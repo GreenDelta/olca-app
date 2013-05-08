@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<persistence version="1.0"
+	xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd">
+
+	<persistence-unit name="openLCA">
+		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+		<class>org.openlca.core.model.Actor</class>
+		<class>org.openlca.core.model.AdminInfo</class>
+		<class>org.openlca.core.model.AllocationFactor</class>
+		<class>org.openlca.core.model.CalculationProperty</class>
+		<class>org.openlca.core.model.Category</class>
+		<class>org.openlca.core.model.Exchange</class>
+		<class>org.openlca.core.model.Flow</class>
+		<class>org.openlca.core.model.FlowProperty</class>
+		<class>org.openlca.core.model.FlowPropertyFactor</class>
+		<class>org.openlca.core.model.LCIACategory</class>
+		<class>org.openlca.core.model.LCIAFactor</class>
+		<class>org.openlca.core.model.LCIAMethod</class>
+		<class>org.openlca.core.model.Location</class>
+		<class>org.openlca.core.model.ModelingAndValidation</class>
+		<class>org.openlca.core.model.NormalizationWeightingSet</class>
+		<class>org.openlca.core.model.NormalizationWeightingFactor</class>
+		<class>org.openlca.core.model.Parameter</class>
+		<class>org.openlca.core.model.Process</class>
+		<class>org.openlca.core.model.ProcessGroupSet</class>
+		<class>org.openlca.core.model.ProcessLink</class>
+		<class>org.openlca.core.model.ProductSystem</class>
+		<class>org.openlca.core.model.Project</class>
+		<class>org.openlca.core.model.ScalingFactor</class>
+		<class>org.openlca.core.model.Source</class>
+		<class>org.openlca.core.model.Technology</class>
+		<class>org.openlca.core.model.Time</class>
+		<class>org.openlca.core.model.Unit</class>
+		<class>org.openlca.core.model.UnitGroup</class>
+		<class>org.openlca.core.model.results.LCIResult</class>
+		<class>org.openlca.core.model.results.LCIAResult</class>
+		<class>org.openlca.core.model.results.LCIACategoryResult</class>
+		<class>org.openlca.core.model.iomaps.Mapping</class>
+		<class>org.openlca.core.model.CostCategory</class>
+		<class>org.openlca.core.model.ProductCostEntry</class>
+		<properties>
+			<property name="eclipselink.connection-pool.default.max"
+				value="10" />
+			<property name="eclipselink.jdbc.cache-statements" value="true" />
+			<property name="eclipselink.logging.level" value="WARNING" />
+		</properties>
+	</persistence-unit>
+</persistence>
