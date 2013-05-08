@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Updater
+Bundle-SymbolicName: olca-app-updater
+Bundle-Version: 1.0.0
+Export-Package: org.openlca.updater
+Bundle-Vendor: openLCA
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Main-Class: org.openlca.updater.Main
+Require-Bundle: org.junit
