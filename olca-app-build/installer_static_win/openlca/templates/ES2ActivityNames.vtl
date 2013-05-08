@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+## template for the EcoSpold 02 activity master data
+## the template gets an activity descriptor list 
+## bound to the context name 'activities' as input
+## 
+## author: Michael Srocka
+## last change: 20/12/2009
+##
+
+<validActivityNames 
+	xmlns="http://www.EcoInvent.org/EcoSpold02"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.EcoInvent.org/EcoSpold02 ../../Schemas/MasterData/EcoSpold02ActivityNames.xsd" 
+	
+	#if($activities.majorRelease)
+		majorRelease="$activities.majorRelease" 
+	#end
+	
+	#if($activities.minorRelease)
+		minorRelease="$activities.minorRelease" 
+	#end
+	
+	#if($activities.contextId)
+		contextId="$activities.contextId" 
+	#end	
+	>
+	
+	#foreach($it in $activities.contextNames)
+		<contextName xml:lang="$it.langCode">$it.value</contextName>
+	#end
+	
+	#foreach($activity in $activities.activityNames)
+		<activityName
+			
+			#if($activity.id)
+				id="$activity.id" 
+			#end							
+			>
+			
+			#foreach($it in $activity.names)
+				<name xml:lang="$it.langCode">$it.value</name>
+			#end		
+		</activityName>
+	#end
+	
+</validActivityNames>

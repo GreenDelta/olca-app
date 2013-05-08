@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="../../stylesheets/source2html.xsl"?>
+
+<sourceDataSet
+	 xmlns="http://lca.jrc.it/ILCD/Source" 
+	 xmlns:common="http://lca.jrc.it/ILCD/Common"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://lca.jrc.it/ILCD/Source ../../schemas/ILCD_SourceDataSet.xsd"
+     version="1.1">
+	<sourceInformation>
+    #if ($source.description)
+		
+        #set ($description = $source.description)        
+        <dataSetInformation>
+			
+            #if ($description.uuid)
+              <common:UUID>$description.uuid</common:UUID>
+            #end
+        
+            #foreach ($it in $description.shortName)
+              <common:shortName xml:lang="$it.langCode">$it.value</common:shortName>
+    		#end
+		
+			<classificationInformation>
+				#foreach ($classification in $description.classifications)
+        			<common:classification
+        				#if ($classification.fileURI)
+                          classes = "$classification.fileURI"
+        				#end
+        				#if ($classification.name)
+                          name = "$classification.name"
+                        #end
+        			>
+        			#foreach ($class in $classification.classes)
+                        <common:class
+                            #if ($class.id)
+                              classId = "$class.id"
+            				#end
+            				#if ($class.level)
+                              level = "$class.level"
+                            #end
+                        >$class.name</common:class>
+        			#end
+        			</common:classification>
+        		#end				
+            </classificationInformation>  
+        
+            #if ($description.sourceCitation)
+              <sourceCitation>$description.sourceCitation</sourceCitation>
+            #end
+        
+            #if ($description.publicationType)
+              <publicationType>$description.publicationType</publicationType>
+            #end
+        
+            #foreach ($it in $description.comment)
+              <sourceDescriptionOrComment xml:lang="$it.langCode">$it.value</sourceDescriptionOrComment>
+    		#end
+			
+			#foreach ($it in $description.digitalFileUri)
+			  <referenceToDigitalFile uri="$it"/>
+			#end       
+			
+			#set($refElem = "referenceToContact")
+            #foreach ($refVal in $description.contactReferences)
+              #parse("ILCDDataSetRef.vtl")
+			#end
+			
+            #if ($description.logoReference)
+				#set($refElem = "referenceToLogo")
+				#set($refVal = $description.logoReference)
+				#parse("ILCDDataSetRef.vtl")            
+            #end
+
+		</dataSetInformation>
+		
+	#end
+    </sourceInformation>
+	<administrativeInformation>
+    #if ($source.entry)
+        #set ($entry = $source.entry)        
+        <dataEntryBy>
+        #if ($entry.timestamp)
+          <common:timeStamp>$entry.timestamp</common:timeStamp>
+		#end
+		
+        #set ($refElem = "common:referenceToDataSetFormat")
+        #foreach ($refVal in $entry.dataSetFormats)
+          #parse("ILCDDataSetRef.vtl")	
+        #end
+        </dataEntryBy>
+    #end
+    
+    #if ($source.publication)
+        #set ($publication = $source.publication)
+        
+         <publicationAndOwnership>
+			
+        #if ($publication.dataSetVersion)
+          <common:dataSetVersion>$publication.dataSetVersion</common:dataSetVersion>
+        #end
+        
+		#set ($refElem = "common:referenceToPrecedingDataSetVersion")
+        #foreach ($refVal in $publication.precedingDataSets)
+          #parse("ILCDDataSetRef.vtl")	
+		#end
+		
+        #if ($publication.permanentDataSetURI)
+          <common:permanentDataSetURI>$publication.permanentDataSetURI</common:permanentDataSetURI>
+        #end
+        
+        #if ($publication.ownership)
+			#set ($refElem = "common:referenceToOwnershipOfDataSet")
+			#set ($refVal = $publication.ownership)
+			#parse("ILCDDataSetRef.vtl")
+        #end
+        
+        </publicationAndOwnership>    
+	#end
+	
+	</administrativeInformation>
+</sourceDataSet>

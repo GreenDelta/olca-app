@@ -1,0 +1,570 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet version="1.0" href="../../stylesheets/process2html.xsl" type="text/xsl"?>
+<processDataSet 
+	xmlns="http://lca.jrc.it/ILCD/Process" 
+	xmlns:common="http://lca.jrc.it/ILCD/Common"
+	metaDataOnly="$process.metaDataOnly"	
+	locations="../ILCDLocations.xml"
+	version="1.1"	
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://lca.jrc.it/ILCD/Process ../../schemas/ILCD_ProcessDataSet.xsd">
+	
+	<processInformation>
+		
+		## process information		
+		#set($dataSetInfo = $process.description)
+		<dataSetInformation>
+			<common:UUID>$dataSetInfo.uuid</common:UUID>
+			<name>
+				#foreach($name in $dataSetInfo.name)
+					<baseName xml:lang="$name.langCode">$name.value</baseName>
+				#end
+				#foreach($tsr in $dataSetInfo.treatmentStandardsRoutes)
+					<treatmentStandardsRoutes xml:lang="$tsr.langCode">$tsr.value</treatmentStandardsRoutes>
+				#end
+				#foreach($mix in $dataSetInfo.mixAndLocationTypes)
+					<mixAndLocationTypes xml:lang="$mix.langCode">$mix.value</mixAndLocationTypes>
+				#end
+				#foreach($fu in $dataSetInfo.functionalUnitFlowProperties)
+					<functionalUnitFlowProperties xml:lang="$fu.langCode">$fu.value</functionalUnitFlowProperties>
+				#end
+			</name>
+			#foreach($synonym in $dataSetInfo.synonyms)
+				<common:synonyms xml:lang="$synonym.langCode">$synonym.value</common:synonyms>
+			#end
+			#if($dataSetInfo.complementingProcesses.size() > 0)
+				<complementingProcesses>
+					#set($refElem = "referenceToComplementingProcess")
+					#foreach($refVal in $dataSetInfo.complementingProcesses)
+						#parse("ILCDDataSetRef.vtl")
+					#end
+				</complementingProcesses>
+			#end
+			<classificationInformation>
+				#foreach($classification in $dataSetInfo.classifications)
+					<common:classification
+						#if($classification.fileURI)
+							classes="$classification.fileURI"
+						#end
+						#if($classification.name)
+							name="$classification.name"
+						#end
+					>
+					#foreach($class in $classification.classes)
+						<common:class 
+							#if($class.id)
+							classId="$class.id" 
+							#end
+							#if($class.level)
+							level="$class.level"
+							#end
+							>$class.name</common:class>
+					#end					
+					</common:classification>
+				#end
+            </classificationInformation>
+			#foreach($comment in $dataSetInfo.comment)
+			<common:generalComment xml:lang="$comment.langCode">$comment.value</common:generalComment>
+			#end
+			#set($refElem = "referenceToExternalDocumentation")
+			#foreach($refVal in $dataSetInfo.externalDocumentations)
+				#parse("ILCDDataSetRef.vtl")
+			#end
+		</dataSetInformation>
+		
+		## quantitative reference
+		#if($process.quantitativeReference)
+			#set($qRef = $process.quantitativeReference)
+		<quantitativeReference 
+				#if($qRef.type)
+				type="$qRef.type"
+				#end
+				>
+				#foreach($refFlow in $qRef.referenceFlows)
+					<referenceToReferenceFlow>$refFlow</referenceToReferenceFlow>
+				#end
+				#foreach($fu in $qRef.functionalUnits)
+					<functionalUnitOrOther xml:lang="$fu.langCode">$fu.value</functionalUnitOrOther>
+				#end
+    	</quantitativeReference>
+		#end
+		
+		## time
+		#if($process.time)
+			#set($time = $process.time)
+			<time>
+				#if($time.referenceYear)
+					<common:referenceYear>$time.referenceYear</common:referenceYear>
+				#end
+				#if($time.validUntil)
+					<common:dataSetValidUntil>$time.validUntil</common:dataSetValidUntil>
+				#end
+				#foreach($descr in $time.description)
+				<common:timeRepresentativenessDescription xml:lang="$descr.langCode">$descr.value</common:timeRepresentativenessDescription>
+				#end				
+			</time>
+		#end
+		
+		## geography
+		#if($process.geography)
+			#set($geography = $process.geography)
+			<geography>
+				<locationOfOperationSupplyOrProduction 
+					#if($geography.latitudeAndLongitude)
+						latitudeAndLongitude="$geography.latitudeAndLongitude" 
+					#end
+					#if($geography.location)
+						location="$geography.location"
+					#end
+				>
+				#foreach($descr in $geography.description)
+					<descriptionOfRestrictions xml:lang="$descr.langCode">$descr.value</descriptionOfRestrictions>
+				#end				
+				</locationOfOperationSupplyOrProduction>
+				#foreach($subLoc in $geography.subLocations)
+					<subLocationOfOperationSupplyOrProduction 
+						#if($subLoc.latitudeAndLongitude)
+						latitudeAndLongitude="$subLoc.latitudeAndLongitude" 
+    					#end
+    					#if($subLoc.subLocation)
+    						subLocation="$subLoc.subLocation"
+    					#end						
+						>
+						#foreach($descr in $subLoc.description)
+						<descriptionOfRestrictions xml:lang="$descr.langCode">$descr.value</descriptionOfRestrictions>
+						#end
+					</subLocationOfOperationSupplyOrProduction> 
+				#end
+			</geography>
+		#end
+		
+		
+		## technology
+		#if($process.technology)
+    		#set($technology = $process.technology)
+    		<technology>
+    			#foreach($description in $technology.description)
+    				<technologyDescriptionAndIncludedProcesses xml:lang="$description.langCode">$description.value</technologyDescriptionAndIncludedProcesses>
+    			#end
+    			#set($refElem = "referenceToIncludedProcesses")
+    			#foreach($refVal in $technology.includedProcesses)
+    				#parse("ILCDDataSetRef.vtl")
+    			#end
+    			#foreach($applicability in $technology.applicability)
+    				<technologicalApplicability xml:lang="$applicability.langCode">$applicability.value</technologicalApplicability>
+    			#end
+    			#if($technology.pictogramme)
+    				#set($refVal = $technology.pictogramme)
+    				#set($refElem = "referenceToTechnologyPictogramme")
+    				#parse("ILCDDataSetRef.vtl")
+    			#end
+    			#set($refElem = "referenceToTechnologyFlowDiagrammOrPicture")
+    			#foreach($refVal in $technology.flowDiagrammsAndPictures)
+    				#parse("ILCDDataSetRef.vtl")
+    			#end
+            </technology>	
+		#end
+		
+		## mathematical relations
+		#if($process.mathSection)
+			<mathematicalRelations>
+				#foreach($descr in $process.mathSection.modelDescription)
+					<modelDescription xml:lang="$descr.langCode">$descr.value</modelDescription>
+				#end
+				#foreach($param in $process.mathSection.parameters)
+					<variableParameter
+						#if($param.name)
+							name = "$param.name"
+						#end						
+					>
+					#if($param.formula)
+						<formula>$param.formula</formula>
+					#end
+					#if($param.meanValue)
+						<meanValue>$param.meanValue</meanValue>
+					#end
+					#if($param.minimumValue)
+						<minimumValue>$param.minimumValue</minimumValue>
+					#end
+					#if($param.maximumValue)
+						<maximumValue>$param.maximumValue</maximumValue>
+					#end
+					#if($param.uncertaintyType)
+						<uncertaintyDistributionType>$param.uncertaintyType</uncertaintyDistributionType>
+					#end
+					#if($param.relStdDeviation95In)
+						<relativeStandardDeviation95In>$param.relStdDeviation95In</relativeStandardDeviation95In>
+					#end
+					#foreach($comment in $param.comment)
+                        <comment xml:lang="$comment.langCode">$comment.value</comment>
+					#end
+                    </variableParameter>
+				#end
+			</mathematicalRelations>
+		#end
+		
+    </processInformation>
+	
+	<modellingAndValidation>
+		
+		## LCI method and allocation
+		#if($process.method)
+			#set($method = $process.method)
+    		<LCIMethodAndAllocation>
+				#if($method.dataSetType)
+                    <typeOfDataSet>$method.dataSetType</typeOfDataSet>
+				#end
+				#if($method.lciMethodPrinciple)
+                    <LCIMethodPrinciple>$method.lciMethodPrinciple</LCIMethodPrinciple>
+				#end
+				#foreach($dev in $method.deviationsFromLCIMethodPrinciple)
+                    <deviationsFromLCIMethodPrinciple xml:lang="$dev.langCode">$dev.value</deviationsFromLCIMethodPrinciple>
+				#end
+				#foreach($it in $method.lciMethodApproaches)
+                    <LCIMethodApproaches>$it</LCIMethodApproaches>
+				#end
+				#foreach($it in $method.deviationsFromLCIMethodApproaches)
+                    <deviationsFromLCIMethodApproaches xml:lang="$it.langCode">$it.value</deviationsFromLCIMethodApproaches>
+				#end
+				#foreach($it in $method.modellingConstants)
+                    <modellingConstants xml:lang="$it.langCode">$it.value</modellingConstants>
+				#end
+				#foreach($it in $method.deviationsFromModellingConstants)
+                    <deviationsFromModellingConstants xml:lang="$it.langCode">$it.value</deviationsFromModellingConstants>
+				#end
+				#set($refElem = "referenceToLCAMethodDetails")
+    			#foreach($refVal in $method.methodDetails)
+    				#parse("ILCDDataSetRef.vtl")
+    			#end
+            </LCIMethodAndAllocation>
+		#end
+		
+		## representativeness
+		#if($process.representativeness)
+			#set($repr = $process.representativeness)
+			<dataSourcesTreatmentAndRepresentativeness>
+				#foreach($it in $repr.cutOffPrinciples)
+					<dataCutOffAndCompletenessPrinciples xml:lang="$it.langCode">$it.value</dataCutOffAndCompletenessPrinciples>
+				#end
+				#foreach($it in $repr.deviationsFromCutOffPrinciples)
+					<deviationsFromCutOffAndCompletenessPrinciples xml:lang="$it.langCode">$it.value</deviationsFromCutOffAndCompletenessPrinciples>
+				#end
+				#foreach($it in $repr.dataSelectionPrinciples)
+					<dataSelectionAndCombinationPrinciples xml:lang="$it.langCode">$it.value</dataSelectionAndCombinationPrinciples>
+				#end
+				#foreach($it in $repr.deviationsFromDataSelectionPrinciples)
+					<deviationsFromSelectionAndCombinationPrinciples xml:lang="$it.langCode">$it.value</deviationsFromSelectionAndCombinationPrinciples>
+				#end							
+				#foreach($it in $repr.extrapolationPrinciples)
+					<dataTreatmentAndExtrapolationsPrinciples xml:lang="$it.langCode">$it.value</dataTreatmentAndExtrapolationsPrinciples>
+				#end
+				#foreach($it in $repr.deviationsFromExtrapolationPrinciples)
+					<deviationsFromTreatmentAndExtrapolationPrinciples xml:lang="$it.langCode">$it.value</deviationsFromTreatmentAndExtrapolationPrinciples>
+				#end
+				#set($refElem = "referenceToDataHandlingPrinciples")
+				#foreach($refVal in $repr.dataHandlingPrinciples)
+					#parse("ILCDDataSetRef.vtl")
+				#end
+				#set($refElem = "referenceToDataSource")
+				#foreach($refVal in $repr.dataSources)
+					#parse("ILCDDataSetRef.vtl")
+				#end
+				#if($repr.percent)
+					<percentageSupplyOrProductionCovered>$repr.percent</percentageSupplyOrProductionCovered>
+				#end
+				#foreach($it in $repr.productionVolume)
+					<annualSupplyOrProductionVolume xml:lang="$it.langCode">$it.value</annualSupplyOrProductionVolume>
+				#end
+				#foreach($it in $repr.samplingProcedure)
+					<samplingProcedure xml:lang="$it.langCode">$it.value</samplingProcedure>
+				#end
+				#foreach($it in $repr.dataCollectionPeriod)
+					<dataCollectionPeriod xml:lang="$it.langCode">$it.value</dataCollectionPeriod>
+				#end
+				#foreach($it in $repr.uncertaintyAdjustments)
+					<uncertaintyAdjustments xml:lang="$it.langCode">$it.value</uncertaintyAdjustments>
+				#end
+				#foreach($it in $repr.useAdviceForDataSet)
+					<useAdviceForDataSet xml:lang="$it.langCode">$it.value</useAdviceForDataSet>
+				#end				
+			</dataSourcesTreatmentAndRepresentativeness>
+		#end
+		
+		#if($process.completeness)
+			#set($completeness = $process.completeness)
+			<completeness>
+				#if($completeness.completenessProductModel)
+                    <completenessProductModel>$completeness.completenessProductModel</completenessProductModel>
+				#end
+				#set($refElem = "referenceToSupportedImpactAssessmentMethods")
+				#foreach($refVal in $completeness.supportedImpactAssessmentMethods)
+					#parse("ILCDDataSetRef.vtl")
+				#end
+				#foreach($it in $completeness.elemFlowCompleteness)
+					<completenessElementaryFlows 
+						#if($it.type)
+							type="$it.type"
+						#end
+						#if($it.value)				
+							value="$it.value"
+						#end
+					/>
+				#end
+				#foreach($it in $completeness.completenessOtherProblemFields)
+					<completenessOtherProblemField xml:lang="$it.langCode">$it.value</completenessOtherProblemField>
+				#end
+            </completeness>
+		#end
+		
+		## reviews
+		#if($process.reviews.size() > 0)
+			<validation>
+				#foreach($review in $process.reviews)
+					<review
+						#if($review.type)
+							type="$review.type"
+						#end>
+						
+						## review scopes
+						#foreach($scope in $review.scopes)
+							<common:scope
+								#if($scope.name)
+									name="$scope.name"
+								#end>
+								#foreach($method in $scope.methods)
+									<common:method name="$method"/>
+								#end
+                            </common:scope>
+						#end
+						
+						## review details
+						#foreach($it in $review.details)
+                             <common:reviewDetails xml:lang="$it.langCode">$it.value</common:reviewDetails>
+						#end
+						
+						## references to reviewers
+						#set($refElem = "common:referenceToNameOfReviewerAndInstitution")
+        				#foreach($refVal in $review.reviewers)
+        					#parse("ILCDDataSetRef.vtl")
+        				#end
+						
+						## other review details
+						#foreach($it in $review.otherDetails)
+                             <common:otherReviewDetails xml:lang="$it.langCode">$it.value</common:otherReviewDetails>
+						#end
+						
+						## reference to review report
+						#if($review.reviewReport)
+							#set($refElem = "common:referenceToCompleteReviewReport")
+							#set($refVal = $review.reviewReport)
+							#parse("ILCDDataSetRef.vtl")
+						#end
+						
+                    </review>
+				#end
+            </validation>
+		#end
+		
+    </modellingAndValidation>
+	
+	<administrativeInformation>
+	
+		## TODO: commissioner and goal
+		
+		## data generators
+		#if($process.dataGenerators.size() > 0)
+			<dataGenerator>
+				## references to data generators
+				#set($refElem = "common:referenceToPersonOrEntityGeneratingTheDataSet")
+        		#foreach($refVal in $process.dataGenerators)
+        			#parse("ILCDDataSetRef.vtl")
+        		#end
+            </dataGenerator>
+		#end
+		
+	## data entry by	
+	#if($process.entry)	
+		#set ($entry = $process.entry)
+		<dataEntryBy>
+            #if ($entry.timeStamp)
+				<common:timeStamp>$entry.timeStamp</common:timeStamp>
+			#end
+			
+            #set($refElem = "common:referenceToDataSetFormat")
+            #foreach ($refVal in $entry.dataFormatReferences)
+				#parse("ILCDDataSetRef.vtl")
+			#end
+			
+            #if ($entry.originalFormatReference)
+				#set($refElem = "common:referenceToConvertedOriginalDataSetFrom")
+				#set($refVal = $entry.originalFormatReference)
+				#parse("ILCDDataSetRef.vtl")             
+            #end
+            
+            #if ($entry.dataSetEntryReference)
+				#set($refElem = "common:referenceToPersonOrEntityEnteringTheData")
+				#set($refVal = $entry.dataSetEntryReference)
+				#parse("ILCDDataSetRef.vtl")               
+            #end
+            
+			#set($refElem = "common:referenceToDataSetUseApproval")
+            #foreach ($refVal in $entry.useApprovalReferences)				
+				#parse("ILCDDataSetRef.vtl")   
+            #end
+        </dataEntryBy>
+	#end	
+	
+	
+	## publication and ownership
+	#if($process.publication)
+		#set($publication = $process.publication)
+		<publicationAndOwnership>
+        
+		#if ($publication.lastRevision)
+          <common:dateOfLastRevision>$publication.lastRevision</common:dateOfLastRevision>
+        #end
+        
+        #if ($publication.dataSetVersion)
+          <common:dataSetVersion>$publication.dataSetVersion</common:dataSetVersion>
+        #end
+        
+		#set($refElem = "common:referenceToPrecedingDataSetVersion")
+        #foreach ($refVal in $publication.precedingDataSetReferences)
+          #parse("ILCDDataSetRef.vtl")
+		#end
+		
+        #if ($publication.permanentDataSetURI)
+          <common:permanentDataSetURI>$publication.permanentDataSetURI</common:permanentDataSetURI>
+        #end
+        
+        #if ($publication.workflowStatus)
+          <common:workflowAndPublicationStatus>$publication.workflowStatus</common:workflowAndPublicationStatus>
+        #end
+        
+        #if ($publication.republicationReference)
+			#set($refElem = "common:referenceToUnchangedRepublication")
+			#set($refVal = $publication.republicationReference)
+			#parse("ILCDDataSetRef.vtl")          
+        #end
+        
+        #if ($publication.registrationAuthorityReference)
+            #set($refElem = "common:referenceToRegistrationAuthority")
+			#set($refVal = $publication.registrationAuthorityReference)
+			#parse("ILCDDataSetRef.vtl")   
+        #end
+        
+        #if ($publication.registrationNumber)
+          <common:registrationNumber>$publication.registrationNumber</common:registrationNumber>
+        #end
+        
+        #if ($publication.ownershipReference)
+          #set($refElem = "common:referenceToOwnershipOfDataSet")
+		  #set($refVal = $publication.ownershipReference)
+		  #parse("ILCDDataSetRef.vtl")          
+        #end
+        
+        #if ($publication.copyright)
+          <common:copyright>$publication.copyright</common:copyright>
+		#else
+		  <common:copyright>false</common:copyright>	
+        #end
+        
+		#set($refElem = "common:referenceToEntitiesWithExclusiveAccess")
+        #foreach ($refVal in $publication.exclusiveAccessReferences)
+          #parse("ILCDDataSetRef.vtl")  
+		#end
+		
+        #if ($publication.licenseType)
+          <common:licenseType>$publication.licenseType</common:licenseType>
+        #end
+        
+        #foreach ($it in $publication.accessRestrictions)
+          <common:accessRestrictions xml:lang="$it.langCode">$it.value</common:accessRestrictions>
+		#end
+		
+        </publicationAndOwnership>
+	#end
+	
+    </administrativeInformation>
+	
+	<exchanges>
+		
+		#foreach($exchange in $process.exchanges)
+			<exchange
+				#if($exchange.id)
+					dataSetInternalID="$exchange.id"
+				#end
+			>
+			#if($exchange.flowDataSet)
+				#set($refElem = "referenceToFlowDataSet")
+				#set($refVal = $exchange.flowDataSet)
+				#parse("ILCDDataSetRef.vtl")
+			#end
+			#if($exchange.location)
+                <location>$exchange.location</location>
+			#end
+			#if($exchange.functionType)
+                <functionType>$exchange.functionType</functionType>
+			#end
+			#if($exchange.direction)
+                <exchangeDirection>$exchange.direction</exchangeDirection>
+			#end
+			#if($exchange.variableReference)
+                <referenceToVariable>$exchange.variableReference</referenceToVariable>
+			#end
+			#if($exchange.meanAmount)
+                <meanAmount>$exchange.meanAmount</meanAmount>
+			#end
+			#if($exchange.resultingAmount)
+                <resultingAmount>$exchange.resultingAmount</resultingAmount>
+			#end
+			#if($exchange.minimumAmount)
+                <minimumAmount>$exchange.minimumAmount</minimumAmount>
+			#end
+			#if($exchange.maximumAmount)
+                <maximumAmount>$exchange.minimumAmount</maximumAmount>
+			#end
+			#if($exchange.uncertaintyDistribution)
+                <uncertaintyDistributionType>$exchange.uncertaintyDistribution</uncertaintyDistributionType>
+			#end
+			#if($exchange.relStdDeviation95In)
+                <relativeStandardDeviation95In>$exchange.relStdDeviation95In</relativeStandardDeviation95In>
+			#end
+			#if($exchange.allocationFactors.size() > 0)
+				<allocations>
+				#foreach($it in $exchange.allocationFactors)
+					<allocation
+						#if($it.fraction)
+							allocatedFraction="$it.fraction"
+						#end
+						#if($it.coProductId)
+							internalReferenceToCoProduct="$it.coProductId"
+						#end
+					/>
+				#end
+                </allocations>				
+			#end
+			#if($exchange.dataSourceType)
+                <dataSourceType>$exchange.dataSourceType</dataSourceType>
+			#end
+			#if($exchange.dataDerivationType)
+                <dataDerivationTypeStatus>$exchange.dataDerivationType</dataDerivationTypeStatus>
+			#end
+			#if($exchange.dataSources.size() > 0)
+				<referencesToDataSource>
+					#set($refElem = "referenceToDataSource")
+					#foreach($refVal in $exchange.dataSources)
+						#parse("ILCDDataSetRef.vtl")
+					#end
+                </referencesToDataSource>
+			#end
+			#foreach($it in $exchange.comment)
+                <generalComment xml:lang="$it.langCode">$it.value</generalComment>
+			#end
+            </exchange>
+		#end
+		
+    </exchanges>
+	
+	
+</processDataSet>

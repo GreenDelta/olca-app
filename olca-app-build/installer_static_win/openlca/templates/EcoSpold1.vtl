@@ -1,0 +1,453 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet version="1.0" href="../stylesheets/EcoSpold01.xsl" type="text/xsl"?>
+<ecoSpold 
+	#if ($ecoSpold.validationId)
+		validationId="$ecoSpold.validationId" 
+	#end	
+	#if ($ecoSpold.validationStatus)
+		validationStatus="$ecoSpold.validationStatus" 
+	#end	
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.EcoInvent.org/EcoSpold01 ../schemas/EcoSpold01Dataset.xsd"	
+	#if ($ecoSpold.schema)
+		xmlns="$ecoSpold.schema"
+	#else
+		xmlns="http://www.EcoInvent.org/EcoSpold01"		
+	#end	
+>	
+	#foreach($dataset in $ecoSpold.datasets)
+	<dataset 
+		#if($dataset.generator)
+			generator="$dataset.generator" 
+		#end	
+    	#if($dataset.internalSchemaVersion)
+			internalSchemaVersion="$dataset.internalSchemaVersion" 
+		#end	
+    	#if($dataset.number)
+			number="$dataset.number" 
+		#end	
+    	#if($dataset.timestamp)
+			timestamp="$dataset.timestamp" 
+		#end	
+    	#if($dataset.validCategories)
+			validCategories="$dataset.validCategories" 
+		#end	
+    	#if($dataset.validCompanyCodes)
+			validCompanyCodes="$dataset.validCompanyCodes" 
+		#end	
+    	#if($dataset.validRegionalCodes)
+			validRegionalCodes="$dataset.validRegionalCodes" 
+		#end	
+    	#if($dataset.validUnits)
+			validUnits="$dataset.validUnits" 
+		#end 
+	>
+		<metaInformation>
+			<processInformation>
+				
+				## reference function
+				#if($dataset.referenceFunction)
+				#set( $referenceFunction = $dataset.referenceFunction )
+				<referenceFunction
+                	#if($referenceFunction.category)
+						category="$referenceFunction.category" 
+					#end                	
+                	#if($referenceFunction.subCategory)
+						subCategory="$referenceFunction.subCategory" 
+					#end                	
+                	#if($referenceFunction.localCategory)
+						localCategory="$referenceFunction.localCategory" 
+					#end                	
+                	#if($referenceFunction.localSubCategory)
+						localSubCategory="$referenceFunction.localSubCategory" 
+					#end                	
+                	#if($referenceFunction.name)
+						name="$referenceFunction.name" 
+					#end                	
+                	#if($referenceFunction.localName)
+						localName="$referenceFunction.localName"
+					#end                	
+					#if($referenceFunction.CASNumber)
+						CASNumber="$referenceFunction.CASNumber" 
+					#end	
+                	#if($referenceFunction.amount)
+						amount="$referenceFunction.amount" 
+					#end                	
+                	#if($referenceFunction.datasetRelatesToProduct)
+						datasetRelatesToProduct="$referenceFunction.datasetRelatesToProduct" 
+					#end                	
+                	#if($referenceFunction.formula)
+						formula="$referenceFunction.formula" 
+					#end                	
+                	#if($referenceFunction.generalComment)
+						generalComment="$referenceFunction.generalComment" 
+					#end                	
+                	#if($referenceFunction.includedProcesses)
+						includedProcesses="$referenceFunction.includedProcesses" 
+					#end                	
+                	#if($referenceFunction.infrastructureIncluded)
+						infrastructureIncluded="$referenceFunction.infrastructureIncluded" 
+					#end                	
+                	#if($referenceFunction.infrastructureProcess)
+						infrastructureProcess="true"
+					#else
+						infrastructureProcess="false"
+					#end                	
+                	#if($referenceFunction.statisticalClassification)
+						statisticalClassification="$referenceFunction.statisticalClassification" 
+					#end                	
+                	#if($referenceFunction.unit)
+						unit="$referenceFunction.unit" 
+					#end>                
+					#foreach($synonym in $referenceFunction.synonyms)                
+					<synonym>$synonym</synonym>
+					#end
+				</referenceFunction>	
+				#end
+				
+				
+				#if($dataset.geography)
+				#set( $geography = $dataset.geography )
+				<geography 
+					#if($geography.location)
+						location="$geography.location" 
+					#end	
+					#if($geography.text)
+						text="$geography.text" 
+					#end				
+				/>
+				#end
+				
+				#if($dataset.technology)
+				#set( $technology = $dataset.technology )
+				<technology 
+					#if($technology.text)
+						text="$technology.text" 
+					#end 
+				/>
+				#end
+				
+				#if($dataset.timePeriod)
+				#set( $timePeriod = $dataset.timePeriod )
+				<timePeriod 
+					#if($timePeriod.dataValidForEntirePeriod)
+						dataValidForEntirePeriod="$timePeriod.dataValidForEntirePeriod" 
+					#end	
+                	#if($timePeriod.text)
+						text="$timePeriod.text"
+					#end 
+				 >                	
+                	#if($timePeriod.startYear)
+						<startYear>$timePeriod.startYear</startYear> 
+					#elseif($timePeriod.startDate)	
+						<startDate>$timePeriod.startDate</startDate> 
+					#elseif($timePeriod.startYearMonth)
+						<startYearMonth>$timePeriod.startYearMonth</startYearMonth>
+					#end					
+                	#if($timePeriod.endYear)
+						<endYear>$timePeriod.endYear</endYear>
+					#elseif($timePeriod.endDate)
+						<endDate>$timePeriod.endDate</endDate>
+					#elseif($timePeriod.endYearMonth)
+						<endYearMonth>$timePeriod.endYearMonth</endYearMonth>
+					#end					
+				</timePeriod>
+				#end
+				
+				#if($dataset.dataSetInformation)
+				#set( $dataSetInformation = $dataset.dataSetInformation )
+				<dataSetInformation 
+					#if($dataSetInformation.energyValues)
+						energyValues="$dataSetInformation.energyValues" 
+					#end	
+                	#if($dataSetInformation.impactAssessmentResult)
+						impactAssessmentResult="true"
+					#else
+						impactAssessmentResult="false"
+					#end                	
+                	#if($dataSetInformation.internalVersion)
+						internalVersion="$dataSetInformation.internalVersion" 
+					#end                	
+                	#if($dataSetInformation.languageCode)
+						languageCode="$dataSetInformation.languageCode" 
+					#end                	
+                	#if($dataSetInformation.localLanguageCode)
+						localLanguageCode="$dataSetInformation.localLanguageCode" 
+					#end                	
+                	#if($dataSetInformation.timestamp)
+						timestamp="$dataSetInformation.timestamp" 
+					#end                	
+                	#if($dataSetInformation.type)
+						type="$dataSetInformation.type" 
+					#end                	
+                	#if($dataSetInformation.version)
+						version="$dataSetInformation.version" 
+					#end
+				/>
+				#end
+			</processInformation>
+			<modellingAndValidation>
+				
+				#if($dataset.representativeness)
+				#set( $representativeness = $dataset.representativeness )
+				<representativeness 
+					#if($representativeness.extrapolations)
+						extrapolations="$representativeness.extrapolations" 
+					#end	
+                	#if($representativeness.percent)
+						percent="$representativeness.percent" 
+					#end	
+                	#if($representativeness.productionVolume)
+						productionVolume="$representativeness.productionVolume" 
+					#end	
+                	#if($representativeness.samplingProcedure)
+						samplingProcedure="$representativeness.samplingProcedure" 
+					#end	
+                	#if($representativeness.uncertaintyAdjustments)
+						uncertaintyAdjustments="$representativeness.uncertaintyAdjustments" 
+					#end	
+				/>
+				#end
+				
+				#foreach($source in $dataset.sources)	
+				<source					
+					#if($source.additionalAuthors)
+						additionalAuthors="$source.additionalAuthors" 
+					#end	
+                	#if($source.firstAuthor)
+						firstAuthor="$source.firstAuthor" 
+					#end	
+                	#if($source.issueNo)
+						issueNo="$source.issueNo" 
+					#end	
+                	#if($source.journal)
+						journal="$source.journal" 
+					#end	
+                	#if($source.nameOfEditors)
+						nameOfEditors="$source.nameOfEditors" 
+					#end	
+                	#if($source.number)
+						number="$source.number" 
+					#end	
+                	#if($source.pageNumbers)
+						pageNumbers="$source.pageNumbers" 
+					#end	
+                	#if($source.placeOfPublications)
+						placeOfPublications="$source.placeOfPublications" 
+					#end	
+                	#if($source.publisher)
+						publisher="$source.publisher" 
+					#end	
+                	#if($source.sourceType)
+						sourceType="$source.sourceType" 
+					#end	
+                	#if($source.text)
+						text="$source.text" 
+					#end	
+                	#if($source.title)
+						title="$source.title" 
+					#end	
+                	#if($source.titleOfAnthology)
+						titleOfAnthology="$source.titleOfAnthology" 
+					#end	
+                	#if($source.volumeNo)
+						volumeNo="$source.volumeNo" 
+					#end	
+                	#if($source.year)
+						year="$source.year" 
+					#end
+				 />				 
+				#end ##foreach source
+					
+				#if($dataset.validation)	
+				#set( $validation = $dataset.validation )
+				<validation 
+					#if($validation.otherDetails)
+						otherDetails="$validation.otherDetails" 
+					#end	
+                	#if($validation.proofReadingDetails)
+						proofReadingDetails="$validation.proofReadingDetails" 
+					#end                	
+                	#if($validation.proofReadingValidator)
+						proofReadingValidator="$validation.proofReadingValidator" 
+					#end	
+				/>
+				#end
+			</modellingAndValidation>
+			<administrativeInformation>	
+				
+				#if($dataset.dataEntryBy)
+				#set( $dataEntryBy = $dataset.dataEntryBy )
+				<dataEntryBy 
+					#if($dataEntryBy.person)
+						person="$dataEntryBy.person" 
+					#end	
+					#if($dataEntryBy.qualityNetwork)
+						qualityNetwork="$dataEntryBy.qualityNetwork" 
+					#end	
+				/>
+				#end
+				
+				#if($dataset.dataGeneratorAndPublication)
+				#set( $dataGeneratorAndPublication = $dataset.dataGeneratorAndPublication )
+				<dataGeneratorAndPublication
+					#if($dataGeneratorAndPublication.accessRestrictedTo)
+						accessRestrictedTo="$dataGeneratorAndPublication.accessRestrictedTo" 
+					#end	
+                	#if($dataGeneratorAndPublication.companyCode)
+						companyCode="$dataGeneratorAndPublication.companyCode" 
+					#end	
+                	#if($dataGeneratorAndPublication.copyright)
+						copyright="$dataGeneratorAndPublication.copyright" 
+					#end	
+                	#if($dataGeneratorAndPublication.countryCode)
+						countryCode="$dataGeneratorAndPublication.countryCode" 
+					#end	
+                	#if($dataGeneratorAndPublication.dataPublishedIn)
+						dataPublishedIn="$dataGeneratorAndPublication.dataPublishedIn" 
+					#end	
+                	#if($dataGeneratorAndPublication.pageNumbers)
+						pageNumbers="$dataGeneratorAndPublication.pageNumbers" 
+					#end	
+                	#if($dataGeneratorAndPublication.person)
+						person="$dataGeneratorAndPublication.person" 
+					#end	
+                	#if($dataGeneratorAndPublication.referenceToPublishedSource)
+						referenceToPublishedSource="$dataGeneratorAndPublication.referenceToPublishedSource" 
+					#end	
+				/>	
+				#end
+				
+				#foreach($person in $dataset.persons)
+				<person 
+					#if($person.address)
+						address="$person.address" 
+					#end	
+                	#if($person.companyCode)
+						companyCode="$person.companyCode" 
+					#end	
+                	#if($person.countryCode)
+						countryCode="$person.countryCode" 
+					#end	
+                	#if($person.email)
+						email="$person.email" 
+					#end	
+                	#if($person.name)
+						name="$person.name" 
+					#end	
+                	#if($person.number)
+						number="$person.number" 
+					#end	
+                	#if($person.telefax)
+						telefax="$person.telefax" 
+					#end	
+                	#if($person.telephone)
+						telephone="$person.telephone" 
+					#end
+				/>
+				#end ##foreach person	
+			</administrativeInformation>
+		</metaInformation>
+		<flowData>
+			#foreach($exchange in $dataset.exchanges)
+			<exchange 
+				#if($exchange.CASNumber)
+					CASNumber="$exchange.CASNumber" 
+				#end	
+            	#if($exchange.category)
+					category="$exchange.category" 
+				#end            	
+            	#if($exchange.formula)
+					formula="$exchange.formula" 
+				#end            	
+            	#if($exchange.generalComment)
+					generalComment="$exchange.generalComment" 
+				#end            	
+            	#if(!$exchange.isElementaryFlow())
+            		#if($exchange.infrastructureProcess)
+						infrastructureProcess="$exchange.infrastructureProcess"
+					#else
+						infrastructureProcess="false"
+					#end 
+				#end            	
+            	#if($exchange.localCategory)
+					localCategory="$exchange.localCategory" 
+				#end            	
+            	#if($exchange.localName)
+					localName="$exchange.localName" 
+				#end            	
+            	#if($exchange.localSubCategory)
+					localSubCategory="$exchange.localSubCategory" 
+				#end            	
+            	#if($exchange.location)
+					location="$exchange.location" 
+				#end            	
+            	#if($exchange.maxValue)
+					maxValue="$exchange.maxValue" 
+				#end            	
+            	#if($exchange.meanValue)
+					meanValue="$exchange.meanValue" 
+				#end            	
+            	#if($exchange.minValue)
+					minValue="$exchange.minValue" 
+				#end            	
+            	#if($exchange.mostLikelyValue)
+					mostLikelyValue="$exchange.mostLikelyValue" 
+				#end            	
+            	#if($exchange.name)
+					name="$exchange.name" 
+				#end            	
+            	#if($exchange.number)
+					number="$exchange.number" 
+				#end            	
+            	#if($exchange.pageNumbers)
+					pageNumbers="$exchange.pageNumbers" 
+				#end            	
+            	#if($exchange.referenceToSource)
+					referenceToSource="$exchange.referenceToSource" 
+				#end            	
+            	#if($exchange.standardDeviation95)
+					standardDeviation95="$exchange.standardDeviation95" 
+				#end
+            	#if($exchange.subCategory)
+					subCategory="$exchange.subCategory" 
+				#end            	
+            	#if($exchange.uncertaintyType)
+					uncertaintyType="$exchange.uncertaintyType" 
+				#end            	
+            	#if($exchange.unit)
+					unit="$exchange.unit" 
+				#end
+			>   					
+            	#if($exchange.inputGroup)
+					<inputGroup>$exchange.inputGroup</inputGroup>
+				#end
+            	#if($exchange.outputGroup)
+                    <outputGroup>$exchange.outputGroup</outputGroup>
+				#end			
+			</exchange>
+			#end ##foreach exchange
+			#foreach($allocation in $dataset.allocations)
+			<allocation 
+				#if($allocation.allocationMethod)
+					allocationMethod="$allocation.allocationMethod" 
+				#end	
+            	#if($allocation.explanations)
+					explanations="$allocation.explanations" 
+				#end	
+            	#if($allocation.fraction)
+					fraction="$allocation.fraction" 
+				#end	
+            	#if($allocation.referenceToCoProduct)
+					referenceToCoProduct="$allocation.referenceToCoProduct" 
+				#end				
+			 >
+				#foreach($ioRef in $allocation.inputOutputReferences)            	
+				<referenceToInputOutput>$ioRef</referenceToInputOutput>
+				#end ##foreach ioRef
+			</allocation>
+			#end ##foreach allocation
+		</flowData>
+	</dataset>
+	#end ##foreach dataset
+</ecoSpold>

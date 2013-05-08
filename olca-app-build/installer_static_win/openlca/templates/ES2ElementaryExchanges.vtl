@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<validElementaryExchanges
+
+	#if($exchanges.contextId)
+		contextId="$exchanges.contextId"
+	#end
+	
+	#if($exchanges.majorRelease)
+		majorRelease="$exchanges.majorRelease"
+	#end
+	
+	#if($exchanges.minorRelease)
+		minorRelease="$exchanges.minorRelease"
+	#end
+	
+	xmlns="http://www.EcoInvent.org/EcoSpold02"
+	xmlns:xml="http://www.w3.org/XML/1998/namespace"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.EcoInvent.org/EcoSpold02 ../../Schemas/MasterData/EcoSpold02ElementaryExchanges.xsd ">
+	
+	#foreach($it in $exchanges.contextName)
+		<contextName xml:lang="$it.langCode">$it.value</contextName>	
+	#end
+	
+	#foreach($exchange in $exchanges.elemFlows)
+		<elementaryExchange
+		
+			#if($exchange.casNumber)
+				casNumber="$exchange.casNumber"
+			#end
+			
+			#if($exchange.defaultVariableName)
+				defaultVariableName="$exchange.defaultVariableName"
+			#end
+			
+			#if($exchange.formula)
+				formula="$exchange.formula"
+			#end
+			
+			#if($exchange.id)
+				id="$exchange.id"
+			#end
+			
+			#if($exchange.unitContextId)
+				unitContextId="$exchange.unitContextId"
+			#end
+			
+			#if($exchange.unitId)
+				unitId="$exchange.unitId"
+			#end
+			
+			>
+			
+			#foreach($it in $exchange.name)			
+				<name xml:lang="$it.langCode">$it.value</name>
+			#end
+			
+			#foreach($it in $exchange.unitName)
+				<unitName xml:lang="$it.langCode">$it.value</unitName>
+			#end
+			
+			<compartment
+			
+				#if($exchane.subCompartmentContextId)
+					subcompartmentContextId="$exchane.subCompartmentContextId"
+				#end
+				
+				#if($exchange.subCompartmentId)
+					subcompartmentId="$exchange.subCompartmentId"
+				#end
+				
+				>
+				
+				#foreach($it in $exchange.compartment)
+					<compartment xml:lang="$it.langCode">$it.value</compartment>
+				#end	
+				
+				#foreach($it in $exchange.subCompartment)	
+					<subcompartment xml:lang="$it.langCode">$it.value</subcompartment>
+				#end
+					
+			</compartment>
+			
+			#foreach($it in $exchange.comment)
+				<comment xml:lang="$it.langCode">$it.value</comment>
+			#end
+			
+			#foreach($it in $exchange.synonym)
+				<synonym xml:lang="$it.langCode">$it.value</synonym>	
+			#end
+				
+		</elementaryExchange>
+	#end
+	
+</validElementaryExchanges>

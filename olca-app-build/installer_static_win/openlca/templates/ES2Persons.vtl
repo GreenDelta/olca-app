@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+## template for EcoSpold 02 person master data
+## the template gets a list of person objects bound to
+## the context name 'persons' as input
+
+<validPersons 
+	xmlns="http://www.EcoInvent.org/EcoSpold02"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.EcoInvent.org/EcoSpold02 ../../Schemas/MasterData/EcoSpold02Persons.xsd" 
+	
+	#if($persons.contextId)
+		contextId="$persons.contextId" 
+	#end
+	#if($persons.majorRelease)
+		majorRelease="$persons.majorRelease" 
+	#end	
+	#if($persons.minorRelease)
+		minorRelease="$persons.minorRelease" 
+	#end
+	>
+	
+	#foreach($it in $persons.contextNames)
+		<contextName xml:lang="$it.langCode">$it.value</contextName>
+	#end
+	
+	#foreach($p in $persons.persons)
+		<person
+			
+			#if($p.address)
+				address="$p.address"
+			#end
+			
+			#if($p.email)
+				email="$p.email"
+			#end
+			
+			#if($p.id)
+				id="$p.id"
+			#end
+			
+			#if($p.name)
+				name="$p.name"
+			#end
+			
+			#if($p.organisationName)
+				organisationName="$p.organisationName"
+			#end
+			
+			#if($p.organisationWebsite)
+				organisationWebsite="$p.organisationWebsite"
+			#end
+			
+			#if($p.telefax)
+				telefax="$p.telefax"
+			#end
+			
+			#if($p.telephone)
+				telephone="$p.telephone" 
+			#end
+		/>
+	#end
+</validPersons>

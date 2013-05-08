@@ -1,0 +1,25 @@
+## Template for the ILCD data set reference type
+## see org.openlca.olcatdb.datatypes.DataSetReference
+## @param refElem: the name of the reference element
+## @param refVal: the value of the reference object
+<$refElem
+	#if($refVal.refObjectId)
+		refObjectId = "$refVal.refObjectId"
+	#end
+	#if($refVal.type)
+		type = "$refVal.type"
+	#end
+	#if($refVal.uri)
+		uri = "$refVal.uri"
+	#end
+	#if($refVal.version)
+		version = "$refVal.version"
+	#end
+>
+	#foreach($subRef in $refVal.subReferences)
+		<common:subReference>$subRef</common:subReference>
+	#end
+	#foreach($descr in $refVal.description)
+		<common:shortDescription xml:lang="$descr.langCode">$descr.value</common:shortDescription>
+	#end
+</$refElem>
