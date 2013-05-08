@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: org.openlca.core.database
 Bundle-SymbolicName: olca-app-database;singleton:=true
-Bundle-Version: 1.3.0
+Bundle-Version: 1.4.0
 Bundle-Activator: org.openlca.core.database.plugin.Activator
 Bundle-Vendor: openLCA.org
 Require-Bundle: org.eclipse.core.runtime,
