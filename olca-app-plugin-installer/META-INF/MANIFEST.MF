@@ -1,0 +1,27 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: openLCA plugin Installer
+Bundle-SymbolicName: olca-app-plugin-installer;singleton:=true
+Bundle-Version: 1.0.1
+Bundle-Activator: org.openlca.plugin.installer.Activator
+Bundle-Vendor: GreenDelta
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ com.google.guava,
+ olca-app-core,
+ org.eclipse.ui.forms,
+ olca-app-resources,
+ org.junit,
+ com.sun.jersey.client,
+ com.sun.jersey.contribs.jersey-apache-client4,
+ com.sun.jersey.core,
+ olca-app-updater,
+ com.fasterxml.jackson.core.jackson-annotations;bundle-version="2.1.2",
+ com.fasterxml.jackson.core.jackson-core;bundle-version="2.1.2",
+ com.fasterxml.jackson.core.jackson-databind;bundle-version="2.1.2",
+ slf4j.api;bundle-version="1.6.1"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ActivationPolicy: lazy
+Service-Component: OSGI-INF/pluginspreupdatehook.xml
+Openlca-PluginVersion: 1
+Bundle-ClassPath: .
