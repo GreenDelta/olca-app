@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="openLCA" uid="olca-app-core.openLCA" id="olca-app-core.openLCA" application="org.openlca.core.application.application" version="1.3.0" useFeatures="false" includeLaunchers="true">
+<product name="openLCA" uid="openLCA" id="olca-app.openLCA" application="org.openlca.core.application.application" version="1.3.0" useFeatures="false" includeLaunchers="true">
 
    <aboutInfo>
       <image path="/olca-app-core/icons/about.png"/>
@@ -36,12 +36,12 @@ en
       <solaris/>
       <win useIco="false">
          <bmp
-            winSmallHigh="/olca-app-core/icons/logo_16_32bit.bmp"
-            winSmallLow="/olca-app-core/icons/logo_16_8bit.bmp"
-            winMediumHigh="/olca-app-core/icons/logo_32_32bit.bmp"
-            winMediumLow="/olca-app-core/icons/logo_32_8bit.bmp"
-            winLargeHigh="/olca-app-core/icons/logo_48_32bit.bmp"
-            winLargeLow="/olca-app-core/icons/logo_48_8bit.bmp"/>
+            winSmallHigh="icons/logo_16_32bit.bmp"
+            winSmallLow="icons/logo_16_8bit.bmp"
+            winMediumHigh="icons/logo_32_32bit.bmp"
+            winMediumLow="icons/logo_32_8bit.bmp"
+            winLargeHigh="icons/logo_48_32bit.bmp"
+            winLargeLow="icons/logo_48_8bit.bmp"/>
       </win>
    </launcher>
 
@@ -134,61 +134,8 @@ http://dev.mysql.com.
    </license>
 
    <plugins>
-      <plugin id="com.fasterxml.jackson.core.jackson-annotations"/>
-      <plugin id="com.fasterxml.jackson.core.jackson-core"/>
-      <plugin id="com.fasterxml.jackson.core.jackson-databind"/>
-      <plugin id="com.google.gson"/>
-      <plugin id="com.google.guava"/>
       <plugin id="com.ibm.icu"/>
-      <plugin id="com.mysql.jdbc"/>
-      <plugin id="com.sun.jersey.client"/>
-      <plugin id="com.sun.jersey.contribs.jersey-apache-client"/>
-      <plugin id="com.sun.jersey.contribs.jersey-apache-client4"/>
-      <plugin id="com.sun.jersey.core"/>
-      <plugin id="groovy-all"/>
-      <plugin id="javax.el"/>
-      <plugin id="javax.persistence"/>
-      <plugin id="javax.servlet"/>
-      <plugin id="javax.servlet.jsp"/>
-      <plugin id="jcl.over.slf4j"/>
-      <plugin id="jdom"/>
-      <plugin id="joda-convert"/>
-      <plugin id="joda-time"/>
-      <plugin id="log4j"/>
-      <plugin id="ojalgo"/>
-      <plugin id="olca-app-core"/>
-      <plugin id="olca-app-database"/>
-      <plugin id="olca-app-editors"/>
-      <plugin id="olca-app-io"/>
-      <plugin id="olca-app-plugin-installer"/>
-      <plugin id="olca-app-resources"/>
-      <plugin id="olca-app-updater"/>
-      <plugin id="olca-blas"/>
-      <plugin id="olca-core"/>
-      <plugin id="olca-ecospold-1"/>
-      <plugin id="olca-formula"/>
-      <plugin id="olca-ilcd"/>
-      <plugin id="olca-io"/>
-      <plugin id="org.apache.commons.beanutils"/>
-      <plugin id="org.apache.commons.codec"/>
-      <plugin id="org.apache.commons.collections"/>
-      <plugin id="org.apache.commons.httpclient"/>
-      <plugin id="org.apache.commons.io"/>
-      <plugin id="org.apache.commons.lang"/>
-      <plugin id="org.apache.commons.lang3"/>
-      <plugin id="org.apache.commons.logging"/>
-      <plugin id="org.apache.commons.math3"/>
-      <plugin id="org.apache.httpcomponents.httpclient"/>
-      <plugin id="org.apache.httpcomponents.httpcore"/>
-      <plugin id="org.apache.jasper.glassfish"/>
-      <plugin id="org.apache.lucene"/>
-      <plugin id="org.apache.lucene.analysis"/>
-      <plugin id="org.apache.lucene.core"/>
-      <plugin id="org.eclipse.birt.chart.device.extension"/>
-      <plugin id="org.eclipse.birt.chart.device.swt"/>
-      <plugin id="org.eclipse.birt.chart.engine"/>
-      <plugin id="org.eclipse.birt.chart.engine.extension"/>
-      <plugin id="org.eclipse.birt.core"/>
+      <plugin id="olca-app"/>
       <plugin id="org.eclipse.compare.core"/>
       <plugin id="org.eclipse.compare.core.nl_de" fragment="true"/>
       <plugin id="org.eclipse.core.commands"/>
@@ -220,63 +167,16 @@ http://dev.mysql.com.
       <plugin id="org.eclipse.core.runtime.nl_de" fragment="true"/>
       <plugin id="org.eclipse.core.variables"/>
       <plugin id="org.eclipse.core.variables.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.draw2d"/>
-      <plugin id="org.eclipse.emf.common"/>
-      <plugin id="org.eclipse.emf.ecore"/>
-      <plugin id="org.eclipse.emf.ecore.xmi"/>
       <plugin id="org.eclipse.equinox.app"/>
       <plugin id="org.eclipse.equinox.common"/>
-      <plugin id="org.eclipse.equinox.ds"/>
-      <plugin id="org.eclipse.equinox.frameworkadmin"/>
-      <plugin id="org.eclipse.equinox.frameworkadmin.equinox"/>
-      <plugin id="org.eclipse.equinox.http.jetty"/>
-      <plugin id="org.eclipse.equinox.http.registry"/>
-      <plugin id="org.eclipse.equinox.http.servlet"/>
-      <plugin id="org.eclipse.equinox.jsp.jasper"/>
-      <plugin id="org.eclipse.equinox.jsp.jasper.registry"/>
-      <plugin id="org.eclipse.equinox.p2.artifact.repository"/>
-      <plugin id="org.eclipse.equinox.p2.core"/>
-      <plugin id="org.eclipse.equinox.p2.director"/>
-      <plugin id="org.eclipse.equinox.p2.directorywatcher"/>
-      <plugin id="org.eclipse.equinox.p2.engine"/>
-      <plugin id="org.eclipse.equinox.p2.extensionlocation"/>
-      <plugin id="org.eclipse.equinox.p2.garbagecollector"/>
-      <plugin id="org.eclipse.equinox.p2.jarprocessor"/>
-      <plugin id="org.eclipse.equinox.p2.metadata"/>
-      <plugin id="org.eclipse.equinox.p2.metadata.repository"/>
-      <plugin id="org.eclipse.equinox.p2.publisher"/>
-      <plugin id="org.eclipse.equinox.p2.publisher.eclipse"/>
-      <plugin id="org.eclipse.equinox.p2.reconciler.dropins"/>
-      <plugin id="org.eclipse.equinox.p2.repository"/>
-      <plugin id="org.eclipse.equinox.p2.touchpoint.eclipse"/>
       <plugin id="org.eclipse.equinox.preferences"/>
       <plugin id="org.eclipse.equinox.registry"/>
       <plugin id="org.eclipse.equinox.security"/>
       <plugin id="org.eclipse.equinox.security.macosx" fragment="true"/>
       <plugin id="org.eclipse.equinox.security.win32.x86" fragment="true"/>
       <plugin id="org.eclipse.equinox.security.win32.x86_64" fragment="true"/>
-      <plugin id="org.eclipse.equinox.simpleconfigurator"/>
-      <plugin id="org.eclipse.equinox.simpleconfigurator.manipulator"/>
-      <plugin id="org.eclipse.equinox.util"/>
-      <plugin id="org.eclipse.gef"/>
       <plugin id="org.eclipse.help"/>
-      <plugin id="org.eclipse.help.appserver"/>
-      <plugin id="org.eclipse.help.appserver.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.help.base"/>
-      <plugin id="org.eclipse.help.base.nl_de" fragment="true"/>
       <plugin id="org.eclipse.help.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.help.ui"/>
-      <plugin id="org.eclipse.help.ui.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.help.webapp"/>
-      <plugin id="org.eclipse.help.webapp.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.jetty.continuation"/>
-      <plugin id="org.eclipse.jetty.http"/>
-      <plugin id="org.eclipse.jetty.http.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.jetty.io"/>
-      <plugin id="org.eclipse.jetty.security"/>
-      <plugin id="org.eclipse.jetty.server"/>
-      <plugin id="org.eclipse.jetty.servlet"/>
-      <plugin id="org.eclipse.jetty.util"/>
       <plugin id="org.eclipse.jface"/>
       <plugin id="org.eclipse.jface.databinding"/>
       <plugin id="org.eclipse.jface.databinding.nl_de" fragment="true"/>
@@ -289,16 +189,7 @@ http://dev.mysql.com.
       <plugin id="org.eclipse.nebula.widgets.tablecombo"/>
       <plugin id="org.eclipse.osgi"/>
       <plugin id="org.eclipse.osgi.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.osgi.services"/>
-      <plugin id="org.eclipse.osgi.services.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.persistence.antlr"/>
-      <plugin id="org.eclipse.persistence.asm"/>
-      <plugin id="org.eclipse.persistence.core"/>
-      <plugin id="org.eclipse.persistence.jpa"/>
-      <plugin id="org.eclipse.persistence.jpa.equinox" fragment="true"/>
       <plugin id="org.eclipse.persistence.jpa.equinox.weaving" fragment="true"/>
-      <plugin id="org.eclipse.persistence.jpa.osgi"/>
-      <plugin id="org.eclipse.persistence.oracle" fragment="true"/>
       <plugin id="org.eclipse.swt"/>
       <plugin id="org.eclipse.swt.cocoa.macosx" fragment="true"/>
       <plugin id="org.eclipse.swt.cocoa.macosx.nl_de" fragment="true"/>
@@ -340,8 +231,6 @@ http://dev.mysql.com.
       <plugin id="org.eclipse.ui.forms.nl_de" fragment="true"/>
       <plugin id="org.eclipse.ui.intro"/>
       <plugin id="org.eclipse.ui.intro.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.ui.intro.universal"/>
-      <plugin id="org.eclipse.ui.intro.universal.nl_de" fragment="true"/>
       <plugin id="org.eclipse.ui.navigator"/>
       <plugin id="org.eclipse.ui.navigator.nl_de" fragment="true"/>
       <plugin id="org.eclipse.ui.nl_de" fragment="true"/>
@@ -352,28 +241,7 @@ http://dev.mysql.com.
       <plugin id="org.eclipse.ui.workbench.nl_de" fragment="true"/>
       <plugin id="org.eclipse.ui.workbench.texteditor"/>
       <plugin id="org.eclipse.ui.workbench.texteditor.nl_de" fragment="true"/>
-      <plugin id="org.hamcrest.core"/>
-      <plugin id="org.jdom"/>
-      <plugin id="org.junit"/>
-      <plugin id="org.junit4"/>
-      <plugin id="org.mozilla.javascript"/>
-      <plugin id="org.openlca.olca-poi"/>
-      <plugin id="org.sat4j.core"/>
-      <plugin id="org.sat4j.pb"/>
-      <plugin id="org.swtchart"/>
-      <plugin id="org.swtchart.ext"/>
-      <plugin id="slf4j.api"/>
-      <plugin id="slf4j.log4j12" fragment="true"/>
-      <plugin id="truezip-file"/>
-      <plugin id="truezip-kernel"/>
    </plugins>
 
-   <configurations>
-      <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="4" />
-      <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2" />
-      <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="2" />
-      <plugin id="org.eclipse.equinox.p2.reconciler.dropins" autoStart="true" startLevel="5" />
-      <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
-   </configurations>
 
 </product>

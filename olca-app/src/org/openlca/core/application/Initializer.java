@@ -1,19 +1,13 @@
 package org.openlca.core.application;
 
-import java.io.File;
 import java.util.Locale;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.jface.window.Window;
-import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.openlca.core.application.plugin.Activator;
 import org.openlca.core.application.preferencepages.Language;
 import org.openlca.core.model.modelprovider.IModelComponent;
 import org.openlca.core.model.modelprovider.ModelComponentRegistry;
-import org.openlca.core.model.referencesearch.IReferenceSearcher;
-import org.openlca.core.model.referencesearch.ReferenceSearcherRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,18 +46,6 @@ public class Initializer {
 									Integer.parseInt(catElement
 											.getAttribute("level")));
 				}
-				// if reference searcher is defined
-				if (clazz != null
-						&& element.getChildren("referenceSearcher").length > 0) {
-					final Object handlerElement = element
-							.createExecutableExtension("referenceSearcher");
-					if (handlerElement instanceof IReferenceSearcher<?>) {
-						// register reference searcher
-						ReferenceSearcherRegistry.getRegistry()
-								.registerSearcher(clazz.getCanonicalName(),
-										(IReferenceSearcher<?>) handlerElement);
-					}
-				}
 			}
 		} catch (final Exception e) {
 			log.error("Initializing model components failed", e);
@@ -95,13 +77,13 @@ public class Initializer {
 	public void initialize() {
 		initializeLocale();
 		initializeModelComponents();
-//		// set default image
-//		Window.setDefaultImage(				
-//				
-//				AbstractUIPlugin
-//				.imageDescriptorFromPlugin(
-//						Activator.PLUGIN_ID,
-//						File.separator + "icons" + File.separator
-//								+ "logo_16_32bit.png").createImage());
+		// // set default image
+		// Window.setDefaultImage(
+		//
+		// AbstractUIPlugin
+		// .imageDescriptorFromPlugin(
+		// Activator.PLUGIN_ID,
+		// File.separator + "icons" + File.separator
+		// + "logo_16_32bit.png").createImage());
 	}
 }

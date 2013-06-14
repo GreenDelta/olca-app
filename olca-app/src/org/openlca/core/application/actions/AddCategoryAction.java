@@ -24,10 +24,6 @@ import org.slf4j.LoggerFactory;
 /**
  * This action creates a new category and appends it to the specified parent
  * category
- * 
- * @author Sebastian Greve
- * @author Michael Srocka
- * 
  */
 public class AddCategoryAction extends NavigationAction {
 
@@ -75,10 +71,10 @@ public class AddCategoryAction extends NavigationAction {
 		category.setName(categroyName);
 		category.setId(UUID.randomUUID().toString());
 		category.setParentCategory(parent);
-		category.setComponentClass(parent.getComponentClass());
+		category.setModelType(parent.getModelType());
 		parent.add(category);
 		try {
-			database.update(parent);
+			database.createDao(Category.class).update(parent);
 		} catch (final Exception e) {
 			log.error("Cannot update database.", e);
 		}

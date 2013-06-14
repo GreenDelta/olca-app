@@ -70,18 +70,15 @@ public class RenameCategoryAction extends NavigationAction {
 
 	@Override
 	public void task() {
-		// open dialog for new name
-		final InputDialog dialog = new InputDialog(UI.shell(),
+		InputDialog dialog = new InputDialog(UI.shell(),
 				Messages.NavigationView_RenameCategoryText,
 				Messages.NavigationView_RenameCategoryDialogText,
 				category.getName(), null);
-		final int rc = dialog.open();
+		int rc = dialog.open();
 		if (rc == Window.OK) {
-			// set new name
 			category.setName(dialog.getValue());
 			try {
-				// update category
-				database.update(category);
+				database.createDao(Category.class).update(category);
 			} catch (final Exception e) {
 				log.error("Update category failed", e);
 			}

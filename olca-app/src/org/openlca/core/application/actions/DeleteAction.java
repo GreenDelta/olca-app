@@ -12,10 +12,8 @@ package org.openlca.core.application.actions;
 import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -23,12 +21,11 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
 import org.openlca.core.application.Messages;
 import org.openlca.core.application.views.ModelEditorInput;
-import org.openlca.core.application.wizards.DeleteWizard;
+import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.DataProviderException;
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.AdminInfo;
-import org.openlca.core.model.AllocationFactor;
-import org.openlca.core.model.Exchange;
 import org.openlca.core.model.ModelingAndValidation;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
@@ -36,7 +33,6 @@ import org.openlca.core.model.Technology;
 import org.openlca.core.model.Time;
 import org.openlca.core.model.descriptors.Descriptors;
 import org.openlca.core.model.modelprovider.IModelComponent;
-import org.openlca.core.model.referencesearch.ReferenceSearcherRegistry;
 import org.openlca.core.resources.ImageType;
 import org.openlca.ui.UI;
 import org.slf4j.Logger;
@@ -147,88 +143,53 @@ public class DeleteAction extends NavigationAction {
 		};
 	}
 
-	/**
-	 * Deletes the given object
-	 * 
-	 * @param object
-	 *            The object to be deleted
-	 * @param database
-	 *            The database to access the object on the data provider
-	 * @throws Exception
-	 */
-	private void deleteObject(IModelComponent object, final IDatabase database)
+	@SuppressWarnings("unchecked")
+	private void deleteObject(IModelComponent object, IDatabase database)
 			throws Exception {
 		if (object instanceof Process) {
-			final Process process = database.select(Process.class,
-					((Process) object).getId());
+			ProcessDao dao = new ProcessDao(database.getEntityFactory());
+			Process process = dao.getForId(object.getId());
 			deleteProcessInformation(process, database);
-			object = process;
-		} else if (object instanceof ProductSystem) {
+		} else if (object instanceof ProductSystem)
 			deleteProductSystem((ProductSystem) object, database);
-		}
-		database.delete(object);
+		BaseDao<Object> dao = (BaseDao<Object>) new BaseDao<>(
+				object.getClass(), database.getEntityFactory());
+		dao.delete(object);
 	}
 
-	/**
-	 * Deletes the additional information of the given process
-	 * 
-	 * @param process
-	 *            The process that will be deleted
-	 * @param database
-	 *            The database to access the process and its additional
-	 *            information
-	 * @throws DataProviderException
-	 */
-	private void deleteProcessInformation(final Process process,
-			final IDatabase database) throws DataProviderException {
-		// delete admin info
-		final AdminInfo adminInfo = database.select(AdminInfo.class,
-				process.getId());
-		if (adminInfo != null) {
-			database.delete(adminInfo);
-		}
+	private void deleteProcessInformation(Process process, IDatabase database)
+			throws Exception {
 
-		// delete modeling and validation
-		final ModelingAndValidation modelingAndValidation = database.select(
-				ModelingAndValidation.class, process.getId());
-		if (modelingAndValidation != null) {
-			database.delete(modelingAndValidation);
-		}
+		// admin info
+		BaseDao<AdminInfo> aiDao = database.createDao(AdminInfo.class);
+		AdminInfo adminInfo = aiDao.getForId(process.getId());
+		if (adminInfo != null)
+			aiDao.delete(adminInfo);
+
+		// delete modelling and validation
+		BaseDao<ModelingAndValidation> mavDao = database
+				.createDao(ModelingAndValidation.class);
+		ModelingAndValidation modelingAndValidation = mavDao.getForId(process
+				.getId());
+		if (modelingAndValidation != null)
+			mavDao.delete(modelingAndValidation);
 
 		// delete time
-		final Time time = database.select(Time.class, process.getId());
-		if (time != null) {
-			database.delete(time);
-		}
+		BaseDao<Time> timeDao = database.createDao(Time.class);
+		Time time = timeDao.getForId(process.getId());
+		if (time != null)
+			timeDao.delete(time);
 
 		// delete technology
-		final Technology technology = database.select(Technology.class,
-				process.getId());
-		if (technology != null) {
-			database.delete(technology);
-		}
+		BaseDao<Technology> techDao = database.createDao(Technology.class);
+		Technology technology = techDao.getForId(process.getId());
+		if (technology != null)
+			techDao.delete(technology);
 
-		// delete allocation factors
-		for (final Exchange exchange : process.getExchanges()) {
-			for (final AllocationFactor factor : exchange
-					.getAllocationFactors()) {
-				database.delete(factor);
-			}
-		}
 	}
 
-	/**
-	 * Deletes the LCI result and it's uncertainty distributions of the given
-	 * product system
-	 * 
-	 * @param productSystem
-	 *            The product system that will be deleted
-	 * @param database
-	 *            The database to access the LCI result
-	 * @throws DataProviderException
-	 */
-	private void deleteProductSystem(final ProductSystem productSystem,
-			final IDatabase database) throws DataProviderException {
+	private void deleteProductSystem(ProductSystem productSystem,
+			IDatabase database) throws DataProviderException {
 		// TODO implementation
 	}
 
@@ -244,74 +205,56 @@ public class DeleteAction extends NavigationAction {
 
 	@Override
 	public void task() {
+		// TODO: check for usages here: use new usage API
+		// a user should be not able to delete a model if it is used somewhere
 		boolean deleteAll = false;
 		for (int i = 0; i < modelComponents.length; i++) {
 			final IModelComponent modelComponent = modelComponents[i];
 			final IDatabase database = databases[i];
 			boolean canDelete = deleteAll;
 			if (!canDelete) {
-				// ask the user if he really wants to delete the component
-				final MessageDialog dialog = createMessageDialog(modelComponent);
-				final int returnCode = dialog.open();
-
-				// user answered yes or yes, all
+				MessageDialog dialog = createMessageDialog(modelComponent);
+				int returnCode = dialog.open();
 				canDelete = returnCode == 0 || returnCode == 1;
-				// user answered yes, all
 				deleteAll = returnCode == 1;
 			}
 			if (canDelete) {
-				// Check for problems with the deletion
-				final DeleteWizard wizard = new DeleteWizard(database,
-						ReferenceSearcherRegistry.getRegistry().getSearcher(
-								modelComponent.getClass().getCanonicalName()),
-						modelComponent);
-				if (wizard.hasProblems()) {
-					final WizardDialog dialog = new WizardDialog(UI.shell(),
-							wizard);
-					canDelete = dialog.open() == IDialogConstants.OK_ID;
-				}
-				if (canDelete) {
-					try {
-						// close editor if open
-						final IEditorPart editor = PlatformUI
-								.getWorkbench()
-								.getActiveWorkbenchWindow()
-								.getActivePage()
-								.findEditor(
-										new ModelEditorInput(Descriptors
-												.toDescriptor(modelComponent),
-												database));
-						if (editor != null) {
-							PlatformUI.getWorkbench()
-									.getActiveWorkbenchWindow().getActivePage()
-									.closeEditor(editor, false);
-						}
-
-						// delete the object
-						PlatformUI.getWorkbench().getProgressService()
-								.busyCursorWhile(new IRunnableWithProgress() {
-
-									@Override
-									public void run(
-											final IProgressMonitor monitor)
-											throws InvocationTargetException,
-											InterruptedException {
-										monitor.beginTask(NLS.bind(
-												Messages.Delete,
-												modelComponent.getName()),
-												IProgressMonitor.UNKNOWN);
-										try {
-											deleteObject(modelComponent,
-													database);
-										} catch (final Exception e) {
-											throw new InterruptedException(e
-													.getMessage());
-										}
-									}
-								});
-					} catch (final Exception e) {
-						log.error("Delete failed", e);
+				try {
+					// close editor if open
+					final IEditorPart editor = PlatformUI
+							.getWorkbench()
+							.getActiveWorkbenchWindow()
+							.getActivePage()
+							.findEditor(
+									new ModelEditorInput(Descriptors
+											.toDescriptor(modelComponent),
+											database));
+					if (editor != null) {
+						PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+								.getActivePage().closeEditor(editor, false);
 					}
+
+					// delete the object
+					PlatformUI.getWorkbench().getProgressService()
+							.busyCursorWhile(new IRunnableWithProgress() {
+
+								@Override
+								public void run(final IProgressMonitor monitor)
+										throws InvocationTargetException,
+										InterruptedException {
+									monitor.beginTask(NLS.bind(Messages.Delete,
+											modelComponent.getName()),
+											IProgressMonitor.UNKNOWN);
+									try {
+										deleteObject(modelComponent, database);
+									} catch (final Exception e) {
+										throw new InterruptedException(e
+												.getMessage());
+									}
+								}
+							});
+				} catch (final Exception e) {
+					log.error("Delete failed", e);
 				}
 			}
 		}

@@ -49,6 +49,7 @@ import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.core.application.Messages;
 import org.openlca.core.application.wizards.DeleteWizard;
+import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Location;
 import org.openlca.core.resources.ImageType;
@@ -216,22 +217,22 @@ public class LocationPreferencePage extends AbstractDatabasePreferencePage
 	@Override
 	protected void save() {
 		try {
-			List<Location> dataProviderLocations = database.createDao(
-					Location.class).getAll();
+			BaseDao<Location> dao = database.createDao(Location.class);
+			List<Location> dataProviderLocations = dao.getAll();
 			List<Location> temp = new ArrayList<>();
 			for (Location location : locations) {
 				temp.add(location);
 			}
 			for (Location l : dataProviderLocations) {
 				if (temp.contains(l)) {
-					database.update(temp.get(temp.indexOf(l)));
+					dao.update(temp.get(temp.indexOf(l)));
 					temp.remove(l);
 				} else {
-					database.delete(l);
+					dao.delete(l);
 				}
 			}
 			for (Location location : temp) {
-				database.insert(location);
+				dao.insert(location);
 			}
 		} catch (Exception e) {
 			log.error("Save failed", e);
@@ -421,8 +422,7 @@ public class LocationPreferencePage extends AbstractDatabasePreferencePage
 			Location location = Viewers.getFirstSelected(locationViewer);
 			if (location == null)
 				return;
-			DeleteWizard wizard = new DeleteWizard(database,
-					new LocationReferenceSearcher(), location);
+			DeleteWizard wizard = new DeleteWizard(database, location);
 			boolean canDelete = true;
 			if (wizard.hasProblems())
 				canDelete = new WizardDialog(UI.shell(), wizard).open() == Window.OK;

@@ -67,4 +67,10 @@ Bundle-ClassPath: .,
  libs/truezip-kernel-7.7.1.jar,
  libs/truezip-swing-7.7.1.jar,
  libs/xml-apis-1.0.b2.jar,
- libs/xmlbeans-2.3.0.jar
+ libs/xmlbeans-2.3.0.jar,
+ libs/olca-ecospold-2-1.0.0.jar,
+ libs/org.eclipse.persistence.antlr-3.2.0.v201206041011.jar,
+ libs/org.eclipse.persistence.asm-3.3.1.v201206041142.jar,
+ libs/org.eclipse.persistence.core-2.4.0.jar,
+ libs/org.eclipse.persistence.jpa-2.4.0.jar,
+ libs/org.eclipse.persistence.jpa.jpql-2.4.0.jar
