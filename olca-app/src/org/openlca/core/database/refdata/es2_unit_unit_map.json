@@ -1,0 +1,208 @@
+[{
+    "mapType" : "UNIT_TO_UNIT",
+    "format" : "ECOSPOLD_2",
+    "externalKey" : "f2aaa4ba-fb58-49a7-a552-e7f64366f379",
+    "externalName" : "m",
+    "olcaId" : "3d314eab-ef11-4ff3-a35e-9bc5cd858694",
+    "factor" : 1
+},
+{
+    "mapType" : "UNIT_TO_UNIT",
+    "format" : "ECOSPOLD_2",
+    "externalKey" : "e32b56ef-fa80-4487-9796-f3c1476c27b3",
+    "externalName" : "hour",
+    "olcaId" : "227a54d9-44e7-468c-b8bb-f2dd1ae68c7a",
+    "factor" : 1
+},
+{
+    "mapType" : "UNIT_TO_UNIT",
+    "format" : "ECOSPOLD_2",
+    "externalKey" : "8266bd67-ebd3-4d31-b972-eee3cf0da36f",
+    "externalName" : "year-m",
+    "olcaId" : "f7fe0af2-e764-4984-bb9f-2cbff6cd2f18",
+    "factor" : 1
+},
+{
+    "mapType" : "UNIT_TO_UNIT",
+    "format" : "ECOSPOLD_2",
+    "externalKey" : "af3de57e-0133-4d5c-8a8e-4f4277226256",
+    "externalName" : "EUR2008",
+    "olcaId" : "a55b7fe7-fa09-47ef-be62-e07b8e6f4351",
+    "factor" : 1
+},
+{
+    "mapType" : "UNIT_TO_UNIT",
+    "format" : "ECOSPOLD_2",
+    "externalKey" : "5b972631-34e3-4db7-a615-f6931770a0cb",
+    "externalName" : "unit",
+    "olcaId" : "6dabe201-aaac-4509-92f0-d00c26cb72ab",
+    "factor" : 1
+},
+{
+    "mapType" : "UNIT_TO_UNIT",
+    "format" : "ECOSPOLD_2",
+    "externalKey" : "86bbe475-8a8f-44d8-914c-e398787e7121",
+    "externalName" : "ha",
+    "olcaId" : "debee4d9-bc47-4e35-8624-4957ecb75386",
+    "factor" : 1
+},
+{
+    "mapType" : "UNIT_TO_UNIT",
+    "format" : "ECOSPOLD_2",
+    "externalKey" : "1017f68a-f818-4f9d-a34d-a31e7386f628",
+    "externalName" : "m2",
+    "olcaId" : "3ce61faa-5716-41c1-aef6-b5920054acc9",
+    "factor" : 1
+},
+{
+    "mapType" : "UNIT_TO_UNIT",
+    "format" : "ECOSPOLD_2",
+    "externalKey" : "eb955b7c-7bed-401f-9c76-5db716ca3640",
+    "externalName" : "m2*year",
+    "olcaId" : "c7266b67-4ea2-457f-b391-9b94e26e195a",
+    "factor" : 1
+},
+{
+    "mapType" : "UNIT_TO_UNIT",
+    "format" : "ECOSPOLD_2",
+    "externalKey" : "25371fa0-c015-46a9-a4ea-af7e480736f0",
+    "externalName" : "EUR2009",
+    "olcaId" : "a55b7fe7-fa09-47ef-be62-e07b8e6f4351",
+    "factor" : 1
+},
+{
+    "mapType" : "UNIT_TO_UNIT",
+    "format" : "ECOSPOLD_2",
+    "externalKey" : "2f4daad7-5331-4f14-930c-d8bca924557d",
+    "externalName" : "metric ton*km",
+    "olcaId" : "0dea4ed8-bb6b-4049-b2b4-b2c413ef2180",
+    "factor" : 1
+},
+{
+    "mapType" : "UNIT_TO_UNIT",
+    "format" : "ECOSPOLD_2",
+    "externalKey" : "577e242a-461f-44a7-922c-d8e1c3d2bf45",
+    "externalName" : "dimensionless",
+    "olcaId" : "6dabe201-aaac-4509-92f0-d00c26cb72ab",
+    "factor" : 1
+},
+{
+    "mapType" : "UNIT_TO_UNIT",
+    "format" : "ECOSPOLD_2",
+    "externalKey" : "ae252091-811b-461b-8e89-8f3075639eb1",
+    "externalName" : "km",
+    "olcaId" : "715ca68e-0ac5-4c4b-b557-fdc36623be88",
+    "factor" : 1
+},
+{
+    "mapType" : "UNIT_TO_UNIT",
+    "format" : "ECOSPOLD_2",
+    "externalKey" : "77ae64fa-7e74-4252-9c3b-889c1cd20bfc",
+    "externalName" : "kWh",
+    "olcaId" : "86ad2244-1f0e-4912-af53-7865283103e4",
+    "factor" : 1
+},
+{
+    "mapType" : "UNIT_TO_UNIT",
+    "format" : "ECOSPOLD_2",
+    "externalKey" : "487df68b-4994-4027-8fdc-a4dc298257b7",
+    "externalName" : "kg",
+    "olcaId" : "20aadc24-a391-41cf-b340-3e4529f44bde",
+    "factor" : 1
+},
+{
+    "mapType" : "UNIT_TO_UNIT",
+    "format" : "ECOSPOLD_2",
+    "externalKey" : "7b75baf0-cbee-45e6-bf66-af119da06553",
+    "externalName" : "EUR2005",
+    "olcaId" : "a55b7fe7-fa09-47ef-be62-e07b8e6f4351",
+    "factor" : 1
+},
+{
+    "mapType" : "UNIT_TO_UNIT",
+    "format" : "ECOSPOLD_2",
+    "externalKey" : "2cf92850-0f92-4004-9dba-a6ceb6a414c2",
+    "externalName" : "year",
+    "olcaId" : "9a87f840-752d-4863-b911-533f92ee5073",
+    "factor" : 1
+},
+{
+    "mapType" : "UNIT_TO_UNIT",
+    "format" : "ECOSPOLD_2",
+    "externalKey" : "b8a43d95-cb0e-4f19-a980-21555780f05c",
+    "externalName" : "EUR2004",
+    "olcaId" : "a55b7fe7-fa09-47ef-be62-e07b8e6f4351",
+    "factor" : 1
+},
+{
+    "mapType" : "UNIT_TO_UNIT",
+    "format" : "ECOSPOLD_2",
+    "externalKey" : "481b9712-c417-44f1-bfba-38d58088173c",
+    "externalName" : "m3*year",
+    "olcaId" : "ee5f2241-18af-4444-b457-b275660e5a20",
+    "factor" : 1
+},
+{
+    "mapType" : "UNIT_TO_UNIT",
+    "format" : "ECOSPOLD_2",
+    "externalKey" : "cb82ee83-7f40-4c5d-838f-4e507f98b547",
+    "externalName" : "EUR2007",
+    "olcaId" : "a55b7fe7-fa09-47ef-be62-e07b8e6f4351",
+    "factor" : 1
+},
+{
+    "mapType" : "UNIT_TO_UNIT",
+    "format" : "ECOSPOLD_2",
+    "externalKey" : "980b811e-3905-4797-82a5-173f5568bc7e",
+    "externalName" : "MJ",
+    "olcaId" : "52765a6c-3896-43c2-b2f4-c679acf13efe",
+    "factor" : 1
+},
+{
+    "mapType" : "UNIT_TO_UNIT",
+    "format" : "ECOSPOLD_2",
+    "externalKey" : "4923348e-591b-4772-b224-d19df86f04c9",
+    "externalName" : "kBq",
+    "olcaId" : "e9773595-284e-46dd-9671-5fc9ff406833",
+    "factor" : 1
+},
+{
+    "mapType" : "UNIT_TO_UNIT",
+    "format" : "ECOSPOLD_2",
+    "externalKey" : "de5b3c87-0e35-4fb0-9765-4f3ba34c99e5",
+    "externalName" : "m3",
+    "olcaId" : "1c3a9695-398d-4b1f-b07e-a8715b610f70",
+    "factor" : 1
+},
+{
+    "mapType" : "UNIT_TO_UNIT",
+    "format" : "ECOSPOLD_2",
+    "externalKey" : "86b0e4a2-57e5-48b8-a43d-22c7f8490dca",
+    "externalName" : "l",
+    "olcaId" : "b80a512e-e402-4363-8ad0-7d02dcf4a459",
+    "factor" : 1
+},
+{
+    "mapType" : "UNIT_TO_UNIT",
+    "format" : "ECOSPOLD_2",
+    "externalKey" : "0e6f38bc-51be-4382-802d-1f389a88e589",
+    "externalName" : "person-km",
+    "olcaId" : "2abb86b6-e71b-4de5-a766-a20e80e59b6d",
+    "factor" : 1
+},
+{
+    "mapType" : "UNIT_TO_UNIT",
+    "format" : "ECOSPOLD_2",
+    "externalKey" : "5c084e2b-dc81-4148-b7ae-5defe7710d54",
+    "externalName" : "EUR2010",
+    "olcaId" : "a55b7fe7-fa09-47ef-be62-e07b8e6f4351",
+    "factor" : 1
+},
+{
+    "mapType" : "UNIT_TO_UNIT",
+    "format" : "ECOSPOLD_2",
+    "externalKey" : "9405b6ff-e347-406a-a395-b74b67196516",
+    "externalName" : "EUR2006",
+    "olcaId" : "a55b7fe7-fa09-47ef-be62-e07b8e6f4351",
+    "factor" : 1
+}]
