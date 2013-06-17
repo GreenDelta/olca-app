@@ -34,46 +34,37 @@ import org.openlca.ui.BaseLabelProvider;
 /**
  * Implementation of the {@link ICommonLabelProvider} interface for providing
  * labels for the common viewer of the applications navigator
- * 
- * @author Sebastian Greve
- * 
  */
 public class NavigationLabelProvider extends BaseLabelProvider implements
 		ICommonLabelProvider {
 
 	private Image getCategoryImage(Category category) {
-		Image img = null;
-		if (category.getComponentClass().equals(Actor.class.getCanonicalName())) {
-			img = ImageType.ACTOR_CATEGORY_ICON.get();
-		} else if (category.getComponentClass().equals(
-				Source.class.getCanonicalName())) {
-			img = ImageType.SOURCE_CATEGORY_ICON.get();
-		} else if (category.getComponentClass().equals(
-				Flow.class.getCanonicalName())) {
-			img = ImageType.FLOW_CATEGORY_ICON.get();
-		} else if (category.getComponentClass().equals(
-				FlowProperty.class.getCanonicalName())) {
-			img = ImageType.FLOW_PROPERTY_CATEGORY_ICON.get();
-		} else if (category.getComponentClass().equals(
-				Process.class.getCanonicalName())) {
-			img = ImageType.PROCESS_CATEGORY_ICON.get();
-		} else if (category.getComponentClass().equals(
-				Project.class.getCanonicalName())) {
-			img = ImageType.PROJECT_CATEGORY_ICON.get();
-		} else if (category.getComponentClass().equals(
-				ProductSystem.class.getCanonicalName())) {
-			img = ImageType.PRODUCT_SYSTEM_CATEGORY_ICON.get();
-		} else if (category.getComponentClass().equals(
-				UnitGroup.class.getCanonicalName())) {
-			img = ImageType.UNIT_GROUP_CATEGORY_ICON.get();
-		} else if (category.getComponentClass().equals(
-				LCIAMethod.class.getCanonicalName())) {
-			img = ImageType.LCIA_CATEGORY_ICON.get();
-		} else if (category.getComponentClass().equals(
-				LCIAResult.class.getCanonicalName())) {
-			img = ImageType.FOLDER_EXPR.get();
+		if (category == null || category.getModelType() == null)
+			return null;
+		switch (category.getModelType()) {
+		case ACTOR:
+			return ImageType.ACTOR_CATEGORY_ICON.get();
+		case FLOW:
+			return ImageType.FLOW_CATEGORY_ICON.get();
+		case FLOW_PROPERTY:
+			return ImageType.FLOW_PROPERTY_CATEGORY_ICON.get();
+		case IMPACT_METHOD:
+			return ImageType.LCIA_CATEGORY_ICON.get();
+		case IMPACT_RESULT:
+			return ImageType.FOLDER_EXPR.get();
+		case PROCESS:
+			return ImageType.PROCESS_CATEGORY_ICON.get();
+		case PRODUCT_SYSTEM:
+			return ImageType.PRODUCT_SYSTEM_CATEGORY_ICON.get();
+		case PROJECT:
+			return ImageType.PROJECT_CATEGORY_ICON.get();
+		case SOURCE:
+			return ImageType.SOURCE_CATEGORY_ICON.get();
+		case UNIT_GROUP:
+			return ImageType.UNIT_GROUP_CATEGORY_ICON.get();
+		default:
+			return ImageType.FOLD_ICON.get();
 		}
-		return img;
 	}
 
 	private Image getModelComponentImage(IModelComponent modelComponent) {
@@ -145,7 +136,7 @@ public class NavigationLabelProvider extends BaseLabelProvider implements
 		if (element instanceof INavigationElement) {
 			Object o = ((INavigationElement) element).getData();
 			if (element instanceof DataProviderNavigationElement) {
-				return ((IDatabaseServer) o).getName(true);
+				return "MySQL";
 			} else if (element instanceof DatabaseNavigationElement) {
 				return ((IDatabase) o).getName();
 			} else if (o instanceof Category) {

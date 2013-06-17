@@ -16,7 +16,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.openlca.core.application.Messages;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.jobs.Jobs;
-import org.openlca.core.model.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,12 +62,13 @@ public class DatabaseNavigationElement extends AbstractNavigationElement {
 			Jobs.getHandler(Jobs.MAIN_JOB_HANDLER).startJob(
 					Messages.PathNavigationElement_LoadingData,
 					IProgressMonitor.UNKNOWN);
-			for (Category category : database.select(Category.class, "root")
-					.getChildCategories()) {
-				INavigationElement element = new CategoryNavigationElement(
-						DatabaseNavigationElement.this, category);
-				elements.add(element);
-			}
+			// TODO: new concept of root categories
+			// for (Category category : database.select(Category.class, "root")
+			// .getChildCategories()) {
+			// INavigationElement element = new CategoryNavigationElement(
+			// DatabaseNavigationElement.this, category);
+			// elements.add(element);
+			// }
 			Jobs.getHandler(Jobs.MAIN_JOB_HANDLER).done();
 		} catch (Exception e) {
 			log.error("Refresh failed", e);

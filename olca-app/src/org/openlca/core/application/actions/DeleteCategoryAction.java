@@ -9,14 +9,10 @@
  ******************************************************************************/
 package org.openlca.core.application.actions;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.osgi.util.NLS;
 import org.openlca.core.application.Messages;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Category;
-import org.openlca.core.model.modelprovider.IModelComponent;
 import org.openlca.core.resources.ImageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,34 +95,38 @@ public class DeleteCategoryAction extends NavigationAction {
 
 	@Override
 	public void task() {
-		for (int i = 0; i < categories.length; i++) {
-			final Category category = categories[i];
-			final IDatabase database = databases[i];
-			try {
-				// load descriptors for category
-				final Map<String, Object> properties = new HashMap<>();
-				properties.put("categoryId", category.getId());
-				final Object[] result = database
-						.selectDescriptors(
-								Class.forName(category.getComponentClass()),
-								properties);
-				if (result instanceof IModelComponent[]) {
-					for (final IModelComponent comp : (IModelComponent[]) result) {
-						// delete found components
-						database.delete(comp);
-					}
-				}
-				// remove category from parent
-				final Category parent = category.getParentCategory();
-				category.setParentCategory(null);
-				// delete category
-				database.delete(category);
-				parent.remove(category);
-				// update parent
-				database.update(parent);
-			} catch (final Exception e) {
-				log.error("Task failed", e);
-			}
-		}
+		// TODO: should we allow a full removal of a category all the
+		// content here?
+		throw new RuntimeException("#experimental: not yet implemented");
+		//
+		// for (int i = 0; i < categories.length; i++) {
+		// final Category category = categories[i];
+		// final IDatabase database = databases[i];
+		// try {
+		// // load descriptors for category
+		// final Map<String, Object> properties = new HashMap<>();
+		// properties.put("categoryId", category.getId());
+		// final Object[] result = database
+		// .selectDescriptors(
+		// Class.forName(category.getComponentClass()),
+		// properties);
+		// if (result instanceof IModelComponent[]) {
+		// for (final IModelComponent comp : (IModelComponent[]) result) {
+		// // delete found components
+		// database.delete(comp);
+		// }
+		// }
+		// // remove category from parent
+		// final Category parent = category.getParentCategory();
+		// category.setParentCategory(null);
+		// // delete category
+		// database.delete(category);
+		// parent.remove(category);
+		// // update parent
+		// database.update(parent);
+		// } catch (final Exception e) {
+		// log.error("Task failed", e);
+		// }
+		// }
 	}
 }

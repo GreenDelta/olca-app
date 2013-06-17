@@ -1,12 +1,11 @@
 package org.openlca.core.application.db;
 
-import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.runtime.Platform;
 import org.openlca.core.database.IDatabaseServer;
-import org.openlca.core.database.MySQLServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,8 +21,9 @@ public class ServerRegistry {
 		String workspace = Platform.getInstanceLocation().getURL().getFile();
 		String filePath = workspace + "/provider.xml";
 		log.trace("read provider file @ {}", filePath);
-		serverFile = new ServerFile(new File(filePath));
-		servers = serverFile.read(MySQLServer.class);
+		// serverFile = new ServerFile(new File(filePath));
+		// servers = serverFile.read(MySQLServer.class);
+		servers = Collections.emptyList();
 	}
 
 	public static ServerRegistry getInstance() {

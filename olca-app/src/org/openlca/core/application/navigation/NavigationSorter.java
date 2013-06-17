@@ -11,7 +11,6 @@ package org.openlca.core.application.navigation;
 
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
-import org.openlca.core.model.Category;
 
 /**
  * Extension of the {@link ViewerSorter} to support sorting on the common viewer
@@ -31,17 +30,7 @@ public class NavigationSorter extends ViewerSorter {
 		} else if (e2 instanceof CategoryNavigationElement
 				&& e1 instanceof ModelNavigationElement) {
 			compare = 1;
-		} else if (e2 instanceof CategoryNavigationElement
-				&& e1 instanceof CategoryNavigationElement
-				&& ((Category) ((CategoryNavigationElement) e1).getData())
-						.getId().equals(
-								((Category) ((CategoryNavigationElement) e1)
-										.getData()).getComponentClass())
-				&& ((Category) ((CategoryNavigationElement) e2).getData())
-						.getId().equals(
-								((Category) ((CategoryNavigationElement) e2)
-										.getData()).getComponentClass())) {
-			compare = 0;
+			// TODO: check both category elements
 		} else {
 			compare = super.compare(viewer, e1, e2);
 		}

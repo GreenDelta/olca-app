@@ -44,16 +44,19 @@ public class DeleteDatabaseAction extends NavigationAction {
 	}
 
 	private void setDatabase(IDatabaseServer dataProvider, String name) {
-		try {
-			for (IDatabase db : dataProvider.getConnectedDatabases()) {
-				if (db.getName().equals(name)) {
-					database = db;
-					break;
-				}
-			}
-		} catch (Exception e) {
-			log.error("Could not set database", e);
-		}
+		// TODO: set database
+
+		// try {
+		// dataProvider.
+		// for (IDatabase db : dataProvider.getConnectedDatabases()) {
+		// if (db.getName().equals(name)) {
+		// database = db;
+		// break;
+		// }
+		// }
+		// } catch (Exception e) {
+		// log.error("Could not set database", e);
+		// }
 	}
 
 	@Override

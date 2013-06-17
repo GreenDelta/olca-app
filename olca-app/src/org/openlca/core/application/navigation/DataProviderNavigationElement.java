@@ -12,7 +12,6 @@ package org.openlca.core.application.navigation;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.IDatabaseServer;
 import org.openlca.core.jobs.Jobs;
 import org.openlca.ui.JobListenerWithProgress;
@@ -69,15 +68,16 @@ public class DataProviderNavigationElement extends AbstractNavigationElement {
 		}
 
 		private void addDatabases() {
-			try {
-				for (IDatabase database : dataProvider.getConnectedDatabases()) {
-					INavigationElement element = new DatabaseNavigationElement(
-							database, DataProviderNavigationElement.this);
-					elements.add(element);
-				}
-			} catch (Exception e) {
-				log.error("Cannot connect to databases", e);
-			}
+			// TODO: add database to navigation
+			// try {
+			// for (IDatabase database : dataProvider.getConnectedDatabases()) {
+			// INavigationElement element = new DatabaseNavigationElement(
+			// database, DataProviderNavigationElement.this);
+			// elements.add(element);
+			// }
+			// } catch (Exception e) {
+			// log.error("Cannot connect to databases", e);
+			// }
 		}
 	}
 

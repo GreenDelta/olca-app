@@ -150,7 +150,7 @@
             name="openLCA">
          <property
                name="windowImages"
-               value="/olca-app-core/icons/logo_16_32bit.png,/olca-app-core/icons/logo_32_32bit.png,/olca-app-core/icons/logo_48_32bit.png,/olca-app-core/icons/logo_64.png,/olca-app-core/icons/logo_128.png">
+               value="icons/logo_16_32bit.png,icons/logo_32_32bit.png,icons/logo_48_32bit.png,icons/logo_64.png,icons/logo_128.png">
          </property>
          <property
                name="aboutText"
@@ -158,7 +158,7 @@
          </property>
          <property
                name="aboutImage"
-               value="/olca-app-core/icons/about.png">
+               value="icons/about.png">
          </property>
          <property
                name="appName"

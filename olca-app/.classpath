@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="libs/olca-core-1.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-ecospold-2-1.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.antlr-3.2.0.v201206041011.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.asm-3.3.1.v201206041142.jar"/>
@@ -37,7 +38,6 @@
 	<classpathentry exported="true" kind="lib" path="libs/mysql-connector-java-5.1.23.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/ojalgo-33.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-blas-1.1.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-core-1.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-ecospold-1-1.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-formula-1.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-ilcd-1.0.0.jar"/>

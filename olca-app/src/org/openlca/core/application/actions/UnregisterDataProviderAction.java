@@ -9,12 +9,7 @@
  ******************************************************************************/
 package org.openlca.core.application.actions;
 
-import org.eclipse.ui.IEditorReference;
-import org.eclipse.ui.PlatformUI;
-import org.openlca.core.application.App;
 import org.openlca.core.application.Messages;
-import org.openlca.core.application.views.ModelEditorInput;
-import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.IDatabaseServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,35 +40,35 @@ public class UnregisterDataProviderAction extends NavigationAction {
 	@Override
 	public void task() {
 		// TODO close model editors, see connect provider action
-		try {
-			if (dataProvider.isRunning()) {
-				for (final IEditorReference reference : PlatformUI
-						.getWorkbench().getWorkbenchWindows()[0]
-						.getActivePage().getEditorReferences()) {
-					if (reference.getEditorInput() instanceof ModelEditorInput) {
-						final IDatabase database = ((ModelEditorInput) reference
-								.getEditorInput()).getDatabase();
-						boolean containsDatabase = false;
-						for (IDatabase provDb : dataProvider
-								.getConnectedDatabases()) {
-							if (provDb.equals(database)) {
-								containsDatabase = true;
-								break;
-							}
-						}
-						if (containsDatabase) {
-							PlatformUI.getWorkbench().getWorkbenchWindows()[0]
-									.getActivePage().closeEditor(
-											reference.getEditor(true), true);
-						}
-					}
-				}
-				dataProvider.shutdown();
-			}
-		} catch (final Exception e) {
-			log.error("Task failed", e);
-		}
-
-		App.removeDatabaseServer(dataProvider);
+		// try {
+		// if (dataProvider.isRunning()) {
+		// for (final IEditorReference reference : PlatformUI
+		// .getWorkbench().getWorkbenchWindows()[0]
+		// .getActivePage().getEditorReferences()) {
+		// if (reference.getEditorInput() instanceof ModelEditorInput) {
+		// final IDatabase database = ((ModelEditorInput) reference
+		// .getEditorInput()).getDatabase();
+		// boolean containsDatabase = false;
+		// for (IDatabase provDb : dataProvider
+		// .getConnectedDatabases()) {
+		// if (provDb.equals(database)) {
+		// containsDatabase = true;
+		// break;
+		// }
+		// }
+		// if (containsDatabase) {
+		// PlatformUI.getWorkbench().getWorkbenchWindows()[0]
+		// .getActivePage().closeEditor(
+		// reference.getEditor(true), true);
+		// }
+		// }
+		// }
+		// dataProvider.shutdown();
+		// }
+		// } catch (final Exception e) {
+		// log.error("Task failed", e);
+		// }
+		//
+		// App.removeDatabaseServer(dataProvider);
 	}
 }

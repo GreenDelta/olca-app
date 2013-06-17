@@ -10,11 +10,12 @@
 
 package org.openlca.ui;
 
-import org.apache.commons.lang.WordUtils;
+import org.apache.commons.lang3.text.WordUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
 import org.openlca.core.application.Messages;
+import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Actor;
 import org.openlca.core.model.AllocationMethod;
@@ -183,10 +184,11 @@ public class BaseLabelProvider extends ColumnLabelProvider {
 
 		if (database != null) {
 			try {
-				Category category = database.select(Category.class,
-						component.getCategoryId());
+				CategoryDao dao = new CategoryDao(database.getEntityFactory());
+				Category category = dao.getForId(component.getCategoryId());
 				if (category != null)
-					text += Messages.Category + ": " + category.getFullPath();
+					text += Messages.Category + ": "
+							+ dao.getShortPath(component.getCategoryId());
 			} catch (Exception e) {
 				log.error("Loading category failed", e);
 			}

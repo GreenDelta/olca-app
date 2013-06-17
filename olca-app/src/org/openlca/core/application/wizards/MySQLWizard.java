@@ -18,7 +18,7 @@ import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.openlca.core.application.App;
 import org.openlca.core.database.IDatabaseServer;
-import org.openlca.core.database.MySQLServer;
+import org.openlca.core.database.mysql.MySQLServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

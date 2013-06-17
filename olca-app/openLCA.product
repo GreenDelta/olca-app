@@ -4,7 +4,7 @@
 <product name="openLCA" uid="openLCA" id="olca-app.openLCA" application="org.openlca.core.application.application" version="1.3.0" useFeatures="false" includeLaunchers="true">
 
    <aboutInfo>
-      <image path="/olca-app-core/icons/about.png"/>
+      <image path="icons/about.png"/>
       <text>
          openLCA 1.3.0
 
@@ -27,7 +27,7 @@ en
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
    </launcherArgs>
 
-   <windowImages i16="/olca-app-core/icons/logo_16_32bit.png" i32="/olca-app-core/icons/logo_32_32bit.png" i48="/olca-app-core/icons/logo_48_32bit.png" i64="/olca-app-core/icons/logo_64.png" i128="/olca-app-core/icons/logo_128.png"/>
+   <windowImages i16="icons/logo_16_32bit.png" i32="icons/logo_32_32bit.png" i48="icons/logo_48_32bit.png" i64="icons/logo_64.png" i128="icons/logo_128.png"/>
 
    <splash
       location="olca-app-core" />
@@ -136,6 +136,11 @@ http://dev.mysql.com.
    <plugins>
       <plugin id="com.ibm.icu"/>
       <plugin id="olca-app"/>
+      <plugin id="org.apache.commons.codec"/>
+      <plugin id="org.eclipse.birt.chart"/>
+      <plugin id="org.eclipse.birt.chart.device.extension"/>
+      <plugin id="org.eclipse.birt.chart.engine"/>
+      <plugin id="org.eclipse.birt.core"/>
       <plugin id="org.eclipse.compare.core"/>
       <plugin id="org.eclipse.compare.core.nl_de" fragment="true"/>
       <plugin id="org.eclipse.core.commands"/>
@@ -167,6 +172,9 @@ http://dev.mysql.com.
       <plugin id="org.eclipse.core.runtime.nl_de" fragment="true"/>
       <plugin id="org.eclipse.core.variables"/>
       <plugin id="org.eclipse.core.variables.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.emf.common"/>
+      <plugin id="org.eclipse.emf.ecore"/>
+      <plugin id="org.eclipse.emf.ecore.xmi"/>
       <plugin id="org.eclipse.equinox.app"/>
       <plugin id="org.eclipse.equinox.common"/>
       <plugin id="org.eclipse.equinox.preferences"/>
@@ -241,6 +249,7 @@ http://dev.mysql.com.
       <plugin id="org.eclipse.ui.workbench.nl_de" fragment="true"/>
       <plugin id="org.eclipse.ui.workbench.texteditor"/>
       <plugin id="org.eclipse.ui.workbench.texteditor.nl_de" fragment="true"/>
+      <plugin id="org.mozilla.javascript"/>
    </plugins>
 
 

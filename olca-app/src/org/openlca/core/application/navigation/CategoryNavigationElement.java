@@ -10,9 +10,7 @@
 package org.openlca.core.application.navigation;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Category;
@@ -52,17 +50,18 @@ public class CategoryNavigationElement extends AbstractNavigationElement {
 		IModelComponent[] descriptors = new IModelComponent[0];
 		try {
 			IDatabase database = getDatabase();
-			if (database != null) {
-				Map<String, Object> properties = new HashMap<>();
-				properties.put("categoryId", category.getId());
-				Object[] result = database
-						.selectDescriptors(
-								Class.forName(category.getComponentClass()),
-								properties);
-				if (result instanceof IModelComponent[]) {
-					descriptors = (IModelComponent[]) result;
-				}
-			}
+			// TODO: get model descriptors for navigation
+			// if (database != null) {
+			// Map<String, Object> properties = new HashMap<>();
+			// properties.put("categoryId", category.getId());
+			// Object[] result = database
+			// .selectDescriptors(
+			// Class.forName(category.getComponentClass()),
+			// properties);
+			// if (result instanceof IModelComponent[]) {
+			// descriptors = (IModelComponent[]) result;
+			// }
+			// }
 		} catch (Exception e1) {
 			log.error("Loading descriptors failed", e1);
 		}
@@ -81,20 +80,16 @@ public class CategoryNavigationElement extends AbstractNavigationElement {
 	 */
 	public boolean canBeDeleted() {
 		boolean canBeDeleted = true;
-		if (category.getComponentClass().equals(category.getId())) {
-			canBeDeleted = false;
-		} else {
-			int i = 0;
-			while (canBeDeleted && i < getChildren(false).length) {
-				if (getChildren(false)[i] instanceof ModelNavigationElement) {
-					canBeDeleted = false;
-				} else if (getChildren(false)[i] instanceof CategoryNavigationElement
-						&& !((CategoryNavigationElement) getChildren(false)[i])
-								.canBeDeleted()) {
-					canBeDeleted = false;
-				} else {
-					i++;
-				}
+		int i = 0;
+		while (canBeDeleted && i < getChildren(false).length) {
+			if (getChildren(false)[i] instanceof ModelNavigationElement) {
+				canBeDeleted = false;
+			} else if (getChildren(false)[i] instanceof CategoryNavigationElement
+					&& !((CategoryNavigationElement) getChildren(false)[i])
+							.canBeDeleted()) {
+				canBeDeleted = false;
+			} else {
+				i++;
 			}
 		}
 		return canBeDeleted;
