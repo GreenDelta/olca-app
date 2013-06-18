@@ -9,52 +9,17 @@
  ******************************************************************************/
 package org.openlca.core.application.navigation;
 
-import org.openlca.core.database.IDatabase;
+import java.util.List;
 
 /**
- * Interface for navigation elements in the applications navigator common viewer
- * 
- * @author Sebastian Greve
- * 
+ * Interface for elements in the navigation tree.
  */
 public interface INavigationElement {
 
-	/**
-	 * Getter of the children navigation element
-	 * 
-	 * @param refresh
-	 *            Indicates whether the common viewer should be updated or not
-	 * @return The children navigation element
-	 */
-	INavigationElement[] getChildren(boolean refresh);
-
-	/**
-	 * Get the data the element is representing
-	 * 
-	 * @return The data hold by the navigation element
-	 */
-	Object getData();
-
-	/**
-	 * Getter of the database of the navigation element. If this element itself
-	 * has no database, than the parents will be searched.
-	 * 
-	 * @return First occurence of a database object in the data field of the
-	 *         navigation element parents
-	 */
-	IDatabase getDatabase();
-
-	/**
-	 * Getter of the parent navigation element
-	 * 
-	 * @return The parent navigation element
-	 */
 	INavigationElement getParent();
 
-	/**
-	 * Returns true if the navigation element does not contain other navigation
-	 * elements.
-	 */
-	boolean isEmpty();
+	List<INavigationElement> getChildren();
+
+	Object getData();
 
 }

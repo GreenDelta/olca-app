@@ -16,12 +16,7 @@ import org.eclipse.ui.application.IActionBarConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 import org.openlca.core.application.App;
-import org.openlca.core.application.navigation.DataProviderNavigationElement;
-import org.openlca.core.application.navigation.INavigationElement;
-import org.openlca.core.application.navigation.NavigationRoot;
-import org.openlca.core.application.views.navigator.Navigator;
-import org.openlca.core.database.DataProviderException;
-import org.openlca.core.database.IDatabaseServer;
+import org.openlca.core.application.db.Database;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,30 +54,17 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 
 	@Override
 	public boolean preWindowShellClose() {
-		Navigator navigator = Navigator.getInstance();
-		if (navigator != null) {
-			final NavigationRoot root = navigator.getRoot();
-			if (root != null) {
-
-				for (final INavigationElement element : root.getChildren(false)) {
-
-					if (element instanceof DataProviderNavigationElement) {
-						final IDatabaseServer dataProvider = (IDatabaseServer) element
-								.getData();
-						if (dataProvider.isRunning()) {
-							try {
-								dataProvider.shutdown();
-							} catch (DataProviderException e) {
-								log.error("Shutdown dataprovider failed", e);
-							}
-						}
-					}
-
-				}
-
-			}
+		boolean b = super.preWindowShellClose();
+		if (!b)
+			return false;
+		try {
+			log.info("close database");
+			Database.close();
+			return true;
+		} catch (Exception e) {
+			log.error("Failed to close database", e);
+			return false;
 		}
-		return super.preWindowShellClose();
 	}
 
 }

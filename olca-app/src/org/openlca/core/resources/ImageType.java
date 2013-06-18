@@ -4,7 +4,7 @@ import java.io.File;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
-import org.openlca.core.resources.plugin.Activator;
+import org.openlca.core.application.plugin.Activator;
 
 public enum ImageType implements IImageType {
 
@@ -39,6 +39,8 @@ public enum ImageType implements IImageType {
 	COST_CALC_ICON("cost_calc_icon.png"),
 
 	DB_ICON("db_obj.gif"),
+
+	DB_ICON_DIS("db_obj_dis.gif"),
 
 	DB_IO("db_io_16.gif"),
 

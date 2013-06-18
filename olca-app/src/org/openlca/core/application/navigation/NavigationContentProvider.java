@@ -9,6 +9,8 @@
  ******************************************************************************/
 package org.openlca.core.application.navigation;
 
+import java.util.List;
+
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.navigator.ICommonContentExtensionSite;
@@ -28,25 +30,24 @@ public class NavigationContentProvider implements ICommonContentProvider {
 	}
 
 	@Override
-	public Object[] getChildren(final Object parentElement) {
-		Object[] children = new Object[0];
-		if (parentElement instanceof INavigationElement) {
-			children = ((INavigationElement) parentElement).getChildren(false);
-		}
-		return children;
+	public Object[] getChildren(Object parent) {
+		if (!(parent instanceof INavigationElement))
+			return new Object[0];
+		INavigationElement e = (INavigationElement) parent;
+		List<INavigationElement> childs = e.getChildren();
+		if (childs == null)
+			return new Object[0];
+		else
+			return childs.toArray();
 	}
 
 	@Override
-	public Object[] getElements(final Object inputElement) {
-		Object[] elements = new Object[0];
-		if (inputElement instanceof INavigationElement) {
-			elements = ((INavigationElement) inputElement).getChildren(true);
-		}
-		return elements;
+	public Object[] getElements(Object input) {
+		return getChildren(input);
 	}
 
 	@Override
-	public Object getParent(final Object element) {
+	public Object getParent(Object element) {
 		Object object = null;
 		if (element instanceof INavigationElement) {
 			object = ((INavigationElement) element).getParent();
@@ -55,30 +56,28 @@ public class NavigationContentProvider implements ICommonContentProvider {
 	}
 
 	@Override
-	public boolean hasChildren(final Object element) {
-		boolean hasChildren = false;
-		if (element instanceof INavigationElement) {
-			hasChildren = ((INavigationElement) element).getChildren(true).length > 0;
-		}
-		return hasChildren;
+	public boolean hasChildren(Object element) {
+		if (!(element instanceof INavigationElement))
+			return false;
+		INavigationElement e = (INavigationElement) element;
+		return !e.getChildren().isEmpty();
 	}
 
 	@Override
-	public void init(final ICommonContentExtensionSite aConfig) {
+	public void init(ICommonContentExtensionSite aConfig) {
 
 	}
 
 	@Override
-	public void inputChanged(final Viewer viewer, final Object oldInput,
-			final Object newInput) {
+	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 	}
 
 	@Override
-	public void restoreState(final IMemento aMemento) {
+	public void restoreState(IMemento aMemento) {
 	}
 
 	@Override
-	public void saveState(final IMemento aMemento) {
+	public void saveState(IMemento aMemento) {
 	}
 
 }

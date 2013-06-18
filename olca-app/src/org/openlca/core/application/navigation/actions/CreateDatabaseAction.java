@@ -8,29 +8,35 @@
  * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
  ******************************************************************************/
 
-package org.openlca.core.application.actions;
+package org.openlca.core.application.navigation.actions;
+
+import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.openlca.core.application.Messages;
 import org.openlca.core.application.db.DatabaseWizard;
-import org.openlca.core.database.IDatabaseServer;
+import org.openlca.core.application.navigation.INavigationElement;
 import org.openlca.core.resources.ImageType;
 
 /**
  * Opens the wizard for creating a new database.
  */
-public class CreateDatabaseAction extends Action {
+public class CreateDatabaseAction extends Action implements INavigationAction {
 
-	private final IDatabaseServer dataProvider;
+	@Override
+	public boolean accept(INavigationElement element) {
+		return false;
+	}
 
-	public CreateDatabaseAction(IDatabaseServer dataProvider) {
-		this.dataProvider = dataProvider;
+	@Override
+	public boolean accept(List<INavigationElement> elements) {
+		return false;
 	}
 
 	@Override
 	public void run() {
-		DatabaseWizard.open(dataProvider);
+		DatabaseWizard.open();
 	}
 
 	@Override

@@ -7,7 +7,7 @@
  * Contributors: GreenDeltaTC - initial API and implementation
  * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
  ******************************************************************************/
-package org.openlca.core.application.views.navigator;
+package org.openlca.core.application.navigation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,64 +26,69 @@ import org.eclipse.ui.navigator.CommonActionProvider;
 import org.openlca.core.application.Messages;
 import org.openlca.core.application.actions.AddCategoryAction;
 import org.openlca.core.application.actions.CopyAction;
-import org.openlca.core.application.actions.CreateDatabaseAction;
 import org.openlca.core.application.actions.CutAction;
 import org.openlca.core.application.actions.DeleteAction;
 import org.openlca.core.application.actions.DeleteCategoryAction;
-import org.openlca.core.application.actions.DeleteDatabaseAction;
 import org.openlca.core.application.actions.ExportDatabaseAction;
 import org.openlca.core.application.actions.IImportAction;
-import org.openlca.core.application.actions.INavigationAction;
 import org.openlca.core.application.actions.ImportDatabaseAction;
 import org.openlca.core.application.actions.OpenEditorAction;
 import org.openlca.core.application.actions.OpenNewWizardAction;
 import org.openlca.core.application.actions.OpenPropertiesAction;
-import org.openlca.core.application.actions.OpenUsageAction;
 import org.openlca.core.application.actions.PasteAction;
-import org.openlca.core.application.actions.RegisterDataProviderAction;
 import org.openlca.core.application.actions.RenameCategoryAction;
-import org.openlca.core.application.actions.UnregisterDataProviderAction;
-import org.openlca.core.application.db.MySQLWizard;
 import org.openlca.core.application.db.ServerConnectionAction;
-import org.openlca.core.application.navigation.CategoryNavigationElement;
-import org.openlca.core.application.navigation.DataProviderNavigationElement;
-import org.openlca.core.application.navigation.DatabaseNavigationElement;
-import org.openlca.core.application.navigation.INavigationElement;
-import org.openlca.core.application.navigation.ModelNavigationElement;
+import org.openlca.core.application.navigation.actions.ActivateDatabaseAction;
+import org.openlca.core.application.navigation.actions.CreateDatabaseAction;
+import org.openlca.core.application.navigation.actions.DeleteDatabaseAction;
+import org.openlca.core.application.navigation.actions.INavigationAction;
+import org.openlca.core.application.navigation.actions.OpenUsageAction;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.IDatabaseServer;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.modelprovider.IModelComponent;
+import org.openlca.ui.Viewers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Extension of the {@link CommonActionProvider} to provide the navigator with
- * actions
- * 
- * @author Sebastian Greve
- * 
+ * Adds the actions to the context menu of the navigation tree.
  */
 public class NavigationActionProvider extends CommonActionProvider {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 	private ExportActionProvider exportActionProvider = new ExportActionProvider();
 
-	private INavigationAction openUsageAction = new OpenUsageAction();
+	private INavigationAction[] actions = new INavigationAction[] {
+			new ActivateDatabaseAction(), new OpenUsageAction(),
+			new DeleteDatabaseAction() };
 
 	@Override
 	public void fillContextMenu(IMenuManager menu) {
 		ActionContext con = getContext();
 		IStructuredSelection selection = (IStructuredSelection) con
 				.getSelection();
-		if (selection == null || selection.isEmpty())
-			menu.add(new RegisterDataProviderAction(new MySQLWizard(),
-					Messages.NewMySQLConnection));
-		else if (selection.size() > 1)
-			multiSelection(menu, selection.toArray());
-		else
-			singleSelection(menu, selection.getFirstElement());
+		List<INavigationElement> elements = Viewers.getAll(selection);
+		if (elements.size() == 1)
+			registerSingleActions(elements.get(0), menu);
+		else if (elements.size() > 1)
+			registerMultiActions(elements, menu);
+		menu.add(new CreateDatabaseAction());
+	}
+
+	private void registerSingleActions(INavigationElement element,
+			IMenuManager menu) {
+		for (INavigationAction action : actions)
+			if (action.accept(element))
+				menu.add(action);
+	}
+
+	private void registerMultiActions(List<INavigationElement> elements,
+			IMenuManager menu) {
+		for (INavigationAction action : actions)
+			if (action.accept(elements))
+				menu.add(action);
 	}
 
 	private void appendCategoryActions(IMenuManager menu,
@@ -102,46 +107,27 @@ public class NavigationActionProvider extends CommonActionProvider {
 		while (wizardId == null && i < elements.length) {
 			String clazz = elements[i].getAttribute("componentClass");
 			// if matching
-			if (clazz != null && category.getComponentClass().equals(clazz)) {
+			if (clazz != null) {
 				// found wizard
 				wizardId = elements[i].getAttribute("newWizardId");
 			}
 			i++;
 		}
 
-		// if a wizard was found
 		if (wizardId != null) {
-			// add open new wizard action
 			menu.add(new OpenNewWizardAction(wizardId, category.getId(),
 					element.getDatabase()));
 			menu.add(new Separator());
-
-			// if not top category
-			if (!category.getId().equals(category.getComponentClass())) {
-				// append cut/copy action
-				menu.add(new CutAction(new INavigationElement[] { element }));
-				menu.add(new CopyAction(new INavigationElement[] { element }));
-			}
-
-			// append paste action
+			menu.add(new CutAction(new INavigationElement[] { element }));
+			menu.add(new CopyAction(new INavigationElement[] { element }));
 			menu.add(new PasteAction(element));
 			menu.add(new Separator());
 		}
 
-		// append add action
 		menu.add(new AddCategoryAction(category, element.getDatabase()));
-
-		// if not top category
-		if (!category.getId().equals(category.getComponentClass())) {
-			// if element is deletable
-			if (element.canBeDeleted()) {
-				// add delete action
-				menu.add(new DeleteCategoryAction(category, element
-						.getDatabase()));
-			}
-			// add rename action
-			menu.add(new RenameCategoryAction(category, element.getDatabase()));
-		}
+		if (element.canBeDeleted())
+			menu.add(new DeleteCategoryAction(category, element.getDatabase()));
+		menu.add(new RenameCategoryAction(category, element.getDatabase()));
 		menu.add(new Separator());
 	}
 
@@ -149,12 +135,10 @@ public class NavigationActionProvider extends CommonActionProvider {
 			IDatabaseServer dataProvider) {
 		menu.add(new ServerConnectionAction(dataProvider));
 		if (dataProvider.isRunning()) {
-			menu.add(new CreateDatabaseAction(dataProvider));
 			menu.add(new ImportDatabaseAction(dataProvider));
 		}
 		menu.add(new Separator());
 		menu.add(new OpenPropertiesAction(dataProvider));
-		menu.add(new UnregisterDataProviderAction(dataProvider));
 	}
 
 	/** Appends the available export actions for the model component. */
@@ -247,8 +231,6 @@ public class NavigationActionProvider extends CommonActionProvider {
 			menu.add(new CutAction(new INavigationElement[] { navElem }));
 			menu.add(new CopyAction(new INavigationElement[] { navElem }));
 		}
-		if (openUsageAction.accept(navElem))
-			menu.add(openUsageAction);
 		menu.add(new DeleteAction(database, modelComponent));
 		menu.add(new Separator());
 		appendExportActions(menu, database, modelComponent);
@@ -313,7 +295,6 @@ public class NavigationActionProvider extends CommonActionProvider {
 	private void appendDatabaseActions(IMenuManager menu,
 			IDatabaseServer dataProvider, IDatabase database) {
 		menu.add(new ExportDatabaseAction(dataProvider, database));
-		menu.add(new DeleteDatabaseAction(dataProvider, database.getName()));
 		menu.add(new Separator());
 		appendImportPopupMenu(menu, database);
 	}
@@ -342,11 +323,7 @@ public class NavigationActionProvider extends CommonActionProvider {
 				if (!(selectedObjects[i] instanceof CategoryNavigationElement)) {
 					allSubCategories = false;
 				} else {
-					Category category = (Category) ((CategoryNavigationElement) selectedObjects[i])
-							.getData();
-					if (category.getComponentClass().equals(category.getId())) {
-						allSubCategories = false;
-					}
+					allSubCategories = false;
 				}
 			}
 			i++;
@@ -359,22 +336,10 @@ public class NavigationActionProvider extends CommonActionProvider {
 	}
 
 	private void singleSelection(IMenuManager menu, Object elem) {
-		if (elem instanceof DataProviderNavigationElement) {
-			appendDataProviderActions1(menu,
-					(IDatabaseServer) ((DataProviderNavigationElement) elem)
-							.getData());
-		} else if (elem instanceof DatabaseNavigationElement) {
-			IDatabaseServer dataProvider = (IDatabaseServer) ((DatabaseNavigationElement) elem)
-					.getParent().getData();
-			IDatabase database = (IDatabase) ((DatabaseNavigationElement) elem)
-					.getData();
-			appendDatabaseActions(menu, dataProvider, database);
-		} else if (elem instanceof ModelNavigationElement) {
+		if (elem instanceof ModelNavigationElement) {
 			appendModelComponentActions(menu, (ModelNavigationElement) elem);
 		} else if (elem instanceof CategoryNavigationElement) {
 			appendCategoryActions(menu, (CategoryNavigationElement) elem);
 		}
-		menu.add(new RegisterDataProviderAction(new MySQLWizard(),
-				Messages.NewMySQLConnection));
 	}
 }

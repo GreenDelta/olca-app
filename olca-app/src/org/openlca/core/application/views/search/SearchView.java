@@ -251,8 +251,8 @@ public class SearchView extends ViewPart {
 			if (searchClass != null) {
 				try {
 					// load model component descriptors
-					final IModelComponent[] objs = database
-							.selectDescriptors(Class.forName(searchClass));
+					final IModelComponent[] objs = new IModelComponent[0];
+					// TODO:
 
 					// for each descriptor
 					for (final IModelComponent c : objs) {
@@ -267,8 +267,10 @@ public class SearchView extends ViewPart {
 					// for each model component class
 					for (final String clazz : nameToClass.values()) {
 						// load descriptors
-						final IModelComponent[] objs = database
-								.selectDescriptors(Class.forName(clazz));
+						final IModelComponent[] objs = new IModelComponent[0];
+
+						// database
+						// .selectDescriptors(Class.forName(clazz));
 
 						// for each descriptor
 						for (final IModelComponent c : objs) {
@@ -491,7 +493,7 @@ public class SearchView extends ViewPart {
 		NavigationRoot root = Navigator.getNavigationRoot();
 		if (root == null)
 			return;
-		databases = root.collectDatabases();
+		databases = new IDatabase[0];
 		String[] names = new String[databases.length];
 		for (int i = 0; i < databases.length; i++)
 			names[i] = databases[i].getName();

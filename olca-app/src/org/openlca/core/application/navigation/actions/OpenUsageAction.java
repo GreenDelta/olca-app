@@ -1,15 +1,15 @@
-package org.openlca.core.application.actions;
+package org.openlca.core.application.navigation.actions;
 
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.openlca.core.application.FeatureFlag;
 import org.openlca.core.application.Messages;
+import org.openlca.core.application.db.Database;
 import org.openlca.core.application.navigation.INavigationElement;
 import org.openlca.core.application.navigation.ModelNavigationElement;
 import org.openlca.core.application.views.UsageView;
 import org.openlca.core.application.views.UsageViewInput;
-import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Actor;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
@@ -28,7 +28,6 @@ import org.openlca.ui.Editors;
 public class OpenUsageAction extends Action implements INavigationAction {
 
 	private BaseDescriptor descriptor;
-	private IDatabase database;
 	private Class<?>[] classes = { Actor.class, Source.class, UnitGroup.class,
 			FlowProperty.class, Flow.class, Process.class };
 
@@ -43,7 +42,8 @@ public class OpenUsageAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		Editors.open(new UsageViewInput(descriptor, database), UsageView.ID);
+		Editors.open(new UsageViewInput(descriptor, Database.get()),
+				UsageView.ID);
 	}
 
 	@Override
@@ -59,7 +59,6 @@ public class OpenUsageAction extends Action implements INavigationAction {
 		IModelComponent comp = (IModelComponent) data;
 		if (isInClasses(comp)) {
 			descriptor = Descriptors.toDescriptor(comp);
-			database = navigationElement.getDatabase();
 			return true;
 		}
 		return false;

@@ -17,6 +17,15 @@ public class Editors {
 	private Editors() {
 	}
 
+	public static void closeAll() {
+		try {
+			PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+					.getActivePage().closeAllEditors(false);
+		} catch (Exception e) {
+			log.error("Failed to close editors", e);
+		}
+	}
+
 	public static void open(IEditorInput input, String editorId) {
 		new OpenInUIJob(input, editorId).schedule();
 	}

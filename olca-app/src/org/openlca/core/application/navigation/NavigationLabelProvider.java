@@ -14,8 +14,8 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.navigator.ICommonContentExtensionSite;
 import org.eclipse.ui.navigator.ICommonLabelProvider;
-import org.openlca.core.database.IDatabase;
-import org.openlca.core.database.IDatabaseServer;
+import org.openlca.core.application.db.Database;
+import org.openlca.core.application.db.IDatabaseConfiguration;
 import org.openlca.core.model.Actor;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Flow;
@@ -37,6 +37,39 @@ import org.openlca.ui.BaseLabelProvider;
  */
 public class NavigationLabelProvider extends BaseLabelProvider implements
 		ICommonLabelProvider {
+
+	@Override
+	public void addListener(ILabelProviderListener listener) {
+
+	}
+
+	@Override
+	public String getDescription(Object anElement) {
+		String description = null;
+		if (anElement instanceof ModelNavigationElement) {
+			ModelNavigationElement navElement = (ModelNavigationElement) anElement;
+			IModelComponent component = (IModelComponent) navElement.getData();
+			if (component.getDescription() != null
+					&& component.getDescription().length() > 0) {
+				description = component.getDescription();
+			}
+		}
+		return description;
+	}
+
+	@Override
+	public Image getImage(Object element) {
+		if (!(element instanceof INavigationElement))
+			return null;
+		Object o = ((INavigationElement) element).getData();
+		if (o instanceof IDatabaseConfiguration)
+			return getDatabaseImage((IDatabaseConfiguration) o);
+		if (o instanceof Category)
+			return getCategoryImage((Category) o);
+		if (o instanceof IModelComponent)
+			return getModelComponentImage((IModelComponent) o);
+		return null;
+	}
 
 	private Image getCategoryImage(Category category) {
 		if (category == null || category.getModelType() == null)
@@ -68,84 +101,50 @@ public class NavigationLabelProvider extends BaseLabelProvider implements
 	}
 
 	private Image getModelComponentImage(IModelComponent modelComponent) {
-		Image img = null;
-		if (modelComponent.getClass() == Flow.class) {
-			img = ImageType.FLOW_ICON.get();
-		} else if (modelComponent.getClass() == FlowProperty.class) {
-			img = ImageType.FLOW_PROPERTY_ICON.get();
-		} else if (modelComponent.getClass() == LCIAMethod.class) {
-			img = ImageType.LCIA_ICON.get();
-		} else if (modelComponent.getClass() == Process.class) {
-			img = ImageType.PROCESS_ICON.get();
-		} else if (modelComponent.getClass() == ProductSystem.class) {
-			img = ImageType.PRODUCT_SYSTEM_ICON.get();
-		} else if (modelComponent.getClass() == UnitGroup.class) {
-			img = ImageType.UNIT_GROUP_ICON.get();
-		} else if (modelComponent.getClass() == Actor.class) {
-			img = ImageType.ACTOR_ICON.get();
-		} else if (modelComponent.getClass() == Source.class) {
-			img = ImageType.SOURCE_ICON.get();
-		} else if (modelComponent.getClass() == Project.class) {
-			img = ImageType.PROJECT_ICON.get();
-		} else if (modelComponent.getClass() == LCIAResult.class) {
-			img = ImageType.EXPRESSION_ICON.get();
-		}
-		return img;
+		if (modelComponent.getClass() == Flow.class)
+			return ImageType.FLOW_ICON.get();
+		else if (modelComponent.getClass() == FlowProperty.class)
+			return ImageType.FLOW_PROPERTY_ICON.get();
+		else if (modelComponent.getClass() == LCIAMethod.class)
+			return ImageType.LCIA_ICON.get();
+		else if (modelComponent.getClass() == Process.class)
+			return ImageType.PROCESS_ICON.get();
+		else if (modelComponent.getClass() == ProductSystem.class)
+			return ImageType.PRODUCT_SYSTEM_ICON.get();
+		else if (modelComponent.getClass() == UnitGroup.class)
+			return ImageType.UNIT_GROUP_ICON.get();
+		else if (modelComponent.getClass() == Actor.class)
+			return ImageType.ACTOR_ICON.get();
+		else if (modelComponent.getClass() == Source.class)
+			return ImageType.SOURCE_ICON.get();
+		else if (modelComponent.getClass() == Project.class)
+			return ImageType.PROJECT_ICON.get();
+		else if (modelComponent.getClass() == LCIAResult.class)
+			return ImageType.EXPRESSION_ICON.get();
+
+		return null;
 	}
 
-	@Override
-	public void addListener(ILabelProviderListener listener) {
-
-	}
-
-	@Override
-	public String getDescription(Object anElement) {
-		String description = null;
-		if (anElement instanceof ModelNavigationElement) {
-			ModelNavigationElement navElement = (ModelNavigationElement) anElement;
-			IModelComponent component = (IModelComponent) navElement.getData();
-			if (component.getDescription() != null
-					&& component.getDescription().length() > 0) {
-				description = component.getDescription();
-			}
-		}
-		return description;
-	}
-
-	@Override
-	public Image getImage(Object element) {
-		if (!(element instanceof INavigationElement))
-			return null;
-		Object o = ((INavigationElement) element).getData();
-		if (o instanceof IDatabaseServer) {
-			IDatabaseServer dataProvider = (IDatabaseServer) o;
-			return dataProvider.isRunning() ? ImageType.CONNECT_ICON.get()
-					: ImageType.DISCONNECT_ICON.get();
-		} else if (element instanceof DatabaseNavigationElement)
+	private Image getDatabaseImage(IDatabaseConfiguration config) {
+		if (Database.isActive(config))
 			return ImageType.DB_ICON.get();
-		else if (o instanceof Category)
-			return getCategoryImage((Category) o);
-		else if (o instanceof IModelComponent)
-			return getModelComponentImage((IModelComponent) o);
 		else
-			return null;
+			return ImageType.DB_ICON_DIS.get();
 	}
 
 	@Override
 	public String getText(Object element) {
-		if (element instanceof INavigationElement) {
-			Object o = ((INavigationElement) element).getData();
-			if (element instanceof DataProviderNavigationElement) {
-				return "MySQL";
-			} else if (element instanceof DatabaseNavigationElement) {
-				return ((IDatabase) o).getName();
-			} else if (o instanceof Category) {
-				return ((Category) o).getName();
-			} else if (o instanceof IModelComponent) {
-				return super.getModelLabel((IModelComponent) o);
-			}
-		}
-		return null;
+		if (!(element instanceof INavigationElement))
+			return null;
+		Object o = ((INavigationElement) element).getData();
+		if (o instanceof IDatabaseConfiguration)
+			return ((IDatabaseConfiguration) o).getName();
+		if (o instanceof Category)
+			return ((Category) o).getName();
+		if (o instanceof IModelComponent)
+			return super.getModelLabel((IModelComponent) o);
+		else
+			return null;
 	}
 
 	@Override

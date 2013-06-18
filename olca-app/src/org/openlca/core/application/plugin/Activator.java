@@ -21,6 +21,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.openlca.core.application.OlcaPlugin;
 import org.openlca.core.application.Preferences;
@@ -37,7 +38,7 @@ public class Activator extends AbstractUIPlugin {
 	private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(this
 			.getClass());
 	private static Activator plugin;
-	public static final String PLUGIN_ID = "olca-app-core";
+	public static final String PLUGIN_ID = "olca-app";
 
 	/**
 	 * Returns the shared instance
@@ -110,5 +111,9 @@ public class Activator extends AbstractUIPlugin {
 		Console.dispose();
 		plugin = null;
 		super.stop(context);
+	}
+
+	public static ImageDescriptor getImageDescriptor(String path) {
+		return imageDescriptorFromPlugin(PLUGIN_ID, path);
 	}
 }

@@ -1,4 +1,4 @@
-package org.openlca.core.application.actions;
+package org.openlca.core.application.navigation.actions;
 
 import java.util.List;
 

@@ -1,7 +1,7 @@
 package org.openlca.core.application.db;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
-import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -10,12 +10,8 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.openlca.core.application.App;
 import org.openlca.core.application.Messages;
 import org.openlca.core.application.db.DatabaseWizardPage.PageData;
-import org.openlca.core.application.events.DatabaseCreatedEvent;
 import org.openlca.core.application.views.navigator.Navigator;
 import org.openlca.core.application.views.search.SearchView;
-import org.openlca.core.database.DatabaseDescriptor;
-import org.openlca.core.database.IDatabase;
-import org.openlca.core.database.IDatabaseServer;
 import org.openlca.ui.UI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,15 +21,13 @@ import org.slf4j.LoggerFactory;
  */
 public class DatabaseWizard extends Wizard implements IRunnableWithProgress {
 
-	private IDatabaseServer dataProvider;
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 	private DatabaseWizardPage page;
 	private PageData data;
 
-	public DatabaseWizard(IDatabaseServer dataProvider) {
+	public DatabaseWizard() {
 		setNeedsProgressMonitor(true);
 		setWindowTitle(Messages.NewDatabase);
-		this.dataProvider = dataProvider;
 	}
 
 	@Override
@@ -43,17 +37,18 @@ public class DatabaseWizard extends Wizard implements IRunnableWithProgress {
 	}
 
 	private String[] getExistingNames() {
-		try {
-			List<DatabaseDescriptor> databases = dataProvider
-					.getDatabaseDescriptors();
-			String[] names = new String[databases.size()];
-			for (int i = 0; i < databases.size(); i++)
-				names[i] = databases.get(i).getName();
-			return names;
-		} catch (Exception e) {
-			log.error("Could not get databases", e);
-			return new String[0];
-		}
+		return null;
+		// try {
+		// List<DatabaseDescriptor> databases = dataProvider
+		// .getDatabaseDescriptors();
+		// String[] names = new String[databases.size()];
+		// for (int i = 0; i < databases.size(); i++)
+		// names[i] = databases.get(i).getName();
+		// return names;
+		// } catch (Exception e) {
+		// log.error("Could not get databases", e);
+		// return new String[0];
+		// }
 	}
 
 	@Override
@@ -70,8 +65,8 @@ public class DatabaseWizard extends Wizard implements IRunnableWithProgress {
 		}
 	}
 
-	public static void open(IDatabaseServer dataProvider) {
-		DatabaseWizard wizard = new DatabaseWizard(dataProvider);
+	public static void open() {
+		DatabaseWizard wizard = new DatabaseWizard();
 		WizardDialog dialog = new WizardDialog(UI.shell(), wizard);
 		dialog.open();
 	}
@@ -81,9 +76,12 @@ public class DatabaseWizard extends Wizard implements IRunnableWithProgress {
 			InterruptedException {
 		monitor.beginTask(Messages.NewDatabase_Create, IProgressMonitor.UNKNOWN);
 		try {
-			IDatabase database = dataProvider.createDatabase(data.databaseName,
-					data.contentType);
-			App.getEventBus().post(new DatabaseCreatedEvent(database));
+			DerbyConfiguration config = new DerbyConfiguration();
+			config.setFolder(new File(App.getWorkspace(), "databases"));
+			config.setName(data.databaseName);
+			Database.register(config);
+			Navigator.refresh();
+			// App.getEventBus().post(new DatabaseCreatedEvent(database));
 			monitor.done();
 		} catch (final Exception e1) {
 			log.error("Create database failed", e1);

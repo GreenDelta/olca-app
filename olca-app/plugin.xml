@@ -253,7 +253,7 @@
          </possibleChildren>
       </navigatorContent>
       <actionProvider
-            class="org.openlca.core.application.views.navigator.NavigationActionProvider"
+            class="org.openlca.core.application.navigation.NavigationActionProvider"
             id="org.openlca.core.application.navigator.actionProvider"
             priority="normal">
          <enablement></enablement>

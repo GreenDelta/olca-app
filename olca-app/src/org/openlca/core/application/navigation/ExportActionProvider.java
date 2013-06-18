@@ -1,4 +1,4 @@
-package org.openlca.core.application.views.navigator;
+package org.openlca.core.application.navigation;
 
 import java.util.ArrayList;
 import java.util.Collections;

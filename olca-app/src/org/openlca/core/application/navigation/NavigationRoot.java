@@ -10,143 +10,34 @@
 package org.openlca.core.application.navigation;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 
 import org.eclipse.core.runtime.PlatformObject;
-import org.openlca.core.application.App;
-import org.openlca.core.database.IDatabase;
-import org.openlca.core.database.IDatabaseServer;
-import org.openlca.core.model.Category;
-import org.openlca.core.model.modelprovider.IModelComponent;
+import org.openlca.core.application.db.Database;
+import org.openlca.core.application.db.DatabaseList;
+import org.openlca.core.application.db.DerbyConfiguration;
+import org.openlca.core.application.db.MySQLConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Root navigation element of the common viewer of the applications navigator
- * 
- * @author Sebastian Greve
- * 
+ * Root element of the navigation tree: shows the database configurations.
  */
 public class NavigationRoot extends PlatformObject implements
 		INavigationElement {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
-	private List<INavigationElement> elements = new ArrayList<>();
-
-	private boolean contains(List<INavigationElement> elements,
-			INavigationElement element) {
-		boolean contains = false;
-		for (INavigationElement e : elements) {
-			if (e.getData().equals(element.getData())) {
-				contains = true;
-				break;
-			}
-		}
-		return contains;
-	}
-
-	/**
-	 * Get the databases from the navigation tree.
-	 */
-	public IDatabase[] collectDatabases() {
-		List<IDatabase> databases = new ArrayList<>();
-		for (INavigationElement element : getChildren(false)) {
-			if (element instanceof DataProviderNavigationElement) {
-				databases.addAll(getDatabases(element));
-			}
-		}
-		return databases.toArray(new IDatabase[databases.size()]);
-	}
-
-	private List<IDatabase> getDatabases(INavigationElement dataProviderElement) {
-		List<IDatabase> databases = new ArrayList<>();
-		for (INavigationElement element : dataProviderElement
-				.getChildren(false)) {
-			IDatabase database = element.getDatabase();
-			if (database != null) {
-				databases.add(database);
-			}
-		}
-		return databases;
-	}
-
-	/**
-	 * Get the root category element for a specific class on a specific database
-	 * 
-	 * @param clazz
-	 *            The class the root element is needed for
-	 * @param database
-	 *            The database
-	 * @return The root category element for the specified class on the database
-	 */
-	public CategoryNavigationElement getCategoryRoot(
-			Class<? extends IModelComponent> clazz, IDatabase database) {
-		INavigationElement[] children = getChildren(false);
-		CategoryNavigationElement categoryRootElement = null;
-		Queue<INavigationElement> elements = new LinkedList<>();
-		for (INavigationElement child : children) {
-			elements.add(child);
-		}
-		while (categoryRootElement == null && !elements.isEmpty()) {
-			INavigationElement element = elements.poll();
-			if (element instanceof CategoryNavigationElement) {
-				if (((Category) element.getData()).getId().equals(
-						clazz.getCanonicalName())
-						&& database.equals(element.getDatabase())) {
-					categoryRootElement = (CategoryNavigationElement) element;
-				}
-			}
-			for (INavigationElement subElement : element.getChildren(false)) {
-				elements.add(subElement);
-			}
-		}
-		return categoryRootElement;
-	}
 
 	@Override
-	public INavigationElement[] getChildren(boolean refresh) {
-		if (refresh) {
-			log.info("Initialize navigation");
-			List<INavigationElement> elements = new ArrayList<>();
-			try {
-				for (IDatabaseServer provider : App.getDatabaseServers()) {
-					INavigationElement element = new DataProviderNavigationElement(
-							provider);
-					elements.add(element);
-				}
-			} catch (Exception e) {
-				log.error("Reading children from db failed", e);
-			}
-			List<INavigationElement> toRemove = new ArrayList<>();
-			for (INavigationElement element : this.elements) {
-				if (!contains(elements, element)) {
-					toRemove.add(element);
-				}
-			}
-
-			for (INavigationElement element : toRemove) {
-				this.elements.remove(element);
-			}
-
-			for (INavigationElement element : elements) {
-				if (!contains(this.elements, element)) {
-					this.elements.add(element);
-				}
-			}
-		}
-		return this.elements.toArray(new INavigationElement[elements.size()]);
-	}
-
-	@Override
-	public Object getData() {
-		return null;
-	}
-
-	@Override
-	public IDatabase getDatabase() {
-		return null;
+	public List<INavigationElement> getChildren() {
+		log.trace("initialize navigation");
+		DatabaseList list = Database.getConfigurations();
+		List<INavigationElement> elements = new ArrayList<>();
+		for (DerbyConfiguration config : list.getLocalDatabases())
+			elements.add(new DatabaseElement(config));
+		for (MySQLConfiguration config : list.getRemoteDatabases())
+			elements.add(new DatabaseElement(config));
+		return elements;
 	}
 
 	@Override
@@ -155,8 +46,8 @@ public class NavigationRoot extends PlatformObject implements
 	}
 
 	@Override
-	public boolean isEmpty() {
-		return elements.size() == 0;
+	public Object getData() {
+		return null;
 	}
 
 }

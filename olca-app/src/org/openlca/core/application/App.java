@@ -29,6 +29,7 @@ import com.google.common.eventbus.EventBus;
 public class App {
 
 	static Logger log = LoggerFactory.getLogger(App.class);
+
 	private static Map<Class<?>, String> editorIds = new HashMap<>();
 	private static AppCache cache = new AppCache();
 	private static EventBus eventBus = new EventBus();
