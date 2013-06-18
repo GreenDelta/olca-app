@@ -13,7 +13,7 @@ package org.openlca.core.application.actions;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.openlca.core.application.Messages;
-import org.openlca.core.application.wizards.DatabaseWizard;
+import org.openlca.core.application.db.DatabaseWizard;
 import org.openlca.core.database.IDatabaseServer;
 import org.openlca.core.resources.ImageType;
 

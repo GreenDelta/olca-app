@@ -1,4 +1,4 @@
-package org.openlca.core.application.wizards;
+package org.openlca.core.application.db;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -9,10 +9,10 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.openlca.core.application.App;
 import org.openlca.core.application.Messages;
+import org.openlca.core.application.db.DatabaseWizardPage.PageData;
 import org.openlca.core.application.events.DatabaseCreatedEvent;
 import org.openlca.core.application.views.navigator.Navigator;
 import org.openlca.core.application.views.search.SearchView;
-import org.openlca.core.application.wizards.DatabaseWizardPage.PageData;
 import org.openlca.core.database.DatabaseDescriptor;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.IDatabaseServer;
