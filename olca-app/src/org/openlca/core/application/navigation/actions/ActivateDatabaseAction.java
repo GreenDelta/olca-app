@@ -46,7 +46,7 @@ public class ActivateDatabaseAction extends Action implements INavigationAction 
 		try {
 			Database.close();
 			Database.activate(config);
-			Navigator.refresh();
+			Navigator.refresh(2);
 		} catch (Exception e) {
 			log.error("Failed to activate database", e);
 		}

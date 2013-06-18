@@ -9,6 +9,7 @@
  ******************************************************************************/
 package org.openlca.core.application.navigation;
 
+import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IMemento;
@@ -21,6 +22,7 @@ import org.openlca.core.model.Category;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.LCIAMethod;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.Project;
@@ -29,13 +31,12 @@ import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.modelprovider.IModelComponent;
 import org.openlca.core.model.results.LCIAResult;
 import org.openlca.core.resources.ImageType;
-import org.openlca.ui.BaseLabelProvider;
 
 /**
  * Implementation of the {@link ICommonLabelProvider} interface for providing
  * labels for the common viewer of the applications navigator
  */
-public class NavigationLabelProvider extends BaseLabelProvider implements
+public class NavigationLabelProvider extends ColumnLabelProvider implements
 		ICommonLabelProvider {
 
 	@Override
@@ -68,13 +69,21 @@ public class NavigationLabelProvider extends BaseLabelProvider implements
 			return getCategoryImage((Category) o);
 		if (o instanceof IModelComponent)
 			return getModelComponentImage((IModelComponent) o);
+		if (o instanceof ModelType)
+			return getCategoryImage((ModelType) o);
 		return null;
 	}
 
 	private Image getCategoryImage(Category category) {
-		if (category == null || category.getModelType() == null)
+		if (category == null)
 			return null;
-		switch (category.getModelType()) {
+		return getCategoryImage(category.getModelType());
+	}
+
+	private Image getCategoryImage(ModelType modelType) {
+		if (modelType == null)
+			return null;
+		switch (modelType) {
 		case ACTOR:
 			return ImageType.ACTOR_CATEGORY_ICON.get();
 		case FLOW:
@@ -141,10 +150,37 @@ public class NavigationLabelProvider extends BaseLabelProvider implements
 			return ((IDatabaseConfiguration) o).getName();
 		if (o instanceof Category)
 			return ((Category) o).getName();
-		if (o instanceof IModelComponent)
-			return super.getModelLabel((IModelComponent) o);
+		if (o instanceof ModelType)
+			return getTypeName((ModelType) o);
 		else
 			return null;
+	}
+
+	private String getTypeName(ModelType o) {
+		if (o == null)
+			return null;
+		switch (o) {
+		case ACTOR:
+			return "Actors";
+		case FLOW:
+			return "Flows";
+		case FLOW_PROPERTY:
+			return "Flow properties";
+		case IMPACT_METHOD:
+			return "LCIA methods";
+		case PROCESS:
+			return "Processes";
+		case PRODUCT_SYSTEM:
+			return "Product systems";
+		case PROJECT:
+			return "Projects";
+		case SOURCE:
+			return "Sources";
+		case UNIT_GROUP:
+			return "Unit groups";
+		default:
+			return "<<unknown>>";
+		}
 	}
 
 	@Override
@@ -154,7 +190,6 @@ public class NavigationLabelProvider extends BaseLabelProvider implements
 			ModelNavigationElement navElem = (ModelNavigationElement) element;
 			IModelComponent modelComponent = (IModelComponent) navElem
 					.getData();
-			text = super.getToolTipText(modelComponent, navElem.getDatabase());
 		}
 		return text;
 	}
