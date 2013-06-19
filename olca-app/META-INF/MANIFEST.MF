@@ -75,4 +75,6 @@ Bundle-ClassPath: .,
  libs/org.eclipse.persistence.core-2.4.0.jar,
  libs/org.eclipse.persistence.jpa-2.4.0.jar,
  libs/org.eclipse.persistence.jpa.jpql-2.4.0.jar,
- libs/olca-core-1.0.0.jar
+ libs/olca-core-1.0.0.jar,
+ libs/derby-10.10.1.1.jar,
+ libs/guava-14.0.1.jar

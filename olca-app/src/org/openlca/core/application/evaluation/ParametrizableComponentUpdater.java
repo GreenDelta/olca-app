@@ -258,7 +258,7 @@ public class ParametrizableComponentUpdater {
 
 	private void update(IDatabase database, Object object) {
 		try {
-			database.update(object);
+			database.refresh(object);
 		} catch (final DataProviderException e) {
 			log.error("Update failed for " + object, e);
 		}

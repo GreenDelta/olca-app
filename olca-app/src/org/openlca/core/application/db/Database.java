@@ -3,6 +3,8 @@ package org.openlca.core.application.db;
 import java.io.File;
 import java.util.Objects;
 
+import javax.persistence.EntityManagerFactory;
+
 import org.openlca.core.application.App;
 import org.openlca.core.database.IDatabase;
 
@@ -18,6 +20,13 @@ public class Database {
 
 	public static IDatabase get() {
 		return database;
+	}
+
+	public static EntityManagerFactory getEntityFactory() {
+		if (database != null)
+			return database.getEntityFactory();
+		else
+			return null;
 	}
 
 	public static void activate(IDatabaseConfiguration config) throws Exception {
@@ -84,4 +93,5 @@ public class Database {
 		configurations.getRemoteDatabases().remove(config);
 		saveConfig();
 	}
+
 }

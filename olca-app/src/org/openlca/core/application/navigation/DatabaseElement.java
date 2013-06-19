@@ -8,6 +8,7 @@ import org.openlca.core.application.db.Database;
 import org.openlca.core.application.db.IDatabaseConfiguration;
 import org.openlca.core.model.ModelType;
 
+/** Navigation element for databases. */
 public class DatabaseElement implements INavigationElement {
 
 	private IDatabaseConfiguration config;

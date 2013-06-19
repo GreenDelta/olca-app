@@ -103,6 +103,14 @@ public class Navigator extends CommonNavigator {
 		expand(viewer, expandLevel);
 	}
 
+	public static void refresh(INavigationElement element) {
+		CommonViewer viewer = getNavigationViewer();
+		if (viewer == null || element == null)
+			return;
+		getNavigationViewer().refresh(element);
+		getNavigationViewer().expandToLevel(element, 1);
+	}
+
 	private static CommonViewer getNavigationViewer() {
 		CommonViewer viewer = null;
 		Navigator instance = getInstance();

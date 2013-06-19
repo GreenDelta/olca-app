@@ -2,7 +2,7 @@ package org.openlca.ilcd.network.rcp.ui;
 
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
-import org.openlca.core.application.navigation.CategoryNavigationElement;
+import org.openlca.core.application.navigation.CategoryElement;
 import org.openlca.core.application.navigation.INavigationElement;
 import org.openlca.core.application.navigation.ModelNavigationElement;
 import org.openlca.core.model.Category;
@@ -31,14 +31,14 @@ public class NavigationTreeFilter extends ViewerFilter {
 	}
 
 	private boolean select(INavigationElement element) {
-		if (element instanceof CategoryNavigationElement)
-			return validCategory((CategoryNavigationElement) element);
+		if (element instanceof CategoryElement)
+			return validCategory((CategoryElement) element);
 		if (element instanceof ModelNavigationElement)
 			return validModel((ModelNavigationElement) element);
 		return hasModelChilds(element);
 	}
 
-	private boolean validCategory(CategoryNavigationElement element) {
+	private boolean validCategory(CategoryElement element) {
 		Category category = (Category) element.getData();
 		if (category == null)
 			return false;

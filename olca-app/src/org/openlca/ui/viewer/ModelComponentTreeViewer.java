@@ -18,7 +18,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.openlca.core.application.navigation.CategoryNavigationElement;
+import org.openlca.core.application.navigation.CategoryElement;
 import org.openlca.core.application.navigation.INavigationElement;
 import org.openlca.core.application.navigation.ModelNavigationElement;
 import org.openlca.core.application.navigation.NavigationContentProvider;
@@ -67,7 +67,7 @@ public class ModelComponentTreeViewer extends TreeViewer {
 			public void doubleClick(final DoubleClickEvent event) {
 				final IStructuredSelection selection = (IStructuredSelection) event
 						.getSelection();
-				if (selection.getFirstElement() instanceof CategoryNavigationElement) {
+				if (selection.getFirstElement() instanceof CategoryElement) {
 					if (isExpandable(selection.getFirstElement())) {
 						setExpandedState(selection.getFirstElement(),
 								getExpandedState(selection.getFirstElement()));
@@ -85,13 +85,13 @@ public class ModelComponentTreeViewer extends TreeViewer {
 				if (element instanceof ModelNavigationElement
 						&& onlyCategories) {
 					select = false;
-				} else if (element instanceof CategoryNavigationElement) {
+				} else if (element instanceof CategoryElement) {
 					select = onlyCategories
-							|| hasModelComponents((CategoryNavigationElement) element);
+							|| hasModelComponents((CategoryElement) element);
 					if (clazz != null) {
 						if (!clazz
 								.getCanonicalName()
-								.equals(((Category) ((CategoryNavigationElement) element)
+								.equals(((Category) ((CategoryElement) element)
 										.getData()).getComponentClass())) {
 							select = false;
 						}
@@ -111,13 +111,13 @@ public class ModelComponentTreeViewer extends TreeViewer {
 	 *            The element to look up
 	 * @return True if the category element contains model components
 	 */
-	private boolean hasModelComponents(final CategoryNavigationElement element) {
+	private boolean hasModelComponents(final CategoryElement element) {
 		boolean has = false;
 		for (final INavigationElement child : element.getChildren(true)) {
 			if (child instanceof ModelNavigationElement) {
 				has = true;
 			} else {
-				has = hasModelComponents((CategoryNavigationElement) child);
+				has = hasModelComponents((CategoryElement) child);
 			}
 			if (has) {
 				break;

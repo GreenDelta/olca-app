@@ -447,7 +447,7 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 						.getConversionFactor(unitName));
 				unitGroup.add(unit);
 				try {
-					database.update(unitGroup);
+					database.refresh(unitGroup);
 				} catch (final DataProviderException e) {
 					log.error("Update unit group failed", e);
 				}

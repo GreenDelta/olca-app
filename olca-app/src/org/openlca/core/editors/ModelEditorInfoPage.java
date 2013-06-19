@@ -29,7 +29,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.core.application.Messages;
-import org.openlca.core.application.navigation.CategoryNavigationElement;
+import org.openlca.core.application.navigation.CategoryElement;
 import org.openlca.core.application.navigation.INavigationElement;
 import org.openlca.core.application.navigation.NavigationRoot;
 import org.openlca.core.application.views.navigator.Navigator;
@@ -128,21 +128,21 @@ public abstract class ModelEditorInfoPage extends ModelEditorPage implements
 				root = navigator.getRoot();
 			}
 			if (root != null) {
-				final CategoryNavigationElement catRoot = root.getCategoryRoot(
+				final CategoryElement catRoot = root.getCategoryRoot(
 						modelComponent.getClass(), getDatabase());
-				CategoryNavigationElement categoryElement = null;
-				final Queue<CategoryNavigationElement> queue = new LinkedList<>();
+				CategoryElement categoryElement = null;
+				final Queue<CategoryElement> queue = new LinkedList<>();
 				queue.add(catRoot);
 				while (categoryElement == null && !queue.isEmpty()) {
-					final CategoryNavigationElement next = queue.poll();
+					final CategoryElement next = queue.poll();
 					if (((Category) next.getData()).getId().equals(
 							modelComponent.getCategoryId())) {
 						categoryElement = next;
 					} else {
 						for (final INavigationElement element : next
 								.getChildren(false)) {
-							if (element instanceof CategoryNavigationElement) {
-								queue.add((CategoryNavigationElement) element);
+							if (element instanceof CategoryElement) {
+								queue.add((CategoryElement) element);
 							}
 						}
 					}
@@ -253,8 +253,8 @@ public abstract class ModelEditorInfoPage extends ModelEditorPage implements
 								&& event.getSelection() instanceof IStructuredSelection) {
 							final IStructuredSelection selection = (IStructuredSelection) event
 									.getSelection();
-							if (selection.getFirstElement() instanceof CategoryNavigationElement) {
-								final Category c = (Category) ((CategoryNavigationElement) selection
+							if (selection.getFirstElement() instanceof CategoryElement) {
+								final Category c = (Category) ((CategoryElement) selection
 										.getFirstElement()).getData();
 								categorySection.setText(c.getName());
 								categorySection.layout();

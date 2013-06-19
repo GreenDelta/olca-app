@@ -11,7 +11,7 @@ package org.openlca.core.application.actions;
 
 import org.eclipse.jface.action.Action;
 import org.openlca.core.application.Messages;
-import org.openlca.core.application.navigation.CategoryNavigationElement;
+import org.openlca.core.application.navigation.CategoryElement;
 import org.openlca.core.application.views.navigator.CopyPasteManager;
 
 /**
@@ -25,7 +25,7 @@ public class PasteAction extends Action {
 	/**
 	 * The navigation element of the target category
 	 */
-	private final CategoryNavigationElement targetElement;
+	private final CategoryElement targetElement;
 
 	/**
 	 * Creates a new instance
@@ -33,7 +33,7 @@ public class PasteAction extends Action {
 	 * @param targetElement
 	 *            The navigation element of the target category
 	 */
-	public PasteAction(final CategoryNavigationElement targetElement) {
+	public PasteAction(final CategoryElement targetElement) {
 		this.targetElement = targetElement;
 	}
 

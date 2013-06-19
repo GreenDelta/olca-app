@@ -24,25 +24,24 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.actions.ActionContext;
 import org.eclipse.ui.navigator.CommonActionProvider;
 import org.openlca.core.application.Messages;
-import org.openlca.core.application.actions.AddCategoryAction;
 import org.openlca.core.application.actions.CopyAction;
 import org.openlca.core.application.actions.CutAction;
 import org.openlca.core.application.actions.DeleteAction;
-import org.openlca.core.application.actions.DeleteCategoryAction;
 import org.openlca.core.application.actions.ExportDatabaseAction;
 import org.openlca.core.application.actions.IImportAction;
 import org.openlca.core.application.actions.ImportDatabaseAction;
 import org.openlca.core.application.actions.OpenEditorAction;
-import org.openlca.core.application.actions.OpenNewWizardAction;
 import org.openlca.core.application.actions.OpenPropertiesAction;
 import org.openlca.core.application.actions.PasteAction;
-import org.openlca.core.application.actions.RenameCategoryAction;
-import org.openlca.core.application.db.ServerConnectionAction;
 import org.openlca.core.application.navigation.actions.ActivateDatabaseAction;
+import org.openlca.core.application.navigation.actions.CloseDatabaseAction;
+import org.openlca.core.application.navigation.actions.CreateCategoryAction;
 import org.openlca.core.application.navigation.actions.CreateDatabaseAction;
+import org.openlca.core.application.navigation.actions.DeleteCategoryAction;
 import org.openlca.core.application.navigation.actions.DeleteDatabaseAction;
 import org.openlca.core.application.navigation.actions.INavigationAction;
 import org.openlca.core.application.navigation.actions.OpenUsageAction;
+import org.openlca.core.application.navigation.actions.RenameCategoryAction;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.IDatabaseServer;
 import org.openlca.core.model.Category;
@@ -60,9 +59,22 @@ public class NavigationActionProvider extends CommonActionProvider {
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 	private ExportActionProvider exportActionProvider = new ExportActionProvider();
 
+	//@formatter:off
 	private INavigationAction[] actions = new INavigationAction[] {
-			new ActivateDatabaseAction(), new OpenUsageAction(),
-			new DeleteDatabaseAction() };
+			
+			// database actions
+			new ActivateDatabaseAction(), 
+			new CloseDatabaseAction(), 
+			new DeleteDatabaseAction(), 
+			
+			// category actions
+			new CreateCategoryAction(),
+			new RenameCategoryAction(),
+			new DeleteCategoryAction(),
+			
+			new OpenUsageAction(),
+	};
+	//@formatter:on
 
 	@Override
 	public void fillContextMenu(IMenuManager menu) {
@@ -70,29 +82,40 @@ public class NavigationActionProvider extends CommonActionProvider {
 		IStructuredSelection selection = (IStructuredSelection) con
 				.getSelection();
 		List<INavigationElement> elements = Viewers.getAll(selection);
+		int registered = 0;
 		if (elements.size() == 1)
-			registerSingleActions(elements.get(0), menu);
+			registered += registerSingleActions(elements.get(0), menu);
 		else if (elements.size() > 1)
-			registerMultiActions(elements, menu);
+			registered += registerMultiActions(elements, menu);
+		if (registered > 0)
+			menu.add(new Separator());
 		menu.add(new CreateDatabaseAction());
 	}
 
-	private void registerSingleActions(INavigationElement element,
+	private int registerSingleActions(INavigationElement element,
 			IMenuManager menu) {
+		int count = 0;
 		for (INavigationAction action : actions)
-			if (action.accept(element))
+			if (action.accept(element)) {
 				menu.add(action);
+				count++;
+			}
+		return count;
 	}
 
-	private void registerMultiActions(List<INavigationElement> elements,
+	private int registerMultiActions(List<INavigationElement> elements,
 			IMenuManager menu) {
+		int count = 0;
 		for (INavigationAction action : actions)
-			if (action.accept(elements))
+			if (action.accept(elements)) {
 				menu.add(action);
+				count++;
+			}
+		return count;
 	}
 
 	private void appendCategoryActions(IMenuManager menu,
-			CategoryNavigationElement element) {
+			CategoryElement element) {
 		Category category = (Category) element.getData();
 
 		String wizardId = null;
@@ -115,8 +138,6 @@ public class NavigationActionProvider extends CommonActionProvider {
 		}
 
 		if (wizardId != null) {
-			menu.add(new OpenNewWizardAction(wizardId, category.getId(),
-					element.getDatabase()));
 			menu.add(new Separator());
 			menu.add(new CutAction(new INavigationElement[] { element }));
 			menu.add(new CopyAction(new INavigationElement[] { element }));
@@ -124,16 +145,11 @@ public class NavigationActionProvider extends CommonActionProvider {
 			menu.add(new Separator());
 		}
 
-		menu.add(new AddCategoryAction(category, element.getDatabase()));
-		if (element.canBeDeleted())
-			menu.add(new DeleteCategoryAction(category, element.getDatabase()));
-		menu.add(new RenameCategoryAction(category, element.getDatabase()));
 		menu.add(new Separator());
 	}
 
 	private void appendDataProviderActions1(IMenuManager menu,
 			IDatabaseServer dataProvider) {
-		menu.add(new ServerConnectionAction(dataProvider));
 		if (dataProvider.isRunning()) {
 			menu.add(new ImportDatabaseAction(dataProvider));
 		}
@@ -278,17 +294,15 @@ public class NavigationActionProvider extends CommonActionProvider {
 	private void appendMultiCategoryActions(IMenuManager menu,
 			Object[] selectedObjects) {
 		Category[] categories = new Category[selectedObjects.length];
-		CategoryNavigationElement[] elements = new CategoryNavigationElement[selectedObjects.length];
+		CategoryElement[] elements = new CategoryElement[selectedObjects.length];
 		IDatabase[] databases = new IDatabase[selectedObjects.length];
 		for (int j = 0; j < categories.length; j++) {
-			CategoryNavigationElement navElem = (CategoryNavigationElement) selectedObjects[j];
+			CategoryElement navElem = (CategoryElement) selectedObjects[j];
 			categories[j] = (Category) navElem.getData();
 			elements[j] = navElem;
-			databases[j] = navElem.getDatabase();
 		}
 		menu.add(new CutAction(elements));
 		menu.add(new CopyAction(elements));
-		menu.add(new DeleteCategoryAction(categories, databases));
 		menu.add(new Separator());
 	}
 
@@ -320,7 +334,7 @@ public class NavigationActionProvider extends CommonActionProvider {
 				allSubCategories = false;
 			} else {
 				allModelComponents = false;
-				if (!(selectedObjects[i] instanceof CategoryNavigationElement)) {
+				if (!(selectedObjects[i] instanceof CategoryElement)) {
 					allSubCategories = false;
 				} else {
 					allSubCategories = false;
@@ -338,8 +352,8 @@ public class NavigationActionProvider extends CommonActionProvider {
 	private void singleSelection(IMenuManager menu, Object elem) {
 		if (elem instanceof ModelNavigationElement) {
 			appendModelComponentActions(menu, (ModelNavigationElement) elem);
-		} else if (elem instanceof CategoryNavigationElement) {
-			appendCategoryActions(menu, (CategoryNavigationElement) elem);
+		} else if (elem instanceof CategoryElement) {
+			appendCategoryActions(menu, (CategoryElement) elem);
 		}
 	}
 }

@@ -15,7 +15,7 @@ import java.util.List;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
-import org.openlca.core.application.navigation.CategoryNavigationElement;
+import org.openlca.core.application.navigation.CategoryElement;
 import org.openlca.core.application.navigation.INavigationElement;
 import org.openlca.core.application.navigation.ModelNavigationElement;
 import org.openlca.core.model.Category;
@@ -44,8 +44,8 @@ public final class EmptyCategoryFilter extends ViewerFilter {
 
 	private Category getCategory(Object element) {
 		Category category = null;
-		if (element instanceof CategoryNavigationElement) {
-			CategoryNavigationElement catElem = (CategoryNavigationElement) element;
+		if (element instanceof CategoryElement) {
+			CategoryElement catElem = (CategoryElement) element;
 			if (catElem.getData() instanceof Category) {
 				category = (Category) catElem.getData();
 			}
@@ -80,8 +80,8 @@ public final class EmptyCategoryFilter extends ViewerFilter {
 	}
 
 	private void addContent(Object element, List<ModelNavigationElement> content) {
-		if (element instanceof CategoryNavigationElement) {
-			CategoryNavigationElement catElement = (CategoryNavigationElement) element;
+		if (element instanceof CategoryElement) {
+			CategoryElement catElement = (CategoryElement) element;
 			boolean refresh = catElement.isEmpty();
 			for (INavigationElement contentElement : catElement
 					.getChildren(refresh)) {

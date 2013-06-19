@@ -3,7 +3,7 @@ package org.openlca.core.application.db;
 import java.io.File;
 import java.util.Objects;
 
-import org.openlca.core.database.IDatabase;
+import org.openlca.core.database.derby.DerbyDatabase;
 
 /**
  * Configuration of a derby database.
@@ -13,9 +13,10 @@ public class DerbyConfiguration implements IDatabaseConfiguration {
 	private File folder;
 	private String name;
 
-	public IDatabase createInstance() throws Exception {
-		// TODO not yet implemented
-		return null;
+	public DerbyDatabase createInstance() throws Exception {
+		File dbFolder = new File(folder, name);
+		DerbyDatabase db = new DerbyDatabase(dbFolder);
+		return db;
 	}
 
 	public File getFolder() {

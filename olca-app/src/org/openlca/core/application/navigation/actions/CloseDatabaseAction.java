@@ -13,14 +13,14 @@ import org.openlca.core.resources.ImageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ActivateDatabaseAction extends Action implements INavigationAction {
+/** Close the activated database */
+public class CloseDatabaseAction extends Action implements INavigationAction {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
-	private IDatabaseConfiguration config;
 
-	public ActivateDatabaseAction() {
-		setText("Activate");
-		setImageDescriptor(ImageType.CONNECT_ICON.getDescriptor());
+	public CloseDatabaseAction() {
+		setText("Close");
+		setImageDescriptor(ImageType.DISCONNECT_ICON.getDescriptor());
 	}
 
 	@Override
@@ -31,10 +31,7 @@ public class ActivateDatabaseAction extends Action implements INavigationAction 
 		if (!(e.getData() instanceof IDatabaseConfiguration))
 			return false;
 		IDatabaseConfiguration config = (IDatabaseConfiguration) e.getData();
-		if (Database.isActive(config))
-			return false;
-		this.config = config;
-		return true;
+		return Database.isActive(config);
 	}
 
 	@Override
@@ -44,24 +41,19 @@ public class ActivateDatabaseAction extends Action implements INavigationAction 
 
 	@Override
 	public void run() {
-		App.run("Activate database", new Runnable() {
+		App.run("Closing database", new Runnable() {
 			public void run() {
-				activate();
+				try {
+					Database.close();
+				} catch (Exception e) {
+					log.error("Failed to close database", e);
+				}
 			}
 		}, new Runnable() {
 			public void run() {
-				Navigator.refresh(2);
+				Navigator.refresh();
 			}
 		});
-	}
-
-	private void activate() {
-		try {
-			Database.close();
-			Database.activate(config);
-		} catch (Exception e) {
-			log.error("Failed to activate database", e);
-		}
 	}
 
 }

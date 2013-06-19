@@ -16,7 +16,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.openlca.core.application.Messages;
-import org.openlca.core.application.navigation.CategoryNavigationElement;
+import org.openlca.core.application.navigation.CategoryElement;
 import org.openlca.core.application.navigation.INavigationElement;
 import org.openlca.core.application.navigation.ModelNavigationElement;
 import org.openlca.core.application.plugin.Activator;
@@ -76,8 +76,8 @@ public class CopyPasteManager {
 	 * @return Null if the element can be moved to the target, an error message
 	 *         otherwise
 	 */
-	private String checkCategory(final CategoryNavigationElement element,
-			final CategoryNavigationElement targetElement) {
+	private String checkCategory(final CategoryElement element,
+			final CategoryElement targetElement) {
 		String error = null;
 		// the dragged category
 		final Category draggedCategory = (Category) element.getData();
@@ -140,16 +140,16 @@ public class CopyPasteManager {
 	 *         otherwise
 	 */
 	private String checkElements(final INavigationElement[] elements,
-			final CategoryNavigationElement targetElement) {
+			final CategoryElement targetElement) {
 		String error = null;
 		int i = 0;
 		// check all element until an error occurs
 		while (error == null && i < elements.length) {
 			// the element to check next
 			final INavigationElement o = elements[i];
-			if (o instanceof CategoryNavigationElement) {
+			if (o instanceof CategoryElement) {
 				// check category
-				error = checkCategory((CategoryNavigationElement) o,
+				error = checkCategory((CategoryElement) o,
 						targetElement);
 			} else if (o instanceof ModelNavigationElement) {
 				// check model component
@@ -172,7 +172,7 @@ public class CopyPasteManager {
 	 *         otherwise
 	 */
 	private String checkModelComponent(final ModelNavigationElement element,
-			final CategoryNavigationElement targetElement) {
+			final CategoryElement targetElement) {
 		String error = null;
 		// the model component
 		final IModelComponent modelComponent = (IModelComponent) element
@@ -196,7 +196,7 @@ public class CopyPasteManager {
 	 *            The target category element
 	 * @return An error message if any error occurred, null otherwise
 	 */
-	private String doIt(final CategoryNavigationElement targetElement) {
+	private String doIt(final CategoryElement targetElement) {
 		// check the elements to be dropped
 		String error = checkElements(cache, targetElement);
 		if (error == null) {
@@ -230,9 +230,9 @@ public class CopyPasteManager {
 							error = Messages.CannotMoveToOtherDatabase;
 						}
 
-					} else if (elem instanceof CategoryNavigationElement) {
+					} else if (elem instanceof CategoryElement) {
 						// cast
-						final CategoryNavigationElement cnElem = (CategoryNavigationElement) elem;
+						final CategoryElement cnElem = (CategoryElement) elem;
 						// get database
 						final IDatabase database = cnElem.getDatabase();
 
@@ -249,7 +249,7 @@ public class CopyPasteManager {
 							} else {
 								// move
 								handleCategory(
-										(CategoryNavigationElement) elem,
+										(CategoryElement) elem,
 										targetElement);
 							}
 
@@ -264,7 +264,7 @@ public class CopyPasteManager {
 	}
 
 	/**
-	 * Handles the drop of a {@link CategoryNavigationElement}
+	 * Handles the drop of a {@link CategoryElement}
 	 * 
 	 * @param element
 	 *            The element to be dropped
@@ -272,8 +272,8 @@ public class CopyPasteManager {
 	 *            The target element
 	 * @throws DataProviderException
 	 */
-	private void handleCategory(final CategoryNavigationElement element,
-			final CategoryNavigationElement targetElement)
+	private void handleCategory(final CategoryElement element,
+			final CategoryElement targetElement)
 			throws DataProviderException {
 		final Category draggedCategory = (Category) element.getData();
 		final Category targetCategory = (Category) targetElement.getData();
@@ -284,15 +284,15 @@ public class CopyPasteManager {
 			// update dragged category
 			final Category parent = draggedCategory.getParentCategory();
 			parent.remove(draggedCategory);
-			database.update(parent);
+			database.refresh(parent);
 
 			// update the target category
 			targetCategory.add(draggedCategory);
-			database.update(targetCategory);
+			database.refresh(targetCategory);
 
 			// update the parent of the dragged category
 			draggedCategory.setParentCategory(targetCategory);
-			database.update(draggedCategory);
+			database.refresh(draggedCategory);
 		}
 	}
 
@@ -306,7 +306,7 @@ public class CopyPasteManager {
 	 * @throws DataProviderException
 	 */
 	private void handleModelComponent(final ModelNavigationElement element,
-			final CategoryNavigationElement targetElement)
+			final CategoryElement targetElement)
 			throws DataProviderException {
 		final IDatabase database = element.getDatabase();
 		final IDatabase targetDatabase = targetElement.getDatabase();
@@ -318,7 +318,7 @@ public class CopyPasteManager {
 			final Category category = (Category) targetElement.getData();
 			modelComponent.setCategoryId(category.getId());
 			if (database.equals(targetDatabase)) {
-				database.update(modelComponent);
+				database.refresh(modelComponent);
 			} else {
 				database.delete(modelComponent);
 				targetDatabase.insert(modelComponent);
@@ -390,7 +390,7 @@ public class CopyPasteManager {
 	 * @param categoryElement
 	 *            The category element to paste the copied/cutted element
 	 */
-	public void paste(final CategoryNavigationElement categoryElement) {
+	public void paste(final CategoryElement categoryElement) {
 		if (!isEmpty()) {
 			final String error = doIt(categoryElement);
 			if (error == null) {

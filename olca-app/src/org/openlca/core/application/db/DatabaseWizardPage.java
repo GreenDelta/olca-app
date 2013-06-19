@@ -18,14 +18,12 @@ class DatabaseWizardPage extends WizardPage {
 
 	private Text nameText;
 	private Button[] contentRadios;
-	private String[] existingNames;
 	private int[] contentTypes;
 
-	public DatabaseWizardPage(String[] existingNames) {
+	public DatabaseWizardPage() {
 		super("database-wizard-page", Messages.NewDatabase,
 				ImageType.NEW_WIZ_DATABASE.getDescriptor());
 		setDescription(Messages.NewDatabase_Description);
-		this.existingNames = existingNames;
 		setPageComplete(false);
 	}
 
@@ -64,7 +62,12 @@ class DatabaseWizardPage extends WizardPage {
 		}
 	}
 
-	private void validateName(String name) {
+	private void validateName(String text) {
+		if (text == null) {
+			error(Messages.NewDatabase_NameToShort);
+			return;
+		}
+		String name = text.trim();
 		if (name == null || name.length() < 4)
 			error(Messages.NewDatabase_NameToShort);
 		else if (name.equals("test") || name.equals("mysql"))
@@ -95,11 +98,11 @@ class DatabaseWizardPage extends WizardPage {
 	}
 
 	private boolean exists(String name) {
-		if (existingNames == null)
+		if (name == null)
 			return false;
-		for (int i = 0; i < existingNames.length; i++) {
-			String existingName = existingNames[i];
-			if (existingName != null && existingName.equalsIgnoreCase(name))
+		for (IDatabaseConfiguration config : Database.getConfigurations()
+				.getLocalDatabases()) {
+			if (name.equalsIgnoreCase(config.getName()))
 				return true;
 		}
 		return false;
@@ -113,7 +116,7 @@ class DatabaseWizardPage extends WizardPage {
 				break;
 			}
 		}
-		data.databaseName = nameText.getText().trim().toLowerCase();
+		data.databaseName = nameText.getText().trim();
 		return data;
 	}
 

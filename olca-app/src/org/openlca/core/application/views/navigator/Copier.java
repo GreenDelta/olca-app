@@ -150,7 +150,7 @@ public class Copier {
 
 		// insert copy and update parent category
 		database.insert(copy);
-		database.update(newParent);
+		database.refresh(newParent);
 
 		// get model components to copy
 		final IModelComponent[] modelComponentsToCopy = collectModelComponents();

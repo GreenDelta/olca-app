@@ -32,7 +32,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.openlca.core.application.Messages;
-import org.openlca.core.application.navigation.CategoryNavigationElement;
+import org.openlca.core.application.navigation.CategoryElement;
 import org.openlca.core.application.navigation.INavigationElement;
 import org.openlca.core.application.navigation.NavigationRoot;
 import org.openlca.core.database.IDatabase;
@@ -124,7 +124,7 @@ public class SelectCategoryDialog extends Dialog {
 					@Override
 					public void selectionChanged(
 							final SelectionChangedEvent event) {
-						category = !event.getSelection().isEmpty() ? (Category) ((CategoryNavigationElement) ((IStructuredSelection) event
+						category = !event.getSelection().isEmpty() ? (Category) ((CategoryElement) ((IStructuredSelection) event
 								.getSelection()).getFirstElement()).getData()
 								: null;
 					}
@@ -148,7 +148,7 @@ public class SelectCategoryDialog extends Dialog {
 				// if selection is not empty
 				if (!selection.isEmpty()) {
 					// cast
-					final CategoryNavigationElement element = (CategoryNavigationElement) selection
+					final CategoryElement element = (CategoryElement) selection
 							.getFirstElement();
 					// get category
 					final Category parent = (Category) element.getData();
@@ -170,7 +170,7 @@ public class SelectCategoryDialog extends Dialog {
 
 						// update parent category
 						try {
-							database.update(parent);
+							database.refresh(parent);
 						} catch (final Exception ex) {
 							log.error("Updating parent in db failed", e);
 						}
@@ -181,7 +181,7 @@ public class SelectCategoryDialog extends Dialog {
 						for (final INavigationElement child : element
 								.getChildren(false)) {
 							// child element is the new created category
-							if (child instanceof CategoryNavigationElement
+							if (child instanceof CategoryElement
 									&& child.getData().equals(category)) {
 								// set seleted
 								categoryViewer

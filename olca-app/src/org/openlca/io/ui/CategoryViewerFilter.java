@@ -2,7 +2,7 @@ package org.openlca.io.ui;
 
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
-import org.openlca.core.application.navigation.CategoryNavigationElement;
+import org.openlca.core.application.navigation.CategoryElement;
 import org.openlca.core.application.navigation.INavigationElement;
 import org.openlca.core.application.navigation.ModelNavigationElement;
 import org.openlca.core.model.Category;
@@ -27,7 +27,7 @@ class CategoryViewerFilter extends ViewerFilter {
 	}
 
 	private boolean isVisible(INavigationElement element) {
-		if (element instanceof CategoryNavigationElement) {
+		if (element instanceof CategoryElement) {
 			Category category = (Category) element.getData();
 			return category.getComponentClass().equals(className)
 					&& hasModelComponents(element);

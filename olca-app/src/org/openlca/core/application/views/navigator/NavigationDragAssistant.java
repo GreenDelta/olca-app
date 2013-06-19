@@ -17,7 +17,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.ui.navigator.CommonDragAdapterAssistant;
-import org.openlca.core.application.navigation.CategoryNavigationElement;
+import org.openlca.core.application.navigation.CategoryElement;
 import org.openlca.core.application.navigation.ModelNavigationElement;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Category;
@@ -52,13 +52,13 @@ public class NavigationDragAssistant extends CommonDragAdapterAssistant {
 			final Object o = it.next();
 
 			// if element is not model component or category element
-			if (!(o instanceof ModelNavigationElement || o instanceof CategoryNavigationElement)) {
+			if (!(o instanceof ModelNavigationElement || o instanceof CategoryElement)) {
 				anEvent.doit = false;
 			} else {
 
 				// if category navigation element
-				if (o instanceof CategoryNavigationElement) {
-					final Category category = (Category) ((CategoryNavigationElement) o)
+				if (o instanceof CategoryElement) {
+					final Category category = (Category) ((CategoryElement) o)
 							.getData();
 					// if component is top category
 					if (category.getComponentClass().equals(category.getId())) {
@@ -90,7 +90,7 @@ public class NavigationDragAssistant extends CommonDragAdapterAssistant {
 			final Object o = it.next();
 
 			// if not model component or category element
-			if (!(o instanceof ModelNavigationElement || o instanceof CategoryNavigationElement)) {
+			if (!(o instanceof ModelNavigationElement || o instanceof CategoryElement)) {
 				canBeDropped = false;
 			} else {
 				// if model component element

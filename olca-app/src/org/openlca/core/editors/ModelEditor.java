@@ -123,7 +123,7 @@ public abstract class ModelEditor extends FormEditor implements
 											modelComponent.getName()),
 									IProgressMonitor.UNKNOWN);
 							try {
-								database.update(modelComponent);
+								database.refresh(modelComponent);
 							} catch (final DataProviderException e) {
 								throw new InvocationTargetException(e);
 							}

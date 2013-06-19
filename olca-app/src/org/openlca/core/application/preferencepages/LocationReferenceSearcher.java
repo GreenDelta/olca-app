@@ -73,7 +73,7 @@ public class LocationReferenceSearcher implements IReferenceSearcher<Location> {
 						// update
 						try {
 							flowInformation.setLocation(null);
-							database.update(flowInformation);
+							database.refresh(flowInformation);
 						} catch (final Exception e) {
 							log.error("solve failed", e);
 						}
@@ -101,7 +101,7 @@ public class LocationReferenceSearcher implements IReferenceSearcher<Location> {
 							// remove location
 							p.setLocation(null);
 							// update process
-							database.update(p);
+							database.refresh(p);
 						} catch (final Exception e) {
 							log.error("solve failed", e);
 						}

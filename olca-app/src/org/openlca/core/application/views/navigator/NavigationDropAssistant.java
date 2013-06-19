@@ -22,7 +22,7 @@ import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.navigator.CommonDropAdapter;
 import org.eclipse.ui.navigator.CommonDropAdapterAssistant;
-import org.openlca.core.application.navigation.CategoryNavigationElement;
+import org.openlca.core.application.navigation.CategoryElement;
 import org.openlca.core.application.navigation.INavigationElement;
 import org.openlca.core.application.navigation.ModelNavigationElement;
 import org.openlca.core.application.plugin.Activator;
@@ -59,7 +59,7 @@ public class NavigationDropAssistant extends CommonDropAdapterAssistant {
 		// drop target
 		final DropTarget target = (DropTarget) aDropTargetEvent.getSource();
 		// target category
-		final CategoryNavigationElement targetElement = (CategoryNavigationElement) aTarget;
+		final CategoryElement targetElement = (CategoryElement) aTarget;
 
 		// if target control is the navigator tree
 		if (target.getControl() == navigator.getCommonViewer().getTree()) {
@@ -71,7 +71,7 @@ public class NavigationDropAssistant extends CommonDropAdapterAssistant {
 			for (final Object o : selection.toArray()) {
 				// if model component or category element
 				if (o instanceof ModelNavigationElement
-						|| o instanceof CategoryNavigationElement) {
+						|| o instanceof CategoryElement) {
 					elements.add((INavigationElement) o);
 				}
 			}
@@ -102,7 +102,7 @@ public class NavigationDropAssistant extends CommonDropAdapterAssistant {
 			final TransferData transferType) {
 		this.operation = operation;
 		IStatus status = null;
-		if (target instanceof CategoryNavigationElement) {
+		if (target instanceof CategoryElement) {
 			status = new Status(IStatus.OK, Activator.PLUGIN_ID, ""); //$NON-NLS-1$
 		}
 		return status;

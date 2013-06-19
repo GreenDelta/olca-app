@@ -24,10 +24,10 @@ public class NavigationSorter extends ViewerSorter {
 	@Override
 	public int compare(final Viewer viewer, final Object e1, final Object e2) {
 		int compare = 0;
-		if (e1 instanceof CategoryNavigationElement
+		if (e1 instanceof CategoryElement
 				&& e2 instanceof ModelNavigationElement) {
 			compare = -1;
-		} else if (e2 instanceof CategoryNavigationElement
+		} else if (e2 instanceof CategoryElement
 				&& e1 instanceof ModelNavigationElement) {
 			compare = 1;
 			// TODO: check both category elements

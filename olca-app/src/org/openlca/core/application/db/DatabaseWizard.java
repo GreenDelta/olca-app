@@ -10,6 +10,7 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.openlca.core.application.App;
 import org.openlca.core.application.Messages;
 import org.openlca.core.application.db.DatabaseWizardPage.PageData;
+import org.openlca.core.application.events.DatabaseCreatedEvent;
 import org.openlca.core.application.views.navigator.Navigator;
 import org.openlca.core.application.views.search.SearchView;
 import org.openlca.ui.UI;
@@ -32,23 +33,8 @@ public class DatabaseWizard extends Wizard implements IRunnableWithProgress {
 
 	@Override
 	public void addPages() {
-		page = new DatabaseWizardPage(getExistingNames());
+		page = new DatabaseWizardPage();
 		addPage(page);
-	}
-
-	private String[] getExistingNames() {
-		return null;
-		// try {
-		// List<DatabaseDescriptor> databases = dataProvider
-		// .getDatabaseDescriptors();
-		// String[] names = new String[databases.size()];
-		// for (int i = 0; i < databases.size(); i++)
-		// names[i] = databases.get(i).getName();
-		// return names;
-		// } catch (Exception e) {
-		// log.error("Could not get databases", e);
-		// return new String[0];
-		// }
 	}
 
 	@Override
@@ -80,8 +66,10 @@ public class DatabaseWizard extends Wizard implements IRunnableWithProgress {
 			config.setFolder(new File(App.getWorkspace(), "databases"));
 			config.setName(data.databaseName);
 			Database.register(config);
+			Database.close();
+			Database.activate(config);
 			Navigator.refresh();
-			// App.getEventBus().post(new DatabaseCreatedEvent(database));
+			App.getEventBus().post(new DatabaseCreatedEvent(Database.get()));
 			monitor.done();
 		} catch (final Exception e1) {
 			log.error("Create database failed", e1);

@@ -12,7 +12,7 @@ package org.openlca.core.application.views.navigator.filter;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
-import org.openlca.core.application.navigation.CategoryNavigationElement;
+import org.openlca.core.application.navigation.CategoryElement;
 import org.openlca.core.application.navigation.INavigationElement;
 import org.openlca.core.application.navigation.ModelNavigationElement;
 import org.openlca.core.model.Category;
@@ -51,7 +51,7 @@ public abstract class ProcessTypeFilter extends ViewerFilter {
 	 * @return True if it contains at least one process element with the
 	 *         specified process types
 	 */
-	private boolean containsProcessType(final CategoryNavigationElement element) {
+	private boolean containsProcessType(final CategoryElement element) {
 		boolean contains = false;
 
 		// for each child
@@ -66,7 +66,7 @@ public abstract class ProcessTypeFilter extends ViewerFilter {
 					contains = isProcessType(processDescriptor);
 				}
 			} else {
-				contains = containsProcessType((CategoryNavigationElement) child);
+				contains = containsProcessType((CategoryElement) child);
 			}
 			if (contains) {
 				break;
@@ -115,10 +115,10 @@ public abstract class ProcessTypeFilter extends ViewerFilter {
 				select = !isProcessType(processDescriptor);
 			}
 		} else if (filterEmptyCategories
-				&& element instanceof CategoryNavigationElement) {
+				&& element instanceof CategoryElement) {
 			// if category navigation element and empty category filter is
 			// enabled
-			final CategoryNavigationElement elem = (CategoryNavigationElement) element;
+			final CategoryElement elem = (CategoryElement) element;
 			final Category category = (Category) elem.getData();
 
 			// if category class is process
@@ -126,7 +126,7 @@ public abstract class ProcessTypeFilter extends ViewerFilter {
 					Process.class.getCanonicalName())
 					&& !category.getComponentClass().equals(category.getId())) {
 				// check if process with macthing type is contained
-				select = !containsProcessType((CategoryNavigationElement) element);
+				select = !containsProcessType((CategoryElement) element);
 			}
 		}
 		return select;

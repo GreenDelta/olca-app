@@ -230,7 +230,7 @@ public class DatabaseParametersPreferencePage extends
 
 				for (Parameter p : dbParameters) {
 					if (temp.contains(p)) {
-						database.update(temp.get(temp.indexOf(p)));
+						database.refresh(temp.get(temp.indexOf(p)));
 						temp.remove(p);
 					} else {
 						database.delete(p);

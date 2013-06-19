@@ -107,10 +107,10 @@ public class ProcessEditor extends ParameterizableModelEditorWithPropertyPage {
 			adminInfo.setLastChange(Calendar.getInstance().getTime());
 			super.doSave(monitor);
 			try {
-				getDatabase().update(time);
-				getDatabase().update(technology);
-				getDatabase().update(modelingAndValidation);
-				getDatabase().update(adminInfo);
+				getDatabase().refresh(time);
+				getDatabase().refresh(technology);
+				getDatabase().refresh(modelingAndValidation);
+				getDatabase().refresh(adminInfo);
 			} catch (final Exception e) {
 				log.error("Save to database failed", e);
 			}
