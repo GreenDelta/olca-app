@@ -25,7 +25,7 @@ import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.CommonViewer;
 import org.openlca.core.application.actions.OpenEditorAction;
 import org.openlca.core.application.navigation.INavigationElement;
-import org.openlca.core.application.navigation.ModelNavigationElement;
+import org.openlca.core.application.navigation.ModelElement;
 import org.openlca.core.application.navigation.NavigationRoot;
 import org.openlca.core.model.modelprovider.IModelComponent;
 import org.openlca.ui.Viewers;
@@ -60,7 +60,7 @@ public class Navigator extends CommonNavigator {
 				IStructuredSelection selection = (IStructuredSelection) event
 						.getSelection();
 				if (!selection.isEmpty()
-						&& selection.getFirstElement() instanceof ModelNavigationElement)
+						&& selection.getFirstElement() instanceof ModelElement)
 					openModel(selection);
 			}
 		});
@@ -68,7 +68,7 @@ public class Navigator extends CommonNavigator {
 	}
 
 	private void openModel(IStructuredSelection selection) {
-		ModelNavigationElement element = (ModelNavigationElement) selection
+		ModelElement element = (ModelElement) selection
 				.getFirstElement();
 		IModelComponent modelComponent = (IModelComponent) element.getData();
 		OpenEditorAction action = new OpenEditorAction();

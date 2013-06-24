@@ -14,7 +14,6 @@ import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
-import org.openlca.core.application.Initializer;
 
 /**
  * This class controls all aspects of the application's execution
@@ -30,8 +29,7 @@ public class Application implements IApplication {
 	@Override
 	public Object start(final IApplicationContext context) throws Exception {
 		Object result = null;
-		new Initializer().initialize();
-		final Display display = PlatformUI.createDisplay();
+		Display display = PlatformUI.createDisplay();
 		try {
 			final int returnCode = PlatformUI.createAndRunWorkbench(display,
 					new ApplicationWorkbenchAdvisor());

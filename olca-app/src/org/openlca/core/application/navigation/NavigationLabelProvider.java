@@ -19,18 +19,17 @@ import org.openlca.core.application.db.Database;
 import org.openlca.core.application.db.IDatabaseConfiguration;
 import org.openlca.core.model.Actor;
 import org.openlca.core.model.Category;
-import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
-import org.openlca.core.model.LCIAMethod;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.Project;
 import org.openlca.core.model.Source;
 import org.openlca.core.model.UnitGroup;
-import org.openlca.core.model.modelprovider.IModelComponent;
-import org.openlca.core.model.results.LCIAResult;
+import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.resources.ImageType;
+import org.openlca.ilcd.methods.LCIAMethod;
+import org.openlca.ilcd.processes.LCIAResult;
 
 /**
  * Implementation of the {@link ICommonLabelProvider} interface for providing
@@ -47,8 +46,8 @@ public class NavigationLabelProvider extends ColumnLabelProvider implements
 	@Override
 	public String getDescription(Object anElement) {
 		String description = null;
-		if (anElement instanceof ModelNavigationElement) {
-			ModelNavigationElement navElement = (ModelNavigationElement) anElement;
+		if (anElement instanceof ModelElement) {
+			ModelElement navElement = (ModelElement) anElement;
 			IModelComponent component = (IModelComponent) navElement.getData();
 			if (component.getDescription() != null
 					&& component.getDescription().length() > 0) {
@@ -67,8 +66,8 @@ public class NavigationLabelProvider extends ColumnLabelProvider implements
 			return getDatabaseImage((IDatabaseConfiguration) o);
 		if (o instanceof Category)
 			return getCategoryImage((Category) o);
-		if (o instanceof IModelComponent)
-			return getModelComponentImage((IModelComponent) o);
+		if (o instanceof BaseDescriptor)
+			return getModelComponentImage((BaseDescriptor) o);
 		if (o instanceof ModelType)
 			return getCategoryImage((ModelType) o);
 		return null;
@@ -109,8 +108,19 @@ public class NavigationLabelProvider extends ColumnLabelProvider implements
 		}
 	}
 
-	private Image getModelComponentImage(IModelComponent modelComponent) {
-		if (modelComponent.getClass() == Flow.class)
+	private Image getModelComponentImage(BaseDescriptor modelComponent) {
+		if (modelComponent == null || modelComponent.getModelType() == null)
+			return null;
+		switch (modelComponent.getModelType()) {
+		case ACTOR:
+
+			break;
+
+		default:
+			break;
+		}
+
+		if (modelComponent.getModelType() == ModelType.FLOW)
 			return ImageType.FLOW_ICON.get();
 		else if (modelComponent.getClass() == FlowProperty.class)
 			return ImageType.FLOW_PROPERTY_ICON.get();
@@ -186,8 +196,8 @@ public class NavigationLabelProvider extends ColumnLabelProvider implements
 	@Override
 	public String getToolTipText(Object element) {
 		String text = null;
-		if (element instanceof ModelNavigationElement) {
-			ModelNavigationElement navElem = (ModelNavigationElement) element;
+		if (element instanceof ModelElement) {
+			ModelElement navElem = (ModelElement) element;
 			IModelComponent modelComponent = (IModelComponent) navElem
 					.getData();
 		}

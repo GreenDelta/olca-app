@@ -7,7 +7,7 @@ import org.openlca.core.application.FeatureFlag;
 import org.openlca.core.application.Messages;
 import org.openlca.core.application.db.Database;
 import org.openlca.core.application.navigation.INavigationElement;
-import org.openlca.core.application.navigation.ModelNavigationElement;
+import org.openlca.core.application.navigation.ModelElement;
 import org.openlca.core.application.views.UsageView;
 import org.openlca.core.application.views.UsageViewInput;
 import org.openlca.core.model.Actor;
@@ -18,7 +18,6 @@ import org.openlca.core.model.Source;
 import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.Descriptors;
-import org.openlca.core.model.modelprovider.IModelComponent;
 import org.openlca.core.resources.ImageType;
 import org.openlca.ui.Editors;
 
@@ -50,9 +49,9 @@ public class OpenUsageAction extends Action implements INavigationAction {
 	public boolean accept(INavigationElement navigationElement) {
 		if (!FeatureFlag.USAGE_MENU.isEnabled())
 			return false;
-		if (!(navigationElement instanceof ModelNavigationElement))
+		if (!(navigationElement instanceof ModelElement))
 			return false;
-		ModelNavigationElement element = (ModelNavigationElement) navigationElement;
+		ModelElement element = (ModelElement) navigationElement;
 		Object data = element.getData();
 		if (!(data instanceof IModelComponent))
 			return false;

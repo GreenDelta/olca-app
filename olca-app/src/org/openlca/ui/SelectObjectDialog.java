@@ -34,7 +34,7 @@ import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.core.application.Messages;
-import org.openlca.core.application.navigation.ModelNavigationElement;
+import org.openlca.core.application.navigation.ModelElement;
 import org.openlca.core.application.navigation.NavigationRoot;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.modelprovider.IModelComponent;
@@ -212,10 +212,10 @@ public class SelectObjectDialog extends Dialog {
 					// for each selected object
 					for (final Object selected : s.toArray()) {
 						// if object is model component element
-						if (selected instanceof ModelNavigationElement) {
+						if (selected instanceof ModelElement) {
 							// add to filtered selection
 							selection
-									.add((IModelComponent) ((ModelNavigationElement) selected)
+									.add((IModelComponent) ((ModelElement) selected)
 											.getData());
 						}
 					}
@@ -251,9 +251,9 @@ public class SelectObjectDialog extends Dialog {
 			public void doubleClick(final DoubleClickEvent event) {
 				final IStructuredSelection selection = (IStructuredSelection) event
 						.getSelection();
-				if (selection.getFirstElement() instanceof ModelNavigationElement) {
+				if (selection.getFirstElement() instanceof ModelElement) {
 					// set first selection
-					final ModelNavigationElement element = (ModelNavigationElement) selection
+					final ModelElement element = (ModelElement) selection
 							.getFirstElement();
 					final IModelComponent modelComponent = (IModelComponent) element
 							.getData();

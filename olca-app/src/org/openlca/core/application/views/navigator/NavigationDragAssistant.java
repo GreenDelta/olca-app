@@ -18,7 +18,7 @@ import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.ui.navigator.CommonDragAdapterAssistant;
 import org.openlca.core.application.navigation.CategoryElement;
-import org.openlca.core.application.navigation.ModelNavigationElement;
+import org.openlca.core.application.navigation.ModelElement;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.modelprovider.IModelComponent;
@@ -52,7 +52,7 @@ public class NavigationDragAssistant extends CommonDragAdapterAssistant {
 			final Object o = it.next();
 
 			// if element is not model component or category element
-			if (!(o instanceof ModelNavigationElement || o instanceof CategoryElement)) {
+			if (!(o instanceof ModelElement || o instanceof CategoryElement)) {
 				anEvent.doit = false;
 			} else {
 
@@ -90,13 +90,13 @@ public class NavigationDragAssistant extends CommonDragAdapterAssistant {
 			final Object o = it.next();
 
 			// if not model component or category element
-			if (!(o instanceof ModelNavigationElement || o instanceof CategoryElement)) {
+			if (!(o instanceof ModelElement || o instanceof CategoryElement)) {
 				canBeDropped = false;
 			} else {
 				// if model component element
-				if (o instanceof ModelNavigationElement) {
+				if (o instanceof ModelElement) {
 					// cast
-					final ModelNavigationElement navElem = (ModelNavigationElement) o;
+					final ModelElement navElem = (ModelElement) o;
 					// get component
 					final IModelComponent comp = (IModelComponent) navElem
 							.getData();

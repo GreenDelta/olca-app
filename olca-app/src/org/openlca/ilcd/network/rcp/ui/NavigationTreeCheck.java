@@ -4,7 +4,7 @@ import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
 import org.openlca.core.application.navigation.INavigationElement;
-import org.openlca.core.application.navigation.ModelNavigationElement;
+import org.openlca.core.application.navigation.ModelElement;
 
 public class NavigationTreeCheck implements ICheckStateListener {
 
@@ -31,7 +31,7 @@ public class NavigationTreeCheck implements ICheckStateListener {
 		for (final INavigationElement child : naviElement.getChildren(false)) {
 			viewer.setGrayed(child, false);
 			viewer.setChecked(child, state);
-			if (!(child instanceof ModelNavigationElement))
+			if (!(child instanceof ModelElement))
 				updateChildren(child, state);
 		}
 	}

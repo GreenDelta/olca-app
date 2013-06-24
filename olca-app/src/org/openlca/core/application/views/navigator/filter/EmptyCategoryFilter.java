@@ -17,7 +17,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.openlca.core.application.navigation.CategoryElement;
 import org.openlca.core.application.navigation.INavigationElement;
-import org.openlca.core.application.navigation.ModelNavigationElement;
+import org.openlca.core.application.navigation.ModelElement;
 import org.openlca.core.model.Category;
 
 /**
@@ -71,7 +71,7 @@ public final class EmptyCategoryFilter extends ViewerFilter {
 	 * which make it through all filters.
 	 */
 	private boolean hasContent(Object element, ViewerFilter[] filters) {
-		List<ModelNavigationElement> content = new ArrayList<>();
+		List<ModelElement> content = new ArrayList<>();
 		addContent(element, content);
 		if (content.size() == 0) {
 			return false;
@@ -79,14 +79,14 @@ public final class EmptyCategoryFilter extends ViewerFilter {
 		return passFilters(content, filters);
 	}
 
-	private void addContent(Object element, List<ModelNavigationElement> content) {
+	private void addContent(Object element, List<ModelElement> content) {
 		if (element instanceof CategoryElement) {
 			CategoryElement catElement = (CategoryElement) element;
 			boolean refresh = catElement.isEmpty();
 			for (INavigationElement contentElement : catElement
 					.getChildren(refresh)) {
-				if (contentElement instanceof ModelNavigationElement) {
-					content.add((ModelNavigationElement) contentElement);
+				if (contentElement instanceof ModelElement) {
+					content.add((ModelElement) contentElement);
 				} else {
 					addContent(contentElement, content);
 				}
@@ -94,12 +94,12 @@ public final class EmptyCategoryFilter extends ViewerFilter {
 		}
 	}
 
-	private boolean passFilters(List<ModelNavigationElement> content,
+	private boolean passFilters(List<ModelElement> content,
 			ViewerFilter[] filters) {
 		if (filters == null || filters.length == 0) {
 			return true;
 		}
-		for (ModelNavigationElement element : content) {
+		for (ModelElement element : content) {
 			if (passFilters(element, filters)) {
 				return true;
 			}
@@ -107,7 +107,7 @@ public final class EmptyCategoryFilter extends ViewerFilter {
 		return false;
 	}
 
-	private boolean passFilters(ModelNavigationElement element,
+	private boolean passFilters(ModelElement element,
 			ViewerFilter[] filters) {
 		boolean select = true;
 		int i = 0;

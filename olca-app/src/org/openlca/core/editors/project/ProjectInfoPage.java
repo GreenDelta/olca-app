@@ -38,7 +38,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.core.application.DateFormatter;
 import org.openlca.core.application.Messages;
 import org.openlca.core.application.actions.OpenEditorAction;
-import org.openlca.core.application.navigation.ModelNavigationElement;
+import org.openlca.core.application.navigation.ModelElement;
 import org.openlca.core.application.navigation.NavigationRoot;
 import org.openlca.core.application.views.navigator.Navigator;
 import org.openlca.core.editors.ModelEditor;
@@ -395,7 +395,7 @@ public class ProjectInfoPage extends ModelEditorInfoPage implements
 				public boolean select(final Viewer viewer,
 						final Object parentElement, final Object element) {
 					boolean select = true;
-					if (parentElement instanceof ModelNavigationElement) {
+					if (parentElement instanceof ModelElement) {
 						// filter sub elements of product system navigation
 						// element
 						select = false;

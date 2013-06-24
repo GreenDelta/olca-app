@@ -25,10 +25,10 @@ public class NavigationSorter extends ViewerSorter {
 	public int compare(final Viewer viewer, final Object e1, final Object e2) {
 		int compare = 0;
 		if (e1 instanceof CategoryElement
-				&& e2 instanceof ModelNavigationElement) {
+				&& e2 instanceof ModelElement) {
 			compare = -1;
 		} else if (e2 instanceof CategoryElement
-				&& e1 instanceof ModelNavigationElement) {
+				&& e1 instanceof ModelElement) {
 			compare = 1;
 			// TODO: check both category elements
 		} else {

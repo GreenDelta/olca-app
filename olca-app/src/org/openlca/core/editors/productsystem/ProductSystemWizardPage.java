@@ -19,7 +19,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.openlca.core.application.FeatureFlag;
 import org.openlca.core.application.Messages;
-import org.openlca.core.application.navigation.ModelNavigationElement;
+import org.openlca.core.application.navigation.ModelElement;
 import org.openlca.core.application.navigation.NavigationRoot;
 import org.openlca.core.application.views.navigator.ModelWizardPage;
 import org.openlca.core.application.views.navigator.Navigator;
@@ -178,8 +178,8 @@ class ProductSystemWizardPage extends ModelWizardPage {
 							final SelectionChangedEvent event) {
 						final IStructuredSelection selection = (IStructuredSelection) event
 								.getSelection();
-						if (selection.getFirstElement() instanceof ModelNavigationElement) {
-							final ModelNavigationElement elem = (ModelNavigationElement) ((IStructuredSelection) processViewer
+						if (selection.getFirstElement() instanceof ModelElement) {
+							final ModelElement elem = (ModelElement) ((IStructuredSelection) processViewer
 									.getSelection()).getFirstElement();
 							selectedProcess = (Process) elem.getData();
 							checkInput();

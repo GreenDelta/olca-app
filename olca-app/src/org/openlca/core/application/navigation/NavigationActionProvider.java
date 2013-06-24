@@ -26,11 +26,9 @@ import org.eclipse.ui.navigator.CommonActionProvider;
 import org.openlca.core.application.Messages;
 import org.openlca.core.application.actions.CopyAction;
 import org.openlca.core.application.actions.CutAction;
-import org.openlca.core.application.actions.DeleteAction;
 import org.openlca.core.application.actions.ExportDatabaseAction;
 import org.openlca.core.application.actions.IImportAction;
 import org.openlca.core.application.actions.ImportDatabaseAction;
-import org.openlca.core.application.actions.OpenEditorAction;
 import org.openlca.core.application.actions.OpenPropertiesAction;
 import org.openlca.core.application.actions.PasteAction;
 import org.openlca.core.application.navigation.actions.ActivateDatabaseAction;
@@ -45,8 +43,7 @@ import org.openlca.core.application.navigation.actions.RenameCategoryAction;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.IDatabaseServer;
 import org.openlca.core.model.Category;
-import org.openlca.core.model.UnitGroup;
-import org.openlca.core.model.modelprovider.IModelComponent;
+import org.openlca.core.model.RootEntity;
 import org.openlca.ui.Viewers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -159,7 +156,7 @@ public class NavigationActionProvider extends CommonActionProvider {
 
 	/** Appends the available export actions for the model component. */
 	private void appendExportActions(IMenuManager menu, IDatabase database,
-			IModelComponent model) {
+			RootEntity model) {
 		List<IAction> actions = exportActionProvider.getFor(model, database);
 		if (actions.isEmpty())
 			return;
@@ -234,22 +231,20 @@ public class NavigationActionProvider extends CommonActionProvider {
 	 *            The model component element to append the actions to
 	 */
 	private void appendModelComponentActions(IMenuManager menu,
-			ModelNavigationElement navElem) {
-		if (navElem.getDatabase() == null)
-			return;
-		OpenEditorAction openAction = new OpenEditorAction();
-		IModelComponent modelComponent = (IModelComponent) navElem.getData();
-		IDatabase database = navElem.getDatabase();
-		openAction.setModelComponent(database, modelComponent);
-		menu.add(openAction);
-		menu.add(new Separator());
-		if (!(modelComponent instanceof UnitGroup)) {
-			menu.add(new CutAction(new INavigationElement[] { navElem }));
-			menu.add(new CopyAction(new INavigationElement[] { navElem }));
-		}
-		menu.add(new DeleteAction(database, modelComponent));
-		menu.add(new Separator());
-		appendExportActions(menu, database, modelComponent);
+			ModelElement navElem) {
+		// OpenEditorAction openAction = new OpenEditorAction();
+		// RootEntity modelComponent = (RootEntity) navElem.getData();
+		// IDatabase database = navElem.getDatabase();
+		// openAction.setModelComponent(database, modelComponent);
+		// menu.add(openAction);
+		// menu.add(new Separator());
+		// if (!(modelComponent instanceof UnitGroup)) {
+		// menu.add(new CutAction(new INavigationElement[] { navElem }));
+		// menu.add(new CopyAction(new INavigationElement[] { navElem }));
+		// }
+		// menu.add(new DeleteAction(database, modelComponent));
+		// menu.add(new Separator());
+		// appendExportActions(menu, database, modelComponent);
 	}
 
 	/**
@@ -262,33 +257,35 @@ public class NavigationActionProvider extends CommonActionProvider {
 	 */
 	private void appendMulitModelComponentActions(IMenuManager menu,
 			Object[] selectedObjects) {
-		OpenEditorAction openAction = new OpenEditorAction();
-		INavigationElement[] elements = new INavigationElement[selectedObjects.length];
-		IModelComponent[] components = new IModelComponent[selectedObjects.length];
-		IDatabase[] databases = new IDatabase[selectedObjects.length];
-
-		// for each selected object
-		for (int j = 0; j < selectedObjects.length; j++) {
-			// cast
-			ModelNavigationElement navElem = (ModelNavigationElement) selectedObjects[j];
-			// get model component
-			components[j] = (IModelComponent) navElem.getData();
-			// store element
-			elements[j] = navElem;
-			// get database
-			databases[j] = navElem.getDatabase();
-		}
-
-		openAction.setModelComponents(databases, components);
-		menu.add(openAction);
-		menu.add(new Separator());
-		// add cut action
-		menu.add(new CutAction(elements));
-		// add copy action
-		menu.add(new CopyAction(elements));
-		// add delete action
-		menu.add(new DeleteAction(databases, components));
-		menu.add(new Separator());
+		// OpenEditorAction openAction = new OpenEditorAction();
+		// INavigationElement[] elements = new
+		// INavigationElement[selectedObjects.length];
+		// IModelComponent[] components = new
+		// IModelComponent[selectedObjects.length];
+		// IDatabase[] databases = new IDatabase[selectedObjects.length];
+		//
+		// // for each selected object
+		// for (int j = 0; j < selectedObjects.length; j++) {
+		// // cast
+		// ModelElement navElem = (ModelElement) selectedObjects[j];
+		// // get model component
+		// components[j] = (IModelComponent) navElem.getData();
+		// // store element
+		// elements[j] = navElem;
+		// // get database
+		// databases[j] = navElem.getDatabase();
+		// }
+		//
+		// openAction.setModelComponents(databases, components);
+		// menu.add(openAction);
+		// menu.add(new Separator());
+		// // add cut action
+		// menu.add(new CutAction(elements));
+		// // add copy action
+		// menu.add(new CopyAction(elements));
+		// // add delete action
+		// menu.add(new DeleteAction(databases, components));
+		// menu.add(new Separator());
 	}
 
 	private void appendMultiCategoryActions(IMenuManager menu,
@@ -330,7 +327,7 @@ public class NavigationActionProvider extends CommonActionProvider {
 		// categories of the top level categories
 		while ((allModelComponents || allSubCategories)
 				&& i < selectedObjects.length) {
-			if (selectedObjects[i] instanceof ModelNavigationElement) {
+			if (selectedObjects[i] instanceof ModelElement) {
 				allSubCategories = false;
 			} else {
 				allModelComponents = false;
@@ -350,8 +347,8 @@ public class NavigationActionProvider extends CommonActionProvider {
 	}
 
 	private void singleSelection(IMenuManager menu, Object elem) {
-		if (elem instanceof ModelNavigationElement) {
-			appendModelComponentActions(menu, (ModelNavigationElement) elem);
+		if (elem instanceof ModelElement) {
+			appendModelComponentActions(menu, (ModelElement) elem);
 		} else if (elem instanceof CategoryElement) {
 			appendCategoryActions(menu, (CategoryElement) elem);
 		}

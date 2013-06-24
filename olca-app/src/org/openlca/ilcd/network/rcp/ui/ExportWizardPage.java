@@ -11,7 +11,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.openlca.core.application.navigation.ModelNavigationElement;
+import org.openlca.core.application.navigation.ModelElement;
 import org.openlca.core.application.navigation.NavigationContentProvider;
 import org.openlca.core.application.navigation.NavigationLabelProvider;
 import org.openlca.core.application.navigation.NavigationSorter;
@@ -68,8 +68,8 @@ public class ExportWizardPage extends WizardPage implements ICheckStateListener 
 		selectedModels.clear();
 		Object[] elements = viewer.getCheckedElements();
 		for (Object element : elements) {
-			if (element instanceof ModelNavigationElement) {
-				ModelNavigationElement modelElement = (ModelNavigationElement) element;
+			if (element instanceof ModelElement) {
+				ModelElement modelElement = (ModelElement) element;
 				IDatabase db = modelElement.getDatabase();
 				Object obj = modelElement.getData();
 				if (obj instanceof IModelComponent && db != null) {

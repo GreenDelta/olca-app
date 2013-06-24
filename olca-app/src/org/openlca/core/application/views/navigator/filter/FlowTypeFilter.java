@@ -12,7 +12,7 @@ package org.openlca.core.application.views.navigator.filter;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
-import org.openlca.core.application.navigation.ModelNavigationElement;
+import org.openlca.core.application.navigation.ModelElement;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowType;
 
@@ -72,8 +72,8 @@ public class FlowTypeFilter extends ViewerFilter {
 		}
 
 		// if element is model component element
-		if (element instanceof ModelNavigationElement) {
-			ModelNavigationElement elem = (ModelNavigationElement) element;
+		if (element instanceof ModelElement) {
+			ModelElement elem = (ModelElement) element;
 
 			// if data is flow
 			if (elem.getData() instanceof Flow) {

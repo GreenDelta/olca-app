@@ -5,7 +5,7 @@ import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
 import org.openlca.core.application.navigation.DataProviderNavigationElement;
 import org.openlca.core.application.navigation.INavigationElement;
-import org.openlca.core.application.navigation.ModelNavigationElement;
+import org.openlca.core.application.navigation.ModelElement;
 import org.openlca.core.model.modelprovider.IModelComponent;
 
 public class SelectObjectCheckState implements ICheckStateListener {
@@ -24,8 +24,8 @@ public class SelectObjectCheckState implements ICheckStateListener {
 			// if (isVisible(child)) {
 			viewer.setGrayed(child, false);
 			viewer.setChecked(child, state);
-			if (child instanceof ModelNavigationElement) {
-				updateSelection((ModelNavigationElement) child,
+			if (child instanceof ModelElement) {
+				updateSelection((ModelElement) child,
 						state);
 			} else {
 				updateChildren(child, state);				
@@ -53,7 +53,7 @@ public class SelectObjectCheckState implements ICheckStateListener {
 		}
 	}
 
-	private void updateSelection(ModelNavigationElement element,
+	private void updateSelection(ModelElement element,
 			boolean selected) {
 		IModelComponent component = (IModelComponent) element.getData();
 		if (selected) {
@@ -73,8 +73,8 @@ public class SelectObjectCheckState implements ICheckStateListener {
 		viewer.setGrayed(element, false);
 		updateChildren(element, event.getChecked());
 		updateParent(element);
-		if (element instanceof ModelNavigationElement) {
-			updateSelection((ModelNavigationElement) element,
+		if (element instanceof ModelElement) {
+			updateSelection((ModelElement) element,
 					event.getChecked());
 		}
 		viewer.getControl().setRedraw(true);

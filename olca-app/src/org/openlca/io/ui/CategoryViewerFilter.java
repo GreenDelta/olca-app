@@ -4,7 +4,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.openlca.core.application.navigation.CategoryElement;
 import org.openlca.core.application.navigation.INavigationElement;
-import org.openlca.core.application.navigation.ModelNavigationElement;
+import org.openlca.core.application.navigation.ModelElement;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.modelprovider.IModelComponent;
 
@@ -31,7 +31,7 @@ class CategoryViewerFilter extends ViewerFilter {
 			Category category = (Category) element.getData();
 			return category.getComponentClass().equals(className)
 					&& hasModelComponents(element);
-		} else if (element instanceof ModelNavigationElement) {
+		} else if (element instanceof ModelElement) {
 			IModelComponent modelComponent = (IModelComponent) element
 					.getData();
 			return clazz.isInstance(modelComponent);
@@ -41,7 +41,7 @@ class CategoryViewerFilter extends ViewerFilter {
 
 	private boolean hasModelComponents(INavigationElement element) {
 		for (INavigationElement child : element.getChildren(true)) {
-			if ((child instanceof ModelNavigationElement)
+			if ((child instanceof ModelElement)
 					&& clazz.isInstance(child.getData()))
 				return true;
 			else if (hasModelComponents(child))

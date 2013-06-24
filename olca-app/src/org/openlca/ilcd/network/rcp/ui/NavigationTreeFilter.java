@@ -4,7 +4,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.openlca.core.application.navigation.CategoryElement;
 import org.openlca.core.application.navigation.INavigationElement;
-import org.openlca.core.application.navigation.ModelNavigationElement;
+import org.openlca.core.application.navigation.ModelElement;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
@@ -33,8 +33,8 @@ public class NavigationTreeFilter extends ViewerFilter {
 	private boolean select(INavigationElement element) {
 		if (element instanceof CategoryElement)
 			return validCategory((CategoryElement) element);
-		if (element instanceof ModelNavigationElement)
-			return validModel((ModelNavigationElement) element);
+		if (element instanceof ModelElement)
+			return validModel((ModelElement) element);
 		return hasModelChilds(element);
 	}
 
@@ -47,7 +47,7 @@ public class NavigationTreeFilter extends ViewerFilter {
 				.equals(SYSTEM_CLASS_NAME)) && hasModelChilds(element);
 	}
 
-	private boolean validModel(ModelNavigationElement element) {
+	private boolean validModel(ModelElement element) {
 		Object model = element.getData();
 		return PROCESS_CLASS.isInstance(model)
 				|| SYSTEM_CLASS.isInstance(model);
@@ -55,8 +55,8 @@ public class NavigationTreeFilter extends ViewerFilter {
 
 	private boolean hasModelChilds(INavigationElement element) {
 		for (INavigationElement child : element.getChildren(true)) {
-			if ((child instanceof ModelNavigationElement)
-					&& validModel((ModelNavigationElement) child))
+			if ((child instanceof ModelElement)
+					&& validModel((ModelElement) child))
 				return true;
 			else if (hasModelChilds(child))
 				return true;

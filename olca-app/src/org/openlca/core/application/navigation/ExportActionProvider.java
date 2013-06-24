@@ -10,7 +10,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.IAction;
 import org.openlca.core.application.actions.IExportAction;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.model.modelprovider.IModelComponent;
+import org.openlca.core.model.RootEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +20,7 @@ class ExportActionProvider {
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private final String EXTENSION_POINT = "org.openlca.core.application.exportAction";
 
-	List<IAction> getFor(IModelComponent model, IDatabase database) {
+	List<IAction> getFor(RootEntity model, IDatabase database) {
 		if (model == null || database == null)
 			return Collections.emptyList();
 		IExtensionRegistry registry = Platform.getExtensionRegistry();
@@ -40,7 +40,7 @@ class ExportActionProvider {
 	}
 
 	private IExportAction createAction(IConfigurationElement element,
-			IModelComponent model, IDatabase database) {
+			RootEntity model, IDatabase database) {
 		try {
 			IExportAction action = (IExportAction) element
 					.createExecutableExtension("exportAction");

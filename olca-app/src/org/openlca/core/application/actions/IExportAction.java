@@ -11,7 +11,7 @@ package org.openlca.core.application.actions;
 
 import org.eclipse.jface.action.IAction;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.model.modelprovider.IModelComponent;
+import org.openlca.core.model.RootEntity;
 
 /**
  * Interface for actions that want to export model components
@@ -27,7 +27,7 @@ public interface IExportAction extends IAction {
 	 * @param component
 	 *            The component to export
 	 */
-	void setComponent(final IModelComponent component);
+	void setComponent(final RootEntity component);
 
 	/**
 	 * Setter of the database

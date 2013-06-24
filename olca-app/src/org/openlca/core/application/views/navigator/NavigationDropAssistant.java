@@ -24,7 +24,7 @@ import org.eclipse.ui.navigator.CommonDropAdapter;
 import org.eclipse.ui.navigator.CommonDropAdapterAssistant;
 import org.openlca.core.application.navigation.CategoryElement;
 import org.openlca.core.application.navigation.INavigationElement;
-import org.openlca.core.application.navigation.ModelNavigationElement;
+import org.openlca.core.application.navigation.ModelElement;
 import org.openlca.core.application.plugin.Activator;
 
 /**
@@ -70,7 +70,7 @@ public class NavigationDropAssistant extends CommonDropAdapterAssistant {
 			// for each selected object
 			for (final Object o : selection.toArray()) {
 				// if model component or category element
-				if (o instanceof ModelNavigationElement
+				if (o instanceof ModelElement
 						|| o instanceof CategoryElement) {
 					elements.add((INavigationElement) o);
 				}

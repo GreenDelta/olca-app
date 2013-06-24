@@ -14,7 +14,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.openlca.core.application.navigation.CategoryElement;
 import org.openlca.core.application.navigation.INavigationElement;
-import org.openlca.core.application.navigation.ModelNavigationElement;
+import org.openlca.core.application.navigation.ModelElement;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessType;
@@ -58,8 +58,8 @@ public abstract class ProcessTypeFilter extends ViewerFilter {
 		for (final INavigationElement child : element.getChildren(false)) {
 
 			// if model component element
-			if (child instanceof ModelNavigationElement) {
-				final ModelNavigationElement elem = (ModelNavigationElement) child;
+			if (child instanceof ModelElement) {
+				final ModelElement elem = (ModelElement) child;
 				// data is process
 				if (elem.getData() instanceof Process) {
 					final Process processDescriptor = (Process) elem.getData();
@@ -107,8 +107,8 @@ public abstract class ProcessTypeFilter extends ViewerFilter {
 		}
 
 		// if element is model component element
-		if (element instanceof ModelNavigationElement) {
-			final ModelNavigationElement elem = (ModelNavigationElement) element;
+		if (element instanceof ModelElement) {
+			final ModelElement elem = (ModelElement) element;
 			// if element is process
 			if (elem.getData() instanceof Process) {
 				final Process processDescriptor = (Process) elem.getData();

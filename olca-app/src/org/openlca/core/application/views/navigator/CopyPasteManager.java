@@ -18,7 +18,7 @@ import org.eclipse.jface.dialogs.ErrorDialog;
 import org.openlca.core.application.Messages;
 import org.openlca.core.application.navigation.CategoryElement;
 import org.openlca.core.application.navigation.INavigationElement;
-import org.openlca.core.application.navigation.ModelNavigationElement;
+import org.openlca.core.application.navigation.ModelElement;
 import org.openlca.core.application.plugin.Activator;
 import org.openlca.core.database.DataProviderException;
 import org.openlca.core.database.IDatabase;
@@ -151,9 +151,9 @@ public class CopyPasteManager {
 				// check category
 				error = checkCategory((CategoryElement) o,
 						targetElement);
-			} else if (o instanceof ModelNavigationElement) {
+			} else if (o instanceof ModelElement) {
 				// check model component
-				error = checkModelComponent((ModelNavigationElement) o,
+				error = checkModelComponent((ModelElement) o,
 						targetElement);
 			}
 			i++;
@@ -171,7 +171,7 @@ public class CopyPasteManager {
 	 * @return Null if the element can be moved to the target, an error message
 	 *         otherwise
 	 */
-	private String checkModelComponent(final ModelNavigationElement element,
+	private String checkModelComponent(final ModelElement element,
 			final CategoryElement targetElement) {
 		String error = null;
 		// the model component
@@ -208,8 +208,8 @@ public class CopyPasteManager {
 
 					final IDatabase targetDatabase = targetElement
 							.getDatabase();
-					if (elem instanceof ModelNavigationElement) {
-						final ModelNavigationElement mnElem = (ModelNavigationElement) elem;
+					if (elem instanceof ModelElement) {
+						final ModelElement mnElem = (ModelElement) elem;
 						final IDatabase database = mnElem.getDatabase();
 						if (database.equals(targetDatabase)) {
 							if (copyMode) {
@@ -222,7 +222,7 @@ public class CopyPasteManager {
 								error = copier.getError();
 							} else {
 								handleModelComponent(
-										(ModelNavigationElement) elem,
+										(ModelElement) elem,
 										targetElement);
 							}
 
@@ -297,7 +297,7 @@ public class CopyPasteManager {
 	}
 
 	/**
-	 * Handles the drop of a {@link ModelNavigationElement}
+	 * Handles the drop of a {@link ModelElement}
 	 * 
 	 * @param element
 	 *            The element to be dropped
@@ -305,7 +305,7 @@ public class CopyPasteManager {
 	 *            The target element
 	 * @throws DataProviderException
 	 */
-	private void handleModelComponent(final ModelNavigationElement element,
+	private void handleModelComponent(final ModelElement element,
 			final CategoryElement targetElement)
 			throws DataProviderException {
 		final IDatabase database = element.getDatabase();

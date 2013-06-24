@@ -10,7 +10,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.openlca.core.application.Messages;
-import org.openlca.core.database.IDatabaseServer;
+import org.openlca.core.database.DatabaseContent;
 import org.openlca.core.resources.ImageType;
 import org.openlca.ui.UI;
 
@@ -18,7 +18,7 @@ class DatabaseWizardPage extends WizardPage {
 
 	private Text nameText;
 	private Button[] contentRadios;
-	private int[] contentTypes;
+	private DatabaseContent[] contentTypes;
 
 	public DatabaseWizardPage() {
 		super("database-wizard-page", Messages.NewDatabase,
@@ -43,9 +43,8 @@ class DatabaseWizardPage extends WizardPage {
 		radioGroup.setLayout(new RowLayout(SWT.VERTICAL));
 		String[] labels = { Messages.EMPTY_DATABASE,
 				Messages.UNITS_AND_FLOW_PROPS, Messages.COMPLETE_REF_DATA };
-		contentTypes = new int[] { IDatabaseServer.CONTENT_TYPE_EMPTY,
-				IDatabaseServer.CONTENT_TYPE_UNITS,
-				IDatabaseServer.CONTENT_TYPE_ALL_REF };
+		contentTypes = new DatabaseContent[] { DatabaseContent.EMPTY,
+				DatabaseContent.UNITS, DatabaseContent.ALL_REF_DATA };
 		contentRadios = new Button[3];
 		for (int i = 0; i < 3; i++) {
 			contentRadios[i] = new Button(radioGroup, SWT.RADIO);
@@ -121,7 +120,7 @@ class DatabaseWizardPage extends WizardPage {
 	}
 
 	class PageData {
-		int contentType = IDatabaseServer.CONTENT_TYPE_EMPTY;
+		DatabaseContent contentType = DatabaseContent.EMPTY;
 		String databaseName;
 	}
 

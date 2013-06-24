@@ -20,7 +20,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.core.application.navigation.CategoryElement;
 import org.openlca.core.application.navigation.INavigationElement;
-import org.openlca.core.application.navigation.ModelNavigationElement;
+import org.openlca.core.application.navigation.ModelElement;
 import org.openlca.core.application.navigation.NavigationContentProvider;
 import org.openlca.core.application.navigation.NavigationLabelProvider;
 import org.openlca.core.application.navigation.NavigationSorter;
@@ -82,7 +82,7 @@ public class ModelComponentTreeViewer extends TreeViewer {
 			public boolean select(final Viewer viewer,
 					final Object parentElement, final Object element) {
 				boolean select = true;
-				if (element instanceof ModelNavigationElement
+				if (element instanceof ModelElement
 						&& onlyCategories) {
 					select = false;
 				} else if (element instanceof CategoryElement) {
@@ -114,7 +114,7 @@ public class ModelComponentTreeViewer extends TreeViewer {
 	private boolean hasModelComponents(final CategoryElement element) {
 		boolean has = false;
 		for (final INavigationElement child : element.getChildren(true)) {
-			if (child instanceof ModelNavigationElement) {
+			if (child instanceof ModelElement) {
 				has = true;
 			} else {
 				has = hasModelComponents((CategoryElement) child);
