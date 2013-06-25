@@ -11,64 +11,64 @@ package org.openlca.core.editors.actor;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.forms.IManagedForm;
+import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.Section;
+import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.core.application.Messages;
-import org.openlca.core.editors.ModelEditor;
-import org.openlca.core.editors.ModelEditorInfoPage;
 import org.openlca.core.model.Actor;
 import org.openlca.ui.DataBinding;
-import org.openlca.ui.UIFactory;
+import org.openlca.ui.UI;
 
-public class ActorInfoPage extends ModelEditorInfoPage {
+public class ActorInfoPage extends FormPage {
 
 	private Actor actor;
 	private FormToolkit toolkit;
-	private Composite composite;
-	private DataBinding binding = new DataBinding();
+	private DataBinding binding;
 
-	public ActorInfoPage(final ModelEditor editor) {
-		super(editor, "ActorInfoPage", Messages.Common_GeneralInformation,
+	public ActorInfoPage(ActorEditor editor) {
+		super(editor, "ActorInfoPage", Messages.Common_GeneralInformation);
+		this.actor = editor.getActor();
+		this.binding = new DataBinding(editor);
+	}
+
+	@Override
+	protected void createFormContent(IManagedForm managedForm) {
+		ScrolledForm form = UI.formHeader(managedForm, Messages.Actor + ": "
+				+ actor.getName());
+		toolkit = managedForm.getToolkit();
+		Composite body = UI.formBody(form, toolkit);
+		createGeneralInfo(body);
+		createAdditionalInfo(body);
+		body.setFocus();
+		form.reflow(true);
+	}
+
+	private void createGeneralInfo(Composite body) {
+		Composite composite = UI.formSection(body, toolkit,
 				Messages.Common_GeneralInformation);
-		this.actor = (Actor) editor.getModelComponent();
+		createText(Messages.Common_Name, "name", composite);
+		Text descriptionText = UI.formMultiText(composite, toolkit,
+				Messages.Common_Description);
+		binding.onString(actor, "description", descriptionText);
 	}
 
-	@Override
-	protected void createContents(Composite body, FormToolkit toolkit) {
-		super.createContents(body, toolkit);
-		this.toolkit = toolkit;
-		getSite().setSelectionProvider(this);
-		Section section = UIFactory.createSection(body, toolkit,
-				Messages.Common_AdditionalInfo, true, false);
-		composite = UIFactory.createSectionComposite(section, toolkit,
-				UIFactory.createGridLayout(2));
-		createTextFields();
+	private void createAdditionalInfo(Composite body) {
+		Composite composite = UI.formSection(body, toolkit,
+				Messages.Common_AdditionalInfo);
+		createText(Messages.Address, "address", composite);
+		createText(Messages.City, "city", composite);
+		createText(Messages.Country, "country", composite);
+		createText(Messages.EMail, "email", composite);
+		createText(Messages.Telefax, "telefax", composite);
+		createText(Messages.Telephone, "telephone", composite);
+		createText(Messages.WebSite, "webSite", composite);
+		createText(Messages.ZipCode, "zipCode", composite);
 	}
 
-	private void createTextFields() {
-		createText(Messages.Address, "address");
-		createText(Messages.City, "city");
-		createText(Messages.Country, "country");
-		createText(Messages.EMail, "EMail");
-		createText(Messages.Telefax, "telefax");
-		createText(Messages.Telephone, "telephone");
-		createText(Messages.WebSite, "webSite");
-		createText(Messages.ZipCode, "zipCode");
-	}
-
-	private void createText(String label, String property) {
-		Text text = UIFactory.createTextWithLabel(composite, toolkit, label,
-				false);
+	private void createText(String label, String property, Composite parent) {
+		Text text = UI.formText(parent, toolkit, label);
 		binding.onString(actor, property, text);
-	}
-
-	@Override
-	protected String getFormTitle() {
-		final String title = Messages.Actor
-				+ ": "
-				+ (actor != null ? actor.getName() != null ? actor.getName()
-						: "" : "");
-		return title;
 	}
 
 }

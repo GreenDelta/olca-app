@@ -5,6 +5,7 @@ import static org.openlca.core.editors.Resource.OLCA_CHARTS_JS;
 import java.io.File;
 import java.io.IOException;
 
+import org.openlca.core.application.plugin.Activator;
 import org.openlca.ui.html.HtmlFolder;
 import org.openlca.ui.html.HtmlResource;
 import org.openlca.ui.html.IHtmlResource;

@@ -5,14 +5,20 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
+import org.openlca.core.editors.IEditor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DataBinding {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
+	private IEditor editor;
 
 	public DataBinding() {
+	}
+
+	public DataBinding(IEditor editor) {
+		this.editor = editor;
 	}
 
 	/** Removes *all* modify listeners from the given text. */
@@ -37,6 +43,7 @@ public class DataBinding {
 			@Override
 			public void modifyText(ModifyEvent e) {
 				setStringValue(bean, property, text);
+				editorChange();
 			}
 		});
 	}
@@ -51,6 +58,7 @@ public class DataBinding {
 			@Override
 			public void modifyText(ModifyEvent e) {
 				setShortValue(bean, property, text);
+				editorChange();
 			}
 		});
 	}
@@ -64,6 +72,7 @@ public class DataBinding {
 			@Override
 			public void modifyText(ModifyEvent e) {
 				setIntValue(bean, property, text);
+				editorChange();
 			}
 		});
 	}
@@ -78,6 +87,7 @@ public class DataBinding {
 			@Override
 			public void modifyText(ModifyEvent e) {
 				setDoubleValue(bean, property, text);
+				editorChange();
 			}
 		});
 	}
@@ -154,6 +164,11 @@ public class DataBinding {
 	private void error(String message, Exception e) {
 		Logger log = LoggerFactory.getLogger(DataBinding.class);
 		log.error(message, e);
+	}
+
+	private void editorChange() {
+		if (editor != null)
+			editor.setDirty(true);
 	}
 
 }
