@@ -17,19 +17,10 @@ import org.eclipse.ui.navigator.ICommonContentExtensionSite;
 import org.eclipse.ui.navigator.ICommonLabelProvider;
 import org.openlca.core.application.db.Database;
 import org.openlca.core.application.db.IDatabaseConfiguration;
-import org.openlca.core.model.Actor;
 import org.openlca.core.model.Category;
-import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.Process;
-import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.Project;
-import org.openlca.core.model.Source;
-import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.resources.ImageType;
-import org.openlca.ilcd.methods.LCIAMethod;
-import org.openlca.ilcd.processes.LCIAResult;
 
 /**
  * Implementation of the {@link ICommonLabelProvider} interface for providing
@@ -45,16 +36,11 @@ public class NavigationLabelProvider extends ColumnLabelProvider implements
 
 	@Override
 	public String getDescription(Object anElement) {
-		String description = null;
-		if (anElement instanceof ModelElement) {
-			ModelElement navElement = (ModelElement) anElement;
-			IModelComponent component = (IModelComponent) navElement.getData();
-			if (component.getDescription() != null
-					&& component.getDescription().length() > 0) {
-				description = component.getDescription();
-			}
-		}
-		return description;
+		if (!(anElement instanceof ModelElement))
+			return null;
+		ModelElement element = (ModelElement) anElement;
+		BaseDescriptor descriptor = (BaseDescriptor) element.getData();
+		return descriptor.getDisplayInfoText();
 	}
 
 	@Override
@@ -113,35 +99,28 @@ public class NavigationLabelProvider extends ColumnLabelProvider implements
 			return null;
 		switch (modelComponent.getModelType()) {
 		case ACTOR:
-
-			break;
-
-		default:
-			break;
-		}
-
-		if (modelComponent.getModelType() == ModelType.FLOW)
-			return ImageType.FLOW_ICON.get();
-		else if (modelComponent.getClass() == FlowProperty.class)
-			return ImageType.FLOW_PROPERTY_ICON.get();
-		else if (modelComponent.getClass() == LCIAMethod.class)
-			return ImageType.LCIA_ICON.get();
-		else if (modelComponent.getClass() == Process.class)
-			return ImageType.PROCESS_ICON.get();
-		else if (modelComponent.getClass() == ProductSystem.class)
-			return ImageType.PRODUCT_SYSTEM_ICON.get();
-		else if (modelComponent.getClass() == UnitGroup.class)
-			return ImageType.UNIT_GROUP_ICON.get();
-		else if (modelComponent.getClass() == Actor.class)
 			return ImageType.ACTOR_ICON.get();
-		else if (modelComponent.getClass() == Source.class)
-			return ImageType.SOURCE_ICON.get();
-		else if (modelComponent.getClass() == Project.class)
-			return ImageType.PROJECT_ICON.get();
-		else if (modelComponent.getClass() == LCIAResult.class)
+		case FLOW:
+			return ImageType.FLOW_ICON.get();
+		case FLOW_PROPERTY:
+			return ImageType.FLOW_PROPERTY_ICON.get();
+		case IMPACT_METHOD:
+			return ImageType.LCIA_ICON.get();
+		case IMPACT_RESULT:
 			return ImageType.EXPRESSION_ICON.get();
-
-		return null;
+		case PROCESS:
+			return ImageType.PROCESS_ICON.get();
+		case PRODUCT_SYSTEM:
+			return ImageType.PRODUCT_SYSTEM_ICON.get();
+		case PROJECT:
+			return ImageType.PROJECT_ICON.get();
+		case SOURCE:
+			return ImageType.SOURCE_ICON.get();
+		case UNIT_GROUP:
+			return ImageType.UNIT_GROUP_ICON.get();
+		default:
+			return null;
+		}
 	}
 
 	private Image getDatabaseImage(IDatabaseConfiguration config) {
@@ -162,6 +141,8 @@ public class NavigationLabelProvider extends ColumnLabelProvider implements
 			return ((Category) o).getName();
 		if (o instanceof ModelType)
 			return getTypeName((ModelType) o);
+		if (o instanceof BaseDescriptor)
+			return ((BaseDescriptor) o).getDisplayName();
 		else
 			return null;
 	}
@@ -195,13 +176,7 @@ public class NavigationLabelProvider extends ColumnLabelProvider implements
 
 	@Override
 	public String getToolTipText(Object element) {
-		String text = null;
-		if (element instanceof ModelElement) {
-			ModelElement navElem = (ModelElement) element;
-			IModelComponent modelComponent = (IModelComponent) navElem
-					.getData();
-		}
-		return text;
+		return getDescription(element);
 	}
 
 	@Override

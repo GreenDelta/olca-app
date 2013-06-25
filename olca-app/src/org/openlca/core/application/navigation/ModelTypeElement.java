@@ -1,18 +1,22 @@
 package org.openlca.core.application.navigation;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.openlca.core.application.db.Database;
 import org.openlca.core.database.CategoryDao;
+import org.openlca.core.database.IRootEntityDao;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
+import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Optional;
+
 public class ModelTypeElement implements INavigationElement {
 
+	private Logger log = LoggerFactory.getLogger(getClass());
 	private ModelType modelType;
 
 	public ModelTypeElement(ModelType modelType) {
@@ -21,17 +25,34 @@ public class ModelTypeElement implements INavigationElement {
 
 	@Override
 	public List<INavigationElement> getChildren() {
-		CategoryDao dao = new CategoryDao(Database.getEntityFactory());
+		List<INavigationElement> childs = new ArrayList<>();
+		addCategoryElements(childs);
+		addModelElements(childs);
+		return childs;
+	}
+
+	private void addCategoryElements(List<INavigationElement> elements) {
 		try {
-			List<INavigationElement> elems = new ArrayList<>();
+			CategoryDao dao = new CategoryDao(Database.getEntityFactory());
 			for (Category category : dao.getRootCategories(modelType)) {
-				elems.add(new CategoryElement(this, category));
+				elements.add(new CategoryElement(this, category));
 			}
-			return elems;
 		} catch (Exception e) {
-			Logger log = LoggerFactory.getLogger(getClass());
-			log.error("failed to get categories for " + modelType, e);
-			return Collections.emptyList();
+			log.error("failed to add category elements: " + modelType, e);
+		}
+	}
+
+	private void addModelElements(List<INavigationElement> elements) {
+		try {
+			IRootEntityDao<?> entityDao = Database.createRootDao(modelType);
+			if (entityDao == null)
+				return;
+			Optional<Category> nil = Optional.absent();
+			for (BaseDescriptor descriptor : entityDao.getDescriptors(nil)) {
+				elements.add(new ModelElement(this, descriptor));
+			}
+		} catch (Exception e) {
+			log.error("Failed to add model elements: " + modelType, e);
 		}
 	}
 

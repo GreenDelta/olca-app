@@ -1,12 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.core.application.views.navigator;
 
 import java.util.ArrayList;
@@ -20,52 +11,19 @@ import org.eclipse.ui.navigator.CommonDragAdapterAssistant;
 import org.openlca.core.application.navigation.CategoryElement;
 import org.openlca.core.application.navigation.ModelElement;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.model.Category;
-import org.openlca.core.model.modelprovider.IModelComponent;
 import org.openlca.ui.dnd.ModelComponentTransfer;
 
-/**
- * Extension of the {@link CommonDragAdapterAssistant} to support drag
- * assistance for the common viewer of the applications navigator
- * 
- * @author Sebastian Greve
- * 
- */
 public class NavigationDragAssistant extends CommonDragAdapterAssistant {
 
-	/**
-	 * Default constructor
-	 */
-	public NavigationDragAssistant() {
-		// nothing to initialize
-	}
-
 	@Override
-	public void dragStart(final DragSourceEvent anEvent,
-			final IStructuredSelection aSelection) {
+	public void dragStart(DragSourceEvent anEvent,
+			IStructuredSelection aSelection) {
 		anEvent.doit = true;
-		final Iterator<?> it = aSelection.iterator();
-
-		// for each element (while no element was found which is no model
-		// component or category
+		Iterator<?> it = aSelection.iterator();
 		while (it.hasNext() && anEvent.doit) {
-			final Object o = it.next();
-
-			// if element is not model component or category element
+			Object o = it.next();
 			if (!(o instanceof ModelElement || o instanceof CategoryElement)) {
 				anEvent.doit = false;
-			} else {
-
-				// if category navigation element
-				if (o instanceof CategoryElement) {
-					final Category category = (Category) ((CategoryElement) o)
-							.getData();
-					// if component is top category
-					if (category.getComponentClass().equals(category.getId())) {
-						anEvent.doit = false;
-					}
-				}
-
 			}
 		}
 	}

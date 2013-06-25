@@ -23,19 +23,13 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.CommonViewer;
-import org.openlca.core.application.actions.OpenEditorAction;
 import org.openlca.core.application.navigation.INavigationElement;
 import org.openlca.core.application.navigation.ModelElement;
 import org.openlca.core.application.navigation.NavigationRoot;
-import org.openlca.core.model.modelprovider.IModelComponent;
 import org.openlca.ui.Viewers;
 
 /**
- * Extension of the {@link CommonNavigator}. This navigator shows all registed
- * data providers and there category system
- * 
- * @author Sebastian Greve
- * @author Michael Srocka (made some refactorings)
+ * The navigation tree.
  */
 public class Navigator extends CommonNavigator {
 
@@ -68,12 +62,7 @@ public class Navigator extends CommonNavigator {
 	}
 
 	private void openModel(IStructuredSelection selection) {
-		ModelElement element = (ModelElement) selection
-				.getFirstElement();
-		IModelComponent modelComponent = (IModelComponent) element.getData();
-		OpenEditorAction action = new OpenEditorAction();
-		action.setModelComponent(element.getDatabase(), modelComponent);
-		action.run();
+		// TODO: open the model
 	}
 
 	/**

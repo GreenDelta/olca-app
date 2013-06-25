@@ -10,8 +10,7 @@ public class ModelElement implements INavigationElement {
 	private BaseDescriptor descriptor;
 	private INavigationElement parent;
 
-	public ModelElement(INavigationElement parent,
-			BaseDescriptor descriptor) {
+	public ModelElement(INavigationElement parent, BaseDescriptor descriptor) {
 		this.descriptor = descriptor;
 		this.parent = parent;
 	}

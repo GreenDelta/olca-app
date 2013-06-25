@@ -6,7 +6,18 @@ import java.util.Objects;
 import javax.persistence.EntityManagerFactory;
 
 import org.openlca.core.application.App;
+import org.openlca.core.database.ActorDao;
+import org.openlca.core.database.BaseDao;
+import org.openlca.core.database.FlowDao;
+import org.openlca.core.database.FlowPropertyDao;
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.database.IRootEntityDao;
+import org.openlca.core.database.ImpactMethodDao;
+import org.openlca.core.database.ProductSystemDao;
+import org.openlca.core.database.ProjectDao;
+import org.openlca.core.database.SourceDao;
+import org.openlca.core.database.UnitGroupDao;
+import org.openlca.core.model.ModelType;
 
 /** Database management of the application. */
 public class Database {
@@ -29,9 +40,11 @@ public class Database {
 			return null;
 	}
 
-	public static void activate(IDatabaseConfiguration config) throws Exception {
+	public static IDatabase activate(IDatabaseConfiguration config)
+			throws Exception {
 		Database.database = config.createInstance();
 		Database.config = config;
+		return Database.database;
 	}
 
 	public static boolean isActive(IDatabaseConfiguration config) {
@@ -92,6 +105,40 @@ public class Database {
 			return;
 		configurations.getRemoteDatabases().remove(config);
 		saveConfig();
+	}
+
+	public static <T> BaseDao<T> createDao(Class<T> clazz) {
+		if (database == null)
+			return null;
+		else
+			return database.createDao(clazz);
+	}
+
+	public static IRootEntityDao<?> createRootDao(ModelType type) {
+		if (database == null)
+			return null;
+		switch (type) {
+		case ACTOR:
+			return new ActorDao(getEntityFactory());
+		case FLOW:
+			return new FlowDao(getEntityFactory());
+		case FLOW_PROPERTY:
+			return new FlowPropertyDao(getEntityFactory());
+		case IMPACT_METHOD:
+			return new ImpactMethodDao(getEntityFactory());
+		case PROCESS:
+			return new ImpactMethodDao(getEntityFactory());
+		case PRODUCT_SYSTEM:
+			return new ProductSystemDao(getEntityFactory());
+		case PROJECT:
+			return new ProjectDao(getEntityFactory());
+		case SOURCE:
+			return new SourceDao(getEntityFactory());
+		case UNIT_GROUP:
+			return new UnitGroupDao(getEntityFactory());
+		default:
+			return null;
+		}
 	}
 
 }

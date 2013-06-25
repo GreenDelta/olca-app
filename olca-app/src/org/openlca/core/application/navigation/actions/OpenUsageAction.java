@@ -1,5 +1,6 @@
 package org.openlca.core.application.navigation.actions;
 
+import java.util.EnumSet;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
@@ -10,14 +11,8 @@ import org.openlca.core.application.navigation.INavigationElement;
 import org.openlca.core.application.navigation.ModelElement;
 import org.openlca.core.application.views.UsageView;
 import org.openlca.core.application.views.UsageViewInput;
-import org.openlca.core.model.Actor;
-import org.openlca.core.model.Flow;
-import org.openlca.core.model.FlowProperty;
-import org.openlca.core.model.Process;
-import org.openlca.core.model.Source;
-import org.openlca.core.model.UnitGroup;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
-import org.openlca.core.model.descriptors.Descriptors;
 import org.openlca.core.resources.ImageType;
 import org.openlca.ui.Editors;
 
@@ -27,8 +22,16 @@ import org.openlca.ui.Editors;
 public class OpenUsageAction extends Action implements INavigationAction {
 
 	private BaseDescriptor descriptor;
-	private Class<?>[] classes = { Actor.class, Source.class, UnitGroup.class,
-			FlowProperty.class, Flow.class, Process.class };
+
+	//@formatter:off
+	private EnumSet<ModelType> types = EnumSet.of(
+			ModelType.ACTOR,
+			ModelType.SOURCE, 
+			ModelType.UNIT_GROUP, 
+			ModelType.FLOW_PROPERTY,
+			ModelType.FLOW, 
+			ModelType.PROCESS);
+	//@formatter:on
 
 	public OpenUsageAction() {
 		setText(Messages.Common_Usage);
@@ -52,22 +55,8 @@ public class OpenUsageAction extends Action implements INavigationAction {
 		if (!(navigationElement instanceof ModelElement))
 			return false;
 		ModelElement element = (ModelElement) navigationElement;
-		Object data = element.getData();
-		if (!(data instanceof IModelComponent))
-			return false;
-		IModelComponent comp = (IModelComponent) data;
-		if (isInClasses(comp)) {
-			descriptor = Descriptors.toDescriptor(comp);
-			return true;
-		}
-		return false;
-	}
-
-	private boolean isInClasses(IModelComponent comp) {
-		for (Class<?> clazz : classes)
-			if (clazz.isInstance(comp))
-				return true;
-		return false;
+		descriptor = (BaseDescriptor) element.getData();
+		return types.contains(descriptor.getModelType());
 	}
 
 	@Override

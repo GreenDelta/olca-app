@@ -13,9 +13,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.openlca.core.application.db.Database;
+import org.openlca.core.database.IRootEntityDao;
 import org.openlca.core.model.Category;
+import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Optional;
 
 /**
  * Represents categories in the navigation tree.
@@ -45,12 +50,27 @@ public class CategoryElement implements INavigationElement {
 	public List<INavigationElement> getChildren() {
 		if (category == null)
 			return Collections.emptyList();
-		// TODO get models
 		List<INavigationElement> list = new ArrayList<>();
 		for (Category child : category.getChildCategories()) {
 			list.add(new CategoryElement(this, child));
 		}
+		addModelElements(list);
 		return list;
+	}
+
+	private void addModelElements(List<INavigationElement> list) {
+		try {
+			IRootEntityDao<?> dao = Database.createRootDao(category
+					.getModelType());
+			if (dao == null)
+				return;
+			Optional<Category> optional = Optional.fromNullable(category);
+			for (BaseDescriptor descriptor : dao.getDescriptors(optional)) {
+				list.add(new ModelElement(this, descriptor));
+			}
+		} catch (Exception e) {
+			log.error("failed to get model elements: " + category, e);
+		}
 	}
 
 	@Override
