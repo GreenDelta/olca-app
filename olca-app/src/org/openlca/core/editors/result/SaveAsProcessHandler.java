@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import org.openlca.core.application.App;
 import org.openlca.core.application.Messages;
-import org.openlca.core.application.views.navigator.Navigator;
+import org.openlca.core.application.navigation.Navigator;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;

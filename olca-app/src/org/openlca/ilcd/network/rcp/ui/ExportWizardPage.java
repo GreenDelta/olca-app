@@ -15,7 +15,7 @@ import org.openlca.core.application.navigation.ModelElement;
 import org.openlca.core.application.navigation.NavigationContentProvider;
 import org.openlca.core.application.navigation.NavigationLabelProvider;
 import org.openlca.core.application.navigation.NavigationSorter;
-import org.openlca.core.application.views.navigator.Navigator;
+import org.openlca.core.application.navigation.Navigator;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.modelprovider.IModelComponent;
 import org.openlca.ui.UI;

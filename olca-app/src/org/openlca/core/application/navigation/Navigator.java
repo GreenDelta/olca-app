@@ -7,14 +7,14 @@
  * Contributors: GreenDeltaTC - initial API and implementation
  * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
  ******************************************************************************/
-package org.openlca.core.application.views.navigator;
+package org.openlca.core.application.navigation;
 
 import java.util.List;
 
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbench;
@@ -23,9 +23,8 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.CommonViewer;
-import org.openlca.core.application.navigation.INavigationElement;
-import org.openlca.core.application.navigation.ModelElement;
-import org.openlca.core.application.navigation.NavigationRoot;
+import org.openlca.core.application.App;
+import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.ui.Viewers;
 
 /**
@@ -48,21 +47,20 @@ public class Navigator extends CommonNavigator {
 		viewer.setUseHashlookup(true);
 		ColumnViewerToolTipSupport.enableFor(viewer);
 		viewer.addDoubleClickListener(new IDoubleClickListener() {
-
 			@Override
 			public void doubleClick(DoubleClickEvent event) {
-				IStructuredSelection selection = (IStructuredSelection) event
-						.getSelection();
-				if (!selection.isEmpty()
-						&& selection.getFirstElement() instanceof ModelElement)
-					openModel(selection);
+				openModel(event.getSelection());
 			}
 		});
-
 	}
 
-	private void openModel(IStructuredSelection selection) {
-		// TODO: open the model
+	private void openModel(ISelection selection) {
+		Object element = Viewers.getFirst(selection);
+		if (!(element instanceof ModelElement))
+			return;
+		ModelElement e = (ModelElement) element;
+		BaseDescriptor d = (BaseDescriptor) e.getData();
+		App.openEditor(d);
 	}
 
 	/**

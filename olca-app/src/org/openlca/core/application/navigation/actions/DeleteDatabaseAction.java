@@ -19,7 +19,7 @@ import org.openlca.core.application.db.Database;
 import org.openlca.core.application.db.DerbyConfiguration;
 import org.openlca.core.application.navigation.DatabaseElement;
 import org.openlca.core.application.navigation.INavigationElement;
-import org.openlca.core.application.views.navigator.Navigator;
+import org.openlca.core.application.navigation.Navigator;
 import org.openlca.core.resources.ImageType;
 import org.openlca.ui.Editors;
 import org.openlca.ui.UI;

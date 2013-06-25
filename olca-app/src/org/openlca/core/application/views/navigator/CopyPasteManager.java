@@ -19,6 +19,7 @@ import org.openlca.core.application.Messages;
 import org.openlca.core.application.navigation.CategoryElement;
 import org.openlca.core.application.navigation.INavigationElement;
 import org.openlca.core.application.navigation.ModelElement;
+import org.openlca.core.application.navigation.Navigator;
 import org.openlca.core.application.plugin.Activator;
 import org.openlca.core.database.DataProviderException;
 import org.openlca.core.database.IDatabase;

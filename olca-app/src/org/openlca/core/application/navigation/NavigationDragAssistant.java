@@ -1,4 +1,4 @@
-package org.openlca.core.application.views.navigator;
+package org.openlca.core.application.navigation;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -8,8 +8,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.ui.navigator.CommonDragAdapterAssistant;
-import org.openlca.core.application.navigation.CategoryElement;
-import org.openlca.core.application.navigation.ModelElement;
 import org.openlca.core.database.IDatabase;
 import org.openlca.ui.dnd.ModelComponentTransfer;
 

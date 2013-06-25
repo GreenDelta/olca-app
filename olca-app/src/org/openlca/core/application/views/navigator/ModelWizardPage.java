@@ -6,7 +6,6 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.openlca.core.application.Messages;
-import org.openlca.core.model.Category;
 import org.openlca.ui.UIFactory;
 
 /**
@@ -17,18 +16,9 @@ public abstract class ModelWizardPage extends WizardPage {
 	private Text descriptionText;
 	private String EMPTY_NAME_ERROR = Messages.Common_PleaseEnterName;
 	private Text nameText;
-	private Category category;
 
 	protected ModelWizardPage(String pageName) {
 		super(pageName);
-	}
-
-	public Category getCategory() {
-		return category;
-	}
-
-	public void setCategory(Category category) {
-		this.category = category;
 	}
 
 	protected void checkInput() {
@@ -48,8 +38,6 @@ public abstract class ModelWizardPage extends WizardPage {
 	protected final String getComponentName() {
 		return nameText != null ? nameText.getText() : "";
 	}
-
-	protected abstract Object[] getData();
 
 	protected void initModifyListeners() {
 		nameText.addModifyListener(new ModifyListener() {

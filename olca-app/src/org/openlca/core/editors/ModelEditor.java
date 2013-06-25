@@ -28,13 +28,13 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.openlca.core.application.Messages;
+import org.openlca.core.application.navigation.Navigator;
 import org.openlca.core.application.views.ModelEditorInput;
-import org.openlca.core.application.views.navigator.Navigator;
 import org.openlca.core.database.DataProviderException;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ProductSystem;
+import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.BaseDescriptor;
-import org.openlca.core.model.modelprovider.IModelComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +51,7 @@ public abstract class ModelEditor extends FormEditor implements
 
 	private IDatabase database;
 	private boolean dirty = false;
-	private IModelComponent modelComponent;
+	private RootEntity modelComponent;
 	private ModelEditorPage[] pages = new ModelEditorPage[0];
 
 	private List<IEditorComponent> editorComponents = new ArrayList<>();
@@ -102,13 +102,6 @@ public abstract class ModelEditor extends FormEditor implements
 	}
 
 	@Override
-	public void dispose() {
-		if (modelComponent != null)
-			modelComponent.removePropertyChangeListener(this);
-		super.dispose();
-	}
-
-	@Override
 	public void doSave(final IProgressMonitor monitor) {
 		log.trace("Save {} to database.", modelComponent);
 		try {
@@ -123,7 +116,8 @@ public abstract class ModelEditor extends FormEditor implements
 											modelComponent.getName()),
 									IProgressMonitor.UNKNOWN);
 							try {
-								database.refresh(modelComponent);
+								database.createDao(modelComponent.getClass())
+										.update(modelComponent);
 							} catch (final DataProviderException e) {
 								throw new InvocationTargetException(e);
 							}
@@ -152,7 +146,7 @@ public abstract class ModelEditor extends FormEditor implements
 		return database;
 	}
 
-	public IModelComponent getModelComponent() {
+	public RootEntity getModelComponent() {
 		return modelComponent;
 	}
 
@@ -164,12 +158,10 @@ public abstract class ModelEditor extends FormEditor implements
 		setPartName(input.getName());
 		try {
 			ModelEditorInput modelInput = (ModelEditorInput) input;
-			database = modelInput.getDatabase();
 			BaseDescriptor descriptor = modelInput.getDescriptor();
 			String id = descriptor.getId();
 			Class<?> clazz = descriptor.getModelType().getModelClass();
 			loadModelComponent(clazz, id, input.getName());
-			modelComponent.addPropertyChangeListener(this);
 		} catch (Exception e) {
 			log.error("Failed to open model " + input, e);
 			throw new PartInitException("Failed to open model", e);

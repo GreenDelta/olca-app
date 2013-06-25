@@ -7,7 +7,7 @@
  * Contributors: GreenDeltaTC - initial API and implementation
  * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
  ******************************************************************************/
-package org.openlca.core.application.views.navigator;
+package org.openlca.core.application.navigation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,10 +22,8 @@ import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.navigator.CommonDropAdapter;
 import org.eclipse.ui.navigator.CommonDropAdapterAssistant;
-import org.openlca.core.application.navigation.CategoryElement;
-import org.openlca.core.application.navigation.INavigationElement;
-import org.openlca.core.application.navigation.ModelElement;
 import org.openlca.core.application.plugin.Activator;
+import org.openlca.core.application.views.navigator.CopyPasteManager;
 
 /**
  * Extension of the {@link CommonDropAdapterAssistant} to support drop

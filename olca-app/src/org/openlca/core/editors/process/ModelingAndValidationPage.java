@@ -28,7 +28,7 @@ import org.openlca.core.application.Messages;
 import org.openlca.core.application.actions.DeleteWithQuestionAction;
 import org.openlca.core.application.actions.OpenEditorAction;
 import org.openlca.core.application.navigation.NavigationRoot;
-import org.openlca.core.application.views.navigator.Navigator;
+import org.openlca.core.application.navigation.Navigator;
 import org.openlca.core.editors.ModelEditor;
 import org.openlca.core.editors.ModelEditorPage;
 import org.openlca.core.model.Actor;

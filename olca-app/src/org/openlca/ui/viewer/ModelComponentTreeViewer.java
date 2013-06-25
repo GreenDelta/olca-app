@@ -25,7 +25,7 @@ import org.openlca.core.application.navigation.NavigationContentProvider;
 import org.openlca.core.application.navigation.NavigationLabelProvider;
 import org.openlca.core.application.navigation.NavigationSorter;
 import org.openlca.core.model.Category;
-import org.openlca.core.model.modelprovider.IModelComponent;
+import org.openlca.core.model.ModelType;
 
 /**
  * Tree viewer implementation for displaying categorized model components
@@ -35,27 +35,9 @@ import org.openlca.core.model.modelprovider.IModelComponent;
  */
 public class ModelComponentTreeViewer extends TreeViewer {
 
-	/**
-	 * Creates a new ModelComponentTreeViewer
-	 * 
-	 * @param parent
-	 *            The parent composite
-	 * @param multi
-	 *            Indicates if multi selection is allowed
-	 * @param onlyCategories
-	 *            Indicates if only categories are shown, if false also the
-	 *            model components within the categories are shown, if true
-	 *            model components will be filtered
-	 * @param input
-	 *            The input of the tree viewer
-	 * @param clazz
-	 *            Only model components/categories of the specified class will
-	 *            be shown
-	 */
 	public ModelComponentTreeViewer(final Composite parent,
 			final boolean multi, final boolean onlyCategories,
-			final INavigationElement input,
-			final Class<? extends IModelComponent> clazz) {
+			final INavigationElement input, final ModelType modelType) {
 		super(parent, SWT.BORDER | (multi ? SWT.MULTI : SWT.SINGLE));
 		setContentProvider(new NavigationContentProvider());
 		setLabelProvider(new NavigationLabelProvider());
@@ -82,17 +64,14 @@ public class ModelComponentTreeViewer extends TreeViewer {
 			public boolean select(final Viewer viewer,
 					final Object parentElement, final Object element) {
 				boolean select = true;
-				if (element instanceof ModelElement
-						&& onlyCategories) {
+				if (element instanceof ModelElement && onlyCategories) {
 					select = false;
 				} else if (element instanceof CategoryElement) {
-					select = onlyCategories
-							|| hasModelComponents((CategoryElement) element);
-					if (clazz != null) {
-						if (!clazz
-								.getCanonicalName()
-								.equals(((Category) ((CategoryElement) element)
-										.getData()).getComponentClass())) {
+					CategoryElement e = (CategoryElement) element;
+					select = onlyCategories || hasModelComponents(e);
+					Category category = (Category) e.getData();
+					if (modelType != null) {
+						if (category.getModelType() != modelType) {
 							select = false;
 						}
 					}
@@ -113,7 +92,7 @@ public class ModelComponentTreeViewer extends TreeViewer {
 	 */
 	private boolean hasModelComponents(final CategoryElement element) {
 		boolean has = false;
-		for (final INavigationElement child : element.getChildren(true)) {
+		for (final INavigationElement child : element.getChildren()) {
 			if (child instanceof ModelElement) {
 				has = true;
 			} else {

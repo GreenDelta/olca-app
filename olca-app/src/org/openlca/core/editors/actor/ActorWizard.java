@@ -1,30 +1,41 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.core.editors.actor;
 
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.ui.IWorkbench;
 import org.openlca.core.application.Messages;
-import org.openlca.core.application.views.navigator.ModelWizard;
+import org.openlca.core.editors.INewModelWizard;
+import org.openlca.core.model.Category;
+import org.openlca.core.resources.ImageType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-/**
- * Wizard for creating a new actor object
- * 
- * @author Sebastian Greve
- * 
- */
-public class ActorWizard extends ModelWizard {
+public class ActorWizard extends Wizard implements INewModelWizard {
 
-	/**
-	 * Creates a new actor wizard
-	 */
-	public ActorWizard() {
-		super(Messages.Actors_WizardTitle, new ActorWizardPage());
+	private Logger log = LoggerFactory.getLogger(getClass());
+	private Category category;
+
+	@Override
+	public void init(IWorkbench workbench, IStructuredSelection selection) {
+		setWindowTitle(Messages.Actors_WizardTitle);
+		setDefaultPageImageDescriptor(ImageType.NEW_WIZARD.getDescriptor());
+	}
+
+	@Override
+	public void setCategory(Category category) {
+		this.category = category;
+	}
+
+	@Override
+	public void addPages() {
+		addPage(new ActorWizardPage());
+	}
+
+	@Override
+	public boolean performFinish() {
+		log.trace("finish create actor");
+
+		return false;
 	}
 
 }

@@ -14,7 +14,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
-import org.openlca.core.application.views.navigator.Navigator;
+import org.openlca.core.application.navigation.Navigator;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.resources.ImageType;
 

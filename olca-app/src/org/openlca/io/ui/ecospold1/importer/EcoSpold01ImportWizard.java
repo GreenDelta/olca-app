@@ -31,7 +31,7 @@ import org.jdom.Element;
 import org.jdom.Namespace;
 import org.jdom.input.SAXBuilder;
 import org.openlca.core.application.navigation.NavigationRoot;
-import org.openlca.core.application.views.navigator.Navigator;
+import org.openlca.core.application.navigation.Navigator;
 import org.openlca.core.database.DataProviderException;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Category;

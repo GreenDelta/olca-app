@@ -11,7 +11,7 @@ import org.openlca.core.application.App;
 import org.openlca.core.application.Messages;
 import org.openlca.core.application.db.DatabaseWizardPage.PageData;
 import org.openlca.core.application.events.DatabaseCreatedEvent;
-import org.openlca.core.application.views.navigator.Navigator;
+import org.openlca.core.application.navigation.Navigator;
 import org.openlca.core.application.views.search.SearchView;
 import org.openlca.core.database.DatabaseContent;
 import org.openlca.core.database.IDatabase;

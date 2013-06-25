@@ -12,56 +12,56 @@
             class="org.openlca.core.editors.actor.ActorEditor"
             default="false"
             icon="icons/actor_obj.png"
-            id="org.openlca.core.editors.actor.ActorEditor"
+            id="ActorEditor"
             name="%editor.name">
       </editor>
       <editor
             class="org.openlca.core.editors.source.SourceEditor"
             default="false"
             icon="icons/source_obj.png"
-            id="org.openlca.core.editors.source.SourceEditor"
+            id="SourceEditor"
             name="%editor.name.0">
       </editor>
       <editor
             class="org.openlca.core.editors.unitgroup.UnitGroupEditor"
             default="false"
             icon="icons/unitgroup_obj.gif"
-            id="org.openlca.core.editors.unitgroup.UnitGroupEditor"
+            id="UnitGroupEditor"
             name="%editor.name.1">
       </editor>
       <editor
             class="org.openlca.core.editors.flowproperty.FlowPropertyEditor"
             default="false"
             icon="icons/flowprop_obj.gif"
-            id="org.openlca.core.editors.flowproperty.FlowPropertyEditor"
+            id="FlowPropertyEditor"
             name="%editor.name.2">
       </editor>
       <editor
             class="org.openlca.core.editors.flow.FlowEditor"
             default="false"
             icon="icons/flow_obj.gif"
-            id="org.openlca.core.editors.flow.FlowEditor"
+            id="FlowEditor"
             name="%editor.name.3">
       </editor>
       <editor
             class="org.openlca.core.editors.lciamethod.LCIAMethodEditor"
             default="false"
             icon="icons/LCIA_obj.gif"
-            id="org.openlca.core.editors.lciamethod.LCIAMethodEditor"
+            id="ImpactMethodEditor"
             name="%editor.name.7">
       </editor>
       <editor
             class="org.openlca.core.editors.process.ProcessEditor"
             default="false"
             icon="icons/proc_obj.gif"
-            id="org.openlca.core.editors.process.ProcessEditor"
+            id="ProcessEditor"
             name="%editor.name.4">
       </editor>
       <editor
             class="org.openlca.core.editors.project.ProjectEditor"
             default="false"
             icon="icons/project_obj.png"
-            id="org.openlca.core.editors.project.ProjectEditor"
+            id="ProjectEditor"
             name="%editor.name.5">
       </editor>
       <editor
@@ -69,7 +69,7 @@
             contributorClass="org.openlca.core.editors.productsystem.graphical.GraphicalEditorActionBarContributor"
             default="false"
             icon="icons/model.gif"
-            id="org.openlca.core.editors.productsystem.ProductSystemEditor"
+            id="ProductSystemEditor"
             name="%editor.name.6">
       </editor>
       <editor
@@ -77,7 +77,7 @@
             contributorClass="org.openlca.core.editors.result.ResultActionProvider"
             default="false"
             icon="icons/expression_obj.gif"
-            id="org.openlca.core.editors.result.ResultEditor"
+            id="ResultEditor"
             name="Result viewer">
       </editor>
       <editor
@@ -184,7 +184,7 @@
          point="org.eclipse.ui.views">
       <view
             allowMultiple="false"
-            class="org.openlca.core.application.views.navigator.Navigator"
+            class="org.openlca.core.application.navigation.Navigator"
             icon="icons/categories.gif"
             id="org.openlca.core.application.navigator"
             name="%view.name">
@@ -370,7 +370,7 @@
          </includes>
       </viewerActionBinding>
       <dragAssistant
-            class="org.openlca.core.application.views.navigator.NavigationDragAssistant"
+            class="org.openlca.core.application.navigation.NavigationDragAssistant"
             viewerId="org.openlca.core.application.navigator">
       </dragAssistant>
    </extension>
@@ -392,7 +392,7 @@
                class="org.openlca.core.application.navigation.NavigationSorter">
          </commonSorter>
          <dropAssistant
-               class="org.openlca.core.application.views.navigator.NavigationDropAssistant"
+               class="org.openlca.core.application.navigation.NavigationDropAssistant"
                id="org.openlca.core.application.dropAssistant">
             <possibleDropTargets>
                <instanceof

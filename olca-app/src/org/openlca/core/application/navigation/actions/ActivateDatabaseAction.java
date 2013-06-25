@@ -8,7 +8,7 @@ import org.openlca.core.application.db.Database;
 import org.openlca.core.application.db.IDatabaseConfiguration;
 import org.openlca.core.application.navigation.DatabaseElement;
 import org.openlca.core.application.navigation.INavigationElement;
-import org.openlca.core.application.views.navigator.Navigator;
+import org.openlca.core.application.navigation.Navigator;
 import org.openlca.core.resources.ImageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

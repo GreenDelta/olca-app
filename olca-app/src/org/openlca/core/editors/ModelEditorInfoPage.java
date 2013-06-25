@@ -32,9 +32,9 @@ import org.openlca.core.application.Messages;
 import org.openlca.core.application.navigation.CategoryElement;
 import org.openlca.core.application.navigation.INavigationElement;
 import org.openlca.core.application.navigation.NavigationRoot;
-import org.openlca.core.application.views.navigator.Navigator;
+import org.openlca.core.application.navigation.Navigator;
 import org.openlca.core.model.Category;
-import org.openlca.core.model.modelprovider.IModelComponent;
+import org.openlca.core.model.RootEntity;
 import org.openlca.ui.UIFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,7 +83,7 @@ public abstract class ModelEditorInfoPage extends ModelEditorPage implements
 	/**
 	 * the object edited by this editor
 	 */
-	private IModelComponent modelComponent;
+	private RootEntity modelComponent;
 
 	/**
 	 * A {@link Text} widget for the name-field of this actor

@@ -23,8 +23,6 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
-import org.eclipse.jface.window.Window;
-import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -38,13 +36,11 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.core.application.Messages;
 import org.openlca.core.application.actions.DeleteWithQuestionAction;
-import org.openlca.core.application.wizards.DeleteWizard;
 import org.openlca.core.editors.ModelEditor;
 import org.openlca.core.editors.ModelEditorInfoPage;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
-import org.openlca.core.model.modelprovider.IModelComponent;
 import org.openlca.core.resources.ImageType;
 import org.openlca.ui.IContentChangedListener;
 import org.openlca.ui.UI;
@@ -244,12 +240,12 @@ public class UnitGroupInfoPage extends ModelEditorInfoPage {
 			int i = 1;
 			// check if exists, if so set new name
 			while (unitGroup.getUnit(name) != null) {
-				name = Messages.Units_Unit + (unitGroup.getUnits().length + i);
+				name = Messages.Units_Unit + (unitGroup.getUnits().size() + i);
 			}
 			unit.setName(name);
 			unit.setId(UUID.randomUUID().toString());
-			unitGroup.add(unit);
-			if (unitGroup.getUnits().length == 1) {
+			unitGroup.getUnits().add(unit);
+			if (unitGroup.getUnits().size() == 1) {
 				unitGroup.setReferenceUnit(unit);
 			}
 
@@ -278,30 +274,12 @@ public class UnitGroupInfoPage extends ModelEditorInfoPage {
 		public void delete() {
 			StructuredSelection structuredSelection = (StructuredSelection) unitsTableViewer
 					.getSelection();
-			// for each selected unit
 			for (int i = 0; i < structuredSelection.toArray().length; i++) {
 				Unit unit = (Unit) structuredSelection.toArray()[i];
-				// create delete wizard
-				DeleteWizard wizard = new DeleteWizard(getDatabase(),
-						new UnitReferenceSearcher(), unit);
-				boolean canDelete = true;
-
-				// if references detected
-				if (wizard.hasProblems()) {
-					// show problems
-					canDelete = new WizardDialog(UI.shell(), wizard).open() == Window.OK;
-				}
-
-				// if can delete
-				if (canDelete) {
-					// delete unit
-					messageManager.removeMessage(unit.toString());
-					unitGroup.remove(unit);
-
-				}
-			} // end for
-
-			// refresh table viewer
+				// TODO: check that unit is not used
+				messageManager.removeMessage(unit.toString());
+				unitGroup.getUnits().remove(unit);
+			}
 			unitsTableViewer.setInput(unitGroup.getUnits());
 		}
 
@@ -380,13 +358,10 @@ public class UnitGroupInfoPage extends ModelEditorInfoPage {
 						}
 					}
 				} else if (property.equals(UNIT_DESCRIPTION)) {
-					// set description
 					unit.setDescription(value.toString());
 				} else if (property.equals(UNIT_SYNONYMS)) {
-					// set synonyms
 					unit.setSynonyms(value.toString());
 				} else if (property.equals(UNIT_CONVERSION_FACTOR)) {
-					// set conversion factor
 					Double factor = unit.getConversionFactor();
 					try {
 						factor = Double.parseDouble(value.toString());
@@ -394,19 +369,14 @@ public class UnitGroupInfoPage extends ModelEditorInfoPage {
 					}
 					unit.setConversionFactor(factor);
 				} else if (property.equals(UNIT_IS_REFERENCE)) {
-					// set reference unit
 					unitGroup.setReferenceUnit(unit);
 					double factor = unit.getConversionFactor();
-
-					// for each unit of the unit group
 					for (Unit u : unitGroup.getUnits()) {
-						// convert factor
 						u.setConversionFactor((double) Math.round(1000000000
 								* u.getConversionFactor() / factor) / 1000000000);
 					}
 				}
 			}
-			// refresh table viewer
 			unitsTableViewer.setInput(unitGroup.getUnits());
 			unitsTableViewer.refresh();
 		}

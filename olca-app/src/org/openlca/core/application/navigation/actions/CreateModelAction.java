@@ -20,7 +20,7 @@ import org.eclipse.ui.PlatformUI;
 import org.openlca.core.application.navigation.CategoryElement;
 import org.openlca.core.application.navigation.INavigationElement;
 import org.openlca.core.application.navigation.ModelTypeElement;
-import org.openlca.core.application.views.navigator.ModelWizard;
+import org.openlca.core.editors.INewModelWizard;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 import org.openlca.ui.Images;
@@ -74,12 +74,12 @@ public class CreateModelAction extends Action implements INavigationAction {
 		try {
 			IWorkbenchWizard wizard = PlatformUI.getWorkbench()
 					.getNewWizardRegistry().findWizard(wizardId).createWizard();
-			if (wizard instanceof ModelWizard) {
-				ModelWizard modelWizard = (ModelWizard) wizard;
+			if (wizard instanceof INewModelWizard) {
+				INewModelWizard modelWizard = (INewModelWizard) wizard;
 				modelWizard.setCategory(category);
-				WizardDialog dialog = new WizardDialog(UI.shell(), modelWizard);
-				dialog.open();
 			}
+			WizardDialog dialog = new WizardDialog(UI.shell(), wizard);
+			dialog.open();
 		} catch (final CoreException e) {
 			log.error("Open model wizard failed", e);
 		}

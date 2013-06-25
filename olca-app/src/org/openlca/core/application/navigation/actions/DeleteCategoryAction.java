@@ -16,7 +16,7 @@ import org.openlca.core.application.Messages;
 import org.openlca.core.application.db.Database;
 import org.openlca.core.application.navigation.CategoryElement;
 import org.openlca.core.application.navigation.INavigationElement;
-import org.openlca.core.application.views.navigator.Navigator;
+import org.openlca.core.application.navigation.Navigator;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.model.Category;
 import org.openlca.core.resources.ImageType;

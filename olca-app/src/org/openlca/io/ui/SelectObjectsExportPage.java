@@ -34,7 +34,7 @@ import org.openlca.core.application.ApplicationProperties;
 import org.openlca.core.application.navigation.NavigationContentProvider;
 import org.openlca.core.application.navigation.NavigationLabelProvider;
 import org.openlca.core.application.navigation.NavigationRoot;
-import org.openlca.core.application.views.navigator.Navigator;
+import org.openlca.core.application.navigation.Navigator;
 import org.openlca.core.model.Actor;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;

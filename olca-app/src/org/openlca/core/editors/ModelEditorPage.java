@@ -21,7 +21,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.core.application.Messages;
 import org.openlca.core.application.actions.OpenEditorAction;
 import org.openlca.core.application.navigation.NavigationRoot;
-import org.openlca.core.application.views.navigator.Navigator;
+import org.openlca.core.application.navigation.Navigator;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.modelprovider.IModelComponent;
 import org.openlca.core.resources.ImageType;

@@ -2,17 +2,12 @@ package org.openlca.core.application;
 
 import java.io.File;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 
-import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.osgi.service.datalocation.Location;
 import org.openlca.core.application.plugin.Activator;
 import org.openlca.core.application.plugin.Workspace;
 import org.openlca.core.application.views.ModelEditorInput;
-import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.BaseDescriptor;
@@ -27,7 +22,6 @@ public class App {
 
 	static Logger log = LoggerFactory.getLogger(App.class);
 
-	private static Map<Class<?>, String> editorIds = new HashMap<>();
 	private static AppCache cache = new AppCache();
 	private static EventBus eventBus = new EventBus();
 
@@ -76,47 +70,53 @@ public class App {
 		return eventBus;
 	}
 
-	public static void openEditor(RootEntity model, IDatabase db) {
+	public static void openEditor(RootEntity model) {
 		BaseDescriptor descriptor = Descriptors.toDescriptor(model);
-		openEditor(descriptor, db);
+		openEditor(descriptor);
 	}
 
-	public static void openEditor(BaseDescriptor modelDescriptor, IDatabase db) {
-		if (modelDescriptor == null || db == null) {
-			log.error("model or db is null, could not open editor");
+	public static void openEditor(BaseDescriptor modelDescriptor) {
+		if (modelDescriptor == null) {
+			log.error("model is null, could not open editor");
 			return;
 		}
-		log.trace("open editor for {} in {}", modelDescriptor, db);
+		log.trace("open editor for {} ", modelDescriptor);
 		String editorId = getEditorId(modelDescriptor.getModelType());
 		if (editorId == null)
 			log.error("could not find editor for model {}", modelDescriptor);
 		else {
-			ModelEditorInput input = new ModelEditorInput(modelDescriptor, db);
+			ModelEditorInput input = new ModelEditorInput(modelDescriptor);
 			Editors.open(input, editorId);
 		}
 	}
 
 	private static String getEditorId(ModelType type) {
-		if (type == null || type.getModelClass() == null)
+		if (type == null)
 			return null;
-		String editorId = editorIds.get(type.getModelClass());
-		if (editorId == null) {
-			editorId = findEditorId(type.getModelClass());
-			editorIds.put(type.getModelClass(), editorId);
+		switch (type) {
+		case ACTOR:
+			return "ActorEditor";
+		case FLOW:
+			return "FlowEditor";
+		case FLOW_PROPERTY:
+			return "FlowPropertyEditor";
+		case IMPACT_METHOD:
+			return "ImpactMethodEditor";
+		case PROCESS:
+			return "ProcessEditor";
+		case PRODUCT_SYSTEM:
+			return "ProductSystemEditor";
+		case IMPACT_RESULT:
+			return "ResultEditor";
+		case PROJECT:
+			return "ProjectEditor";
+		case SOURCE:
+			return "SourceEditor";
+		case UNIT_GROUP:
+			return "UnitGroupEditor";
+		default:
+			return null;
 		}
-		return editorId;
-	}
-
-	private static String findEditorId(Class<?> modelClass) {
-		IExtensionRegistry registry = Platform.getExtensionRegistry();
-		IConfigurationElement[] elements = registry
-				.getConfigurationElementsFor("org.openlca.core.application.editors");
-		for (IConfigurationElement elem : elements) {
-			String clazz = elem.getAttribute("componentClass");
-			if (clazz != null && clazz.equals(modelClass.getCanonicalName()))
-				return elem.getAttribute("editorID");
-		}
-		return null;
 	}
 
 	public static void runInUI(String name, Runnable runnable) {
