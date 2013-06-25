@@ -28,7 +28,6 @@ import org.openlca.core.application.navigation.Navigator;
 import org.openlca.core.application.views.navigator.ModelWizardPage;
 import org.openlca.core.application.views.navigator.filter.EmptyCategoryFilter;
 import org.openlca.core.application.views.navigator.filter.FlowTypeFilter;
-import org.openlca.core.editors.controllers.ProcessCreationController;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.descriptors.Descriptors;

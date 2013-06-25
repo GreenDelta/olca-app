@@ -14,8 +14,8 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.model.results.LCIAResult;
-import org.openlca.core.model.results.LCIResult;
+import org.openlca.core.model.results.ImpactResult;
+import org.openlca.core.model.results.InventoryResult;
 
 /**
  * Editor input for product system results.
@@ -23,16 +23,16 @@ import org.openlca.core.model.results.LCIResult;
 public class ResultEditorInput implements IEditorInput {
 
 	private IDatabase database;
-	private LCIResult lciResult;
-	private LCIAResult lciaResult;
+	private InventoryResult lciResult;
+	private ImpactResult lciaResult;
 	private String displayName;
 
-	public ResultEditorInput(LCIResult lciResult, IDatabase database) {
+	public ResultEditorInput(InventoryResult lciResult, IDatabase database) {
 		this.database = database;
 		this.lciResult = lciResult;
 	}
 
-	public void setImpactResult(LCIAResult lciaResult) {
+	public void setImpactResult(ImpactResult lciaResult) {
 		this.lciaResult = lciaResult;
 	}
 
@@ -64,7 +64,7 @@ public class ResultEditorInput implements IEditorInput {
 		return null;
 	}
 
-	public LCIResult getLCIResult() {
+	public InventoryResult getLCIResult() {
 		return lciResult;
 	}
 
@@ -78,7 +78,7 @@ public class ResultEditorInput implements IEditorInput {
 		return null;
 	}
 
-	public LCIAResult getImpactResult() {
+	public ImpactResult getImpactResult() {
 		return lciaResult;
 	}
 

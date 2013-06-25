@@ -3,6 +3,7 @@ package org.openlca.core.editors;
 import java.io.File;
 import java.io.IOException;
 
+import org.openlca.core.application.plugin.Activator;
 import org.openlca.ui.html.HtmlFolder;
 import org.openlca.ui.html.HtmlResource;
 import org.openlca.ui.html.IHtmlResource;

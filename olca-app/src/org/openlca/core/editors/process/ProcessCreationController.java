@@ -1,4 +1,4 @@
-package org.openlca.core.editors.controllers;
+package org.openlca.core.editors.process;
 
 import java.util.UUID;
 

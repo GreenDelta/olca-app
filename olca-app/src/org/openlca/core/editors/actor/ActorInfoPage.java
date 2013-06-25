@@ -16,6 +16,7 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.core.application.Messages;
+import org.openlca.core.editors.InfoSection;
 import org.openlca.core.model.Actor;
 import org.openlca.ui.DataBinding;
 import org.openlca.ui.UI;
@@ -38,19 +39,11 @@ public class ActorInfoPage extends FormPage {
 				+ actor.getName());
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
-		createGeneralInfo(body);
+		InfoSection infoSection = new InfoSection(actor, binding);
+		infoSection.render(body, toolkit);
 		createAdditionalInfo(body);
 		body.setFocus();
 		form.reflow(true);
-	}
-
-	private void createGeneralInfo(Composite body) {
-		Composite composite = UI.formSection(body, toolkit,
-				Messages.Common_GeneralInformation);
-		createText(Messages.Common_Name, "name", composite);
-		Text descriptionText = UI.formMultiText(composite, toolkit,
-				Messages.Common_Description);
-		binding.onString(actor, "description", descriptionText);
 	}
 
 	private void createAdditionalInfo(Composite body) {

@@ -28,10 +28,8 @@ import org.openlca.core.application.Messages;
 import org.openlca.core.editors.ModelEditor;
 import org.openlca.core.editors.ModelEditorPage;
 import org.openlca.core.model.Actor;
-import org.openlca.core.model.AdminInfo;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.Source;
-import org.openlca.core.model.modelprovider.IModelComponent;
 import org.openlca.ui.IContentChangedListener;
 import org.openlca.ui.UIFactory;
 import org.openlca.ui.dnd.TextDropComponent;
@@ -391,20 +389,6 @@ public class AdminInfoPage extends ModelEditorPage implements
 				copyrightButton.setSelection(adminInfo.getCopyright());
 			}
 		}
-	}
-
-	@Override
-	public void dispose() {
-		super.dispose();
-		process = null;
-		intendedApplicationText = null;
-		accessAndUseRestrictionsText = null;
-		projectText = null;
-		versionText = null;
-		copyrightButton = null;
-		creationDateText = null;
-		lastChangeText = null;
-		adminInfo = null;
 	}
 
 	@Override

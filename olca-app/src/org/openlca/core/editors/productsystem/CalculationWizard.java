@@ -16,6 +16,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.Wizard;
 import org.openlca.core.application.App;
 import org.openlca.core.application.Messages;
+import org.openlca.core.application.db.Database;
 import org.openlca.core.application.views.AnalyzeEditorInput;
 import org.openlca.core.application.views.ResultEditorInput;
 import org.openlca.core.application.wizards.ProductSystemCleaner;
@@ -31,8 +32,8 @@ import org.openlca.core.model.NormalizationWeightingSet;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.results.AnalysisResult;
-import org.openlca.core.model.results.LCIAResult;
-import org.openlca.core.model.results.LCIResult;
+import org.openlca.core.model.results.ImpactResult;
+import org.openlca.core.model.results.InventoryResult;
 import org.openlca.ui.Editors;
 import org.openlca.ui.JobListenerWithProgress;
 import org.slf4j.Logger;
@@ -163,7 +164,7 @@ class CalculationWizard extends Wizard {
 
 					try {
 						CalculateAction calculateAction = new CalculateAction();
-						LCIResult lciResult = calculateAction.calculate(
+						InventoryResult lciResult = calculateAction.calculate(
 								productSystem, database, calculator);
 						cacheNewResult(lciResult);
 						ResultEditorInput input = new ResultEditorInput(
@@ -173,8 +174,8 @@ class CalculationWizard extends Wizard {
 						if (method != null) {
 							ImpactCalculator impactCalculator = new ImpactCalculator(
 									database, lciResult);
-							LCIAResult lciaResult = impactCalculator.calculate(
-									method, nwSet);
+							ImpactResult lciaResult = impactCalculator
+									.calculate(method, nwSet);
 							input.setImpactResult(lciaResult);
 						}
 						Editors.open(input, ResultEditor.ID);
@@ -203,16 +204,18 @@ class CalculationWizard extends Wizard {
 		}
 	}
 
-	private void cacheNewResult(LCIResult newResult) {
+	private void cacheNewResult(InventoryResult newResult) {
 		if (newResult == null)
 			return;
 		log.trace("cache new LCI result");
 		try {
-			LCIResult oldResult = database.select(LCIResult.class,
-					newResult.getProductSystemId());
+			BaseDao<InventoryResult> dao = Database
+					.createDao(InventoryResult.class);
+			InventoryResult oldResult = dao.getForId(newResult
+					.getProductSystemId());
 			if (oldResult != null)
-				database.delete(oldResult);
-			database.insert(newResult);
+				dao.delete(oldResult);
+			dao.insert(newResult);
 		} catch (Exception e) {
 			log.error("Caching new LCI result failed", e);
 		}

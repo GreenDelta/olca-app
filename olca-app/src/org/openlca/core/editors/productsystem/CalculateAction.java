@@ -24,7 +24,7 @@ import org.openlca.core.model.ParameterType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.results.AnalysisResult;
-import org.openlca.core.model.results.LCIResult;
+import org.openlca.core.model.results.InventoryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,11 +38,11 @@ class CalculateAction {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
-	public LCIResult calculate(ProductSystem productSystem, IDatabase database,
-			MatrixSolver calculator) throws Exception {
+	public InventoryResult calculate(ProductSystem productSystem,
+			IDatabase database, MatrixSolver calculator) throws Exception {
 		log.trace("start calculation");
 		evaluateParameters(productSystem, database);
-		LCIResult result = calculator.calculate(productSystem);
+		InventoryResult result = calculator.calculate(productSystem);
 		log.trace("calculation done");
 		return result;
 	}
@@ -59,7 +59,7 @@ class CalculateAction {
 	private void evaluateParameters(ProductSystem productSystem,
 			IDatabase database) {
 		log.trace("call prepare");
-		if (productSystem.getParameters().length > 0) {
+		if (productSystem.getParameters().size() > 0) {
 			try {
 				List<Parameter> databaseParameters = new ParameterDao(
 						database.getEntityFactory())
@@ -99,11 +99,9 @@ class CalculateAction {
 
 			for (Parameter param : productSystem.getParameters()) {
 				parameters.add(param);
-				param.removePropertyChangeListener(productSystem);
 			}
 			for (Parameter param : process.getParameters()) {
 				parameters.add(param);
-				param.removePropertyChangeListener(productSystem);
 			}
 
 			evaluator.evaluate(parameters);
@@ -114,8 +112,5 @@ class CalculateAction {
 			}
 		}
 
-		for (Parameter param : productSystem.getParameters()) {
-			param.addPropertyChangeListener(productSystem);
-		}
 	}
 }

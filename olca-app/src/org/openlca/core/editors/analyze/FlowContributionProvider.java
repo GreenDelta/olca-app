@@ -4,25 +4,22 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Flow;
+import org.openlca.core.model.FlowProperty;
+import org.openlca.core.model.Unit;
+import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.results.AnalysisFlowResult;
 import org.openlca.core.model.results.AnalysisResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class FlowContributionProvider implements IProcessContributionProvider<Flow> {
 
 	private AnalysisResult result;
-	private FlowDao flowDao;
-	private Logger log = LoggerFactory.getLogger(getClass());
 	private IDatabase database;
 
 	public FlowContributionProvider(IDatabase database, AnalysisResult result) {
 		this.result = result;
 		this.database = database;
-		flowDao = new FlowDao(database.getEntityFactory());
 	}
 
 	@Override
@@ -100,11 +97,15 @@ class FlowContributionProvider implements IProcessContributionProvider<Flow> {
 	private String flowUnit(Flow flow) {
 		if (flow == null)
 			return null;
-		try {
-			return flowDao.getRefUnitName(flow);
-		} catch (Exception e) {
-			log.error("Failed to get unit for flow " + flow, e);
+		FlowProperty refProp = flow.getReferenceFlowProperty();
+		if (refProp == null)
 			return null;
-		}
+		UnitGroup unitGroup = refProp.getUnitGroup();
+		if (unitGroup == null)
+			return null;
+		Unit unit = unitGroup.getReferenceUnit();
+		if (unit == null)
+			return null;
+		return unit.getName();
 	}
 }

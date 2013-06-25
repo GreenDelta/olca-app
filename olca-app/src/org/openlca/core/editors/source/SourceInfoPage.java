@@ -12,58 +12,50 @@ package org.openlca.core.editors.source;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.forms.IManagedForm;
+import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.Section;
+import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.core.application.Messages;
-import org.openlca.core.editors.ModelEditor;
-import org.openlca.core.editors.ModelEditorInfoPage;
+import org.openlca.core.editors.InfoSection;
 import org.openlca.core.model.Source;
 import org.openlca.ui.DataBinding;
-import org.openlca.ui.UIFactory;
+import org.openlca.ui.UI;
 
-public class SourceInfoPage extends ModelEditorInfoPage {
+public class SourceInfoPage extends FormPage {
 
-	private Source source = null;
-	private DataBinding binding = new DataBinding();
-	private Composite composite;
+	private Source source;
+	private DataBinding binding;
 	private FormToolkit toolkit;
 
-	public SourceInfoPage(ModelEditor editor) {
-		super(editor, "SourceInfoPage", Messages.Common_GeneralInformation,
-				Messages.Common_GeneralInformation);
-		this.source = (Source) editor.getModelComponent();
+	public SourceInfoPage(SourceEditor editor) {
+		super(editor, "SourceInfoPage", Messages.Common_GeneralInformation);
+		this.source = editor.getSource();
+		this.binding = new DataBinding(editor);
 	}
 
 	@Override
-	protected void createContents(final Composite body,
-			final FormToolkit toolkit) {
-		super.createContents(body, toolkit);
-		this.toolkit = toolkit;
-		Section section = UIFactory.createSection(body, toolkit,
-				Messages.Sources_SourceInfoSectionLabel, true, false);
-		composite = UIFactory.createSectionComposite(section, toolkit,
-				UIFactory.createGridLayout(2));
-		Text text = createText(Messages.Sources_Doi);
+	protected void createFormContent(IManagedForm managedForm) {
+		ScrolledForm form = UI.formHeader(managedForm,
+				Messages.Sources_FormText + ": " + source.getName());
+		toolkit = managedForm.getToolkit();
+		Composite body = UI.formBody(form, toolkit);
+		InfoSection infoSection = new InfoSection(source, binding);
+		infoSection.render(body, toolkit);
+		createAdditionalInfo(body);
+		body.setFocus();
+		form.reflow(true);
+	}
+
+	protected void createAdditionalInfo(Composite body) {
+		Composite composite = UI.formSection(body, toolkit,
+				Messages.Sources_SourceInfoSectionLabel);
+		Text text = UI.formText(composite, toolkit, Messages.Sources_Doi);
 		binding.onString(source, "doi", text);
-		text = createText(Messages.Sources_TextReference);
+		text = UI.formText(composite, toolkit, Messages.Sources_TextReference);
 		binding.onString(source, "textReference", text);
-		text = createText(Messages.Sources_Year);
+		text = UI.formText(composite, toolkit, Messages.Sources_Year);
 		binding.onShort(source, "year", text);
-	}
-
-	private Text createText(String label) {
-		Text text = UIFactory.createTextWithLabel(composite, toolkit, label,
-				false);
-		return text;
-	}
-
-	@Override
-	protected String getFormTitle() {
-		final String title = Messages.Sources_FormText
-				+ ": "
-				+ (source != null ? source.getName() != null ? source.getName()
-						: "" : "");
-		return title;
 	}
 
 }
