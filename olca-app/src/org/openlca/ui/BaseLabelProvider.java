@@ -122,15 +122,15 @@ public class BaseLabelProvider extends ColumnLabelProvider {
 
 	private String getEnumText(Object enumValue) {
 		if (enumValue instanceof AllocationMethod)
-			return EnumLabels.allocationMethod((AllocationMethod) enumValue);
+			return Labels.allocationMethod((AllocationMethod) enumValue);
 		if (enumValue instanceof FlowPropertyType)
-			return EnumLabels.flowPropertyType((FlowPropertyType) enumValue);
+			return Labels.flowPropertyType((FlowPropertyType) enumValue);
 		if (enumValue instanceof FlowType)
-			return EnumLabels.flowType((FlowType) enumValue);
+			return Labels.flowType((FlowType) enumValue);
 		if (enumValue instanceof ProcessType)
-			return EnumLabels.processType((ProcessType) enumValue);
+			return Labels.processType((ProcessType) enumValue);
 		if (enumValue instanceof UncertaintyDistributionType)
-			return EnumLabels
+			return Labels
 					.uncertaintyType((UncertaintyDistributionType) enumValue);
 		if (enumValue != null)
 			return enumValue.toString();
@@ -209,7 +209,7 @@ public class BaseLabelProvider extends ColumnLabelProvider {
 			Process p = (Process) component;
 			location = p.getLocation();
 			if (p.getProcessType() != null)
-				type = EnumLabels.processType(p);
+				type = Labels.processType(p);
 		} else if (component instanceof Flow) {
 			Flow f = (Flow) component;
 			location = f.getLocation();

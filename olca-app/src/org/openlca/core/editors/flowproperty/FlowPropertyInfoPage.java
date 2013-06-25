@@ -19,7 +19,7 @@ import org.openlca.core.editors.ModelEditor;
 import org.openlca.core.editors.ModelEditorInfoPage;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.UnitGroup;
-import org.openlca.ui.EnumLabels;
+import org.openlca.ui.Labels;
 import org.openlca.ui.UIFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,7 +71,7 @@ public class FlowPropertyInfoPage extends ModelEditorInfoPage {
 					flowProperty.getUnitGroupId());
 			if (group != null && group.getName() != null)
 				unitGroupText.setText(group.getName());
-			typeText.setText(EnumLabels.flowPropertyType(flowProperty));
+			typeText.setText(Labels.flowPropertyType(flowProperty));
 		} catch (Exception e) {
 			log.error("Failed to set editor data", e);
 		}

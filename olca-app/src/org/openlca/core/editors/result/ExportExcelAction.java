@@ -43,7 +43,7 @@ import org.openlca.core.model.results.LCIACategoryResult;
 import org.openlca.core.model.results.LCIAResult;
 import org.openlca.core.model.results.LCIResult;
 import org.openlca.core.resources.ImageType;
-import org.openlca.ui.EnumLabels;
+import org.openlca.ui.Labels;
 import org.openlca.ui.UI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -591,7 +591,7 @@ public class ExportExcelAction extends Action {
 		final HSSFCell typeCell = row.createCell(currentColumnNo++);
 		typeCell.setCellType(HSSFCell.CELL_TYPE_STRING);
 		typeCell.setCellStyle(borderedCellStyle);
-		typeCell.setCellValue(new HSSFRichTextString(EnumLabels
+		typeCell.setCellValue(new HSSFRichTextString(Labels
 				.flowType(exchange.getFlow())));
 
 	}

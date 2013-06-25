@@ -46,7 +46,7 @@ import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.resources.ImageType;
-import org.openlca.ui.EnumLabels;
+import org.openlca.ui.Labels;
 
 /**
  * Figure of a {@link ProcessNode}
@@ -136,7 +136,7 @@ public class ProcessFigure extends Figure implements PropertyChangeListener {
 		if (processNode.getProcess().getProcessType() == ProcessType.LCI_Result) {
 			result = true;
 		}
-		setToolTip(new Label(EnumLabels.processType(processNode.getProcess())
+		setToolTip(new Label(Labels.processType(processNode.getProcess())
 				+ ": " + processNode.getName()));
 		setBounds(new Rectangle(0, 0, 0, 0));
 		this.processNode = processNode;

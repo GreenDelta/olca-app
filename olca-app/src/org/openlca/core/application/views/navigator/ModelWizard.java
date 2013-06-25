@@ -13,9 +13,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
-import org.openlca.core.application.App;
-import org.openlca.core.database.IDatabase;
-import org.openlca.core.model.modelprovider.IModelComponent;
+import org.openlca.core.model.Category;
 import org.openlca.core.resources.ImageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,13 +24,17 @@ import org.slf4j.LoggerFactory;
 public abstract class ModelWizard extends Wizard implements INewWizard {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
-	protected IDatabase database;
 	private String title;
 	private ModelWizardPage wizardPage;
+	private Category category;
 
 	public ModelWizard(String title, ModelWizardPage wizardPage) {
 		this.title = title;
 		this.wizardPage = wizardPage;
+	}
+
+	public void setCategory(Category category) {
+		this.category = category;
 	}
 
 	@Override
@@ -48,33 +50,13 @@ public abstract class ModelWizard extends Wizard implements INewWizard {
 
 	@Override
 	public boolean performFinish() {
-		boolean errorOccurred = false;
-		IModelComponent modelComponent = null;
 		try {
-			for (Object object : wizardPage.getData()) {
-				if (object instanceof IModelComponent)
-					modelComponent = (IModelComponent) object; // TODO: last
-																// model
-																// component
-																// wins!
-				database.insert(object);
-			}
+			// TODO: save model and open the editor
+			return true;
 		} catch (Exception e) {
 			log.error("Failed to create model", e);
-			errorOccurred = true;
+			return true;
 		}
-		if (!errorOccurred) {
-			App.openEditor(modelComponent, database);
-		}
-		return !errorOccurred;
 	}
 
-	public void setCategoryId(String categoryId) {
-		wizardPage.setCategoryId(categoryId);
-	}
-
-	public void setDatabase(IDatabase database) {
-		this.database = database;
-		this.wizardPage.setDatabase(database);
-	}
 }

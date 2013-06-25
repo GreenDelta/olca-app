@@ -35,6 +35,7 @@ import org.openlca.core.application.navigation.actions.ActivateDatabaseAction;
 import org.openlca.core.application.navigation.actions.CloseDatabaseAction;
 import org.openlca.core.application.navigation.actions.CreateCategoryAction;
 import org.openlca.core.application.navigation.actions.CreateDatabaseAction;
+import org.openlca.core.application.navigation.actions.CreateModelAction;
 import org.openlca.core.application.navigation.actions.DeleteCategoryAction;
 import org.openlca.core.application.navigation.actions.DeleteDatabaseAction;
 import org.openlca.core.application.navigation.actions.INavigationAction;
@@ -64,10 +65,14 @@ public class NavigationActionProvider extends CommonActionProvider {
 			new CloseDatabaseAction(), 
 			new DeleteDatabaseAction(), 
 			
+			// model actions
+			new CreateModelAction(),
+			
 			// category actions
 			new CreateCategoryAction(),
 			new RenameCategoryAction(),
 			new DeleteCategoryAction(),
+			
 			
 			new OpenUsageAction(),
 	};

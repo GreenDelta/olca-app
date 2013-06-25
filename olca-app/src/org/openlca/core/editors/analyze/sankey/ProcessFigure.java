@@ -25,7 +25,7 @@ import org.openlca.core.application.FaviColor;
 import org.openlca.core.application.Messages;
 import org.openlca.core.application.Numbers;
 import org.openlca.ui.Colors;
-import org.openlca.ui.EnumLabels;
+import org.openlca.ui.Labels;
 import org.openlca.util.Strings;
 
 /**
@@ -39,7 +39,7 @@ public class ProcessFigure extends Figure {
 	private Font boldFont;
 
 	public ProcessFigure(ProcessNode processNode) {
-		setToolTip(new Label(EnumLabels.processType(processNode.getProcess())
+		setToolTip(new Label(Labels.processType(processNode.getProcess())
 				+ ": " + processNode.getName()));
 		processNode.setFigure(this);
 		this.processNode = processNode;

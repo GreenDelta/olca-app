@@ -21,7 +21,7 @@ import org.openlca.core.application.Messages;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.resources.ImageType;
-import org.openlca.ui.EnumLabels;
+import org.openlca.ui.Labels;
 
 /**
  * Figure for an {@link ExchangeNode}
@@ -75,7 +75,7 @@ public class ExchangeFigure extends Label {
 		setToolTip(new Label(
 				(exchange.isAvoidedProduct() ? exchange.getFlow().getFlowType() == FlowType.ProductFlow ? Messages.Systems_AvoidedProductFlow
 						: Messages.Systems_AvoidedWasteFlow
-						: EnumLabels.flowType(exchange.getFlow()))
+						: Labels.flowType(exchange.getFlow()))
 						+ ": " + exchangeNode.getName()));
 	}
 

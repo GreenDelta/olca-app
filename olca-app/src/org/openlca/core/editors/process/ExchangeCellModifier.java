@@ -19,7 +19,7 @@ import org.openlca.core.model.UncertaintyDistributionType;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
-import org.openlca.ui.EnumLabels;
+import org.openlca.ui.Labels;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +45,7 @@ class ExchangeCellModifier implements ICellModifier {
 				.values();
 		distributionValues = new String[types.length];
 		for (int i = 0; i < types.length; i++) {
-			distributionValues[i] = EnumLabels.uncertaintyType(types[i]);
+			distributionValues[i] = Labels.uncertaintyType(types[i]);
 		}
 		ComboBoxCellEditor editor = getComboEditor(ExchangeTable.UNCERTAINTY_COLUMN);
 		if (editor != null)
@@ -114,7 +114,7 @@ class ExchangeCellModifier implements ICellModifier {
 
 	/** Get the index of the selected uncertainty distribution type. */
 	private int getDistributionIndex(Exchange exchange) {
-		String val = EnumLabels.uncertaintyType(exchange.getDistributionType());
+		String val = Labels.uncertaintyType(exchange.getDistributionType());
 		return getIndex(val, distributionValues);
 	}
 

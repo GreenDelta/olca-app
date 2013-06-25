@@ -2,11 +2,165 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension-point id="org.openlca.core.application.editors" name="Editors" schema="schema/org.openlca.core.application.editors.exsd"/>
-   <extension-point id="splashExtension" name="Splash-Erweiterungen" schema="schema/splashExtension.exsd"/>
    <extension-point id="org.openlca.core.application.exportAction" name="org.openlca.core.application.exportAction" schema="schema/org.openlca.core.application.exportAction.exsd"/>
    <extension-point id="org.openlca.core.application.importAction" name="org.openlca.core.application.importAction" schema="schema/org.openlca.core.application.importAction.exsd"/>
    <extension-point id="org.openlca.core.application.plugin" name="openLCA Plugin" schema="schema/org.openlca.core.application.plugin.exsd"/>
-   <extension-point id="org.openlca.core.model.components" name="Model components" schema="schema/org.openlca.core.model.components.exsd"/>
+
+	<extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="org.openlca.core.editors.actor.ActorEditor"
+            default="false"
+            icon="icons/actor_obj.png"
+            id="org.openlca.core.editors.actor.ActorEditor"
+            name="%editor.name">
+      </editor>
+      <editor
+            class="org.openlca.core.editors.source.SourceEditor"
+            default="false"
+            icon="icons/source_obj.png"
+            id="org.openlca.core.editors.source.SourceEditor"
+            name="%editor.name.0">
+      </editor>
+      <editor
+            class="org.openlca.core.editors.unitgroup.UnitGroupEditor"
+            default="false"
+            icon="icons/unitgroup_obj.gif"
+            id="org.openlca.core.editors.unitgroup.UnitGroupEditor"
+            name="%editor.name.1">
+      </editor>
+      <editor
+            class="org.openlca.core.editors.flowproperty.FlowPropertyEditor"
+            default="false"
+            icon="icons/flowprop_obj.gif"
+            id="org.openlca.core.editors.flowproperty.FlowPropertyEditor"
+            name="%editor.name.2">
+      </editor>
+      <editor
+            class="org.openlca.core.editors.flow.FlowEditor"
+            default="false"
+            icon="icons/flow_obj.gif"
+            id="org.openlca.core.editors.flow.FlowEditor"
+            name="%editor.name.3">
+      </editor>
+      <editor
+            class="org.openlca.core.editors.lciamethod.LCIAMethodEditor"
+            default="false"
+            icon="icons/LCIA_obj.gif"
+            id="org.openlca.core.editors.lciamethod.LCIAMethodEditor"
+            name="%editor.name.7">
+      </editor>
+      <editor
+            class="org.openlca.core.editors.process.ProcessEditor"
+            default="false"
+            icon="icons/proc_obj.gif"
+            id="org.openlca.core.editors.process.ProcessEditor"
+            name="%editor.name.4">
+      </editor>
+      <editor
+            class="org.openlca.core.editors.project.ProjectEditor"
+            default="false"
+            icon="icons/project_obj.png"
+            id="org.openlca.core.editors.project.ProjectEditor"
+            name="%editor.name.5">
+      </editor>
+      <editor
+            class="org.openlca.core.editors.productsystem.ProductSystemEditor"
+            contributorClass="org.openlca.core.editors.productsystem.graphical.GraphicalEditorActionBarContributor"
+            default="false"
+            icon="icons/model.gif"
+            id="org.openlca.core.editors.productsystem.ProductSystemEditor"
+            name="%editor.name.6">
+      </editor>
+      <editor
+            class="org.openlca.core.editors.result.ResultEditor"
+            contributorClass="org.openlca.core.editors.result.ResultActionProvider"
+            default="false"
+            icon="icons/expression_obj.gif"
+            id="org.openlca.core.editors.result.ResultEditor"
+            name="Result viewer">
+      </editor>
+      <editor
+            class="org.openlca.core.editors.analyze.AnalyzeEditor"
+            contributorClass="org.openlca.core.editors.analyze.AnalyzeActionContributor"
+            default="false"
+            icon="icons/analyze.gif"
+            id="org.openlca.core.editors.analyze.AnalyzeEditor"
+            name="Analyze viewer">
+      </editor>
+      <editor
+            class="org.openlca.core.editors.productsystem.SimulationEditor"
+            default="false"
+            icon="icons/simulate_16.png"
+            id="SimulationEditor"
+            name="Simulation Editor">
+      </editor>      
+      <editor
+            class="org.openlca.core.editors.result.CostResultEditor"
+            default="false"
+            icon="icons/simulate_16.png"
+            id="CostResultEditor"
+            name="Cost results">
+      </editor>      
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <wizard
+            class="org.openlca.core.editors.actor.ActorWizard"
+            icon="icons/actor_obj_new.png"
+            id="newActorWizard"
+            name="%wizard.name">
+      </wizard>
+      <wizard
+            class="org.openlca.core.editors.source.SourceWizard"
+            icon="icons/source_obj_new.png"
+            id="newSourceWizard"
+            name="%wizard.name.0">
+      </wizard>
+      <wizard
+            class="org.openlca.core.editors.unitgroup.UnitGroupWizard"
+            icon="icons/unitgroup_obj_new.gif"
+            id="newUnitGroupWizard"
+            name="%wizard.name.1">
+      </wizard>
+      <wizard
+            class="org.openlca.core.editors.flowproperty.FlowPropertyWizard"
+            icon="icons/flowprop_obj_new.gif"
+            id="newFlowPropertyWizard"
+            name="%wizard.name.2">
+      </wizard>
+      <wizard
+            class="org.openlca.core.editors.flow.FlowWizard"
+            icon="icons/flow_obj_new.gif"
+            id="newFlowWizard"
+            name="%wizard.name.3">
+      </wizard>
+      <wizard
+            class="org.openlca.core.editors.lciamethod.LCIAMethodWizard"
+            icon="icons/LCIA_obj_new.gif"
+            id="newImpactMethodWizard"
+            name="%wizard.name.7">
+      </wizard>
+      <wizard
+            class="org.openlca.core.editors.process.ProcessWizard"
+            icon="icons/proc_obj_new.gif"
+            id="newProcessWizard"
+            name="%wizard.name.4">
+      </wizard>
+      <wizard
+            class="org.openlca.core.editors.project.ProjectWizard"
+            icon="icons/project_obj_new.png"
+            id="newProjectWizard"
+            name="%wizard.name.5">
+      </wizard>
+      <wizard
+            class="org.openlca.core.editors.productsystem.ProductSystemWizard"
+            icon="icons/chart_organisation_new.png"
+            id="newProductSystemWizard"
+            name="%wizard.name.6">
+      </wizard>
+   </extension>   
    
    <extension
          id="org.openlca.core.application.application"
@@ -310,81 +464,5 @@
             class="org.openlca.core.application.update.UpdatePreference">
       </initializer>
    </extension>
-   
-   
-   <extension
-         point="org.openlca.core.model.components">
-      <modelComponent
-            class="org.openlca.core.model.Source">
-         <category
-               level="9"
-               name="%model.category.name.5">
-         </category>
-      </modelComponent>
-      <modelComponent
-            class="org.openlca.core.model.Actor">
-         <category
-               level="8"
-               name="%model.category.name">
-         </category>
-      </modelComponent>
-      <modelComponent
-            class="org.openlca.core.model.UnitGroup">
-         <category
-               level="7"
-               name="%model.category.name.6">
-         </category>
-      </modelComponent>
-      <modelComponent
-            class="org.openlca.core.model.FlowProperty">
-         <category
-               level="6"
-               name="%model.category.name.1">
-         </category>
-      </modelComponent>
-      <modelComponent
-            class="org.openlca.core.model.Flow">
-         <category
-               level="5"
-               name="%model.category.name.0">
-         </category>
-      </modelComponent>
-      <modelComponent
-            class="org.openlca.core.model.Process">
-         <category
-               level="4"
-               name="%model.category.name.7">
-         </category>
-      </modelComponent>
-      <modelComponent
-            class="org.openlca.core.model.LCIAMethod">
-         <category
-               level="3"
-               name="%model.category.name.2">
-         </category>
-      </modelComponent>
-      <modelComponent
-            class="org.openlca.core.model.ProductSystem">
-         <category
-               level="2"
-               name="%model.category.name.3">
-         </category>
-      </modelComponent>
-      <modelComponent
-            class="org.openlca.core.model.Project">
-         <category
-               level="1"
-               name="%model.category.name.4">
-         </category>
-      </modelComponent>
-      <modelComponent
-            class="org.openlca.core.model.results.LCIAResult">
-         <category
-               level="10"
-               name="%model.category.name.8">
-         </category>
-      </modelComponent>
-   </extension>
-   
    
 </plugin>

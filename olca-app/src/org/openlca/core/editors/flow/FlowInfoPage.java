@@ -27,7 +27,7 @@ import org.openlca.core.editors.ModelEditorInfoPage;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Location;
-import org.openlca.ui.EnumLabels;
+import org.openlca.ui.Labels;
 import org.openlca.ui.UI;
 import org.openlca.ui.UIFactory;
 import org.openlca.ui.viewer.ISelectionChangedListener;
@@ -201,7 +201,7 @@ public class FlowInfoPage extends ModelEditorInfoPage implements
 	@Override
 	protected void setData() {
 		super.setData();
-		flowTypeText.setText(EnumLabels.flowType(flow));
+		flowTypeText.setText(Labels.flowType(flow));
 		locationViewer.setInput(getDatabase());
 		if (flow != null) {
 

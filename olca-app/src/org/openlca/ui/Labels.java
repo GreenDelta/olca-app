@@ -10,9 +10,9 @@ import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.UncertaintyDistributionType;
 
-public class EnumLabels {
+public class Labels {
 
-	private EnumLabels() {
+	private Labels() {
 	}
 
 	/**
@@ -48,11 +48,11 @@ public class EnumLabels {
 		if (type == null)
 			return null;
 		switch (type) {
-		case ElementaryFlow:
+		case ELEMENTARY_FLOW:
 			return Messages.Common_ElementaryFlow;
-		case ProductFlow:
+		case PRODUCT_FLOW:
 			return Messages.Common_ProductFlow;
-		case WasteFlow:
+		case WASTE_FLOW:
 			return Messages.Common_WasteFlow;
 		default:
 			return null;
@@ -111,9 +111,9 @@ public class EnumLabels {
 		if (type == null)
 			return null;
 		switch (type) {
-		case Economic:
+		case ECONOMIC:
 			return Messages.Common_Economic;
-		case Physical:
+		case PHYSICAL:
 			return Messages.Common_Physical;
 		default:
 			return null;

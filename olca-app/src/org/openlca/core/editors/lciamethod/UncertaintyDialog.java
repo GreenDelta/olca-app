@@ -18,7 +18,7 @@ import org.openlca.core.model.LCIAFactor;
 import org.openlca.core.model.UncertaintyDistributionType;
 import org.openlca.ui.Colors;
 import org.openlca.ui.DataBinding;
-import org.openlca.ui.EnumLabels;
+import org.openlca.ui.Labels;
 import org.openlca.ui.UI;
 
 /** Dialog for editing uncertainty information in impact assessment factors. */
@@ -112,7 +112,7 @@ public class UncertaintyDialog extends Dialog {
 		int idx = 0;
 		for (int i = 0; i < items.length; i++) {
 			UncertaintyDistributionType type = types[i];
-			items[i] = EnumLabels.uncertaintyType(type);
+			items[i] = Labels.uncertaintyType(type);
 			if (factor.getUncertaintyType() == type)
 				idx = i;
 		}

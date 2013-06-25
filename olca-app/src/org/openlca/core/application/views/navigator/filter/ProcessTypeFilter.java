@@ -16,6 +16,7 @@ import org.openlca.core.application.navigation.CategoryElement;
 import org.openlca.core.application.navigation.INavigationElement;
 import org.openlca.core.application.navigation.ModelElement;
 import org.openlca.core.model.Category;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessType;
 
@@ -55,7 +56,7 @@ public abstract class ProcessTypeFilter extends ViewerFilter {
 		boolean contains = false;
 
 		// for each child
-		for (final INavigationElement child : element.getChildren(false)) {
+		for (final INavigationElement child : element.getChildren()) {
 
 			// if model component element
 			if (child instanceof ModelElement) {
@@ -114,17 +115,14 @@ public abstract class ProcessTypeFilter extends ViewerFilter {
 				final Process processDescriptor = (Process) elem.getData();
 				select = !isProcessType(processDescriptor);
 			}
-		} else if (filterEmptyCategories
-				&& element instanceof CategoryElement) {
+		} else if (filterEmptyCategories && element instanceof CategoryElement) {
 			// if category navigation element and empty category filter is
 			// enabled
 			final CategoryElement elem = (CategoryElement) element;
 			final Category category = (Category) elem.getData();
 
 			// if category class is process
-			if (category.getComponentClass().equals(
-					Process.class.getCanonicalName())
-					&& !category.getComponentClass().equals(category.getId())) {
+			if (category.getModelType() == ModelType.PROCESS) {
 				// check if process with macthing type is contained
 				select = !containsProcessType((CategoryElement) element);
 			}

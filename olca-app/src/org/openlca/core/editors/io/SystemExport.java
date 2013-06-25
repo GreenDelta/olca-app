@@ -35,7 +35,7 @@ import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
-import org.openlca.ui.EnumLabels;
+import org.openlca.ui.Labels;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -155,7 +155,7 @@ public class SystemExport {
 		currentRow = line(sheet, currentRow, "Product system:", name);
 		if (allocated)
 			currentRow = line(sheet, currentRow, "Allocation method:",
-					EnumLabels.allocationMethod(allocationMethod));
+					Labels.allocationMethod(allocationMethod));
 		currentRow = line(sheet, currentRow, "No. of processes:", processes);
 		currentRow = line(sheet, currentRow, "No. of products:", products);
 		currentRow = line(sheet, currentRow, "No. of elementary flows:", flows);
@@ -185,7 +185,7 @@ public class SystemExport {
 		currentRow = line(sheet, currentRow, "Product system:", name);
 		if (allocated)
 			currentRow = line(sheet, currentRow, "Allocation method:",
-					EnumLabels.allocationMethod(allocationMethod));
+					Labels.allocationMethod(allocationMethod));
 		currentRow = line(sheet, currentRow, "No. of processes:", processes);
 		currentRow = line(sheet, currentRow, "No. of products:", products);
 		currentRow = line(sheet, currentRow, "Matrix dimensions:", dimensions);

@@ -8,7 +8,7 @@ import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.Unit;
-import org.openlca.ui.EnumLabels;
+import org.openlca.ui.Labels;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,8 +107,8 @@ class ExchangeSorter extends ViewerSorter {
 	}
 
 	private int compareByUncertainty(Exchange e1, Exchange e2) {
-		String val1 = EnumLabels.uncertaintyType(e1.getDistributionType());
-		String val2 = EnumLabels.uncertaintyType(e2.getDistributionType());
+		String val1 = Labels.uncertaintyType(e1.getDistributionType());
+		String val2 = Labels.uncertaintyType(e2.getDistributionType());
 		return Strings.compare(val1, val2);
 	}
 

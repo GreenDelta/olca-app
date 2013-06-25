@@ -22,7 +22,7 @@ import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.resources.ImageType;
 import org.openlca.ui.Colors;
-import org.openlca.ui.EnumLabels;
+import org.openlca.ui.Labels;
 import org.openlca.ui.UI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -127,7 +127,7 @@ class ExchangeLabelProvider extends ColumnLabelProvider implements
 		case ExchangeTable.AMOUNT_COLUMN:
 			return resultingAmount(exchange);
 		case ExchangeTable.UNCERTAINTY_COLUMN:
-			return EnumLabels.uncertaintyType(exchange.getDistributionType());
+			return Labels.uncertaintyType(exchange.getDistributionType());
 		case ExchangeTable.PEDIGREE_COLUMN:
 			return pedigreeUncertainty(exchange);
 		case ExchangeTable.PROVIDER_COLUMN:
@@ -173,7 +173,7 @@ class ExchangeLabelProvider extends ColumnLabelProvider implements
 		if (!(element instanceof Exchange))
 			return null;
 		Exchange exchange = (Exchange) element;
-		return EnumLabels.flowType(exchange.getFlow());
+		return Labels.flowType(exchange.getFlow());
 	}
 
 	@Override
