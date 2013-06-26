@@ -48,6 +48,8 @@ public class Database {
 	}
 
 	public static boolean isActive(IDatabaseConfiguration config) {
+		if (config == null)
+			return false;
 		return Objects.equals(config, Database.config);
 	}
 

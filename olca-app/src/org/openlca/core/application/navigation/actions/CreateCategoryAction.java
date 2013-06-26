@@ -39,7 +39,7 @@ public class CreateCategoryAction extends Action implements INavigationAction {
 
 	private Category parent;
 	private ModelType modelType;
-	private INavigationElement parentElement;
+	private INavigationElement<?> parentElement;
 
 	public CreateCategoryAction() {
 		setText(Messages.NavigationView_AddCategoryText);
@@ -47,16 +47,16 @@ public class CreateCategoryAction extends Action implements INavigationAction {
 	}
 
 	@Override
-	public boolean accept(INavigationElement element) {
+	public boolean accept(INavigationElement<?> element) {
 		if (element instanceof ModelTypeElement) {
-			ModelType type = (ModelType) element.getData();
+			ModelType type = (ModelType) element.getContent();
 			this.parent = null;
 			this.modelType = type;
 			this.parentElement = element;
 			return true;
 		}
 		if (element instanceof CategoryElement) {
-			Category category = (Category) element.getData();
+			Category category = (Category) element.getContent();
 			parent = category;
 			modelType = category.getModelType();
 			this.parentElement = element;
@@ -66,7 +66,7 @@ public class CreateCategoryAction extends Action implements INavigationAction {
 	}
 
 	@Override
-	public boolean accept(List<INavigationElement> elements) {
+	public boolean accept(List<INavigationElement<?>> elements) {
 		return false;
 	}
 

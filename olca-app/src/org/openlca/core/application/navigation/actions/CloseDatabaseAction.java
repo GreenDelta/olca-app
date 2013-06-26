@@ -24,18 +24,16 @@ public class CloseDatabaseAction extends Action implements INavigationAction {
 	}
 
 	@Override
-	public boolean accept(INavigationElement element) {
+	public boolean accept(INavigationElement<?> element) {
 		if (!(element instanceof DatabaseElement))
 			return false;
 		DatabaseElement e = (DatabaseElement) element;
-		if (!(e.getData() instanceof IDatabaseConfiguration))
-			return false;
-		IDatabaseConfiguration config = (IDatabaseConfiguration) e.getData();
+		IDatabaseConfiguration config = e.getContent();
 		return Database.isActive(config);
 	}
 
 	@Override
-	public boolean accept(List<INavigationElement> elements) {
+	public boolean accept(List<INavigationElement<?>> elements) {
 		return false;
 	}
 

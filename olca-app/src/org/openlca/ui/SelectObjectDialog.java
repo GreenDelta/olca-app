@@ -37,7 +37,8 @@ import org.openlca.core.application.Messages;
 import org.openlca.core.application.navigation.ModelElement;
 import org.openlca.core.application.navigation.NavigationRoot;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.model.modelprovider.IModelComponent;
+import org.openlca.core.model.ModelType;
+import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.ui.viewer.ModelComponentTreeViewer;
 
 /**
@@ -48,7 +49,7 @@ public class SelectObjectDialog extends Dialog {
 	/**
 	 * The class of components that can be selected
 	 */
-	private final Class<? extends IModelComponent> clazz;
+	private final ModelType modelType;
 
 	/**
 	 * The database
@@ -68,7 +69,7 @@ public class SelectObjectDialog extends Dialog {
 	/**
 	 * The current selection of the table viewer.
 	 */
-	protected IModelComponent[] multiSelection;
+	protected BaseDescriptor[] multiSelection;
 
 	/**
 	 * The input of this dialog.
@@ -78,7 +79,7 @@ public class SelectObjectDialog extends Dialog {
 	/**
 	 * The current first element of the table viewer.
 	 */
-	protected IModelComponent selection;
+	protected BaseDescriptor selection;
 
 	/**
 	 * Creates the dialog.
@@ -97,10 +98,9 @@ public class SelectObjectDialog extends Dialog {
 	 */
 	public SelectObjectDialog(final Shell parentShell,
 			final NavigationRoot root, final boolean multiSelect,
-			final IDatabase database,
-			final Class<? extends IModelComponent> clazz) {
+			final IDatabase database, ModelType modelType) {
 		super(parentShell);
-		this.clazz = clazz;
+		this.modelType = modelType;
 		setShellStyle(SWT.BORDER | SWT.TITLE | SWT.APPLICATION_MODAL);
 		this.root = root;
 		this.multiSelect = multiSelect;
@@ -187,7 +187,8 @@ public class SelectObjectDialog extends Dialog {
 
 		// create tree viewer for selecting objects
 		final TreeViewer viewer = new ModelComponentTreeViewer(composite2,
-				multiSelect, false, root.getCategoryRoot(clazz, database), null);
+				multiSelect, false, root.getCategoryRoot(modelType, database),
+				null);
 
 		// for each filter
 		for (final ViewerFilter filter : filters) {
@@ -208,14 +209,14 @@ public class SelectObjectDialog extends Dialog {
 					// get selection
 					final IStructuredSelection s = (IStructuredSelection) event
 							.getSelection();
-					final List<IModelComponent> selection = new ArrayList<>();
+					final List<BaseDescriptor> selection = new ArrayList<>();
 					// for each selected object
 					for (final Object selected : s.toArray()) {
 						// if object is model component element
 						if (selected instanceof ModelElement) {
 							// add to filtered selection
 							selection
-									.add((IModelComponent) ((ModelElement) selected)
+									.add((BaseDescriptor) ((ModelElement) selected)
 											.getData());
 						}
 					}
@@ -223,7 +224,7 @@ public class SelectObjectDialog extends Dialog {
 					if (multiSelect) {
 						// set multi selection
 						SelectObjectDialog.this.multiSelection = selection
-								.toArray(new IModelComponent[selection.size()]);
+								.toArray(new BaseDescriptor[selection.size()]);
 					} else {
 						if (!selection.isEmpty()) {
 							// set first selection
@@ -255,10 +256,10 @@ public class SelectObjectDialog extends Dialog {
 					// set first selection
 					final ModelElement element = (ModelElement) selection
 							.getFirstElement();
-					final IModelComponent modelComponent = (IModelComponent) element
+					final BaseDescriptor modelComponent = (BaseDescriptor) element
 							.getData();
 					if (multiSelect) {
-						SelectObjectDialog.this.multiSelection = new IModelComponent[] { modelComponent };
+						SelectObjectDialog.this.multiSelection = new BaseDescriptor[] { modelComponent };
 					} else {
 						SelectObjectDialog.this.selection = modelComponent;
 					}
@@ -293,7 +294,7 @@ public class SelectObjectDialog extends Dialog {
 	 * @return null if no selection was made or the parameter multi select was
 	 *         set to false, otherwise the selected model components
 	 */
-	public IModelComponent[] getMultiSelection() {
+	public BaseDescriptor[] getMultiSelection() {
 		return multiSelection;
 	}
 
@@ -303,7 +304,7 @@ public class SelectObjectDialog extends Dialog {
 	 * @return the current selection of this dialog, or <code>null</code> if no
 	 *         object is selected or the parameter multi select was set to true
 	 */
-	public IModelComponent getSelection() {
+	public BaseDescriptor getSelection() {
 		return selection;
 	}
 

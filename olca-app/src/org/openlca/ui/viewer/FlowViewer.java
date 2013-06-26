@@ -130,11 +130,11 @@ public class FlowViewer extends AbstractComboViewer<Flow> {
 			switch (columnIndex) {
 			case 0:
 				switch (flow.getFlowType()) {
-				case ElementaryFlow:
+				case ELEMENTARY_FLOW:
 					return ImageType.FLOW_SUBSTANCE.get();
-				case ProductFlow:
+				case PRODUCT_FLOW:
 					return ImageType.FLOW_PRODUCT.get();
-				case WasteFlow:
+				case WASTE_FLOW:
 					return ImageType.FLOW_WASTE.get();
 				}
 			}

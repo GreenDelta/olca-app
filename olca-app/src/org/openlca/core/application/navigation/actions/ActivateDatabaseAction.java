@@ -24,13 +24,11 @@ public class ActivateDatabaseAction extends Action implements INavigationAction 
 	}
 
 	@Override
-	public boolean accept(INavigationElement element) {
+	public boolean accept(INavigationElement<?> element) {
 		if (!(element instanceof DatabaseElement))
 			return false;
 		DatabaseElement e = (DatabaseElement) element;
-		if (!(e.getData() instanceof IDatabaseConfiguration))
-			return false;
-		IDatabaseConfiguration config = (IDatabaseConfiguration) e.getData();
+		IDatabaseConfiguration config = e.getContent();
 		if (Database.isActive(config))
 			return false;
 		this.config = config;
@@ -38,7 +36,7 @@ public class ActivateDatabaseAction extends Action implements INavigationAction 
 	}
 
 	@Override
-	public boolean accept(List<INavigationElement> elements) {
+	public boolean accept(List<INavigationElement<?>> elements) {
 		return false;
 	}
 
@@ -50,7 +48,7 @@ public class ActivateDatabaseAction extends Action implements INavigationAction 
 			}
 		}, new Runnable() {
 			public void run() {
-				Navigator.refresh(2);
+				Navigator.refresh();
 			}
 		});
 	}

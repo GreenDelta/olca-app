@@ -39,7 +39,7 @@ public class NavigationLabelProvider extends ColumnLabelProvider implements
 		if (!(anElement instanceof ModelElement))
 			return null;
 		ModelElement element = (ModelElement) anElement;
-		BaseDescriptor descriptor = (BaseDescriptor) element.getData();
+		BaseDescriptor descriptor = element.getContent();
 		return descriptor.getDisplayInfoText();
 	}
 
@@ -47,7 +47,7 @@ public class NavigationLabelProvider extends ColumnLabelProvider implements
 	public Image getImage(Object element) {
 		if (!(element instanceof INavigationElement))
 			return null;
-		Object o = ((INavigationElement) element).getData();
+		Object o = ((INavigationElement<?>) element).getContent();
 		if (o instanceof IDatabaseConfiguration)
 			return getDatabaseImage((IDatabaseConfiguration) o);
 		if (o instanceof Category)
@@ -134,7 +134,7 @@ public class NavigationLabelProvider extends ColumnLabelProvider implements
 	public String getText(Object element) {
 		if (!(element instanceof INavigationElement))
 			return null;
-		Object o = ((INavigationElement) element).getData();
+		Object o = ((INavigationElement<?>) element).getContent();
 		if (o instanceof IDatabaseConfiguration)
 			return ((IDatabaseConfiguration) o).getName();
 		if (o instanceof Category)

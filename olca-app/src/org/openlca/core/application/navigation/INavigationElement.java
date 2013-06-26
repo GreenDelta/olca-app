@@ -14,12 +14,14 @@ import java.util.List;
 /**
  * Interface for elements in the navigation tree.
  */
-public interface INavigationElement {
+public interface INavigationElement<T> {
 
-	INavigationElement getParent();
+	INavigationElement<?> getParent();
 
-	List<INavigationElement> getChildren();
+	List<INavigationElement<?>> getChildren();
 
-	Object getData();
+	T getContent();
+
+	void update();
 
 }

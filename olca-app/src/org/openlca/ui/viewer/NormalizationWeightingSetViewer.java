@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.database.MethodDao;
+import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.model.NormalizationWeightingSet;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 
@@ -26,7 +26,8 @@ public class NormalizationWeightingSetViewer extends
 		if (database == null)
 			throw new IllegalStateException("No database set");
 		if (impactMethod != null) {
-			MethodDao dao = new MethodDao(database.getEntityFactory());
+			ImpactMethodDao dao = new ImpactMethodDao(
+					database.getEntityFactory());
 			List<NormalizationWeightingSet> nwSets = dao
 					.getNwSetDescriptors(impactMethod);
 			setInput(nwSets

@@ -43,18 +43,18 @@ public class DeleteDatabaseAction extends Action implements INavigationAction {
 	}
 
 	@Override
-	public boolean accept(INavigationElement element) {
+	public boolean accept(INavigationElement<?> element) {
 		if (!(element instanceof DatabaseElement))
 			return false;
 		DatabaseElement e = (DatabaseElement) element;
-		if (!(e.getData() instanceof DerbyConfiguration))
+		if (!(e.getContent() instanceof DerbyConfiguration))
 			return false;
-		this.config = (DerbyConfiguration) e.getData();
+		this.config = (DerbyConfiguration) e.getContent();
 		return true;
 	}
 
 	@Override
-	public boolean accept(List<INavigationElement> elements) {
+	public boolean accept(List<INavigationElement<?>> elements) {
 		return false;
 	}
 

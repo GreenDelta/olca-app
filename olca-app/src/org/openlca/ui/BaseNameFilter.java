@@ -12,7 +12,7 @@ package org.openlca.ui;
 
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
-import org.openlca.core.model.modelprovider.IModelComponent;
+import org.openlca.core.model.RootEntity;
 
 /**
  * Filters instances of {@link IModelComponent} by their name.
@@ -64,8 +64,8 @@ public class BaseNameFilter extends ViewerFilter {
 	public boolean select(final Viewer viewer, final Object parentElement,
 			final Object element) {
 		String content = null;
-		if (element instanceof IModelComponent) {
-			content = ((IModelComponent) element).getName();
+		if (element instanceof RootEntity) {
+			content = ((RootEntity) element).getName();
 		}
 		return select(filter, content);
 	}

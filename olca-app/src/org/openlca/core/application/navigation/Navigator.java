@@ -59,7 +59,7 @@ public class Navigator extends CommonNavigator {
 		if (!(element instanceof ModelElement))
 			return;
 		ModelElement e = (ModelElement) element;
-		BaseDescriptor d = (BaseDescriptor) e.getData();
+		BaseDescriptor d = e.getContent();
 		App.openEditor(d);
 	}
 
@@ -75,27 +75,20 @@ public class Navigator extends CommonNavigator {
 	 */
 	public static void refresh() {
 		CommonViewer viewer = getNavigationViewer();
-		if (viewer != null)
+		NavigationRoot root = getNavigationRoot();
+		if (viewer != null && root != null) {
+			root.update();
+			viewer.expandToLevel(2);
 			viewer.refresh();
+		}
 	}
 
-	/**
-	 * Refreshes the navigation view and expands the navigation tree to the
-	 * given level.
-	 */
-	public static void refresh(int expandLevel) {
-		CommonViewer viewer = getNavigationViewer();
-		if (viewer != null)
-			viewer.refresh();
-		expand(viewer, expandLevel);
-	}
-
-	public static void refresh(INavigationElement element) {
+	public static void refresh(INavigationElement<?> element) {
 		CommonViewer viewer = getNavigationViewer();
 		if (viewer == null || element == null)
 			return;
+		element.update();
 		getNavigationViewer().refresh(element);
-		getNavigationViewer().expandToLevel(element, 1);
 	}
 
 	private static CommonViewer getNavigationViewer() {
@@ -144,13 +137,13 @@ public class Navigator extends CommonNavigator {
 		return root;
 	}
 
-	public INavigationElement getFirstSelected() {
-		INavigationElement[] all = getAllSelected();
+	public INavigationElement<?> getFirstSelected() {
+		INavigationElement<?>[] all = getAllSelected();
 		return all.length > 0 ? all[0] : null;
 	}
 
-	public INavigationElement[] getAllSelected() {
-		List<INavigationElement> selection = Viewers
+	public INavigationElement<?>[] getAllSelected() {
+		List<INavigationElement<?>> selection = Viewers
 				.getAllSelected(getNavigationViewer());
 		return selection.toArray(new INavigationElement[selection.size()]);
 	}

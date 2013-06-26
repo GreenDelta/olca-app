@@ -83,7 +83,7 @@ public class NavigationActionProvider extends CommonActionProvider {
 		ActionContext con = getContext();
 		IStructuredSelection selection = (IStructuredSelection) con
 				.getSelection();
-		List<INavigationElement> elements = Viewers.getAll(selection);
+		List<INavigationElement<?>> elements = Viewers.getAll(selection);
 		int registered = 0;
 		if (elements.size() == 1)
 			registered += registerSingleActions(elements.get(0), menu);
@@ -94,7 +94,7 @@ public class NavigationActionProvider extends CommonActionProvider {
 		menu.add(new CreateDatabaseAction());
 	}
 
-	private int registerSingleActions(INavigationElement element,
+	private int registerSingleActions(INavigationElement<?> element,
 			IMenuManager menu) {
 		int count = 0;
 		for (INavigationAction action : actions)
@@ -105,7 +105,7 @@ public class NavigationActionProvider extends CommonActionProvider {
 		return count;
 	}
 
-	private int registerMultiActions(List<INavigationElement> elements,
+	private int registerMultiActions(List<INavigationElement<?>> elements,
 			IMenuManager menu) {
 		int count = 0;
 		for (INavigationAction action : actions)
@@ -118,7 +118,7 @@ public class NavigationActionProvider extends CommonActionProvider {
 
 	private void appendCategoryActions(IMenuManager menu,
 			CategoryElement element) {
-		Category category = (Category) element.getData();
+		Category category = element.getContent();
 
 		String wizardId = null;
 
@@ -300,7 +300,7 @@ public class NavigationActionProvider extends CommonActionProvider {
 		IDatabase[] databases = new IDatabase[selectedObjects.length];
 		for (int j = 0; j < categories.length; j++) {
 			CategoryElement navElem = (CategoryElement) selectedObjects[j];
-			categories[j] = (Category) navElem.getData();
+			categories[j] = navElem.getContent();
 			elements[j] = navElem;
 		}
 		menu.add(new CutAction(elements));

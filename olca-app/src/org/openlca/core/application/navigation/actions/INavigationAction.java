@@ -7,8 +7,8 @@ import org.openlca.core.application.navigation.INavigationElement;
 
 public interface INavigationAction extends IAction {
 
-	boolean accept(INavigationElement element);
+	boolean accept(INavigationElement<?> element);
 
-	boolean accept(List<INavigationElement> elements);
+	boolean accept(List<INavigationElement<?>> elements);
 
 }

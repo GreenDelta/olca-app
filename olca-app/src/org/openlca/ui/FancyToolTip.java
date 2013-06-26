@@ -26,7 +26,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.ui.forms.widgets.TableWrapData;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
 import org.openlca.core.application.Messages;
-import org.openlca.core.model.modelprovider.IModelComponent;
+import org.openlca.core.model.RootEntity;
 
 /**
  * Creates a tool tip for controls containing model components, which shows the
@@ -61,26 +61,26 @@ public final class FancyToolTip extends DefaultToolTip {
 		Composite composite = null;
 
 		// get the pointed component
-		IModelComponent descriptor = null;
+		RootEntity descriptor = null;
 		if (event.widget != null && event.widget instanceof Table) {
 			final Table table = (Table) event.widget;
 			final Item item = table.getItem(new Point(event.x, event.y));
 			if (item != null && item.getData() != null
-					&& item.getData() instanceof IModelComponent) {
-				descriptor = (IModelComponent) item.getData();
+					&& item.getData() instanceof RootEntity) {
+				descriptor = (RootEntity) item.getData();
 			}
 
 		} else if (event.widget != null && event.widget instanceof Tree) {
 			final Tree tree = (Tree) event.widget;
 			final Item item = tree.getItem(new Point(event.x, event.y));
 			if (item != null && item.getData() != null
-					&& item.getData() instanceof IModelComponent) {
-				descriptor = (IModelComponent) item.getData();
+					&& item.getData() instanceof RootEntity) {
+				descriptor = (RootEntity) item.getData();
 			}
 
 		} else if (event.widget != null && event.widget.getData() != null
-				&& event.widget.getData() instanceof IModelComponent) {
-			descriptor = (IModelComponent) event.widget.getData();
+				&& event.widget.getData() instanceof RootEntity) {
+			descriptor = (RootEntity) event.widget.getData();
 		}
 
 		// create the tool tip

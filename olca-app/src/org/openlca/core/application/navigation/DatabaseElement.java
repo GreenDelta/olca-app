@@ -9,17 +9,16 @@ import org.openlca.core.application.db.IDatabaseConfiguration;
 import org.openlca.core.model.ModelType;
 
 /** Navigation element for databases. */
-public class DatabaseElement implements INavigationElement {
+public class DatabaseElement extends NavigationElement<IDatabaseConfiguration> {
 
-	private IDatabaseConfiguration config;
-
-	public DatabaseElement(IDatabaseConfiguration config) {
-		this.config = config;
+	public DatabaseElement(INavigationElement<?> parent,
+			IDatabaseConfiguration config) {
+		super(parent, config);
 	}
 
 	@Override
-	public List<INavigationElement> getChildren() {
-		if (!Database.isActive(config))
+	protected List<INavigationElement<?>> queryChilds() {
+		if (!Database.isActive(getContent()))
 			return Collections.emptyList();
 		//@formatter:off
 		ModelType[] types = new ModelType[] {
@@ -34,20 +33,10 @@ public class DatabaseElement implements INavigationElement {
 			ModelType.SOURCE
 		};
 		//@formatter:on
-		List<INavigationElement> elements = new ArrayList<>();
+		List<INavigationElement<?>> elements = new ArrayList<>();
 		for (ModelType type : types)
-			elements.add(new ModelTypeElement(type));
+			elements.add(new ModelTypeElement(this, type));
 		return elements;
-	}
-
-	@Override
-	public Object getData() {
-		return config;
-	}
-
-	@Override
-	public INavigationElement getParent() {
-		return null;
 	}
 
 }

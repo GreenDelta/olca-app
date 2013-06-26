@@ -15,33 +15,23 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
 import org.openlca.core.application.Messages;
-import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.model.Actor;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
-import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.FlowPropertyType;
 import org.openlca.core.model.FlowType;
-import org.openlca.core.model.LCIACategory;
-import org.openlca.core.model.LCIAMethod;
+import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.NormalizationWeightingSet;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessType;
-import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.Project;
-import org.openlca.core.model.Source;
+import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.UncertaintyDistributionType;
 import org.openlca.core.model.Unit;
-import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.descriptors.BaseDescriptor;
-import org.openlca.core.model.modelprovider.IModelComponent;
-import org.openlca.core.model.results.LCIAResult;
-import org.openlca.core.resources.ImageType;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,64 +50,39 @@ public class BaseLabelProvider extends ColumnLabelProvider {
 
 	@Override
 	public Image getImage(Object element) {
-		IModelComponent component = null;
-		if (element instanceof IModelComponent) {
-			component = (IModelComponent) element;
-		}
-		return component == null ? null : getImage(component);
-	}
-
-	protected Image getImage(IModelComponent component) {
-		Image img = null;
-		if (component.getClass() == Flow.class) {
-			img = ImageType.FLOW_ICON.get();
-		} else if (component.getClass() == FlowProperty.class) {
-			img = ImageType.FLOW_PROPERTY_ICON.get();
-		} else if (component.getClass() == LCIAMethod.class) {
-			img = ImageType.LCIA_ICON.get();
-		} else if (component.getClass() == Process.class) {
-			img = ImageType.PROCESS_ICON.get();
-		} else if (component.getClass() == ProductSystem.class) {
-			img = ImageType.PRODUCT_SYSTEM_ICON.get();
-		} else if (component.getClass() == UnitGroup.class) {
-			img = ImageType.UNIT_GROUP_ICON.get();
-		} else if (component.getClass() == Actor.class) {
-			img = ImageType.ACTOR_ICON.get();
-		} else if (component.getClass() == Source.class) {
-			img = ImageType.SOURCE_ICON.get();
-		} else if (component.getClass() == Project.class) {
-			img = ImageType.PROJECT_ICON.get();
-		} else if (component.getClass() == LCIAResult.class) {
-			img = ImageType.EXPRESSION_ICON.get();
-		}
-		return img;
+		if (element instanceof RootEntity)
+			return Images.getIcon((RootEntity) element);
+		if (element instanceof BaseDescriptor)
+			return Images.getIcon(((BaseDescriptor) element).getModelType());
+		return null;
 	}
 
 	@Override
 	public String getText(Object element) {
-		if (element instanceof IModelComponent)
-			return getModelLabel((IModelComponent) element);
-		else if (element instanceof LCIACategory)
-			return ((LCIACategory) element).getName();
-		else if (element instanceof Exchange)
+		if (element instanceof BaseDescriptor)
+			return getModelLabel((BaseDescriptor) element);
+		if (element instanceof RootEntity)
+			return getModelLabel((RootEntity) element);
+		if (element instanceof ImpactCategory)
+			return ((ImpactCategory) element).getName();
+		if (element instanceof Exchange)
 			return getModelLabel(((Exchange) element).getFlow());
-		else if (element instanceof FlowPropertyFactor)
+		if (element instanceof FlowPropertyFactor)
 			return getModelLabel(((FlowPropertyFactor) element)
 					.getFlowProperty());
-		else if (element instanceof Unit)
+		if (element instanceof Unit)
 			return ((Unit) element).getName();
-		else if (element instanceof Location)
+		if (element instanceof Location)
 			return ((Location) element).getName();
-		else if (element instanceof NormalizationWeightingSet)
+		if (element instanceof NormalizationWeightingSet)
 			return ((NormalizationWeightingSet) element).getReferenceSystem();
-		else if (element instanceof BaseDescriptor)
+		if (element instanceof BaseDescriptor)
 			return ((BaseDescriptor) element).getDisplayName();
-		else if (element instanceof Enum<?>)
+		if (element instanceof Enum<?>)
 			return getEnumText(element);
-		else if (element != null)
+		if (element != null)
 			return element.toString();
-		else
-			return null;
+		return null;
 	}
 
 	private String getEnumText(Object enumValue) {
@@ -137,7 +102,7 @@ public class BaseLabelProvider extends ColumnLabelProvider {
 		return null;
 	}
 
-	protected String getModelLabel(IModelComponent o) {
+	protected String getModelLabel(RootEntity o) {
 		if (o == null)
 			return "";
 		String label = Strings.cut(o.getName(), 75);
@@ -149,6 +114,12 @@ public class BaseLabelProvider extends ColumnLabelProvider {
 		if (location != null && location.getCode() != null)
 			label += " (" + location.getCode() + ")";
 		return label;
+	}
+
+	protected String getModelLabel(BaseDescriptor d) {
+		if (d == null)
+			return null;
+		return Strings.cut(d.getDisplayName(), 75);
 	}
 
 	@Override
@@ -174,9 +145,9 @@ public class BaseLabelProvider extends ColumnLabelProvider {
 	}
 
 	private String getToolTipText2(Object element) {
-		if (!(element instanceof IModelComponent))
+		if (!(element instanceof RootEntity))
 			return null;
-		IModelComponent component = (IModelComponent) element;
+		RootEntity component = (RootEntity) element;
 		String name = component.getName();
 		String text = name == null ? "" : name + "\n";
 
@@ -184,11 +155,10 @@ public class BaseLabelProvider extends ColumnLabelProvider {
 
 		if (database != null) {
 			try {
-				CategoryDao dao = new CategoryDao(database.getEntityFactory());
-				Category category = dao.getForId(component.getCategoryId());
+				Category category = component.getCategory();
 				if (category != null)
 					text += Messages.Category + ": "
-							+ dao.getShortPath(component.getCategoryId());
+							+ CategoryPath.getShort(category);
 			} catch (Exception e) {
 				log.error("Loading category failed", e);
 			}
@@ -202,7 +172,7 @@ public class BaseLabelProvider extends ColumnLabelProvider {
 		return text;
 	}
 
-	private String addLocationAndType(IModelComponent component, String text) {
+	private String addLocationAndType(RootEntity component, String text) {
 		Location location = null;
 		String type = null;
 		if (component instanceof Process) {

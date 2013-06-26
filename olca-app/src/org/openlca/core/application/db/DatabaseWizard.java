@@ -12,7 +12,6 @@ import org.openlca.core.application.Messages;
 import org.openlca.core.application.db.DatabaseWizardPage.PageData;
 import org.openlca.core.application.events.DatabaseCreatedEvent;
 import org.openlca.core.application.navigation.Navigator;
-import org.openlca.core.application.views.search.SearchView;
 import org.openlca.core.database.DatabaseContent;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.derby.DerbyDatabase;
@@ -45,8 +44,7 @@ public class DatabaseWizard extends Wizard implements IRunnableWithProgress {
 		try {
 			data = page.getPageData();
 			getContainer().run(true, false, this);
-			Navigator.refresh(2);
-			SearchView.refresh();
+			Navigator.refresh();
 			return true;
 		} catch (Exception e) {
 			log.error("Database creation failed", e);

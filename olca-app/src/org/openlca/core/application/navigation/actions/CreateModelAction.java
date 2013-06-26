@@ -20,6 +20,7 @@ import org.eclipse.ui.PlatformUI;
 import org.openlca.core.application.navigation.CategoryElement;
 import org.openlca.core.application.navigation.INavigationElement;
 import org.openlca.core.application.navigation.ModelTypeElement;
+import org.openlca.core.application.navigation.Navigator;
 import org.openlca.core.editors.INewModelWizard;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
@@ -37,19 +38,22 @@ public class CreateModelAction extends Action implements INavigationAction {
 
 	private Category category;
 	private ModelType type;
+	private INavigationElement<?> parent;
 
 	@Override
-	public boolean accept(INavigationElement element) {
+	public boolean accept(INavigationElement<?> element) {
 		if (element instanceof ModelTypeElement) {
 			ModelTypeElement e = (ModelTypeElement) element;
+			parent = e;
 			category = null;
-			type = (ModelType) e.getData();
+			type = e.getContent();
 			initDisplay();
 			return true;
 		}
 		if (element instanceof CategoryElement) {
 			CategoryElement e = (CategoryElement) element;
-			category = (Category) e.getData();
+			parent = e;
+			category = e.getContent();
 			type = category.getModelType();
 			initDisplay();
 			return true;
@@ -64,7 +68,7 @@ public class CreateModelAction extends Action implements INavigationAction {
 	}
 
 	@Override
-	public boolean accept(List<INavigationElement> elements) {
+	public boolean accept(List<INavigationElement<?>> elements) {
 		return false;
 	}
 
@@ -80,6 +84,7 @@ public class CreateModelAction extends Action implements INavigationAction {
 			}
 			WizardDialog dialog = new WizardDialog(UI.shell(), wizard);
 			dialog.open();
+			Navigator.refresh(parent);
 		} catch (final CoreException e) {
 			log.error("Open model wizard failed", e);
 		}

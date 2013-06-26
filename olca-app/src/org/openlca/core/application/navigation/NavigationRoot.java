@@ -24,30 +24,43 @@ import org.slf4j.LoggerFactory;
  * Root element of the navigation tree: shows the database configurations.
  */
 public class NavigationRoot extends PlatformObject implements
-		INavigationElement {
+		INavigationElement<NavigationRoot> {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
+	private List<INavigationElement<?>> childs;
+
 	@Override
-	public List<INavigationElement> getChildren() {
-		log.trace("initialize navigation");
+	public NavigationRoot getContent() {
+		return this;
+	}
+
+	@Override
+	public void update() {
+		childs = null;
+	}
+
+	@Override
+	public List<INavigationElement<?>> getChildren() {
+		if (childs == null)
+			childs = loadChilds();
+		return childs;
+	}
+
+	@Override
+	public INavigationElement<?> getParent() {
+		return null;
+	}
+
+	private List<INavigationElement<?>> loadChilds() {
+		log.trace("create database navigation elements");
 		DatabaseList list = Database.getConfigurations();
-		List<INavigationElement> elements = new ArrayList<>();
+		List<INavigationElement<?>> elements = new ArrayList<>();
 		for (DerbyConfiguration config : list.getLocalDatabases())
-			elements.add(new DatabaseElement(config));
+			elements.add(new DatabaseElement(this, config));
 		for (MySQLConfiguration config : list.getRemoteDatabases())
-			elements.add(new DatabaseElement(config));
+			elements.add(new DatabaseElement(this, config));
 		return elements;
-	}
-
-	@Override
-	public INavigationElement getParent() {
-		return null;
-	}
-
-	@Override
-	public Object getData() {
-		return null;
 	}
 
 }

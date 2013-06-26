@@ -37,8 +37,8 @@ import org.openlca.core.application.navigation.INavigationElement;
 import org.openlca.core.application.navigation.NavigationRoot;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Category;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.modelprovider.IModelComponent;
 import org.openlca.core.resources.ImageType;
 import org.openlca.ui.viewer.ModelComponentTreeViewer;
 import org.slf4j.Logger;
@@ -60,7 +60,7 @@ public class SelectCategoryDialog extends Dialog {
 	/**
 	 * Only categories matching the component class will be displayed
 	 */
-	private final Class<? extends IModelComponent> componentClass;
+	private final ModelType modelType;
 
 	/**
 	 * The database
@@ -92,13 +92,13 @@ public class SelectCategoryDialog extends Dialog {
 	 *            The navigation root containing the categories
 	 */
 	public SelectCategoryDialog(final Shell parentShell, final String title,
-			final Class<? extends IModelComponent> componentClass,
-			final IDatabase database, final NavigationRoot root) {
+			ModelType modelType, final IDatabase database,
+			final NavigationRoot root) {
 		super(parentShell);
 		this.root = root;
 		this.title = title;
 		this.database = database;
-		this.componentClass = componentClass;
+		this.modelType = modelType;
 	}
 
 	@Override
@@ -113,7 +113,7 @@ public class SelectCategoryDialog extends Dialog {
 		// create category viewer
 		final TreeViewer categoryViewer = new ModelComponentTreeViewer(
 				composite, false, true, root.getCategoryRoot(Process.class,
-						database).getParent(), Process.class);
+						database).getParent(), ModelType.PROCESS);
 		categoryViewer.getTree().setLayoutData(
 				new GridData(SWT.FILL, SWT.FILL, true, true));
 
@@ -164,8 +164,7 @@ public class SelectCategoryDialog extends Dialog {
 						category.setName(dialog.getValue());
 						category.setId(UUID.randomUUID().toString());
 						category.setParentCategory(parent);
-						category.setComponentClass(componentClass
-								.getCanonicalName());
+						category.setModelType(modelType);
 						parent.add(category);
 
 						// update parent category
@@ -179,7 +178,7 @@ public class SelectCategoryDialog extends Dialog {
 						categoryViewer.refresh(element);
 						// for each child element
 						for (final INavigationElement child : element
-								.getChildren(false)) {
+								.getChildren()) {
 							// child element is the new created category
 							if (child instanceof CategoryElement
 									&& child.getData().equals(category)) {

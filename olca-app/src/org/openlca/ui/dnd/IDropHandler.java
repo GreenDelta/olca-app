@@ -9,7 +9,10 @@
  ******************************************************************************/
 package org.openlca.ui.dnd;
 
-import org.openlca.core.model.modelprovider.IModelComponent;
+import java.util.List;
+
+import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.ui.viewer.ViewerDropComponent;
 
 /**
  * An interface for handling of dropping model components to a table viewer
@@ -26,6 +29,6 @@ public interface IDropHandler {
 	 * @param droppedComponents
 	 *            - the components dropped
 	 */
-	void handleDrop(IModelComponent[] droppedComponents);
+	void handleDrop(List<BaseDescriptor> droppedModels);
 
 }

@@ -34,7 +34,7 @@ public class RenameCategoryAction extends Action implements INavigationAction {
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
 	private Category category;
-	private INavigationElement element;
+	private INavigationElement<?> element;
 
 	public RenameCategoryAction() {
 		setText(Messages.NavigationView_RenameCategoryText);
@@ -42,17 +42,17 @@ public class RenameCategoryAction extends Action implements INavigationAction {
 	}
 
 	@Override
-	public boolean accept(INavigationElement element) {
+	public boolean accept(INavigationElement<?> element) {
 		if (!(element instanceof CategoryElement))
 			return false;
 		CategoryElement e = (CategoryElement) element;
-		category = (Category) e.getData();
+		category = e.getContent();
 		this.element = element;
 		return true;
 	}
 
 	@Override
-	public boolean accept(List<INavigationElement> elements) {
+	public boolean accept(List<INavigationElement<?>> elements) {
 		return false;
 	}
 

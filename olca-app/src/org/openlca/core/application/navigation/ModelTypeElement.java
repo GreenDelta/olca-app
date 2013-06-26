@@ -14,37 +14,40 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Optional;
 
-public class ModelTypeElement implements INavigationElement {
+public class ModelTypeElement extends NavigationElement<ModelType> {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
-	private ModelType modelType;
 
-	public ModelTypeElement(ModelType modelType) {
-		this.modelType = modelType;
+	public ModelTypeElement(INavigationElement<?> parent, ModelType modelType) {
+		super(parent, modelType);
 	}
 
 	@Override
-	public List<INavigationElement> getChildren() {
-		List<INavigationElement> childs = new ArrayList<>();
-		addCategoryElements(childs);
-		addModelElements(childs);
+	protected List<INavigationElement<?>> queryChilds() {
+		ModelType type = getContent();
+		log.trace("get model type childs: {}", type);
+		List<INavigationElement<?>> childs = new ArrayList<>();
+		addCategoryElements(type, childs);
+		addModelElements(type, childs);
 		return childs;
 	}
 
-	private void addCategoryElements(List<INavigationElement> elements) {
+	private void addCategoryElements(ModelType type,
+			List<INavigationElement<?>> elements) {
 		try {
 			CategoryDao dao = new CategoryDao(Database.getEntityFactory());
-			for (Category category : dao.getRootCategories(modelType)) {
+			for (Category category : dao.getRootCategories(type)) {
 				elements.add(new CategoryElement(this, category));
 			}
 		} catch (Exception e) {
-			log.error("failed to add category elements: " + modelType, e);
+			log.error("failed to add category elements: " + type, e);
 		}
 	}
 
-	private void addModelElements(List<INavigationElement> elements) {
+	private void addModelElements(ModelType type,
+			List<INavigationElement<?>> elements) {
 		try {
-			IRootEntityDao<?> entityDao = Database.createRootDao(modelType);
+			IRootEntityDao<?> entityDao = Database.createRootDao(type);
 			if (entityDao == null)
 				return;
 			Optional<Category> nil = Optional.absent();
@@ -52,18 +55,8 @@ public class ModelTypeElement implements INavigationElement {
 				elements.add(new ModelElement(this, descriptor));
 			}
 		} catch (Exception e) {
-			log.error("Failed to add model elements: " + modelType, e);
+			log.error("Failed to add model elements: " + type, e);
 		}
-	}
-
-	@Override
-	public INavigationElement getParent() {
-		return null;
-	}
-
-	@Override
-	public Object getData() {
-		return modelType;
 	}
 
 }

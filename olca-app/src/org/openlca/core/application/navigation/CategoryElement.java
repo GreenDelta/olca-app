@@ -25,40 +25,31 @@ import com.google.common.base.Optional;
 /**
  * Represents categories in the navigation tree.
  */
-public class CategoryElement implements INavigationElement {
+public class CategoryElement extends NavigationElement<Category> {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
-	private Category category;
-	private INavigationElement parent;
-
-	public CategoryElement(INavigationElement parent, Category category) {
-		this.category = category;
-		this.parent = parent;
-	}
-
-	/**
-	 * Returns true if the category is empty: means it has no sub categories or
-	 * models inside.
-	 */
-	public boolean canBeDeleted() {
-		// TODO:
-		return false;
+	public CategoryElement(INavigationElement<?> parent, Category category) {
+		super(parent, category);
 	}
 
 	@Override
-	public List<INavigationElement> getChildren() {
-		if (category == null)
+	protected List<INavigationElement<?>> queryChilds() {
+		Category category = getContent();
+		log.trace("add category childs for {}", category);
+		if (category == null) {
 			return Collections.emptyList();
-		List<INavigationElement> list = new ArrayList<>();
+		}
+		List<INavigationElement<?>> list = new ArrayList<>();
 		for (Category child : category.getChildCategories()) {
 			list.add(new CategoryElement(this, child));
 		}
-		addModelElements(list);
+		addModelElements(category, list);
 		return list;
 	}
 
-	private void addModelElements(List<INavigationElement> list) {
+	private void addModelElements(Category category,
+			List<INavigationElement<?>> list) {
 		try {
 			IRootEntityDao<?> dao = Database.createRootDao(category
 					.getModelType());
@@ -71,26 +62,6 @@ public class CategoryElement implements INavigationElement {
 		} catch (Exception e) {
 			log.error("failed to get model elements: " + category, e);
 		}
-	}
-
-	@Override
-	public Object getData() {
-		return category;
-	}
-
-	@Override
-	public INavigationElement getParent() {
-		return parent;
-	}
-
-	@Override
-	public String toString() {
-		String str = "CategoryElement [ category = ";
-		if (category == null)
-			str += "null ]";
-		else
-			str += category.getName() + "]";
-		return str;
 	}
 
 }

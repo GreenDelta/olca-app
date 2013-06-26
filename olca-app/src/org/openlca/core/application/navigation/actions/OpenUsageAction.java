@@ -49,18 +49,18 @@ public class OpenUsageAction extends Action implements INavigationAction {
 	}
 
 	@Override
-	public boolean accept(INavigationElement navigationElement) {
+	public boolean accept(INavigationElement<?> navigationElement) {
 		if (!FeatureFlag.USAGE_MENU.isEnabled())
 			return false;
 		if (!(navigationElement instanceof ModelElement))
 			return false;
 		ModelElement element = (ModelElement) navigationElement;
-		descriptor = (BaseDescriptor) element.getData();
+		descriptor = element.getContent();
 		return types.contains(descriptor.getModelType());
 	}
 
 	@Override
-	public boolean accept(List<INavigationElement> elements) {
+	public boolean accept(List<INavigationElement<?>> elements) {
 		return false;
 	}
 

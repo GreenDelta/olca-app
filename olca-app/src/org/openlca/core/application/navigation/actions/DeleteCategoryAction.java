@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 public class DeleteCategoryAction extends Action implements INavigationAction {
 
 	private Category category;
-	private INavigationElement parentElement;
+	private INavigationElement<?> parentElement;
 
 	public DeleteCategoryAction() {
 		setText(Messages.NavigationView_RemoveCategoryText);
@@ -39,16 +39,16 @@ public class DeleteCategoryAction extends Action implements INavigationAction {
 	}
 
 	@Override
-	public boolean accept(INavigationElement element) {
+	public boolean accept(INavigationElement<?> element) {
 		if (!(element instanceof CategoryElement))
 			return false;
 		CategoryElement e = (CategoryElement) element;
-		category = (Category) e.getData();
+		category = e.getContent();
 		parentElement = element.getParent();
 		return true;
 	}
 
-	public boolean accept(List<INavigationElement> elements) {
+	public boolean accept(List<INavigationElement<?>> elements) {
 		return false;
 	}
 

@@ -14,6 +14,7 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.IContentProvider;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
@@ -25,6 +26,8 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Layout;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -36,8 +39,10 @@ import org.openlca.core.application.navigation.NavigationRoot;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.RootEntity;
+import org.openlca.ui.dnd.IDropHandler;
 import org.openlca.ui.dnd.TextDropComponent;
 import org.openlca.ui.viewer.ModelComponentTreeViewer;
+import org.openlca.ui.viewer.ViewerDropComponent;
 
 /**
  * A factory for basic UI components in the openLCA framework.
@@ -458,49 +463,47 @@ public final class UIFactory {
 
 	}
 
-	// public static TableViewer createTableViewer(Composite parent,
-	// Class<? extends IModelComponent> allowedDropClass,
-	// IDropHandler handler, FormToolkit toolkit, String[] PROPERTIES,
-	// IDatabase database) {
-	// TableViewer tableViewer = null;
-	// if (allowedDropClass == null || handler == null) {
-	// tableViewer = new TableViewer(parent, SWT.BORDER
-	// | SWT.FULL_SELECTION | SWT.MULTI);
-	// } else {
-	// tableViewer = new ViewerDropComponent(parent, allowedDropClass,
-	// handler, database);
-	// }
-	// tableViewer.setContentProvider(ArrayContentProvider.getInstance());
-	// tableViewer.setSorter(new BaseNameSorter());
-	//
-	// // create the table
-	// final Table table = tableViewer.getTable();
-	// if (toolkit != null) {
-	// toolkit.adapt(table, true, true);
-	// }
-	// if (PROPERTIES == null || PROPERTIES.length < 2) {
-	// table.setLinesVisible(false);
-	// table.setHeaderVisible(false);
-	// } else {
-	// table.setLinesVisible(true);
-	// table.setHeaderVisible(true);
-	// for (final String p : PROPERTIES) {
-	// final TableColumn c = new TableColumn(table, SWT.NULL);
-	// c.setText(p);
-	// }
-	// for (final TableColumn c : table.getColumns()) {
-	// c.pack();
-	// }
-	// }
-	//
-	// if (PROPERTIES != null && PROPERTIES.length >= 2) {
-	// tableViewer.setColumnProperties(PROPERTIES);
-	// }
-	// if (toolkit != null) {
-	// toolkit.paintBordersFor(parent);
-	// }
-	// return tableViewer;
-	// }
+	public static TableViewer createTableViewer(Composite parent,
+			ModelType modelType, IDropHandler handler, FormToolkit toolkit,
+			String[] PROPERTIES, IDatabase database) {
+		TableViewer tableViewer = null;
+		if (modelType == null || handler == null) {
+			tableViewer = new TableViewer(parent, SWT.BORDER
+					| SWT.FULL_SELECTION | SWT.MULTI);
+		} else {
+			tableViewer = new ViewerDropComponent(parent, modelType, handler);
+		}
+		tableViewer.setContentProvider(ArrayContentProvider.getInstance());
+		tableViewer.setSorter(new BaseNameSorter());
+
+		// create the table
+		final Table table = tableViewer.getTable();
+		if (toolkit != null) {
+			toolkit.adapt(table, true, true);
+		}
+		if (PROPERTIES == null || PROPERTIES.length < 2) {
+			table.setLinesVisible(false);
+			table.setHeaderVisible(false);
+		} else {
+			table.setLinesVisible(true);
+			table.setHeaderVisible(true);
+			for (final String p : PROPERTIES) {
+				final TableColumn c = new TableColumn(table, SWT.NULL);
+				c.setText(p);
+			}
+			for (final TableColumn c : table.getColumns()) {
+				c.pack();
+			}
+		}
+
+		if (PROPERTIES != null && PROPERTIES.length >= 2) {
+			tableViewer.setColumnProperties(PROPERTIES);
+		}
+		if (toolkit != null) {
+			toolkit.paintBordersFor(parent);
+		}
+		return tableViewer;
+	}
 
 	/**
 	 * Creates a new table wrap layout with vertical spacing 10, each margin 10,

@@ -1,22 +1,25 @@
 package org.openlca.ui.viewer;
 
+import java.util.List;
+
 import org.eclipse.swt.widgets.Composite;
-import org.openlca.core.model.LCIACategory;
-import org.openlca.core.model.LCIAMethod;
+import org.openlca.core.model.ImpactCategory;
+import org.openlca.core.model.ImpactMethod;
 
 @Deprecated
 /**
  * Use ImpactCategoryViewer instead
  */
-public class LCIACategoryViewer extends AbstractComboViewer<LCIACategory> {
+public class LCIACategoryViewer extends AbstractComboViewer<ImpactCategory> {
 
 	public LCIACategoryViewer(Composite parent) {
 		super(parent);
-		setInput(new LCIACategory[0]);
+		setInput(new ImpactCategory[0]);
 	}
 
-	public void setInput(LCIAMethod method) {
-		setInput(method.getLCIACategories());
+	public void setInput(ImpactMethod method) {
+		List<ImpactCategory> categories = method.getLCIACategories();
+		setInput(categories.toArray(new ImpactCategory[categories.size()]));
 	}
 
 }

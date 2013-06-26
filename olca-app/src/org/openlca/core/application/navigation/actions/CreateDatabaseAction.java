@@ -25,12 +25,12 @@ import org.openlca.core.resources.ImageType;
 public class CreateDatabaseAction extends Action implements INavigationAction {
 
 	@Override
-	public boolean accept(INavigationElement element) {
+	public boolean accept(INavigationElement<?> element) {
 		return false;
 	}
 
 	@Override
-	public boolean accept(List<INavigationElement> elements) {
+	public boolean accept(List<INavigationElement<?>> elements) {
 		return false;
 	}
 
