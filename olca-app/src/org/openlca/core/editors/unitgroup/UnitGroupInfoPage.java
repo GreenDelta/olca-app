@@ -39,6 +39,7 @@ import org.openlca.core.application.actions.DeleteWithQuestionAction;
 import org.openlca.core.editors.ModelEditor;
 import org.openlca.core.editors.ModelEditorInfoPage;
 import org.openlca.core.model.FlowProperty;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
 import org.openlca.core.resources.ImageType;
@@ -94,7 +95,8 @@ public class UnitGroupInfoPage extends ModelEditorInfoPage {
 		defaultFlowPropertyDropComponent = createDropComponent(
 				getMainComposite(), toolkit,
 				Messages.Units_DefaultFlowProperty,
-				unitGroup.getDefaultFlowProperty(), FlowProperty.class, false);
+				unitGroup.getDefaultFlowProperty(), ModelType.FLOW_PROPERTY,
+				false);
 
 		// create unit section
 		unitsSection = UIFactory.createSection(body, toolkit,
@@ -104,7 +106,7 @@ public class UnitGroupInfoPage extends ModelEditorInfoPage {
 
 		// create table viewer for displaying and editing units
 		unitsTableViewer = UIFactory.createTableViewer(unitsComposite, null,
-				null, toolkit, UNIT_PROPERTIES, getDatabase());
+				null, toolkit, UNIT_PROPERTIES);
 		unitsTableViewer.setCellModifier(new UnitCellModifier());
 		unitsTableViewer.setLabelProvider(new UnitLabelProvider(unitGroup,
 				unitsTableViewer.getTable()));
@@ -153,11 +155,12 @@ public class UnitGroupInfoPage extends ModelEditorInfoPage {
 							// load flow property
 							FlowProperty defaultFlowProperty;
 							try {
-								defaultFlowProperty = getDatabase().select(
-										FlowProperty.class,
-										((IModelComponent) content).getId());
-								unitGroup
-										.setDefaultFlowProperty(defaultFlowProperty);
+								// TODO: implement d&d
+								// defaultFlowProperty = getDatabase().select(
+								// FlowProperty.class,
+								// ((IModelComponent) content).getId());
+								// unitGroup
+								// .setDefaultFlowProperty(defaultFlowProperty);
 							} catch (Exception e) {
 								log.error("Loading flow property failed", e);
 							}

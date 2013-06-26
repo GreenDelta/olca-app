@@ -22,6 +22,7 @@ import org.eclipse.ui.forms.widgets.TableWrapData;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
 import org.openlca.core.application.Messages;
 import org.openlca.core.application.navigation.NavigationRoot;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.resources.ImageType;
 import org.openlca.ui.FancyToolTip;
@@ -44,14 +45,17 @@ public final class TextDropComponent extends Composite {
 	private Text text;
 	private FormToolkit toolkit;
 	private Transfer transferType = ModelComponentTransfer.getInstance();
+	private ModelType modelType;
 
 	public TextDropComponent(Composite parent, FormToolkit toolkit,
-			RootEntity content, boolean isNecessary, NavigationRoot root) {
+			RootEntity content, boolean isNecessary, NavigationRoot root,
+			ModelType modelType) {
 		super(parent, SWT.FILL);
 		this.toolkit = toolkit;
 		objectIsNecessary = isNecessary;
 		this.content = content;
 		this.root = root;
+		this.modelType = modelType;
 		createContent();
 	}
 
@@ -99,7 +103,7 @@ public final class TextDropComponent extends Composite {
 			@Override
 			public void mouseDown(final MouseEvent e) {
 				final SelectObjectDialog dialog = new SelectObjectDialog(
-						addButton.getShell(), root, false, database, clazz);
+						addButton.getShell(), root, false, modelType);
 				dialog.open();
 				final int code = dialog.getReturnCode();
 				if (code == Window.OK && dialog.getSelection() != null) {
@@ -139,14 +143,7 @@ public final class TextDropComponent extends Composite {
 			public void drop(final DropTargetEvent event) {
 				if (transferType.isSupportedType(event.currentDataType)
 						&& event.data != null) {
-					final Object[] data = (Object[]) event.data;
-					if (data[data.length - 1] instanceof String
-							&& data[data.length - 1].equals(database.getUrl())) {
-						final IModelComponent object = (IModelComponent) data[0];
-						if (object.getClass() == clazz) {
-							setData(object);
-						}
-					}
+					setData(event.data);
 				}
 			}
 
@@ -181,7 +178,7 @@ public final class TextDropComponent extends Composite {
 	 * @param content
 	 *            The new content
 	 */
-	protected void fireContentChange(final IModelComponent content) {
+	protected void fireContentChange(final RootEntity content) {
 		for (final IContentChangedListener l : listeners) {
 			l.contentChanged(this, content);
 		}
@@ -229,16 +226,9 @@ public final class TextDropComponent extends Composite {
 		if (data == null) {
 			content = null;
 			text.setText("");
-		} else if (data instanceof IModelComponent) {
-			final IModelComponent descriptor = (IModelComponent) data;
-			if (descriptor.getClass() == clazz) {
-				content = descriptor;
-				if (descriptor.getName() == null) {
-					text.setText("");
-				} else {
-					text.setText(descriptor.getName());
-				}
-			}
+		} else if (data instanceof Object[]) {
+
+			// TODO: set conent
 		}
 		text.setData(content); // for the tool tip
 		if (!objectIsNecessary) {

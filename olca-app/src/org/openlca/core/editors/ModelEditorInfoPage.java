@@ -10,9 +10,7 @@
 package org.openlca.core.editors;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -20,24 +18,15 @@ import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.core.application.Messages;
-import org.openlca.core.application.navigation.CategoryElement;
-import org.openlca.core.application.navigation.INavigationElement;
-import org.openlca.core.application.navigation.NavigationRoot;
-import org.openlca.core.application.navigation.Navigator;
-import org.openlca.core.model.Category;
 import org.openlca.core.model.RootEntity;
 import org.openlca.ui.UIFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Abstract form page for model component information (name, description,
@@ -48,17 +37,6 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class ModelEditorInfoPage extends ModelEditorPage implements
 		ISelectionProvider {
-
-	private Logger log = LoggerFactory.getLogger(this.getClass());
-
-	/**
-	 * The section for the category tree viewer
-	 */
-	private Section categorySection;
-	/**
-	 * The category tree viewer
-	 */
-	private TreeViewer categoryTreeViewer;
 
 	/**
 	 * A {@link Text} widget for the description-field of this actor
@@ -115,52 +93,6 @@ public abstract class ModelEditorInfoPage extends ModelEditorPage implements
 	}
 
 	/**
-	 * Sets the input and initial selection of the category tree viewer
-	 */
-	private void setCategoryViewerData() {
-		// set the category viewer input
-		try {
-			NavigationRoot root = null;
-			final Navigator navigator = (Navigator) PlatformUI.getWorkbench()
-					.getActiveWorkbenchWindow().getActivePage()
-					.findView(Navigator.ID);
-			if (navigator != null) {
-				root = navigator.getRoot();
-			}
-			if (root != null) {
-				final CategoryElement catRoot = root.getCategoryRoot(
-						modelComponent.getClass(), getDatabase());
-				CategoryElement categoryElement = null;
-				final Queue<CategoryElement> queue = new LinkedList<>();
-				queue.add(catRoot);
-				while (categoryElement == null && !queue.isEmpty()) {
-					final CategoryElement next = queue.poll();
-					if (((Category) next.getData()).getId().equals(
-							modelComponent.getCategoryId())) {
-						categoryElement = next;
-					} else {
-						for (final INavigationElement element : next
-								.getChildren(false)) {
-							if (element instanceof CategoryElement) {
-								queue.add((CategoryElement) element);
-							}
-						}
-					}
-				}
-				if (categoryElement != null) {
-					categoryTreeViewer.setSelection(new StructuredSelection(
-							categoryElement));
-					final Category c = (Category) categoryElement.getData();
-					categorySection.setText(c.getName());
-				}
-				categorySection.layout();
-			}
-		} catch (final Exception e) {
-			log.error("Setting category viewer input failed", e);
-		}
-	}
-
-	/**
 	 * Adds actions to the given section
 	 * 
 	 * @param section
@@ -168,37 +100,6 @@ public abstract class ModelEditorInfoPage extends ModelEditorPage implements
 	 */
 	protected void addSectionActions(final Section section) {
 		// subclasses may override
-	}
-
-	/**
-	 * Creates a {@link TreeViewer} widget for selecting the category of the
-	 * model component
-	 * 
-	 * @param composite
-	 *            the parent composite
-	 * @param toolkit
-	 *            the {@link FormToolkit} which should be used The model
-	 *            component
-	 * @return a {@link TreeViewer} widget
-	 */
-	protected final TreeViewer createCategoryTreeViewer(
-			final Composite composite, final FormToolkit toolkit) {
-		categorySection = UIFactory.createCategorySection(composite, toolkit);
-		NavigationRoot root = null;
-		final Navigator navigator = (Navigator) PlatformUI.getWorkbench()
-				.getActiveWorkbenchWindow().getActivePage()
-				.findView(Navigator.ID);
-		if (navigator != null) {
-			root = navigator.getRoot();
-		}
-		// create category tree viewer
-		final TreeViewer treeViewer = UIFactory.createCategoryTreeViewer(
-				categorySection,
-				toolkit,
-				root != null ? root.getCategoryRoot(modelComponent.getClass(),
-						getDatabase()).getParent() : null,
-				modelComponent.getClass());
-		return treeViewer;
 	}
 
 	@Override
@@ -219,7 +120,6 @@ public abstract class ModelEditorInfoPage extends ModelEditorPage implements
 		descriptionText = UIFactory.createTextWithLabel(mainComposite, toolkit,
 				Messages.Common_Description, true);
 
-		categoryTreeViewer = createCategoryTreeViewer(mainComposite, toolkit);
 	}
 
 	@Override
@@ -242,29 +142,6 @@ public abstract class ModelEditorInfoPage extends ModelEditorPage implements
 
 		});
 
-		categoryTreeViewer
-				.addSelectionChangedListener(new ISelectionChangedListener() {
-
-					@Override
-					public void selectionChanged(
-							final SelectionChangedEvent event) {
-						if (event.getSelection() != null
-								&& !event.getSelection().isEmpty()
-								&& event.getSelection() instanceof IStructuredSelection) {
-							final IStructuredSelection selection = (IStructuredSelection) event
-									.getSelection();
-							if (selection.getFirstElement() instanceof CategoryElement) {
-								final Category c = (Category) ((CategoryElement) selection
-										.getFirstElement()).getData();
-								categorySection.setText(c.getName());
-								categorySection.layout();
-								modelComponent.setCategoryId(c.getId());
-							}
-						}
-
-					}
-
-				});
 	}
 
 	@Override
@@ -273,7 +150,6 @@ public abstract class ModelEditorInfoPage extends ModelEditorPage implements
 		if (modelComponent.getDescription() != null) {
 			descriptionText.setText(modelComponent.getDescription());
 		}
-		setCategoryViewerData();
 	}
 
 	@Override

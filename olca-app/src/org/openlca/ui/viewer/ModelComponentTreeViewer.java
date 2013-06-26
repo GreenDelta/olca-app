@@ -69,7 +69,7 @@ public class ModelComponentTreeViewer extends TreeViewer {
 				} else if (element instanceof CategoryElement) {
 					CategoryElement e = (CategoryElement) element;
 					select = onlyCategories || hasModelComponents(e);
-					Category category = (Category) e.getData();
+					Category category = e.getContent();
 					if (modelType != null) {
 						if (category.getModelType() != modelType) {
 							select = false;

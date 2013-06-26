@@ -36,7 +36,6 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.core.application.Messages;
 import org.openlca.core.application.navigation.ModelElement;
 import org.openlca.core.application.navigation.NavigationRoot;
-import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.ui.viewer.ModelComponentTreeViewer;
@@ -50,11 +49,6 @@ public class SelectObjectDialog extends Dialog {
 	 * The class of components that can be selected
 	 */
 	private final ModelType modelType;
-
-	/**
-	 * The database
-	 */
-	private final IDatabase database;
 
 	/**
 	 * Additional filters
@@ -98,13 +92,12 @@ public class SelectObjectDialog extends Dialog {
 	 */
 	public SelectObjectDialog(final Shell parentShell,
 			final NavigationRoot root, final boolean multiSelect,
-			final IDatabase database, ModelType modelType) {
+			ModelType modelType) {
 		super(parentShell);
 		this.modelType = modelType;
 		setShellStyle(SWT.BORDER | SWT.TITLE | SWT.APPLICATION_MODAL);
 		this.root = root;
 		this.multiSelect = multiSelect;
-		this.database = database;
 		setBlockOnOpen(true);
 	}
 
@@ -187,8 +180,7 @@ public class SelectObjectDialog extends Dialog {
 
 		// create tree viewer for selecting objects
 		final TreeViewer viewer = new ModelComponentTreeViewer(composite2,
-				multiSelect, false, root.getCategoryRoot(modelType, database),
-				null);
+				multiSelect, false, root, null);
 
 		// for each filter
 		for (final ViewerFilter filter : filters) {
@@ -217,7 +209,7 @@ public class SelectObjectDialog extends Dialog {
 							// add to filtered selection
 							selection
 									.add((BaseDescriptor) ((ModelElement) selected)
-											.getData());
+											.getContent());
 						}
 					}
 					// if multiple selection is allowed
@@ -256,8 +248,7 @@ public class SelectObjectDialog extends Dialog {
 					// set first selection
 					final ModelElement element = (ModelElement) selection
 							.getFirstElement();
-					final BaseDescriptor modelComponent = (BaseDescriptor) element
-							.getData();
+					final BaseDescriptor modelComponent = element.getContent();
 					if (multiSelect) {
 						SelectObjectDialog.this.multiSelection = new BaseDescriptor[] { modelComponent };
 					} else {

@@ -22,8 +22,8 @@ import org.openlca.core.application.Messages;
 import org.openlca.core.application.actions.OpenEditorAction;
 import org.openlca.core.application.navigation.NavigationRoot;
 import org.openlca.core.application.navigation.Navigator;
-import org.openlca.core.database.IDatabase;
-import org.openlca.core.model.modelprovider.IModelComponent;
+import org.openlca.core.model.ModelType;
+import org.openlca.core.model.RootEntity;
 import org.openlca.core.resources.ImageType;
 import org.openlca.ui.UI;
 import org.openlca.ui.UIFactory;
@@ -37,18 +37,15 @@ import org.openlca.ui.dnd.TextDropComponent;
  */
 public abstract class ModelEditorPage extends FormPage {
 
-	private IDatabase database;
 	private ScrolledForm form;
 
 	public ModelEditorPage(ModelEditor editor, String id, String title) {
 		super(editor, id, title);
-		this.database = editor.getDatabase();
 	}
 
 	protected TextDropComponent createDropComponent(Composite parent,
-			FormToolkit toolkit, String labelText,
-			IModelComponent initialObject,
-			Class<? extends IModelComponent> objectClass, boolean necessary) {
+			FormToolkit toolkit, String labelText, RootEntity initialObject,
+			ModelType modelType, boolean necessary) {
 		NavigationRoot root = null;
 		Navigator navigator = (Navigator) PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow().getActivePage()
@@ -57,13 +54,12 @@ public abstract class ModelEditorPage extends FormPage {
 			root = navigator.getRoot();
 		}
 		return UIFactory.createDropComponent(parent, labelText, toolkit,
-				initialObject, objectClass, necessary, database, root);
+				initialObject, necessary, root, modelType);
 	}
 
 	protected void updateFormTitle() {
 		if (form != null) {
-			form.getForm().setText(
-					getFormTitle() + " (" + database.getName() + ")");
+			form.getForm().setText(getFormTitle());
 		}
 	}
 
@@ -75,7 +71,7 @@ public abstract class ModelEditorPage extends FormPage {
 		toolkit.getHyperlinkGroup().setHyperlinkUnderlineMode(
 				HyperlinkSettings.UNDERLINE_HOVER);
 		toolkit.decorateFormHeading(form.getForm());
-		form.setText(getFormTitle() + " (" + database.getName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$ 
+		form.setText(getFormTitle()); //$NON-NLS-1$ //$NON-NLS-2$ 
 
 		IToolBarManager toolBar = form.getToolBarManager();
 		RefreshAction action = new RefreshAction();
@@ -92,10 +88,6 @@ public abstract class ModelEditorPage extends FormPage {
 	}
 
 	protected abstract void createContents(Composite body, FormToolkit toolkit);
-
-	protected IDatabase getDatabase() {
-		return database;
-	}
 
 	protected abstract String getFormTitle();
 
@@ -118,8 +110,8 @@ public abstract class ModelEditorPage extends FormPage {
 		@Override
 		public void run() {
 			OpenEditorAction action = new OpenEditorAction();
-			action.setModelComponent(database,
-					((ModelEditor) getEditor()).getModelComponent());
+			// action.setModelComponent(database,
+			// ((ModelEditor) getEditor()).getModelComponent());
 			action.run(true);
 		}
 	}

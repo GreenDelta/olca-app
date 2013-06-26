@@ -7,16 +7,13 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.openlca.core.database.CategoryDao;
-import org.openlca.core.database.IDatabase;
 import org.openlca.core.math.IResultData;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.Location;
 import org.openlca.core.resources.ImageType;
+import org.openlca.ui.CategoryPath;
 import org.openlca.util.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class FlowViewer extends AbstractComboViewer<Flow> {
 
@@ -24,10 +21,6 @@ public class FlowViewer extends AbstractComboViewer<Flow> {
 			"Category", "Location" };
 	private static final int[] COLUMN_BOUNDS_PERCENTAGES = new int[] { 45, 40,
 			15 };
-
-	private CategoryDao categoryDao;
-
-	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	public FlowViewer(Composite parent) {
 		super(parent);
@@ -54,23 +47,8 @@ public class FlowViewer extends AbstractComboViewer<Flow> {
 		return new FlowSorter();
 	}
 
-	public void setDatabase(IDatabase database) {
-		categoryDao = new CategoryDao(database.getEntityFactory());
-	}
-
 	public void setInput(IResultData result) {
-		if (categoryDao == null)
-			throw new IllegalStateException("No database set");
 		setInput(result.getFlows());
-	}
-
-	private Category getCategory(String id) {
-		try {
-			return categoryDao.getForId(id);
-		} catch (Exception e) {
-			log.error("Error loading category", e);
-		}
-		return null;
 	}
 
 	private class FlowSorter extends ViewerSorter {
@@ -95,8 +73,8 @@ public class FlowViewer extends AbstractComboViewer<Flow> {
 				return flowNameCompare;
 
 			// compare categories
-			Category category1 = getCategory(flow1.getCategoryId());
-			Category category2 = getCategory(flow2.getCategoryId());
+			Category category1 = flow1.getCategory();
+			Category category2 = flow2.getCategory();
 			int categoryCompare = compare(category1, category2);
 			if (categoryCompare != 0)
 				return categoryCompare;
@@ -106,8 +84,8 @@ public class FlowViewer extends AbstractComboViewer<Flow> {
 		}
 
 		private int compare(Category category1, Category category2) {
-			String path1 = category1 != null ? category1.getFullPath() : null;
-			String path2 = category2 != null ? category2.getFullPath() : null;
+			String path1 = CategoryPath.getFull(category1);
+			String path2 = CategoryPath.getFull(category2);
 			return Strings.compare(path1, path2);
 		}
 
@@ -150,10 +128,7 @@ public class FlowViewer extends AbstractComboViewer<Flow> {
 			case 0:
 				return flow.getName();
 			case 1:
-				Category category = getCategory(flow.getCategoryId());
-				if (category == null)
-					break;
-				return category.getFullPath();
+				return CategoryPath.getFull(flow.getCategory());
 			case 2:
 				if (flow.getLocation() == null)
 					break;

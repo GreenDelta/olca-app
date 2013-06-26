@@ -9,40 +9,24 @@
  ******************************************************************************/
 package org.openlca.ui;
 
-import java.util.UUID;
-
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
-import org.openlca.core.application.Messages;
 import org.openlca.core.application.navigation.CategoryElement;
-import org.openlca.core.application.navigation.INavigationElement;
 import org.openlca.core.application.navigation.NavigationRoot;
-import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.Process;
-import org.openlca.core.resources.ImageType;
 import org.openlca.ui.viewer.ModelComponentTreeViewer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This dialog should be used to select an openLCA category
@@ -50,54 +34,16 @@ import org.slf4j.LoggerFactory;
  */
 public class SelectCategoryDialog extends Dialog {
 
-	private Logger log = LoggerFactory.getLogger(this.getClass());
-
-	/**
-	 * The selected category
-	 */
 	private Category category;
-
-	/**
-	 * Only categories matching the component class will be displayed
-	 */
 	private final ModelType modelType;
-
-	/**
-	 * The database
-	 */
-	private final IDatabase database;
-
-	/**
-	 * The navigation root containing the categories
-	 */
 	private final NavigationRoot root;
-
-	/**
-	 * The title of the dialog
-	 */
 	private final String title;
 
-	/**
-	 * Creates a new dialog
-	 * 
-	 * @param parentShell
-	 *            The parent shell
-	 * @param title
-	 *            The title of the dialog
-	 * @param componentClass
-	 *            Only categories matching the component class will be displayed
-	 * @param database
-	 *            The database
-	 * @param root
-	 *            The navigation root containing the categories
-	 */
-	public SelectCategoryDialog(final Shell parentShell, final String title,
-			ModelType modelType, final IDatabase database,
-			final NavigationRoot root) {
+	public SelectCategoryDialog(Shell parentShell, String title,
+			ModelType modelType, NavigationRoot root) {
 		super(parentShell);
 		this.root = root;
 		this.title = title;
-		this.database = database;
 		this.modelType = modelType;
 	}
 
@@ -112,8 +58,7 @@ public class SelectCategoryDialog extends Dialog {
 
 		// create category viewer
 		final TreeViewer categoryViewer = new ModelComponentTreeViewer(
-				composite, false, true, root.getCategoryRoot(Process.class,
-						database).getParent(), ModelType.PROCESS);
+				composite, false, true, root, modelType);
 		categoryViewer.getTree().setLayoutData(
 				new GridData(SWT.FILL, SWT.FILL, true, true));
 
@@ -125,77 +70,11 @@ public class SelectCategoryDialog extends Dialog {
 					public void selectionChanged(
 							final SelectionChangedEvent event) {
 						category = !event.getSelection().isEmpty() ? (Category) ((CategoryElement) ((IStructuredSelection) event
-								.getSelection()).getFirstElement()).getData()
-								: null;
+								.getSelection()).getFirstElement())
+								.getContent() : null;
 					}
 				});
 
-		// create popup menu
-		final Menu menu = new Menu(categoryViewer.getTree());
-		final MenuItem item = new MenuItem(menu, SWT.NONE);
-		// add selection listener to menu item
-		item.addSelectionListener(new SelectionListener() {
-
-			@Override
-			public void widgetDefaultSelected(final SelectionEvent e) {
-				// no default behaviour
-			}
-
-			@Override
-			public void widgetSelected(final SelectionEvent e) {
-				final IStructuredSelection selection = (IStructuredSelection) categoryViewer
-						.getSelection();
-				// if selection is not empty
-				if (!selection.isEmpty()) {
-					// cast
-					final CategoryElement element = (CategoryElement) selection
-							.getFirstElement();
-					// get category
-					final Category parent = (Category) element.getData();
-					// create input dialog for new name
-					final InputDialog dialog = new InputDialog(UI.shell(),
-							Messages.NewCategoryDialogTitle,
-							Messages.NewCategoryDialogText,
-							Messages.NewCategoryDialogDefault, null);
-					final int rc = dialog.open();
-					if (rc == Window.OK) {
-						// create category
-						final Category category = new Category();
-						category.setName(dialog.getValue());
-						category.setId(UUID.randomUUID().toString());
-						category.setParentCategory(parent);
-						category.setModelType(modelType);
-						parent.add(category);
-
-						// update parent category
-						try {
-							database.refresh(parent);
-						} catch (final Exception ex) {
-							log.error("Updating parent in db failed", e);
-						}
-
-						SelectCategoryDialog.this.category = category;
-						categoryViewer.refresh(element);
-						// for each child element
-						for (final INavigationElement child : element
-								.getChildren()) {
-							// child element is the new created category
-							if (child instanceof CategoryElement
-									&& child.getData().equals(category)) {
-								// set seleted
-								categoryViewer
-										.setSelection(new StructuredSelection(
-												child));
-								break;
-							}
-						}
-					}
-				}
-			}
-		});
-		item.setText(Messages.AddCategoryText);
-		item.setImage(ImageType.ADD_ICON.get());
-		categoryViewer.getTree().setMenu(menu);
 		return parent;
 	}
 

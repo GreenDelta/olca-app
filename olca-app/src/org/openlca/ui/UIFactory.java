@@ -36,7 +36,6 @@ import org.eclipse.ui.forms.widgets.TableWrapLayout;
 import org.openlca.core.application.Messages;
 import org.openlca.core.application.navigation.INavigationElement;
 import org.openlca.core.application.navigation.NavigationRoot;
-import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.RootEntity;
 import org.openlca.ui.dnd.IDropHandler;
@@ -136,7 +135,8 @@ public final class UIFactory {
 	 * @return The category tree viewer
 	 */
 	public static TreeViewer createCategoryTreeViewer(Section section,
-			FormToolkit toolkit, INavigationElement input, ModelType modelType) {
+			FormToolkit toolkit, INavigationElement<?> input,
+			ModelType modelType) {
 
 		// create the section client
 		final Composite categoryTreeComp = toolkit.createComposite(section);
@@ -333,11 +333,11 @@ public final class UIFactory {
 	public static TextDropComponent createDropComponent(final Composite parent,
 			final String labelText, final FormToolkit toolkit,
 			final RootEntity modelComponent, final boolean necessary,
-			final IDatabase database, final NavigationRoot root) {
+			final NavigationRoot root, ModelType modelType) {
 		if (labelText != null && toolkit != null)
 			toolkit.createLabel(parent, labelText, SWT.NONE);
 		final TextDropComponent dropComponent = new TextDropComponent(parent,
-				toolkit, modelComponent, necessary, root);
+				toolkit, modelComponent, necessary, root, modelType);
 		dropComponent.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
 				false));
 		return dropComponent;
@@ -465,7 +465,7 @@ public final class UIFactory {
 
 	public static TableViewer createTableViewer(Composite parent,
 			ModelType modelType, IDropHandler handler, FormToolkit toolkit,
-			String[] PROPERTIES, IDatabase database) {
+			String[] PROPERTIES) {
 		TableViewer tableViewer = null;
 		if (modelType == null || handler == null) {
 			tableViewer = new TableViewer(parent, SWT.BORDER

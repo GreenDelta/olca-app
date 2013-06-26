@@ -28,10 +28,9 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.openlca.core.application.Messages;
+import org.openlca.core.application.db.Database;
 import org.openlca.core.application.navigation.Navigator;
 import org.openlca.core.application.views.ModelEditorInput;
-import org.openlca.core.database.DataProviderException;
-import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.BaseDescriptor;
@@ -49,7 +48,6 @@ public abstract class ModelEditor extends FormEditor implements
 
 	protected Logger log = LoggerFactory.getLogger(this.getClass());
 
-	private IDatabase database;
 	private boolean dirty = false;
 	private RootEntity modelComponent;
 	private ModelEditorPage[] pages = new ModelEditorPage[0];
@@ -97,10 +95,6 @@ public abstract class ModelEditor extends FormEditor implements
 
 	protected abstract ModelEditorPage[] initPages();
 
-	protected void setDatabase(final IDatabase database) {
-		this.database = database;
-	}
-
 	@Override
 	public void doSave(final IProgressMonitor monitor) {
 		log.trace("Save {} to database.", modelComponent);
@@ -116,9 +110,10 @@ public abstract class ModelEditor extends FormEditor implements
 											modelComponent.getName()),
 									IProgressMonitor.UNKNOWN);
 							try {
-								database.createDao(modelComponent.getClass())
-										.update(modelComponent);
-							} catch (final DataProviderException e) {
+								// TODO: save updates
+								// database.createDao(modelComponent.getClass())
+								// .update(modelComponent);
+							} catch (final Exception e) {
 								throw new InvocationTargetException(e);
 							}
 							monitor.done();
@@ -140,10 +135,6 @@ public abstract class ModelEditor extends FormEditor implements
 
 	@Override
 	public void doSaveAs() {
-	}
-
-	public IDatabase getDatabase() {
-		return database;
 	}
 
 	public RootEntity getModelComponent() {
@@ -181,9 +172,10 @@ public abstract class ModelEditor extends FormEditor implements
 							monitor.beginTask(NLS.bind(Messages.Loading, name),
 									IProgressMonitor.UNKNOWN);
 							try {
-								modelComponent = (IModelComponent) database
+								modelComponent = (RootEntity) Database
 										.createDao(clazz).getForId(id);
 							} catch (Exception e) {
+								log.error("failed to load model", e);
 								throw new InvocationTargetException(e);
 							}
 							monitor.done();
