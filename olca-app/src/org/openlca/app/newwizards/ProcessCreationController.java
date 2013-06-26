@@ -1,4 +1,4 @@
-package org.openlca.core.editors.process;
+package org.openlca.app.newwizards;
 
 import java.util.UUID;
 
@@ -10,6 +10,7 @@ import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;
+import org.openlca.core.model.ProcessDocumentation;
 import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.FlowPropertyDescriptor;
@@ -21,7 +22,7 @@ import org.openlca.core.model.descriptors.FlowPropertyDescriptor;
  * case, a flow property must be provided for the second case a flow. If a flow
  * is created the flow is also inserted in the database.
  */
-public class ProcessCreationController {
+class ProcessCreationController {
 
 	private IDatabase database;
 	private String name;
@@ -29,7 +30,6 @@ public class ProcessCreationController {
 	private boolean createWithProduct;
 	private FlowPropertyDescriptor flowProperty;
 	private FlowDescriptor flow;
-	private String categoryId;
 
 	public ProcessCreationController(IDatabase database) {
 		this.database = database;
@@ -55,10 +55,6 @@ public class ProcessCreationController {
 		this.flow = flow;
 	}
 
-	public void setCategoryId(String categoryId) {
-		this.categoryId = categoryId;
-	}
-
 	public boolean canCreate() {
 		if (name == null || name.trim().isEmpty())
 			return false;
@@ -71,14 +67,15 @@ public class ProcessCreationController {
 		if (!canCreate())
 			throw new RuntimeException("Invalid arguments for process creation");
 		try {
-			Process process = new Process(UUID.randomUUID().toString(), name);
+			Process process = new Process();
+			process.setId(UUID.randomUUID().toString());
+			process.setName(name);
 			process.setDescription(description);
-			if (categoryId == null)
-				process.setCategoryId(Process.class.getCanonicalName());
-			else
-				process.setCategoryId(categoryId);
 			Flow flow = getFlow();
 			addQuantitativeReference(process, flow);
+			ProcessDocumentation doc = new ProcessDocumentation();
+			doc.setId(process.getId());
+			process.setDocumentation(doc);
 			return process;
 		} catch (Exception e) {
 			throw new RuntimeException("Could not create process", e);
@@ -93,15 +90,19 @@ public class ProcessCreationController {
 
 	private Flow createFlow() throws Exception {
 		Flow flow;
-		flow = new Flow(UUID.randomUUID().toString(), name);
-		flow.setCategoryId(Flow.class.getCanonicalName());
+		flow = new Flow();
+		flow.setId(UUID.randomUUID().toString());
+		flow.setName(name);
 		flow.setDescription(description);
-		flow.setFlowType(FlowType.ProductFlow);
+		flow.setFlowType(FlowType.PRODUCT_FLOW);
 		FlowProperty property = database.createDao(FlowProperty.class)
 				.getForId(flowProperty.getId());
 		flow.setReferenceFlowProperty(property);
-		flow.add(new FlowPropertyFactor(UUID.randomUUID().toString(), property,
-				1));
+		FlowPropertyFactor factor = new FlowPropertyFactor();
+		factor.setId(UUID.randomUUID().toString());
+		factor.setConversionFactor(1);
+		factor.setFlowProperty(property);
+		flow.getFlowPropertyFactors().add(factor);
 		database.createDao(Flow.class).insert(flow);
 		return flow;
 	}
@@ -112,13 +113,12 @@ public class ProcessCreationController {
 		qRef.setId(UUID.randomUUID().toString());
 		qRef.setFlow(flow);
 		FlowProperty refProp = flow.getReferenceFlowProperty();
-		qRef.setFlowPropertyFactor(flow.getFlowPropertyFactor(refProp.getId()));
-		UnitGroup unitGroup = database.createDao(UnitGroup.class).getForId(
-				refProp.getUnitGroupId());
+		qRef.setFlowPropertyFactor(flow.getReferenceFactor());
+		UnitGroup unitGroup = refProp.getUnitGroup();
 		if (unitGroup != null)
 			qRef.setUnit(unitGroup.getReferenceUnit());
 		qRef.setInput(false);
-		process.add(qRef);
+		process.getExchanges().add(qRef);
 		process.setQuantitativeReference(qRef);
 	}
 }

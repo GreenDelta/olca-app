@@ -1,18 +1,14 @@
-package org.openlca.core.editors.actor;
+package org.openlca.app.newwizards;
 
 import java.util.UUID;
 
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.core.application.Messages;
-import org.openlca.core.application.views.navigator.ModelWizardPage;
 import org.openlca.core.model.Actor;
 import org.openlca.core.resources.ImageType;
 
-public class ActorWizardPage extends ModelWizardPage {
+class ActorWizardPage extends AbstractWizardPage<Actor> {
 
-	/**
-	 * Creates a new actor wizard page
-	 */
 	public ActorWizardPage() {
 		super("ActorWizardPage");
 		setTitle(Messages.Actors_WizardTitle);
@@ -25,11 +21,12 @@ public class ActorWizardPage extends ModelWizardPage {
 	protected void createContents(Composite container) {
 	}
 
-	public Actor getActor() {
+	@Override
+	public Actor createModel() {
 		Actor actor = new Actor();
 		actor.setId(UUID.randomUUID().toString());
-		actor.setName(getComponentName());
-		actor.setDescription(getComponentDescription());
+		actor.setName(getModelName());
+		actor.setDescription(getModelDescription());
 		return actor;
 	}
 

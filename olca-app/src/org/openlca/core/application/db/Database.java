@@ -18,6 +18,7 @@ import org.openlca.core.database.ProjectDao;
 import org.openlca.core.database.SourceDao;
 import org.openlca.core.database.UnitGroupDao;
 import org.openlca.core.model.ModelType;
+import org.openlca.core.model.descriptors.BaseDescriptor;
 
 /** Database management of the application. */
 public class Database {
@@ -31,6 +32,15 @@ public class Database {
 
 	public static IDatabase get() {
 		return database;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> T load(BaseDescriptor descriptor) throws Exception {
+		if (descriptor == null || descriptor.getModelType() == null)
+			return null;
+		Class<?> clazz = descriptor.getModelType().getModelClass();
+		Object o = createDao(clazz).getForId(descriptor.getId());
+		return (T) o;
 	}
 
 	public static EntityManagerFactory getEntityFactory() {

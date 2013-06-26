@@ -1,4 +1,4 @@
-package org.openlca.core.editors.unitgroup;
+package org.openlca.app.newwizards;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,7 +11,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.openlca.core.application.Messages;
 import org.openlca.core.application.db.Database;
-import org.openlca.core.application.views.navigator.ModelWizardPage;
 import org.openlca.core.database.Query;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
@@ -20,7 +19,7 @@ import org.openlca.ui.UIFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class UnitGroupWizardPage extends ModelWizardPage {
+class UnitGroupWizardPage extends AbstractWizardPage<UnitGroup> {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 	private Text referenceUnitText;
@@ -94,11 +93,11 @@ public class UnitGroupWizardPage extends ModelWizardPage {
 		}
 	}
 
-	public UnitGroup getUnitGroup() {
+	public UnitGroup createModel() {
 		UnitGroup unitGroup = new UnitGroup();
 		unitGroup.setId(UUID.randomUUID().toString());
-		unitGroup.setName(getComponentName());
-		unitGroup.setDescription(getComponentDescription());
+		unitGroup.setName(getModelName());
+		unitGroup.setDescription(getModelDescription());
 		Unit referenceUnit = new Unit();
 		referenceUnit.setId(UUID.randomUUID().toString());
 		referenceUnit.setName(referenceUnitText.getText().trim());

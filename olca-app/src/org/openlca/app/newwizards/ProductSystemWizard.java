@@ -1,83 +1,49 @@
-package org.openlca.core.editors.productsystem;
+package org.openlca.app.newwizards;
 
 import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.wizard.IWizardPage;
-import org.eclipse.ui.IWorkbench;
 import org.openlca.core.application.App;
 import org.openlca.core.application.FeatureFlag;
 import org.openlca.core.application.Messages;
-import org.openlca.core.application.views.navigator.ModelWizard;
+import org.openlca.core.application.db.Database;
+import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.IProductSystemBuilder;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.resources.ImageType;
 import org.openlca.ui.ProgressAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ProductSystemWizard extends ModelWizard {
+public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
-	private String title = Messages.Systems_WizardTitle;
 
 	public ProductSystemWizard() {
-		super(Messages.Systems_WizardTitle, new ProductSystemWizardPage());
+		super();
 		setNeedsProgressMonitor(true);
-	}
-
-	private ProductSystemWizardPage getPage() {
-		IWizardPage[] pages = getPages();
-		if (pages == null)
-			return null;
-		for (IWizardPage page : pages) {
-			if (page instanceof ProductSystemWizardPage)
-				return (ProductSystemWizardPage) page;
-		}
-		return null;
-	}
-
-	private ProductSystem getProductSystem() {
-		ProductSystemWizardPage page = getPage();
-		if (page == null)
-			return null;
-		Object[] data = page.getData();
-		if (data == null)
-			return null;
-		for (Object datum : data)
-			if (datum instanceof ProductSystem)
-				return (ProductSystem) datum;
-		return null;
-	}
-
-	@Override
-	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		setWindowTitle(title);
-		setDefaultPageImageDescriptor(ImageType.NEW_WIZARD.getDescriptor());
 	}
 
 	@Override
 	public boolean performFinish() {
-		ProductSystemWizardPage page = getPage();
-		ProductSystem system = getProductSystem();
-		if (page == null || system == null) {
+		ProductSystemWizardPage page = (ProductSystemWizardPage) getPage();
+		ProductSystem system = page.createModel();
+		if (system == null) {
 			log.error("Unexpected error: no page or product system");
 			return false;
 		}
 		try {
-			database.insert(system);
+			createDao().insert(system);
 			boolean autoComplete = page.addSupplyChain();
 			if (!autoComplete)
 				return true;
 			boolean preferSystems = page.useSystemProcesses();
-			Runner runner = new Runner(database, system, preferSystems);
+			Runner runner = new Runner(system, preferSystems);
 			if (FeatureFlag.PRODUCT_SYSTEM_CUTOFF.isEnabled())
 				runner.setCutoff(page.getCutoff());
 			getContainer().run(true, true, runner);
-			App.openEditor(system, database);
+			App.openEditor(system);
 			return true;
 		} catch (Exception e) {
 			log.error("Failed to create model", e);
@@ -92,11 +58,10 @@ public class ProductSystemWizard extends ModelWizard {
 		private IDatabase db;
 		private Double cutoff;
 
-		public Runner(IDatabase db, ProductSystem system,
-				boolean preferSystemProcesses) {
+		public Runner(ProductSystem system, boolean preferSystemProcesses) {
 			this.system = system;
 			this.preferSystemProcesses = preferSystemProcesses;
-			this.db = db;
+			this.db = Database.get();
 		}
 
 		public void setCutoff(double cutoff) {
@@ -123,5 +88,20 @@ public class ProductSystemWizard extends ModelWizard {
 				log.error("Failed to auto-complete product system", e);
 			}
 		}
+	}
+
+	@Override
+	protected String getTitle() {
+		return Messages.Systems_WizardTitle;
+	}
+
+	@Override
+	protected BaseDao<ProductSystem> createDao() {
+		return Database.createDao(ProductSystem.class);
+	}
+
+	@Override
+	protected AbstractWizardPage<ProductSystem> createPage() {
+		return new ProductSystemWizardPage();
 	}
 }

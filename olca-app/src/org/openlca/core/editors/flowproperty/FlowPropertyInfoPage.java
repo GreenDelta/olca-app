@@ -14,7 +14,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.core.application.Messages;
-import org.openlca.core.database.IDatabase;
 import org.openlca.core.editors.ModelEditor;
 import org.openlca.core.editors.ModelEditorInfoPage;
 import org.openlca.core.model.FlowProperty;
@@ -66,9 +65,7 @@ public class FlowPropertyInfoPage extends ModelEditorInfoPage {
 	protected void setData() {
 		super.setData();
 		try {
-			IDatabase db = getDatabase();
-			UnitGroup group = db.select(UnitGroup.class,
-					flowProperty.getUnitGroupId());
+			UnitGroup group = flowProperty.getUnitGroup();
 			if (group != null && group.getName() != null)
 				unitGroupText.setText(group.getName());
 			typeText.setText(Labels.flowPropertyType(flowProperty));

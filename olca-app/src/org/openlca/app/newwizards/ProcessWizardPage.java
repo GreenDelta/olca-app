@@ -1,13 +1,4 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
-package org.openlca.core.editors.process;
+package org.openlca.app.newwizards;
 
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -22,14 +13,15 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.openlca.core.application.Messages;
+import org.openlca.core.application.db.Database;
 import org.openlca.core.application.navigation.INavigationElement;
 import org.openlca.core.application.navigation.NavigationRoot;
 import org.openlca.core.application.navigation.Navigator;
-import org.openlca.core.application.views.navigator.ModelWizardPage;
 import org.openlca.core.application.views.navigator.filter.EmptyCategoryFilter;
 import org.openlca.core.application.views.navigator.filter.FlowTypeFilter;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowType;
+import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.Descriptors;
 import org.openlca.core.resources.ImageType;
 import org.openlca.ui.UI;
@@ -39,13 +31,7 @@ import org.openlca.ui.viewer.ModelComponentTreeViewer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Wizard page for creating a new process
- * 
- * @author Sebastian Greve
- * 
- */
-public class ProcessWizardPage extends ModelWizardPage {
+class ProcessWizardPage extends AbstractWizardPage<Process> {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -97,7 +83,6 @@ public class ProcessWizardPage extends ModelWizardPage {
 
 		productViewer
 				.addSelectionChangedListener(new ISelectionChangedListener() {
-
 					@Override
 					public void selectionChanged(SelectionChangedEvent event) {
 						checkInput();
@@ -109,9 +94,8 @@ public class ProcessWizardPage extends ModelWizardPage {
 	private void setData() {
 		NavigationRoot root = Navigator.getNavigationRoot();
 		if (root != null)
-			productViewer.setInput(root.getCategoryRoot(Flow.class,
-					getDatabase()));
-		flowPropertyViewer.setInput(getDatabase());
+			productViewer.setInput(root);
+		flowPropertyViewer.setInput(Database.get());
 		flowPropertyViewer.selectFirst();
 	}
 
@@ -184,34 +168,32 @@ public class ProcessWizardPage extends ModelWizardPage {
 		UI.gridData(productViewerContainer, true, false);
 		productViewerContainer.setLayout(gridLayout());
 		productViewer = new ModelComponentTreeViewer(productViewerContainer,
-				false, false, root != null ? root.getCategoryRoot(Flow.class,
-						getDatabase()) : root, null);
+				false, false, root, null);
 		UI.gridData(productViewer.getTree(), true, true).heightHint = 200;
-		productViewer.addFilter(new FlowTypeFilter(FlowType.ElementaryFlow,
-				FlowType.WasteFlow));
+		productViewer.addFilter(new FlowTypeFilter(FlowType.ELEMENTARY_FLOW,
+				FlowType.WASTE_FLOW));
 		productViewer.addFilter(new EmptyCategoryFilter());
 		log.trace("product viewer initialised");
 	}
 
 	@Override
-	protected Object[] getData() {
+	public Process createModel() {
 		ProcessCreationController controller = new ProcessCreationController(
-				getDatabase());
-		controller.setCategoryId(getCategoryId());
-		controller.setName(getComponentName());
+				Database.get());
+		controller.setName(getModelName());
 		controller.setCreateWithProduct(createRefFlowCheck.getSelection());
-		controller.setDescription(getComponentDescription());
+		controller.setDescription(getModelDescription());
 		Flow flow = getSelectedFlow();
 		if (flow != null)
 			controller.setFlow(Descriptors.toDescriptor(flow));
 		controller.setFlowProperty(flowPropertyViewer.getSelected());
-		return new Object[] { controller.create() };
+		return controller.create();
 	}
 
 	private Flow getSelectedFlow() {
-		INavigationElement e = Viewers.getFirstSelected(productViewer);
-		if (e == null || !(e.getData() instanceof Flow))
+		INavigationElement<?> e = Viewers.getFirstSelected(productViewer);
+		if (e == null || !(e.getContent() instanceof Flow))
 			return null;
-		return (Flow) e.getData();
+		return (Flow) e.getContent();
 	}
 }

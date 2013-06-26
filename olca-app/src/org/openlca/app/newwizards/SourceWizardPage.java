@@ -8,47 +8,35 @@
  * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
  ******************************************************************************/
 
-package org.openlca.core.editors.lciamethod;
+package org.openlca.app.newwizards;
 
 import java.util.UUID;
 
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.core.application.Messages;
-import org.openlca.core.application.views.navigator.ModelWizardPage;
-import org.openlca.core.model.LCIAMethod;
+import org.openlca.core.model.Source;
 import org.openlca.core.resources.ImageType;
 
-/**
- * Wizard page for creating a new LCIA method object
- * 
- * @author Sebastian Greve
- * 
- */
-public class LCIAMethodWizardPage extends ModelWizardPage {
+public class SourceWizardPage extends AbstractWizardPage<Source> {
 
-	/**
-	 * Creates a new LCIA method wizard page
-	 */
-	public LCIAMethodWizardPage() {
-		super("LCIAMethodWizardPage");
-		setTitle(Messages.Methods_WizardTitle);
-		setMessage(Messages.Methods_WizardMessage);
-		setImageDescriptor(ImageType.NEW_WIZ_METHOD.getDescriptor());
+	public SourceWizardPage() {
+		super("SourceWizardPage");
+		setTitle(Messages.Sources_WizardTitle);
+		setMessage(Messages.Sources_WizardMessage);
+		setImageDescriptor(ImageType.NEW_WIZ_SOURCE.getDescriptor());
 		setPageComplete(false);
 	}
 
 	@Override
 	protected void createContents(final Composite container) {
-		// nothing to create
 	}
 
 	@Override
-	public Object[] getData() {
-		final LCIAMethod lciaMethod = new LCIAMethod(UUID.randomUUID()
-				.toString(), getComponentName());
-		lciaMethod.setCategoryId(getCategoryId());
-		lciaMethod.setDescription(getComponentDescription());
-		return new Object[] { lciaMethod };
+	public Source createModel() {
+		Source source = new Source();
+		source.setId(UUID.randomUUID().toString());
+		source.setName(getModelName());
+		source.setDescription(getModelDescription());
+		return source;
 	}
-
 }

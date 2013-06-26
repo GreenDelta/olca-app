@@ -1,22 +1,10 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
-
-package org.openlca.core.editors.flow;
+package org.openlca.app.newwizards;
 
 import java.util.UUID;
 
-import org.eclipse.jface.viewers.ComboViewer;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.core.application.Messages;
-import org.openlca.core.application.views.navigator.ModelWizardPage;
+import org.openlca.core.application.db.Database;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyFactor;
@@ -27,29 +15,14 @@ import org.openlca.ui.UI;
 import org.openlca.ui.viewer.FlowPropertyViewer;
 import org.openlca.ui.viewer.FlowTypeViewer;
 import org.openlca.ui.viewer.ISelectionChangedListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-/**
- * Wizard page for creating a new flow object
- * 
- * @author Sebastian Greve
- * 
- */
-public class FlowWizardPage extends ModelWizardPage {
+class FlowWizardPage extends AbstractWizardPage<Flow> {
 
-	/**
-	 * A {@link Combo} widget for selection of the flowType-field of this flow
-	 */
 	private FlowTypeViewer flowTypeViewer;
-
-	/**
-	 * A {@link ComboViewer} widget for selection of the
-	 * referenceFlowProperty-field of this flow
-	 */
 	private FlowPropertyViewer referenceFlowPropertyViewer;
 
-	/**
-	 * Creates a new flow property wizard page
-	 */
 	public FlowWizardPage() {
 		super("FlowWizardPage");
 		setTitle(Messages.Flows_WizardTitle);
@@ -73,11 +46,11 @@ public class FlowWizardPage extends ModelWizardPage {
 	protected void createContents(final Composite container) {
 		UI.formLabel(container, Messages.Flows_FlowType);
 		flowTypeViewer = new FlowTypeViewer(container);
-		flowTypeViewer.select(FlowType.ElementaryFlow);
+		flowTypeViewer.select(FlowType.ELEMENTARY_FLOW);
 
 		UI.formLabel(container, Messages.Flows_ReferenceFlowProperty);
 		referenceFlowPropertyViewer = new FlowPropertyViewer(container);
-		referenceFlowPropertyViewer.setInput(getDatabase());
+		referenceFlowPropertyViewer.setInput(Database.get());
 	}
 
 	@Override
@@ -95,26 +68,32 @@ public class FlowWizardPage extends ModelWizardPage {
 	}
 
 	@Override
-	public Object[] getData() {
-		final Flow flow = new Flow(UUID.randomUUID().toString(),
-				getComponentName());
-		flow.setCategoryId(getCategoryId());
-		flow.setDescription(getComponentDescription());
+	public Flow createModel() {
+		Flow flow = new Flow();
+		flow.setId(UUID.randomUUID().toString());
+		flow.setName(getModelName());
+		flow.setDescription(getModelDescription());
 		flow.setFlowType(flowTypeViewer.getSelected());
-
-		try {
-			// load reference flow property
-			String id = referenceFlowPropertyViewer.getSelected().getId();
-			FlowProperty referenceFlowProperty = getDatabase().select(
-					FlowProperty.class, id);
-			flow.setReferenceFlowProperty(referenceFlowProperty);
-
-			flow.add(new FlowPropertyFactor(UUID.randomUUID().toString(),
-					referenceFlowProperty, 1));
-
-		} catch (final Exception e) {
-			setErrorMessage(e.getMessage());
-		}
-		return new Object[] { flow };
+		addFlowProperty(flow);
+		return flow;
 	}
+
+	private void addFlowProperty(Flow flow) {
+		try {
+			String id = referenceFlowPropertyViewer.getSelected().getId();
+			FlowProperty flowProp = Database.createDao(FlowProperty.class)
+					.getForId(id);
+			flow.setReferenceFlowProperty(flowProp);
+			FlowPropertyFactor factor = new FlowPropertyFactor();
+			factor.setId(UUID.randomUUID().toString());
+			factor.setConversionFactor(1);
+			factor.setFlowProperty(flowProp);
+			flow.getFlowPropertyFactors().add(factor);
+		} catch (Exception e) {
+			setErrorMessage("Failed to load flow property");
+			Logger log = LoggerFactory.getLogger(getClass());
+			log.error("Failed to load flow property", e);
+		}
+	}
+
 }

@@ -107,55 +107,55 @@
    <extension
          point="org.eclipse.ui.newWizards">
       <wizard
-            class="org.openlca.core.editors.actor.ActorWizard"
+            class="org.openlca.app.newwizards.ActorWizard"
             icon="icons/actor_obj_new.png"
             id="newActorWizard"
             name="%wizard.name">
       </wizard>
       <wizard
-            class="org.openlca.core.editors.source.SourceWizard"
+            class="org.openlca.app.newwizards.SourceWizard"
             icon="icons/source_obj_new.png"
             id="newSourceWizard"
             name="%wizard.name.0">
       </wizard>
       <wizard
-            class="org.openlca.core.editors.unitgroup.UnitGroupWizard"
+            class="org.openlca.app.newwizards.UnitGroupWizard"
             icon="icons/unitgroup_obj_new.gif"
             id="newUnitGroupWizard"
             name="%wizard.name.1">
       </wizard>
       <wizard
-            class="org.openlca.core.editors.flowproperty.FlowPropertyWizard"
+            class="org.openlca.app.newwizards.FlowPropertyWizard"
             icon="icons/flowprop_obj_new.gif"
             id="newFlowPropertyWizard"
             name="%wizard.name.2">
       </wizard>
       <wizard
-            class="org.openlca.core.editors.flow.FlowWizard"
+            class="org.openlca.app.newwizards.FlowWizard"
             icon="icons/flow_obj_new.gif"
             id="newFlowWizard"
             name="%wizard.name.3">
       </wizard>
       <wizard
-            class="org.openlca.core.editors.lciamethod.LCIAMethodWizard"
+            class="org.openlca.app.newwizards.ImpactMethodWizard"
             icon="icons/LCIA_obj_new.gif"
             id="newImpactMethodWizard"
             name="%wizard.name.7">
       </wizard>
       <wizard
-            class="org.openlca.core.editors.process.ProcessWizard"
+            class="org.openlca.app.newwizards.ProcessWizard"
             icon="icons/proc_obj_new.gif"
             id="newProcessWizard"
             name="%wizard.name.4">
       </wizard>
       <wizard
-            class="org.openlca.core.editors.project.ProjectWizard"
+            class="org.openlca.app.newwizards.ProjectWizard"
             icon="icons/project_obj_new.png"
             id="newProjectWizard"
             name="%wizard.name.5">
       </wizard>
       <wizard
-            class="org.openlca.core.editors.productsystem.ProductSystemWizard"
+            class="org.openlca.app.newwizards.ProductSystemWizard"
             icon="icons/chart_organisation_new.png"
             id="newProductSystemWizard"
             name="%wizard.name.6">

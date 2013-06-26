@@ -1,4 +1,4 @@
-package org.openlca.core.editors.productsystem;
+package org.openlca.app.newwizards;
 
 import java.util.UUID;
 
@@ -19,10 +19,10 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.openlca.core.application.FeatureFlag;
 import org.openlca.core.application.Messages;
+import org.openlca.core.application.db.Database;
 import org.openlca.core.application.navigation.ModelElement;
 import org.openlca.core.application.navigation.NavigationRoot;
 import org.openlca.core.application.navigation.Navigator;
-import org.openlca.core.application.views.navigator.ModelWizardPage;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.resources.ImageType;
@@ -32,7 +32,7 @@ import org.openlca.ui.viewer.ModelComponentTreeViewer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class ProductSystemWizardPage extends ModelWizardPage {
+class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -57,17 +57,15 @@ class ProductSystemWizardPage extends ModelWizardPage {
 	}
 
 	@Override
-	public Object[] getData() {
-		final ProductSystem productSystem = new ProductSystem(UUID.randomUUID()
-				.toString(), getComponentName());
-		productSystem.setCategoryId(getCategoryId());
-		productSystem.setDescription(getComponentDescription());
+	public ProductSystem createModel() {
+		final ProductSystem productSystem = new ProductSystem();
+		productSystem.setId(UUID.randomUUID().toString());
+		productSystem.setName(getModelName());
+		productSystem.setDescription(getModelDescription());
 
 		try {
-			// load reference process
-			final Process process = getDatabase().select(Process.class,
-					selectedProcess.getId());
-			productSystem.add(process);
+			final Process process = selectedProcess;
+			productSystem.getProcesses().add(process);
 			productSystem.setReferenceProcess(process);
 			if (process.getQuantitativeReference() != null) {
 				productSystem.setReferenceExchange(process
@@ -84,7 +82,7 @@ class ProductSystemWizardPage extends ModelWizardPage {
 		} catch (final Exception e) {
 			log.error("Loading reference process failed", e);
 		}
-		return new Object[] { productSystem };
+		return productSystem;
 	}
 
 	public boolean useSystemProcesses() {
@@ -118,8 +116,7 @@ class ProductSystemWizardPage extends ModelWizardPage {
 	private void createProcessViewer(Composite container) {
 		NavigationRoot root = Navigator.getNavigationRoot();
 		processViewer = new ModelComponentTreeViewer(container, false, false,
-				root != null ? root.getCategoryRoot(Process.class,
-						getDatabase()) : root, null);
+				root, null);
 		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
 		gd.heightHint = 200;
 		processViewer.getTree().setLayoutData(gd);
@@ -181,8 +178,13 @@ class ProductSystemWizardPage extends ModelWizardPage {
 						if (selection.getFirstElement() instanceof ModelElement) {
 							final ModelElement elem = (ModelElement) ((IStructuredSelection) processViewer
 									.getSelection()).getFirstElement();
-							selectedProcess = (Process) elem.getData();
-							checkInput();
+							try {
+								selectedProcess = Database.load(elem
+										.getContent());
+								checkInput();
+							} catch (Exception e) {
+								log.error("failed to load process", e);
+							}
 						} else {
 							selectedProcess = null;
 							checkInput();

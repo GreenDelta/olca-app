@@ -1,29 +1,32 @@
-package org.openlca.core.editors.source;
+package org.openlca.app.newwizards;
 
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IWorkbench;
 import org.openlca.core.application.App;
-import org.openlca.core.application.Messages;
-import org.openlca.core.application.db.Database;
-import org.openlca.core.application.navigation.Navigator;
+import org.openlca.core.database.BaseDao;
 import org.openlca.core.editors.INewModelWizard;
 import org.openlca.core.model.Category;
-import org.openlca.core.model.Source;
+import org.openlca.core.model.RootEntity;
 import org.openlca.core.resources.ImageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SourceWizard extends Wizard implements INewModelWizard {
+abstract class AbstractWizard<T extends RootEntity> extends Wizard implements
+		INewModelWizard {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private Category category;
-	private SourceWizardPage page;
+	private AbstractWizardPage<T> page;
 
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		setWindowTitle(Messages.Sources_WizardTitle);
+		setWindowTitle(getTitle());
 		setDefaultPageImageDescriptor(ImageType.NEW_WIZARD.getDescriptor());
+	}
+
+	public AbstractWizardPage<T> getPage() {
+		return page;
 	}
 
 	@Override
@@ -33,24 +36,29 @@ public class SourceWizard extends Wizard implements INewModelWizard {
 
 	@Override
 	public void addPages() {
-		page = new SourceWizardPage();
+		page = createPage();
 		addPage(page);
 	}
 
 	@Override
 	public boolean performFinish() {
-		log.trace("finish create source");
+		T model = page.createModel();
+		log.trace("create {}", model);
 		try {
-			Source source = page.getSource();
-			source.setCategory(category);
-			Database.createDao(Source.class).insert(source);
-			App.openEditor(source);
-			Navigator.refresh();
+			model.setCategory(category);
+			createDao().insert(model);
+			App.openEditor(model);
 			return true;
 		} catch (Exception e) {
-			log.error("failed to create source", e);
+			log.error("failed to create actor", e);
 			return false;
 		}
 	}
+
+	protected abstract String getTitle();
+
+	protected abstract BaseDao<T> createDao();
+
+	protected abstract AbstractWizardPage<T> createPage();
 
 }
