@@ -122,7 +122,6 @@ class GroupResultSection {
 				SWT.RADIO);
 		flowsCheck.setSelection(true);
 		flowViewer = new FlowViewer(parent);
-		flowViewer.setDatabase(database);
 		flowViewer.setInput(result);
 		flowViewer.addSelectionChangedListener(new SelectionChange<Flow>());
 		if (result.getFlowIndex().getFlows().length > 0)

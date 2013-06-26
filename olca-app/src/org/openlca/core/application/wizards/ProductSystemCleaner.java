@@ -132,9 +132,10 @@ public class ProductSystemCleaner {
 						final ProcessLink[] links = productSystem
 								.getProcessLinks(process.getId());
 						for (final ProcessLink link : links) {
-							productSystem.remove(link);
+							productSystem.getProcessLinks().remove(link);
 						}
-						productSystem.remove(process);
+						// TODO: remove processes?
+						// productSystem.getProcesses().remove(process);
 					}
 				};
 				problems.add(problem);

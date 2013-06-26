@@ -91,7 +91,6 @@ public class SankeyDiagram extends GraphicalEditor implements
 			nwSet = editorInput.getNwSet();
 		}
 		if (productSystem != null) {
-			productSystem.addPropertyChangeListener(this);
 			setPartName(productSystem.getName());
 		}
 	}
@@ -415,8 +414,6 @@ public class SankeyDiagram extends GraphicalEditor implements
 
 	@Override
 	public void dispose() {
-		if (productSystem != null)
-			productSystem.removePropertyChangeListener(this);
 		if (systemNode != null)
 			systemNode.dispose();
 		super.dispose();

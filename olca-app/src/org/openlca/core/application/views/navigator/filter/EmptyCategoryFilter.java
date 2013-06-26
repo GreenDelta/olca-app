@@ -34,9 +34,7 @@ public final class EmptyCategoryFilter extends ViewerFilter {
 		Category category = null;
 		if (element instanceof CategoryElement) {
 			CategoryElement catElem = (CategoryElement) element;
-			if (catElem.getData() instanceof Category) {
-				category = (Category) catElem.getData();
-			}
+			category = catElem.getContent();
 		}
 		return category;
 	}

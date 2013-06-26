@@ -17,7 +17,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.core.application.Messages;
-import org.openlca.core.database.IDatabase;
+import org.openlca.core.application.db.Database;
 import org.openlca.core.model.ProcessGroupSet;
 import org.openlca.core.resources.ImageType;
 import org.openlca.ui.UI;
@@ -66,8 +66,7 @@ class OpenGroupSetAction extends Action {
 
 		private ProcessGroupSet[] getGroupSets() {
 			try {
-				IDatabase database = page.editor.getDatabase();
-				List<ProcessGroupSet> list = database.createDao(
+				List<ProcessGroupSet> list = Database.createDao(
 						ProcessGroupSet.class).getAll();
 				ProcessGroupSet[] groups = list
 						.toArray(new ProcessGroupSet[list.size()]);

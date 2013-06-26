@@ -97,7 +97,6 @@ public class FlowImpactSelection {
 		flowsCheck.setSelection(typeFlows);
 		flowViewer = new FlowViewer(section);
 		flowViewer.setEnabled(typeFlows);
-		flowViewer.setDatabase(database);
 		flowViewer.setInput(result);
 		flowViewer.selectFirst();
 		flowViewer.addSelectionChangedListener(new SelectionChange<Flow>());

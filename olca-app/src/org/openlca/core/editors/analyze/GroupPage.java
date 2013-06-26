@@ -36,7 +36,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.core.application.Messages;
-import org.openlca.core.database.IDatabase;
+import org.openlca.core.application.db.Database;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessGroup;
 import org.openlca.core.model.ProcessGroupSet;
@@ -126,8 +126,7 @@ class GroupPage extends FormPage {
 		FormToolkit toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		createGroupingSection(toolkit, body);
-		resultSection = new GroupResultSection(groups, result,
-				editor.getDatabase());
+		resultSection = new GroupResultSection(groups, result, Database.get());
 		resultSection.render(body, toolkit);
 		form.reflow(true);
 	}
@@ -415,8 +414,7 @@ class GroupPage extends FormPage {
 			ProcessGroupSet set = new ProcessGroupSet();
 			set.setId(UUID.randomUUID().toString());
 			set.setName(dialog.getValue());
-			IDatabase database = page.editor.getDatabase();
-			database.createDao(ProcessGroupSet.class).insert(set);
+			Database.createDao(ProcessGroupSet.class).insert(set);
 			return set;
 		}
 
@@ -452,8 +450,7 @@ class GroupPage extends FormPage {
 				throws Exception {
 			List<ProcessGroup> groups = createGroups();
 			groupSet.setGroups(groups);
-			IDatabase database = page.editor.getDatabase();
-			database.createDao(ProcessGroupSet.class).update(groupSet);
+			Database.createDao(ProcessGroupSet.class).update(groupSet);
 			page.groupSet = groupSet;
 		}
 	}

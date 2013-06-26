@@ -6,6 +6,7 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.core.application.Messages;
+import org.openlca.core.application.db.Database;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.results.AnalysisResult;
@@ -58,7 +59,7 @@ class ProcessContributionPage extends FormPage {
 	private ProcessContributionSection<Flow> createFlowSection(Composite body,
 			FormToolkit toolkit) {
 		FlowContributionProvider flowProvider = new FlowContributionProvider(
-				editor.getDatabase(), result);
+				Database.get(), result);
 		ProcessContributionSection<Flow> flowSection = new ProcessContributionSection<>(
 				flowProvider);
 		flowSection.setSectionTitle(Messages.Analyze_FlowContributions);

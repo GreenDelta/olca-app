@@ -5,8 +5,7 @@ import org.openlca.core.application.db.Database;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.model.Process;
 
-public class ProcessWizard extends
-		AbstractWizard<org.openlca.core.model.Process> {
+public class ProcessWizard extends AbstractWizard<Process> {
 
 	@Override
 	protected String getTitle() {

@@ -131,7 +131,6 @@ public class ProcessNode extends Node {
 		String text = process.getName();
 		text += process.getLocation() != null ? " ["
 				+ process.getLocation().getCode() + "]" : "";
-		text += process.isInfrastructureProcess() ? " _IP" : "";
 		if (process.getProcessType() == ProcessType.LCI_Result) {
 			text += " _S";
 		}

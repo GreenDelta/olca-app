@@ -7,7 +7,6 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Table;
 import org.openlca.core.application.Numbers;
-import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyFactor;
@@ -23,12 +22,10 @@ import org.slf4j.LoggerFactory;
 class FlowPropertyLabel implements ITableLabelProvider, ITableFontProvider {
 
 	private Flow flowInfo;
-	private IDatabase database;
 	private Font boldFont;
 
-	public FlowPropertyLabel(Flow flowInfo, IDatabase database, Table table) {
+	public FlowPropertyLabel(Flow flowInfo, Table table) {
 		this.flowInfo = flowInfo;
-		this.database = database;
 		boldFont = UI.boldFont(table);
 	}
 
@@ -83,8 +80,7 @@ class FlowPropertyLabel implements ITableLabelProvider, ITableFontProvider {
 
 	private String getRefUnitText(FlowPropertyFactor factor) {
 		try {
-			UnitGroup unitGroup = database.select(UnitGroup.class, factor
-					.getFlowProperty().getUnitGroupId());
+			UnitGroup unitGroup = factor.getFlowProperty().getUnitGroup();
 			return unitGroup.getReferenceUnit().getName();
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(this.getClass());

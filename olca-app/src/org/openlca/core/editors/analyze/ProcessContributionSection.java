@@ -68,7 +68,6 @@ class ProcessContributionSection<T> {
 		toolkit.createLabel(header, selectionName);
 		if (provider instanceof FlowContributionProvider) {
 			FlowViewer itemViewer = new FlowViewer(header);
-			itemViewer.setDatabase(provider.getDatabase());
 			itemViewer.setInput(provider.getAnalysisResult());
 			this.itemViewer = (AbstractViewer<T>) itemViewer;
 		} else if (provider instanceof ImpactContributionProvider) {

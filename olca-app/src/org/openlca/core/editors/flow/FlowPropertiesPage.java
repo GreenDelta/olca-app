@@ -42,7 +42,7 @@ import org.openlca.core.editors.ModelEditorPage;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyFactor;
-import org.openlca.core.model.modelprovider.IModelComponent;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.resources.ImageType;
 import org.openlca.ui.UI;
 import org.openlca.ui.UIFactory;
@@ -84,11 +84,11 @@ public class FlowPropertiesPage extends ModelEditorPage {
 
 		// create table viewer for displaying and editing flow properties
 		propertyViewer = UIFactory.createTableViewer(composite,
-				FlowProperty.class, new FlowPropertyDropHandler(), toolkit,
-				FlowPropertyColumn.LABELS, getDatabase());
+				ModelType.FLOW_PROPERTY, new FlowPropertyDropHandler(),
+				toolkit, FlowPropertyColumn.LABELS);
 		propertyViewer.setCellModifier(new FlowPropertyFactorCellModifier());
 		FlowPropertyLabel labelProvider = new FlowPropertyLabel(flow,
-				getDatabase(), propertyViewer.getTable());
+				propertyViewer.getTable());
 		propertyViewer.setLabelProvider(labelProvider);
 
 		bindActions(section, propertyViewer);

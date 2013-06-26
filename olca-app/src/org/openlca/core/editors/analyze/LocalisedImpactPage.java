@@ -9,7 +9,7 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.core.application.App;
-import org.openlca.core.database.IDatabase;
+import org.openlca.core.application.db.Database;
 import org.openlca.core.editors.HtmlView;
 import org.openlca.core.editors.io.LocalisedMethodStorage;
 import org.openlca.core.editors.model.LocalisedImpactCalculator;
@@ -33,13 +33,11 @@ public class LocalisedImpactPage extends FormPage implements HtmlPage {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private AnalysisResult result;
-	private IDatabase database;
 	private Browser browser;
 
 	public LocalisedImpactPage(AnalyzeEditor editor, AnalysisResult result) {
 		super(editor, "analyse.LocalisedImpactPage", "Localised LCIA (beta)");
 		this.result = result;
-		this.database = editor.getDatabase();
 	}
 
 	@Override
@@ -99,7 +97,7 @@ public class LocalisedImpactPage extends FormPage implements HtmlPage {
 			if (impactMethod == null || impactCategories == null
 					|| impactCategories.isEmpty())
 				return null;
-			return LocalisedMethodStorage.getOrCreate(database,
+			return LocalisedMethodStorage.getOrCreate(Database.get(),
 					impactMethod.getId());
 		}
 

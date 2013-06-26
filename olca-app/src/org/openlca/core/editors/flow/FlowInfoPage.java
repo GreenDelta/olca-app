@@ -22,6 +22,7 @@ import org.eclipse.ui.forms.IMessageManager;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.core.application.Messages;
+import org.openlca.core.application.db.Database;
 import org.openlca.core.editors.ModelEditor;
 import org.openlca.core.editors.ModelEditorInfoPage;
 import org.openlca.core.model.Flow;
@@ -117,8 +118,8 @@ public class FlowInfoPage extends ModelEditorInfoPage implements
 			final FormToolkit toolkit) {
 		super.createContents(body, toolkit);
 
-		if (flow.getFlowType() != FlowType.ElementaryFlow) {
-			FlowUseSection useSection = new FlowUseSection(flow, getDatabase());
+		if (flow.getFlowType() != FlowType.ELEMENTARY_FLOW) {
+			FlowUseSection useSection = new FlowUseSection(flow, Database.get());
 			useSection.render(body, toolkit);
 		}
 
@@ -202,7 +203,7 @@ public class FlowInfoPage extends ModelEditorInfoPage implements
 	protected void setData() {
 		super.setData();
 		flowTypeText.setText(Labels.flowType(flow));
-		locationViewer.setInput(getDatabase());
+		locationViewer.setInput(Database.get());
 		if (flow != null) {
 
 			if (flow.getCasNumber() != null) {

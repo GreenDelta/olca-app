@@ -75,11 +75,11 @@ public class FlowTypeFilter extends ViewerFilter {
 		if (element instanceof ModelElement) {
 			ModelElement elem = (ModelElement) element;
 
-			// if data is flow
-			if (elem.getData() instanceof Flow) {
-				Flow flowDescriptor = (Flow) elem.getData();
-				select = !matchType(flowDescriptor);
-			}
+			// // if data is flow
+			// if (elem.getContent() instanceof Flow) {
+			// Flow flowDescriptor = (Flow) elem.getContent();
+			// select = !matchType(flowDescriptor);
+			// }
 		}
 
 		// else if (filterEmptyCategories

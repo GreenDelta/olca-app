@@ -5,11 +5,11 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.openlca.core.application.Numbers;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.model.Category;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.results.AnalysisFlowResult;
 import org.openlca.ui.BaseLabelProvider;
+import org.openlca.ui.CategoryPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +51,7 @@ public class InventoryContributionLabel extends BaseLabelProvider implements
 			return process ? result.getProcess().getName() : result.getFlow()
 					.getName();
 		case 1:
-			return getCategoryPath(result.getFlow().getCategoryId());
+			return CategoryPath.getFull(result.getFlow().getCategory());
 		case 2:
 			return Numbers.format(result.getAggregatedResult());
 		case 3:
@@ -59,18 +59,6 @@ public class InventoryContributionLabel extends BaseLabelProvider implements
 		case 4:
 			return getReferenceUnitName(database, result.getFlow());
 		default:
-			return null;
-		}
-	}
-
-	private String getCategoryPath(final String categoryId) {
-		try {
-			Category category = database.select(Category.class, categoryId);
-			if (category != null)
-				return category.getFullPath();
-			return null;
-		} catch (final Exception e) {
-			log.error("Loading category failed", e);
 			return null;
 		}
 	}
@@ -86,8 +74,8 @@ public class InventoryContributionLabel extends BaseLabelProvider implements
 
 	static String getReferenceUnitName(IDatabase database, Flow flow) {
 		try {
-			UnitGroup unitGroup = database.select(UnitGroup.class, flow
-					.getReferenceFlowProperty().getUnitGroupId());
+			UnitGroup unitGroup = flow.getReferenceFlowProperty()
+					.getUnitGroup();
 			return unitGroup.getReferenceUnit().getName();
 		} catch (final Exception e) {
 			Logger log = LoggerFactory

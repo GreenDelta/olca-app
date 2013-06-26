@@ -14,6 +14,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.core.application.Messages;
+import org.openlca.core.application.db.Database;
 import org.openlca.core.editors.FlowImpactSelection;
 import org.openlca.core.editors.FlowImpactSelection.EventHandler;
 import org.openlca.core.editors.HtmlView;
@@ -84,8 +85,8 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 	private void createCombos(Composite body, FormToolkit toolkit) {
 		Composite composite = toolkit.createComposite(body);
 		UI.gridLayout(composite, 2);
-		flowImpactSelection = FlowImpactSelection
-				.onDatabase(editor.getDatabase()).withAnalysisResult(result)
+		flowImpactSelection = FlowImpactSelection.onDatabase(Database.get())
+				.withAnalysisResult(result)
 				.withEventHandler(new SelectionHandler())
 				.withSelection(result.getFlows()[0]).create(composite, toolkit);
 	}

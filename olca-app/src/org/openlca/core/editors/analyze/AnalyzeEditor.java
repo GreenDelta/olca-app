@@ -27,7 +27,6 @@ import org.openlca.core.editors.analyze.sankey.SankeyDiagram;
 import org.openlca.core.editors.model.FlowInfo;
 import org.openlca.core.editors.model.FlowInfoDao;
 import org.openlca.core.model.Flow;
-import org.openlca.core.model.modelprovider.IModelComponent;
 import org.openlca.core.model.results.AnalysisResult;
 
 /**
@@ -49,7 +48,6 @@ public class AnalyzeEditor extends ModelEditor {
 		editorInput = (AnalyzeEditorInput) input;
 		String resultKey = editorInput.getResultKey();
 		result = App.getCache().remove(resultKey, AnalysisResult.class);
-		setDatabase(editorInput.getDatabase());
 		setSite(site);
 		setInput(input);
 		String name = Messages.Analyze_ResultOf + " "
@@ -120,11 +118,6 @@ public class AnalyzeEditor extends ModelEditor {
 
 	public SankeyDiagram getDiagram() {
 		return diagram;
-	}
-
-	@Override
-	public IModelComponent getModelComponent() {
-		return result.getSetup().getProductSystem();
 	}
 
 	@Override

@@ -16,7 +16,7 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.core.application.Numbers;
-import org.openlca.core.database.IDatabase;
+import org.openlca.core.application.db.Database;
 import org.openlca.core.editors.ContributionImage;
 import org.openlca.core.editors.FlowImpactSelection;
 import org.openlca.core.editors.FlowImpactSelection.EventHandler;
@@ -34,7 +34,6 @@ public class ContributionTreePage extends FormPage {
 
 	private AnalyzeEditor editor;
 	private AnalysisResult result;
-	private IDatabase database;
 	private TreeViewer contributionTree;
 	private ContributionTreeCalculator calculator;
 	private Object selection;
@@ -46,7 +45,6 @@ public class ContributionTreePage extends FormPage {
 		super(editor, "analysis.ContributionTreePage", "Contribution tree");
 		this.editor = editor;
 		this.result = result;
-		this.database = editor.getDatabase();
 		LinkContributions linkContributions = LinkContributions.calculate(
 				result.getSetup().getProductSystem(), result.getProductIndex(),
 				result.getScalingFactors());
@@ -63,7 +61,8 @@ public class ContributionTreePage extends FormPage {
 
 		Composite composite = toolkit.createComposite(body);
 		UI.gridLayout(composite, 2);
-		FlowImpactSelection.onDatabase(database).withAnalysisResult(result)
+		FlowImpactSelection.onDatabase(Database.get())
+				.withAnalysisResult(result)
 				.withEventHandler(new SelectionHandler())
 				.create(composite, toolkit);
 

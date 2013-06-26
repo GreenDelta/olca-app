@@ -6,8 +6,6 @@ import java.util.TimerTask;
 import org.eclipse.draw2d.MouseEvent;
 import org.eclipse.draw2d.MouseListener;
 import org.openlca.core.application.App;
-import org.openlca.core.database.IDatabase;
-import org.openlca.core.model.modelprovider.IModelComponent;
 
 /**
  * Opens the process editor on a double click. As 'mouseDoubleClick' not works
@@ -35,10 +33,7 @@ class ProcessMouseClick implements MouseListener {
 			firstClick = false;
 			scheduleTimer();
 		} else {
-			IDatabase db = ((ProductSystemNode) processNode.getParent())
-					.getEditor().getDatabase();
-			IModelComponent process = processNode.getProcess();
-			App.openEditor(process, db);
+			App.openEditor(processNode.getProcess());
 		}
 	}
 
