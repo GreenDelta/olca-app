@@ -30,16 +30,13 @@ public class SourceWizardPage extends ModelWizardPage {
 
 	@Override
 	protected void createContents(final Composite container) {
-		// no contents to create
 	}
 
-	@Override
-	public Object[] getData() {
-		final Source source = new Source(UUID.randomUUID().toString(),
-				getComponentName());
-		source.setCategoryId(getCategoryId());
+	public Source getSource() {
+		Source source = new Source();
+		source.setId(UUID.randomUUID().toString());
+		source.setName(getComponentName());
 		source.setDescription(getComponentDescription());
-		return new Object[] { source };
+		return source;
 	}
-
 }
