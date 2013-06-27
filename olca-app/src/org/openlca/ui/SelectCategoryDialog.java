@@ -22,11 +22,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
-import org.openlca.core.application.navigation.CategoryElement;
-import org.openlca.core.application.navigation.NavigationRoot;
+import org.openlca.app.navigation.CategoryElement;
+import org.openlca.app.navigation.NavigationRoot;
+import org.openlca.app.navigation.NavigationTree;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
-import org.openlca.ui.viewer.ModelComponentTreeViewer;
 
 /**
  * This dialog should be used to select an openLCA category
@@ -57,7 +57,7 @@ public class SelectCategoryDialog extends Dialog {
 		new Label(composite, SWT.NONE).setText(title);
 
 		// create category viewer
-		final TreeViewer categoryViewer = new ModelComponentTreeViewer(
+		final TreeViewer categoryViewer = new NavigationTree(
 				composite, false, true, root, modelType);
 		categoryViewer.getTree().setLayoutData(
 				new GridData(SWT.FILL, SWT.FILL, true, true));

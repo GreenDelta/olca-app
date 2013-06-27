@@ -33,14 +33,13 @@ import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
+import org.openlca.app.navigation.INavigationElement;
+import org.openlca.app.navigation.NavigationTree;
 import org.openlca.core.application.Messages;
-import org.openlca.core.application.navigation.INavigationElement;
-import org.openlca.core.application.navigation.NavigationRoot;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.RootEntity;
 import org.openlca.ui.dnd.IDropHandler;
 import org.openlca.ui.dnd.TextDropComponent;
-import org.openlca.ui.viewer.ModelComponentTreeViewer;
 import org.openlca.ui.viewer.ViewerDropComponent;
 
 /**
@@ -146,7 +145,7 @@ public final class UIFactory {
 		section.setClient(categoryTreeComp);
 
 		// create category viewer
-		final TreeViewer categoryViewer = new ModelComponentTreeViewer(
+		final TreeViewer categoryViewer = new NavigationTree(
 				categoryTreeComp, false, true, input, modelType);
 		final GridData treeGridData = new GridData(SWT.FILL, SWT.FILL, true,
 				false);
@@ -333,11 +332,11 @@ public final class UIFactory {
 	public static TextDropComponent createDropComponent(final Composite parent,
 			final String labelText, final FormToolkit toolkit,
 			final RootEntity modelComponent, final boolean necessary,
-			final NavigationRoot root, ModelType modelType) {
+			ModelType modelType) {
 		if (labelText != null && toolkit != null)
 			toolkit.createLabel(parent, labelText, SWT.NONE);
 		final TextDropComponent dropComponent = new TextDropComponent(parent,
-				toolkit, modelComponent, necessary, root, modelType);
+				toolkit, modelComponent, necessary, modelType);
 		dropComponent.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
 				false));
 		return dropComponent;

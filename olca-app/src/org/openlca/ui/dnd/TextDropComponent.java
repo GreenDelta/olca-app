@@ -21,7 +21,6 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.TableWrapData;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
 import org.openlca.core.application.Messages;
-import org.openlca.core.application.navigation.NavigationRoot;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.resources.ImageType;
@@ -31,7 +30,7 @@ import org.openlca.ui.Images;
 import org.openlca.ui.SelectObjectDialog;
 
 /**
- * An text field with an add and remove button which allows the drop of a
+ * A text field with an add and remove button which allows the drop of a
  * specific model type into this field.
  */
 public final class TextDropComponent extends Composite {
@@ -41,20 +40,17 @@ public final class TextDropComponent extends Composite {
 	private List<IContentChangedListener> listeners = new ArrayList<>();
 	private final boolean objectIsNecessary;
 	private Button removeButton;
-	private final NavigationRoot root;
 	private Text text;
 	private FormToolkit toolkit;
 	private Transfer transferType = ModelComponentTransfer.getInstance();
 	private ModelType modelType;
 
 	public TextDropComponent(Composite parent, FormToolkit toolkit,
-			RootEntity content, boolean isNecessary, NavigationRoot root,
-			ModelType modelType) {
+			RootEntity content, boolean isNecessary, ModelType modelType) {
 		super(parent, SWT.FILL);
 		this.toolkit = toolkit;
 		objectIsNecessary = isNecessary;
 		this.content = content;
-		this.root = root;
 		this.modelType = modelType;
 		createContent();
 	}
@@ -103,7 +99,7 @@ public final class TextDropComponent extends Composite {
 			@Override
 			public void mouseDown(final MouseEvent e) {
 				final SelectObjectDialog dialog = new SelectObjectDialog(
-						addButton.getShell(), root, false, modelType);
+						addButton.getShell(), modelType, false);
 				dialog.open();
 				final int code = dialog.getReturnCode();
 				if (code == Window.OK && dialog.getSelection() != null) {

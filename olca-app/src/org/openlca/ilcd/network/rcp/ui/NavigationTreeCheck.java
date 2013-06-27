@@ -3,8 +3,8 @@ package org.openlca.ilcd.network.rcp.ui;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
-import org.openlca.core.application.navigation.INavigationElement;
-import org.openlca.core.application.navigation.ModelElement;
+import org.openlca.app.navigation.INavigationElement;
+import org.openlca.app.navigation.ModelElement;
 
 public class NavigationTreeCheck implements ICheckStateListener {
 

@@ -12,7 +12,6 @@ package org.openlca.core.editors;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.HyperlinkSettings;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
@@ -20,8 +19,6 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.core.application.Messages;
 import org.openlca.core.application.actions.OpenEditorAction;
-import org.openlca.core.application.navigation.NavigationRoot;
-import org.openlca.core.application.navigation.Navigator;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.resources.ImageType;
@@ -46,15 +43,8 @@ public abstract class ModelEditorPage extends FormPage {
 	protected TextDropComponent createDropComponent(Composite parent,
 			FormToolkit toolkit, String labelText, RootEntity initialObject,
 			ModelType modelType, boolean necessary) {
-		NavigationRoot root = null;
-		Navigator navigator = (Navigator) PlatformUI.getWorkbench()
-				.getActiveWorkbenchWindow().getActivePage()
-				.findView(Navigator.ID);
-		if (navigator != null) {
-			root = navigator.getRoot();
-		}
 		return UIFactory.createDropComponent(parent, labelText, toolkit,
-				initialObject, necessary, root, modelType);
+				initialObject, necessary, modelType);
 	}
 
 	protected void updateFormTitle() {

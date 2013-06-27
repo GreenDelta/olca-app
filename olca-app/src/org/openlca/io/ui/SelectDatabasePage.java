@@ -22,14 +22,14 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.PlatformUI;
+import org.openlca.app.navigation.INavigationElement;
+import org.openlca.app.navigation.NavigationContentProvider;
+import org.openlca.app.navigation.NavigationLabelProvider;
+import org.openlca.app.navigation.NavigationRoot;
+import org.openlca.app.navigation.NavigationSorter;
+import org.openlca.app.navigation.Navigator;
 import org.openlca.core.application.navigation.DataProviderNavigationElement;
 import org.openlca.core.application.navigation.DatabaseNavigationElement;
-import org.openlca.core.application.navigation.INavigationElement;
-import org.openlca.core.application.navigation.NavigationContentProvider;
-import org.openlca.core.application.navigation.NavigationLabelProvider;
-import org.openlca.core.application.navigation.NavigationRoot;
-import org.openlca.core.application.navigation.NavigationSorter;
-import org.openlca.core.application.navigation.Navigator;
 import org.openlca.core.database.IDatabase;
 
 /**

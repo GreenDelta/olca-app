@@ -13,9 +13,9 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.PlatformUI;
+import org.openlca.app.navigation.NavigationRoot;
+import org.openlca.app.navigation.Navigator;
 import org.openlca.core.application.Messages;
-import org.openlca.core.application.navigation.NavigationRoot;
-import org.openlca.core.application.navigation.Navigator;
 import org.openlca.core.database.IDatabase;
 import org.openlca.ui.Question;
 

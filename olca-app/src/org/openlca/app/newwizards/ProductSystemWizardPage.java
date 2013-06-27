@@ -17,18 +17,18 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.openlca.app.navigation.ModelElement;
+import org.openlca.app.navigation.NavigationRoot;
+import org.openlca.app.navigation.NavigationTree;
+import org.openlca.app.navigation.Navigator;
 import org.openlca.core.application.FeatureFlag;
 import org.openlca.core.application.Messages;
 import org.openlca.core.application.db.Database;
-import org.openlca.core.application.navigation.ModelElement;
-import org.openlca.core.application.navigation.NavigationRoot;
-import org.openlca.core.application.navigation.Navigator;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.resources.ImageType;
 import org.openlca.ui.UI;
 import org.openlca.ui.UIFactory;
-import org.openlca.ui.viewer.ModelComponentTreeViewer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -115,8 +115,8 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 
 	private void createProcessViewer(Composite container) {
 		NavigationRoot root = Navigator.getNavigationRoot();
-		processViewer = new ModelComponentTreeViewer(container, false, false,
-				root, null);
+		processViewer = NavigationTree.createViewer(container);
+		processViewer.setInput(root); // only processes + filter
 		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
 		gd.heightHint = 200;
 		processViewer.getTree().setLayoutData(gd);

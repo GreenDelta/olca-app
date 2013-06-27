@@ -30,15 +30,16 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.openlca.app.navigation.NavigationContentProvider;
+import org.openlca.app.navigation.NavigationLabelProvider;
+import org.openlca.app.navigation.NavigationRoot;
+import org.openlca.app.navigation.Navigator;
+import org.openlca.app.navigation.filters.CategoryViewerFilter;
 import org.openlca.core.application.ApplicationProperties;
-import org.openlca.core.application.navigation.NavigationContentProvider;
-import org.openlca.core.application.navigation.NavigationLabelProvider;
-import org.openlca.core.application.navigation.NavigationRoot;
-import org.openlca.core.application.navigation.Navigator;
 import org.openlca.core.model.Actor;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
-import org.openlca.core.model.LCIAMethod;
+import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.Source;
@@ -338,7 +339,7 @@ public class SelectObjectsExportPage extends WizardPage {
 		case PROCESS:
 			return Process.class;
 		case METHOD:
-			return LCIAMethod.class;
+			return ImpactMethod.class;
 		case FLOW:
 			return Flow.class;
 		case FLOW_PROPERTY:

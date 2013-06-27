@@ -2,9 +2,9 @@ package org.openlca.ilcd.network.rcp.ui;
 
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
-import org.openlca.core.application.navigation.CategoryElement;
-import org.openlca.core.application.navigation.INavigationElement;
-import org.openlca.core.application.navigation.ModelElement;
+import org.openlca.app.navigation.CategoryElement;
+import org.openlca.app.navigation.INavigationElement;
+import org.openlca.app.navigation.ModelElement;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;

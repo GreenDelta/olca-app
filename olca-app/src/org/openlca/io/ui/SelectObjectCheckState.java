@@ -3,9 +3,9 @@ package org.openlca.io.ui;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
+import org.openlca.app.navigation.INavigationElement;
+import org.openlca.app.navigation.ModelElement;
 import org.openlca.core.application.navigation.DataProviderNavigationElement;
-import org.openlca.core.application.navigation.INavigationElement;
-import org.openlca.core.application.navigation.ModelElement;
 import org.openlca.core.model.modelprovider.IModelComponent;
 
 public class SelectObjectCheckState implements ICheckStateListener {

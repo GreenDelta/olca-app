@@ -1,13 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
-
 package org.openlca.ui;
 
 import java.util.ArrayList;
@@ -33,72 +23,27 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.navigation.ModelElement;
+import org.openlca.app.navigation.NavigationTree;
 import org.openlca.core.application.Messages;
-import org.openlca.core.application.navigation.ModelElement;
-import org.openlca.core.application.navigation.NavigationRoot;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
-import org.openlca.ui.viewer.ModelComponentTreeViewer;
 
-/**
- * A dialog for the selection of a model component type.
- */
 public class SelectObjectDialog extends Dialog {
 
-	/**
-	 * The class of components that can be selected
-	 */
 	private final ModelType modelType;
-
-	/**
-	 * Additional filters
-	 */
 	private final List<ViewerFilter> filters = new ArrayList<>();
-
-	/**
-	 * Indicates if multiple selection is allowed
-	 */
-	private final boolean multiSelect;
-
-	/**
-	 * The current selection of the table viewer.
-	 */
 	protected BaseDescriptor[] multiSelection;
-
-	/**
-	 * The input of this dialog.
-	 */
-	protected NavigationRoot root;
-
-	/**
-	 * The current first element of the table viewer.
-	 */
 	protected BaseDescriptor selection;
+	private boolean multiSelect;
 
-	/**
-	 * Creates the dialog.
-	 * 
-	 * @param parentShell
-	 *            see {@link Dialog#getShell()}
-	 * @param root
-	 *            The input of this dialog
-	 * @param multiSelect
-	 *            Indicates if multiple objects can be selected
-	 * @param database
-	 *            The database
-	 * @param clazz
-	 *            Only objects matching this class will be displayed, all others
-	 *            will be filtered
-	 */
-	public SelectObjectDialog(final Shell parentShell,
-			final NavigationRoot root, final boolean multiSelect,
-			ModelType modelType) {
+	public SelectObjectDialog(Shell parentShell, ModelType modelType,
+			boolean multiSelect) {
 		super(parentShell);
 		this.modelType = modelType;
 		setShellStyle(SWT.BORDER | SWT.TITLE | SWT.APPLICATION_MODAL);
-		this.root = root;
-		this.multiSelect = multiSelect;
 		setBlockOnOpen(true);
+		this.multiSelect = multiSelect;
 	}
 
 	@Override
@@ -110,12 +55,6 @@ public class SelectObjectDialog extends Dialog {
 		return c;
 	}
 
-	/**
-	 * Create contents of the button bar
-	 * 
-	 * @param parent
-	 *            The parent composite
-	 */
 	@Override
 	protected void createButtonsForButtonBar(final Composite parent) {
 		createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL,
@@ -125,12 +64,6 @@ public class SelectObjectDialog extends Dialog {
 				IDialogConstants.CANCEL_LABEL, true);
 	}
 
-	/**
-	 * Create contents of the dialog
-	 * 
-	 * @param parent
-	 *            The parent composite
-	 */
 	@Override
 	protected Control createDialogArea(final Composite parent) {
 
@@ -179,8 +112,8 @@ public class SelectObjectDialog extends Dialog {
 		toolkit.paintBordersFor(composite2);
 
 		// create tree viewer for selecting objects
-		final TreeViewer viewer = new ModelComponentTreeViewer(composite2,
-				multiSelect, false, root, null);
+		final TreeViewer viewer = NavigationTree.forSingleSelection(composite2,
+				modelType);
 
 		// for each filter
 		for (final ViewerFilter filter : filters) {

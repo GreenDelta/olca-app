@@ -12,13 +12,14 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.openlca.app.navigation.INavigationElement;
+import org.openlca.app.navigation.NavigationRoot;
+import org.openlca.app.navigation.NavigationTree;
+import org.openlca.app.navigation.Navigator;
+import org.openlca.app.navigation.filters.EmptyCategoryFilter;
+import org.openlca.app.navigation.filters.FlowTypeFilter;
 import org.openlca.core.application.Messages;
 import org.openlca.core.application.db.Database;
-import org.openlca.core.application.navigation.INavigationElement;
-import org.openlca.core.application.navigation.NavigationRoot;
-import org.openlca.core.application.navigation.Navigator;
-import org.openlca.core.application.views.navigator.filter.EmptyCategoryFilter;
-import org.openlca.core.application.views.navigator.filter.FlowTypeFilter;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;
@@ -27,7 +28,6 @@ import org.openlca.core.resources.ImageType;
 import org.openlca.ui.UI;
 import org.openlca.ui.Viewers;
 import org.openlca.ui.viewer.FlowPropertyViewer;
-import org.openlca.ui.viewer.ModelComponentTreeViewer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -163,12 +163,12 @@ class ProcessWizardPage extends AbstractWizardPage<Process> {
 
 	private void createProductViewer() {
 		log.trace("start initialise product viewer");
-		NavigationRoot root = Navigator.getNavigationRoot();
 		productViewerContainer = new Composite(contentStack, SWT.NONE);
 		UI.gridData(productViewerContainer, true, false);
 		productViewerContainer.setLayout(gridLayout());
-		productViewer = new ModelComponentTreeViewer(productViewerContainer,
-				false, false, root, null);
+		productViewer = NavigationTree.createViewer(productViewerContainer);
+		productViewer.setInput(Navigator.getNavigationRoot()); // TODO: only
+																// processes
 		UI.gridData(productViewer.getTree(), true, true).heightHint = 200;
 		productViewer.addFilter(new FlowTypeFilter(FlowType.ELEMENTARY_FLOW,
 				FlowType.WASTE_FLOW));

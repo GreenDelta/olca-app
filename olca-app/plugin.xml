@@ -184,7 +184,7 @@
          point="org.eclipse.ui.views">
       <view
             allowMultiple="false"
-            class="org.openlca.core.application.navigation.Navigator"
+            class="org.openlca.app.navigation.Navigator"
             icon="icons/categories.gif"
             id="org.openlca.core.application.navigator"
             name="%view.name">
@@ -370,7 +370,7 @@
          </includes>
       </viewerActionBinding>
       <dragAssistant
-            class="org.openlca.core.application.navigation.NavigationDragAssistant"
+            class="org.openlca.app.navigation.NavigationDragAssistant"
             viewerId="org.openlca.core.application.navigator">
       </dragAssistant>
    </extension>
@@ -378,73 +378,73 @@
          point="org.eclipse.ui.navigator.navigatorContent">
       <navigatorContent
             activeByDefault="true"
-            contentProvider="org.openlca.core.application.navigation.NavigationContentProvider"
+            contentProvider="org.openlca.app.navigation.NavigationContentProvider"
             id="org.openlca.core.application.navigationContext"
-            labelProvider="org.openlca.core.application.navigation.NavigationLabelProvider"
+            labelProvider="org.openlca.app.navigation.NavigationLabelProvider"
             name="%navigatorContent.name"
             priority="normal">
          <triggerPoints>
             <instanceof
-                  value="org.openlca.core.application.navigation.INavigationElement">
+                  value="org.openlca.app.navigation.INavigationElement">
             </instanceof>
          </triggerPoints>
          <commonSorter
-               class="org.openlca.core.application.navigation.NavigationSorter">
+               class="org.openlca.app.navigation.NavigationSorter">
          </commonSorter>
          <dropAssistant
-               class="org.openlca.core.application.navigation.NavigationDropAssistant"
+               class="org.openlca.app.navigation.NavigationDropAssistant"
                id="org.openlca.core.application.dropAssistant">
             <possibleDropTargets>
                <instanceof
-                     value="org.openlca.core.application.navigation.INavigationElement">
+                     value="org.openlca.app.navigation.INavigationElement">
                </instanceof>
             </possibleDropTargets>
          </dropAssistant>
          <possibleChildren>
             <instanceof
-                  value="org.openlca.core.application.navigation.INavigationElement">
+                  value="org.openlca.app.navigation.INavigationElement">
             </instanceof>
          </possibleChildren>
       </navigatorContent>
       <actionProvider
-            class="org.openlca.core.application.navigation.NavigationActionProvider"
+            class="org.openlca.app.navigation.NavigationActionProvider"
             id="org.openlca.core.application.navigator.actionProvider"
             priority="normal">
          <enablement></enablement>
       </actionProvider>
       <commonFilter
             activeByDefault="false"
-            class="org.openlca.core.application.views.navigator.filter.EmptyCategoryFilter"
+            class="org.openlca.app.navigation.filters.EmptyCategoryFilter"
             id="org.openlca.core.application.views.navigator.filter.EmptyCategoryFilter"
             name="%commonFilter.name">
       </commonFilter>
       <commonFilter
             activeByDefault="false"
-            class="org.openlca.core.application.views.navigator.filter.ProductFlowFilter"
+            class="org.openlca.app.navigation.filters.ProductFlowFilter"
             id="org.openlca.core.application.views.navigator.filter.ProductFlowFilter"
             name="%commonFilter.name.0">
       </commonFilter>
       <commonFilter
             activeByDefault="false"
-            class="org.openlca.core.application.views.navigator.filter.ElementaryFlowFilter"
+            class="org.openlca.app.navigation.filters.ElementaryFlowFilter"
             id="org.openlca.core.application.views.navigator.filter.ElementaryFlowFilter"
             name="%commonFilter.name.1">
       </commonFilter>
       <commonFilter
             activeByDefault="false"
-            class="org.openlca.core.application.views.navigator.filter.WasteFlowFilter"
+            class="org.openlca.app.navigation.filters.WasteFlowFilter"
             id="org.openlca.core.application.views.navigator.filter.WasteFlowFilter"
             name="%commonFilter.name.2">
       </commonFilter>
       <commonFilter
             activeByDefault="false"
-            class="org.openlca.core.application.views.navigator.filter.UnitProcessFilter"
+            class="org.openlca.app.navigation.filters.UnitProcessFilter"
             id="org.openlca.core.application.views.navigator.filter.UnitProcessFilter"
             name="%commonFilter.name.3">
       </commonFilter>
       <commonFilter
             activeByDefault="false"
-            class="org.openlca.core.application.views.navigator.filter.SystemProcessFilter"
+            class="org.openlca.app.navigation.filters.SystemProcessFilter"
             id="org.openlca.core.application.views.navigator.filter.SystemProcessFilter"
             name="%commonFilter.name.4">
       </commonFilter>

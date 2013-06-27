@@ -1,0 +1,52 @@
+package org.openlca.app.navigation.filters;
+
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerFilter;
+import org.openlca.app.navigation.CategoryElement;
+import org.openlca.app.navigation.INavigationElement;
+import org.openlca.app.navigation.ModelElement;
+import org.openlca.core.model.Category;
+import org.openlca.core.model.modelprovider.IModelComponent;
+
+/**
+ * The category filter for the export object selection page.
+ */
+class CategoryViewerFilter extends ViewerFilter {
+
+	private Class<?> clazz;
+	private String className;
+
+	public CategoryViewerFilter(Class<?> filterClass) {
+		this.clazz = filterClass;
+		this.className = filterClass.getCanonicalName();
+	}
+
+	@Override
+	public boolean select(Viewer viewer, Object parentElement, Object element) {
+		return isVisible((INavigationElement) element);
+	}
+
+	private boolean isVisible(INavigationElement element) {
+		if (element instanceof CategoryElement) {
+			Category category = (Category) element.getData();
+			return category.getComponentClass().equals(className)
+					&& hasModelComponents(element);
+		} else if (element instanceof ModelElement) {
+			IModelComponent modelComponent = (IModelComponent) element
+					.getData();
+			return clazz.isInstance(modelComponent);
+		} else
+			return hasModelComponents(element);
+	}
+
+	private boolean hasModelComponents(INavigationElement element) {
+		for (INavigationElement child : element.getChildren(true)) {
+			if ((child instanceof ModelElement)
+					&& clazz.isInstance(child.getData()))
+				return true;
+			else if (hasModelComponents(child))
+				return true;
+		}
+		return false;
+	}
+}
