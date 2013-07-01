@@ -12,7 +12,6 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Table;
 import org.openlca.core.application.Numbers;
-import org.openlca.core.database.CategoryPath;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.Exchange;
@@ -21,6 +20,7 @@ import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.resources.ImageType;
+import org.openlca.ui.CategoryPath;
 import org.openlca.ui.Colors;
 import org.openlca.ui.Labels;
 import org.openlca.ui.UI;
@@ -88,11 +88,11 @@ class ExchangeLabelProvider extends ColumnLabelProvider implements
 		if (flow == null || flow.getFlowType() == null)
 			return null;
 		switch (flow.getFlowType()) {
-		case ElementaryFlow:
+		case ELEMENTARY_FLOW:
 			return ImageType.FLOW_SUBSTANCE.get();
-		case ProductFlow:
+		case PRODUCT_FLOW:
 			return ImageType.FLOW_PRODUCT.get();
-		case WasteFlow:
+		case WASTE_FLOW:
 			return ImageType.FLOW_WASTE.get();
 		default:
 			return null;
@@ -101,7 +101,7 @@ class ExchangeLabelProvider extends ColumnLabelProvider implements
 
 	private Image getAvoidedCheckImage(Exchange exchange) {
 		Flow flow = exchange.getFlow();
-		if (flow == null || flow.getFlowType() == FlowType.ElementaryFlow
+		if (flow == null || flow.getFlowType() == FlowType.ELEMENTARY_FLOW
 				|| exchange.isAvoidedProduct() != exchange.isInput())
 			return null;
 		if (exchange.isAvoidedProduct())
@@ -118,8 +118,7 @@ class ExchangeLabelProvider extends ColumnLabelProvider implements
 		case ExchangeTable.FLOW_COLUMN:
 			return exchange.getFlow().getName();
 		case ExchangeTable.CATEGORY_COLUM:
-			return CategoryPath.getShort(exchange.getFlow().getCategoryId(),
-					database);
+			return CategoryPath.getShort(exchange.getFlow().getCategory());
 		case ExchangeTable.PROPERTY_COLUMN:
 			return exchange.getFlowPropertyFactor().getFlowProperty().getName();
 		case ExchangeTable.UNIT_COLUMN:

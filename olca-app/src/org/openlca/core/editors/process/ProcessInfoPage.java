@@ -18,8 +18,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
@@ -29,16 +27,16 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.core.application.Messages;
-import org.openlca.core.editors.ModelEditor;
+import org.openlca.core.application.db.Database;
 import org.openlca.core.editors.ModelEditorInfoPage;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.Technology;
-import org.openlca.core.model.Time;
+import org.openlca.core.model.ProcessDocumentation;
 import org.openlca.ui.BaseLabelProvider;
 import org.openlca.ui.BaseNameSorter;
+import org.openlca.ui.DataBinding;
 import org.openlca.ui.UI;
 import org.openlca.ui.UIFactory;
 import org.openlca.ui.viewer.LocationViewer;
@@ -53,23 +51,21 @@ import org.openlca.ui.viewer.ToolTipComboViewer;
 public class ProcessInfoPage extends ModelEditorInfoPage implements
 		PropertyChangeListener {
 
-	private Text geographyCommentText;
-	private Button infrastructureProcessButton;
+	private DataBinding binding;
+	private Button infrastructureCheck;
 	private LocationViewer locationViewer;
 	private Process process;
+	private ProcessDocumentation processDoc;
 	private ToolTipComboViewer quantitativeReferenceCombo;
-	private Technology technology;
-	private Text technologyDescriptionText;
-
 	private ProcessTimeSection timeSection;
 
-	public ProcessInfoPage(ModelEditor editor, Technology technology, Time time) {
+	public ProcessInfoPage(ProcessEditor editor) {
 		super(editor, "ProcessInfoPage", Messages.Common_GeneralInformation,
 				Messages.Common_GeneralInformation);
 		this.process = (Process) editor.getModelComponent();
-		this.technology = technology;
-		timeSection = new ProcessTimeSection(time);
-		editor.getModelComponent().addPropertyChangeListener(this);
+		this.processDoc = process.getDocumentation();
+		timeSection = new ProcessTimeSection(processDoc);
+		this.binding = new DataBinding(editor);
 	}
 
 	@Override
@@ -77,9 +73,8 @@ public class ProcessInfoPage extends ModelEditorInfoPage implements
 			final FormToolkit toolkit) {
 		super.createContents(body, toolkit);
 
-		infrastructureProcessButton = UIFactory.createButton(
-				getMainComposite(), toolkit,
-				Messages.Processes_InfrastructureProcess);
+		infrastructureCheck = UIFactory.createButton(getMainComposite(),
+				toolkit, Messages.Processes_InfrastructureProcess);
 
 		final Section qRefSection = UIFactory.createSection(body, toolkit,
 				Messages.Common_QuantitativeReference, true, false);
@@ -91,15 +86,14 @@ public class ProcessInfoPage extends ModelEditorInfoPage implements
 				Messages.Common_QuantitativeReference);
 		quantitativeReferenceCombo = new ToolTipComboViewer(qRefComposite,
 				SWT.NONE);
-		quantitativeReferenceCombo.setLabelProvider(new BaseLabelProvider(
-				getDatabase()));
+		quantitativeReferenceCombo.setLabelProvider(new BaseLabelProvider());
 		quantitativeReferenceCombo.setContentProvider(ArrayContentProvider
 				.getInstance());
 		quantitativeReferenceCombo.setSorter(new BaseNameSorter());
 		quantitativeReferenceCombo.setLayoutData(new GridData(SWT.FILL,
 				SWT.FILL, true, false));
 		quantitativeReferenceCombo.setInput(process
-				.getOutputs(FlowType.ProductFlow));
+				.getOutputs(FlowType.PRODUCT_FLOW));
 
 		timeSection.createSection(toolkit, body);
 
@@ -114,9 +108,10 @@ public class ProcessInfoPage extends ModelEditorInfoPage implements
 		UI.formLabel(locationInfoComposite, Messages.Location);
 		locationViewer = new LocationViewer(locationInfoComposite);
 
-		geographyCommentText = UIFactory.createTextWithLabel(
+		Text geographyText = UIFactory.createTextWithLabel(
 				locationInfoComposite, toolkit,
 				Messages.Processes_GeographyComment, true);
+		binding.onString(processDoc, "geography", geographyText);
 
 		final Section technologyInfoSection = UIFactory.createSection(body,
 				toolkit, Messages.Processes_TechnologyInfoSectionLabel, true,
@@ -126,9 +121,10 @@ public class ProcessInfoPage extends ModelEditorInfoPage implements
 				.createSectionComposite(technologyInfoSection, toolkit,
 						UIFactory.createGridLayout(2));
 
-		technologyDescriptionText = UIFactory.createTextWithLabel(
+		Text technologyText = UIFactory.createTextWithLabel(
 				technologyInfoComposite, toolkit, Messages.Common_Description,
 				true);
+		binding.onString(processDoc, "technology", technologyText);
 	}
 
 	@Override
@@ -143,20 +139,19 @@ public class ProcessInfoPage extends ModelEditorInfoPage implements
 	@Override
 	protected void initListeners() {
 		super.initListeners();
-		infrastructureProcessButton
-				.addSelectionListener(new SelectionListener() {
+		infrastructureCheck.addSelectionListener(new SelectionListener() {
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
 
-					@Override
-					public void widgetDefaultSelected(final SelectionEvent e) {
-						// no action on default selection
-					}
-
-					@Override
-					public void widgetSelected(final SelectionEvent e) {
-						process.setInfrastructureProcess(infrastructureProcessButton
-								.getSelection());
-					}
-				});
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if (processDoc == null)
+					return;
+				processDoc.setInfrastructureProcess(infrastructureCheck
+						.getSelection());
+			}
+		});
 
 		quantitativeReferenceCombo
 				.addSelectionChangedListener(new ISelectionChangedListener() {
@@ -183,42 +178,16 @@ public class ProcessInfoPage extends ModelEditorInfoPage implements
 
 				});
 
-		geographyCommentText.addModifyListener(new ModifyListener() {
-
-			@Override
-			public void modifyText(final ModifyEvent e) {
-				process.setGeographyComment(geographyCommentText.getText());
-			}
-
-		});
-
-		technologyDescriptionText.addModifyListener(new ModifyListener() {
-
-			@Override
-			public void modifyText(final ModifyEvent e) {
-				technology.setDescription(technologyDescriptionText.getText());
-			}
-
-		});
-
 	}
 
 	@Override
 	protected void setData() {
 		super.setData();
-		locationViewer.setInput(getDatabase());
-		if (process != null) {
-			infrastructureProcessButton.setSelection(process
+		locationViewer.setInput(Database.get());
+		if (processDoc != null)
+			infrastructureCheck.setSelection(processDoc
 					.isInfrastructureProcess());
-			if (process.getGeographyComment() != null) {
-				geographyCommentText.setText(process.getGeographyComment());
-			}
-			if (technology != null) {
-				if (technology.getDescription() != null) {
-					technologyDescriptionText.setText(technology
-							.getDescription());
-				}
-			}
+		if (process != null) {
 			if (process.getQuantitativeReference() != null) {
 				quantitativeReferenceCombo
 						.setSelection(new StructuredSelection(process
@@ -229,23 +198,13 @@ public class ProcessInfoPage extends ModelEditorInfoPage implements
 	}
 
 	@Override
-	public void dispose() {
-		if (getEditor() != null
-				&& ((ModelEditor) getEditor()).getModelComponent() != null) {
-			((ModelEditor) getEditor()).getModelComponent()
-					.removePropertyChangeListener(this);
-		}
-		super.dispose();
-	}
-
-	@Override
 	public void propertyChange(final PropertyChangeEvent evt) {
 
 		if (evt.getPropertyName().equals("exchanges")) {
 			// update the quantitative reference combo
 			if (quantitativeReferenceCombo != null) {
 				quantitativeReferenceCombo.setInput(process
-						.getOutputs(FlowType.ProductFlow));
+						.getOutputs(FlowType.PRODUCT_FLOW));
 				if (process.getQuantitativeReference() != null) {
 					quantitativeReferenceCombo
 							.setSelection(new StructuredSelection(process

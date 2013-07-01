@@ -9,6 +9,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.openlca.core.application.db.Database;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowType;
@@ -38,7 +39,7 @@ public class ProcessCostPage extends FormPage {
 
 		for (Exchange e : getOutputProducts()) {
 			ProcessCostSection section = new ProcessCostSection(e,
-					editor.getDatabase(), editor);
+					Database.get(), editor);
 			section.render(toolkit, body);
 		}
 
@@ -51,7 +52,7 @@ public class ProcessCostPage extends FormPage {
 			if (e.isInput())
 				continue;
 			Flow f = e.getFlow();
-			if (f != null && f.getFlowType() == FlowType.ProductFlow)
+			if (f != null && f.getFlowType() == FlowType.PRODUCT_FLOW)
 				list.add(e);
 		}
 		return list;

@@ -32,11 +32,10 @@ import org.openlca.core.application.actions.OpenEditorAction;
 import org.openlca.core.editors.ModelEditor;
 import org.openlca.core.editors.ModelEditorPage;
 import org.openlca.core.model.Actor;
-import org.openlca.core.model.ModelingAndValidation;
 import org.openlca.core.model.Process;
+import org.openlca.core.model.ProcessDocumentation;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.Source;
-import org.openlca.core.model.modelprovider.IModelComponent;
 import org.openlca.core.resources.ImageType;
 import org.openlca.ui.DataBinding;
 import org.openlca.ui.IContentChangedListener;
@@ -51,10 +50,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * FormPage to display and edit the modeling and validation information of a
+ * FormPage to display and edit the modelling and validation information of a
  * process object
- * 
- * @author Sebastian Greve
  * 
  */
 public class ModelingAndValidationPage extends ModelEditorPage {
@@ -62,7 +59,7 @@ public class ModelingAndValidationPage extends ModelEditorPage {
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
 	private Process process;
-	private ModelingAndValidation modelingAndValidation;
+	private ProcessDocumentation doc;
 	private DataBinding dataBinding = new DataBinding();
 	private ProcessTypeViewer processTypeViewer;
 	private TextDropComponent reviewerDropComponent;
@@ -70,12 +67,11 @@ public class ModelingAndValidationPage extends ModelEditorPage {
 
 	private OpenEditorAction openAction;
 
-	public ModelingAndValidationPage(ModelEditor editor,
-			ModelingAndValidation modelingAndValidation) {
+	public ModelingAndValidationPage(ModelEditor editor) {
 		super(editor, "ModelingAndValidationPage",
 				Messages.Processes_ModelingAndValidationPageLabel);
 		this.process = (Process) editor.getModelComponent();
-		this.modelingAndValidation = modelingAndValidation;
+		this.doc = process.getDocumentation();
 	}
 
 	@Override
@@ -93,23 +89,23 @@ public class ModelingAndValidationPage extends ModelEditorPage {
 
 		Text text = UIFactory.createTextWithLabel(composite, toolkit,
 				Messages.Processes_LCIMethod, true);
-		dataBinding.onString(modelingAndValidation, "LCIMethod", text);
+		dataBinding.onString(doc, "LCIMethod", text);
 
 		text = UIFactory.createTextWithLabel(composite, toolkit,
 				Messages.Processes_ModelingConstants, true);
-		dataBinding.onString(modelingAndValidation, "modelingConstants", text);
+		dataBinding.onString(doc, "modelingConstants", text);
 
 		text = UIFactory.createTextWithLabel(composite, toolkit,
 				Messages.Processes_DataCompleteness, true);
-		dataBinding.onString(modelingAndValidation, "dataCompleteness", text);
+		dataBinding.onString(doc, "dataCompleteness", text);
 
 		text = UIFactory.createTextWithLabel(composite, toolkit,
 				Messages.Processes_DataSelection, true);
-		dataBinding.onString(modelingAndValidation, "dataSelection", text);
+		dataBinding.onString(doc, "dataSelection", text);
 
 		text = UIFactory.createTextWithLabel(composite, toolkit,
 				Messages.Processes_DataTreatment, true);
-		dataBinding.onString(modelingAndValidation, "dataTreatment", text);
+		dataBinding.onString(doc, "dataTreatment", text);
 
 		Section dataSourceInfoSection = UIFactory.createSection(body, toolkit,
 				Messages.Processes_DataSourceInfoSectionLabel, true, false);
@@ -119,12 +115,11 @@ public class ModelingAndValidationPage extends ModelEditorPage {
 
 		text = UIFactory.createTextWithLabel(dataSourceInfoComposite, toolkit,
 				Messages.Processes_Sampling, true);
-		dataBinding.onString(modelingAndValidation, "sampling", text);
+		dataBinding.onString(doc, "sampling", text);
 
 		text = UIFactory.createTextWithLabel(dataSourceInfoComposite, toolkit,
 				Messages.Processes_DataCollectionPeriod, true);
-		dataBinding.onString(modelingAndValidation, "dataCollectionPeriod",
-				text);
+		dataBinding.onString(doc, "dataCollectionPeriod", text);
 
 		Section evaluationSection = UIFactory.createSection(body, toolkit,
 				Messages.Processes_EvaluationSectionLabel, true, false);
@@ -133,13 +128,12 @@ public class ModelingAndValidationPage extends ModelEditorPage {
 				evaluationSection, toolkit, UIFactory.createGridLayout(2));
 
 		reviewerDropComponent = createDropComponent(evaluationComposite,
-				toolkit, Messages.Processes_Reviewer,
-				modelingAndValidation.getReviewer(), Actor.class, false);
+				toolkit, Messages.Processes_Reviewer, doc.getReviewer(),
+				Actor.class, false);
 
 		text = UIFactory.createTextWithLabel(evaluationComposite, toolkit,
 				Messages.Processes_DatasetOtherEvaluation, true);
-		dataBinding.onString(modelingAndValidation, "dataSetOtherEvaluation",
-				text);
+		dataBinding.onString(doc, "dataSetOtherEvaluation", text);
 
 		Section sourcesSection = UI.section(body, toolkit,
 				Messages.Processes_SourcesInfoSectionLabel);
@@ -156,8 +150,8 @@ public class ModelingAndValidationPage extends ModelEditorPage {
 		bindSourcesActions(sourceTableViewer, sourcesSection);
 
 		if (process != null) {
-			if (modelingAndValidation.getSources() != null) {
-				sourceTableViewer.setInput(modelingAndValidation.getSources());
+			if (doc.getSources() != null) {
+				sourceTableViewer.setInput(doc.getSources());
 			}
 		}
 

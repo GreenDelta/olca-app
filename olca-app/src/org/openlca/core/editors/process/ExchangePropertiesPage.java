@@ -28,9 +28,6 @@ import org.slf4j.LoggerFactory;
 /**
  * Property sheet for displaying uncertainty and allocation values of an
  * exchange. See {@link ExchangePropertySource} for the sheet entries.
- * 
- * @author Sebastian Greve, Michael Srocka
- * 
  */
 public class ExchangePropertiesPage extends PropertySheetPage implements
 		PropertyChangeListener, IPropertySourceProvider {
@@ -41,14 +38,6 @@ public class ExchangePropertiesPage extends PropertySheetPage implements
 
 	public ExchangePropertiesPage(Process process) {
 		this.process = process;
-		process.addPropertyChangeListener(this);
-	}
-
-	@Override
-	public void dispose() {
-		if (process != null)
-			process.removePropertyChangeListener(this);
-		super.dispose();
 	}
 
 	@Override

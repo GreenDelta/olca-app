@@ -49,9 +49,9 @@ public class ExchangePropertySource implements IPropertySource {
 		List<IPropertyDescriptor> descriptors = new ArrayList<>();
 		descriptors.addAll(uncertaintyProvider.getDescriptors());
 		if (shouldCreateAllocationDescriptors()) {
-			for (Exchange exchange : process.getOutputs(FlowType.ProductFlow))
+			for (Exchange exchange : process.getOutputs(FlowType.PRODUCT_FLOW))
 				createAllocationDescriptor(descriptors, exchange);
-			for (Exchange exchange : process.getOutputs(FlowType.WasteFlow))
+			for (Exchange exchange : process.getOutputs(FlowType.WASTE_FLOW))
 				createAllocationDescriptor(descriptors, exchange);
 		}
 		IPropertyDescriptor[] result = new IPropertyDescriptor[descriptors
@@ -63,7 +63,7 @@ public class ExchangePropertySource implements IPropertySource {
 	private boolean shouldCreateAllocationDescriptors() {
 		return (process.getAllocationMethod() == AllocationMethod.Causal)
 				&& (this.exchange.isInput() || this.exchange.getFlow()
-						.getFlowType() == FlowType.ElementaryFlow);
+						.getFlowType() == FlowType.ELEMENTARY_FLOW);
 	}
 
 	private void createAllocationDescriptor(

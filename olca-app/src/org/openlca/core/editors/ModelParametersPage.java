@@ -34,9 +34,12 @@ import org.openlca.core.model.Expression;
 import org.openlca.core.model.IParameterisable;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterType;
+import org.openlca.core.model.RootEntity;
 import org.openlca.core.resources.ImageType;
 import org.openlca.ui.UI;
 import org.openlca.ui.UIFactory;
+
+import com.google.common.base.Objects;
 
 /**
  * Abstract form page for editing parameters of a parameterizable object
@@ -127,7 +130,7 @@ public class ModelParametersPage extends ModelEditorPage implements
 	protected String getFormTitle() {
 		final String title = formText
 				+ ": "
-				+ (component != null ? ((IModelComponent) component).getName() != null ? ((IModelComponent) component)
+				+ (component != null ? ((RootEntity) component).getName() != null ? ((RootEntity) component)
 						.getName() : ""
 						: "");
 		return title;
@@ -139,27 +142,14 @@ public class ModelParametersPage extends ModelEditorPage implements
 	}
 
 	@Override
-	public void dispose() {
-		if (getEditor() != null
-				&& ((ModelEditor) getEditor()).getModelComponent() != null) {
-			((ModelEditor) getEditor()).getModelComponent()
-					.removePropertyChangeListener(this);
-		}
-		super.dispose();
-	}
-
-	@Override
 	public void error(FormulaParseException exception) {
 		if (messageManager == null)
 			return;
 		boolean belongsToThePage = false;
-		int i = 0;
-		while (!belongsToThePage && i < component.getParameters().length) {
-			if (component.getParameters()[i].getId().equals(
-					exception.getTriggerId())) {
+		for (Parameter p : component.getParameters()) {
+			if (Objects.equal(p.getId(), exception.getTriggerId())) {
 				belongsToThePage = true;
-			} else {
-				i++;
+				break;
 			}
 		}
 		if (belongsToThePage) {
@@ -217,15 +207,15 @@ public class ModelParametersPage extends ModelEditorPage implements
 			final Parameter parameter = new Parameter(UUID.randomUUID()
 					.toString(),
 					new Expression("1", 1), ParameterType.getTypeFor(component //$NON-NLS-1$
-							.getClass()), ((IModelComponent) component).getId());
-			String name = "p" + component.getParameters().length; //$NON-NLS-1$
+							.getClass()), ((RootEntity) component).getId());
+			String name = "p" + component.getParameters().size(); //$NON-NLS-1$
 			int i = 1;
 			while (parameterExists(name) != null) {
-				name = "p" + (component.getParameters().length + i); //$NON-NLS-1$
+				name = "p" + (component.getParameters().size() + i); //$NON-NLS-1$
 				i++;
 			}
 			parameter.setName(name);
-			component.add(parameter);
+			component.getParameters().add(parameter);
 
 			// update table viewer and formula editor
 			parameterViewer.setInput(component.getParameters());
@@ -343,7 +333,7 @@ public class ModelParametersPage extends ModelEditorPage implements
 				final Parameter parameter = (Parameter) structuredSelection
 						.toArray()[i];
 				// remove from component
-				component.remove(parameter);
+				component.getParameters().remove(parameter);
 			}
 			// update table viewer and formula editor
 			parameterViewer.setInput(component.getParameters());

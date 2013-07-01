@@ -12,11 +12,7 @@ package org.openlca.core.editors.process;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.UUID;
 
 import org.eclipse.jface.action.Action;
@@ -28,32 +24,26 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.window.Window;
-import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.IMessageManager;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.navigation.NavigationRoot;
-import org.openlca.app.navigation.Navigator;
 import org.openlca.core.application.App;
 import org.openlca.core.application.Messages;
+import org.openlca.core.application.db.Database;
 import org.openlca.core.application.evaluation.EvaluationListener;
-import org.openlca.core.editors.ModelEditor;
 import org.openlca.core.editors.PropertyProviderPage;
 import org.openlca.core.math.FormulaParseException;
 import org.openlca.core.model.AllocationFactor;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
-import org.openlca.core.model.FlowPropertyFactor;
-import org.openlca.core.model.FlowPropertyType;
-import org.openlca.core.model.FlowType;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.UnitGroup;
-import org.openlca.core.model.modelprovider.IModelComponent;
+import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.resources.ImageType;
 import org.openlca.ui.SelectObjectDialog;
 import org.openlca.ui.UI;
@@ -83,10 +73,9 @@ public class ExchangePage extends PropertyProviderPage implements
 	private Section inputSection;
 	private Section outputSection;
 
-	public ExchangePage(final ModelEditor editor) {
+	public ExchangePage(ProcessEditor editor) {
 		super(editor, "ExchangePage", Messages.Processes_InputOutputPageLabel);
 		this.process = (Process) editor.getModelComponent();
-		process.addPropertyChangeListener(this);
 	}
 
 	@Override
@@ -121,42 +110,29 @@ public class ExchangePage extends PropertyProviderPage implements
 		allocationViewer = new AllocationMethodViewer(composite);
 	}
 
-	/**
-	 * Adds an exchange for each given flow id to the process
-	 * 
-	 * @param flowIds
-	 *            The ids of the flow to create exchanges for
-	 * @param input
-	 *            Indicates if the exchanges to create are inputs or outputs
-	 */
-	private void addExchanges(final String[] flowIds, final boolean input) {
-		final Exchange[] exchanges = new Exchange[flowIds.length];
+	private void addExchanges(String[] flowIds, boolean input) {
+		Exchange[] exchanges = new Exchange[flowIds.length];
 		for (int i = 0; i < flowIds.length; i++) {
 			if (!process.contains(flowIds[i], input)) {
 				Flow flow = null;
 				UnitGroup unitGroup = null;
-				// load flow, flow information and unit group
 				try {
-					flow = getDatabase().select(Flow.class, flowIds[i]);
-					unitGroup = getDatabase().select(UnitGroup.class,
-							flow.getReferenceFlowProperty().getUnitGroupId());
+					flow = Database.createDao(Flow.class).getForId(flowIds[i]);
+					unitGroup = flow.getReferenceFlowProperty().getUnitGroup();
 				} catch (final Exception e) {
 					log.error(
 							"Loading flow, flow information and unit group from db failed",
 							e);
 				}
 				if (unitGroup != null) {
-					// create exchange
-					final Exchange exchange = new Exchange(process.getId());
+					Exchange exchange = new Exchange(process.getId());
 					exchange.setFlow(flow);
 					exchange.setId(UUID.randomUUID().toString());
-					exchange.setFlowPropertyFactor(flow
-							.getFlowPropertyFactor(flow
-									.getReferenceFlowProperty().getId()));
+					exchange.setFlowPropertyFactor(flow.getReferenceFactor());
 					exchange.setUnit(unitGroup.getReferenceUnit());
 					exchange.setInput(input);
 					exchanges[i] = exchange;
-					process.add(exchange);
+					process.getExchanges().add(exchange);
 				}
 			}
 		}
@@ -177,11 +153,10 @@ public class ExchangePage extends PropertyProviderPage implements
 
 	private void createInputTableViewer(Composite parent, FormToolkit toolkit) {
 		IModelDropHandler exchangesInputHandler = new FlowDropHandler(true);
-		inputViewer = UIFactory.createTableViewer(parent, Flow.class,
-				exchangesInputHandler, toolkit, ExchangeTable.INPUT_PROPERTIES,
-				getDatabase());
+		inputViewer = UIFactory.createTableViewer(parent, ModelType.FLOW,
+				exchangesInputHandler, toolkit, ExchangeTable.INPUT_PROPERTIES);
 		ExchangeLabelProvider labelProvider = new ExchangeLabelProvider(
-				getDatabase(), process);
+				Database.get(), process);
 		inputViewer.setLabelProvider(labelProvider);
 		bindActions(inputSection, inputViewer, true);
 		GridData exchangesInputGridData = new GridData(SWT.FILL, SWT.FILL,
@@ -189,19 +164,19 @@ public class ExchangePage extends PropertyProviderPage implements
 		exchangesInputGridData.widthHint = 300;
 		exchangesInputGridData.heightHint = 200;
 		inputViewer.getTable().setLayoutData(exchangesInputGridData);
-		ExchangeTable.addInputEditors(inputViewer, getDatabase());
-		ExchangeTable.addSorting(inputViewer, getDatabase());
+		ExchangeTable.addInputEditors(inputViewer, Database.get());
+		ExchangeTable.addSorting(inputViewer, Database.get());
 
 	}
 
 	private void createOutputTableViewer(final Composite parent,
 			final FormToolkit toolkit) {
 		IModelDropHandler exchangesOutputHandler = new FlowDropHandler(false);
-		outputViewer = UIFactory.createTableViewer(parent, Flow.class,
+		outputViewer = UIFactory.createTableViewer(parent, ModelType.FLOW,
 				exchangesOutputHandler, toolkit,
-				ExchangeTable.OUTPUT_PROPERTIES, getDatabase());
+				ExchangeTable.OUTPUT_PROPERTIES);
 		ExchangeLabelProvider labelProvider = new ExchangeLabelProvider(
-				getDatabase(), process);
+				Database.get(), process);
 		outputViewer.setLabelProvider(labelProvider);
 		bindActions(outputSection, outputViewer, false);
 		GridData exchangesOutputGridData = new GridData(SWT.FILL, SWT.FILL,
@@ -209,15 +184,15 @@ public class ExchangePage extends PropertyProviderPage implements
 		exchangesOutputGridData.widthHint = 300;
 		exchangesOutputGridData.heightHint = 200;
 		outputViewer.getTable().setLayoutData(exchangesOutputGridData);
-		ExchangeTable.addOutputEditors(outputViewer, getDatabase());
-		ExchangeTable.addSorting(outputViewer, getDatabase());
+		ExchangeTable.addOutputEditors(outputViewer, Database.get());
+		ExchangeTable.addSorting(outputViewer, Database.get());
 	}
 
 	private void bindActions(Section section, TableViewer viewer,
 			boolean forInputs) {
 		Action add = new AddExchangeAction(forInputs);
 		RemoveExchangeAction remove = new RemoveExchangeAction(forInputs,
-				getDatabase(), process);
+				process);
 		remove.setViewer(viewer);
 		Action valueViewSwitch = new SwitchValueViewAction(viewer);
 		UI.bindActions(section, add, remove, valueViewSwitch);
@@ -234,148 +209,155 @@ public class ExchangePage extends PropertyProviderPage implements
 	String checkAllocation() {
 
 		String text = null;
-		try {
-			final AllocationMethod method = process.getAllocationMethod();
-			if (method == AllocationMethod.Physical
-					|| method == AllocationMethod.Economic) {
-				// check conditions of physical/economic method
-				final Map<String, Flow> flowInformations = new HashMap<>();
-				final Map<String, List<String>> productToFlowProperties = new HashMap<>();
-				String productWithLessFlowProperties = null;
-				int flowPropertyCount = Integer.MAX_VALUE;
-				final List<Exchange> exchanges = new ArrayList<>();
-				for (final Exchange product : process
-						.getOutputs(FlowType.ProductFlow)) {
-					exchanges.add(product);
-				}
-				for (final Exchange product : process
-						.getOutputs(FlowType.WasteFlow)) {
-					exchanges.add(product);
-				}
-				for (final Exchange product : exchanges) {
-					List<String> flowProperties = productToFlowProperties
-							.get(product.getId());
-					// collect flow property ids of each product flow
-					if (flowProperties == null) {
-						flowProperties = new ArrayList<>();
-					}
-					Flow flowInformation = product.getFlow();
 
-					flowInformations.put(product.getId(), flowInformation);
-					for (final FlowPropertyFactor flowPropertyFactor : flowInformation
-							.getFlowPropertyFactors()) {
-						if (flowPropertyFactor.getFlowProperty()
-								.getFlowPropertyType() == (method == AllocationMethod.Physical ? FlowPropertyType.Physical
-								: FlowPropertyType.Economic)) {
-							flowProperties.add(flowPropertyFactor
-									.getFlowProperty().getId());
-						}
-					}
-					if (flowPropertyCount > flowProperties.size()) {
-						productWithLessFlowProperties = product.getId();
-						flowPropertyCount = flowProperties.size();
-					}
-					productToFlowProperties
-							.put(product.getId(), flowProperties);
-				}
-				int i = 0;
-				final List<String> flowProperties = productToFlowProperties
-						.get(productWithLessFlowProperties);
-				String flowPropertyIntersectionId = null;
-				if (flowProperties != null && flowProperties.size() > 0) {
-					while (flowPropertyIntersectionId == null
-							&& i < flowProperties.size()) {
-						// check if all products contain at least one of the
-						// flow properties.
-						// The product flow with the least flow properties is
-						// used.
-						final String flowPropertyId = flowProperties.get(i);
-						boolean isFoundInAll = true;
-						for (final List<String> flowPropertiesToCompare : productToFlowProperties
-								.values()) {
-							if (!flowPropertiesToCompare
-									.contains(flowPropertyId)) {
-								isFoundInAll = false;
-								break;
-							}
-						}
-						if (isFoundInAll) {
-							flowPropertyIntersectionId = flowPropertyId;
-						}
-						i++;
-					}
-				}
-				process.clearAllocationFactors();
-				if (flowPropertyIntersectionId == null) {
-					text = NLS
-							.bind(Messages.Processes_NoFlowPropertyUsedByAll,
-									(method == AllocationMethod.Physical ? Messages.Processes_Physical
-											: Messages.Processes_Economic));
-				} else {
-					// there is a common flow property
-					double totalAmount = 0;
-					final Map<String, Double> amounts = new HashMap<>();
-					// for each product exchange
-					for (final Exchange product : exchanges) {
-						// append total amount
-						Flow flowInformation = product.getFlow();
-						final FlowPropertyFactor factor = flowInformation
-								.getFlowPropertyFactor(flowPropertyIntersectionId);
-						final double amount = product.getConvertedResult()
-								/ factor.getConversionFactor();
-						totalAmount += amount;
-						amounts.put(product.getId(), amount);
-					}
-
-					// for each exchange of the process
-					for (final Exchange exchange : process.getExchanges()) {
-						// is exchange is input or elementary
-						if (exchange.isInput()
-								|| exchange.getFlow().getFlowType() == FlowType.ElementaryFlow) {
-							// for each amount
-							for (final Entry<String, Double> entry : amounts
-									.entrySet()) {
-								// create new allocation factor
-								final AllocationFactor allocationFactor = new AllocationFactor(
-										UUID.randomUUID().toString(),
-										entry.getKey(), entry.getValue()
-												/ totalAmount);
-								exchange.add(allocationFactor);
-							}
-						}
-					}
-				}
-			} else if (method == AllocationMethod.Causal) {
-				boolean causalCanBeApplied = true;
-				// for each exchange
-				for (final Exchange exchange : process.getExchanges()) {
-					// if exchange is input or elementary
-					if (exchange.isInput()
-							|| exchange.getFlow().getFlowType() == FlowType.ElementaryFlow) {
-						double allocationSum = 0;
-						// for each allocation factor of the exchange
-						for (final AllocationFactor factor : exchange
-								.getAllocationFactors()) {
-							// add value to sum
-							allocationSum += factor.getValue();
-						}
-						// if not summing up to 1 (100%)
-						if (allocationSum != 1) {
-							// causal allocation can not be applied
-							causalCanBeApplied = false;
-							break;
-						}
-					}
-				}
-				if (!causalCanBeApplied) {
-					text = Messages.Processes_NotSumTo100;
-				}
-			} else {
-				process.clearAllocationFactors();
-			}
-		} catch (final Exception e) {
-			log.error("Checking allocation failed", e);
-		}
+		//@formatter:off
+		// TODO: this code is crazy: please the the AllocationSwitch class
+		// which does the same thing
+		
+//		try {
+//			final AllocationMethod method = process.getAllocationMethod();
+//			if (method == AllocationMethod.Physical
+//					|| method == AllocationMethod.Economic) {
+//				// check conditions of physical/economic method
+//				final Map<String, Flow> flowInformations = new HashMap<>();
+//				final Map<String, List<String>> productToFlowProperties = new HashMap<>();
+//				String productWithLessFlowProperties = null;
+//				int flowPropertyCount = Integer.MAX_VALUE;
+//				final List<Exchange> exchanges = new ArrayList<>();
+//				for (final Exchange product : process
+//						.getOutputs(FlowType.PRODUCT_FLOW)) {
+//					exchanges.add(product);
+//				}
+//				for (final Exchange product : process
+//						.getOutputs(FlowType.WASTE_FLOW)) {
+//					exchanges.add(product);
+//				}
+//				for (final Exchange product : exchanges) {
+//					List<String> flowProperties = productToFlowProperties
+//							.get(product.getId());
+//					// collect flow property ids of each product flow
+//					if (flowProperties == null) {
+//						flowProperties = new ArrayList<>();
+//					}
+//					Flow flowInformation = product.getFlow();
+//
+//					flowInformations.put(product.getId(), flowInformation);
+//					for (final FlowPropertyFactor flowPropertyFactor : flowInformation
+//							.getFlowPropertyFactors()) {
+//						if (flowPropertyFactor.getFlowProperty()
+//								.getFlowPropertyType() == (method == AllocationMethod.Physical ? FlowPropertyType.PHYSICAL
+//								: FlowPropertyType.ECONOMIC)) {
+//							flowProperties.add(flowPropertyFactor
+//									.getFlowProperty().getId());
+//						}
+//					}
+//					if (flowPropertyCount > flowProperties.size()) {
+//						productWithLessFlowProperties = product.getId();
+//						flowPropertyCount = flowProperties.size();
+//					}
+//					productToFlowProperties
+//							.put(product.getId(), flowProperties);
+//				}
+//				int i = 0;
+//				final List<String> flowProperties = productToFlowProperties
+//						.get(productWithLessFlowProperties);
+//				String flowPropertyIntersectionId = null;
+//				if (flowProperties != null && flowProperties.size() > 0) {
+//					while (flowPropertyIntersectionId == null
+//							&& i < flowProperties.size()) {
+//						// check if all products contain at least one of the
+//						// flow properties.
+//						// The product flow with the least flow properties is
+//						// used.
+//						final String flowPropertyId = flowProperties.get(i);
+//						boolean isFoundInAll = true;
+//						for (final List<String> flowPropertiesToCompare : productToFlowProperties
+//								.values()) {
+//							if (!flowPropertiesToCompare
+//									.contains(flowPropertyId)) {
+//								isFoundInAll = false;
+//								break;
+//							}
+//						}
+//						if (isFoundInAll) {
+//							flowPropertyIntersectionId = flowPropertyId;
+//						}
+//						i++;
+//					}
+//				}
+//				process.clearAllocationFactors();
+//				if (flowPropertyIntersectionId == null) {
+//					text = NLS
+//							.bind(Messages.Processes_NoFlowPropertyUsedByAll,
+//									(method == AllocationMethod.Physical ? Messages.Processes_Physical
+//											: Messages.Processes_Economic));
+//				} else {
+//					// there is a common flow property
+//					double totalAmount = 0;
+//					final Map<String, Double> amounts = new HashMap<>();
+//					// for each product exchange
+//					for (final Exchange product : exchanges) {
+//						// append total amount
+//						Flow flow = product.getFlow();
+//						final FlowPropertyFactor factor = flow
+//								.getFlowPropertyFactor(flowPropertyIntersectionId);
+//						final double amount = product.getConvertedResult()
+//								/ factor.getConversionFactor();
+//						totalAmount += amount;
+//						amounts.put(product.getId(), amount);
+//					}
+//
+//					// for each exchange of the process
+//					for (final Exchange exchange : process.getExchanges()) {
+//						// is exchange is input or elementary
+//						if (exchange.isInput()
+//								|| exchange.getFlow().getFlowType() == FlowType.ElementaryFlow) {
+//							// for each amount
+//							for (final Entry<String, Double> entry : amounts
+//									.entrySet()) {
+//								// create new allocation factor
+//								final AllocationFactor allocationFactor = new AllocationFactor(
+//										UUID.randomUUID().toString(),
+//										entry.getKey(), entry.getValue()
+//												/ totalAmount);
+//								exchange.add(allocationFactor);
+//							}
+//						}
+//					}
+//				}
+//			} else if (method == AllocationMethod.Causal) {
+//				boolean causalCanBeApplied = true;
+//				// for each exchange
+//				for (final Exchange exchange : process.getExchanges()) {
+//					// if exchange is input or elementary
+//					if (exchange.isInput()
+//							|| exchange.getFlow().getFlowType() == FlowType.ElementaryFlow) {
+//						double allocationSum = 0;
+//						// for each allocation factor of the exchange
+//						for (final AllocationFactor factor : exchange
+//								.getAllocationFactors()) {
+//							// add value to sum
+//							allocationSum += factor.getValue();
+//						}
+//						// if not summing up to 1 (100%)
+//						if (allocationSum != 1) {
+//							// causal allocation can not be applied
+//							causalCanBeApplied = false;
+//							break;
+//						}
+//					}
+//				}
+//				if (!causalCanBeApplied) {
+//					text = Messages.Processes_NotSumTo100;
+//				}
+//			} else {
+//				process.clearAllocationFactors();
+//			}
+//		} catch (final Exception e) {
+//			log.error("Checking allocation failed", e);
+//		}
+		
+		// @formatter:on
 		return text;
 	}
 
@@ -434,7 +416,7 @@ public class ExchangePage extends PropertyProviderPage implements
 				Exchange exchange = Viewers.getFirstSelected(viewer);
 				if (exchange == null)
 					return;
-				App.openEditor(exchange.getFlow(), getDatabase());
+				App.openEditor(exchange.getFlow());
 			}
 		});
 	}
@@ -442,13 +424,6 @@ public class ExchangePage extends PropertyProviderPage implements
 	@Override
 	protected void setData() {
 		allocationViewer.select(process.getAllocationMethod());
-	}
-
-	@Override
-	public void dispose() {
-		if (process != null)
-			process.removePropertyChangeListener(this);
-		super.dispose();
 	}
 
 	@Override
@@ -538,61 +513,34 @@ public class ExchangePage extends PropertyProviderPage implements
 
 		@Override
 		public void run() {
-			// get the navigation root
-			NavigationRoot root = null;
-			final Navigator navigator = (Navigator) PlatformUI.getWorkbench()
-					.getActiveWorkbenchWindow().getActivePage()
-					.findView(Navigator.ID);
-			if (navigator != null) {
-				root = navigator.getRoot();
-			}
-
-			// create select object dialog
-			final SelectObjectDialog dialog = new SelectObjectDialog(
-					UI.shell(), root, true, getDatabase(), Flow.class);
-			dialog.open();
-			final int code = dialog.getReturnCode();
+			SelectObjectDialog dialog = new SelectObjectDialog(UI.shell(),
+					ModelType.FLOW, true);
+			int code = dialog.open();
 			if (code == Window.OK && dialog.getMultiSelection() != null) {
 				final String[] ids = new String[dialog.getMultiSelection().length];
-
 				for (int i = 0; i < ids.length; i++) {
 					ids[i] = dialog.getMultiSelection()[i].getId();
 				}
-
 				addExchanges(ids, input);
 			}
-
 		}
 	}
 
-	/**
-	 * Implementation of {@link IModelDropHandler} for flows
-	 * 
-	 * @author Sebastian Greve
-	 * 
-	 */
 	private class FlowDropHandler implements IModelDropHandler {
 
-		/**
-		 * Indicates if the new exchange should be an input or output
-		 */
 		private final boolean input;
 
-		/**
-		 * Creates a new instance
-		 * 
-		 * @param input
-		 *            Indicates if the new exchange should be an input or output
-		 */
-		public FlowDropHandler(final boolean input) {
+		public FlowDropHandler(boolean input) {
 			this.input = input;
 		}
 
 		@Override
-		public void handleDrop(final IModelComponent[] droppedComponents) {
-			final String[] ids = new String[droppedComponents.length];
+		public void handleDrop(List<BaseDescriptor> droppedComponents) {
+			if (droppedComponents == null)
+				return;
+			String[] ids = new String[droppedComponents.size()];
 			for (int i = 0; i < ids.length; i++) {
-				ids[i] = droppedComponents[i].getId();
+				ids[i] = droppedComponents.get(i).getId();
 			}
 			addExchanges(ids, input);
 		}

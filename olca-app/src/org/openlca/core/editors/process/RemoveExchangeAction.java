@@ -7,28 +7,20 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.window.Window;
-import org.eclipse.jface.wizard.WizardDialog;
 import org.openlca.core.application.Messages;
 import org.openlca.core.application.actions.DeleteWithQuestionAction;
-import org.openlca.core.application.wizards.DeleteWizard;
-import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Process;
 import org.openlca.core.resources.ImageType;
-import org.openlca.ui.UI;
 
 class RemoveExchangeAction extends DeleteWithQuestionAction {
 
 	private boolean input;
 	private TableViewer viewer;
-	private IDatabase database;
 	private Process process;
 
-	public RemoveExchangeAction(boolean input, IDatabase database,
-			Process process) {
+	public RemoveExchangeAction(boolean input, Process process) {
 		this.input = input;
-		this.database = database;
 		this.process = process;
 		setId("InputOutputPage.RemoveExchangeAction");
 		if (input)
@@ -92,7 +84,7 @@ class RemoveExchangeAction extends DeleteWithQuestionAction {
 
 	private void checkAndDelete(Exchange exchange) {
 		if (canDelete(exchange)) {
-			process.remove(exchange);
+			process.getExchanges().remove(exchange);
 			if (input)
 				viewer.setInput(process.getInputs());
 			else
@@ -103,12 +95,7 @@ class RemoveExchangeAction extends DeleteWithQuestionAction {
 	private boolean canDelete(Exchange exchange) {
 		if (exchange.equals(process.getQuantitativeReference()))
 			return false;
-		boolean canDelete = true;
-		DeleteWizard wizard = new DeleteWizard(database,
-				new ExchangeReferenceSearcher(), exchange);
-		if (wizard.hasProblems()) {
-			canDelete = new WizardDialog(UI.shell(), wizard).open() == Window.OK;
-		}
-		return canDelete;
+		// TODO: no process locking in product systems
+		return true;
 	}
 }

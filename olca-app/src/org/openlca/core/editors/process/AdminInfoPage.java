@@ -9,18 +9,22 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.core.application.DateFormatter;
 import org.openlca.core.application.Messages;
+import org.openlca.core.application.db.Database;
 import org.openlca.core.editors.ModelEditorPage;
 import org.openlca.core.model.Actor;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
+import org.openlca.core.model.ProcessDocumentation;
 import org.openlca.core.model.Source;
-import org.openlca.ui.IContentChangedListener;
+import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.Descriptors;
 import org.openlca.ui.UIFactory;
+import org.openlca.ui.dnd.ISingleModelDrop;
 import org.openlca.ui.dnd.TextDropComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,23 +37,24 @@ public class AdminInfoPage extends ModelEditorPage implements
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
-	private Text accessAndUseRestrictionsText;
+	private ProcessDocumentation doc;
+	private Process process;
+	private Text restrictionsText;
 	private Button copyrightButton;
 	private Text creationDateText;
-	private TextDropComponent dataDocumentorDropComponent;
-	private TextDropComponent dataGeneratorDropComponent;
-	private TextDropComponent dataSetOwnerDropComponent;
+	private TextDropComponent documentorDrop;
+	private TextDropComponent generatorDrop;
+	private TextDropComponent ownerDrop;
 	private Text intendedApplicationText;
 	private Text lastChangeText;
 	private Text projectText;
-	private TextDropComponent publicationDropComponent;
+	private TextDropComponent publicationDrop;
 	private Text versionText;
 
-	public AdminInfoPage(ProcessEditor editor, final AdminInfo adminInfo) {
+	public AdminInfoPage(ProcessEditor editor, Process process) {
 		super(editor, "AdminInfoPage", Messages.Processes_AdminInfoPageLabel);
-		this.process = (Process) editor.getModelComponent();
-		this.adminInfo = adminInfo;
-		this.adminInfo.addPropertyChangeListener(this);
+		this.doc = process.getDocumentation();
+		this.process = process;
 	}
 
 	@Override
@@ -64,24 +69,31 @@ public class AdminInfoPage extends ModelEditorPage implements
 		intendedApplicationText = UIFactory.createTextWithLabel(composite,
 				toolkit, Messages.Processes_IntendedApplication, true);
 
-		dataSetOwnerDropComponent = createDropComponent(composite, toolkit,
-				Messages.Processes_DataSetOwner, adminInfo.getDataSetOwner(),
-				Actor.class, false);
+		ownerDrop = UIFactory.createDropComponent(composite,
+				Messages.Processes_DataSetOwner, toolkit, false,
+				ModelType.ACTOR);
+		ownerDrop.setContent(Descriptors.toDescriptor(doc.getDataSetOwner()));
 
-		dataGeneratorDropComponent = createDropComponent(composite, toolkit,
-				Messages.Processes_DataGenerator, adminInfo.getDataGenerator(),
-				Actor.class, false);
+		generatorDrop = UIFactory.createDropComponent(composite,
+				Messages.Processes_DataGenerator, toolkit, false,
+				ModelType.ACTOR);
+		generatorDrop.setContent(Descriptors.toDescriptor(doc
+				.getDataGenerator()));
 
-		dataDocumentorDropComponent = createDropComponent(composite, toolkit,
-				Messages.Processes_DataDocumentor,
-				adminInfo.getDataDocumentor(), Actor.class, false);
+		documentorDrop = UIFactory.createDropComponent(composite,
+				Messages.Processes_DataDocumentor, toolkit, false,
+				ModelType.ACTOR);
+		documentorDrop.setContent(Descriptors.toDescriptor(doc
+				.getDataDocumentor()));
 
-		publicationDropComponent = createDropComponent(composite, toolkit,
-				Messages.Processes_Publication, adminInfo.getPublication(),
-				Source.class, false);
+		publicationDrop = UIFactory.createDropComponent(composite,
+				Messages.Processes_Publication, toolkit, false,
+				ModelType.SOURCE);
+		publicationDrop.setContent(Descriptors.toDescriptor(doc
+				.getPublication()));
 
-		accessAndUseRestrictionsText = UIFactory.createTextWithLabel(composite,
-				toolkit, Messages.Processes_AccessAndUseRestrictions, true);
+		restrictionsText = UIFactory.createTextWithLabel(composite, toolkit,
+				Messages.Processes_AccessAndUseRestrictions, true);
 
 		projectText = UIFactory.createTextWithLabel(composite, toolkit,
 				Messages.Processes_Project, false);
@@ -113,32 +125,27 @@ public class AdminInfoPage extends ModelEditorPage implements
 	@Override
 	protected void initListeners() {
 
-		intendedApplicationText.addModifyListener(new ModifyListener() {
+		// TODO: use data binding here
 
+		intendedApplicationText.addModifyListener(new ModifyListener() {
 			@Override
 			public void modifyText(final ModifyEvent e) {
-				adminInfo.setIntendedApplication(intendedApplicationText
-						.getText());
+				doc.setIntendedApplication(intendedApplicationText.getText());
 			}
-
 		});
 
-		accessAndUseRestrictionsText.addModifyListener(new ModifyListener() {
-
+		restrictionsText.addModifyListener(new ModifyListener() {
 			@Override
 			public void modifyText(final ModifyEvent e) {
-				adminInfo
-						.setAccessAndUseRestrictions(accessAndUseRestrictionsText
-								.getText());
+				doc.setRestrictions(restrictionsText.getText());
 			}
-
 		});
 
 		projectText.addModifyListener(new ModifyListener() {
 
 			@Override
 			public void modifyText(final ModifyEvent e) {
-				adminInfo.setProject(projectText.getText());
+				doc.setProject(projectText.getText());
 			}
 
 		});
@@ -147,7 +154,7 @@ public class AdminInfoPage extends ModelEditorPage implements
 
 			@Override
 			public void modifyText(final ModifyEvent e) {
-				adminInfo.setVersion(versionText.getText());
+				doc.setVersion(versionText.getText());
 			}
 
 		});
@@ -161,154 +168,102 @@ public class AdminInfoPage extends ModelEditorPage implements
 
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
-				adminInfo.setCopyright(copyrightButton.getSelection());
+				doc.setCopyright(copyrightButton.getSelection());
 			}
 		});
 
-		dataSetOwnerDropComponent
-				.addContentChangedListener(new IContentChangedListener() {
-
-					@Override
-					public void contentChanged(final Control source,
-							final Object content) {
-						if (content != null) {
-							if (adminInfo != null) {
-								Actor dataSetOwner;
-								try {
-									dataSetOwner = getDatabase()
-											.select(Actor.class,
-													((IModelComponent) content)
-															.getId());
-									adminInfo.setDataSetOwner(dataSetOwner);
-								} catch (final Exception e) {
-									log.error(
-											"Reading actor from database failed",
-											e);
-								}
-							}
-						} else {
-							adminInfo.setDataSetOwner(null);
-						}
+		ownerDrop.setHandler(new ISingleModelDrop() {
+			@Override
+			public void handle(BaseDescriptor descriptor) {
+				if (descriptor == null)
+					doc.setDataSetOwner(null);
+				else
+					try {
+						Actor actor = Database.load(descriptor);
+						doc.setDataSetOwner(actor);
+					} catch (Exception e) {
+						log.error("failed to load actor " + descriptor, e);
 					}
+			}
+		});
 
-				});
-
-		dataGeneratorDropComponent
-				.addContentChangedListener(new IContentChangedListener() {
-
-					@Override
-					public void contentChanged(final Control source,
-							final Object content) {
-						if (content != null) {
-							if (adminInfo != null) {
-								Actor dataGenerator;
-								try {
-									dataGenerator = getDatabase()
-											.select(Actor.class,
-													((IModelComponent) content)
-															.getId());
-									adminInfo.setDataGenerator(dataGenerator);
-								} catch (final Exception e) {
-									log.error(
-											"Reading actor from database failed",
-											e);
-								}
-							}
-						} else {
-							adminInfo.setDataGenerator(null);
-						}
+		generatorDrop.setHandler(new ISingleModelDrop() {
+			@Override
+			public void handle(BaseDescriptor descriptor) {
+				if (descriptor == null)
+					doc.setDataGenerator(null);
+				else
+					try {
+						Actor actor = Database.load(descriptor);
+						doc.setDataGenerator(actor);
+					} catch (Exception e) {
+						log.error("failed to load actor " + descriptor, e);
 					}
+			}
+		});
 
-				});
-
-		dataDocumentorDropComponent
-				.addContentChangedListener(new IContentChangedListener() {
-
-					@Override
-					public void contentChanged(final Control source,
-							final Object content) {
-						if (content != null) {
-							if (adminInfo != null) {
-								Actor dataDocumentor;
-								try {
-									dataDocumentor = getDatabase()
-											.select(Actor.class,
-													((IModelComponent) content)
-															.getId());
-									adminInfo.setDataDocumentor(dataDocumentor);
-								} catch (final Exception e) {
-									log.error(
-											"Reading actor from database failed",
-											e);
-								}
-							}
-						} else {
-							adminInfo.setDataDocumentor(null);
-						}
+		publicationDrop.setHandler(new ISingleModelDrop() {
+			@Override
+			public void handle(BaseDescriptor descriptor) {
+				if (descriptor == null)
+					doc.setPublication(null);
+				else
+					try {
+						Source source = Database.load(descriptor);
+						doc.setPublication(source);
+					} catch (Exception e) {
+						log.error("failed to load actor " + descriptor, e);
 					}
+			}
+		});
 
-				});
-
-		publicationDropComponent
-				.addContentChangedListener(new IContentChangedListener() {
-
-					@Override
-					public void contentChanged(final Control source,
-							final Object content) {
-						if (content != null) {
-							if (adminInfo != null) {
-								Source publication;
-								try {
-									publication = getDatabase()
-											.select(Source.class,
-													((IModelComponent) content)
-															.getId());
-									adminInfo.setPublication(publication);
-								} catch (final Exception e) {
-									log.error(
-											"Reading actor from database failed",
-											e);
-								}
-							}
-						} else {
-							adminInfo.setPublication(null);
-						}
+		documentorDrop.setHandler(new ISingleModelDrop() {
+			@Override
+			public void handle(BaseDescriptor descriptor) {
+				if (descriptor == null)
+					doc.setDataDocumentor(null);
+				else
+					try {
+						Actor actor = Database.load(descriptor);
+						doc.setDataDocumentor(actor);
+					} catch (Exception e) {
+						log.error("failed to load actor " + descriptor, e);
 					}
+			}
+		});
 
-				});
 	}
 
 	@Override
 	protected void setData() {
 		if (process != null) {
-			if (adminInfo != null) {
-				if (adminInfo.getIntendedApplication() != null) {
-					intendedApplicationText.setText(adminInfo
+			if (doc != null) {
+				if (doc.getIntendedApplication() != null) {
+					intendedApplicationText.setText(doc
 							.getIntendedApplication());
 				}
-				if (adminInfo.getAccessAndUseRestrictions() != null) {
-					accessAndUseRestrictionsText.setText(adminInfo
-							.getAccessAndUseRestrictions());
+				if (doc.getRestrictions() != null) {
+					restrictionsText.setText(doc.getRestrictions());
 				}
-				if (adminInfo.getProject() != null) {
-					projectText.setText(adminInfo.getProject());
+				if (doc.getProject() != null) {
+					projectText.setText(doc.getProject());
 				}
-				if (adminInfo.getVersion() != null) {
-					versionText.setText(adminInfo.getVersion());
+				if (doc.getVersion() != null) {
+					versionText.setText(doc.getVersion());
 				}
-				if (adminInfo.getCreationDate() != null) {
-					creationDateText.setText(DateFormatter
-							.formatShort(adminInfo.getCreationDate()));
+				if (doc.getCreationDate() != null) {
+					creationDateText.setText(DateFormatter.formatShort(doc
+							.getCreationDate()));
 					creationDateText.setToolTipText(DateFormatter
-							.formatLong(adminInfo.getCreationDate()));
+							.formatLong(doc.getCreationDate()));
 				}
-				if (adminInfo.getLastChange() != null) {
-					lastChangeText.setText(DateFormatter.formatShort(adminInfo
+				if (doc.getLastChange() != null) {
+					lastChangeText.setText(DateFormatter.formatShort(doc
 							.getLastChange()));
-					lastChangeText.setToolTipText(DateFormatter
-							.formatLong(adminInfo.getLastChange()));
+					lastChangeText.setToolTipText(DateFormatter.formatLong(doc
+							.getLastChange()));
 				}
-				copyrightButton.setSelection(adminInfo.getCopyright());
+				copyrightButton.setSelection(doc.isCopyright());
 			}
 		}
 	}
@@ -317,10 +272,10 @@ public class AdminInfoPage extends ModelEditorPage implements
 	public void propertyChange(final PropertyChangeEvent arg0) {
 		if (arg0.getPropertyName().equals("lastChange")) {
 			if (lastChangeText != null) {
-				lastChangeText.setText(DateFormatter.formatShort(adminInfo
+				lastChangeText.setText(DateFormatter.formatShort(doc
 						.getLastChange()));
-				lastChangeText.setToolTipText(DateFormatter
-						.formatLong(adminInfo.getLastChange()));
+				lastChangeText.setToolTipText(DateFormatter.formatLong(doc
+						.getLastChange()));
 			}
 		}
 	}

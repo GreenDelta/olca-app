@@ -64,11 +64,11 @@ class ExchangeCellModifier implements ICellModifier {
 			return exchange.getDistributionType() == null
 					|| exchange.getDistributionType() == UncertaintyDistributionType.NONE;
 		if (property.equals(ExchangeTable.AVOIDED_PRODUCT))
-			return exchange.getFlow().getFlowType() != FlowType.ElementaryFlow
+			return exchange.getFlow().getFlowType() != FlowType.ELEMENTARY_FLOW
 					&& (exchange.isInput() == exchange.isAvoidedProduct());
 		if (property.equals(ExchangeTable.PROVIDER))
 			return exchange.isInput()
-					&& exchange.getFlow().getFlowType() != FlowType.ElementaryFlow;
+					&& exchange.getFlow().getFlowType() != FlowType.ELEMENTARY_FLOW;
 		return true;
 	}
 
@@ -134,7 +134,7 @@ class ExchangeCellModifier implements ICellModifier {
 
 	private String[] getProviderNames(Exchange exchange) {
 		Flow flow = exchange.getFlow();
-		if (flow == null || flow.getFlowType() == FlowType.ElementaryFlow)
+		if (flow == null || flow.getFlowType() == FlowType.ELEMENTARY_FLOW)
 			return new String[0];
 		try {
 			FlowDao dao = new FlowDao(database.getEntityFactory());
@@ -189,22 +189,22 @@ class ExchangeCellModifier implements ICellModifier {
 		UnitGroup unitGroup = getUnitGroup(exchange);
 		if (unitGroup == null)
 			return new String[0];
-		Unit[] units = unitGroup.getUnits();
-		String[] vals = new String[units.length];
+		List<Unit> units = unitGroup.getUnits();
+		String[] vals = new String[units.size()];
 		for (int i = 0; i < vals.length; i++) {
-			vals[i] = units[i].getName();
+			vals[i] = units.get(i).getName();
 		}
 		return vals;
 	}
 
 	private String[] getFlowPropertyNames(Exchange exchange) {
-		Flow flowInfo = exchange.getFlow();
-		if (flowInfo == null)
+		Flow flow = exchange.getFlow();
+		if (flow == null)
 			return new String[0];
-		FlowPropertyFactor[] factors = flowInfo.getFlowPropertyFactors();
-		String[] vals = new String[factors.length];
+		List<FlowPropertyFactor> factors = flow.getFlowPropertyFactors();
+		String[] vals = new String[factors.size()];
 		for (int i = 0; i < vals.length; i++) {
-			vals[i] = factors[i].getFlowProperty().getName();
+			vals[i] = factors.get(i).getFlowProperty().getName();
 		}
 		return vals;
 	}
@@ -214,8 +214,7 @@ class ExchangeCellModifier implements ICellModifier {
 			return null;
 		FlowPropertyFactor factor = exchange.getFlowPropertyFactor();
 		try {
-			String unitGroupId = factor.getFlowProperty().getUnitGroupId();
-			return database.createDao(UnitGroup.class).getForId(unitGroupId);
+			return factor.getFlowProperty().getUnitGroup();
 		} catch (Exception e) {
 			log.error("Failed to load unit group " + exchange, e);
 			return null;

@@ -61,7 +61,7 @@ final class ExchangeTable {
 
 	static void addSorting(TableViewer viewer, IDatabase database) {
 		viewer.getTable().setSortDirection(SWT.DOWN);
-		ExchangeSorter sorter = new ExchangeSorter(database);
+		ExchangeSorter sorter = new ExchangeSorter();
 		viewer.setSorter(sorter);
 		ExchangeSortListener listener = new ExchangeSortListener(sorter, viewer);
 		for (TableColumn c : viewer.getTable().getColumns()) {

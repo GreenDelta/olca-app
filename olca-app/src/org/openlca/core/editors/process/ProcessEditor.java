@@ -30,12 +30,9 @@ import org.openlca.core.application.Messages;
 import org.openlca.core.application.evaluation.EvaluationController;
 import org.openlca.core.editors.ModelEditorPage;
 import org.openlca.core.editors.ParameterizableModelEditorWithPropertyPage;
-import org.openlca.core.model.AdminInfo;
 import org.openlca.core.model.Exchange;
-import org.openlca.core.model.ModelingAndValidation;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.Technology;
-import org.openlca.core.model.Time;
+import org.openlca.core.model.ProcessDocumentation;
 import org.openlca.ui.UI;
 
 /**
@@ -44,11 +41,8 @@ import org.openlca.ui.UI;
 public class ProcessEditor extends ParameterizableModelEditorWithPropertyPage {
 
 	public static String ID = "org.openlca.core.editors.process.ProcessEditor";
-	private AdminInfo adminInfo;
 	private ExchangePage inputOutputPage;
-	private ModelingAndValidation modelingAndValidation;
-	private Technology technology;
-	private Time time;
+	private ProcessDocumentation doc;
 	private int ioPageIndex;
 
 	public ProcessEditor() {

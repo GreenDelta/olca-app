@@ -16,20 +16,20 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.core.application.Messages;
-import org.openlca.core.model.Time;
+import org.openlca.core.model.ProcessDocumentation;
 import org.openlca.ui.UIFactory;
 
 class ProcessTimeSection {
 
-	private Time time;
+	private ProcessDocumentation doc;
 	private DateTime startDate;
 	private DateTime endDate;
 	private Text commentText;
 	private FormToolkit toolkit;
 	private Composite composite;
 
-	public ProcessTimeSection(Time time) {
-		this.time = time;
+	public ProcessTimeSection(ProcessDocumentation doc) {
+		this.doc = doc;
 	}
 
 	public Section createSection(FormToolkit toolkit, Composite parent) {
@@ -60,19 +60,19 @@ class ProcessTimeSection {
 		startDate.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				time.setStartDate(fetchDate(startDate));
+				doc.setValidFrom(fetchDate(startDate));
 			}
 		});
 		endDate.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				time.setEndDate(fetchDate(endDate));
+				doc.setValidUntil(fetchDate(endDate));
 			}
 		});
 		commentText.addModifyListener(new ModifyListener() {
 			@Override
 			public void modifyText(final ModifyEvent e) {
-				time.setComment(commentText.getText());
+				doc.setTime(commentText.getText());
 			}
 		});
 	}
@@ -86,12 +86,12 @@ class ProcessTimeSection {
 	}
 
 	private void setData() {
-		if (time == null)
+		if (doc == null)
 			return;
-		setDate(startDate, time.getStartDate());
-		setDate(endDate, time.getEndDate());
-		if (time.getComment() != null)
-			commentText.setText(time.getComment());
+		setDate(startDate, doc.getValidFrom());
+		setDate(endDate, doc.getValidUntil());
+		if (doc.getTime() != null)
+			commentText.setText(doc.getTime());
 	}
 
 	private void setDate(DateTime dateTime, Date date) {

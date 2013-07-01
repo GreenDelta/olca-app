@@ -2,12 +2,11 @@ package org.openlca.core.editors.process;
 
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
-import org.openlca.core.database.CategoryPath;
-import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.Unit;
+import org.openlca.ui.CategoryPath;
 import org.openlca.ui.Labels;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
@@ -19,11 +18,6 @@ class ExchangeSorter extends ViewerSorter {
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private boolean ascending = true;
 	private String property = ExchangeTable.FLOW;
-	private IDatabase database;
-
-	public ExchangeSorter(IDatabase database) {
-		this.database = database;
-	}
 
 	public void setAscending(boolean ascending) {
 		this.ascending = ascending;
@@ -65,10 +59,8 @@ class ExchangeSorter extends ViewerSorter {
 
 	private int compareByCategory(Exchange e1, Exchange e2) {
 		try {
-			String catId1 = e1.getFlow().getCategoryId();
-			String catId2 = e2.getFlow().getCategoryId();
-			String cat1 = CategoryPath.getShort(catId1, database);
-			String cat2 = CategoryPath.getShort(catId2, database);
+			String cat1 = CategoryPath.getShort(e1.getFlow().getCategory());
+			String cat2 = CategoryPath.getShort(e2.getFlow().getCategory());
 			return Strings.compare(cat1, cat2);
 		} catch (Exception e) {
 			log.error("Comparing category paths failed", e);

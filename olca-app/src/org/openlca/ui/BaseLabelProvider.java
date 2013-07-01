@@ -15,7 +15,6 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
 import org.openlca.core.application.Messages;
-import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Exchange;
@@ -39,14 +38,6 @@ import org.slf4j.LoggerFactory;
 public class BaseLabelProvider extends ColumnLabelProvider {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
-	private IDatabase database;
-
-	public BaseLabelProvider() {
-	}
-
-	public BaseLabelProvider(IDatabase database) {
-		this.database = database;
-	}
 
 	@Override
 	public Image getImage(Object element) {
@@ -127,23 +118,6 @@ public class BaseLabelProvider extends ColumnLabelProvider {
 		return getToolTipText2(element);
 	}
 
-	/**
-	 * Getter of the tooltip of a specific element on a specific database
-	 * 
-	 * @param element
-	 *            The element to create the tool tip text for
-	 * @param database
-	 *            The database
-	 * @return The tool tip text for the element
-	 */
-	protected String getToolTipText(Object element, IDatabase database) {
-		IDatabase old = this.database;
-		this.database = database;
-		String text = getToolTipText2(element);
-		this.database = old;
-		return text;
-	}
-
 	private String getToolTipText2(Object element) {
 		if (!(element instanceof RootEntity))
 			return null;
@@ -153,15 +127,13 @@ public class BaseLabelProvider extends ColumnLabelProvider {
 
 		text = addLocationAndType(component, text);
 
-		if (database != null) {
-			try {
-				Category category = component.getCategory();
-				if (category != null)
-					text += Messages.Category + ": "
-							+ CategoryPath.getShort(category);
-			} catch (Exception e) {
-				log.error("Loading category failed", e);
-			}
+		try {
+			Category category = component.getCategory();
+			if (category != null)
+				text += Messages.Category + ": "
+						+ CategoryPath.getShort(category);
+		} catch (Exception e) {
+			log.error("Loading category failed", e);
 		}
 
 		String description = component.getDescription();

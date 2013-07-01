@@ -9,8 +9,6 @@
  ******************************************************************************/
 package org.openlca.core.editors;
 
-import java.beans.PropertyChangeEvent;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.IEditorInput;
@@ -102,21 +100,6 @@ public abstract class ParameterizableModelEditor extends ModelEditor implements
 			throws PartInitException {
 		super.init(site, input);
 		initEvaluationController();
-	}
-
-	@Override
-	public void propertyChange(final PropertyChangeEvent evt) {
-		super.propertyChange(evt);
-		if (evt.getPropertyName().equals("parameters")) { //$NON-NLS-1$
-			if (evt.getNewValue() == null) {
-				getEvaluationController().unregisterParameter(
-						(Parameter) evt.getOldValue());
-			} else {
-				getEvaluationController().registerParameter(
-						(Parameter) evt.getNewValue());
-			}
-			getEvaluationController().evaluate();
-		}
 	}
 
 	/**
