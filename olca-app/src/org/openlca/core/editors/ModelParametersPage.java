@@ -31,10 +31,9 @@ import org.openlca.core.application.actions.DeleteWithQuestionAction;
 import org.openlca.core.application.evaluation.EvaluationListener;
 import org.openlca.core.math.FormulaParseException;
 import org.openlca.core.model.Expression;
+import org.openlca.core.model.IParameterisable;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterType;
-import org.openlca.core.model.modelprovider.IModelComponent;
-import org.openlca.core.model.modelprovider.IParameterizedComponent;
 import org.openlca.core.resources.ImageType;
 import org.openlca.ui.UI;
 import org.openlca.ui.UIFactory;
@@ -47,7 +46,7 @@ import org.openlca.ui.UIFactory;
 public class ModelParametersPage extends ModelEditorPage implements
 		EvaluationListener, PropertyChangeListener {
 
-	private final IParameterizedComponent component;
+	private final IParameterisable component;
 	private final String formText;
 	private FormulaTextCellEditor formulaEditor;
 	private IMessageManager messageManager;
@@ -61,24 +60,20 @@ public class ModelParametersPage extends ModelEditorPage implements
 
 	private TableViewer parameterViewer;
 
-	public ModelParametersPage(final ModelEditor editor, final String formText) {
+	public ModelParametersPage(ModelEditor editor, String formText) {
 		super(editor, "ParameterInfoPage", Messages.ParametersPageLabel); //$NON-NLS-1$
-		component = (IParameterizedComponent) editor.getModelComponent();
-		editor.getModelComponent().addPropertyChangeListener(this);
+		component = (IParameterisable) editor.getModelComponent();
 		this.formText = formText;
 	}
 
-	private Parameter parameterExists(final String name) {
-		Parameter exists = null;
-		int i = 0;
-		while (exists == null && i < component.getParameters().length) {
-			if (component.getParameters()[i].getName().equals(name)) {
-				exists = component.getParameters()[i];
-			} else {
-				i++;
-			}
+	private Parameter parameterExists(String name) {
+		if (name == null)
+			return null;
+		for (Parameter p : component.getParameters()) {
+			if (name.trim().equalsIgnoreCase(p.getName()))
+				return p;
 		}
-		return exists;
+		return null;
 	}
 
 	@Override
@@ -98,7 +93,7 @@ public class ModelParametersPage extends ModelEditorPage implements
 
 	private void createViewer(final FormToolkit toolkit, Composite composite) {
 		parameterViewer = UIFactory.createTableViewer(composite, null, null,
-				toolkit, PARAMETER_PROPERTIES, getDatabase());
+				toolkit, PARAMETER_PROPERTIES);
 		parameterViewer.setCellModifier(new ParameterCellModifier());
 		parameterViewer.setLabelProvider(new ParameterLabelProvider());
 		UI.gridData(parameterViewer.getTable(), true, true);
@@ -114,7 +109,7 @@ public class ModelParametersPage extends ModelEditorPage implements
 						parameterViewer.getTable());
 			} else {
 				formulaEditor = new FormulaTextCellEditor(parameterViewer, 1,
-						component.getParameters(), getDatabase());
+						component.getParameters());
 				parametersEditors[i] = formulaEditor;
 			}
 		}

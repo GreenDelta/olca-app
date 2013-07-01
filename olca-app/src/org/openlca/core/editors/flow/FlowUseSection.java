@@ -100,7 +100,7 @@ class FlowUseSection {
 			try {
 				ProcessDao dao = new ProcessDao(database.getEntityFactory());
 				Process p = dao.getForId(descriptor.getId());
-				App.openEditor(p, database);
+				App.openEditor(p);
 			} catch (Exception e) {
 				log.error("Failed to open via process-link", e);
 			}

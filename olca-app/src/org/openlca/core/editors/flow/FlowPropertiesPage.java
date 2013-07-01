@@ -9,6 +9,9 @@
  ******************************************************************************/
 package org.openlca.core.editors.flow;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import org.eclipse.jface.action.Action;
@@ -17,35 +20,33 @@ import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.IDoubleClickListener;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.window.Window;
-import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Item;
-import org.eclipse.ui.forms.events.ExpansionEvent;
-import org.eclipse.ui.forms.events.IExpansionListener;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.core.application.App;
 import org.openlca.core.application.Messages;
 import org.openlca.core.application.actions.DeleteWithQuestionAction;
-import org.openlca.core.application.actions.OpenEditorAction;
-import org.openlca.core.application.wizards.DeleteWizard;
+import org.openlca.core.application.db.Database;
 import org.openlca.core.editors.ModelEditor;
 import org.openlca.core.editors.ModelEditorPage;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.ModelType;
+import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.resources.ImageType;
+import org.openlca.ui.SelectObjectDialog;
 import org.openlca.ui.UI;
 import org.openlca.ui.UIFactory;
+import org.openlca.ui.Viewers;
 import org.openlca.ui.dnd.IModelDropHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,13 +56,8 @@ import org.slf4j.LoggerFactory;
  */
 public class FlowPropertiesPage extends ModelEditorPage {
 
-	private Logger log = LoggerFactory.getLogger(this.getClass());
-
 	private Flow flow;
 	private TableViewer propertyViewer;
-
-	private OpenEditorAction openEditorAction = null;
-	private Section section;
 
 	public FlowPropertiesPage(ModelEditor editor) {
 		super(editor, "FlowPropertiesPage",
@@ -72,12 +68,11 @@ public class FlowPropertiesPage extends ModelEditorPage {
 	@Override
 	protected void createContents(final Composite body,
 			final FormToolkit toolkit) {
-		openEditorAction = new OpenEditorAction();
 
 		final int heightHint = getManagedForm().getForm().computeSize(
 				SWT.DEFAULT, SWT.DEFAULT).y / 3;
 
-		section = UIFactory.createSection(body, toolkit,
+		Section section = UIFactory.createSection(body, toolkit,
 				Messages.Flows_FlowPropertiesPageLabel, true, true);
 		final Composite composite = UIFactory.createSectionComposite(section,
 				toolkit, UIFactory.createGridLayout(1, true, 0));
@@ -109,9 +104,7 @@ public class FlowPropertiesPage extends ModelEditorPage {
 	}
 
 	private void bindActions(Section section, TableViewer viewer) {
-		FlowPropertyAddAction add = new FlowPropertyAddAction(flow,
-				getDatabase());
-		add.setViewer(viewer);
+		FlowPropertyAddAction add = new FlowPropertyAddAction();
 		RemoveFlowPropertyFactorAction remove = new RemoveFlowPropertyFactorAction();
 		UI.bindActions(viewer, add, remove);
 		UI.bindActions(section, add, remove);
@@ -128,61 +121,18 @@ public class FlowPropertiesPage extends ModelEditorPage {
 
 	@Override
 	protected void initListeners() {
-		section.addExpansionListener(new IExpansionListener() {
-
-			@Override
-			public void expansionStateChanged(final ExpansionEvent e) {
-
-			}
-
-			@Override
-			public void expansionStateChanging(final ExpansionEvent e) {
-				((GridData) section.getLayoutData()).grabExcessVerticalSpace = e
-						.getState();
-			}
-		});
-
 		propertyViewer.addDoubleClickListener(new IDoubleClickListener() {
-
 			@Override
 			public void doubleClick(final DoubleClickEvent event) {
 				final IStructuredSelection selection = (IStructuredSelection) event
 						.getSelection();
 				if (!selection.isEmpty()) {
-					final FlowProperty flowProperty = ((FlowPropertyFactor) selection
+					FlowProperty flowProperty = ((FlowPropertyFactor) selection
 							.getFirstElement()).getFlowProperty();
-					openEditorAction.setModelComponent(getDatabase(),
-							flowProperty);
-					openEditorAction.run();
+					App.openEditor(flowProperty);
 				}
 			}
-
 		});
-
-		propertyViewer
-				.addSelectionChangedListener(new ISelectionChangedListener() {
-
-					@Override
-					public void selectionChanged(
-							final SelectionChangedEvent event) {
-						final IStructuredSelection selection = (IStructuredSelection) event
-								.getSelection();
-						boolean isValid = true;
-						int i = 0;
-						while (isValid && i < selection.toArray().length) {
-							if (flow.getReferenceFlowProperty()
-									.getId()
-									.equals(((FlowPropertyFactor) selection
-											.toArray()[i]).getFlowProperty()
-											.getId())) {
-								isValid = false;
-							} else {
-								i++;
-							}
-						}
-					}
-
-				});
 	}
 
 	@Override
@@ -194,80 +144,90 @@ public class FlowPropertiesPage extends ModelEditorPage {
 		}
 	}
 
-	/**
-	 * Implementation of {@link IModelDropHandler} for flow properties
-	 * 
-	 * @author Sebastian Greve
-	 * 
-	 */
-	private class FlowPropertyDropHandler implements IModelDropHandler {
-
-		@Override
-		public void handleDrop(final IModelComponent[] droppedComponents) {
-			final FlowPropertyFactor[] factors = new FlowPropertyFactor[droppedComponents.length];
-			// for each dropped component
-			for (int i = 0; i < droppedComponents.length; i++) {
-				// load flow property
-				try {
-					final FlowProperty flowProperty = getDatabase().select(
-							FlowProperty.class, droppedComponents[i].getId());
-					// create new flow property factor
-					factors[i] = new FlowPropertyFactor(UUID.randomUUID()
-							.toString(), flowProperty, 1);
-					boolean contains = false;
-					int j = 0;
-
-					// check if already contained
-					while (!contains
-							&& j < flow.getFlowPropertyFactors().length) {
-						if (flow.getFlowPropertyFactors()[j].getFlowProperty()
-								.equals(flowProperty)) {
-							contains = true;
-						} else {
-							j++;
-						}
-					}
-
-					// if not contained
-					if (!contains) {
-						// add to flow information
-						flow.add(factors[i]);
-					}
-				} catch (final Exception e) {
-					log.error("Load flow property failed", e);
-				}
-
-			}
-
-			// refresh table viewer
-			propertyViewer.setInput(flow.getFlowPropertyFactors());
-			propertyViewer.setSelection(new StructuredSelection(factors));
+	private FlowPropertyFactor findOrCreateFactor(BaseDescriptor descriptor) {
+		try {
+			FlowProperty prop = Database.load(descriptor);
+			FlowPropertyFactor factor = flow.getFactor(prop);
+			if (factor != null)
+				return factor;
+			factor = new FlowPropertyFactor();
+			factor.setConversionFactor(1.0);
+			factor.setFlowProperty(prop);
+			factor.setId(UUID.randomUUID().toString());
+			return factor;
+		} catch (Exception e) {
+			Logger log = LoggerFactory.getLogger(getClass());
+			log.error("failed to create flow property factor");
+			return null;
 		}
 	}
 
-	/**
-	 * A cell modifier for the flowPropertiesTableViewer
-	 * 
-	 * @see ICellModifier
-	 */
+	private void refreshViewer(List<FlowPropertyFactor> selection) {
+		if (selection == null)
+			return;
+		if (propertyViewer != null) {
+			propertyViewer.setInput(flow.getFlowPropertyFactors());
+			propertyViewer.setSelection(new StructuredSelection(selection));
+		}
+	}
+
+	private class FlowPropertyDropHandler implements IModelDropHandler {
+
+		@Override
+		public void handleDrop(List<BaseDescriptor> descriptors) {
+			if (descriptors == null || descriptors.isEmpty())
+				return;
+			List<FlowPropertyFactor> factors = new ArrayList<>();
+			for (BaseDescriptor descriptor : descriptors) {
+				if (descriptor.getModelType() != ModelType.FLOW_PROPERTY)
+					continue;
+				FlowPropertyFactor factor = findOrCreateFactor(descriptor);
+				if (factor != null)
+					factors.add(factor);
+			}
+			propertyViewer.setInput(flow.getFlowPropertyFactors());
+			propertyViewer.setSelection(new StructuredSelection(factors));
+		}
+
+	}
+
+	class FlowPropertyAddAction extends Action {
+
+		public FlowPropertyAddAction() {
+			setId("FlowPropertyAddAction");
+			setText(Messages.Flows_AddFlowPropertyFactorText);
+			setImageDescriptor(ImageType.ADD_ICON.getDescriptor());
+			setDisabledImageDescriptor(ImageType.ADD_ICON_DISABLED
+					.getDescriptor());
+		}
+
+		@Override
+		public void run() {
+			SelectObjectDialog dialog = new SelectObjectDialog(UI.shell(),
+					ModelType.FLOW_PROPERTY, false);
+			int code = dialog.open();
+			BaseDescriptor descriptor = dialog.getSelection();
+			if (code != Window.OK || descriptor == null
+					|| descriptor.getModelType() != ModelType.FLOW_PROPERTY)
+				return;
+			FlowPropertyFactor factor = findOrCreateFactor(descriptor);
+			refreshViewer(Arrays.asList(factor));
+		}
+	}
+
 	private class FlowPropertyFactorCellModifier implements ICellModifier {
 
 		@Override
 		public boolean canModify(final Object element, final String property) {
 			boolean canModifiy = false;
-			// if conversion factor or reference column
 			if (property.equals(Messages.Flows_ConversionFactor)
 					|| property.equals(Messages.Flows_IsReference)) {
 				canModifiy = true;
 			}
-			// if conversion factor
 			if (property.equals(Messages.Flows_ConversionFactor)) {
-				// if flow property factor
 				if (element instanceof FlowPropertyFactor) {
-					// if is reference flow property
 					if (flow.getReferenceFlowProperty().equals(
 							((FlowPropertyFactor) element).getFlowProperty())) {
-						// cannot modify
 						canModifiy = false;
 					}
 				}
@@ -279,14 +239,11 @@ public class FlowPropertiesPage extends ModelEditorPage {
 		public Object getValue(final Object element, final String property) {
 			Object v = null;
 			if (element instanceof FlowPropertyFactor) {
-				final FlowPropertyFactor flowPropertyFactor = (FlowPropertyFactor) element;
-
+				FlowPropertyFactor flowPropertyFactor = (FlowPropertyFactor) element;
 				if (property.equals(Messages.Flows_ConversionFactor)) {
-					// get conversion factor
 					v = Double.toString(flowPropertyFactor
 							.getConversionFactor());
 				} else if (property.equals(Messages.Flows_IsReference)) {
-					// get "is reference"
 					v = flowPropertyFactor.getFlowProperty().equals(
 							flow.getReferenceFlowProperty());
 				}
@@ -335,31 +292,11 @@ public class FlowPropertiesPage extends ModelEditorPage {
 		}
 	}
 
-	/**
-	 * Removes the selected flow property factor object from this flow
-	 * 
-	 * @see Action
-	 */
 	private class RemoveFlowPropertyFactorAction extends
 			DeleteWithQuestionAction {
 
-		/**
-		 * The id of the action
-		 */
-		public static final String ID = "org.openlca.core.editors.flow.FlowInfoPage.RemoveFlowPropertyFactorAction";
-
-		/**
-		 * The text of the action
-		 */
-		public String TEXT = Messages.Flows_RemoveFlowPropertyFactorText;
-
-		/**
-		 * Creates a new RemoveFlowPropertyFactorAction and sets the ID, TEXT
-		 * and ImageDescriptor
-		 */
 		public RemoveFlowPropertyFactorAction() {
-			setId(ID);
-			setText(TEXT);
+			setText(Messages.Flows_RemoveFlowPropertyFactorText);
 			setImageDescriptor(ImageType.DELETE_ICON.getDescriptor());
 			setDisabledImageDescriptor(ImageType.DELETE_ICON_DISABLED
 					.getDescriptor());
@@ -367,33 +304,11 @@ public class FlowPropertiesPage extends ModelEditorPage {
 
 		@Override
 		public void delete() {
-			// TODO: assert not reference flow property !!
-
-			final StructuredSelection structuredSelection = (StructuredSelection) propertyViewer
-					.getSelection();
-			// for each selected flow property factor
-			for (int i = 0; i < structuredSelection.toArray().length; i++) {
-				// cast
-				final FlowPropertyFactor flowPropertyFactor = (FlowPropertyFactor) structuredSelection
-						.toArray()[i];
-				// create deletewizard
-				final DeleteWizard wizard = new DeleteWizard(getDatabase(),
-						new FlowPropertyFactorReferenceSearcher(),
-						flowPropertyFactor);
-				boolean canDelete = true;
-				// if references detected
-				if (wizard.hasProblems()) {
-					// show reference problems
-					canDelete = new WizardDialog(UI.shell(), wizard).open() == Window.OK;
-				}
-				// if can delete
-				if (canDelete) {
-					// remove flow property factor
-					flow.remove(flowPropertyFactor);
-					// update table viewer
-					propertyViewer.setInput(flow.getFlowPropertyFactors());
-				}
-			}
+			List<FlowPropertyFactor> selection = Viewers
+					.getAllSelected(propertyViewer);
+			// TODO: do not delete reference flow property and used factors !!!
+			flow.getFlowPropertyFactors().removeAll(selection);
+			propertyViewer.setInput(flow.getFlowPropertyFactors());
 		}
 
 	}

@@ -2,12 +2,6 @@ package org.openlca.core.editors.flow;
 
 import org.openlca.core.application.Messages;
 
-/**
- * The column constants of the table viewer of the flow property factors.
- * 
- * @author Michael Srocka
- * 
- */
 interface FlowPropertyColumn {
 
 	int NAME = 0;
