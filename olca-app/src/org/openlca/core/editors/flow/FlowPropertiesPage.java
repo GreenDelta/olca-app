@@ -46,7 +46,7 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.resources.ImageType;
 import org.openlca.ui.UI;
 import org.openlca.ui.UIFactory;
-import org.openlca.ui.dnd.IDropHandler;
+import org.openlca.ui.dnd.IModelDropHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -195,12 +195,12 @@ public class FlowPropertiesPage extends ModelEditorPage {
 	}
 
 	/**
-	 * Implementation of {@link IDropHandler} for flow properties
+	 * Implementation of {@link IModelDropHandler} for flow properties
 	 * 
 	 * @author Sebastian Greve
 	 * 
 	 */
-	private class FlowPropertyDropHandler implements IDropHandler {
+	private class FlowPropertyDropHandler implements IModelDropHandler {
 
 		@Override
 		public void handleDrop(final IModelComponent[] droppedComponents) {

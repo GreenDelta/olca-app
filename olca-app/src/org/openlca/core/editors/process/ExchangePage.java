@@ -59,7 +59,7 @@ import org.openlca.ui.SelectObjectDialog;
 import org.openlca.ui.UI;
 import org.openlca.ui.UIFactory;
 import org.openlca.ui.Viewers;
-import org.openlca.ui.dnd.IDropHandler;
+import org.openlca.ui.dnd.IModelDropHandler;
 import org.openlca.ui.viewer.AllocationMethodViewer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -176,7 +176,7 @@ public class ExchangePage extends PropertyProviderPage implements
 	}
 
 	private void createInputTableViewer(Composite parent, FormToolkit toolkit) {
-		IDropHandler exchangesInputHandler = new FlowDropHandler(true);
+		IModelDropHandler exchangesInputHandler = new FlowDropHandler(true);
 		inputViewer = UIFactory.createTableViewer(parent, Flow.class,
 				exchangesInputHandler, toolkit, ExchangeTable.INPUT_PROPERTIES,
 				getDatabase());
@@ -196,7 +196,7 @@ public class ExchangePage extends PropertyProviderPage implements
 
 	private void createOutputTableViewer(final Composite parent,
 			final FormToolkit toolkit) {
-		IDropHandler exchangesOutputHandler = new FlowDropHandler(false);
+		IModelDropHandler exchangesOutputHandler = new FlowDropHandler(false);
 		outputViewer = UIFactory.createTableViewer(parent, Flow.class,
 				exchangesOutputHandler, toolkit,
 				ExchangeTable.OUTPUT_PROPERTIES, getDatabase());
@@ -566,12 +566,12 @@ public class ExchangePage extends PropertyProviderPage implements
 	}
 
 	/**
-	 * Implementation of {@link IDropHandler} for flows
+	 * Implementation of {@link IModelDropHandler} for flows
 	 * 
 	 * @author Sebastian Greve
 	 * 
 	 */
-	private class FlowDropHandler implements IDropHandler {
+	private class FlowDropHandler implements IModelDropHandler {
 
 		/**
 		 * Indicates if the new exchange should be an input or output

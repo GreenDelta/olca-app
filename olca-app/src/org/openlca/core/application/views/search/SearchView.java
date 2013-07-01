@@ -67,7 +67,7 @@ import org.openlca.core.resources.ImageType;
 import org.openlca.ilcd.methods.LCIAMethod;
 import org.openlca.ilcd.processes.LCIAResult;
 import org.openlca.ui.Viewers;
-import org.openlca.ui.dnd.ModelComponentTransfer;
+import org.openlca.ui.dnd.ModelTransfer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -427,7 +427,7 @@ public class SearchView extends ViewPart {
 				Messages.Category, Messages.Description, Messages.Database });
 
 		// create drag and drop support
-		final Transfer transferAgent = ModelComponentTransfer.getInstance();
+		final Transfer transferAgent = ModelTransfer.getInstance();
 		final Transfer[] transfers = new Transfer[] { transferAgent };
 
 		final DragSource dragSource = new DragSource(resultViewer.getTable(),

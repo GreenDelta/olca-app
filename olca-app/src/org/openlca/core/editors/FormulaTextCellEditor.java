@@ -1,12 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.core.editors;
 
 import java.util.ArrayList;
@@ -27,11 +18,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Text cell editor for editing formulas of a parameter with content assistance
- * 
- * @see AutoCompleteTextCellEditor
- * 
- * @author Sebastian Greve
- * 
  */
 public class FormulaTextCellEditor extends AutoCompleteTextCellEditor {
 
@@ -40,20 +26,8 @@ public class FormulaTextCellEditor extends AutoCompleteTextCellEditor {
 	private final IDatabase database;
 	private Parameter[] objectParameters;
 
-	/**
-	 * Creates a new FormulaTextCellEditor
-	 * 
-	 * @param viewer
-	 *            the owner of the text cell
-	 * @param column
-	 *            the column of the text cell
-	 * @param objectParameters
-	 *            the input for the content assistant
-	 * @param database
-	 *            The database
-	 */
-	public FormulaTextCellEditor(final TableViewer viewer, final int column,
-			final Parameter[] objectParameters, final IDatabase database) {
+	public FormulaTextCellEditor(TableViewer viewer, int column,
+			Parameter[] objectParameters, IDatabase database) {
 		super(viewer, column, Messages.SelectParameter);
 		this.objectParameters = objectParameters;
 		this.database = database;

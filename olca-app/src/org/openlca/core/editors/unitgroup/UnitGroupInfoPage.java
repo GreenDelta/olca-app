@@ -27,7 +27,6 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Item;
 import org.eclipse.ui.forms.IMessageManager;
 import org.eclipse.ui.forms.events.ExpansionEvent;
@@ -36,16 +35,18 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.core.application.Messages;
 import org.openlca.core.application.actions.DeleteWithQuestionAction;
-import org.openlca.core.editors.ModelEditor;
+import org.openlca.core.application.db.Database;
 import org.openlca.core.editors.ModelEditorInfoPage;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
+import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.Descriptors;
 import org.openlca.core.resources.ImageType;
-import org.openlca.ui.IContentChangedListener;
 import org.openlca.ui.UI;
 import org.openlca.ui.UIFactory;
+import org.openlca.ui.dnd.ISingleModelDrop;
 import org.openlca.ui.dnd.TextDropComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +61,6 @@ public class UnitGroupInfoPage extends ModelEditorInfoPage {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
-	private TextDropComponent defaultFlowPropertyDropComponent;
 	private IMessageManager messageManager;
 
 	private String UNIT_CONVERSION_FACTOR = Messages.Units_ConversionFactor;
@@ -74,13 +74,15 @@ public class UnitGroupInfoPage extends ModelEditorInfoPage {
 			UNIT_DESCRIPTION, UNIT_SYNONYMS, UNIT_CONVERSION_FACTOR,
 			UNIT_FORMULA, UNIT_IS_REFERENCE };
 
-	private UnitGroup unitGroup = null;
+	private UnitGroup unitGroup;
 	private Section unitsSection;
 	private TableViewer unitsTableViewer;
+	private UnitGroupEditor editor;
 
-	public UnitGroupInfoPage(ModelEditor editor) {
+	public UnitGroupInfoPage(UnitGroupEditor editor) {
 		super(editor, "UnitGroupInfoPage", Messages.Common_GeneralInformation,
 				Messages.Common_GeneralInformation);
+		this.editor = editor;
 		this.unitGroup = (UnitGroup) editor.getModelComponent();
 	}
 
@@ -90,13 +92,7 @@ public class UnitGroupInfoPage extends ModelEditorInfoPage {
 		messageManager = getForm().getMessageManager();
 
 		int heightHint = getForm().computeSize(SWT.DEFAULT, SWT.DEFAULT).y / 3;
-
-		// create flow property drop component
-		defaultFlowPropertyDropComponent = createDropComponent(
-				getMainComposite(), toolkit,
-				Messages.Units_DefaultFlowProperty,
-				unitGroup.getDefaultFlowProperty(), ModelType.FLOW_PROPERTY,
-				false);
+		createPropertyText(toolkit);
 
 		// create unit section
 		unitsSection = UIFactory.createSection(body, toolkit,
@@ -127,6 +123,36 @@ public class UnitGroupInfoPage extends ModelEditorInfoPage {
 		unitsTableViewer.setCellEditors(unitsEditors);
 	}
 
+	private void createPropertyText(FormToolkit toolkit) {
+		TextDropComponent propertyDropText = UIFactory.createDropComponent(
+				getMainComposite(), Messages.Units_DefaultFlowProperty,
+				toolkit, false, ModelType.FLOW_PROPERTY);
+		if (unitGroup != null)
+			propertyDropText.setContent(Descriptors.toDescriptor(unitGroup
+					.getDefaultFlowProperty()));
+		propertyDropText.setHandler(new ISingleModelDrop() {
+			@Override
+			public void handle(BaseDescriptor descriptor) {
+				handleFlowPropertyChange(descriptor);
+			}
+		});
+	}
+
+	private void handleFlowPropertyChange(BaseDescriptor descriptor) {
+		log.trace("handle new flow property {}", descriptor);
+		if (descriptor == null
+				|| descriptor.getModelType() != ModelType.FLOW_PROPERTY) {
+			unitGroup.setDefaultFlowProperty(null);
+		} else
+			try {
+				FlowProperty prop = Database.load(descriptor);
+				unitGroup.setDefaultFlowProperty(prop);
+			} catch (Exception e) {
+				log.error("failed to load flow property " + descriptor, e);
+			}
+		editor.setDirty(true);
+	}
+
 	private void bindActions(Section section, TableViewer viewer) {
 		Action add = new AddUnitAction();
 		Action remove = new RemoveUnitAction();
@@ -146,31 +172,6 @@ public class UnitGroupInfoPage extends ModelEditorInfoPage {
 	@Override
 	protected void initListeners() {
 		super.initListeners();
-		defaultFlowPropertyDropComponent
-				.addContentChangedListener(new IContentChangedListener() {
-
-					@Override
-					public void contentChanged(Control source, Object content) {
-						if (content != null) {
-							// load flow property
-							FlowProperty defaultFlowProperty;
-							try {
-								// TODO: implement d&d
-								// defaultFlowProperty = getDatabase().select(
-								// FlowProperty.class,
-								// ((IModelComponent) content).getId());
-								// unitGroup
-								// .setDefaultFlowProperty(defaultFlowProperty);
-							} catch (Exception e) {
-								log.error("Loading flow property failed", e);
-							}
-
-						} else {
-							unitGroup.setDefaultFlowProperty(null);
-						}
-					}
-
-				});
 
 		unitsTableViewer
 				.addSelectionChangedListener(new ISelectionChangedListener() {

@@ -8,8 +8,8 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.ui.navigator.CommonDragAdapterAssistant;
-import org.openlca.core.database.IDatabase;
-import org.openlca.ui.dnd.ModelComponentTransfer;
+import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.ui.dnd.ModelTransfer;
 
 public class NavigationDragAssistant extends CommonDragAdapterAssistant {
 
@@ -28,60 +28,33 @@ public class NavigationDragAssistant extends CommonDragAdapterAssistant {
 
 	@Override
 	public Transfer[] getSupportedTransferTypes() {
-		return new Transfer[] { ModelComponentTransfer.getInstance() };
+		return new Transfer[] { ModelTransfer.getInstance() };
 	}
 
 	@Override
-	public boolean setDragData(final DragSourceEvent anEvent,
-			final IStructuredSelection aSelection) {
+	public boolean setDragData(DragSourceEvent anEvent,
+			IStructuredSelection aSelection) {
 		boolean canBeDropped = true;
-		final Iterator<?> it = aSelection.iterator();
-		String componentClass = null;
-		IDatabase database = null;
-		final List<IModelComponent> components = new ArrayList<>();
-
-		// while next and no error occured
+		Iterator<?> it = aSelection.iterator();
+		List<BaseDescriptor> components = new ArrayList<>();
 		while (it.hasNext() && canBeDropped) {
-			// next element
-			final Object o = it.next();
-
-			// if not model component or category element
+			Object o = it.next();
 			if (!(o instanceof ModelElement || o instanceof CategoryElement)) {
 				canBeDropped = false;
 			} else {
-				// if model component element
 				if (o instanceof ModelElement) {
-					// cast
-					final ModelElement navElem = (ModelElement) o;
-					// get component
-					final IModelComponent comp = (IModelComponent) navElem
-							.getData();
-
-					if (componentClass == null) {
-						componentClass = comp.getClass().getCanonicalName();
-						database = navElem.getDatabase();
-					}
-
-					if (database != null) {
-						if (componentClass.equals(comp.getClass()
-								.getCanonicalName())
-								&& database.equals(navElem.getDatabase())) {
-							components.add(comp);
-						} else {
-							canBeDropped = false;
-						}
-					}
+					ModelElement navElem = (ModelElement) o;
+					BaseDescriptor comp = navElem.getContent();
+					if (comp != null)
+						components.add(comp);
 				}
 			}
 		}
-		// if can be dropped
 		if (canBeDropped) {
-			// set drop data
-			final Object[] data = new Object[components.size() + 1];
+			Object[] data = new Object[components.size()];
 			for (int i = 0; i < components.size(); i++) {
 				data[i] = components.get(i);
 			}
-			data[components.size()] = database;
 			anEvent.data = data;
 		}
 		return canBeDropped;

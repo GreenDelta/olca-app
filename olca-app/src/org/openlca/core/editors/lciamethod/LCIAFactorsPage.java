@@ -49,7 +49,7 @@ import org.openlca.core.resources.ImageType;
 import org.openlca.ui.SelectObjectDialog;
 import org.openlca.ui.UI;
 import org.openlca.ui.UIFactory;
-import org.openlca.ui.dnd.IDropHandler;
+import org.openlca.ui.dnd.IModelDropHandler;
 import org.openlca.ui.viewer.ISelectionChangedListener;
 import org.openlca.ui.viewer.LCIACategoryViewer;
 import org.slf4j.Logger;
@@ -374,12 +374,12 @@ public class LCIAFactorsPage extends ModelEditorPage implements
 	}
 
 	/**
-	 * Implementation of {@link IDropHandler} for flows
+	 * Implementation of {@link IModelDropHandler} for flows
 	 * 
 	 * @author Sebastian Greve
 	 * 
 	 */
-	private class FlowDropHandler implements IDropHandler {
+	private class FlowDropHandler implements IModelDropHandler {
 
 		@Override
 		public void handleDrop(final IModelComponent[] droppedComponents) {

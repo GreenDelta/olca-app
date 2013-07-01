@@ -94,7 +94,7 @@ import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.modelprovider.IModelComponent;
-import org.openlca.ui.dnd.ModelComponentTransfer;
+import org.openlca.ui.dnd.ModelTransfer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -587,7 +587,7 @@ public class ProductSystemGraphEditor extends GraphicalEditor implements
 		((ScalableRootEditPart) getGraphicalViewer().getRootEditPart())
 				.getZoomManager().setZoomLevels(zoomLevels);
 
-		final Transfer transferType = ModelComponentTransfer.getInstance();
+		final Transfer transferType = ModelTransfer.getInstance();
 		final DropTarget dropTarget = new DropTarget(viewer.getControl(),
 				DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_DEFAULT);
 		dropTarget.setTransfer(new Transfer[] { transferType });

@@ -11,7 +11,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.core.math.IResultData;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.resources.ImageType;
 import org.openlca.util.Strings;
 
@@ -47,9 +46,7 @@ public class ImpactCategoryViewer extends
 		return COLUMN_HEADERS;
 	}
 
-	public void setInput(ImpactMethodDescriptor impactMethodDescriptor) {
-		List<ImpactCategoryDescriptor> categories = impactMethodDescriptor
-				.getImpactCategories();
+	public void setInput(List<ImpactCategoryDescriptor> categories) {
 		setInput(categories.toArray(new ImpactCategoryDescriptor[categories
 				.size()]));
 	}

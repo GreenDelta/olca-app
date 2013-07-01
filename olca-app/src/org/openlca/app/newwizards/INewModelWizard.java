@@ -1,4 +1,4 @@
-package org.openlca.core.editors;
+package org.openlca.app.newwizards;
 
 import org.eclipse.ui.INewWizard;
 import org.openlca.core.model.Category;

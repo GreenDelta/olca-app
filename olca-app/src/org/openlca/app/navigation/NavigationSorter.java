@@ -1,39 +1,64 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.app.navigation;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
+import org.openlca.core.model.ModelType;
 
 /**
- * Extension of the {@link ViewerSorter} to support sorting on the common viewer
- * of the applications navigator
- * 
- * @author Sebastian Greve
- * 
+ * A sorter for navigation elements.
  */
 public class NavigationSorter extends ViewerSorter {
 
-	@Override
-	public int compare(final Viewer viewer, final Object e1, final Object e2) {
-		int compare = 0;
-		if (e1 instanceof CategoryElement
-				&& e2 instanceof ModelElement) {
-			compare = -1;
-		} else if (e2 instanceof CategoryElement
-				&& e1 instanceof ModelElement) {
-			compare = 1;
-			// TODO: check both category elements
-		} else {
-			compare = super.compare(viewer, e1, e2);
-		}
-		return compare;
+	private Map<ModelType, Integer> typeOrder = new HashMap<>();
+
+	public NavigationSorter() {
+		super();
+		fillTypeOrder();
 	}
+
+	private void fillTypeOrder() {
+		//@formatter:off
+		ModelType[] order = new ModelType[] {
+				ModelType.PROJECT,
+				ModelType.PRODUCT_SYSTEM,
+				ModelType.IMPACT_METHOD,
+				ModelType.PROCESS,
+				ModelType.FLOW,
+				ModelType.FLOW_PROPERTY,
+				ModelType.UNIT_GROUP,
+				ModelType.SOURCE,
+				ModelType.ACTOR
+		};
+		//@formatter:on
+		for (int i = 0; i < order.length; i++)
+			typeOrder.put(order[i], i);
+	}
+
+	@Override
+	public int compare(Viewer viewer, Object e1, Object e2) {
+		if (e1 instanceof CategoryElement && e2 instanceof ModelElement)
+			return -1;
+		if (e2 instanceof CategoryElement && e1 instanceof ModelElement)
+			return 1;
+		if (e1 instanceof ModelTypeElement && e2 instanceof ModelTypeElement)
+			return compare((ModelTypeElement) e1, (ModelTypeElement) e2);
+		else
+			return super.compare(viewer, e1, e2);
+	}
+
+	private int compare(ModelTypeElement e1, ModelTypeElement e2) {
+		ModelType type1 = e1.getContent();
+		ModelType type2 = e2.getContent();
+		if (type1 == null || type2 == null)
+			return 0;
+		Integer order1 = typeOrder.get(type1);
+		Integer order2 = typeOrder.get(type2);
+		if (order1 == null || order2 == null)
+			return 0;
+		return order1 - order2;
+	}
+
 }

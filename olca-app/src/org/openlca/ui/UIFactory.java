@@ -37,8 +37,7 @@ import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.NavigationTree;
 import org.openlca.core.application.Messages;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.RootEntity;
-import org.openlca.ui.dnd.IDropHandler;
+import org.openlca.ui.dnd.IModelDropHandler;
 import org.openlca.ui.dnd.TextDropComponent;
 import org.openlca.ui.viewer.ViewerDropComponent;
 
@@ -145,8 +144,8 @@ public final class UIFactory {
 		section.setClient(categoryTreeComp);
 
 		// create category viewer
-		final TreeViewer categoryViewer = new NavigationTree(
-				categoryTreeComp, false, true, input, modelType);
+		final TreeViewer categoryViewer = new NavigationTree(categoryTreeComp,
+				false, true, input, modelType);
 		final GridData treeGridData = new GridData(SWT.FILL, SWT.FILL, true,
 				false);
 		treeGridData.minimumHeight = 100;
@@ -307,36 +306,12 @@ public final class UIFactory {
 		return container;
 	}
 
-	/**
-	 * Creates a label and a drop component
-	 * 
-	 * @param parent
-	 *            The parent composite
-	 * @param labelText
-	 *            The text of the label
-	 * @param toolkit
-	 *            The form toolkit
-	 * @param modelComponent
-	 *            The content of the drop component
-	 * @param objectClass
-	 *            The class that is allowed as content
-	 * @param necessary
-	 *            Indicates if there has to be set content in the drop component
-	 *            or if it can be empty
-	 * @param database
-	 *            The database
-	 * @param root
-	 *            The navigation root
-	 * @return A new drop component
-	 */
-	public static TextDropComponent createDropComponent(final Composite parent,
-			final String labelText, final FormToolkit toolkit,
-			final RootEntity modelComponent, final boolean necessary,
+	public static TextDropComponent createDropComponent(Composite parent,
+			String labelText, FormToolkit toolkit, boolean necessary,
 			ModelType modelType) {
-		if (labelText != null && toolkit != null)
-			toolkit.createLabel(parent, labelText, SWT.NONE);
-		final TextDropComponent dropComponent = new TextDropComponent(parent,
-				toolkit, modelComponent, necessary, modelType);
+		toolkit.createLabel(parent, labelText, SWT.NONE);
+		TextDropComponent dropComponent = new TextDropComponent(parent,
+				toolkit, necessary, modelType);
 		dropComponent.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
 				false));
 		return dropComponent;
@@ -463,8 +438,8 @@ public final class UIFactory {
 	}
 
 	public static TableViewer createTableViewer(Composite parent,
-			ModelType modelType, IDropHandler handler, FormToolkit toolkit,
-			String[] PROPERTIES) {
+			ModelType modelType, IModelDropHandler handler,
+			FormToolkit toolkit, String[] PROPERTIES) {
 		TableViewer tableViewer = null;
 		if (modelType == null || handler == null) {
 			tableViewer = new TableViewer(parent, SWT.BORDER

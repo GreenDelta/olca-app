@@ -48,17 +48,15 @@ public class SelectCategoryDialog extends Dialog {
 	}
 
 	@Override
-	protected Control createDialogArea(final Composite parent) {
-		// create body
-		final Composite composite = new Composite(parent, SWT.NONE);
+	protected Control createDialogArea(Composite parent) {
+		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setLayout(new GridLayout());
 		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-
 		new Label(composite, SWT.NONE).setText(title);
 
 		// create category viewer
-		final TreeViewer categoryViewer = new NavigationTree(
-				composite, false, true, root, modelType);
+		final TreeViewer categoryViewer = new NavigationTree(composite, false,
+				true, root, modelType);
 		categoryViewer.getTree().setLayoutData(
 				new GridData(SWT.FILL, SWT.FILL, true, true));
 
@@ -83,11 +81,6 @@ public class SelectCategoryDialog extends Dialog {
 		return new Point(400, 400);
 	}
 
-	/**
-	 * Getter of the selected category
-	 * 
-	 * @return The selected category
-	 */
 	public Category getSelectedCategory() {
 		return category;
 	}

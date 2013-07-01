@@ -19,12 +19,8 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.core.application.Messages;
 import org.openlca.core.application.actions.OpenEditorAction;
-import org.openlca.core.model.ModelType;
-import org.openlca.core.model.RootEntity;
 import org.openlca.core.resources.ImageType;
 import org.openlca.ui.UI;
-import org.openlca.ui.UIFactory;
-import org.openlca.ui.dnd.TextDropComponent;
 
 /**
  * Abstract form page for model components
@@ -38,13 +34,6 @@ public abstract class ModelEditorPage extends FormPage {
 
 	public ModelEditorPage(ModelEditor editor, String id, String title) {
 		super(editor, id, title);
-	}
-
-	protected TextDropComponent createDropComponent(Composite parent,
-			FormToolkit toolkit, String labelText, RootEntity initialObject,
-			ModelType modelType, boolean necessary) {
-		return UIFactory.createDropComponent(parent, labelText, toolkit,
-				initialObject, necessary, modelType);
 	}
 
 	protected void updateFormTitle() {

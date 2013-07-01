@@ -43,7 +43,7 @@ import org.openlca.ui.IContentChangedListener;
 import org.openlca.ui.SelectObjectDialog;
 import org.openlca.ui.UI;
 import org.openlca.ui.UIFactory;
-import org.openlca.ui.dnd.IDropHandler;
+import org.openlca.ui.dnd.IModelDropHandler;
 import org.openlca.ui.dnd.TextDropComponent;
 import org.openlca.ui.viewer.ISelectionChangedListener;
 import org.openlca.ui.viewer.ProcessTypeViewer;
@@ -147,7 +147,7 @@ public class ModelingAndValidationPage extends ModelEditorPage {
 		Composite sourcesComposite = UI.sectionClient(sourcesSection, toolkit);
 		UI.gridLayout(sourcesComposite, 1);
 
-		IDropHandler sourceDropHandler = new SourceDropHandler();
+		IModelDropHandler sourceDropHandler = new SourceDropHandler();
 
 		sourceTableViewer = UIFactory.createTableViewer(sourcesComposite,
 				Source.class, sourceDropHandler, toolkit, null, getDatabase());
@@ -309,7 +309,7 @@ public class ModelingAndValidationPage extends ModelEditorPage {
 
 	}
 
-	private class SourceDropHandler implements IDropHandler {
+	private class SourceDropHandler implements IModelDropHandler {
 
 		@Override
 		public void handleDrop(IModelComponent[] droppedComponents) {

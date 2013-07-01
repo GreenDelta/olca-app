@@ -13,20 +13,20 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
-import org.openlca.ui.dnd.IDropHandler;
-import org.openlca.ui.dnd.ModelComponentTransfer;
+import org.openlca.ui.dnd.IModelDropHandler;
+import org.openlca.ui.dnd.ModelTransfer;
 
 /**
  * A table viewer with drop support for arrays of base descriptor instances (see
- * {@link ModelComponentTransfer}.
+ * {@link ModelTransfer}.
  */
 public class ViewerDropComponent extends TableViewer {
 
-	private IDropHandler handler;
-	private Transfer transferType = ModelComponentTransfer.getInstance();
+	private IModelDropHandler handler;
+	private Transfer transferType = ModelTransfer.getInstance();
 
 	public ViewerDropComponent(Composite parent, ModelType type,
-			IDropHandler handler) {
+			IModelDropHandler handler) {
 		super(parent, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
 		this.handler = handler;
 		DropTarget dropTarget = new DropTarget(getTable(), DND.DROP_COPY

@@ -17,20 +17,20 @@ import org.slf4j.LoggerFactory;
  * allowed input is an array of base descriptors. Accordingly, the return type
  * is an array of these descriptors.
  */
-public final class ModelComponentTransfer extends ByteArrayTransfer {
+public final class ModelTransfer extends ByteArrayTransfer {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
 	private static final String NAME = "model_component_transfer";
 	private static final int ID = registerType(NAME);
-	private static ModelComponentTransfer instance;
+	private static ModelTransfer instance;
 
-	private ModelComponentTransfer() {
+	private ModelTransfer() {
 	}
 
-	public static ModelComponentTransfer getInstance() {
+	public static ModelTransfer getInstance() {
 		if (instance == null) {
-			instance = new ModelComponentTransfer();
+			instance = new ModelTransfer();
 		}
 		return instance;
 	}

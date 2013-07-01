@@ -9,8 +9,6 @@
  ******************************************************************************/
 package org.openlca.core.editors;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +29,6 @@ import org.openlca.app.navigation.Navigator;
 import org.openlca.core.application.Messages;
 import org.openlca.core.application.db.Database;
 import org.openlca.core.application.views.ModelEditorInput;
-import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.slf4j.Logger;
@@ -43,8 +40,7 @@ import org.slf4j.LoggerFactory;
  * @author Sebastian Greve
  * 
  */
-public abstract class ModelEditor extends FormEditor implements
-		PropertyChangeListener {
+public abstract class ModelEditor extends FormEditor implements IEditor {
 
 	protected Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -196,16 +192,6 @@ public abstract class ModelEditor extends FormEditor implements
 		return false;
 	}
 
-	// TODO: use mark dirty instead
-	@Override
-	public void propertyChange(final PropertyChangeEvent evt) {
-		if (!(evt.getSource() instanceof ProductSystem && evt.getPropertyName()
-				.equals("lciaResult"))) {
-			dirty = true;
-			this.editorDirtyStateChanged();
-		}
-	}
-
 	public void fireChange() {
 		dirty = true;
 		for (IEditorComponent component : editorComponents)
@@ -220,6 +206,18 @@ public abstract class ModelEditor extends FormEditor implements
 	void fireSaved() {
 		for (IEditorComponent component : editorComponents)
 			component.onSaved();
+	}
+
+	@Override
+	public void setDirty(boolean b) {
+		if (b == dirty)
+			return;
+		if (b)
+			fireChange();
+		else {
+			dirty = b;
+			editorDirtyStateChanged();
+		}
 	}
 
 }

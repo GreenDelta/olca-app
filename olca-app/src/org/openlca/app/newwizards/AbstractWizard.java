@@ -5,7 +5,6 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IWorkbench;
 import org.openlca.core.application.App;
 import org.openlca.core.database.BaseDao;
-import org.openlca.core.editors.INewModelWizard;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.resources.ImageType;

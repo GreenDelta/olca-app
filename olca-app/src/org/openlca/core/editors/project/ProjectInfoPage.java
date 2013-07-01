@@ -53,7 +53,7 @@ import org.openlca.ui.SelectObjectDialog;
 import org.openlca.ui.UI;
 import org.openlca.ui.UIFactory;
 import org.openlca.ui.Viewers;
-import org.openlca.ui.dnd.IDropHandler;
+import org.openlca.ui.dnd.IModelDropHandler;
 import org.openlca.ui.dnd.TextDropComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -424,7 +424,7 @@ public class ProjectInfoPage extends ModelEditorInfoPage implements
 		}
 	}
 
-	private class ProductSystemDropHandler implements IDropHandler {
+	private class ProductSystemDropHandler implements IModelDropHandler {
 
 		@Override
 		public void handleDrop(final IModelComponent[] droppedComponents) {

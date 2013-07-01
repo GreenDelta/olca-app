@@ -21,7 +21,7 @@ import org.openlca.app.navigation.CategoryElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelTypeElement;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.core.editors.INewModelWizard;
+import org.openlca.app.newwizards.INewModelWizard;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 import org.openlca.ui.Images;

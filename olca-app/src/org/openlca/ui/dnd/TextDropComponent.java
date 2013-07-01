@@ -1,8 +1,5 @@
 package org.openlca.ui.dnd;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
@@ -12,8 +9,6 @@ import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseListener;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
@@ -22,220 +17,158 @@ import org.eclipse.ui.forms.widgets.TableWrapData;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
 import org.openlca.core.application.Messages;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.RootEntity;
+import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.resources.ImageType;
 import org.openlca.ui.FancyToolTip;
-import org.openlca.ui.IContentChangedListener;
 import org.openlca.ui.Images;
 import org.openlca.ui.SelectObjectDialog;
 
 /**
- * A text field with an add and remove button which allows the drop of a
- * specific model type into this field.
+ * A text field with an add and optional remove button which allows the drop of
+ * descriptors of a specific model type into this field.
  */
 public final class TextDropComponent extends Composite {
 
-	private Button addButton;
-	private RootEntity content = null;
-	private List<IContentChangedListener> listeners = new ArrayList<>();
-	private final boolean objectIsNecessary;
-	private Button removeButton;
+	private BaseDescriptor content;
+	private boolean withoutDelete;
 	private Text text;
 	private FormToolkit toolkit;
-	private Transfer transferType = ModelComponentTransfer.getInstance();
 	private ModelType modelType;
+	private Button removeButton;
+	private ISingleModelDrop handler;
 
 	public TextDropComponent(Composite parent, FormToolkit toolkit,
-			RootEntity content, boolean isNecessary, ModelType modelType) {
+			boolean withoutDelete, ModelType modelType) {
 		super(parent, SWT.FILL);
 		this.toolkit = toolkit;
-		objectIsNecessary = isNecessary;
-		this.content = content;
+		this.withoutDelete = withoutDelete;
 		this.modelType = modelType;
 		createContent();
 	}
 
-	public void setTextBackground(Color color) {
-		text.setBackground(color);
+	public void setHandler(ISingleModelDrop handler) {
+		this.handler = handler;
 	}
 
-	public void setAddButtonToolTipText(String text) {
-		if (addButton != null)
-			addButton.setToolTipText(text);
+	public BaseDescriptor getContent() {
+		return content;
 	}
 
-	/**
-	 * Creates the graphical content of this component.
-	 * 
-	 */
-	protected void createContent() {
-		if (toolkit != null)
-			toolkit.adapt(this);
-		final TableWrapLayout layout = new TableWrapLayout();
-		if (objectIsNecessary) {
-			layout.numColumns = 2;
+	public void setContent(BaseDescriptor content) {
+		this.content = content;
+		text.setData(content); // tooltip
+		if (content == null || content.getDisplayName() == null) {
+			text.setText("");
 		} else {
-			layout.numColumns = 3;
+			text.setText(content.getDisplayName());
 		}
+		if (!withoutDelete)
+			removeButton.setEnabled(content != null);
+	}
+
+	private void createContent() {
+		toolkit.adapt(this);
+		TableWrapLayout layout = createLayout();
+		setLayout(layout);
+		// order of the method calls is important (fills from left to right)
+		createAddButton();
+		createTextField();
+		addDropToText();
+		if (!withoutDelete)
+			createRemoveButton();
+	}
+
+	private TableWrapLayout createLayout() {
+		TableWrapLayout layout = new TableWrapLayout();
+		if (withoutDelete)
+			layout.numColumns = 2;
+		else
+			layout.numColumns = 3;
 		layout.leftMargin = 0;
 		layout.rightMargin = 0;
 		layout.topMargin = 0;
 		layout.bottomMargin = 0;
 		layout.horizontalSpacing = 0;
 		layout.verticalSpacing = 0;
-		setLayout(layout);
+		return layout;
+	}
 
-		// create the text field & tool tip
-		// create the add button
-		if (toolkit != null)
-			addButton = toolkit.createButton(this, "", SWT.PUSH);
-		else
-			addButton = new Button(this, SWT.PUSH);
+	private void createAddButton() {
+		Button addButton = toolkit.createButton(this, "", SWT.PUSH);
 		addButton.setToolTipText(Messages.TextDropComponent_ToolTipText);
 		addButton.setLayoutData(new TableWrapData());
-		addButton.setImage(Images.getIcon(content));
+		addButton.setImage(Images.getIcon(modelType));
 		addButton.addMouseListener(new MouseAdapter() {
-
 			@Override
 			public void mouseDown(final MouseEvent e) {
-				final SelectObjectDialog dialog = new SelectObjectDialog(
-						addButton.getShell(), modelType, false);
-				dialog.open();
-				final int code = dialog.getReturnCode();
-				if (code == Window.OK && dialog.getSelection() != null) {
-					setData(dialog.getSelection());
-				}
+				SelectObjectDialog dialog = new SelectObjectDialog(getShell(),
+						modelType, false);
+				int code = dialog.open();
+				if (code == Window.OK && dialog.getSelection() != null)
+					handleChange(dialog.getSelection());
 			}
-
 		});
+	}
 
-		if (toolkit != null)
-			text = toolkit.createText(this, "", SWT.BORDER);
-		else
-			text = new Text(this, SWT.BORDER);
+	private void createTextField() {
+		text = toolkit.createText(this, "", SWT.BORDER);
 		text.setEditable(false);
-		final TableWrapData layoutData = new TableWrapData(TableWrapData.FILL,
+		TableWrapData layoutData = new TableWrapData(TableWrapData.FILL,
 				TableWrapData.FILL);
 		layoutData.grabHorizontal = true;
 		text.setLayoutData(layoutData);
-		if (content != null) {
+		if (content != null)
 			text.setText(content.getName());
-		}
-		if (toolkit != null)
-			new FancyToolTip(text, toolkit);
+		new FancyToolTip(text, toolkit);
+	}
 
-		// creates a drop listener for the text field
-		final DropTarget dropTarget = new DropTarget(text, DND.DROP_COPY
+	private void createRemoveButton() {
+		removeButton = toolkit.createButton(this, "", SWT.PUSH);
+		removeButton.setLayoutData(new TableWrapData());
+		removeButton.setImage(ImageType.DELETE_ICON.get());
+		removeButton
+				.setToolTipText(Messages.TextDropComponent_RemoveButtonText);
+		if (content == null)
+			removeButton.setEnabled(false);
+		removeButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDown(final MouseEvent e) {
+				handleChange(null);
+			}
+		});
+	}
+
+	private void addDropToText() {
+		final Transfer transferType = ModelTransfer.getInstance();
+		DropTarget dropTarget = new DropTarget(text, DND.DROP_COPY
 				| DND.DROP_MOVE | DND.DROP_DEFAULT);
 		dropTarget.setTransfer(new Transfer[] { transferType });
 		dropTarget.addDropListener(new DropTargetAdapter() {
-
 			@Override
-			public void dragEnter(final DropTargetEvent event) {
-				// do nothing
+			public void dragEnter(DropTargetEvent event) {
 			}
 
 			@Override
-			public void drop(final DropTargetEvent event) {
-				if (transferType.isSupportedType(event.currentDataType)
-						&& event.data != null) {
-					setData(event.data);
+			public void drop(DropTargetEvent event) {
+				if (transferType.isSupportedType(event.currentDataType)) {
+					handleChange(event.data);
 				}
 			}
-
 		});
+	}
 
-		// create the delete button
-		if (!objectIsNecessary) {
-			if (toolkit != null)
-				removeButton = toolkit.createButton(this, "", SWT.PUSH);
-			else
-				removeButton = new Button(this, SWT.PUSH);
-			removeButton.setLayoutData(new TableWrapData());
-			removeButton.setImage(ImageType.DELETE_ICON.get());
-			removeButton
-					.setToolTipText(Messages.TextDropComponent_RemoveButtonText);
-			if (text.getText().equals("")) {
-				removeButton.setEnabled(false);
-			}
-			removeButton.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mouseDown(final MouseEvent e) {
-					setData(null);
-				}
-			});
+	private void handleChange(Object data) {
+		BaseDescriptor descriptor = null;
+		if (data instanceof BaseDescriptor)
+			descriptor = (BaseDescriptor) data;
+		else if (data instanceof Object[]) {
+			Object[] objects = (Object[]) data;
+			if (objects.length > 0 && (objects[0] instanceof BaseDescriptor))
+				descriptor = (BaseDescriptor) objects[0];
 		}
-	}
-
-	/**
-	 * Sets the reference to the selected {@link IModelComponent} and informs
-	 * the selection changed listeners.
-	 * 
-	 * @param content
-	 *            The new content
-	 */
-	protected void fireContentChange(final RootEntity content) {
-		for (final IContentChangedListener l : listeners) {
-			l.contentChanged(this, content);
-		}
-	}
-
-	/**
-	 * Adds a content changed listener
-	 * 
-	 * @param listener
-	 *            The listener to add
-	 */
-	public void addContentChangedListener(final IContentChangedListener listener) {
-		listeners.add(listener);
-	}
-
-	@Override
-	public Object getData() {
-		return content;
-	}
-
-	/**
-	 * Removes a listener from this container which is informed when the add
-	 * button was pressed.
-	 * 
-	 * @param listener
-	 *            the listener to be removed
-	 */
-	public void removeAddHandler(final MouseListener listener) {
-		addButton.removeMouseListener(listener);
-	}
-
-	/**
-	 * Removes a content changed listener
-	 * 
-	 * @param listener
-	 *            The listener to remove
-	 */
-	public void removeContentChangedListener(
-			final IContentChangedListener listener) {
-		listeners.remove(listener);
-	}
-
-	@Override
-	public void setData(final Object data) {
-		if (data == null) {
-			content = null;
-			text.setText("");
-		} else if (data instanceof Object[]) {
-
-			// TODO: set conent
-		}
-		text.setData(content); // for the tool tip
-		if (!objectIsNecessary) {
-			removeButton.setEnabled(content != null);
-		}
-		fireContentChange(content);
-	}
-
-	@Override
-	public void setData(final String key, final Object value) {
-		setData(value);
+		setContent(descriptor);
+		if (handler != null)
+			handler.handle(descriptor);
 	}
 
 }
