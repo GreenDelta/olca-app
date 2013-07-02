@@ -10,6 +10,8 @@
 
 package org.openlca.core.editors.process;
 
+import java.util.List;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -19,30 +21,30 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.navigation.NavigationRoot;
-import org.openlca.app.navigation.Navigator;
+import org.openlca.core.application.App;
 import org.openlca.core.application.Messages;
 import org.openlca.core.application.actions.DeleteWithQuestionAction;
-import org.openlca.core.application.actions.OpenEditorAction;
+import org.openlca.core.application.db.Database;
 import org.openlca.core.editors.ModelEditor;
 import org.openlca.core.editors.ModelEditorPage;
 import org.openlca.core.model.Actor;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessDocumentation;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.Source;
+import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.Descriptors;
 import org.openlca.core.resources.ImageType;
 import org.openlca.ui.DataBinding;
-import org.openlca.ui.IContentChangedListener;
 import org.openlca.ui.SelectObjectDialog;
 import org.openlca.ui.UI;
 import org.openlca.ui.UIFactory;
 import org.openlca.ui.dnd.IModelDropHandler;
+import org.openlca.ui.dnd.ISingleModelDrop;
 import org.openlca.ui.dnd.TextDropComponent;
 import org.openlca.ui.viewer.ISelectionChangedListener;
 import org.openlca.ui.viewer.ProcessTypeViewer;
@@ -62,10 +64,8 @@ public class ModelingAndValidationPage extends ModelEditorPage {
 	private ProcessDocumentation doc;
 	private DataBinding dataBinding = new DataBinding();
 	private ProcessTypeViewer processTypeViewer;
-	private TextDropComponent reviewerDropComponent;
+	private TextDropComponent reviewerDrop;
 	private TableViewer sourceTableViewer;
-
-	private OpenEditorAction openAction;
 
 	public ModelingAndValidationPage(ModelEditor editor) {
 		super(editor, "ModelingAndValidationPage",
@@ -127,9 +127,9 @@ public class ModelingAndValidationPage extends ModelEditorPage {
 		Composite evaluationComposite = UIFactory.createSectionComposite(
 				evaluationSection, toolkit, UIFactory.createGridLayout(2));
 
-		reviewerDropComponent = createDropComponent(evaluationComposite,
-				toolkit, Messages.Processes_Reviewer, doc.getReviewer(),
-				Actor.class, false);
+		reviewerDrop = UIFactory.createDropComponent(evaluationComposite,
+				Messages.Processes_Reviewer, toolkit, false, ModelType.ACTOR);
+		reviewerDrop.setContent(Descriptors.toDescriptor(doc.getReviewer()));
 
 		text = UIFactory.createTextWithLabel(evaluationComposite, toolkit,
 				Messages.Processes_DatasetOtherEvaluation, true);
@@ -144,7 +144,7 @@ public class ModelingAndValidationPage extends ModelEditorPage {
 		IModelDropHandler sourceDropHandler = new SourceDropHandler();
 
 		sourceTableViewer = UIFactory.createTableViewer(sourcesComposite,
-				Source.class, sourceDropHandler, toolkit, null, getDatabase());
+				ModelType.SOURCE, sourceDropHandler, toolkit, null);
 		sourceTableViewer.setLabelProvider(new SourceLabelProvider());
 		UI.gridData(sourceTableViewer.getTable(), true, true).heightHint = heightHint;
 		bindSourcesActions(sourceTableViewer, sourcesSection);
@@ -155,20 +155,16 @@ public class ModelingAndValidationPage extends ModelEditorPage {
 			}
 		}
 
-		openAction = new OpenEditorAction();
 		sourceTableViewer.addDoubleClickListener(new IDoubleClickListener() {
-
 			@Override
 			public void doubleClick(DoubleClickEvent event) {
 				IStructuredSelection selection = (IStructuredSelection) event
 						.getSelection();
 				if (!selection.isEmpty()) {
 					Source source = (Source) selection.getFirstElement();
-					openAction.setModelComponent(getDatabase(), source);
-					openAction.run();
+					App.openEditor(source);
 				}
 			}
-
 		});
 	}
 
@@ -200,39 +196,36 @@ public class ModelingAndValidationPage extends ModelEditorPage {
 
 				});
 
-		reviewerDropComponent
-				.addContentChangedListener(new IContentChangedListener() {
-
-					@Override
-					public void contentChanged(Control source, Object content) {
-						if (content != null) {
-							if (modelingAndValidation != null) {
-								try {
-									Actor reviewer = getDatabase()
-											.select(Actor.class,
-													((IModelComponent) content)
-															.getId());
-									modelingAndValidation.setReviewer(reviewer);
-								} catch (Exception e) {
-									log.error(
-											"Reading actor from database failed",
-											e);
-								}
-							}
-						} else {
-							modelingAndValidation.setReviewer(null);
-						}
+		reviewerDrop.setHandler(new ISingleModelDrop() {
+			@Override
+			public void handle(BaseDescriptor descriptor) {
+				if (descriptor == null)
+					doc.setReviewer(null);
+				else
+					try {
+						Actor actor = Database.load(descriptor);
+						doc.setReviewer(actor);
+					} catch (Exception e) {
+						log.error("failed to load reviewer", e);
 					}
+			}
+		});
 
-				});
+	}
+
+	private void checkAddSources(BaseDescriptor descriptor) {
+		try {
+			Source source = Database.load(descriptor);
+			if (source != null && !doc.getSources().contains(source))
+				doc.getSources().add(source);
+		} catch (Exception e) {
+			log.error("Reading source from database failed", e);
+		}
 	}
 
 	private class AddSourceAction extends Action {
 
-		private final String ID = "org.openlca.core.editors.process.ModelingAndValidationPage.AddSourceAction";
-
 		public AddSourceAction() {
-			setId(ID);
 			setText(Messages.Processes_AddSourceText);
 			setImageDescriptor(ImageType.ADD_ICON.getDescriptor());
 			setDisabledImageDescriptor(ImageType.ADD_ICON_DISABLED
@@ -241,42 +234,17 @@ public class ModelingAndValidationPage extends ModelEditorPage {
 
 		@Override
 		public void run() {
-			// get navigation root
-			NavigationRoot root = null;
-			Navigator navigator = (Navigator) PlatformUI.getWorkbench()
-					.getActiveWorkbenchWindow().getActivePage()
-					.findView(Navigator.ID);
-			if (navigator != null) {
-				root = navigator.getRoot();
-			}
-			// create select object dialog
 			SelectObjectDialog dialog = new SelectObjectDialog(UI.shell(),
-					root, true, getDatabase(), Source.class);
-			dialog.open();
-			int code = dialog.getReturnCode();
-
-			if (code == Window.OK && dialog.getMultiSelection() != null) {
-				// add sources
-				Source[] sources = new Source[dialog.getMultiSelection().length];
-				// for each selected source
-				for (int i = 0; i < dialog.getMultiSelection().length; i++) {
-					// load source
-					try {
-						Source source = getDatabase().select(Source.class,
-								dialog.getMultiSelection()[i].getId());
-						// add source
-						modelingAndValidation.add(source);
-						sources[i] = source;
-					} catch (Exception e) {
-						log.error("Reading source from database failed", e);
-					}
-				}
-
-				// refresh viewer
-				sourceTableViewer.setInput(modelingAndValidation.getSources());
-				sourceTableViewer
-						.setSelection(new StructuredSelection(sources));
+					ModelType.SOURCE, true);
+			int code = dialog.open();
+			BaseDescriptor[] selection = dialog.getMultiSelection();
+			if (code != Window.OK || selection == null)
+				return;
+			for (int i = 0; i < selection.length; i++) {
+				BaseDescriptor descriptor = selection[i];
+				checkAddSources(descriptor);
 			}
+			sourceTableViewer.setInput(doc.getSources());
 		}
 	}
 
@@ -296,9 +264,9 @@ public class ModelingAndValidationPage extends ModelEditorPage {
 					.getSelection();
 			for (int i = 0; i < structuredSelection.toArray().length; i++) {
 				Source source = (Source) structuredSelection.toArray()[i];
-				modelingAndValidation.remove(source);
+				doc.getSources().remove(source);
 			}
-			sourceTableViewer.setInput(modelingAndValidation.getSources());
+			sourceTableViewer.setInput(doc.getSources());
 		}
 
 	}
@@ -306,20 +274,12 @@ public class ModelingAndValidationPage extends ModelEditorPage {
 	private class SourceDropHandler implements IModelDropHandler {
 
 		@Override
-		public void handleDrop(IModelComponent[] droppedComponents) {
-			Source[] sources = new Source[droppedComponents.length];
-			for (int i = 0; i < droppedComponents.length; i++) {
-				try {
-					Source source = getDatabase().select(Source.class,
-							droppedComponents[i].getId());
-					modelingAndValidation.add(source);
-					sources[i] = source;
-				} catch (Exception e) {
-					log.error("Reading source from database failed", e);
-				}
-			}
-			sourceTableViewer.setInput(modelingAndValidation.getSources());
-			sourceTableViewer.setSelection(new StructuredSelection(sources));
+		public void handleDrop(List<BaseDescriptor> droppedComponents) {
+			if (droppedComponents == null)
+				return;
+			for (BaseDescriptor d : droppedComponents)
+				checkAddSources(d);
+			sourceTableViewer.setInput(doc.getSources());
 		}
 
 	}

@@ -13,6 +13,7 @@ import org.openlca.core.database.FlowPropertyDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.IRootEntityDao;
 import org.openlca.core.database.ImpactMethodDao;
+import org.openlca.core.database.ProcessDao;
 import org.openlca.core.database.ProductSystemDao;
 import org.openlca.core.database.ProjectDao;
 import org.openlca.core.database.SourceDao;
@@ -139,7 +140,7 @@ public class Database {
 		case IMPACT_METHOD:
 			return new ImpactMethodDao(getEntityFactory());
 		case PROCESS:
-			return new ImpactMethodDao(getEntityFactory());
+			return new ProcessDao(getEntityFactory());
 		case PRODUCT_SYSTEM:
 			return new ProductSystemDao(getEntityFactory());
 		case PROJECT:
