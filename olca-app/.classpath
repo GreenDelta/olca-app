@@ -43,7 +43,7 @@
 	<classpathentry exported="true" kind="lib" path="libs/olca-ecospold-1-1.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-formula-1.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-ilcd-1.0.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-io-1.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-io-1.0.0.jar" sourcepath="/olca-io/src/main/java"/>
 	<classpathentry exported="true" kind="lib" path="libs/poi-3.9.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/poi-ooxml-3.9.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/poi-ooxml-schemas-3.9.jar"/>

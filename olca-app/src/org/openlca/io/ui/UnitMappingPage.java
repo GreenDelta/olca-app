@@ -36,12 +36,12 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.openlca.core.application.db.Database;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
 import org.openlca.io.UnitMapping;
-import org.openlca.io.ui.ecospold1.importer.EcoSpold01ImportWizard;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -155,16 +155,18 @@ public abstract class UnitMappingPage extends WizardPage {
 		for (int i = 0; i < unitNames.length; i++) {
 			input[i] = new Input(unitNames[i]);
 			for (final FlowProperty flowProperty : flowProperties) {
-				final Unit unit = unitGroups.get(flowProperty.getUnitGroupId())
-						.getUnit(unitNames[i]);
+				final Unit unit = unitGroups.get(
+						flowProperty.getUnitGroup().getId()).getUnit(
+						unitNames[i]);
 				if (unit != null) {
 					input[i].setFlowProperty(flowProperty);
 					input[i].setConversionFactor(unit.getConversionFactor());
-					if (unitGroups.get(flowProperty.getUnitGroupId())
+					if (unitGroups.get(flowProperty.getUnitGroup().getId())
 							.getDefaultFlowProperty() != null
 							&& flowProperty.getId().equals(
 									unitGroups
-											.get(flowProperty.getUnitGroupId())
+											.get(flowProperty.getUnitGroup()
+													.getId())
 											.getDefaultFlowProperty().getId())) {
 						break;
 					}
@@ -174,7 +176,7 @@ public abstract class UnitMappingPage extends WizardPage {
 			UnitGroup unitGroup = null;
 			if (input[i].getFlowProperty() != null) {
 				unitGroup = unitGroups.get(input[i].getFlowProperty()
-						.getUnitGroupId());
+						.getUnitGroup().getId());
 			}
 			unitMapping.put(unitNames[i], input[i].getFlowProperty(),
 					unitGroup, input[i].getConversionFactor());
@@ -308,8 +310,7 @@ public abstract class UnitMappingPage extends WizardPage {
 		if (!visible) {
 			setPageComplete(false);
 		} else {
-			final IDatabase database = ((EcoSpold01ImportWizard) getWizard())
-					.getDatabase();
+			final IDatabase database = Database.get();
 			try {
 				List<FlowProperty> flowProperties = database.createDao(
 						FlowProperty.class).getAll();
@@ -357,8 +358,8 @@ public abstract class UnitMappingPage extends WizardPage {
 					&& !property.equals(UNIT_GROUP)
 					&& !property.equals(REFERENCE_UNIT)
 					&& !((input.getFlowProperty() == null || unitGroups.get(
-							input.getFlowProperty().getUnitGroupId()).getUnit(
-							input.getUnitName()) != null) && property
+							input.getFlowProperty().getUnitGroup().getId())
+							.getUnit(input.getUnitName()) != null) && property
 							.equals(CONVERSION_FACTOR));
 		}
 
@@ -369,8 +370,8 @@ public abstract class UnitMappingPage extends WizardPage {
 			if (property.equals(FLOW_PROPERTY)) {
 				final List<String> flowPropertyNames = new ArrayList<>();
 				for (final FlowProperty flowProperty : flowProperties) {
-					if (unitGroups.get(flowProperty.getUnitGroupId()).getUnit(
-							input.getUnitName()) != null) {
+					if (unitGroups.get(flowProperty.getUnitGroup().getId())
+							.getUnit(input.getUnitName()) != null) {
 						flowPropertyNames.add(flowProperty.getName());
 					}
 				}
@@ -401,8 +402,8 @@ public abstract class UnitMappingPage extends WizardPage {
 			if (property.equals(FLOW_PROPERTY)) {
 				final List<String> flowPropertyNames = new ArrayList<>();
 				for (final FlowProperty flowProperty : flowProperties) {
-					if (unitGroups.get(flowProperty.getUnitGroupId()).getUnit(
-							input.getUnitName()) != null) {
+					if (unitGroups.get(flowProperty.getUnitGroup().getId())
+							.getUnit(input.getUnitName()) != null) {
 						flowPropertyNames.add(flowProperty.getName());
 					}
 				}
@@ -422,7 +423,7 @@ public abstract class UnitMappingPage extends WizardPage {
 							}
 						}
 						final Unit unit = unitGroups.get(
-								input.getFlowProperty().getUnitGroupId())
+								input.getFlowProperty().getUnitGroup().getId())
 								.getUnit(input.getUnitName());
 						if (unit != null) {
 							input.setConversionFactor(unit
@@ -551,7 +552,7 @@ public abstract class UnitMappingPage extends WizardPage {
 		public void setFlowProperty(final FlowProperty flowProperty) {
 			this.flowProperty = flowProperty;
 			unitMapping.set(unitName, flowProperty,
-					unitGroups.get(flowProperty.getUnitGroupId()));
+					unitGroups.get(flowProperty.getUnitGroup().getId()));
 		}
 
 	}
@@ -584,13 +585,13 @@ public abstract class UnitMappingPage extends WizardPage {
 			} else if (columnIndex == 2) {
 				if (input.getFlowProperty() != null) {
 					final UnitGroup unitGroup = unitGroups.get(input
-							.getFlowProperty().getUnitGroupId());
+							.getFlowProperty().getUnitGroup().getId());
 					text = unitGroup.getName();
 				}
 			} else if (columnIndex == 3) {
 				if (input.getFlowProperty() != null) {
 					final UnitGroup unitGroup = unitGroups.get(input
-							.getFlowProperty().getUnitGroupId());
+							.getFlowProperty().getUnitGroup().getId());
 					text = unitGroup.getReferenceUnit().getName();
 				}
 			} else if (columnIndex == 4) {

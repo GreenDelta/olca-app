@@ -7,9 +7,10 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IExportWizard;
 import org.eclipse.ui.IWorkbench;
-import org.openlca.core.model.Process;
+import org.openlca.core.application.db.Database;
+import org.openlca.core.model.ModelType;
+import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.io.ecospold2.ProcessExport;
-import org.openlca.io.ui.ObjectWrapper;
 import org.openlca.io.ui.SelectObjectsExportPage;
 
 public class EcoSpold2ExportWizard extends Wizard implements IExportWizard {
@@ -25,10 +26,10 @@ public class EcoSpold2ExportWizard extends Wizard implements IExportWizard {
 	@Override
 	public boolean performFinish() {
 		File targetDir = exportPage.getExportDestination();
-		List<ObjectWrapper> wrapper = exportPage.getSelectedModelComponents();
-		for (ObjectWrapper w : wrapper) {
-			ProcessExport export = new ProcessExport(
-					(Process) w.getModelComponent(), w.getDatabase());
+		List<BaseDescriptor> selection = exportPage
+				.getSelectedModelComponents();
+		for (BaseDescriptor d : selection) {
+			ProcessExport export = new ProcessExport(d, Database.get());
 			export.run(targetDir);
 		}
 		return true;
@@ -36,8 +37,8 @@ public class EcoSpold2ExportWizard extends Wizard implements IExportWizard {
 
 	@Override
 	public void addPages() {
-		exportPage = new SelectObjectsExportPage(false,
-				SelectObjectsExportPage.PROCESS, false, "EcoSpold02");
+		exportPage = new SelectObjectsExportPage(false, ModelType.PROCESS,
+				false, "EcoSpold02");
 		addPage(exportPage);
 	}
 

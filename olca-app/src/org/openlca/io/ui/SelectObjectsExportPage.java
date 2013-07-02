@@ -36,14 +36,8 @@ import org.openlca.app.navigation.NavigationRoot;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.filters.CategoryViewerFilter;
 import org.openlca.core.application.ApplicationProperties;
-import org.openlca.core.model.Actor;
-import org.openlca.core.model.Flow;
-import org.openlca.core.model.FlowProperty;
-import org.openlca.core.model.ImpactMethod;
-import org.openlca.core.model.Process;
-import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.Source;
-import org.openlca.core.model.UnitGroup;
+import org.openlca.core.model.ModelType;
+import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.ui.Colors;
 import org.openlca.ui.UI;
 import org.openlca.ui.UIFactory;
@@ -53,26 +47,17 @@ import org.openlca.ui.UIFactory;
  */
 public class SelectObjectsExportPage extends WizardPage {
 
-	public final static int METHOD = 1;
-	public final static int FLOW = 2;
-	public final static int FLOW_PROPERTY = 3;
-	public final static int UNIT_GROUP = 4;
-	public final static int PROCESS = 0;
-	public final static int ACTOR = 5;
-	public final static int SOURCE = 6;
-	public final static int PRODUCT_SYSTEM = 7;
-
 	private Text errorText;
 	private File exportDestination;
 	private String fileName = "openLCA";
-	private List<ObjectWrapper> selectedComponents = new ArrayList<>();
+	private List<BaseDescriptor> selectedComponents = new ArrayList<>();
 	private boolean selectFileName;
 	private boolean singleExport;
-	private int type;
+	private ModelType type;
 	private CheckboxTreeViewer viewer;
 	private String fileExtension = ".csv";
 
-	public SelectObjectsExportPage(boolean singleExport, int type,
+	public SelectObjectsExportPage(boolean singleExport, ModelType type,
 			boolean selectFileName, String subDirectory) {
 		super("Ecospold01ExportPage");
 		setPageComplete(false);
@@ -101,11 +86,11 @@ public class SelectObjectsExportPage extends WizardPage {
 		setDescription(descr);
 	}
 
-	private String getTypeName(int type) {
+	private String getTypeName(ModelType type) {
 		switch (type) {
 		case PROCESS:
 			return Phrases.Processes;
-		case METHOD:
+		case IMPACT_METHOD:
 			return Phrases.LCIAMethods;
 		case FLOW:
 			return Phrases.Flows;
@@ -326,50 +311,18 @@ public class SelectObjectsExportPage extends WizardPage {
 		viewer.setContentProvider(new NavigationContentProvider());
 		viewer.setLabelProvider(new NavigationLabelProvider());
 		viewer.addCheckStateListener(new SelectObjectCheckState(this, viewer));
-		viewer.setFilters(new ViewerFilter[] { new CategoryViewerFilter(
-				getTypeClass()) });
+		viewer.setFilters(new ViewerFilter[] { new CategoryViewerFilter(type) });
 		if (root != null) {
 			viewer.setInput(root);
 		}
 		ColumnViewerToolTipSupport.enableFor(viewer);
 	}
 
-	private Class<?> getTypeClass() {
-		switch (type) {
-		case PROCESS:
-			return Process.class;
-		case METHOD:
-			return ImpactMethod.class;
-		case FLOW:
-			return Flow.class;
-		case FLOW_PROPERTY:
-			return FlowProperty.class;
-		case UNIT_GROUP:
-			return UnitGroup.class;
-		case ACTOR:
-			return Actor.class;
-		case SOURCE:
-			return Source.class;
-		case PRODUCT_SYSTEM:
-			return ProductSystem.class;
-		default:
-			return null;
-		}
-	}
-
-	/**
-	 * Getter of the export destination
-	 * 
-	 * @return The directory or file to export the selected components
-	 */
 	public File getExportDestination() {
 		return new File(exportDestination.getAbsolutePath());
 	}
 
-	/**
-	 * Returns a live list of the selected model components.
-	 */
-	public List<ObjectWrapper> getSelectedModelComponents() {
+	public List<BaseDescriptor> getSelectedModelComponents() {
 		return selectedComponents;
 	}
 

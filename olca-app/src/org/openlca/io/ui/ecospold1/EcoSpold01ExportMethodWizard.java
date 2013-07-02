@@ -7,13 +7,12 @@
  * Contributors: GreenDeltaTC - initial API and implementation
  * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
  ******************************************************************************/
-package org.openlca.io.ui.ecospold1.exporter;
+package org.openlca.io.ui.ecospold1;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.model.LCIAMethod;
 import org.openlca.io.ui.ObjectWrapper;
 import org.openlca.io.ui.SelectObjectsExportPage;
 
@@ -30,7 +29,7 @@ public class EcoSpold01ExportMethodWizard extends EcoSpold01ExportWizard {
 	}
 
 	public EcoSpold01ExportMethodWizard(final IDatabase database,
-			final LCIAMethod method) {
+			final ImpactMethodMethod method) {
 		super(SelectObjectsExportPage.METHOD);
 		List<ObjectWrapper> list = new ArrayList<>();
 		list.add(new ObjectWrapper(method, database));

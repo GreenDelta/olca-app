@@ -7,7 +7,7 @@
  * Contributors: GreenDeltaTC - initial API and implementation
  * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
  ******************************************************************************/
-package org.openlca.io.ui.ecospold1.importer;
+package org.openlca.io.ui.ecospold1;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -21,21 +21,16 @@ import java.util.zip.ZipFile;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.PlatformUI;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.Namespace;
-import org.jdom.input.SAXBuilder;
-import org.openlca.app.navigation.NavigationRoot;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.Namespace;
+import org.jdom2.input.SAXBuilder;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.core.database.DataProviderException;
-import org.openlca.core.database.IDatabase;
+import org.openlca.core.application.db.Database;
 import org.openlca.core.model.Category;
-import org.openlca.core.model.Process;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
 import org.openlca.core.resources.ImageType;
@@ -45,10 +40,7 @@ import org.openlca.io.UnitMapping;
 import org.openlca.io.UnitMappingEntry;
 import org.openlca.io.ecospold1.importer.EcoSpold01Parser;
 import org.openlca.io.ui.FileImportPage;
-import org.openlca.io.ui.SelectDatabasePage;
 import org.openlca.io.ui.UnitMappingPage;
-import org.openlca.ui.SelectCategoryDialog;
-import org.openlca.ui.UI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,24 +55,16 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
 	private Category category;
-	private SelectDatabasePage databasePage;
 	private FileImportPage importPage;
 	private UnitMappingPage mappingPage;
 	private Namespace methodNameSpace = Namespace
 			.getNamespace("http://www.EcoInvent.org/EcoSpold01Impact");
 	private final Namespace processNameSpace = Namespace
 			.getNamespace("http://www.EcoInvent.org/EcoSpold01");
-	private IDatabase database;
 
 	public EcoSpold01ImportWizard() {
 		super();
 		setNeedsProgressMonitor(true);
-	}
-
-	public EcoSpold01ImportWizard(IDatabase database) {
-		super();
-		setNeedsProgressMonitor(true);
-		this.database = database;
 	}
 
 	/**
@@ -117,34 +101,20 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 		return process;
 	}
 
-	/**
-	 * Reads out the xml files length
-	 * 
-	 * @param files
-	 *            The files to import
-	 * @return The accumulated length of all files
-	 */
 	private long getAmountOfJobs(final File[] files) {
 		long sizeOfXmlFiles = 0;
-		// for each file
 		for (final File file : files) {
-			// if xml file
 			if (file.getName().toLowerCase().endsWith(".xml")) { //$NON-NLS-1$
-				// add length of file
 				sizeOfXmlFiles += file.length();
 			} else {
-				// else it is a zip file
 				try (final ZipFile zipFile = new ZipFile(file)) {
 					final Enumeration<? extends ZipEntry> entries = zipFile
 							.entries();
-					// while more entries
 					while (entries.hasMoreElements()) {
 						final ZipEntry entry = entries.nextElement();
-						// if xml file
 						if (!entry.isDirectory()
 								&& entry.getName().toLowerCase()
 										.endsWith(".xml")) { //$NON-NLS-1$
-							// add length of file
 							sizeOfXmlFiles += entry.getSize();
 						}
 					}
@@ -156,38 +126,26 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 		return sizeOfXmlFiles;
 	}
 
-	/**
-	 * Looks up the files if they contain any process
-	 * 
-	 * @param files
-	 *            The files to look up
-	 * @return true if at least one process is within the files
-	 */
 	private boolean hasProcesses(final File[] files) {
-		final SAXBuilder builder = new SAXBuilder(false);
+		final SAXBuilder builder = new SAXBuilder();
 		boolean hasProcess = false;
 		try {
-			// for each file
 			for (final File file : files) {
-				// if xml file
 				if (file.getAbsolutePath().toLowerCase().endsWith(".xml")) { //$NON-NLS-1$
-					// build document
 					final Document doc = builder.build(file);
 					hasProcess = doc.getRootElement().getNamespace()
 							.equals(processNameSpace);
 				} else if (file.getAbsolutePath().toLowerCase()
-						.endsWith(".zip")) { //$NON-NLS-1$
-					// else if zip file
+						.endsWith(".zip")) {
 					try (ZipFile zipFile = new ZipFile(file)) {
 						final Enumeration<? extends ZipEntry> entries = zipFile
 								.entries();
-						// while more elements
 						while (entries.hasMoreElements()) {
 							final ZipEntry entry = entries.nextElement();
 							// if xml file
 							if (!entry.isDirectory()
 									&& entry.getName().toLowerCase()
-											.endsWith(".xml")) { //$NON-NLS-1$
+											.endsWith(".xml")) {
 								// build document
 								final Document doc = builder.build(zipFile
 										.getInputStream(entry));
@@ -211,93 +169,8 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 		return hasProcess;
 	}
 
-	/**
-	 * Parses the given files
-	 * 
-	 * @param monitor
-	 *            The progress monitor
-	 * @param files
-	 *            The files to parse
-	 * @param unitMapping
-	 *            The unit mapping
-	 * @throws ParserException
-	 *             If any error occurs while parsing
-	 */
-	private void parse(final IProgressMonitor monitor, final File[] files,
-			final UnitMapping unitMapping) throws ParserException {
-		// set up
-		EcoSpold01Parser processParser = new EcoSpold01Parser(category,
-				database, unitMapping);
-		final long sizeOfXmlFiles = getAmountOfJobs(files);
-		monitor.beginTask(Messages.EcoSpoldImportWizard_Importing,
-				(int) sizeOfXmlFiles);
-		final SAXBuilder builder = new SAXBuilder(false);
-		int i = 0;
-
-		// while more files and not canceled
-		while (!monitor.isCanceled() && i < files.length) {
-			final File file = files[i];
-			try {
-				// if zip file
-				if (file.getName().endsWith(".zip")) {
-					try (ZipFile zipFile = new ZipFile(file)) {
-						final Enumeration<? extends ZipEntry> entries = zipFile
-								.entries();
-						// while more elements and not canceled
-						while (!monitor.isCanceled()
-								&& entries.hasMoreElements()) {
-							final ZipEntry entry = entries.nextElement();
-							// if xml file
-							if (!entry.isDirectory()
-									&& entry.getName().toLowerCase()
-											.endsWith(".xml")) {
-								monitor.subTask(entry.getName());
-								// build document
-								final Document doc = builder.build(zipFile
-										.getInputStream(entry));
-								// if process or LCIA method
-								if (doc.getRootElement().getNamespace()
-										.equals(processNameSpace)
-										|| doc.getRootElement().getNamespace()
-												.equals(methodNameSpace)) {
-									// parse
-									processParser.parse(zipFile, entry,
-											changeNameSpace(doc));
-								}
-							}
-							monitor.worked((int) entry.getSize());
-						}
-					}
-				} else {
-					monitor.subTask(file.getName());
-					final Document doc = builder.build(file);
-					// if process or LCIA method
-					if (doc.getRootElement().getNamespace()
-							.equals(processNameSpace)
-							|| doc.getRootElement().getNamespace()
-									.equals(methodNameSpace)) {
-						// parse
-						processParser.parse(file, changeNameSpace(doc));
-					}
-					monitor.worked((int) file.length());
-				}
-			} catch (final Exception e) {
-				log.error("Parsing files failed", e);
-			}
-			i++;
-		}
-		// clear cache
-		monitor.done();
-	}
-
 	@Override
 	public void addPages() {
-		if (database == null) {
-			// database page
-			// import from wizard (no database selected)
-			databasePage = new SelectDatabasePage();
-			addPage(databasePage);
-		}
 
 		// file import page
 		importPage = new FileImportPage(new String[] { "zip", "xml" }, true);
@@ -348,23 +221,6 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 		return importPage.getFiles();
 	}
 
-	/**
-	 * Getter of the database
-	 * 
-	 * @return The database
-	 */
-	public IDatabase getDatabase() {
-		IDatabase database = null;
-		if (databasePage != null) {
-			// import from workbench import action
-			database = databasePage.getDatabase();
-		} else {
-			// import from navigation
-			database = this.database;
-		}
-		return database;
-	}
-
 	@Override
 	public void init(final IWorkbench workbench,
 			final IStructuredSelection selection) {
@@ -375,66 +231,83 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 
 	@Override
 	public boolean performFinish() {
-		boolean error = false;
-		if (database == null) {
-			// import from workbench import action
-			database = databasePage.getDatabase();
+		// TODO: select a category for processes
+		try {
+			getContainer().run(true, true, new IRunnableWithProgress() {
+				@Override
+				public void run(final IProgressMonitor monitor)
+						throws InvocationTargetException, InterruptedException {
+					try {
+						File[] files = importPage.getFiles();
+						UnitMapping unitMapping = mappingPage.getUnitMapping();
+						saveUnits(unitMapping);
+						parse(monitor, files, unitMapping);
+					} catch (ParserException e) {
+						throw new InterruptedException(e.getMessage());
+					}
+				}
+			});
+			Navigator.refresh();
+			return true;
+		} catch (Exception e) {
+			log.error("import failed ", e);
+			return false;
 		}
-		final File[] files = importPage.getFiles();
-		final UnitMapping unitMapping = mappingPage.getUnitMapping();
-		saveUnits(unitMapping);
-		boolean abort = true;
+	}
 
-		// if files contain process data set
-		if (hasProcesses(files)) {
-			// get navigation root
-			NavigationRoot root = null;
-			final Navigator navigator = (Navigator) PlatformUI.getWorkbench()
-					.getActiveWorkbenchWindow().getActivePage()
-					.findView(Navigator.ID);
-			if (navigator != null) {
-				root = navigator.getRoot();
-			}
-
-			// open category dialog
-			final SelectCategoryDialog dialog = new SelectCategoryDialog(
-					UI.shell(), Messages.EcoSpold01ImportWizard_SelectCategory,
-					Process.class, database, root);
-			if (dialog.open() == Window.OK) {
-				// get selected category
-				category = dialog.getSelectedCategory();
-				abort = false;
-			}
-		} else {
-			abort = false;
-		}
-		if (!abort) {
-			// parse with progress monitor
+	private void parse(final IProgressMonitor monitor, final File[] files,
+			final UnitMapping unitMapping) throws ParserException {
+		EcoSpold01Parser processParser = new EcoSpold01Parser(category,
+				Database.get(), unitMapping);
+		final long sizeOfXmlFiles = getAmountOfJobs(files);
+		monitor.beginTask(Messages.EcoSpoldImportWizard_Importing,
+				(int) sizeOfXmlFiles);
+		final SAXBuilder builder = new SAXBuilder();
+		int i = 0;
+		while (!monitor.isCanceled() && i < files.length) {
+			final File file = files[i];
 			try {
-				getContainer().run(true, true, new IRunnableWithProgress() {
-
-					@Override
-					public void run(final IProgressMonitor monitor)
-							throws InvocationTargetException,
-							InterruptedException {
-						try {
-							// parse
-							parse(monitor, files, unitMapping);
-						} catch (final ParserException e) {
-							throw new InterruptedException(e.getMessage());
+				if (file.getName().endsWith(".zip")) {
+					try (ZipFile zipFile = new ZipFile(file)) {
+						final Enumeration<? extends ZipEntry> entries = zipFile
+								.entries();
+						while (!monitor.isCanceled()
+								&& entries.hasMoreElements()) {
+							final ZipEntry entry = entries.nextElement();
+							if (!entry.isDirectory()
+									&& entry.getName().toLowerCase()
+											.endsWith(".xml")) {
+								monitor.subTask(entry.getName());
+								final Document doc = builder.build(zipFile
+										.getInputStream(entry));
+								if (doc.getRootElement().getNamespace()
+										.equals(processNameSpace)
+										|| doc.getRootElement().getNamespace()
+												.equals(methodNameSpace)) {
+									processParser.parse(zipFile, entry,
+											changeNameSpace(doc));
+								}
+							}
+							monitor.worked((int) entry.getSize());
 						}
 					}
-
-				});
+				} else {
+					monitor.subTask(file.getName());
+					final Document doc = builder.build(file);
+					if (doc.getRootElement().getNamespace()
+							.equals(processNameSpace)
+							|| doc.getRootElement().getNamespace()
+									.equals(methodNameSpace)) {
+						processParser.parse(file, changeNameSpace(doc));
+					}
+					monitor.worked((int) file.length());
+				}
 			} catch (final Exception e) {
-				error = true;
+				log.error("Parsing files failed", e);
 			}
-
+			i++;
 		}
-
-		Navigator.refresh();
-
-		return !error && !abort;
+		monitor.done();
 	}
 
 	private void saveUnits(UnitMapping unitMapping) {
@@ -445,10 +318,10 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 				Unit unit = new Unit(UUID.randomUUID().toString(), unitName);
 				unit.setConversionFactor(unitMapping
 						.getConversionFactor(unitName));
-				unitGroup.add(unit);
+				unitGroup.getUnits().add(unit);
 				try {
-					database.refresh(unitGroup);
-				} catch (final DataProviderException e) {
+					Database.createDao(UnitGroup.class).update(unitGroup);
+				} catch (Exception e) {
 					log.error("Update unit group failed", e);
 				}
 			}

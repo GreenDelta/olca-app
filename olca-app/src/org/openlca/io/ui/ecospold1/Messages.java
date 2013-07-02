@@ -7,16 +7,21 @@
  * Contributors: GreenDeltaTC - initial API and implementation
  * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
  ******************************************************************************/
-package org.openlca.io.ui.ecospold1.exporter;
+package org.openlca.io.ui.ecospold1;
 
 import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
-	private static final String BUNDLE_NAME = "org.openlca.io.ui.ecospold1.exporter.messages";
+	private static final String BUNDLE_NAME = "org.openlca.io.ui.ecospold1.messages";
 	public static String CreatingFolder;
 	public static String EcoSpoldExportWizard_WindowTitle;
 	public static String ExportActionText;
 	public static String Exporting;
+
+	public static String EcoSpold01ImportWizard_SelectCategory;
+	public static String EcoSpoldImportWizard_Importing;
+	public static String EcoSpoldImportWizard_WindowTitle;
+	public static String ImportActionText;
 
 	static {
 		// initialize resource bundle

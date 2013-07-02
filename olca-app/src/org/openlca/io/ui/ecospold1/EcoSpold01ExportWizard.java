@@ -7,7 +7,7 @@
  * Contributors: GreenDeltaTC - initial API and implementation
  * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
  ******************************************************************************/
-package org.openlca.io.ui.ecospold1.exporter;
+package org.openlca.io.ui.ecospold1;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -18,10 +18,9 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IExportWizard;
 import org.eclipse.ui.IWorkbench;
-import org.openlca.core.model.LCIAMethod;
 import org.openlca.core.model.Process;
+import org.openlca.ilcd.methods.LCIAMethod;
 import org.openlca.io.ecospold1.exporter.EcoSpold01Outputter;
-import org.openlca.io.ui.ObjectWrapper;
 import org.openlca.io.ui.SelectObjectsExportPage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,18 +39,18 @@ public class EcoSpold01ExportWizard extends Wizard implements IExportWizard {
 	private final int type;
 
 	private List<ObjectWrapper> components;
-	
+
 	public EcoSpold01ExportWizard(final int type) {
 		super();
 		setNeedsProgressMonitor(true);
 		this.type = type;
 	}
 
-	protected final void setModelComponentsToExport(List<ObjectWrapper> components) {
+	protected final void setModelComponentsToExport(
+			List<ObjectWrapper> components) {
 		this.components = components;
 	}
 
-	
 	protected final void setSingleExport(final boolean singleExport) {
 		this.singleExport = singleExport;
 	}

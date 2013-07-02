@@ -6,45 +6,47 @@ import org.openlca.app.navigation.CategoryElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.core.model.Category;
-import org.openlca.core.model.modelprovider.IModelComponent;
+import org.openlca.core.model.ModelType;
+import org.openlca.core.model.descriptors.BaseDescriptor;
 
 /**
- * The category filter for the export object selection page.
+ * The category filter for a model type.
  */
-class CategoryViewerFilter extends ViewerFilter {
+public class CategoryViewerFilter extends ViewerFilter {
 
-	private Class<?> clazz;
-	private String className;
+	private ModelType type;
 
-	public CategoryViewerFilter(Class<?> filterClass) {
-		this.clazz = filterClass;
-		this.className = filterClass.getCanonicalName();
+	public CategoryViewerFilter(ModelType modelType) {
+		this.type = modelType;
 	}
 
 	@Override
 	public boolean select(Viewer viewer, Object parentElement, Object element) {
-		return isVisible((INavigationElement) element);
+		return isVisible((INavigationElement<?>) element);
 	}
 
-	private boolean isVisible(INavigationElement element) {
+	private boolean isVisible(INavigationElement<?> element) {
 		if (element instanceof CategoryElement) {
-			Category category = (Category) element.getData();
-			return category.getComponentClass().equals(className)
+			CategoryElement e = (CategoryElement) element;
+			Category category = e.getContent();
+			return category.getModelType() == type
 					&& hasModelComponents(element);
 		} else if (element instanceof ModelElement) {
-			IModelComponent modelComponent = (IModelComponent) element
-					.getData();
-			return clazz.isInstance(modelComponent);
+			ModelElement e = (ModelElement) element;
+			BaseDescriptor d = e.getContent();
+			return d.getModelType() == type;
 		} else
 			return hasModelComponents(element);
 	}
 
-	private boolean hasModelComponents(INavigationElement element) {
-		for (INavigationElement child : element.getChildren(true)) {
-			if ((child instanceof ModelElement)
-					&& clazz.isInstance(child.getData()))
-				return true;
-			else if (hasModelComponents(child))
+	private boolean hasModelComponents(INavigationElement<?> element) {
+		for (INavigationElement<?> child : element.getChildren()) {
+			if (child instanceof ModelElement) {
+				ModelElement e = (ModelElement) child;
+				BaseDescriptor d = e.getContent();
+				if (d.getModelType() == type)
+					return true;
+			} else if (hasModelComponents(child))
 				return true;
 		}
 		return false;

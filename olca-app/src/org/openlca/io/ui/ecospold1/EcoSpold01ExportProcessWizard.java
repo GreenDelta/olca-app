@@ -7,7 +7,7 @@
  * Contributors: GreenDeltaTC - initial API and implementation
  * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
  ******************************************************************************/
-package org.openlca.io.ui.ecospold1.exporter;
+package org.openlca.io.ui.ecospold1;
 
 import java.util.ArrayList;
 import java.util.List;
