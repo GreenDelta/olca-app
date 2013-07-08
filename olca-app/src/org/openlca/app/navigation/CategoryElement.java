@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.openlca.core.application.db.Database;
-import org.openlca.core.database.IRootEntityDao;
+import org.openlca.core.database.CategorizedEnitityDao;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.slf4j.Logger;
@@ -51,7 +51,7 @@ public class CategoryElement extends NavigationElement<Category> {
 	private void addModelElements(Category category,
 			List<INavigationElement<?>> list) {
 		try {
-			IRootEntityDao<?> dao = Database.createRootDao(category
+			CategorizedEnitityDao<?> dao = Database.createRootDao(category
 					.getModelType());
 			if (dao == null)
 				return;

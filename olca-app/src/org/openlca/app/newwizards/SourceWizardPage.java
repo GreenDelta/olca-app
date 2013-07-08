@@ -34,7 +34,7 @@ public class SourceWizardPage extends AbstractWizardPage<Source> {
 	@Override
 	public Source createModel() {
 		Source source = new Source();
-		source.setId(UUID.randomUUID().toString());
+		source.setRefId(UUID.randomUUID().toString());
 		source.setName(getModelName());
 		source.setDescription(getModelDescription());
 		return source;

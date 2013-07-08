@@ -22,7 +22,6 @@ import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheet;
 import org.openlca.core.application.ApplicationProperties;
 import org.openlca.core.application.Messages;
-import org.openlca.core.application.evaluation.EvaluationController;
 import org.openlca.core.editors.ModelEditorPage;
 import org.openlca.core.editors.ParameterizableModelEditorWithPropertyPage;
 import org.openlca.core.model.Process;
@@ -49,9 +48,7 @@ public class ProcessEditor extends ParameterizableModelEditorWithPropertyPage {
 	@Override
 	protected void initEvaluationController() {
 		super.initEvaluationController();
-		EvaluationController controller = getEvaluationController();
 		Process process = (Process) getModelComponent();
-		controller.resisterProcess(process);
 	}
 
 	@Override

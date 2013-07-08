@@ -8,10 +8,10 @@ import javax.persistence.EntityManagerFactory;
 import org.openlca.core.application.App;
 import org.openlca.core.database.ActorDao;
 import org.openlca.core.database.BaseDao;
+import org.openlca.core.database.CategorizedEnitityDao;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.FlowPropertyDao;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.database.IRootEntityDao;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.database.ProductSystemDao;
@@ -127,7 +127,7 @@ public class Database {
 			return database.createDao(clazz);
 	}
 
-	public static IRootEntityDao<?> createRootDao(ModelType type) {
+	public static CategorizedEnitityDao<?> createRootDao(ModelType type) {
 		if (database == null)
 			return null;
 		switch (type) {

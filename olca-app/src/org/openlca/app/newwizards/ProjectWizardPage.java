@@ -25,7 +25,7 @@ class ProjectWizardPage extends AbstractWizardPage<Project> {
 	@Override
 	public Project createModel() {
 		Project project = new Project();
-		project.setId(UUID.randomUUID().toString());
+		project.setRefId(UUID.randomUUID().toString());
 		project.setName(getModelName());
 		project.setDescription(getModelDescription());
 		project.setCreationDate(Calendar.getInstance().getTime());

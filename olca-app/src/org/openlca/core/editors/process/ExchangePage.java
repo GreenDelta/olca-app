@@ -13,7 +13,6 @@ package org.openlca.core.editors.process;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
-import java.util.UUID;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.IMessageProvider;
@@ -110,7 +109,7 @@ public class ExchangePage extends PropertyProviderPage implements
 		allocationViewer = new AllocationMethodViewer(composite);
 	}
 
-	private void addExchanges(String[] flowIds, boolean input) {
+	private void addExchanges(long[] flowIds, boolean input) {
 		Exchange[] exchanges = new Exchange[flowIds.length];
 		for (int i = 0; i < flowIds.length; i++) {
 			if (!process.contains(flowIds[i], input)) {
@@ -125,9 +124,8 @@ public class ExchangePage extends PropertyProviderPage implements
 							e);
 				}
 				if (unitGroup != null) {
-					Exchange exchange = new Exchange(process.getId());
+					Exchange exchange = new Exchange();
 					exchange.setFlow(flow);
-					exchange.setId(UUID.randomUUID().toString());
 					exchange.setFlowPropertyFactor(flow.getReferenceFactor());
 					exchange.setUnit(unitGroup.getReferenceUnit());
 					exchange.setInput(input);
@@ -517,7 +515,7 @@ public class ExchangePage extends PropertyProviderPage implements
 					ModelType.FLOW, true);
 			int code = dialog.open();
 			if (code == Window.OK && dialog.getMultiSelection() != null) {
-				final String[] ids = new String[dialog.getMultiSelection().length];
+				final long[] ids = new long[dialog.getMultiSelection().length];
 				for (int i = 0; i < ids.length; i++) {
 					ids[i] = dialog.getMultiSelection()[i].getId();
 				}
@@ -538,7 +536,7 @@ public class ExchangePage extends PropertyProviderPage implements
 		public void handleDrop(List<BaseDescriptor> droppedComponents) {
 			if (droppedComponents == null)
 				return;
-			String[] ids = new String[droppedComponents.size()];
+			long[] ids = new long[droppedComponents.size()];
 			for (int i = 0; i < ids.length; i++) {
 				ids[i] = droppedComponents.get(i).getId();
 			}

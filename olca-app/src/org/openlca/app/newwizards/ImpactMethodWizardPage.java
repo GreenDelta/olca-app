@@ -24,7 +24,7 @@ class ImpactMethodWizardPage extends AbstractWizardPage<ImpactMethod> {
 	@Override
 	public ImpactMethod createModel() {
 		ImpactMethod method = new ImpactMethod();
-		method.setId(UUID.randomUUID().toString());
+		method.setRefId(UUID.randomUUID().toString());
 		method.setName(getModelName());
 		method.setDescription(getDescription());
 		return method;

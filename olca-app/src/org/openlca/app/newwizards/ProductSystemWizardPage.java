@@ -59,7 +59,7 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 	@Override
 	public ProductSystem createModel() {
 		final ProductSystem productSystem = new ProductSystem();
-		productSystem.setId(UUID.randomUUID().toString());
+		productSystem.setRefId(UUID.randomUUID().toString());
 		productSystem.setName(getModelName());
 		productSystem.setDescription(getModelDescription());
 

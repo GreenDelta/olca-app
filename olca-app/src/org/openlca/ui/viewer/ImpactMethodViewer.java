@@ -6,12 +6,12 @@ import java.util.List;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ImpactMethodDao;
+import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ImpactMethodViewer extends
-		AbstractComboViewer<ImpactMethodDescriptor> {
+public class ImpactMethodViewer extends AbstractComboViewer<BaseDescriptor> {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -22,11 +22,11 @@ public class ImpactMethodViewer extends
 
 	public void setInput(IDatabase database) {
 		try {
-			List<ImpactMethodDescriptor> descriptors = new ImpactMethodDao(
+			List<BaseDescriptor> descriptors = new ImpactMethodDao(
 					database.getEntityFactory()).getDescriptors();
 			Collections.sort(descriptors);
-			setInput(descriptors.toArray(new ImpactMethodDescriptor[descriptors
-					.size()]));
+			setInput(descriptors
+					.toArray(new BaseDescriptor[descriptors.size()]));
 		} catch (Exception e) {
 			log.error("Loading impact methods failed", e);
 		}

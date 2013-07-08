@@ -5,14 +5,14 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IWorkbench;
 import org.openlca.core.application.App;
 import org.openlca.core.database.BaseDao;
+import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Category;
-import org.openlca.core.model.RootEntity;
 import org.openlca.core.resources.ImageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-abstract class AbstractWizard<T extends RootEntity> extends Wizard implements
-		INewModelWizard {
+abstract class AbstractWizard<T extends CategorizedEntity> extends Wizard
+		implements INewModelWizard {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private Category category;

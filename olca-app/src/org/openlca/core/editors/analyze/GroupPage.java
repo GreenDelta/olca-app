@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.UUID;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.InputDialog;
@@ -412,7 +411,6 @@ class GroupPage extends FormPage {
 			if (code == Window.CANCEL)
 				return null;
 			ProcessGroupSet set = new ProcessGroupSet();
-			set.setId(UUID.randomUUID().toString());
 			set.setName(dialog.getValue());
 			Database.createDao(ProcessGroupSet.class).insert(set);
 			return set;

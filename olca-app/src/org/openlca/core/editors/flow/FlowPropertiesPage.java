@@ -12,7 +12,6 @@ package org.openlca.core.editors.flow;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.CellEditor;
@@ -153,7 +152,6 @@ public class FlowPropertiesPage extends ModelEditorPage {
 			factor = new FlowPropertyFactor();
 			factor.setConversionFactor(1.0);
 			factor.setFlowProperty(prop);
-			factor.setId(UUID.randomUUID().toString());
 			return factor;
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(getClass());

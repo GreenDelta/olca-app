@@ -146,7 +146,7 @@ public abstract class ModelEditor extends FormEditor implements IEditor {
 		try {
 			ModelEditorInput modelInput = (ModelEditorInput) input;
 			BaseDescriptor descriptor = modelInput.getDescriptor();
-			String id = descriptor.getId();
+			long id = descriptor.getId();
 			Class<?> clazz = descriptor.getModelType().getModelClass();
 			loadModelComponent(clazz, id, input.getName());
 		} catch (Exception e) {
@@ -155,7 +155,7 @@ public abstract class ModelEditor extends FormEditor implements IEditor {
 		}
 	}
 
-	private void loadModelComponent(final Class<?> clazz, final String id,
+	private void loadModelComponent(final Class<?> clazz, final long id,
 			final String name) {
 		log.trace("Load instance (type={}, id={}) from database", clazz, id);
 		try {

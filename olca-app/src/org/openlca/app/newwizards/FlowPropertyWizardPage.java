@@ -8,7 +8,7 @@ import org.openlca.core.application.db.Database;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyType;
 import org.openlca.core.model.UnitGroup;
-import org.openlca.core.model.descriptors.UnitGroupDescriptor;
+import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.resources.ImageType;
 import org.openlca.ui.UI;
 import org.openlca.ui.viewer.FlowPropertyTypeViewer;
@@ -56,9 +56,9 @@ class FlowPropertyWizardPage extends AbstractWizardPage<FlowProperty> {
 	protected void initModifyListeners() {
 		super.initModifyListeners();
 		unitGroupComboViewer
-				.addSelectionChangedListener(new ISelectionChangedListener<UnitGroupDescriptor>() {
+				.addSelectionChangedListener(new ISelectionChangedListener<BaseDescriptor>() {
 					@Override
-					public void selectionChanged(UnitGroupDescriptor selection) {
+					public void selectionChanged(BaseDescriptor selection) {
 						checkInput();
 					}
 				});
@@ -67,7 +67,7 @@ class FlowPropertyWizardPage extends AbstractWizardPage<FlowProperty> {
 	@Override
 	public FlowProperty createModel() {
 		FlowProperty flowProperty = new FlowProperty();
-		flowProperty.setId(UUID.randomUUID().toString());
+		flowProperty.setRefId(UUID.randomUUID().toString());
 		flowProperty.setName(getModelName());
 		flowProperty.setDescription(getModelDescription());
 		try {

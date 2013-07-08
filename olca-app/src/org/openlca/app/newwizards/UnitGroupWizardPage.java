@@ -95,11 +95,11 @@ class UnitGroupWizardPage extends AbstractWizardPage<UnitGroup> {
 
 	public UnitGroup createModel() {
 		UnitGroup unitGroup = new UnitGroup();
-		unitGroup.setId(UUID.randomUUID().toString());
+		unitGroup.setRefId(UUID.randomUUID().toString());
 		unitGroup.setName(getModelName());
 		unitGroup.setDescription(getModelDescription());
 		Unit referenceUnit = new Unit();
-		referenceUnit.setId(UUID.randomUUID().toString());
+		referenceUnit.setRefId(UUID.randomUUID().toString());
 		referenceUnit.setName(referenceUnitText.getText().trim());
 		unitGroup.setReferenceUnit(referenceUnit);
 		unitGroup.getUnits().add(referenceUnit);

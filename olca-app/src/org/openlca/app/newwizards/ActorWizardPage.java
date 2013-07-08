@@ -24,7 +24,7 @@ class ActorWizardPage extends AbstractWizardPage<Actor> {
 	@Override
 	public Actor createModel() {
 		Actor actor = new Actor();
-		actor.setId(UUID.randomUUID().toString());
+		actor.setRefId(UUID.randomUUID().toString());
 		actor.setName(getModelName());
 		actor.setDescription(getModelDescription());
 		return actor;

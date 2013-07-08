@@ -12,8 +12,8 @@ import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessDocumentation;
 import org.openlca.core.model.UnitGroup;
+import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
-import org.openlca.core.model.descriptors.FlowPropertyDescriptor;
 
 /**
  * Controller for the creation of a process from wizard data. The user can
@@ -28,7 +28,7 @@ class ProcessCreationController {
 	private String name;
 	private String description;
 	private boolean createWithProduct;
-	private FlowPropertyDescriptor flowProperty;
+	private BaseDescriptor flowProperty;
 	private FlowDescriptor flow;
 
 	public ProcessCreationController(IDatabase database) {
@@ -47,7 +47,7 @@ class ProcessCreationController {
 		this.createWithProduct = createWithProduct;
 	}
 
-	public void setFlowProperty(FlowPropertyDescriptor flowProperty) {
+	public void setFlowProperty(BaseDescriptor flowProperty) {
 		this.flowProperty = flowProperty;
 	}
 
@@ -68,7 +68,7 @@ class ProcessCreationController {
 			throw new RuntimeException("Invalid arguments for process creation");
 		try {
 			Process process = new Process();
-			process.setId(UUID.randomUUID().toString());
+			process.setRefId(UUID.randomUUID().toString());
 			process.setName(name);
 			process.setDescription(description);
 			Flow flow = getFlow();
@@ -91,7 +91,7 @@ class ProcessCreationController {
 	private Flow createFlow() throws Exception {
 		Flow flow;
 		flow = new Flow();
-		flow.setId(UUID.randomUUID().toString());
+		flow.setRefId(UUID.randomUUID().toString());
 		flow.setName(name);
 		flow.setDescription(description);
 		flow.setFlowType(FlowType.PRODUCT_FLOW);
@@ -99,7 +99,6 @@ class ProcessCreationController {
 				.getForId(flowProperty.getId());
 		flow.setReferenceFlowProperty(property);
 		FlowPropertyFactor factor = new FlowPropertyFactor();
-		factor.setId(UUID.randomUUID().toString());
 		factor.setConversionFactor(1);
 		factor.setFlowProperty(property);
 		flow.getFlowPropertyFactors().add(factor);
@@ -109,8 +108,7 @@ class ProcessCreationController {
 
 	private void addQuantitativeReference(Process process, Flow flow)
 			throws Exception {
-		Exchange qRef = new Exchange(process.getId());
-		qRef.setId(UUID.randomUUID().toString());
+		Exchange qRef = new Exchange();
 		qRef.setFlow(flow);
 		FlowProperty refProp = flow.getReferenceFlowProperty();
 		qRef.setFlowPropertyFactor(flow.getReferenceFactor());

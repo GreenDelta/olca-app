@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openlca.core.application.db.Database;
+import org.openlca.core.database.CategorizedEnitityDao;
 import org.openlca.core.database.CategoryDao;
-import org.openlca.core.database.IRootEntityDao;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
@@ -47,7 +47,7 @@ public class ModelTypeElement extends NavigationElement<ModelType> {
 	private void addModelElements(ModelType type,
 			List<INavigationElement<?>> elements) {
 		try {
-			IRootEntityDao<?> entityDao = Database.createRootDao(type);
+			CategorizedEnitityDao<?> entityDao = Database.createRootDao(type);
 			if (entityDao == null)
 				return;
 			Optional<Category> nil = Optional.absent();

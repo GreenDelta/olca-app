@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.UUID;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -60,7 +59,6 @@ class ProcessCostEntryDialog extends Dialog {
 		this.database = database;
 		this.existingEntries = existingEntries;
 		newEntry = new ProductCostEntry();
-		newEntry.setId(UUID.randomUUID().toString());
 	}
 
 	@Override
@@ -104,7 +102,6 @@ class ProcessCostEntryDialog extends Dialog {
 	private boolean createCostCategory(String newName) {
 		try {
 			CostCategory cat = new CostCategory();
-			cat.setId(UUID.randomUUID().toString());
 			cat.setName(newName);
 			cat.setFix(fix.getSelection());
 			database.createDao(CostCategory.class).insert(cat);

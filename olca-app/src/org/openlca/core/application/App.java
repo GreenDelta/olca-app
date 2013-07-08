@@ -8,8 +8,8 @@ import org.eclipse.osgi.service.datalocation.Location;
 import org.openlca.core.application.plugin.Activator;
 import org.openlca.core.application.plugin.Workspace;
 import org.openlca.core.application.views.ModelEditorInput;
+import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.Descriptors;
 import org.openlca.ui.Editors;
@@ -70,7 +70,7 @@ public class App {
 		return eventBus;
 	}
 
-	public static void openEditor(RootEntity model) {
+	public static void openEditor(CategorizedEntity model) {
 		BaseDescriptor descriptor = Descriptors.toDescriptor(model);
 		openEditor(descriptor);
 	}

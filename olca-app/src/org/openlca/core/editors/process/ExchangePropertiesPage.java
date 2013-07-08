@@ -66,13 +66,10 @@ public class ExchangePropertiesPage extends PropertySheetPage implements
 
 	@Override
 	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-		if (actualSelection != null)
-			actualSelection.removePropertyChangeListener(this);
 		if (selection instanceof IStructuredSelection) {
 			IStructuredSelection sel = (IStructuredSelection) selection;
 			if (sel.getFirstElement() instanceof Exchange) {
 				actualSelection = (Exchange) sel.getFirstElement();
-				actualSelection.addPropertyChangeListener(this);
 			}
 		}
 		super.selectionChanged(part, selection);

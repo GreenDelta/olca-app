@@ -18,7 +18,7 @@ import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.resources.ImageType;
 import org.openlca.ui.CategoryPath;
 import org.openlca.ui.Colors;
@@ -152,12 +152,12 @@ class ExchangeLabelProvider extends ColumnLabelProvider implements
 	}
 
 	private String providerName(Exchange exchange) {
-		String provId = exchange.getDefaultProviderId();
+		Long provId = exchange.getDefaultProviderId();
 		if (provId == null)
 			return null;
 		try {
 			ProcessDao dao = new ProcessDao(database.getEntityFactory());
-			ProcessDescriptor d = dao.getDescriptor(provId);
+			BaseDescriptor d = dao.getDescriptor(provId);
 			if (d == null)
 				return null;
 			return d.getDisplayName();

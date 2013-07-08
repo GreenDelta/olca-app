@@ -103,7 +103,7 @@ public class CreateCategoryAction extends Action implements INavigationAction {
 		name = name.trim();
 		Category category = new Category();
 		category.setName(name);
-		category.setId(UUID.randomUUID().toString());
+		category.setRefId(UUID.randomUUID().toString());
 		category.setModelType(modelType);
 		return category;
 	}

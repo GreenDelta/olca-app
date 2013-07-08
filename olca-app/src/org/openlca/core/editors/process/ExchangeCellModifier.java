@@ -18,7 +18,7 @@ import org.openlca.core.model.FlowType;
 import org.openlca.core.model.UncertaintyDistributionType;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.ui.Labels;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,12 +96,12 @@ class ExchangeCellModifier implements ICellModifier {
 	}
 
 	private int getProviderIndex(Exchange exchange) {
-		String providerId = exchange.getDefaultProviderId();
+		Long providerId = exchange.getDefaultProviderId();
 		if (providerId == null)
 			return -1;
 		ProcessDao dao = new ProcessDao(database.getEntityFactory());
 		try {
-			ProcessDescriptor d = dao.getDescriptor(providerId);
+			BaseDescriptor d = dao.getDescriptor(providerId);
 			if (d == null || d.getName() == null)
 				return -1;
 			ComboBoxCellEditor editor = getComboEditor(ExchangeTable.PROVIDER_COLUMN);
@@ -138,7 +138,7 @@ class ExchangeCellModifier implements ICellModifier {
 			return new String[0];
 		try {
 			FlowDao dao = new FlowDao(database.getEntityFactory());
-			List<ProcessDescriptor> providers = dao.getProviders(flow);
+			List<BaseDescriptor> providers = dao.getProviders(flow);
 			String[] names = new String[providers.size() + 1];
 			names[0] = "";
 			for (int i = 0; i < providers.size(); i++)
@@ -306,14 +306,14 @@ class ExchangeCellModifier implements ICellModifier {
 		String providerName = getStringValue(value,
 				ExchangeTable.PROVIDER_COLUMN);
 		if (providerName == null || providerName.isEmpty()) {
-			exchange.setDefaultProviderId(null);
+			exchange.setDefaultProviderId(0);
 			return;
 		}
 		FlowDao dao = new FlowDao(database.getEntityFactory());
 		try {
-			List<ProcessDescriptor> descriptors = dao.getProviders(exchange
+			List<BaseDescriptor> descriptors = dao.getProviders(exchange
 					.getFlow());
-			for (ProcessDescriptor d : descriptors) {
+			for (BaseDescriptor d : descriptors) {
 				if (providerName.equals(d.getDisplayName())) {
 					exchange.setDefaultProviderId(d.getId());
 					break;

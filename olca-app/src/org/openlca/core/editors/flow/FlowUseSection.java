@@ -18,7 +18,7 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.resources.ImageType;
 import org.openlca.ui.Colors;
 import org.openlca.ui.UI;
@@ -43,8 +43,8 @@ class FlowUseSection {
 
 	public void render(Composite body, FormToolkit toolkit) {
 		log.trace("render flow-use-section for flow {}", flow);
-		List<ProcessDescriptor> recipients = getProcesses(true);
-		List<ProcessDescriptor> providers = getProcesses(false);
+		List<BaseDescriptor> recipients = getProcesses(true);
+		List<BaseDescriptor> providers = getProcesses(false);
 		if (recipients.isEmpty() && providers.isEmpty())
 			return;
 		Section section = UI.section(body, toolkit,
@@ -58,7 +58,7 @@ class FlowUseSection {
 				ImageType.OUTPUT_ICON.get());
 	}
 
-	private List<ProcessDescriptor> getProcesses(boolean forInput) {
+	private List<BaseDescriptor> getProcesses(boolean forInput) {
 		try {
 			FlowDao dao = new FlowDao(database.getEntityFactory());
 			if (forInput)
@@ -70,14 +70,14 @@ class FlowUseSection {
 		}
 	}
 
-	private void renderLinks(String label, List<ProcessDescriptor> descriptors,
+	private void renderLinks(String label, List<BaseDescriptor> descriptors,
 			Image image) {
 		if (descriptors.isEmpty())
 			return;
 		UI.formLabel(parent, toolkit, label);
 		Composite linkComposite = toolkit.createComposite(parent);
 		UI.gridLayout(linkComposite, 1).verticalSpacing = 0;
-		for (ProcessDescriptor d : descriptors) {
+		for (BaseDescriptor d : descriptors) {
 			ImageHyperlink link = new ImageHyperlink(linkComposite, SWT.TOP);
 			link.setText(d.getDisplayName());
 			link.setToolTipText(d.getDisplayInfoText());
@@ -89,9 +89,9 @@ class FlowUseSection {
 
 	private class LinkListener extends HyperlinkAdapter {
 
-		private ProcessDescriptor descriptor;
+		private BaseDescriptor descriptor;
 
-		public LinkListener(ProcessDescriptor descriptor) {
+		public LinkListener(BaseDescriptor descriptor) {
 			this.descriptor = descriptor;
 		}
 

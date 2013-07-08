@@ -9,7 +9,7 @@ import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.FlowType;
-import org.openlca.core.model.descriptors.FlowPropertyDescriptor;
+import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.resources.ImageType;
 import org.openlca.ui.UI;
 import org.openlca.ui.viewer.FlowPropertyViewer;
@@ -57,10 +57,10 @@ class FlowWizardPage extends AbstractWizardPage<Flow> {
 	protected void initModifyListeners() {
 		super.initModifyListeners();
 		referenceFlowPropertyViewer
-				.addSelectionChangedListener(new ISelectionChangedListener<FlowPropertyDescriptor>() {
+				.addSelectionChangedListener(new ISelectionChangedListener<BaseDescriptor>() {
 
 					@Override
-					public void selectionChanged(FlowPropertyDescriptor selected) {
+					public void selectionChanged(BaseDescriptor selected) {
 						checkInput();
 					}
 
@@ -70,7 +70,7 @@ class FlowWizardPage extends AbstractWizardPage<Flow> {
 	@Override
 	public Flow createModel() {
 		Flow flow = new Flow();
-		flow.setId(UUID.randomUUID().toString());
+		flow.setRefId(UUID.randomUUID().toString());
 		flow.setName(getModelName());
 		flow.setDescription(getModelDescription());
 		flow.setFlowType(flowTypeViewer.getSelected());
@@ -80,12 +80,11 @@ class FlowWizardPage extends AbstractWizardPage<Flow> {
 
 	private void addFlowProperty(Flow flow) {
 		try {
-			String id = referenceFlowPropertyViewer.getSelected().getId();
+			long id = referenceFlowPropertyViewer.getSelected().getId();
 			FlowProperty flowProp = Database.createDao(FlowProperty.class)
 					.getForId(id);
 			flow.setReferenceFlowProperty(flowProp);
 			FlowPropertyFactor factor = new FlowPropertyFactor();
-			factor.setId(UUID.randomUUID().toString());
 			factor.setConversionFactor(1);
 			factor.setFlowProperty(flowProp);
 			flow.getFlowPropertyFactors().add(factor);
