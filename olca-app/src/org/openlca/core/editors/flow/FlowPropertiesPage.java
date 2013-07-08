@@ -259,7 +259,6 @@ public class FlowPropertiesPage extends ModelEditorPage {
 			if (element instanceof FlowPropertyFactor) {
 				final FlowPropertyFactor flowPropertyFactor = (FlowPropertyFactor) element;
 				if (property.equals(Messages.Flows_ConversionFactor)) {
-					// set conversion factor
 					Double factor = flowPropertyFactor.getConversionFactor();
 					try {
 						factor = Double.parseDouble(value.toString());
@@ -267,12 +266,9 @@ public class FlowPropertiesPage extends ModelEditorPage {
 					}
 					flowPropertyFactor.setConversionFactor(factor);
 				} else if (property.equals(Messages.Flows_IsReference)) {
-					// set reference flow property
 					flow.setReferenceFlowProperty(flowPropertyFactor
 							.getFlowProperty());
-					final double factor = flowPropertyFactor
-							.getConversionFactor();
-					// for each flow property factor of the flow information
+					double factor = flowPropertyFactor.getConversionFactor();
 					for (final FlowPropertyFactor fpFactor : flow
 							.getFlowPropertyFactors()) {
 						// convert factor to new reference
@@ -283,10 +279,7 @@ public class FlowPropertiesPage extends ModelEditorPage {
 					}
 				}
 			}
-			// refresh table viewer
 			propertyViewer.setInput(flow.getFlowPropertyFactors());
-			propertyViewer.refresh();
-
 		}
 	}
 

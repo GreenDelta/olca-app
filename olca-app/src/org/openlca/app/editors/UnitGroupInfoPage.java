@@ -1,14 +1,4 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
-
-package org.openlca.core.editors.unitgroup;
+package org.openlca.app.editors;
 
 import java.util.UUID;
 
@@ -51,12 +41,6 @@ import org.openlca.ui.dnd.TextDropComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Form page for displaying and editing a unit group object
- * 
- * @author Sebastian Greve
- * 
- */
 public class UnitGroupInfoPage extends ModelEditorInfoPage {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
@@ -238,22 +222,18 @@ public class UnitGroupInfoPage extends ModelEditorInfoPage {
 
 		@Override
 		public void run() {
-			// create unit
 			Unit unit = new Unit();
 			String name = Messages.Units_Unit;
 			int i = 1;
-			// check if exists, if so set new name
 			while (unitGroup.getUnit(name) != null) {
 				name = Messages.Units_Unit + (unitGroup.getUnits().size() + i);
 			}
 			unit.setName(name);
-			unit.setId(UUID.randomUUID().toString());
+			unit.setRefId(UUID.randomUUID().toString());
 			unitGroup.getUnits().add(unit);
 			if (unitGroup.getUnits().size() == 1) {
 				unitGroup.setReferenceUnit(unit);
 			}
-
-			// refresh table viewer
 			unitsTableViewer.setInput(unitGroup.getUnits());
 			unitsTableViewer.setSelection(new StructuredSelection(unit));
 		}

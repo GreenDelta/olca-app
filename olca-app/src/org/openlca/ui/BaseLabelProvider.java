@@ -10,13 +10,10 @@
 
 package org.openlca.ui;
 
-import org.apache.commons.lang3.text.WordUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
-import org.openlca.core.application.Messages;
 import org.openlca.core.model.AllocationMethod;
-import org.openlca.core.model.Category;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowPropertyFactor;
@@ -32,12 +29,8 @@ import org.openlca.core.model.UncertaintyDistributionType;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.util.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class BaseLabelProvider extends ColumnLabelProvider {
-
-	private Logger log = LoggerFactory.getLogger(this.getClass());
 
 	@Override
 	public Image getImage(Object element) {
@@ -115,52 +108,9 @@ public class BaseLabelProvider extends ColumnLabelProvider {
 
 	@Override
 	public String getToolTipText(Object element) {
-		return getToolTipText2(element);
-	}
-
-	private String getToolTipText2(Object element) {
-		if (!(element instanceof RootEntity))
-			return null;
-		RootEntity component = (RootEntity) element;
-		String name = component.getName();
-		String text = name == null ? "" : name + "\n";
-
-		text = addLocationAndType(component, text);
-
-		try {
-			Category category = component.getCategory();
-			if (category != null)
-				text += Messages.Category + ": "
-						+ CategoryPath.getShort(category);
-		} catch (Exception e) {
-			log.error("Loading category failed", e);
-		}
-
-		String description = component.getDescription();
-		if (description != null)
-			text += "\n" + Messages.Description + ": "
-					+ WordUtils.wrap(description, 65, "\n", false);
-
-		return text;
-	}
-
-	private String addLocationAndType(RootEntity component, String text) {
-		Location location = null;
-		String type = null;
-		if (component instanceof Process) {
-			Process p = (Process) component;
-			location = p.getLocation();
-			if (p.getProcessType() != null)
-				type = Labels.processType(p);
-		} else if (component instanceof Flow) {
-			Flow f = (Flow) component;
-			location = f.getLocation();
-		}
-		if (type != null)
-			text += type + "\n";
-		if (location != null)
-			text += Messages.Common_Location + ": " + location.getName() + "\n";
-		return text;
+		if (element instanceof BaseDescriptor)
+			return ((BaseDescriptor) element).getDisplayInfoText();
+		return null;
 	}
 
 	@Override

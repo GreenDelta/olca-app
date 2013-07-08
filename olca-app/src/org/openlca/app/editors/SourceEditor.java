@@ -1,4 +1,4 @@
-package org.openlca.core.editors.source;
+package org.openlca.app.editors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;

@@ -1,4 +1,4 @@
-package org.openlca.core.editors.unitgroup;
+package org.openlca.app.editors;
 
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITableFontProvider;

@@ -1,4 +1,4 @@
-package org.openlca.core.editors.unitgroup;
+package org.openlca.app.editors;
 
 import org.openlca.core.editors.ModelEditor;
 import org.openlca.core.editors.ModelEditorPage;

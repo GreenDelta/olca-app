@@ -315,7 +315,9 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 			UnitMappingEntry entry = unitMapping.getEntry(unitName);
 			UnitGroup unitGroup = entry.getUnitGroup();
 			if (unitGroup.getUnit(unitName) == null) {
-				Unit unit = new Unit(UUID.randomUUID().toString(), unitName);
+				Unit unit = new Unit();
+				unit.setName(unitName);
+				unit.setRefId(UUID.randomUUID().toString());
 				unit.setConversionFactor(unitMapping
 						.getConversionFactor(unitName));
 				unitGroup.getUnits().add(unit);

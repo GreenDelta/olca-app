@@ -7,7 +7,7 @@
  * Contributors: GreenDeltaTC - initial API and implementation
  * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
  ******************************************************************************/
-package org.openlca.core.editors.flowproperty;
+package org.openlca.app.editors;
 
 import org.openlca.core.editors.ModelEditor;
 import org.openlca.core.editors.ModelEditorPage;

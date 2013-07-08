@@ -9,28 +9,28 @@
 	<extension
          point="org.eclipse.ui.editors">
       <editor
-            class="org.openlca.core.editors.actor.ActorEditor"
+            class="org.openlca.app.editors.ActorEditor"
             default="false"
             icon="icons/actor_obj.png"
             id="ActorEditor"
             name="%editor.name">
       </editor>
       <editor
-            class="org.openlca.core.editors.source.SourceEditor"
+            class="org.openlca.app.editors.SourceEditor"
             default="false"
             icon="icons/source_obj.png"
             id="SourceEditor"
             name="%editor.name.0">
       </editor>
       <editor
-            class="org.openlca.core.editors.unitgroup.UnitGroupEditor"
+            class="org.openlca.app.editors.UnitGroupEditor"
             default="false"
             icon="icons/unitgroup_obj.gif"
             id="UnitGroupEditor"
             name="%editor.name.1">
       </editor>
       <editor
-            class="org.openlca.core.editors.flowproperty.FlowPropertyEditor"
+            class="org.openlca.app.editors.FlowPropertyEditor"
             default="false"
             icon="icons/flowprop_obj.gif"
             id="FlowPropertyEditor"
@@ -220,11 +220,6 @@
             class="org.openlca.core.application.preferencepages.DatabaseParametersPage"
             id="org.openlca.core.application.preferencepages.DatabaseParametersPreferencePage"
             name="%page.name.1">
-      </page>
-      <page
-            class="org.openlca.core.application.preferencepages.CalculationPreferencePage"
-            id="org.openlca.core.application.preferencepages.CalculationPreferencePage"
-            name="%page.name.3">
       </page>
       <page
             class="org.openlca.core.application.logging.LoggerConfigPage"
@@ -441,18 +436,6 @@
             class="org.openlca.app.navigation.filters.WasteFlowFilter"
             id="org.openlca.core.application.views.navigator.filter.WasteFlowFilter"
             name="%commonFilter.name.2">
-      </commonFilter>
-      <commonFilter
-            activeByDefault="false"
-            class="org.openlca.app.navigation.filters.UnitProcessFilter"
-            id="org.openlca.core.application.views.navigator.filter.UnitProcessFilter"
-            name="%commonFilter.name.3">
-      </commonFilter>
-      <commonFilter
-            activeByDefault="false"
-            class="org.openlca.app.navigation.filters.SystemProcessFilter"
-            id="org.openlca.core.application.views.navigator.filter.SystemProcessFilter"
-            name="%commonFilter.name.4">
       </commonFilter>
    </extension>
    <extension

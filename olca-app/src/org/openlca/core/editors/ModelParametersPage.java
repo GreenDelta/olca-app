@@ -11,7 +11,6 @@ package org.openlca.core.editors;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.UUID;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -173,10 +172,9 @@ public class ModelParametersPage extends ModelEditorPage implements
 		@Override
 		public void run() {
 			// create parameter
-			final Parameter parameter = new Parameter(UUID.randomUUID()
-					.toString(),
+			final Parameter parameter = new Parameter(
 					new Expression("1", 1), ParameterType.getTypeFor(component //$NON-NLS-1$
-							.getClass()), ((RootEntity) component).getId());
+							.getClass()), ((RootEntity) component).getRefId());
 			String name = "p" + component.getParameters().size(); //$NON-NLS-1$
 			int i = 1;
 			while (parameterExists(name) != null) {

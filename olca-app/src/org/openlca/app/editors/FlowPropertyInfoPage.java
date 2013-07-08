@@ -8,7 +8,7 @@
  * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
  ******************************************************************************/
 
-package org.openlca.core.editors.flowproperty;
+package org.openlca.app.editors;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
