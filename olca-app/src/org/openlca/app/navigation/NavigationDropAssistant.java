@@ -67,24 +67,23 @@ public class NavigationDropAssistant extends CommonDropAdapterAssistant {
 			// for each selected object
 			for (final Object o : selection.toArray()) {
 				// if model component or category element
-				if (o instanceof ModelElement
-						|| o instanceof CategoryElement) {
+				if (o instanceof ModelElement || o instanceof CategoryElement) {
 					elements.add((INavigationElement) o);
 				}
 			}
 			if (operation == DND.DROP_COPY) {
 				// copy
-				CopyPasteManager.getInstance()
-						.copy(elements.toArray(new INavigationElement[elements
-								.size()]));
+				// CopyPasteManager.getInstance()
+				// .copy(elements.toArray(new INavigationElement[elements
+				// .size()]));
 			} else {
 				// cut
-				CopyPasteManager.getInstance()
-						.cut(elements.toArray(new INavigationElement[elements
-								.size()]));
+				// CopyPasteManager.getInstance()
+				// .cut(elements.toArray(new INavigationElement[elements
+				// .size()]));
 			}
 			// paste
-			CopyPasteManager.getInstance().paste(targetElement);
+			// CopyPasteManager.getInstance().paste(targetElement);
 		}
 		return null;
 	}

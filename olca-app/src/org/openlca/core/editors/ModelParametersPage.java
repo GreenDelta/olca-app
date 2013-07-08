@@ -14,7 +14,6 @@ import java.beans.PropertyChangeListener;
 import java.util.UUID;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
@@ -28,8 +27,6 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.core.application.Messages;
 import org.openlca.core.application.actions.DeleteWithQuestionAction;
-import org.openlca.core.application.evaluation.EvaluationListener;
-import org.openlca.core.math.FormulaParseException;
 import org.openlca.core.model.Expression;
 import org.openlca.core.model.IParameterisable;
 import org.openlca.core.model.Parameter;
@@ -39,15 +36,13 @@ import org.openlca.core.resources.ImageType;
 import org.openlca.ui.UI;
 import org.openlca.ui.UIFactory;
 
-import com.google.common.base.Objects;
-
 /**
  * Abstract form page for editing parameters of a parameterizable object
  * 
  * @author Sebastian Greve
  */
 public class ModelParametersPage extends ModelEditorPage implements
-		EvaluationListener, PropertyChangeListener {
+		PropertyChangeListener {
 
 	private final IParameterisable component;
 	private final String formText;
@@ -139,32 +134,6 @@ public class ModelParametersPage extends ModelEditorPage implements
 	@Override
 	protected void setData() {
 		parameterViewer.setInput(component.getParameters());
-	}
-
-	@Override
-	public void error(FormulaParseException exception) {
-		if (messageManager == null)
-			return;
-		boolean belongsToThePage = false;
-		for (Parameter p : component.getParameters()) {
-			if (Objects.equal(p.getId(), exception.getTriggerId())) {
-				belongsToThePage = true;
-				break;
-			}
-		}
-		if (belongsToThePage) {
-			messageManager.addMessage(exception.toString(),
-					exception.getMessage(), parameterViewer,
-					IMessageProvider.ERROR);
-		}
-	}
-
-	@Override
-	public void evaluated() {
-		if (parameterViewer != null) {
-			messageManager.removeAllMessages();
-			parameterViewer.refresh();
-		}
 	}
 
 	@Override

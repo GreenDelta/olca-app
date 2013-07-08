@@ -10,8 +10,6 @@
 
 package org.openlca.core.editors.process;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
@@ -20,7 +18,6 @@ import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
@@ -32,16 +29,11 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.core.application.App;
 import org.openlca.core.application.Messages;
 import org.openlca.core.application.db.Database;
-import org.openlca.core.application.evaluation.EvaluationListener;
 import org.openlca.core.editors.PropertyProviderPage;
-import org.openlca.core.math.FormulaParseException;
-import org.openlca.core.model.AllocationFactor;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.Exchange;
-import org.openlca.core.model.Flow;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.resources.ImageType;
 import org.openlca.ui.SelectObjectDialog;
@@ -59,8 +51,7 @@ import org.slf4j.LoggerFactory;
  * @author Sebastian Greve
  * 
  */
-public class ExchangePage extends PropertyProviderPage implements
-		EvaluationListener, PropertyChangeListener {
+public class ExchangePage extends PropertyProviderPage {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -111,42 +102,44 @@ public class ExchangePage extends PropertyProviderPage implements
 
 	private void addExchanges(long[] flowIds, boolean input) {
 		Exchange[] exchanges = new Exchange[flowIds.length];
-		for (int i = 0; i < flowIds.length; i++) {
-			if (!process.contains(flowIds[i], input)) {
-				Flow flow = null;
-				UnitGroup unitGroup = null;
-				try {
-					flow = Database.createDao(Flow.class).getForId(flowIds[i]);
-					unitGroup = flow.getReferenceFlowProperty().getUnitGroup();
-				} catch (final Exception e) {
-					log.error(
-							"Loading flow, flow information and unit group from db failed",
-							e);
-				}
-				if (unitGroup != null) {
-					Exchange exchange = new Exchange();
-					exchange.setFlow(flow);
-					exchange.setFlowPropertyFactor(flow.getReferenceFactor());
-					exchange.setUnit(unitGroup.getReferenceUnit());
-					exchange.setInput(input);
-					exchanges[i] = exchange;
-					process.getExchanges().add(exchange);
-				}
-			}
-		}
-		ExchangeTable.setInput(process, inputViewer, outputViewer);
-		if (input)
-			inputViewer.setSelection(new StructuredSelection(exchanges));
-		else
-			outputViewer.setSelection(new StructuredSelection(exchanges));
 
-		// check allocation
-		final String text = checkAllocation();
-		messageManager.removeMessage("allocationMethod");
-		if (text != null) {
-			messageManager.addMessage("allocationMethod", text, null,
-					IMessageProvider.WARNING);
-		}
+		// TODO: add exchanges for flows
+		// for (int i = 0; i < flowIds.length; i++) {
+		// if (!process.contains(flowIds[i], input)) {
+		// Flow flow = null;
+		// UnitGroup unitGroup = null;
+		// try {
+		// flow = Database.createDao(Flow.class).getForId(flowIds[i]);
+		// unitGroup = flow.getReferenceFlowProperty().getUnitGroup();
+		// } catch (final Exception e) {
+		// log.error(
+		// "Loading flow, flow information and unit group from db failed",
+		// e);
+		// }
+		// if (unitGroup != null) {
+		// Exchange exchange = new Exchange();
+		// exchange.setFlow(flow);
+		// exchange.setFlowPropertyFactor(flow.getReferenceFactor());
+		// exchange.setUnit(unitGroup.getReferenceUnit());
+		// exchange.setInput(input);
+		// exchanges[i] = exchange;
+		// process.getExchanges().add(exchange);
+		// }
+		// }
+		// }
+		// ExchangeTable.setInput(process, inputViewer, outputViewer);
+		// if (input)
+		// inputViewer.setSelection(new StructuredSelection(exchanges));
+		// else
+		// outputViewer.setSelection(new StructuredSelection(exchanges));
+		//
+		// // check allocation
+		// final String text = checkAllocation();
+		// messageManager.removeMessage("allocationMethod");
+		// if (text != null) {
+		// messageManager.addMessage("allocationMethod", text, null,
+		// IMessageProvider.WARNING);
+		// }
 	}
 
 	private void createInputTableViewer(Composite parent, FormToolkit toolkit) {
@@ -424,85 +417,16 @@ public class ExchangePage extends PropertyProviderPage implements
 		allocationViewer.select(process.getAllocationMethod());
 	}
 
-	@Override
-	public void error(final FormulaParseException exception) {
-		if (messageManager != null) {
-			messageManager.addMessage(exception.toString(),
-					exception.getMessage(), null, IMessageProvider.ERROR);
-		}
-	}
-
-	@Override
-	public void evaluated() {
-		if (inputViewer != null && outputViewer != null) {
-			messageManager.removeAllMessages();
-			inputViewer.refresh();
-			outputViewer.refresh();
-		}
-	}
-
-	@Override
-	public void propertyChange(final PropertyChangeEvent evt) {
-		if (evt.getNewValue() instanceof AllocationFactor
-				|| evt.getSource() instanceof AllocationFactor) {
-			if (process.getAllocationMethod() == AllocationMethod.Causal) {
-				final String text = checkAllocation();
-				messageManager.removeMessage("allocationMethod");
-				if (text != null) {
-					messageManager.addMessage("allocationMethod", text, null,
-							IMessageProvider.WARNING);
-				}
-			}
-		} else if (evt.getPropertyName().equals("quantitativeReference")
-				|| evt.getPropertyName().equals("value")
-				|| evt.getPropertyName().equals("pedigreeUncertainty")
-				|| evt.getPropertyName().equals("baseUncertainty")) {
-			if (inputViewer != null) {
-				inputViewer.refresh();
-			}
-			if (outputViewer != null) {
-				outputViewer.refresh();
-			}
-		}
-	}
-
-	/**
-	 * Adds an exchange object to this process
-	 * 
-	 * @see Action
-	 */
 	private class AddExchangeAction extends Action {
 
-		/**
-		 * The id of the action
-		 */
-		public static final String ID = "org.openlca.core.editors.process.InputOutputPage.AddExchangeAction";
+		private boolean input;
 
-		/**
-		 * Indicates if the new exchange should be an input or output
-		 */
-		private final boolean input;
-
-		/**
-		 * The text of the action
-		 */
-		public String TEXT;
-
-		/**
-		 * Creates a new AddExchangeAction and sets the ID, TEXT and
-		 * ImageDescriptor
-		 * 
-		 * @param input
-		 *            Indicates if the new exchange should be an input or output
-		 */
-		public AddExchangeAction(final boolean input) {
-			setId(ID);
+		public AddExchangeAction(boolean input) {
 			if (input) {
-				TEXT = Messages.Processes_AddInputText;
+				setText(Messages.Processes_AddInputText);
 			} else {
-				TEXT = Messages.Processes_AddOutputText;
+				setText(Messages.Processes_AddOutputText);
 			}
-			setText(TEXT);
 			setImageDescriptor(ImageType.ADD_ICON.getDescriptor());
 			setDisabledImageDescriptor(ImageType.ADD_ICON_DISABLED
 					.getDescriptor());

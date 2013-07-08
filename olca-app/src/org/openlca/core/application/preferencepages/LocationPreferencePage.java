@@ -1,16 +1,6 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.core.application.preferencepages;
 
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -61,17 +51,8 @@ import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Preference page for locations
- * 
- * @see PreferencePage
- * @see IWorkbenchPreferencePage
- * 
- * @author Sebastian Greve
- * 
- */
-public class LocationPreferencePage extends AbstractDatabasePreferencePage
-		implements PropertyChangeListener {
+public class LocationPreferencePage extends PreferencePage implements
+		IWorkbenchPreferencePage {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -111,8 +92,6 @@ public class LocationPreferencePage extends AbstractDatabasePreferencePage
 	protected Control createContents(final Composite parent) {
 		final Composite body = new Composite(parent, SWT.NONE);
 		body.setLayout(new GridLayout());
-
-		super.createContents(body);
 
 		// create section for the location viewer
 		final Section section = new Section(body, ExpandableComposite.NO_TITLE);
@@ -196,7 +175,6 @@ public class LocationPreferencePage extends AbstractDatabasePreferencePage
 			List<Location> objs = database.createDao(Location.class).getAll();
 			locations.clear();
 			for (Location l : objs) {
-				l.addPropertyChangeListener(LocationPreferencePage.this);
 				locations.add(l);
 			}
 			locationViewer.setInput(locations.toArray(new Location[locations

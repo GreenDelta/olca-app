@@ -15,13 +15,8 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.openlca.core.application.Messages;
-import org.openlca.core.application.db.Database;
-import org.openlca.core.application.evaluation.EvaluationController;
-import org.openlca.core.application.evaluation.EvaluationListener;
-import org.openlca.core.math.FormulaParseException;
 import org.openlca.core.model.IParameterisable;
 import org.openlca.core.model.Parameter;
-import org.openlca.ui.Error;
 import org.openlca.ui.UI;
 
 /**
@@ -30,11 +25,9 @@ import org.openlca.ui.UI;
  * @author sg
  * 
  */
-public abstract class ParameterizableModelEditor extends ModelEditor implements
-		EvaluationListener {
+public abstract class ParameterizableModelEditor extends ModelEditor {
 
 	private final String componentTypeName;
-	private EvaluationController evaluationController;
 	private boolean parameterErrors = false;
 	private ModelParametersPage parametersPage;
 
@@ -46,8 +39,6 @@ public abstract class ParameterizableModelEditor extends ModelEditor implements
 	protected void addPages() {
 		super.addPages();
 		parametersPage = new ModelParametersPage(this, componentTypeName);
-		getEvaluationController().addEvaluationListener(parametersPage);
-		getEvaluationController().addEvaluationListener(this);
 		try {
 			addPage(parametersPage);
 		} catch (final PartInitException e) {
@@ -56,18 +47,9 @@ public abstract class ParameterizableModelEditor extends ModelEditor implements
 	}
 
 	protected void initEvaluationController() {
-		evaluationController = new EvaluationController(Database.get());
 		IParameterisable component = (IParameterisable) getModelComponent();
 		for (Parameter parameter : component.getParameters()) {
-			getEvaluationController().registerParameter(parameter);
 		}
-	}
-
-	@Override
-	public void dispose() {
-		getEvaluationController().removeEvaluationListener(this);
-		getEvaluationController().removeEvaluationListener(parametersPage);
-		super.dispose();
 	}
 
 	@Override
@@ -78,21 +60,6 @@ public abstract class ParameterizableModelEditor extends ModelEditor implements
 			MessageDialog.openError(UI.shell(), Messages.CannotSave,
 					Messages.ErrorText);
 		}
-	}
-
-	@Override
-	public void error(FormulaParseException exception) {
-		Error.showPopup("Parameter evaluation failed.", exception.getMessage());
-		parameterErrors = true;
-	}
-
-	@Override
-	public void evaluated() {
-		parameterErrors = false;
-	}
-
-	public EvaluationController getEvaluationController() {
-		return evaluationController;
 	}
 
 	@Override
@@ -107,7 +74,6 @@ public abstract class ParameterizableModelEditor extends ModelEditor implements
 	 */
 	public void udpateExpressions() {
 		initEvaluationController();
-		evaluationController.evaluate();
 	}
 
 }

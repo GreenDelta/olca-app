@@ -55,70 +55,23 @@ public abstract class UnitMappingPage extends WizardPage {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
-	/**
-	 * String for the 'conversion factor' property
-	 */
-	private final String CONVERSION_FACTOR = Phrases.ConversionFactor;
-
-	/**
-	 * String for the 'flow property' property
-	 */
-	private final String FLOW_PROPERTY = Phrases.FlowProperty;
-
-	/**
-	 * List of flow properties
-	 */
-	private final List<FlowProperty> flowProperties = new ArrayList<>();
-
-	/**
-	 * The flow Property cell editor
-	 */
-	private ComboBoxCellEditor flowPropertyCellEditor;
-
-	/**
-	 * To check if something has changed (used by getControl())
-	 */
-	private File[] lastFiles = new File[0];
-
-	/**
-	 * String for the 'reference unit' property
-	 */
 	private final String REFERENCE_UNIT = Phrases.ReferenceUnit;
-
-	/**
-	 * String for the 'unit' property
-	 */
+	private final String CONVERSION_FACTOR = Phrases.ConversionFactor;
+	private final String FLOW_PROPERTY = Phrases.FlowProperty;
 	private final String UNIT = Phrases.Unit;
-
-	/**
-	 * String for the 'unit group' property
-	 */
 	private final String UNIT_GROUP = Phrases.UnitGroup;
-
-	/**
-	 * Properties of the table viewer
-	 */
 	private final String[] PROPERTIES = new String[] { UNIT, FLOW_PROPERTY,
 			UNIT_GROUP, REFERENCE_UNIT, CONVERSION_FACTOR };
 
-	/**
-	 * The viewer to display and edit the mappings
-	 */
+	private final List<FlowProperty> flowProperties = new ArrayList<>();
+	private ComboBoxCellEditor flowPropertyCellEditor;
+	private File[] lastFiles = new File[0];
+
 	private TableViewer tableViewer;
 
-	/**
-	 * List of available unit groups
-	 */
 	private final Map<String, UnitGroup> unitGroups = new HashMap<>();
-
-	/**
-	 * The unit mapping object
-	 */
 	private final UnitMapping unitMapping = new UnitMapping();
 
-	/**
-	 * Creates a new instance
-	 */
 	public UnitMappingPage() {
 		super("UnitMappingPage");
 		setTitle(Messages.UnitMappingPage_Title);
@@ -126,9 +79,6 @@ public abstract class UnitMappingPage extends WizardPage {
 		setPageComplete(false);
 	}
 
-	/**
-	 * Checks if all units are mapped. If so sets the page completed
-	 */
 	private void checkCompletion() {
 		boolean isCompleted = true;
 		final String[] unitNames = unitMapping.getUnits();
@@ -144,20 +94,13 @@ public abstract class UnitMappingPage extends WizardPage {
 		setPageComplete(isCompleted);
 	}
 
-	/**
-	 * Tries to map the unit names to existing units
-	 * 
-	 * @param unitNames
-	 *            the unit names to be mapped
-	 */
-	private void setUnits(final String[] unitNames) {
+	private void setUnits(String[] unitNames) {
 		final Input[] input = new Input[unitNames.length];
 		for (int i = 0; i < unitNames.length; i++) {
 			input[i] = new Input(unitNames[i]);
-			for (final FlowProperty flowProperty : flowProperties) {
-				final Unit unit = unitGroups.get(
-						flowProperty.getUnitGroup().getId()).getUnit(
-						unitNames[i]);
+			for (FlowProperty flowProperty : flowProperties) {
+				Unit unit = unitGroups.get(flowProperty.getUnitGroup().getId())
+						.getUnit(unitNames[i]);
 				if (unit != null) {
 					input[i].setFlowProperty(flowProperty);
 					input[i].setConversionFactor(unit.getConversionFactor());

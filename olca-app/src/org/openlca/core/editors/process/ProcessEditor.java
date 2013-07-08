@@ -64,18 +64,11 @@ public class ProcessEditor extends ParameterizableModelEditorWithPropertyPage {
 	@Override
 	protected ModelEditorPage[] initPages() {
 		inputOutputPage = new ExchangePage(this);
-		getEvaluationController().addEvaluationListener(inputOutputPage);
 		ioPageIndex = 1;
 		return new ModelEditorPage[] { new ProcessInfoPage(this),
 				inputOutputPage,
 				new AdminInfoPage(this, (Process) getModelComponent()),
 				new ModelingAndValidationPage(this) };
-	}
-
-	@Override
-	public void dispose() {
-		getEvaluationController().removeEvaluationListener(inputOutputPage);
-		super.dispose();
 	}
 
 	@Override
