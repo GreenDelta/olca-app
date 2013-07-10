@@ -33,8 +33,8 @@ import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
+import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.ui.Labels;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +49,7 @@ public class SystemExport {
 
 	private ProductSystem productSystem;
 	private AllocationMethod allocationMethod;
-	private ImpactMethodDescriptor impactMethod;
+	private BaseDescriptor impactMethod;
 
 	private FlowInfoDao flowInfoDao;
 	private ProductInfoDao productInfoDao;
@@ -62,7 +62,7 @@ public class SystemExport {
 
 	public SystemExport(ProductSystem productSystem, IDatabase database,
 			AllocationMethod allocationMethod,
-			ImpactMethodDescriptor impactMethodDescriptor) {
+			BaseDescriptor impactMethodDescriptor) {
 		this.productSystem = productSystem;
 		this.databaseName = database.getName();
 
@@ -178,7 +178,7 @@ public class SystemExport {
 		currentRow++;
 
 		String name = productSystem.getName();
-		int processes = productSystem.getProcesses().length;
+		int processes = productSystem.getProcesses().size();
 		int products = inventoryMatrix.getProductIndex().size();
 		String dimensions = products + "x" + products;
 
@@ -625,7 +625,7 @@ public class SystemExport {
 			case HEADERS.IMPACT_CATEGORY.CATEGORY:
 				return impactCategory.getName();
 			case HEADERS.IMPACT_CATEGORY.UUID:
-				return impactCategory.getId();
+				return impactCategory.getRefId();
 			case HEADERS.IMPACT_CATEGORY.METHOD:
 				return methodName;
 			case HEADERS.IMPACT_CATEGORY.UNIT:

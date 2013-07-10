@@ -19,7 +19,7 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.editors.io.SystemExport;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
+import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.resources.ImageType;
 import org.openlca.ui.UI;
 import org.openlca.ui.viewer.AllocationMethodViewer;
@@ -90,7 +90,7 @@ public class SystemExportDialog extends WizardDialog {
 				return allocationMethodViewer.getSelected();
 			}
 
-			private ImpactMethodDescriptor getImpactMethod() {
+			private BaseDescriptor getImpactMethod() {
 				return impactMethodViewer.getSelected();
 			}
 
@@ -120,7 +120,7 @@ public class SystemExportDialog extends WizardDialog {
 		public boolean performFinish() {
 			boolean errorOccured = false;
 			final AllocationMethod allocation = page.getAllocationMethod();
-			final ImpactMethodDescriptor impactMethod = page.getImpactMethod();
+			final BaseDescriptor impactMethod = page.getImpactMethod();
 			final File directory = page.getDirectory();
 			try {
 				getContainer().run(true, true, new IRunnableWithProgress() {
