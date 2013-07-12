@@ -3,9 +3,9 @@ package org.openlca.core.editors.model;
 import java.util.List;
 
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.model.LCIACategory;
-import org.openlca.core.model.LCIAFactor;
-import org.openlca.core.model.LCIAMethod;
+import org.openlca.core.model.ImpactCategory;
+import org.openlca.core.model.ImpactFactor;
+import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.descriptors.Descriptors;
 import org.slf4j.Logger;
@@ -20,11 +20,11 @@ import org.slf4j.LoggerFactory;
 public class LocalisedMethodBuilder {
 
 	private IDatabase database;
-	private LCIAMethod method;
+	private ImpactMethod method;
 	private Location defaultLocation;
 	private FlowInfoDao flowInfoDao;
 
-	public LocalisedMethodBuilder(LCIAMethod method, IDatabase database) {
+	public LocalisedMethodBuilder(ImpactMethod method, IDatabase database) {
 		this.method = method;
 		this.database = database;
 		this.flowInfoDao = new FlowInfoDao(database);
@@ -75,7 +75,7 @@ public class LocalisedMethodBuilder {
 	}
 
 	private void addCategories(LocalisedImpactMethod locMethod) {
-		for (LCIACategory category : method.getLCIACategories()) {
+		for (ImpactCategory category : method.getLCIACategories()) {
 			LocalisedImpactCategory locCategory = new LocalisedImpactCategory();
 			locMethod.getImpactCategories().add(locCategory);
 			locCategory.setImpactCategory(Descriptors.toDescriptor(category));
@@ -85,9 +85,9 @@ public class LocalisedMethodBuilder {
 		}
 	}
 
-	private void addFactors(LCIACategory category,
+	private void addFactors(ImpactCategory category,
 			LocalisedImpactCategory locCategory) {
-		for (LCIAFactor factor : category.getLCIAFactors()) {
+		for (ImpactFactor factor : category.getImpactFactors()) {
 			LocalisedImpactFactor locFactor = new LocalisedImpactFactor();
 			locCategory.getFactors().add(locFactor);
 			FlowInfo flow = flowInfoDao.fromFlow(factor.getFlow());

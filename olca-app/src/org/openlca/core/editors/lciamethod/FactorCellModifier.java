@@ -7,7 +7,7 @@ import org.eclipse.swt.widgets.Item;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowPropertyFactor;
-import org.openlca.core.model.LCIAFactor;
+import org.openlca.core.model.ImpactFactor;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
 import org.slf4j.Logger;
@@ -26,15 +26,14 @@ class FactorCellModifier implements ICellModifier {
 		this.viewer = viewer;
 	}
 
-	private void updateCellEditors(final LCIAFactor factor) {
+	private void updateCellEditors(final ImpactFactor factor) {
 		Flow flow = factor.getFlow();
 		UnitGroup unitGroup = null;
 
 		// load flow information and unit group
 		try {
-			unitGroup = database
-					.select(UnitGroup.class, factor.getFlowPropertyFactor()
-							.getFlowProperty().getUnitGroupId());
+			unitGroup = factor.getFlowPropertyFactor().getFlowProperty()
+					.getUnitGroup();
 		} catch (final Exception e) {
 			log.error(
 					"Loading flow information and unit group from database failed",
@@ -43,17 +42,17 @@ class FactorCellModifier implements ICellModifier {
 
 		if (unitGroup != null) {
 			// update cell editors
-			flowPropertyNames = new String[flow.getFlowPropertyFactors().length];
-			for (int i = 0; i < flow.getFlowPropertyFactors().length; i++) {
-				flowPropertyNames[i] = flow.getFlowPropertyFactors()[i]
+			flowPropertyNames = new String[flow.getFlowPropertyFactors().size()];
+			for (int i = 0; i < flow.getFlowPropertyFactors().size(); i++) {
+				flowPropertyNames[i] = flow.getFlowPropertyFactors().get(i)
 						.getFlowProperty().getName();
 			}
 			((ComboBoxCellEditor) viewer.getCellEditors()[2])
 					.setItems(flowPropertyNames);
 
-			unitNames = new String[unitGroup.getUnits().length];
+			unitNames = new String[unitGroup.getUnits().size()];
 			for (int i = 0; i < unitNames.length; i++) {
-				unitNames[i] = unitGroup.getUnits()[i].getName();
+				unitNames[i] = unitGroup.getUnits().get(i).getName();
 			}
 			((ComboBoxCellEditor) viewer.getCellEditors()[3])
 					.setItems(unitNames);
@@ -75,8 +74,8 @@ class FactorCellModifier implements ICellModifier {
 	@Override
 	public Object getValue(final Object element, final String property) {
 		Object v = null;
-		if (element instanceof LCIAFactor) {
-			final LCIAFactor factor = (LCIAFactor) element;
+		if (element instanceof ImpactFactor) {
+			final ImpactFactor factor = (ImpactFactor) element;
 			// update the cell editors
 			updateCellEditors(factor);
 			if (property.equals(FactorTable.PROPERTY)) {
@@ -117,27 +116,24 @@ class FactorCellModifier implements ICellModifier {
 			element = ((Item) element).getData();
 		}
 		try {
-			if (element instanceof LCIAFactor) {
-				final LCIAFactor factor = (LCIAFactor) element;
+			if (element instanceof ImpactFactor) {
+				final ImpactFactor factor = (ImpactFactor) element;
 				Flow flow = factor.getFlow();
 				if (property.equals(FactorTable.PROPERTY)) {
 					// set flow property
 					boolean set = false;
 					int i = 0;
-					while (!set && i < flow.getFlowPropertyFactors().length) {
+					while (!set && i < flow.getFlowPropertyFactors().size()) {
 						final FlowPropertyFactor flowPropertyFactor = flow
-								.getFlowPropertyFactors()[i];
+								.getFlowPropertyFactors().get(i);
 						if (flowPropertyFactor
 								.getFlowProperty()
 								.getName()
 								.equals(flowPropertyNames[Integer
 										.parseInt(value.toString())])) {
 							factor.setFlowPropertyFactor(flowPropertyFactor);
-							factor.setUnit(database.select(
-									UnitGroup.class,
-									flowPropertyFactor.getFlowProperty()
-											.getUnitGroupId())
-									.getReferenceUnit());
+							factor.setUnit(flowPropertyFactor.getFlowProperty()
+									.getUnitGroup().getReferenceUnit());
 							set = true;
 						} else {
 							i++;
@@ -147,10 +143,9 @@ class FactorCellModifier implements ICellModifier {
 					// set unit
 					boolean set = false;
 					int i = 0;
-					final Unit[] units = database.select(
-							UnitGroup.class,
-							factor.getFlowPropertyFactor().getFlowProperty()
-									.getUnitGroupId()).getUnits();
+					final Unit[] units = factor.getFlowPropertyFactor()
+							.getFlowProperty().getUnitGroup().getUnits()
+							.toArray(new Unit[0]);
 					while (!set && i < units.length) {
 						if (units[i].getName().equals(
 								unitNames[Integer.parseInt(value.toString())])) {

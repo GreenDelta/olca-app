@@ -9,8 +9,6 @@
  ******************************************************************************/
 package org.openlca.core.editors.lciamethod;
 
-import java.util.UUID;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.ToolBarManager;
@@ -35,7 +33,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.core.application.Messages;
 import org.openlca.core.editors.ModelEditor;
 import org.openlca.core.editors.ModelEditorPage;
-import org.openlca.core.model.LCIAMethod;
+import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.NormalizationWeightingFactor;
 import org.openlca.core.model.NormalizationWeightingSet;
 import org.openlca.core.resources.ImageType;
@@ -54,7 +52,7 @@ public class LCIANormalizationWeightingPage extends ModelEditorPage {
 	private TableViewer factorsViewer;
 
 	private final String LCIA_CATEGORY = Messages.Common_ImpactCategory;
-	private final LCIAMethod lciaMethod;
+	private final ImpactMethod lciaMethod;
 
 	/**
 	 * Name property of the factors viewer
@@ -107,7 +105,7 @@ public class LCIANormalizationWeightingPage extends ModelEditorPage {
 	public LCIANormalizationWeightingPage(final ModelEditor editor) {
 		super(editor, "LCIANormalizationWeightingPage",
 				Messages.Methods_NormalizationWeightingPageLabel);
-		lciaMethod = (LCIAMethod) editor.getModelComponent();
+		lciaMethod = (ImpactMethod) editor.getModelComponent();
 	}
 
 	@Override
@@ -237,8 +235,8 @@ public class LCIANormalizationWeightingPage extends ModelEditorPage {
 	@Override
 	protected void setData() {
 		setViewer.setInput(lciaMethod.getNormalizationWeightingSets());
-		if (lciaMethod.getNormalizationWeightingSets().length > 0) {
-			actualSet = lciaMethod.getNormalizationWeightingSets()[0];
+		if (lciaMethod.getNormalizationWeightingSets().size() > 0) {
+			actualSet = lciaMethod.getNormalizationWeightingSets().get(0);
 			setViewer.setSelection(new StructuredSelection(actualSet));
 			factorsViewer
 					.setInput(actualSet.getNormalizationWeightingFactors());
@@ -281,14 +279,11 @@ public class LCIANormalizationWeightingPage extends ModelEditorPage {
 
 		@Override
 		public void run() {
-			// create new set
-			final NormalizationWeightingSet set = new NormalizationWeightingSet(
-					UUID.randomUUID().toString(),
-					Messages.Common_NormalizationWeightingSet
-							+ (lciaMethod.getNormalizationWeightingSets().length + 1),
-					lciaMethod);
+			NormalizationWeightingSet set = new NormalizationWeightingSet();
+			set.setReferenceSystem(Messages.Common_NormalizationWeightingSet
+					+ (lciaMethod.getNormalizationWeightingSets().size() + 1));
 			set.setUnit("points");
-			lciaMethod.add(set);
+			lciaMethod.getNormalizationWeightingSets().add(set);
 			actualSet = set;
 
 			// refresh the viewer
@@ -386,11 +381,12 @@ public class LCIANormalizationWeightingPage extends ModelEditorPage {
 		@Override
 		public void run() {
 			if (actualSet != null) {
-				lciaMethod.remove(actualSet);
+				lciaMethod.getNormalizationWeightingSets().remove(actualSet);
 				setViewer.setInput(lciaMethod.getNormalizationWeightingSets());
 				setViewer.refresh();
-				if (lciaMethod.getNormalizationWeightingSets().length > 0) {
-					actualSet = lciaMethod.getNormalizationWeightingSets()[0];
+				if (lciaMethod.getNormalizationWeightingSets().size() > 0) {
+					actualSet = lciaMethod.getNormalizationWeightingSets().get(
+							0);
 					setViewer.setSelection(new StructuredSelection(actualSet));
 				} else {
 					setEnabled(false);

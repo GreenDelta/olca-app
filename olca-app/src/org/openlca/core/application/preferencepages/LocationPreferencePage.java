@@ -1,6 +1,5 @@
 package org.openlca.core.application.preferencepages;
 
-import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -239,12 +238,6 @@ public class LocationPreferencePage extends PreferencePage implements
 			}
 		}
 		return super.performOk();
-	}
-
-	@Override
-	public void propertyChange(final PropertyChangeEvent arg0) {
-		setDirty(true);
-		getApplyButton().setEnabled(true);
 	}
 
 	private class AddLocationAction extends Action {

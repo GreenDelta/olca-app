@@ -93,7 +93,6 @@ import org.openlca.core.editors.productsystem.graphical.outline.ProcessTreeEditP
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.modelprovider.IModelComponent;
 import org.openlca.ui.dnd.ModelTransfer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -126,7 +125,7 @@ public class ProductSystemGraphEditor extends GraphicalEditor implements
 	 * Contains all processes which have already been created. Maps
 	 * process.getKey() to the created ProcessNode
 	 */
-	private final Map<String, ProcessNode> createdProcesses = new HashMap<>();
+	private final Map<Long, ProcessNode> createdProcesses = new HashMap<>();
 
 	/**
 	 * The database
@@ -238,7 +237,6 @@ public class ProductSystemGraphEditor extends GraphicalEditor implements
 			throws PartInitException {
 		setEditDomain(new DefaultEditDomain(this));
 		if (productSystem != null) {
-			productSystem.addPropertyChangeListener(this);
 			setPartName(productSystem.getName());
 		}
 		super.init(site, input);
@@ -288,8 +286,8 @@ public class ProductSystemGraphEditor extends GraphicalEditor implements
 	 * @return The created ProcessNode
 	 */
 	private ProcessNode paintProcess(final Process process) {
-		final ProcessNode processNode = new ProcessNode(process,
-				productSystem.getProcesses().length > 20);
+		final ProcessNode processNode = new ProcessNode(process, productSystem
+				.getProcesses().size() > 20);
 		createdProcesses.put(process.getId(), processNode);
 		return processNode;
 	}
@@ -310,11 +308,8 @@ public class ProductSystemGraphEditor extends GraphicalEditor implements
 					final ProcessNode processNode = (ProcessNode) ((ProcessPart) sel[i])
 							.getModel();
 					if (processNode != null && processNode.getProcess() != null) {
-						if (!processNode
-								.getProcess()
-								.getId()
-								.equals(productSystem.getReferenceProcess()
-										.getId())) {
+						if (processNode.getProcess().getId() != productSystem
+								.getReferenceProcess().getId()) {
 							final ExchangeNode[] exchangeNodes = processNode
 									.getExchangeNodes();
 							boolean connected = false;
@@ -396,8 +391,9 @@ public class ProductSystemGraphEditor extends GraphicalEditor implements
 			if (nodes.length > 0) {
 				final ProductSystem productSystem = ((ProductSystemNode) nodes[0]
 						.getParent()).getProductSystem();
-				final boolean mark = !productSystem.isMarked(nodes[0]
-						.getProcess().getId());
+				final boolean mark = false;
+				// !productSystem.isMarked(nodes[0]
+				// .getProcess().getId());
 				if (mark) {
 					markAction.setNodes(nodes);
 				} else {

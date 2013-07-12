@@ -4,9 +4,10 @@ import java.io.File;
 
 import org.openlca.core.application.App;
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.editors.model.LocalisedImpactMethod;
 import org.openlca.core.editors.model.LocalisedMethodBuilder;
-import org.openlca.core.model.LCIAMethod;
+import org.openlca.core.model.ImpactMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +21,7 @@ public class LocalisedMethodStorage {
 
 	public static void save(LocalisedImpactMethod method, IDatabase database) {
 		try {
-			File file = getFile(database, method.getImpactMethod().getId());
+			File file = getFile(database, method.getImpactMethod().getRefId());
 			LocalisedMethodPackage methodPackage = new LocalisedMethodPackage(
 					file);
 			methodPackage.write(method);
@@ -56,8 +57,9 @@ public class LocalisedMethodStorage {
 	private static LocalisedImpactMethod createNew(IDatabase database,
 			String methodId, File file) {
 		try {
-			LCIAMethod realMethod = database.createDao(LCIAMethod.class)
-					.getForId(methodId);
+			ImpactMethodDao dao = new ImpactMethodDao(
+					database.getEntityFactory());
+			ImpactMethod realMethod = dao.getForRefId(methodId);
 			LocalisedMethodBuilder builder = new LocalisedMethodBuilder(
 					realMethod, database);
 			LocalisedImpactMethod method = builder.build();

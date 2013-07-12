@@ -17,6 +17,8 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Process;
 
+import com.google.common.base.Objects;
+
 /**
  * This class represents a process as a {@link Node}
  * 
@@ -62,7 +64,9 @@ public class ProcessNode extends Node {
 	 */
 	public ProcessNode(final Process process, final boolean minimized) {
 		super();
-		addChild(new ExchangeContainerNode(process.getExchanges()));
+		Exchange[] exchanges = process.getExchanges().toArray(
+				new Exchange[process.getExchanges().size()]);
+		addChild(new ExchangeContainerNode(exchanges));
 		this.minimized = minimized;
 		this.process = process;
 	}
@@ -88,15 +92,15 @@ public class ProcessNode extends Node {
 	}
 
 	@Override
-	public boolean equals(final Object arg0) {
-		boolean equals = false;
-		if (arg0 instanceof ProcessNode) {
-			if (((ProcessNode) arg0).getProcess().getId()
-					.equals(process.getId())) {
-				equals = true;
-			}
-		}
-		return equals;
+	public boolean equals(Object obj) {
+		if (obj == null)
+			return false;
+		if (obj == this)
+			return true;
+		if (!obj.getClass().equals(this.getClass()))
+			return false;
+		ProcessNode other = (ProcessNode) obj;
+		return Objects.equal(other.getProcess(), this.getProcess());
 	}
 
 	/**
@@ -108,18 +112,12 @@ public class ProcessNode extends Node {
 	 * @return The {@link ExchangeNode} belonging to the given exchange if it
 	 *         contains it, else null
 	 */
-	public ExchangeNode getExchangeNode(final String id) {
-		ExchangeNode node = null;
-		int i = 0;
-		while (i < getExchangeNodes().length && node == null) {
-			final ExchangeNode eNode = getExchangeNodes()[i];
-			if (eNode.getExchange().getId().equals(id)) {
-				node = eNode;
-			} else {
-				i++;
-			}
+	public ExchangeNode getExchangeNode(long id) {
+		for (ExchangeNode node : getExchangeNodes()) {
+			if (node.getExchange().getId() == id)
+				return node;
 		}
-		return node;
+		return null;
 	}
 
 	/**
@@ -128,7 +126,8 @@ public class ProcessNode extends Node {
 	 * @return The exchanges of the process behind the node
 	 */
 	public Exchange[] getExchanges() {
-		return process.getExchanges();
+		return process.getExchanges().toArray(
+				new Exchange[process.getExchanges().size()]);
 	}
 
 	/**

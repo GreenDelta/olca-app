@@ -30,6 +30,8 @@ import org.openlca.core.model.Process;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Objects;
+
 /**
  * EditPart of a {@link ProductSystemNode}
  * 
@@ -185,7 +187,7 @@ public class ProcessEditPart extends AbstractGraphicalEditPart implements
 		Process thisProcess = ((ProcessNode) getModel()).getProcess();
 		Process provider = link.getProcessLink().getProviderProcess();
 		Process recipient = link.getProcessLink().getRecipientProcess();
-		boolean isLoop = provider.getId().equals(recipient.getId());
+		boolean isLoop = Objects.equal(provider, recipient);
 		try {
 			if (thisProcess.equals(provider)) {
 				refreshSourceConnections();

@@ -8,6 +8,7 @@ import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.core.application.App;
+import org.openlca.core.application.db.Database;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.editors.HtmlView;
 import org.openlca.core.editors.ModelEditorPage;
@@ -18,8 +19,8 @@ import org.openlca.core.editors.io.ui.FileChooser;
 import org.openlca.core.editors.model.LocalisedImpactCategory;
 import org.openlca.core.editors.model.LocalisedImpactMethod;
 import org.openlca.core.jobs.Status;
-import org.openlca.core.model.LCIAMethod;
-import org.openlca.core.model.modelprovider.IModelComponent;
+import org.openlca.core.model.ImpactMethod;
+import org.openlca.core.model.RootEntity;
 import org.openlca.ui.HtmlPage;
 import org.openlca.ui.InformationPopup;
 import org.openlca.ui.Question;
@@ -45,7 +46,7 @@ public class ImpactLocalisationPage extends ModelEditorPage implements HtmlPage 
 
 	public ImpactLocalisationPage(LCIAMethodEditor editor) {
 		super(editor, "ImpactLocalisationPage", "Regionalisation (beta)");
-		this.database = editor.getDatabase();
+		this.database = Database.get();
 		this.editor = editor;
 	}
 
@@ -174,8 +175,8 @@ public class ImpactLocalisationPage extends ModelEditorPage implements HtmlPage 
 		}
 
 		private void initialise() {
-			IModelComponent comp = editor.getModelComponent();
-			if (!(comp instanceof LCIAMethod))
+			RootEntity comp = editor.getModelComponent();
+			if (!(comp instanceof ImpactMethod))
 				return;
 			loadMethod(comp);
 			for (LocalisedImpactCategory cat : localisedMethod
@@ -183,10 +184,10 @@ public class ImpactLocalisationPage extends ModelEditorPage implements HtmlPage 
 				Collections.sort(cat.getFactors());
 		}
 
-		private void loadMethod(IModelComponent comp) {
-			LCIAMethod method = (LCIAMethod) comp;
+		private void loadMethod(RootEntity comp) {
+			ImpactMethod method = (ImpactMethod) comp;
 			localisedMethod = LocalisedMethodStorage.getOrCreate(database,
-					method.getId());
+					method.getRefId());
 		}
 	}
 

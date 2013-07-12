@@ -2,11 +2,11 @@ package org.openlca.core.editors.lciamethod;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.openlca.core.model.LCIAFactor;
+import org.openlca.core.model.ImpactFactor;
 
 public class UncertaintyCellEditor extends DialogCellEditor {
 
-	private LCIAFactor factor;
+	private ImpactFactor factor;
 
 	public UncertaintyCellEditor(Composite parent) {
 		super(parent);
@@ -14,8 +14,8 @@ public class UncertaintyCellEditor extends DialogCellEditor {
 
 	@Override
 	protected void doSetValue(Object value) {
-		if (value instanceof LCIAFactor)
-			factor = (LCIAFactor) value;
+		if (value instanceof ImpactFactor)
+			factor = (ImpactFactor) value;
 		super.doSetValue(UncertaintyLabel.get(factor));
 	}
 

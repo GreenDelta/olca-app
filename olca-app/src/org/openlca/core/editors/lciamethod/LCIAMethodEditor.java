@@ -41,12 +41,4 @@ public class LCIAMethodEditor extends ModelEditor {
 		return pages.toArray(new ModelEditorPage[pages.size()]);
 	}
 
-	@Override
-	public void dispose() {
-		if (getModelComponent() != null) {
-			getModelComponent().removePropertyChangeListener(this);
-		}
-		super.dispose();
-	}
-
 }

@@ -105,7 +105,7 @@ public class ProductSystemInfoPage extends ModelEditorInfoPage {
 		tk.createLabel(composite, label);
 		ToolTipComboViewer viewer = new ToolTipComboViewer(composite, SWT.NONE);
 		viewer.setContentProvider(ArrayContentProvider.getInstance());
-		viewer.setLabelProvider(new BaseLabelProvider(getDatabase()));
+		viewer.setLabelProvider(new BaseLabelProvider());
 		viewer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		viewer.setSorter(new BaseNameSorter());
 		return viewer;
@@ -188,16 +188,11 @@ public class ProductSystemInfoPage extends ModelEditorInfoPage {
 	}
 
 	private Unit getReferenceUnit(FlowPropertyFactor factor) {
-		Unit refUnit = null;
 		try {
-			String unitGroupId = factor.getFlowProperty().getUnitGroupId();
-			UnitGroup unitGroup = getDatabase().select(UnitGroup.class,
-					unitGroupId);
-			refUnit = unitGroup.getReferenceUnit();
+			return factor.getFlowProperty().getUnitGroup().getReferenceUnit();
 		} catch (Exception e) {
 			throw new RuntimeException("Cannot load unit group.", e);
 		}
-		return refUnit;
 	}
 
 	private void unitChanged(Unit unit) {
@@ -255,15 +250,14 @@ public class ProductSystemInfoPage extends ModelEditorInfoPage {
 	}
 
 	private void fillExchangeViewer(Process process) {
-		Exchange[] products = process.getOutputs(FlowType.ProductFlow);
+		Exchange[] products = process.getOutputs(FlowType.PRODUCT_FLOW);
 		exchangeViewer.setInput(products);
 	}
 
 	private void fillFlowPropertyViewer(Exchange exchange) {
 		try {
 			Flow flow = exchange.getFlow();
-			FlowPropertyFactor[] factors = flow.getFlowPropertyFactors();
-			flowPropertyViewer.setInput(factors);
+			flowPropertyViewer.setInput(flow.getFlowPropertyFactors());
 		} catch (Exception e) {
 			throw new RuntimeException("Cannot load flow properties.", e);
 		}
@@ -271,10 +265,8 @@ public class ProductSystemInfoPage extends ModelEditorInfoPage {
 
 	private void fillUnitViewer(FlowPropertyFactor propertyFactor) {
 		try {
-			String unitGroupId = propertyFactor.getFlowProperty()
-					.getUnitGroupId();
-			UnitGroup unitGroup = getDatabase().select(UnitGroup.class,
-					unitGroupId);
+			UnitGroup unitGroup = propertyFactor.getFlowProperty()
+					.getUnitGroup();
 			unitViewer.setInput(unitGroup.getUnits());
 		} catch (Exception e) {
 			log.error("Filling unit viewer failed", e);

@@ -12,7 +12,7 @@ package org.openlca.core.editors.lciamethod;
 import org.openlca.core.application.Messages;
 import org.openlca.core.editors.ModelEditor;
 import org.openlca.core.editors.ModelEditorInfoPage;
-import org.openlca.core.model.LCIAMethod;
+import org.openlca.core.model.ImpactMethod;
 
 /**
  * Form page for editing actors
@@ -25,7 +25,7 @@ public class LCIAMethodInfoPage extends ModelEditorInfoPage {
 	/**
 	 * the LCIA method object edited by this editor
 	 */
-	private LCIAMethod lciaMethod = null;
+	private ImpactMethod lciaMethod = null;
 
 	/**
 	 * Creates a new instance.
@@ -36,7 +36,7 @@ public class LCIAMethodInfoPage extends ModelEditorInfoPage {
 	public LCIAMethodInfoPage(final ModelEditor editor) {
 		super(editor, "LCIAMethodInfoPage", Messages.Common_GeneralInformation,
 				Messages.Common_GeneralInformation);
-		this.lciaMethod = (LCIAMethod) editor.getModelComponent();
+		this.lciaMethod = (ImpactMethod) editor.getModelComponent();
 	}
 
 	@Override

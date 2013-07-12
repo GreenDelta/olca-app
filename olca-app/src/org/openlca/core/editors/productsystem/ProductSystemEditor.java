@@ -9,7 +9,6 @@
  ******************************************************************************/
 package org.openlca.core.editors.productsystem;
 
-import java.beans.PropertyChangeEvent;
 import java.io.IOException;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -24,6 +23,7 @@ import org.eclipse.ui.views.contentoutline.ContentOutline;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.openlca.core.application.ApplicationProperties;
 import org.openlca.core.application.Messages;
+import org.openlca.core.application.db.Database;
 import org.openlca.core.editors.ModelEditorPage;
 import org.openlca.core.editors.ParameterizableModelEditor;
 import org.openlca.core.editors.productsystem.graphical.ProductSystemGraphEditor;
@@ -84,7 +84,7 @@ public class ProductSystemEditor extends ParameterizableModelEditor {
 		try {
 			infoPage = new ProductSystemInfoPage(this);
 			addPage(infoPage);
-			graphEditor = new ProductSystemGraphEditor(this, getDatabase(),
+			graphEditor = new ProductSystemGraphEditor(this, Database.get(),
 					(ProductSystem) getModelComponent());
 			graphEditorPageIndex = addPage(graphEditor, getEditorInput());
 			setPageText(graphEditorPageIndex, Messages.Systems_GraphTab);
@@ -149,9 +149,6 @@ public class ProductSystemEditor extends ParameterizableModelEditor {
 				}
 			}
 		}
-		if (getModelComponent() != null) {
-			getModelComponent().removePropertyChangeListener(this);
-		}
 		graphEditor.dispose();
 		graphEditor = null;
 		super.dispose();
@@ -188,14 +185,6 @@ public class ProductSystemEditor extends ParameterizableModelEditor {
 			page = graphEditor;
 		}
 		return page;
-	}
-
-	@Override
-	public void propertyChange(final PropertyChangeEvent evt) {
-		super.propertyChange(evt);
-		if (evt.getPropertyName().equals("processes")) {
-			infoPage.setData();
-		}
 	}
 
 }

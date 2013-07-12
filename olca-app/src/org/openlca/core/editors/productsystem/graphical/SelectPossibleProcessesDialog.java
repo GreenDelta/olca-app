@@ -281,10 +281,10 @@ public class SelectPossibleProcessesDialog extends Dialog {
 				if (exchange.isInput()) {
 					for (final ProcessLink link : productSystem
 							.getOutgoingLinks(process.getId())) {
-						if (link.getRecipientProcess().getId()
-								.equals(parentOfExchange.getId())
-								&& link.getRecipientInput().getId()
-										.equals(exchange.getId())) {
+						if (link.getRecipientProcess().getId() == parentOfExchange
+								.getId()
+								&& link.getRecipientInput().getId() == exchange
+										.getId()) {
 							pp.setOutput(link.getProviderOutput());
 							break;
 						}
@@ -292,10 +292,10 @@ public class SelectPossibleProcessesDialog extends Dialog {
 				} else {
 					for (final ProcessLink link : productSystem
 							.getIncomingLinks(process.getId())) {
-						if (link.getProviderProcess().getId()
-								.equals(parentOfExchange.getId())
-								&& link.getProviderOutput().getId()
-										.equals(exchange.getId())) {
+						if (link.getProviderProcess().getId() == parentOfExchange
+								.getId()
+								&& link.getProviderOutput().getId() == exchange
+										.getId()) {
 							pp.setInput(link.getRecipientInput());
 							break;
 						}
@@ -361,12 +361,12 @@ public class SelectPossibleProcessesDialog extends Dialog {
 	 * @return The id of the provider output or null if no process found with
 	 *         the given id
 	 */
-	public String getProviderExchangeId(final String providerId) {
-		String id = null;
+	public Long getProviderExchangeId(long providerId) {
+		Long id = null;
 		int i = 0;
 		while (i < possibleProcesses.size() && id == null) {
 			final PossibleProcess pp = possibleProcesses.get(i);
-			if (pp.getProcess().getId().equals(providerId)) {
+			if (pp.getProcess().getId() == providerId) {
 				id = pp.getOutput().getId();
 			} else {
 				i++;
@@ -400,12 +400,12 @@ public class SelectPossibleProcessesDialog extends Dialog {
 	 * @return The id of the recipient input or null if no process found with
 	 *         the given id
 	 */
-	public String getRecipientExchangeKey(final String recipientId) {
-		String id = null;
+	public Long getRecipientExchangeKey(final long recipientId) {
+		Long id = null;
 		int i = 0;
 		while (i < possibleProcesses.size() && id == null) {
 			final PossibleProcess pp = possibleProcesses.get(i);
-			if (pp.getProcess().getId().equals(recipientId)) {
+			if (pp.getProcess().getId() == recipientId) {
 				id = pp.getInput().getId();
 			} else {
 				i++;
@@ -683,8 +683,8 @@ public class SelectPossibleProcessesDialog extends Dialog {
 					canModify = true;
 					for (final ProcessLink link : productSystem
 							.getIncomingLinks(process.getProcess().getId())) {
-						if (link.getRecipientInput().getFlow().getId()
-								.equals(exchange.getFlow().getId())) {
+						if (link.getRecipientInput().getFlow().getId() == exchange
+								.getFlow().getId()) {
 							canModify = false;
 							break;
 						}
@@ -697,8 +697,8 @@ public class SelectPossibleProcessesDialog extends Dialog {
 						// only on provider allowed per product
 						for (final ProcessLink link : productSystem
 								.getIncomingLinks(parentOfExchange.getId())) {
-							if (link.getRecipientInput().getId()
-									.equals(exchange.getId())) {
+							if (link.getRecipientInput().getId() == exchange
+									.getId()) {
 								canModify = false;
 								break;
 							}
@@ -758,8 +758,8 @@ public class SelectPossibleProcessesDialog extends Dialog {
 					Exchange e = null;
 					int i = 0;
 					while (e == null && i < p.getProcess().getInputs().length) {
-						if (p.getProcess().getInputs()[i].getFlow().getId()
-								.equals(exchange.getFlow().getId())) {
+						if (p.getProcess().getInputs()[i].getFlow().getId() == exchange
+								.getFlow().getId()) {
 							e = p.getProcess().getInputs()[i];
 						} else {
 							i++;
@@ -778,8 +778,8 @@ public class SelectPossibleProcessesDialog extends Dialog {
 					Exchange e = null;
 					int i = 0;
 					while (e == null && i < p.getProcess().getOutputs().length) {
-						if (p.getProcess().getOutputs()[i].getFlow().getId()
-								.equals(exchange.getFlow().getId())) {
+						if (p.getProcess().getOutputs()[i].getFlow().getId() == exchange
+								.getFlow().getId()) {
 							e = p.getProcess().getOutputs()[i];
 						} else {
 							i++;
@@ -900,7 +900,6 @@ public class SelectPossibleProcessesDialog extends Dialog {
 				text = p.getProcess().getName();
 				text += p.getProcess().getLocation() != null ? " ["
 						+ p.getProcess().getLocation().getCode() + "]" : "";
-				text += p.getProcess().isInfrastructureProcess() ? " _IP" : "";
 				if (p.getProcess().getProcessType() == ProcessType.LCI_Result) {
 					text += " _S";
 				}

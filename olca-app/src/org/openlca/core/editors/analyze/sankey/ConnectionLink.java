@@ -1,24 +1,14 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.core.editors.analyze.sankey;
+
+import java.util.Objects;
 
 import org.eclipse.draw2d.IFigure;
 import org.openlca.core.model.ProcessLink;
 
 /**
  * 
- * Internal model for a link between two exchanges. Representing a process link
+ * Internal model for a link between two exchanges representing a process link
  * in the graphical editor
- * 
- * @author Sebastian Greve
- * 
  */
 public class ConnectionLink {
 
@@ -45,16 +35,14 @@ public class ConnectionLink {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof ConnectionLink) {
-			ConnectionLink link = (ConnectionLink) obj;
-			if (link.getProcessLink() != null && getProcessLink() != null) {
-				if (link.getProcessLink().getId()
-						.equals(getProcessLink().getId())) {
-					return true;
-				}
-			}
-		}
-		return false;
+		if (obj == null)
+			return false;
+		if (obj == this)
+			return true;
+		if (!(obj instanceof ConnectionLink))
+			return false;
+		ConnectionLink other = (ConnectionLink) obj;
+		return Objects.equals(this.processLink, other.processLink);
 	}
 
 	public IFigure getFigure() {

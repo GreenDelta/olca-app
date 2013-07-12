@@ -11,7 +11,6 @@ package org.openlca.core.editors.lciamethod;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.UUID;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.CellEditor;
@@ -40,11 +39,9 @@ import org.openlca.core.application.actions.OpenEditorAction;
 import org.openlca.core.editors.ModelEditor;
 import org.openlca.core.editors.ModelEditorPage;
 import org.openlca.core.model.Flow;
-import org.openlca.core.model.LCIACategory;
-import org.openlca.core.model.LCIAFactor;
-import org.openlca.core.model.LCIAMethod;
+import org.openlca.core.model.ImpactFactor;
+import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.UnitGroup;
-import org.openlca.core.model.modelprovider.IModelComponent;
 import org.openlca.core.resources.ImageType;
 import org.openlca.ui.SelectObjectDialog;
 import org.openlca.ui.UI;
@@ -69,13 +66,12 @@ public class LCIAFactorsPage extends ModelEditorPage implements
 	private LCIACategoryViewer categoryViewer;
 	private TableViewer factorViewer;
 
-	private LCIAMethod lciaMethod;
+	private ImpactMethod lciaMethod;
 	private OpenEditorAction openAction = null;
 
 	public LCIAFactorsPage(final ModelEditor editor) {
 		super(editor, "LCIAFactorsPage", Messages.Common_LCIAFactors);
-		this.lciaMethod = (LCIAMethod) editor.getModelComponent();
-		lciaMethod.addPropertyChangeListener(this);
+		this.lciaMethod = (ImpactMethod) editor.getModelComponent();
 	}
 
 	/**
@@ -85,7 +81,7 @@ public class LCIAFactorsPage extends ModelEditorPage implements
 	 *            The id's of the flows to add a factor for
 	 */
 	private void addFactors(final String[] flowIds) {
-		final LCIAFactor[] factors = new LCIAFactor[flowIds.length];
+		final ImpactFactor[] factors = new ImpactFactor[flowIds.length];
 		int i = 0;
 		// for each flow id
 		for (final String flowId : flowIds) {
@@ -103,8 +99,7 @@ public class LCIAFactorsPage extends ModelEditorPage implements
 			}
 			if (unitGroup != null) {
 				// create LCIA factor
-				final LCIAFactor factor = new LCIAFactor();
-				factor.setId(UUID.randomUUID().toString());
+				final ImpactFactor factor = new ImpactFactor();
 				factor.setFlow(flow);
 				factor.setFlowPropertyFactor(flow.getFlowPropertyFactor(flow
 						.getReferenceFlowProperty().getId()));
@@ -208,10 +203,10 @@ public class LCIAFactorsPage extends ModelEditorPage implements
 			public int compare(final Viewer viewer, final Object e1,
 					final Object e2) {
 				int compare = 0;
-				if (e1 instanceof LCIAFactor && e2 instanceof LCIAFactor) {
+				if (e1 instanceof ImpactFactor && e2 instanceof ImpactFactor) {
 					// compare flow name
-					final LCIAFactor f1 = (LCIAFactor) e1;
-					final LCIAFactor f2 = (LCIAFactor) e2;
+					final ImpactFactor f1 = (ImpactFactor) e1;
+					final ImpactFactor f2 = (ImpactFactor) e2;
 					compare = f1.getFlow().getName().toLowerCase()
 							.compareTo(f2.getFlow().getName().toLowerCase());
 				}
@@ -250,8 +245,8 @@ public class LCIAFactorsPage extends ModelEditorPage implements
 				final IStructuredSelection selection = (IStructuredSelection) event
 						.getSelection();
 				if (selection.getFirstElement() != null) {
-					final Flow flow = ((LCIAFactor) selection.getFirstElement())
-							.getFlow();
+					final Flow flow = ((ImpactFactor) selection
+							.getFirstElement()).getFlow();
 					openAction.setModelComponent(getDatabase(), flow);
 					openAction.run();
 				}
@@ -414,11 +409,11 @@ public class LCIAFactorsPage extends ModelEditorPage implements
 		protected void delete() {
 			final StructuredSelection structuredSelection = (StructuredSelection) factorViewer
 					.getSelection();
-			final LCIAFactor lCIAFactor = (LCIAFactor) structuredSelection
+			final LCIAFactor lCIAFactor = (ImpactFactor) structuredSelection
 					.getFirstElement();
 			categoryViewer.getSelected().remove(lCIAFactor);
-			factorViewer
-					.setInput(categoryViewer.getSelected().getLCIAFactors());
+			factorViewer.setInput(categoryViewer.getSelected()
+					.getImpactFactors());
 		}
 
 	}

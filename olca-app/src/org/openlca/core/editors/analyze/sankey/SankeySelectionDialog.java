@@ -93,7 +93,7 @@ public class SankeySelectionDialog extends FormDialog {
 		}
 		selectionViewer = new ToolTipComboViewer(firstLayer, SWT.NONE);
 		tookit.adapt(selectionViewer);
-		selectionViewer.setLabelProvider(new BaseLabelProvider(database));
+		selectionViewer.setLabelProvider(new BaseLabelProvider());
 		selectionViewer.setContentProvider(new ArrayContentProvider());
 		selectionViewer.setSorter(new BaseNameSorter());
 		selectionViewer.setInput(firstSelection == null

@@ -48,7 +48,7 @@ public class MinimalTreeLayout {
 	 */
 	private void applyLayout(final ProcessFigure[] processFigures,
 			final Graph graph) {
-		final Map<String, ProcessFigure> figures = new HashMap<>();
+		final Map<Long, ProcessFigure> figures = new HashMap<>();
 		// for each process figure
 		for (final ProcessFigure figure : processFigures) {
 			// create a map entry with process id and figure
@@ -244,7 +244,7 @@ public class MinimalTreeLayout {
 		/**
 		 * The nodes of the graph
 		 */
-		private final Map<String, Node> nodes = new HashMap<>();
+		private final Map<Long, Node> nodes = new HashMap<>();
 
 		/**
 		 * Upper end of the coordinate systems x-axis
@@ -369,12 +369,10 @@ public class MinimalTreeLayout {
 							int divisor = 2;
 							while (!stopTrying) {
 								// the nearest node
-								final Node nearest = lightestEdge.start.key
-										.equals(node.key) ? lightestEdge.end
+								final Node nearest = lightestEdge.start.key == node.key ? lightestEdge.end
 										: lightestEdge.start;
 								// the farest node
-								final Node farest = heaviestEdge.start.key
-										.equals(node.key) ? heaviestEdge.end
+								final Node farest = heaviestEdge.start.key == node.key ? heaviestEdge.end
 										: heaviestEdge.start;
 								// if not lightest edge = heaviest edge
 								if (!lightestEdge.equals(heaviestEdge)) {
@@ -461,7 +459,7 @@ public class MinimalTreeLayout {
 		/**
 		 * Identifier of the node
 		 */
-		private final String key;
+		private final long key;
 
 		/**
 		 * Location in the coordinate system of the graph
@@ -479,7 +477,7 @@ public class MinimalTreeLayout {
 		 * @param key
 		 *            The identifier of the node
 		 */
-		public Node(final String key) {
+		public Node(final long key) {
 			this.key = key;
 		}
 
@@ -555,13 +553,12 @@ public class MinimalTreeLayout {
 				return true;
 			}
 			if (obj instanceof Node) {
-				if (key.equals(((Node) obj).key)) {
+				if (key == ((Node) obj).key) {
 					return true;
 				}
 			}
 			return false;
 		}
-
 	}
 
 }

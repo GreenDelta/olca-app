@@ -27,8 +27,8 @@ import org.openlca.core.application.Messages;
 import org.openlca.core.application.actions.DeleteWithQuestionAction;
 import org.openlca.core.editors.ModelEditor;
 import org.openlca.core.editors.ModelEditorPage;
-import org.openlca.core.model.LCIACategory;
-import org.openlca.core.model.LCIAMethod;
+import org.openlca.core.model.ImpactCategory;
+import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.resources.ImageType;
 import org.openlca.ui.UI;
 import org.openlca.ui.UIFactory;
@@ -72,7 +72,7 @@ public class LCIACategoriesPage extends ModelEditorPage {
 	/**
 	 * the LCIA method object edited by this editor
 	 */
-	private LCIAMethod lciaMethod = null;
+	private ImpactMethod lciaMethod = null;
 
 	/**
 	 * Creates a new instance.
@@ -82,7 +82,7 @@ public class LCIACategoriesPage extends ModelEditorPage {
 	 */
 	public LCIACategoriesPage(ModelEditor editor) {
 		super(editor, "LCIACategoriesPage", Messages.Common_ImpactCategories);
-		this.lciaMethod = (LCIAMethod) editor.getModelComponent();
+		this.lciaMethod = (ImpactMethod) editor.getModelComponent();
 	}
 
 	@Override
@@ -98,8 +98,8 @@ public class LCIACategoriesPage extends ModelEditorPage {
 		UI.gridLayout(composite, 1);
 
 		categoryViewer = UIFactory.createTableViewer(composite, null, null,
-				toolkit, LCIACATEGORY_PROPERTIES, getDatabase());
-		categoryViewer.setCellModifier(new LCIACategoryCellModifier());
+				toolkit, LCIACATEGORY_PROPERTIES);
+		categoryViewer.setCellModifier(new ImpactCategoryCellModifier());
 		categoryViewer.setLabelProvider(new ImpactCategoryLabel());
 		UI.gridData(categoryViewer.getTable(), true, true).heightHint = heightHint; // TODO?
 		categoryViewer.getTable().getColumn(0).setWidth(150);
@@ -116,8 +116,8 @@ public class LCIACategoriesPage extends ModelEditorPage {
 	}
 
 	private void bindActions(TableViewer viewer, Section section) {
-		Action add = new AddLCIACategoryAction();
-		Action remove = new RemoveLCIACategoryAction();
+		Action add = new AddImpactCategoryAction();
+		Action remove = new RemoveImpactCategoryAction();
 		UI.bindActions(viewer, add, remove);
 		UI.bindActions(section, add, remove);
 	}
@@ -144,12 +144,12 @@ public class LCIACategoriesPage extends ModelEditorPage {
 	 * 
 	 * @see Action
 	 */
-	private class AddLCIACategoryAction extends Action {
+	private class AddImpactCategoryAction extends Action {
 
 		/**
 		 * The id of the action
 		 */
-		public static final String ID = "org.openlca.core.editors.lciamethod.LCIACategoriesPage.AddLCIACategoryAction";
+		public static final String ID = "org.openlca.core.editors.lciamethod.LCIACategoriesPage.AddImpactCategoryAction";
 
 		/**
 		 * The text of the action
@@ -157,10 +157,10 @@ public class LCIACategoriesPage extends ModelEditorPage {
 		public String TEXT = Messages.Methods_AddLCIACategoryText;
 
 		/**
-		 * Creates a new AddLCIACategoryAction and sets the ID, TEXT and
+		 * Creates a new AddImpactCategoryAction and sets the ID, TEXT and
 		 * ImageDescriptor
 		 */
-		public AddLCIACategoryAction() {
+		public AddImpactCategoryAction() {
 			setId(ID);
 			setText(TEXT);
 			setImageDescriptor(ImageType.ADD_ICON.getDescriptor());
@@ -171,11 +171,11 @@ public class LCIACategoriesPage extends ModelEditorPage {
 		@Override
 		public void run() {
 			// create LCIA category
-			LCIACategory lciaCategory = new LCIACategory();
-			lciaCategory.setId(UUID.randomUUID().toString());
+			ImpactCategory lciaCategory = new ImpactCategory();
+			lciaCategory.setRefId(UUID.randomUUID().toString());
 			lciaCategory.setName(Messages.Common_ImpactCategory
-					+ lciaMethod.getLCIACategories().length);
-			lciaMethod.add(lciaCategory);
+					+ lciaMethod.getLCIACategories().size());
+			lciaMethod.getLCIACategories().add(lciaCategory);
 
 			// refresh table viewer
 			categoryViewer.setInput(lciaMethod.getLCIACategories());
@@ -188,7 +188,7 @@ public class LCIACategoriesPage extends ModelEditorPage {
 	 * 
 	 * @see ICellModifier
 	 */
-	private class LCIACategoryCellModifier implements ICellModifier {
+	private class ImpactCategoryCellModifier implements ICellModifier {
 
 		@Override
 		public boolean canModify(Object element, String property) {
@@ -199,8 +199,8 @@ public class LCIACategoriesPage extends ModelEditorPage {
 		@Override
 		public Object getValue(Object element, String property) {
 			Object v = null;
-			if (element instanceof LCIACategory) {
-				LCIACategory lciaCategory = (LCIACategory) element;
+			if (element instanceof ImpactCategory) {
+				ImpactCategory lciaCategory = (ImpactCategory) element;
 				if (property.equals(LCIACATEGORY_NAME)) {
 					// get name
 					v = lciaCategory.getName();
@@ -222,8 +222,8 @@ public class LCIACategoriesPage extends ModelEditorPage {
 				element = ((Item) element).getData();
 			}
 
-			if (element instanceof LCIACategory) {
-				LCIACategory lciaCategory = (LCIACategory) element;
+			if (element instanceof ImpactCategory) {
+				ImpactCategory lciaCategory = (ImpactCategory) element;
 
 				if (property.equals(LCIACATEGORY_NAME)) {
 					// set name
@@ -249,10 +249,10 @@ public class LCIACategoriesPage extends ModelEditorPage {
 	 * 
 	 * @see Action
 	 */
-	private class RemoveLCIACategoryAction extends DeleteWithQuestionAction {
+	private class RemoveImpactCategoryAction extends DeleteWithQuestionAction {
 
-		public RemoveLCIACategoryAction() {
-			setId("RemoveLCIACategoryAction");
+		public RemoveImpactCategoryAction() {
+			setId("RemoveImpactCategoryAction");
 			setText(Messages.Methods_RemoveLCIACategoryText);
 			setImageDescriptor(ImageType.DELETE_ICON.getDescriptor());
 			setDisabledImageDescriptor(ImageType.DELETE_ICON_DISABLED
@@ -264,9 +264,9 @@ public class LCIACategoriesPage extends ModelEditorPage {
 			StructuredSelection structuredSelection = (StructuredSelection) categoryViewer
 					.getSelection();
 			for (int i = 0; i < structuredSelection.toArray().length; i++) {
-				LCIACategory lciaCategory = (LCIACategory) structuredSelection
+				ImpactCategory lciaCategory = (ImpactCategory) structuredSelection
 						.toArray()[i];
-				lciaMethod.remove(lciaCategory);
+				lciaMethod.getLCIACategories().remove(lciaCategory);
 			}
 			categoryViewer.setInput(lciaMethod.getLCIACategories());
 		}

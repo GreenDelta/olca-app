@@ -1,6 +1,6 @@
 package org.openlca.core.editors.lciamethod;
 
-import org.openlca.core.model.LCIAFactor;
+import org.openlca.core.model.ImpactFactor;
 import org.openlca.core.model.UncertaintyDistributionType;
 
 /**
@@ -12,8 +12,8 @@ final class UncertaintySetter {
 	private UncertaintySetter() {
 	}
 
-	static void setValues(LCIAFactor factor, UncertaintyDistributionType type,
-			double... parameters) {
+	static void setValues(ImpactFactor factor,
+			UncertaintyDistributionType type, double... parameters) {
 		if (factor == null)
 			return;
 		if (type == null || type == UncertaintyDistributionType.NONE) {
@@ -38,14 +38,14 @@ final class UncertaintySetter {
 		}
 	}
 
-	private static void clear(LCIAFactor factor) {
+	private static void clear(ImpactFactor factor) {
 		factor.setUncertaintyType(UncertaintyDistributionType.NONE);
 		factor.setUncertaintyParameter1(0);
 		factor.setUncertaintyParameter2(0);
 		factor.setUncertaintyParameter3(0);
 	}
 
-	private static void setNormal(LCIAFactor factor, double[] params) {
+	private static void setNormal(ImpactFactor factor, double[] params) {
 		factor.setUncertaintyType(UncertaintyDistributionType.NORMAL);
 		factor.setValue(params[0]);
 		factor.setUncertaintyParameter1(params[0]);
@@ -53,7 +53,7 @@ final class UncertaintySetter {
 		factor.setUncertaintyParameter3(0);
 	}
 
-	private static void setLognormal(LCIAFactor factor, double[] params) {
+	private static void setLognormal(ImpactFactor factor, double[] params) {
 		factor.setUncertaintyType(UncertaintyDistributionType.LOG_NORMAL);
 		factor.setValue(params[0]);
 		factor.setUncertaintyParameter1(params[0]);
@@ -61,7 +61,7 @@ final class UncertaintySetter {
 		factor.setUncertaintyParameter3(0);
 	}
 
-	private static void setUniform(LCIAFactor factor, double[] params) {
+	private static void setUniform(ImpactFactor factor, double[] params) {
 		factor.setUncertaintyType(UncertaintyDistributionType.UNIFORM);
 		double min = params[0];
 		double max = params[1];
@@ -72,7 +72,7 @@ final class UncertaintySetter {
 		factor.setUncertaintyParameter3(0);
 	}
 
-	private static void setTriangular(LCIAFactor factor, double[] params) {
+	private static void setTriangular(ImpactFactor factor, double[] params) {
 		factor.setUncertaintyType(UncertaintyDistributionType.TRIANGLE);
 		double min = params[0];
 		double mode = params[1];

@@ -94,7 +94,7 @@ public class ProductSystemCleaner {
 	 */
 	private Problem[] getUnconnectedPartProblems() {
 		final List<Problem> problems = new ArrayList<>();
-		final List<String> linkedToReference = new ArrayList<>();
+		final List<Long> linkedToReference = new ArrayList<>();
 		final Queue<Process> toCheck = new LinkedList<>();
 		toCheck.add(productSystem.getReferenceProcess());
 
