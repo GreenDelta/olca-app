@@ -35,17 +35,17 @@ public class TreeLayout {
 	 * set of process keys that have been added to a node already (important in
 	 * case of loops, so no process is added twice)
 	 */
-	private final Set<String> containing = new HashSet<>();
+	private final Set<Long> containing = new HashSet<>();
 
 	/**
 	 * XY location in grid -> process key
 	 */
-	private final Map<Point, String> locations = new HashMap<>();
+	private final Map<Point, Long> locations = new HashMap<>();
 
 	/**
 	 * The processes painted as process nodes
 	 */
-	private final Set<String> paintedProcesses = new HashSet<>();
+	private final Set<Long> paintedProcesses = new HashSet<>();
 
 	/**
 	 * Lays out the product system node
@@ -97,7 +97,7 @@ public class TreeLayout {
 					maximumY = p.y;
 				}
 			}
-			final Map<String, ProcessFigure> figures = new HashMap<>();
+			final Map<Long, ProcessFigure> figures = new HashMap<>();
 			for (final Object n : productSystemNode.getChildrenArray()) {
 				if (n instanceof ProcessNode) {
 					final ProcessFigure figure = ((ProcessNode) n).getFigure();
@@ -115,7 +115,7 @@ public class TreeLayout {
 				}
 				int yPosition = GraphLayoutManager.verticalSpacing;
 				for (int y = minimumY; y <= maximumY; y++) {
-					final String processKey = locations.get(new Point(x, y));
+					final Long processKey = locations.get(new Point(x, y));
 					if (y > minimumY) {
 						yPosition += ProcessFigure.HEIGHT
 								+ GraphLayoutManager.verticalSpacing;
@@ -213,10 +213,10 @@ public class TreeLayout {
 	private void build(final ProductSystem productSystem, final Node[] nodes) {
 		final List<Node> children = new ArrayList<>();
 		for (final Node node : nodes) {
-			final String processKey = node.processKey;
+			final long processKey = node.processKey;
 			for (final ProcessLink link : productSystem
 					.getProcessLinks(processKey)) {
-				if (link.getRecipientProcess().getId().equals(processKey)) {
+				if (link.getRecipientProcess().getId() == processKey) {
 					if (!containing.contains(link.getProviderProcess().getId())
 							&& paintedProcesses.contains(link
 									.getProviderProcess().getId())) {
@@ -233,21 +233,19 @@ public class TreeLayout {
 			build(productSystem, children.toArray(new Node[children.size()]));
 		}
 		children.clear();
-		for (final Node node : nodes) {
-			final String processKey = node.processKey;
-			for (final ProcessLink link : productSystem
-					.getProcessLinks(processKey)) {
-				if (link.getProviderProcess().getId().equals(processKey)) {
-					if (!containing
-							.contains(link.getRecipientProcess().getId())
-							&& paintedProcesses.contains(link
-									.getRecipientProcess().getId())) {
-						final Node child = new Node();
-						child.processKey = link.getRecipientProcess().getId();
-						node.rightChildren.add(child);
-						containing.add(child.processKey);
-						children.add(child);
-					}
+		for (Node node : nodes) {
+			long processKey = node.processKey;
+			for (ProcessLink link : productSystem.getProcessLinks(processKey)) {
+				if (link.getProviderProcess().getId() != processKey)
+					continue;
+				if (!containing.contains(link.getRecipientProcess().getId())
+						&& paintedProcesses.contains(link.getRecipientProcess()
+								.getId())) {
+					Node child = new Node();
+					child.processKey = link.getRecipientProcess().getId();
+					node.rightChildren.add(child);
+					containing.add(child.processKey);
+					children.add(child);
 				}
 			}
 		}
@@ -290,7 +288,7 @@ public class TreeLayout {
 		/**
 		 * The key of the process behind this node
 		 */
-		String processKey;
+		long processKey;
 
 		/**
 		 * The recieving processes as nodes

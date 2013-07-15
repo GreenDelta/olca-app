@@ -15,7 +15,10 @@ import java.util.List;
 import org.eclipse.jface.action.IAction;
 import org.openlca.core.editors.productsystem.graphical.GraphLayoutType;
 import org.openlca.core.editors.productsystem.graphical.ProductSystemGraphEditor;
+import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
+
+import com.google.common.base.Objects;
 
 /**
  * This class represents a product system as a node
@@ -177,11 +180,10 @@ public class ProductSystemNode extends Node {
 	 * @return the ProcessNode children representing the process with the given
 	 *         key
 	 */
-	public ProcessNode getProcessNode(final String processKey) {
+	public ProcessNode getProcessNode(final long processKey) {
 		for (final Node node : getChildrenArray()) {
 			if (node instanceof ProcessNode) {
-				if (((ProcessNode) node).getProcess().getId()
-						.equals(processKey)) {
+				if (((ProcessNode) node).getProcess().getId() == processKey) {
 					return (ProcessNode) node;
 				}
 			}
@@ -206,19 +208,13 @@ public class ProductSystemNode extends Node {
 	 *            The node to check
 	 * @return True if the exchange node is already a recipient (and linked)
 	 */
-	public boolean hasConnection(final ExchangeNode recipient) {
-		boolean hasConnection = false;
-		int i = 0;
-		while (!hasConnection
-				&& i < getProductSystem().getProcessLinks().length) {
-			if (getProductSystem().getProcessLinks()[i].getRecipientInput()
-					.getId().equals(recipient.getExchange().getId())) {
-				hasConnection = true;
-			} else {
-				i++;
-			}
+	public boolean hasConnection(ExchangeNode recipient) {
+		for (ProcessLink link : getProductSystem().getProcessLinks()) {
+			if (Objects
+					.equal(link.getRecipientInput(), recipient.getExchange()))
+				return true;
 		}
-		return hasConnection;
+		return false;
 	}
 
 	/**

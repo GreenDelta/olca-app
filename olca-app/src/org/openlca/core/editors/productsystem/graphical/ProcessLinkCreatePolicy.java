@@ -154,8 +154,8 @@ public class ProcessLinkCreatePolicy extends GraphicalNodeEditPolicy {
 					.isInput() ? targetNode : sourceNode;
 
 			// if there already is a connection which is not the actual
-			if (!oldLink.getTargetNode().getExchange().getId()
-					.equals(targetNode.getExchange().getId())
+			if (oldLink.getTargetNode().getExchange().getId() != targetNode
+					.getExchange().getId()
 					&& ((ProductSystemNode) targetNode.getParentProcessNode()
 							.getParent()).hasConnection(recipientInput)) {
 				canConnect = false;

@@ -1,7 +1,7 @@
 package org.openlca.core.editors.lciamethod;
 
 import org.openlca.core.application.Numbers;
-import org.openlca.core.model.LCIAFactor;
+import org.openlca.core.model.ImpactFactor;
 
 /**
  * Converts the uncertainty information of an impact assessment factor to a
@@ -12,7 +12,7 @@ final class UncertaintyLabel {
 	private UncertaintyLabel() {
 	}
 
-	static String get(LCIAFactor factor) {
+	static String get(ImpactFactor factor) {
 		if (factor == null || factor.getUncertaintyType() == null)
 			return "none";
 		switch (factor.getUncertaintyType()) {
@@ -31,28 +31,28 @@ final class UncertaintyLabel {
 		}
 	}
 
-	private static String lognormal(LCIAFactor factor) {
+	private static String lognormal(ImpactFactor factor) {
 		String template = "lognormal: gmean=%s gsigma=%s";
 		String gmean = format(factor.getUncertaintyParameter1());
 		String gsigma = format(factor.getUncertaintyParameter2());
 		return String.format(template, gmean, gsigma);
 	}
 
-	private static String normal(LCIAFactor factor) {
+	private static String normal(ImpactFactor factor) {
 		String template = "normal: mean=%s sigma=%s";
 		String mean = format(factor.getUncertaintyParameter1());
 		String sigma = format(factor.getUncertaintyParameter2());
 		return String.format(template, mean, sigma);
 	}
 
-	private static String uniform(LCIAFactor factor) {
+	private static String uniform(ImpactFactor factor) {
 		String template = "uniform: min=%s max=%s";
 		String min = format(factor.getUncertaintyParameter1());
 		String max = format(factor.getUncertaintyParameter2());
 		return String.format(template, min, max);
 	}
 
-	private static String triangular(LCIAFactor factor) {
+	private static String triangular(ImpactFactor factor) {
 		String template = "triangular: min=%s mode=%s max=%s";
 		String min = format(factor.getUncertaintyParameter1());
 		String mode = format(factor.getUncertaintyParameter2());

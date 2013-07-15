@@ -14,7 +14,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.core.application.Messages;
-import org.openlca.core.model.LCIAFactor;
+import org.openlca.core.model.ImpactFactor;
 import org.openlca.core.model.UncertaintyDistributionType;
 import org.openlca.ui.Colors;
 import org.openlca.ui.DataBinding;
@@ -37,9 +37,9 @@ public class UncertaintyDialog extends Dialog {
 	private double thirdParam;
 	private String[] properties = { "firstParam", "secondParam", "thirdParam" };
 
-	private LCIAFactor factor;
+	private ImpactFactor factor;
 
-	public UncertaintyDialog(Shell parentShell, LCIAFactor factor) {
+	public UncertaintyDialog(Shell parentShell, ImpactFactor factor) {
 		super(parentShell);
 		toolkit = new FormToolkit(parentShell.getDisplay());
 		this.factor = factor;

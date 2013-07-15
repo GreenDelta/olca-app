@@ -32,7 +32,7 @@ class SankeyResult {
 	private double[] totalContributions;
 	private double[] singleResults;
 	private double[] singleContributions;
-	private Map<String, Double> linkContribution;
+	private Map<Long, Double> linkContribution;
 
 	public SankeyResult(ProductSystem productSystem, AnalysisResult results) {
 		this.productSystem = productSystem;
@@ -75,8 +75,8 @@ class SankeyResult {
 		return Math.abs(contributions[length - maxProcessesCount]);
 	}
 
-	public List<String> getProcesseIdsAboveCutoff(double cutoff) {
-		List<String> processes = new ArrayList<>();
+	public List<Long> getProcesseIdsAboveCutoff(double cutoff) {
+		List<Long> processes = new ArrayList<>();
 		for (Process process : productSystem.getProcesses()) {
 			double contr = getTotalContribution(process);
 			if (Math.abs(contr) >= cutoff)

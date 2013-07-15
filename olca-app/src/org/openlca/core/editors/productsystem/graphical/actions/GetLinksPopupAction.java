@@ -111,8 +111,8 @@ public class GetLinksPopupAction extends Action {
 					.getExchanges()) {
 				// if exchange is non elementary and input(provider) or
 				// output(recipient)
-				if ((exchange.getFlow().getFlowType() == FlowType.ProductFlow || exchange
-						.getFlow().getFlowType() == FlowType.WasteFlow)
+				if ((exchange.getFlow().getFlowType() == FlowType.PRODUCT_FLOW || exchange
+						.getFlow().getFlowType() == FlowType.WASTE_FLOW)
 						&& exchange.isInput() == provider) {
 					// add to list
 					exchanges.add(exchange);
@@ -174,7 +174,7 @@ public class GetLinksPopupAction extends Action {
 	 * @return True if the exchange is already connected to another process
 	 *         input/output, false otherwise
 	 */
-	private boolean isConnected(Exchange exchange, String processId,
+	private boolean isConnected(Exchange exchange, long processId,
 			ProductSystem productSystem) {
 		boolean connected = false;
 		ProcessLink[] links = exchange.isInput() ? productSystem
@@ -183,9 +183,9 @@ public class GetLinksPopupAction extends Action {
 
 		int i = 0;
 		while (!connected && i < links.length) {
-			String id = exchange.isInput() ? links[i].getRecipientInput()
-					.getId() : links[i].getProviderOutput().getId();
-			if (id.equals(exchange.getId())) {
+			long id = exchange.isInput() ? links[i].getRecipientInput().getId()
+					: links[i].getProviderOutput().getId();
+			if (id == exchange.getId()) {
 				connected = true;
 			} else {
 				i++;
@@ -209,14 +209,14 @@ public class GetLinksPopupAction extends Action {
 	private boolean isExisting(Exchange exchange, ProductSystem productSystem) {
 		boolean existing = false;
 		int i = 0;
-		while (!existing && i < productSystem.getProcesses().length) {
-			Process process = productSystem.getProcesses()[i];
+		while (!existing && i < productSystem.getProcesses().size()) {
+			Process process = productSystem.getProcesses().get(i);
 			Exchange[] exchanges = exchange.isInput() ? process.getOutputs()
 					: process.getInputs();
 			int j = 0;
 			while (!existing && j < exchanges.length) {
-				if (exchanges[j].getFlow().getId()
-						.equals(exchange.getFlow().getId())) {
+				if (exchanges[j].getFlow().getId() == exchange.getFlow()
+						.getId()) {
 					existing = true;
 				} else {
 					j++;
@@ -286,7 +286,7 @@ public class GetLinksPopupAction extends Action {
 
 				// for each created process node
 				for (final ProcessNode node : createdProcessNodes) {
-					if (node.getProcess().getId().equals(p.getId())) {
+					if (node.getProcess().getId() == p.getId()) {
 						// find process node for p
 						pNode = node;
 						break;

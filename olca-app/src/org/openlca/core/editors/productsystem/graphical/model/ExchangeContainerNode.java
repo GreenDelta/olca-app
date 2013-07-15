@@ -37,8 +37,8 @@ public class ExchangeContainerNode extends Node {
 		// for each non elementary input
 		for (final Exchange e : exchanges) {
 			if (e.isInput()
-					&& (e.getFlow().getFlowType() == FlowType.ProductFlow || e
-							.getFlow().getFlowType() == FlowType.WasteFlow)) {
+					&& (e.getFlow().getFlowType() == FlowType.PRODUCT_FLOW || e
+							.getFlow().getFlowType() == FlowType.WASTE_FLOW)) {
 				inputs.add(e);
 			}
 		}
@@ -46,8 +46,8 @@ public class ExchangeContainerNode extends Node {
 		// for each non elementary output
 		for (final Exchange e : exchanges) {
 			if (!e.isInput()
-					&& (e.getFlow().getFlowType() == FlowType.ProductFlow || e
-							.getFlow().getFlowType() == FlowType.WasteFlow)) {
+					&& (e.getFlow().getFlowType() == FlowType.PRODUCT_FLOW || e
+							.getFlow().getFlowType() == FlowType.WASTE_FLOW)) {
 				outputs.add(e);
 			}
 		}

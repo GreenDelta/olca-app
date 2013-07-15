@@ -21,7 +21,7 @@ public class ProductSystemNode extends Node implements PropertyChangeListener {
 	private double cutoff = 0;
 	private SankeyDiagram editor;
 	private Object selection;
-	private List<String> processIds = new ArrayList<>();
+	private List<Long> processIds = new ArrayList<>();
 	private ProductSystem productSystem;
 
 	public ProductSystemNode(ProductSystem productSystem, SankeyDiagram editor,
@@ -41,7 +41,7 @@ public class ProductSystemNode extends Node implements PropertyChangeListener {
 		return added;
 	}
 
-	public boolean containsProcess(String id) {
+	public boolean containsProcess(long id) {
 		return processIds.contains(id);
 	}
 

@@ -3,8 +3,8 @@ package org.openlca.core.editors.lciamethod;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
-import org.openlca.core.model.LCIACategory;
-import org.openlca.core.model.LCIAMethod;
+import org.openlca.core.model.ImpactCategory;
+import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.NormalizationWeightingFactor;
 
 /**
@@ -12,9 +12,9 @@ import org.openlca.core.model.NormalizationWeightingFactor;
  */
 class NwSetFactorLabel extends BaseLabelProvider implements ITableLabelProvider {
 
-	private LCIAMethod method;
+	private ImpactMethod method;
 
-	public NwSetFactorLabel(LCIAMethod method) {
+	public NwSetFactorLabel(ImpactMethod method) {
 		this.method = method;
 	}
 
@@ -47,11 +47,11 @@ class NwSetFactorLabel extends BaseLabelProvider implements ITableLabelProvider 
 	}
 
 	private String categoryName(NormalizationWeightingFactor factor) {
-		String catId = factor.getImpactCategoryId();
-		if (catId == null || method == null)
+		long catId = factor.getImpactCategoryId();
+		if (method == null)
 			return null;
-		for (LCIACategory cat : method.getLCIACategories())
-			if (catId.equals(cat.getId()))
+		for (ImpactCategory cat : method.getLCIACategories())
+			if (catId == cat.getId())
 				return cat.getName();
 		return null;
 	}

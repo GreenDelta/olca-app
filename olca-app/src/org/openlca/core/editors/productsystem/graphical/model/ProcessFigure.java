@@ -140,21 +140,7 @@ public class ProcessFigure extends Figure implements PropertyChangeListener {
 				+ ": " + processNode.getName()));
 		setBounds(new Rectangle(0, 0, 0, 0));
 		this.processNode = processNode;
-		int inputs = 0;
-		int outputs = 0;
-		for (final Exchange e : processNode.getProcess().getExchanges()) {
-			if (e.getFlow().getFlowType() == FlowType.ProductFlow
-					|| e.getFlow().getFlowType() == FlowType.WasteFlow) {
-				if (e.isInput()) {
-					inputs++;
-				} else {
-					outputs++;
-				}
-			}
-		}
-		final int length = Math.max(inputs, outputs);
-		privateMinimumHeight = 55 + length * ExchangeFigure.height
-				+ (result ? 3 : 0);
+		initHeight(processNode);
 		setSize(calculateSize());
 		oldSize = calculateSize();
 		final GridLayout layout = new GridLayout(1, true);
@@ -189,19 +175,7 @@ public class ProcessFigure extends Figure implements PropertyChangeListener {
 		dummyGridData.heightHint = 30;
 		add(new Figure(), dummyGridData);
 
-		if (result) {
-			final LineBorder outer = new LineBorder(lineColor, 1);
-			final LineBorder innerInner = new LineBorder(lineColor, 1);
-			final LineBorder innerOuter = new LineBorder(ColorConstants.white,
-					1);
-			final CompoundBorder inner = new CompoundBorder(innerOuter,
-					innerInner);
-			final CompoundBorder border = new CompoundBorder(outer, inner);
-			setBorder(border);
-		} else {
-			final LineBorder border = new LineBorder(lineColor, 1);
-			setBorder(border);
-		}
+		drawBorder();
 
 		final ProductSystem productSystem = ((ProductSystemNode) processNode
 				.getParent()).getProductSystem();
@@ -211,11 +185,11 @@ public class ProcessFigure extends Figure implements PropertyChangeListener {
 		final ProcessLink[] links = productSystem.getProcessLinks(processNode
 				.getProcess().getId());
 		while ((!hasIncomingLinks || !hasOutgoingLinks) && i < links.length) {
-			if (links[i].getProviderProcess().getId()
-					.equals(processNode.getProcess().getId())) {
+			if (links[i].getProviderProcess().getId() == processNode
+					.getProcess().getId()) {
 				hasOutgoingLinks = true;
-			} else if (links[i].getRecipientProcess().getId()
-					.equals(processNode.getProcess().getId())) {
+			} else if (links[i].getRecipientProcess().getId() == processNode
+					.getProcess().getId()) {
 				hasIncomingLinks = true;
 			}
 			i++;
@@ -226,12 +200,43 @@ public class ProcessFigure extends Figure implements PropertyChangeListener {
 		if (!hasOutgoingLinks) {
 			expandCollapseRight.setVisible(false);
 		}
-		if (productSystem.getReferenceProcess().getId()
-				.equals(processNode.getProcess().getId())) {
+		if (productSystem.getReferenceProcess().getId() == processNode
+				.getProcess().getId()) {
 			setExpandedLeft(true);
 		}
 
 		initializeMouseListeners();
+	}
+
+	private void drawBorder() {
+		if (result) {
+			LineBorder outer = new LineBorder(lineColor, 1);
+			LineBorder innerInner = new LineBorder(lineColor, 1);
+			LineBorder innerOuter = new LineBorder(ColorConstants.white, 1);
+			CompoundBorder inner = new CompoundBorder(innerOuter, innerInner);
+			CompoundBorder border = new CompoundBorder(outer, inner);
+			setBorder(border);
+		} else {
+			LineBorder border = new LineBorder(lineColor, 1);
+			setBorder(border);
+		}
+	}
+
+	private void initHeight(ProcessNode processNode) {
+		int inputs = 0;
+		int outputs = 0;
+		for (Exchange e : processNode.getProcess().getExchanges()) {
+			FlowType type = e.getFlow().getFlowType();
+			if (type == FlowType.ELEMENTARY_FLOW)
+				continue;
+			if (e.isInput())
+				inputs++;
+			else
+				outputs++;
+		}
+		final int length = Math.max(inputs, outputs);
+		privateMinimumHeight = 55 + length * ExchangeFigure.height
+				+ (result ? 3 : 0);
 	}
 
 	/**
@@ -245,24 +250,14 @@ public class ProcessFigure extends Figure implements PropertyChangeListener {
 	 *            The id of the process expanding started with
 	 */
 	private void callExpandRecursion(final List<ProcessNode> visited,
-			final List<ProcessNode> processNodes, final String startProcessId) {
-		// for each process node
+			final List<ProcessNode> processNodes, final long startProcessId) {
 		for (final ProcessNode processNode : processNodes) {
-			// if process is not the start process
-			if (!processNode.getProcess().getId().equals(startProcessId)) {
-				// if expanded to the left
-				if (processNode.getFigure().expandedLeft) {
-					// expand
-					processNode.getFigure().expand(visited, true,
-							startProcessId);
-				}
-				// if expanded to the right
-				if (processNode.getFigure().expandedRight) {
-					// expand
-					processNode.getFigure().expand(visited, false,
-							startProcessId);
-				}
-			}
+			if (processNode.getProcess().getId() == startProcessId)
+				continue;
+			if (processNode.getFigure().expandedLeft)
+				processNode.getFigure().expand(visited, true, startProcessId);
+			if (processNode.getFigure().expandedRight)
+				processNode.getFigure().expand(visited, false, startProcessId);
 		}
 	}
 
@@ -276,24 +271,15 @@ public class ProcessFigure extends Figure implements PropertyChangeListener {
 	 * @param startProcessId
 	 *            The id of the process folding started with
 	 */
-	private void callFoldRecursion(final List<ProcessNode> visited,
-			final List<ProcessNode> processNodes, final String startProcessId) {
-		// for each process node
-		for (final ProcessNode processNode : processNodes) {
-			// if not start process
-			if (!processNode.getProcess().getId().equals(startProcessId)) {
-				// if expanded left
-				if (processNode.getFigure().expandedLeft) {
-					// fold
-					processNode.getFigure().fold(visited, true, startProcessId);
-				}
-				// if expanded right
-				if (processNode.getFigure().expandedRight) {
-					// fold
-					processNode.getFigure()
-							.fold(visited, false, startProcessId);
-				}
-			}
+	private void callFoldRecursion(List<ProcessNode> visited,
+			List<ProcessNode> processNodes, long startProcessId) {
+		for (ProcessNode processNode : processNodes) {
+			if (processNode.getProcess().getId() == startProcessId)
+				continue;
+			if (processNode.getFigure().expandedLeft)
+				processNode.getFigure().fold(visited, true, startProcessId);
+			if (processNode.getFigure().expandedRight)
+				processNode.getFigure().fold(visited, false, startProcessId);
 		}
 	}
 
@@ -311,7 +297,7 @@ public class ProcessFigure extends Figure implements PropertyChangeListener {
 	 * @return A list of process nodes that can be set invisible
 	 */
 	private List<ProcessNode> checkIfNodesCanBeFolded(final boolean left,
-			final List<ProcessNode> processNodes, final String startProcessId) {
+			final List<ProcessNode> processNodes, final long startProcessId) {
 		final List<ProcessNode> remainingProcessNodes = new ArrayList<>();
 		// for each process node
 		for (final ProcessNode processNode : processNodes) {
@@ -377,8 +363,8 @@ public class ProcessFigure extends Figure implements PropertyChangeListener {
 				final ExchangeNode e2 = left ? link.getSourceNode() : link
 						.getTargetNode();
 				// if parent node equals process node
-				if (e1.getParentProcessNode().getProcess().getId()
-						.equals(processNode.getProcess().getId())) {
+				if (e1.getParentProcessNode().getProcess().getId() == processNode
+						.getProcess().getId()) {
 					// if node process nodes contains parent of e2
 					if (!processNodes.contains(e2.getParentProcessNode())) {
 						// set visible
@@ -404,7 +390,7 @@ public class ProcessFigure extends Figure implements PropertyChangeListener {
 	 * @return A list of process nodes to fold
 	 */
 	private List<ProcessNode> getNodesToFold(final boolean left,
-			final String startProcessId) {
+			final long startProcessId) {
 		final List<ProcessNode> processNodes = new ArrayList<>();
 		// for each exchange node
 		for (final ExchangeNode exchangeNode : processNode.getExchangeNodes()) {
@@ -415,13 +401,12 @@ public class ProcessFigure extends Figure implements PropertyChangeListener {
 				final ExchangeNode e2 = left ? link.getSourceNode() : link
 						.getTargetNode();
 				// if parent process node equals process node
-				if (e1.getParentProcessNode().getProcess().getId()
-						.equals(processNode.getProcess().getId())) {
+				if (e1.getParentProcessNode().getProcess().getId() == processNode
+						.getProcess().getId()) {
 					// if not process node contains e2 parent node and e2's
 					// parent node is not the start process
 					if (!processNodes.contains(e2.getParentProcessNode())
-							&& !e2.getParentProcessNode().getProcess().getId()
-									.equals(startProcessId)) {
+							&& e2.getParentProcessNode().getProcess().getId() != startProcessId) {
 						processNodes.add(e2.getParentProcessNode());
 					}
 				}
@@ -444,7 +429,7 @@ public class ProcessFigure extends Figure implements PropertyChangeListener {
 	 * @return True if the process node has to stay visible, false otherwise
 	 */
 	private boolean hasToBeVisible(final ProcessNode processNode,
-			final String startProcessId, final boolean left) {
+			final long startProcessId, final boolean left) {
 		int i = 0;
 		boolean hasToBeVisible = false;
 		final ExchangeNode[] exchangeNodes = processNode.getExchangeNodes();
@@ -459,12 +444,12 @@ public class ProcessFigure extends Figure implements PropertyChangeListener {
 				final ExchangeNode e2 = left ? link.getTargetNode() : link
 						.getSourceNode();
 				// if e1's parent process node equals the process node
-				if (e1.getParentProcessNode().getProcess().getId()
-						.equals(processNode.getProcess().getId())) {
+				if (e1.getParentProcessNode().getProcess().getId() == processNode
+						.getProcess().getId()) {
 					final ProcessNode pNode = e2.getParentProcessNode();
 					// if not pNode is the start process, the figure is visible
 					// and is expanded right/left
-					if (!pNode.getProcess().getId().equals(startProcessId)
+					if (pNode.getProcess().getId() != startProcessId
 							&& pNode.getFigure().isVisible()
 							&& (left ? pNode.getFigure().expandedLeft : pNode
 									.getFigure().expandedRight)) {
@@ -627,16 +612,10 @@ public class ProcessFigure extends Figure implements PropertyChangeListener {
 	 */
 	private void paintTop(final Graphics graphics) {
 		Image file = null;
-		final ProductSystem ps = ((ProductSystemNode) processNode.getParent())
-				.getProductSystem();
-		if (ps.isMarked(processNode.getProcess().getId())) {
-			file = ImageType.PROCESS_BG_MARKED.get();
+		if (processNode.getProcess().getProcessType() == ProcessType.LCI_Result) {
+			file = ImageType.PROCESS_BG_LCI.get();
 		} else {
-			if (processNode.getProcess().getProcessType() == ProcessType.LCI_Result) {
-				file = ImageType.PROCESS_BG_LCI.get();
-			} else {
-				file = ImageType.PROCESS_BG.get();
-			}
+			file = ImageType.PROCESS_BG.get();
 		}
 		for (int i = 0; i < getSize().width - 20; i++) {
 			graphics.drawImage(file, new Point(getLocation().x + i,
@@ -814,11 +793,11 @@ public class ProcessFigure extends Figure implements PropertyChangeListener {
 	 * @param startProcessId
 	 *            The id of the process which started the expanding procedure
 	 */
-	public void expand(final List<ProcessNode> visited, final boolean left,
-			final String startProcessId) {
+	public void expand(List<ProcessNode> visited, boolean left,
+			long startProcessId) {
 		if (!visited.contains(processNode)) {
 			visited.add(processNode);
-			final List<ProcessNode> processNodes = getAndShowNodesToExpand(left);
+			List<ProcessNode> processNodes = getAndShowNodesToExpand(left);
 			setLinksVisible(left, processNodes);
 			callExpandRecursion(visited, processNodes, startProcessId);
 		}
@@ -836,7 +815,7 @@ public class ProcessFigure extends Figure implements PropertyChangeListener {
 	 *            The id of the process which started the folding procedure
 	 */
 	public void fold(final List<ProcessNode> visited, final boolean left,
-			final String startProcessId) {
+			final long startProcessId) {
 		if (!visited.contains(processNode)) {
 			visited.add(processNode);
 			List<ProcessNode> processNodes = getNodesToFold(left,

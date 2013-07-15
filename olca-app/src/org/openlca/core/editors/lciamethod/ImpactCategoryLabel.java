@@ -5,7 +5,7 @@ import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
-import org.openlca.core.model.LCIACategory;
+import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.resources.ImageType;
 
 /**
@@ -30,9 +30,9 @@ class ImpactCategoryLabel implements ITableLabelProvider, ITableFontProvider {
 
 	@Override
 	public String getColumnText(Object element, int columnIndex) {
-		if (!(element instanceof LCIACategory))
+		if (!(element instanceof ImpactCategory))
 			return null;
-		LCIACategory lciaCategory = (LCIACategory) element;
+		ImpactCategory lciaCategory = (ImpactCategory) element;
 		switch (columnIndex) {
 		case 0:
 			return lciaCategory.getName();

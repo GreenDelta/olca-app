@@ -12,6 +12,7 @@ package org.openlca.core.editors.analyze.sankey;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -68,8 +69,8 @@ public class SankeyDiagram extends GraphicalEditor implements
 	public static final String ID = "editor.ProductSystemSankeyDiagram";
 
 	private SankeyResult sankeyResult;
-	private Map<String, ConnectionLink> createdLinks = new HashMap<>();
-	private Map<String, ProcessNode> createdProcesses = new HashMap<>();
+	private Map<Long, ConnectionLink> createdLinks = new HashMap<>();
+	private Map<Long, ProcessNode> createdProcesses = new HashMap<>();
 	private IDatabase database;
 	private ProductSystemNode systemNode;
 	private ImpactMethodDescriptor method;
@@ -115,7 +116,7 @@ public class SankeyDiagram extends GraphicalEditor implements
 		}
 	}
 
-	private String getGreatestRecipient(String processId, int position) {
+	private Long getGreatestRecipient(long processId, int position) {
 		List<WeightedProcess> recipients = new ArrayList<>();
 		for (ProcessLink link : productSystem.getOutgoingLinks(processId)) {
 			WeightedProcess wp = new WeightedProcess();
@@ -153,9 +154,9 @@ public class SankeyDiagram extends GraphicalEditor implements
 	 *         process itself and ending with the node in the graph to connect
 	 *         to
 	 */
-	private List<String> searchPathFor(final String processToConnect,
-			final List<String> connectedGraph, final List<String> visited) {
-		List<String> path = null;
+	private List<Long> searchPathFor(final long processToConnect,
+			final List<Long> connectedGraph, final List<Long> visited) {
+		List<Long> path = null;
 		int x = 1;
 		while (path == null) {
 			// this while iteration is only for loop protection (if the system
@@ -166,7 +167,7 @@ public class SankeyDiagram extends GraphicalEditor implements
 			// recipient would be the next to look up and so on)
 
 			// get the x-greatest recipient
-			final String greatestRecipient = getGreatestRecipient(
+			final Long greatestRecipient = getGreatestRecipient(
 					processToConnect, x);
 			if (greatestRecipient == null) {
 				break;
@@ -180,11 +181,11 @@ public class SankeyDiagram extends GraphicalEditor implements
 				} else {
 					// append all visited nodes and the actual one to a new
 					// "visited-list" (for loop protection)
-					final List<String> newVisited = new ArrayList<>();
+					final List<Long> newVisited = new ArrayList<>();
 					newVisited.addAll(visited);
 					newVisited.add(greatestRecipient);
 					// get further path
-					final List<String> nextPath = searchPathFor(
+					final List<Long> nextPath = searchPathFor(
 							greatestRecipient, connectedGraph, newVisited);
 					if (nextPath != null) {
 						// if a path was found, add the path to the current
@@ -208,13 +209,13 @@ public class SankeyDiagram extends GraphicalEditor implements
 	 *            The id's of the processes to be drawn
 	 * @return A list of additional process nodes to be drawn
 	 */
-	private List<String> stockUpGraph(final List<String> processIds) {
-		final List<String> unconnected = new ArrayList<>();
-		final List<String> connected = new ArrayList<>();
+	private List<Long> stockUpGraph(final List<Long> processIds) {
+		final List<Long> unconnected = new ArrayList<>();
+		final List<Long> connected = new ArrayList<>();
 
 		// at the beginning only the reference process is definitely connected
 		// (implicit)
-		for (final String id : processIds) {
+		for (final Long id : processIds) {
 			if (!id.equals(productSystem.getReferenceProcess().getId())) {
 				unconnected.add(id);
 			} else {
@@ -222,17 +223,17 @@ public class SankeyDiagram extends GraphicalEditor implements
 			}
 		}
 
-		final Queue<String> toCheck = new LinkedList<>();
+		final Queue<Long> toCheck = new LinkedList<>();
 		toCheck.add(productSystem.getReferenceProcess().getId());
 		while (!toCheck.isEmpty()) {
 			// the actual process id
-			final String actual = toCheck.poll();
+			final Long actual = toCheck.poll();
 
 			// check each provider and add him to the connected list (if the
 			// process should be drawn)
 			for (final ProcessLink link : productSystem
 					.getIncomingLinks(actual)) {
-				final String providerId = link.getProviderProcess().getId();
+				final Long providerId = link.getProviderProcess().getId();
 				if (processIds.contains(providerId)) {
 					if (unconnected.contains(providerId)) {
 						unconnected.remove(providerId);
@@ -244,11 +245,11 @@ public class SankeyDiagram extends GraphicalEditor implements
 		}
 
 		// for each unconnected process
-		final List<String> additionalNodes = new ArrayList<>();
-		for (final String processId : unconnected) {
-			final List<String> path = searchPathFor(processId, connected,
-					new ArrayList<String>());
-			for (final String id : path) {
+		final List<Long> additionalNodes = new ArrayList<>();
+		for (final Long processId : unconnected) {
+			final List<Long> path = searchPathFor(processId, connected,
+					new ArrayList<Long>());
+			for (final Long id : path) {
 				connected.add(id);
 				additionalNodes.add(id);
 			}
@@ -274,7 +275,7 @@ public class SankeyDiagram extends GraphicalEditor implements
 			}
 		} else {
 			// collect all process above the cutoff
-			List<String> processesToDraw = sankeyResult
+			List<Long> processesToDraw = sankeyResult
 					.getProcesseIdsAboveCutoff(cutoff);
 
 			// if no process is found add at least the reference process
@@ -284,15 +285,15 @@ public class SankeyDiagram extends GraphicalEditor implements
 			}
 
 			// stock up the graph
-			final List<String> additionalNodes = stockUpGraph(processesToDraw);
-			for (final String processId : additionalNodes) {
+			final List<Long> additionalNodes = stockUpGraph(processesToDraw);
+			for (final Long processId : additionalNodes) {
 				if (!processesToDraw.contains(processId)) {
 					processesToDraw.add(processId);
 				}
 			}
 
 			// paint processes
-			for (final String processId : processesToDraw) {
+			for (final Long processId : processesToDraw) {
 				ProcessNode node = createNode(productSystem
 						.getProcess(processId));
 				systemNode.addChild(node);
@@ -434,7 +435,7 @@ public class SankeyDiagram extends GraphicalEditor implements
 	public List<ImpactCategoryDescriptor> getLCIACategories() {
 		if (method == null)
 			return Collections.emptyList();
-		return method.getImpactCategories();
+		return Arrays.asList(results.getImpactCategories());
 	}
 
 	public ProductSystemNode getModel() {
@@ -504,7 +505,7 @@ public class SankeyDiagram extends GraphicalEditor implements
 		/**
 		 * The id of the process
 		 */
-		private String id;
+		private long id;
 
 		/**
 		 * The weight of the process

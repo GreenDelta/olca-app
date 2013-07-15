@@ -130,7 +130,6 @@ public class SimulationPage extends FormPage {
 				Messages.Common_Flows, SWT.RADIO);
 		flowsCheck.setSelection(true);
 		flowViewer = new FlowViewer(section);
-		flowViewer.setDatabase(database);
 		flowViewer.setInput(result);
 		flowViewer.selectFirst();
 		flowViewer.addSelectionChangedListener(new SelectionChange<Flow>());
