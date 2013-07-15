@@ -1,12 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.io.ui.ecospold1;
 
 import java.io.File;
@@ -38,16 +29,14 @@ import org.openlca.io.EcoSpoldUnitFetch;
 import org.openlca.io.ParserException;
 import org.openlca.io.UnitMapping;
 import org.openlca.io.UnitMappingEntry;
-import org.openlca.io.ecospold1.importer.EcoSpold01Parser;
+import org.openlca.io.ecospold1.importer.EcoSpold01Import;
 import org.openlca.io.ui.FileImportPage;
 import org.openlca.io.ui.UnitMappingPage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Import wizard for importing a set of EcoSpold01 formatted files
- * 
- * @author Sebastian Greve
+ * Import wizard for EcoSpold 01 data sets
  * 
  */
 public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
@@ -257,8 +246,9 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 
 	private void parse(final IProgressMonitor monitor, final File[] files,
 			final UnitMapping unitMapping) throws ParserException {
-		EcoSpold01Parser processParser = new EcoSpold01Parser(category,
-				Database.get(), unitMapping);
+		EcoSpold01Import importer = new EcoSpold01Import(Database.get(),
+				unitMapping);
+		importer.setProcessCategory(category);
 		final long sizeOfXmlFiles = getAmountOfJobs(files);
 		monitor.beginTask(Messages.EcoSpoldImportWizard_Importing,
 				(int) sizeOfXmlFiles);
@@ -284,7 +274,7 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 										.equals(processNameSpace)
 										|| doc.getRootElement().getNamespace()
 												.equals(methodNameSpace)) {
-									processParser.parse(zipFile, entry,
+									importer.parse(zipFile, entry,
 											changeNameSpace(doc));
 								}
 							}
@@ -298,7 +288,7 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 							.equals(processNameSpace)
 							|| doc.getRootElement().getNamespace()
 									.equals(methodNameSpace)) {
-						processParser.parse(file, changeNameSpace(doc));
+						importer.run(file, changeNameSpace(doc));
 					}
 					monitor.worked((int) file.length());
 				}

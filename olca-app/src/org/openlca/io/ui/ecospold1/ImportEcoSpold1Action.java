@@ -44,7 +44,7 @@ public class ImportEcoSpold1Action extends Action implements IImportAction {
 	public void run() {
 		if (database != null) {
 			final WizardDialog dialog = new WizardDialog(UI.shell(),
-					new EcoSpold01ImportWizard(database));
+					new EcoSpold01ImportWizard());
 			dialog.open();
 		}
 	}
