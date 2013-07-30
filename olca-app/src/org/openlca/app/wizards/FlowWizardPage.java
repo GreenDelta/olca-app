@@ -14,7 +14,7 @@ import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.FlowType;
-import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.FlowPropertyDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,10 +57,10 @@ class FlowWizardPage extends AbstractWizardPage<Flow> {
 	protected void initModifyListeners() {
 		super.initModifyListeners();
 		referenceFlowPropertyViewer
-				.addSelectionChangedListener(new ISelectionChangedListener<BaseDescriptor>() {
+				.addSelectionChangedListener(new ISelectionChangedListener<FlowPropertyDescriptor>() {
 
 					@Override
-					public void selectionChanged(BaseDescriptor selected) {
+					public void selectionChanged(FlowPropertyDescriptor selected) {
 						checkInput();
 					}
 

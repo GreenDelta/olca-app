@@ -13,7 +13,7 @@ import org.openlca.core.application.db.Database;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyType;
 import org.openlca.core.model.UnitGroup;
-import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.UnitGroupDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,9 +56,9 @@ class FlowPropertyWizardPage extends AbstractWizardPage<FlowProperty> {
 	protected void initModifyListeners() {
 		super.initModifyListeners();
 		unitGroupComboViewer
-				.addSelectionChangedListener(new ISelectionChangedListener<BaseDescriptor>() {
+				.addSelectionChangedListener(new ISelectionChangedListener<UnitGroupDescriptor>() {
 					@Override
-					public void selectionChanged(BaseDescriptor selection) {
+					public void selectionChanged(UnitGroupDescriptor selection) {
 						checkInput();
 					}
 				});

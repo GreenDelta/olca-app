@@ -106,8 +106,7 @@ class ProcessCreationController {
 		return flow;
 	}
 
-	private void addQuantitativeReference(Process process, Flow flow)
-			throws Exception {
+	private void addQuantitativeReference(Process process, Flow flow) {
 		Exchange qRef = new Exchange();
 		qRef.setFlow(flow);
 		FlowProperty refProp = flow.getReferenceFlowProperty();
