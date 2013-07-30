@@ -14,6 +14,8 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
@@ -23,7 +25,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.openlca.app.navigation.CategoryElement;
-import org.openlca.app.navigation.NavigationRoot;
+import org.openlca.app.navigation.ModelTypeElement;
 import org.openlca.app.navigation.NavigationTree;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
@@ -36,13 +38,11 @@ public class SelectCategoryDialog extends Dialog {
 
 	private Category category;
 	private final ModelType modelType;
-	private final NavigationRoot root;
 	private final String title;
 
 	public SelectCategoryDialog(Shell parentShell, String title,
-			ModelType modelType, NavigationRoot root) {
+			ModelType modelType) {
 		super(parentShell);
-		this.root = root;
 		this.title = title;
 		this.modelType = modelType;
 	}
@@ -55,23 +55,15 @@ public class SelectCategoryDialog extends Dialog {
 		new Label(composite, SWT.NONE).setText(title);
 
 		// create category viewer
-		final TreeViewer categoryViewer = new NavigationTree(composite, false,
-				true, root, modelType);
+		final TreeViewer categoryViewer = NavigationTree.forSingleSelection(
+				composite, modelType);
+		categoryViewer.setFilters(new ViewerFilter[] { new CategoryFilter() });
 		categoryViewer.getTree().setLayoutData(
 				new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		// add category selection changed listener
 		categoryViewer
-				.addSelectionChangedListener(new ISelectionChangedListener() {
-
-					@Override
-					public void selectionChanged(
-							final SelectionChangedEvent event) {
-						category = !event.getSelection().isEmpty() ? (Category) ((CategoryElement) ((IStructuredSelection) event
-								.getSelection()).getFirstElement())
-								.getContent() : null;
-					}
-				});
+				.addSelectionChangedListener(new CategorySelectionListener());
 
 		return parent;
 	}
@@ -83,6 +75,28 @@ public class SelectCategoryDialog extends Dialog {
 
 	public Category getSelectedCategory() {
 		return category;
+	}
+
+	private class CategoryFilter extends ViewerFilter {
+
+		@Override
+		public boolean select(Viewer viewer, Object parentElement,
+				Object element) {
+			return element instanceof CategoryElement
+					|| element instanceof ModelTypeElement;
+		}
+
+	}
+
+	private class CategorySelectionListener implements
+			ISelectionChangedListener {
+
+		@Override
+		public void selectionChanged(final SelectionChangedEvent event) {
+			category = !event.getSelection().isEmpty() ? ((CategoryElement) ((IStructuredSelection) event
+					.getSelection()).getFirstElement()).getContent() : null;
+		}
+
 	}
 
 }
