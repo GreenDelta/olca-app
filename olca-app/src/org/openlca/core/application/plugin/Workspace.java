@@ -1,4 +1,4 @@
-package org.openlca.app.plugin;
+package org.openlca.core.application.plugin;
 
 import java.io.File;
 import java.net.URL;

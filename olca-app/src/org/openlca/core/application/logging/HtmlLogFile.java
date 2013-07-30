@@ -1,4 +1,4 @@
-package org.openlca.app.logging;
+package org.openlca.core.application.logging;
 
 import java.io.File;
 import java.io.IOException;

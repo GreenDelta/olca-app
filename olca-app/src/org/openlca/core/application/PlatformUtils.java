@@ -7,7 +7,7 @@ import java.net.URL;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
-import org.openlca.app.plugin.Activator;
+import org.openlca.core.application.plugin.Activator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,4 +1,4 @@
-package org.openlca.app.db;
+package org.openlca.core.application.db;
 
 import org.openlca.core.database.IDatabase;
 

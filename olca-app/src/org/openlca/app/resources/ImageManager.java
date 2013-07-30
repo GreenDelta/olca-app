@@ -13,7 +13,7 @@ package org.openlca.app.resources;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
-import org.openlca.app.plugin.Activator;
+import org.openlca.core.application.plugin.Activator;
 
 /**
  * Manager for the application images and icons.

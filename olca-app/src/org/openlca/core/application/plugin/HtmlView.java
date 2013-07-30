@@ -1,6 +1,6 @@
-package org.openlca.app.plugin;
+package org.openlca.core.application.plugin;
 
-import static org.openlca.app.plugin.Resource.USAGE_VIEW_JS;
+import static org.openlca.core.application.plugin.Resource.USAGE_VIEW_JS;
 
 import java.io.File;
 import java.io.IOException;

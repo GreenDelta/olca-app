@@ -13,10 +13,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.PlatformObject;
-import org.openlca.app.db.Database;
-import org.openlca.app.db.DatabaseList;
-import org.openlca.app.db.DerbyConfiguration;
-import org.openlca.app.db.MySQLConfiguration;
+import org.openlca.core.application.db.Database;
+import org.openlca.core.application.db.DatabaseList;
+import org.openlca.core.application.db.DerbyConfiguration;
+import org.openlca.core.application.db.MySQLConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

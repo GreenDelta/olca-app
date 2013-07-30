@@ -1,4 +1,4 @@
-package org.openlca.app.db;
+package org.openlca.core.application.db;
 
 import org.eclipse.jface.dialogs.DialogPage;
 import org.eclipse.jface.wizard.WizardPage;

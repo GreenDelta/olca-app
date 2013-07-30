@@ -2,7 +2,7 @@ package org.openlca.core.application;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.openlca.app.plugin.Activator;
+import org.openlca.core.application.plugin.Activator;
 import org.openlca.core.math.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -7,7 +7,7 @@
  * Contributors: GreenDeltaTC - initial API and implementation
  * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
  ******************************************************************************/
-package org.openlca.app.db;
+package org.openlca.core.application.db;
 
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;

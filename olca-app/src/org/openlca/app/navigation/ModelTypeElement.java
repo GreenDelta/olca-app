@@ -3,7 +3,7 @@ package org.openlca.app.navigation;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openlca.app.db.Database;
+import org.openlca.core.application.db.Database;
 import org.openlca.core.database.CategorizedEnitityDao;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.model.Category;

@@ -32,11 +32,11 @@ import org.eclipse.swt.widgets.Text;
 import org.openlca.app.Colors;
 import org.openlca.app.UI;
 import org.openlca.app.UIFactory;
-import org.openlca.app.db.Database;
 import org.openlca.app.navigation.NavigationContentProvider;
 import org.openlca.app.navigation.NavigationLabelProvider;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.core.application.ApplicationProperties;
+import org.openlca.core.application.db.Database;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 
