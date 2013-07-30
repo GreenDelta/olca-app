@@ -12,9 +12,13 @@ package org.openlca.app.navigation.filters;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
+import org.openlca.app.navigation.CategoryElement;
+import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
-import org.openlca.core.model.Flow;
+import org.openlca.core.model.Category;
 import org.openlca.core.model.FlowType;
+import org.openlca.core.model.ModelType;
+import org.openlca.core.model.descriptors.FlowDescriptor;
 
 /**
  * Filter for filtering specific flow types
@@ -36,68 +40,51 @@ public class FlowTypeFilter extends ViewerFilter {
 		this.flowTypes = types;
 	}
 
-	// private boolean containsFlowAndMatchType(INavigationElement elem) {
-	// boolean bool = false;
-	// if (elem.getData() instanceof Flow) {
-	// Flow flowDescriptor = (Flow) elem.getData();
-	// bool = matchType(flowDescriptor);
-	// }
-	// return bool;
-	// }
+	private boolean containsType(CategoryElement element) {
+		for (INavigationElement<?> child : element.getChildren())
+			if (child instanceof ModelElement
+					&& matchType((ModelElement) child))
+				return true;
+			else if (child instanceof CategoryElement
+					&& containsType((CategoryElement) child))
+				return true;
+		return false;
+	}
 
-	private boolean matchType(Flow flow) {
-		boolean isFlowType = false;
-		for (FlowType flowType : flowTypes) {
-			if (flow != null && flow.getFlowType() == flowType) {
-				isFlowType = true;
-				break;
-			}
-		}
-		return isFlowType;
+	private boolean matchType(ModelElement element) {
+		if (element.getContent().getModelType() != ModelType.FLOW)
+			return false;
+		FlowDescriptor flow = (FlowDescriptor) element.getContent();
+		for (FlowType flowType : flowTypes)
+			if (flow != null && flow.getFlowType() == flowType)
+				return true;
+		return false;
 	}
 
 	@Override
 	public boolean select(Viewer viewer, Object parentElement, Object element) {
 		boolean select = true;
 		TreeViewer treeViewer = (TreeViewer) viewer;
-		// boolean filterEmptyCategories = false;
-
-		// for each filter
-		for (ViewerFilter filter : treeViewer.getFilters()) {
-			// if filter is "empty category"-filter
-			if (filter.getClass() == EmptyCategoryFilter.class) {
-				// filterEmptyCategories = true;
-				break;
-			}
-		}
 
 		// if element is model component element
 		if (element instanceof ModelElement) {
-			ModelElement elem = (ModelElement) element;
-
-			// // if data is flow
-			// if (elem.getContent() instanceof Flow) {
-			// Flow flowDescriptor = (Flow) elem.getContent();
-			// select = !matchType(flowDescriptor);
-			// }
+			select = !matchType((ModelElement) element);
+		} else if (element instanceof CategoryElement) {
+			if (filterEmptyCategories(treeViewer)) {
+				Category category = ((CategoryElement) element).getContent();
+				if (category.getModelType() == ModelType.FLOW)
+					select = !containsType((CategoryElement) element);
+			}
 		}
 
-		// else if (filterEmptyCategories
-		// && element instanceof CategoryNavigationElement) {
-		// CategoryNavigationElement elem = (CategoryNavigationElement) element;
-		// Category category = (Category) elem.getData();
-		//
-		// // if category is flow category and not top category
-		// if (category.getComponentClass().equals(
-		// Flow.class.getCanonicalName())
-		// && !category.getComponentClass().equals(category.getId())) {
-		// // check if a flow matching the flow type is contained
-		// select = !containsFlowType((CategoryNavigationElement) element);
-		// }
-		// }
-		//
 		return select;
+	}
 
+	private boolean filterEmptyCategories(TreeViewer treeViewer) {
+		for (ViewerFilter filter : treeViewer.getFilters())
+			if (filter.getClass() == EmptyCategoryFilter.class)
+				return true;
+		return false;
 	}
 
 }

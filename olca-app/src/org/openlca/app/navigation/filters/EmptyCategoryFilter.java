@@ -67,7 +67,7 @@ public final class EmptyCategoryFilter extends ViewerFilter {
 	private void addContent(Object element, List<ModelElement> content) {
 		if (element instanceof CategoryElement) {
 			CategoryElement catElement = (CategoryElement) element;
-			for (INavigationElement contentElement : catElement.getChildren()) {
+			for (INavigationElement<?> contentElement : catElement.getChildren()) {
 				if (contentElement instanceof ModelElement) {
 					content.add((ModelElement) contentElement);
 				} else {
