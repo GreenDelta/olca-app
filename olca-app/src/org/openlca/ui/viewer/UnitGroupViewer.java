@@ -6,12 +6,11 @@ import java.util.List;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.UnitGroupDao;
-import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.UnitGroupDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class UnitGroupViewer extends AbstractComboViewer<BaseDescriptor> {
+public class UnitGroupViewer extends AbstractComboViewer<UnitGroupDescriptor> {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -22,10 +21,10 @@ public class UnitGroupViewer extends AbstractComboViewer<BaseDescriptor> {
 
 	public void setInput(IDatabase database) {
 		try {
-			List<BaseDescriptor> groups = new UnitGroupDao(
-					database.getEntityFactory()).getDescriptors();
+			List<UnitGroupDescriptor> groups = new UnitGroupDao(
+					database).getDescriptors();
 			Collections.sort(groups);
-			setInput(groups.toArray(new BaseDescriptor[groups.size()]));
+			setInput(groups.toArray(new UnitGroupDescriptor[groups.size()]));
 		} catch (Exception e) {
 			log.error("Loading unit groups failed", e);
 		}

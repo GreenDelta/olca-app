@@ -9,13 +9,13 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.core.math.IResultData;
 import org.openlca.core.model.Category;
-import org.openlca.core.model.Flow;
 import org.openlca.core.model.Location;
+import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.resources.ImageType;
 import org.openlca.ui.CategoryPath;
 import org.openlca.util.Strings;
 
-public class FlowViewer extends AbstractComboViewer<Flow> {
+public class FlowViewer extends AbstractComboViewer<FlowDescriptor> {
 
 	private static final String[] COLUMN_HEADERS = new String[] { "Name",
 			"Category", "Location" };
@@ -24,7 +24,7 @@ public class FlowViewer extends AbstractComboViewer<Flow> {
 
 	public FlowViewer(Composite parent) {
 		super(parent);
-		setInput(new Flow[0]);
+		setInput(new FlowDescriptor[0]);
 	}
 
 	@Override
@@ -55,16 +55,16 @@ public class FlowViewer extends AbstractComboViewer<Flow> {
 
 		@Override
 		public int compare(Viewer viewer, Object e1, Object e2) {
-			if (!(e1 instanceof Flow) || e1 == null) {
+			if (!(e1 instanceof FlowDescriptor) || e1 == null) {
 				if (e2 != null)
 					return -1;
 				return 0;
 			}
-			if (!(e2 instanceof Flow) || e2 == null)
+			if (!(e2 instanceof FlowDescriptor) || e2 == null)
 				return 1;
 
-			Flow flow1 = (Flow) e1;
-			Flow flow2 = (Flow) e2;
+			FlowDescriptor flow1 = (FlowDescriptor) e1;
+			FlowDescriptor flow2 = (FlowDescriptor) e2;
 
 			// safe compare flow names
 			int flowNameCompare = Strings.compare(flow1.getName(),
@@ -80,7 +80,8 @@ public class FlowViewer extends AbstractComboViewer<Flow> {
 				return categoryCompare;
 
 			// compare locations
-			return compare(flow1.getLocation(), flow2.getLocation());
+			return Strings.compare(flow1.getLocationCode(),
+					flow2.getLocationCode());
 		}
 
 		private int compare(Category category1, Category category2) {
@@ -89,13 +90,6 @@ public class FlowViewer extends AbstractComboViewer<Flow> {
 			return Strings.compare(path1, path2);
 		}
 
-		private int compare(Location location1, Location location2) {
-			String locationName1 = location1 != null ? location1.getName()
-					: null;
-			String locationName2 = location2 != null ? location2.getName()
-					: null;
-			return Strings.compare(locationName1, locationName2);
-		}
 	}
 
 	private class FlowLabelProvider extends BaseLabelProvider implements
@@ -103,7 +97,7 @@ public class FlowViewer extends AbstractComboViewer<Flow> {
 
 		@Override
 		public Image getColumnImage(Object element, int columnIndex) {
-			Flow flow = (Flow) element;
+			FlowDescriptor flow = (FlowDescriptor) element;
 
 			switch (columnIndex) {
 			case 0:
@@ -122,7 +116,7 @@ public class FlowViewer extends AbstractComboViewer<Flow> {
 
 		@Override
 		public String getColumnText(Object element, int columnIndex) {
-			Flow flow = (Flow) element;
+			FlowDescriptor flow = (FlowDescriptor) element;
 
 			switch (columnIndex) {
 			case 0:
@@ -130,9 +124,9 @@ public class FlowViewer extends AbstractComboViewer<Flow> {
 			case 1:
 				return CategoryPath.getFull(flow.getCategory());
 			case 2:
-				if (flow.getLocation() == null)
+				if (flow.getLocationCode() == null)
 					break;
-				return flow.getLocation().getName();
+				return flow.getLocationCode();
 			}
 			return "";
 		}

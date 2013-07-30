@@ -27,7 +27,7 @@ public class NormalizationWeightingSetViewer extends
 			throw new IllegalStateException("No database set");
 		if (impactMethod != null) {
 			ImpactMethodDao dao = new ImpactMethodDao(
-					database.getEntityFactory());
+					database);
 			List<NormalizationWeightingSet> nwSets = dao
 					.getNwSetDescriptors(impactMethod);
 			setInput(nwSets
