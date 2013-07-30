@@ -119,27 +119,28 @@ public class CreateModelAction extends Action implements INavigationAction {
 
 	@Override
 	public String getText() {
+		String prefix = "Create new ";
 		if (type == null)
 			return "Unknown?";
 		switch (type) {
 		case ACTOR:
-			return "New actor";
+			return prefix + "actor";
 		case FLOW:
-			return "New flow";
+			return prefix + "flow";
 		case FLOW_PROPERTY:
-			return "New flow property";
+			return prefix + "flow property";
 		case IMPACT_METHOD:
-			return "New LCIA method";
+			return prefix + "LCIA method";
 		case PROCESS:
-			return "New process";
+			return prefix + "process";
 		case PRODUCT_SYSTEM:
-			return "New product system";
+			return prefix + "product system";
 		case PROJECT:
-			return "New project";
+			return prefix + "project";
 		case SOURCE:
-			return "New source";
+			return prefix + "source";
 		case UNIT_GROUP:
-			return "New unit group";
+			return prefix + "unit group";
 		default:
 			return "Unknown?";
 		}
