@@ -30,6 +30,7 @@ import org.openlca.app.navigation.actions.CreateDatabaseAction;
 import org.openlca.app.navigation.actions.CreateModelAction;
 import org.openlca.app.navigation.actions.DeleteCategoryAction;
 import org.openlca.app.navigation.actions.DeleteDatabaseAction;
+import org.openlca.app.navigation.actions.DeleteModelAction;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.actions.OpenUsageAction;
 import org.openlca.app.navigation.actions.RenameCategoryAction;
@@ -58,23 +59,25 @@ public class NavigationActionProvider extends CommonActionProvider {
 	private ExportActionProvider exportActionProvider = new ExportActionProvider();
 
 	//@formatter:off
-	private INavigationAction[] actions = new INavigationAction[] {
-			
+	private INavigationAction[][] actions = new INavigationAction[][] {
 			// database actions
-			new ActivateDatabaseAction(), 
-			new CloseDatabaseAction(), 
-			new DeleteDatabaseAction(), 
-			
+			new INavigationAction[] {
+				new ActivateDatabaseAction(), 
+				new CloseDatabaseAction(), 
+				new DeleteDatabaseAction()
+			},			
 			// model actions
-			new CreateModelAction(),
-			
+			new INavigationAction[] {
+				new CreateModelAction(),
+				new OpenUsageAction(),				
+				new DeleteModelAction()
+			},			
 			// category actions
-			new CreateCategoryAction(),
-			new RenameCategoryAction(),
-			new DeleteCategoryAction(),
-			
-			
-			new OpenUsageAction(),
+			new INavigationAction[] {
+				new CreateCategoryAction(),
+				new RenameCategoryAction(),
+				new DeleteCategoryAction()		
+			},			
 	};
 	//@formatter:on
 
@@ -97,22 +100,34 @@ public class NavigationActionProvider extends CommonActionProvider {
 	private int registerSingleActions(INavigationElement<?> element,
 			IMenuManager menu) {
 		int count = 0;
-		for (INavigationAction action : actions)
-			if (action.accept(element)) {
-				menu.add(action);
-				count++;
-			}
+		for (INavigationAction[] group : actions) {
+			boolean acceptedOne = false;
+			for (INavigationAction action : group)
+				if (action.accept(element)) {
+					menu.add(action);
+					count++;
+					acceptedOne = true;
+				}
+			if (acceptedOne)
+				menu.add(new Separator());
+		}
 		return count;
 	}
 
 	private int registerMultiActions(List<INavigationElement<?>> elements,
 			IMenuManager menu) {
 		int count = 0;
-		for (INavigationAction action : actions)
-			if (action.accept(elements)) {
-				menu.add(action);
-				count++;
-			}
+		for (INavigationAction[] group : actions) {
+			boolean acceptedOne = false;
+			for (INavigationAction action : group)
+				if (action.accept(elements)) {
+					menu.add(action);
+					count++;
+					acceptedOne = true;
+				}
+			if (acceptedOne)
+				menu.add(new Separator());
+		}
 		return count;
 	}
 
