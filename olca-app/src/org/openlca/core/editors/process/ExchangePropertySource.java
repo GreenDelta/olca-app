@@ -16,13 +16,13 @@ import java.util.UUID;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.TextPropertyDescriptor;
+import org.openlca.app.Error;
 import org.openlca.core.application.Messages;
 import org.openlca.core.model.AllocationFactor;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;
-import org.openlca.ui.Error;
 
 /**
  * Property source for the {@link ExchangePropertiesPage}

@@ -6,8 +6,8 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
+import org.openlca.app.UI;
 import org.openlca.core.application.Messages;
-import org.openlca.ui.UI;
 
 /** Table viewer for process contributions. */
 class ProcessContributionViewer extends TableViewer {

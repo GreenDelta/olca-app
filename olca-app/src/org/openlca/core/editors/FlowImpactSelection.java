@@ -6,14 +6,14 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.viewer.AbstractViewer;
+import org.openlca.app.viewer.FlowViewer;
+import org.openlca.app.viewer.ISelectionChangedListener;
+import org.openlca.app.viewer.ImpactCategoryViewer;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.results.AnalysisResult;
-import org.openlca.ui.viewer.AbstractViewer;
-import org.openlca.ui.viewer.FlowViewer;
-import org.openlca.ui.viewer.ISelectionChangedListener;
-import org.openlca.ui.viewer.ImpactCategoryViewer;
 
 /**
  * Two combo boxes showing flows and impact categories. The impact categories

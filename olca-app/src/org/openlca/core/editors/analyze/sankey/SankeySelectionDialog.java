@@ -23,15 +23,15 @@ import org.eclipse.ui.forms.HyperlinkSettings;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.openlca.app.BaseLabelProvider;
+import org.openlca.app.BaseNameSorter;
+import org.openlca.app.UI;
+import org.openlca.app.viewer.ToolTipComboViewer;
 import org.openlca.core.application.Messages;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.ui.BaseLabelProvider;
-import org.openlca.ui.BaseNameSorter;
-import org.openlca.ui.UI;
-import org.openlca.ui.viewer.ToolTipComboViewer;
 
 /**
  * A dialog for selecting the flow/LCIA category and the cutoff to analyze in

@@ -20,10 +20,10 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.openlca.app.UI;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.PedigreeMatrix;
 import org.openlca.core.model.PedigreeMatrixRow;
-import org.openlca.ui.UI;
 
 class PedigreeShell extends Shell {
 

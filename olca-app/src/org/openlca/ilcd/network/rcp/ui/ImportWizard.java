@@ -12,6 +12,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
+import org.openlca.app.io.Activator;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.core.database.IDatabase;
 import org.openlca.ilcd.descriptors.ProcessDescriptor;
@@ -20,7 +21,6 @@ import org.openlca.ilcd.processes.Process;
 import org.openlca.ilcd.util.ProcessBag;
 import org.openlca.io.ilcd.input.ProcessImport;
 import org.openlca.io.ilcd.input.SystemImport;
-import org.openlca.io.ui.Activator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

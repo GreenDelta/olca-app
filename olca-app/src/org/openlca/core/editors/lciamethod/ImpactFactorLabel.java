@@ -5,14 +5,14 @@ import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
+import org.openlca.app.CategoryPath;
+import org.openlca.app.resources.ImageType;
 import org.openlca.core.application.Numbers;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.ImpactFactor;
 import org.openlca.core.model.Unit;
-import org.openlca.core.resources.ImageType;
-import org.openlca.ui.CategoryPath;
 
 /**
  * The label provider for impact assessment factors in the LCIA method editor.

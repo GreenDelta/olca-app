@@ -29,6 +29,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.openlca.app.Colors;
+import org.openlca.app.UI;
+import org.openlca.app.UIFactory;
 import org.openlca.app.navigation.NavigationContentProvider;
 import org.openlca.app.navigation.NavigationLabelProvider;
 import org.openlca.app.navigation.Navigator;
@@ -36,9 +39,6 @@ import org.openlca.core.application.ApplicationProperties;
 import org.openlca.core.application.db.Database;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
-import org.openlca.ui.Colors;
-import org.openlca.ui.UI;
-import org.openlca.ui.UIFactory;
 
 /**
  * Wizard page for selecting objects for export

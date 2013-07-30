@@ -14,7 +14,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.openlca.ui.UI;
+import org.openlca.app.UI;
 
 public class FileSelection implements SelectionListener {
 

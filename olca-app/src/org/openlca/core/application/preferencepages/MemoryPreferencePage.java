@@ -10,9 +10,9 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.openlca.app.UIFactory;
 import org.openlca.core.application.ApplicationProperties;
 import org.openlca.core.application.Messages;
-import org.openlca.ui.UIFactory;
 
 /**
  * Preference page for changing the amount of RAM openLCA reserves

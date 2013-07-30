@@ -12,11 +12,11 @@ package org.openlca.core.editors.productsystem.graphical.actions;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.openlca.app.resources.ImageType;
 import org.openlca.core.application.Messages;
 import org.openlca.core.editors.productsystem.graphical.ProductSystemGraphEditor;
 import org.openlca.core.editors.productsystem.graphical.model.Node;
 import org.openlca.core.editors.productsystem.graphical.model.ProcessNode;
-import org.openlca.core.resources.ImageType;
 
 /**
  * Creates a command chain with {@link MaximizeCommand}'s for each ProcessNode

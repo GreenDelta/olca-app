@@ -15,6 +15,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.openlca.app.UI;
 import org.openlca.core.application.Numbers;
 import org.openlca.core.application.db.Database;
 import org.openlca.core.editors.ContributionImage;
@@ -28,7 +29,6 @@ import org.openlca.core.model.results.ContributionTree;
 import org.openlca.core.model.results.ContributionTreeCalculator;
 import org.openlca.core.model.results.ContributionTreeNode;
 import org.openlca.core.model.results.LinkContributions;
-import org.openlca.ui.UI;
 
 public class ContributionTreePage extends FormPage {
 

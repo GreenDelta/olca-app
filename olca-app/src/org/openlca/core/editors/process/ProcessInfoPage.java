@@ -26,6 +26,13 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.BaseLabelProvider;
+import org.openlca.app.BaseNameSorter;
+import org.openlca.app.DataBinding;
+import org.openlca.app.UI;
+import org.openlca.app.UIFactory;
+import org.openlca.app.viewer.LocationViewer;
+import org.openlca.app.viewer.ToolTipComboViewer;
 import org.openlca.core.application.Messages;
 import org.openlca.core.application.db.Database;
 import org.openlca.core.editors.ModelEditorInfoPage;
@@ -34,13 +41,6 @@ import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessDocumentation;
-import org.openlca.ui.BaseLabelProvider;
-import org.openlca.ui.BaseNameSorter;
-import org.openlca.ui.DataBinding;
-import org.openlca.ui.UI;
-import org.openlca.ui.UIFactory;
-import org.openlca.ui.viewer.LocationViewer;
-import org.openlca.ui.viewer.ToolTipComboViewer;
 
 /**
  * Form page for displaying and editing the general information of a process.
@@ -169,7 +169,7 @@ public class ProcessInfoPage extends ModelEditorInfoPage implements
 				});
 
 		locationViewer
-				.addSelectionChangedListener(new org.openlca.ui.viewer.ISelectionChangedListener<Location>() {
+				.addSelectionChangedListener(new org.openlca.app.viewer.ISelectionChangedListener<Location>() {
 
 					@Override
 					public void selectionChanged(Location selection) {

@@ -5,9 +5,9 @@ import static org.openlca.core.application.plugin.Resource.USAGE_VIEW_JS;
 import java.io.File;
 import java.io.IOException;
 
-import org.openlca.ui.html.HtmlFolder;
-import org.openlca.ui.html.HtmlResource;
-import org.openlca.ui.html.IHtmlResource;
+import org.openlca.app.html.HtmlFolder;
+import org.openlca.app.html.HtmlResource;
+import org.openlca.app.html.IHtmlResource;
 
 public enum HtmlView {
 

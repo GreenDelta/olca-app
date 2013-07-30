@@ -21,6 +21,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.views.contentoutline.ContentOutline;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
+import org.openlca.app.UI;
 import org.openlca.core.application.ApplicationProperties;
 import org.openlca.core.application.Messages;
 import org.openlca.core.application.db.Database;
@@ -28,7 +29,6 @@ import org.openlca.core.editors.ModelEditorPage;
 import org.openlca.core.editors.ParameterizableModelEditor;
 import org.openlca.core.editors.productsystem.graphical.ProductSystemGraphEditor;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.ui.UI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

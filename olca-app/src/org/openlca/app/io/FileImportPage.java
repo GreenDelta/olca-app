@@ -35,9 +35,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.openlca.app.Colors;
+import org.openlca.app.UI;
 import org.openlca.core.application.ApplicationProperties;
-import org.openlca.ui.Colors;
-import org.openlca.ui.UI;
 
 /**
  * Wizard page for file import: the user can select files from directories.

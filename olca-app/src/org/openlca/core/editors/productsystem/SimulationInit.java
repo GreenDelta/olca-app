@@ -4,12 +4,12 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.openlca.app.Editors;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.math.SimulationSolver;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
-import org.openlca.ui.Editors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -16,8 +16,8 @@ import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editparts.AbstractConnectionEditPart;
 import org.eclipse.gef.editpolicies.ConnectionEndpointEditPolicy;
 import org.eclipse.swt.graphics.RGB;
+import org.openlca.app.Colors;
 import org.openlca.core.application.FaviColor;
-import org.openlca.ui.Colors;
 
 /**
  * EditPart for {@link ConnectionLink}.

@@ -8,8 +8,8 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.ui.navigator.CommonDragAdapterAssistant;
+import org.openlca.app.dnd.ModelTransfer;
 import org.openlca.core.model.descriptors.BaseDescriptor;
-import org.openlca.ui.dnd.ModelTransfer;
 
 public class NavigationDragAssistant extends CommonDragAdapterAssistant {
 

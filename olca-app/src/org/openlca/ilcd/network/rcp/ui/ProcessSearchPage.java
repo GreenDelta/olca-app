@@ -21,12 +21,12 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
+import org.openlca.app.Dialog;
+import org.openlca.app.UI;
 import org.openlca.ilcd.descriptors.DescriptorList;
 import org.openlca.ilcd.descriptors.ProcessDescriptor;
 import org.openlca.ilcd.io.NetworkClient;
 import org.openlca.ilcd.processes.Process;
-import org.openlca.ui.Dialog;
-import org.openlca.ui.UI;
 
 /**
  * The wizard page for searching processes in the ILCD network.

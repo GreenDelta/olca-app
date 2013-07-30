@@ -17,11 +17,11 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.UI;
 import org.openlca.core.application.Numbers;
 import org.openlca.core.editors.model.FlowInfo;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.results.AnalysisResult;
-import org.openlca.ui.UI;
 import org.openlca.util.Strings;
 
 public class LCITotalPage extends FormPage {

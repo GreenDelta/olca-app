@@ -17,15 +17,15 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ui.IWorkbenchWizard;
 import org.eclipse.ui.PlatformUI;
+import org.openlca.app.Images;
+import org.openlca.app.UI;
 import org.openlca.app.navigation.CategoryElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelTypeElement;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.newwizards.INewModelWizard;
+import org.openlca.app.wizards.INewModelWizard;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
-import org.openlca.ui.Images;
-import org.openlca.ui.UI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

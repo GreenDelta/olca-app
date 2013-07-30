@@ -13,13 +13,13 @@ package org.openlca.app.editors;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.Labels;
+import org.openlca.app.UIFactory;
 import org.openlca.core.application.Messages;
 import org.openlca.core.editors.ModelEditor;
 import org.openlca.core.editors.ModelEditorInfoPage;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.UnitGroup;
-import org.openlca.ui.Labels;
-import org.openlca.ui.UIFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

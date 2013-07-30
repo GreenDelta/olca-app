@@ -29,11 +29,11 @@ import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.ui.PlatformUI;
+import org.openlca.app.JobListenerWithProgress;
+import org.openlca.app.UI;
+import org.openlca.app.resources.ImageType;
 import org.openlca.core.application.Messages;
 import org.openlca.core.editors.productsystem.graphical.ProductSystemGraphEditor;
-import org.openlca.core.resources.ImageType;
-import org.openlca.ui.JobListenerWithProgress;
-import org.openlca.ui.UI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

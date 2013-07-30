@@ -44,6 +44,8 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.UI;
+import org.openlca.app.resources.ImageType;
 import org.openlca.core.application.Messages;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Exchange;
@@ -52,8 +54,6 @@ import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.resources.ImageType;
-import org.openlca.ui.UI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

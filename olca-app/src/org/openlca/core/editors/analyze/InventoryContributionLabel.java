@@ -3,13 +3,13 @@ package org.openlca.core.editors.analyze;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
+import org.openlca.app.BaseLabelProvider;
+import org.openlca.app.CategoryPath;
 import org.openlca.core.application.Numbers;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.results.AnalysisFlowResult;
-import org.openlca.ui.BaseLabelProvider;
-import org.openlca.ui.CategoryPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

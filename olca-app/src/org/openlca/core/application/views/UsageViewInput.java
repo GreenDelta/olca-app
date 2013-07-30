@@ -3,9 +3,9 @@ package org.openlca.core.application.views;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
+import org.openlca.app.resources.ImageType;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.descriptors.BaseDescriptor;
-import org.openlca.core.resources.ImageType;
 
 /**
  * Input for the usage view. Contains the descriptor of the model which usages

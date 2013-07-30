@@ -18,8 +18,8 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
+import org.openlca.app.UIFactory;
 import org.openlca.core.application.Messages;
-import org.openlca.ui.UIFactory;
 
 /**
  * Wizard page for editing the properties of a data provider

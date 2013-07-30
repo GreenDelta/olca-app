@@ -26,6 +26,13 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IMessageManager;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.SelectObjectDialog;
+import org.openlca.app.UI;
+import org.openlca.app.UIFactory;
+import org.openlca.app.Viewers;
+import org.openlca.app.dnd.IModelDropHandler;
+import org.openlca.app.resources.ImageType;
+import org.openlca.app.viewer.AllocationMethodViewer;
 import org.openlca.core.application.App;
 import org.openlca.core.application.Messages;
 import org.openlca.core.application.db.Database;
@@ -35,13 +42,6 @@ import org.openlca.core.model.Exchange;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.BaseDescriptor;
-import org.openlca.core.resources.ImageType;
-import org.openlca.ui.SelectObjectDialog;
-import org.openlca.ui.UI;
-import org.openlca.ui.UIFactory;
-import org.openlca.ui.Viewers;
-import org.openlca.ui.dnd.IModelDropHandler;
-import org.openlca.ui.viewer.AllocationMethodViewer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -364,7 +364,7 @@ public class ExchangePage extends PropertyProviderPage {
 	@Override
 	protected void initListeners() {
 		allocationViewer
-				.addSelectionChangedListener(new org.openlca.ui.viewer.ISelectionChangedListener<AllocationMethod>() {
+				.addSelectionChangedListener(new org.openlca.app.viewer.ISelectionChangedListener<AllocationMethod>() {
 
 					@Override
 					public void selectionChanged(AllocationMethod selection) {

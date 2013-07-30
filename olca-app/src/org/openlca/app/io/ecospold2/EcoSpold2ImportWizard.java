@@ -8,9 +8,9 @@ import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
 import org.openlca.app.io.FileImportPage;
 import org.openlca.app.navigation.Navigator;
+import org.openlca.app.resources.ImageType;
 import org.openlca.core.application.db.Database;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.resources.ImageType;
 import org.openlca.io.ecospold2.EcoSpold2Import;
 
 /**

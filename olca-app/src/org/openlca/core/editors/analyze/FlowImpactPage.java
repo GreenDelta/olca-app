@@ -19,6 +19,9 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.openlca.app.UI;
+import org.openlca.app.viewer.ISelectionChangedListener;
+import org.openlca.app.viewer.ImpactCategoryViewer;
 import org.openlca.core.application.Numbers;
 import org.openlca.core.editors.ContributionImage;
 import org.openlca.core.model.Flow;
@@ -27,9 +30,6 @@ import org.openlca.core.model.results.AnalysisResult;
 import org.openlca.core.model.results.Contribution;
 import org.openlca.core.model.results.ContributionSet;
 import org.openlca.core.model.results.FlowImpactContribution;
-import org.openlca.ui.UI;
-import org.openlca.ui.viewer.ISelectionChangedListener;
-import org.openlca.ui.viewer.ImpactCategoryViewer;
 
 public class FlowImpactPage extends FormPage {
 

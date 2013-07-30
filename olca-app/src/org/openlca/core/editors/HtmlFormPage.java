@@ -10,8 +10,8 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.openlca.ui.HtmlPage;
-import org.openlca.ui.UI;
+import org.openlca.app.HtmlPage;
+import org.openlca.app.UI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

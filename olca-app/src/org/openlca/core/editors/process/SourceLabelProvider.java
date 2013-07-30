@@ -5,8 +5,8 @@ import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
+import org.openlca.app.resources.ImageType;
 import org.openlca.core.model.Source;
-import org.openlca.core.resources.ImageType;
 
 /**
  * The label provider for sources in the process editor.

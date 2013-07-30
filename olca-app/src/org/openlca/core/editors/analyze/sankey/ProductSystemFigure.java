@@ -22,6 +22,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
+import org.openlca.app.Colors;
 import org.openlca.core.application.FaviColor;
 import org.openlca.core.application.Messages;
 import org.openlca.core.application.Numbers;
@@ -29,7 +30,6 @@ import org.openlca.core.editors.analyze.AnalyzeActionContributor;
 import org.openlca.core.editors.analyze.PropertySelectionAction;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.ui.Colors;
 
 /**
  * Figure of the product system.

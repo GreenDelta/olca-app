@@ -7,7 +7,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.openlca.ui.UI;
+import org.openlca.app.UI;
 
 /**
  * A text with label and change button which shows the ILCD connection

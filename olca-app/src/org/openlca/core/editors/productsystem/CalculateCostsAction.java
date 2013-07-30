@@ -3,14 +3,14 @@ package org.openlca.core.editors.productsystem;
 import org.eclipse.jface.action.Action;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.widgets.Display;
+import org.openlca.app.Editors;
+import org.openlca.app.resources.ImageType;
 import org.openlca.core.application.Messages;
 import org.openlca.core.editors.result.CostResultEditor;
 import org.openlca.core.editors.result.CostResultEditorInput;
 import org.openlca.core.math.CostCalculator;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.results.SimpleCostResult;
-import org.openlca.core.resources.ImageType;
-import org.openlca.ui.Editors;
 
 public class CalculateCostsAction extends Action {
 

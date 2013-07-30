@@ -9,10 +9,10 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
+import org.openlca.app.UI;
+import org.openlca.app.resources.ImageType;
 import org.openlca.core.application.Messages;
 import org.openlca.core.database.DatabaseContent;
-import org.openlca.core.resources.ImageType;
-import org.openlca.ui.UI;
 
 class DatabaseWizardPage extends WizardPage {
 

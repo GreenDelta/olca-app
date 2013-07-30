@@ -6,7 +6,7 @@ import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 import org.eclipse.ui.PlatformUI;
-import org.openlca.ui.Error;
+import org.openlca.app.Error;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

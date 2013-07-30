@@ -7,6 +7,7 @@ import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.Item;
+import org.openlca.app.Labels;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ProcessDao;
@@ -19,7 +20,6 @@ import org.openlca.core.model.UncertaintyDistributionType;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.descriptors.BaseDescriptor;
-import org.openlca.ui.Labels;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

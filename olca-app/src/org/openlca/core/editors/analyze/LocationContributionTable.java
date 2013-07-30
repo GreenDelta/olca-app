@@ -12,12 +12,12 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.openlca.app.UI;
 import org.openlca.core.application.Messages;
 import org.openlca.core.application.Numbers;
 import org.openlca.core.editors.ContributionImage;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.results.Contribution;
-import org.openlca.ui.UI;
 
 /**
  * Table for showing the result contributions for locations of an analysis

@@ -3,11 +3,11 @@ package org.openlca.core.editors.productsystem;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
+import org.openlca.app.resources.ImageType;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.math.SimulationSolver;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.resources.ImageType;
 
 public class SimulationInput implements IEditorInput {
 

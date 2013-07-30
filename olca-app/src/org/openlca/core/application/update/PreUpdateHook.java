@@ -1,6 +1,6 @@
 package org.openlca.core.application.update;
 
-import org.openlca.updater.Updater;
+import org.openlca.app.updater.Updater;
 
 public interface PreUpdateHook {
 

@@ -1,13 +1,13 @@
 package org.openlca.core.editors.result;
 
 import org.eclipse.jface.action.Action;
+import org.openlca.app.Info;
 import org.openlca.app.navigation.Navigator;
+import org.openlca.app.resources.ImageType;
 import org.openlca.core.application.Messages;
 import org.openlca.core.database.DataProviderException;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.results.LCIAResult;
-import org.openlca.core.resources.ImageType;
-import org.openlca.ui.Info;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -30,14 +30,14 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.UIFactory;
+import org.openlca.app.resources.ImageType;
 import org.openlca.core.application.Messages;
 import org.openlca.core.editors.ModelEditor;
 import org.openlca.core.editors.ModelEditorPage;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.NormalizationWeightingFactor;
 import org.openlca.core.model.NormalizationWeightingSet;
-import org.openlca.core.resources.ImageType;
-import org.openlca.ui.UIFactory;
 
 /**
  * {@link ModelEditorPage} for displaying and editing the normalization and

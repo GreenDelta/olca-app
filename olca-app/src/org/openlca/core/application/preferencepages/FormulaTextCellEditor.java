@@ -15,9 +15,9 @@ import java.util.List;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
+import org.openlca.app.autocomplete.AutoCompleteTextCellEditor;
 import org.openlca.core.application.Messages;
 import org.openlca.core.model.Parameter;
-import org.openlca.ui.autocomplete.AutoCompleteTextCellEditor;
 
 /**
  * Text cell editor for editing formulas of a parameter with content assistance

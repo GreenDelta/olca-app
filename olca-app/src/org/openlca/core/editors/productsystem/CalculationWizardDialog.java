@@ -14,11 +14,11 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.openlca.app.UI;
 import org.openlca.core.application.ApplicationProperties;
 import org.openlca.core.application.Messages;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.ui.UI;
 
 /**
  * Dialog for setting calculation properties and calculate a product system

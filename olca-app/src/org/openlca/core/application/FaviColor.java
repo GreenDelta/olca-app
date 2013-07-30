@@ -2,7 +2,7 @@ package org.openlca.core.application;
 
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
-import org.openlca.ui.Colors;
+import org.openlca.app.Colors;
 
 /**
  * An index for a predefined color scale for chart colors and contribution

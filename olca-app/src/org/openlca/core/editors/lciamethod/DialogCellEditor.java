@@ -32,8 +32,8 @@ import org.eclipse.swt.widgets.Layout;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.Hyperlink;
+import org.openlca.app.Colors;
 import org.openlca.core.application.Messages;
-import org.openlca.ui.Colors;
 
 /**
  * An abstract cell editor that uses a dialog. Dialog cell editors usually have

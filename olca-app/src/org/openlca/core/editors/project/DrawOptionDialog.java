@@ -33,14 +33,14 @@ import org.eclipse.ui.forms.HyperlinkSettings;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.openlca.app.BaseLabelProvider;
+import org.openlca.app.BaseNameSorter;
+import org.openlca.app.UI;
+import org.openlca.app.UIFactory;
 import org.openlca.core.application.Messages;
 import org.openlca.core.model.LCIACategory;
 import org.openlca.core.model.LCIAMethod;
 import org.openlca.core.model.NormalizationWeightingSet;
-import org.openlca.ui.BaseLabelProvider;
-import org.openlca.ui.BaseNameSorter;
-import org.openlca.ui.UI;
-import org.openlca.ui.UIFactory;
 
 /**
  * Dialog for selection the draw options for the chart

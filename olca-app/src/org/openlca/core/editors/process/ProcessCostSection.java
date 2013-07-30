@@ -11,14 +11,14 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.UI;
+import org.openlca.app.Viewers;
+import org.openlca.app.resources.ImageType;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ProductCostEntryDao;
 import org.openlca.core.editors.IEditorComponent;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.ProductCostEntry;
-import org.openlca.core.resources.ImageType;
-import org.openlca.ui.UI;
-import org.openlca.ui.Viewers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

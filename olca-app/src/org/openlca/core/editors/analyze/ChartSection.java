@@ -11,15 +11,15 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.UI;
+import org.openlca.app.viewer.AbstractViewer;
+import org.openlca.app.viewer.FlowViewer;
+import org.openlca.app.viewer.ISelectionChangedListener;
+import org.openlca.app.viewer.ImpactCategoryViewer;
 import org.openlca.core.application.Messages;
 import org.openlca.core.editors.ContributionItem;
 import org.openlca.core.editors.charts.ContributionChart;
 import org.openlca.core.editors.io.ImageExportAction;
-import org.openlca.ui.UI;
-import org.openlca.ui.viewer.AbstractViewer;
-import org.openlca.ui.viewer.FlowViewer;
-import org.openlca.ui.viewer.ISelectionChangedListener;
-import org.openlca.ui.viewer.ImpactCategoryViewer;
 
 /**
  * Chart section of the first page in the analysis editor. Can contain flow or

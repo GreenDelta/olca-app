@@ -2,6 +2,8 @@ package org.openlca.core.editors.result;
 
 import java.util.UUID;
 
+import org.openlca.app.Error;
+import org.openlca.app.Question;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.core.application.App;
 import org.openlca.core.application.Messages;
@@ -11,8 +13,6 @@ import org.openlca.core.model.Flow;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.results.LCIResult;
-import org.openlca.ui.Error;
-import org.openlca.ui.Question;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

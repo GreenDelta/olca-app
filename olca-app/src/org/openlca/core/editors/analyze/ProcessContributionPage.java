@@ -5,12 +5,12 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.openlca.app.UI;
 import org.openlca.core.application.Messages;
 import org.openlca.core.application.db.Database;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.results.AnalysisResult;
-import org.openlca.ui.UI;
 
 class ProcessContributionPage extends FormPage {
 

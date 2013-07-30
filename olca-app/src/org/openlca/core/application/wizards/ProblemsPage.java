@@ -19,9 +19,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
+import org.openlca.app.UIFactory;
+import org.openlca.app.resources.ImageType;
 import org.openlca.core.application.Messages;
-import org.openlca.core.resources.ImageType;
-import org.openlca.ui.UIFactory;
 
 /**
  * Wizard page for displaying warnings and errors while deleting an object

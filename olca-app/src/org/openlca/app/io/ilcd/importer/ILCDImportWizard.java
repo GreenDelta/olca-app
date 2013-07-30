@@ -18,12 +18,12 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
+import org.openlca.app.ProgressAdapter;
 import org.openlca.app.io.FileImportPage;
 import org.openlca.app.navigation.Navigator;
+import org.openlca.app.resources.ImageType;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.resources.ImageType;
 import org.openlca.io.ilcd.ILCDImport;
-import org.openlca.ui.ProgressAdapter;
 
 /**
  * Import wizard for importing a set of ILCD formatted files

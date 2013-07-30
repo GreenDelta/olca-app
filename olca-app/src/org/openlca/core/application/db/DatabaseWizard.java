@@ -7,6 +7,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
+import org.openlca.app.UI;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.core.application.App;
 import org.openlca.core.application.Messages;
@@ -15,7 +16,6 @@ import org.openlca.core.application.events.DatabaseCreatedEvent;
 import org.openlca.core.database.DatabaseContent;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.derby.DerbyDatabase;
-import org.openlca.ui.UI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

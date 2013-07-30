@@ -13,13 +13,13 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.Colors;
+import org.openlca.app.DataBinding;
+import org.openlca.app.Labels;
+import org.openlca.app.UI;
 import org.openlca.core.application.Messages;
 import org.openlca.core.model.ImpactFactor;
 import org.openlca.core.model.UncertaintyDistributionType;
-import org.openlca.ui.Colors;
-import org.openlca.ui.DataBinding;
-import org.openlca.ui.Labels;
-import org.openlca.ui.UI;
 
 /** Dialog for editing uncertainty information in impact assessment factors. */
 public class UncertaintyDialog extends Dialog {

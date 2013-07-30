@@ -10,8 +10,8 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.UI;
 import org.openlca.core.model.PedigreeMatrixRow;
-import org.openlca.ui.UI;
 
 class PedigreeCell {
 

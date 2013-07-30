@@ -14,6 +14,8 @@ import java.util.UUID;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.Wizard;
+import org.openlca.app.Editors;
+import org.openlca.app.JobListenerWithProgress;
 import org.openlca.core.application.App;
 import org.openlca.core.application.Messages;
 import org.openlca.core.application.db.Database;
@@ -34,8 +36,6 @@ import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.results.AnalysisResult;
 import org.openlca.core.model.results.ImpactResult;
 import org.openlca.core.model.results.InventoryResult;
-import org.openlca.ui.Editors;
-import org.openlca.ui.JobListenerWithProgress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

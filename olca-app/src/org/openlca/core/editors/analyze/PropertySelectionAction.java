@@ -3,10 +3,10 @@ package org.openlca.core.editors.analyze;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.window.Window;
+import org.openlca.app.resources.ImageType;
 import org.openlca.core.application.Messages;
 import org.openlca.core.editors.analyze.sankey.SankeyDiagram;
 import org.openlca.core.editors.analyze.sankey.SankeySelectionDialog;
-import org.openlca.core.resources.ImageType;
 
 /**
  * Action for opening the {@link SankeySelectionDialog} and updating the sankey

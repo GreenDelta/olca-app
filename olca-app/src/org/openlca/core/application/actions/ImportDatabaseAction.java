@@ -2,9 +2,9 @@ package org.openlca.core.application.actions;
 
 import java.io.File;
 
+import org.openlca.app.resources.ImageType;
 import org.openlca.core.application.Messages;
 import org.openlca.core.database.IDatabaseServer;
-import org.openlca.core.resources.ImageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

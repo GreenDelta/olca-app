@@ -15,12 +15,12 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.navigator.ICommonContentExtensionSite;
 import org.eclipse.ui.navigator.ICommonLabelProvider;
+import org.openlca.app.resources.ImageType;
 import org.openlca.core.application.db.Database;
 import org.openlca.core.application.db.IDatabaseConfiguration;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
-import org.openlca.core.resources.ImageType;
 
 /**
  * Implementation of the {@link ICommonLabelProvider} interface for providing

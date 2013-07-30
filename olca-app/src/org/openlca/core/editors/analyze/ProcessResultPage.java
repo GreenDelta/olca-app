@@ -24,6 +24,9 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.UI;
+import org.openlca.app.viewer.ISelectionChangedListener;
+import org.openlca.app.viewer.ProcessViewer;
 import org.openlca.core.application.Numbers;
 import org.openlca.core.editors.ContributionImage;
 import org.openlca.core.editors.model.FlowInfo;
@@ -32,9 +35,6 @@ import org.openlca.core.model.Flow;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.results.AnalysisResult;
-import org.openlca.ui.UI;
-import org.openlca.ui.viewer.ISelectionChangedListener;
-import org.openlca.ui.viewer.ProcessViewer;
 
 /** Shows the single results of the processes in an analysis result. */
 public class ProcessResultPage extends FormPage {

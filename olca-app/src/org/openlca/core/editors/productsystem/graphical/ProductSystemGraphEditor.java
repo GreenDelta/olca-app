@@ -69,6 +69,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
+import org.openlca.app.dnd.ModelTransfer;
 import org.openlca.core.application.Messages;
 import org.openlca.core.application.actions.OpenEditorAction;
 import org.openlca.core.database.IDatabase;
@@ -93,7 +94,6 @@ import org.openlca.core.editors.productsystem.graphical.outline.ProcessTreeEditP
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.ui.dnd.ModelTransfer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -21,6 +21,11 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.IMessageManager;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.Labels;
+import org.openlca.app.UI;
+import org.openlca.app.UIFactory;
+import org.openlca.app.viewer.ISelectionChangedListener;
+import org.openlca.app.viewer.LocationViewer;
 import org.openlca.core.application.Messages;
 import org.openlca.core.application.db.Database;
 import org.openlca.core.editors.ModelEditor;
@@ -28,11 +33,6 @@ import org.openlca.core.editors.ModelEditorInfoPage;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Location;
-import org.openlca.ui.Labels;
-import org.openlca.ui.UI;
-import org.openlca.ui.UIFactory;
-import org.openlca.ui.viewer.ISelectionChangedListener;
-import org.openlca.ui.viewer.LocationViewer;
 
 /**
  * Form page for displaying and editing a flow object

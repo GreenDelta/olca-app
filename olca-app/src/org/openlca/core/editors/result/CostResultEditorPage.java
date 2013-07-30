@@ -20,8 +20,8 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.openlca.app.UI;
 import org.openlca.core.editors.ContributionImage;
-import org.openlca.ui.UI;
 
 public class CostResultEditorPage extends FormPage {
 

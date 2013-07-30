@@ -8,11 +8,11 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.openlca.app.DataBinding;
+import org.openlca.app.UI;
 import org.openlca.core.application.Messages;
 import org.openlca.core.application.Numbers;
 import org.openlca.core.application.Preferences;
-import org.openlca.ui.DataBinding;
-import org.openlca.ui.UI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

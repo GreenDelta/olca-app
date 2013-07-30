@@ -4,11 +4,11 @@ import java.io.File;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
+import org.openlca.app.UI;
+import org.openlca.app.resources.ImageType;
 import org.openlca.core.application.Messages;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.IDatabaseServer;
-import org.openlca.core.resources.ImageType;
-import org.openlca.ui.UI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

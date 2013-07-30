@@ -10,9 +10,9 @@ import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
+import org.openlca.app.resources.ImageType;
 import org.openlca.core.application.Messages;
 import org.openlca.core.editors.io.ui.FileChooser;
-import org.openlca.core.resources.ImageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -35,6 +35,8 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
+import org.openlca.app.Labels;
+import org.openlca.app.resources.ImageType;
 import org.openlca.core.application.Messages;
 import org.openlca.core.editors.productsystem.graphical.actions.ExpandFoldCommand;
 import org.openlca.core.editors.productsystem.graphical.actions.MaximizeCommand;
@@ -45,8 +47,6 @@ import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.resources.ImageType;
-import org.openlca.ui.Labels;
 
 /**
  * Figure of a {@link ProcessNode}

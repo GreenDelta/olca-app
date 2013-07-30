@@ -26,12 +26,12 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.UIFactory;
+import org.openlca.app.resources.ImageType;
 import org.openlca.core.application.Messages;
 import org.openlca.core.editors.ModelEditor;
 import org.openlca.core.editors.ModelEditorPage;
 import org.openlca.core.model.results.LCIACategoryResult;
-import org.openlca.core.resources.ImageType;
-import org.openlca.ui.UIFactory;
 
 /**
  * FormPage for displaying the lcia results

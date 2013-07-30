@@ -25,6 +25,8 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.openlca.app.UI;
+import org.openlca.app.resources.ImageType;
 import org.openlca.core.application.Messages;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.editors.productsystem.graphical.SelectPossibleProcessesDialog;
@@ -36,8 +38,6 @@ import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.resources.ImageType;
-import org.openlca.ui.UI;
 
 /**
  * Opens a {@link SelectPossibleProcessesDialog} for the selected

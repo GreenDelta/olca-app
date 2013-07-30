@@ -7,8 +7,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
+import org.openlca.app.UI;
 import org.openlca.core.application.Messages;
-import org.openlca.ui.UI;
 
 /**
  * A helper class for selecting a file for an import or export via a file

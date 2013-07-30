@@ -7,10 +7,10 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.dialogs.PreferencesUtil;
+import org.openlca.app.Dialog;
+import org.openlca.app.io.Activator;
 import org.openlca.ilcd.io.Authentication;
 import org.openlca.ilcd.io.NetworkClient;
-import org.openlca.io.ui.Activator;
-import org.openlca.ui.Dialog;
 
 public class PreferencePage extends FieldEditorPreferencePage implements
 		IWorkbenchPreferencePage {

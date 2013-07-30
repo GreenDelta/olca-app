@@ -5,8 +5,8 @@ import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
+import org.openlca.app.resources.ImageType;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.resources.ImageType;
 
 /**
  * The label provider for the product system table in the project editor.

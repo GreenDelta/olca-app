@@ -31,6 +31,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.part.EditorActionBarContributor;
+import org.openlca.app.resources.ImageType;
 import org.openlca.core.application.FeatureFlag;
 import org.openlca.core.application.Messages;
 import org.openlca.core.editors.productsystem.CalculateCostsAction;
@@ -47,7 +48,6 @@ import org.openlca.core.editors.productsystem.graphical.actions.MinimizeAllProce
 import org.openlca.core.editors.productsystem.graphical.actions.OpenMiniatureViewAction;
 import org.openlca.core.editors.productsystem.graphical.actions.SaveImageAction;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.resources.ImageType;
 
 /**
  * Action bar contributor for the product system editor

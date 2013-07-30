@@ -24,9 +24,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.UIFactory;
 import org.openlca.core.application.Messages;
 import org.openlca.core.model.RootEntity;
-import org.openlca.ui.UIFactory;
 
 /**
  * Abstract form page for model component information (name, description,

@@ -24,6 +24,9 @@ import org.eclipse.swt.widgets.Item;
 import org.eclipse.ui.forms.IMessageManager;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.UI;
+import org.openlca.app.UIFactory;
+import org.openlca.app.resources.ImageType;
 import org.openlca.core.application.Messages;
 import org.openlca.core.application.actions.DeleteWithQuestionAction;
 import org.openlca.core.model.Expression;
@@ -31,9 +34,6 @@ import org.openlca.core.model.IParameterisable;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterType;
 import org.openlca.core.model.RootEntity;
-import org.openlca.core.resources.ImageType;
-import org.openlca.ui.UI;
-import org.openlca.ui.UIFactory;
 
 /**
  * Abstract form page for editing parameters of a parameterizable object

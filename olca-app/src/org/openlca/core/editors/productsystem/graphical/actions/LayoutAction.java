@@ -12,11 +12,11 @@ package org.openlca.core.editors.productsystem.graphical.actions;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.osgi.util.NLS;
+import org.openlca.app.resources.ImageType;
 import org.openlca.core.application.Messages;
 import org.openlca.core.editors.productsystem.graphical.GraphLayoutManager;
 import org.openlca.core.editors.productsystem.graphical.GraphLayoutType;
 import org.openlca.core.editors.productsystem.graphical.model.ProductSystemNode;
-import org.openlca.core.resources.ImageType;
 
 /**
  * Creates a {@link LayoutCommand} and executes it. Also sets checkedAction in

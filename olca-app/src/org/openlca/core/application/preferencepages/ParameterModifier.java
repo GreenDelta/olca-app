@@ -5,11 +5,11 @@ import java.util.List;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.Item;
+import org.openlca.app.Dialog;
 import org.openlca.core.application.Messages;
 import org.openlca.core.model.Parameter;
 import org.openlca.expressions.Interpreter;
 import org.openlca.expressions.Variable;
-import org.openlca.ui.Dialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

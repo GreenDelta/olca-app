@@ -9,8 +9,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.Hyperlink;
-import org.openlca.core.resources.ImageType;
-import org.openlca.ui.InformationPopup;
+import org.openlca.app.InformationPopup;
+import org.openlca.app.resources.ImageType;
 import org.openlca.util.Strings;
 
 public class UpdateAvailablePopup extends InformationPopup {

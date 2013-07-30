@@ -19,11 +19,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
+import org.openlca.app.Colors;
+import org.openlca.app.UI;
 import org.openlca.core.application.FaviColor;
 import org.openlca.core.application.Numbers;
 import org.openlca.core.editors.ContributionItem;
-import org.openlca.ui.Colors;
-import org.openlca.ui.UI;
 
 /**
  * A pie chart for showing a set of result contributions.

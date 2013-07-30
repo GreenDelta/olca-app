@@ -11,9 +11,9 @@ package org.openlca.core.editors.productsystem.graphical.actions;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.openlca.app.resources.ImageType;
 import org.openlca.core.application.Messages;
 import org.openlca.core.editors.productsystem.graphical.model.ProductSystemNode;
-import org.openlca.core.resources.ImageType;
 
 /**
  * Folds all process nodes in the graphical editor (except the reference

@@ -15,8 +15,8 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.openlca.app.navigation.Navigator;
+import org.openlca.app.resources.ImageType;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.resources.ImageType;
 
 /**
  * The wizard page for the selection of a database.

@@ -21,11 +21,11 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
+import org.openlca.app.Colors;
+import org.openlca.app.Labels;
 import org.openlca.core.application.FaviColor;
 import org.openlca.core.application.Messages;
 import org.openlca.core.application.Numbers;
-import org.openlca.ui.Colors;
-import org.openlca.ui.Labels;
 import org.openlca.util.Strings;
 
 /**

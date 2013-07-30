@@ -12,16 +12,16 @@ package org.openlca.app.navigation.actions;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
+import org.openlca.app.Error;
+import org.openlca.app.Question;
 import org.openlca.app.navigation.CategoryElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
+import org.openlca.app.resources.ImageType;
 import org.openlca.core.application.Messages;
 import org.openlca.core.application.db.Database;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.model.Category;
-import org.openlca.core.resources.ImageType;
-import org.openlca.ui.Error;
-import org.openlca.ui.Question;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

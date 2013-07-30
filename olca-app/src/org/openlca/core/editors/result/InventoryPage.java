@@ -35,6 +35,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.resources.ImageType;
 import org.openlca.core.application.Messages;
 import org.openlca.core.application.Numbers;
 import org.openlca.core.application.actions.OpenEditorAction;
@@ -45,7 +46,6 @@ import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Expression;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.UncertaintyDistributionType;
-import org.openlca.core.resources.ImageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

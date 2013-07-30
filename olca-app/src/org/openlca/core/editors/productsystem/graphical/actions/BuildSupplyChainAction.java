@@ -7,6 +7,8 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.osgi.util.NLS;
+import org.openlca.app.ProgressAdapter;
+import org.openlca.app.UI;
 import org.openlca.core.application.Messages;
 import org.openlca.core.application.actions.OpenEditorAction;
 import org.openlca.core.database.IDatabase;
@@ -14,8 +16,6 @@ import org.openlca.core.database.IProductSystemBuilder;
 import org.openlca.core.editors.productsystem.graphical.model.ProductSystemNode;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.ui.ProgressAdapter;
-import org.openlca.ui.UI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

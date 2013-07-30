@@ -7,11 +7,11 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
+import org.openlca.app.resources.ImageType;
 import org.openlca.core.application.Messages;
 import org.openlca.core.application.actions.DeleteWithQuestionAction;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Process;
-import org.openlca.core.resources.ImageType;
 
 class RemoveExchangeAction extends DeleteWithQuestionAction {
 

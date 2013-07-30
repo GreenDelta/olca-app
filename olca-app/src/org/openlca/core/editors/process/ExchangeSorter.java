@@ -2,12 +2,12 @@ package org.openlca.core.editors.process;
 
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
+import org.openlca.app.CategoryPath;
+import org.openlca.app.Labels;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.Unit;
-import org.openlca.ui.CategoryPath;
-import org.openlca.ui.Labels;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

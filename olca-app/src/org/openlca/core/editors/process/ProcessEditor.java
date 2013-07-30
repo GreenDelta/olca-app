@@ -20,12 +20,12 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheet;
+import org.openlca.app.UI;
 import org.openlca.core.application.ApplicationProperties;
 import org.openlca.core.application.Messages;
 import org.openlca.core.editors.ModelEditorPage;
 import org.openlca.core.editors.ParameterizableModelEditorWithPropertyPage;
 import org.openlca.core.model.Process;
-import org.openlca.ui.UI;
 
 /**
  * Editor for processes.

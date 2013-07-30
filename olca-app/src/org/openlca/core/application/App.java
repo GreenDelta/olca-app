@@ -5,6 +5,7 @@ import java.net.URL;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.osgi.service.datalocation.Location;
+import org.openlca.app.Editors;
 import org.openlca.core.application.plugin.Activator;
 import org.openlca.core.application.plugin.Workspace;
 import org.openlca.core.application.views.ModelEditorInput;
@@ -12,7 +13,6 @@ import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.Descriptors;
-import org.openlca.ui.Editors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

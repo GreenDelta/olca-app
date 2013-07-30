@@ -14,14 +14,14 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.Dialog;
+import org.openlca.app.UI;
+import org.openlca.app.resources.ImageType;
 import org.openlca.core.application.App;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.editors.io.MatrixExport;
 import org.openlca.core.editors.io.MatrixExportData;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.resources.ImageType;
-import org.openlca.ui.Dialog;
-import org.openlca.ui.UI;
 
 /**
  * The dialog for exporting product systems as matrices.

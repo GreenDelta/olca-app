@@ -13,8 +13,8 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.openlca.app.UI;
 import org.openlca.core.application.Messages;
-import org.openlca.ui.UI;
 
 /**
  * Action for confirming a deletion

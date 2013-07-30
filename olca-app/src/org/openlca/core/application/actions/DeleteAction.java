@@ -19,6 +19,8 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
+import org.openlca.app.UI;
+import org.openlca.app.resources.ImageType;
 import org.openlca.core.application.Messages;
 import org.openlca.core.application.views.ModelEditorInput;
 import org.openlca.core.database.BaseDao;
@@ -33,8 +35,6 @@ import org.openlca.core.model.Technology;
 import org.openlca.core.model.Time;
 import org.openlca.core.model.descriptors.Descriptors;
 import org.openlca.core.model.modelprovider.IModelComponent;
-import org.openlca.core.resources.ImageType;
-import org.openlca.ui.UI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -147,13 +147,13 @@ public class DeleteAction extends NavigationAction {
 	private void deleteObject(IModelComponent object, IDatabase database)
 			throws Exception {
 		if (object instanceof Process) {
-			ProcessDao dao = new ProcessDao(database.getEntityFactory());
+			ProcessDao dao = new ProcessDao(database);
 			Process process = dao.getForId(object.getId());
 			deleteProcessInformation(process, database);
 		} else if (object instanceof ProductSystem)
 			deleteProductSystem((ProductSystem) object, database);
 		BaseDao<Object> dao = (BaseDao<Object>) new BaseDao<>(
-				object.getClass(), database.getEntityFactory());
+				object.getClass(), database);
 		dao.delete(object);
 	}
 

@@ -12,10 +12,10 @@ package org.openlca.app.io.ecospold1;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.wizard.WizardDialog;
+import org.openlca.app.UI;
+import org.openlca.app.resources.ImageType;
 import org.openlca.core.application.actions.IImportAction;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.resources.ImageType;
-import org.openlca.ui.UI;
 
 /**
  * Action for importing EcoSpold01 formatted files

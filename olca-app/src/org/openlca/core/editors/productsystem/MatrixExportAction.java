@@ -11,12 +11,12 @@ package org.openlca.core.editors.productsystem;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.openlca.app.UI;
+import org.openlca.app.resources.ImageType;
 import org.openlca.core.application.Messages;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.editors.io.ui.MatrixExportShell;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.resources.ImageType;
-import org.openlca.ui.UI;
 
 /**
  * Opens the matrix export dialog.

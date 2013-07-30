@@ -23,6 +23,7 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.actions.ActionContext;
 import org.eclipse.ui.navigator.CommonActionProvider;
+import org.openlca.app.Viewers;
 import org.openlca.app.navigation.actions.ActivateDatabaseAction;
 import org.openlca.app.navigation.actions.CloseDatabaseAction;
 import org.openlca.app.navigation.actions.CreateCategoryAction;
@@ -46,7 +47,6 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.IDatabaseServer;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.RootEntity;
-import org.openlca.ui.Viewers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

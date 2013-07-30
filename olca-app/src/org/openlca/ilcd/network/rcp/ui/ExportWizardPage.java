@@ -11,6 +11,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.openlca.app.UI;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.NavigationContentProvider;
 import org.openlca.app.navigation.NavigationLabelProvider;
@@ -18,7 +19,6 @@ import org.openlca.app.navigation.NavigationSorter;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.modelprovider.IModelComponent;
-import org.openlca.ui.UI;
 
 public class ExportWizardPage extends WizardPage implements ICheckStateListener {
 

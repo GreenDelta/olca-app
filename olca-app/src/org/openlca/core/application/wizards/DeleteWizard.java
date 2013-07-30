@@ -15,13 +15,13 @@ import java.util.List;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.ui.PlatformUI;
+import org.openlca.app.JobListenerWithProgress;
 import org.openlca.core.application.Messages;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.jobs.JobHandler;
 import org.openlca.core.jobs.Jobs;
 import org.openlca.core.model.referencesearch.IReferenceSearcher;
 import org.openlca.core.model.referencesearch.Reference;
-import org.openlca.ui.JobListenerWithProgress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

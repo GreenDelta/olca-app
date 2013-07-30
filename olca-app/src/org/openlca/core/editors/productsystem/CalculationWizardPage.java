@@ -17,6 +17,12 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.openlca.app.DataBinding;
+import org.openlca.app.UI;
+import org.openlca.app.resources.ImageType;
+import org.openlca.app.viewer.AllocationMethodViewer;
+import org.openlca.app.viewer.ImpactMethodViewer;
+import org.openlca.app.viewer.NormalizationWeightingSetViewer;
 import org.openlca.core.application.ApplicationProperties;
 import org.openlca.core.application.Messages;
 import org.openlca.core.database.IDatabase;
@@ -24,12 +30,6 @@ import org.openlca.core.database.MethodDao;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.NormalizationWeightingSet;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
-import org.openlca.core.resources.ImageType;
-import org.openlca.ui.DataBinding;
-import org.openlca.ui.UI;
-import org.openlca.ui.viewer.AllocationMethodViewer;
-import org.openlca.ui.viewer.ImpactMethodViewer;
-import org.openlca.ui.viewer.NormalizationWeightingSetViewer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -143,7 +143,7 @@ public class CalculationWizardPage extends WizardPage {
 		methodViewer = new ImpactMethodViewer(parent);
 		methodViewer.setInput(database);
 		methodViewer
-				.addSelectionChangedListener(new org.openlca.ui.viewer.ISelectionChangedListener<ImpactMethodDescriptor>() {
+				.addSelectionChangedListener(new org.openlca.app.viewer.ISelectionChangedListener<ImpactMethodDescriptor>() {
 
 					@Override
 					public void selectionChanged(

@@ -14,10 +14,10 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
+import org.openlca.app.UI;
 import org.openlca.core.application.Messages;
 import org.openlca.core.model.IParameterisable;
 import org.openlca.core.model.Parameter;
-import org.openlca.ui.UI;
 
 /**
  * Form editor for parameterizable components

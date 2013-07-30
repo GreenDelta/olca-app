@@ -4,8 +4,10 @@ import java.util.EnumSet;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
+import org.openlca.app.Editors;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
+import org.openlca.app.resources.ImageType;
 import org.openlca.core.application.FeatureFlag;
 import org.openlca.core.application.Messages;
 import org.openlca.core.application.db.Database;
@@ -13,8 +15,6 @@ import org.openlca.core.application.views.UsageView;
 import org.openlca.core.application.views.UsageViewInput;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
-import org.openlca.core.resources.ImageType;
-import org.openlca.ui.Editors;
 
 /**
  * Opens a view with the usages of a model in other entities.
