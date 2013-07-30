@@ -14,7 +14,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
-import org.openlca.core.application.db.Database;
+import org.openlca.app.db.Database;
 import org.openlca.core.application.views.ModelEditorInput;
 import org.openlca.core.database.ActorDao;
 import org.openlca.core.editors.IEditor;

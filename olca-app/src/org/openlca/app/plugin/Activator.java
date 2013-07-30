@@ -7,7 +7,7 @@
  * Contributors: GreenDeltaTC - initial API and implementation
  * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
  ******************************************************************************/
-package org.openlca.core.application.plugin;
+package org.openlca.app.plugin;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,10 +23,10 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.openlca.app.logging.Console;
+import org.openlca.app.logging.LoggerConfig;
 import org.openlca.core.application.OlcaPlugin;
 import org.openlca.core.application.Preferences;
-import org.openlca.core.application.logging.Console;
-import org.openlca.core.application.logging.LoggerConfig;
 import org.openlca.jblas.Library;
 import org.osgi.framework.BundleContext;
 

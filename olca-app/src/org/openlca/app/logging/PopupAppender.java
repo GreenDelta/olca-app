@@ -1,4 +1,4 @@
-package org.openlca.core.application.logging;
+package org.openlca.app.logging;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

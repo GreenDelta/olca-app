@@ -1,4 +1,4 @@
-package org.openlca.core.application.logging;
+package org.openlca.app.logging;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.ConsoleAppender;

@@ -1,4 +1,4 @@
-package org.openlca.core.application.db;
+package org.openlca.app.db;
 
 import java.util.List;
 

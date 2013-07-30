@@ -1,4 +1,4 @@
-package org.openlca.core.application.plugin;
+package org.openlca.app.plugin;
 
 import java.io.File;
 import java.io.IOException;

@@ -1,9 +1,9 @@
-package org.openlca.core.application.logging;
+package org.openlca.app.logging;
 
 import org.apache.log4j.Level;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.openlca.core.application.plugin.Activator;
+import org.openlca.app.plugin.Activator;
 
 /**
  * The preferences of the application logging.

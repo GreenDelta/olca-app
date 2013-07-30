@@ -141,7 +141,7 @@ public class SelectObjectDialog extends Dialog {
 						if (selected instanceof ModelElement) {
 							// add to filtered selection
 							selection
-									.add((BaseDescriptor) ((ModelElement) selected)
+									.add(((ModelElement) selected)
 											.getContent());
 						}
 					}

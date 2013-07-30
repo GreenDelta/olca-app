@@ -3,13 +3,13 @@ package org.openlca.app.navigation.actions;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
+import org.openlca.app.db.Database;
+import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.resources.ImageType;
 import org.openlca.core.application.App;
-import org.openlca.core.application.db.Database;
-import org.openlca.core.application.db.IDatabaseConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -8,7 +8,7 @@ import java.io.IOException;
 import org.openlca.app.html.HtmlFolder;
 import org.openlca.app.html.HtmlResource;
 import org.openlca.app.html.IHtmlResource;
-import org.openlca.core.application.plugin.Activator;
+import org.openlca.app.plugin.Activator;
 
 public enum HtmlView {
 

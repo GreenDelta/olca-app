@@ -22,7 +22,7 @@ import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.navigator.CommonDropAdapter;
 import org.eclipse.ui.navigator.CommonDropAdapterAssistant;
-import org.openlca.core.application.plugin.Activator;
+import org.openlca.app.plugin.Activator;
 
 /**
  * Extension of the {@link CommonDropAdapterAssistant} to support drop
@@ -61,29 +61,22 @@ public class NavigationDropAssistant extends CommonDropAdapterAssistant {
 		// if target control is the navigator tree
 		if (target.getControl() == navigator.getCommonViewer().getTree()) {
 
-			final List<INavigationElement> elements = new ArrayList<>();
+			final List<INavigationElement<?>> elements = new ArrayList<>();
 			final IStructuredSelection selection = (IStructuredSelection) aDropTargetEvent.data;
 
 			// for each selected object
 			for (final Object o : selection.toArray()) {
 				// if model component or category element
 				if (o instanceof ModelElement || o instanceof CategoryElement) {
-					elements.add((INavigationElement) o);
+					elements.add((INavigationElement<?>) o);
 				}
 			}
 			if (operation == DND.DROP_COPY) {
-				// copy
-				// CopyPasteManager.getInstance()
-				// .copy(elements.toArray(new INavigationElement[elements
-				// .size()]));
+				CopyPaste.copy(elements);
 			} else {
-				// cut
-				// CopyPasteManager.getInstance()
-				// .cut(elements.toArray(new INavigationElement[elements
-				// .size()]));
+				CopyPaste.cut(elements);
 			}
-			// paste
-			// CopyPasteManager.getInstance().paste(targetElement);
+			CopyPaste.paste(targetElement);
 		}
 		return null;
 	}

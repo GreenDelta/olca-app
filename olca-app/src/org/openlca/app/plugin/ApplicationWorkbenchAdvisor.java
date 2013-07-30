@@ -7,14 +7,14 @@
  * Contributors: GreenDeltaTC - initial API and implementation
  * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
  ******************************************************************************/
-package org.openlca.core.application.plugin;
+package org.openlca.app.plugin;
 
 import org.eclipse.ui.application.IWorkbenchConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchAdvisor;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
-import org.openlca.core.application.logging.Console;
-import org.openlca.core.application.logging.LoggerPreference;
+import org.openlca.app.logging.Console;
+import org.openlca.app.logging.LoggerPreference;
 import org.openlca.core.application.update.UpdateCheckAndPrepareJob;
 
 /**
