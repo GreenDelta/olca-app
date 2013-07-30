@@ -119,40 +119,6 @@ public final class UIFactory {
 		return categorySection;
 	}
 
-	/**
-	 * Creates a tree viewer for displaying openLCA categories
-	 * 
-	 * @param section
-	 *            The section in which the tree viewer should be added
-	 * @param toolkit
-	 *            The form toolkit
-	 * @param input
-	 *            The input of the viewer
-	 * @param clazz
-	 *            The model component class to display
-	 * @return The category tree viewer
-	 */
-	public static TreeViewer createCategoryTreeViewer(Section section,
-			FormToolkit toolkit, INavigationElement<?> input,
-			ModelType modelType) {
-
-		// create the section client
-		final Composite categoryTreeComp = toolkit.createComposite(section);
-		categoryTreeComp.setLayout(new GridLayout());
-		categoryTreeComp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
-				false));
-		section.setClient(categoryTreeComp);
-
-		// create category viewer
-		final TreeViewer categoryViewer = new NavigationTree(categoryTreeComp,
-				false, true, input, modelType);
-		final GridData treeGridData = new GridData(SWT.FILL, SWT.FILL, true,
-				false);
-		treeGridData.minimumHeight = 100;
-		treeGridData.heightHint = 200;
-		categoryViewer.getTree().setLayoutData(treeGridData);
-		return categoryViewer;
-	}
 
 	/**
 	 * Creates a label with the given text and a combo viewer
