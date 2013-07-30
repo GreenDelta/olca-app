@@ -83,8 +83,7 @@ public class PluginsService {
 	 * @throws URISyntaxException
 	 * @throws IOException
 	 */
-	public PluginListWrapper getInstalledPlugins() throws URISyntaxException,
-			IOException {
+	public PluginListWrapper getInstalledPlugins() {
 		ArrayList<Bundle> allOpenlcaPluginBundles = findAllOpenlcaPluginBundles();
 		log.debug("all olca plugins: {}", allOpenlcaPluginBundles);
 

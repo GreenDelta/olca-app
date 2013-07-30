@@ -59,8 +59,7 @@ public class Base64ImageHelper {
 		return stringWriter.toString();
 	}
 
-	public InputSupplier<InputStream> getBase64ImageDecoder(final String base64)
-			throws IOException {
+	public InputSupplier<InputStream> getBase64ImageDecoder(final String base64) {
 
 		return getBase64ImageDecoder(new InputSupplier<Reader>() {
 			@Override
@@ -71,7 +70,7 @@ public class Base64ImageHelper {
 	}
 
 	public InputSupplier<InputStream> getBase64ImageDecoder(
-			InputSupplier<? extends Reader> in) throws IOException {
+			InputSupplier<? extends Reader> in) {
 		return BaseEncoding.base64().decodingStream(in);
 	}
 
