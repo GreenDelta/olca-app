@@ -11,7 +11,7 @@ package org.openlca.io.ui.ilcd.exporter;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -20,10 +20,12 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IExportWizard;
 import org.eclipse.ui.IWorkbench;
+import org.openlca.core.application.db.Database;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.model.modelprovider.IModelComponent;
+import org.openlca.core.model.CategorizedEntity;
+import org.openlca.core.model.ModelType;
+import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.io.ilcd.ILCDExport;
-import org.openlca.io.ui.ObjectWrapper;
 import org.openlca.io.ui.SelectObjectsExportPage;
 
 /**
@@ -37,30 +39,25 @@ import org.openlca.io.ui.SelectObjectsExportPage;
 public class ILCDExportWizard extends Wizard implements IExportWizard {
 
 	private SelectObjectsExportPage exportPage;
-	private List<ObjectWrapper> components;
-	private boolean singleExport = false;
-	private final int type;
+	private List<BaseDescriptor> components;
+	private final ModelType type;
 
-	public ILCDExportWizard(int type) {
+	public ILCDExportWizard(ModelType type) {
 		setNeedsProgressMonitor(true);
 		this.type = type;
 	}
 
-	protected final void setModelComponentsToExport(
-			List<ObjectWrapper> components) {
+	protected void setComponents(List<BaseDescriptor> components) {
 		this.components = components;
-	}
-
-	protected void setSingleExport(IModelComponent component, IDatabase database) {
-		components = new ArrayList<>();
-		components.add(new ObjectWrapper(component, database));
-		singleExport = true;
 	}
 
 	@Override
 	public void addPages() {
-		exportPage = new SelectObjectsExportPage(singleExport, type, false,
-				"ILCD");
+		if (components != null)
+			exportPage = SelectObjectsExportPage.withoutSelection(type);
+		else
+			exportPage = SelectObjectsExportPage.withSelection(type);
+		exportPage.setSubDirectory("ILCD");
 		addPage(exportPage);
 	}
 
@@ -72,7 +69,10 @@ public class ILCDExportWizard extends Wizard implements IExportWizard {
 
 	@Override
 	public boolean performFinish() {
-
+		final IDatabase database = Database.get();
+		if (database == null)
+			// TODO: show error message
+			return false;
 		// test the export parameters
 		// the target directory
 		final File targetDir = exportPage.getExportDestination();
@@ -82,7 +82,7 @@ public class ILCDExportWizard extends Wizard implements IExportWizard {
 		}
 
 		// the components to be exported
-		final List<ObjectWrapper> components = singleExport ? this.components
+		final List<BaseDescriptor> components = this.components != null ? this.components
 				: exportPage.getSelectedModelComponents();
 		if (components == null || components.size() == 0) {
 			// TODO: show error message
@@ -102,14 +102,22 @@ public class ILCDExportWizard extends Wizard implements IExportWizard {
 					monitor.beginTask("ILCD Export", components.size());
 					int worked = 0;
 					ILCDExport export = new ILCDExport(targetDir);
-					for (ObjectWrapper wrapper : components) {
+					for (BaseDescriptor descriptor : components) {
 						if (monitor.isCanceled())
 							break;
-						monitor.setTaskName(wrapper.getModelComponent()
-								.getName());
-						export.export(wrapper.getModelComponent(),
-								wrapper.getDatabase());
-						monitor.worked(++worked);
+						monitor.setTaskName(descriptor.getName());
+						try {
+							Object component = database.createDao(
+									descriptor.getModelType().getModelClass())
+									.getForId(descriptor.getId());
+							if (component instanceof CategorizedEntity)
+								export.export((CategorizedEntity) component,
+										database);
+						} catch (Exception e) {
+							throw new InvocationTargetException(e);
+						} finally {
+							monitor.worked(++worked);
+						}
 					}
 					export.close();
 				}
@@ -124,5 +132,4 @@ public class ILCDExportWizard extends Wizard implements IExportWizard {
 
 		return !errorOccured;
 	}
-
 }

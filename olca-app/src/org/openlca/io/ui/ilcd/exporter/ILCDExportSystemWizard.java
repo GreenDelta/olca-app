@@ -1,11 +1,11 @@
 package org.openlca.io.ui.ilcd.exporter;
 
-import org.openlca.io.ui.SelectObjectsExportPage;
+import org.openlca.core.model.ModelType;
 
 public class ILCDExportSystemWizard extends ILCDExportWizard {
 
 	public ILCDExportSystemWizard() {
-		super(SelectObjectsExportPage.PRODUCT_SYSTEM);
+		super(ModelType.PRODUCT_SYSTEM);
 	}
 
 }

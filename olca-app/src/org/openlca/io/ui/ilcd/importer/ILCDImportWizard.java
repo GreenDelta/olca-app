@@ -23,7 +23,6 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.resources.ImageType;
 import org.openlca.io.ilcd.ILCDImport;
 import org.openlca.io.ui.FileImportPage;
-import org.openlca.io.ui.SelectDatabasePage;
 import org.openlca.ui.ProgressAdapter;
 
 /**
@@ -34,7 +33,6 @@ import org.openlca.ui.ProgressAdapter;
  */
 public class ILCDImportWizard extends Wizard implements IImportWizard {
 
-	private SelectDatabasePage databasePage;
 	private FileImportPage importPage;
 	private IDatabase database;
 
@@ -52,11 +50,6 @@ public class ILCDImportWizard extends Wizard implements IImportWizard {
 
 	@Override
 	public void addPages() {
-		if (database == null) {
-			// import from wizard (no database selected)
-			databasePage = new SelectDatabasePage();
-			addPage(databasePage);
-		}
 		importPage = new FileImportPage(new String[] { "zip" }, false);
 		addPage(importPage);
 	}
@@ -79,10 +72,6 @@ public class ILCDImportWizard extends Wizard implements IImportWizard {
 			return false;
 
 		boolean error = false;
-		if (database == null) {
-			// import from workbench import action
-			database = databasePage.getDatabase();
-		}
 
 		try {
 			getContainer().run(true, true, new IRunnableWithProgress() {

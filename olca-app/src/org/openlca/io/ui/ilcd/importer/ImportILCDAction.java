@@ -18,7 +18,7 @@ import org.openlca.core.resources.ImageType;
 import org.openlca.ui.UI;
 
 /**
- * Action for importing EcoSpold01 formatted files
+ * Action for importing ILCD formatted files
  * 
  * @author Sebastian Greve
  * 

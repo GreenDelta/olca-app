@@ -18,8 +18,13 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IExportWizard;
 import org.eclipse.ui.IWorkbench;
+import org.openlca.core.application.db.Database;
+import org.openlca.core.database.ImpactMethodDao;
+import org.openlca.core.database.ProcessDao;
+import org.openlca.core.model.ImpactMethod;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
-import org.openlca.ilcd.methods.LCIAMethod;
+import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.io.ecospold1.exporter.EcoSpold01Outputter;
 import org.openlca.io.ui.SelectObjectsExportPage;
 import org.slf4j.Logger;
@@ -35,30 +40,26 @@ public class EcoSpold01ExportWizard extends Wizard implements IExportWizard {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 	private SelectObjectsExportPage exportPage;
-	private boolean singleExport = false;
-	private final int type;
+	private final ModelType type;
+	private List<BaseDescriptor> components;
 
-	private List<ObjectWrapper> components;
-
-	public EcoSpold01ExportWizard(final int type) {
+	public EcoSpold01ExportWizard(ModelType type) {
 		super();
 		setNeedsProgressMonitor(true);
 		this.type = type;
 	}
 
-	protected final void setModelComponentsToExport(
-			List<ObjectWrapper> components) {
+	public final void setComponents(List<BaseDescriptor> components) {
 		this.components = components;
-	}
-
-	protected final void setSingleExport(final boolean singleExport) {
-		this.singleExport = singleExport;
 	}
 
 	@Override
 	public void addPages() {
-		exportPage = new SelectObjectsExportPage(singleExport, type, false,
-				"EcoSpold1");
+		if (components != null)
+			exportPage = SelectObjectsExportPage.withoutSelection(type);
+		else
+			exportPage = SelectObjectsExportPage.withSelection(type);
+		exportPage.setSubDirectory("EcoSpold1");
 		addPage(exportPage);
 	}
 
@@ -71,66 +72,41 @@ public class EcoSpold01ExportWizard extends Wizard implements IExportWizard {
 	@Override
 	public boolean performFinish() {
 		boolean errorOccured = false;
-		if (!singleExport) {
+		if (components == null) {
 			components = exportPage.getSelectedModelComponents();
 		}
 		try {
 			getContainer().run(true, true, new IRunnableWithProgress() {
 
 				@Override
-				public void run(final IProgressMonitor monitor)
+				public void run(IProgressMonitor monitor)
 						throws InvocationTargetException, InterruptedException {
 					// set up
 					int objectAmount = components.size();
 					monitor.beginTask(Messages.Exporting, objectAmount + 1);
 					monitor.subTask(Messages.CreatingFolder);
-					final EcoSpold01Outputter outputter = new EcoSpold01Outputter(
+					EcoSpold01Outputter outputter = new EcoSpold01Outputter(
 							exportPage.getExportDestination());
 					monitor.worked(1);
 
 					try {
-						switch (type) {
-						case SelectObjectsExportPage.PROCESS:
-							// for each component to export
-							for (final ObjectWrapper wrapper : components) {
-								if (!monitor.isCanceled()) {
-									// load process
-									final Process process = wrapper
-											.getDatabase().select(
-													Process.class,
-													wrapper.getModelComponent()
-															.getId());
-									monitor.subTask(process.getName());
-									// export
-									outputter.exportProcess(process,
-											wrapper.getDatabase());
-									monitor.worked(1);
+						for (BaseDescriptor descriptor : components) {
+							if (!monitor.isCanceled()) {
+								monitor.subTask(descriptor.getName());
+								if (type == ModelType.PROCESS) {
+									Process process = new ProcessDao(Database
+											.get()).getForId(descriptor.getId());
+									outputter.exportProcess(process);
+								} else if (type == ModelType.IMPACT_METHOD) {
+									ImpactMethod method = new ImpactMethodDao(
+											Database.get()).getForId(descriptor
+											.getId());
+									outputter.exportLCIAMethod(method);
 								}
+								monitor.worked(1);
 							}
-							break;
-						case SelectObjectsExportPage.METHOD:
-							// for each component to export
-							for (final ObjectWrapper wrapper : components) {
-								if (!monitor.isCanceled()) {
-									// load method
-									final LCIAMethod method = wrapper
-											.getDatabase().select(
-													LCIAMethod.class,
-													wrapper.getModelComponent()
-															.getId());
-									monitor.subTask(method.getName());
-									// export
-									outputter.exportLCIAMethod(method,
-											wrapper.getDatabase());
-									monitor.worked(1);
-								}
-							}
-							break;
 						}
-						// clear cache
-						outputter.clearGlobalCache();
 					} catch (final Exception e) {
-						// TODO: handle exception
 						log.error("Perform finish failed", e);
 						throw new InterruptedException(e.getMessage());
 					}
@@ -144,5 +120,4 @@ public class EcoSpold01ExportWizard extends Wizard implements IExportWizard {
 		}
 		return !errorOccured;
 	}
-
 }

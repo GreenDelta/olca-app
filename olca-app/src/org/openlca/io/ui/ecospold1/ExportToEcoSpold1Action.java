@@ -9,18 +9,14 @@
  ******************************************************************************/
 package org.openlca.io.ui.ecospold1;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.openlca.core.application.actions.IExportAction;
-import org.openlca.core.database.IDatabase;
-import org.openlca.core.model.Process;
+import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.resources.ImageType;
-import org.openlca.io.ui.ObjectWrapper;
-import org.openlca.io.ui.SelectObjectsExportPage;
 import org.openlca.ui.UI;
 
 /**
@@ -31,8 +27,7 @@ import org.openlca.ui.UI;
  */
 public class ExportToEcoSpold1Action extends Action implements IExportAction {
 
-	private IModelComponent component;
-	private IDatabase database;
+	private BaseDescriptor component;
 
 	@Override
 	public ImageDescriptor getImageDescriptor() {
@@ -46,27 +41,18 @@ public class ExportToEcoSpold1Action extends Action implements IExportAction {
 
 	@Override
 	public void run() {
-		if (component != null && database != null) {
+		if (component != null) {
 			EcoSpold01ExportWizard wizard = new EcoSpold01ExportWizard(
-					component instanceof Process ? SelectObjectsExportPage.PROCESS
-							: SelectObjectsExportPage.METHOD);
-			List<ObjectWrapper> list = new ArrayList<>();
-			list.add(new ObjectWrapper(component, database));
-			wizard.setModelComponentsToExport(list);
-			wizard.setSingleExport(true);
+					component.getModelType());
+			wizard.setComponents(Collections.singletonList(component));
 			WizardDialog dialog = new WizardDialog(UI.shell(), wizard);
 			dialog.open();
 		}
 	}
 
 	@Override
-	public void setComponent(final IModelComponent modelComponent) {
-		this.component = modelComponent;
-	}
-
-	@Override
-	public void setDatabase(final IDatabase database) {
-		this.database = database;
+	public void setDescriptor(BaseDescriptor component) {
+		this.component = component;
 	}
 
 }

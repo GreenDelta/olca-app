@@ -9,9 +9,7 @@
  ******************************************************************************/
 package org.openlca.io.ui.ilcd.exporter;
 
-import org.openlca.core.database.IDatabase;
-import org.openlca.core.model.Process;
-import org.openlca.io.ui.SelectObjectsExportPage;
+import org.openlca.core.model.ModelType;
 
 /**
  * Extension of {@link ILCDExportWizard} for processes
@@ -22,13 +20,7 @@ import org.openlca.io.ui.SelectObjectsExportPage;
 public class ILCDExportProcessWizard extends ILCDExportWizard {
 
 	public ILCDExportProcessWizard() {
-		super(SelectObjectsExportPage.PROCESS);
-	}
-
-	public ILCDExportProcessWizard(final IDatabase database,
-			final Process process) {
-		super(SelectObjectsExportPage.PROCESS);
-		setSingleExport(process, database);
+		super(ModelType.PROCESS);
 	}
 
 }

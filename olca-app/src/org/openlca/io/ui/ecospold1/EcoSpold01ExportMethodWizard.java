@@ -9,12 +9,7 @@
  ******************************************************************************/
 package org.openlca.io.ui.ecospold1;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.openlca.core.database.IDatabase;
-import org.openlca.io.ui.ObjectWrapper;
-import org.openlca.io.ui.SelectObjectsExportPage;
+import org.openlca.core.model.ModelType;
 
 /**
  * Extension of {@link EcoSpold01ExportWizard} for LCIA methods
@@ -25,16 +20,7 @@ import org.openlca.io.ui.SelectObjectsExportPage;
 public class EcoSpold01ExportMethodWizard extends EcoSpold01ExportWizard {
 
 	public EcoSpold01ExportMethodWizard() {
-		super(SelectObjectsExportPage.METHOD);
-	}
-
-	public EcoSpold01ExportMethodWizard(final IDatabase database,
-			final ImpactMethodMethod method) {
-		super(SelectObjectsExportPage.METHOD);
-		List<ObjectWrapper> list = new ArrayList<>();
-		list.add(new ObjectWrapper(method, database));
-		setModelComponentsToExport(list);
-		setSingleExport(true);
+		super(ModelType.IMPACT_METHOD);
 	}
 
 }

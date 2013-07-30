@@ -1,11 +1,12 @@
 package org.openlca.io.ui.ilcd.exporter;
 
+import java.util.Collections;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.openlca.core.application.actions.IExportAction;
-import org.openlca.core.database.IDatabase;
-import org.openlca.core.model.modelprovider.IModelComponent;
+import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.resources.ImageType;
 import org.openlca.ui.UI;
 import org.slf4j.Logger;
@@ -17,8 +18,7 @@ import org.slf4j.LoggerFactory;
 public class ILCDExportAction extends Action implements IExportAction {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
-	private IModelComponent component;
-	private IDatabase database;
+	private BaseDescriptor descriptor;
 
 	@Override
 	public ImageDescriptor getImageDescriptor() {
@@ -32,26 +32,21 @@ public class ILCDExportAction extends Action implements IExportAction {
 
 	@Override
 	public void run() {
-		if (component == null || database == null) {
+		if (descriptor == null) {
 			log.error("Component or database is null");
 			return;
 		}
-		ILCDExportWizard wizard = new ILCDExportWizard(-1); // type is not
-															// relevant? -1
-		wizard.setSingleExport(component, database);
+		ILCDExportWizard wizard = new ILCDExportWizard(
+				descriptor.getModelType());
+		wizard.setComponents(Collections.singletonList(descriptor));
 		WizardDialog dialog = new WizardDialog(UI.shell(), wizard);
 		dialog.open();
 
 	}
 
 	@Override
-	public void setComponent(final IModelComponent modelComponent) {
-		this.component = modelComponent;
-	}
-
-	@Override
-	public void setDatabase(final IDatabase database) {
-		this.database = database;
+	public void setDescriptor(BaseDescriptor descriptor) {
+		this.descriptor = descriptor;
 	}
 
 }

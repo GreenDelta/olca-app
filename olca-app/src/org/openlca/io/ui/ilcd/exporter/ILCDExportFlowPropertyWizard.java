@@ -9,9 +9,7 @@
  ******************************************************************************/
 package org.openlca.io.ui.ilcd.exporter;
 
-import org.openlca.core.database.IDatabase;
-import org.openlca.core.model.FlowProperty;
-import org.openlca.io.ui.SelectObjectsExportPage;
+import org.openlca.core.model.ModelType;
 
 /**
  * Extension of {@link ILCDExportWizard} for flow properties
@@ -22,13 +20,7 @@ import org.openlca.io.ui.SelectObjectsExportPage;
 public class ILCDExportFlowPropertyWizard extends ILCDExportWizard {
 
 	public ILCDExportFlowPropertyWizard() {
-		super(SelectObjectsExportPage.FLOW_PROPERTY);
-	}
-
-	public ILCDExportFlowPropertyWizard(final IDatabase database,
-			final FlowProperty flowProperty) {
-		super(SelectObjectsExportPage.FLOW_PROPERTY);
-		setSingleExport(flowProperty, database);
+		super(ModelType.FLOW_PROPERTY);
 	}
 
 }

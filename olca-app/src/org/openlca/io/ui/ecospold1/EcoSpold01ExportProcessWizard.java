@@ -9,13 +9,7 @@
  ******************************************************************************/
 package org.openlca.io.ui.ecospold1;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.openlca.core.database.IDatabase;
-import org.openlca.core.model.Process;
-import org.openlca.io.ui.ObjectWrapper;
-import org.openlca.io.ui.SelectObjectsExportPage;
+import org.openlca.core.model.ModelType;
 
 /**
  * Extension of {@link EcoSpold01ExportWizard} for processes
@@ -26,15 +20,7 @@ import org.openlca.io.ui.SelectObjectsExportPage;
 public class EcoSpold01ExportProcessWizard extends EcoSpold01ExportWizard {
 
 	public EcoSpold01ExportProcessWizard() {
-		super(SelectObjectsExportPage.PROCESS);
-	}
-
-	public EcoSpold01ExportProcessWizard(IDatabase database, Process process) {
-		super(SelectObjectsExportPage.PROCESS);
-		List<ObjectWrapper> list = new ArrayList<>();
-		list.add(new ObjectWrapper(process, database));
-		setModelComponentsToExport(list);
-		setSingleExport(true);
+		super(ModelType.PROCESS);
 	}
 
 }

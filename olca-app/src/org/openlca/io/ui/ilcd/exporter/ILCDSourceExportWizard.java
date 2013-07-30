@@ -10,9 +10,7 @@
 
 package org.openlca.io.ui.ilcd.exporter;
 
-import org.openlca.core.database.IDatabase;
-import org.openlca.core.model.Source;
-import org.openlca.io.ui.SelectObjectsExportPage;
+import org.openlca.core.model.ModelType;
 
 /**
  * The wizard for the export of sources to ILCD data sets.
@@ -23,12 +21,8 @@ import org.openlca.io.ui.SelectObjectsExportPage;
 public class ILCDSourceExportWizard extends ILCDExportWizard {
 
 	public ILCDSourceExportWizard() {
-		super(SelectObjectsExportPage.SOURCE);
+		super(ModelType.SOURCE);
 	}
 
-	public ILCDSourceExportWizard(final IDatabase database, final Source source) {
-		super(SelectObjectsExportPage.SOURCE);
-		setSingleExport(source, database);
-	}
 
 }

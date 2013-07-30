@@ -15,7 +15,6 @@ import java.util.List;
 
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
-import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
@@ -32,10 +31,9 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.openlca.app.navigation.NavigationContentProvider;
 import org.openlca.app.navigation.NavigationLabelProvider;
-import org.openlca.app.navigation.NavigationRoot;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.navigation.filters.CategoryViewerFilter;
 import org.openlca.core.application.ApplicationProperties;
+import org.openlca.core.application.db.Database;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.ui.Colors;
@@ -45,33 +43,53 @@ import org.openlca.ui.UIFactory;
 /**
  * Wizard page for selecting objects for export
  */
-public class SelectObjectsExportPage extends WizardPage {
+public class SelectObjectsExportPage extends
+		WizardPage {
 
 	private Text errorText;
 	private File exportDestination;
 	private String fileName = "openLCA";
 	private List<BaseDescriptor> selectedComponents = new ArrayList<>();
 	private boolean selectFileName;
-	private boolean singleExport;
+	private boolean withSelection;
 	private ModelType type;
 	private CheckboxTreeViewer viewer;
 	private String fileExtension = ".csv";
 
-	public SelectObjectsExportPage(boolean singleExport, ModelType type,
-			boolean selectFileName, String subDirectory) {
-		super("Ecospold01ExportPage");
+	public static SelectObjectsExportPage withoutSelection(
+			ModelType type) {
+		SelectObjectsExportPage page = new SelectObjectsExportPage();
+		page.withSelection = false;
+		page.type = type;
+		return page;
+	}
+
+	public static  SelectObjectsExportPage withSelection(
+			ModelType type) {
+		SelectObjectsExportPage page = new SelectObjectsExportPage();
+		page.withSelection = true;
+		page.type = type;
+		return page;
+	}
+
+	private SelectObjectsExportPage() {
+		super(SelectObjectsExportPage.class.getCanonicalName());
 		setPageComplete(false);
+	}
+
+	public void setSelectFileName(boolean selectFileName) {
 		this.selectFileName = selectFileName;
-		this.singleExport = singleExport;
-		this.type = type;
-		createTexts(subDirectory);
+	}
+
+	public void setSubDirectory(String directory) {
+		createTexts(directory);
 	}
 
 	private void createTexts(String subDirectory) {
 		String typeName = getTypeName(type);
 		String title = null;
 		String descr = null;
-		if (singleExport) {
+		if (!withSelection) {
 			title = Messages.SelectDirectoryPage_Title;
 			descr = Messages.SelectDirectoryPage_Description;
 		} else {
@@ -130,7 +148,7 @@ public class SelectObjectsExportPage extends WizardPage {
 	}
 
 	void checkCompletion() {
-		if (singleExport) {
+		if (!withSelection) {
 			setPageComplete(exportDestination != null);
 		} else {
 			setPageComplete(exportDestination != null
@@ -281,7 +299,7 @@ public class SelectObjectsExportPage extends WizardPage {
 			createChooseFileNameComposite(body);
 		}
 
-		if (!singleExport) {
+		if (withSelection) {
 			final Composite processComposite = new Composite(body, SWT.NONE);
 			final GridLayout processLayout = new GridLayout(2, false);
 			processLayout.marginLeft = 0;
@@ -302,7 +320,6 @@ public class SelectObjectsExportPage extends WizardPage {
 	}
 
 	private void createViewer(Composite processComposite) {
-		NavigationRoot root = Navigator.getNavigationRoot();
 		viewer = new CheckboxTreeViewer(processComposite, SWT.VIRTUAL
 				| SWT.MULTI | SWT.BORDER);
 		viewer.setUseHashlookup(true);
@@ -311,10 +328,12 @@ public class SelectObjectsExportPage extends WizardPage {
 		viewer.setContentProvider(new NavigationContentProvider());
 		viewer.setLabelProvider(new NavigationLabelProvider());
 		viewer.addCheckStateListener(new SelectObjectCheckState(this, viewer));
-		viewer.setFilters(new ViewerFilter[] { new CategoryViewerFilter(type) });
-		if (root != null) {
-			viewer.setInput(root);
-		}
+		if (type != null)
+			viewer.setInput(Navigator.findElement(type));
+		else
+			viewer.setInput(Navigator.findElement(Database
+					.getActiveConfiguration()));
+
 		ColumnViewerToolTipSupport.enableFor(viewer);
 	}
 

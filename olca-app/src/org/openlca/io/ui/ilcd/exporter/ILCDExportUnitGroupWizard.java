@@ -9,9 +9,7 @@
  ******************************************************************************/
 package org.openlca.io.ui.ilcd.exporter;
 
-import org.openlca.core.database.IDatabase;
-import org.openlca.core.model.UnitGroup;
-import org.openlca.io.ui.SelectObjectsExportPage;
+import org.openlca.core.model.ModelType;
 
 /**
  * Extension of {@link ILCDExportWizard} for unit groups
@@ -19,16 +17,11 @@ import org.openlca.io.ui.SelectObjectsExportPage;
  * @author Sebastian Greve
  * 
  */
-public class ILCDExportUnitGroupWizard extends ILCDExportWizard {
+public class ILCDExportUnitGroupWizard extends
+		ILCDExportWizard {
 
 	public ILCDExportUnitGroupWizard() {
-		super(SelectObjectsExportPage.UNIT_GROUP);
-	}
-
-	public ILCDExportUnitGroupWizard(final IDatabase database,
-			final UnitGroup unitGroup) {
-		super(SelectObjectsExportPage.UNIT_GROUP);
-		setSingleExport(unitGroup, database);
+		super(ModelType.UNIT_GROUP);
 	}
 
 }
