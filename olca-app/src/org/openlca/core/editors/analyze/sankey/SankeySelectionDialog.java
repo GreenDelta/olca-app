@@ -191,7 +191,6 @@ public class SankeySelectionDialog extends FormDialog {
 
 		final Composite body = UI.formBody(form, toolkit);
 		// create composite for first layer (relates to the connection links)
-		toolkit.createLabel(body, Messages.Sankey_FirstLayer);
 		createFirstLayerComposite(body, toolkit);
 
 		// create the cutoff spinner
