@@ -210,7 +210,7 @@ public class DatabaseParametersPage extends PreferencePage implements
 
 	private void loadParameters() {
 		try {
-			ParameterDao dao = new ParameterDao(database.getEntityFactory());
+			ParameterDao dao = new ParameterDao(database);
 			List<Parameter> parameters = dao
 					.getAllForType(ParameterType.DATABASE);
 			this.parameters.clear();
@@ -246,7 +246,7 @@ public class DatabaseParametersPage extends PreferencePage implements
 		if (!b)
 			return true;
 		try {
-			ParameterDao dao = new ParameterDao(database.getEntityFactory());
+			ParameterDao dao = new ParameterDao(database);
 			for (Parameter p : parameters) {
 				if (p.getId() > 0L)
 					dao.update(p);
@@ -331,8 +331,7 @@ public class DatabaseParametersPage extends PreferencePage implements
 		private void tryDelete(Parameter parameter) {
 			try {
 				if (parameter.getId() > 0L) {
-					ParameterDao dao = new ParameterDao(
-							database.getEntityFactory());
+					ParameterDao dao = new ParameterDao(database);
 					dao.delete(parameter);
 				}
 				parameters.remove(parameter);

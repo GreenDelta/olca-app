@@ -51,7 +51,7 @@ public class CategoryElement extends NavigationElement<Category> {
 	private void addModelElements(Category category,
 			List<INavigationElement<?>> list) {
 		try {
-			CategorizedEnitityDao<?> dao = Database.createRootDao(category
+			CategorizedEnitityDao<?, ?> dao = Database.createRootDao(category
 					.getModelType());
 			if (dao == null)
 				return;

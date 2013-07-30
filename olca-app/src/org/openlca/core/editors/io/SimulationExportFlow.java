@@ -37,7 +37,7 @@ class SimulationExportFlow implements Comparable<SimulationExportFlow> {
 
 	private void loadFlowInfo(Flow flow, IDatabase database) {
 		try {
-			FlowDao dao = new FlowDao(database.getEntityFactory());
+			FlowDao dao = new FlowDao(database);
 			unit = dao.getRefUnitName(flow);
 			FlowProperty prop = flow.getReferenceFlowProperty();
 			property = prop != null ? prop.getName() : "n.a.";

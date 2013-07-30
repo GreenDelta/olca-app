@@ -35,7 +35,7 @@ public class ModelTypeElement extends NavigationElement<ModelType> {
 	private void addCategoryElements(ModelType type,
 			List<INavigationElement<?>> elements) {
 		try {
-			CategoryDao dao = new CategoryDao(Database.getEntityFactory());
+			CategoryDao dao = new CategoryDao(Database.get());
 			for (Category category : dao.getRootCategories(type)) {
 				elements.add(new CategoryElement(this, category));
 			}
@@ -47,7 +47,7 @@ public class ModelTypeElement extends NavigationElement<ModelType> {
 	private void addModelElements(ModelType type,
 			List<INavigationElement<?>> elements) {
 		try {
-			CategorizedEnitityDao<?> entityDao = Database.createRootDao(type);
+			CategorizedEnitityDao<?, ?> entityDao = Database.createRootDao(type);
 			if (entityDao == null)
 				return;
 			Optional<Category> nil = Optional.absent();

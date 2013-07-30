@@ -156,7 +156,7 @@ class ExchangeLabelProvider extends ColumnLabelProvider implements
 		if (provId == null)
 			return null;
 		try {
-			ProcessDao dao = new ProcessDao(database.getEntityFactory());
+			ProcessDao dao = new ProcessDao(database);
 			BaseDescriptor d = dao.getDescriptor(provId);
 			if (d == null)
 				return null;

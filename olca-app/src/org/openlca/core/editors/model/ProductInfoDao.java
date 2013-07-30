@@ -71,7 +71,7 @@ public class ProductInfoDao {
 		if (refProp == null)
 			return;
 		try {
-			FlowDao dao = new FlowDao(database.getEntityFactory());
+			FlowDao dao = new FlowDao(database);
 			info.setProduct(flow.getName());
 			info.setProductId(flow.getId());
 			info.setProductUnit(dao.getRefUnitName(flow));

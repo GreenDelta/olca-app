@@ -3,8 +3,6 @@ package org.openlca.core.application.db;
 import java.io.File;
 import java.util.Objects;
 
-import javax.persistence.EntityManagerFactory;
-
 import org.openlca.core.application.App;
 import org.openlca.core.database.ActorDao;
 import org.openlca.core.database.BaseDao;
@@ -42,13 +40,6 @@ public class Database {
 		Class<?> clazz = descriptor.getModelType().getModelClass();
 		Object o = createDao(clazz).getForId(descriptor.getId());
 		return (T) o;
-	}
-
-	public static EntityManagerFactory getEntityFactory() {
-		if (database != null)
-			return database.getEntityFactory();
-		else
-			return null;
 	}
 
 	public static IDatabase activate(IDatabaseConfiguration config)
@@ -92,6 +83,18 @@ public class Database {
 		return configurations;
 	}
 
+	public static IDatabaseConfiguration getActiveConfiguration() {
+		for (IDatabaseConfiguration configuration : configurations
+				.getLocalDatabases())
+			if (isActive(configuration))
+				return configuration;
+		for (IDatabaseConfiguration configuration : configurations
+				.getRemoteDatabases())
+			if (isActive(configuration))
+				return configuration;
+		return null;
+	}
+
 	public static void register(DerbyConfiguration config) {
 		if (configurations.contains(config))
 			return;
@@ -127,28 +130,28 @@ public class Database {
 			return database.createDao(clazz);
 	}
 
-	public static CategorizedEnitityDao<?> createRootDao(ModelType type) {
+	public static CategorizedEnitityDao<?, ?> createRootDao(ModelType type) {
 		if (database == null)
 			return null;
 		switch (type) {
 		case ACTOR:
-			return new ActorDao(getEntityFactory());
+			return new ActorDao(database);
 		case FLOW:
-			return new FlowDao(getEntityFactory());
+			return new FlowDao(database);
 		case FLOW_PROPERTY:
-			return new FlowPropertyDao(getEntityFactory());
+			return new FlowPropertyDao(database);
 		case IMPACT_METHOD:
-			return new ImpactMethodDao(getEntityFactory());
+			return new ImpactMethodDao(database);
 		case PROCESS:
-			return new ProcessDao(getEntityFactory());
+			return new ProcessDao(database);
 		case PRODUCT_SYSTEM:
-			return new ProductSystemDao(getEntityFactory());
+			return new ProductSystemDao(database);
 		case PROJECT:
-			return new ProjectDao(getEntityFactory());
+			return new ProjectDao(database);
 		case SOURCE:
-			return new SourceDao(getEntityFactory());
+			return new SourceDao(database);
 		case UNIT_GROUP:
-			return new UnitGroupDao(getEntityFactory());
+			return new UnitGroupDao(database);
 		default:
 			return null;
 		}

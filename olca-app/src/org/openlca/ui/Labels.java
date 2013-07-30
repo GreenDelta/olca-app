@@ -69,9 +69,9 @@ public class Labels {
 		if (processType == null)
 			return null;
 		switch (processType) {
-		case LCI_Result:
+		case LCI_RESULT:
 			return Messages.Common_SystemProcess;
-		case UnitProcess:
+		case UNIT_PROCESS:
 			return Messages.Common_UnitProcess;
 		default:
 			return null;

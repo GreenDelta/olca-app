@@ -33,7 +33,7 @@ public class MatrixExport implements Runnable {
 
 	public MatrixExport(MatrixExportData data) {
 		this.data = data;
-		this.flowDao = new FlowDao(data.getDatabase().getEntityFactory());
+		this.flowDao = new FlowDao(data.getDatabase());
 		separator = data.getColumnSeperator();
 		point = data.getDecimalSeparator();
 	}

@@ -62,7 +62,7 @@ class CalculateAction {
 		if (productSystem.getParameters().size() > 0) {
 			try {
 				List<Parameter> databaseParameters = new ParameterDao(
-						database.getEntityFactory())
+						database)
 						.getAllForType(ParameterType.DATABASE);
 				for (Process process : productSystem.getProcesses()) {
 					updateExpressions(productSystem, database, process,

@@ -28,7 +28,7 @@ public class SourceEditor extends FormEditor implements IEditor {
 		log.trace("open source editor {}", input);
 		setPartName(input.getName());
 		try {
-			dao = new SourceDao(Database.getEntityFactory());
+			dao = new SourceDao(Database.get());
 			ModelEditorInput i = (ModelEditorInput) input;
 			source = dao.getForId(i.getDescriptor().getId());
 		} catch (Exception e) {

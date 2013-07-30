@@ -67,7 +67,7 @@ public class LocalisedMethodImport implements Runnable {
 	private void createMethod(HSSFSheet infoSheet) {
 		String methodId = Excel.getString(infoSheet, 3, 3);
 		log.trace("Import method {}", methodId);
-		MethodDao dao = new MethodDao(database.getEntityFactory());
+		MethodDao dao = new MethodDao(database);
 		ImpactMethodDescriptor descriptor = dao.getDescriptor(methodId);
 		if (descriptor == null)
 			throw new RuntimeException("Unkown impact method " + methodId);
@@ -98,7 +98,7 @@ public class LocalisedMethodImport implements Runnable {
 		log.trace("Import impact category {}", id);
 		LocalisedImpactCategory category = new LocalisedImpactCategory();
 		ImpactCategoryDao dao = new ImpactCategoryDao(
-				database.getEntityFactory());
+				database);
 		ImpactCategoryDescriptor descriptor = dao.getDescriptor(id);
 		if (descriptor == null)
 			throw new RuntimeException("Unknown impact category " + id);

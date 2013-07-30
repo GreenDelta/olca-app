@@ -60,7 +60,7 @@ class FlowUseSection {
 
 	private List<BaseDescriptor> getProcesses(boolean forInput) {
 		try {
-			FlowDao dao = new FlowDao(database.getEntityFactory());
+			FlowDao dao = new FlowDao(database);
 			if (forInput)
 				return dao.getRecipients(flow);
 			return dao.getProviders(flow);
@@ -98,7 +98,7 @@ class FlowUseSection {
 		@Override
 		public void linkActivated(HyperlinkEvent evt) {
 			try {
-				ProcessDao dao = new ProcessDao(database.getEntityFactory());
+				ProcessDao dao = new ProcessDao(database);
 				Process p = dao.getForId(descriptor.getId());
 				App.openEditor(p);
 			} catch (Exception e) {

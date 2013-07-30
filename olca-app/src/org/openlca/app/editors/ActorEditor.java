@@ -37,7 +37,7 @@ public class ActorEditor extends FormEditor implements IEditor {
 		log.trace("open actor editor {}", input);
 		setPartName(input.getName());
 		try {
-			dao = new ActorDao(Database.getEntityFactory());
+			dao = new ActorDao(Database.get());
 			ModelEditorInput i = (ModelEditorInput) input;
 			actor = dao.getForId(i.getDescriptor().getId());
 		} catch (Exception e) {

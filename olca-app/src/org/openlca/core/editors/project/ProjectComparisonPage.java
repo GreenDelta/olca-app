@@ -245,7 +245,7 @@ public class ProjectComparisonPage extends ModelEditorPage {
 	protected void setData() {
 		try {
 			IDatabase database = getDatabase();
-			MethodDao dao = new MethodDao(database.getEntityFactory());
+			MethodDao dao = new MethodDao(database);
 			methodViewer.setInput(dao.getAll());
 		} catch (Exception e) {
 			log.error("Reading LCIA method from db failed", e);

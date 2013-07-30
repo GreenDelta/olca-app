@@ -58,7 +58,7 @@ public class LocalisedMethodStorage {
 			String methodId, File file) {
 		try {
 			ImpactMethodDao dao = new ImpactMethodDao(
-					database.getEntityFactory());
+					database);
 			ImpactMethod realMethod = dao.getForRefId(methodId);
 			LocalisedMethodBuilder builder = new LocalisedMethodBuilder(
 					realMethod, database);

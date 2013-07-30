@@ -118,28 +118,26 @@ public class UsageView extends FormEditor {
 				return Collections.emptyList();
 			switch (model.getModelType()) {
 			case ACTOR:
-				ActorDao aDao = new ActorDao(database.getEntityFactory());
+				ActorDao aDao = new ActorDao(database);
 				return aDao
 						.whereUsed(new Actor(model.getId(), model.getName()));
 			case SOURCE:
-				SourceDao sDao = new SourceDao(database.getEntityFactory());
+				SourceDao sDao = new SourceDao(database);
 				return sDao
 						.whereUsed(new Source(model.getId(), model.getName()));
 			case UNIT_GROUP:
-				UnitGroupDao uDao = new UnitGroupDao(
-						database.getEntityFactory());
+				UnitGroupDao uDao = new UnitGroupDao(database);
 				return uDao.whereUsed(new UnitGroup(model.getId(), model
 						.getName()));
 			case FLOW_PROPERTY:
-				FlowPropertyDao fpDao = new FlowPropertyDao(
-						database.getEntityFactory());
+				FlowPropertyDao fpDao = new FlowPropertyDao(database);
 				return fpDao.whereUsed(new FlowProperty(model.getId(), model
 						.getName()));
 			case FLOW:
-				FlowDao fDao = new FlowDao(database.getEntityFactory());
+				FlowDao fDao = new FlowDao(database);
 				return fDao.whereUsed(new Flow(model.getId(), model.getName()));
 			case PROCESS:
-				ProcessDao pDao = new ProcessDao(database.getEntityFactory());
+				ProcessDao pDao = new ProcessDao(database);
 				return pDao.whereUsed(new Process(model.getId(), model
 						.getName()));
 			default:
@@ -181,7 +179,7 @@ public class UsageView extends FormEditor {
 				Gson gson = new Gson();
 				BaseDescriptor descriptor = gson.fromJson(json,
 						BaseDescriptor.class);
-				App.openEditor(descriptor, database);
+				App.openEditor(descriptor);
 			} catch (Exception e) {
 				log.error("Failed to open model from usage page", e);
 			}

@@ -172,7 +172,7 @@ public class CalculationWizardPage extends WizardPage {
 			return;
 		try {
 			ImpactMethodDescriptor method = new MethodDao(
-					database.getEntityFactory()).getDescriptor(id);
+					database).getDescriptor(id);
 			if (method != null) {
 				methodViewer.select(method);
 				initNwSets();

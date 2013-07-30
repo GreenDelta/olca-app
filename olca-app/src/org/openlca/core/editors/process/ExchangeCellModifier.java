@@ -99,7 +99,7 @@ class ExchangeCellModifier implements ICellModifier {
 		Long providerId = exchange.getDefaultProviderId();
 		if (providerId == null)
 			return -1;
-		ProcessDao dao = new ProcessDao(database.getEntityFactory());
+		ProcessDao dao = new ProcessDao(database);
 		try {
 			BaseDescriptor d = dao.getDescriptor(providerId);
 			if (d == null || d.getName() == null)
@@ -137,7 +137,7 @@ class ExchangeCellModifier implements ICellModifier {
 		if (flow == null || flow.getFlowType() == FlowType.ELEMENTARY_FLOW)
 			return new String[0];
 		try {
-			FlowDao dao = new FlowDao(database.getEntityFactory());
+			FlowDao dao = new FlowDao(database);
 			List<BaseDescriptor> providers = dao.getProviders(flow);
 			String[] names = new String[providers.size() + 1];
 			names[0] = "";
@@ -309,7 +309,7 @@ class ExchangeCellModifier implements ICellModifier {
 			exchange.setDefaultProviderId(0);
 			return;
 		}
-		FlowDao dao = new FlowDao(database.getEntityFactory());
+		FlowDao dao = new FlowDao(database);
 		try {
 			List<BaseDescriptor> descriptors = dao.getProviders(exchange
 					.getFlow());

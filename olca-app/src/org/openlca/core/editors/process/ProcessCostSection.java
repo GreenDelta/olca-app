@@ -46,7 +46,7 @@ class ProcessCostSection implements IEditorComponent {
 			IDatabase database) {
 		try {
 			ProductCostEntryDao dao = new ProductCostEntryDao(
-					database.getEntityFactory());
+					database);
 			return dao.getAllForProduct(product.getId());
 		} catch (Exception e) {
 			log.error("Could not load cost entries", e);
@@ -69,7 +69,7 @@ class ProcessCostSection implements IEditorComponent {
 	@Override
 	public void onSaved() {
 		ProductCostEntryDao dao = new ProductCostEntryDao(
-				database.getEntityFactory());
+				database);
 		try {
 			for (ProductCostEntry entry : entries) {
 				if (!dao.contains(entry.getId()))

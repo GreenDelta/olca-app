@@ -62,7 +62,7 @@ public class FlowInfoDao {
 		if (refProp == null)
 			return;
 		try {
-			FlowDao dao = new FlowDao(database.getEntityFactory());
+			FlowDao dao = new FlowDao(database);
 			info.setUnit(dao.getRefUnitName(flow));
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(FlowInfo.class);

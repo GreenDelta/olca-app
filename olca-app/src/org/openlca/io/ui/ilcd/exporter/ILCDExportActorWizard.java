@@ -10,9 +10,7 @@
 
 package org.openlca.io.ui.ilcd.exporter;
 
-import org.openlca.core.database.IDatabase;
-import org.openlca.core.model.Actor;
-import org.openlca.io.ui.SelectObjectsExportPage;
+import org.openlca.core.model.ModelType;
 
 /**
  * The wizard for the export of actors to ILCD contact data sets.
@@ -20,15 +18,11 @@ import org.openlca.io.ui.SelectObjectsExportPage;
  * @author Michael Srocka
  * 
  */
-public class ILCDActorExportWizard extends ILCDExportWizard {
+public class ILCDExportActorWizard extends ILCDExportWizard {
 
-	public ILCDActorExportWizard() {
-		super(SelectObjectsExportPage.ACTOR);
-	}
-
-	public ILCDActorExportWizard(final IDatabase database, final Actor actor) {
-		super(SelectObjectsExportPage.ACTOR);
-		setSingleExport(actor, database);
+	public ILCDExportActorWizard() {
+		super(ModelType.ACTOR);
 	}
 
 }
+ 
