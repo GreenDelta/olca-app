@@ -12,8 +12,9 @@ package org.openlca.app.io.ilcd.importer;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.wizard.WizardDialog;
-import org.openlca.app.UI;
+import org.openlca.app.Messages;
 import org.openlca.app.resources.ImageType;
+import org.openlca.app.util.UI;
 import org.openlca.core.application.actions.IImportAction;
 import org.openlca.core.database.IDatabase;
 
@@ -37,7 +38,7 @@ public class ImportILCDAction extends Action implements IImportAction {
 
 	@Override
 	public String getText() {
-		return Messages.ImportActionText;
+		return Messages.ILCDImportActionText;
 	}
 
 	@Override

@@ -22,7 +22,7 @@ import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.navigator.CommonDropAdapter;
 import org.eclipse.ui.navigator.CommonDropAdapterAssistant;
-import org.openlca.core.application.plugin.Activator;
+import org.openlca.app.plugin.Activator;
 
 /**
  * Extension of the {@link CommonDropAdapterAssistant} to support drop

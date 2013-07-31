@@ -12,7 +12,7 @@ package org.openlca.core.editors.productsystem.graphical.actions;
 import org.eclipse.gef.ui.parts.TreeViewer;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.openlca.core.application.Messages;
+import org.openlca.app.Messages;
 import org.openlca.core.editors.productsystem.graphical.model.ProductSystemNode;
 import org.openlca.core.editors.productsystem.graphical.outline.ProcessTreeEditPart;
 

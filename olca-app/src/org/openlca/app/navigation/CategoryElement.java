@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.openlca.core.application.db.Database;
+import org.openlca.app.db.Database;
 import org.openlca.core.database.CategorizedEnitityDao;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.descriptors.BaseDescriptor;

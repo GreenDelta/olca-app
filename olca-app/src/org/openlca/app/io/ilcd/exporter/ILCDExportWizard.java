@@ -11,7 +11,6 @@ package org.openlca.app.io.ilcd.exporter;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -20,8 +19,9 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IExportWizard;
 import org.eclipse.ui.IWorkbench;
+import org.openlca.app.Messages;
+import org.openlca.app.db.Database;
 import org.openlca.app.io.SelectObjectsExportPage;
-import org.openlca.core.application.db.Database;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.ModelType;

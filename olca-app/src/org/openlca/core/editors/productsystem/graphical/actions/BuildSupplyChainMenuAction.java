@@ -9,8 +9,8 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.openlca.app.Messages;
 import org.openlca.app.resources.ImageType;
-import org.openlca.core.application.Messages;
 import org.openlca.core.editors.productsystem.graphical.model.ProductSystemNode;
 import org.openlca.core.model.Process;
 

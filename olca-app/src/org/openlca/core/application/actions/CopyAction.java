@@ -10,9 +10,9 @@
 package org.openlca.core.application.actions;
 
 import org.eclipse.jface.action.Action;
+import org.openlca.app.Messages;
 import org.openlca.app.navigation.CopyPasteManager;
 import org.openlca.app.navigation.INavigationElement;
-import org.openlca.core.application.Messages;
 
 /**
  * Action for copying elements

@@ -2,11 +2,11 @@ package org.openlca.core.editors.result;
 
 import java.util.UUID;
 
-import org.openlca.app.Error;
-import org.openlca.app.Question;
+import org.openlca.app.App;
+import org.openlca.app.Messages;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.core.application.App;
-import org.openlca.core.application.Messages;
+import org.openlca.app.util.Error;
+import org.openlca.app.util.Question;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;

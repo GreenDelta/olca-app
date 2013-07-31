@@ -5,8 +5,9 @@ import java.util.Collections;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.wizard.WizardDialog;
-import org.openlca.app.UI;
+import org.openlca.app.Messages;
 import org.openlca.app.resources.ImageType;
+import org.openlca.app.util.UI;
 import org.openlca.core.application.actions.IExportAction;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.slf4j.Logger;
@@ -27,7 +28,7 @@ public class ILCDExportAction extends Action implements IExportAction {
 
 	@Override
 	public String getText() {
-		return Messages.ExportActionText;
+		return Messages.ILCDExportActionText;
 	}
 
 	@Override

@@ -12,7 +12,7 @@ package org.openlca.core.editors.lciamethod;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openlca.core.application.FeatureFlag;
+import org.openlca.app.FeatureFlag;
 import org.openlca.core.editors.ModelEditor;
 import org.openlca.core.editors.ModelEditorPage;
 

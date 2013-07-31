@@ -3,6 +3,7 @@ package org.openlca.app.plugin.installer;
 import java.io.File;
 
 import org.eclipse.swt.graphics.Image;
+import org.openlca.app.plugin.Activator;
 import org.openlca.app.resources.IImageType;
 import org.openlca.app.resources.ImageManager;
 

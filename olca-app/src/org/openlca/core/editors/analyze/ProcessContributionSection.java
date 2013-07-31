@@ -13,14 +13,14 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.UI;
+import org.openlca.app.App;
+import org.openlca.app.Messages;
 import org.openlca.app.resources.ImageType;
+import org.openlca.app.util.UI;
 import org.openlca.app.viewer.AbstractViewer;
 import org.openlca.app.viewer.FlowViewer;
 import org.openlca.app.viewer.ISelectionChangedListener;
 import org.openlca.app.viewer.ImpactCategoryViewer;
-import org.openlca.core.application.App;
-import org.openlca.core.application.Messages;
 import org.openlca.core.editors.io.ui.FileChooser;
 
 class ProcessContributionSection<T> {

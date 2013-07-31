@@ -5,8 +5,8 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
-import org.openlca.app.UIFactory;
-import org.openlca.core.application.Messages;
+import org.openlca.app.Messages;
+import org.openlca.app.util.UIFactory;
 import org.openlca.core.model.RootEntity;
 
 abstract class AbstractWizardPage<T extends RootEntity> extends WizardPage {

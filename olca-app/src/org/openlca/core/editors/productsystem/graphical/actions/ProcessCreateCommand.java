@@ -10,7 +10,7 @@
 package org.openlca.core.editors.productsystem.graphical.actions;
 
 import org.eclipse.gef.commands.Command;
-import org.openlca.core.application.Messages;
+import org.openlca.app.Messages;
 import org.openlca.core.editors.productsystem.graphical.model.ProcessNode;
 import org.openlca.core.editors.productsystem.graphical.model.ProductSystemNode;
 

@@ -9,7 +9,7 @@ import org.eclipse.draw2d.GridLayout;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.LineBorder;
 import org.eclipse.draw2d.geometry.Point;
-import org.openlca.core.application.Numbers;
+import org.openlca.app.util.Numbers;
 import org.openlca.core.math.Statistics;
 
 /**

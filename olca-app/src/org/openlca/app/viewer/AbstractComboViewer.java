@@ -7,7 +7,7 @@ import org.eclipse.nebula.widgets.tablecombo.TableCombo;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.PlatformUI;
-import org.openlca.app.UI;
+import org.openlca.app.util.UI;
 
 public class AbstractComboViewer<T> extends AbstractViewer<T> {
 

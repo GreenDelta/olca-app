@@ -9,7 +9,7 @@
  ******************************************************************************/
 package org.openlca.core.editors.lciamethod;
 
-import org.openlca.core.application.Messages;
+import org.openlca.app.Messages;
 import org.openlca.core.editors.ModelEditor;
 import org.openlca.core.editors.ModelEditorInfoPage;
 import org.openlca.core.model.ImpactMethod;

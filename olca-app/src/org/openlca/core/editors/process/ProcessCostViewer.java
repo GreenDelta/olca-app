@@ -14,7 +14,7 @@ import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.openlca.app.UI;
+import org.openlca.app.util.UI;
 import org.openlca.core.model.ProductCostEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

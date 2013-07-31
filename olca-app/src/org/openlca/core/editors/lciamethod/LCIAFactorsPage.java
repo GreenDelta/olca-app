@@ -31,16 +31,16 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.SelectObjectDialog;
-import org.openlca.app.UI;
-import org.openlca.app.UIFactory;
-import org.openlca.app.dnd.IModelDropHandler;
+import org.openlca.app.Messages;
+import org.openlca.app.component.IModelDropHandler;
+import org.openlca.app.component.ObjectDialog;
 import org.openlca.app.navigation.NavigationRoot;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.resources.ImageType;
+import org.openlca.app.util.UI;
+import org.openlca.app.util.UIFactory;
 import org.openlca.app.viewer.ISelectionChangedListener;
 import org.openlca.app.viewer.LCIACategoryViewer;
-import org.openlca.core.application.Messages;
 import org.openlca.core.application.actions.DeleteWithQuestionAction;
 import org.openlca.core.application.actions.OpenEditorAction;
 import org.openlca.core.editors.ModelEditor;
@@ -347,7 +347,7 @@ public class LCIAFactorsPage extends ModelEditorPage implements
 			}
 
 			// create select object dialog
-			final SelectObjectDialog dialog = new SelectObjectDialog(
+			final ObjectDialog dialog = new ObjectDialog(
 					UI.shell(), root, true, getDatabase(), Flow.class);
 			dialog.open();
 			final int code = dialog.getReturnCode();

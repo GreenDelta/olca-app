@@ -25,8 +25,8 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.CommonViewer;
-import org.openlca.app.Viewers;
-import org.openlca.core.application.App;
+import org.openlca.app.App;
+import org.openlca.app.util.Viewers;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 
 import com.google.common.base.Objects;

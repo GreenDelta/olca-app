@@ -41,7 +41,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Text;
-import org.openlca.app.Colors;
+import org.openlca.app.util.Colors;
 
 /**
  * A combo viewer with tool tip support. This widget does NOT extends

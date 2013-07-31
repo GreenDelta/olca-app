@@ -7,7 +7,7 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.CellStyle;
-import org.openlca.core.application.Messages;
+import org.openlca.app.Messages;
 import org.openlca.core.editors.io.Excel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

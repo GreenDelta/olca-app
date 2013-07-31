@@ -2,7 +2,7 @@ package org.openlca.core.application.actions;
 
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.osgi.util.NLS;
-import org.openlca.core.application.Messages;
+import org.openlca.app.Messages;
 
 /**
  * Implementation of {@link IInputValidator} for validating the name of a

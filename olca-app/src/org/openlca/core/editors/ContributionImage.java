@@ -5,8 +5,8 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
-import org.openlca.app.Colors;
-import org.openlca.core.application.FaviColor;
+import org.openlca.app.FaviColor;
+import org.openlca.app.util.Colors;
 
 public class ContributionImage {
 

@@ -1,7 +1,7 @@
 package org.openlca.app.wizards;
 
-import org.openlca.core.application.Messages;
-import org.openlca.core.application.db.Database;
+import org.openlca.app.Messages;
+import org.openlca.app.db.Database;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.model.ImpactMethod;
 

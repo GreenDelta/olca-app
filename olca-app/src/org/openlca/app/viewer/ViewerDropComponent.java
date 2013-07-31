@@ -11,8 +11,8 @@ import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Composite;
-import org.openlca.app.dnd.IModelDropHandler;
-import org.openlca.app.dnd.ModelTransfer;
+import org.openlca.app.component.IModelDropHandler;
+import org.openlca.app.component.ModelTransfer;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 

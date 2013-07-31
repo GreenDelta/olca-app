@@ -1,6 +1,6 @@
 package org.openlca.core.editors.lciamethod;
 
-import org.openlca.core.application.Numbers;
+import org.openlca.app.util.Numbers;
 import org.openlca.core.model.ImpactFactor;
 
 /**

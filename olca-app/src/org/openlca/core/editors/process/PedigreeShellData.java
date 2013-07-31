@@ -6,7 +6,7 @@ import java.util.Properties;
 
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
-import org.openlca.app.Colors;
+import org.openlca.app.util.Colors;
 import org.openlca.core.model.PedigreeMatrixRow;
 import org.slf4j.LoggerFactory;
 

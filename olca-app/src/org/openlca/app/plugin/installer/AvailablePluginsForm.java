@@ -30,9 +30,9 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.TableWrapData;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
-import org.openlca.app.ErrorPopup;
-import org.openlca.app.InformationPopup;
 import org.openlca.app.plugin.installer.helpers.Base64ImageHelper;
+import org.openlca.app.util.ErrorPopup;
+import org.openlca.app.util.InformationPopup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

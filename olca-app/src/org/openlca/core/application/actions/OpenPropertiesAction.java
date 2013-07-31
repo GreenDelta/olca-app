@@ -10,7 +10,7 @@
 package org.openlca.core.application.actions;
 
 import org.eclipse.jface.action.Action;
-import org.openlca.core.application.Messages;
+import org.openlca.app.Messages;
 import org.openlca.core.application.views.navigator.DataProviderPropertiesWindow;
 import org.openlca.core.database.IDatabaseServer;
 

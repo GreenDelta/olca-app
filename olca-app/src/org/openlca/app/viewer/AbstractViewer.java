@@ -9,9 +9,7 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.widgets.Composite;
-import org.openlca.app.BaseLabelProvider;
-import org.openlca.app.BaseNameSorter;
-import org.openlca.app.Viewers;
+import org.openlca.app.util.Viewers;
 
 public abstract class AbstractViewer<T> implements
 		org.eclipse.jface.viewers.ISelectionChangedListener {

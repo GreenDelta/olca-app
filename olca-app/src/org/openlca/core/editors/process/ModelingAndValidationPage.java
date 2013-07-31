@@ -24,20 +24,20 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.DataBinding;
-import org.openlca.app.SelectObjectDialog;
-import org.openlca.app.UI;
-import org.openlca.app.UIFactory;
-import org.openlca.app.dnd.IModelDropHandler;
-import org.openlca.app.dnd.ISingleModelDrop;
-import org.openlca.app.dnd.TextDropComponent;
+import org.openlca.app.App;
+import org.openlca.app.Messages;
+import org.openlca.app.component.IModelDropHandler;
+import org.openlca.app.component.ISingleModelDrop;
+import org.openlca.app.component.ObjectDialog;
+import org.openlca.app.component.TextDropComponent;
+import org.openlca.app.db.Database;
+import org.openlca.app.editors.DataBinding;
 import org.openlca.app.resources.ImageType;
+import org.openlca.app.util.UI;
+import org.openlca.app.util.UIFactory;
 import org.openlca.app.viewer.ISelectionChangedListener;
 import org.openlca.app.viewer.ProcessTypeViewer;
-import org.openlca.core.application.App;
-import org.openlca.core.application.Messages;
 import org.openlca.core.application.actions.DeleteWithQuestionAction;
-import org.openlca.core.application.db.Database;
 import org.openlca.core.editors.ModelEditor;
 import org.openlca.core.editors.ModelEditorPage;
 import org.openlca.core.model.Actor;
@@ -234,7 +234,7 @@ public class ModelingAndValidationPage extends ModelEditorPage {
 
 		@Override
 		public void run() {
-			SelectObjectDialog dialog = new SelectObjectDialog(UI.shell(),
+			ObjectDialog dialog = new ObjectDialog(UI.shell(),
 					ModelType.SOURCE, true);
 			int code = dialog.open();
 			BaseDescriptor[] selection = dialog.getMultiSelection();

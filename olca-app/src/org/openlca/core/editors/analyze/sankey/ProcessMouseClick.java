@@ -5,7 +5,7 @@ import java.util.TimerTask;
 
 import org.eclipse.draw2d.MouseEvent;
 import org.eclipse.draw2d.MouseListener;
-import org.openlca.core.application.App;
+import org.openlca.app.App;
 
 /**
  * Opens the process editor on a double click. As 'mouseDoubleClick' not works

@@ -4,7 +4,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.openlca.app.Editors;
+import org.openlca.app.util.Editors;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.math.SimulationSolver;
 import org.openlca.core.model.AllocationMethod;

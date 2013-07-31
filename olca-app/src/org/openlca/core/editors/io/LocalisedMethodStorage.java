@@ -2,7 +2,7 @@ package org.openlca.core.editors.io;
 
 import java.io.File;
 
-import org.openlca.core.application.App;
+import org.openlca.app.App;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.editors.model.LocalisedImpactMethod;

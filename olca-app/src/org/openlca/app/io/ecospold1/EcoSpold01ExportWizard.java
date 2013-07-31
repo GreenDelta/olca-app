@@ -18,8 +18,9 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IExportWizard;
 import org.eclipse.ui.IWorkbench;
+import org.openlca.app.Messages;
+import org.openlca.app.db.Database;
 import org.openlca.app.io.SelectObjectsExportPage;
-import org.openlca.core.application.db.Database;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.ImpactMethod;
@@ -83,8 +84,8 @@ public class EcoSpold01ExportWizard extends Wizard implements IExportWizard {
 						throws InvocationTargetException, InterruptedException {
 					// set up
 					int objectAmount = components.size();
-					monitor.beginTask(Messages.Exporting, objectAmount + 1);
-					monitor.subTask(Messages.CreatingFolder);
+					monitor.beginTask(Messages.EcoSpoldExporting, objectAmount + 1);
+					monitor.subTask(Messages.EcoSpoldCreatingFolder);
 					EcoSpold01Outputter outputter = new EcoSpold01Outputter(
 							exportPage.getExportDestination());
 					monitor.worked(1);

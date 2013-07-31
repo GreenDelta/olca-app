@@ -17,7 +17,7 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.ui.actions.ActionFactory;
-import org.openlca.core.application.Messages;
+import org.openlca.app.Messages;
 import org.openlca.core.application.actions.OpenEditorAction;
 import org.openlca.core.editors.productsystem.graphical.actions.BuildSupplyChainMenuAction;
 import org.openlca.core.editors.productsystem.graphical.actions.GetLinksPopupAction;

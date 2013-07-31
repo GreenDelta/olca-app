@@ -12,7 +12,7 @@ package org.openlca.core.editors.analyze.sankey;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.commands.Command;
-import org.openlca.core.application.Messages;
+import org.openlca.app.Messages;
 
 /**
  * Sets new layout

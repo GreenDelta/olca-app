@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.TextPropertyDescriptor;
-import org.openlca.core.application.Messages;
+import org.openlca.app.Messages;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Expression;
 import org.openlca.core.model.UncertaintyDistributionType;

@@ -11,7 +11,7 @@ package org.openlca.core.application.actions;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.ui.PlatformUI;
-import org.openlca.app.JobListenerWithProgress;
+import org.openlca.app.component.JobListenerWithProgress;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.core.jobs.Jobs;
 import org.slf4j.Logger;

@@ -4,9 +4,9 @@ import java.io.File;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
-import org.openlca.app.UI;
+import org.openlca.app.Messages;
 import org.openlca.app.resources.ImageType;
-import org.openlca.core.application.Messages;
+import org.openlca.app.util.UI;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.IDatabaseServer;
 import org.slf4j.Logger;

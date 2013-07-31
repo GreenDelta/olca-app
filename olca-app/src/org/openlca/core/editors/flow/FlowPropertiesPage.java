@@ -30,16 +30,16 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Item;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.SelectObjectDialog;
-import org.openlca.app.UI;
-import org.openlca.app.UIFactory;
-import org.openlca.app.Viewers;
-import org.openlca.app.dnd.IModelDropHandler;
+import org.openlca.app.App;
+import org.openlca.app.Messages;
+import org.openlca.app.component.IModelDropHandler;
+import org.openlca.app.component.ObjectDialog;
+import org.openlca.app.db.Database;
 import org.openlca.app.resources.ImageType;
-import org.openlca.core.application.App;
-import org.openlca.core.application.Messages;
+import org.openlca.app.util.UI;
+import org.openlca.app.util.UIFactory;
+import org.openlca.app.util.Viewers;
 import org.openlca.core.application.actions.DeleteWithQuestionAction;
-import org.openlca.core.application.db.Database;
 import org.openlca.core.editors.ModelEditor;
 import org.openlca.core.editors.ModelEditorPage;
 import org.openlca.core.model.Flow;
@@ -201,7 +201,7 @@ public class FlowPropertiesPage extends ModelEditorPage {
 
 		@Override
 		public void run() {
-			SelectObjectDialog dialog = new SelectObjectDialog(UI.shell(),
+			ObjectDialog dialog = new ObjectDialog(UI.shell(),
 					ModelType.FLOW_PROPERTY, false);
 			int code = dialog.open();
 			BaseDescriptor descriptor = dialog.getSelection();

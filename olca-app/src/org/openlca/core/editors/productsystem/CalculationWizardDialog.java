@@ -14,9 +14,9 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.openlca.app.UI;
-import org.openlca.core.application.ApplicationProperties;
-import org.openlca.core.application.Messages;
+import org.openlca.app.ApplicationProperties;
+import org.openlca.app.Messages;
+import org.openlca.app.util.UI;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ProductSystem;
 

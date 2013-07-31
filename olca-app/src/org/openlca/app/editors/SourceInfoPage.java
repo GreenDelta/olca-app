@@ -16,9 +16,8 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.openlca.app.DataBinding;
-import org.openlca.app.UI;
-import org.openlca.core.application.Messages;
+import org.openlca.app.Messages;
+import org.openlca.app.util.UI;
 import org.openlca.core.editors.InfoSection;
 import org.openlca.core.model.Source;
 

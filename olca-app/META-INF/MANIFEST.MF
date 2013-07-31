@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: org.openlca.core.application
 Bundle-SymbolicName: olca-app;singleton:=true
 Bundle-Version: 1.4.0
-Bundle-Activator: org.openlca.core.application.plugin.Activator
+Bundle-Activator: org.openlca.app.plugin.Activator
 Bundle-Vendor: openLCA.org
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
@@ -14,7 +14,6 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.mylyn.commons.ui,
  org.eclipse.ui.intro,
  org.eclipse.nebula.widgets.tablecombo;bundle-version="1.0.0",
- org.eclipse.birt.chart;bundle-version="4.2.1",
  org.eclipse.birt.chart.device.extension;bundle-version="4.2.1",
  org.eclipse.draw2d;bundle-version="3.8.1",
  org.eclipse.gef;bundle-version="3.8.1",

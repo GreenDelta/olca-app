@@ -4,7 +4,7 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
-import org.openlca.core.application.Numbers;
+import org.openlca.app.util.Numbers;
 import org.openlca.core.editors.ContributionImage;
 
 /** Label and image provider for the process contribution viewer. */

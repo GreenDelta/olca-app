@@ -18,7 +18,7 @@ import java.util.zip.ZipFile;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.openlca.core.application.App;
+import org.openlca.app.App;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

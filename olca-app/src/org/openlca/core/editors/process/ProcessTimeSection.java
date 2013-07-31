@@ -15,8 +15,8 @@ import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.UIFactory;
-import org.openlca.core.application.Messages;
+import org.openlca.app.Messages;
+import org.openlca.app.util.UIFactory;
 import org.openlca.core.model.ProcessDocumentation;
 
 class ProcessTimeSection {

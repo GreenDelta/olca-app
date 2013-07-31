@@ -4,11 +4,11 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.openlca.app.ProgressAdapter;
-import org.openlca.core.application.App;
-import org.openlca.core.application.FeatureFlag;
-import org.openlca.core.application.Messages;
-import org.openlca.core.application.db.Database;
+import org.openlca.app.App;
+import org.openlca.app.FeatureFlag;
+import org.openlca.app.Messages;
+import org.openlca.app.component.ProgressAdapter;
+import org.openlca.app.db.Database;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.IProductSystemBuilder;

@@ -1,6 +1,6 @@
 package org.openlca.core.editors.lciamethod;
 
-import org.openlca.core.application.Messages;
+import org.openlca.app.Messages;
 
 final class FactorTable {
 

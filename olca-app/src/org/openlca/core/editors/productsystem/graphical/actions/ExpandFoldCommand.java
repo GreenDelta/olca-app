@@ -12,7 +12,7 @@ package org.openlca.core.editors.productsystem.graphical.actions;
 import java.util.ArrayList;
 
 import org.eclipse.gef.commands.Command;
-import org.openlca.core.application.Messages;
+import org.openlca.app.Messages;
 import org.openlca.core.editors.productsystem.graphical.GraphLayoutManager;
 import org.openlca.core.editors.productsystem.graphical.GraphLayoutType;
 import org.openlca.core.editors.productsystem.graphical.model.ProcessFigure;

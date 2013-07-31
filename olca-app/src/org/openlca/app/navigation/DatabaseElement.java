@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.openlca.core.application.db.Database;
-import org.openlca.core.application.db.IDatabaseConfiguration;
+import org.openlca.app.db.Database;
+import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.core.model.ModelType;
 
 /** Navigation element for databases. */

@@ -27,7 +27,7 @@ package org.openlca.core.editors.charts;
 import org.eclipse.birt.chart.model.attribute.ColorDefinition;
 import org.eclipse.birt.chart.model.attribute.impl.ColorDefinitionImpl;
 import org.eclipse.swt.graphics.RGB;
-import org.openlca.core.application.FaviColor;
+import org.openlca.app.FaviColor;
 
 /**
  * Defines methods for pre-defined colors.

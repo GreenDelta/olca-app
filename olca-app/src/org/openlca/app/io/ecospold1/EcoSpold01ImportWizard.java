@@ -19,11 +19,12 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
 import org.jdom2.input.SAXBuilder;
+import org.openlca.app.Messages;
+import org.openlca.app.db.Database;
 import org.openlca.app.io.FileImportPage;
 import org.openlca.app.io.UnitMappingPage;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.resources.ImageType;
-import org.openlca.core.application.db.Database;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
@@ -274,8 +275,8 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 										.equals(processNameSpace)
 										|| doc.getRootElement().getNamespace()
 												.equals(methodNameSpace)) {
-									importer.parse(zipFile, entry,
-											changeNameSpace(doc));
+									changeNameSpace(doc);
+									importer.parse(zipFile, entry);
 								}
 							}
 							monitor.worked((int) entry.getSize());
@@ -288,7 +289,8 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 							.equals(processNameSpace)
 							|| doc.getRootElement().getNamespace()
 									.equals(methodNameSpace)) {
-						importer.run(file, changeNameSpace(doc));
+						changeNameSpace(doc);
+						importer.run(file);
 					}
 					monitor.worked((int) file.length());
 				}

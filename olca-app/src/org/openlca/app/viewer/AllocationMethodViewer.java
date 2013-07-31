@@ -3,8 +3,7 @@ package org.openlca.app.viewer;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.nebula.widgets.tablecombo.TableCombo;
 import org.eclipse.swt.widgets.Composite;
-import org.openlca.app.BaseLabelProvider;
-import org.openlca.core.application.Messages;
+import org.openlca.app.Messages;
 import org.openlca.core.model.AllocationMethod;
 
 public class AllocationMethodViewer extends

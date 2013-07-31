@@ -9,7 +9,7 @@
  ******************************************************************************/
 package org.openlca.core.editors.productsystem.graphical;
 
-import org.openlca.core.application.Messages;
+import org.openlca.app.Messages;
 
 /**
  * Enumeration of GraphLayoutTypes

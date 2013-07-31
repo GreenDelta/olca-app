@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.openlca.app.Colors;
-import org.openlca.core.application.FaviColor;
+import org.openlca.app.FaviColor;
+import org.openlca.app.util.Colors;
 import org.swtchart.Chart;
 import org.swtchart.IAxis;
 import org.swtchart.IBarSeries;

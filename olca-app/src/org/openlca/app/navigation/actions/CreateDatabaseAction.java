@@ -14,10 +14,10 @@ import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.openlca.app.Messages;
+import org.openlca.app.db.DatabaseWizard;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.resources.ImageType;
-import org.openlca.core.application.Messages;
-import org.openlca.core.application.db.DatabaseWizard;
 
 /**
  * Opens the wizard for creating a new database.

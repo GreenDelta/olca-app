@@ -14,7 +14,7 @@ import java.lang.reflect.InvocationTargetException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.Wizard;
-import org.openlca.core.application.Messages;
+import org.openlca.app.Messages;
 
 /**
  * Wizard for displaying problems

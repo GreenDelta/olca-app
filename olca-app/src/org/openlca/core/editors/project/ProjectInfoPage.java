@@ -36,18 +36,18 @@ import org.eclipse.ui.forms.events.IExpansionListener;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.IContentChangedListener;
-import org.openlca.app.SelectObjectDialog;
-import org.openlca.app.UI;
-import org.openlca.app.UIFactory;
-import org.openlca.app.Viewers;
-import org.openlca.app.dnd.IModelDropHandler;
-import org.openlca.app.dnd.TextDropComponent;
+import org.openlca.app.Messages;
+import org.openlca.app.component.IModelDropHandler;
+import org.openlca.app.component.ObjectDialog;
+import org.openlca.app.component.TextDropComponent;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.NavigationRoot;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.resources.ImageType;
-import org.openlca.core.application.DateFormatter;
-import org.openlca.core.application.Messages;
+import org.openlca.app.util.DateFormatter;
+import org.openlca.app.util.UI;
+import org.openlca.app.util.UIFactory;
+import org.openlca.app.util.Viewers;
 import org.openlca.core.application.actions.OpenEditorAction;
 import org.openlca.core.editors.ModelEditor;
 import org.openlca.core.editors.ModelEditorInfoPage;
@@ -387,7 +387,7 @@ public class ProjectInfoPage extends ModelEditorInfoPage implements
 			if (navigator != null) {
 				root = navigator.getRoot();
 			}
-			final SelectObjectDialog dialog = new SelectObjectDialog(
+			final ObjectDialog dialog = new ObjectDialog(
 					UI.shell(), root, true, getDatabase(), ProductSystem.class);
 			dialog.addFilter(new ViewerFilter() {
 

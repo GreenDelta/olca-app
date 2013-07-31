@@ -4,8 +4,8 @@ import java.util.Calendar;
 import java.util.UUID;
 
 import org.eclipse.swt.widgets.Composite;
+import org.openlca.app.Messages;
 import org.openlca.app.resources.ImageType;
-import org.openlca.core.application.Messages;
 import org.openlca.core.model.Project;
 
 class ProjectWizardPage extends AbstractWizardPage<Project> {

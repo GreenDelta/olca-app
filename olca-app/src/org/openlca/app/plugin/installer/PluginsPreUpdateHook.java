@@ -3,10 +3,10 @@ package org.openlca.app.plugin.installer;
 import java.io.File;
 import java.util.List;
 
-import org.openlca.app.updater.Updater;
-import org.openlca.app.updater.Updater.UnzipRequest;
-import org.openlca.core.application.update.PreUpdateHook;
-import org.openlca.core.application.update.VersionInfo;
+import org.openlca.app.update.PreUpdateHook;
+import org.openlca.app.update.VersionInfo;
+import org.openlca.app.update.execution.Updater;
+import org.openlca.app.update.execution.Updater.UnzipRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

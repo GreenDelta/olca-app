@@ -3,13 +3,13 @@ package org.openlca.app.wizards;
 import java.util.UUID;
 
 import org.eclipse.swt.widgets.Composite;
-import org.openlca.app.UI;
+import org.openlca.app.Messages;
+import org.openlca.app.db.Database;
 import org.openlca.app.resources.ImageType;
+import org.openlca.app.util.UI;
 import org.openlca.app.viewer.FlowPropertyViewer;
 import org.openlca.app.viewer.FlowTypeViewer;
 import org.openlca.app.viewer.ISelectionChangedListener;
-import org.openlca.core.application.Messages;
-import org.openlca.core.application.db.Database;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyFactor;

@@ -1,6 +1,6 @@
 package org.openlca.core.editors.flow;
 
-import org.openlca.core.application.Messages;
+import org.openlca.app.Messages;
 
 interface FlowPropertyColumn {
 

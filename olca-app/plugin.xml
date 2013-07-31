@@ -101,61 +101,68 @@
             icon="icons/simulate_16.png"
             id="CostResultEditor"
             name="Cost results">
+      </editor>
+      <editor
+            class="org.openlca.core.application.views.UsageView"
+            default="false"
+            icon="icons/16x16_link_blue.png"
+            id="application.views.UsageView"
+            name="%usage">
       </editor>      
    </extension>
    
    <extension
          point="org.eclipse.ui.newWizards">
       <wizard
-            class="org.openlca.app.newwizards.ActorWizard"
+            class="org.openlca.app.wizards.ActorWizard"
             icon="icons/actor_obj_new.png"
             id="newActorWizard"
             name="%wizard.name">
       </wizard>
       <wizard
-            class="org.openlca.app.newwizards.SourceWizard"
+            class="org.openlca.app.wizards.SourceWizard"
             icon="icons/source_obj_new.png"
             id="newSourceWizard"
             name="%wizard.name.0">
       </wizard>
       <wizard
-            class="org.openlca.app.newwizards.UnitGroupWizard"
+            class="org.openlca.app.wizards.UnitGroupWizard"
             icon="icons/unitgroup_obj_new.gif"
             id="newUnitGroupWizard"
             name="%wizard.name.1">
       </wizard>
       <wizard
-            class="org.openlca.app.newwizards.FlowPropertyWizard"
+            class="org.openlca.app.wizards.FlowPropertyWizard"
             icon="icons/flowprop_obj_new.gif"
             id="newFlowPropertyWizard"
             name="%wizard.name.2">
       </wizard>
       <wizard
-            class="org.openlca.app.newwizards.FlowWizard"
+            class="org.openlca.app.wizards.FlowWizard"
             icon="icons/flow_obj_new.gif"
             id="newFlowWizard"
             name="%wizard.name.3">
       </wizard>
       <wizard
-            class="org.openlca.app.newwizards.ImpactMethodWizard"
+            class="org.openlca.app.wizards.ImpactMethodWizard"
             icon="icons/LCIA_obj_new.gif"
             id="newImpactMethodWizard"
             name="%wizard.name.7">
       </wizard>
       <wizard
-            class="org.openlca.app.newwizards.ProcessWizard"
+            class="org.openlca.app.wizards.ProcessWizard"
             icon="icons/proc_obj_new.gif"
             id="newProcessWizard"
             name="%wizard.name.4">
       </wizard>
       <wizard
-            class="org.openlca.app.newwizards.ProjectWizard"
+            class="org.openlca.app.wizards.ProjectWizard"
             icon="icons/project_obj_new.png"
             id="newProjectWizard"
             name="%wizard.name.5">
       </wizard>
       <wizard
-            class="org.openlca.app.newwizards.ProductSystemWizard"
+            class="org.openlca.app.wizards.ProductSystemWizard"
             icon="icons/chart_organisation_new.png"
             id="newProductSystemWizard"
             name="%wizard.name.6">
@@ -168,7 +175,7 @@
          point="org.eclipse.core.runtime.applications">
       <application>
          <run
-               class="org.openlca.core.application.plugin.Application">
+               class="org.openlca.app.plugin.Application">
          </run>
       </application>
    </extension>
@@ -176,7 +183,7 @@
          point="org.eclipse.ui.perspectives">
       <perspective
             name="%perspective.name"
-            class="org.openlca.core.application.plugin.Perspective"
+            class="org.openlca.app.plugin.Perspective"
             id="org.openlca.core.application.perspective">
       </perspective>
    </extension>
@@ -190,7 +197,7 @@
             name="%view.name">
       </view>  
  	  <view
-            class="org.openlca.core.application.views.search.SearchView"
+            class="org.openlca.app.search.SearchView"
             icon="icons/search_obj.png"
             id="org.openlca.core.application.views.SearchView"
             name="%view.name.0"
@@ -198,46 +205,36 @@
       </view> 
    </extension>
    
-   <extension
-         point="org.eclipse.ui.editors">
-      <editor
-            default="false"
-            id="application.views.UsageView"
-            name="%usage"
-            class="org.openlca.core.application.views.UsageView"
-            icon="icons/16x16_link_blue.png">
-      </editor>
-   </extension>
  
    <extension
          point="org.eclipse.ui.preferencePages">
 	  <page
-            class="org.openlca.core.application.preferencepages.LocationPreferencePage"
+            class="org.openlca.app.preferencepages.LocationPreferencePage"
             id="org.openlca.core.application.preferencepages.LocationPreferencePage"
             name="%page.name.2">
       </page>
       <page
-            class="org.openlca.core.application.preferencepages.DatabaseParametersPage"
+            class="org.openlca.app.preferencepages.DatabaseParametersPage"
             id="org.openlca.core.application.preferencepages.DatabaseParametersPreferencePage"
             name="%page.name.1">
       </page>
       <page
-            class="org.openlca.core.application.logging.LoggerConfigPage"
+            class="org.openlca.app.logging.LoggerConfigPage"
             id="org.openlca.core.application.logging.LoggerConfigPage"
             name="%logger.config.page.name">
       </page>
       <page
-      		class="org.openlca.core.application.preferencepages.NumberFormatPage"
+      		class="org.openlca.app.preferencepages.NumberFormatPage"
       		id="NumberFormatPage"
       		name="%number.format.page.name">
       </page>
       <page
-            class="org.openlca.core.application.update.UpdatePreferencePage"
+            class="org.openlca.app.update.UpdatePreferencePage"
             id="org.openlca.core.application.update.UpdatePreferencePage"
             name="%update.preference.page.name">
       </page>
       <page
-            class="org.openlca.core.application.preferencepages.FeatureFlagPage"
+            class="org.openlca.app.preferencepages.FeatureFlagPage"
             id="org.openlca.core.application.preferencepages.FeatureFlagPage"
             name="Experimental features">
       </page>
@@ -265,7 +262,7 @@
          point="org.eclipse.ui.handlers">
       <handler
             commandId="org.openlca.core.application.update.commands.updateCheckCommand"
-            class="org.openlca.core.application.update.UpdateCheckHandler">
+            class="org.openlca.app.update.UpdateCheckHandler">
       </handler>
    </extension>
    
@@ -441,59 +438,73 @@
    <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer
-            class="org.openlca.core.application.logging.LoggerPreference">
+            class="org.openlca.app.logging.LoggerPreference">
       </initializer>
       <initializer
-            class="org.openlca.core.application.Preferences">
+            class="org.openlca.app.Preferences">
       </initializer>
-   </extension>
-   <extension
-         point="org.eclipse.core.runtime.preferences">
       <initializer
-            class="org.openlca.core.application.update.UpdatePreference">
+            class="org.openlca.ilcd.network.rcp.ui.Preference">
+      </initializer>
+      <initializer
+            class="org.openlca.app.update.UpdatePreference">
+      </initializer>
+      <initializer
+            class="org.openlca.app.update.UpdatePreference">
       </initializer>
    </extension>
    
    
    <extension
          point="org.eclipse.ui.importWizards">
-       <category
+      <category
             id="org.openlca.io.ui.importFilesCategory"
             name="File Import">
-      </category> 
-         
+      </category>
       <wizard
-            class="org.openlca.io.ui.ecospold1.EcoSpold01ImportWizard"
+            category="org.openlca.io.ui.importFilesCategory"
+            class="org.openlca.app.io.ecospold1.EcoSpold01ImportWizard"
             icon="icons/xml.png"
             id="org.openlca.io.ui.ecospold1.EcoSpoldImportWizard"
-            name="%wizard.name"
-            category="org.openlca.io.ui.importFilesCategory">
+            name="%wizard.name">
          <description>
             %wizard.description
          </description>
       </wizard>
-      
       <wizard
-            class="org.openlca.io.ui.ecospold2.EcoSpold2ImportWizard"
+            category="org.openlca.io.ui.importFilesCategory"
+            class="org.openlca.app.io.ecospold2.EcoSpold2ImportWizard"
             icon="icons/xml.png"
             id="org.openlca.io.ui.ecospold2.EcoSpold2ImportWizard"
-            name="EcoSpold 2"
-            category="org.openlca.io.ui.importFilesCategory">
+            name="EcoSpold 2">
          <description>
             Import EcoSpold 2 files
          </description>
       </wizard>
-      
       <wizard
-            class="org.openlca.io.ui.ilcd.importer.ILCDImportWizard"
+            category="org.openlca.io.ui.importFilesCategory"
+            class="org.openlca.app.io.ilcd.importer.ILCDImportWizard"
             icon="icons/ilcd16.png"
             id="org.openlca.io.ui.ilcd.importer.ILCDImportWizard"
-            name="ILCD"
-            category="org.openlca.io.ui.importFilesCategory">
+            name="ILCD">
          <description>
             %ilcd.import.description
          </description>
-      </wizard>      
+      </wizard>
+      <category
+            id="org.openlca.ilcd.network.wizards.category"
+            name="%ilcd.net.import.category.name">
+      </category>
+      <wizard
+            category="org.openlca.ilcd.network.wizards.category"
+            class="org.openlca.ilcd.network.rcp.ui.ImportWizard"
+            icon="icons/network16.png"
+            id="org.openlca.ilcd.network.wizards.ImportWizard"
+            name="%ilcd.net.import.wizard.name">
+         <description>
+            %ilcd.net.import.wizard.description
+         </description>
+      </wizard>
    </extension>
    
    <!-- export wizards -->
@@ -510,7 +521,7 @@
       </category>
       <wizard
             category="org.openlca.io.ui.ecospold"
-            class="org.openlca.io.ui.ecospold1.EcoSpold01ExportProcessWizard"
+            class="org.openlca.app.io.ecospold1.EcoSpold01ExportProcessWizard"
             icon="icons/xml.png"
             id="org.openlca.io.ui.ecospold1.EcoSpoldExportProcessWizard"
             name="%wizard.name.0">
@@ -518,21 +529,9 @@
             %wizard.description.0
          </description>
       </wizard>
-      <!-- not yet included
       <wizard
             category="org.openlca.io.ui.ecospold"
-            class="org.openlca.io.ui.ecospold2.EcoSpold2ExportWizard"
-            icon="icons/xml.png"
-            id="org.openlca.io.ui.ecospold2.EcoSpold2ExportWizard"
-            name="Processes - EcoSpold 2">
-         <description>
-            Export processes to EcoSpold 2
-         </description>
-      </wizard>
-      -->
-      <wizard
-            category="org.openlca.io.ui.ecospold"
-            class="org.openlca.io.ui.ecospold1.EcoSpold01ExportMethodWizard"
+            class="org.openlca.app.io.ecospold1.EcoSpold01ExportMethodWizard"
             icon="icons/xml.png"
             id="org.openlca.io.ui.ecospold1.exporter.EcoSpold01ExportMethodWizard"
             name="%wizard.name.1">
@@ -540,96 +539,55 @@
             %wizard.description.1
          </description>
       </wizard>
-       <wizard
+      <wizard
             category="org.openlca.io.ui.ilcd"
-            class="org.openlca.io.ui.ilcd.exporter.ILCDExportSystemWizard"
+            class="org.openlca.app.io.ilcd.exporter.ILCDExportSystemWizard"
             icon="icons/ilcd16.png"
             id="org.openlca.io.ui.ilcd.exporter.ILCDExportSystemWizard"
             name="%wizard.name.7">
       </wizard>
       <wizard
             category="org.openlca.io.ui.ilcd"
-            class="org.openlca.io.ui.ilcd.exporter.ILCDExportProcessWizard"
+            class="org.openlca.app.io.ilcd.exporter.ILCDExportProcessWizard"
             icon="icons/ilcd16.png"
             id="org.openlca.io.ui.ilcd.exporter.ILCDExportProcessWizard"
             name="%wizard.name.3">
       </wizard>
       <wizard
             category="org.openlca.io.ui.ilcd"
-            class="org.openlca.io.ui.ilcd.exporter.ILCDExportFlowWizard"
+            class="org.openlca.app.io.ilcd.exporter.ILCDExportFlowWizard"
             icon="icons/ilcd16.png"
             id="org.openlca.io.ui.ilcd.exporter.ILCDExportFlowWizard"
             name="%wizard.name.4">
       </wizard>
       <wizard
             category="org.openlca.io.ui.ilcd"
-            class="org.openlca.io.ui.ilcd.exporter.ILCDExportFlowPropertyWizard"
+            class="org.openlca.app.io.ilcd.exporter.ILCDExportFlowPropertyWizard"
             icon="icons/ilcd16.png"
             id="org.openlca.io.ui.ilcd.exporter.ILCDExportFlowPropertyWizard"
             name="%wizard.name.5">
       </wizard>
       <wizard
             category="org.openlca.io.ui.ilcd"
-            class="org.openlca.io.ui.ilcd.exporter.ILCDExportUnitGroupWizard"
+            class="org.openlca.app.io.ilcd.exporter.ILCDExportUnitGroupWizard"
             icon="icons/ilcd16.png"
             id="org.openlca.io.ui.wizard4"
             name="%wizard.name.6">
       </wizard>
       <wizard
             category="org.openlca.io.ui.ilcd"
-            class="org.openlca.io.ui.ilcd.exporter.ILCDActorExportWizard"
+            class="org.openlca.app.io.ilcd.exporter.ILCDExportActorWizard"
             icon="icons/ilcd16.png"
             id="org.openlca.io.ui.ilcd.exporter.ILCDActorExportWizard"
             name="%Actors">
       </wizard>
       <wizard
             category="org.openlca.io.ui.ilcd"
-            class="org.openlca.io.ui.ilcd.exporter.ILCDSourceExportWizard"
+            class="org.openlca.app.io.ilcd.exporter.ILCDSourceExportWizard"
             icon="icons/ilcd16.png"
             id="org.openlca.io.ui.ilcd.exporter.ILCDSourceExportWizard"
             name="%Sources">
       </wizard>
-   </extension>
-   
-   <extension
-         point="org.openlca.core.application.exportAction">
-      <exportAction
-            exportAction="org.openlca.io.ui.ecospold1.ExportToEcoSpold1Action">
-         <allowedClass className="org.openlca.core.model.Process"/>
-         <allowedClass className="org.openlca.core.model.LCIAMethod"/>
-      </exportAction>
-      <exportAction
-            exportAction="org.openlca.io.ui.ilcd.exporter.ILCDExportAction">
-         <allowedClass className="org.openlca.core.model.ProductSystem" />
-         <allowedClass className="org.openlca.core.model.Process" />
-         <allowedClass className="org.openlca.core.model.Flow" />
-         <allowedClass className="org.openlca.core.model.FlowProperty" />
-         <allowedClass className="org.openlca.core.model.UnitGroup" />
-         <allowedClass className="org.openlca.core.model.Source" />
-         <allowedClass className="org.openlca.core.model.Actor" />      
-       </exportAction>
-   </extension>
-   
-      
-    <extension
-         point="org.eclipse.ui.importWizards">
-      <category
-            id="org.openlca.ilcd.network.wizards.category"
-            name="%ilcd.net.import.category.name">
-      </category>
-      <wizard
-            category="org.openlca.ilcd.network.wizards.category"
-            class="org.openlca.ilcd.network.rcp.ui.ImportWizard"
-            icon="icons/network16.png"
-            id="org.openlca.ilcd.network.wizards.ImportWizard"
-            name="%ilcd.net.import.wizard.name">
-         <description>
-            %ilcd.net.import.wizard.description
-         </description>
-      </wizard>
-   </extension>
-   <extension
-         point="org.eclipse.ui.exportWizards">
       <category
             id="org.openlca.ilcd.network.export.category"
             name="%ilcd.net.export.category.name">
@@ -643,12 +601,45 @@
       </wizard>
    </extension>
    
-   
    <extension
-         point="org.eclipse.core.runtime.preferences">
-      <initializer
-            class="org.openlca.ilcd.network.rcp.ui.Preference">
-      </initializer>
+         point="org.openlca.core.application.exportAction">
+      <exportAction
+            exportAction="org.openlca.app.io.ecospold1.ExportToEcoSpold1Action">
+         <allowedClass
+               className="org.openlca.core.model.Process">
+         </allowedClass>
+         <allowedClass
+               className="org.openlca.core.model.LCIAMethod">
+         </allowedClass>
+      </exportAction>
+      <exportAction
+            exportAction="org.openlca.app.io.ilcd.exporter.ILCDExportAction">
+         <allowedClass
+               className="org.openlca.core.model.ProductSystem">
+         </allowedClass>
+         <allowedClass
+               className="org.openlca.core.model.Process">
+         </allowedClass>
+         <allowedClass
+               className="org.openlca.core.model.Flow">
+         </allowedClass>
+         <allowedClass
+               className="org.openlca.core.model.FlowProperty">
+         </allowedClass>
+         <allowedClass
+               className="org.openlca.core.model.UnitGroup">
+         </allowedClass>
+         <allowedClass
+               className="org.openlca.core.model.Source">
+         </allowedClass>
+         <allowedClass
+               className="org.openlca.core.model.Actor">
+         </allowedClass>
+      </exportAction>
    </extension>
+   
+      
+   
+   
    
 </plugin>

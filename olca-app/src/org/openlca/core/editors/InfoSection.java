@@ -3,9 +3,9 @@ package org.openlca.core.editors;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.openlca.app.DataBinding;
-import org.openlca.app.UI;
-import org.openlca.core.application.Messages;
+import org.openlca.app.Messages;
+import org.openlca.app.editors.DataBinding;
+import org.openlca.app.util.UI;
 import org.openlca.core.model.RootEntity;
 
 /**

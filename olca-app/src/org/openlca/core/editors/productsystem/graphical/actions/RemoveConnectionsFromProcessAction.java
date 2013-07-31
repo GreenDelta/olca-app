@@ -18,7 +18,7 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.openlca.core.application.Messages;
+import org.openlca.app.Messages;
 import org.openlca.core.editors.productsystem.graphical.model.ConnectionLink;
 import org.openlca.core.editors.productsystem.graphical.model.ExchangeNode;
 import org.openlca.core.editors.productsystem.graphical.model.ProcessNode;
