@@ -23,7 +23,7 @@ public class FlowPropertyEditor extends ModelEditor {
 	/**
 	 * The id of the flow property editor
 	 */
-	public static String ID = "org.openlca.core.editors.flowproperty.FlowPropertyEditor";
+	public static String ID = "editors.flowproperty";
 
 	@Override
 	protected ModelEditorPage[] initPages() {

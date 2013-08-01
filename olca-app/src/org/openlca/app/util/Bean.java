@@ -25,6 +25,14 @@ public class Bean {
 		return null;
 	}
 
+	public static Class<?> getType(Object bean, String property) throws Exception {
+		PropertyDescriptor descriptor = PropertyUtils.getPropertyDescriptor(
+				bean, property);
+		if (descriptor != null)
+			return descriptor.getPropertyType();
+		return null;
+	}
+
 	public static void setValue(Object bean, String property, Object value)
 			throws Exception {
 		Method method = findSetter(bean, property);

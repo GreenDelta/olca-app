@@ -5,6 +5,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.Messages;
 import org.openlca.app.editors.DataBinding;
+import org.openlca.app.editors.DataBinding.BindingType;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.RootEntity;
 
@@ -26,10 +27,10 @@ public class InfoSection {
 		Composite composite = UI.formSection(body, toolkit,
 				Messages.Common_GeneralInformation);
 		Text nameText = UI.formText(composite, toolkit, Messages.Common_Name);
-		binding.onString(entity, "name", nameText);
+		binding.on(entity, "name", BindingType.STRING, nameText);
 		Text descriptionText = UI.formMultiText(composite, toolkit,
 				Messages.Common_Description);
-		binding.onString(entity, "description", descriptionText);
+		binding.on(entity, "description", BindingType.STRING, descriptionText);
 
 		// TODO: a category link
 	}

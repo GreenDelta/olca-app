@@ -1,14 +1,25 @@
 package org.openlca.app.editors;
 
-import org.openlca.core.editors.ModelEditor;
-import org.openlca.core.editors.ModelEditorPage;
+import org.openlca.core.model.UnitGroup;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class UnitGroupEditor extends ModelEditor {
+public class UnitGroupEditor extends ModelEditor<UnitGroup> {
 
-	public static String ID = "UnitGroupEditor";
+	public static String ID = "editors.unitgroup";
+	private Logger log = LoggerFactory.getLogger(getClass());
+
+	public UnitGroupEditor() {
+		super(UnitGroup.class);
+	}
 
 	@Override
-	protected ModelEditorPage[] initPages() {
-		return new ModelEditorPage[] { new UnitGroupInfoPage(this) };
+	protected void addPages() {
+		try {
+			addPage(new UnitGroupInfoPage(this));
+		} catch (Exception e) {
+			log.error("failed to add editor pages", e);
+		}
 	}
+
 }

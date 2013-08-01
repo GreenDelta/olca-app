@@ -160,7 +160,7 @@ class ProcessContributionSection<T> {
 			data.setItemName(selectionName);
 			data.setItems((List<ProcessContributionItem>) viewer.getInput());
 			data.setOrderType(modeCombo.getText());
-			data.setSelectedItem(itemViewer.getSelectedText());
+			data.setSelectedItem(itemViewer.getSelected().toString());
 			data.setTitle(sectionTitle);
 			ContributionExport export = new ContributionExport(data);
 			App.run("Export of process contributions", export);

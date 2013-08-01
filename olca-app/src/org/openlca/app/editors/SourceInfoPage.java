@@ -11,35 +11,30 @@
 package org.openlca.app.editors;
 
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.Messages;
+import org.openlca.app.editors.DataBinding.BindingType;
 import org.openlca.app.util.UI;
 import org.openlca.core.editors.InfoSection;
 import org.openlca.core.model.Source;
 
-public class SourceInfoPage extends FormPage {
+public class SourceInfoPage extends ModelPage<Source> {
 
-	private Source source;
-	private DataBinding binding;
 	private FormToolkit toolkit;
 
 	public SourceInfoPage(SourceEditor editor) {
 		super(editor, "SourceInfoPage", Messages.Common_GeneralInformation);
-		this.source = editor.getSource();
-		this.binding = new DataBinding(editor);
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
 		ScrolledForm form = UI.formHeader(managedForm,
-				Messages.Sources_FormText + ": " + source.getName());
+				Messages.Sources_FormText + ": " + getModel().getName());
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
-		InfoSection infoSection = new InfoSection(source, binding);
+		InfoSection infoSection = new InfoSection(getModel(), getBinding());
 		infoSection.render(body, toolkit);
 		createAdditionalInfo(body);
 		body.setFocus();
@@ -49,12 +44,9 @@ public class SourceInfoPage extends FormPage {
 	protected void createAdditionalInfo(Composite body) {
 		Composite composite = UI.formSection(body, toolkit,
 				Messages.Sources_SourceInfoSectionLabel);
-		Text text = UI.formText(composite, toolkit, Messages.Sources_Doi);
-		binding.onString(source, "doi", text);
-		text = UI.formText(composite, toolkit, Messages.Sources_TextReference);
-		binding.onString(source, "textReference", text);
-		text = UI.formText(composite, toolkit, Messages.Sources_Year);
-		binding.onShort(source, "year", text);
+		createText(Messages.Sources_Doi, "doi", composite);
+		createText(Messages.Sources_TextReference, "textReference", composite);
+		createText(Messages.Sources_Year, "year", BindingType.SHORT, composite);
 	}
 
 }

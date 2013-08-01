@@ -10,9 +10,7 @@
 package org.openlca.app.editors;
 
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.Messages;
@@ -20,25 +18,21 @@ import org.openlca.app.util.UI;
 import org.openlca.core.editors.InfoSection;
 import org.openlca.core.model.Actor;
 
-public class ActorInfoPage extends FormPage {
+public class ActorInfoPage extends ModelPage<Actor> {
 
-	private Actor actor;
 	private FormToolkit toolkit;
-	private DataBinding binding;
 
 	public ActorInfoPage(ActorEditor editor) {
 		super(editor, "ActorInfoPage", Messages.Common_GeneralInformation);
-		this.actor = editor.getActor();
-		this.binding = new DataBinding(editor);
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
 		ScrolledForm form = UI.formHeader(managedForm, Messages.Actor + ": "
-				+ actor.getName());
+				+ getModel().getName());
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
-		InfoSection infoSection = new InfoSection(actor, binding);
+		InfoSection infoSection = new InfoSection(getModel(), getBinding());
 		infoSection.render(body, toolkit);
 		createAdditionalInfo(body);
 		body.setFocus();
@@ -56,11 +50,6 @@ public class ActorInfoPage extends FormPage {
 		createText(Messages.Telephone, "telephone", composite);
 		createText(Messages.WebSite, "webSite", composite);
 		createText(Messages.ZipCode, "zipCode", composite);
-	}
-
-	private void createText(String label, String property, Composite parent) {
-		Text text = UI.formText(parent, toolkit, label);
-		binding.onString(actor, property, text);
 	}
 
 }
