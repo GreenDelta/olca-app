@@ -36,6 +36,7 @@ import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.openlca.app.ApplicationProperties;
+import org.openlca.app.Messages;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.UI;
 

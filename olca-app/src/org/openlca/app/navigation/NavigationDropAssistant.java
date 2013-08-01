@@ -52,7 +52,7 @@ public class NavigationDropAssistant extends CommonDropAdapterAssistant {
 		// get navigator
 		final Navigator navigator = (Navigator) PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow().getActivePage()
-				.findView("org.openlca.core.application.navigator"); //$NON-NLS-1$
+				.findView(Navigator.ID); //$NON-NLS-1$
 		// drop target
 		final DropTarget target = (DropTarget) aDropTargetEvent.getSource();
 		// target category
@@ -61,14 +61,14 @@ public class NavigationDropAssistant extends CommonDropAdapterAssistant {
 		// if target control is the navigator tree
 		if (target.getControl() == navigator.getCommonViewer().getTree()) {
 
-			final List<INavigationElement> elements = new ArrayList<>();
+			final List<INavigationElement<?>> elements = new ArrayList<>();
 			final IStructuredSelection selection = (IStructuredSelection) aDropTargetEvent.data;
 
 			// for each selected object
 			for (final Object o : selection.toArray()) {
 				// if model component or category element
 				if (o instanceof ModelElement || o instanceof CategoryElement) {
-					elements.add((INavigationElement) o);
+					elements.add((INavigationElement<?>) o);
 				}
 			}
 			if (operation == DND.DROP_COPY) {

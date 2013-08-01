@@ -140,9 +140,8 @@ public class ObjectDialog extends Dialog {
 						// if object is model component element
 						if (selected instanceof ModelElement) {
 							// add to filtered selection
-							selection
-									.add((BaseDescriptor) ((ModelElement) selected)
-											.getContent());
+							selection.add(((ModelElement) selected)
+									.getContent());
 						}
 					}
 					// if multiple selection is allowed
@@ -153,8 +152,7 @@ public class ObjectDialog extends Dialog {
 					} else {
 						if (!selection.isEmpty()) {
 							// set first selection
-							ObjectDialog.this.selection = selection
-									.get(0);
+							ObjectDialog.this.selection = selection.get(0);
 						} else {
 							ObjectDialog.this.selection = null;
 						}

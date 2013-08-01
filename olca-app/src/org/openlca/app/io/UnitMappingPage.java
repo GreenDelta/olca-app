@@ -36,6 +36,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.FlowProperty;
@@ -58,12 +59,12 @@ public abstract class UnitMappingPage extends WizardPage {
 	/**
 	 * String for the 'conversion factor' property
 	 */
-	private final String CONVERSION_FACTOR = Phrases.ConversionFactor;
+	private final String CONVERSION_FACTOR = Messages.ConversionFactor;
 
 	/**
 	 * String for the 'flow property' property
 	 */
-	private final String FLOW_PROPERTY = Phrases.FlowProperty;
+	private final String FLOW_PROPERTY = Messages.FlowProperty;
 
 	/**
 	 * List of flow properties
@@ -83,17 +84,17 @@ public abstract class UnitMappingPage extends WizardPage {
 	/**
 	 * String for the 'reference unit' property
 	 */
-	private final String REFERENCE_UNIT = Phrases.ReferenceUnit;
+	private final String REFERENCE_UNIT = Messages.ReferenceUnit;
 
 	/**
 	 * String for the 'unit' property
 	 */
-	private final String UNIT = Phrases.Unit;
+	private final String UNIT = Messages.Unit;
 
 	/**
 	 * String for the 'unit group' property
 	 */
-	private final String UNIT_GROUP = Phrases.UnitGroup;
+	private final String UNIT_GROUP = Messages.UnitGroup;
 
 	/**
 	 * Properties of the table viewer

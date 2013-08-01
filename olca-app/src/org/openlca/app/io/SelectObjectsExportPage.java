@@ -30,6 +30,7 @@ import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.openlca.app.ApplicationProperties;
+import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.NavigationContentProvider;
 import org.openlca.app.navigation.NavigationLabelProvider;
@@ -43,8 +44,7 @@ import org.openlca.core.model.descriptors.BaseDescriptor;
 /**
  * Wizard page for selecting objects for export
  */
-public class SelectObjectsExportPage extends
-		WizardPage {
+public class SelectObjectsExportPage extends WizardPage {
 
 	private Text errorText;
 	private File exportDestination;
@@ -56,16 +56,14 @@ public class SelectObjectsExportPage extends
 	private CheckboxTreeViewer viewer;
 	private String fileExtension = ".csv";
 
-	public static SelectObjectsExportPage withoutSelection(
-			ModelType type) {
+	public static SelectObjectsExportPage withoutSelection(ModelType type) {
 		SelectObjectsExportPage page = new SelectObjectsExportPage();
 		page.withSelection = false;
 		page.type = type;
 		return page;
 	}
 
-	public static  SelectObjectsExportPage withSelection(
-			ModelType type) {
+	public static SelectObjectsExportPage withSelection(ModelType type) {
 		SelectObjectsExportPage page = new SelectObjectsExportPage();
 		page.withSelection = true;
 		page.type = type;
@@ -107,21 +105,21 @@ public class SelectObjectsExportPage extends
 	private String getTypeName(ModelType type) {
 		switch (type) {
 		case PROCESS:
-			return Phrases.Processes;
+			return Messages.Processes;
 		case IMPACT_METHOD:
-			return Phrases.LCIAMethods;
+			return Messages.LCIAMethods;
 		case FLOW:
-			return Phrases.Flows;
+			return Messages.Flows;
 		case FLOW_PROPERTY:
-			return Phrases.FlowProperties;
+			return Messages.FlowProperties;
 		case UNIT_GROUP:
-			return Phrases.UnitGroups;
+			return Messages.UnitGroups;
 		case ACTOR:
-			return Phrases.Actors;
+			return Messages.Actors;
 		case SOURCE:
-			return Phrases.Sources;
+			return Messages.Sources;
 		case PRODUCT_SYSTEM:
-			return Phrases.ProductSystems;
+			return Messages.ProductSystems;
 		default:
 			return "unknown";
 		}

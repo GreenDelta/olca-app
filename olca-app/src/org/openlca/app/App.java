@@ -93,30 +93,7 @@ public class App {
 	private static String getEditorId(ModelType type) {
 		if (type == null)
 			return null;
-		switch (type) {
-		case ACTOR:
-			return "ActorEditor";
-		case FLOW:
-			return "FlowEditor";
-		case FLOW_PROPERTY:
-			return "FlowPropertyEditor";
-		case IMPACT_METHOD:
-			return "ImpactMethodEditor";
-		case PROCESS:
-			return "ProcessEditor";
-		case PRODUCT_SYSTEM:
-			return "ProductSystemEditor";
-		case IMPACT_RESULT:
-			return "ResultEditor";
-		case PROJECT:
-			return "ProjectEditor";
-		case SOURCE:
-			return "SourceEditor";
-		case UNIT_GROUP:
-			return "UnitGroupEditor";
-		default:
-			return null;
-		}
+		return "editors." + type.getModelClass().getSimpleName().toLowerCase();
 	}
 
 	public static void runInUI(String name, Runnable runnable) {
