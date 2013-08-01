@@ -28,7 +28,6 @@ import org.openlca.core.model.descriptors.BaseDescriptor;
 public final class TextDropComponent extends Composite {
 
 	private BaseDescriptor content;
-	private boolean withoutDelete;
 	private Text text;
 	private FormToolkit toolkit;
 	private ModelType modelType;
@@ -36,10 +35,9 @@ public final class TextDropComponent extends Composite {
 	private ISingleModelDrop handler;
 
 	public TextDropComponent(Composite parent, FormToolkit toolkit,
-			boolean withoutDelete, ModelType modelType) {
+			ModelType modelType) {
 		super(parent, SWT.FILL);
 		this.toolkit = toolkit;
-		this.withoutDelete = withoutDelete;
 		this.modelType = modelType;
 		createContent();
 	}
@@ -53,6 +51,10 @@ public final class TextDropComponent extends Composite {
 	}
 
 	public void setContent(BaseDescriptor content) {
+		if (content.getModelType() != modelType)
+			throw new IllegalArgumentException("Descriptor must be of type "
+					+ modelType);
+
 		this.content = content;
 		text.setData(content); // tooltip
 		if (content == null || content.getDisplayName() == null) {
@@ -60,8 +62,11 @@ public final class TextDropComponent extends Composite {
 		} else {
 			text.setText(content.getDisplayName());
 		}
-		if (!withoutDelete)
-			removeButton.setEnabled(content != null);
+		removeButton.setEnabled(content != null);
+	}
+
+	public ModelType getModelType() {
+		return modelType;
 	}
 
 	private void createContent() {
@@ -72,16 +77,12 @@ public final class TextDropComponent extends Composite {
 		createAddButton();
 		createTextField();
 		addDropToText();
-		if (!withoutDelete)
-			createRemoveButton();
+		createRemoveButton();
 	}
 
 	private TableWrapLayout createLayout() {
 		TableWrapLayout layout = new TableWrapLayout();
-		if (withoutDelete)
-			layout.numColumns = 2;
-		else
-			layout.numColumns = 3;
+		layout.numColumns = 3;
 		layout.leftMargin = 0;
 		layout.rightMargin = 0;
 		layout.topMargin = 0;
@@ -99,8 +100,8 @@ public final class TextDropComponent extends Composite {
 		addButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(final MouseEvent e) {
-				ObjectDialog dialog = new ObjectDialog(getShell(),
-						modelType, false);
+				ObjectDialog dialog = new ObjectDialog(getShell(), modelType,
+						false);
 				int code = dialog.open();
 				if (code == Window.OK && dialog.getSelection() != null)
 					handleChange(dialog.getSelection());
@@ -157,11 +158,13 @@ public final class TextDropComponent extends Composite {
 
 	private void handleChange(Object data) {
 		BaseDescriptor descriptor = null;
-		if (data instanceof BaseDescriptor)
+		if (data instanceof BaseDescriptor
+				&& ((BaseDescriptor) data).getModelType() == modelType)
 			descriptor = (BaseDescriptor) data;
 		else if (data instanceof Object[]) {
 			Object[] objects = (Object[]) data;
-			if (objects.length > 0 && (objects[0] instanceof BaseDescriptor))
+			if (objects.length > 0 && (objects[0] instanceof BaseDescriptor)
+					&& ((BaseDescriptor) data).getModelType() == modelType)
 				descriptor = (BaseDescriptor) objects[0];
 		}
 		setContent(descriptor);
