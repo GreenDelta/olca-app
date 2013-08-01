@@ -1,4 +1,4 @@
-package org.openlca.core.application.views;
+package org.openlca.app.editors;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;

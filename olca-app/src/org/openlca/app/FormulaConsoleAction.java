@@ -1,4 +1,4 @@
-package org.openlca.core.application.actions;
+package org.openlca.app;
 
 import java.io.PrintStream;
 

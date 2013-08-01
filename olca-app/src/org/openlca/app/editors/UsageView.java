@@ -1,4 +1,4 @@
-package org.openlca.core.application.views;
+package org.openlca.app.editors;
 
 import java.util.Collections;
 import java.util.List;
@@ -21,13 +21,8 @@ import org.openlca.app.html.HtmlPage;
 import org.openlca.app.html.IHtmlResource;
 import org.openlca.app.plugin.HtmlView;
 import org.openlca.app.util.UI;
-import org.openlca.core.database.ActorDao;
-import org.openlca.core.database.FlowDao;
-import org.openlca.core.database.FlowPropertyDao;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.database.ProcessDao;
-import org.openlca.core.database.SourceDao;
-import org.openlca.core.database.UnitGroupDao;
+import org.openlca.core.database.usage.IUseSearch;
 import org.openlca.core.model.Actor;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
@@ -35,6 +30,7 @@ import org.openlca.core.model.Process;
 import org.openlca.core.model.Source;
 import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.Descriptors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +41,7 @@ import com.google.gson.Gson;
  */
 public class UsageView extends FormEditor {
 
-	public static String ID = "application.views.UsageView";
+	public static String ID = "views.usage";
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private BaseDescriptor model;
@@ -118,28 +114,23 @@ public class UsageView extends FormEditor {
 				return Collections.emptyList();
 			switch (model.getModelType()) {
 			case ACTOR:
-				ActorDao aDao = new ActorDao(database);
-				return aDao
-						.whereUsed(new Actor(model.getId(), model.getName()));
+				return IUseSearch.FACTORY.createFor(Actor.class, database)
+						.findUses(Descriptors.toActor(model));
 			case SOURCE:
-				SourceDao sDao = new SourceDao(database);
-				return sDao
-						.whereUsed(new Source(model.getId(), model.getName()));
+				return IUseSearch.FACTORY.createFor(Source.class, database)
+						.findUses(Descriptors.toSource(model));
 			case UNIT_GROUP:
-				UnitGroupDao uDao = new UnitGroupDao(database);
-				return uDao.whereUsed(new UnitGroup(model.getId(), model
-						.getName()));
+				return IUseSearch.FACTORY.createFor(UnitGroup.class, database)
+						.findUses(Descriptors.toUnitGroup(model));
 			case FLOW_PROPERTY:
-				FlowPropertyDao fpDao = new FlowPropertyDao(database);
-				return fpDao.whereUsed(new FlowProperty(model.getId(), model
-						.getName()));
+				return IUseSearch.FACTORY.createFor(FlowProperty.class, database)
+						.findUses(Descriptors.toFlowProperty(model));
 			case FLOW:
-				FlowDao fDao = new FlowDao(database);
-				return fDao.whereUsed(new Flow(model.getId(), model.getName()));
+				return IUseSearch.FACTORY.createFor(Flow.class, database)
+						.findUses(Descriptors.toFlow(model));
 			case PROCESS:
-				ProcessDao pDao = new ProcessDao(database);
-				return pDao.whereUsed(new Process(model.getId(), model
-						.getName()));
+				return IUseSearch.FACTORY.createFor(Process.class, database)
+						.findUses(Descriptors.toProcess(model));
 			default:
 				return Collections.emptyList();
 			}

@@ -25,9 +25,9 @@ import org.eclipse.ui.actions.ContributionItemFactory;
 import org.eclipse.ui.actions.RetargetAction;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
+import org.openlca.app.FormulaConsoleAction;
 import org.openlca.app.Messages;
 import org.openlca.app.resources.ImageType;
-import org.openlca.core.application.actions.FormulaConsoleAction;
 
 /**
  * The application action bar advisor

@@ -7,12 +7,12 @@ import org.eclipse.jface.action.Action;
 import org.openlca.app.FeatureFlag;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
+import org.openlca.app.editors.UsageView;
+import org.openlca.app.editors.UsageViewInput;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Editors;
-import org.openlca.core.application.views.UsageView;
-import org.openlca.core.application.views.UsageViewInput;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 
