@@ -2,7 +2,6 @@ package org.openlca.app.preferencepages;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
@@ -37,6 +36,7 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
+import org.openlca.app.db.Database;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
@@ -45,6 +45,7 @@ import org.openlca.app.viewer.BaseNameSorter;
 import org.openlca.core.application.wizards.DeleteWizard;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.database.usage.IUseSearch;
 import org.openlca.core.model.Location;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
@@ -59,6 +60,7 @@ public class LocationPreferencePage extends PreferencePage implements
 	private IDatabase database;
 	private final List<Location> locations = new ArrayList<>();
 	private TableViewer locationViewer;
+	private boolean dirty;
 
 	private final String CODE = Messages.Code;
 	private final String DESCRIPTION = Messages.Description;
@@ -71,20 +73,16 @@ public class LocationPreferencePage extends PreferencePage implements
 
 	private RemoveLocationAction removeLocationAction;
 
-	private void initListeners() {
-		locationViewer
-				.addSelectionChangedListener(new ISelectionChangedListener() {
+	@Override
+	public void init(final IWorkbench workbench) {
+		database = Database.get();
+	}
 
-					@Override
-					public void selectionChanged(
-							final SelectionChangedEvent event) {
-						if (event.getSelection().isEmpty()) {
-							removeLocationAction.setEnabled(false);
-						} else {
-							removeLocationAction.setEnabled(true);
-						}
-					}
-				});
+	@Override
+	public void createControl(final Composite parent) {
+		super.createControl(parent);
+		getApplyButton().setEnabled(false);
+		getDefaultsButton().setVisible(false);
 	}
 
 	@Override
@@ -164,23 +162,47 @@ public class LocationPreferencePage extends PreferencePage implements
 				SWT.FILL, true, true));
 
 		initListeners();
+		initData();
 		return body;
 	}
 
 	@Override
-	protected void onDatabaseSelection(final IDatabase selectedDatabase) {
-		database = selectedDatabase;
-		try {
-			List<Location> objs = database.createDao(Location.class).getAll();
-			locations.clear();
-			for (Location l : objs) {
-				locations.add(l);
+	public boolean performOk() {
+		if (isDirty()) {
+			if (Question.ask(Messages.Common_SaveChangesQuestion,
+					Messages.Common_SaveChangesQuestion)) {
+				save();
 			}
-			locationViewer.setInput(locations.toArray(new Location[locations
-					.size()]));
-		} catch (Exception e) {
-			log.error("Load locations failed", e);
 		}
+		return super.performOk();
+	}
+
+	private void initListeners() {
+		locationViewer
+				.addSelectionChangedListener(new ISelectionChangedListener() {
+
+					@Override
+					public void selectionChanged(
+							final SelectionChangedEvent event) {
+						if (event.getSelection().isEmpty()) {
+							removeLocationAction.setEnabled(false);
+						} else {
+							removeLocationAction.setEnabled(true);
+						}
+					}
+				});
+	}
+
+	private void initData() {
+		if (database == null)
+			return;
+
+		List<Location> objs = database.createDao(Location.class).getAll();
+		locations.clear();
+		for (Location l : objs)
+			locations.add(l);
+		locationViewer
+				.setInput(locations.toArray(new Location[locations.size()]));
 		addLocationAction.setEnabled(true);
 		locationViewer.getTable().setEnabled(true);
 	}
@@ -191,8 +213,7 @@ public class LocationPreferencePage extends PreferencePage implements
 		super.performApply();
 	}
 
-	@Override
-	protected void save() {
+	private void save() {
 		try {
 			BaseDao<Location> dao = database.createDao(Location.class);
 			List<Location> dataProviderLocations = dao.getAll();
@@ -218,26 +239,12 @@ public class LocationPreferencePage extends PreferencePage implements
 		setDirty(false);
 	}
 
-	@Override
-	public void createControl(final Composite parent) {
-		super.createControl(parent);
-		getApplyButton().setEnabled(false);
-		getDefaultsButton().setVisible(false);
+	private void setDirty(boolean value) {
+		dirty = value;
 	}
 
-	@Override
-	public void init(final IWorkbench workbench) {
-	}
-
-	@Override
-	public boolean performOk() {
-		if (isDirty()) {
-			if (Question.ask(Messages.Common_SaveChangesQuestion,
-					Messages.Common_SaveChangesQuestion)) {
-				save();
-			}
-		}
-		return super.performOk();
+	private boolean isDirty() {
+		return dirty;
 	}
 
 	private class AddLocationAction extends Action {
@@ -254,10 +261,8 @@ public class LocationPreferencePage extends PreferencePage implements
 		@Override
 		public void run() {
 			Location location = new Location();
-			location.setId(UUID.randomUUID().toString());
 			location.setName(Messages.Common_Location
 					+ (locationViewer.getTable().getItemCount() + 1));
-			location.addPropertyChangeListener(LocationPreferencePage.this);
 			locations.add(location);
 			locationViewer.setInput(locations);
 			getApplyButton().setEnabled(true);
@@ -393,7 +398,9 @@ public class LocationPreferencePage extends PreferencePage implements
 			Location location = Viewers.getFirstSelected(locationViewer);
 			if (location == null)
 				return;
-			DeleteWizard wizard = new DeleteWizard(database, location);
+			DeleteWizard<Location> wizard = new DeleteWizard<>(
+					IUseSearch.FACTORY.createFor(Location.class, database),
+					location);
 			boolean canDelete = true;
 			if (wizard.hasProblems())
 				canDelete = new WizardDialog(UI.shell(), wizard).open() == Window.OK;
