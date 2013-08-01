@@ -3,7 +3,7 @@ package org.openlca.app.editors;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.editor.FormPage;
-import org.openlca.app.component.TextDropComponent;
+import org.openlca.app.components.TextDropComponent;
 import org.openlca.app.editors.DataBinding.BindingType;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.UIFactory;

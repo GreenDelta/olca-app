@@ -33,11 +33,11 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
 import org.openlca.app.Messages;
-import org.openlca.app.component.IModelDropHandler;
-import org.openlca.app.component.TextDropComponent;
-import org.openlca.app.viewer.BaseLabelProvider;
-import org.openlca.app.viewer.BaseNameSorter;
-import org.openlca.app.viewer.ViewerDropComponent;
+import org.openlca.app.components.IModelDropHandler;
+import org.openlca.app.components.TextDropComponent;
+import org.openlca.app.viewers.BaseLabelProvider;
+import org.openlca.app.viewers.BaseNameSorter;
+import org.openlca.app.viewers.ViewerDropComponent;
 import org.openlca.core.model.ModelType;
 
 /**

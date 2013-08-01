@@ -7,7 +7,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.openlca.app.App;
 import org.openlca.app.FeatureFlag;
 import org.openlca.app.Messages;
-import org.openlca.app.component.ProgressAdapter;
+import org.openlca.app.components.ProgressAdapter;
 import org.openlca.app.db.Database;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.IDatabase;

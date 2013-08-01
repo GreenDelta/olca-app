@@ -52,20 +52,25 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.part.ViewPart;
 import org.openlca.app.App;
 import org.openlca.app.Messages;
-import org.openlca.app.component.ModelTransfer;
+import org.openlca.app.components.ModelTransfer;
 import org.openlca.app.navigation.NavigationRoot;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Viewers;
+import org.openlca.app.viewers.DescriptorViewer;
+import org.openlca.app.viewers.ISelectionChangedListener;
+import org.openlca.app.viewers.ModelTypeViewer;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Actor;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.Project;
 import org.openlca.core.model.Source;
 import org.openlca.core.model.UnitGroup;
+import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.ilcd.methods.LCIAMethod;
 import org.openlca.ilcd.processes.LCIAResult;
 import org.slf4j.Logger;
@@ -79,16 +84,12 @@ import org.slf4j.LoggerFactory;
  */
 public class SearchView extends ViewPart {
 
-	public static final String ID = "org.openlca.core.application.views.SearchView";
+	public static final String ID = "views.search";
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
-	private Combo componentTypeCombo;
-	private IDatabase[] databases = new IDatabase[0];
-	private Combo dbCombo;
-	private final Map<String, String> nameToClass = new HashMap<>();
-	private TableViewer resultViewer;
+	private ModelTypeViewer modelTypeViewer;
+	private DescriptorViewer resultViewer;
 	private Text searchText;
-	private ResultSorter sorter;
 	private Button searchButton;
 
 	public static void refresh() {
@@ -106,62 +107,23 @@ public class SearchView extends ViewPart {
 	}
 
 	private void initListeners() {
-		dbCombo.addSelectionListener(new SelectionListener() {
+		modelTypeViewer
+				.addSelectionChangedListener(new ISelectionChangedListener<ModelType>() {
 
-			@Override
-			public void widgetDefaultSelected(final SelectionEvent e) {
-				// no default action
-			}
+					@Override
+					public void selectionChanged(ModelType selection) {
+						search();
+					}
 
-			@Override
-			public void widgetSelected(final SelectionEvent e) {
-				search();
-			}
-		});
-
-		componentTypeCombo.addSelectionListener(new SelectionListener() {
-
-			@Override
-			public void widgetDefaultSelected(final SelectionEvent e) {
-				// no default action
-			}
-
-			@Override
-			public void widgetSelected(final SelectionEvent e) {
-				search();
-			}
-		});
-
-		for (int i = 0; i < resultViewer.getTable().getColumns().length; i++) {
-			final TableColumn c = resultViewer.getTable().getColumns()[i];
-			final int actual = i;
-			c.setWidth(150);
-			c.addSelectionListener(new SelectionListener() {
-
-				@Override
-				public void widgetDefaultSelected(SelectionEvent e) {
-					widgetSelected(e);
-				}
-
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					sorter.sortColumn(actual);
-					resultViewer.refresh();
-					c.getParent().setSortColumn(c);
-					c.getParent().setSortDirection(
-							sorter.isAscending() ? SWT.DOWN : SWT.UP);
-				}
-			});
-		}
+				});
 
 		resultViewer.addDoubleClickListener(new IDoubleClickListener() {
 
 			@Override
 			public void doubleClick(DoubleClickEvent event) {
-				SearchResult result = Viewers.getFirstSelected(resultViewer);
-				if (result != null)
-					App.openEditor(result.getModelComponent(),
-							result.getDatabase());
+				BaseDescriptor descriptor = resultViewer.getSelected();
+				if (descriptor != null)
+					App.openEditor(descriptor);
 			}
 		});
 
@@ -195,9 +157,9 @@ public class SearchView extends ViewPart {
 	 * Searches for components matching the entered information
 	 */
 	private void search() {
-		final List<SearchResult> results = new ArrayList<>();
+		final List<BaseDescriptor> results = new ArrayList<>();
 		final String searchPhrase = searchText.getText();
-		final String clazz = nameToClass.get(componentTypeCombo.getText());
+		final String clazz = nameToClass.get(modelTypeViewer.getText());
 		// if "all databases" is selected
 		if (dbCombo.getSelectionIndex() == 0) {
 			// for each database
@@ -339,10 +301,10 @@ public class SearchView extends ViewPart {
 
 		toolkit.createLabel(composite1, Messages.ObjectType);
 		// create a combo for selecting a component type (class)
-		componentTypeCombo = new Combo(composite1, SWT.READ_ONLY);
-		componentTypeCombo.setLayoutData(new GridData(SWT.FILL, SWT.FILL,
-				false, false));
-		componentTypeCombo.setSize(150, dbCombo.getSize().y);
+		modelTypeViewer = new Combo(composite1, SWT.READ_ONLY);
+		modelTypeViewer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false,
+				false));
+		modelTypeViewer.setSize(150, dbCombo.getSize().y);
 
 		// load model components from extension registry
 		final IExtensionRegistry extensionRegistry = Platform
@@ -376,10 +338,10 @@ public class SearchView extends ViewPart {
 		});
 		names.add(0, Messages.AllTypes);
 
-		componentTypeCombo.setItems(names.toArray(new String[names.size()]));
-		componentTypeCombo.select(0);
+		modelTypeViewer.setItems(names.toArray(new String[names.size()]));
+		modelTypeViewer.select(0);
 
-		toolkit.adapt(componentTypeCombo);
+		toolkit.adapt(modelTypeViewer);
 
 		toolkit.createLabel(composite1, Messages.SearchTerm);
 

@@ -19,7 +19,7 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
 import org.openlca.app.Messages;
-import org.openlca.app.component.ProgressAdapter;
+import org.openlca.app.components.ProgressAdapter;
 import org.openlca.app.io.FileImportPage;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.resources.ImageType;
