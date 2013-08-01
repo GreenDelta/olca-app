@@ -70,18 +70,9 @@ public class DeleteWizard<T extends RootEntity> extends ProblemWizard {
 								for (final BaseDescriptor descriptor : search
 										.findUses(model)) {
 									// create problem
-									String used = model.getClass()
-											.getSimpleName()
-											+ " "
-											+ model.getName();
-									String user = descriptor.getModelType()
-											.getModelClass().getSimpleName()
-											+ " " + descriptor.getName();
-									String message = used + " is used by "
-											+ user;
-
 									final Problem problem = new Problem(
-											Problem.ERROR, message) {
+											Problem.ERROR, getMessage(model,
+													descriptor)) {
 
 										@Override
 										public void solve() {
@@ -101,4 +92,13 @@ public class DeleteWizard<T extends RootEntity> extends ProblemWizard {
 			}
 		}
 	}
+
+	private String getMessage(T used, BaseDescriptor user) {
+		String s1 = used.getClass().getSimpleName() + " " + used.getName();
+		String s2 = user.getModelType().getModelClass().getSimpleName() + " "
+				+ user.getName();
+		return s1 + " is used by " + s2;
+
+	}
+
 }
