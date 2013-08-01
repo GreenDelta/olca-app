@@ -82,13 +82,13 @@ class ProcessCreationController {
 		}
 	}
 
-	private Flow getFlow() throws Exception {
+	private Flow getFlow() {
 		if (createWithProduct)
 			return createFlow();
 		return new FlowDao(database).getForId(flow.getId());
 	}
 
-	private Flow createFlow() throws Exception {
+	private Flow createFlow() {
 		Flow flow;
 		flow = new Flow();
 		flow.setRefId(UUID.randomUUID().toString());

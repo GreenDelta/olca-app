@@ -6,7 +6,7 @@ import java.util.Objects;
 import org.openlca.app.App;
 import org.openlca.core.database.ActorDao;
 import org.openlca.core.database.BaseDao;
-import org.openlca.core.database.CategorizedEnitityDao;
+import org.openlca.core.database.CategorizedEntityDao;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.FlowPropertyDao;
 import org.openlca.core.database.IDatabase;
@@ -34,7 +34,7 @@ public class Database {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> T load(BaseDescriptor descriptor) throws Exception {
+	public static <T> T load(BaseDescriptor descriptor) {
 		if (descriptor == null || descriptor.getModelType() == null)
 			return null;
 		Class<?> clazz = descriptor.getModelType().getModelClass();
@@ -130,7 +130,7 @@ public class Database {
 			return database.createDao(clazz);
 	}
 
-	public static CategorizedEnitityDao<?, ?> createRootDao(ModelType type) {
+	public static CategorizedEntityDao<?, ?> createRootDao(ModelType type) {
 		if (database == null)
 			return null;
 		switch (type) {
