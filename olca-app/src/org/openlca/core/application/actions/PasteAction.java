@@ -49,6 +49,6 @@ public class PasteAction extends Action {
 
 	@Override
 	public void run() {
-		CopyPasteManager.getInstance().paste(targetElement);
+		CopyPasteManager.getInstance().pasteTo(targetElement);
 	}
 }
