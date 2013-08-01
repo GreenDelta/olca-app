@@ -36,7 +36,7 @@ import com.google.common.base.Objects;
  */
 public class Navigator extends CommonNavigator {
 
-	public static String ID = "org.openlca.core.application.navigator";
+	public static String ID = "views.navigation";
 	private NavigationRoot root;
 
 	@Override
@@ -118,7 +118,7 @@ public class Navigator extends CommonNavigator {
 		IWorkbenchPage page = window.getActivePage();
 		if (page == null)
 			return null;
-		IViewPart part = page.findView(Navigator.ID);
+		IViewPart part = page.findView(ID);
 		if (part instanceof Navigator)
 			return (Navigator) part;
 		return null;

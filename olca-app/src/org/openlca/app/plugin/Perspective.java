@@ -9,12 +9,10 @@
  ******************************************************************************/
 package org.openlca.app.plugin;
 
-import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.IExtensionRegistry;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
+import org.openlca.app.navigation.Navigator;
 import org.openlca.app.search.SearchView;
 
 /**
@@ -34,7 +32,7 @@ public class Perspective implements IPerspectiveFactory {
 		// navigator and search view
 		final IFolderLayout folder = layout.createFolder("Others",
 				IPageLayout.LEFT, 0.31f, editorArea);
-		folder.addView("org.openlca.core.application.navigator");
+		folder.addView(Navigator.ID);
 		folder.addView(SearchView.ID);
 
 		// property sheet place holder
@@ -45,15 +43,6 @@ public class Perspective implements IPerspectiveFactory {
 		// outline place holder
 		layout.addPlaceholder(IPageLayout.ID_OUTLINE, IPageLayout.RIGHT, 0.8f,
 				editorArea);
-
-		// get wizard shortcuts
-		final IExtensionRegistry extensionRegistry = Platform
-				.getExtensionRegistry();
-		final IConfigurationElement[] elements = extensionRegistry
-				.getConfigurationElementsFor("org.openlca.core.application.wizardShortcuts");
-		for (final IConfigurationElement element : elements) {
-			layout.addNewWizardShortcut(element.getAttribute("wizardID"));
-		}
 
 	}
 }

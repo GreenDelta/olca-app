@@ -29,7 +29,7 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 	/**
 	 * The ID of the openLCA perspective
 	 */
-	private static final String PERSPECTIVE_ID = "org.openlca.core.application.perspective";
+	private static final String PERSPECTIVE_ID = "perspectives.standard";
 
 	@Override
 	public WorkbenchWindowAdvisor createWorkbenchWindowAdvisor(

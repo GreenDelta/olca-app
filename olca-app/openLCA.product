@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="openLCA" uid="openLCA" id="olca-app.openLCA" application="org.openlca.core.application.application" version="1.3.0" useFeatures="false" includeLaunchers="true">
+<product name="openLCA" uid="openLCA" id="olca-app.openLCA" application="org.openlca.app.Application" version="1.4.0" useFeatures="false" includeLaunchers="true">
 
    <aboutInfo>
-      <image path="icons/about.png"/>
+      <image path="/olca-app/icons/about.png"/>
       <text>
          openLCA 1.3.0
 
@@ -27,21 +27,21 @@ en
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
    </launcherArgs>
 
-   <windowImages i16="icons/logo_16_32bit.png" i32="icons/logo_32_32bit.png" i48="icons/logo_48_32bit.png" i64="icons/logo_64.png" i128="icons/logo_128.png"/>
+   <windowImages i16="/olca-app/icons/logo_16_32bit.png" i32="/olca-app/icons/logo_32_32bit.png" i48="/olca-app/icons/logo_48_32bit.png" i64="/olca-app/icons/logo_64.png" i128="/olca-app/icons/logo_128.png"/>
 
    <splash
       location="olca-app-core" />
    <launcher name="openLCA">
-      <macosx icon="/org.openlca.core.application/icons/logo.icns"/>
+      <macosx icon="/olca-app/icons/logo.icns"/>
       <solaris/>
       <win useIco="false">
          <bmp
-            winSmallHigh="icons/logo_16_32bit.bmp"
-            winSmallLow="icons/logo_16_8bit.bmp"
-            winMediumHigh="icons/logo_32_32bit.bmp"
-            winMediumLow="icons/logo_32_8bit.bmp"
-            winLargeHigh="icons/logo_48_32bit.bmp"
-            winLargeLow="icons/logo_48_8bit.bmp"/>
+            winSmallHigh="/olca-app/icons/logo_16_32bit.bmp"
+            winSmallLow="/olca-app/icons/logo_16_8bit.bmp"
+            winMediumHigh="/olca-app/icons/logo_32_32bit.bmp"
+            winMediumLow="/olca-app/icons/logo_32_8bit.bmp"
+            winLargeHigh="/olca-app/icons/logo_48_32bit.bmp"
+            winLargeLow="/olca-app/icons/logo_48_8bit.bmp"/>
       </win>
    </launcher>
 

@@ -579,7 +579,7 @@ public class PluginsService {
 	public String getOpenlcaVersion() {
 		for (Bundle b : Activator.getDefault().getBundle().getBundleContext()
 				.getBundles()) {
-			if ("org.openlca.core.application".equals(b.getSymbolicName())) {
+			if ("olca-app".equals(b.getSymbolicName())) {
 				return b.getVersion().toString();
 			}
 		}

@@ -85,7 +85,7 @@ public class Activator extends AbstractUIPlugin {
 	private OlcaPlugin[] getOlcaPlugins() throws CoreException {
 		IExtensionRegistry registry = Platform.getExtensionRegistry();
 		IConfigurationElement[] elements = registry
-				.getConfigurationElementsFor("org.openlca.core.application.plugin");
+				.getConfigurationElementsFor("org.openlca.app.plugin");
 		List<OlcaPlugin> plugins = new ArrayList<>();
 		for (IConfigurationElement elem : elements) {
 			plugins.add((OlcaPlugin) elem

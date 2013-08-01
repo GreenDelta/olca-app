@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: org.openlca.core.application
+Bundle-Name: olca-app
 Bundle-SymbolicName: olca-app;singleton:=true
 Bundle-Version: 1.4.0
 Bundle-Activator: org.openlca.app.plugin.Activator
@@ -40,7 +40,6 @@ Bundle-ClassPath: .,
  libs/dom4j-1.6.1.jar,
  libs/groovy-all-2.1.1.jar,
  libs/gson-2.2.2.jar,
- libs/guava-14.0.jar,
  libs/httpclient-4.1.1.jar,
  libs/httpcore-4.1.jar,
  libs/jackson-annotations-2.1.4.jar,
@@ -85,4 +84,5 @@ Bundle-ClassPath: .,
  libs/org.eclipse.persistence.jpa.jpql-2.4.0.jar,
  libs/olca-core-1.0.0.jar,
  libs/derby-10.10.1.1.jar,
- libs/guava-14.0.1.jar
+ libs/guava-14.0.1.jar,
+ libs/bonecp-0.8.0-rc1.jar
