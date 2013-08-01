@@ -15,7 +15,6 @@ import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
@@ -36,8 +35,6 @@ import org.eclipse.ui.forms.widgets.TableWrapLayout;
 import org.openlca.app.Messages;
 import org.openlca.app.component.IModelDropHandler;
 import org.openlca.app.component.TextDropComponent;
-import org.openlca.app.navigation.INavigationElement;
-import org.openlca.app.navigation.NavigationTree;
 import org.openlca.app.viewer.BaseLabelProvider;
 import org.openlca.app.viewer.BaseNameSorter;
 import org.openlca.app.viewer.ViewerDropComponent;
@@ -120,7 +117,6 @@ public final class UIFactory {
 				false));
 		return categorySection;
 	}
-
 
 	/**
 	 * Creates a label with the given text and a combo viewer
@@ -275,11 +271,10 @@ public final class UIFactory {
 	}
 
 	public static TextDropComponent createDropComponent(Composite parent,
-			String labelText, FormToolkit toolkit, boolean necessary,
-			ModelType modelType) {
+			String labelText, FormToolkit toolkit, ModelType modelType) {
 		toolkit.createLabel(parent, labelText, SWT.NONE);
 		TextDropComponent dropComponent = new TextDropComponent(parent,
-				toolkit, necessary, modelType);
+				toolkit, modelType);
 		dropComponent.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
 				false));
 		return dropComponent;

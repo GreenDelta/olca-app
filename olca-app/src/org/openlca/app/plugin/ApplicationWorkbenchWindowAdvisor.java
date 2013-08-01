@@ -10,7 +10,6 @@
 package org.openlca.app.plugin;
 
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
@@ -35,11 +34,6 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 		return new ApplicationActionBarAdvisor(configurer);
 	}
 
-	@Override
-	public void createWindowContents(final Shell shell) {
-		super.createWindowContents(shell);
-		shell.setMaximized(true);
-	}
 
 	@Override
 	public void preWindowOpen() {

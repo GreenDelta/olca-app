@@ -45,11 +45,6 @@ public class AbstractComboViewer<T> extends AbstractViewer<T> {
 		return columnBoundsAbsolute;
 	}
 
-	@Override
-	public String getSelectedText() {
-		return ((TableCombo) getViewer().getControl()).getText();
-	}
-
 	private boolean useColumnHeaders() {
 		return getColumnHeaders() != null && getColumnHeaders().length > 0;
 	}

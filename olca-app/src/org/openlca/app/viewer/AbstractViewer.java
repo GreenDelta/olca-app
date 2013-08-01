@@ -80,8 +80,6 @@ public abstract class AbstractViewer<T> implements
 		return Viewers.getFirst(viewer.getSelection());
 	}
 
-	public abstract String getSelectedText();
-
 	public void select(T value) {
 		internalSelect(value);
 	}

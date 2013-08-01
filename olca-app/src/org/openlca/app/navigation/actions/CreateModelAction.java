@@ -93,28 +93,8 @@ public class CreateModelAction extends Action implements INavigationAction {
 	private String getWizardId() {
 		if (type == null)
 			return null;
-		switch (type) {
-		case ACTOR:
-			return "newActorWizard";
-		case FLOW:
-			return "newFlowWizard";
-		case FLOW_PROPERTY:
-			return "newFlowPropertyWizard";
-		case IMPACT_METHOD:
-			return "newImpactMethodWizard";
-		case PROCESS:
-			return "newProcessWizard";
-		case PRODUCT_SYSTEM:
-			return "newProductSystemWizard";
-		case PROJECT:
-			return "newProjectWizard";
-		case SOURCE:
-			return "newSourceWizard";
-		case UNIT_GROUP:
-			return "newUnitGroupWizard";
-		default:
-			return null;
-		}
+		return "wizards.new."
+				+ type.getModelClass().getSimpleName().toLowerCase();
 	}
 
 	@Override

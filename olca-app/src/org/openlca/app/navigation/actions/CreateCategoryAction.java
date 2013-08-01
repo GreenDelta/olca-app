@@ -85,7 +85,7 @@ public class CreateCategoryAction extends Action implements INavigationAction {
 		}
 	}
 
-	private void tryInsert(Category category) throws Exception {
+	private void tryInsert(Category category) {
 		BaseDao<Category> dao = Database.get().createDao(Category.class);
 		if (parent == null)
 			dao.insert(category);
