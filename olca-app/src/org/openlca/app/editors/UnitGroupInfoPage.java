@@ -1,45 +1,17 @@
 package org.openlca.app.editors;
 
-import java.util.UUID;
-
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.jface.viewers.CheckboxCellEditor;
-import org.eclipse.jface.viewers.ICellModifier;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TextCellEditor;
-import org.eclipse.osgi.util.NLS;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Item;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.IMessageManager;
-import org.eclipse.ui.forms.events.ExpansionEvent;
-import org.eclipse.ui.forms.events.IExpansionListener;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
-import org.openlca.app.components.ISingleModelDrop;
-import org.openlca.app.components.TextDropComponent;
-import org.openlca.app.db.Database;
-import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.UI;
-import org.openlca.app.util.UIFactory;
-import org.openlca.core.application.actions.DeleteWithQuestionAction;
+import org.openlca.app.viewers.UnitViewer;
 import org.openlca.core.editors.InfoSection;
-import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
-import org.openlca.core.model.descriptors.BaseDescriptor;
-import org.openlca.core.model.descriptors.Descriptors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,20 +21,6 @@ public class UnitGroupInfoPage extends ModelPage<UnitGroup> {
 
 	private IMessageManager messageManager;
 	private FormToolkit toolkit;
-
-	private String UNIT_CONVERSION_FACTOR = Messages.Units_ConversionFactor;
-	private String UNIT_DESCRIPTION = Messages.Common_Description;
-	private String UNIT_FORMULA = Messages.Units_Formula;
-	private String UNIT_IS_REFERENCE = Messages.Units_IsReference;
-	private String UNIT_NAME = Messages.Common_Name;
-	private String UNIT_SYNONYMS = Messages.Units_Synonyms;
-
-	private String[] UNIT_PROPERTIES = new String[] { UNIT_NAME,
-			UNIT_DESCRIPTION, UNIT_SYNONYMS, UNIT_CONVERSION_FACTOR,
-			UNIT_FORMULA, UNIT_IS_REFERENCE };
-
-	private Section unitsSection;
-	private TableViewer unitsTableViewer;
 
 	public UnitGroupInfoPage(UnitGroupEditor editor) {
 		super(editor, "UnitGroupInfoPage", Messages.Common_GeneralInformation);
@@ -84,8 +42,14 @@ public class UnitGroupInfoPage extends ModelPage<UnitGroup> {
 	protected void createAdditionalInfo(Composite body) {
 		createDropComponent(Messages.Units_DefaultFlowProperty,
 				"defaultFlowProperty", ModelType.FLOW_PROPERTY, body);
-		Composite composite = UI.formSection(body, toolkit,
+
+		Section section = UI.section(body, toolkit,
 				Messages.Units_UnitGroupInfoSectionLabel);
+		Composite client = UI.sectionClient(section, toolkit);
+
+		UnitViewer unitViewer = new UnitViewer(client);
+		getBinding().onList(getModel(), "units", unitViewer);
+		unitViewer.bindTo(section);
 	}
 
 	// @Override

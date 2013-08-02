@@ -11,11 +11,11 @@ import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.util.Viewers;
 
-public abstract class AbstractViewer<T> implements
+public abstract class AbstractViewer<T, V extends StructuredViewer> implements
 		org.eclipse.jface.viewers.ISelectionChangedListener {
 
 	private List<ISelectionChangedListener<T>> listener = new ArrayList<>();
-	private StructuredViewer viewer;
+	private V viewer;
 	private T[] input;
 	private boolean hasNull;
 
@@ -23,7 +23,7 @@ public abstract class AbstractViewer<T> implements
 		viewer = createViewer(parent);
 	}
 
-	protected abstract StructuredViewer createViewer(Composite parent);
+	protected abstract V createViewer(Composite parent);
 
 	protected IBaseLabelProvider getLabelProvider() {
 		return new BaseLabelProvider();
@@ -33,7 +33,7 @@ public abstract class AbstractViewer<T> implements
 		return new BaseNameSorter();
 	}
 
-	protected StructuredViewer getViewer() {
+	protected V getViewer() {
 		return viewer;
 	}
 

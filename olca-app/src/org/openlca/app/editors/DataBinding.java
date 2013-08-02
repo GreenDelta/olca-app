@@ -1,5 +1,8 @@
 package org.openlca.app.editors;
 
+import java.lang.reflect.Method;
+import java.util.List;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -10,6 +13,8 @@ import org.openlca.app.components.TextDropComponent;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.Bean;
 import org.openlca.app.util.Colors;
+import org.openlca.app.viewers.AbstractTableViewer;
+import org.openlca.app.viewers.AbstractTableViewer.IModelChangedListener;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.editors.IEditor;
 import org.openlca.core.model.RootEntity;
@@ -46,6 +51,50 @@ public class DataBinding {
 			ModifyListener mod = (ModifyListener) listener;
 			text.removeModifyListener(mod);
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> void onList(final Object bean, final String property,
+			AbstractTableViewer<T> viewer) {
+		List<T> modelList = null;
+		try {
+			modelList = (List<T>) Bean.getValue(bean, property);
+		} catch (Exception e) {
+			log.error("Cannot find property " + property
+					+ ", is not a list or generic type does not match");
+			return;
+		}
+		try {
+			Method setInput = viewer.getClass().getDeclaredMethod("setInput",
+					bean.getClass());
+			setInput.invoke(viewer, bean);
+		} catch (Exception e) {
+			log.error("Cannot find setInput method for type " + bean.getClass());
+			return;
+		}
+
+		viewer.addModelChangedListener(new BoundModelChangedListener<T>(
+				modelList));
+	}
+
+	private class BoundModelChangedListener<T> implements
+			IModelChangedListener<T> {
+
+		private List<T> list;
+
+		private BoundModelChangedListener(List<T> list) {
+			this.list = list;
+		}
+
+		@Override
+		public void modelChanged(Type type, T element) {
+			if (type == Type.CREATE)
+				list.add(element);
+			if (type == Type.REMOVE)
+				list.remove(element);
+			editorChange();
+		}
+
 	}
 
 	public void onModel(final Object bean, final String property,

@@ -1,7 +1,6 @@
 package org.openlca.app.viewers;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.nebula.jface.tablecomboviewer.TableComboViewer;
 import org.eclipse.nebula.widgets.tablecombo.TableCombo;
 import org.eclipse.swt.SWT;
@@ -9,14 +8,14 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.PlatformUI;
 import org.openlca.app.util.UI;
 
-public class AbstractComboViewer<T> extends AbstractViewer<T> {
+public class AbstractComboViewer<T> extends AbstractViewer<T, TableComboViewer> {
 
 	protected AbstractComboViewer(Composite parent) {
 		super(parent);
 	}
 
 	@Override
-	protected StructuredViewer createViewer(Composite parent) {
+	protected TableComboViewer createViewer(Composite parent) {
 		TableCombo combo = new TableCombo(parent, SWT.READ_ONLY | SWT.BORDER);
 		UI.gridData(combo, true, false).widthHint = 350;
 		if (useColumnHeaders()) {
