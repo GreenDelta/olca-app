@@ -5,6 +5,9 @@ import java.net.URL;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.osgi.service.datalocation.Location;
+import org.eclipse.ui.IEditorReference;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.internal.EditorReference;
 import org.openlca.app.editors.ModelEditorInput;
 import org.openlca.app.plugin.Activator;
 import org.openlca.app.plugin.Workspace;
@@ -88,6 +91,23 @@ public class App {
 			ModelEditorInput input = new ModelEditorInput(modelDescriptor);
 			Editors.open(input, editorId);
 		}
+	}
+
+	public static void closeEditor(BaseDescriptor descriptor) {
+		if (descriptor == null) {
+			log.error("model is null, could not close editor");
+			return;
+		}
+		for (IEditorReference ref : Editors.getReferences())
+			try {
+				if (new ModelEditorInput(descriptor).equals(ref
+						.getEditorInput())) {
+					Editors.close(ref);
+					break;
+				}
+			} catch (PartInitException e) {
+				e.printStackTrace();
+			}
 	}
 
 	private static String getEditorId(ModelType type) {
