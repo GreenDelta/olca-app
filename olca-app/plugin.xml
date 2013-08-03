@@ -34,7 +34,7 @@
             name="%editor.name.2">
       </editor>
       <editor
-            class="org.openlca.core.editors.flow.FlowEditor"
+            class="org.openlca.app.editors.FlowEditor"
             default="false"
             icon="icons/flow_obj.gif"
             id="editors.flow"

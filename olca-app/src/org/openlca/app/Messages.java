@@ -727,6 +727,9 @@ public class Messages extends NLS {
 	public static String DAILY;
 	public static String WEEKLY;
 	public static String MONTHLY;
+	
+	public static String Is_Infrastructure_Flow;
+	
 	static {
 		NLS.initializeMessages("org.openlca.app.messages", Messages.class);
 	}

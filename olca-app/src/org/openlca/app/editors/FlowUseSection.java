@@ -1,6 +1,5 @@
-package org.openlca.core.editors.flow;
+package org.openlca.app.editors;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -22,6 +21,7 @@ import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,8 +43,8 @@ class FlowUseSection {
 
 	public void render(Composite body, FormToolkit toolkit) {
 		log.trace("render flow-use-section for flow {}", flow);
-		List<BaseDescriptor> recipients = getProcesses(true);
-		List<BaseDescriptor> providers = getProcesses(false);
+		List<ProcessDescriptor> recipients = getProcesses(true);
+		List<ProcessDescriptor> providers = getProcesses(false);
 		if (recipients.isEmpty() && providers.isEmpty())
 			return;
 		Section section = UI.section(body, toolkit,
@@ -58,26 +58,21 @@ class FlowUseSection {
 				ImageType.OUTPUT_ICON.get());
 	}
 
-	private List<BaseDescriptor> getProcesses(boolean forInput) {
-		try {
-			FlowDao dao = new FlowDao(database);
-			if (forInput)
-				return dao.getRecipients(flow);
-			return dao.getProviders(flow);
-		} catch (Exception e) {
-			log.error("Failed to execute where-used-query", e);
-			return Collections.emptyList();
-		}
+	private List<ProcessDescriptor> getProcesses(boolean forInput) {
+		FlowDao dao = new FlowDao(database);
+		if (forInput)
+			return dao.getRecipients(flow);
+		return dao.getProviders(flow);
 	}
 
-	private void renderLinks(String label, List<BaseDescriptor> descriptors,
+	private void renderLinks(String label, List<ProcessDescriptor> descriptors,
 			Image image) {
 		if (descriptors.isEmpty())
 			return;
 		UI.formLabel(parent, toolkit, label);
 		Composite linkComposite = toolkit.createComposite(parent);
 		UI.gridLayout(linkComposite, 1).verticalSpacing = 0;
-		for (BaseDescriptor d : descriptors) {
+		for (ProcessDescriptor d : descriptors) {
 			ImageHyperlink link = new ImageHyperlink(linkComposite, SWT.TOP);
 			link.setText(d.getDisplayName());
 			link.setToolTipText(d.getDisplayInfoText());
@@ -97,14 +92,9 @@ class FlowUseSection {
 
 		@Override
 		public void linkActivated(HyperlinkEvent evt) {
-			try {
-				ProcessDao dao = new ProcessDao(database);
-				Process p = dao.getForId(descriptor.getId());
-				App.openEditor(p);
-			} catch (Exception e) {
-				log.error("Failed to open via process-link", e);
-			}
-
+			ProcessDao dao = new ProcessDao(database);
+			Process p = dao.getForId(descriptor.getId());
+			App.openEditor(p);
 		}
 	}
 }

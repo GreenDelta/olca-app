@@ -7,28 +7,29 @@
  * Contributors: GreenDeltaTC - initial API and implementation
  * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
  ******************************************************************************/
-package org.openlca.core.editors.flow;
+package org.openlca.app.editors;
 
-import org.openlca.core.editors.ModelEditor;
-import org.openlca.core.editors.ModelEditorPage;
+import org.openlca.core.model.Flow;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-/**
- * Form editor for editing flows
- * 
- * @author Sebastian Greve
- * 
- */
-public class FlowEditor extends ModelEditor {
+public class FlowEditor extends ModelEditor<Flow> {
 
-	/**
-	 * The id of the flow editor
-	 */
-	public static String ID = "org.openlca.core.editors.flow.FlowEditor";
+	public static String ID = "editors.flow";
+	private Logger log = LoggerFactory.getLogger(getClass());
+
+	public FlowEditor() {
+		super(Flow.class);
+	}
 
 	@Override
-	protected ModelEditorPage[] initPages() {
-		return new ModelEditorPage[] { new FlowInfoPage(this),
-				new FlowPropertiesPage(this) };
+	protected void addPages() {
+		try {
+			addPage(new FlowInfoPage(this));
+			addPage(new FlowPropertiesPage(this));
+		} catch (Exception e) {
+			log.error("failed to add page", e);
+		}
 	}
 
 }
