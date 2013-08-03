@@ -15,7 +15,6 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.Messages;
 import org.openlca.app.util.UI;
-import org.openlca.core.editors.InfoSection;
 import org.openlca.core.model.Actor;
 
 public class ActorInfoPage extends ModelPage<Actor> {

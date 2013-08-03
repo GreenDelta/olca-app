@@ -9,8 +9,9 @@
  ******************************************************************************/
 package org.openlca.app.editors;
 
-import org.openlca.core.editors.ModelEditor;
-import org.openlca.core.editors.ModelEditorPage;
+import org.openlca.core.model.FlowProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Form editor for editing flow properties
@@ -18,15 +19,22 @@ import org.openlca.core.editors.ModelEditorPage;
  * @author Sebastian Greve
  * 
  */
-public class FlowPropertyEditor extends ModelEditor {
+public class FlowPropertyEditor extends ModelEditor<FlowProperty> {
 
-	/**
-	 * The id of the flow property editor
-	 */
 	public static String ID = "editors.flowproperty";
+	private Logger log = LoggerFactory.getLogger(getClass());
+
+	public FlowPropertyEditor() {
+		super(FlowProperty.class);
+	}
 
 	@Override
-	protected ModelEditorPage[] initPages() {
-		return new ModelEditorPage[] { new FlowPropertyInfoPage(this) };
+	protected void addPages() {
+		try {
+			addPage(new FlowPropertyInfoPage(this));
+		} catch (Exception e) {
+			log.error("failed to add page", e);
+		}
 	}
+
 }

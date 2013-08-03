@@ -17,7 +17,6 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.Messages;
 import org.openlca.app.editors.DataBinding.BindingType;
 import org.openlca.app.util.UI;
-import org.openlca.core.editors.InfoSection;
 import org.openlca.core.model.Source;
 
 public class SourceInfoPage extends ModelPage<Source> {

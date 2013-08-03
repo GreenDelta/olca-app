@@ -8,11 +8,11 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.openlca.app.db.Database;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.editors.IEditor;
-import org.openlca.core.model.RootEntity;
+import org.openlca.core.model.CategorizedEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-abstract class ModelEditor<T extends RootEntity> extends FormEditor implements IEditor {
+abstract class ModelEditor<T extends CategorizedEntity> extends FormEditor implements IEditor {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private boolean dirty;
