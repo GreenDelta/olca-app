@@ -17,10 +17,10 @@ import org.openlca.app.db.Database;
 import org.openlca.app.util.Bean;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Labels;
+import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.app.viewers.table.AbstractTableViewer;
 import org.openlca.app.viewers.table.modify.IModelChangedListener;
-import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.editors.IEditor;
 import org.openlca.core.model.RootEntity;
@@ -84,7 +84,7 @@ public class DataBinding {
 	}
 
 	private class BoundModelChangedListener<T> implements
-			IModelChangedListener<T, T> {
+			IModelChangedListener<T> {
 
 		private List<T> list;
 
