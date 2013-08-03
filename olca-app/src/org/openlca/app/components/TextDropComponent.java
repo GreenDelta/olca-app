@@ -51,7 +51,7 @@ public final class TextDropComponent extends Composite {
 	}
 
 	public void setContent(BaseDescriptor content) {
-		if (content.getModelType() != modelType)
+		if (content != null && content.getModelType() != modelType)
 			throw new IllegalArgumentException("Descriptor must be of type "
 					+ modelType);
 
