@@ -36,6 +36,16 @@ import org.openlca.app.viewers.table.modify.IModelChangedListener.ModelChangeTyp
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Abstract implementation of AbstractViewer for SWT table viewer.
+ * 
+ * There are three extensions that can be implemented by annotating the methods
+ * of impelementing classes. To enable creation and removal actions use
+ * annotations {@link OnCreate} and {@link OnRemove}. The run methods of each
+ * action will call all annotated methods. Implementations are responsible to
+ * update the input. To enable drop feature use {@link OnDrop} and specify the
+ * type of accepted elements by the input parameter of the annotated method.
+ */
 public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
@@ -145,6 +155,10 @@ public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 		return getColumnHeaders() != null && getColumnHeaders().length > 0;
 	}
 
+	/**
+	 * Binds the create and remove actions of the table viewer to the given
+	 * section.
+	 */
 	public void bindTo(Section section) {
 		UI.bindActions(section, actions.toArray(new Action[actions.size()]));
 	}

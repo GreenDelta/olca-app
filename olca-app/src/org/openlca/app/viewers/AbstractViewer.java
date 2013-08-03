@@ -58,6 +58,10 @@ public abstract class AbstractViewer<T, V extends StructuredViewer> implements
 		return this.input;
 	}
 
+	/**
+	 * Adds an empty/null value as first element in the viewer, you can specify
+	 * the text of this null element via #setNullText
+	 */
 	public void setNullable(boolean nullable) {
 		boolean changed = this.nullable != nullable;
 		this.nullable = nullable;
