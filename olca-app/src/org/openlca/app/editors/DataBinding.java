@@ -13,6 +13,7 @@ import org.openlca.app.components.TextDropComponent;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.Bean;
 import org.openlca.app.util.Colors;
+import org.openlca.app.util.Labels;
 import org.openlca.app.viewers.AbstractTableViewer;
 import org.openlca.app.viewers.AbstractTableViewer.IModelChangedListener;
 import org.openlca.core.database.BaseDao;
@@ -27,7 +28,7 @@ public class DataBinding {
 
 	public enum BindingType {
 
-		STRING, DOUBLE, INT, SHORT;
+		STRING, DOUBLE, INT, SHORT, ENUM, MODEL;
 
 	}
 
@@ -97,7 +98,7 @@ public class DataBinding {
 
 	}
 
-	public void onModel(final Object bean, final String property,
+	public void on(final Object bean, final String property,
 			final TextDropComponent text) {
 		log.trace("Register data binding - base descriptor - {} - {}", bean,
 				property);
@@ -147,7 +148,18 @@ public class DataBinding {
 		case SHORT:
 			onShort(bean, property, text);
 			break;
+		default:
+			// Enum values are read only
+			break;
 		}
+	}
+
+	public void readOnly(final Object bean, final String property,
+			BindingType type, final Text text) {
+		log.trace("Register data binding - string - {} - {}", bean, property);
+		if (bean == null || property == null || text == null)
+			return;
+		initValue(bean, property, text);
 	}
 
 	private void onString(final Object bean, final String property,
@@ -212,9 +224,15 @@ public class DataBinding {
 	private void initValue(Object bean, String property, Text text) {
 		try {
 			Object val = Bean.getValue(bean, property);
-			if (val != null) {
-				text.setText(val.toString());
-			}
+			if (val != null)
+				if (val.getClass().isEnum())
+					text.setText(Labels.getEnumText(val));
+				else if (val instanceof RootEntity)
+					text.setText(((RootEntity) val).getName());
+				else if (val instanceof BaseDescriptor)
+					text.setText(((BaseDescriptor) val).getName());
+				else
+					text.setText(val.toString());
 		} catch (Exception e) {
 			error("Cannot set text value", e);
 		}
@@ -295,9 +313,11 @@ public class DataBinding {
 		log.trace("Change value {} @ {}", property, bean);
 		try {
 			BaseDescriptor descriptor = text.getContent();
-			Object model = new BaseDao<>(descriptor.getModelType()
-					.getModelClass(), Database.get()).getForId(descriptor
-					.getId());
+			Object model = null;
+			if (descriptor != null)
+				model = new BaseDao<>(
+						descriptor.getModelType().getModelClass(),
+						Database.get()).getForId(descriptor.getId());
 			Bean.setValue(bean, property, model);
 		} catch (Exception e) {
 			error("Cannot set bean value", e);
