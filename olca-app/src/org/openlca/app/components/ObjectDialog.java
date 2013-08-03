@@ -26,6 +26,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.NavigationTree;
+import org.openlca.app.util.UI;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 
@@ -36,6 +37,20 @@ public class ObjectDialog extends Dialog {
 	protected BaseDescriptor[] multiSelection;
 	protected BaseDescriptor selection;
 	private boolean multiSelect;
+
+	public static BaseDescriptor select(ModelType type) {
+		ObjectDialog dialog = new ObjectDialog(UI.shell(), type, false);
+		if (dialog.open() == OK)
+			return dialog.getSelection();
+		return null;
+	}
+
+	public static BaseDescriptor[] selectAll(ModelType type) {
+		ObjectDialog dialog = new ObjectDialog(UI.shell(), type, true);
+		if (dialog.open() == OK)
+			return dialog.getMultiSelection();
+		return null;
+	}
 
 	public ObjectDialog(Shell parentShell, ModelType modelType,
 			boolean multiSelect) {
