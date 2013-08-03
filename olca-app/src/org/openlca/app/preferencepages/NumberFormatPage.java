@@ -11,7 +11,7 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.openlca.app.Messages;
 import org.openlca.app.Preferences;
 import org.openlca.app.editors.DataBinding;
-import org.openlca.app.editors.DataBinding.BindingType;
+import org.openlca.app.editors.DataBinding.TextBindType;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.slf4j.Logger;
@@ -50,7 +50,7 @@ public class NumberFormatPage extends PreferencePage implements
 		numberText = UI.formText(parent,
 				Messages.NumberFormatPage_NumberOfPlaces);
 		UI.gridData(numberText, false, false).widthHint = 80;
-		new DataBinding().on(this, "accuracy", BindingType.INT, numberText);
+		new DataBinding().on(this, "accuracy", TextBindType.INT, numberText);
 		createExample(parent);
 		return parent;
 	}
