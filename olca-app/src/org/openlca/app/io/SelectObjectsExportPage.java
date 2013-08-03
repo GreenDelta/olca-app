@@ -107,7 +107,7 @@ public class SelectObjectsExportPage extends WizardPage {
 		case PROCESS:
 			return Messages.Processes;
 		case IMPACT_METHOD:
-			return Messages.LCIAMethods;
+			return Messages.ImpactMethods;
 		case FLOW:
 			return Messages.Flows;
 		case FLOW_PROPERTY:

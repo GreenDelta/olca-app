@@ -47,7 +47,7 @@ public class Messages extends NLS {
 	public static String Calculating;
 	public static String CalculatingLCI;
 
-	public static String CalculatingLCIA;
+	public static String CalculatingImpact;
 
 	public static String CalculationPreferencePage_Name;
 
@@ -101,8 +101,8 @@ public class Messages extends NLS {
 	public static String Common_ImpactCategories;
 	public static String Common_ImpactCategory;
 	public static String Common_Inputs;
-	public static String Common_LCIAFactors;
-	public static String Common_LCIAMethodTitle;
+	public static String Common_ImpactFactors;
+	public static String Common_ImpactMethodTitle;
 	public static String Common_LogNormalDistribution;
 	public static String Common_Maximum;
 	public static String Common_Mean;
@@ -245,10 +245,10 @@ public class Messages extends NLS {
 	public static String LanguagePreferencePage_SelectLanguageNoteText;
 	public static String LanguagePreferencePage_Title;
 	public static String Latitude;
-	public static String LCIAMethod;
+	public static String ImpactMethod;
 	public static String Loading;
 	public static String LoadingLCI;
-	public static String LoadingLCIAMethod;
+	public static String LoadingImpactMethod;
 	public static String LoadingPS;
 
 	public static String Common_Location;
@@ -266,9 +266,9 @@ public class Messages extends NLS {
 	public static String Menu_Open;
 	public static String Menu_ShowViews;
 	public static String Menu_Window;
-	public static String Methods_AddLCIACategoryText;
+	public static String Methods_AddImpactCategoryText;
 
-	public static String Methods_AddLCIAFactorText;
+	public static String Methods_AddImpactFactorText;
 
 	public static String Methods_AddNormalizationWeightingSet;
 
@@ -276,10 +276,10 @@ public class Messages extends NLS {
 	public static String Methods_NormalizationWeightingPageLabel;
 	public static String Methods_NormalizationWeightingSet;
 	public static String Methods_NormalizationWeightingSets;
-	public static String Methods_RemoveLCIACategoryText;
-	public static String Methods_RemoveLCIAFactorText;
+	public static String Methods_RemoveImpactCategoryText;
+	public static String Methods_RemoveImpactFactorText;
 	public static String Methods_RemoveNormalizationWeightingSet;
-	public static String Methods_SelectLCIACategory;
+	public static String Methods_SelectImpactCategory;
 	public static String Methods_Value;
 	public static String Methods_WeightingFactor;
 	public static String Methods_WizardMessage;
@@ -450,7 +450,7 @@ public class Messages extends NLS {
 	public static String Projects_Goal;
 	public static String Projects_GoalAndScopeInfoSectionLabel;
 	public static String Projects_LastModificationDate;
-	public static String Projects_LCIAMethod;
+	public static String Projects_ImpactMethod;
 	public static String Projects_Normalization;
 	public static String Projects_NormalizationWeightingSet;
 	public static String Projects_ProductSystemsInfoSectionLabel;
@@ -483,7 +483,7 @@ public class Messages extends NLS {
 	public static String Results_CharacterizationOf;
 	public static String Results_Chart;
 	public static String Results_CreatingInfoSheet;
-	public static String Results_CreatingLCIASheet;
+	public static String Results_CreatingImpactSheet;
 	public static String Results_CreatingLCISheet;
 	public static String Results_CreationDate;
 	public static String Results_DataSetInformation;
@@ -495,11 +495,11 @@ public class Messages extends NLS {
 	public static String Results_Information;
 	public static String Results_INVALID_PROCESS;
 	public static String Results_LCI;
-	public static String Results_LCIACategory;
-	public static String Results_LCIAMethod;
-	public static String Results_LCIAMethodUsed;
-	public static String Results_LCIAResultSavedMessage;
-	public static String Results_LCIAResultSavedTitle;
+	public static String Results_ImpactCategory;
+	public static String Results_ImpactMethod;
+	public static String Results_ImpactMethodUsed;
+	public static String Results_ImpactResultSavedMessage;
+	public static String Results_ImpactResultSavedTitle;
 	public static String Results_LCIOf;
 	public static String Results_LCIResults;
 	public static String Results_MatrixMethod;
@@ -510,7 +510,7 @@ public class Messages extends NLS {
 	public static String Results_ResultsOf;
 	public static String Results_SAVE_AS_PROCESS_QUESTION;
 	public static String Results_SAVE_AS_PROCESS_TITLE;
-	public static String Results_SAVE_LCIA_RESULT;
+	public static String Results_SAVE_IMPACT_RESULT;
 	public static String Results_SettingUp;
 	public static String Results_ShowAs;
 	public static String Results_SingleScoreChart;
@@ -524,7 +524,7 @@ public class Messages extends NLS {
 	public static String Results_WritingIntoFile;
 	public static String Sankey_ActionText;
 	public static String Sankey_AnalyseFlow;
-	public static String Sankey_AnalyseLCIA;
+	public static String Sankey_AnalyseImpact;
 	public static String Sankey_ClickHere;
 	public static String Sankey_Cutoff;
 	public static String Sankey_DialogDescription;
@@ -636,8 +636,8 @@ public class Messages extends NLS {
 	public static String Units_FormText;
 	public static String Units_Formula;
 	public static String Units_IsReference;
-	public static String Units_LCIAFactors;
-	public static String Units_LCIAMethod;
+	public static String Units_ImpactFactors;
+	public static String Units_ImpactMethod;
 	public static String Units_Process;
 	public static String Units_Processes;
 	public static String Units_ReferenceUnit;
@@ -682,7 +682,7 @@ public class Messages extends NLS {
 	public static String ReferenceUnit;
 	public static String Unit;
 	public static String Flows;
-	public static String LCIAMethods;
+	public static String ImpactMethods;
 	public static String UnitGroups;
 	public static String FlowProperties;
 	public static String Actors;
