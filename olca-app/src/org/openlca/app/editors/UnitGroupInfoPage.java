@@ -42,7 +42,7 @@ public class UnitGroupInfoPage extends ModelPage<UnitGroup> {
 		Composite client = UI.sectionClient(section, toolkit);
 
 		UnitViewer unitViewer = new UnitViewer(client);
-		getBinding().onList(getModel(), "units", unitViewer);
+		getBinding().on(getModel(), "units", unitViewer);
 		unitViewer.bindTo(section);
 	}
 

@@ -58,7 +58,7 @@ public class DataBinding {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> void onList(final Object bean, final String property,
+	public <T> void on(final Object bean, final String property,
 			AbstractTableViewer<T> viewer) {
 		List<T> modelList = null;
 		try {
