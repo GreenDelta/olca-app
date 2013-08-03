@@ -8,11 +8,13 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.PlatformUI;
 import org.openlca.app.util.UI;
 
-public class AbstractComboViewer<T> extends AbstractViewer<T, TableComboViewer> {
+public abstract class AbstractComboViewer<T> extends AbstractViewer<T, TableComboViewer> {
 
 	protected AbstractComboViewer(Composite parent) {
 		super(parent);
 	}
+
+	public abstract Class<T> getType();
 
 	@Override
 	protected TableComboViewer createViewer(Composite parent) {

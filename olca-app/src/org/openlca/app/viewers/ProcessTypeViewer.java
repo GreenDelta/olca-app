@@ -10,4 +10,9 @@ public class ProcessTypeViewer extends AbstractComboViewer<ProcessType> {
 		setInput(ProcessType.values());
 	}
 
+	@Override
+	public Class<ProcessType> getType() {
+		return ProcessType.class;
+	}
+
 }

@@ -10,4 +10,8 @@ public class ModelTypeViewer extends AbstractComboViewer<ModelType> {
 		setInput(ModelType.values());
 	}
 
+	@Override
+	public Class<ModelType> getType() {
+		return ModelType.class;
+	}
 }

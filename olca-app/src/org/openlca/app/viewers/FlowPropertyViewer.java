@@ -32,4 +32,9 @@ public class FlowPropertyViewer extends
 		}
 	}
 
+	@Override
+	public Class<FlowPropertyDescriptor> getType() {
+		return FlowPropertyDescriptor.class;
+	}
+	
 }

@@ -26,8 +26,7 @@ public class NormalizationWeightingSetViewer extends
 		if (database == null)
 			throw new IllegalStateException("No database set");
 		if (impactMethod != null) {
-			ImpactMethodDao dao = new ImpactMethodDao(
-					database);
+			ImpactMethodDao dao = new ImpactMethodDao(database);
 			List<NormalizationWeightingSet> nwSets = dao
 					.getNwSetDescriptors(impactMethod);
 			setInput(nwSets
@@ -43,4 +42,10 @@ public class NormalizationWeightingSetViewer extends
 				return nwSet;
 		return null;
 	}
+
+	@Override
+	public Class<NormalizationWeightingSet> getType() {
+		return NormalizationWeightingSet.class;
+	}
+
 }

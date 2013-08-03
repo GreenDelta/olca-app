@@ -21,13 +21,18 @@ public class UnitGroupViewer extends AbstractComboViewer<UnitGroupDescriptor> {
 
 	public void setInput(IDatabase database) {
 		try {
-			List<UnitGroupDescriptor> groups = new UnitGroupDao(
-					database).getDescriptors();
+			List<UnitGroupDescriptor> groups = new UnitGroupDao(database)
+					.getDescriptors();
 			Collections.sort(groups);
 			setInput(groups.toArray(new UnitGroupDescriptor[groups.size()]));
 		} catch (Exception e) {
 			log.error("Loading unit groups failed", e);
 		}
+	}
+
+	@Override
+	public Class<UnitGroupDescriptor> getType() {
+		return UnitGroupDescriptor.class;
 	}
 
 }

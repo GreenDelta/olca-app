@@ -10,4 +10,9 @@ public class FlowTypeViewer extends AbstractComboViewer<FlowType> {
 		setInput(FlowType.values());
 	}
 
+	@Override
+	public Class<FlowType> getType() {
+		return FlowType.class;
+	}
+
 }

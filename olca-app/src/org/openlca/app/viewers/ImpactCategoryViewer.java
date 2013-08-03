@@ -55,6 +55,11 @@ public class ImpactCategoryViewer extends
 		setInput(result.getImpactCategories());
 	}
 
+	@Override
+	public Class<ImpactCategoryDescriptor> getType() {
+		return ImpactCategoryDescriptor.class;
+	}
+
 	private class ImpactCategoryLabelProvider extends BaseLabelProvider
 			implements ITableLabelProvider {
 

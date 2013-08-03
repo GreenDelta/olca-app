@@ -51,6 +51,11 @@ public class FlowViewer extends AbstractComboViewer<FlowDescriptor> {
 		setInput(result.getFlows());
 	}
 
+	@Override
+	public Class<FlowDescriptor> getType() {
+		return FlowDescriptor.class;
+	}
+
 	private class FlowSorter extends ViewerSorter {
 
 		@Override

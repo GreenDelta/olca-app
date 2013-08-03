@@ -33,4 +33,10 @@ public class LocationViewer extends AbstractComboViewer<Location> {
 			e.printStackTrace();
 		}
 	}
+
+	@Override
+	public Class<Location> getType() {
+		return Location.class;
+	}
+
 }

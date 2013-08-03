@@ -32,4 +32,9 @@ public class ImpactMethodViewer extends
 		}
 	}
 
+	@Override
+	public Class<ImpactMethodDescriptor> getType() {
+		return ImpactMethodDescriptor.class;
+	}
+	
 }

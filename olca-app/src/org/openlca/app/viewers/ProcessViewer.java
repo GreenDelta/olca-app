@@ -23,4 +23,9 @@ public class ProcessViewer extends AbstractComboViewer<ProcessDescriptor> {
 		setInput(processes);
 	}
 
+	@Override
+	public Class<ProcessDescriptor> getType() {
+		return ProcessDescriptor.class;
+	}
+
 }

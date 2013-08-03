@@ -10,5 +10,10 @@ public class FlowPropertyTypeViewer extends
 		super(parent);
 		setInput(FlowPropertyType.values());
 	}
+	
+	@Override
+	public Class<FlowPropertyType> getType() {
+		return FlowPropertyType.class;
+	}
 
 }

@@ -46,6 +46,11 @@ public class AllocationMethodViewer extends
 		return new AllocationMethodLabelProvider();
 	}
 
+	@Override
+	public Class<AllocationMethod> getType() {
+		return AllocationMethod.class;
+	}
+
 	private class AllocationMethodLabelProvider extends BaseLabelProvider {
 
 		@Override
