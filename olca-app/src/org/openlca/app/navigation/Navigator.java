@@ -17,6 +17,7 @@ import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbench;
@@ -93,6 +94,19 @@ public class Navigator extends CommonNavigator {
 			return;
 		element.update();
 		getNavigationViewer().refresh(element);
+	}
+
+	public static void select(Object element) {
+		if (element == null)
+			return;
+		Navigator instance = getInstance();
+		if (instance == null)
+			return;
+		INavigationElement<?> navElement = findElement(element);
+		if (navElement == null)
+			return;
+
+		instance.selectReveal(new StructuredSelection(navElement));
 	}
 
 	private static CommonViewer getNavigationViewer() {

@@ -15,6 +15,23 @@ public class Labels {
 	private Labels() {
 	}
 
+	public static String getEnumText(Object enumValue) {
+		if (enumValue instanceof AllocationMethod)
+			return Labels.allocationMethod((AllocationMethod) enumValue);
+		if (enumValue instanceof FlowPropertyType)
+			return Labels.flowPropertyType((FlowPropertyType) enumValue);
+		if (enumValue instanceof FlowType)
+			return Labels.flowType((FlowType) enumValue);
+		if (enumValue instanceof ProcessType)
+			return Labels.processType((ProcessType) enumValue);
+		if (enumValue instanceof UncertaintyDistributionType)
+			return Labels
+					.uncertaintyType((UncertaintyDistributionType) enumValue);
+		if (enumValue != null)
+			return enumValue.toString();
+		return null;
+	}
+
 	/**
 	 * Returns the label for the given uncertainty distribution type. If the
 	 * given type is NULL the value for 'no distribution' is returned.
