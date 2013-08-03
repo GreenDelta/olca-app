@@ -16,6 +16,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -257,6 +258,21 @@ public class UI {
 		Composite composite = new Composite(parent, SWT.NONE);
 		gridLayout(composite, 2);
 		return composite;
+	}
+
+	public static Button formCheckBox(Composite parent, String label) {
+		return formCheckBox(parent, null, label);
+
+	}
+
+	public static Button formCheckBox(Composite parent, FormToolkit toolkit,
+			String label) {
+		toolkit.createLabel(parent, "", SWT.NONE);
+
+		final Button button = toolkit.createButton(parent, label, SWT.CHECK);
+		final GridData gd = new GridData(SWT.FILL, SWT.FILL, true, false);
+		button.setLayoutData(gd);
+		return button;
 	}
 
 	public static Text formText(Composite parent, String label) {
