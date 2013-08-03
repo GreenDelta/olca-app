@@ -3,6 +3,7 @@ package org.openlca.app.editors;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
@@ -77,6 +78,13 @@ public abstract class ModelPage<T extends CategorizedEntity> extends FormPage {
 			Composite parent) {
 		Text text = UI.formText(parent, getManagedForm().getToolkit(), label);
 		binding.on(getModel(), property, type, text);
+	}
+
+	protected void createCheckBox(String label, String property,
+			Composite parent) {
+		Button button = UI.formCheckBox(parent, getManagedForm().getToolkit(),
+				label);
+		binding.on(getModel(), property, button);
 	}
 
 	protected void createDropComponent(String label, String property,

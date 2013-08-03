@@ -6,6 +6,9 @@ import java.util.List;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 import org.openlca.app.components.ISingleModelDrop;
@@ -116,6 +119,30 @@ public class DataBinding {
 				editorChange();
 			}
 
+		});
+	}
+
+	public void on(final Object bean, final String property, final Button button) {
+		log.trace("Register data binding - string - {} - {}", bean, property);
+		if (bean == null || property == null || button == null)
+			return;
+		initValue(bean, property, button);
+		button.addSelectionListener(new SelectionListener() {
+
+			private void selected() {
+				setBooleanValue(bean, property, button);
+				editorChange();
+			}
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				selected();
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				selected();
+			}
 		});
 	}
 
@@ -238,6 +265,17 @@ public class DataBinding {
 		}
 	}
 
+	private void initValue(Object bean, String property, Button button) {
+		try {
+			Object val = Bean.getValue(bean, property);
+			if (val != null)
+				if (val instanceof Boolean)
+					button.setSelection((Boolean) val);
+		} catch (Exception e) {
+			error("Cannot set check state", e);
+		}
+	}
+
 	private void initValue(Object bean, String property, TextDropComponent text) {
 		try {
 			Object val = Bean.getValue(bean, property);
@@ -254,6 +292,16 @@ public class DataBinding {
 	private void setStringValue(Object bean, String property, Text text) {
 		log.trace("Change value {} @ {}", property, bean);
 		String val = text.getText();
+		try {
+			Bean.setValue(bean, property, val);
+		} catch (Exception e) {
+			error("Cannot set bean value", e);
+		}
+	}
+
+	private void setBooleanValue(Object bean, String property, Button button) {
+		log.trace("Change value {} @ {}", property, bean);
+		boolean val = button.getSelection();
 		try {
 			Bean.setValue(bean, property, val);
 		} catch (Exception e) {
