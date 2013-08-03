@@ -39,6 +39,7 @@ public class FlowPropertiesPage extends ModelPage<Flow> {
 
 		Section section = UI.section(body, toolkit,
 				Messages.Flows_FlowPropertiesPageLabel);
+		UI.gridData(section, true, true);
 		Composite client = UI.sectionClient(section, toolkit);
 
 		FlowPropertyFactorViewer factorViewer = new FlowPropertyFactorViewer(

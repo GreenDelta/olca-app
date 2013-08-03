@@ -39,6 +39,7 @@ public class UnitGroupInfoPage extends ModelPage<UnitGroup> {
 
 		Section section = UI.section(body, toolkit,
 				Messages.Units_UnitGroupInfoSectionLabel);
+		UI.gridData(section, true, true);
 		Composite client = UI.sectionClient(section, toolkit);
 
 		UnitViewer unitViewer = new UnitViewer(client);
