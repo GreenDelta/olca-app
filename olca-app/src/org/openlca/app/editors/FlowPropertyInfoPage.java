@@ -38,16 +38,14 @@ public class FlowPropertyInfoPage extends ModelPage<FlowProperty> {
 		Composite body = UI.formBody(form, toolkit);
 		InfoSection infoSection = new InfoSection(getModel(), getBinding());
 		infoSection.render(body, toolkit);
-		createAdditionalInfo(body);
+		createAdditionalInfo(infoSection);
 		body.setFocus();
 		form.reflow(true);
 	}
 
-	private void createAdditionalInfo(Composite body) {
-		Composite composite = UI.formSection(body, toolkit,
-				Messages.Common_AdditionalInfo);
-		createLink(Messages.UnitGroup, "unitGroup", composite);
+	private void createAdditionalInfo(InfoSection infoSection) {
+		createLink(Messages.UnitGroup, "unitGroup", infoSection.getContainer());
 		createReadOnly(Messages.FlowProps_FlowPropertyType, "flowPropertyType",
-				composite);
+				infoSection.getContainer());
 	}
 }
