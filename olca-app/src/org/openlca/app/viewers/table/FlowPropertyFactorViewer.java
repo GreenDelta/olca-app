@@ -52,8 +52,13 @@ public class FlowPropertyFactorViewer extends
 
 	public void setInput(Flow flow) {
 		this.flow = flow;
-		setInput(flow.getFlowPropertyFactors().toArray(
-				new FlowPropertyFactor[flow.getFlowPropertyFactors().size()]));
+		if (flow == null)
+			setInput(new FlowPropertyFactor[0]);
+		else
+			setInput(flow.getFlowPropertyFactors()
+					.toArray(
+							new FlowPropertyFactor[flow
+									.getFlowPropertyFactors().size()]));
 	}
 
 	@Override
@@ -78,8 +83,7 @@ public class FlowPropertyFactorViewer extends
 		FlowPropertyFactor factor = new FlowPropertyFactor();
 		factor.setFlowProperty(flowPropertyDao.getForId(descriptor.getId()));
 		fireModelChanged(ModelChangeType.CREATE, factor);
-		setInput(flow.getFlowPropertyFactors().toArray(
-				new FlowPropertyFactor[flow.getFlowPropertyFactors().size()]));
+		setInput(flow);
 	}
 
 	@OnRemove
@@ -88,8 +92,7 @@ public class FlowPropertyFactorViewer extends
 			flow.getFlowPropertyFactors().remove(factor);
 			fireModelChanged(ModelChangeType.REMOVE, factor);
 		}
-		setInput(flow.getFlowPropertyFactors().toArray(
-				new FlowPropertyFactor[flow.getFlowPropertyFactors().size()]));
+		setInput(flow);
 	}
 
 	@OnDrop
