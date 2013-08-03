@@ -21,27 +21,32 @@ import com.google.common.base.Objects;
 
 public class UnitViewer extends AbstractTableViewer<Unit> {
 
-	private static final String UNIT_CONVERSION_FACTOR = Messages.Units_ConversionFactor;
-	private static final String UNIT_DESCRIPTION = Messages.Common_Description;
-	private static final String UNIT_FORMULA = Messages.Units_Formula;
-	private static final String UNIT_IS_REFERENCE = Messages.Units_IsReference;
-	private static final String UNIT_NAME = Messages.Common_Name;
-	private static final String UNIT_SYNONYMS = Messages.Units_Synonyms;
-	private static final String[] COLUMN_HEADERS = { UNIT_NAME,
-			UNIT_DESCRIPTION, UNIT_SYNONYMS, UNIT_CONVERSION_FACTOR,
-			UNIT_FORMULA, UNIT_IS_REFERENCE };
+	private interface LABEL {
+
+		String CONVERSION_FACTOR = Messages.Units_ConversionFactor;
+		String DESCRIPTION = Messages.Common_Description;
+		String FORMULA = Messages.Units_Formula;
+		String IS_REFERENCE = Messages.Units_IsReference;
+		String NAME = Messages.Common_Name;
+		String SYNONYMS = Messages.Units_Synonyms;
+
+	}
+
+	private static final String[] COLUMN_HEADERS = { LABEL.NAME,
+			LABEL.DESCRIPTION, LABEL.SYNONYMS, LABEL.CONVERSION_FACTOR,
+			LABEL.FORMULA, LABEL.IS_REFERENCE };
 
 	private UnitGroup unitGroup;
 
 	public UnitViewer(Composite parent) {
 		super(parent);
-		getCellModifySupport().support(UNIT_NAME, new NameModifier());
-		getCellModifySupport().support(UNIT_DESCRIPTION,
+		getCellModifySupport().support(LABEL.NAME, new NameModifier());
+		getCellModifySupport().support(LABEL.DESCRIPTION,
 				new DescriptionModifier());
-		getCellModifySupport().support(UNIT_SYNONYMS, new SynonymsModifier());
-		getCellModifySupport().support(UNIT_CONVERSION_FACTOR,
+		getCellModifySupport().support(LABEL.SYNONYMS, new SynonymsModifier());
+		getCellModifySupport().support(LABEL.CONVERSION_FACTOR,
 				new ConversionFactorModifier());
-		getCellModifySupport().support(UNIT_IS_REFERENCE,
+		getCellModifySupport().support(LABEL.IS_REFERENCE,
 				new ReferenceModifier());
 		getViewer().refresh(true);
 	}
