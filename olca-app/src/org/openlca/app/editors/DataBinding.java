@@ -17,8 +17,10 @@ import org.openlca.app.db.Database;
 import org.openlca.app.util.Bean;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Labels;
+import org.openlca.app.viewers.AbstractComboViewer;
 import org.openlca.app.viewers.AbstractTableViewer;
 import org.openlca.app.viewers.AbstractTableViewer.IModelChangedListener;
+import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.editors.IEditor;
 import org.openlca.core.model.RootEntity;
@@ -101,6 +103,24 @@ public class DataBinding {
 
 	}
 
+	public <T> void on(final Object bean, final String property,
+			final AbstractComboViewer<T> viewer) {
+		log.trace("Register data binding - base descriptor - {} - {}", bean,
+				property);
+		if (bean == null || property == null || viewer == null)
+			return;
+
+		checkType(bean, property, viewer);
+		initValue(bean, property, viewer);
+		viewer.addSelectionChangedListener(new ISelectionChangedListener<T>() {
+			@Override
+			public void selectionChanged(T selection) {
+				setModel(bean, property, viewer);
+				editorChange();
+			}
+		});
+	}
+
 	public void on(final Object bean, final String property,
 			final TextDropComponent text) {
 		log.trace("Register data binding - base descriptor - {} - {}", bean,
@@ -144,6 +164,19 @@ public class DataBinding {
 				selected();
 			}
 		});
+	}
+
+	private <T> void checkType(final Object bean, final String property,
+			final AbstractComboViewer<T> viewer) {
+		try {
+			Class<?> propertyType = Bean.getType(bean, property);
+			if (propertyType != viewer.getType())
+				throw new IllegalArgumentException("Cannot bind "
+						+ viewer.getType().getCanonicalName() + " to "
+						+ propertyType.getCanonicalName());
+		} catch (Exception e) {
+			error("Cannot bind bean", e);
+		}
 	}
 
 	private void checkType(final Object bean, final String property,
@@ -276,6 +309,24 @@ public class DataBinding {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	private <T> void initValue(Object bean, String property,
+			AbstractComboViewer<T> viewer) {
+		try {
+			Object val = Bean.getValue(bean, property);
+			if (val != null) {
+				if (BaseDescriptor.class.isAssignableFrom(viewer.getType())
+						&& !BaseDescriptor.class.isAssignableFrom(val
+								.getClass())) {
+					val = Descriptors.toDescriptor((RootEntity) val);
+				}
+				viewer.select((T) val);
+			}
+		} catch (Exception e) {
+			error("Cannot set text value", e);
+		}
+	}
+
 	private void initValue(Object bean, String property, TextDropComponent text) {
 		try {
 			Object val = Bean.getValue(bean, property);
@@ -352,6 +403,27 @@ public class DataBinding {
 		} catch (NumberFormatException e) {
 			text.setToolTipText("" + stringVal + " is not a valid number");
 			text.setBackground(Colors.getErrorColor());
+		} catch (Exception e) {
+			error("Cannot set bean value", e);
+		}
+	}
+
+	private <T> void setModel(Object bean, String property,
+			AbstractComboViewer<T> viewer) {
+		log.trace("Change value {} @ {}", property, bean);
+		try {
+			T value = viewer.getSelected();
+			Object model = null;
+			if (value != null)
+				if (value instanceof BaseDescriptor) {
+					BaseDescriptor descriptor = (BaseDescriptor) value;
+					Class<?> modelClass = descriptor.getModelType()
+							.getModelClass();
+					model = new BaseDao<>(modelClass, Database.get())
+							.getForId(descriptor.getId());
+				} else
+					model = value;
+			Bean.setValue(bean, property, model);
 		} catch (Exception e) {
 			error("Cannot set bean value", e);
 		}
