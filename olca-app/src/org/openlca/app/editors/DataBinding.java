@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 
 public class DataBinding {
 
-	public enum BindingType {
+	public enum TextBindType {
 
 		STRING, DOUBLE, INT, SHORT, ENUM, MODEL;
 
@@ -133,7 +133,7 @@ public class DataBinding {
 		}
 	}
 
-	public void on(final Object bean, final String property, BindingType type,
+	public void on(final Object bean, final String property, TextBindType type,
 			final Text text) {
 		switch (type) {
 		case STRING:
@@ -155,7 +155,7 @@ public class DataBinding {
 	}
 
 	public void readOnly(final Object bean, final String property,
-			BindingType type, final Text text) {
+			TextBindType type, final Text text) {
 		log.trace("Register data binding - string - {} - {}", bean, property);
 		if (bean == null || property == null || text == null)
 			return;

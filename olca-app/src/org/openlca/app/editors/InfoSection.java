@@ -9,7 +9,7 @@ import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.Messages;
-import org.openlca.app.editors.DataBinding.BindingType;
+import org.openlca.app.editors.DataBinding.TextBindType;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.CategorizedEntity;
@@ -34,10 +34,10 @@ public class InfoSection {
 		container = UI.formSection(body, toolkit,
 				Messages.Common_GeneralInformation);
 		Text nameText = UI.formText(container, toolkit, Messages.Common_Name);
-		binding.on(entity, "name", BindingType.STRING, nameText);
+		binding.on(entity, "name", TextBindType.STRING, nameText);
 		Text descriptionText = UI.formMultiText(container, toolkit,
 				Messages.Common_Description);
-		binding.on(entity, "description", BindingType.STRING, descriptionText);
+		binding.on(entity, "description", TextBindType.STRING, descriptionText);
 		new Label(container, SWT.NONE).setText(Messages.Common_Category);
 		Link link = new Link(container, SWT.NONE);
 		link.setText("<a>" + getBreadcrumb(entity.getCategory()) + "</a>");

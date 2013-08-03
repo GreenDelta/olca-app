@@ -10,7 +10,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.openlca.app.App;
 import org.openlca.app.components.TextDropComponent;
-import org.openlca.app.editors.DataBinding.BindingType;
+import org.openlca.app.editors.DataBinding.TextBindType;
 import org.openlca.app.util.Bean;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.UIFactory;
@@ -65,15 +65,15 @@ public abstract class ModelPage<T extends CategorizedEntity> extends FormPage {
 			Composite parent) {
 		Text text = UI.formText(parent, getManagedForm().getToolkit(), label);
 		text.setEnabled(false);
-		binding.readOnly(getModel(), property, BindingType.STRING, text);
+		binding.readOnly(getModel(), property, TextBindType.STRING, text);
 	}
 
 	protected void createText(String label, String property, Composite parent) {
 		Text text = UI.formText(parent, getManagedForm().getToolkit(), label);
-		binding.on(getModel(), property, BindingType.STRING, text);
+		binding.on(getModel(), property, TextBindType.STRING, text);
 	}
 
-	protected void createText(String label, String property, BindingType type,
+	protected void createText(String label, String property, TextBindType type,
 			Composite parent) {
 		Text text = UI.formText(parent, getManagedForm().getToolkit(), label);
 		binding.on(getModel(), property, type, text);

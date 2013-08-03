@@ -15,7 +15,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.Messages;
-import org.openlca.app.editors.DataBinding.BindingType;
+import org.openlca.app.editors.DataBinding.TextBindType;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.Source;
 
@@ -45,7 +45,7 @@ public class SourceInfoPage extends ModelPage<Source> {
 				Messages.Sources_SourceInfoSectionLabel);
 		createText(Messages.Sources_Doi, "doi", composite);
 		createText(Messages.Sources_TextReference, "textReference", composite);
-		createText(Messages.Sources_Year, "year", BindingType.SHORT, composite);
+		createText(Messages.Sources_Year, "year", TextBindType.SHORT, composite);
 	}
 
 }
