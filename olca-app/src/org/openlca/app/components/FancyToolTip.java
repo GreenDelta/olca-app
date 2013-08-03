@@ -31,9 +31,6 @@ import org.openlca.core.model.RootEntity;
 /**
  * Creates a tool tip for controls containing model components, which shows the
  * name and description of the pointed model component in a pop-up section.
- * 
- * @author Michael Srocka
- * 
  */
 public final class FancyToolTip extends DefaultToolTip {
 

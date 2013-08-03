@@ -13,9 +13,6 @@ import org.openlca.core.model.ModelType;
 
 /**
  * Extension of {@link ILCDExportWizard} for processes
- * 
- * @author Sebastian Greve
- * 
  */
 public class ILCDExportProcessWizard extends ILCDExportWizard {
 

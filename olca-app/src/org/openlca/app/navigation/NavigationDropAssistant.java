@@ -27,21 +27,12 @@ import org.openlca.app.plugin.Activator;
 /**
  * Extension of the {@link CommonDropAdapterAssistant} to support drop
  * assistance for the common viewer of the applications navigator
- * 
- * @author Sebastian Greve
- * 
  */
 
 public class NavigationDropAssistant extends CommonDropAdapterAssistant {
 
-	/**
-	 * The type of operation
-	 */
 	private int operation;
 
-	/**
-	 * Default constructor
-	 */
 	public NavigationDropAssistant() {
 		// nothing to initialize
 	}

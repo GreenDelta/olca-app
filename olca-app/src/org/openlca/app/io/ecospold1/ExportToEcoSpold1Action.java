@@ -21,9 +21,6 @@ import org.openlca.core.model.descriptors.BaseDescriptor;
 
 /**
  * Action for exporting a process or LCIA method in the EcoSpold01 format
- * 
- * @author Sebastian Greve
- * 
  */
 public class ExportToEcoSpold1Action extends Action {
 

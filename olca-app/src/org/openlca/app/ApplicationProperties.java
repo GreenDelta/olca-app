@@ -23,9 +23,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The class provides the openLCA properties
- * 
- * @author Sebastian Greve
- * 
  */
 // TODO: why a separate preference store?
 // TODO: merge with preferences

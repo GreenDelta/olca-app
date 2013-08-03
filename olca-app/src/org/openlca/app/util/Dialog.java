@@ -6,9 +6,6 @@ import org.openlca.app.Messages;
 
 /**
  * Some functions for showing pop-up dialogs.
- * 
- * @author Michael Srocka
- * 
  */
 public final class Dialog {
 

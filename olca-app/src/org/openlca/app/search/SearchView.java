@@ -76,12 +76,6 @@ import org.openlca.ilcd.processes.LCIAResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * View for searching for model components
- * 
- * @author Sebastian Greve
- * 
- */
 public class SearchView extends ViewPart {
 
 	public static final String ID = "views.search";

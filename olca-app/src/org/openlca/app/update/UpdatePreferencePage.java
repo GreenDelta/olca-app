@@ -9,9 +9,6 @@ import org.openlca.app.Messages;
 
 /**
  * The preference page for the auto-update configuration.
- * 
- * @author Georg Koester
- * 
  */
 public class UpdatePreferencePage extends FieldEditorPreferencePage implements
 		IWorkbenchPreferencePage {

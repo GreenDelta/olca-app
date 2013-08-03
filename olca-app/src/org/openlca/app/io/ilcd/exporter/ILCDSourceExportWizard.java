@@ -14,15 +14,11 @@ import org.openlca.core.model.ModelType;
 
 /**
  * The wizard for the export of sources to ILCD data sets.
- * 
- * @author Michael Srocka
- * 
  */
 public class ILCDSourceExportWizard extends ILCDExportWizard {
 
 	public ILCDSourceExportWizard() {
 		super(ModelType.SOURCE);
 	}
-
 
 }

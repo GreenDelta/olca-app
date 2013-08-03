@@ -28,9 +28,6 @@ import org.openlca.io.ilcd.ILCDImport;
 
 /**
  * Import wizard for importing a set of ILCD formatted files
- * 
- * @author Sebastian Greve
- * 
  */
 public class ILCDImportWizard extends Wizard implements IImportWizard {
 

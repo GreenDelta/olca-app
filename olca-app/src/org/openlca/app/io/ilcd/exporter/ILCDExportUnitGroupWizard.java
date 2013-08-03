@@ -13,12 +13,8 @@ import org.openlca.core.model.ModelType;
 
 /**
  * Extension of {@link ILCDExportWizard} for unit groups
- * 
- * @author Sebastian Greve
- * 
  */
-public class ILCDExportUnitGroupWizard extends
-		ILCDExportWizard {
+public class ILCDExportUnitGroupWizard extends ILCDExportWizard {
 
 	public ILCDExportUnitGroupWizard() {
 		super(ModelType.UNIT_GROUP);

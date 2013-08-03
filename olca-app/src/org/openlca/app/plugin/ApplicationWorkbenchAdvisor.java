@@ -17,13 +17,6 @@ import org.openlca.app.logging.Console;
 import org.openlca.app.logging.LoggerPreference;
 import org.openlca.app.update.UpdateCheckAndPrepareJob;
 
-/**
- * The application workbench advisor
- * 
- * @see WorkbenchAdvisor
- * @author Sebastian Greve
- * 
- */
 public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 
 	/**

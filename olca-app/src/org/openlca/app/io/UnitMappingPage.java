@@ -48,32 +48,14 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Page for mapping units to flow properties (e.g. while importing eco spold)
- * 
- * @author Sebastian Greve
- * 
  */
 public abstract class UnitMappingPage extends WizardPage {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
-	/**
-	 * String for the 'conversion factor' property
-	 */
 	private final String CONVERSION_FACTOR = Messages.ConversionFactor;
-
-	/**
-	 * String for the 'flow property' property
-	 */
 	private final String FLOW_PROPERTY = Messages.FlowProperty;
-
-	/**
-	 * List of flow properties
-	 */
 	private final List<FlowProperty> flowProperties = new ArrayList<>();
-
-	/**
-	 * The flow Property cell editor
-	 */
 	private ComboBoxCellEditor flowPropertyCellEditor;
 
 	/**
@@ -81,45 +63,16 @@ public abstract class UnitMappingPage extends WizardPage {
 	 */
 	private File[] lastFiles = new File[0];
 
-	/**
-	 * String for the 'reference unit' property
-	 */
 	private final String REFERENCE_UNIT = Messages.ReferenceUnit;
-
-	/**
-	 * String for the 'unit' property
-	 */
 	private final String UNIT = Messages.Unit;
-
-	/**
-	 * String for the 'unit group' property
-	 */
 	private final String UNIT_GROUP = Messages.UnitGroup;
-
-	/**
-	 * Properties of the table viewer
-	 */
 	private final String[] PROPERTIES = new String[] { UNIT, FLOW_PROPERTY,
 			UNIT_GROUP, REFERENCE_UNIT, CONVERSION_FACTOR };
 
-	/**
-	 * The viewer to display and edit the mappings
-	 */
 	private TableViewer tableViewer;
-
-	/**
-	 * List of available unit groups
-	 */
 	private final Map<Long, UnitGroup> unitGroups = new HashMap<>();
-
-	/**
-	 * The unit mapping object
-	 */
 	private final UnitMapping unitMapping = new UnitMapping();
 
-	/**
-	 * Creates a new instance
-	 */
 	public UnitMappingPage() {
 		super("UnitMappingPage");
 		setTitle(Messages.UnitMappingPage_Title);
@@ -344,9 +297,6 @@ public abstract class UnitMappingPage extends WizardPage {
 
 	/**
 	 * Cell modifier for modifing the unit mapping
-	 * 
-	 * @author Sebastian Greve
-	 * 
 	 */
 	private class CellModifier implements ICellModifier {
 
@@ -447,9 +397,6 @@ public abstract class UnitMappingPage extends WizardPage {
 
 	/**
 	 * Content provider for the unit mapping table
-	 * 
-	 * @author Sebastian Greve
-	 * 
 	 */
 	private class ContentProvider implements IStructuredContentProvider {
 
@@ -473,9 +420,6 @@ public abstract class UnitMappingPage extends WizardPage {
 
 	/**
 	 * Input element of the unit mapping table
-	 * 
-	 * @author Sebastian Greve
-	 * 
 	 */
 	private class Input {
 
@@ -558,9 +502,6 @@ public abstract class UnitMappingPage extends WizardPage {
 
 	/**
 	 * Label provider for the unit mapping table
-	 * 
-	 * @author Sebastian Greve
-	 * 
 	 */
 	private class LabelProvider extends
 			org.eclipse.jface.viewers.BaseLabelProvider implements

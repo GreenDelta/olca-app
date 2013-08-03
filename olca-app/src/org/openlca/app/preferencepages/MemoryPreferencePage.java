@@ -14,12 +14,6 @@ import org.openlca.app.ApplicationProperties;
 import org.openlca.app.Messages;
 import org.openlca.app.util.UIFactory;
 
-/**
- * Preference page for changing the amount of RAM openLCA reserves
- * 
- * @author Sebastian Greve
- * 
- */
 public class MemoryPreferencePage extends PreferencePage implements
 		IWorkbenchPreferencePage {
 

@@ -4,9 +4,6 @@ import org.openlca.app.resources.ImageType;
 
 /**
  * A pop-up for information messages.
- * 
- * @author Georg Koester
- * 
  */
 public class InformationPopup extends Popup {
 

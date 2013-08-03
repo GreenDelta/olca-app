@@ -23,9 +23,6 @@ import org.openlca.core.model.Parameter;
  * Text cell editor for editing formulas of a parameter with content assistance
  * 
  * @see AutoCompleteTextCellEditor
- * 
- * @author Sebastian Greve
- * 
  */
 public class FormulaTextCellEditor extends AutoCompleteTextCellEditor {
 

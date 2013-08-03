@@ -14,9 +14,6 @@ import org.eclipse.ui.console.MessageConsoleStream;
 
 /**
  * The logger console.
- * 
- * @author Michael Srocka
- * 
  */
 public class Console extends AppenderSkeleton {
 
@@ -63,7 +60,7 @@ public class Console extends AppenderSkeleton {
 
 	@Override
 	protected void append(LoggingEvent evt) {
-		if (!logStream.isClosed()){
+		if (!logStream.isClosed()) {
 			String message = "" + evt.getLevel().toString() + " - "
 					+ evt.getMessage();
 			tryPrintMessage(message, evt.getThrowableInformation());

@@ -11,9 +11,6 @@ package org.openlca.app.components.delete;
 
 /**
  * This class represents problems while operating on objects
- * 
- * @author Sebastian Greve
- * 
  */
 public abstract class Problem {
 

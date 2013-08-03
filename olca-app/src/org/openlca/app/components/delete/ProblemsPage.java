@@ -26,8 +26,6 @@ import org.openlca.app.util.UIFactory;
 /**
  * Wizard page for displaying warnings and errors while deleting an object
  * 
- * @author Sebastian Greve
- * 
  */
 public class ProblemsPage extends WizardPage {
 
@@ -94,9 +92,6 @@ public class ProblemsPage extends WizardPage {
 
 	/**
 	 * Content provider for the problem viewer
-	 * 
-	 * @author Sebastian Greve
-	 * 
 	 */
 	private class ProblemContentProvider implements IStructuredContentProvider {
 
@@ -124,9 +119,6 @@ public class ProblemsPage extends WizardPage {
 
 	/**
 	 * Label provider for the problem viewer
-	 * 
-	 * @author Sebastian Greve
-	 * 
 	 */
 	private class ProblemLabelProvider extends LabelProvider {
 
@@ -156,9 +148,6 @@ public class ProblemsPage extends WizardPage {
 
 	/**
 	 * Sorter of the content of the problem viewer
-	 * 
-	 * @author Sebastian Greve
-	 * 
 	 */
 	private class ProblemSorter extends ViewerSorter {
 

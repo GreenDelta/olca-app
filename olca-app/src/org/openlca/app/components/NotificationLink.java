@@ -18,9 +18,6 @@ import org.slf4j.LoggerFactory;
 /**
  * A notification pop-up with a link which can be opened with the respective
  * desktop application (e.g. a web-browser or MS Excel).
- * 
- * @author Michael Srocka
- * 
  */
 public class NotificationLink extends AbstractNotificationPopup {
 

@@ -47,9 +47,6 @@ import org.openlca.app.util.Colors;
  * A combo viewer with tool tip support. This widget does NOT extends
  * {@link ComboViewer}, instead it supports an own implementation build on a
  * text widget and a table viewer as drop down menu
- * 
- * @author Sebastian Greve
- * 
  */
 public class ToolTipComboViewer extends Composite implements
 		IInputSelectionProvider {
@@ -319,15 +316,9 @@ public class ToolTipComboViewer extends Composite implements
 
 	/**
 	 * A popup list displaying the input as a table viewer
-	 * 
-	 * @author Sebastian Greve
-	 * 
 	 */
 	private class PopupList extends PopupDialog {
 
-		/**
-		 * Creates a new popup list
-		 */
 		public PopupList() {
 			super(ToolTipComboViewer.this.getShell(), SWT.NONE, true, true,
 					true, false, false, null, null);

@@ -13,9 +13,6 @@ import org.openlca.core.model.ModelType;
 
 /**
  * Extension of {@link EcoSpold01ExportWizard} for processes
- * 
- * @author Sebastian Greve
- * 
  */
 public class EcoSpold01ExportProcessWizard extends EcoSpold01ExportWizard {
 

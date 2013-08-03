@@ -12,9 +12,6 @@ import org.eclipse.core.runtime.Platform;
 
 /**
  * The configuration of the HTML log file.
- * 
- * @author Michael Srocka
- * 
  */
 class HtmlLogFile {
 

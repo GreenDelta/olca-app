@@ -22,20 +22,11 @@ import org.openlca.core.model.descriptors.FlowDescriptor;
 
 /**
  * Filter for filtering specific flow types
- * 
- * @author Sebastian Greve
- * 
  */
 public class FlowTypeFilter extends ViewerFilter {
 
 	private FlowType[] flowTypes;
 
-	/**
-	 * Creates a new instance
-	 * 
-	 * @param types
-	 *            The flow types to filter
-	 */
 	public FlowTypeFilter(FlowType... types) {
 		this.flowTypes = types;
 	}

@@ -14,10 +14,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * A pop-up for error messages.
- * 
- * @author Michael Srocka
- * @author Georg Koester
- * 
  */
 public class ErrorPopup extends Popup {
 

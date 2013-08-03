@@ -17,9 +17,6 @@ import org.openlca.expressions.Repl;
 /**
  * An action that opens a console and starts the formula interpreter REPL in the
  * console.
- * 
- * @author Michael Srocka
- * 
  */
 public class FormulaConsoleAction extends Action {
 

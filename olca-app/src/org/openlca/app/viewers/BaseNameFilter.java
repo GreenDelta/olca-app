@@ -16,9 +16,6 @@ import org.openlca.core.model.RootEntity;
 
 /**
  * Filters instances of {@link IModelComponent} by their name.
- * 
- * @author Michael Srocka
- * 
  */
 public class BaseNameFilter extends ViewerFilter {
 

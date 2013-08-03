@@ -29,8 +29,6 @@ import org.slf4j.LoggerFactory;
  * 
  * @see ProblemWizard
  * 
- * @author Sebastian Greve
- * 
  */
 public class DeleteWizard<T extends RootEntity> extends ProblemWizard {
 

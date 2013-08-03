@@ -29,113 +29,28 @@ import org.openlca.app.FormulaConsoleAction;
 import org.openlca.app.Messages;
 import org.openlca.app.resources.ImageType;
 
-/**
- * The application action bar advisor
- * 
- * @see ActionBarAdvisor
- * @author Sebastian Greve
- * 
- */
 public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 
-	/**
-	 * Action to show the about dialog
-	 */
 	private IWorkbenchAction aboutAction;
-
-	/**
-	 * Action to close an editor
-	 */
 	private IWorkbenchAction closeAction;
-
-	/**
-	 * Action to close all editors
-	 */
 	private IWorkbenchAction closeAllAction;
-
-	/**
-	 * Action to delete an object
-	 */
 	private RetargetAction deleteAction;
-
-	/**
-	 * Action to show the dynamic help
-	 */
 	private IWorkbenchAction dynamicHelpAction;
-
-	/**
-	 * Action to exit the application
-	 */
 	private IWorkbenchAction exitAction;
-
-	/**
-	 * Action to show the export wizards
-	 */
 	private IWorkbenchAction exportAction;
-
-	/**
-	 * Action to open the help contents
-	 */
 	private IWorkbenchAction helpContentsAction;
-
-	/**
-	 * Action to open the help search
-	 */
 	private IWorkbenchAction helpSearchAction;
-
-	/**
-	 * Action to show the import wizards
-	 */
 	private IWorkbenchAction importAction;
-
-	/**
-	 * Action to open a selection in a new editor
-	 */
 	private IWorkbenchAction newEditorAction;
-
-	/**
-	 * Action to open the application in a new window
-	 */
 	private IWorkbenchAction newWindowAction;
-
-	/**
-	 * Action to open an object in an editor
-	 */
 	private RetargetAction openAction;
-
-	/**
-	 * Action to show the preference pages
-	 */
 	private IWorkbenchAction preferencesAction;
-
-	/**
-	 * Action to save an object
-	 */
 	private IWorkbenchAction saveAction;
-
-	/**
-	 * Action to save all objects
-	 */
 	private IWorkbenchAction saveAllAction;
-
-	/**
-	 * Action save an object as a new object
-	 */
 	private IWorkbenchAction saveAsAction;
-
-	/**
-	 * Action to show the available views
-	 */
 	private IContributionItem showViews;
-
 	private IWorkbenchAction introAction;
 
-	/**
-	 * Creates a new instance
-	 * 
-	 * @param configurer
-	 *            The action bar configurer
-	 */
 	public ApplicationActionBarAdvisor(final IActionBarConfigurer configurer) {
 		super(configurer);
 	}

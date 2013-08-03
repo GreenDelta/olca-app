@@ -34,9 +34,6 @@ import org.openlca.app.viewers.BaseNameSorter;
 
 /**
  * Widget for context assistance
- * 
- * @author Sebastian Greve
- * 
  */
 public abstract class AutoCompleteText extends Text {
 

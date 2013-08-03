@@ -6,9 +6,6 @@ import java.util.Locale;
 
 /**
  * Formatter for dates in different locales
- * 
- * @author Sebastian Greve
- * 
  */
 public class DateFormatter {
 

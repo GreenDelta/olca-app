@@ -33,9 +33,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Wizard for exporting processes and LCIA methods to the EcoSpold01 format
- * 
- * @author Sebastian Greve
- * 
  */
 public class EcoSpold01ExportWizard extends Wizard implements IExportWizard {
 
@@ -84,7 +81,8 @@ public class EcoSpold01ExportWizard extends Wizard implements IExportWizard {
 						throws InvocationTargetException, InterruptedException {
 					// set up
 					int objectAmount = components.size();
-					monitor.beginTask(Messages.EcoSpoldExporting, objectAmount + 1);
+					monitor.beginTask(Messages.EcoSpoldExporting,
+							objectAmount + 1);
 					monitor.subTask(Messages.EcoSpoldCreatingFolder);
 					EcoSpold01Outputter outputter = new EcoSpold01Outputter(
 							exportPage.getExportDestination());

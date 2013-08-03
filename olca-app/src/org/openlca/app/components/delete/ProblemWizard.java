@@ -18,9 +18,6 @@ import org.openlca.app.Messages;
 
 /**
  * Wizard for displaying problems
- * 
- * @author Sebastian Greve
- * 
  */
 public class ProblemWizard extends Wizard {
 

@@ -6,11 +6,6 @@ import org.openlca.app.plugin.Activator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Preferences for updating and update checking.
- * 
- * @author Georg Koester
- */
 public class UpdatePreference extends AbstractPreferenceInitializer {
 
 	private static final Logger log = LoggerFactory

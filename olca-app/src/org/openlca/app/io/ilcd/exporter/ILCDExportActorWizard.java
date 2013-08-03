@@ -14,9 +14,6 @@ import org.openlca.core.model.ModelType;
 
 /**
  * The wizard for the export of actors to ILCD contact data sets.
- * 
- * @author Michael Srocka
- * 
  */
 public class ILCDExportActorWizard extends ILCDExportWizard {
 
@@ -25,4 +22,3 @@ public class ILCDExportActorWizard extends ILCDExportWizard {
 	}
 
 }
- 

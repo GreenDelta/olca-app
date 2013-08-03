@@ -19,15 +19,9 @@ import org.openlca.core.database.IDatabase;
 
 /**
  * Action for importing EcoSpold01 formatted files
- * 
- * @author Sebastian Greve
- * 
  */
 public class ImportEcoSpold1Action extends Action {
 
-	/**
-	 * The database
-	 */
 	private IDatabase database;
 
 	@Override

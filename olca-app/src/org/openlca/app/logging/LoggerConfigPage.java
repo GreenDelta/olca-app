@@ -10,9 +10,6 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 
 /**
  * The preference page for the logger configuration.
- * 
- * @author Michael Srocka
- *
  */
 public class LoggerConfigPage extends FieldEditorPreferencePage implements
 		IWorkbenchPreferencePage {
@@ -38,17 +35,17 @@ public class LoggerConfigPage extends FieldEditorPreferencePage implements
 	@Override
 	public boolean performOk() {
 		boolean b = super.performOk();
-		if(b) {
+		if (b) {
 			Level level = LoggerPreference.getLogLevel();
 			LoggerConfig.setLevel(level);
-			if(LoggerPreference.getShowConsole())
+			if (LoggerPreference.getShowConsole())
 				Console.show();
 			else
-				Console.dispose();		
+				Console.dispose();
 		}
 		return b;
 	}
-	
+
 	@Override
 	public void init(IWorkbench workbench) {
 		setPreferenceStore(LoggerPreference.getStore());

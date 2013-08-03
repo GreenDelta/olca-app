@@ -25,35 +25,12 @@ import org.openlca.app.ApplicationProperties;
 import org.openlca.app.Messages;
 import org.openlca.app.util.Question;
 
-/**
- * The {@link PreferencePage} for the language support
- * 
- * @see IWorkbenchPreferencePage
- * 
- * @author Sebastian Greve
- * 
- */
 public class LanguagePreferencePage extends PreferencePage implements
 		IWorkbenchPreferencePage {
 
-	/**
-	 * The {@link Combo} to select the {@link Language}
-	 */
 	private Combo combo;
-
-	/**
-	 * The default {@link Language}
-	 */
 	private int defaultLanguage;
-
-	/**
-	 * Indicates the dirty state of this page
-	 */
 	private boolean isDirty = false;
-
-	/**
-	 * The selected {@link Language}
-	 */
 	private Language language;
 
 	/**

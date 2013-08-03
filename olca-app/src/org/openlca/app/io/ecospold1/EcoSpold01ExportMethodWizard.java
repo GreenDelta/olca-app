@@ -13,9 +13,6 @@ import org.openlca.core.model.ModelType;
 
 /**
  * Extension of {@link EcoSpold01ExportWizard} for LCIA methods
- * 
- * @author Sebastian Greve
- * 
  */
 public class EcoSpold01ExportMethodWizard extends EcoSpold01ExportWizard {
 

@@ -23,9 +23,6 @@ import org.openlca.app.util.UIFactory;
 
 /**
  * Wizard page for editing the properties of a data provider
- * 
- * @author Sebastian Greve
- * 
  */
 public class MySQLPropertiesPage extends WizardPage {
 

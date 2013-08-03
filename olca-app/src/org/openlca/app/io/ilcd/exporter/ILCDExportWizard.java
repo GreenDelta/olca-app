@@ -31,10 +31,6 @@ import org.openlca.io.ilcd.ILCDExport;
 /**
  * Wizard for exporting processes, flows, flow properties and unit group to the
  * ILCD format
- * 
- * @author Sebastian Greve
- * @author Michael Srocka
- * 
  */
 public class ILCDExportWizard extends Wizard implements IExportWizard {
 

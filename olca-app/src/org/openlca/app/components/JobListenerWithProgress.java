@@ -19,9 +19,6 @@ import org.openlca.core.jobs.JobListener;
 /**
  * JobListenerWithProgress can be appended to a {@link JobHandler}, listens to
  * its activities and presents them in a progress monitor
- * 
- * @author Sebastian Greve
- * 
  */
 public abstract class JobListenerWithProgress implements IRunnableWithProgress,
 		JobListener {

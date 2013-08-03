@@ -12,51 +12,21 @@ package org.openlca.app.preferencepages;
 /**
  * Enumeration of supported languages
  * 
- * @author Sebastian Greve
- * 
  */
 public enum Language {
 
-	/**
-	 * Enum value for english
-	 */
 	ENGLISH(org.openlca.app.Messages.English, "en"),
 
-	/**
-	 * Enum value for german
-	 */
 	GERMAN(org.openlca.app.Messages.German, "de");
 
-	/**
-	 * The language code
-	 */
 	private String code;
-
-	/**
-	 * The display name of the language
-	 */
 	private String displayName;
 
-	/**
-	 * Creates a new instance
-	 * 
-	 * @param displayName
-	 *            The display name of the language
-	 * @param code
-	 *            The language code
-	 */
 	private Language(final String displayName, final String code) {
 		this.displayName = displayName;
 		this.code = code;
 	}
 
-	/**
-	 * Returns the language enum value with the given code
-	 * 
-	 * @param code
-	 *            The code of the requested language
-	 * @return The language enum value with the given code
-	 */
 	public static Language getLanguage(final String code) {
 		Language language = null;
 		int i = 0;
@@ -70,20 +40,10 @@ public enum Language {
 		return language;
 	}
 
-	/**
-	 * Getter of the code
-	 * 
-	 * @return The language code
-	 */
 	public String getCode() {
 		return code;
 	}
 
-	/**
-	 * Getter of the display name
-	 * 
-	 * @return The display name of the language
-	 */
 	public String getDisplayName() {
 		return displayName;
 	}

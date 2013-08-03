@@ -13,9 +13,6 @@ import org.openlca.core.model.ModelType;
 
 /**
  * Extension of {@link ILCDExportWizard} for flows
- * 
- * @author Sebastian Greve
- * 
  */
 public class ILCDExportFlowWizard extends ILCDExportWizard {
 

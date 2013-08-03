@@ -3,10 +3,7 @@ package org.openlca.app.util;
 import org.openlca.app.resources.ImageType;
 
 /**
- * A pop-up for information messages.
- * 
- * @author Georg Koester
- * 
+ * A pop-up for warning messages.
  */
 public class WarningPopup extends Popup {
 

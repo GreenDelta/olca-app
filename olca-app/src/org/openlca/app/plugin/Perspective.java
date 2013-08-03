@@ -17,9 +17,6 @@ import org.openlca.app.search.SearchView;
 
 /**
  * The openLCA perspective
- * 
- * @author Sebastian Greve
- * 
  */
 public class Perspective implements IPerspectiveFactory {
 

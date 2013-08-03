@@ -19,15 +19,9 @@ import org.openlca.core.database.IDatabase;
 
 /**
  * Action for importing ILCD formatted files
- * 
- * @author Sebastian Greve
- * 
  */
 public class ImportILCDAction extends Action {
 
-	/**
-	 * The database
-	 */
 	private IDatabase database;
 
 	@Override

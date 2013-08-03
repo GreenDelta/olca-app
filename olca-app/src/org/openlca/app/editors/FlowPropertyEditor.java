@@ -15,9 +15,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Form editor for editing flow properties
- * 
- * @author Sebastian Greve
- * 
  */
 public class FlowPropertyEditor extends ModelEditor<FlowProperty> {
 

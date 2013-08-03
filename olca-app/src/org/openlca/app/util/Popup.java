@@ -20,10 +20,6 @@ import org.openlca.util.Strings;
 /**
  * A pop-up for messages. For spezialized versions look at inheriting classes
  * like {@link InformationPopup}.
- * 
- * @author Michael Srocka
- * @author Georg Koester
- * 
  */
 public class Popup {
 

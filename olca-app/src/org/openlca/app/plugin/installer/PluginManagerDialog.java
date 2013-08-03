@@ -38,9 +38,6 @@ import org.slf4j.LoggerFactory;
 /**
  * Wizard for exporting processes, flows, flow properties and unit group to the
  * OLCAPack format
- * 
- * @author Georg Koester
- * 
  */
 public class PluginManagerDialog extends FormDialog {
 
