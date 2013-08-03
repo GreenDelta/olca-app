@@ -1,4 +1,4 @@
-package org.openlca.app.viewers.modify;
+package org.openlca.app.viewers.table.modify;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,7 +9,7 @@ import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.widgets.Item;
-import org.openlca.app.viewers.modify.ICellModifier.CellEditingType;
+import org.openlca.app.viewers.table.modify.ICellModifier.CellEditingType;
 
 import com.google.common.base.Objects;
 

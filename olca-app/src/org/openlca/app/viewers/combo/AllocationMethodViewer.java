@@ -1,4 +1,4 @@
-package org.openlca.app.viewers;
+package org.openlca.app.viewers.combo;
 
 import org.eclipse.nebula.widgets.tablecombo.TableCombo;
 import org.eclipse.swt.widgets.Composite;

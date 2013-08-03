@@ -1,4 +1,4 @@
-package org.openlca.app.viewers;
+package org.openlca.app.viewers.combo;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.nebula.jface.tablecomboviewer.TableComboViewer;
@@ -7,6 +7,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.PlatformUI;
 import org.openlca.app.util.UI;
+import org.openlca.app.viewers.AbstractViewer;
 
 public abstract class AbstractComboViewer<T> extends AbstractViewer<T, TableComboViewer> {
 

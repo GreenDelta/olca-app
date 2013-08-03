@@ -1,4 +1,4 @@
-package org.openlca.app.viewers;
+package org.openlca.app.viewers.table;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
@@ -29,8 +29,10 @@ import org.openlca.app.resources.ImageManager;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
-import org.openlca.app.viewers.AbstractTableViewer.IModelChangedListener.Type;
-import org.openlca.app.viewers.modify.CellModifySupport;
+import org.openlca.app.viewers.AbstractViewer;
+import org.openlca.app.viewers.table.modify.CellModifySupport;
+import org.openlca.app.viewers.table.modify.IModelChangedListener;
+import org.openlca.app.viewers.table.modify.IModelChangedListener.ModelChangeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -175,7 +177,7 @@ public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 			changeListener.remove(listener);
 	}
 
-	protected void fireModelChanged(Type type, T element) {
+	protected void fireModelChanged(ModelChangeType type, T element) {
 		for (IModelChangedListener<T> listener : changeListener)
 			listener.modelChanged(type, element);
 	}
@@ -217,18 +219,6 @@ public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.METHOD)
 	protected @interface OnDrop {
-	}
-
-	public interface IModelChangedListener<T> {
-
-		public enum Type {
-
-			CREATE, REMOVE, CHANGE;
-
-		}
-
-		void modelChanged(Type type, T element);
-
 	}
 
 	private class CreateAction extends Action {

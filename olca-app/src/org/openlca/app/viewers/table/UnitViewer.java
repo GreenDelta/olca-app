@@ -1,4 +1,4 @@
-package org.openlca.app.viewers;
+package org.openlca.app.viewers.table;
 
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
@@ -11,9 +11,9 @@ import org.openlca.app.Messages;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.AbstractTableViewer.IModelChangedListener.Type;
-import org.openlca.app.viewers.modify.CheckBoxCellModifier;
-import org.openlca.app.viewers.modify.TextCellModifier;
+import org.openlca.app.viewers.table.modify.CheckBoxCellModifier;
+import org.openlca.app.viewers.table.modify.TextCellModifier;
+import org.openlca.app.viewers.table.modify.IModelChangedListener.ModelChangeType;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
 
@@ -73,7 +73,7 @@ public class UnitViewer extends AbstractTableViewer<Unit> {
 		Unit unit = new Unit();
 		unit.setName("newUnit");
 		unit.setConversionFactor(1d);
-		fireModelChanged(Type.CREATE, unit);
+		fireModelChanged(ModelChangeType.CREATE, unit);
 		setInput(unitGroup);
 	}
 
@@ -81,7 +81,7 @@ public class UnitViewer extends AbstractTableViewer<Unit> {
 	protected void onRemove() {
 		for (Unit unit : getAllSelected())
 			if (!Objects.equal(unitGroup.getReferenceUnit(), unit))
-				fireModelChanged(Type.REMOVE, unit);
+				fireModelChanged(ModelChangeType.REMOVE, unit);
 		setInput(unitGroup);
 	}
 
@@ -177,7 +177,7 @@ public class UnitViewer extends AbstractTableViewer<Unit> {
 		@Override
 		protected void setText(Unit element, String text) {
 			element.setName(text);
-			fireModelChanged(Type.CHANGE, element);
+			fireModelChanged(ModelChangeType.CHANGE, element);
 		}
 
 	}
@@ -192,7 +192,7 @@ public class UnitViewer extends AbstractTableViewer<Unit> {
 		@Override
 		protected void setText(Unit element, String text) {
 			element.setDescription(text);
-			fireModelChanged(Type.CHANGE, element);
+			fireModelChanged(ModelChangeType.CHANGE, element);
 		}
 	}
 
@@ -206,7 +206,7 @@ public class UnitViewer extends AbstractTableViewer<Unit> {
 		@Override
 		protected void setText(Unit element, String text) {
 			element.setSynonyms(text);
-			fireModelChanged(Type.CHANGE, element);
+			fireModelChanged(ModelChangeType.CHANGE, element);
 		}
 
 	}
@@ -222,7 +222,7 @@ public class UnitViewer extends AbstractTableViewer<Unit> {
 		protected void setText(Unit element, String text) {
 			try {
 				element.setConversionFactor(Double.parseDouble(text));
-				fireModelChanged(Type.CHANGE, element);
+				fireModelChanged(ModelChangeType.CHANGE, element);
 			} catch (NumberFormatException e) {
 
 			}
@@ -241,7 +241,7 @@ public class UnitViewer extends AbstractTableViewer<Unit> {
 		protected void setChecked(Unit element, boolean value) {
 			if (value) {
 				unitGroup.setReferenceUnit(element);
-				fireModelChanged(Type.CHANGE, element);
+				fireModelChanged(ModelChangeType.CHANGE, element);
 			}
 		}
 

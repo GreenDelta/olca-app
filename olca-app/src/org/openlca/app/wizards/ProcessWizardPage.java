@@ -23,7 +23,7 @@ import org.openlca.app.navigation.filters.FlowTypeFilter;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
-import org.openlca.app.viewers.FlowPropertyViewer;
+import org.openlca.app.viewers.combo.FlowPropertyViewer;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;

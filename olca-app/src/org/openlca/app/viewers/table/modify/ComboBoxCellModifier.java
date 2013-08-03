@@ -1,4 +1,4 @@
-package org.openlca.app.viewers.modify;
+package org.openlca.app.viewers.table.modify;
 
 public abstract class ComboBoxCellModifier<T, V> implements ICellModifier<T> {
 

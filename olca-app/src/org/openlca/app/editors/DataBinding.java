@@ -17,9 +17,9 @@ import org.openlca.app.db.Database;
 import org.openlca.app.util.Bean;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Labels;
-import org.openlca.app.viewers.AbstractComboViewer;
-import org.openlca.app.viewers.AbstractTableViewer;
-import org.openlca.app.viewers.AbstractTableViewer.IModelChangedListener;
+import org.openlca.app.viewers.combo.AbstractComboViewer;
+import org.openlca.app.viewers.table.AbstractTableViewer;
+import org.openlca.app.viewers.table.modify.IModelChangedListener;
 import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.editors.IEditor;
@@ -84,7 +84,7 @@ public class DataBinding {
 	}
 
 	private class BoundModelChangedListener<T> implements
-			IModelChangedListener<T> {
+			IModelChangedListener<T, T> {
 
 		private List<T> list;
 
@@ -93,10 +93,10 @@ public class DataBinding {
 		}
 
 		@Override
-		public void modelChanged(Type type, T element) {
-			if (type == Type.CREATE)
+		public void modelChanged(ModelChangeType type, T element) {
+			if (type == ModelChangeType.CREATE)
 				list.add(element);
-			if (type == Type.REMOVE)
+			if (type == ModelChangeType.REMOVE)
 				list.remove(element);
 			editorChange();
 		}

@@ -7,7 +7,6 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.osgi.service.datalocation.Location;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.internal.EditorReference;
 import org.openlca.app.editors.ModelEditorInput;
 import org.openlca.app.plugin.Activator;
 import org.openlca.app.plugin.Workspace;

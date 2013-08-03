@@ -18,7 +18,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.FlowPropertyFactorViewer;
+import org.openlca.app.viewers.table.FlowPropertyFactorViewer;
 import org.openlca.core.model.Flow;
 
 public class FlowPropertiesPage extends ModelPage<Flow> {

@@ -7,7 +7,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.UnitViewer;
+import org.openlca.app.viewers.table.UnitViewer;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.UnitGroup;
 

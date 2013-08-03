@@ -1,4 +1,4 @@
-package org.openlca.app.viewers;
+package org.openlca.app.viewers.combo;
 
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.core.model.FlowType;

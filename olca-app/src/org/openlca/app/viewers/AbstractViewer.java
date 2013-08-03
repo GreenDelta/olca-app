@@ -135,7 +135,7 @@ public abstract class AbstractViewer<T, V extends StructuredViewer> implements
 		viewer.removeSelectionChangedListener(this);
 	}
 
-	class Null {
+	protected class Null {
 
 		@Override
 		public boolean equals(Object arg0) {

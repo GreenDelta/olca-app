@@ -1,4 +1,4 @@
-package org.openlca.app.viewers;
+package org.openlca.app.viewers.combo;
 
 import java.util.Collections;
 import java.util.List;

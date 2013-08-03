@@ -1,4 +1,4 @@
-package org.openlca.app.viewers.modify;
+package org.openlca.app.viewers.table.modify;
 
 public interface ICellModifier<T> {
 

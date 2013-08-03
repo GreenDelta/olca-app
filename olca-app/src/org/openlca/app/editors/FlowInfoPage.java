@@ -19,7 +19,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.LocationViewer;
+import org.openlca.app.viewers.combo.LocationViewer;
 import org.openlca.core.model.Flow;
 
 public class FlowInfoPage extends ModelPage<Flow> {

@@ -1,4 +1,4 @@
-package org.openlca.app.viewers;
+package org.openlca.app.viewers.table;
 
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
@@ -12,9 +12,9 @@ import org.openlca.app.components.ObjectDialog;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.AbstractTableViewer.IModelChangedListener.Type;
-import org.openlca.app.viewers.modify.CheckBoxCellModifier;
-import org.openlca.app.viewers.modify.TextCellModifier;
+import org.openlca.app.viewers.table.modify.CheckBoxCellModifier;
+import org.openlca.app.viewers.table.modify.TextCellModifier;
+import org.openlca.app.viewers.table.modify.IModelChangedListener.ModelChangeType;
 import org.openlca.core.database.FlowPropertyDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Flow;
@@ -77,7 +77,7 @@ public class FlowPropertyFactorViewer extends
 	private void add(BaseDescriptor descriptor) {
 		FlowPropertyFactor factor = new FlowPropertyFactor();
 		factor.setFlowProperty(flowPropertyDao.getForId(descriptor.getId()));
-		fireModelChanged(Type.CREATE, factor);
+		fireModelChanged(ModelChangeType.CREATE, factor);
 		setInput(flow.getFlowPropertyFactors().toArray(
 				new FlowPropertyFactor[flow.getFlowPropertyFactors().size()]));
 	}
@@ -86,7 +86,7 @@ public class FlowPropertyFactorViewer extends
 	protected void onRemove() {
 		for (FlowPropertyFactor factor : getAllSelected()) {
 			flow.getFlowPropertyFactors().remove(factor);
-			fireModelChanged(Type.REMOVE, factor);
+			fireModelChanged(ModelChangeType.REMOVE, factor);
 		}
 		setInput(flow.getFlowPropertyFactors().toArray(
 				new FlowPropertyFactor[flow.getFlowPropertyFactors().size()]));
@@ -178,7 +178,7 @@ public class FlowPropertyFactorViewer extends
 		protected void setText(FlowPropertyFactor element, String text) {
 			try {
 				element.setConversionFactor(Double.parseDouble(text));
-				fireModelChanged(Type.CHANGE, element);
+				fireModelChanged(ModelChangeType.CHANGE, element);
 			} catch (NumberFormatException e) {
 
 			}
@@ -198,7 +198,7 @@ public class FlowPropertyFactorViewer extends
 		protected void setChecked(FlowPropertyFactor element, boolean value) {
 			if (value) {
 				flow.setReferenceFlowProperty(element.getFlowProperty());
-				fireModelChanged(Type.CHANGE, element);
+				fireModelChanged(ModelChangeType.CHANGE, element);
 			}
 		}
 
