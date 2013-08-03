@@ -17,7 +17,8 @@ public abstract class AbstractViewer<T, V extends StructuredViewer> implements
 	private List<ISelectionChangedListener<T>> listener = new ArrayList<>();
 	private V viewer;
 	private T[] input;
-	private boolean hasNull;
+	private boolean nullable;
+	private String nullText;
 
 	protected AbstractViewer(Composite parent) {
 		viewer = createViewer(parent);
@@ -57,20 +58,33 @@ public abstract class AbstractViewer<T, V extends StructuredViewer> implements
 		return this.input;
 	}
 
+	public void setNullable(boolean nullable) {
+		boolean changed = this.nullable != nullable;
+		this.nullable = nullable;
+		if (changed && getInput() != null)
+			setInput(getInput());
+	}
+
+	public boolean isNullable() {
+		return nullable;
+	}
+
+	protected void setNullText(String nullText) {
+		this.nullText = nullText;
+	}
+
 	private Object[] getInternalInput() {
 		return (Object[]) viewer.getInput();
 	}
 
 	protected void setInput(T[] input) {
 		this.input = input;
-		Object[] internalInput = new Object[input.length];
-		hasNull = false;
+		Object[] internalInput = new Object[nullable ? input.length + 1
+				: input.length];
+		if (nullable)
+			internalInput[0] = new Null();
 		for (int i = 0; i < input.length; i++)
-			if (input[i] == null) {
-				internalInput[i] = new Null();
-				hasNull = true;
-			} else
-				internalInput[i] = input[i];
+			internalInput[nullable ? i + 1 : i] = input[i];
 		viewer.setInput(internalInput);
 	}
 
@@ -87,7 +101,7 @@ public abstract class AbstractViewer<T, V extends StructuredViewer> implements
 	private void internalSelect(Object value) {
 		if (value != null)
 			viewer.setSelection(new StructuredSelection(value));
-		else if (hasNull)
+		else if (nullable)
 			viewer.setSelection(new StructuredSelection(new Null()));
 		else
 			viewer.setSelection(new StructuredSelection());
@@ -130,7 +144,7 @@ public abstract class AbstractViewer<T, V extends StructuredViewer> implements
 
 		@Override
 		public String toString() {
-			return "Null";
+			return nullText == null ? "" : nullText;
 		}
 
 	}

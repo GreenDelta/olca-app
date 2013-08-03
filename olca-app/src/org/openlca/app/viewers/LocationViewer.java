@@ -11,8 +11,16 @@ import org.openlca.util.Strings;
 
 public class LocationViewer extends AbstractComboViewer<Location> {
 
+	public static final int NULLABLE = 1;
+	private boolean nullable;
+
 	public LocationViewer(Composite parent) {
+		this(parent, -1);
+	}
+
+	public LocationViewer(Composite parent, int flag) {
 		super(parent);
+		nullable = flag == NULLABLE;
 		setInput(new Location[0]);
 	}
 
@@ -28,7 +36,14 @@ public class LocationViewer extends AbstractComboViewer<Location> {
 					return Strings.compare(loc1.getName(), loc2.getName());
 				}
 			});
-			setInput(locations.toArray(new Location[locations.size()]));
+			if (nullable) {
+				Location[] values = new Location[locations.size() + 1];
+				for (int i = 0; i < locations.size(); i++)
+					values[i + 1] = locations.get(i);
+				setInput(values);
+				select(null);
+			} else
+				setInput(locations.toArray(new Location[locations.size()]));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
