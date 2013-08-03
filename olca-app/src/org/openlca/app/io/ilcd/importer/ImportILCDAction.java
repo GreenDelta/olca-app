@@ -15,7 +15,6 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.openlca.app.Messages;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.UI;
-import org.openlca.core.application.actions.IImportAction;
 import org.openlca.core.database.IDatabase;
 
 /**
@@ -24,7 +23,7 @@ import org.openlca.core.database.IDatabase;
  * @author Sebastian Greve
  * 
  */
-public class ImportILCDAction extends Action implements IImportAction {
+public class ImportILCDAction extends Action {
 
 	/**
 	 * The database
@@ -50,7 +49,6 @@ public class ImportILCDAction extends Action implements IImportAction {
 		}
 	}
 
-	@Override
 	public void setDatabase(final IDatabase database) {
 		this.database = database;
 	}

@@ -17,7 +17,6 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.openlca.app.Messages;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.UI;
-import org.openlca.core.application.actions.IExportAction;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 
 /**
@@ -26,7 +25,7 @@ import org.openlca.core.model.descriptors.BaseDescriptor;
  * @author Sebastian Greve
  * 
  */
-public class ExportToEcoSpold1Action extends Action implements IExportAction {
+public class ExportToEcoSpold1Action extends Action {
 
 	private BaseDescriptor component;
 
@@ -51,7 +50,6 @@ public class ExportToEcoSpold1Action extends Action implements IExportAction {
 		}
 	}
 
-	@Override
 	public void setDescriptor(BaseDescriptor component) {
 		this.component = component;
 	}

@@ -8,7 +8,6 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.openlca.app.Messages;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.UI;
-import org.openlca.core.application.actions.IExportAction;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +15,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Action for the export of a model component to ILCD.
  */
-public class ILCDExportAction extends Action implements IExportAction {
+public class ILCDExportAction extends Action {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private BaseDescriptor descriptor;
@@ -45,7 +44,6 @@ public class ILCDExportAction extends Action implements IExportAction {
 
 	}
 
-	@Override
 	public void setDescriptor(BaseDescriptor descriptor) {
 		this.descriptor = descriptor;
 	}
