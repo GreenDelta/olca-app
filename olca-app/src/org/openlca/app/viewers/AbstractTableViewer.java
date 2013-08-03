@@ -14,11 +14,17 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.DropTargetAdapter;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
+import org.openlca.app.components.ModelTransfer;
 import org.openlca.app.resources.ImageManager;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.UI;
@@ -72,9 +78,52 @@ public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 			actions.add(new RemoveAction());
 		UI.bindActions(viewer, actions.toArray(new Action[actions.size()]));
 
+		if (supports(OnDrop.class))
+			addDropSupport(viewer);
+
 		cellModifySupport = new CellModifySupport<>(viewer);
 
 		return viewer;
+	}
+
+	private void addDropSupport(TableViewer viewer) {
+		final Transfer transferType = ModelTransfer.getInstance();
+		DropTarget dropTarget = new DropTarget(viewer.getTable(), DND.DROP_COPY
+				| DND.DROP_MOVE | DND.DROP_DEFAULT);
+		dropTarget.setTransfer(new Transfer[] { transferType });
+		final AbstractTableViewer<T> thisObject = this;
+		dropTarget.addDropListener(new DropTargetAdapter() {
+			@Override
+			public void drop(DropTargetEvent event) {
+				if (transferType.isSupportedType(event.currentDataType))
+					if (event.data != null)
+						for (Method method : getMethods(OnDrop.class))
+							tryInvoke(method, event.data);
+			}
+
+			private void tryInvoke(Method method, Object value) {
+				Class<?> parameterType = method.getParameterTypes().length > 0 ? method
+						.getParameterTypes()[0] : null;
+				Class<?> dataType = value.getClass();
+				if (dataType.isArray()) {
+					for (Object object : (Object[]) value)
+						if (parameterType == object.getClass()) {
+							try {
+								method.invoke(thisObject, object);
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
+				} else {
+					if (parameterType == dataType)
+						try {
+							method.invoke(thisObject, value);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+				}
+			}
+		});
 	}
 
 	protected CellModifySupport<T> getCellModifySupport() {
@@ -139,13 +188,20 @@ public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 	}
 
 	private void call(Class<? extends Annotation> clazz) {
+		for (Method method : getMethods(clazz))
+			try {
+				method.invoke(this);
+			} catch (Exception e) {
+				log.error("Cannot call onAdd method", e);
+			}
+	}
+
+	private List<Method> getMethods(Class<? extends Annotation> clazz) {
+		List<Method> methods = new ArrayList<>();
 		for (Method method : this.getClass().getDeclaredMethods())
 			if (method.isAnnotationPresent(clazz))
-				try {
-					method.invoke(this);
-				} catch (Exception e) {
-					log.error("Cannot call onAdd method", e);
-				}
+				methods.add(method);
+		return methods;
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
@@ -156,6 +212,11 @@ public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.METHOD)
 	protected @interface OnRemove {
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.METHOD)
+	protected @interface OnDrop {
 	}
 
 	public interface IModelChangedListener<T> {
