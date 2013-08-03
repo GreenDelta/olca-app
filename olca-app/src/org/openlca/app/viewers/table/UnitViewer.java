@@ -12,8 +12,8 @@ import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.table.modify.CheckBoxCellModifier;
-import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.app.viewers.table.modify.IModelChangedListener.ModelChangeType;
+import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
 
@@ -52,9 +52,12 @@ public class UnitViewer extends AbstractTableViewer<Unit> {
 	}
 
 	public void setInput(UnitGroup unitGroup) {
-		super.setInput(unitGroup.getUnits().toArray(
-				new Unit[unitGroup.getUnits().size()]));
 		this.unitGroup = unitGroup;
+		if (unitGroup == null)
+			setInput(new Unit[0]);
+		else
+			setInput(unitGroup.getUnits().toArray(
+					new Unit[unitGroup.getUnits().size()]));
 		getViewer().refresh(true);
 	}
 
