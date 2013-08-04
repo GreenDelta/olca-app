@@ -22,9 +22,9 @@ import org.openlca.app.Messages;
 import org.openlca.app.editors.DataBinding;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewer.AllocationMethodViewer;
-import org.openlca.app.viewer.ImpactMethodViewer;
-import org.openlca.app.viewer.NormalizationWeightingSetViewer;
+import org.openlca.app.viewers.combo.AllocationMethodViewer;
+import org.openlca.app.viewers.combo.ImpactMethodViewer;
+import org.openlca.app.viewers.combo.NormalizationWeightingSetViewer;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.MethodDao;
 import org.openlca.core.model.AllocationMethod;
@@ -113,7 +113,7 @@ public class CalculationWizardPage extends WizardPage {
 		case ANALYSIS:
 			return Messages.CalculationWizardPage_Analysis;
 		case MONTE_CARLO:
-			return Messages.Common_MonteCarloSimulation;
+			return Messages.MonteCarloSimulation;
 		case QUICK:
 			return Messages.CalculationWizardPage_QuickResults;
 		default:
@@ -139,11 +139,11 @@ public class CalculationWizardPage extends WizardPage {
 	}
 
 	private void createMethodComboViewer(Composite parent) {
-		UI.formLabel(parent, Messages.LCIAMethod);
+		UI.formLabel(parent, Messages.ImpactMethod);
 		methodViewer = new ImpactMethodViewer(parent);
 		methodViewer.setInput(database);
 		methodViewer
-				.addSelectionChangedListener(new org.openlca.app.viewer.ISelectionChangedListener<ImpactMethodDescriptor>() {
+				.addSelectionChangedListener(new org.openlca.app.viewers.ISelectionChangedListener<ImpactMethodDescriptor>() {
 
 					@Override
 					public void selectionChanged(

@@ -27,8 +27,8 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.util.UIFactory;
 import org.openlca.app.util.Viewers;
-import org.openlca.app.viewer.BaseLabelProvider;
-import org.openlca.app.viewer.BaseNameSorter;
+import org.openlca.app.viewers.BaseLabelProvider;
+import org.openlca.app.viewers.BaseNameSorter;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.MethodDao;
 import org.openlca.core.editors.ModelEditor;
@@ -127,7 +127,7 @@ public class ProjectComparisonPage extends ModelEditorPage {
 	 */
 	public ProjectComparisonPage(final ModelEditor editor) {
 		super(editor, "ProjectComparisonPage",
-				Messages.Projects_ProjectComparisonPageLabel);
+				Messages.ProjectComparisonPageLabel);
 		this.project = (Project) editor.getModelComponent();
 	}
 
@@ -135,13 +135,13 @@ public class ProjectComparisonPage extends ModelEditorPage {
 	protected void createContents(final Composite body,
 			final FormToolkit toolkit) {
 		final Section section = UIFactory.createSection(body, toolkit,
-				Messages.Projects_ProjectComparisonPageLabel, true, false);
+				Messages.ProjectComparisonPageLabel, true, false);
 
 		final Composite composite = UIFactory.createSectionComposite(section,
 				toolkit, UIFactory.createGridLayout(3, false, 5));
 		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-		new Label(composite, SWT.NONE).setText(Messages.Projects_LCIAMethod);
+		new Label(composite, SWT.NONE).setText(Messages.ImpactMethod);
 		methodViewer = new ComboViewer(composite);
 		methodViewer.setContentProvider(ArrayContentProvider.getInstance());
 		methodViewer.setLabelProvider(new BaseLabelProvider());
@@ -149,12 +149,12 @@ public class ProjectComparisonPage extends ModelEditorPage {
 		methodViewer.getCombo().setLayoutData(
 				new GridData(SWT.FILL, SWT.FILL, true, false));
 
-		button = toolkit.createButton(composite, Messages.Projects_DrawChart,
+		button = toolkit.createButton(composite, Messages.DrawChart,
 				SWT.NONE);
 		button.setEnabled(false);
 
 		final Section chartSection = UIFactory.createSection(body, toolkit,
-				Messages.Projects_ChartSectionLabel, true, true);
+				Messages.ChartSectionLabel, true, true);
 		final Composite chartComposite = UIFactory.createSectionComposite(
 				chartSection, toolkit, UIFactory.createGridLayout(1, true, 0));
 
@@ -163,17 +163,17 @@ public class ProjectComparisonPage extends ModelEditorPage {
 		radioComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
 				false));
 		characterizationRadio = toolkit.createButton(radioComposite,
-				Messages.Projects_Characterization, SWT.RADIO);
+				Messages.Characterization, SWT.RADIO);
 		characterizationRadio.setSelection(true);
 
 		normalizationRadio = toolkit.createButton(radioComposite,
-				Messages.Projects_Normalization, SWT.RADIO);
+				Messages.Normalization, SWT.RADIO);
 
 		weightingRadio = toolkit.createButton(radioComposite,
-				Messages.Projects_Weighting, SWT.RADIO);
+				Messages.Weighting, SWT.RADIO);
 
 		singleScoreRadio = toolkit.createButton(radioComposite,
-				Messages.Projects_SingleScore, SWT.RADIO);
+				Messages.SingleScore, SWT.RADIO);
 		radioComposite.setVisible(false);
 
 		chart = new ProductSystemComparisonChart(chartComposite, project,

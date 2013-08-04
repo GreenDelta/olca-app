@@ -115,10 +115,10 @@ public abstract class ModelEditorInfoPage extends ModelEditorPage implements
 				UIFactory.createGridLayout(2));
 
 		nameText = UIFactory.createTextWithLabel(mainComposite, toolkit,
-				Messages.Common_Name, false);
+				Messages.Name, false);
 
 		descriptionText = UIFactory.createTextWithLabel(mainComposite, toolkit,
-				Messages.Common_Description, true);
+				Messages.Description, true);
 
 	}
 

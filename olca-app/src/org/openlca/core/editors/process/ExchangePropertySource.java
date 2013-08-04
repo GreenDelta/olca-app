@@ -70,7 +70,7 @@ public class ExchangePropertySource implements IPropertySource {
 			List<IPropertyDescriptor> descriptors, Exchange exchange) {
 		TextPropertyDescriptor descriptor = new TextPropertyDescriptor("a"
 				+ exchange.getId(), exchange.getFlow().getName());
-		descriptor.setCategory(Messages.Processes_AllocationFactors);
+		descriptor.setCategory(Messages.AllocationFactors);
 		descriptors.add(descriptor);
 	}
 

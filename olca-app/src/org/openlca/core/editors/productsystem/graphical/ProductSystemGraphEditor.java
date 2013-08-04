@@ -70,7 +70,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.openlca.app.Messages;
-import org.openlca.app.component.ModelTransfer;
+import org.openlca.app.components.ModelTransfer;
 import org.openlca.core.application.actions.OpenEditorAction;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.editors.ModelEditor;

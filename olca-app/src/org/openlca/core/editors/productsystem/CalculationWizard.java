@@ -16,7 +16,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.Wizard;
 import org.openlca.app.App;
 import org.openlca.app.Messages;
-import org.openlca.app.component.JobListenerWithProgress;
+import org.openlca.app.components.JobListenerWithProgress;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.AnalyzeEditorInput;
 import org.openlca.app.editors.ResultEditorInput;
@@ -117,7 +117,7 @@ class CalculationWizard extends Wizard {
 							AnalysisResult result = calculateAction
 									.calculateAggregatedProcessResults(
 											productSystem, database, calculator);
-							openAnalysisEditot(result, method, nwSet);
+							openAnalysisEditor(result, method, nwSet);
 
 						} catch (Exception e) {
 							log.error("Calculation failed " + e.getMessage(), e);
@@ -132,7 +132,7 @@ class CalculationWizard extends Wizard {
 		}
 	}
 
-	private void openAnalysisEditot(AnalysisResult result,
+	private void openAnalysisEditor(AnalysisResult result,
 			ImpactMethodDescriptor method, NormalizationWeightingSet nwSet) {
 		AnalyzeEditorInput input = new AnalyzeEditorInput();
 		input.setDatabase(database);
@@ -170,7 +170,7 @@ class CalculationWizard extends Wizard {
 						ResultEditorInput input = new ResultEditorInput(
 								lciResult, database);
 
-						monitor.subTask(Messages.CalculatingLCIA);
+						monitor.subTask(Messages.CalculatingImpact);
 						if (method != null) {
 							ImpactCalculator impactCalculator = new ImpactCalculator(
 									database, lciResult);

@@ -36,7 +36,7 @@ class OpenGroupSetAction extends Action {
 
 	public OpenGroupSetAction(GroupPage page) {
 		this.page = page;
-		setToolTipText(Messages.Common_Open);
+		setToolTipText(Messages.Open);
 		setImageDescriptor(ImageType.FOLDER_ICON_OPEN.getDescriptor());
 	}
 
@@ -80,14 +80,14 @@ class OpenGroupSetAction extends Action {
 
 		@Override
 		protected Control createDialogArea(Composite root) {
-			getShell().setText(Messages.Common_Open);
+			getShell().setText(Messages.Open);
 			toolkit.adapt(root);
 			Composite area = (Composite) super.createDialogArea(root);
 			toolkit.adapt(area);
 			Composite container = toolkit.createComposite(area);
 			UI.gridData(container, true, true);
 			UI.gridLayout(container, 2);
-			combo = UI.formCombo(container, toolkit, Messages.Common_Grouping);
+			combo = UI.formCombo(container, toolkit, Messages.Grouping);
 			UI.gridData(combo, false, false).widthHint = 250;
 			combo.addSelectionListener(this);
 			getShell().pack();

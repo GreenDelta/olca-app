@@ -49,11 +49,11 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 	private FlowImpactSelection flowImpactSelection;
 
 	public LocationContributionPage(AnalyzeEditor editor, AnalysisResult result) {
-		super(editor, "analysis.MapPage", Messages.Common_Locations);
+		super(editor, "analysis.MapPage", Messages.Locations);
 		this.result = result;
 		this.editor = editor;
 		calculator = new LocationContribution(result,
-				Messages.Common_Unspecified);
+				Messages.Unspecified);
 	}
 
 	@Override
@@ -73,7 +73,7 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
 		ScrolledForm form = UI.formHeader(managedForm,
-				Messages.Common_Locations);
+				Messages.Locations);
 		FormToolkit toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		createCombos(body, toolkit);
@@ -93,13 +93,13 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 
 	private void createTable(Composite body, FormToolkit toolkit) {
 		Composite composite = UI.formSection(body, toolkit,
-				Messages.Common_ResultContributions);
+				Messages.ResultContributions);
 		UI.gridLayout(composite, 1);
 		table = new LocationContributionTable(composite);
 	}
 
 	private void createBrowser(Composite body, FormToolkit toolkit) {
-		Section section = UI.section(body, toolkit, Messages.Common_Map
+		Section section = UI.section(body, toolkit, Messages.Map
 				+ " (beta)");
 		UI.bindActions(section, new RefreshMapAction());
 		GridData gridData = UI.gridData(section, true, false);

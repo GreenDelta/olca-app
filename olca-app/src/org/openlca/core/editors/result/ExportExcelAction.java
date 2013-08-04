@@ -126,7 +126,7 @@ public class ExportExcelAction extends Action {
 	 */
 	private void buildInfoSheet(final HSSFWorkbook workbook) {
 		final HSSFSheet infoSheet = workbook
-				.createSheet(Messages.Results_Information);
+				.createSheet(Messages.Information);
 		infoSheet.setColumnWidth(0, 9000);
 		infoSheet.setColumnWidth(1, 30000);
 
@@ -157,7 +157,7 @@ public class ExportExcelAction extends Action {
 		headerCell.setCellStyle(boldCellStyle);
 		headerCell.setCellType(HSSFCell.CELL_TYPE_STRING);
 		headerCell.setCellValue(new HSSFRichTextString(
-				Messages.Results_ExportTitle));
+				Messages.ExportTitle));
 
 		final HSSFRow processRow = infoSheet.createRow(currentRowNo++);
 		final HSSFCell nameCell = processRow.createCell(1);
@@ -167,33 +167,33 @@ public class ExportExcelAction extends Action {
 		currentRowNo++;
 
 		writeDateRow(infoSheet, currentRowNo++, boldCellStyle,
-				Messages.Results_CreationDate + ":", new Date());
+				Messages.CreationDate + ":", new Date());
 
 		currentRowNo++;
 		currentRowNo++;
 
 		// data set information
 		writeTextRow(infoSheet, currentRowNo++, italicCellStyle,
-				Messages.Results_DataSetInformation, null);
+				Messages.DataSetInformation, null);
 		currentRowNo++;
 
 		// name
 		writeTextRow(infoSheet, currentRowNo++, boldCellStyle,
-				Messages.Common_Name + ":", productSystem);
+				Messages.Name + ":", productSystem);
 
 		// product
 		writeTextRow(infoSheet, currentRowNo++, boldCellStyle,
-				Messages.Common_QuantitativeReference + ":", product);
+				Messages.QuantitativeReference + ":", product);
 
 		if (lciaMethod != null) {
 			// lcia method
 			writeTextRow(infoSheet, currentRowNo++, boldCellStyle,
-					Messages.Results_LCIAMethodUsed + ":", lciaMethod);
+					Messages.ImpactMethodUsed + ":", lciaMethod);
 
 			if (nwSet != null) {
 				// normalization weighting set
 				writeTextRow(infoSheet, currentRowNo++, boldCellStyle,
-						Messages.Results_NormalizationWeightingSet + ":", nwSet);
+						Messages.NormalizationWeightingSet + ":", nwSet);
 			}
 		}
 	}
@@ -211,13 +211,13 @@ public class ExportExcelAction extends Action {
 		String title = null;
 		switch (type) {
 		case CHARACTERIZATION:
-			title = Messages.Results_Characterization;
+			title = Messages.Characterization;
 			break;
 		case NORMALIZATION:
-			title = Messages.Results_Normalization;
+			title = Messages.Normalization;
 			break;
 		case WEIGHTING:
-			title = Messages.Results_Weighting;
+			title = Messages.Weighting;
 			break;
 		}
 
@@ -240,7 +240,7 @@ public class ExportExcelAction extends Action {
 		final HSSFCell nameCell = methodRow.createCell(0);
 		nameCell.setCellType(HSSFCell.CELL_TYPE_STRING);
 		nameCell.setCellValue(new HSSFRichTextString(
-				Messages.Results_LCIAMethodUsed + ": "
+				Messages.ImpactMethodUsed + ": "
 						+ lciaResult.getLCIAMethod()));
 
 		currentRowNo++;
@@ -251,18 +251,18 @@ public class ExportExcelAction extends Action {
 		categoryCell.setCellType(HSSFCell.CELL_TYPE_STRING);
 		categoryCell.setCellStyle(boldBorderedCellStyle);
 		categoryCell.setCellValue(new HSSFRichTextString(
-				Messages.Results_LCIACategory));
+				Messages.ImpactCategory));
 
 		final HSSFCell amountCell = titleRow.createCell(1);
 		amountCell.setCellType(HSSFCell.CELL_TYPE_STRING);
 		amountCell.setCellStyle(boldBorderedCellStyle);
-		amountCell.setCellValue(new HSSFRichTextString(Messages.Common_Amount));
+		amountCell.setCellValue(new HSSFRichTextString(Messages.Amount));
 
 		if (type != NORMALIZATION) {
 			final HSSFCell unitCell = titleRow.createCell(2);
 			unitCell.setCellType(HSSFCell.CELL_TYPE_STRING);
 			unitCell.setCellStyle(boldBorderedCellStyle);
-			unitCell.setCellValue(new HSSFRichTextString(Messages.Results_Unit));
+			unitCell.setCellValue(new HSSFRichTextString(Messages.Unit));
 		}
 
 		final HSSFCell sdCell = titleRow.createCell(type != NORMALIZATION ? 3
@@ -270,7 +270,7 @@ public class ExportExcelAction extends Action {
 		sdCell.setCellType(HSSFCell.CELL_TYPE_STRING);
 		sdCell.setCellStyle(boldBorderedCellStyle);
 		sdCell.setCellValue(new HSSFRichTextString(
-				Messages.Results_StandardDeviation));
+				Messages.StandardDeviation));
 
 		currentRowNo++;
 
@@ -316,13 +316,13 @@ public class ExportExcelAction extends Action {
 	private void buildLCISheet(final HSSFWorkbook workbook) throws Exception {
 
 		final HSSFSheet lciSheet = workbook
-				.createSheet(Messages.Results_LCIResults);
+				.createSheet(Messages.LCIResults);
 
 		int currentRowNo = 0;
 
 		// inputs
 		writeTextRow(lciSheet, currentRowNo++, italicCellStyle,
-				Messages.Common_Inputs, null);
+				Messages.Inputs, null);
 		currentRowNo++;
 
 		int currentColumnNo = 0;
@@ -331,35 +331,35 @@ public class ExportExcelAction extends Action {
 		HSSFCell flowCell = headerRow.createCell(currentColumnNo++);
 		flowCell.setCellType(HSSFCell.CELL_TYPE_STRING);
 		flowCell.setCellStyle(boldBorderedCellStyle);
-		flowCell.setCellValue(new HSSFRichTextString(Messages.Results_Flow));
+		flowCell.setCellValue(new HSSFRichTextString(Messages.Flow));
 
 		HSSFCell categoryCell = headerRow.createCell(currentColumnNo++);
 		categoryCell.setCellType(HSSFCell.CELL_TYPE_STRING);
 		categoryCell.setCellStyle(boldBorderedCellStyle);
 		categoryCell.setCellValue(new HSSFRichTextString(
-				Messages.Common_Category));
+				Messages.Category));
 
 		HSSFCell propertyCell = headerRow.createCell(currentColumnNo++);
 		propertyCell.setCellType(HSSFCell.CELL_TYPE_STRING);
 		propertyCell.setCellStyle(boldBorderedCellStyle);
 		propertyCell.setCellValue(new HSSFRichTextString(
-				Messages.Results_FlowProperty));
+				Messages.FlowProperty));
 
 		HSSFCell unitCell = headerRow.createCell(currentColumnNo++);
 		unitCell.setCellType(HSSFCell.CELL_TYPE_STRING);
 		unitCell.setCellStyle(boldBorderedCellStyle);
-		unitCell.setCellValue(new HSSFRichTextString(Messages.Results_Unit));
+		unitCell.setCellValue(new HSSFRichTextString(Messages.Unit));
 
 		HSSFCell amountCell = headerRow.createCell(currentColumnNo++);
 		amountCell.setCellType(HSSFCell.CELL_TYPE_STRING);
 		amountCell.setCellStyle(boldBorderedCellStyle);
-		amountCell.setCellValue(new HSSFRichTextString(Messages.Common_Amount));
+		amountCell.setCellValue(new HSSFRichTextString(Messages.Amount));
 
 		HSSFCell typeCell = headerRow.createCell(currentColumnNo++);
 		typeCell.setCellType(HSSFCell.CELL_TYPE_STRING);
 		typeCell.setCellStyle(boldBorderedCellStyle);
 		typeCell.setCellValue(new HSSFRichTextString(
-				Messages.Results_ExchangeType));
+				Messages.ExchangeType));
 
 		List<Exchange> sorted = sortByFlowName(lciResult.getInventory());
 		for (Exchange exchange : sorted) {
@@ -373,7 +373,7 @@ public class ExportExcelAction extends Action {
 
 		// outputs
 		writeTextRow(lciSheet, currentRowNo++, italicCellStyle,
-				Messages.Common_Outputs, null);
+				Messages.Outputs, null);
 		currentRowNo++;
 
 		currentColumnNo = 0;
@@ -382,35 +382,35 @@ public class ExportExcelAction extends Action {
 		flowCell = headerRow.createCell(currentColumnNo++);
 		flowCell.setCellType(HSSFCell.CELL_TYPE_STRING);
 		flowCell.setCellStyle(boldBorderedCellStyle);
-		flowCell.setCellValue(new HSSFRichTextString(Messages.Results_Flow));
+		flowCell.setCellValue(new HSSFRichTextString(Messages.Flow));
 
 		categoryCell = headerRow.createCell(currentColumnNo++);
 		categoryCell.setCellType(HSSFCell.CELL_TYPE_STRING);
 		categoryCell.setCellStyle(boldBorderedCellStyle);
 		categoryCell.setCellValue(new HSSFRichTextString(
-				Messages.Common_Category));
+				Messages.Category));
 
 		propertyCell = headerRow.createCell(currentColumnNo++);
 		propertyCell.setCellType(HSSFCell.CELL_TYPE_STRING);
 		propertyCell.setCellStyle(boldBorderedCellStyle);
 		propertyCell.setCellValue(new HSSFRichTextString(
-				Messages.Results_FlowProperty));
+				Messages.FlowProperty));
 
 		unitCell = headerRow.createCell(currentColumnNo++);
 		unitCell.setCellType(HSSFCell.CELL_TYPE_STRING);
 		unitCell.setCellStyle(boldBorderedCellStyle);
-		unitCell.setCellValue(new HSSFRichTextString(Messages.Results_Unit));
+		unitCell.setCellValue(new HSSFRichTextString(Messages.Unit));
 
 		amountCell = headerRow.createCell(currentColumnNo++);
 		amountCell.setCellType(HSSFCell.CELL_TYPE_STRING);
 		amountCell.setCellStyle(boldBorderedCellStyle);
-		amountCell.setCellValue(new HSSFRichTextString(Messages.Common_Amount));
+		amountCell.setCellValue(new HSSFRichTextString(Messages.Amount));
 
 		typeCell = headerRow.createCell(currentColumnNo++);
 		typeCell.setCellType(HSSFCell.CELL_TYPE_STRING);
 		typeCell.setCellStyle(boldBorderedCellStyle);
 		typeCell.setCellValue(new HSSFRichTextString(
-				Messages.Results_ExchangeType));
+				Messages.ExchangeType));
 
 		for (final Exchange exchange : sorted) {
 			if (!exchange.isInput()) {
@@ -632,7 +632,7 @@ public class ExportExcelAction extends Action {
 
 	@Override
 	public String getText() {
-		return Messages.Common_ExportToExcel;
+		return Messages.ExportToExcel;
 	}
 
 	@Override
@@ -653,8 +653,8 @@ public class ExportExcelAction extends Action {
 				boolean write = true;
 				if (file.exists()) {
 					write = MessageDialog.openQuestion(UI.shell(),
-							Messages.Common_FileAlreadyExists,
-							Messages.Common_OverwriteFileQuestion);
+							Messages.FileAlreadyExists,
+							Messages.OverwriteFileQuestion);
 				}
 				if (write) {
 					final ProgressMonitorDialog dialog = new ProgressMonitorDialog(
@@ -668,19 +668,19 @@ public class ExportExcelAction extends Action {
 									InterruptedException {
 								try {
 									monitor.beginTask(NLS.bind(
-											Messages.Results_ExportTo, path),
+											Messages.ExportTo, path),
 											IProgressMonitor.UNKNOWN);
 									final HSSFWorkbook workbook = new HSSFWorkbook();
-									monitor.subTask(Messages.Results_SettingUp);
+									monitor.subTask(Messages.SettingUp);
 									setUp(workbook);
-									monitor.subTask(Messages.Results_CreatingInfoSheet);
+									monitor.subTask(Messages.CreatingInfoSheet);
 									buildInfoSheet(workbook);
-									monitor.subTask(Messages.Results_CreatingLCISheet);
+									monitor.subTask(Messages.CreatingLCISheet);
 									if (lciResult != null) {
 										buildLCISheet(workbook);
 									}
 									if (lciaResult != null) {
-										monitor.subTask(Messages.Results_CreatingLCIASheet);
+										monitor.subTask(Messages.CreatingImpactSheet);
 										buildLCIASheet(workbook,
 												CHARACTERIZATION);
 										if (lciaResult
@@ -690,7 +690,7 @@ public class ExportExcelAction extends Action {
 											buildLCIASheet(workbook, WEIGHTING);
 										}
 									}
-									monitor.subTask(Messages.Results_WritingIntoFile);
+									monitor.subTask(Messages.WritingIntoFile);
 									try (FileOutputStream fileOut = new FileOutputStream(
 											path)) {
 										workbook.write(fileOut);

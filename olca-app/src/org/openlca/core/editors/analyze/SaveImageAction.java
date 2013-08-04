@@ -42,7 +42,7 @@ class SaveImageAction extends Action {
 
 	@Override
 	public String getText() {
-		return Messages.Common_SaveAsImage;
+		return Messages.SaveAsImage;
 	}
 
 	@Override

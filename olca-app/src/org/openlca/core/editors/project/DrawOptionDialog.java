@@ -36,8 +36,8 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.Messages;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.UIFactory;
-import org.openlca.app.viewer.BaseLabelProvider;
-import org.openlca.app.viewer.BaseNameSorter;
+import org.openlca.app.viewers.BaseLabelProvider;
+import org.openlca.app.viewers.BaseNameSorter;
 import org.openlca.core.model.LCIACategory;
 import org.openlca.core.model.LCIAMethod;
 import org.openlca.core.model.NormalizationWeightingSet;
@@ -155,7 +155,7 @@ public class DrawOptionDialog extends FormDialog {
 		toolkit.getHyperlinkGroup().setHyperlinkUnderlineMode(
 				HyperlinkSettings.UNDERLINE_HOVER);
 		toolkit.decorateFormHeading(form.getForm());
-		String title = Messages.Projects_SelectCategories;
+		String title = Messages.SelectCategories;
 		form.setText(title);
 
 		Composite body = UI.formBody(form, toolkit);
@@ -197,7 +197,7 @@ public class DrawOptionDialog extends FormDialog {
 		nwComposite.setLayout(new GridLayout(2, false));
 		normalizationWeightingSetViewer = UIFactory.createComboViewerWithLabel(
 				nwComposite, toolkit,
-				Messages.Projects_NormalizationWeightingSet,
+				Messages.NormalizationWeightingSet,
 				ArrayContentProvider.getInstance(), new BaseLabelProvider(),
 				new BaseNameSorter());
 		normalizationWeightingSetViewer.setInput(method
@@ -208,15 +208,15 @@ public class DrawOptionDialog extends FormDialog {
 		composite2.setLayout(new GridLayout(2, false));
 
 		selectAllButton = toolkit.createButton(composite2,
-				Messages.Projects_SelectAll, SWT.NONE);
+				Messages.SelectAll, SWT.NONE);
 
 		unselectAllButton = toolkit.createButton(composite2,
-				Messages.Projects_SelectNone, SWT.NONE);
+				Messages.SelectNone, SWT.NONE);
 
 		Label sep = new Label(body, SWT.HORIZONTAL | SWT.SEPARATOR);
 		sep.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		showValuesButton = toolkit.createButton(body,
-				Messages.Projects_ShowValues, SWT.CHECK);
+				Messages.ShowValues, SWT.CHECK);
 
 		initListeners();
 	}

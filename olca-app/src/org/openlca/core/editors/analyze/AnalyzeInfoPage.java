@@ -43,7 +43,7 @@ public class AnalyzeInfoPage extends FormPage {
 
 	public AnalyzeInfoPage(AnalyzeEditor editor, AnalysisResult result,
 			AnalyzeEditorInput editorInput) {
-		super(editor, "AnalyzeInfoPage", Messages.Common_GeneralInformation);
+		super(editor, "AnalyzeInfoPage", Messages.GeneralInformation);
 		this.input = editorInput;
 		this.result = result;
 	}
@@ -54,7 +54,7 @@ public class AnalyzeInfoPage extends FormPage {
 		toolkit = managedForm.getToolkit();
 		toolkit.getHyperlinkGroup().setHyperlinkUnderlineMode(
 				HyperlinkSettings.UNDERLINE_HOVER);
-		form.setText(Messages.Analyze_ResultOf + " "
+		form.setText(Messages.ResultOf + " "
 				+ result.getSetup().getProductSystem().getName());
 		toolkit.decorateFormHeading(form.getForm());
 		Composite body = UI.formBody(form, toolkit);
@@ -66,20 +66,20 @@ public class AnalyzeInfoPage extends FormPage {
 
 	private void createInfoSection(Composite body) {
 		Composite composite = UI.formSection(body, toolkit,
-				Messages.Common_GeneralInformation);
+				Messages.GeneralInformation);
 		ProductSystem system = result.getSetup().getProductSystem();
-		createText(composite, Messages.Common_ProductSystem, system.getName());
+		createText(composite, Messages.ProductSystem, system.getName());
 		String targetText = system.getTargetAmount() + " "
 				+ system.getTargetUnit().getName() + " "
 				+ system.getReferenceExchange().getFlow().getName();
-		createText(composite, Messages.Common_TargetAmount, targetText);
+		createText(composite, Messages.TargetAmount, targetText);
 		ImpactMethodDescriptor method = input.getMethodDescriptor();
 		if (method != null)
-			createText(composite, Messages.Common_LCIAMethodTitle,
+			createText(composite, Messages.ImpactMethodTitle,
 					method.getName());
 		NormalizationWeightingSet nwSet = input.getNwSet();
 		if (nwSet != null)
-			createText(composite, Messages.Common_NormalizationWeightingSet,
+			createText(composite, Messages.NormalizationWeightingSet,
 					nwSet.getReferenceSystem());
 	}
 
@@ -134,16 +134,16 @@ public class AnalyzeInfoPage extends FormPage {
 		FlowContributionProvider flowProvider = new FlowContributionProvider(
 				input.getDatabase(), result);
 		ChartSection<Flow> flowSection = new ChartSection<>(flowProvider);
-		flowSection.setSectionTitle(Messages.Analyze_FlowContributions);
-		flowSection.setSelectionName(Messages.Common_Flow);
+		flowSection.setSectionTitle(Messages.FlowContributions);
+		flowSection.setSelectionName(Messages.Flow);
 		flowSection.render(body, toolkit);
 		if (result.hasImpactResults()) {
 			ImpactContributionProvider impactProvider = new ImpactContributionProvider(
 					result);
 			ChartSection<ImpactCategoryDescriptor> impactSection = new ChartSection<>(
 					impactProvider);
-			impactSection.setSectionTitle(Messages.Analyze_ImpactContributions);
-			impactSection.setSelectionName(Messages.Common_ImpactCategory);
+			impactSection.setSectionTitle(Messages.ImpactContributions);
+			impactSection.setSelectionName(Messages.ImpactCategory);
 			impactSection.render(body, toolkit);
 		}
 	}

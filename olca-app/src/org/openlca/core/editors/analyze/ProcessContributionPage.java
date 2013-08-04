@@ -19,7 +19,7 @@ class ProcessContributionPage extends FormPage {
 
 	public ProcessContributionPage(AnalyzeEditor editor, AnalysisResult result) {
 		super(editor, "ProcessContributionPage",
-				Messages.Analyze_ProcessContributions);
+				Messages.ProcessContributions);
 		this.editor = editor;
 		this.result = result;
 	}
@@ -27,7 +27,7 @@ class ProcessContributionPage extends FormPage {
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
 		ScrolledForm form = UI.formHeader(managedForm,
-				Messages.Analyze_ProcessContributions);
+				Messages.ProcessContributions);
 		FormToolkit toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 
@@ -50,8 +50,8 @@ class ProcessContributionPage extends FormPage {
 				result);
 		ProcessContributionSection<ImpactCategoryDescriptor> impactSection = new ProcessContributionSection<>(
 				impactProvider);
-		impactSection.setSectionTitle(Messages.Analyze_ImpactContributions);
-		impactSection.setSelectionName(Messages.Common_ImpactCategory);
+		impactSection.setSectionTitle(Messages.ImpactContributions);
+		impactSection.setSelectionName(Messages.ImpactCategory);
 		impactSection.render(body, toolkit);
 		return impactSection;
 	}
@@ -62,8 +62,8 @@ class ProcessContributionPage extends FormPage {
 				Database.get(), result);
 		ProcessContributionSection<Flow> flowSection = new ProcessContributionSection<>(
 				flowProvider);
-		flowSection.setSectionTitle(Messages.Analyze_FlowContributions);
-		flowSection.setSelectionName(Messages.Common_Flow);
+		flowSection.setSectionTitle(Messages.FlowContributions);
+		flowSection.setSelectionName(Messages.Flow);
 		flowSection.render(body, toolkit);
 		return flowSection;
 	}

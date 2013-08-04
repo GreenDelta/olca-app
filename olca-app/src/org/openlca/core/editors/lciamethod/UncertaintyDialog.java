@@ -87,7 +87,7 @@ public class UncertaintyDialog extends Dialog {
 
 	@Override
 	protected Control createDialogArea(Composite root) {
-		getShell().setText(Messages.Common_Uncertainty);
+		getShell().setText(Messages.Uncertainty);
 		toolkit.adapt(root);
 		Composite area = (Composite) super.createDialogArea(root);
 		toolkit.adapt(area);
@@ -107,7 +107,7 @@ public class UncertaintyDialog extends Dialog {
 		UI.gridData(comboComposite, true, false);
 		UI.gridLayout(comboComposite, 2);
 		combo = UI.formCombo(comboComposite, toolkit,
-				Messages.Common_UncertaintyDistribution);
+				Messages.UncertaintyDistribution);
 		String[] items = new String[types.length];
 		int idx = 0;
 		for (int i = 0; i < items.length; i++) {
@@ -157,19 +157,19 @@ public class UncertaintyDialog extends Dialog {
 			Composite composite) {
 		switch (type) {
 		case LOG_NORMAL:
-			return new Client(composite, Messages.Common_GeometricMean,
-					Messages.Common_GeometricStandardDeviation);
+			return new Client(composite, Messages.GeometricMean,
+					Messages.GeometricStandardDeviation);
 		case NONE:
 			return new Client(composite);
 		case NORMAL:
-			return new Client(composite, Messages.Common_Mean,
-					Messages.Common_StandardDeviation);
+			return new Client(composite, Messages.Mean,
+					Messages.StandardDeviation);
 		case TRIANGLE:
-			return new Client(composite, Messages.Common_Minimum,
-					Messages.Common_Mode, Messages.Common_Maximum);
+			return new Client(composite, Messages.Minimum,
+					Messages.Mode, Messages.Maximum);
 		case UNIFORM:
-			return new Client(composite, Messages.Common_Minimum,
-					Messages.Common_Maximum);
+			return new Client(composite, Messages.Minimum,
+					Messages.Maximum);
 		default:
 			return new Client(composite);
 		}
@@ -211,7 +211,7 @@ public class UncertaintyDialog extends Dialog {
 				texts[i] = UI.formText(composite, toolkit, labels[i]);
 			if (labels.length == 0) {
 				Label label = toolkit.createLabel(composite,
-						Messages.Common_NoDistribution);
+						Messages.NoDistribution);
 				label.setForeground(Colors.getDarkGray());
 			}
 		}

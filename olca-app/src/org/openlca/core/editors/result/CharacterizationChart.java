@@ -83,8 +83,8 @@ public class CharacterizationChart extends Composite {
 				.getLabel()
 				.getCaption()
 				.setValue(
-						type == CharacterizationPage.NORMALIZATION ? Messages.Results_CharacterizationChart_NormalizedResults
-								: Messages.Results_CharacterizationChart_WeightedResults);
+						type == CharacterizationPage.NORMALIZATION ? Messages.NormalizedResults
+								: Messages.WeightedResults);
 		chart.setDimension(ChartDimension.TWO_DIMENSIONAL_WITH_DEPTH_LITERAL);
 
 		// configure legened
@@ -94,7 +94,7 @@ public class CharacterizationChart extends Composite {
 		// get and configure x-axis
 		final Axis xAxis = chart.getPrimaryBaseAxes()[0];
 		xAxis.getTitle().getCaption()
-				.setValue(Messages.Common_ImpactCategories);
+				.setValue(Messages.ImpactCategories);
 		xAxis.getTitle().setVisible(false);
 		xAxis.getLabel().setVisible(false);
 		final TextAlignment xLabelAlignment = TextAlignmentImpl.create();
@@ -160,7 +160,7 @@ public class CharacterizationChart extends Composite {
 		barSeries.setDataSet(yAxisValues);
 		barSeries.getLabel().setVisible(true);
 		barSeries.getLabel().setVisible(true);
-		barSeries.setSeriesIdentifier(Messages.Common_ImpactCategories);
+		barSeries.setSeriesIdentifier(Messages.ImpactCategories);
 		barSeries.setLabelPosition(Position.INSIDE_LITERAL);
 		final SeriesDefinition seriesDefinitionY = SeriesDefinitionImpl
 				.create();

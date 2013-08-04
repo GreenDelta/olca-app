@@ -105,7 +105,7 @@ public class SelectPossibleProcessesDialog extends Dialog {
 	/**
 	 * Column property 'Name'
 	 */
-	private final String NAME = Messages.Common_Name;
+	private final String NAME = Messages.Name;
 
 	/**
 	 * The process to link to (containing the exchange to link to)

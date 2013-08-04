@@ -30,7 +30,7 @@ import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.ui.PlatformUI;
 import org.openlca.app.Messages;
-import org.openlca.app.component.JobListenerWithProgress;
+import org.openlca.app.components.JobListenerWithProgress;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.UI;
 import org.openlca.core.editors.productsystem.graphical.ProductSystemGraphEditor;
@@ -59,14 +59,14 @@ public class SaveImageAction extends Action {
 
 	@Override
 	public String getText() {
-		return Messages.Common_SaveAsImage;
+		return Messages.SaveAsImage;
 	}
 
 	@Override
 	public void run() {
 		if (editor != null) {
 			final FileDialog dialog = new FileDialog(UI.shell(), SWT.SAVE);
-			dialog.setText(Messages.Common_SaveAsImage);
+			dialog.setText(Messages.SaveAsImage);
 			dialog.setFileName("graph.png");
 			dialog.setFilterExtensions(new String[] { "*.png" });
 			dialog.setFilterNames(new String[] { "*.png (Portable Network Graphics (PNG)" });
@@ -76,8 +76,8 @@ public class SaveImageAction extends Action {
 				boolean write = false;
 				if (file.exists()) {
 					write = MessageDialog.openQuestion(UI.shell(),
-							Messages.Common_FileAlreadyExists,
-							Messages.Common_OverwriteFileQuestion);
+							Messages.FileAlreadyExists,
+							Messages.OverwriteFileQuestion);
 				} else {
 					write = true;
 				}

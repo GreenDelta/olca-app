@@ -24,7 +24,7 @@ public class FileChooser {
 		case SWT.OPEN:
 			return Messages.Import;
 		case SWT.SAVE:
-			return Messages.Common_SelectExportFile;
+			return Messages.SelectExportFile;
 		default:
 			return "";
 		}
@@ -64,8 +64,8 @@ public class FileChooser {
 		if (!file.exists() || file.isDirectory())
 			return file;
 		boolean write = MessageDialog.openQuestion(UI.shell(),
-				Messages.Common_FileAlreadyExists,
-				Messages.Common_OverwriteFileQuestion);
+				Messages.FileAlreadyExists,
+				Messages.OverwriteFileQuestion);
 		if (write)
 			return file;
 		return null;

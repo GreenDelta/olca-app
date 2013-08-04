@@ -50,7 +50,7 @@ public class AnalyzeEditor extends ModelEditor {
 		result = App.getCache().remove(resultKey, AnalysisResult.class);
 		setSite(site);
 		setInput(input);
-		String name = Messages.Analyze_ResultOf + " "
+		String name = Messages.ResultOf + " "
 				+ result.getSetup().getProductSystem().getName();
 		setPartName(name);
 		initFlowInfows(editorInput.getDatabase());

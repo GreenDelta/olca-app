@@ -17,10 +17,10 @@ import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewer.AbstractViewer;
-import org.openlca.app.viewer.FlowViewer;
-import org.openlca.app.viewer.ISelectionChangedListener;
-import org.openlca.app.viewer.ImpactCategoryViewer;
+import org.openlca.app.viewers.AbstractViewer;
+import org.openlca.app.viewers.ISelectionChangedListener;
+import org.openlca.app.viewers.combo.FlowViewer;
+import org.openlca.app.viewers.combo.ImpactCategoryViewer;
 import org.openlca.core.editors.io.ui.FileChooser;
 
 class ProcessContributionSection<T> {
@@ -82,18 +82,18 @@ class ProcessContributionSection<T> {
 
 	private void createModeCombo(FormToolkit toolkit, Composite header,
 			ComboSelectionChange selectionChange) {
-		toolkit.createLabel(header, Messages.Common_OrderBy);
+		toolkit.createLabel(header, Messages.OrderBy);
 		modeCombo = new Combo(header, SWT.NONE);
 		toolkit.adapt(modeCombo);
-		modeCombo.setItems(new String[] { Messages.Analyze_TotalContributions,
-				Messages.Analyze_HotSpots });
+		modeCombo.setItems(new String[] { Messages.TotalContributions,
+				Messages.HotSpots });
 		modeCombo.select(0);
 		modeCombo.addSelectionListener(selectionChange);
 	}
 
 	private void createSpinner(FormToolkit toolkit, Composite header,
 			ComboSelectionChange selectionChange) {
-		toolkit.createLabel(header, Messages.Common_CutOff);
+		toolkit.createLabel(header, Messages.CutOff);
 		spinner = new Spinner(header, SWT.BORDER);
 		spinner.setValues(2, 0, 100, 0, 1, 10);
 		toolkit.adapt(spinner);
@@ -144,7 +144,7 @@ class ProcessContributionSection<T> {
 
 	private class ExportAction extends Action {
 		public ExportAction() {
-			setToolTipText(Messages.Common_ExportToExcel);
+			setToolTipText(Messages.ExportToExcel);
 			setImageDescriptor(ImageType.EXCEL_ICON.getDescriptor());
 		}
 

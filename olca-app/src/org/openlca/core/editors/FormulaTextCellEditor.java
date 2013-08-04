@@ -6,7 +6,7 @@ import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.openlca.app.Messages;
-import org.openlca.app.component.AutoCompleteTextCellEditor;
+import org.openlca.app.components.AutoCompleteTextCellEditor;
 import org.openlca.core.model.Parameter;
 
 /**

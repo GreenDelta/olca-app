@@ -108,7 +108,7 @@ class XYLayoutCommand extends Command {
 
 	@Override
 	public String getLabel() {
-		return Messages.Common_Move;
+		return Messages.Move;
 	}
 
 	@Override

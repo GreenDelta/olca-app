@@ -94,7 +94,7 @@ public class AppContextMenuProvider extends ContextMenuProvider {
 				.getAction(ActionFactory.REDO.getId()));
 		final IAction deleteAction = getActionRegistry().getAction(
 				ActionFactory.DELETE.getId());
-		deleteAction.setText(Messages.Common_Delete);
+		deleteAction.setText(Messages.Delete);
 		menu.appendToGroup(GEFActionConstants.GROUP_EDIT, deleteAction);
 	}
 

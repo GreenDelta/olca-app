@@ -24,6 +24,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.PlatformUI;
 import org.openlca.app.Messages;
+import org.openlca.app.components.delete.Problem;
+import org.openlca.app.components.delete.ProblemWizard;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessLink;

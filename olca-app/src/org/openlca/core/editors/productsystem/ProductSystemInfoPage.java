@@ -28,11 +28,11 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.util.UIFactory;
-import org.openlca.app.viewer.BaseLabelProvider;
-import org.openlca.app.viewer.BaseNameSorter;
-import org.openlca.app.viewer.ToolTipComboViewer;
+import org.openlca.app.viewers.BaseLabelProvider;
+import org.openlca.app.viewers.BaseNameSorter;
 import org.openlca.core.editors.ModelEditor;
 import org.openlca.core.editors.ModelEditorInfoPage;
+import org.openlca.core.editors.ToolTipComboViewer;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowPropertyFactor;
@@ -66,8 +66,8 @@ public class ProductSystemInfoPage extends ModelEditorInfoPage {
 
 	public ProductSystemInfoPage(ModelEditor editor) {
 		super(editor, "ProductSystemInfoPage",
-				Messages.Common_GeneralInformation,
-				Messages.Common_GeneralInformation);
+				Messages.GeneralInformation,
+				Messages.GeneralInformation);
 		productSystem = (ProductSystem) editor.getModelComponent();
 	}
 
@@ -80,15 +80,15 @@ public class ProductSystemInfoPage extends ModelEditorInfoPage {
 
 	private void createAdditionalInfoSection(Composite body, FormToolkit toolkit) {
 		Composite composite = createSectionAndComposite(body, toolkit);
-		processViewer = createViewer(toolkit, Messages.Common_ReferenceProcess,
+		processViewer = createViewer(toolkit, Messages.ReferenceProcess,
 				composite);
 		exchangeViewer = createViewer(toolkit,
 				Messages.Systems_ReferenceExchange, composite);
 		amountText = UIFactory.createTextWithLabel(composite, toolkit,
-				Messages.Common_TargetAmount, false);
+				Messages.TargetAmount, false);
 		flowPropertyViewer = createViewer(toolkit,
-				Messages.Systems_FlowProperty, composite);
-		unitViewer = createViewer(toolkit, Messages.Common_Unit, composite);
+				Messages.FlowProperty, composite);
+		unitViewer = createViewer(toolkit, Messages.Unit, composite);
 	}
 
 	private Composite createSectionAndComposite(Composite body,

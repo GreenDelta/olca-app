@@ -5,7 +5,7 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.openlca.app.util.CategoryPath;
 import org.openlca.app.util.Numbers;
-import org.openlca.app.viewer.BaseLabelProvider;
+import org.openlca.app.viewers.BaseLabelProvider;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.UnitGroup;

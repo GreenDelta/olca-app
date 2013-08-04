@@ -17,7 +17,7 @@ public class CalculateCostsAction extends Action {
 	private ProductSystemEditor editor;
 
 	public CalculateCostsAction() {
-		setToolTipText(Messages.Common_CalculateCosts);
+		setToolTipText(Messages.CalculateCosts);
 		setImageDescriptor(ImageType.COST_CALC_ICON.getDescriptor());
 	}
 

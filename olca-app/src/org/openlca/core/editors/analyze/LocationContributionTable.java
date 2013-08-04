@@ -28,8 +28,8 @@ class LocationContributionTable {
 	private final int LOCATION_COL = 0;
 	private final int AMOUNT_COL = 1;
 	private final int UNIT_COL = 2;
-	private String[] COLUMN_LABELS = { Messages.Common_Location,
-			Messages.Common_Amount, Messages.Common_Unit };
+	private String[] COLUMN_LABELS = { Messages.Location,
+			Messages.Amount, Messages.Unit };
 
 	private TableViewer viewer;
 	private String unit;

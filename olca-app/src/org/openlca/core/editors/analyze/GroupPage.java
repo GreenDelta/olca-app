@@ -65,7 +65,7 @@ class GroupPage extends FormPage {
 	private Section groupingSection;
 
 	public GroupPage(AnalyzeEditor editor, AnalysisResult result) {
-		super(editor, "analysis.GroupPage", Messages.Common_Grouping);
+		super(editor, "analysis.GroupPage", Messages.Grouping);
 		this.editor = editor;
 		this.result = result;
 		initGroups(result);
@@ -75,7 +75,7 @@ class GroupPage extends FormPage {
 		groups = new ArrayList<>();
 		ProductSystem system = result.getSetup().getProductSystem();
 		ProcessGrouping restGroup = new ProcessGrouping();
-		restGroup.setName(Messages.Common_Rest);
+		restGroup.setName(Messages.Rest);
 		restGroup.setRest(true);
 		for (Process p : system.getProcesses())
 			restGroup.getProcesses().add(p);
@@ -91,7 +91,7 @@ class GroupPage extends FormPage {
 		for (Process p : result.getSetup().getProductSystem().getProcesses())
 			processes.add(p);
 		List<ProcessGrouping> newGroups = ProcessGrouping.applyOn(processes,
-				groupSet, Messages.Common_Rest);
+				groupSet, Messages.Rest);
 		groups.clear();
 		groups.addAll(newGroups);
 		updateViewers();
@@ -112,16 +112,16 @@ class GroupPage extends FormPage {
 		if (groupingSection == null)
 			return;
 		if (groupSet == null)
-			groupingSection.setText(Messages.Common_Groups);
+			groupingSection.setText(Messages.Groups);
 		else
-			groupingSection.setText(Messages.Common_Groups + " ("
+			groupingSection.setText(Messages.Groups + " ("
 					+ groupSet.getName() + ")");
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
 		ScrolledForm form = UI
-				.formHeader(managedForm, Messages.Common_Grouping);
+				.formHeader(managedForm, Messages.Grouping);
 		FormToolkit toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		createGroupingSection(toolkit, body);
@@ -131,7 +131,7 @@ class GroupPage extends FormPage {
 	}
 
 	private void createGroupingSection(FormToolkit toolkit, Composite body) {
-		groupingSection = UI.section(body, toolkit, Messages.Common_Groups);
+		groupingSection = UI.section(body, toolkit, Messages.Groups);
 		Composite composite = UI.sectionClient(groupingSection, toolkit);
 		UI.gridLayout(composite, 2);
 		UI.bindActions(groupingSection, new AddGroupAction(),
@@ -174,7 +174,7 @@ class GroupPage extends FormPage {
 		Menu menu = new Menu(processViewer.getTable());
 		processViewer.getTable().setMenu(menu);
 		MenuItem item = new MenuItem(menu, SWT.CASCADE);
-		item.setText(Messages.Common_Move);
+		item.setText(Messages.Move);
 		groupMoveMenu = new Menu(item);
 		item.setMenu(groupMoveMenu);
 		groupMoveMenu.addListener(SWT.Show, new MenuGroupListener());
@@ -184,12 +184,12 @@ class GroupPage extends FormPage {
 
 		public AddGroupAction() {
 			setImageDescriptor(ImageType.ADD_ICON.getDescriptor());
-			setToolTipText(Messages.Common_Add);
+			setToolTipText(Messages.Add);
 		}
 
 		@Override
 		public void run() {
-			String m = Messages.Common_PleaseEnterName;
+			String m = Messages.PleaseEnterName;
 			InputDialog dialog = new InputDialog(getSite().getShell(), m, m,
 					"", null);
 			int code = dialog.open();
@@ -208,7 +208,7 @@ class GroupPage extends FormPage {
 
 		public DeleteGroupAction() {
 			setImageDescriptor(ImageType.DELETE_ICON.getDescriptor());
-			setText(Messages.Common_Delete);
+			setText(Messages.Delete);
 		}
 
 		@Override
@@ -374,7 +374,7 @@ class GroupPage extends FormPage {
 
 		public SaveGroupSetAction(GroupPage page) {
 			this.page = page;
-			setToolTipText(Messages.Common_Save);
+			setToolTipText(Messages.Save);
 			ImageDescriptor image = PlatformUI.getWorkbench().getSharedImages()
 					.getImageDescriptor(ISharedImages.IMG_ETOOL_SAVE_EDIT);
 			setImageDescriptor(image);
@@ -405,8 +405,8 @@ class GroupPage extends FormPage {
 
 		private ProcessGroupSet createGroupSet() throws Exception {
 			Shell shell = page.getEditorSite().getShell();
-			InputDialog dialog = new InputDialog(shell, Messages.Common_SaveAs,
-					Messages.Common_PleaseEnterName, "", null);
+			InputDialog dialog = new InputDialog(shell, Messages.SaveAs,
+					Messages.PleaseEnterName, "", null);
 			int code = dialog.open();
 			if (code == Window.CANCEL)
 				return null;
@@ -418,8 +418,8 @@ class GroupPage extends FormPage {
 
 		private void updateExisting(ProcessGroupSet groupSet) {
 			try {
-				boolean b = Question.ask(Messages.Common_SaveChanges,
-						Messages.Common_SaveChangesQuestion);
+				boolean b = Question.ask(Messages.SaveChanges,
+						Messages.SaveChangesQuestion);
 				if (b)
 					setAndSaveGroups(groupSet);
 			} catch (Exception e) {

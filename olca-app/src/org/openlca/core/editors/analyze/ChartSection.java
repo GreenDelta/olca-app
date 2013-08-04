@@ -13,10 +13,10 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewer.AbstractViewer;
-import org.openlca.app.viewer.FlowViewer;
-import org.openlca.app.viewer.ISelectionChangedListener;
-import org.openlca.app.viewer.ImpactCategoryViewer;
+import org.openlca.app.viewers.AbstractViewer;
+import org.openlca.app.viewers.ISelectionChangedListener;
+import org.openlca.app.viewers.combo.FlowViewer;
+import org.openlca.app.viewers.combo.ImpactCategoryViewer;
 import org.openlca.core.editors.ContributionItem;
 import org.openlca.core.editors.charts.ContributionChart;
 import org.openlca.core.editors.io.ImageExportAction;
@@ -81,11 +81,11 @@ class ChartSection<T> {
 	}
 
 	private void createModeCombo(FormToolkit toolkit, Composite header) {
-		toolkit.createLabel(header, Messages.Common_OrderBy);
+		toolkit.createLabel(header, Messages.OrderBy);
 		modeCombo = new Combo(header, SWT.NONE);
 		toolkit.adapt(modeCombo);
-		modeCombo.setItems(new String[] { Messages.Analyze_HotSpots,
-				Messages.Analyze_TotalContributions });
+		modeCombo.setItems(new String[] { Messages.HotSpots,
+				Messages.TotalContributions });
 		modeCombo.select(0);
 		modeCombo.addSelectionListener(new ComboSelectionChange());
 	}
@@ -137,7 +137,7 @@ class ChartSection<T> {
 			ProcessContributionItem item) {
 		ContributionItem restItem;
 		restItem = new ContributionItem();
-		restItem.setLabel(Messages.Common_Rest);
+		restItem.setLabel(Messages.Rest);
 		restItem.setUnit(item.getUnit());
 		restItem.setRest(true);
 		contributions.add(restItem);

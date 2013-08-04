@@ -31,14 +31,14 @@ class SaveAsProcessHandler {
 	public void run() {
 		if (inventoryResult == null)
 			return;
-		boolean b = Question.ask(Messages.Results_SAVE_AS_PROCESS_TITLE,
-				Messages.Results_SAVE_AS_PROCESS_QUESTION);
+		boolean b = Question.ask(Messages.SaveAsProcessTitle,
+				Messages.SaveAsProcessQuestion);
 		if (!b)
 			return;
 		Process process = createProcess();
 		boolean valid = process.getQuantitativeReference() != null;
 		if (!valid)
-			Error.showBox(Messages.Results_INVALID_PROCESS);
+			Error.showBox(Messages.InvalidProcess);
 		else
 			insert(process);
 	}

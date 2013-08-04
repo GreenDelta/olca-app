@@ -596,9 +596,9 @@ public class ProcessFigure extends Figure implements PropertyChangeListener {
 		}
 
 		graphics.setForegroundColor(textColor);
-		graphics.drawText(Messages.Common_Inputs, new Point(getLocation().x
+		graphics.drawText(Messages.Inputs, new Point(getLocation().x
 				+ getSize().width / divisor1, getLocation().y + 25));
-		graphics.drawText(Messages.Common_Outputs, new Point(getLocation().x
+		graphics.drawText(Messages.Outputs, new Point(getLocation().x
 				+ getSize().width / 2 + getSize().width / divisor2,
 				getLocation().y + 25));
 		graphics.setForegroundColor(ColorConstants.black);

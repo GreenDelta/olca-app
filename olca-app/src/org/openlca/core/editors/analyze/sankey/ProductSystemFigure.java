@@ -72,11 +72,11 @@ public class ProductSystemFigure extends Figure {
 
 		Object selection = productSystemNode.getSelection();
 		double cutoffValue = productSystemNode.getCutoff() * 100;
-		String cutoffText = Messages.Common_CutOff + ": "
+		String cutoffText = Messages.CutOff + ": "
 				+ Numbers.format(cutoffValue, 3) + "%";
 		if (selection != null) {
 			String label = selectionLabel(selection);
-			graphics.drawText(Messages.Common_ProductSystem + ": "
+			graphics.drawText(Messages.ProductSystem + ": "
 					+ productSystemNode.getProductSystem().getName(),
 					new Point(5, 5));
 			graphics.drawText(label, new Point(5, 30));
@@ -84,7 +84,7 @@ public class ProductSystemFigure extends Figure {
 
 		} else {
 			graphics.drawText(Messages.Sankey_NoOptions, new Point(5, 5));
-			graphics.drawText(Messages.Sankey_ClickHere, new Point(5, 30));
+			graphics.drawText(Messages.ClickHere, new Point(5, 30));
 		}
 
 		graphics.setFont(normalFont);
@@ -105,11 +105,11 @@ public class ProductSystemFigure extends Figure {
 	private String selectionLabel(Object selection) {
 		if (selection instanceof Flow) {
 			Flow flow = (Flow) selection;
-			return Messages.Common_Flow + ": " + flow.getName();
+			return Messages.Flow + ": " + flow.getName();
 		}
 		if (selection instanceof ImpactCategoryDescriptor) {
 			ImpactCategoryDescriptor category = (ImpactCategoryDescriptor) selection;
-			return Messages.Common_ImpactCategory + ": " + category.getName();
+			return Messages.ImpactCategory + ": " + category.getName();
 		}
 		return Messages.Sankey_NoOptions;
 	}

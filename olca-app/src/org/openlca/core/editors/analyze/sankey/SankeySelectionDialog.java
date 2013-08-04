@@ -25,10 +25,10 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.Messages;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewer.BaseLabelProvider;
-import org.openlca.app.viewer.BaseNameSorter;
-import org.openlca.app.viewer.ToolTipComboViewer;
+import org.openlca.app.viewers.BaseLabelProvider;
+import org.openlca.app.viewers.BaseNameSorter;
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.editors.ToolTipComboViewer;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
@@ -81,13 +81,13 @@ public class SankeySelectionDialog extends FormDialog {
 				false));
 		tookit.adapt(radioComposite);
 		flowRadioButton = tookit.createButton(radioComposite,
-				Messages.Sankey_AnalyseFlow, SWT.RADIO);
+				Messages.AnalyseFlow, SWT.RADIO);
 		flowRadioButton.setSelection(firstSelection == null
 				|| firstSelection instanceof Flow);
 		tookit.paintBordersFor(radioComposite);
 		if (categories.size() > 0) {
 			lciaCategoryRadioButton = tookit.createButton(radioComposite,
-					Messages.Sankey_AnalyseLCIA, SWT.RADIO);
+					Messages.AnalyseImpact, SWT.RADIO);
 			lciaCategoryRadioButton.setSelection(firstSelection != null
 					&& firstSelection instanceof ImpactCategory);
 		}

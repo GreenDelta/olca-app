@@ -79,7 +79,7 @@ public class SingleScoreChart extends Composite {
 		ChartWithAxes chart = ChartWithAxesImpl.create();
 		// set title
 		chart.getTitle().getLabel().getCaption()
-				.setValue(Messages.Results_SingleScoreResult);
+				.setValue(Messages.SingleScoreResult);
 		chart.setDimension(ChartDimension.TWO_DIMENSIONAL_WITH_DEPTH_LITERAL);
 
 		// configure legend

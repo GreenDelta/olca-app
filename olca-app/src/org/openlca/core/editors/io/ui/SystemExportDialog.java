@@ -17,8 +17,8 @@ import org.eclipse.swt.widgets.Group;
 import org.openlca.app.Messages;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewer.AllocationMethodViewer;
-import org.openlca.app.viewer.ImpactMethodViewer;
+import org.openlca.app.viewers.combo.AllocationMethodViewer;
+import org.openlca.app.viewers.combo.ImpactMethodViewer;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.editors.io.SystemExport;
 import org.openlca.core.model.AllocationMethod;
@@ -63,7 +63,7 @@ public class SystemExportDialog extends WizardDialog {
 				Group methodGroup = createGroup("Methods", composite, 1);
 				UI.formLabel(methodGroup, Messages.AllocationMethod);
 				allocationMethodViewer = new AllocationMethodViewer(methodGroup);
-				UI.formLabel(methodGroup, Messages.LCIAMethod);
+				UI.formLabel(methodGroup, Messages.ImpactMethod);
 				impactMethodViewer = new ImpactMethodViewer(methodGroup);
 				impactMethodViewer.setInput(database);
 

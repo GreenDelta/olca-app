@@ -44,10 +44,10 @@ class ContributionExport implements Runnable {
 		Excel.cell(row, 0, data.getItemName()).setCellStyle(headerStyle);
 		Excel.cell(row, 1, data.getSelectedItem());
 		row = sheet.createRow(rowNum++);
-		Excel.cell(row, 0, Messages.Common_OrderBy).setCellStyle(headerStyle);
+		Excel.cell(row, 0, Messages.OrderBy).setCellStyle(headerStyle);
 		Excel.cell(row, 1, data.getOrderType());
 		row = sheet.createRow(rowNum++);
-		Excel.cell(row, 0, Messages.Common_CutOff).setCellStyle(headerStyle);
+		Excel.cell(row, 0, Messages.CutOff).setCellStyle(headerStyle);
 		Excel.cell(row, 1, data.getCutoff());
 		rowNum++;
 		row = sheet.createRow(rowNum++);
@@ -64,11 +64,11 @@ class ContributionExport implements Runnable {
 	}
 
 	private void writeHeaders(HSSFRow row, CellStyle style) {
-		Excel.cell(row, 0, Messages.Analyze_Contribution).setCellStyle(style);
-		Excel.cell(row, 1, Messages.Common_Process).setCellStyle(style);
-		Excel.cell(row, 2, Messages.Analyze_TotalAmount).setCellStyle(style);
-		Excel.cell(row, 3, Messages.Analyze_SingleAmount).setCellStyle(style);
-		Excel.cell(row, 4, Messages.Common_Unit).setCellStyle(style);
+		Excel.cell(row, 0, Messages.Contribution).setCellStyle(style);
+		Excel.cell(row, 1, Messages.Process).setCellStyle(style);
+		Excel.cell(row, 2, Messages.TotalAmount).setCellStyle(style);
+		Excel.cell(row, 3, Messages.SingleAmount).setCellStyle(style);
+		Excel.cell(row, 4, Messages.Unit).setCellStyle(style);
 	}
 
 	private void writeData(int rowNum, HSSFSheet sheet) {

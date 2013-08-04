@@ -232,7 +232,7 @@ public class ChartViewer extends Composite implements PaintListener,
 
 		@Override
 		public String getText() {
-			return Messages.Common_SaveAsImage;
+			return Messages.SaveAsImage;
 		}
 
 		@Override
@@ -240,7 +240,7 @@ public class ChartViewer extends Composite implements PaintListener,
 			final ImageLoader loader = new ImageLoader();
 			loader.data = new ImageData[] { image.getImageData() };
 			final FileDialog dialog = new FileDialog(UI.shell(), SWT.SAVE);
-			dialog.setText(Messages.Common_SaveAsImage);
+			dialog.setText(Messages.SaveAsImage);
 			dialog.setFileName("chart.png");
 			dialog.setFilterExtensions(new String[] { "*.png" });
 			dialog.setFilterNames(new String[] { "*.png (Portable Network Graphics (PNG)" });
@@ -250,8 +250,8 @@ public class ChartViewer extends Composite implements PaintListener,
 				boolean write = false;
 				if (file.exists()) {
 					write = MessageDialog.openQuestion(UI.shell(),
-							Messages.Common_FileAlreadyExists,
-							Messages.Common_OverwriteFileQuestion);
+							Messages.FileAlreadyExists,
+							Messages.OverwriteFileQuestion);
 				} else {
 					write = true;
 				}

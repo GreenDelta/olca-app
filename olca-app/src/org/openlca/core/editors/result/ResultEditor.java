@@ -61,16 +61,16 @@ public class ResultEditor extends ModelEditor {
 	private void addImpactPages(List<ModelEditorPage> pages) {
 		pages.add(new CharacterizationPage(this, impactResult.getName(),
 				impactResult.getLCIACategoryResults(), null,
-				Messages.Results_Characterization, "CharacterizationPage",
+				Messages.Characterization, "CharacterizationPage",
 				CharacterizationPage.IMPACT_ASSESSMENT));
 		if (impactResult.getNormalizationWeightingSet() != null) {
 			pages.add(new CharacterizationPage(this, impactResult.getName(),
 					impactResult.getLCIACategoryResults(), null,
-					Messages.Results_Normalization, "NormalizationPage",
+					Messages.Normalization, "NormalizationPage",
 					CharacterizationPage.NORMALIZATION));
 			pages.add(new CharacterizationPage(this, impactResult.getName(),
 					impactResult.getLCIACategoryResults(), impactResult
-							.getWeightingUnit(), Messages.Results_Weighting,
+							.getWeightingUnit(), Messages.Weighting,
 					"WeightingPage", CharacterizationPage.WEIGHTING));
 		}
 	}

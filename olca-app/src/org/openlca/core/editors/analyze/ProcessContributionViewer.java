@@ -27,9 +27,9 @@ class ProcessContributionViewer extends TableViewer {
 	/** Index of the column with the units. */
 	static final int UNIT = 4;
 
-	private String[] columnLabels = { Messages.Analyze_Contribution,
-			Messages.Common_Process, Messages.Analyze_TotalAmount,
-			Messages.Analyze_SingleAmount, Messages.Common_Unit };
+	private String[] columnLabels = { Messages.Contribution,
+			Messages.Process, Messages.TotalAmount,
+			Messages.SingleAmount, Messages.Unit };
 
 	private double[] columnWidths = { 0.17, 0.37, 0.17, 0.17, 0.10 };
 

@@ -16,10 +16,10 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewer.AbstractViewer;
-import org.openlca.app.viewer.FlowViewer;
-import org.openlca.app.viewer.ISelectionChangedListener;
-import org.openlca.app.viewer.ImpactCategoryViewer;
+import org.openlca.app.viewers.AbstractViewer;
+import org.openlca.app.viewers.ISelectionChangedListener;
+import org.openlca.app.viewers.combo.FlowViewer;
+import org.openlca.app.viewers.combo.ImpactCategoryViewer;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.math.SimulationResult;
 import org.openlca.core.math.SimulationSolver;
@@ -52,7 +52,7 @@ public class SimulationPage extends FormPage {
 	protected void createFormContent(IManagedForm managedForm) {
 		form = managedForm.getForm();
 		FormToolkit toolkit = managedForm.getToolkit();
-		form.setText(Messages.Common_MonteCarloSimulation);
+		form.setText(Messages.MonteCarloSimulation);
 		toolkit.decorateFormHeading(form.getForm());
 		Composite body = UI.formBody(form, toolkit);
 		createSettingsSection(toolkit, body);
@@ -65,13 +65,13 @@ public class SimulationPage extends FormPage {
 
 	private void createSettingsSection(FormToolkit toolkit, Composite body) {
 		Composite settings = UI.formSection(body, toolkit,
-				Messages.Common_Settings);
+				Messages.Settings);
 		Text systemText = UI.formText(settings, toolkit,
-				Messages.Common_ProductSystem);
+				Messages.ProductSystem);
 		Text processText = UI.formText(settings, toolkit,
-				Messages.Common_Process);
+				Messages.Process);
 		Text qRefText = UI.formText(settings, toolkit,
-				Messages.Common_QuantitativeReference);
+				Messages.QuantitativeReference);
 		Text simCountText = UI.formText(settings, toolkit,
 				Messages.Simulation_NumberOfSimulations);
 		if (input != null) {
@@ -87,13 +87,13 @@ public class SimulationPage extends FormPage {
 	}
 
 	private void createProgressSection(FormToolkit toolkit, Composite body) {
-		progressSection = UI.section(body, toolkit, Messages.Common_Progress);
+		progressSection = UI.section(body, toolkit, Messages.Progress);
 		Composite composite = UI.sectionClient(progressSection, toolkit);
 		progressBar = new ProgressBar(composite, SWT.SMOOTH);
 		progressBar.setMaximum(input.getNumberOfRuns());
 		UI.gridWidth(progressBar, 470);
 		final Button progressButton = toolkit.createButton(composite,
-				Messages.Common_Start, SWT.NONE);
+				Messages.Start, SWT.NONE);
 		UI.gridWidth(progressButton, 70);
 		new SimulationControl(progressButton, input, this);
 	}
@@ -101,7 +101,7 @@ public class SimulationPage extends FormPage {
 	private void createResultSection(FormToolkit toolkit, Composite body) {
 		if (result == null)
 			return;
-		Section section = UI.section(body, toolkit, Messages.Common_Results);
+		Section section = UI.section(body, toolkit, Messages.Results);
 		SimulationExportAction exportAction = new SimulationExportAction();
 		exportAction.configure(input, result);
 		UI.bindActions(section, exportAction);
@@ -115,7 +115,7 @@ public class SimulationPage extends FormPage {
 
 	private void initImpactCheckViewer(FormToolkit toolkit, Composite section) {
 		Button impactCheck = toolkit.createButton(section,
-				Messages.Common_ImpactCategories, SWT.RADIO);
+				Messages.ImpactCategories, SWT.RADIO);
 		impactViewer = new ImpactCategoryViewer(section);
 		impactViewer.setEnabled(false);
 		impactViewer.setInput(result);
@@ -127,7 +127,7 @@ public class SimulationPage extends FormPage {
 
 	private void initFlowCheckViewer(FormToolkit toolkit, Composite section) {
 		Button flowsCheck = toolkit.createButton(section,
-				Messages.Common_Flows, SWT.RADIO);
+				Messages.Flows, SWT.RADIO);
 		flowsCheck.setSelection(true);
 		flowViewer = new FlowViewer(section);
 		flowViewer.setInput(result);

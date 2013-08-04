@@ -37,9 +37,9 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.IContentChangedListener;
 import org.openlca.app.Messages;
-import org.openlca.app.component.IModelDropHandler;
-import org.openlca.app.component.ObjectDialog;
-import org.openlca.app.component.TextDropComponent;
+import org.openlca.app.components.IModelDropHandler;
+import org.openlca.app.components.ObjectDialog;
+import org.openlca.app.components.TextDropComponent;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.NavigationRoot;
 import org.openlca.app.navigation.Navigator;
@@ -119,8 +119,8 @@ public class ProjectInfoPage extends ModelEditorInfoPage implements
 	 *            the editor of this page
 	 */
 	public ProjectInfoPage(final ModelEditor editor) {
-		super(editor, "ProjectInfoPage", Messages.Common_GeneralInformation,
-				Messages.Common_GeneralInformation);
+		super(editor, "ProjectInfoPage", Messages.GeneralInformation,
+				Messages.GeneralInformation);
 		this.project = (Project) editor.getModelComponent();
 		this.project.addPropertyChangeListener(this);
 	}
@@ -152,7 +152,7 @@ public class ProjectInfoPage extends ModelEditorInfoPage implements
 				SWT.DEFAULT, SWT.DEFAULT).y / 3;
 
 		final Section goalAndScopeInfoSection = UIFactory.createSection(body,
-				toolkit, Messages.Projects_GoalAndScopeInfoSectionLabel, true,
+				toolkit, Messages.GoalAndScopeInfoSectionLabel, true,
 				false);
 
 		final Composite goalAndScopeInfoComposite = UIFactory
@@ -160,35 +160,35 @@ public class ProjectInfoPage extends ModelEditorInfoPage implements
 						UIFactory.createGridLayout(2));
 
 		goalText = UIFactory.createTextWithLabel(goalAndScopeInfoComposite,
-				toolkit, Messages.Projects_Goal, true);
+				toolkit, Messages.Goal, true);
 
 		functionalUnitText = UIFactory.createTextWithLabel(
 				goalAndScopeInfoComposite, toolkit,
-				Messages.Projects_FunctionalUnit, true);
+				Messages.FunctionalUnit, true);
 
 		final Section projectInfoSection = UIFactory
 				.createSection(body, toolkit,
-						Messages.Projects_ProjectInfoSectionLabel, true, false);
+						Messages.ProjectInfoSectionLabel, true, false);
 
 		final Composite projectInfoComposite = UIFactory
 				.createSectionComposite(projectInfoSection, toolkit,
 						UIFactory.createGridLayout(2));
 
 		creationDateText = UIFactory.createTextWithLabel(projectInfoComposite,
-				toolkit, Messages.Projects_CreationDate, false);
+				toolkit, Messages.CreationDate, false);
 		creationDateText.setEditable(false);
 
 		lastModificationDateText = UIFactory.createTextWithLabel(
 				projectInfoComposite, toolkit,
-				Messages.Projects_LastModificationDate, false);
+				Messages.LastModificationDate, false);
 		lastModificationDateText.setEditable(false);
 
 		authorDropComponent = createDropComponent(projectInfoComposite,
-				toolkit, Messages.Projects_Author, project.getAuthor(),
+				toolkit, Messages.Author, project.getAuthor(),
 				Actor.class, false);
 
 		productSystemsInfoSection = UIFactory.createSection(body, toolkit,
-				Messages.Projects_ProductSystemsInfoSectionLabel, true, true);
+				Messages.ProductSystemsInfoSectionLabel, true, true);
 
 		final Composite productSystemsInfoComposite = UIFactory
 				.createSectionComposite(productSystemsInfoSection, toolkit,
@@ -363,7 +363,7 @@ public class ProjectInfoPage extends ModelEditorInfoPage implements
 		/**
 		 * The text of the action
 		 */
-		public String TEXT = Messages.Projects_AddProductSystemText;
+		public String TEXT = Messages.AddProductSystemText;
 
 		/**
 		 * Creates a new AddProductSystemAction and sets the ID, TEXT and
@@ -446,7 +446,7 @@ public class ProjectInfoPage extends ModelEditorInfoPage implements
 
 		public RemoveProductSystemAction() {
 			setId("ProjectInfoPage.RemoveProductSystemAction");
-			setText(Messages.Projects_RemoveProductSystemText);
+			setText(Messages.RemoveProductSystemText);
 			setImageDescriptor(ImageType.DELETE_ICON.getDescriptor());
 		}
 

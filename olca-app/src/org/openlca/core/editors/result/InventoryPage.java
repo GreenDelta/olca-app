@@ -59,10 +59,10 @@ public class InventoryPage extends ModelEditorPage {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
-	private final String AMOUNT = Messages.Common_Amount;
-	private final String CATEGORY = Messages.Common_Category;
-	private final String FLOW = Messages.Results_Flow;
-	private final String FLOWPROPERTY = Messages.Results_FlowProperty;
+	private final String AMOUNT = Messages.Amount;
+	private final String CATEGORY = Messages.Category;
+	private final String FLOW = Messages.Flow;
+	private final String FLOWPROPERTY = Messages.FlowProperty;
 
 	private int iDirection = 1;
 
@@ -119,7 +119,7 @@ public class InventoryPage extends ModelEditorPage {
 	/**
 	 * Property for the input/output table viewer
 	 */
-	private final String UNIT = Messages.Results_Unit;
+	private final String UNIT = Messages.Unit;
 
 	/**
 	 * Properties for the input/output table viewer
@@ -139,7 +139,7 @@ public class InventoryPage extends ModelEditorPage {
 	 */
 	public InventoryPage(ModelEditor editor, String name,
 			List<Exchange> inventory) {
-		super(editor, "InventoryPage", Messages.Results_LCI);
+		super(editor, "InventoryPage", Messages.LCI);
 		this.name = name;
 		final List<Exchange> inputs = new ArrayList<>();
 		final List<Exchange> outputs = new ArrayList<>();
@@ -199,7 +199,7 @@ public class InventoryPage extends ModelEditorPage {
 		inputComposite.setLayout(new GridLayout());
 		inputComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
 				true));
-		toolkit.createLabel(inputComposite, Messages.Common_Inputs);
+		toolkit.createLabel(inputComposite, Messages.Inputs);
 
 		// create table viewer for displaying and editing inputs
 		inputTableViewer = new TableViewer(inputComposite, SWT.FULL_SELECTION
@@ -242,7 +242,7 @@ public class InventoryPage extends ModelEditorPage {
 				true));
 
 		// create table viewer for displaying and editing outputs
-		toolkit.createLabel(outputComposite, Messages.Common_Outputs);
+		toolkit.createLabel(outputComposite, Messages.Outputs);
 		outputTableViewer = new TableViewer(outputComposite, SWT.FULL_SELECTION
 				| SWT.BORDER);
 		outputTableViewer.setLabelProvider(new ResultLabelProvider());
@@ -278,7 +278,7 @@ public class InventoryPage extends ModelEditorPage {
 
 	@Override
 	protected String getFormTitle() {
-		return NLS.bind(Messages.Results_LCIOf, name);
+		return NLS.bind(Messages.LCIOf, name);
 	}
 
 	@Override

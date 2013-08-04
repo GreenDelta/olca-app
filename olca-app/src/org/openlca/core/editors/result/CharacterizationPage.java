@@ -59,12 +59,12 @@ public class CharacterizationPage extends ModelEditorPage {
 	/**
 	 * Property of the lcia result table viewer
 	 */
-	private String AMOUNT = Messages.Common_Amount;
+	private String AMOUNT = Messages.Amount;
 
 	/**
 	 * Property of the lcia result table viewer
 	 */
-	private String CATEGORY = Messages.Results_LCIACategory;
+	private String CATEGORY = Messages.ImpactCategory;
 
 	/**
 	 * The characterization chart
@@ -124,7 +124,7 @@ public class CharacterizationPage extends ModelEditorPage {
 	/**
 	 * Property of the lcia result table viewer
 	 */
-	private String UNIT = Messages.Results_Unit;
+	private String UNIT = Messages.Unit;
 
 	/**
 	 * The weighting unit
@@ -225,13 +225,13 @@ public class CharacterizationPage extends ModelEditorPage {
 		String title = null;
 		switch (type) {
 		case NORMALIZATION:
-			title = NLS.bind(Messages.Results_NormalizationOf, name);
+			title = NLS.bind(Messages.NormalizationOf, name);
 			break;
 		case IMPACT_ASSESSMENT:
-			title = NLS.bind(Messages.Results_CharacterizationOf, name);
+			title = NLS.bind(Messages.CharacterizationOf, name);
 			break;
 		case WEIGHTING:
-			title = NLS.bind(Messages.Results_WeightingOf, name);
+			title = NLS.bind(Messages.WeightingOf, name);
 			break;
 		}
 		return title;
@@ -423,16 +423,16 @@ public class CharacterizationPage extends ModelEditorPage {
 			String binding = null;
 			switch (type) {
 			case TABLE:
-				binding = Messages.Results_Table;
+				binding = Messages.Table;
 				break;
 			case CHART:
-				binding = Messages.Results_Chart;
+				binding = Messages.Chart;
 				break;
 			case SINGLE_SCORE:
-				binding = Messages.Results_SingleScoreChart;
+				binding = Messages.SingleScoreChart;
 				break;
 			}
-			final String text = NLS.bind(Messages.Results_ShowAs, binding);
+			final String text = NLS.bind(Messages.ShowAs, binding);
 			return text;
 		}
 

@@ -22,7 +22,7 @@ class SaveResultAction extends Action {
 		setImageDescriptor(ImageType.LCIA_CATEGORY_ICON.getDescriptor());
 		setDisabledImageDescriptor(ImageType.LCIA_CATEGORY_ICON_DIS
 				.getDescriptor());
-		setToolTipText(Messages.Results_SAVE_LCIA_RESULT);
+		setToolTipText(Messages.SaveImpactResult);
 		setEnabled(false);
 	}
 
@@ -42,8 +42,8 @@ class SaveResultAction extends Action {
 				log.trace("insert result");
 				result.setCategoryId(LCIAResult.class.getCanonicalName());
 				database.insert(result);
-				Info.showBox(Messages.Results_LCIAResultSavedTitle,
-						Messages.Results_LCIAResultSavedMessage);
+				Info.showBox(Messages.ImpactResultSavedTitle,
+						Messages.ImpactResultSavedMessage);
 				Navigator.refresh();
 			}
 		} catch (DataProviderException e) {

@@ -8,7 +8,7 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.osgi.util.NLS;
 import org.openlca.app.Messages;
-import org.openlca.app.component.ProgressAdapter;
+import org.openlca.app.components.ProgressAdapter;
 import org.openlca.app.util.UI;
 import org.openlca.core.application.actions.OpenEditorAction;
 import org.openlca.core.database.IDatabase;
@@ -38,8 +38,8 @@ public class BuildSupplyChainAction extends Action {
 
 	@Override
 	public String getText() {
-		String type = useSystemProcesses ? Messages.Common_SystemProcess
-				: Messages.Common_UnitProcess;
+		String type = useSystemProcesses ? Messages.SystemProcess
+				: Messages.UnitProcess;
 		return NLS.bind(Messages.Systems_Prefer, type);
 	}
 

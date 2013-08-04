@@ -21,9 +21,9 @@ class GroupResultTable {
 	private final int GROUP_COL = 0;
 	private final int AMOUNT_COL = 1;
 
-	private final String GROUP = Messages.Common_Group;
-	private final String AMOUNT = Messages.Common_Amount;
-	private final String UNIT = Messages.Common_Unit;
+	private final String GROUP = Messages.Group;
+	private final String AMOUNT = Messages.Amount;
+	private final String UNIT = Messages.Unit;
 
 	private TableViewer viewer;
 

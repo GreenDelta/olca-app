@@ -25,7 +25,7 @@ public class ResultInfoPage extends ModelEditorPage {
 
 	public ResultInfoPage(ModelEditor editor, ResultInfo info) {
 		super(editor, "org.openlca.core.editors.analyze",
-				Messages.Common_GeneralInformation);
+				Messages.GeneralInformation);
 		this.resultInfo = info;
 	}
 
@@ -42,16 +42,16 @@ public class ResultInfoPage extends ModelEditorPage {
 	private void createTexts(Composite body) {
 		if (resultInfo == null)
 			return;
-		createText(body, Messages.Results_ProductSystem,
+		createText(body, Messages.ProductSystem,
 				resultInfo.getProductSystem());
-		createText(body, Messages.Results_TargetAmount,
+		createText(body, Messages.TargetAmount,
 				resultInfo.getProductFlow());
-		createText(body, Messages.Results_LCIAMethod,
+		createText(body, Messages.ImpactMethod,
 				resultInfo.getImpactMethod());
-		createText(body, Messages.Results_NormalizationWeightingSet,
+		createText(body, Messages.NormalizationWeightingSet,
 				resultInfo.getNwSet());
-		createText(body, Messages.Results_CalculationMethod,
-				Messages.Results_MatrixMethod);
+		createText(body, Messages.CalculationMethod,
+				Messages.MatrixMethod);
 	}
 
 	private void createText(Composite body, String label, String value) {
@@ -65,7 +65,7 @@ public class ResultInfoPage extends ModelEditorPage {
 	@Override
 	protected String getFormTitle() {
 		String sys = resultInfo != null ? resultInfo.getProductSystem() : "";
-		return NLS.bind(Messages.Results_ResultsOf, sys);
+		return NLS.bind(Messages.ResultsOf, sys);
 	}
 
 	@Override

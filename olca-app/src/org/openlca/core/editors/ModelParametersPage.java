@@ -48,9 +48,9 @@ public class ModelParametersPage extends ModelEditorPage implements
 	private FormulaTextCellEditor formulaEditor;
 	private IMessageManager messageManager;
 
-	private String PARAMETER_DESCRIPTION = Messages.Common_Description;
-	private String PARAMETER_FORMULA = Messages.Common_FormulaTitle;
-	private String PARAMETER_NAME = Messages.Common_Name;
+	private String PARAMETER_DESCRIPTION = Messages.Description;
+	private String PARAMETER_FORMULA = Messages.FormulaTitle;
+	private String PARAMETER_NAME = Messages.Name;
 	private String PARAMETER_NUMERIC_VALUE = Messages.NumericValue;
 	private String[] PARAMETER_PROPERTIES = new String[] { PARAMETER_NAME,
 			PARAMETER_FORMULA, PARAMETER_NUMERIC_VALUE, PARAMETER_DESCRIPTION };
@@ -163,7 +163,7 @@ public class ModelParametersPage extends ModelEditorPage implements
 		 */
 		public AddParameterAction() {
 			setId(ID);
-			setText(Messages.Common_NewParameter);
+			setText(Messages.NewParameter);
 			setImageDescriptor(ImageType.ADD_ICON.getDescriptor());
 			setDisabledImageDescriptor(ImageType.ADD_ICON_DISABLED
 					.getDescriptor());
@@ -246,7 +246,7 @@ public class ModelParametersPage extends ModelEditorPage implements
 						// open error message
 						MessageDialog.openError(UI.shell(),
 								Messages.ModelParametersPageDuplicateParameter,
-								Messages.Common_ParameterAlreadyDefined);
+								Messages.ParameterAlreadyDefined);
 					}
 				} else if (property.equals(PARAMETER_FORMULA)) {
 					// set formula

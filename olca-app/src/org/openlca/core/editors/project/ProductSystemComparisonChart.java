@@ -104,7 +104,7 @@ public class ProductSystemComparisonChart extends Composite {
 			boolean showValuesOnBarSeries, String unit) {
 		ChartWithAxes chart = ChartWithAxesImpl.create();
 		String title = NLS.bind(
-				Messages.Projects_CompareProductSystemsForMethod, method
+				Messages.CompareProductSystemsForMethod, method
 						+ (referenceSystem != null ? " - " + referenceSystem
 								: ""));
 		chart.getTitle().getLabel().getCaption().setValue(title);
@@ -116,7 +116,7 @@ public class ProductSystemComparisonChart extends Composite {
 
 		Axis xAxis = chart.getPrimaryBaseAxes()[0];
 		xAxis.getTitle().getCaption()
-				.setValue(Messages.Common_ImpactCategories);
+				.setValue(Messages.ImpactCategories);
 		TextAlignment xLabelAlignment = TextAlignmentImpl.create();
 		xLabelAlignment
 				.setHorizontalAlignment(HorizontalAlignment.CENTER_LITERAL);
@@ -243,7 +243,7 @@ public class ProductSystemComparisonChart extends Composite {
 				.getLabel()
 				.getCaption()
 				.setValue(
-						NLS.bind(Messages.Projects_SingleScoreTitle, method
+						NLS.bind(Messages.SingleScoreTitle, method
 								+ " - " + referenceSystem));
 		chart.setDimension(ChartDimension.TWO_DIMENSIONAL_WITH_DEPTH_LITERAL);
 
