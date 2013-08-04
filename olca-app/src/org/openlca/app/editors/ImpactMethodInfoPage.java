@@ -19,13 +19,12 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.table.ImpactCategoryViewer;
 import org.openlca.core.model.ImpactMethod;
 
-public class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
+class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 
 	private FormToolkit toolkit;
 
-	public ImpactMethodInfoPage(ImpactMethodEditor editor) {
-		super(editor, "ImpactMethodInfoPage",
-				Messages.GeneralInformation);
+	ImpactMethodInfoPage(ImpactMethodEditor editor) {
+		super(editor, "ImpactMethodInfoPage", Messages.GeneralInformation);
 	}
 
 	@Override
@@ -42,8 +41,7 @@ public class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 	}
 
 	private void createImpactCategoryViewer(Composite body) {
-		Section section = UI.section(body, toolkit,
-				Messages.ImpactCategories);
+		Section section = UI.section(body, toolkit, Messages.ImpactCategories);
 		UI.gridData(section, true, true);
 		Composite client = UI.sectionClient(section, toolkit);
 		ImpactCategoryViewer viewer = new ImpactCategoryViewer(client);

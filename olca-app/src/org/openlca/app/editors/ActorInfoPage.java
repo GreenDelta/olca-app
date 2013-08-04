@@ -17,11 +17,11 @@ import org.openlca.app.Messages;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.Actor;
 
-public class ActorInfoPage extends ModelPage<Actor> {
+class ActorInfoPage extends ModelPage<Actor> {
 
 	private FormToolkit toolkit;
 
-	public ActorInfoPage(ActorEditor editor) {
+	ActorInfoPage(ActorEditor editor) {
 		super(editor, "ActorInfoPage", Messages.GeneralInformation);
 	}
 

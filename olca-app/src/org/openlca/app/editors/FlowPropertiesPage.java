@@ -21,11 +21,11 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.table.FlowPropertyFactorViewer;
 import org.openlca.core.model.Flow;
 
-public class FlowPropertiesPage extends ModelPage<Flow> {
+class FlowPropertiesPage extends ModelPage<Flow> {
 
 	private FormToolkit toolkit;
 
-	public FlowPropertiesPage(FlowEditor editor) {
+	FlowPropertiesPage(FlowEditor editor) {
 		super(editor, "FlowPropertiesPage",
 				Messages.FlowPropertiesPageLabel);
 	}

@@ -19,18 +19,18 @@ import org.openlca.app.editors.DataBinding.TextBindType;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.Source;
 
-public class SourceInfoPage extends ModelPage<Source> {
+class SourceInfoPage extends ModelPage<Source> {
 
 	private FormToolkit toolkit;
 
-	public SourceInfoPage(SourceEditor editor) {
+	SourceInfoPage(SourceEditor editor) {
 		super(editor, "SourceInfoPage", Messages.GeneralInformation);
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm,
-				Messages.Source + ": " + getModel().getName());
+		ScrolledForm form = UI.formHeader(managedForm, Messages.Source + ": "
+				+ getModel().getName());
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		InfoSection infoSection = new InfoSection(getModel(), getBinding());

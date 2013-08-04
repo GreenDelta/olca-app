@@ -22,11 +22,11 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.LocationViewer;
 import org.openlca.core.model.Flow;
 
-public class FlowInfoPage extends ModelPage<Flow> {
+class FlowInfoPage extends ModelPage<Flow> {
 
 	private FormToolkit toolkit;
 
-	public FlowInfoPage(FlowEditor editor) {
+	FlowInfoPage(FlowEditor editor) {
 		super(editor, "FlowInfoPage", Messages.GeneralInformation);
 	}
 

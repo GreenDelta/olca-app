@@ -1,6 +1,7 @@
 package org.openlca.app.editors;
 
 import java.lang.reflect.Method;
+import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -394,6 +395,12 @@ public class DataBinding {
 					text.setText(((RootEntity) val).getName());
 				else if (val instanceof BaseDescriptor)
 					text.setText(((BaseDescriptor) val).getName());
+				else if (val instanceof Date)
+					text.setText(DateFormat.getDateInstance()
+							.format((Date) val));
+				else if (val instanceof GregorianCalendar)
+					text.setText(DateFormat.getDateInstance().format(
+							((GregorianCalendar) val).getTime()));
 				else
 					text.setText(val.toString());
 		} catch (Exception e) {

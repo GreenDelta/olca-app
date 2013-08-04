@@ -36,26 +36,23 @@ class FlowUseSection {
 	private Composite parent;
 	private FormToolkit toolkit;
 
-	public FlowUseSection(Flow flow, IDatabase database) {
+	FlowUseSection(Flow flow, IDatabase database) {
 		this.flow = flow;
 		this.database = database;
 	}
 
-	public void render(Composite body, FormToolkit toolkit) {
+	void render(Composite body, FormToolkit toolkit) {
 		log.trace("render flow-use-section for flow {}", flow);
 		List<ProcessDescriptor> recipients = getProcesses(true);
 		List<ProcessDescriptor> providers = getProcesses(false);
 		if (recipients.isEmpty() && providers.isEmpty())
 			return;
-		Section section = UI.section(body, toolkit,
-				Messages.UsedInProcesses);
+		Section section = UI.section(body, toolkit, Messages.UsedInProcesses);
 		section.setExpanded(false);
 		parent = UI.sectionClient(section, toolkit);
 		this.toolkit = toolkit;
-		renderLinks(Messages.ConsumedBy, recipients,
-				ImageType.INPUT_ICON.get());
-		renderLinks(Messages.ProducedBy, providers,
-				ImageType.OUTPUT_ICON.get());
+		renderLinks(Messages.ConsumedBy, recipients, ImageType.INPUT_ICON.get());
+		renderLinks(Messages.ProducedBy, providers, ImageType.OUTPUT_ICON.get());
 	}
 
 	private List<ProcessDescriptor> getProcesses(boolean forInput) {

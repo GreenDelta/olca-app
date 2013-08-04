@@ -31,12 +31,12 @@ import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.descriptors.Descriptors;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 
-public class ImpactFactorsPage extends ModelPage<ImpactMethod> {
+class ImpactFactorsPage extends ModelPage<ImpactMethod> {
 
 	private FormToolkit toolkit;
 	private ImpactFactorViewer factorViewer;
 
-	public ImpactFactorsPage(ImpactMethodEditor editor) {
+	ImpactFactorsPage(ImpactMethodEditor editor) {
 		super(editor, "ImpactFactorsPage", Messages.ImpactFactors);
 	}
 

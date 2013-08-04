@@ -21,11 +21,11 @@ import org.openlca.core.model.FlowProperty;
 /**
  * Information page of flow properties.
  */
-public class FlowPropertyInfoPage extends ModelPage<FlowProperty> {
+class FlowPropertyInfoPage extends ModelPage<FlowProperty> {
 
 	private FormToolkit toolkit;
 
-	public FlowPropertyInfoPage(FlowPropertyEditor editor) {
+	FlowPropertyInfoPage(FlowPropertyEditor editor) {
 		super(editor, "FlowPropertyInfoPage",
 				Messages.GeneralInformation);
 	}

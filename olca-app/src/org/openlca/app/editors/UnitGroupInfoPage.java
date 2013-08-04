@@ -11,11 +11,11 @@ import org.openlca.app.viewers.table.UnitViewer;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.UnitGroup;
 
-public class UnitGroupInfoPage extends ModelPage<UnitGroup> {
+class UnitGroupInfoPage extends ModelPage<UnitGroup> {
 
 	private FormToolkit toolkit;
 
-	public UnitGroupInfoPage(UnitGroupEditor editor) {
+	UnitGroupInfoPage(UnitGroupEditor editor) {
 		super(editor, "UnitGroupInfoPage", Messages.GeneralInformation);
 	}
 

@@ -17,12 +17,12 @@ import org.openlca.app.viewers.table.NormalizationWeightingSetViewer;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.NormalizationWeightingSet;
 
-public class ImpactNormalizationWeightingPage extends ModelPage<ImpactMethod> {
+class ImpactNormalizationWeightingPage extends ModelPage<ImpactMethod> {
 
 	private FormToolkit toolkit;
 	private NormalizationWeightingFactorViewer factorViewer;
 
-	public ImpactNormalizationWeightingPage(ImpactMethodEditor editor) {
+	ImpactNormalizationWeightingPage(ImpactMethodEditor editor) {
 		super(editor, "ImpactNormalizationWeightingPage",
 				Messages.NormalizationWeightingPageLabel);
 	}
