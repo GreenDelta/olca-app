@@ -59,6 +59,47 @@ public class DataBinding {
 		}
 	}
 
+	/** Removes *all* selection listeners from the given button. */
+	public void release(Button button) {
+		Listener[] listeners = button.getListeners(SWT.Selection);
+		log.trace("release {} listeners from button", listeners.length);
+		for (Listener listener : listeners) {
+			if (!(listener instanceof SelectionListener))
+				continue;
+			SelectionListener sel = (SelectionListener) listener;
+			button.removeSelectionListener(sel);
+		}
+	}
+
+	/** Unsets the handler of the given text drop component. */
+	public void release(TextDropComponent component) {
+		component.setHandler(null);
+	}
+
+	/** Removes *all* selection changed listeners from the given viewer. */
+	public <T> void release(AbstractComboViewer<T> viewer) {
+		ISelectionChangedListener<T>[] listeners = viewer
+				.getSelectionChangedListeners();
+		log.trace("release {} listeners from viewer", listeners.length);
+		for (ISelectionChangedListener<T> listener : listeners)
+			viewer.removeSelectionChangedListener(listener);
+	}
+
+	/** Removes *all* selection changed listeners from the given viewer. */
+	public <T> void release(AbstractTableViewer<T> viewer) {
+		ISelectionChangedListener<T>[] listeners = viewer
+				.getSelectionChangedListeners();
+		log.trace("release {} listeners from viewer", listeners.length);
+		for (ISelectionChangedListener<T> listener : listeners)
+			viewer.removeSelectionChangedListener(listener);
+
+		IModelChangedListener<T>[] modelListeners = viewer
+				.getModelChangedListeners();
+		log.trace("release {} listeners from viewer", listeners.length);
+		for (IModelChangedListener<T> listener : modelListeners)
+			viewer.removeModelChangedListener(listener);
+	}
+
 	@SuppressWarnings("unchecked")
 	public <T> void on(final Object bean, final String property,
 			AbstractTableViewer<T> viewer) {
