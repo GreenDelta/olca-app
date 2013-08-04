@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.openlca.app.App;
@@ -13,6 +14,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.Navigator;
+import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.ActorDao;
 import org.openlca.core.database.BaseDao;
@@ -65,6 +67,11 @@ public class DeleteModelAction extends Action implements INavigationAction {
 	@Override
 	public String getText() {
 		return Messages.Common_Delete;
+	}
+
+	@Override
+	public ImageDescriptor getImageDescriptor() {
+		return ImageType.DELETE_ICON.getDescriptor();
 	}
 
 	@Override
