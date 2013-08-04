@@ -64,10 +64,8 @@ public class ImpactCategoryViewer extends AbstractTableViewer<ImpactCategory> {
 
 	@OnRemove
 	protected void onRemove() {
-		for (ImpactCategory category : getAllSelected()) {
-			method.getImpactCategories().remove(category);
+		for (ImpactCategory category : getAllSelected())
 			fireModelChanged(ModelChangeType.REMOVE, category);
-		}
 		setInput(method);
 	}
 

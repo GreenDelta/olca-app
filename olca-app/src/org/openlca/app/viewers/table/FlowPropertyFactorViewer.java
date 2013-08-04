@@ -87,10 +87,8 @@ public class FlowPropertyFactorViewer extends
 
 	@OnRemove
 	protected void onRemove() {
-		for (FlowPropertyFactor factor : getAllSelected()) {
-			flow.getFlowPropertyFactors().remove(factor);
+		for (FlowPropertyFactor factor : getAllSelected())
 			fireModelChanged(ModelChangeType.REMOVE, factor);
-		}
 		setInput(flow);
 	}
 

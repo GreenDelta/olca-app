@@ -93,7 +93,8 @@ public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 		if (supports(OnDrop.class))
 			addDropSupport(viewer);
 
-		cellModifySupport = new CellModifySupport<>(viewer);
+		if (useColumnHeaders())
+			cellModifySupport = new CellModifySupport<>(viewer);
 
 		return viewer;
 	}

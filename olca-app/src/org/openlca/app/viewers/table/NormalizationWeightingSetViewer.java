@@ -63,10 +63,8 @@ public class NormalizationWeightingSetViewer extends
 
 	@OnRemove
 	protected void onRemove() {
-		for (NormalizationWeightingSet set : getAllSelected()) {
-			method.getNormalizationWeightingSets().remove(set);
+		for (NormalizationWeightingSet set : getAllSelected())
 			fireModelChanged(ModelChangeType.REMOVE, set);
-		}
 		setInput(method);
 	}
 

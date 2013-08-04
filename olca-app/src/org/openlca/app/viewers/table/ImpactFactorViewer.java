@@ -90,10 +90,8 @@ public class ImpactFactorViewer extends AbstractTableViewer<ImpactFactor> {
 	@OnRemove
 	protected void onRemove() {
 		if (category != null) {
-			for (ImpactFactor factor : getAllSelected()) {
-				category.getImpactFactors().remove(factor);
+			for (ImpactFactor factor : getAllSelected())
 				fireModelChanged(ModelChangeType.REMOVE, factor);
-			}
 			setInput(category);
 		}
 	}
