@@ -54,6 +54,11 @@ public abstract class AbstractViewer<T, V extends StructuredViewer> implements
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	public ISelectionChangedListener<T>[] getSelectionChangedListeners() {
+		return listener.toArray(new ISelectionChangedListener[listener.size()]);
+	}
+
 	protected T[] getInput() {
 		return this.input;
 	}
