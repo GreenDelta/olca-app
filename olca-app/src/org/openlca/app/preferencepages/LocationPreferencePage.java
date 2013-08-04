@@ -11,6 +11,8 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
@@ -47,8 +49,6 @@ import org.openlca.core.database.usage.IUseSearch;
 import org.openlca.core.model.Location;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-g.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class LocationPreferencePage extends PreferencePage implements
