@@ -164,15 +164,24 @@ public class CopyPaste {
 
 	private static void move(CategoryElement element,
 			INavigationElement<?> category) {
-		Category parent = getCategory(category);
+		Category newParent = getCategory(category);
+		Category oldParent = getCategory(element.getParent());
 		Category content = element.getContent();
-		content.setParentCategory(parent);
-		new CategoryDao(Database.get()).update(content);
+		if (oldParent != null)
+			oldParent.remove(content);
+		if (newParent != null)
+			newParent.add(content);
+		content.setParentCategory(newParent);
+
+		if (oldParent != null)
+			new CategoryDao(Database.get()).update(oldParent);
+		if (newParent != null)
+			new CategoryDao(Database.get()).update(newParent);
 	}
 
 	private static void move(ModelElement element,
 			INavigationElement<?> category) {
-		Optional<Category> parent = Optional.fromNullable(getCategory(element));
+		Optional<Category> parent = Optional.fromNullable(getCategory(category));
 		BaseDescriptor descriptor = element.getContent();
 		Database.createRootDao(descriptor.getModelType()).updateCategory(
 				descriptor, parent);
