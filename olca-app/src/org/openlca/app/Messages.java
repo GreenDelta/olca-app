@@ -280,7 +280,7 @@ public class Messages extends NLS {
 	public static String Methods_RemoveImpactFactorText;
 	public static String Methods_RemoveNormalizationWeightingSet;
 	public static String Methods_SelectImpactCategory;
-	public static String Methods_Value;
+	public static String Methods_Factor;
 	public static String Methods_WeightingFactor;
 	public static String Methods_WizardMessage;
 	public static String Methods_WizardTitle;

@@ -41,7 +41,7 @@
             name="%editor.name.3">
       </editor>
       <editor
-            class="org.openlca.core.editors.lciamethod.LCIAMethodEditor"
+            class="org.openlca.app.editors.ImpactMethodEditor"
             default="false"
             icon="icons/LCIA_obj.gif"
             id="editors.impactmethod"
