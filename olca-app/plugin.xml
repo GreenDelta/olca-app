@@ -55,7 +55,7 @@
             name="%editor.name.4">
       </editor>
       <editor
-            class="org.openlca.core.editors.project.ProjectEditor"
+            class="org.openlca.app.editors.ProjectEditor"
             default="false"
             icon="icons/project_obj.png"
             id="editors.project"
