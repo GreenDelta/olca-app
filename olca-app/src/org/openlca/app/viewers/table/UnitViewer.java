@@ -88,8 +88,8 @@ public class UnitViewer extends AbstractTableViewer<Unit> {
 		setInput(unitGroup);
 	}
 
-	private class UnitLabelProvider extends LabelProvider implements ITableLabelProvider,
-			ITableFontProvider {
+	private class UnitLabelProvider extends LabelProvider implements
+			ITableLabelProvider, ITableFontProvider {
 
 		private Font boldFont;
 
@@ -167,8 +167,10 @@ public class UnitViewer extends AbstractTableViewer<Unit> {
 
 		@Override
 		protected void setText(Unit element, String text) {
-			element.setName(text);
-			fireModelChanged(ModelChangeType.CHANGE, element);
+			if (!Objects.equal(text, element.getName())) {
+				element.setName(text);
+				fireModelChanged(ModelChangeType.CHANGE, element);
+			}
 		}
 
 	}
@@ -182,8 +184,10 @@ public class UnitViewer extends AbstractTableViewer<Unit> {
 
 		@Override
 		protected void setText(Unit element, String text) {
-			element.setDescription(text);
-			fireModelChanged(ModelChangeType.CHANGE, element);
+			if (!Objects.equal(text, element.getDescription())) {
+				element.setDescription(text);
+				fireModelChanged(ModelChangeType.CHANGE, element);
+			}
 		}
 	}
 
@@ -196,8 +200,10 @@ public class UnitViewer extends AbstractTableViewer<Unit> {
 
 		@Override
 		protected void setText(Unit element, String text) {
-			element.setSynonyms(text);
-			fireModelChanged(ModelChangeType.CHANGE, element);
+			if (!Objects.equal(text, element.getSynonyms())) {
+				element.setSynonyms(text);
+				fireModelChanged(ModelChangeType.CHANGE, element);
+			}
 		}
 
 	}
@@ -212,8 +218,11 @@ public class UnitViewer extends AbstractTableViewer<Unit> {
 		@Override
 		protected void setText(Unit element, String text) {
 			try {
-				element.setConversionFactor(Double.parseDouble(text));
-				fireModelChanged(ModelChangeType.CHANGE, element);
+				double value = Double.parseDouble(text);
+				if (value != element.getConversionFactor()) {
+					element.setConversionFactor(Double.parseDouble(text));
+					fireModelChanged(ModelChangeType.CHANGE, element);
+				}
 			} catch (NumberFormatException e) {
 
 			}
@@ -231,8 +240,10 @@ public class UnitViewer extends AbstractTableViewer<Unit> {
 		@Override
 		protected void setChecked(Unit element, boolean value) {
 			if (value) {
-				unitGroup.setReferenceUnit(element);
-				fireModelChanged(ModelChangeType.CHANGE, element);
+				if (!Objects.equal(element, unitGroup.getReferenceUnit())) {
+					unitGroup.setReferenceUnit(element);
+					fireModelChanged(ModelChangeType.CHANGE, element);
+				}
 			}
 		}
 

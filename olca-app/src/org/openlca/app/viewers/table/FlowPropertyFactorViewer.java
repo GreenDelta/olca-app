@@ -167,8 +167,11 @@ public class FlowPropertyFactorViewer extends
 		@Override
 		protected void setText(FlowPropertyFactor element, String text) {
 			try {
-				element.setConversionFactor(Double.parseDouble(text));
-				fireModelChanged(ModelChangeType.CHANGE, element);
+				double value = Double.parseDouble(text);
+				if (value != element.getConversionFactor()) {
+					element.setConversionFactor(value);
+					fireModelChanged(ModelChangeType.CHANGE, element);
+				}
 			} catch (NumberFormatException e) {
 
 			}
@@ -187,11 +190,13 @@ public class FlowPropertyFactorViewer extends
 		@Override
 		protected void setChecked(FlowPropertyFactor element, boolean value) {
 			if (value) {
-				flow.setReferenceFlowProperty(element.getFlowProperty());
-				fireModelChanged(ModelChangeType.CHANGE, element);
+				if (!Objects.equal(flow.getReferenceFlowProperty(),
+						element.getFlowProperty())) {
+					flow.setReferenceFlowProperty(element.getFlowProperty());
+					fireModelChanged(ModelChangeType.CHANGE, element);
+				}
 			}
 		}
-
 	}
 
 }
