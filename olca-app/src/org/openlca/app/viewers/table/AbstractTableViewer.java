@@ -186,6 +186,12 @@ public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 			changeListener.add(listener);
 	}
 
+	@SuppressWarnings("unchecked")
+	public IModelChangedListener<T>[] getModelChangedListeners() {
+		return changeListener.toArray(new IModelChangedListener[changeListener
+				.size()]);
+	}
+
 	public void removeModelChangedListener(IModelChangedListener<T> listener) {
 		if (changeListener.contains(listener))
 			changeListener.remove(listener);
