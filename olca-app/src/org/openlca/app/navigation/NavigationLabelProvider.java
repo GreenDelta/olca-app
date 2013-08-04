@@ -158,7 +158,7 @@ public class NavigationLabelProvider extends ColumnLabelProvider implements
 		case FLOW_PROPERTY:
 			return "Flow properties";
 		case IMPACT_METHOD:
-			return "LCIA methods";
+			return "Impact methods";
 		case PROCESS:
 			return "Processes";
 		case PRODUCT_SYSTEM:

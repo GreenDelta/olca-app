@@ -32,7 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Wizard for exporting processes and LCIA methods to the EcoSpold01 format
+ * Wizard for exporting processes and impact methods to the EcoSpold01 format
  */
 public class EcoSpold01ExportWizard extends Wizard implements IExportWizard {
 

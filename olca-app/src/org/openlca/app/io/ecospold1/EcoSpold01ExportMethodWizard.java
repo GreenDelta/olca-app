@@ -12,7 +12,7 @@ package org.openlca.app.io.ecospold1;
 import org.openlca.core.model.ModelType;
 
 /**
- * Extension of {@link EcoSpold01ExportWizard} for LCIA methods
+ * Extension of {@link EcoSpold01ExportWizard} for impact methods
  */
 public class EcoSpold01ExportMethodWizard extends EcoSpold01ExportWizard {
 
