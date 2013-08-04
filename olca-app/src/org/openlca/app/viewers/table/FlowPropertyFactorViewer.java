@@ -1,9 +1,9 @@
 package org.openlca.app.viewers.table;
 
 import org.eclipse.jface.viewers.IBaseLabelProvider;
-import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -13,8 +13,8 @@ import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.table.modify.CheckBoxCellModifier;
-import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.app.viewers.table.modify.IModelChangedListener.ModelChangeType;
+import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.database.FlowPropertyDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Flow;
@@ -101,14 +101,10 @@ public class FlowPropertyFactorViewer extends
 			add(descriptor);
 	}
 
-	private class FactorLabelProvider implements ITableLabelProvider,
-			ITableFontProvider {
+	private class FactorLabelProvider extends LabelProvider implements
+			ITableLabelProvider, ITableFontProvider {
 
 		private Font boldFont;
-
-		@Override
-		public void addListener(ILabelProviderListener listener) {
-		}
 
 		@Override
 		public void dispose() {
@@ -157,15 +153,6 @@ public class FlowPropertyFactorViewer extends
 				return boldFont;
 			}
 			return null;
-		}
-
-		@Override
-		public boolean isLabelProperty(Object element, String property) {
-			return false;
-		}
-
-		@Override
-		public void removeListener(ILabelProviderListener listener) {
 		}
 	}
 

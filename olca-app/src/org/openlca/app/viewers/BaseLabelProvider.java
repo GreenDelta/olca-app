@@ -1,5 +1,4 @@
 /*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
  * the accompanying materials are made available under the terms of the Mozilla
  * Public License v1.1 which accompanies this distribution, and is available at
  * http://www.openlca.org/uploads/media/MPL-1.1.html
@@ -11,7 +10,6 @@
 package org.openlca.app.viewers;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
 import org.openlca.app.util.Images;
 import org.openlca.app.util.Labels;
@@ -113,15 +111,6 @@ public class BaseLabelProvider extends ColumnLabelProvider {
 		if (element instanceof BaseDescriptor)
 			return ((BaseDescriptor) element).getDisplayInfoText();
 		return null;
-	}
-
-	@Override
-	public boolean isLabelProperty(Object element, String property) {
-		return false;
-	}
-
-	@Override
-	public void removeListener(ILabelProviderListener listener) {
 	}
 
 }

@@ -1,8 +1,8 @@
 package org.openlca.app.editors;
 
-import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Table;
@@ -15,7 +15,8 @@ import org.openlca.core.model.UnitGroup;
 /**
  * The label provider for the unit table in the unit group editor.
  */
-class UnitLabelProvider implements ITableLabelProvider, ITableFontProvider {
+class UnitLabelProvider extends LabelProvider implements ITableLabelProvider,
+		ITableFontProvider {
 
 	private UnitGroup unitGroup;
 	private Font boldFont;
@@ -23,10 +24,6 @@ class UnitLabelProvider implements ITableLabelProvider, ITableFontProvider {
 	public UnitLabelProvider(UnitGroup unitGroup, Table table) {
 		this.unitGroup = unitGroup;
 		boldFont = UI.boldFont(table);
-	}
-
-	@Override
-	public void addListener(ILabelProviderListener listener) {
 	}
 
 	@Override
@@ -86,12 +83,4 @@ class UnitLabelProvider implements ITableLabelProvider, ITableFontProvider {
 		return null;
 	}
 
-	@Override
-	public boolean isLabelProperty(Object element, String property) {
-		return false;
-	}
-
-	@Override
-	public void removeListener(ILabelProviderListener listener) {
-	}
 }

@@ -1,20 +1,12 @@
 package org.openlca.app.preferencepages;
 
-import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.openlca.core.model.Parameter;
 
 /** The label provider of the parameter table. */
-class ParameterLabel implements ITableLabelProvider {
-
-	@Override
-	public void addListener(ILabelProviderListener listener) {
-	}
-
-	@Override
-	public void dispose() {
-	}
+class ParameterLabel extends LabelProvider implements ITableLabelProvider {
 
 	@Override
 	public Image getColumnImage(Object element, int columnIndex) {
@@ -41,15 +33,6 @@ class ParameterLabel implements ITableLabelProvider {
 		default:
 			return null;
 		}
-	}
-
-	@Override
-	public boolean isLabelProperty(Object element, String property) {
-		return false;
-	}
-
-	@Override
-	public void removeListener(ILabelProviderListener listener) {
 	}
 
 }

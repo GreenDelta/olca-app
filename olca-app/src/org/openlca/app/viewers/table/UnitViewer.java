@@ -1,9 +1,9 @@
 package org.openlca.app.viewers.table;
 
 import org.eclipse.jface.viewers.IBaseLabelProvider;
-import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -88,14 +88,10 @@ public class UnitViewer extends AbstractTableViewer<Unit> {
 		setInput(unitGroup);
 	}
 
-	private class UnitLabelProvider implements ITableLabelProvider,
+	private class UnitLabelProvider extends LabelProvider implements ITableLabelProvider,
 			ITableFontProvider {
 
 		private Font boldFont;
-
-		@Override
-		public void addListener(ILabelProviderListener listener) {
-		}
 
 		@Override
 		public void dispose() {
@@ -160,14 +156,6 @@ public class UnitViewer extends AbstractTableViewer<Unit> {
 			return null;
 		}
 
-		@Override
-		public boolean isLabelProperty(Object element, String property) {
-			return false;
-		}
-
-		@Override
-		public void removeListener(ILabelProviderListener listener) {
-		}
 	}
 
 	private class NameModifier extends TextCellModifier<Unit> {
