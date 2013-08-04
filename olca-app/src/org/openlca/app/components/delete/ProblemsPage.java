@@ -48,7 +48,7 @@ public class ProblemsPage extends WizardPage {
 	protected ProblemsPage(final Problem[] problems) {
 		super(ID);
 		this.problems = problems;
-		setTitle(Messages.Common_Delete);
+		setTitle(Messages.Delete);
 		setDescription(Messages.ProblemsPage_FoundProblems + " "
 				+ problems.length);
 		setPageComplete(!hasErrors());

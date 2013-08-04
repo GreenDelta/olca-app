@@ -34,7 +34,7 @@ public class OpenUsageAction extends Action implements INavigationAction {
 	//@formatter:on
 
 	public OpenUsageAction() {
-		setText(Messages.Common_Usage);
+		setText(Messages.Usage);
 		setImageDescriptor(ImageType.LINK_16_BLUE.getDescriptor());
 	}
 

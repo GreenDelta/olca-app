@@ -25,7 +25,8 @@ public class Bean {
 		return null;
 	}
 
-	public static Class<?> getType(Object bean, String property) throws Exception {
+	public static Class<?> getType(Object bean, String property)
+			throws Exception {
 		PropertyDescriptor descriptor = PropertyUtils.getPropertyDescriptor(
 				bean, property);
 		if (descriptor != null)
@@ -38,7 +39,11 @@ public class Bean {
 		Method method = findSetter(bean, property);
 		if (method != null) {
 			method.setAccessible(true);
-			method.invoke(bean, value);
+			if (isNested(property)) {
+				Object fieldValue = getValue(bean, getNestedHead(property));
+				setValue(fieldValue, getNestedTail(property), value);
+			} else
+				method.invoke(bean, value);
 		}
 	}
 
@@ -47,9 +52,25 @@ public class Bean {
 		Method method = findGetter(bean, property);
 		if (method != null) {
 			method.setAccessible(true);
-			return method.invoke(bean);
+			if (isNested(property)) {
+				Object fieldValue = getValue(bean, getNestedHead(property));
+				return getValue(fieldValue, getNestedTail(property));
+			} else
+				return method.invoke(bean);
 		}
 		return null;
+	}
+
+	private static boolean isNested(String property) {
+		return property.contains(".");
+	}
+
+	private static String getNestedHead(String property) {
+		return property.substring(0, property.indexOf("."));
+	}
+
+	private static String getNestedTail(String property) {
+		return property.substring(property.indexOf(".") + 1);
 	}
 
 }

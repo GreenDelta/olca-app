@@ -105,7 +105,7 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 	@Override
 	protected void createContents(final Composite container) {
 		container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		new Label(container, SWT.TOP).setText(Messages.Common_ReferenceProcess);
+		new Label(container, SWT.TOP).setText(Messages.ReferenceProcess);
 		Composite c = new Composite(container, SWT.NONE);
 		c.setLayout(new GridLayout(2, false));
 		c.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));

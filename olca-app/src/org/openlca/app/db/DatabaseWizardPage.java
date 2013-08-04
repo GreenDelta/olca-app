@@ -41,8 +41,8 @@ class DatabaseWizardPage extends WizardPage {
 	private void createContentRadios(Composite composite) {
 		Composite radioGroup = new Composite(composite, SWT.NONE);
 		radioGroup.setLayout(new RowLayout(SWT.VERTICAL));
-		String[] labels = { Messages.EMPTY_DATABASE,
-				Messages.UNITS_AND_FLOW_PROPS, Messages.COMPLETE_REF_DATA };
+		String[] labels = { Messages.EmptyDatabase,
+				Messages.UnitsAndFlowProps, Messages.CompleteRefData };
 		contentTypes = new DatabaseContent[] { DatabaseContent.EMPTY,
 				DatabaseContent.UNITS, DatabaseContent.ALL_REF_DATA };
 		contentRadios = new Button[3];

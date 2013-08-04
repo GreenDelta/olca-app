@@ -32,13 +32,13 @@ public class InfoSection {
 
 	public void render(Composite body, FormToolkit toolkit) {
 		container = UI.formSection(body, toolkit,
-				Messages.Common_GeneralInformation);
-		Text nameText = UI.formText(container, toolkit, Messages.Common_Name);
+				Messages.GeneralInformation);
+		Text nameText = UI.formText(container, toolkit, Messages.Name);
 		binding.on(entity, "name", TextBindType.STRING, nameText);
 		Text descriptionText = UI.formMultiText(container, toolkit,
-				Messages.Common_Description);
+				Messages.Description);
 		binding.on(entity, "description", TextBindType.STRING, descriptionText);
-		new Label(container, SWT.NONE).setText(Messages.Common_Category);
+		new Label(container, SWT.NONE).setText(Messages.Category);
 		Link link = new Link(container, SWT.NONE);
 		link.setText("<a>" + getBreadcrumb(entity.getCategory()) + "</a>");
 		link.addSelectionListener(new CategoryLinkSelectionListener());

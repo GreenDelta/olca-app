@@ -27,7 +27,7 @@ public class FlowPropertyInfoPage extends ModelPage<FlowProperty> {
 
 	public FlowPropertyInfoPage(FlowPropertyEditor editor) {
 		super(editor, "FlowPropertyInfoPage",
-				Messages.Common_GeneralInformation);
+				Messages.GeneralInformation);
 	}
 
 	@Override

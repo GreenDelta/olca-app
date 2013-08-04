@@ -24,7 +24,7 @@ public class SourceInfoPage extends ModelPage<Source> {
 	private FormToolkit toolkit;
 
 	public SourceInfoPage(SourceEditor editor) {
-		super(editor, "SourceInfoPage", Messages.Common_GeneralInformation);
+		super(editor, "SourceInfoPage", Messages.GeneralInformation);
 	}
 
 	@Override
@@ -42,10 +42,10 @@ public class SourceInfoPage extends ModelPage<Source> {
 
 	protected void createAdditionalInfo(Composite body) {
 		Composite composite = UI.formSection(body, toolkit,
-				Messages.Sources_SourceInfoSectionLabel);
-		createText(Messages.Sources_Doi, "doi", composite);
-		createText(Messages.Sources_TextReference, "textReference", composite);
-		createText(Messages.Sources_Year, "year", TextBindType.SHORT, composite);
+				Messages.SourceInfoSectionLabel);
+		createText(Messages.Doi, "doi", composite);
+		createText(Messages.TextReference, "textReference", composite);
+		createText(Messages.Year, "year", TextBindType.SHORT, composite);
 	}
 
 }

@@ -37,7 +37,7 @@ public class ImpactFactorsPage extends ModelPage<ImpactMethod> {
 	private ImpactFactorViewer factorViewer;
 
 	public ImpactFactorsPage(ImpactMethodEditor editor) {
-		super(editor, "ImpactFactorsPage", Messages.Common_ImpactFactors);
+		super(editor, "ImpactFactorsPage", Messages.ImpactFactors);
 	}
 
 	@Override
@@ -48,7 +48,7 @@ public class ImpactFactorsPage extends ModelPage<ImpactMethod> {
 		Composite body = UI.formBody(form, toolkit);
 
 		Section section = UI.section(body, toolkit,
-				Messages.Common_ImpactFactors);
+				Messages.ImpactFactors);
 		UI.gridData(section, true, true);
 		Composite client = toolkit.createComposite(section);
 		section.setClient(client);
@@ -58,7 +58,7 @@ public class ImpactFactorsPage extends ModelPage<ImpactMethod> {
 		UI.gridLayout(container, 2, 10, 0);
 		UI.gridData(container, true, false);
 
-		new Label(container, SWT.NONE).setText(Messages.Common_ImpactCategory);
+		new Label(container, SWT.NONE).setText(Messages.ImpactCategory);
 		ImpactCategoryViewer categoryViewer = new ImpactCategoryViewer(
 				container);
 		categoryViewer

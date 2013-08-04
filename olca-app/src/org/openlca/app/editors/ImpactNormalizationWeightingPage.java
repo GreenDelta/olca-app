@@ -24,7 +24,7 @@ public class ImpactNormalizationWeightingPage extends ModelPage<ImpactMethod> {
 
 	public ImpactNormalizationWeightingPage(ImpactMethodEditor editor) {
 		super(editor, "ImpactNormalizationWeightingPage",
-				Messages.Methods_NormalizationWeightingPageLabel);
+				Messages.NormalizationWeightingPageLabel);
 	}
 
 	@Override
@@ -35,7 +35,7 @@ public class ImpactNormalizationWeightingPage extends ModelPage<ImpactMethod> {
 		Composite body = UI.formBody(form, toolkit);
 
 		Section section = UI.section(body, toolkit,
-				Messages.Methods_NormalizationWeightingSets);
+				Messages.NormalizationWeightingSets);
 		UI.gridData(section, true, true);
 		Composite client = toolkit.createComposite(section);
 		section.setClient(client);

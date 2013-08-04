@@ -85,7 +85,7 @@ public class UsageView extends FormEditor {
 		private Browser browser;
 
 		public Page() {
-			super(UsageView.this, "UsageView.Page", Messages.Common_Usage);
+			super(UsageView.this, "UsageView.Page", Messages.Usage);
 		}
 
 		@Override
@@ -141,7 +141,7 @@ public class UsageView extends FormEditor {
 			if (model == null)
 				return;
 			ScrolledForm form = UI.formHeader(managedForm,
-					Messages.Common_UsageOf + ": " + model.getDisplayName());
+					Messages.UsageOf + ": " + model.getDisplayName());
 			FormToolkit toolkit = managedForm.getToolkit();
 			Composite body = UI.formBody(form, toolkit);
 			browser = UI.createBrowser(body, this);

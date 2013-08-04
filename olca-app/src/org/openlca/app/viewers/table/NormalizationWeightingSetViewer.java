@@ -24,8 +24,8 @@ public class NormalizationWeightingSetViewer extends
 	}
 
 	private interface LABEL {
-		String REFERENCE_SYSTEM = Messages.Common_NormalizationWeightingSet;
-		String UNIT = Messages.Common_ReferenceUnit;
+		String REFERENCE_SYSTEM = Messages.NormalizationWeightingSet;
+		String UNIT = Messages.ReferenceUnit;
 	}
 
 	private static final String[] COLUMN_HEADERS = { LABEL.REFERENCE_SYSTEM,

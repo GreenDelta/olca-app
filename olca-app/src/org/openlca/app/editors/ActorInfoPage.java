@@ -22,7 +22,7 @@ public class ActorInfoPage extends ModelPage<Actor> {
 	private FormToolkit toolkit;
 
 	public ActorInfoPage(ActorEditor editor) {
-		super(editor, "ActorInfoPage", Messages.Common_GeneralInformation);
+		super(editor, "ActorInfoPage", Messages.GeneralInformation);
 	}
 
 	@Override
@@ -40,7 +40,7 @@ public class ActorInfoPage extends ModelPage<Actor> {
 
 	private void createAdditionalInfo(Composite body) {
 		Composite composite = UI.formSection(body, toolkit,
-				Messages.Common_AdditionalInfo);
+				Messages.AdditionalInfo);
 		createText(Messages.Address, "address", composite);
 		createText(Messages.City, "city", composite);
 		createText(Messages.Country, "country", composite);

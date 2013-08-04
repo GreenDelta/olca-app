@@ -22,13 +22,13 @@ public class UpdatePreferencePage extends FieldEditorPreferencePage implements
 		Composite parent = getFieldEditorParent();
 
 		String[][] updateRythm = new String[][] {
-				{ Messages.NEVER_CHECK, UpdatePreference.UPDATE_RYTHM_NEVER },
-				{ Messages.HOURLY, UpdatePreference.UPDATE_RYTHM_HOURLY },
-				{ Messages.DAILY, UpdatePreference.UPDATE_RYTHM_DAILY },
-				{ Messages.WEEKLY, UpdatePreference.UPDATE_RYTHM_WEEKLY },
-				{ Messages.MONTHLY, UpdatePreference.UPDATE_RYTHM_MONTHLY }, };
+				{ Messages.Never, UpdatePreference.UPDATE_RYTHM_NEVER },
+				{ Messages.Hourly, UpdatePreference.UPDATE_RYTHM_HOURLY },
+				{ Messages.Daily, UpdatePreference.UPDATE_RYTHM_DAILY },
+				{ Messages.Weekly, UpdatePreference.UPDATE_RYTHM_WEEKLY },
+				{ Messages.Monthly, UpdatePreference.UPDATE_RYTHM_MONTHLY }, };
 		RadioGroupFieldEditor rythmRadios = new RadioGroupFieldEditor(
-				UpdatePreference.UPDATE_RYTHM_SECS, Messages.check_for_updates,
+				UpdatePreference.UPDATE_RYTHM_SECS, Messages.CheckForUpdates,
 				1, updateRythm, parent, true);
 		addField(rythmRadios);
 

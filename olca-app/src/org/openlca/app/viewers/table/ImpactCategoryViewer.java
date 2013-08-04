@@ -24,9 +24,9 @@ public class ImpactCategoryViewer extends AbstractTableViewer<ImpactCategory> {
 	}
 
 	private interface LABEL {
-		String NAME = Messages.Common_Name;
-		String DESCRIPTION = Messages.Common_Description;
-		String REFERENCE_UNIT = Messages.Common_ReferenceUnit;
+		String NAME = Messages.Name;
+		String DESCRIPTION = Messages.Description;
+		String REFERENCE_UNIT = Messages.ReferenceUnit;
 	}
 
 	private static final String[] COLUMN_HEADERS = { LABEL.NAME,

@@ -81,7 +81,7 @@ public class DeleteDatabaseAction extends Action implements INavigationAction {
 	}
 
 	private MessageDialog createMessageDialog() {
-		return new MessageDialog(UI.shell(), Messages.Common_Delete, null,
+		return new MessageDialog(UI.shell(), Messages.Delete, null,
 				NLS.bind(Messages.NavigationView_DeleteQuestion,
 						config.getName()), MessageDialog.QUESTION,
 				new String[] { Messages.NavigationView_YesButton,

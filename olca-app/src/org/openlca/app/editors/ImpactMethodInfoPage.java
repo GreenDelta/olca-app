@@ -25,7 +25,7 @@ public class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 
 	public ImpactMethodInfoPage(ImpactMethodEditor editor) {
 		super(editor, "ImpactMethodInfoPage",
-				Messages.Common_GeneralInformation);
+				Messages.GeneralInformation);
 	}
 
 	@Override
@@ -43,7 +43,7 @@ public class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 
 	private void createImpactCategoryViewer(Composite body) {
 		Section section = UI.section(body, toolkit,
-				Messages.Common_ImpactCategories);
+				Messages.ImpactCategories);
 		UI.gridData(section, true, true);
 		Composite client = UI.sectionClient(section, toolkit);
 		ImpactCategoryViewer viewer = new ImpactCategoryViewer(client);

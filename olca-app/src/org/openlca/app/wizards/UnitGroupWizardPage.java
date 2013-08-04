@@ -35,7 +35,7 @@ class UnitGroupWizardPage extends AbstractWizardPage<UnitGroup> {
 	@Override
 	protected void createContents(final Composite container) {
 		referenceUnitText = UIFactory.createTextWithLabel(container,
-				Messages.Units_ReferenceUnit, false);
+				Messages.ReferenceUnit, false);
 	}
 
 	@Override
@@ -62,11 +62,11 @@ class UnitGroupWizardPage extends AbstractWizardPage<UnitGroup> {
 	private void checkUnit() {
 		String refUnitName = referenceUnitText.getText().trim();
 		if (refUnitName.length() == 0)
-			failCheck(Messages.Units_EmptyReferenceUnitError);
+			failCheck(Messages.EmptyReferenceUnitError);
 		else {
 			UnitGroup unitGroup = findGroupWithUnit(refUnitName);
 			if (unitGroup != null)
-				failCheck(NLS.bind(Messages.Units_UnitExistsError,
+				failCheck(NLS.bind(Messages.UnitExistsError,
 						unitGroup.getName()));
 			else
 				setPageComplete(true);

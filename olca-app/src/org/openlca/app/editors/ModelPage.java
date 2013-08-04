@@ -3,8 +3,10 @@ package org.openlca.app.editors;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
@@ -72,6 +74,23 @@ public abstract class ModelPage<T extends CategorizedEntity> extends FormPage {
 	protected void createText(String label, String property, Composite parent) {
 		Text text = UI.formText(parent, getManagedForm().getToolkit(), label);
 		binding.on(getModel(), property, TextBindType.STRING, text);
+	}
+
+	protected void createMultiText(String label, String property,
+			Composite parent) {
+		Text text = UI.formMultiText(parent, getManagedForm().getToolkit(),
+				label);
+		binding.on(getModel(), property, TextBindType.STRING, text);
+	}
+
+	protected void createDate(String label, String property, Composite parent) {
+		getManagedForm().getToolkit().createLabel(parent, label, SWT.NONE);
+		DateTime dateTime = new DateTime(parent, SWT.DATE | SWT.DROP_DOWN);
+		GridData data = new GridData();
+		data.widthHint = 150;
+		dateTime.setLayoutData(data);
+
+		binding.on(getModel(), property, dateTime);
 	}
 
 	protected void createText(String label, String property, TextBindType type,

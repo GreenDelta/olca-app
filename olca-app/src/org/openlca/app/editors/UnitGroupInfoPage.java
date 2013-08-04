@@ -16,7 +16,7 @@ public class UnitGroupInfoPage extends ModelPage<UnitGroup> {
 	private FormToolkit toolkit;
 
 	public UnitGroupInfoPage(UnitGroupEditor editor) {
-		super(editor, "UnitGroupInfoPage", Messages.Common_GeneralInformation);
+		super(editor, "UnitGroupInfoPage", Messages.GeneralInformation);
 	}
 
 	@Override
@@ -33,12 +33,12 @@ public class UnitGroupInfoPage extends ModelPage<UnitGroup> {
 	}
 
 	protected void createAdditionalInfo(InfoSection infoSection, Composite body) {
-		createDropComponent(Messages.Units_DefaultFlowProperty,
+		createDropComponent(Messages.DefaultFlowProperty,
 				"defaultFlowProperty", ModelType.FLOW_PROPERTY,
 				infoSection.getContainer());
 
 		Section section = UI.section(body, toolkit,
-				Messages.Units_UnitGroupInfoSectionLabel);
+				Messages.UnitGroupInfoSectionLabel);
 		UI.gridData(section, true, true);
 		Composite client = UI.sectionClient(section, toolkit);
 

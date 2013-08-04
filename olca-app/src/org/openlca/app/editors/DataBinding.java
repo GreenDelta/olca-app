@@ -1,6 +1,9 @@
 package org.openlca.app.editors;
 
 import java.lang.reflect.Method;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -9,6 +12,7 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 import org.openlca.app.components.ISingleModelDrop;
@@ -33,7 +37,7 @@ public class DataBinding {
 
 	public enum TextBindType {
 
-		STRING, DOUBLE, INT, SHORT, ENUM, MODEL;
+		STRING, DOUBLE, INT, SHORT;
 
 	}
 
@@ -56,6 +60,18 @@ public class DataBinding {
 				continue;
 			ModifyListener mod = (ModifyListener) listener;
 			text.removeModifyListener(mod);
+		}
+	}
+
+	/** Removes *all* selection listeners from the given date time. */
+	public void release(DateTime dateTime) {
+		Listener[] listeners = dateTime.getListeners(SWT.Selection);
+		log.trace("release {} listeners from date time", listeners.length);
+		for (Listener listener : listeners) {
+			if (!(listener instanceof SelectionListener))
+				continue;
+			SelectionListener sel = (SelectionListener) listener;
+			dateTime.removeSelectionListener(sel);
 		}
 	}
 
@@ -234,6 +250,30 @@ public class DataBinding {
 		}
 	}
 
+	public void on(final Object bean, final String property,
+			final DateTime dateTime) {
+		log.trace("Register data binding - string - {} - {}", bean, property);
+		if (bean == null || property == null || dateTime == null)
+			return;
+		initValue(bean, property, dateTime);
+		dateTime.addSelectionListener(new SelectionListener() {
+			private void selected() {
+				setDateValue(bean, property, dateTime);
+				editorChange();
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				selected();
+			}
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				selected();
+			}
+		});
+	}
+
 	public void on(final Object bean, final String property, TextBindType type,
 			final Text text) {
 		switch (type) {
@@ -322,6 +362,28 @@ public class DataBinding {
 		});
 	}
 
+	private void initValue(Object bean, String property, DateTime dateTime) {
+		try {
+			Object val = Bean.getValue(bean, property);
+			if (val != null) {
+				GregorianCalendar calendar = null;
+				if (val instanceof Date) {
+					calendar = new GregorianCalendar();
+					calendar.setTime((Date) val);
+				} else if (val instanceof GregorianCalendar)
+					calendar = (GregorianCalendar) val;
+
+				if (calendar != null) {
+					dateTime.setDay(calendar.get(Calendar.DAY_OF_MONTH));
+					dateTime.setMonth(calendar.get(Calendar.MONTH));
+					dateTime.setYear(calendar.get(Calendar.YEAR));
+				}
+			}
+		} catch (Exception e) {
+			error("Cannot set text value", e);
+		}
+	}
+
 	private void initValue(Object bean, String property, Text text) {
 		try {
 			Object val = Bean.getValue(bean, property);
@@ -378,6 +440,24 @@ public class DataBinding {
 			}
 		} catch (Exception e) {
 			error("Cannot set text value", e);
+		}
+	}
+
+	private void setDateValue(Object bean, String property, DateTime dateTime) {
+		log.trace("Change value {} @ {}", property, bean);
+		GregorianCalendar calendar = new GregorianCalendar();
+		calendar.set(Calendar.DAY_OF_MONTH, dateTime.getDay());
+		calendar.set(Calendar.YEAR, dateTime.getYear());
+		calendar.set(Calendar.MONTH, dateTime.getMonth());
+		try {
+			if (Bean.getType(bean, property) == Date.class)
+				Bean.setValue(bean, property, calendar.getTime());
+			else if (Bean.getType(bean, property) == GregorianCalendar.class)
+				Bean.setValue(bean, property, calendar);
+			else
+				log.error("Cannot set bean value");
+		} catch (Exception e) {
+			error("Cannot set bean value", e);
 		}
 	}
 

@@ -169,8 +169,8 @@ public class LocationPreferencePage extends PreferencePage implements
 	@Override
 	public boolean performOk() {
 		if (isDirty()) {
-			if (Question.ask(Messages.Common_SaveChangesQuestion,
-					Messages.Common_SaveChangesQuestion)) {
+			if (Question.ask(Messages.SaveChangesQuestion,
+					Messages.SaveChangesQuestion)) {
 				save();
 			}
 		}
@@ -251,7 +251,7 @@ public class LocationPreferencePage extends PreferencePage implements
 
 		public AddLocationAction() {
 			setId("LocationPreferencePage.AddParameterAction");
-			setText(NLS.bind(Messages.AddAction_Text, Messages.Common_Location));
+			setText(NLS.bind(Messages.AddAction_Text, Messages.Location));
 			setImageDescriptor(ImageType.ADD_ICON.getDescriptor());
 			setDisabledImageDescriptor(ImageType.ADD_ICON_DISABLED
 					.getDescriptor());
@@ -261,7 +261,7 @@ public class LocationPreferencePage extends PreferencePage implements
 		@Override
 		public void run() {
 			Location location = new Location();
-			location.setName(Messages.Common_Location
+			location.setName(Messages.Location
 					+ (locationViewer.getTable().getItemCount() + 1));
 			locations.add(location);
 			locationViewer.setInput(locations);
@@ -371,7 +371,7 @@ public class LocationPreferencePage extends PreferencePage implements
 		public RemoveLocationAction() {
 			setId("LocationPreferencePage.RemoveParameterAction");
 			setText(NLS.bind(Messages.RemoveAction_Text,
-					Messages.Common_Location));
+					Messages.Location));
 			setImageDescriptor(ImageType.DELETE_ICON.getDescriptor());
 			setDisabledImageDescriptor(ImageType.DELETE_ICON_DISABLED
 					.getDescriptor());

@@ -150,8 +150,8 @@ public class LanguagePreferencePage extends PreferencePage implements
 	@Override
 	public boolean performOk() {
 		if (isDirty) {
-			if (Question.ask(Messages.Common_SaveChangesQuestion,
-					Messages.Common_SaveChangesQuestion)) {
+			if (Question.ask(Messages.SaveChangesQuestion,
+					Messages.SaveChangesQuestion)) {
 				performApply();
 			}
 		}

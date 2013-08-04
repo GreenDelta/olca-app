@@ -28,10 +28,10 @@ public class FlowPropertyFactorViewer extends
 		AbstractTableViewer<FlowPropertyFactor> {
 
 	private interface LABEL {
-		String NAME = Messages.Common_Name;
-		String CONVERSION_FACTOR = Messages.Flows_ConversionFactor;
-		String REFERENCE_UNIT = Messages.Common_ReferenceUnit;
-		String IS_REFERENCE = Messages.Flows_IsReference;
+		String NAME = Messages.Name;
+		String CONVERSION_FACTOR = Messages.ConversionFactor;
+		String REFERENCE_UNIT = Messages.ReferenceUnit;
+		String IS_REFERENCE = Messages.IsReference;
 	}
 
 	private static final String[] COLUMN_HEADERS = { LABEL.NAME,

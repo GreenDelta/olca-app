@@ -27,7 +27,7 @@ public class FlowPropertiesPage extends ModelPage<Flow> {
 
 	public FlowPropertiesPage(FlowEditor editor) {
 		super(editor, "FlowPropertiesPage",
-				Messages.Flows_FlowPropertiesPageLabel);
+				Messages.FlowPropertiesPageLabel);
 	}
 
 	@Override
@@ -38,7 +38,7 @@ public class FlowPropertiesPage extends ModelPage<Flow> {
 		Composite body = UI.formBody(form, toolkit);
 
 		Section section = UI.section(body, toolkit,
-				Messages.Flows_FlowPropertiesPageLabel);
+				Messages.FlowPropertiesPageLabel);
 		UI.gridData(section, true, true);
 		Composite client = UI.sectionClient(section, toolkit);
 

@@ -12,7 +12,7 @@ import org.openlca.core.model.RootEntity;
 abstract class AbstractWizardPage<T extends RootEntity> extends WizardPage {
 
 	private Text descriptionText;
-	private String EMPTY_NAME_ERROR = Messages.Common_PleaseEnterName;
+	private String EMPTY_NAME_ERROR = Messages.PleaseEnterName;
 	private Text nameText;
 
 	protected AbstractWizardPage(String pageName) {

@@ -46,7 +46,7 @@ public class UpdateCheckAndPrepareJob extends Job {
 	private boolean forceCheck;
 
 	public UpdateCheckAndPrepareJob() {
-		super(Messages.openLCA_update_check_jobname);
+		super(Messages.OpenLCAUpdateCheckJobname);
 	}
 
 	public boolean isForceCheck() {

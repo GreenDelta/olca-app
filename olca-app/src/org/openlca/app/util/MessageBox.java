@@ -26,10 +26,10 @@ class MessageBox {
 		String title = null;
 		switch (type) {
 		case ERROR:
-			title = Messages.ERROR;
+			title = Messages.Error;
 			break;
 		case WARNING:
-			title = Messages.WARNING;
+			title = Messages.Warning;
 			break;
 		case INFO:
 			title = Messages.INFO;

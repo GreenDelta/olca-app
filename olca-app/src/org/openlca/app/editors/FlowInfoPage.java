@@ -27,7 +27,7 @@ public class FlowInfoPage extends ModelPage<Flow> {
 	private FormToolkit toolkit;
 
 	public FlowInfoPage(FlowEditor editor) {
-		super(editor, "FlowInfoPage", Messages.Common_GeneralInformation);
+		super(editor, "FlowInfoPage", Messages.GeneralInformation);
 	}
 
 	@Override
@@ -49,14 +49,14 @@ public class FlowInfoPage extends ModelPage<Flow> {
 	}
 
 	private void createAdditionalInfo(InfoSection infoSection, Composite body) {
-		createCheckBox(Messages.Is_Infrastructure_Flow, "infrastructureFlow",
+		createCheckBox(Messages.IsInfrastructureFlow, "infrastructureFlow",
 				infoSection.getContainer());
-		createReadOnly(Messages.Flows_FlowType, "flowType",
+		createReadOnly(Messages.FlowType, "flowType",
 				infoSection.getContainer());
 
 		Composite composite = UI.formSection(body, toolkit,
-				Messages.Common_AdditionalInfo);
-		createText(Messages.Flows_CasNumber, "casNumber", composite);
+				Messages.AdditionalInfo);
+		createText(Messages.CasNumber, "casNumber", composite);
 		createText(Messages.Formula, "formula", composite);
 		new Label(composite, SWT.NONE).setText(Messages.Location);
 		LocationViewer viewer = new LocationViewer(composite);

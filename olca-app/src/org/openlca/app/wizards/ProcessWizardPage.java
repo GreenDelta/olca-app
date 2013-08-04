@@ -103,7 +103,7 @@ class ProcessWizardPage extends AbstractWizardPage<Process> {
 	protected void checkInput() {
 		super.checkInput();
 		boolean createFlow = createRefFlowCheck.getSelection();
-		String err = Messages.Processes_EmptyQuantitativeReferenceError;
+		String err = Messages.EmptyQuantitativeReferenceError;
 		if (createFlow) {
 			if (flowPropertyViewer.getSelected() == null)
 				setErrorMessage(err);
@@ -119,7 +119,7 @@ class ProcessWizardPage extends AbstractWizardPage<Process> {
 	protected void createContents(Composite container) {
 		new Label(container, SWT.NONE);
 		createRefFlowCheck = new Button(container, SWT.CHECK);
-		createRefFlowCheck.setText(Messages.Processes_CreateProductFlow);
+		createRefFlowCheck.setText(Messages.CreateProductFlow);
 
 		labelStack = new Composite(container, SWT.NONE);
 		labelStack.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
@@ -130,12 +130,12 @@ class ProcessWizardPage extends AbstractWizardPage<Process> {
 		contentStack.setLayout(new StackLayout());
 
 		selectFlowLabel = new Label(labelStack, SWT.NONE);
-		selectFlowLabel.setText(Messages.Common_QuantitativeReference);
+		selectFlowLabel.setText(Messages.QuantitativeReference);
 
 		createProductViewer();
 
 		selectFlowPropertyLabel = new Label(labelStack, SWT.NONE);
-		selectFlowPropertyLabel.setText(Messages.Flows_ReferenceFlowProperty);
+		selectFlowPropertyLabel.setText(Messages.ReferenceFlowProperty);
 
 		// create combo viewer for selecting a reference flow property
 		flowPropertyViewerContainer = new Composite(contentStack, SWT.NONE);

@@ -18,9 +18,9 @@ public class NormalizationWeightingFactorViewer extends
 		AbstractTableViewer<Wrapper> {
 
 	private interface LABEL {
-		String IMPACT_CATEGORY = Messages.Common_ImpactCategory;
-		String NORMALIZATION = Messages.Methods_NormalizationFactor;
-		String WEIGHTING = Messages.Methods_WeightingFactor;
+		String IMPACT_CATEGORY = Messages.ImpactCategory;
+		String NORMALIZATION = Messages.NormalizationFactor;
+		String WEIGHTING = Messages.WeightingFactor;
 	}
 
 	private static final String[] COLUMN_HEADERS = { LABEL.IMPACT_CATEGORY,

@@ -48,13 +48,13 @@ class FlowUseSection {
 		if (recipients.isEmpty() && providers.isEmpty())
 			return;
 		Section section = UI.section(body, toolkit,
-				Messages.Flows_UsedInProcesses);
+				Messages.UsedInProcesses);
 		section.setExpanded(false);
 		parent = UI.sectionClient(section, toolkit);
 		this.toolkit = toolkit;
-		renderLinks(Messages.Flows_ConsumedBy, recipients,
+		renderLinks(Messages.ConsumedBy, recipients,
 				ImageType.INPUT_ICON.get());
-		renderLinks(Messages.Flows_ProducedBy, providers,
+		renderLinks(Messages.ProducedBy, providers,
 				ImageType.OUTPUT_ICON.get());
 	}
 

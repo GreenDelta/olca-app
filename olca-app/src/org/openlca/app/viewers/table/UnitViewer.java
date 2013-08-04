@@ -22,12 +22,12 @@ public class UnitViewer extends AbstractTableViewer<Unit> {
 
 	private interface LABEL {
 
-		String CONVERSION_FACTOR = Messages.Units_ConversionFactor;
-		String DESCRIPTION = Messages.Common_Description;
-		String FORMULA = Messages.Units_Formula;
-		String IS_REFERENCE = Messages.Units_IsReference;
-		String NAME = Messages.Common_Name;
-		String SYNONYMS = Messages.Units_Synonyms;
+		String CONVERSION_FACTOR = Messages.ConversionFactor;
+		String DESCRIPTION = Messages.Description;
+		String FORMULA = Messages.Formula;
+		String IS_REFERENCE = Messages.IsReference;
+		String NAME = Messages.Name;
+		String SYNONYMS = Messages.Synonyms;
 
 	}
 

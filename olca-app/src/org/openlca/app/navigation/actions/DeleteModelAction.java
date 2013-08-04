@@ -66,7 +66,7 @@ public class DeleteModelAction extends Action implements INavigationAction {
 
 	@Override
 	public String getText() {
-		return Messages.Common_Delete;
+		return Messages.Delete;
 	}
 
 	@Override

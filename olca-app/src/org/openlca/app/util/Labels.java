@@ -38,20 +38,20 @@ public class Labels {
 	 */
 	public static String uncertaintyType(UncertaintyDistributionType type) {
 		if (type == null)
-			return Messages.Common_NoDistribution;
+			return Messages.NoDistribution;
 		switch (type) {
 		case LOG_NORMAL:
-			return Messages.Common_LogNormalDistribution;
+			return Messages.LogNormalDistribution;
 		case NONE:
-			return Messages.Common_NoDistribution;
+			return Messages.NoDistribution;
 		case NORMAL:
-			return Messages.Common_NormalDistribution;
+			return Messages.NormalDistribution;
 		case TRIANGLE:
-			return Messages.Common_TriangleDistribution;
+			return Messages.TriangleDistribution;
 		case UNIFORM:
-			return Messages.Common_UniformDistribution;
+			return Messages.UniformDistribution;
 		default:
-			return Messages.Common_NoDistribution;
+			return Messages.NoDistribution;
 		}
 	}
 
@@ -66,11 +66,11 @@ public class Labels {
 			return null;
 		switch (type) {
 		case ELEMENTARY_FLOW:
-			return Messages.Common_ElementaryFlow;
+			return Messages.ElementaryFlow;
 		case PRODUCT_FLOW:
-			return Messages.Common_ProductFlow;
+			return Messages.ProductFlow;
 		case WASTE_FLOW:
-			return Messages.Common_WasteFlow;
+			return Messages.WasteFlow;
 		default:
 			return null;
 		}
@@ -87,9 +87,9 @@ public class Labels {
 			return null;
 		switch (processType) {
 		case LCI_RESULT:
-			return Messages.Common_SystemProcess;
+			return Messages.SystemProcess;
 		case UNIT_PROCESS:
-			return Messages.Common_UnitProcess;
+			return Messages.UnitProcess;
 		default:
 			return null;
 		}
@@ -97,7 +97,7 @@ public class Labels {
 
 	public static String allocationMethod(Process process) {
 		if (process == null)
-			return Messages.Common_None;
+			return Messages.None;
 		return allocationMethod(process.getAllocationMethod());
 	}
 
@@ -106,15 +106,15 @@ public class Labels {
 			return null;
 		switch (allocationMethod) {
 		case Causal:
-			return Messages.Common_Causal;
+			return Messages.Causal;
 		case Economic:
-			return Messages.Common_Economic;
+			return Messages.Economic;
 		case None:
-			return Messages.Common_None;
+			return Messages.None;
 		case Physical:
-			return Messages.Common_Physical;
+			return Messages.Physical;
 		default:
-			return Messages.Common_None;
+			return Messages.None;
 		}
 	}
 
@@ -129,9 +129,9 @@ public class Labels {
 			return null;
 		switch (type) {
 		case ECONOMIC:
-			return Messages.Common_Economic;
+			return Messages.Economic;
 		case PHYSICAL:
-			return Messages.Common_Physical;
+			return Messages.Physical;
 		default:
 			return null;
 		}

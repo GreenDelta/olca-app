@@ -36,7 +36,7 @@ class FlowWizardPage extends AbstractWizardPage<Flow> {
 		super.checkInput();
 		if (getErrorMessage() == null) {
 			if (referenceFlowPropertyViewer.getSelected() == null) {
-				setErrorMessage(Messages.Flows_EmptyReferenceFlowPropertyError);
+				setErrorMessage(Messages.EmptyReferenceFlowPropertyError);
 			}
 		}
 		setPageComplete(getErrorMessage() == null);
@@ -44,11 +44,11 @@ class FlowWizardPage extends AbstractWizardPage<Flow> {
 
 	@Override
 	protected void createContents(final Composite container) {
-		UI.formLabel(container, Messages.Flows_FlowType);
+		UI.formLabel(container, Messages.FlowType);
 		flowTypeViewer = new FlowTypeViewer(container);
 		flowTypeViewer.select(FlowType.ELEMENTARY_FLOW);
 
-		UI.formLabel(container, Messages.Flows_ReferenceFlowProperty);
+		UI.formLabel(container, Messages.ReferenceFlowProperty);
 		referenceFlowPropertyViewer = new FlowPropertyViewer(container);
 		referenceFlowPropertyViewer.setInput(Database.get());
 	}

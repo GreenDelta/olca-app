@@ -28,10 +28,10 @@ import org.openlca.core.model.descriptors.FlowDescriptor;
 public class ImpactFactorViewer extends AbstractTableViewer<ImpactFactor> {
 
 	private interface LABEL {
-		String FLOW = Messages.Common_Flow;
-		String FLOW_PROPERTY = Messages.Common_FlowProperty;
-		String UNIT = Messages.Common_Unit;
-		String FACTOR = Messages.Methods_Factor;
+		String FLOW = Messages.Flow;
+		String FLOW_PROPERTY = Messages.FlowProperty;
+		String UNIT = Messages.Unit;
+		String FACTOR = Messages.Factor;
 	}
 
 	private static final String[] COLUMN_HEADERS = { LABEL.FLOW,

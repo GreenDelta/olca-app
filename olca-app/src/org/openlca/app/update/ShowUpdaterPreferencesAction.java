@@ -17,7 +17,7 @@ public class ShowUpdaterPreferencesAction extends Action {
 
 	@Override
 	public String getText() {
-		return Messages.update_preferences;
+		return Messages.UpdatePreferences;
 	}
 
 	@Override
