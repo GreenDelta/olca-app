@@ -29,7 +29,9 @@ public abstract class TextCellModifier<T> implements ICellModifier<T> {
 
 	@Override
 	public void modify(T element, Object value) {
-		setText(element, value != null ? value.toString() : null);
+		setText(element,
+				value != null ? !value.toString().isEmpty() ? value.toString()
+						: null : null);
 	}
 
 	protected abstract String getText(T element);
