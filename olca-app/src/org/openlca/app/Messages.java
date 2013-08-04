@@ -9,16 +9,6 @@
  ******************************************************************************/
 package org.openlca.app;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.InputStreamReader;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-
 import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
@@ -41,7 +31,6 @@ public class Messages extends NLS {
 	public static String AddProductSystemText;
 	public static String Address;
 	public static String AddSourceText;
-
 	public static String AddUnitText;
 	public static String AdminInfoPageLabel;
 	public static String AllDatabases;
@@ -54,6 +43,7 @@ public class Messages extends NLS {
 	public static String AsDefinedInProcesses;
 	public static String Author;
 	public static String AvoidedProduct;
+	public static String AvoidedProducts;
 	public static String Button_No;
 	public static String Button_Yes;
 	public static String Calculate;
@@ -158,6 +148,7 @@ public class Messages extends NLS {
 	public static String ElementaryFlow;
 	public static String EMail;
 	public static String Embedded;
+	public static String Emissions;
 	public static String EmptyDatabase;
 	public static String EmptyQuantitativeReferenceError;
 	public static String EmptyReferenceFlowPropertyError;
@@ -388,6 +379,7 @@ public class Messages extends NLS {
 	public static String ProcessType;
 	public static String ProducedBy;
 	public static String ProductFlow;
+	public static String Products;
 	public static String ProductSystem;
 	public static String ProductSystemCleaner_Analizing;
 	public static String ProductSystemCleaner_ProblemText;
@@ -411,9 +403,9 @@ public class Messages extends NLS {
 	public static String ReferenceUnit;
 	public static String Reload;
 	public static String Remember;
-
 	public static String RemoveAction_Text;
 	public static String RemoveFlowPropertyFactorText;
+
 	public static String RemoveImpactCategoryText;
 	public static String RemoveImpactFactorText;
 	public static String RemoveInputText;
@@ -426,6 +418,7 @@ public class Messages extends NLS {
 	public static String Reserve;
 	public static String Reserved;
 	public static String Reset;
+	public static String Resources;
 	public static String Rest;
 	public static String ResultContributions;
 	public static String ResultingAmount;
@@ -601,6 +594,7 @@ public class Messages extends NLS {
 	public static String Version;
 	public static String Warning;
 	public static String WasteFlow;
+	public static String Wastes;
 	public static String WebSite;
 	public static String Weekly;
 	public static String WeightedResults;
