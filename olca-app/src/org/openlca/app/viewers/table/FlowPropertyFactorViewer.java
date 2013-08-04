@@ -1,5 +1,6 @@
 package org.openlca.app.viewers.table;
 
+import java.util.Objects;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -22,8 +23,6 @@ import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.FlowPropertyDescriptor;
-
-import com.google.common.base.Objects;
 
 public class FlowPropertyFactorViewer extends
 		AbstractTableViewer<FlowPropertyFactor> {
@@ -184,13 +183,13 @@ public class FlowPropertyFactorViewer extends
 		@Override
 		protected boolean isChecked(FlowPropertyFactor element) {
 			return flow != null
-					&& Objects.equal(flow.getReferenceFactor(), element);
+					&& Objects.equals(flow.getReferenceFactor(), element);
 		}
 
 		@Override
 		protected void setChecked(FlowPropertyFactor element, boolean value) {
 			if (value) {
-				if (!Objects.equal(flow.getReferenceFlowProperty(),
+				if (!Objects.equals(flow.getReferenceFlowProperty(),
 						element.getFlowProperty())) {
 					flow.setReferenceFlowProperty(element.getFlowProperty());
 					fireModelChanged(ModelChangeType.CHANGE, element);

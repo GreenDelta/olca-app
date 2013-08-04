@@ -1,5 +1,6 @@
 package org.openlca.app.viewers.table;
 
+import java.util.Objects;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -16,8 +17,6 @@ import org.openlca.app.viewers.table.modify.IModelChangedListener.ModelChangeTyp
 import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
-
-import com.google.common.base.Objects;
 
 public class UnitViewer extends AbstractTableViewer<Unit> {
 
@@ -83,7 +82,7 @@ public class UnitViewer extends AbstractTableViewer<Unit> {
 	@OnRemove
 	protected void onRemove() {
 		for (Unit unit : getAllSelected())
-			if (!Objects.equal(unitGroup.getReferenceUnit(), unit))
+			if (!Objects.equals(unitGroup.getReferenceUnit(), unit))
 				fireModelChanged(ModelChangeType.REMOVE, unit);
 		setInput(unitGroup);
 	}
@@ -167,7 +166,7 @@ public class UnitViewer extends AbstractTableViewer<Unit> {
 
 		@Override
 		protected void setText(Unit element, String text) {
-			if (!Objects.equal(text, element.getName())) {
+			if (!Objects.equals(text, element.getName())) {
 				element.setName(text);
 				fireModelChanged(ModelChangeType.CHANGE, element);
 			}
@@ -184,7 +183,7 @@ public class UnitViewer extends AbstractTableViewer<Unit> {
 
 		@Override
 		protected void setText(Unit element, String text) {
-			if (!Objects.equal(text, element.getDescription())) {
+			if (!Objects.equals(text, element.getDescription())) {
 				element.setDescription(text);
 				fireModelChanged(ModelChangeType.CHANGE, element);
 			}
@@ -200,7 +199,7 @@ public class UnitViewer extends AbstractTableViewer<Unit> {
 
 		@Override
 		protected void setText(Unit element, String text) {
-			if (!Objects.equal(text, element.getSynonyms())) {
+			if (!Objects.equals(text, element.getSynonyms())) {
 				element.setSynonyms(text);
 				fireModelChanged(ModelChangeType.CHANGE, element);
 			}
@@ -234,13 +233,13 @@ public class UnitViewer extends AbstractTableViewer<Unit> {
 		@Override
 		protected boolean isChecked(Unit element) {
 			return unitGroup != null
-					&& Objects.equal(unitGroup.getReferenceUnit(), element);
+					&& Objects.equals(unitGroup.getReferenceUnit(), element);
 		}
 
 		@Override
 		protected void setChecked(Unit element, boolean value) {
 			if (value) {
-				if (!Objects.equal(element, unitGroup.getReferenceUnit())) {
+				if (!Objects.equals(element, unitGroup.getReferenceUnit())) {
 					unitGroup.setReferenceUnit(element);
 					fireModelChanged(ModelChangeType.CHANGE, element);
 				}
