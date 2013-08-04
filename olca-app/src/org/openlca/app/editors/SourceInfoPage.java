@@ -30,7 +30,7 @@ public class SourceInfoPage extends ModelPage<Source> {
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
 		ScrolledForm form = UI.formHeader(managedForm,
-				Messages.Sources_FormText + ": " + getModel().getName());
+				Messages.Source + ": " + getModel().getName());
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		InfoSection infoSection = new InfoSection(getModel(), getBinding());

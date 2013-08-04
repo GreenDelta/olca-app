@@ -21,7 +21,7 @@ public class UnitGroupInfoPage extends ModelPage<UnitGroup> {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, Messages.Units_FormText
+		ScrolledForm form = UI.formHeader(managedForm, Messages.UnitGroup
 				+ ": " + getModel().getName());
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
