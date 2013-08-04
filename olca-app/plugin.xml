@@ -48,7 +48,7 @@
             name="%editor.name.7">
       </editor>
       <editor
-            class="org.openlca.core.editors.process.ProcessEditor"
+            class="org.openlca.app.editors.ProcessEditor"
             default="false"
             icon="icons/proc_obj.gif"
             id="editors.process"
