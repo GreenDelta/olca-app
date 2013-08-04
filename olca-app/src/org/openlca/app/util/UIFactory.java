@@ -14,7 +14,6 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.IContentProvider;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
@@ -25,19 +24,15 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Layout;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
 import org.openlca.app.Messages;
-import org.openlca.app.components.IModelDropHandler;
 import org.openlca.app.components.TextDropComponent;
 import org.openlca.app.viewers.BaseLabelProvider;
 import org.openlca.app.viewers.BaseNameSorter;
-import org.openlca.app.viewers.ViewerDropComponent;
 import org.openlca.core.model.ModelType;
 
 /**
@@ -398,48 +393,6 @@ public final class UIFactory {
 		toolkit.adapt(composite);
 		return composite;
 
-	}
-
-	public static TableViewer createTableViewer(Composite parent,
-			ModelType modelType, IModelDropHandler handler,
-			FormToolkit toolkit, String[] PROPERTIES) {
-		TableViewer tableViewer = null;
-		if (modelType == null || handler == null) {
-			tableViewer = new TableViewer(parent, SWT.BORDER
-					| SWT.FULL_SELECTION | SWT.MULTI);
-		} else {
-			tableViewer = new ViewerDropComponent(parent, modelType, handler);
-		}
-		tableViewer.setContentProvider(ArrayContentProvider.getInstance());
-		tableViewer.setSorter(new BaseNameSorter());
-
-		// create the table
-		final Table table = tableViewer.getTable();
-		if (toolkit != null) {
-			toolkit.adapt(table, true, true);
-		}
-		if (PROPERTIES == null || PROPERTIES.length < 2) {
-			table.setLinesVisible(false);
-			table.setHeaderVisible(false);
-		} else {
-			table.setLinesVisible(true);
-			table.setHeaderVisible(true);
-			for (final String p : PROPERTIES) {
-				final TableColumn c = new TableColumn(table, SWT.NULL);
-				c.setText(p);
-			}
-			for (final TableColumn c : table.getColumns()) {
-				c.pack();
-			}
-		}
-
-		if (PROPERTIES != null && PROPERTIES.length >= 2) {
-			tableViewer.setColumnProperties(PROPERTIES);
-		}
-		if (toolkit != null) {
-			toolkit.paintBordersFor(parent);
-		}
-		return tableViewer;
 	}
 
 	/**
