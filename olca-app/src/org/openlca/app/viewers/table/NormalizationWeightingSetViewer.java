@@ -55,8 +55,8 @@ public class NormalizationWeightingSetViewer extends
 
 	@OnCreate
 	protected void onCreate() {
-		NormalizationWeightingSet set = new NormalizationWeightingSet("newSet",
-				method);
+		NormalizationWeightingSet set = new NormalizationWeightingSet();
+		set.setReferenceSystem("newSet");
 		fireModelChanged(ModelChangeType.CREATE, set);
 		setInput(method);
 	}
