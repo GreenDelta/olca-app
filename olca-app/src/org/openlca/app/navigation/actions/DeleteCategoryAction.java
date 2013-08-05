@@ -56,7 +56,7 @@ public class DeleteCategoryAction extends Action implements INavigationAction {
 	public void run() {
 		if (category == null)
 			return;
-		if (category.getChildCategories().length != 0) {
+		if (category.getChildCategories().size() != 0) {
 			// TODO: models in category !
 			Error.showBox("The category is not empty.");
 			return;
@@ -73,7 +73,7 @@ public class DeleteCategoryAction extends Action implements INavigationAction {
 			BaseDao<Category> dao = Database.get().createDao(Category.class);
 			Category parent = category.getParentCategory();
 			if (parent != null) {
-				parent.remove(category);
+				parent.getChildCategories().remove(category);
 				category.setParentCategory(null);
 				dao.update(parent);
 			}

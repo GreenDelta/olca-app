@@ -8,9 +8,27 @@ import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.ModelTypeElement;
 import org.openlca.app.navigation.Navigator;
+import org.openlca.core.database.ActorDao;
+import org.openlca.core.database.CategorizedEntityDao;
 import org.openlca.core.database.CategoryDao;
+import org.openlca.core.database.FlowDao;
+import org.openlca.core.database.FlowPropertyDao;
+import org.openlca.core.database.ProcessDao;
+import org.openlca.core.database.ProductSystemDao;
+import org.openlca.core.database.ProjectDao;
+import org.openlca.core.database.SourceDao;
+import org.openlca.core.database.UnitGroupDao;
+import org.openlca.core.model.Actor;
+import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Category;
+import org.openlca.core.model.Flow;
+import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.ModelType;
+import org.openlca.core.model.Process;
+import org.openlca.core.model.ProductSystem;
+import org.openlca.core.model.Project;
+import org.openlca.core.model.Source;
+import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 
 import com.google.common.base.Optional;
@@ -168,9 +186,9 @@ public class CopyPaste {
 		Category oldParent = getCategory(element.getParent());
 		Category content = element.getContent();
 		if (oldParent != null)
-			oldParent.remove(content);
+			oldParent.getChildCategories().remove(content);
 		if (newParent != null)
-			newParent.add(content);
+			newParent.getChildCategories().add(content);
 		content.setParentCategory(newParent);
 
 		if (oldParent != null)
@@ -181,7 +199,8 @@ public class CopyPaste {
 
 	private static void move(ModelElement element,
 			INavigationElement<?> category) {
-		Optional<Category> parent = Optional.fromNullable(getCategory(category));
+		Optional<Category> parent = Optional
+				.fromNullable(getCategory(category));
 		BaseDescriptor descriptor = element.getContent();
 		Database.createRootDao(descriptor.getModelType()).updateCategory(
 				descriptor, parent);
@@ -189,12 +208,29 @@ public class CopyPaste {
 
 	private static void copy(CategoryElement element,
 			INavigationElement<?> category) {
-		// TODO
 	}
 
 	private static void copy(ModelElement element,
 			INavigationElement<?> category) {
-		// TODO
+	}
+
+	private static void insert(CategorizedEntity entity) {
+		if (entity instanceof Actor)
+			new ActorDao(Database.get()).insert((Actor) entity);
+		else if (entity instanceof Source)
+			new SourceDao(Database.get()).insert((Source) entity);
+		else if (entity instanceof UnitGroup)
+			new UnitGroupDao(Database.get()).insert((UnitGroup) entity);
+		else if (entity instanceof FlowProperty)
+			new FlowPropertyDao(Database.get()).insert((FlowProperty) entity);
+		else if (entity instanceof Flow)
+			new FlowDao(Database.get()).insert((Flow) entity);
+		else if (entity instanceof Process)
+			new ProcessDao(Database.get()).insert((Process) entity);
+		else if (entity instanceof ProductSystem)
+			new ProductSystemDao(Database.get()).insert((ProductSystem) entity);
+		else if (entity instanceof Project)
+			new ProjectDao(Database.get()).insert((Project) entity);
 	}
 
 	public static boolean cacheIsEmpty() {
