@@ -3,24 +3,24 @@ package org.openlca.app.viewers.combo;
 import java.util.List;
 
 import org.eclipse.swt.widgets.Composite;
-import org.openlca.core.model.Process;
+import org.openlca.core.database.IDatabase;
+import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.descriptors.Descriptors;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 public class ProcessViewer extends AbstractComboViewer<ProcessDescriptor> {
 
-	public ProcessViewer(Composite parent) {
+	private ProcessDao processDao;
+
+	public ProcessViewer(Composite parent, IDatabase database) {
 		super(parent);
 		setInput(new ProcessDescriptor[0]);
 	}
 
 	public void setInput(ProductSystem productSystem) {
-		List<Process> list = productSystem.getProcesses();
-		ProcessDescriptor[] processes = new ProcessDescriptor[list.size()];
-		for (int i = 0; i < list.size(); i++)
-			processes[i] = Descriptors.toDescriptor(list.get(i));
-		setInput(processes);
+		List<ProcessDescriptor> descriptors = processDao
+				.getDescriptors(productSystem.getProcesses());
+		setInput(descriptors.toArray(new ProcessDescriptor[descriptors.size()]));
 	}
 
 	@Override

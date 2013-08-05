@@ -47,6 +47,9 @@ import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.usage.IUseSearch;
 import org.openlca.core.model.Location;
+import org.openlca.core.model.ModelType;
+import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.Descriptors;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -370,8 +373,7 @@ public class LocationPreferencePage extends PreferencePage implements
 
 		public RemoveLocationAction() {
 			setId("LocationPreferencePage.RemoveParameterAction");
-			setText(NLS.bind(Messages.RemoveAction_Text,
-					Messages.Location));
+			setText(NLS.bind(Messages.RemoveAction_Text, Messages.Location));
 			setImageDescriptor(ImageType.DELETE_ICON.getDescriptor());
 			setDisabledImageDescriptor(ImageType.DELETE_ICON_DISABLED
 					.getDescriptor());
@@ -382,9 +384,9 @@ public class LocationPreferencePage extends PreferencePage implements
 			Location location = Viewers.getFirstSelected(locationViewer);
 			if (location == null)
 				return;
-			DeleteWizard<Location> wizard = new DeleteWizard<>(
-					IUseSearch.FACTORY.createFor(Location.class, database),
-					location);
+			DeleteWizard<BaseDescriptor> wizard = new DeleteWizard<>(
+					IUseSearch.FACTORY.createFor(ModelType.LOCATION, database),
+					Descriptors.toDescriptor(location));
 			boolean canDelete = true;
 			if (wizard.hasProblems())
 				canDelete = new WizardDialog(UI.shell(), wizard).open() == Window.OK;

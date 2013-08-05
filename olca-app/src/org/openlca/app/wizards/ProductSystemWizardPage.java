@@ -65,7 +65,7 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 
 		try {
 			final Process process = selectedProcess;
-			productSystem.getProcesses().add(process);
+			productSystem.getProcesses().add(process.getId());
 			productSystem.setReferenceProcess(process);
 			if (process.getQuantitativeReference() != null) {
 				productSystem.setReferenceExchange(process

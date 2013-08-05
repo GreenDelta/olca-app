@@ -5,19 +5,22 @@ import java.util.List;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.components.ObjectDialog;
 import org.openlca.app.viewers.table.modify.IModelChangedListener.ModelChangeType;
+import org.openlca.core.database.IDatabase;
+import org.openlca.core.database.SourceDao;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.Source;
 import org.openlca.core.model.descriptors.BaseDescriptor;
-import org.openlca.core.model.descriptors.Descriptors;
 import org.openlca.core.model.descriptors.SourceDescriptor;
 
 public class SourceViewer extends AbstractTableViewer<Source> {
 
 	private Process process;
+	private SourceDao sourceDao;
 
-	public SourceViewer(Composite parent) {
+	public SourceViewer(Composite parent, IDatabase database) {
 		super(parent);
+		this.sourceDao = new SourceDao(database);
 	}
 
 	public void setInput(Process process) {
@@ -38,7 +41,7 @@ public class SourceViewer extends AbstractTableViewer<Source> {
 	}
 
 	private void add(SourceDescriptor descriptor) {
-		Source source = Descriptors.toSource(descriptor);
+		Source source = sourceDao.getForId(descriptor.getId());
 		fireModelChanged(ModelChangeType.CREATE, source);
 		setInput(process);
 	}

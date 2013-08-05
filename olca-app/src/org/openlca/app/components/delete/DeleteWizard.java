@@ -19,7 +19,6 @@ import org.openlca.app.components.JobListenerWithProgress;
 import org.openlca.core.database.usage.IUseSearch;
 import org.openlca.core.jobs.JobHandler;
 import org.openlca.core.jobs.Jobs;
-import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +29,7 @@ import org.slf4j.LoggerFactory;
  * @see ProblemWizard
  * 
  */
-public class DeleteWizard<T extends RootEntity> extends ProblemWizard {
+public class DeleteWizard<T extends BaseDescriptor> extends ProblemWizard {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 

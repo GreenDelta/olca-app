@@ -15,6 +15,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
+import org.openlca.app.db.Database;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.ProcessTypeViewer;
 import org.openlca.app.viewers.table.SourceViewer;
@@ -93,7 +94,7 @@ class ProcessModelingPage extends ModelPage<Process> {
 		UI.gridData(composite, true, true);
 		section.setClient(composite);
 
-		SourceViewer sourceViewer = new SourceViewer(composite);
+		SourceViewer sourceViewer = new SourceViewer(composite, Database.get());
 		getBinding().on(getModel(), "documentation.sources", sourceViewer);
 		sourceViewer.bindTo(section);
 	}

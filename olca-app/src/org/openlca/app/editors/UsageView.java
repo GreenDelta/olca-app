@@ -23,14 +23,7 @@ import org.openlca.app.plugin.HtmlView;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.usage.IUseSearch;
-import org.openlca.core.model.Actor;
-import org.openlca.core.model.Flow;
-import org.openlca.core.model.FlowProperty;
-import org.openlca.core.model.Process;
-import org.openlca.core.model.Source;
-import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.descriptors.BaseDescriptor;
-import org.openlca.core.model.descriptors.Descriptors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -112,36 +105,16 @@ public class UsageView extends FormEditor {
 		private List<BaseDescriptor> runSearch() {
 			if (model == null || model.getModelType() == null)
 				return Collections.emptyList();
-			switch (model.getModelType()) {
-			case ACTOR:
-				return IUseSearch.FACTORY.createFor(Actor.class, database)
-						.findUses(Descriptors.toActor(model));
-			case SOURCE:
-				return IUseSearch.FACTORY.createFor(Source.class, database)
-						.findUses(Descriptors.toSource(model));
-			case UNIT_GROUP:
-				return IUseSearch.FACTORY.createFor(UnitGroup.class, database)
-						.findUses(Descriptors.toUnitGroup(model));
-			case FLOW_PROPERTY:
-				return IUseSearch.FACTORY.createFor(FlowProperty.class, database)
-						.findUses(Descriptors.toFlowProperty(model));
-			case FLOW:
-				return IUseSearch.FACTORY.createFor(Flow.class, database)
-						.findUses(Descriptors.toFlow(model));
-			case PROCESS:
-				return IUseSearch.FACTORY.createFor(Process.class, database)
-						.findUses(Descriptors.toProcess(model));
-			default:
-				return Collections.emptyList();
-			}
+			return IUseSearch.FACTORY.createFor(model.getModelType(), database)
+					.findUses(model);
 		}
 
 		@Override
 		protected void createFormContent(IManagedForm managedForm) {
 			if (model == null)
 				return;
-			ScrolledForm form = UI.formHeader(managedForm,
-					Messages.UsageOf + ": " + model.getDisplayName());
+			ScrolledForm form = UI.formHeader(managedForm, Messages.UsageOf
+					+ ": " + model.getDisplayName());
 			FormToolkit toolkit = managedForm.getToolkit();
 			Composite body = UI.formBody(form, toolkit);
 			browser = UI.createBrowser(body, this);

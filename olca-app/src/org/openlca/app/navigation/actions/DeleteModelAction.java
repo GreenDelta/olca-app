@@ -28,15 +28,7 @@ import org.openlca.core.database.ProjectDao;
 import org.openlca.core.database.SourceDao;
 import org.openlca.core.database.UnitGroupDao;
 import org.openlca.core.database.usage.IUseSearch;
-import org.openlca.core.model.Actor;
-import org.openlca.core.model.Flow;
-import org.openlca.core.model.FlowProperty;
-import org.openlca.core.model.ImpactMethod;
-import org.openlca.core.model.Process;
-import org.openlca.core.model.RootEntity;
-import org.openlca.core.model.Source;
-import org.openlca.core.model.UnitGroup;
-import org.openlca.core.model.descriptors.Descriptors;
+import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.results.ImpactResult;
 
 public class DeleteModelAction extends Action implements INavigationAction {
@@ -79,7 +71,9 @@ public class DeleteModelAction extends Action implements INavigationAction {
 		// TODO implement deletion of list
 		// current list contains only one element
 		ModelElement element = elements.get(0);
-		DeleteWizard<? extends RootEntity> wizard = getWizard(element);
+		DeleteWizard<BaseDescriptor> wizard = new DeleteWizard<>(
+				IUseSearch.FACTORY.createFor(element.getContent()
+						.getModelType(), Database.get()), element.getContent());
 		boolean canDelete = true;
 		if (wizard != null && wizard.hasProblems())
 			canDelete = new WizardDialog(UI.shell(), wizard).open() == Window.OK;
@@ -90,91 +84,58 @@ public class DeleteModelAction extends Action implements INavigationAction {
 		}
 	}
 
-	private DeleteWizard<? extends RootEntity> getWizard(ModelElement element) {
-		switch (element.getContent().getModelType()) {
-		case ACTOR:
-			return new DeleteWizard<Actor>(IUseSearch.FACTORY.createFor(
-					Actor.class, Database.get()), Descriptors.toActor(element
-					.getContent()));
-		case SOURCE:
-			return new DeleteWizard<Source>(IUseSearch.FACTORY.createFor(
-					Source.class, Database.get()), Descriptors.toSource(element
-					.getContent()));
-		case UNIT_GROUP:
-			return new DeleteWizard<UnitGroup>(IUseSearch.FACTORY.createFor(
-					UnitGroup.class, Database.get()),
-					Descriptors.toUnitGroup(element.getContent()));
-		case FLOW_PROPERTY:
-			return new DeleteWizard<FlowProperty>(IUseSearch.FACTORY.createFor(
-					FlowProperty.class, Database.get()),
-					Descriptors.toFlowProperty(element.getContent()));
-		case FLOW:
-			return new DeleteWizard<Flow>(IUseSearch.FACTORY.createFor(
-					Flow.class, Database.get()), Descriptors.toFlow(element
-					.getContent()));
-		case PROCESS:
-			return new DeleteWizard<Process>(IUseSearch.FACTORY.createFor(
-					Process.class, Database.get()),
-					Descriptors.toProcess(element.getContent()));
-		case IMPACT_METHOD:
-			return new DeleteWizard<ImpactMethod>(IUseSearch.FACTORY.createFor(
-					ImpactMethod.class, Database.get()),
-					Descriptors.toImpactMethod(element.getContent()));
-		case IMPACT_RESULT:
-			return new DeleteWizard<ImpactResult>(IUseSearch.FACTORY.createFor(
-					ImpactResult.class, Database.get()),
-					Descriptors.toImpactResult(element.getContent()));
-		default:
-			return null;
-		}
-	}
-
 	private void delete(ModelElement element) {
 		IDatabase database = Database.get();
 		switch (element.getContent().getModelType()) {
 		case ACTOR:
-			new ActorDao(database).delete(Descriptors.toActor(element
-					.getContent()));
+			ActorDao actorDao = new ActorDao(database);
+			actorDao.delete(actorDao.getForId(element.getContent().getId()));
 			break;
 		case SOURCE:
-			new SourceDao(database).delete(Descriptors.toSource(element
-					.getContent()));
+			SourceDao sourceDao = new SourceDao(database);
+			sourceDao.delete(sourceDao.getForId(element.getContent().getId()));
 			break;
 		case UNIT_GROUP:
-			new UnitGroupDao(database).delete(Descriptors.toUnitGroup(element
-					.getContent()));
+			UnitGroupDao unitGroupDao = new UnitGroupDao(database);
+			unitGroupDao.delete(unitGroupDao.getForId(element.getContent()
+					.getId()));
 			break;
 		case FLOW_PROPERTY:
-			new FlowPropertyDao(database).delete(Descriptors
-					.toFlowProperty(element.getContent()));
+			FlowPropertyDao flowPropertyDao = new FlowPropertyDao(database);
+			flowPropertyDao.delete(flowPropertyDao.getForId(element
+					.getContent().getId()));
 			break;
 		case FLOW:
-			new FlowDao(database).delete(Descriptors.toFlow(element
-					.getContent()));
+			FlowDao flowDao = new FlowDao(database);
+			flowDao.delete(flowDao.getForId(element.getContent().getId()));
 			break;
 		case PROCESS:
-			new ProcessDao(database).delete(Descriptors.toProcess(element
-					.getContent()));
+			ProcessDao processDao = new ProcessDao(database);
+			processDao
+					.delete(processDao.getForId(element.getContent().getId()));
 			break;
 		case PRODUCT_SYSTEM:
-			new ProductSystemDao(database).delete(Descriptors
-					.toProductSystem(element.getContent()));
+			ProductSystemDao productSystemDao = new ProductSystemDao(database);
+			productSystemDao.delete(productSystemDao.getForId(element
+					.getContent().getId()));
 			break;
 		case PROJECT:
-			new ProjectDao(database).delete(Descriptors.toProject(element
-					.getContent()));
+			ProjectDao projectDao = new ProjectDao(database);
+			projectDao
+					.delete(projectDao.getForId(element.getContent().getId()));
 			break;
 		case IMPACT_METHOD:
-			new ImpactMethodDao(database).delete(Descriptors
-					.toImpactMethod(element.getContent()));
+			ImpactMethodDao impactMethodDao = new ImpactMethodDao(database);
+			impactMethodDao.delete(impactMethodDao.getForId(element
+					.getContent().getId()));
 			break;
 		case IMPACT_RESULT:
-			new BaseDao<ImpactResult>(ImpactResult.class, database)
-					.delete(Descriptors.toImpactResult(element.getContent()));
+			BaseDao<ImpactResult> baseDao = new BaseDao<>(ImpactResult.class,
+					database);
+			baseDao.delete(baseDao.getForId(element.getContent().getId()));
 			break;
 		default:
 			break;
 		}
 	}
-
 }
