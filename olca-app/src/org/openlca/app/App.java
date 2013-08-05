@@ -105,7 +105,7 @@ public class App {
 					break;
 				}
 			} catch (PartInitException e) {
-				e.printStackTrace();
+				log.error("Error closing editor", e);
 			}
 	}
 

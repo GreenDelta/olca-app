@@ -6,6 +6,7 @@ import java.io.IOException;
 import org.openlca.app.html.HtmlFolder;
 import org.openlca.app.html.HtmlResource;
 import org.openlca.app.html.IHtmlResource;
+import org.slf4j.LoggerFactory;
 
 enum Resource {
 
@@ -27,7 +28,8 @@ enum Resource {
 					HtmlFolder.register(dependency.getResource());
 			HtmlFolder.register(resource);
 		} catch (IOException e) {
-			e.printStackTrace();
+			LoggerFactory.getLogger(getClass()).error(
+					"Error loading html resource", e);
 		}
 		return resource;
 	}

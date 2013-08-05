@@ -32,6 +32,7 @@ public class Workspace {
 			Workspace.dir = dir;
 			return dir;
 		} catch (Exception e) {
+			// no logging here as the logger is not yet configured
 			e.printStackTrace();
 			return null;
 		}

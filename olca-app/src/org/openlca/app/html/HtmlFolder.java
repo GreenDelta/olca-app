@@ -36,7 +36,7 @@ public class HtmlFolder {
 		try {
 			initializeBaseFiles();
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.error("Error initializing html base files", e);
 		}
 	}
 

@@ -124,7 +124,7 @@ public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 							try {
 								method.invoke(thisObject, object);
 							} catch (Exception e) {
-								e.printStackTrace();
+								log.error("Error invoking OnDrop method", e);
 							}
 						}
 				} else {
@@ -132,7 +132,7 @@ public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 						try {
 							method.invoke(thisObject, value);
 						} catch (Exception e) {
-							e.printStackTrace();
+							log.error("Error invoking OnDrop method", e);
 						}
 				}
 			}

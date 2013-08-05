@@ -31,15 +31,10 @@ public class EcoSpold2ExportWizard extends Wizard implements IExportWizard {
 		List<BaseDescriptor> selection = exportPage
 				.getSelectedModelComponents();
 		for (BaseDescriptor descriptor : selection) {
-			try {
-				Process process = new ProcessDao(Database.get())
-						.getForId(descriptor.getId());
-				ProcessExport export = new ProcessExport(process,
-						Database.get());
-				export.run(targetDir);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			Process process = new ProcessDao(Database.get())
+					.getForId(descriptor.getId());
+			ProcessExport export = new ProcessExport(process, Database.get());
+			export.run(targetDir);
 		}
 		return true;
 	}

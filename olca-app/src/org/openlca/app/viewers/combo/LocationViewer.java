@@ -17,21 +17,16 @@ public class LocationViewer extends AbstractComboViewer<Location> {
 	}
 
 	public void setInput(IDatabase database) {
-		try {
-			List<Location> locations = database.createDao(Location.class)
-					.getAll();
-			Collections.sort(locations, new Comparator<Location>() {
-				@Override
-				public int compare(Location loc1, Location loc2) {
-					if (loc1 == null || loc2 == null)
-						return 0;
-					return Strings.compare(loc1.getName(), loc2.getName());
-				}
-			});
-			super.setInput(locations.toArray(new Location[locations.size()]));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		List<Location> locations = database.createDao(Location.class).getAll();
+		Collections.sort(locations, new Comparator<Location>() {
+			@Override
+			public int compare(Location loc1, Location loc2) {
+				if (loc1 == null || loc2 == null)
+					return 0;
+				return Strings.compare(loc1.getName(), loc2.getName());
+			}
+		});
+		super.setInput(locations.toArray(new Location[locations.size()]));
 	}
 
 	@Override
