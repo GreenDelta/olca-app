@@ -110,7 +110,7 @@ public class CreateModelAction extends Action implements INavigationAction {
 		case FLOW_PROPERTY:
 			return prefix + "flow property";
 		case IMPACT_METHOD:
-			return prefix + "LCIA method";
+			return prefix + "impact method";
 		case PROCESS:
 			return prefix + "process";
 		case PRODUCT_SYSTEM:

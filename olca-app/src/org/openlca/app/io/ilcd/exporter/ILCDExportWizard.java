@@ -43,7 +43,7 @@ public class ILCDExportWizard extends Wizard implements IExportWizard {
 		this.type = type;
 	}
 
-	protected void setComponents(List<BaseDescriptor> components) {
+	public void setComponents(List<BaseDescriptor> components) {
 		this.components = components;
 	}
 

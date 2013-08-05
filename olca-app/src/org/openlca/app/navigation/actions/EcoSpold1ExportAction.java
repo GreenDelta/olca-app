@@ -7,24 +7,24 @@
  * Contributors: GreenDeltaTC - initial API and implementation
  * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
  ******************************************************************************/
-package org.openlca.app.io.ecospold1;
+package org.openlca.app.navigation.actions;
 
-import java.util.Collections;
-
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.openlca.app.Messages;
+import org.openlca.app.io.ecospold1.EcoSpold01ExportWizard;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.UI;
-import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.ModelType;
 
 /**
- * Action for exporting a process or LCIA method in the EcoSpold01 format
+ * Action for exporting a process or impact method in the EcoSpold01 format
  */
-public class ExportToEcoSpold1Action extends Action {
+public class EcoSpold1ExportAction extends ExportAction {
 
-	private BaseDescriptor component;
+	public EcoSpold1ExportAction() {
+		super(ModelType.PROCESS, ModelType.IMPACT_METHOD);
+	}
 
 	@Override
 	public ImageDescriptor getImageDescriptor() {
@@ -38,17 +38,10 @@ public class ExportToEcoSpold1Action extends Action {
 
 	@Override
 	public void run() {
-		if (component != null) {
-			EcoSpold01ExportWizard wizard = new EcoSpold01ExportWizard(
-					component.getModelType());
-			wizard.setComponents(Collections.singletonList(component));
-			WizardDialog dialog = new WizardDialog(UI.shell(), wizard);
-			dialog.open();
-		}
-	}
-
-	public void setDescriptor(BaseDescriptor component) {
-		this.component = component;
+		EcoSpold01ExportWizard wizard = new EcoSpold01ExportWizard(getType());
+		wizard.setComponents(getComponents());
+		WizardDialog dialog = new WizardDialog(UI.shell(), wizard);
+		dialog.open();
 	}
 
 }

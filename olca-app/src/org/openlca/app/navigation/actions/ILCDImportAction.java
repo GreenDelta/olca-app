@@ -7,22 +7,20 @@
  * Contributors: GreenDeltaTC - initial API and implementation
  * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
  ******************************************************************************/
-package org.openlca.app.io.ecospold1;
+package org.openlca.app.navigation.actions;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.openlca.app.Messages;
+import org.openlca.app.db.Database;
+import org.openlca.app.io.ilcd.importer.ILCDImportWizard;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.UI;
-import org.openlca.core.database.IDatabase;
 
 /**
- * Action for importing EcoSpold01 formatted files
+ * Action for importing ILCD formatted files
  */
-public class ImportEcoSpold1Action extends Action {
-
-	private IDatabase database;
+public class ILCDImportAction extends ImportAction {
 
 	@Override
 	public ImageDescriptor getImageDescriptor() {
@@ -31,20 +29,14 @@ public class ImportEcoSpold1Action extends Action {
 
 	@Override
 	public String getText() {
-		return Messages.EcoSpoldImportActionText;
+		return Messages.ILCDImportActionText;
 	}
 
 	@Override
 	public void run() {
-		if (database != null) {
-			final WizardDialog dialog = new WizardDialog(UI.shell(),
-					new EcoSpold01ImportWizard());
-			dialog.open();
-		}
-	}
-
-	public void setDatabase(final IDatabase database) {
-		this.database = database;
+		final WizardDialog dialog = new WizardDialog(UI.shell(),
+				new ILCDImportWizard(Database.get()));
+		dialog.open();
 	}
 
 }

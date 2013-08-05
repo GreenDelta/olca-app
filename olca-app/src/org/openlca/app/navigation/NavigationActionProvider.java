@@ -26,6 +26,10 @@ import org.openlca.app.navigation.actions.CutAction;
 import org.openlca.app.navigation.actions.DeleteCategoryAction;
 import org.openlca.app.navigation.actions.DeleteDatabaseAction;
 import org.openlca.app.navigation.actions.DeleteModelAction;
+import org.openlca.app.navigation.actions.EcoSpold1ExportAction;
+import org.openlca.app.navigation.actions.EcoSpold1ImportAction;
+import org.openlca.app.navigation.actions.ILCDExportAction;
+import org.openlca.app.navigation.actions.ILCDImportAction;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.actions.OpenModelAction;
 import org.openlca.app.navigation.actions.OpenUsageAction;
@@ -58,6 +62,13 @@ public class NavigationActionProvider extends CommonActionProvider {
 				new CutAction(),
 				new CopyAction(),				
 				new PasteAction()
+			}, 
+			// IO actions
+			new INavigationAction[] {
+				new EcoSpold1ExportAction(),
+				new EcoSpold1ImportAction(),
+				new ILCDExportAction(),
+				new ILCDImportAction()
 			},
 			// category actions
 			new INavigationAction[] {
