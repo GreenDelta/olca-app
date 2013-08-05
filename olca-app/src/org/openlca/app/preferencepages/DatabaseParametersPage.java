@@ -45,7 +45,6 @@ import org.openlca.app.util.Question;
 import org.openlca.app.util.Viewers;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ParameterDao;
-import org.openlca.core.model.Expression;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterType;
 import org.slf4j.Logger;
@@ -294,8 +293,8 @@ public class DatabaseParametersPage extends PreferencePage implements
 
 		@Override
 		public void run() {
-			Parameter parameter = new Parameter(new Expression("1", 1),
-					ParameterType.DATABASE, null);
+			Parameter parameter = new Parameter();
+			parameter.setType(ParameterType.DATABASE);
 			String name = "p" + parameters.size();
 			parameter.setName(name);
 			parameters.add(parameter);
