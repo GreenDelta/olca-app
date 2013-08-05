@@ -1,6 +1,10 @@
 package org.openlca.app.util;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.CategoryElement;
@@ -208,10 +212,56 @@ public class CopyPaste {
 
 	private static void copy(CategoryElement element,
 			INavigationElement<?> category) {
+		List<CategorizedEntity> entitiesToInsert = new ArrayList<>();
+		Category parent = getCategory(category);
+		Category rootCopy = null;
+		Queue<CategoryElement> elements = new LinkedList<>();
+		elements.add(element);
+		Category currentParent = parent;
+		while (!elements.isEmpty()) {
+			CategoryElement current = elements.poll();
+			Category copy = current.getContent().clone();
+			if (rootCopy == null)
+				rootCopy = copy;
+			copy.getChildCategories().clear();
+			copy.setParentCategory(parent);
+			if (currentParent != null)
+				currentParent.getChildCategories().add(copy);
+			for (INavigationElement<?> child : current.getChildren())
+				if (child instanceof CategoryElement)
+					elements.add((CategoryElement) child);
+				else {
+					CategorizedEntity modelCopy = copy((ModelElement) child);
+					modelCopy.setCategory(copy);
+					entitiesToInsert.add(modelCopy);
+				}
+			currentParent = copy;
+		}
+		if (parent != null)
+			new CategoryDao(Database.get()).update(parent);
+		else
+			new CategoryDao(Database.get()).insert(rootCopy);
+		for (CategorizedEntity entity : entitiesToInsert)
+			insert(entity);
 	}
 
 	private static void copy(ModelElement element,
 			INavigationElement<?> category) {
+		CategorizedEntity copy = copy(element);
+		copy.setCategory(getCategory(category));
+		insert(copy);
+	}
+
+	private static CategorizedEntity copy(ModelElement element) {
+		BaseDescriptor descriptor = element.getContent();
+
+		CategorizedEntityDao<?, ?> dao = Database.createRootDao(descriptor
+				.getModelType());
+		@SuppressWarnings("cast")
+		CategorizedEntity entity = (CategorizedEntity) dao.getForId(descriptor
+				.getId());
+		CategorizedEntity copy = CloneUtil.clone(entity);
+		return copy;
 	}
 
 	private static void insert(CategorizedEntity entity) {

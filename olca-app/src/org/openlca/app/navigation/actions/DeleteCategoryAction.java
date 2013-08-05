@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DeleteCategoryAction extends Action implements INavigationAction {
 
-	private Category category;
+	private CategoryElement categoryElement;
 	private INavigationElement<?> parentElement;
 
 	public DeleteCategoryAction() {
@@ -42,8 +42,7 @@ public class DeleteCategoryAction extends Action implements INavigationAction {
 	public boolean accept(INavigationElement<?> element) {
 		if (!(element instanceof CategoryElement))
 			return false;
-		CategoryElement e = (CategoryElement) element;
-		category = e.getContent();
+		categoryElement = (CategoryElement) element;
 		parentElement = element.getParent();
 		return true;
 	}
@@ -54,10 +53,9 @@ public class DeleteCategoryAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		if (category == null)
+		if (categoryElement == null)
 			return;
-		if (category.getChildCategories().size() != 0) {
-			// TODO: models in category !
+		if (categoryElement.getChildren().size() != 0) {
 			Error.showBox("The category is not empty.");
 			return;
 		}
@@ -69,6 +67,7 @@ public class DeleteCategoryAction extends Action implements INavigationAction {
 	}
 
 	private void delete() {
+		Category category = categoryElement.getContent();
 		try {
 			BaseDao<Category> dao = Database.get().createDao(Category.class);
 			Category parent = category.getParentCategory();
