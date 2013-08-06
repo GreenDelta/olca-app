@@ -26,8 +26,7 @@ class FlowPropertiesPage extends ModelPage<Flow> {
 	private FormToolkit toolkit;
 
 	FlowPropertiesPage(FlowEditor editor) {
-		super(editor, "FlowPropertiesPage",
-				Messages.FlowPropertiesPageLabel);
+		super(editor, "FlowPropertiesPage", Messages.FlowPropertiesPageLabel);
 	}
 
 	@Override
@@ -43,7 +42,7 @@ class FlowPropertiesPage extends ModelPage<Flow> {
 		Composite client = UI.sectionClient(section, toolkit);
 
 		FlowPropertyFactorViewer factorViewer = new FlowPropertyFactorViewer(
-				client, Database.get());
+				client, Database.getCache());
 		getBinding().on(getModel(), "flowPropertyFactors", factorViewer);
 		factorViewer.bindTo(section);
 
