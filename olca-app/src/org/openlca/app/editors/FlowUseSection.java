@@ -14,6 +14,7 @@ import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Colors;
+import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
@@ -71,8 +72,8 @@ class FlowUseSection {
 		UI.gridLayout(linkComposite, 1).verticalSpacing = 0;
 		for (ProcessDescriptor d : descriptors) {
 			ImageHyperlink link = new ImageHyperlink(linkComposite, SWT.TOP);
-			link.setText(d.getDisplayName());
-			link.setToolTipText(d.getDisplayInfoText());
+			link.setText(Labels.getDisplayName(d));
+			link.setToolTipText(Labels.getDisplayInfoText(d));
 			link.setImage(image);
 			link.addHyperlinkListener(new LinkListener(d));
 			link.setForeground(Colors.getLinkBlue());

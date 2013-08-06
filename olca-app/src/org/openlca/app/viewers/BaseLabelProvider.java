@@ -61,7 +61,7 @@ public class BaseLabelProvider extends ColumnLabelProvider {
 		if (element instanceof NormalizationWeightingSet)
 			return ((NormalizationWeightingSet) element).getReferenceSystem();
 		if (element instanceof BaseDescriptor)
-			return ((BaseDescriptor) element).getDisplayName();
+			return Labels.getDisplayName((BaseDescriptor) element);
 		if (element instanceof Enum<?>)
 			return getEnumText(element);
 		if (element != null)
@@ -103,13 +103,13 @@ public class BaseLabelProvider extends ColumnLabelProvider {
 	protected String getModelLabel(BaseDescriptor d) {
 		if (d == null)
 			return null;
-		return Strings.cut(d.getDisplayName(), 75);
+		return Strings.cut(Labels.getDisplayName(d), 75);
 	}
 
 	@Override
 	public String getToolTipText(Object element) {
 		if (element instanceof BaseDescriptor)
-			return ((BaseDescriptor) element).getDisplayInfoText();
+			return Labels.getDisplayInfoText((BaseDescriptor) element);
 		return null;
 	}
 

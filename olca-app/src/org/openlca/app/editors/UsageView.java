@@ -20,6 +20,7 @@ import org.openlca.app.Messages;
 import org.openlca.app.html.HtmlPage;
 import org.openlca.app.html.IHtmlResource;
 import org.openlca.app.plugin.HtmlView;
+import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.usage.IUseSearch;
@@ -114,7 +115,7 @@ public class UsageView extends FormEditor {
 			if (model == null)
 				return;
 			ScrolledForm form = UI.formHeader(managedForm, Messages.UsageOf
-					+ ": " + model.getDisplayName());
+					+ ": " + Labels.getDisplayName(model));
 			FormToolkit toolkit = managedForm.getToolkit();
 			Composite body = UI.formBody(form, toolkit);
 			browser = UI.createBrowser(body, this);

@@ -6,6 +6,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
 import org.openlca.app.util.Images;
+import org.openlca.app.util.Labels;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 
 /**
@@ -54,7 +55,7 @@ public final class ModelEditorInput implements IEditorInput {
 	public String getName() {
 		if (descriptor == null)
 			return "no content";
-		return descriptor.getDisplayName();
+		return Labels.getDisplayName(descriptor);
 	}
 
 	@Override

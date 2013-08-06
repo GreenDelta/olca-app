@@ -10,6 +10,7 @@ import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.resources.ImageType;
+import org.openlca.app.util.Labels;
 import org.openlca.core.math.IResultData;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.util.Strings;
@@ -78,7 +79,7 @@ public class ImpactCategoryViewer extends
 
 			switch (columnIndex) {
 			case 0:
-				return category.getDisplayName();
+				return Labels.getDisplayName(category);
 			case 1:
 				return category.getReferenceUnit();
 			}

@@ -9,6 +9,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.components.ObjectDialog;
 import org.openlca.app.util.Images;
+import org.openlca.app.util.Labels;
 import org.openlca.app.viewers.table.modify.IModelChangedListener.ModelChangeType;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ProductSystemDao;
@@ -83,7 +84,8 @@ public class ProductSystemViewer extends AbstractTableViewer<Long> {
 				return null;
 			Long id = (Long) element;
 			if (!nameCache.containsKey(id))
-				nameCache.put(id, systemDao.getDescriptor(id).getDisplayName());
+				nameCache.put(id,
+						Labels.getDisplayName(systemDao.getDescriptor(id)));
 			return nameCache.get(id);
 		}
 	}

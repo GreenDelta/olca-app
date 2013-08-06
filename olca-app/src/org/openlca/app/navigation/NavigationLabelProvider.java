@@ -18,6 +18,7 @@ import org.eclipse.ui.navigator.ICommonLabelProvider;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.resources.ImageType;
+import org.openlca.app.util.Labels;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
@@ -40,7 +41,7 @@ public class NavigationLabelProvider extends ColumnLabelProvider implements
 			return null;
 		ModelElement element = (ModelElement) anElement;
 		BaseDescriptor descriptor = element.getContent();
-		return descriptor.getDisplayInfoText();
+		return Labels.getDisplayInfoText(descriptor);
 	}
 
 	@Override
@@ -142,7 +143,7 @@ public class NavigationLabelProvider extends ColumnLabelProvider implements
 		if (o instanceof ModelType)
 			return getTypeName((ModelType) o);
 		if (o instanceof BaseDescriptor)
-			return ((BaseDescriptor) o).getDisplayName();
+			return Labels.getDisplayName((BaseDescriptor) o);
 		else
 			return null;
 	}

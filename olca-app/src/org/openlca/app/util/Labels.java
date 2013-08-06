@@ -9,10 +9,19 @@ import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.UncertaintyDistributionType;
+import org.openlca.core.model.descriptors.BaseDescriptor;
 
 public class Labels {
 
 	private Labels() {
+	}
+
+	public static String getDisplayName(BaseDescriptor descriptor) {
+		return descriptor.getName();
+	}
+
+	public static String getDisplayInfoText(BaseDescriptor descriptor) {
+		return descriptor.getDescription();
 	}
 
 	public static String getEnumText(Object enumValue) {

@@ -18,6 +18,7 @@ import org.eclipse.ui.forms.widgets.TableWrapLayout;
 import org.openlca.app.Messages;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Images;
+import org.openlca.app.util.Labels;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 
@@ -57,10 +58,10 @@ public final class TextDropComponent extends Composite {
 
 		this.content = content;
 		text.setData(content); // tooltip
-		if (content == null || content.getDisplayName() == null) {
+		if (content == null) {
 			text.setText("");
 		} else {
-			text.setText(content.getDisplayName());
+			text.setText(Labels.getDisplayName(content));
 		}
 		removeButton.setEnabled(content != null);
 	}

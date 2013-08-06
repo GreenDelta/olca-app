@@ -6,6 +6,7 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.util.Images;
+import org.openlca.app.util.Labels;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 
 public class DescriptorViewer extends AbstractTableViewer<BaseDescriptor> {
@@ -43,7 +44,7 @@ public class DescriptorViewer extends AbstractTableViewer<BaseDescriptor> {
 			BaseDescriptor descriptor = (BaseDescriptor) element;
 			switch (columnIndex) {
 			case 0:
-				return descriptor.getDisplayName();
+				return Labels.getDisplayName(descriptor);
 			case 1:
 				return descriptor.getDescription();
 			}
