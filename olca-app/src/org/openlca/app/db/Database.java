@@ -6,6 +6,7 @@ import java.util.Objects;
 import org.openlca.app.App;
 import org.openlca.core.database.ActorDao;
 import org.openlca.core.database.BaseDao;
+import org.openlca.core.database.Cache;
 import org.openlca.core.database.CategorizedEntityDao;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.FlowPropertyDao;
@@ -25,12 +26,17 @@ public class Database {
 	private static IDatabase database;
 	private static IDatabaseConfiguration config;
 	private static DatabaseList configurations = loadConfigs();
+	private static Cache cache;
 
 	private Database() {
 	}
 
 	public static IDatabase get() {
 		return database;
+	}
+
+	public static Cache getCache() {
+		return cache;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -45,6 +51,8 @@ public class Database {
 	public static IDatabase activate(IDatabaseConfiguration config)
 			throws Exception {
 		Database.database = config.createInstance();
+		Database.cache = new Cache(Database.database);
+		Database.cache.load();
 		Database.config = config;
 		return Database.database;
 	}
@@ -62,6 +70,7 @@ public class Database {
 		database.close();
 		database = null;
 		config = null;
+		cache = null;
 	}
 
 	private static DatabaseList loadConfigs() {

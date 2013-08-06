@@ -11,8 +11,7 @@ import org.openlca.app.components.ObjectDialog;
 import org.openlca.app.util.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.viewers.table.modify.IModelChangedListener.ModelChangeType;
-import org.openlca.core.database.IDatabase;
-import org.openlca.core.database.ProductSystemDao;
+import org.openlca.core.database.Cache;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Project;
 import org.openlca.core.model.descriptors.BaseDescriptor;
@@ -21,11 +20,11 @@ import org.openlca.core.model.descriptors.ProductSystemDescriptor;
 public class ProductSystemViewer extends AbstractTableViewer<Long> {
 
 	private Project project;
-	private ProductSystemDao systemDao;
+	private Cache cache;
 
-	public ProductSystemViewer(Composite parent, IDatabase database) {
+	public ProductSystemViewer(Composite parent, Cache cache) {
 		super(parent);
-		this.systemDao = new ProductSystemDao(database);
+		this.cache = cache;
 	}
 
 	public void setInput(Project project) {
@@ -84,8 +83,8 @@ public class ProductSystemViewer extends AbstractTableViewer<Long> {
 				return null;
 			Long id = (Long) element;
 			if (!nameCache.containsKey(id))
-				nameCache.put(id,
-						Labels.getDisplayName(systemDao.getDescriptor(id)));
+				nameCache.put(id, Labels.getDisplayName(cache
+						.getProductSystemDescriptor(id)));
 			return nameCache.get(id);
 		}
 	}

@@ -18,6 +18,7 @@ import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.ActorDao;
 import org.openlca.core.database.BaseDao;
+import org.openlca.core.database.Cache;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.FlowPropertyDao;
 import org.openlca.core.database.IDatabase;
@@ -86,6 +87,7 @@ public class DeleteModelAction extends Action implements INavigationAction {
 
 	private void delete(ModelElement element) {
 		IDatabase database = Database.get();
+		Cache cache = Database.getCache();
 		switch (element.getContent().getModelType()) {
 		case ACTOR:
 			ActorDao actorDao = new ActorDao(database);
@@ -97,13 +99,13 @@ public class DeleteModelAction extends Action implements INavigationAction {
 			break;
 		case UNIT_GROUP:
 			UnitGroupDao unitGroupDao = new UnitGroupDao(database);
-			unitGroupDao.delete(unitGroupDao.getForId(element.getContent()
-					.getId()));
+			unitGroupDao.delete(cache
+					.getUnitGroup(element.getContent().getId()));
 			break;
 		case FLOW_PROPERTY:
 			FlowPropertyDao flowPropertyDao = new FlowPropertyDao(database);
-			flowPropertyDao.delete(flowPropertyDao.getForId(element
-					.getContent().getId()));
+			flowPropertyDao.delete(cache.getFlowProperty(element.getContent()
+					.getId()));
 			break;
 		case FLOW:
 			FlowDao flowDao = new FlowDao(database);

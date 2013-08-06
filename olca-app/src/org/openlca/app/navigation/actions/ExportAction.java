@@ -2,7 +2,9 @@ package org.openlca.app.navigation.actions;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jface.action.Action;
 import org.openlca.app.navigation.CategoryElement;
@@ -16,7 +18,7 @@ class ExportAction extends Action implements INavigationAction {
 
 	private List<BaseDescriptor> components;
 	private ModelType type;
-	private List<Long> visited;
+	private Set<Long> visited;
 	private ModelType[] acceptedTypes;
 
 	ExportAction(ModelType... acceptedTypes) {
@@ -86,7 +88,7 @@ class ExportAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean accept(INavigationElement<?> element) {
-		visited = new ArrayList<>();
+		visited = new HashSet<>();
 		type = null;
 		if (!accepted(element))
 			return false;
@@ -96,7 +98,7 @@ class ExportAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean accept(List<INavigationElement<?>> elements) {
-		visited = new ArrayList<>();
+		visited = new HashSet<>();
 		type = null;
 		for (INavigationElement<?> element : elements)
 			if (!accepted(element))

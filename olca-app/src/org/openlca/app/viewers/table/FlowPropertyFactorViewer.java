@@ -1,6 +1,7 @@
 package org.openlca.app.viewers.table;
 
 import java.util.Objects;
+
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -16,8 +17,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.table.modify.CheckBoxCellModifier;
 import org.openlca.app.viewers.table.modify.IModelChangedListener.ModelChangeType;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
-import org.openlca.core.database.FlowPropertyDao;
-import org.openlca.core.database.IDatabase;
+import org.openlca.core.database.Cache;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.ModelType;
@@ -38,15 +38,15 @@ public class FlowPropertyFactorViewer extends
 			LABEL.CONVERSION_FACTOR, LABEL.REFERENCE_UNIT, LABEL.IS_REFERENCE };
 
 	private Flow flow;
-	private final FlowPropertyDao flowPropertyDao;
+	private Cache cache;
 
-	public FlowPropertyFactorViewer(Composite parent, IDatabase database) {
+	public FlowPropertyFactorViewer(Composite parent, Cache cache) {
 		super(parent);
 		getCellModifySupport().support(LABEL.CONVERSION_FACTOR,
 				new ConversionFactorModifier());
 		getCellModifySupport().support(LABEL.IS_REFERENCE,
 				new ReferenceModifier());
-		flowPropertyDao = new FlowPropertyDao(database);
+		this.cache = cache;
 	}
 
 	public void setInput(Flow flow) {
@@ -80,7 +80,7 @@ public class FlowPropertyFactorViewer extends
 
 	private void add(BaseDescriptor descriptor) {
 		FlowPropertyFactor factor = new FlowPropertyFactor();
-		factor.setFlowProperty(flowPropertyDao.getForId(descriptor.getId()));
+		factor.setFlowProperty(cache.getFlowProperty(descriptor.getId()));
 		fireModelChanged(ModelChangeType.CREATE, factor);
 		setInput(flow);
 	}

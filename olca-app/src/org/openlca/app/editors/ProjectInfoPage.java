@@ -72,7 +72,7 @@ class ProjectInfoPage extends ModelPage<Project> {
 		Composite client = UI.sectionClient(section, toolkit);
 
 		ProductSystemViewer viewer = new ProductSystemViewer(client,
-				Database.get());
+				Database.getCache());
 		viewer.bindTo(section);
 		getBinding().on(getModel(), "productSystems", viewer);
 	}
