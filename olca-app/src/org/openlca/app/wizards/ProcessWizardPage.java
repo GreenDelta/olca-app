@@ -15,7 +15,6 @@ import org.eclipse.swt.widgets.Label;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.INavigationElement;
-import org.openlca.app.navigation.NavigationRoot;
 import org.openlca.app.navigation.NavigationTree;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.filters.EmptyCategoryFilter;
@@ -26,6 +25,7 @@ import org.openlca.app.util.Viewers;
 import org.openlca.app.viewers.combo.FlowPropertyViewer;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowType;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.Descriptors;
 import org.slf4j.Logger;
@@ -92,9 +92,7 @@ class ProcessWizardPage extends AbstractWizardPage<Process> {
 	}
 
 	private void setData() {
-		NavigationRoot root = Navigator.getNavigationRoot();
-		if (root != null)
-			productViewer.setInput(root);
+		productViewer.setInput(Navigator.findElement(ModelType.FLOW));
 		flowPropertyViewer.setInput(Database.get());
 		flowPropertyViewer.selectFirst();
 	}
@@ -167,8 +165,6 @@ class ProcessWizardPage extends AbstractWizardPage<Process> {
 		UI.gridData(productViewerContainer, true, false);
 		productViewerContainer.setLayout(gridLayout());
 		productViewer = NavigationTree.createViewer(productViewerContainer);
-		productViewer.setInput(Navigator.getNavigationRoot()); // TODO: only
-																// processes
 		UI.gridData(productViewer.getTree(), true, true).heightHint = 200;
 		productViewer.addFilter(new FlowTypeFilter(FlowType.ELEMENTARY_FLOW,
 				FlowType.WASTE_FLOW));

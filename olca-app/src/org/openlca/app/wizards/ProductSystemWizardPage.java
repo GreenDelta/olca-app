@@ -24,9 +24,11 @@ import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.NavigationRoot;
 import org.openlca.app.navigation.NavigationTree;
 import org.openlca.app.navigation.Navigator;
+import org.openlca.app.navigation.filters.EmptyCategoryFilter;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.UIFactory;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
 import org.slf4j.Logger;
@@ -114,9 +116,9 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 	}
 
 	private void createProcessViewer(Composite container) {
-		NavigationRoot root = Navigator.getNavigationRoot();
 		processViewer = NavigationTree.createViewer(container);
-		processViewer.setInput(root); // only processes + filter
+		processViewer.setInput(Navigator.findElement(ModelType.PROCESS));
+		processViewer.addFilter(new EmptyCategoryFilter());
 		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
 		gd.heightHint = 200;
 		processViewer.getTree().setLayoutData(gd);
