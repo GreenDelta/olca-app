@@ -1,6 +1,7 @@
 package org.openlca.app.util;
 
 import org.openlca.app.Messages;
+import org.openlca.core.database.DatabaseContent;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
@@ -146,4 +147,18 @@ public class Labels {
 		}
 	}
 
+	public static String databaseContent(DatabaseContent content) {
+		if (content == null)
+			return null;
+		switch (content) {
+		case EMPTY:
+			return Messages.EmptyDatabase;
+		case UNITS:
+			return Messages.UnitsAndFlowProps;
+		case ALL_REF_DATA:
+			return Messages.CompleteRefData;
+		default:
+			return null;
+		}
+	}
 }

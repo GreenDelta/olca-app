@@ -275,10 +275,13 @@ public class UI {
 
 	public static Button formCheckBox(Composite parent, FormToolkit toolkit,
 			String label) {
-		toolkit.createLabel(parent, "", SWT.NONE);
-
-		final Button button = toolkit.createButton(parent, label, SWT.CHECK);
-		final GridData gd = new GridData(SWT.FILL, SWT.FILL, true, false);
+		formLabel(parent, label);
+		Button button = null;
+		if (toolkit != null)
+			button = toolkit.createButton(parent, label, SWT.CHECK);
+		else
+			button = new Button(parent, SWT.CHECK);
+		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, false);
 		button.setLayoutData(gd);
 		return button;
 	}

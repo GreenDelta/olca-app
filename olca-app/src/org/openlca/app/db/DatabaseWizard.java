@@ -9,6 +9,8 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.openlca.app.App;
 import org.openlca.app.Messages;
+import org.openlca.app.db.DatabaseWizardPage.DerbyPageData;
+import org.openlca.app.db.DatabaseWizardPage.MySQLPageData;
 import org.openlca.app.db.DatabaseWizardPage.PageData;
 import org.openlca.app.events.DatabaseCreatedEvent;
 import org.openlca.app.navigation.Navigator;
@@ -62,27 +64,42 @@ public class DatabaseWizard extends Wizard implements IRunnableWithProgress {
 	public void run(IProgressMonitor monitor) throws InvocationTargetException,
 			InterruptedException {
 		monitor.beginTask(Messages.NewDatabase_Create, IProgressMonitor.UNKNOWN);
-		try {
+		IDatabaseConfiguration configuration = null;
+		if (data instanceof DerbyPageData) {
 			DerbyConfiguration config = new DerbyConfiguration();
 			config.setFolder(new File(App.getWorkspace(), "databases"));
 			config.setName(data.databaseName);
 			Database.register(config);
-			Database.close();
-			IDatabase database = Database.activate(config);
-			fillContent(database);
-			Navigator.refresh();
-			App.getEventBus().post(new DatabaseCreatedEvent(Database.get()));
-			monitor.done();
-		} catch (final Exception e1) {
-			log.error("Create database failed", e1);
+			configuration = config;
+		} else if (data instanceof MySQLPageData) {
+			MySQLPageData mysqlData = (MySQLPageData) data;
+			MySQLConfiguration config = new MySQLConfiguration();
+			config.setHost(mysqlData.host);
+			config.setPort(mysqlData.port);
+			config.setUser(mysqlData.user);
+			config.setPassword(mysqlData.password);
+			config.setName(mysqlData.databaseName);
+			Database.register(config);
+			configuration = config;
 		}
+		try {
+			Database.close();
+			IDatabase database = Database.activate(configuration);
+			fillContent(database);
+		} catch (Exception e) {
+			log.error("Create database failed", e);
+		}
+		Navigator.refresh();
+		App.getEventBus().post(new DatabaseCreatedEvent(Database.get()));
+		monitor.done();
 	}
 
 	private void fillContent(IDatabase database) {
 		if (!(database instanceof DerbyDatabase))
 			return;
 		DerbyDatabase db = (DerbyDatabase) database;
-		DatabaseContent content = data.contentType;
+		DerbyPageData dData = (DerbyPageData) data;
+		DatabaseContent content = dData.contentType;
 		if (content != DatabaseContent.EMPTY)
 			db.fill(content);
 	}
