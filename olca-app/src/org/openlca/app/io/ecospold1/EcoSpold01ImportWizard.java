@@ -2,12 +2,7 @@ package org.openlca.app.io.ecospold1;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Enumeration;
-import java.util.LinkedList;
-import java.util.Queue;
 import java.util.UUID;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -15,10 +10,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.Namespace;
-import org.jdom2.input.SAXBuilder;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.io.FileImportPage;
@@ -46,126 +37,17 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 	private Category category;
 	private FileImportPage importPage;
 	private UnitMappingPage mappingPage;
-	private Namespace methodNameSpace = Namespace
-			.getNamespace("http://www.EcoInvent.org/EcoSpold01Impact");
-	private final Namespace processNameSpace = Namespace
-			.getNamespace("http://www.EcoInvent.org/EcoSpold01");
 
 	public EcoSpold01ImportWizard() {
 		super();
 		setNeedsProgressMonitor(true);
 	}
 
-	/**
-	 * Changes the name space of a document into the process name space
-	 * 
-	 * @param doc
-	 *            The document to change the name space in
-	 * @return true if the name space was changed, false if it already was the
-	 *         process name space
-	 */
-	private boolean changeNameSpace(final Document doc) {
-		final boolean process = doc.getRootElement().getNamespace()
-				.equals(processNameSpace);
-
-		// if LCIA method data set
-		if (!process
-				&& doc.getRootElement().getNamespace().equals(methodNameSpace)) {
-			final Queue<Element> queue = new LinkedList<>();
-			queue.add(doc.getRootElement());
-			// while more elements
-			while (!queue.isEmpty()) {
-				// set process name space
-				final Element e = queue.poll();
-				e.setNamespace(processNameSpace);
-				// add each child element to queue
-				for (final Object o : e.getChildren()) {
-					if (o instanceof Element) {
-						queue.add((Element) o);
-					}
-				}
-			}
-		}
-
-		return process;
-	}
-
-	private long getAmountOfJobs(final File[] files) {
-		long sizeOfXmlFiles = 0;
-		for (final File file : files) {
-			if (file.getName().toLowerCase().endsWith(".xml")) { //$NON-NLS-1$
-				sizeOfXmlFiles += file.length();
-			} else {
-				try (final ZipFile zipFile = new ZipFile(file)) {
-					final Enumeration<? extends ZipEntry> entries = zipFile
-							.entries();
-					while (entries.hasMoreElements()) {
-						final ZipEntry entry = entries.nextElement();
-						if (!entry.isDirectory()
-								&& entry.getName().toLowerCase()
-										.endsWith(".xml")) { //$NON-NLS-1$
-							sizeOfXmlFiles += entry.getSize();
-						}
-					}
-				} catch (final Exception e) {
-					log.error("Reading XML files failed", e);
-				}
-			}
-		}
-		return sizeOfXmlFiles;
-	}
-
-	private boolean hasProcesses(final File[] files) {
-		final SAXBuilder builder = new SAXBuilder();
-		boolean hasProcess = false;
-		try {
-			for (final File file : files) {
-				if (file.getAbsolutePath().toLowerCase().endsWith(".xml")) { //$NON-NLS-1$
-					final Document doc = builder.build(file);
-					hasProcess = doc.getRootElement().getNamespace()
-							.equals(processNameSpace);
-				} else if (file.getAbsolutePath().toLowerCase()
-						.endsWith(".zip")) {
-					try (ZipFile zipFile = new ZipFile(file)) {
-						final Enumeration<? extends ZipEntry> entries = zipFile
-								.entries();
-						while (entries.hasMoreElements()) {
-							final ZipEntry entry = entries.nextElement();
-							// if xml file
-							if (!entry.isDirectory()
-									&& entry.getName().toLowerCase()
-											.endsWith(".xml")) {
-								// build document
-								final Document doc = builder.build(zipFile
-										.getInputStream(entry));
-								hasProcess = doc.getRootElement()
-										.getNamespace()
-										.equals(processNameSpace);
-								if (hasProcess) {
-									break;
-								}
-							}
-						}
-					}
-				}
-				if (hasProcess) {
-					break;
-				}
-			}
-		} catch (final Exception e) {
-			log.error("Look up for the files failed", e);
-		}
-		return hasProcess;
-	}
-
 	@Override
 	public void addPages() {
-
-		// file import page
 		importPage = new FileImportPage(new String[] { "zip", "xml" }, true);
 		addPage(importPage);
 
-		// unit mapping page
 		mappingPage = new UnitMappingPage() {
 
 			@Override
@@ -193,19 +75,12 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 	@Override
 	public void dispose() {
 		super.dispose();
-		if (importPage != null) {
+		if (importPage != null)
 			importPage.dispose();
-		}
-		if (mappingPage != null) {
+		if (mappingPage != null)
 			mappingPage.dispose();
-		}
 	}
 
-	/**
-	 * Getter of the files
-	 * 
-	 * @return The files selected on the file import page
-	 */
 	public File[] getFiles() {
 		return importPage.getFiles();
 	}
