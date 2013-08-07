@@ -1,20 +1,24 @@
 package org.openlca.app.editors;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.custom.CLabel;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.editor.FormPage;
+import org.eclipse.ui.forms.events.HyperlinkAdapter;
+import org.eclipse.ui.forms.events.HyperlinkEvent;
+import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.openlca.app.App;
 import org.openlca.app.components.TextDropComponent;
 import org.openlca.app.editors.DataBinding.TextBindType;
 import org.openlca.app.util.Bean;
+import org.openlca.app.util.Colors;
+import org.openlca.app.util.Images;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.UIFactory;
 import org.openlca.core.model.CategorizedEntity;
@@ -56,9 +60,11 @@ abstract class ModelPage<T extends CategorizedEntity> extends FormPage {
 
 			CategorizedEntity entity = (CategorizedEntity) value;
 			new Label(parent, SWT.NONE).setText(label);
-			Link link = new Link(parent, SWT.NONE);
-			link.setText("<a>" + entity.getName() + "</a>");
-			link.addSelectionListener(new ModelLinkClickedListener(entity));
+			ImageHyperlink link = new ImageHyperlink(parent, SWT.TOP);
+			link.setText(entity.getName());
+			link.setImage(Images.getIcon(entity));
+			link.addHyperlinkListener(new ModelLinkClickedListener(entity));
+			link.setForeground(Colors.getLinkBlue());
 		} catch (Exception e) {
 			log.error("Could not get value of bean", e);
 		}
@@ -66,9 +72,23 @@ abstract class ModelPage<T extends CategorizedEntity> extends FormPage {
 
 	protected void createReadOnly(String label, String property,
 			Composite parent) {
-		Text text = UI.formText(parent, getManagedForm().getToolkit(), label);
-		text.setEnabled(false);
-		binding.readOnly(getModel(), property, TextBindType.STRING, text);
+		UI.formLabel(parent, label);
+		Label labelWidget = new Label(parent, SWT.NONE);
+		GridData gridData = UI.gridData(labelWidget, false, false);
+		gridData.verticalAlignment = SWT.TOP;
+		gridData.verticalIndent = 2;
+		binding.readOnly(getModel(), property, labelWidget);
+	}
+
+	protected void createReadOnly(String label, Image image, String property,
+			Composite parent) {
+		UI.formLabel(parent, label);
+		CLabel labelWidget = new CLabel(parent, SWT.NONE);
+		GridData gridData = UI.gridData(labelWidget, false, false);
+		gridData.verticalAlignment = SWT.TOP;
+		gridData.verticalIndent = 2;
+		labelWidget.setImage(image);
+		binding.readOnly(getModel(), property, labelWidget);
 	}
 
 	protected void createText(String label, String property, Composite parent) {
@@ -113,7 +133,7 @@ abstract class ModelPage<T extends CategorizedEntity> extends FormPage {
 		binding.on(getModel(), property, text);
 	}
 
-	public class ModelLinkClickedListener implements SelectionListener {
+	public class ModelLinkClickedListener extends HyperlinkAdapter {
 
 		private Object model;
 
@@ -125,21 +145,12 @@ abstract class ModelPage<T extends CategorizedEntity> extends FormPage {
 			this.model = descriptor;
 		}
 
-		private void selected() {
+		@Override
+		public void linkActivated(HyperlinkEvent e) {
 			if (model instanceof CategorizedEntity)
 				App.openEditor((CategorizedEntity) model);
 			else if (model instanceof BaseDescriptor)
 				App.openEditor((BaseDescriptor) model);
-		}
-
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			selected();
-		}
-
-		@Override
-		public void widgetDefaultSelected(SelectionEvent e) {
-			selected();
 		}
 
 	}

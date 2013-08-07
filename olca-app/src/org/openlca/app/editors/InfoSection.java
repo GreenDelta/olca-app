@@ -1,16 +1,21 @@
 package org.openlca.app.editors;
 
+import java.util.Stack;
+
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.forms.events.HyperlinkAdapter;
+import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.eclipse.ui.forms.widgets.Hyperlink;
+import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.openlca.app.Messages;
 import org.openlca.app.editors.DataBinding.TextBindType;
 import org.openlca.app.navigation.Navigator;
+import org.openlca.app.util.Colors;
+import org.openlca.app.util.Images;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Category;
@@ -38,39 +43,51 @@ class InfoSection {
 				Messages.Description);
 		binding.on(entity, "description", TextBindType.STRING, descriptionText);
 		new Label(container, SWT.NONE).setText(Messages.Category);
-		Link link = new Link(container, SWT.NONE);
-		link.setText("<a>" + getBreadcrumb(entity.getCategory()) + "</a>");
-		link.addSelectionListener(new CategoryLinkSelectionListener());
+
+		createBreadcrumb(container);
 	}
 
-	private String getBreadcrumb(Category category) {
-		if (category == null)
-			return "";
-		String breadcrumb = category.getName();
-		if (category.getParentCategory() != null)
-			breadcrumb = getBreadcrumb(category.getParentCategory()) + " > "
-					+ breadcrumb;
-		return breadcrumb;
+	private void createBreadcrumb(Composite parent) {
+		Stack<Category> stack = new Stack<>();
+		Category current = entity.getCategory();
+		while (current != null) {
+			stack.push(current);
+			current = current.getParentCategory();
+		}
+
+		Composite breadcrumb = new Composite(parent, SWT.NONE);
+		UI.gridLayout(breadcrumb, stack.size() * 2 - 1, 0, 0);
+		while (!stack.isEmpty()) {
+			current = stack.pop();
+			Hyperlink link = null;
+			if (current.getParentCategory() == null) {
+				link = new ImageHyperlink(breadcrumb, SWT.NONE);
+				((ImageHyperlink) link).setImage(Images.getIcon(current));
+			} else {
+				new Label(breadcrumb, SWT.NONE).setText(" > ");
+				link = new Hyperlink(breadcrumb, SWT.NONE);
+			}
+			link.setText(current.getName());
+			link.addHyperlinkListener(new CategoryLinkSelectionListener(current));
+			link.setForeground(Colors.getLinkBlue());
+		}
 	}
 
 	Composite getContainer() {
 		return container;
 	}
 
-	private class CategoryLinkSelectionListener implements SelectionListener {
+	private class CategoryLinkSelectionListener extends HyperlinkAdapter {
 
-		private void select() {
-			Navigator.select(entity.getCategory());
+		private Category category;
+
+		private CategoryLinkSelectionListener(Category category) {
+			this.category = category;
 		}
 
 		@Override
-		public void widgetSelected(SelectionEvent e) {
-			select();
-		}
-
-		@Override
-		public void widgetDefaultSelected(SelectionEvent e) {
-			select();
+		public void linkActivated(HyperlinkEvent e) {
+			Navigator.select(category);
 		}
 	}
 

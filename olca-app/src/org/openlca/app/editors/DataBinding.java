@@ -8,12 +8,14 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.DateTime;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 import org.openlca.app.components.ISingleModelDrop;
@@ -224,14 +226,21 @@ public class DataBinding {
 		});
 	}
 
+	@SuppressWarnings("unchecked")
 	private <T> void checkType(final Object bean, final String property,
 			final AbstractComboViewer<T> viewer) {
 		try {
 			Class<?> propertyType = Bean.getType(bean, property);
 			if (propertyType != viewer.getType())
-				throw new IllegalArgumentException("Cannot bind "
-						+ viewer.getType().getCanonicalName() + " to "
-						+ propertyType.getCanonicalName());
+				if (RootEntity.class.isAssignableFrom(propertyType)
+						&& BaseDescriptor.class.isAssignableFrom(viewer
+								.getType()))
+					if (propertyType != Descriptors
+							.getModelClass((Class<? extends BaseDescriptor>) viewer
+									.getType()))
+						throw new IllegalArgumentException("Cannot bind "
+								+ viewer.getType().getCanonicalName() + " to "
+								+ propertyType.getCanonicalName());
 		} catch (Exception e) {
 			error("Cannot bind bean", e);
 		}
@@ -297,11 +306,19 @@ public class DataBinding {
 	}
 
 	public void readOnly(final Object bean, final String property,
-			TextBindType type, final Text text) {
+			final Label label) {
 		log.trace("Register data binding - string - {} - {}", bean, property);
-		if (bean == null || property == null || text == null)
+		if (bean == null || property == null || label == null)
 			return;
-		initValue(bean, property, text);
+		initValue(bean, property, label);
+	}
+
+	public void readOnly(final Object bean, final String property,
+			final CLabel label) {
+		log.trace("Register data binding - string - {} - {}", bean, property);
+		if (bean == null || property == null || label == null)
+			return;
+		initValue(bean, property, label);
 	}
 
 	private void onString(final Object bean, final String property,
@@ -388,24 +405,51 @@ public class DataBinding {
 	private void initValue(Object bean, String property, Text text) {
 		try {
 			Object val = Bean.getValue(bean, property);
-			if (val != null)
-				if (val.getClass().isEnum())
-					text.setText(Labels.getEnumText(val));
-				else if (val instanceof RootEntity)
-					text.setText(((RootEntity) val).getName());
-				else if (val instanceof BaseDescriptor)
-					text.setText(((BaseDescriptor) val).getName());
-				else if (val instanceof Date)
-					text.setText(DateFormat.getDateInstance()
-							.format((Date) val));
-				else if (val instanceof GregorianCalendar)
-					text.setText(DateFormat.getDateInstance().format(
-							((GregorianCalendar) val).getTime()));
-				else
-					text.setText(val.toString());
+			String value = getValueAsString(val);
+			text.setText(value);
 		} catch (Exception e) {
 			error("Cannot set text value", e);
 		}
+	}
+
+	private void initValue(Object bean, String property, Label label) {
+		try {
+			Object val = Bean.getValue(bean, property);
+			String value = getValueAsString(val);
+			label.setText(value);
+		} catch (Exception e) {
+			error("Cannot set label value", e);
+		}
+	}
+
+	private void initValue(Object bean, String property, CLabel label) {
+		try {
+			Object val = Bean.getValue(bean, property);
+			String value = getValueAsString(val);
+			label.setText(value);
+		} catch (Exception e) {
+			error("Cannot set label value", e);
+		}
+	}
+
+	private String getValueAsString(Object val) {
+		if (val != null)
+			if (val.getClass().isEnum())
+				return Labels.getEnumText(val);
+			else if (val instanceof RootEntity)
+				return ((RootEntity) val).getName();
+			else if (val instanceof BaseDescriptor)
+				return ((BaseDescriptor) val).getName();
+			else if (val instanceof Date)
+				return DateFormat.getDateTimeInstance(DateFormat.SHORT,
+						DateFormat.SHORT).format((Date) val);
+			else if (val instanceof GregorianCalendar)
+				return DateFormat.getDateTimeInstance(DateFormat.SHORT,
+						DateFormat.SHORT).format(
+						((GregorianCalendar) val).getTime());
+			else
+				return val.toString();
+		return "";
 	}
 
 	private void initValue(Object bean, String property, Button button) {

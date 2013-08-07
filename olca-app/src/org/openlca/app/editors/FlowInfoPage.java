@@ -18,6 +18,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
+import org.openlca.app.util.Images;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.LocationViewer;
 import org.openlca.core.model.Flow;
@@ -51,7 +52,8 @@ class FlowInfoPage extends ModelPage<Flow> {
 	private void createAdditionalInfo(InfoSection infoSection, Composite body) {
 		createCheckBox(Messages.IsInfrastructureFlow, "infrastructureFlow",
 				infoSection.getContainer());
-		createReadOnly(Messages.FlowType, "flowType",
+		createReadOnly(Messages.FlowType,
+				Images.getIcon(getModel().getFlowType()), "flowType",
 				infoSection.getContainer());
 
 		Composite composite = UI.formSection(body, toolkit,
