@@ -18,6 +18,7 @@ import org.eclipse.ui.navigator.ICommonLabelProvider;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.resources.ImageType;
+import org.openlca.app.util.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
@@ -52,47 +53,18 @@ public class NavigationLabelProvider extends ColumnLabelProvider implements
 		if (o instanceof IDatabaseConfiguration)
 			return getDatabaseImage((IDatabaseConfiguration) o);
 		if (o instanceof Category)
-			return getCategoryImage((Category) o);
+			return Images.getIcon((Category) o);
 		if (o instanceof BaseDescriptor)
 			return getModelComponentImage((BaseDescriptor) o);
 		if (o instanceof ModelType)
-			return getCategoryImage((ModelType) o);
+			return Images.getIcon(dummyCategory((ModelType) o));
 		return null;
 	}
 
-	private Image getCategoryImage(Category category) {
-		if (category == null)
-			return null;
-		return getCategoryImage(category.getModelType());
-	}
-
-	private Image getCategoryImage(ModelType modelType) {
-		if (modelType == null)
-			return null;
-		switch (modelType) {
-		case ACTOR:
-			return ImageType.ACTOR_CATEGORY_ICON.get();
-		case FLOW:
-			return ImageType.FLOW_CATEGORY_ICON.get();
-		case FLOW_PROPERTY:
-			return ImageType.FLOW_PROPERTY_CATEGORY_ICON.get();
-		case IMPACT_METHOD:
-			return ImageType.LCIA_CATEGORY_ICON.get();
-		case IMPACT_RESULT:
-			return ImageType.FOLDER_EXPR.get();
-		case PROCESS:
-			return ImageType.PROCESS_CATEGORY_ICON.get();
-		case PRODUCT_SYSTEM:
-			return ImageType.PRODUCT_SYSTEM_CATEGORY_ICON.get();
-		case PROJECT:
-			return ImageType.PROJECT_CATEGORY_ICON.get();
-		case SOURCE:
-			return ImageType.SOURCE_CATEGORY_ICON.get();
-		case UNIT_GROUP:
-			return ImageType.UNIT_GROUP_CATEGORY_ICON.get();
-		default:
-			return ImageType.FOLD_ICON.get();
-		}
+	private Category dummyCategory(ModelType type) {
+		Category dummy = new Category();
+		dummy.setModelType(type);
+		return dummy;
 	}
 
 	private Image getModelComponentImage(BaseDescriptor modelComponent) {
