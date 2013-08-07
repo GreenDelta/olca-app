@@ -18,6 +18,7 @@ public class CategoryPath {
 		Category parent = category.getParentCategory();
 		while (parent != null) {
 			path = parent.getName() + "/" + path;
+			parent = parent.getParentCategory();
 		}
 		return path;
 	}

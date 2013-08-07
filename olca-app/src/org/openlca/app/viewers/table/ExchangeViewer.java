@@ -46,29 +46,12 @@ public class ExchangeViewer extends AbstractTableViewer<Exchange> {
 		String AMOUNT = Messages.Amount;
 	}
 
-	public enum Direction {
-
-		INPUT, OUTPUT;
-
-	}
-
-	public enum Type {
-
-		PRODUCT(FlowType.PRODUCT_FLOW),
-
-		WASTE(FlowType.WASTE_FLOW),
-
-		ELEMENTARY(FlowType.ELEMENTARY_FLOW),
-
-		AVOIDED_PRODUCT(FlowType.PRODUCT_FLOW);
-
-		private FlowType type;
-
-		private Type(FlowType type) {
-			this.type = type;
-		}
-
-	}
+	public static final int INPUTS = 0x01;
+	public static final int OUTPUTS = 0x02;
+	public static final int PRODUCTS = 0x04;
+	public static final int WASTES = 0x08;
+	public static final int ELEMENTARIES = 0x10;
+	public static final int ALL_TYPES = ELEMENTARIES | PRODUCTS | WASTES;
 
 	public enum ViewMode {
 
@@ -80,22 +63,21 @@ public class ExchangeViewer extends AbstractTableViewer<Exchange> {
 			LABEL.CATEGORY, LABEL.FLOW_PROPERTY, LABEL.UNIT, LABEL.AMOUNT };
 
 	private FlowDao flowDao;
-	private Direction direction;
-	private Type type;
 	private ViewMode viewMode;
 	private Process process;
+	private int direction;
+	private int types;
 
-	public ExchangeViewer(Composite parent, IDatabase database,
-			Direction direction, Type type) {
+	public ExchangeViewer(Composite parent, IDatabase database, int direction,
+			int types) {
 		super(parent);
 		this.flowDao = new FlowDao(database);
-		if (direction == null || type == null)
+		if (direction == 0 || types == 0)
 			throw new IllegalArgumentException("Direction and type must be set");
-		if (direction == Direction.OUTPUT && type == Type.AVOIDED_PRODUCT)
-			throw new IllegalArgumentException(
-					"Avoided products can only be inputs");
+		if (direction == (INPUTS | OUTPUTS))
+			throw new IllegalArgumentException("Direction must be unamiguous");
 		this.direction = direction;
-		this.type = type;
+		this.types = types;
 
 		getCellModifySupport().support(LABEL.FLOW_PROPERTY,
 				new FlowPropertyModifier());
@@ -103,9 +85,37 @@ public class ExchangeViewer extends AbstractTableViewer<Exchange> {
 		getCellModifySupport().support(LABEL.AMOUNT, new AmountModifier());
 	}
 
+	private boolean matches(FlowType type) {
+		switch (type) {
+		case PRODUCT_FLOW:
+			return is(PRODUCTS, types);
+		case WASTE_FLOW:
+			return is(WASTES, types);
+		case ELEMENTARY_FLOW:
+			return is(ELEMENTARIES, types);
+		default:
+			return false;
+		}
+	}
+
+	private FlowType[] getFlowTypes() {
+		List<FlowType> flowTypes = new ArrayList<>();
+		if (is(PRODUCTS, types))
+			flowTypes.add(FlowType.PRODUCT_FLOW);
+		if (is(WASTES, types))
+			flowTypes.add(FlowType.WASTE_FLOW);
+		if (is(ELEMENTARIES, types))
+			flowTypes.add(FlowType.ELEMENTARY_FLOW);
+		return flowTypes.toArray(new FlowType[flowTypes.size()]);
+	}
+
 	@Override
 	protected String[] getColumnHeaders() {
 		return COLUMN_HEADERS;
+	}
+
+	private boolean is(int value, int flag) {
+		return (value & flag) != 0;
 	}
 
 	public void setInput(Process process) {
@@ -113,18 +123,10 @@ public class ExchangeViewer extends AbstractTableViewer<Exchange> {
 		if (process == null)
 			setInput(new Exchange[0]);
 		else {
-			if (direction == Direction.INPUT)
-				if (type != Type.AVOIDED_PRODUCT)
-					setInput(process.getInputs(type.type));
-				else {
-					List<Exchange> exchanges = new ArrayList<>();
-					for (Exchange exchange : process.getInputs(type.type))
-						if (exchange.isAvoidedProduct())
-							exchanges.add(exchange);
-					setInput(exchanges.toArray(new Exchange[exchanges.size()]));
-				}
-			else if (direction == Direction.OUTPUT)
-				setInput(process.getOutputs(type.type));
+			if (is(direction, INPUTS))
+				setInput(process.getInputs(getFlowTypes()));
+			else if (is(direction, OUTPUTS))
+				setInput(process.getOutputs(getFlowTypes()));
 		}
 	}
 
@@ -149,8 +151,7 @@ public class ExchangeViewer extends AbstractTableViewer<Exchange> {
 		exchange.setFlowPropertyFactor(flow.getReferenceFactor());
 		exchange.setUnit(flow.getReferenceFactor().getFlowProperty()
 				.getUnitGroup().getReferenceUnit());
-		exchange.setInput(direction == Direction.INPUT);
-		exchange.setAvoidedProduct(type == Type.AVOIDED_PRODUCT);
+		exchange.setInput(is(direction, INPUTS));
 		fireModelChanged(ModelChangeType.CREATE, exchange);
 		setInput(process);
 	}
@@ -164,7 +165,7 @@ public class ExchangeViewer extends AbstractTableViewer<Exchange> {
 
 	@OnDrop
 	protected void onDrop(FlowDescriptor descriptor) {
-		if (descriptor != null && descriptor.getFlowType() == type.type)
+		if (descriptor != null && matches(descriptor.getFlowType()))
 			add(descriptor);
 	}
 
@@ -243,7 +244,7 @@ public class ExchangeViewer extends AbstractTableViewer<Exchange> {
 			if (descriptor.getModelType() != ModelType.FLOW)
 				return false;
 			FlowDescriptor flowDescriptor = (FlowDescriptor) descriptor;
-			return flowDescriptor.getFlowType() == type.type;
+			return ExchangeViewer.this.matches(flowDescriptor.getFlowType());
 		}
 
 	}

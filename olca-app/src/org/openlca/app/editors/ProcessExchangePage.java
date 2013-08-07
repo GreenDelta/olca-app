@@ -9,8 +9,6 @@
  ******************************************************************************/
 package org.openlca.app.editors;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -21,8 +19,6 @@ import org.openlca.app.db.Database;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AllocationMethodViewer;
 import org.openlca.app.viewers.table.ExchangeViewer;
-import org.openlca.app.viewers.table.ExchangeViewer.Direction;
-import org.openlca.app.viewers.table.ExchangeViewer.Type;
 import org.openlca.core.model.Process;
 
 class ProcessExchangePage extends ModelPage<Process> {
@@ -41,22 +37,10 @@ class ProcessExchangePage extends ModelPage<Process> {
 		Composite body = UI.formBody(form, toolkit);
 
 		createAllocationSection(body);
-		Composite inputs = createIOSection(body, Messages.Inputs, 3);
-		createExchangeSection(inputs, Direction.INPUT, Type.PRODUCT,
-				Messages.Products);
-		createExchangeSection(inputs, Direction.INPUT, Type.ELEMENTARY,
-				Messages.Resources);
-		createExchangeSection(inputs, Direction.INPUT, Type.WASTE,
-				Messages.Wastes);
-		Composite outputs = createIOSection(body, Messages.Outputs, 4);
-		createExchangeSection(outputs, Direction.OUTPUT, Type.PRODUCT,
-				Messages.Products);
-		createExchangeSection(outputs, Direction.INPUT, Type.AVOIDED_PRODUCT,
-				Messages.AvoidedProducts);
-		createExchangeSection(outputs, Direction.OUTPUT, Type.ELEMENTARY,
-				Messages.Emissions);
-		createExchangeSection(outputs, Direction.OUTPUT, Type.WASTE,
-				Messages.Wastes);
+		createExchangeSection(body, ExchangeViewer.INPUTS,
+				ExchangeViewer.ALL_TYPES, Messages.Inputs);
+		createExchangeSection(body, ExchangeViewer.OUTPUTS,
+				ExchangeViewer.ALL_TYPES, Messages.Outputs);
 
 		body.setFocus();
 		form.reflow(true);
@@ -69,30 +53,16 @@ class ProcessExchangePage extends ModelPage<Process> {
 		getBinding().on(getModel(), "allocationMethod", viewer);
 	}
 
-	private Composite createIOSection(Composite parent, String label,
-			int nrOfContainer) {
+	private void createExchangeSection(Composite parent, int direction,
+			int types, String label) {
 		Section section = UI.section(parent, toolkit, label);
+		UI.gridData(section, true, true);
 		Composite composite = toolkit.createComposite(section);
 		UI.gridLayout(composite, 1);
-		GridData data = new GridData(SWT.FILL, SWT.CENTER, true, false);
-		data.heightHint = nrOfContainer * 500;
-		composite.setLayoutData(data);
-		section.setClient(composite);
-		return composite;
-	}
-
-	private void createExchangeSection(Composite parent, Direction direction,
-			Type type, String label) {
-		Section section = UI.section(parent, toolkit, label);
-		Composite composite = toolkit.createComposite(section);
-		UI.gridLayout(composite, 1);
-		GridData data = new GridData(SWT.FILL, SWT.CENTER, true, false);
-		data.heightHint = 500;
-		composite.setLayoutData(data);
 		section.setClient(composite);
 
 		ExchangeViewer viewer = new ExchangeViewer(composite, Database.get(),
-				direction, type);
+				direction, types);
 		viewer.bindTo(section);
 		getBinding().on(getModel(), "exchanges", viewer);
 	}
