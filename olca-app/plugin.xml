@@ -62,8 +62,7 @@
             name="%editor.name.5">
       </editor>
       <editor
-            class="org.openlca.core.editors.productsystem.ProductSystemEditor"
-            contributorClass="org.openlca.core.editors.productsystem.graphical.GraphicalEditorActionBarContributor"
+            class="org.openlca.app.editors.ProductSystemEditor"
             default="false"
             icon="icons/model.gif"
             id="editors.productsystem"

@@ -379,6 +379,7 @@ public class Messages extends NLS {
 	public static String ProcessType;
 	public static String ProducedBy;
 	public static String ProductFlow;
+	public static String Product;
 	public static String Products;
 	public static String ProductSystem;
 	public static String ProductSystemCleaner_Analizing;
@@ -398,6 +399,7 @@ public class Messages extends NLS {
 	public static String Publication;
 	public static String QuantitativeReference;
 	public static String RecipientInput;
+	public static String ReferenceExchange;
 	public static String ReferenceFlowProperty;
 	public static String ReferenceProcess;
 	public static String ReferenceUnit;
@@ -533,7 +535,6 @@ public class Messages extends NLS {
 	public static String Systems_ProductSystemInfoSectionLabel;
 	public static String Systems_Providers;
 	public static String Systems_Recipients;
-	public static String Systems_ReferenceExchange;
 	public static String Systems_Remember;
 	public static String Systems_RemoveConnectionsFromProcessAction_Text;
 	public static String Systems_RemoveSupplyChainAction_Text;
