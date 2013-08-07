@@ -23,6 +23,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.navigator.CommonDropAdapter;
 import org.eclipse.ui.navigator.CommonDropAdapterAssistant;
 import org.openlca.app.plugin.Activator;
+import org.openlca.app.util.CopyPaste;
 
 /**
  * Extension of the {@link CommonDropAdapterAssistant} to support drop
@@ -38,60 +39,45 @@ public class NavigationDropAssistant extends CommonDropAdapterAssistant {
 	}
 
 	@Override
-	public IStatus handleDrop(final CommonDropAdapter aDropAdapter,
-			final DropTargetEvent aDropTargetEvent, final Object aTarget) {
-		// get navigator
-		final Navigator navigator = (Navigator) PlatformUI.getWorkbench()
+	public IStatus handleDrop(CommonDropAdapter dropAdapter,
+			DropTargetEvent dropTargetEvent, Object target) {
+		Navigator navigator = (Navigator) PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow().getActivePage()
-				.findView(Navigator.ID); //$NON-NLS-1$
-		// drop target
-		final DropTarget target = (DropTarget) aDropTargetEvent.getSource();
-		// target category
-		final CategoryElement targetElement = (CategoryElement) aTarget;
+				.findView(Navigator.ID);
+		DropTarget dropTarget = (DropTarget) dropTargetEvent.getSource();
 
-		// if target control is the navigator tree
-		if (target.getControl() == navigator.getCommonViewer().getTree()) {
-
-			final List<INavigationElement<?>> elements = new ArrayList<>();
-			final IStructuredSelection selection = (IStructuredSelection) aDropTargetEvent.data;
-
-			// for each selected object
-			for (final Object o : selection.toArray()) {
-				// if model component or category element
-				if (o instanceof ModelElement || o instanceof CategoryElement) {
+		INavigationElement<?> targetElement = (INavigationElement<?>) target;
+		if (dropTarget.getControl() == navigator.getCommonViewer().getTree()) {
+			List<INavigationElement<?>> elements = new ArrayList<>();
+			IStructuredSelection selection = (IStructuredSelection) dropTargetEvent.data;
+			for (Object o : selection.toArray())
+				if (o instanceof ModelElement || o instanceof CategoryElement)
 					elements.add((INavigationElement<?>) o);
-				}
+			if (CopyPaste.canMove(elements, targetElement)) {
+				if (operation == DND.DROP_COPY)
+					CopyPaste.copy(elements);
+				else
+					CopyPaste.cut(elements);
+				CopyPaste.pasteTo(targetElement);
 			}
-			if (operation == DND.DROP_COPY) {
-				// copy
-				// CopyPasteManager.getInstance()
-				// .copy(elements.toArray(new INavigationElement[elements
-				// .size()]));
-			} else {
-				// cut
-				// CopyPasteManager.getInstance()
-				// .cut(elements.toArray(new INavigationElement[elements
-				// .size()]));
-			}
-			// paste
-			// CopyPasteManager.getInstance().paste(targetElement);
 		}
 		return null;
 	}
 
 	@Override
-	public boolean isSupportedType(final TransferData aTransferType) {
+	public boolean isSupportedType(TransferData aTransferType) {
 		return true;
 	}
 
 	@Override
-	public IStatus validateDrop(final Object target, final int operation,
-			final TransferData transferType) {
+	public IStatus validateDrop(Object target, int operation,
+			TransferData transferType) {
 		this.operation = operation;
 		IStatus status = null;
-		if (target instanceof CategoryElement) {
-			status = new Status(IStatus.OK, Activator.PLUGIN_ID, ""); //$NON-NLS-1$
-		}
+
+		if (target instanceof CategoryElement
+				|| target instanceof ModelTypeElement)
+			status = new Status(IStatus.OK, Activator.PLUGIN_ID, "");
 		return status;
 	}
 

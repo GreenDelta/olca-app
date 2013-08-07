@@ -156,6 +156,27 @@ public class CopyPaste {
 		}
 	}
 
+	public static boolean canMove(INavigationElement<?> element,
+			INavigationElement<?> target) {
+		return canMove(new INavigationElement<?>[] { element }, target);
+	}
+
+	public static boolean canMove(Collection<INavigationElement<?>> elements,
+			INavigationElement<?> target) {
+		return canMove(
+				elements.toArray(new INavigationElement[elements.size()]),
+				target);
+	}
+
+	public static boolean canMove(INavigationElement<?>[] elements,
+			INavigationElement<?> target) {
+		if (!isSupported(elements))
+			return false;
+		if (!(target instanceof CategoryElement || target instanceof ModelTypeElement))
+			return false;
+		return getType(target) == getType(elements[0]);
+	}
+
 	public static boolean canPasteTo(INavigationElement<?> element) {
 		if (cacheIsEmpty())
 			return false;
