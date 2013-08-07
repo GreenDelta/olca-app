@@ -38,6 +38,8 @@ public class BaseLabelProvider extends ColumnLabelProvider {
 			return Images.getIcon((RootEntity) element);
 		if (element instanceof BaseDescriptor)
 			return Images.getIcon(((BaseDescriptor) element).getModelType());
+		if (element instanceof Exchange)
+			return Images.getIcon(((Exchange) element).getFlow().getFlowType());
 		return null;
 	}
 
