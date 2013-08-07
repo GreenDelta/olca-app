@@ -9,10 +9,13 @@
  ******************************************************************************/
 package org.openlca.app.editors;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.openlca.core.editors.IEditor;
 import org.openlca.core.model.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.ibm.icu.util.Calendar;
 
 public class ProjectEditor extends ModelEditor<Project> implements IEditor {
 
@@ -30,6 +33,12 @@ public class ProjectEditor extends ModelEditor<Project> implements IEditor {
 		} catch (Exception e) {
 			log.error("failed to add page", e);
 		}
+	}
+
+	@Override
+	public void doSave(IProgressMonitor monitor) {
+		getModel().setLastModificationDate(Calendar.getInstance().getTime());
+		super.doSave(monitor);
 	}
 
 }

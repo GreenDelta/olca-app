@@ -15,6 +15,8 @@ import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 
+import com.ibm.icu.util.Calendar;
+
 /**
  * Controller for the creation of a process from wizard data. The user can
  * decide to create a new product with the process (Data#createWithProduct =
@@ -74,6 +76,8 @@ class ProcessCreationController {
 			Flow flow = getFlow();
 			addQuantitativeReference(process, flow);
 			ProcessDocumentation doc = new ProcessDocumentation();
+			doc.setCreationDate(Calendar.getInstance().getTime());
+			doc.setLastChange(Calendar.getInstance().getTime());
 			doc.setId(process.getId());
 			process.setDocumentation(doc);
 			return process;
