@@ -13,7 +13,6 @@ import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.search.SearchView;
 
 /**
  * The openLCA perspective
@@ -30,7 +29,7 @@ public class Perspective implements IPerspectiveFactory {
 		final IFolderLayout folder = layout.createFolder("Others",
 				IPageLayout.LEFT, 0.31f, editorArea);
 		folder.addView(Navigator.ID);
-		folder.addView(SearchView.ID);
+		// folder.addView(SearchView.ID);
 
 		// property sheet place holder
 		final IFolderLayout folder2 = layout.createFolder("Bottom",

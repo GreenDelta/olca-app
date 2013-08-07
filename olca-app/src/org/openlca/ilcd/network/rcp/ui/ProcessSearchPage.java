@@ -40,7 +40,7 @@ public class ProcessSearchPage extends WizardPage {
 	private TableViewer viewer;
 
 	public ProcessSearchPage() {
-		super("ILCD-ProcessSearchPage"); //$NON-NLS-1$
+		super("ILCD-ProcessSearchPage"); 
 		setTitle(Messages.NetworkSearch);
 		setDescription(Messages.SearchPageDescription);
 		setPageComplete(false);

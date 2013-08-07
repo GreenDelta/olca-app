@@ -113,7 +113,7 @@ public class CharacterizationChart extends Composite {
 		// get and configure y-axis
 		final Axis yAxis = chart.getPrimaryOrthogonalAxis(xAxis);
 		yAxis.getTitle().getCaption()
-				.setValue(weightingUnit != null ? weightingUnit : ""); //$NON-NLS-1$
+				.setValue(weightingUnit != null ? weightingUnit : ""); 
 		yAxis.getTitle().setVisible(true);
 
 		// get category names as string array

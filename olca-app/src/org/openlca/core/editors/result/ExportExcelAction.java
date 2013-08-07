@@ -645,8 +645,8 @@ public class ExportExcelAction extends Action {
 				productSystem = lciaResult.getProductSystem();
 			}
 			final FileDialog fileDialog = new FileDialog(UI.shell(), SWT.SAVE);
-			fileDialog.setFilterExtensions(new String[] { "*.xls" }); //$NON-NLS-1$
-			fileDialog.setFileName(productSystem + ".xls"); //$NON-NLS-1$
+			fileDialog.setFilterExtensions(new String[] { "*.xls" }); 
+			fileDialog.setFileName(productSystem + ".xls"); 
 			final String path = fileDialog.open();
 			if (path != null) {
 				final File file = new File(path);

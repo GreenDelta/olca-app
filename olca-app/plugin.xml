@@ -193,7 +193,7 @@
             name="%view.name">
       </view>  
  	  <view
-            class="org.openlca.app.search.SearchView"
+            class="org.openlca.core.application.search.SearchView"
             icon="icons/search_obj.png"
             id="views.search"
             name="%view.name.0"

@@ -60,7 +60,7 @@ public abstract class DialogCellEditor extends CellEditor {
 	 * Image registry key for three dot image (value
 	 * <code>"cell_editor_dots_button_image"</code>).
 	 */
-	public static final String CELL_EDITOR_IMG_DOTS_BUTTON = "cell_editor_dots_button_image";//$NON-NLS-1$
+	public static final String CELL_EDITOR_IMG_DOTS_BUTTON = "cell_editor_dots_button_image";
 
 	/**
 	 * The editor control.
@@ -96,7 +96,7 @@ public abstract class DialogCellEditor extends CellEditor {
 	static {
 		ImageRegistry reg = JFaceResources.getImageRegistry();
 		reg.put(CELL_EDITOR_IMG_DOTS_BUTTON, ImageDescriptor.createFromFile(
-				DialogCellEditor.class, "images/dots_button.gif"));//$NON-NLS-1$
+				DialogCellEditor.class, "images/dots_button.gif"));
 	}
 
 	/**
@@ -412,7 +412,7 @@ public abstract class DialogCellEditor extends CellEditor {
 			return;
 		}
 
-		String text = "";//$NON-NLS-1$
+		String text = "";
 		if (value != null) {
 			text = value.toString();
 		}

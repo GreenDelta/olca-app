@@ -58,7 +58,7 @@ public class ModelParametersPage extends ModelEditorPage implements
 	private TableViewer parameterViewer;
 
 	public ModelParametersPage(ModelEditor editor, String formText) {
-		super(editor, "ParameterInfoPage", Messages.ParametersPageLabel); //$NON-NLS-1$
+		super(editor, "ParameterInfoPage", Messages.ParametersPageLabel); 
 		component = (IParameterisable) editor.getModelComponent();
 		this.formText = formText;
 	}
@@ -138,7 +138,7 @@ public class ModelParametersPage extends ModelEditorPage implements
 	@Override
 	public void propertyChange(final PropertyChangeEvent arg0) {
 		if (parameterViewer != null) {
-			if (arg0.getPropertyName().equals("value")) { //$NON-NLS-1$
+			if (arg0.getPropertyName().equals("value")) { 
 				messageManager.removeAllMessages();
 				parameterViewer.refresh();
 			}
@@ -155,7 +155,7 @@ public class ModelParametersPage extends ModelEditorPage implements
 		/**
 		 * The id of the action
 		 */
-		public static final String ID = "org.openlca.editors.ModelParametersPage.AddParameterAction"; //$NON-NLS-1$
+		public static final String ID = "org.openlca.editors.ModelParametersPage.AddParameterAction"; 
 
 		/**
 		 * Creates a new AddParameterAction and sets the ID, TEXT and
@@ -173,12 +173,12 @@ public class ModelParametersPage extends ModelEditorPage implements
 		public void run() {
 			// create parameter
 			final Parameter parameter = new Parameter(
-					new Expression("1", 1), ParameterType.getTypeFor(component //$NON-NLS-1$
+					new Expression("1", 1), ParameterType.getTypeFor(component 
 							.getClass()), ((RootEntity) component).getRefId());
-			String name = "p" + component.getParameters().size(); //$NON-NLS-1$
+			String name = "p" + component.getParameters().size(); 
 			int i = 1;
 			while (parameterExists(name) != null) {
-				name = "p" + (component.getParameters().size() + i); //$NON-NLS-1$
+				name = "p" + (component.getParameters().size() + i); 
 				i++;
 			}
 			parameter.setName(name);
@@ -219,7 +219,7 @@ public class ModelParametersPage extends ModelEditorPage implements
 					v = parameter.getDescription();
 				}
 			}
-			return v != null ? v : ""; //$NON-NLS-1$
+			return v != null ? v : ""; 
 		}
 
 		@Override
@@ -272,7 +272,7 @@ public class ModelParametersPage extends ModelEditorPage implements
 		/**
 		 * The id of the action
 		 */
-		public static final String ID = "org.openlca.editors.ModelParametersPage.RemoveParameterAction"; //$NON-NLS-1$
+		public static final String ID = "org.openlca.editors.ModelParametersPage.RemoveParameterAction"; 
 
 		/**
 		 * The text of the action

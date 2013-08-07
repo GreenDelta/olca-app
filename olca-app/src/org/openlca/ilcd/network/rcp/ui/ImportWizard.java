@@ -97,7 +97,7 @@ public class ImportWizard extends Wizard implements IImportWizard {
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
 		setWindowTitle(NetworkImport);
 		setDefaultPageImageDescriptor(Activator.imageDescriptorFromPlugin(
-				Activator.PLUGIN_ID, "/icons/network_wiz.png")); //$NON-NLS-1$
+				Activator.PLUGIN_ID, "/icons/network_wiz.png")); 
 		setNeedsProgressMonitor(true);
 		processSearchPage = new ProcessSearchPage();
 		databasePage = new DatabaseSelectionPage();

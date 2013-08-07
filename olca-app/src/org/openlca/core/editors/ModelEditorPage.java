@@ -50,7 +50,7 @@ public abstract class ModelEditorPage extends FormPage {
 		toolkit.getHyperlinkGroup().setHyperlinkUnderlineMode(
 				HyperlinkSettings.UNDERLINE_HOVER);
 		toolkit.decorateFormHeading(form.getForm());
-		form.setText(getFormTitle()); //$NON-NLS-1$ //$NON-NLS-2$ 
+		form.setText(getFormTitle()); 
 
 		IToolBarManager toolBar = form.getToolBarManager();
 		RefreshAction action = new RefreshAction();
