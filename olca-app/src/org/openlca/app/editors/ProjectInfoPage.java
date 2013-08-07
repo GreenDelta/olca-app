@@ -58,8 +58,8 @@ class ProjectInfoPage extends ModelPage<Project> {
 		Composite composite = UI.formSection(parent, toolkit,
 				Messages.ProjectInfoSectionLabel);
 
-		createDate(Messages.CreationDate, "creationDate", composite);
-		createDate(Messages.LastModificationDate, "lastModificationDate",
+		createReadOnly(Messages.CreationDate, "creationDate", composite);
+		createReadOnly(Messages.LastModificationDate, "lastModificationDate",
 				composite);
 		createDropComponent(Messages.Author, "author", ModelType.ACTOR,
 				composite);
