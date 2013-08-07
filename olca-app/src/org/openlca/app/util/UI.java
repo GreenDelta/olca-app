@@ -102,6 +102,10 @@ public class UI {
 		return font;
 	}
 
+	public static void applyBoldFont(Control control) {
+		control.setFont(boldFont(control));
+	}
+
 	/**
 	 * Creates an italic font using the font data of the given control. The
 	 * returned font must be disposed by the respective caller.
@@ -113,6 +117,10 @@ public class UI {
 		fd.setStyle(SWT.ITALIC);
 		Font font = new Font(control.getDisplay(), fd);
 		return font;
+	}
+
+	public static void applyItalicFont(Control control) {
+		control.setFont(italicFont(control));
 	}
 
 	/**
@@ -275,18 +283,32 @@ public class UI {
 		return button;
 	}
 
+	public static Text formText(Composite parent, int flags) {
+		return formText(parent, null, null, flags | SWT.BORDER);
+	}
+
 	public static Text formText(Composite parent, String label) {
 		return formText(parent, null, label);
 	}
 
+	public static Text formText(Composite parent, String label, int flags) {
+		return formText(parent, null, label, flags | SWT.BORDER);
+	}
+
 	public static Text formText(Composite parent, FormToolkit toolkit,
 			String label) {
-		formLabel(parent, toolkit, label);
+		return formText(parent, toolkit, label, SWT.BORDER);
+	}
+
+	public static Text formText(Composite parent, FormToolkit toolkit,
+			String label, int flags) {
+		if (label != null)
+			formLabel(parent, toolkit, label);
 		Text text = null;
 		if (toolkit != null)
-			text = toolkit.createText(parent, null, SWT.BORDER);
+			text = toolkit.createText(parent, null, flags);
 		else
-			text = new Text(parent, SWT.BORDER);
+			text = new Text(parent, flags);
 		gridData(text, true, false);
 		return text;
 	}
