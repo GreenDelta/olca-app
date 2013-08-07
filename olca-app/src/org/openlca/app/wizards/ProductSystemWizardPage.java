@@ -21,7 +21,6 @@ import org.openlca.app.FeatureFlag;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.ModelElement;
-import org.openlca.app.navigation.NavigationRoot;
 import org.openlca.app.navigation.NavigationTree;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.filters.EmptyCategoryFilter;
@@ -106,12 +105,11 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 
 	@Override
 	protected void createContents(final Composite container) {
-		container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		new Label(container, SWT.TOP).setText(Messages.ReferenceProcess);
-		Composite c = new Composite(container, SWT.NONE);
-		c.setLayout(new GridLayout(2, false));
-		c.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-		createProcessViewer(c);
+		Composite label = new Composite(container, SWT.NONE);
+		label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
+		label.setLayout(new GridLayout(1, true));
+		new Label(label, SWT.NONE).setText(Messages.ReferenceProcess);
+		createProcessViewer(container);
 		createOptions(container);
 	}
 

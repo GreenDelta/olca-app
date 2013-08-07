@@ -120,7 +120,7 @@ class ProcessWizardPage extends AbstractWizardPage<Process> {
 		createRefFlowCheck.setText(Messages.CreateProductFlow);
 
 		labelStack = new Composite(container, SWT.NONE);
-		labelStack.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		labelStack.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
 		labelStack.setLayout(new StackLayout());
 
 		contentStack = new Composite(container, SWT.NONE);
