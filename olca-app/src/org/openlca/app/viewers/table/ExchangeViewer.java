@@ -19,7 +19,6 @@ import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.CategoryPath;
-import org.openlca.app.util.UI;
 import org.openlca.app.viewers.table.modify.ComboBoxCellModifier;
 import org.openlca.app.viewers.table.modify.IModelChangedListener.ModelChangeType;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
@@ -137,11 +136,11 @@ public class ExchangeViewer extends AbstractTableViewer<Exchange> {
 
 	@OnCreate
 	protected void onCreate() {
-		ObjectDialog dialog = new ObjectDialog(UI.shell(), ModelType.FLOW,
-				false);
-		dialog.addFilter(new FlowTypeFilter());
-		if (dialog.open() == ObjectDialog.OK)
-			add((FlowDescriptor) dialog.getSelection());
+		BaseDescriptor[] descriptors = ObjectDialog.multiSelect(ModelType.FLOW,
+				new FlowTypeFilter());
+		if (descriptors != null)
+			for (BaseDescriptor descriptor : descriptors)
+				add((FlowDescriptor) descriptor);
 	}
 
 	private void add(FlowDescriptor descriptor) {

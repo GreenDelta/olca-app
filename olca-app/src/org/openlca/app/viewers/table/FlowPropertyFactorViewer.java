@@ -72,13 +72,14 @@ public class FlowPropertyFactorViewer extends
 
 	@OnCreate
 	protected void onCreate() {
-		BaseDescriptor descriptor = ObjectDialog
-				.select(ModelType.FLOW_PROPERTY);
-		if (descriptor != null)
-			add(descriptor);
+		BaseDescriptor[] descriptors = ObjectDialog
+				.multiSelect(ModelType.FLOW_PROPERTY);
+		if (descriptors != null)
+			for (BaseDescriptor descriptor : descriptors)
+				add((FlowPropertyDescriptor) descriptor);
 	}
 
-	private void add(BaseDescriptor descriptor) {
+	private void add(FlowPropertyDescriptor descriptor) {
 		FlowPropertyFactor factor = new FlowPropertyFactor();
 		factor.setFlowProperty(cache.getFlowProperty(descriptor.getId()));
 		fireModelChanged(ModelChangeType.CREATE, factor);

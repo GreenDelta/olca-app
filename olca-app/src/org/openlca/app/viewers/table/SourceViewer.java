@@ -35,9 +35,11 @@ public class SourceViewer extends AbstractTableViewer<Source> {
 
 	@OnCreate
 	protected void onCreate() {
-		BaseDescriptor descriptor = ObjectDialog.select(ModelType.SOURCE);
-		if (descriptor != null)
-			add((SourceDescriptor) descriptor);
+		BaseDescriptor[] descriptors = ObjectDialog
+				.multiSelect(ModelType.SOURCE);
+		if (descriptors != null)
+			for (BaseDescriptor descriptor : descriptors)
+				add((SourceDescriptor) descriptor);
 	}
 
 	private void add(SourceDescriptor descriptor) {

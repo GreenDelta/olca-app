@@ -1,6 +1,5 @@
 package org.openlca.app.components;
 
-import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
@@ -101,11 +100,9 @@ public final class TextDropComponent extends Composite {
 		addButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(final MouseEvent e) {
-				ObjectDialog dialog = new ObjectDialog(getShell(), modelType,
-						false);
-				int code = dialog.open();
-				if (code == Window.OK && dialog.getSelection() != null)
-					handleChange(dialog.getSelection());
+				BaseDescriptor descriptor = ObjectDialog.select(modelType);
+				if (descriptor != null)
+					handleChange(descriptor);
 			}
 		});
 	}

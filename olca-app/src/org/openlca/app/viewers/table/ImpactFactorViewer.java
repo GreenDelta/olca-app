@@ -71,13 +71,15 @@ public class ImpactFactorViewer extends AbstractTableViewer<ImpactFactor> {
 	@OnCreate
 	protected void onCreate() {
 		if (category != null) {
-			BaseDescriptor descriptor = ObjectDialog.select(ModelType.FLOW);
-			if (descriptor != null)
-				add(descriptor);
+			BaseDescriptor[] descriptors = ObjectDialog
+					.multiSelect(ModelType.FLOW);
+			if (descriptors != null)
+				for (BaseDescriptor descriptor : descriptors)
+					add((FlowDescriptor) descriptor);
 		}
 	}
 
-	private void add(BaseDescriptor descriptor) {
+	private void add(FlowDescriptor descriptor) {
 		ImpactFactor factor = new ImpactFactor();
 		factor.setFlow(flowDao.getForId(descriptor.getId()));
 		factor.setFlowPropertyFactor(factor.getFlow().getReferenceFactor());

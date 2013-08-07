@@ -3,7 +3,6 @@ package org.openlca.app.components;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -11,63 +10,73 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.forms.widgets.ExpandableComposite;
-import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.Messages;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.forms.FormDialog;
+import org.eclipse.ui.forms.IManagedForm;
+import org.openlca.app.navigation.CategoryElement;
+import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.NavigationTree;
+import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 
-public class ObjectDialog extends Dialog {
+public class ObjectDialog extends FormDialog {
 
-	private final ModelType modelType;
 	private final List<ViewerFilter> filters = new ArrayList<>();
-	protected BaseDescriptor[] multiSelection;
-	protected BaseDescriptor selection;
-	private boolean multiSelect;
+	private final ModelType modelType;
+	private boolean multiSelection = false;
 
-	public static BaseDescriptor select(ModelType type) {
-		ObjectDialog dialog = new ObjectDialog(UI.shell(), type, false);
+	private TreeViewer viewer;
+	private Text searchText;
+	private BaseDescriptor[] selection;
+
+	public static BaseDescriptor select(ModelType type, ViewerFilter... filters) {
+		ObjectDialog dialog = new ObjectDialog(UI.shell(), type);
+		if (filters != null)
+			for (ViewerFilter filter : filters)
+				dialog.filters.add(filter);
+		if (dialog.open() == OK) {
+			BaseDescriptor[] selection = dialog.getSelection();
+			if (selection == null || selection.length == 0)
+				return null;
+			return selection[0];
+		}
+		return null;
+	}
+
+	public static BaseDescriptor[] multiSelect(ModelType type,
+			ViewerFilter... filters) {
+		ObjectDialog dialog = new ObjectDialog(UI.shell(), type);
+		dialog.multiSelection = true;
+		if (filters != null)
+			for (ViewerFilter filter : filters)
+				dialog.filters.add(filter);
 		if (dialog.open() == OK)
 			return dialog.getSelection();
 		return null;
 	}
 
-	public static BaseDescriptor[] selectAll(ModelType type) {
-		ObjectDialog dialog = new ObjectDialog(UI.shell(), type, true);
-		if (dialog.open() == OK)
-			return dialog.getMultiSelection();
-		return null;
-	}
-
-	public ObjectDialog(Shell parentShell, ModelType modelType,
-			boolean multiSelect) {
+	private ObjectDialog(Shell parentShell, ModelType modelType) {
 		super(parentShell);
 		this.modelType = modelType;
-		setShellStyle(SWT.BORDER | SWT.TITLE | SWT.APPLICATION_MODAL);
+		setShellStyle(SWT.BORDER | SWT.TITLE | SWT.APPLICATION_MODAL
+				| SWT.RESIZE);
 		setBlockOnOpen(true);
-		this.multiSelect = multiSelect;
-	}
-
-	@Override
-	protected Control createButtonBar(final Composite parent) {
-		final Control c = super.createButtonBar(parent);
-		c.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
-		parent.setBackground(Display.getCurrent().getSystemColor(
-				SWT.COLOR_WHITE));
-		return c;
+		filters.add(new NameFilter());
 	}
 
 	@Override
@@ -80,169 +89,148 @@ public class ObjectDialog extends Dialog {
 	}
 
 	@Override
-	protected Control createDialogArea(final Composite parent) {
+	protected void createFormContent(IManagedForm form) {
+		Composite composite = UI.formBody(form.getForm(), form.getToolkit());
+		UI.gridLayout(composite, 1);
+		String title = "Select model" + (multiSelection ? "(s)" : "");
+		UI.formHeader(form, title);
 
-		// create dialog container
-		final Composite container = (Composite) super.createDialogArea(parent);
-		final GridLayout gl = new GridLayout();
-		gl.verticalSpacing = 0;
-		gl.horizontalSpacing = 0;
-		gl.marginRight = 0;
-		gl.marginLeft = 0;
-		gl.marginBottom = 0;
-		gl.marginTop = 0;
-		gl.numColumns = 1;
-		container.setLayout(gl);
-		final FormToolkit toolkit = new FormToolkit(Display.getCurrent());
-		toolkit.adapt(container);
+		UI.applyBoldFont(UI.formLabel(composite, form.getToolkit(), "Filter by name"));
+		searchText = UI.formText(composite, SWT.SEARCH);
+		searchText.addModifyListener(new SearchTextModifyListener());
 
-		// create section and section client
-		final Section selectObjectSection = toolkit
-				.createSection(container, ExpandableComposite.TITLE_BAR
-						| ExpandableComposite.FOCUS_TITLE);
-		selectObjectSection.setText(Messages.SelectObjectDialog_SectionText);
-		selectObjectSection.setLayoutData(new GridData(SWT.FILL, SWT.FILL,
-				true, true));
+		Composite actionComposite = form.getToolkit()
+				.createComposite(composite);
+		UI.gridLayout(actionComposite, 2, 2, 0);
+		UI.gridData(actionComposite, false, false);
 
-		// create composite
-		final Composite composite = toolkit.createComposite(
-				selectObjectSection, SWT.NONE);
-		final GridLayout gridLayout = new GridLayout();
-		gridLayout.verticalSpacing = 10;
-		gridLayout.horizontalSpacing = 10;
-		gridLayout.marginRight = 10;
-		gridLayout.marginLeft = 10;
-		gridLayout.marginBottom = 10;
-		gridLayout.marginTop = 10;
-		gridLayout.numColumns = 1;
-		composite.setLayout(gridLayout);
-		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		selectObjectSection.setClient(composite);
-		toolkit.paintBordersFor(composite);
+		Button expandButton = form.getToolkit().createButton(actionComposite,
+				"", SWT.PUSH);
+		expandButton.setImage(ImageType.EXPAND_ICON.get());
+		expandButton.addSelectionListener(new ExpandSelectionListener());
+		Button collapseButton = form.getToolkit().createButton(actionComposite,
+				"", SWT.PUSH);
+		collapseButton.addSelectionListener(new CollapseSelectionListener());
+		collapseButton.setImage(ImageType.FOLD_ICON.get());
 
-		// create composite
-		final Composite composite2 = toolkit.createComposite(composite);
-		composite2.setLayout(new GridLayout());
-		composite2.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		toolkit.paintBordersFor(composite2);
-
-		// create tree viewer for selecting objects
-		final TreeViewer viewer = NavigationTree.forSingleSelection(composite2,
-				modelType);
-
-		// for each filter
-		for (final ViewerFilter filter : filters) {
-			// add filter
-			viewer.addFilter(filter);
-		}
+		if (multiSelection)
+			viewer = NavigationTree.forMultiSelection(composite, modelType);
+		else
+			viewer = NavigationTree.forSingleSelection(composite, modelType);
+		viewer.setFilters(filters.toArray(new ViewerFilter[filters.size()]));
 
 		viewer.getTree().setLayoutData(
 				new GridData(SWT.FILL, SWT.FILL, true, true));
 
-		// add a selection listener to the viewer
-		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
-			@Override
-			public void selectionChanged(final SelectionChangedEvent event) {
-				// if selection is not empty
-				if (event.getSelection() != null
-						&& !event.getSelection().isEmpty()) {
-					// get selection
-					final IStructuredSelection s = (IStructuredSelection) event
-							.getSelection();
-					final List<BaseDescriptor> selection = new ArrayList<>();
-					// for each selected object
-					for (final Object selected : s.toArray()) {
-						// if object is model component element
-						if (selected instanceof ModelElement) {
-							// add to filtered selection
-							selection.add(((ModelElement) selected)
-									.getContent());
-						}
-					}
-					// if multiple selection is allowed
-					if (multiSelect) {
-						// set multi selection
-						ObjectDialog.this.multiSelection = selection
-								.toArray(new BaseDescriptor[selection.size()]);
-					} else {
-						if (!selection.isEmpty()) {
-							// set first selection
-							ObjectDialog.this.selection = selection.get(0);
-						} else {
-							ObjectDialog.this.selection = null;
-						}
-					}
-				} else if (multiSelect) {
-					multiSelection = null;
-				} else {
-					selection = null;
-				}
-				getButton(IDialogConstants.OK_ID).setEnabled(
-						multiSelect && multiSelection != null
-								&& multiSelection.length > 0 || !multiSelect
-								&& selection != null);
-			}
-		});
-
-		viewer.addDoubleClickListener(new IDoubleClickListener() {
-
-			@Override
-			public void doubleClick(final DoubleClickEvent event) {
-				final IStructuredSelection selection = (IStructuredSelection) event
-						.getSelection();
-				if (selection.getFirstElement() instanceof ModelElement) {
-					// set first selection
-					final ModelElement element = (ModelElement) selection
-							.getFirstElement();
-					final BaseDescriptor modelComponent = element.getContent();
-					if (multiSelect) {
-						ObjectDialog.this.multiSelection = new BaseDescriptor[] { modelComponent };
-					} else {
-						ObjectDialog.this.selection = modelComponent;
-					}
-					okPressed();
-				}
-			}
-		});
-		return container;
+		viewer.addSelectionChangedListener(new SelectionChangedListener());
+		viewer.addDoubleClickListener(new DoubleClickListener());
 	}
 
-	/**
-	 * Return the initial size of the dialog
-	 */
 	@Override
 	protected Point getInitialSize() {
-		return new Point(400, 300);
+		return new Point(600, 600);
 	}
 
-	/**
-	 * Adds a filter to the dialog's input viewer
-	 * 
-	 * @param filter
-	 *            The filter to add
-	 */
-	public void addFilter(final ViewerFilter filter) {
-		filters.add(filter);
+	@Override
+	protected Point getInitialLocation(Point initialSize) {
+		Point loc = super.getInitialLocation(initialSize);
+		int marginTop = (getParentShell().getSize().y - initialSize.y) / 3;
+		if (marginTop < 0)
+			marginTop = 0;
+		return new Point(loc.x, loc.y + marginTop);
 	}
 
-	/**
-	 * Returns the selected model components
-	 * 
-	 * @return null if no selection was made or the parameter multi select was
-	 *         set to false, otherwise the selected model components
-	 */
-	public BaseDescriptor[] getMultiSelection() {
-		return multiSelection;
-	}
-
-	/**
-	 * Get the current selection of this dialog.
-	 * 
-	 * @return the current selection of this dialog, or <code>null</code> if no
-	 *         object is selected or the parameter multi select was set to true
-	 */
-	public BaseDescriptor getSelection() {
+	private BaseDescriptor[] getSelection() {
 		return selection;
+	}
+
+	private class SearchTextModifyListener implements ModifyListener {
+
+		@Override
+		public void modifyText(ModifyEvent e) {
+			viewer.refresh();
+		}
+
+	}
+
+	private class ExpandSelectionListener extends SelectionAdapter {
+		@Override
+		public void widgetSelected(SelectionEvent e) {
+			viewer.expandAll();
+		}
+	}
+
+	private class CollapseSelectionListener extends SelectionAdapter {
+		@Override
+		public void widgetSelected(SelectionEvent e) {
+			viewer.collapseAll();
+		}
+	}
+
+	private class SelectionChangedListener implements ISelectionChangedListener {
+
+		@Override
+		public void selectionChanged(SelectionChangedEvent event) {
+			if (event.getSelection() != null && !event.getSelection().isEmpty()) {
+				IStructuredSelection s = (IStructuredSelection) event
+						.getSelection();
+
+				List<BaseDescriptor> currentSelection = new ArrayList<>();
+				for (Object selected : s.toArray())
+					if (selected instanceof ModelElement)
+						currentSelection.add(((ModelElement) selected)
+								.getContent());
+				selection = currentSelection
+						.toArray(new BaseDescriptor[currentSelection.size()]);
+			}
+			getButton(IDialogConstants.OK_ID).setEnabled(
+					selection != null && selection.length > 0);
+		}
+	}
+
+	private class DoubleClickListener implements IDoubleClickListener {
+
+		@Override
+		public void doubleClick(DoubleClickEvent event) {
+			IStructuredSelection currentSelection = (IStructuredSelection) event
+					.getSelection();
+			if (currentSelection.getFirstElement() instanceof ModelElement) {
+				ModelElement element = (ModelElement) currentSelection
+						.getFirstElement();
+				BaseDescriptor modelComponent = element.getContent();
+				selection = new BaseDescriptor[] { modelComponent };
+				okPressed();
+			}
+		}
+
+	}
+
+	private class NameFilter extends ViewerFilter {
+
+		private boolean select(Object element) {
+			if (element instanceof ModelElement) {
+				ModelElement modelElement = (ModelElement) element;
+				if (modelElement.getContent().getName().toLowerCase()
+						.contains(searchText.getText().toLowerCase()))
+					return true;
+			} else if (element instanceof CategoryElement) {
+				CategoryElement categoryElement = (CategoryElement) element;
+				for (INavigationElement<?> child : categoryElement
+						.getChildren())
+					if (select(child))
+						return true;
+			}
+			return false;
+		}
+
+		@Override
+		public boolean select(Viewer viewer, Object parentElement,
+				Object element) {
+			if ("".equals(searchText.getText()))
+				return true;
+			else
+				return select(element);
+		}
 	}
 
 }

@@ -31,6 +31,17 @@ public class NavigationTree {
 		return viewer;
 	}
 
+	/**
+	 * Creates a tree viewer for the selection of multiple models of the given
+	 * type. The input of the respective navigation element is already done in
+	 * this method.
+	 */
+	public static TreeViewer forMultiSelection(Composite parent, ModelType type) {
+		TreeViewer viewer = createViewer(parent, true);
+		viewer.setInput(Navigator.findElement(type));
+		return viewer;
+	}
+
 	private static TreeViewer createViewer(Composite parent, boolean multi) {
 		int selectionFlag = multi ? SWT.MULTI : SWT.SINGLE;
 		TreeViewer viewer = new TreeViewer(parent, SWT.BORDER | selectionFlag);
