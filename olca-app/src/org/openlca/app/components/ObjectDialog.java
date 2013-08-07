@@ -25,7 +25,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
-import org.openlca.app.navigation.CategoryElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.NavigationTree;
@@ -95,7 +94,8 @@ public class ObjectDialog extends FormDialog {
 		String title = "Select model" + (multiSelection ? "(s)" : "");
 		UI.formHeader(form, title);
 
-		UI.applyBoldFont(UI.formLabel(composite, form.getToolkit(), "Filter by name"));
+		UI.applyBoldFont(UI.formLabel(composite, form.getToolkit(),
+				"Filter by name"));
 		searchText = UI.formText(composite, SWT.SEARCH);
 		searchText.addModifyListener(new SearchTextModifyListener());
 
@@ -144,6 +144,11 @@ public class ObjectDialog extends FormDialog {
 		return selection;
 	}
 
+	private boolean matches(ModelElement element) {
+		return element.getContent().getName().toLowerCase()
+				.contains(searchText.getText().toLowerCase());
+	}
+
 	private class SearchTextModifyListener implements ModifyListener {
 
 		@Override
@@ -177,15 +182,26 @@ public class ObjectDialog extends FormDialog {
 
 				List<BaseDescriptor> currentSelection = new ArrayList<>();
 				for (Object selected : s.toArray())
-					if (selected instanceof ModelElement)
-						currentSelection.add(((ModelElement) selected)
-								.getContent());
+					currentSelection
+							.addAll(getSelection((INavigationElement<?>) selected));
 				selection = currentSelection
 						.toArray(new BaseDescriptor[currentSelection.size()]);
 			}
 			getButton(IDialogConstants.OK_ID).setEnabled(
 					selection != null && selection.length > 0);
 		}
+	}
+
+	private List<BaseDescriptor> getSelection(INavigationElement<?> element) {
+		List<BaseDescriptor> currentSelection = new ArrayList<>();
+		if (element instanceof ModelElement) {
+			ModelElement modelElement = (ModelElement) element;
+			if (matches(modelElement))
+				currentSelection.add(modelElement.getContent());
+		} else
+			for (INavigationElement<?> child : element.getChildren())
+				currentSelection.addAll(getSelection(child));
+		return currentSelection;
 	}
 
 	private class DoubleClickListener implements IDoubleClickListener {
@@ -207,19 +223,13 @@ public class ObjectDialog extends FormDialog {
 
 	private class NameFilter extends ViewerFilter {
 
-		private boolean select(Object element) {
-			if (element instanceof ModelElement) {
-				ModelElement modelElement = (ModelElement) element;
-				if (modelElement.getContent().getName().toLowerCase()
-						.contains(searchText.getText().toLowerCase()))
+		private boolean select(INavigationElement<?> element) {
+			if (element instanceof ModelElement)
+				return matches((ModelElement) element);
+			
+			for (INavigationElement<?> child : element.getChildren())
+				if (select(child))
 					return true;
-			} else if (element instanceof CategoryElement) {
-				CategoryElement categoryElement = (CategoryElement) element;
-				for (INavigationElement<?> child : categoryElement
-						.getChildren())
-					if (select(child))
-						return true;
-			}
 			return false;
 		}
 
@@ -229,7 +239,7 @@ public class ObjectDialog extends FormDialog {
 			if ("".equals(searchText.getText()))
 				return true;
 			else
-				return select(element);
+				return select((INavigationElement<?>) element);
 		}
 	}
 
