@@ -78,8 +78,6 @@ public class NavigationLabelProvider extends ColumnLabelProvider implements
 			return ImageType.FLOW_PROPERTY_CATEGORY_ICON.get();
 		case IMPACT_METHOD:
 			return ImageType.LCIA_CATEGORY_ICON.get();
-		case IMPACT_RESULT:
-			return ImageType.FOLDER_EXPR.get();
 		case PROCESS:
 			return ImageType.PROCESS_CATEGORY_ICON.get();
 		case PRODUCT_SYSTEM:
@@ -107,8 +105,6 @@ public class NavigationLabelProvider extends ColumnLabelProvider implements
 			return ImageType.FLOW_PROPERTY_ICON.get();
 		case IMPACT_METHOD:
 			return ImageType.LCIA_ICON.get();
-		case IMPACT_RESULT:
-			return ImageType.EXPRESSION_ICON.get();
 		case PROCESS:
 			return ImageType.PROCESS_ICON.get();
 		case PRODUCT_SYSTEM:

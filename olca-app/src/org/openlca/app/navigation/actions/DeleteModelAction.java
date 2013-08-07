@@ -17,7 +17,6 @@ import org.openlca.app.navigation.Navigator;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.ActorDao;
-import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.Cache;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.FlowPropertyDao;
@@ -30,7 +29,6 @@ import org.openlca.core.database.SourceDao;
 import org.openlca.core.database.UnitGroupDao;
 import org.openlca.core.database.usage.IUseSearch;
 import org.openlca.core.model.descriptors.BaseDescriptor;
-import org.openlca.core.model.results.ImpactResult;
 
 public class DeleteModelAction extends Action implements INavigationAction {
 
@@ -130,11 +128,6 @@ public class DeleteModelAction extends Action implements INavigationAction {
 			ImpactMethodDao impactMethodDao = new ImpactMethodDao(database);
 			impactMethodDao.delete(impactMethodDao.getForId(element
 					.getContent().getId()));
-			break;
-		case IMPACT_RESULT:
-			BaseDao<ImpactResult> baseDao = new BaseDao<>(ImpactResult.class,
-					database);
-			baseDao.delete(baseDao.getForId(element.getContent().getId()));
 			break;
 		default:
 			break;
