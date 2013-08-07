@@ -129,8 +129,6 @@ public class Images {
 			return ImageType.FLOW_PROPERTY_CATEGORY_ICON;
 		case IMPACT_METHOD:
 			return ImageType.LCIA_CATEGORY_ICON;
-		case IMPACT_RESULT:
-			return ImageType.FOLDER_EXPR;
 		case PROCESS:
 			return ImageType.PROCESS_CATEGORY_ICON;
 		case PRODUCT_SYSTEM:

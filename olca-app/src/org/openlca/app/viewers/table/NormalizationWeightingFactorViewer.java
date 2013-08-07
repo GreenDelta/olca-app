@@ -48,7 +48,7 @@ public class NormalizationWeightingFactorViewer extends
 			for (int i = 0; i < wrapper.length; i++) {
 				ImpactCategory category = method.getImpactCategories().get(i);
 				wrapper[i] = new Wrapper(category);
-				wrapper[i].factor = set.getFactor(category);
+				wrapper[i].factor = set.getFactor(category.getId());
 			}
 			setInput(wrapper);
 		}

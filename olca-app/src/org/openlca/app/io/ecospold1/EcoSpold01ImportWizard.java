@@ -29,7 +29,6 @@ import org.openlca.core.model.Category;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
 import org.openlca.io.EcoSpoldUnitFetch;
-import org.openlca.io.ParserException;
 import org.openlca.io.UnitMapping;
 import org.openlca.io.UnitMappingEntry;
 import org.openlca.io.ecospold1.importer.EcoSpold01Import;
@@ -227,14 +226,10 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 				@Override
 				public void run(final IProgressMonitor monitor)
 						throws InvocationTargetException, InterruptedException {
-					try {
-						File[] files = importPage.getFiles();
-						UnitMapping unitMapping = mappingPage.getUnitMapping();
-						saveUnits(unitMapping);
-						parse(monitor, files, unitMapping);
-					} catch (ParserException e) {
-						throw new InterruptedException(e.getMessage());
-					}
+					File[] files = importPage.getFiles();
+					UnitMapping unitMapping = mappingPage.getUnitMapping();
+					saveUnits(unitMapping);
+					parse(monitor, files, unitMapping);
 				}
 			});
 			Navigator.refresh();
@@ -245,59 +240,18 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 		}
 	}
 
-	private void parse(final IProgressMonitor monitor, final File[] files,
-			final UnitMapping unitMapping) throws ParserException {
+	private void parse(IProgressMonitor monitor, File[] files,
+			UnitMapping unitMapping) {
+		// TODO: we should pass the monitor to the exporter
+		monitor.beginTask("Import EcoSpold 01 data sets",
+				IProgressMonitor.UNKNOWN);
 		EcoSpold01Import importer = new EcoSpold01Import(Database.get(),
 				unitMapping);
 		importer.setProcessCategory(category);
-		final long sizeOfXmlFiles = getAmountOfJobs(files);
-		monitor.beginTask(Messages.EcoSpoldImportWizard_Importing,
-				(int) sizeOfXmlFiles);
-		final SAXBuilder builder = new SAXBuilder();
-		int i = 0;
-		while (!monitor.isCanceled() && i < files.length) {
-			final File file = files[i];
-			try {
-				if (file.getName().endsWith(".zip")) {
-					try (ZipFile zipFile = new ZipFile(file)) {
-						final Enumeration<? extends ZipEntry> entries = zipFile
-								.entries();
-						while (!monitor.isCanceled()
-								&& entries.hasMoreElements()) {
-							final ZipEntry entry = entries.nextElement();
-							if (!entry.isDirectory()
-									&& entry.getName().toLowerCase()
-											.endsWith(".xml")) {
-								monitor.subTask(entry.getName());
-								final Document doc = builder.build(zipFile
-										.getInputStream(entry));
-								if (doc.getRootElement().getNamespace()
-										.equals(processNameSpace)
-										|| doc.getRootElement().getNamespace()
-												.equals(methodNameSpace)) {
-									changeNameSpace(doc);
-									importer.parse(zipFile, entry);
-								}
-							}
-							monitor.worked((int) entry.getSize());
-						}
-					}
-				} else {
-					monitor.subTask(file.getName());
-					final Document doc = builder.build(file);
-					if (doc.getRootElement().getNamespace()
-							.equals(processNameSpace)
-							|| doc.getRootElement().getNamespace()
-									.equals(methodNameSpace)) {
-						changeNameSpace(doc);
-						importer.run(file);
-					}
-					monitor.worked((int) file.length());
-				}
-			} catch (final Exception e) {
-				log.error("Parsing files failed", e);
-			}
-			i++;
+		try {
+			importer.run(files);
+		} catch (Exception e) {
+			log.error("Data set import failed", e);
 		}
 		monitor.done();
 	}

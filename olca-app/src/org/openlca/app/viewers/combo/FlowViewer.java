@@ -10,7 +10,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.CategoryPath;
 import org.openlca.core.database.Cache;
-import org.openlca.core.math.IResultData;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.descriptors.FlowDescriptor;
@@ -49,10 +48,6 @@ public class FlowViewer extends AbstractComboViewer<FlowDescriptor> {
 	@Override
 	protected ViewerSorter getSorter() {
 		return new FlowSorter();
-	}
-
-	public void setInput(IResultData result) {
-		setInput(result.getFlows());
 	}
 
 	@Override

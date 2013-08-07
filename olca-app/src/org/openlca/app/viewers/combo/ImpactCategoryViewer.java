@@ -11,7 +11,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Labels;
-import org.openlca.core.math.IResultData;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.util.Strings;
 
@@ -50,10 +49,6 @@ public class ImpactCategoryViewer extends
 	public void setInput(List<ImpactCategoryDescriptor> categories) {
 		setInput(categories.toArray(new ImpactCategoryDescriptor[categories
 				.size()]));
-	}
-
-	public void setInput(IResultData result) {
-		setInput(result.getImpactCategories());
 	}
 
 	@Override
