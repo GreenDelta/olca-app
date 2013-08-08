@@ -51,8 +51,7 @@ public class Database {
 	public static IDatabase activate(IDatabaseConfiguration config)
 			throws Exception {
 		Database.database = config.createInstance();
-		Database.cache = new Cache(Database.database);
-		Database.cache.load();
+		Database.cache = Cache.createDefaultCache(database);
 		Database.config = config;
 		return Database.database;
 	}
