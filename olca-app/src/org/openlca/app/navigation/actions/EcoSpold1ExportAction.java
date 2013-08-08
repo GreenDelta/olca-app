@@ -12,9 +12,9 @@ package org.openlca.app.navigation.actions;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.openlca.app.Messages;
-import org.openlca.app.io.ecospold1.EcoSpold01ExportWizard;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.UI;
+import org.openlca.app.wizards.io.EcoSpold01ExportWizard;
 import org.openlca.core.model.ModelType;
 
 /**

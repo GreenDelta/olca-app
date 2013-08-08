@@ -13,9 +13,9 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
-import org.openlca.app.io.ilcd.importer.ILCDImportWizard;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.UI;
+import org.openlca.app.wizards.io.ILCDImportWizard;
 
 /**
  * Action for importing ILCD formatted files

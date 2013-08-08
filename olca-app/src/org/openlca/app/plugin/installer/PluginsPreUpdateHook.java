@@ -1,8 +1,8 @@
 package org.openlca.app.plugin.installer;
 
 import org.openlca.app.update.PreUpdateHook;
+import org.openlca.app.update.Updater;
 import org.openlca.app.update.VersionInfo;
-import org.openlca.app.update.execution.Updater;
 
 public class PluginsPreUpdateHook implements PreUpdateHook {
 

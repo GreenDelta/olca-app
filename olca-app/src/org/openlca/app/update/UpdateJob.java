@@ -15,7 +15,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.UIJob;
-import org.openlca.app.update.execution.Updater;
 import org.openlca.app.util.PlatformUtils;
 import org.openlca.app.util.UI;
 import org.osgi.framework.Bundle;

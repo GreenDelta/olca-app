@@ -453,7 +453,7 @@
       </category>
       <wizard
             category="import.category.file"
-            class="org.openlca.app.io.ecospold1.EcoSpold01ImportWizard"
+            class="org.openlca.app.wizards.io.EcoSpold01ImportWizard"
             icon="icons/xml.png"
             id="wizard.import.ecospold1"
             name="%wizard.name">
@@ -463,7 +463,7 @@
       </wizard>
       <wizard
             category="import.category.file"
-            class="org.openlca.app.io.ecospold2.EcoSpold2ImportWizard"
+            class="org.openlca.app.wizards.io.EcoSpold2ImportWizard"
             icon="icons/xml.png"
             id="wizard.import.ecospold2"
             name="EcoSpold 2">
@@ -473,7 +473,7 @@
       </wizard>
       <wizard
             category="import.category.file"
-            class="org.openlca.app.io.ilcd.importer.ILCDImportWizard"
+            class="org.openlca.app.wizards.io.ILCDImportWizard"
             icon="icons/ilcd16.png"
             id="wizard.import.ilcd"
             name="ILCD">
@@ -511,7 +511,7 @@
       </category>
       <wizard
             category="export.category.ecospold"
-            class="org.openlca.app.io.ecospold1.EcoSpold01ExportProcessWizard"
+            class="org.openlca.app.wizards.io.EcoSpold01ExportProcessWizard"
             icon="icons/xml.png"
             id="wizard.export.ecospold.process"
             name="%wizard.name.0">
@@ -521,7 +521,7 @@
       </wizard>
       <wizard
             category="export.category.ecospold"
-            class="org.openlca.app.io.ecospold1.EcoSpold01ExportMethodWizard"
+            class="org.openlca.app.wizards.io.EcoSpold01ExportMethodWizard"
             icon="icons/xml.png"
             id="wizard.export.ecospold.impactmethod"
             name="%wizard.name.1">
@@ -531,49 +531,49 @@
       </wizard>
       <wizard
             category="export.category.ilcd"
-            class="org.openlca.app.io.ilcd.exporter.ILCDExportSystemWizard"
+            class="org.openlca.app.wizards.io.ILCDExportSystemWizard"
             icon="icons/ilcd16.png"
             id="wizard.export.ilcd.productsystem"
             name="%wizard.name.7">
       </wizard>
       <wizard
             category="export.category.ilcd"
-            class="org.openlca.app.io.ilcd.exporter.ILCDExportProcessWizard"
+            class="org.openlca.app.wizards.io.ILCDExportProcessWizard"
             icon="icons/ilcd16.png"
             id="wizard.export.ilcd.process"
             name="%wizard.name.3">
       </wizard>
       <wizard
             category="export.category.ilcd"
-            class="org.openlca.app.io.ilcd.exporter.ILCDExportFlowWizard"
+            class="org.openlca.app.wizards.io.ILCDExportFlowWizard"
             icon="icons/ilcd16.png"
             id="wizard.export.ilcd.flow"
             name="%wizard.name.4">
       </wizard>
       <wizard
             category="export.category.ilcd"
-            class="org.openlca.app.io.ilcd.exporter.ILCDExportFlowPropertyWizard"
+            class="org.openlca.app.wizards.io.ILCDExportFlowPropertyWizard"
             icon="icons/ilcd16.png"
             id="wizard.export.ilcd.flowproperty"
             name="%wizard.name.5">
       </wizard>
       <wizard
             category="export.category.ilcd"
-            class="org.openlca.app.io.ilcd.exporter.ILCDExportUnitGroupWizard"
+            class="org.openlca.app.wizards.io.ILCDExportUnitGroupWizard"
             icon="icons/ilcd16.png"
             id="wizard.export.ilcd.unitgroup"
             name="%wizard.name.6">
       </wizard>
       <wizard
             category="export.category.ilcd"
-            class="org.openlca.app.io.ilcd.exporter.ILCDExportActorWizard"
+            class="org.openlca.app.wizards.io.ILCDExportActorWizard"
             icon="icons/ilcd16.png"
             id="wizard.export.actor"
             name="%Actors">
       </wizard>
       <wizard
             category="export.category.ilcd"
-            class="org.openlca.app.io.ilcd.exporter.ILCDSourceExportWizard"
+            class="org.openlca.app.wizards.io.ILCDSourceExportWizard"
             icon="icons/ilcd16.png"
             id="wizard.export.source"
             name="%Sources">
