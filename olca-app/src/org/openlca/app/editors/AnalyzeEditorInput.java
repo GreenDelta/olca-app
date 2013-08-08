@@ -13,7 +13,8 @@ package org.openlca.app.editors;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
-import org.openlca.core.database.IDatabase;
+import org.openlca.app.db.Database;
+import org.openlca.core.database.BaseDao;
 import org.openlca.core.model.NormalizationWeightingSet;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 
@@ -22,18 +23,10 @@ import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
  */
 public class AnalyzeEditorInput implements IEditorInput {
 
-	private NormalizationWeightingSet nwSet;
 	private String resultKey;
-	private IDatabase database;
-	private ImpactMethodDescriptor methodDescriptor;
-
-	public NormalizationWeightingSet getNwSet() {
-		return nwSet;
-	}
-
-	public void setNwSet(NormalizationWeightingSet nwSet) {
-		this.nwSet = nwSet;
-	}
+	private Long nwSetId;
+	private Long methodId;
+	private CalculationType type;
 
 	public String getResultKey() {
 		return resultKey;
@@ -43,20 +36,39 @@ public class AnalyzeEditorInput implements IEditorInput {
 		this.resultKey = resultKey;
 	}
 
-	public IDatabase getDatabase() {
-		return database;
+	public CalculationType getType() {
+		return type;
 	}
 
-	public void setDatabase(IDatabase database) {
-		this.database = database;
+	public void setType(CalculationType type) {
+		this.type = type;
+	}
+
+	/**
+	 * Cache the nw set since it is loaded from the database every time this
+	 * method gets called
+	 */
+	public NormalizationWeightingSet getNwSet() {
+		if (nwSetId == null)
+			return null;
+		if (methodId == null)
+			return null;
+		return new BaseDao<>(NormalizationWeightingSet.class, Database.get())
+				.getForId(nwSetId);
+	}
+
+	public void setNwSetId(Long nwSetId) {
+		this.nwSetId = nwSetId;
 	}
 
 	public ImpactMethodDescriptor getMethodDescriptor() {
-		return methodDescriptor;
+		if (methodId == null)
+			return null;
+		return Database.getCache().getImpactMethodDescriptor(methodId);
 	}
 
-	public void setMethodDescriptor(ImpactMethodDescriptor methodDescriptor) {
-		this.methodDescriptor = methodDescriptor;
+	public void setMethodId(Long methodId) {
+		this.methodId = methodId;
 	}
 
 	@Override
@@ -89,4 +101,5 @@ public class AnalyzeEditorInput implements IEditorInput {
 	public String getToolTipText() {
 		return "";
 	}
+
 }
