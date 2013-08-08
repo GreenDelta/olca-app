@@ -9,6 +9,8 @@
  ******************************************************************************/
 package org.openlca.app.navigation.actions;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
@@ -17,6 +19,8 @@ import org.eclipse.osgi.util.NLS;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DerbyConfiguration;
+import org.openlca.app.db.IDatabaseConfiguration;
+import org.openlca.app.db.MySQLConfiguration;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
@@ -34,7 +38,7 @@ public class DeleteDatabaseAction extends Action implements INavigationAction {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
-	private DerbyConfiguration config;
+	private List<IDatabaseConfiguration> config;
 
 	public DeleteDatabaseAction() {
 		setImageDescriptor(ImageType.DELETE_ICON.getDescriptor());
@@ -47,15 +51,21 @@ public class DeleteDatabaseAction extends Action implements INavigationAction {
 		if (!(element instanceof DatabaseElement))
 			return false;
 		DatabaseElement e = (DatabaseElement) element;
-		if (!(e.getContent() instanceof DerbyConfiguration))
-			return false;
-		this.config = (DerbyConfiguration) e.getContent();
+		config = Collections.singletonList(e.getContent());
 		return true;
 	}
 
 	@Override
 	public boolean accept(List<INavigationElement<?>> elements) {
-		return false;
+		List<IDatabaseConfiguration> config = new ArrayList<>();
+		for (INavigationElement<?> element : elements) {
+			if (!(element instanceof DatabaseElement))
+				return false;
+			DatabaseElement e = (DatabaseElement) element;
+			config.add(e.getContent());
+		}
+		this.config = config;
+		return true;
 	}
 
 	@Override
@@ -67,24 +77,31 @@ public class DeleteDatabaseAction extends Action implements INavigationAction {
 	public void run() {
 		if (createMessageDialog().open() != 0)
 			return;
-		if (Database.isActive(config))
-			try {
-				Editors.closeAll();
-				Database.close();
-			} catch (Exception e) {
-				log.error("Failed to close database", e);
-				return;
-			}
-		// TODO: really delete database
-		Database.remove(config);
+
+		for (IDatabaseConfiguration config : this.config) {
+			if (Database.isActive(config))
+				try {
+					Editors.closeAll();
+					Database.close();
+				} catch (Exception e) {
+					log.error("Failed to close database", e);
+					continue;
+				}
+			// TODO: really delete database
+			if (config instanceof DerbyConfiguration)
+				Database.remove((DerbyConfiguration) config);
+			else if (config instanceof MySQLConfiguration)
+				Database.remove((MySQLConfiguration) config);
+		}
 		Navigator.refresh();
 	}
 
-	private MessageDialog createMessageDialog() {
-		return new MessageDialog(UI.shell(), Messages.Delete, null,
-				NLS.bind(Messages.NavigationView_DeleteQuestion,
-						config.getName()), MessageDialog.QUESTION,
-				new String[] { Messages.NavigationView_YesButton,
+	private MessageDialog createMessageDialog() { 
+		String name = config.size() == 1 ? config.get(0).getName() : "the selected databases";
+		return new MessageDialog(UI.shell(), Messages.Delete, null, NLS.bind(
+				Messages.NavigationView_DeleteQuestion, name),
+				MessageDialog.QUESTION, new String[] {
+						Messages.NavigationView_YesButton,
 						Messages.NavigationView_NoButton, },
 				MessageDialog.CANCEL);
 	}
