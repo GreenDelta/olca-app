@@ -4,6 +4,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.UIJob;
@@ -24,6 +25,17 @@ public class Editors {
 		} catch (Exception e) {
 			log.error("Failed to close editors", e);
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T extends IEditorPart> T getActive() {
+		try {
+			return (T) PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+					.getActivePage().getActiveEditor();
+		} catch (ClassCastException e) {
+			log.error("Error getting active editor", e);
+		}
+		return null;
 	}
 
 	public static void open(IEditorInput input, String editorId) {
