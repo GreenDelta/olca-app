@@ -9,21 +9,20 @@
  ******************************************************************************/
 package org.openlca.app.editors.actions;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.UUID;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.Wizard;
 import org.openlca.app.App;
 import org.openlca.app.Messages;
-import org.openlca.app.components.JobListenerWithProgress;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.AnalyzeEditorInput;
 import org.openlca.app.editors.CalculationType;
 import org.openlca.app.editors.actions.CalculationWizardPage.CalculationSettings;
 import org.openlca.app.util.Editors;
 import org.openlca.core.editors.analyze.AnalyzeEditor;
-import org.openlca.core.jobs.JobHandler;
-import org.openlca.core.jobs.Jobs;
 import org.openlca.core.math.SystemCalculator;
 import org.openlca.core.model.NormalizationWeightingSet;
 import org.openlca.core.model.ProductSystem;
@@ -57,78 +56,66 @@ class CalculationWizard extends Wizard {
 	@Override
 	public boolean performFinish() {
 		CalculationSettings settings = calculationPage.getSettings();
-		switch (settings.getType()) {
-		case ANALYSIS:
-		case QUICK:
-			analyze(settings);
+		try {
+			getContainer().run(true, true, new Calculation(settings));
 			return true;
-		case MONTE_CARLO:
-			// TODO
-			// SimulationInit init = new SimulationInit(productSystem, database,
-			// settings.getIterationCount());
-			// init.setImpactMethod(settings.getMethod());
-			// init.setAllocationMethod(settings.getAllocationMethod());
-			// init.run();
-			return true;
-		default:
+		} catch (Exception e) {
+			log.error("Calculation failed", e);
 			return false;
 		}
 	}
 
-	private void analyze(final CalculationSettings settings) {
-		try {
-			getContainer().run(true, true, new JobListenerWithProgress() {
+	private class Calculation implements IRunnableWithProgress {
 
-				@Override
-				public void run() {
-					JobHandler handler = Jobs.getHandler(Jobs.MAIN_JOB_HANDLER);
-					handler.addJobListener(this);
-					handler.startJob(Messages.Calculating,
-							IProgressMonitor.UNKNOWN);
-					SystemCalculator calculator = new SystemCalculator(Database
-							.get());
-					ImpactMethodDescriptor method = settings.getMethod();
-					Object result = null;
-					switch (settings.getType()) {
-					case ANALYSIS:
-						if (method != null)
-							result = calculator.analyse(productSystem);
-						else
-							result = calculator.analyse(productSystem, method);
-						break;
-					case QUICK:
-						if (method != null)
-							result = calculator.solve(productSystem);
-						else
-							result = calculator.solve(productSystem, method);
-						break;
-					default:
-						break;
-					}
-					if (result != null)
-						openEditor(result, method, settings.getNwSet(),
-								settings.getType());
-					handler.done();
-					handler.removeJobListener(this);
-				}
-			});
-		} catch (Exception e) {
-			log.error("Target invocation failed", e);
+		private CalculationSettings settings;
+
+		public Calculation(CalculationSettings settings) {
+			// TODO Auto-generated constructor stub
 		}
-	}
 
-	private void openEditor(Object result, ImpactMethodDescriptor method,
-			NormalizationWeightingSet nwSet, CalculationType type) {
-		AnalyzeEditorInput input = new AnalyzeEditorInput();
-		input.setType(type);
-		if (method != null)
-			input.setMethodId(method.getId());
-		if (nwSet != null)
-			input.setNwSetId(nwSet.getId());
-		String resultKey = UUID.randomUUID().toString();
-		App.getCache().put(resultKey, result);
-		input.setResultKey(resultKey);
-		Editors.open(input, AnalyzeEditor.ID);
+		@Override
+		public void run(IProgressMonitor monitor)
+				throws InvocationTargetException, InterruptedException {
+			monitor.beginTask("Run calculation", IProgressMonitor.UNKNOWN);
+			SystemCalculator calculator = new SystemCalculator(Database.get());
+			ImpactMethodDescriptor method = settings.getMethod();
+			Object result = null;
+			switch (settings.getType()) {
+			case ANALYSIS:
+				if (method != null)
+					result = calculator.analyse(productSystem);
+				else
+					result = calculator.analyse(productSystem, method);
+				break;
+			case QUICK:
+				if (method != null)
+					result = calculator.solve(productSystem);
+				else
+					result = calculator.solve(productSystem, method);
+				break;
+			default:
+				break;
+			}
+			if (result != null)
+				openEditor(result, method, settings.getNwSet(),
+						settings.getType());
+			monitor.done();
+		}
+
+		private void openEditor(Object result, ImpactMethodDescriptor method,
+				NormalizationWeightingSet nwSet, CalculationType type) {
+			AnalyzeEditorInput input = new AnalyzeEditorInput();
+			input.setType(type);
+			if (method != null)
+				input.setMethodId(method.getId());
+			if (nwSet != null)
+				input.setNwSetId(nwSet.getId());
+			String resultKey = UUID.randomUUID().toString();
+			App.getCache().put(resultKey, result);
+			input.setResultKey(resultKey);
+			Editors.open(input, AnalyzeEditor.ID);
+		}
+
 	}
 
 }

@@ -66,7 +66,7 @@ class CalculationWizardDialog extends WizardDialog {
 
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
-				// no action on default selection
+				widgetSelected(e);
 			}
 
 			@Override
