@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet version="1.0" href="../../stylesheets/contact2html.xsl" type="text/xsl"?>
+
+<contactDataSet  
+	xmlns="http://lca.jrc.it/ILCD/Contact" 
+	xmlns:common="http://lca.jrc.it/ILCD/Common" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://lca.jrc.it/ILCD/Contact ../../schemas/ILCD_ContactDataSet.xsd" 
+	version="1.1">
+	
+	<contactInformation>
+    #if ($contact.description)
+        #set ($description = $contact.description)        
+        <dataSetInformation>
+			
+        #if ($description.uuid)
+          <common:UUID>$description.uuid</common:UUID>
+        #end
+        
+        #foreach ($it in $description.shortName)
+          <common:shortName xml:lang="$it.langCode">$it.value</common:shortName>
+		#end
+		
+        #foreach ($it in $description.name)
+          <common:name xml:lang="$it.langCode">$it.value</common:name>
+		#end
+		
+		<classificationInformation>
+			#foreach ($classification in $description.classifications)
+    			<common:classification
+    				#if ($classification.fileURI)
+                      classes = "$classification.fileURI"
+    				#end
+    				#if ($classification.name)
+                      name = "$classification.name"
+                    #end
+    			>
+    			#foreach ($class in $classification.classes)
+                    <common:class
+                        #if ($class.id)
+                          classId = "$class.id"
+        				#end
+        				#if ($class.level)
+                          level = "$class.level"
+                        #end
+                    >$class.name</common:class>
+    			#end
+    			</common:classification>
+    		#end				
+        </classificationInformation>  
+		        
+        #foreach ($it in $description.contactAddress)
+          <contactAddress xml:lang="$it.langCode">$it.value</contactAddress>
+		#end
+		
+        #if ($description.telephone)
+          <telephone>$description.telephone</telephone>
+        #end
+        
+        #if ($description.telefax)
+          <telefax>$description.telefax</telefax>
+        #end
+        
+        #if ($description.email)
+          <email>$description.email</email>
+        #end
+        
+        #if ($description.webAddress)
+          <WWWAddress>$description.webAddress</WWWAddress>
+        #end
+        
+        #foreach ($it in $description.centralContactPoint)
+          <centralContactPoint xml:lang="$it.langCode">$it.value</centralContactPoint>
+		#end
+		
+        #foreach ($it in $description.comment)
+          <contactDescriptionOrComment xml:lang="$it.langCode">$it.value</contactDescriptionOrComment>
+		#end
+		
+        #set($refElem = "referenceToContact")
+        #foreach ($refVal in $description.contactReferences)
+          #parse("ILCDDataSetRef.vtl")
+		#end
+		
+        #if ($description.logoReference)
+			#set($refElem = "referenceToLogo")
+			#set($refVal = $description.logoReference)
+			#parse("ILCDDataSetRef.vtl")            
+        #end
+        
+        </dataSetInformation>
+        
+    #end
+	</contactInformation>
+	
+	<administrativeInformation>
+    #if ($contact.entry)
+        #set ($entry = $contact.entry)        
+        <dataEntryBy>
+        #if ($entry.timestamp)
+          <common:timeStamp>$entry.timestamp</common:timeStamp>
+		#end
+		
+        #set ($refElem = "common:referenceToDataSetFormat")
+        #foreach ($refVal in $entry.dataSetFormats)
+          #parse("ILCDDataSetRef.vtl")	
+        #end
+        </dataEntryBy>
+    #end
+    
+    #if ($contact.publication)
+        #set ($publication = $contact.publication)
+        
+         <publicationAndOwnership>
+			
+        #if ($publication.dataSetVersion)
+          <common:dataSetVersion>$publication.dataSetVersion</common:dataSetVersion>
+        #end
+        
+		#set ($refElem = "common:referenceToPrecedingDataSetVersion")
+        #foreach ($refVal in $publication.precedingDataSets)
+          #parse("ILCDDataSetRef.vtl")	
+		#end
+		
+        #if ($publication.permanentDataSetURI)
+          <common:permanentDataSetURI>$publication.permanentDataSetURI</common:permanentDataSetURI>
+        #end
+        
+        #if ($publication.ownership)
+			#set ($refElem = "common:referenceToOwnershipOfDataSet")
+			#set ($refVal = $publication.ownership)
+			#parse("ILCDDataSetRef.vtl")
+        #end
+        
+        </publicationAndOwnership>    
+	#end
+	
+	</administrativeInformation>
+	
+</contactDataSet>
+

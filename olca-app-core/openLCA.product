@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?pde version="3.5"?>
+
+<product name="openLCA" uid="olca-app-core.openLCA" id="olca-app-core.openLCA" application="org.openlca.core.application.application" version="1.3.0" useFeatures="false" includeLaunchers="true">
+
+   <aboutInfo>
+      <image path="/olca-app-core/icons/about.png"/>
+      <text>
+         openLCA 1.3.0
+
+Copyright (c) 2007 - 2013 GreenDelta. All rights reserved.
+Visit http://openlca.org and http://greendelta.com
+
+This product includes software developed in the openLCA 
+project and other open source software.
+      </text>
+   </aboutInfo>
+
+   <configIni use="default">
+   </configIni>
+
+   <launcherArgs>
+      <programArgs>-nl
+en
+-data @noDefault</programArgs>
+      <vmArgs>-Xmx1024M</vmArgs>
+      <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
+   </launcherArgs>
+
+   <windowImages i16="/olca-app-core/icons/logo_16_32bit.png" i32="/olca-app-core/icons/logo_32_32bit.png" i48="/olca-app-core/icons/logo_48_32bit.png" i64="/olca-app-core/icons/logo_64.png" i128="/olca-app-core/icons/logo_128.png"/>
+
+   <splash
+      location="olca-app-core" />
+   <launcher name="openLCA">
+      <macosx icon="/org.openlca.core.application/icons/logo.icns"/>
+      <solaris/>
+      <win useIco="false">
+         <bmp
+            winSmallHigh="/olca-app-core/icons/logo_16_32bit.bmp"
+            winSmallLow="/olca-app-core/icons/logo_16_8bit.bmp"
+            winMediumHigh="/olca-app-core/icons/logo_32_32bit.bmp"
+            winMediumLow="/olca-app-core/icons/logo_32_8bit.bmp"
+            winLargeHigh="/olca-app-core/icons/logo_48_32bit.bmp"
+            winLargeLow="/olca-app-core/icons/logo_48_8bit.bmp"/>
+      </win>
+   </launcher>
+
+   <intro introId="org.openlca.core.welcome.intro"/>
+
+   <vm>
+      <windows include="true">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7</windows>
+   </vm>
+
+   <license>
+        <url>http://www.openlca.org</url>
+        <text>
+   == License ==
+
+The openLCA project makes available all content in this plug-in 
+(&quot;Content&quot;). Unless otherwise indicated below, the Content is provided 
+to you under the terms and conditions of the Mozilla Public License 
+Version 1.1 (&quot;MPL&quot;). A copy of the MPL is available at 
+http://openlca.org/uploads/media/MPL-1.1.html.
+
+The openLCA project is maintained and coordinated by GreenDelta, 
+www.greendelta.com. If you did not receive this Content directly 
+from the openLCA project, the Content is being redistributed by 
+another party (&quot;Redistributor&quot;) and different terms and conditions may 
+apply to your use of any object code in the Content. Check the 
+Redistributor&apos;s license that was provided with the Content. If no such 
+license exists, contact the Redistributor. Unless otherwise indicated 
+below, the terms and conditions of the MPL still apply to any source 
+code in the Content and such source code may be obtained at 
+http://sourceforge.net/projects/openlca.
+
+A copy of the full license text and also copies of the licenses of the 
+third party content can be found in the installation directory 
+(/licenses).
+
+
+== MySQL Server ==
+
+In order to work with openLCA you need a MySQL Server 
+(http://dev.mysql.com/). The MySQL Server is licensed under the 
+General Public License v2 (GPL, 
+http://www.gnu.org/licenses/old-licenses/gpl-2.0.html). As the GPL is 
+not compatible with other open source software components in the 
+Content, the MySQL server is NOT included or distributed with the 
+Content. However, you can download und install the MySQL Server with 
+the help of the openLCA installer or retrieve it directly from the 
+MySQL website.
+
+
+== Third Party Content ==
+
+= Apache Projects =
+The Content includes software developed by the Apache Software 
+Foundation (http://www.apache.org). This software is licensed under 
+the Apache License v2.0 which can be found at 
+http://www.apache.org/licenses/LICENSE-2.0.txt. Original binaries and 
+source code are available from the respective project web-sites of the 
+Apache Software Foundation.    
+
+= Eclipse Rich Client Platform =
+The openLCA application is built on top of the Eclipse Rich Client 
+Platform and, therefore, includes plug-ins that are made available by 
+the Eclipse Foundation and are licensed under the Eclipse Public 
+License Version 1.0 (&quot;EPL&quot;). A copy of the EPL is available at 
+http://www.eclipse.org/legal/epl-v10.html. These plug-ins can again 
+contain third party content which is indicated in the legal 
+information of the respective plug-ins (see the plug-in details in the 
+application). Original binaries and source code are available from the 
+Eclipse website (http://eclipse.org).
+
+= JDOM =
+JDOM is licensed under the JDOM License (BSD style). The license and 
+original binaries and source are available from the JDOM website 
+http://www.jdom.org.
+
+= Silk Icons =
+The Silk icon set is licensed under the Creative Commons Attribution 
+2.5 License (http://creativecommons.org/licenses/by/2.5/legalcode) and 
+is available from the following website: 
+http://www.famfamfam.com/lab/icons/silk. 
+
+= MySQL Connector/J =
+The MySQL Connector/J is licensed under the General Public License v2 
+(GPL v2) with a FOSS Exception. The GPL v2 is available at 
+http://www.gnu.org/licenses/old-licenses/gpl-2.0.html and the FOSS 
+exception at http://www.mysql.com/about/legal/licensing/foss-exception.
+Original binaries and source are available from the MySQL website 
+http://dev.mysql.com.
+         </text>
+   </license>
+
+   <plugins>
+      <plugin id="com.fasterxml.jackson.core.jackson-annotations"/>
+      <plugin id="com.fasterxml.jackson.core.jackson-core"/>
+      <plugin id="com.fasterxml.jackson.core.jackson-databind"/>
+      <plugin id="com.google.gson"/>
+      <plugin id="com.google.guava"/>
+      <plugin id="com.ibm.icu"/>
+      <plugin id="com.mysql.jdbc"/>
+      <plugin id="com.sun.jersey.client"/>
+      <plugin id="com.sun.jersey.contribs.jersey-apache-client"/>
+      <plugin id="com.sun.jersey.contribs.jersey-apache-client4"/>
+      <plugin id="com.sun.jersey.core"/>
+      <plugin id="groovy-all"/>
+      <plugin id="javax.el"/>
+      <plugin id="javax.persistence"/>
+      <plugin id="javax.servlet"/>
+      <plugin id="javax.servlet.jsp"/>
+      <plugin id="jcl.over.slf4j"/>
+      <plugin id="jdom"/>
+      <plugin id="joda-convert"/>
+      <plugin id="joda-time"/>
+      <plugin id="log4j"/>
+      <plugin id="ojalgo"/>
+      <plugin id="olca-app-core"/>
+      <plugin id="olca-app-database"/>
+      <plugin id="olca-app-editors"/>
+      <plugin id="olca-app-io"/>
+      <plugin id="olca-app-plugin-installer"/>
+      <plugin id="olca-app-resources"/>
+      <plugin id="olca-app-updater"/>
+      <plugin id="olca-blas"/>
+      <plugin id="olca-core"/>
+      <plugin id="olca-ecospold-1"/>
+      <plugin id="olca-formula"/>
+      <plugin id="olca-ilcd"/>
+      <plugin id="olca-io"/>
+      <plugin id="org.apache.commons.beanutils"/>
+      <plugin id="org.apache.commons.codec"/>
+      <plugin id="org.apache.commons.collections"/>
+      <plugin id="org.apache.commons.httpclient"/>
+      <plugin id="org.apache.commons.io"/>
+      <plugin id="org.apache.commons.lang"/>
+      <plugin id="org.apache.commons.lang3"/>
+      <plugin id="org.apache.commons.logging"/>
+      <plugin id="org.apache.commons.math3"/>
+      <plugin id="org.apache.httpcomponents.httpclient"/>
+      <plugin id="org.apache.httpcomponents.httpcore"/>
+      <plugin id="org.apache.jasper.glassfish"/>
+      <plugin id="org.apache.lucene"/>
+      <plugin id="org.apache.lucene.analysis"/>
+      <plugin id="org.apache.lucene.core"/>
+      <plugin id="org.eclipse.birt.chart.device.extension"/>
+      <plugin id="org.eclipse.birt.chart.device.swt"/>
+      <plugin id="org.eclipse.birt.chart.engine"/>
+      <plugin id="org.eclipse.birt.chart.engine.extension"/>
+      <plugin id="org.eclipse.birt.core"/>
+      <plugin id="org.eclipse.compare.core"/>
+      <plugin id="org.eclipse.compare.core.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.core.commands"/>
+      <plugin id="org.eclipse.core.commands.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.core.contenttype"/>
+      <plugin id="org.eclipse.core.contenttype.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.core.databinding"/>
+      <plugin id="org.eclipse.core.databinding.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.core.databinding.observable"/>
+      <plugin id="org.eclipse.core.databinding.observable.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.core.databinding.property"/>
+      <plugin id="org.eclipse.core.databinding.property.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.core.expressions"/>
+      <plugin id="org.eclipse.core.expressions.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.core.jobs"/>
+      <plugin id="org.eclipse.core.jobs.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.core.net"/>
+      <plugin id="org.eclipse.core.net.linux.x86" fragment="true"/>
+      <plugin id="org.eclipse.core.net.linux.x86.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.core.net.linux.x86_64" fragment="true"/>
+      <plugin id="org.eclipse.core.net.linux.x86_64.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.core.net.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.core.net.win32.x86" fragment="true"/>
+      <plugin id="org.eclipse.core.net.win32.x86.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.core.net.win32.x86_64" fragment="true"/>
+      <plugin id="org.eclipse.core.net.win32.x86_64.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.core.runtime"/>
+      <plugin id="org.eclipse.core.runtime.compatibility.registry" fragment="true"/>
+      <plugin id="org.eclipse.core.runtime.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.core.variables"/>
+      <plugin id="org.eclipse.core.variables.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.draw2d"/>
+      <plugin id="org.eclipse.emf.common"/>
+      <plugin id="org.eclipse.emf.ecore"/>
+      <plugin id="org.eclipse.emf.ecore.xmi"/>
+      <plugin id="org.eclipse.equinox.app"/>
+      <plugin id="org.eclipse.equinox.common"/>
+      <plugin id="org.eclipse.equinox.ds"/>
+      <plugin id="org.eclipse.equinox.frameworkadmin"/>
+      <plugin id="org.eclipse.equinox.frameworkadmin.equinox"/>
+      <plugin id="org.eclipse.equinox.http.jetty"/>
+      <plugin id="org.eclipse.equinox.http.registry"/>
+      <plugin id="org.eclipse.equinox.http.servlet"/>
+      <plugin id="org.eclipse.equinox.jsp.jasper"/>
+      <plugin id="org.eclipse.equinox.jsp.jasper.registry"/>
+      <plugin id="org.eclipse.equinox.p2.artifact.repository"/>
+      <plugin id="org.eclipse.equinox.p2.core"/>
+      <plugin id="org.eclipse.equinox.p2.director"/>
+      <plugin id="org.eclipse.equinox.p2.directorywatcher"/>
+      <plugin id="org.eclipse.equinox.p2.engine"/>
+      <plugin id="org.eclipse.equinox.p2.extensionlocation"/>
+      <plugin id="org.eclipse.equinox.p2.garbagecollector"/>
+      <plugin id="org.eclipse.equinox.p2.jarprocessor"/>
+      <plugin id="org.eclipse.equinox.p2.metadata"/>
+      <plugin id="org.eclipse.equinox.p2.metadata.repository"/>
+      <plugin id="org.eclipse.equinox.p2.publisher"/>
+      <plugin id="org.eclipse.equinox.p2.publisher.eclipse"/>
+      <plugin id="org.eclipse.equinox.p2.reconciler.dropins"/>
+      <plugin id="org.eclipse.equinox.p2.repository"/>
+      <plugin id="org.eclipse.equinox.p2.touchpoint.eclipse"/>
+      <plugin id="org.eclipse.equinox.preferences"/>
+      <plugin id="org.eclipse.equinox.registry"/>
+      <plugin id="org.eclipse.equinox.security"/>
+      <plugin id="org.eclipse.equinox.security.macosx" fragment="true"/>
+      <plugin id="org.eclipse.equinox.security.win32.x86" fragment="true"/>
+      <plugin id="org.eclipse.equinox.security.win32.x86_64" fragment="true"/>
+      <plugin id="org.eclipse.equinox.simpleconfigurator"/>
+      <plugin id="org.eclipse.equinox.simpleconfigurator.manipulator"/>
+      <plugin id="org.eclipse.equinox.util"/>
+      <plugin id="org.eclipse.gef"/>
+      <plugin id="org.eclipse.help"/>
+      <plugin id="org.eclipse.help.appserver"/>
+      <plugin id="org.eclipse.help.appserver.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.help.base"/>
+      <plugin id="org.eclipse.help.base.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.help.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.help.ui"/>
+      <plugin id="org.eclipse.help.ui.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.help.webapp"/>
+      <plugin id="org.eclipse.help.webapp.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.jetty.continuation"/>
+      <plugin id="org.eclipse.jetty.http"/>
+      <plugin id="org.eclipse.jetty.http.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.jetty.io"/>
+      <plugin id="org.eclipse.jetty.security"/>
+      <plugin id="org.eclipse.jetty.server"/>
+      <plugin id="org.eclipse.jetty.servlet"/>
+      <plugin id="org.eclipse.jetty.util"/>
+      <plugin id="org.eclipse.jface"/>
+      <plugin id="org.eclipse.jface.databinding"/>
+      <plugin id="org.eclipse.jface.databinding.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.jface.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.jface.text"/>
+      <plugin id="org.eclipse.jface.text.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.mylyn.commons.core"/>
+      <plugin id="org.eclipse.mylyn.commons.screenshots"/>
+      <plugin id="org.eclipse.mylyn.commons.ui"/>
+      <plugin id="org.eclipse.nebula.widgets.tablecombo"/>
+      <plugin id="org.eclipse.osgi"/>
+      <plugin id="org.eclipse.osgi.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.osgi.services"/>
+      <plugin id="org.eclipse.osgi.services.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.persistence.antlr"/>
+      <plugin id="org.eclipse.persistence.asm"/>
+      <plugin id="org.eclipse.persistence.core"/>
+      <plugin id="org.eclipse.persistence.jpa"/>
+      <plugin id="org.eclipse.persistence.jpa.equinox" fragment="true"/>
+      <plugin id="org.eclipse.persistence.jpa.equinox.weaving" fragment="true"/>
+      <plugin id="org.eclipse.persistence.jpa.osgi"/>
+      <plugin id="org.eclipse.persistence.oracle" fragment="true"/>
+      <plugin id="org.eclipse.swt"/>
+      <plugin id="org.eclipse.swt.cocoa.macosx" fragment="true"/>
+      <plugin id="org.eclipse.swt.cocoa.macosx.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.swt.cocoa.macosx.x86_64" fragment="true"/>
+      <plugin id="org.eclipse.swt.cocoa.macosx.x86_64.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.swt.gtk.aix.ppc" fragment="true"/>
+      <plugin id="org.eclipse.swt.gtk.aix.ppc.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.swt.gtk.aix.ppc64" fragment="true"/>
+      <plugin id="org.eclipse.swt.gtk.aix.ppc64.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.swt.gtk.hpux.ia64_32" fragment="true"/>
+      <plugin id="org.eclipse.swt.gtk.hpux.ia64_32.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.swt.gtk.linux.ppc64" fragment="true"/>
+      <plugin id="org.eclipse.swt.gtk.linux.ppc64.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.swt.gtk.linux.s390" fragment="true"/>
+      <plugin id="org.eclipse.swt.gtk.linux.s390.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.swt.gtk.linux.s390x" fragment="true"/>
+      <plugin id="org.eclipse.swt.gtk.linux.s390x.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.swt.gtk.linux.x86" fragment="true"/>
+      <plugin id="org.eclipse.swt.gtk.linux.x86.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.swt.gtk.linux.x86_64" fragment="true"/>
+      <plugin id="org.eclipse.swt.gtk.linux.x86_64.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.swt.gtk.solaris.sparc" fragment="true"/>
+      <plugin id="org.eclipse.swt.gtk.solaris.sparc.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.swt.gtk.solaris.x86" fragment="true"/>
+      <plugin id="org.eclipse.swt.gtk.solaris.x86.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.swt.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.swt.win32.win32.x86" fragment="true"/>
+      <plugin id="org.eclipse.swt.win32.win32.x86.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.swt.win32.win32.x86_64" fragment="true"/>
+      <plugin id="org.eclipse.swt.win32.win32.x86_64.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.text"/>
+      <plugin id="org.eclipse.text.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.ui"/>
+      <plugin id="org.eclipse.ui.cocoa" fragment="true"/>
+      <plugin id="org.eclipse.ui.cocoa.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.ui.console"/>
+      <plugin id="org.eclipse.ui.console.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.ui.forms"/>
+      <plugin id="org.eclipse.ui.forms.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.ui.intro"/>
+      <plugin id="org.eclipse.ui.intro.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.ui.intro.universal"/>
+      <plugin id="org.eclipse.ui.intro.universal.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.ui.navigator"/>
+      <plugin id="org.eclipse.ui.navigator.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.ui.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.ui.views"/>
+      <plugin id="org.eclipse.ui.views.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.ui.win32.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.ui.workbench"/>
+      <plugin id="org.eclipse.ui.workbench.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.ui.workbench.texteditor"/>
+      <plugin id="org.eclipse.ui.workbench.texteditor.nl_de" fragment="true"/>
+      <plugin id="org.hamcrest.core"/>
+      <plugin id="org.jdom"/>
+      <plugin id="org.junit"/>
+      <plugin id="org.junit4"/>
+      <plugin id="org.mozilla.javascript"/>
+      <plugin id="org.openlca.olca-poi"/>
+      <plugin id="org.sat4j.core"/>
+      <plugin id="org.sat4j.pb"/>
+      <plugin id="org.swtchart"/>
+      <plugin id="org.swtchart.ext"/>
+      <plugin id="slf4j.api"/>
+      <plugin id="slf4j.log4j12" fragment="true"/>
+      <plugin id="truezip-file"/>
+      <plugin id="truezip-kernel"/>
+   </plugins>
+
+   <configurations>
+      <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="4" />
+      <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.equinox.p2.reconciler.dropins" autoStart="true" startLevel="5" />
+      <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
+   </configurations>
+
+</product>

@@ -1,0 +1,15 @@
+License
+
+The openLCA project makes available all content in this plug-in ("Content"). Unless otherwise indicated below, the Content is provided to you under the terms and conditions of the Mozilla Public License Version 1.1 ("MPL"). A copy of the MPL is available at http://openlca.org/uploads/media/MPL-1.1.html.
+
+The openLCA project is maintained and coordinated by GreenDelta, www.greendelta.com. Copyright 2010, all rights reserved.
+
+If you did not receive this Content directly from the openLCA project, the Content is being redistributed by another party ("Redistributor") and different terms and conditions may apply to your use of any object code in the Content. Check the Redistributor's license that was provided with the Content. If no such license exists, contact the Redistributor. Unless otherwise indicated below, the terms and conditions of the MPL still apply to any source code in the Content and such source code may be obtained at http://sourceforge.net/projects/openlca.
+
+Third Party Content
+
+The Content includes items that have been sourced from third parties as set out below. If you did not receive this Content directly from the openLCA project, the following is provided for informational purposes only, and you should look to the Redistributor’s license for terms and conditions of use.
+
+During the installation, a MySQL Server is downloaded from a remote website. This MySQL Server is licenced according to the GPL Licence, http://www.gnu.org/licenses/gpl.html.
+
+The install package may contain a Java Virtual Machine (JVM) and other software, as described in the readme file readme.txt, which is located in the installation path.

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+## template for EcoSpold 02 geography master data
+## the template gets a geographies list as input which is
+## bound to the context name 'sources' as input
+
+<validGeographies 
+	xmlns="http://www.EcoInvent.org/EcoSpold02"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.EcoInvent.org/EcoSpold02 ../../Schemas/MasterData/EcoSpold02Geographies.xsd" 
+	
+	#if($geographies.contextId)
+		contextId="$geographies.contextId" 
+	#end
+	#if($geographies.majorRelease)
+		majorRelease="$geographies.majorRelease" 
+	#end	
+	#if($geographies.minorRelease)
+		minorRelease="$geographies.minorRelease" 
+	#end
+	>
+	
+	#foreach($it in $geographies.contextNames)
+		<contextName xml:lang="$it.langCode">$it.value</contextName>
+	#end
+	
+	#foreach($geo in $geographies.geographies)
+		<geography
+			
+			#if($geo.isoThreeLetterCode)
+				ISOThreeLetterCode="$geo.isoThreeLetterCode"
+			#end
+			
+			#if($geo.isoTwoLetterCode)
+				ISOTwoLetterCode="$geo.isoTwoLetterCode"
+			#end
+			
+			#if($geo.unCode)
+				UNCode="$geo.unCode"
+			#end
+			
+			#if($geo.unRegionCode)
+				UNRegionCode="$geo.unRegionCode"
+			#end
+			
+			#if($geo.unSubregionCode)
+				UNSubregionCode="$geo.unSubregionCode"
+			#end
+			
+			#if($geo.id)
+				id="$geo.id"
+			#end
+			
+			#if($geo.latitude)
+				latitude="$geo.latitude"
+			#end
+			
+			#if($geo.longitude)
+				longitude="$geo.longitude"
+			#end
+			>
+			
+			#foreach($it in $geo.names)
+				<name xml:lang="$it.langCode">$it.value</name>
+			#end
+			
+			#foreach($it in $geo.shortnames)
+				<shortname xml:lang="$it.langCode">$it.value</shortname>
+			#end
+			
+			#if($geo.comment)
+                <comment>
+					#foreach($it in $geo.comment.text)
+						<text index="$it.index" xml:lang="$it.langCode">$it.value</text>
+					#end
+					#foreach($it in $geo.comment.images)
+						<imageUrl index="$it.index">$it.url</imageUrl>
+					#end
+					#foreach($it in $geo.comment.variables)
+						<variable name="$it.name">$it.value</variable>
+					#end
+                </comment>
+			#end			
+        </geography>		
+	#end
+</validGeographies>

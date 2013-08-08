@@ -1,0 +1,70 @@
+﻿<!DOCTYPE html>
+<html data-ng-app="UsagePage">
+<head>
+<title>Usages</title>
+<link href="../../libs/bootstrap_2.2.2/css/bootstrap.min.css" rel="stylesheet"
+	media="screen">
+<style type="text/css">
+.selectedPage {
+	color: black;
+	font-weight: bold;
+}
+</style>
+</head>
+<body>
+	<div class="container-fluid" data-ng-controller="Content"
+		id="contentDiv">
+		<div class="row-fluid">
+			<div class="span12 row-fluid" style="padding: 30px">
+
+
+				<!-- Search box -->
+				<div class="span4 offset1">
+					<form class="form-horizontal">
+						<div class="control-group">
+							<label class="control-label">Search</label>
+							<div class="controls">
+								<input type="text" style="width: 350px"
+									data-ng-model="nameFilter" data-ng-change="search()"></input>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+
+			<div class="span11">
+				<table class="table table-hover">
+					<tr>
+						<th>Type</th>
+						<th>Name</th>
+						<th class="muted">UUID</th>
+					</tr>
+					<tr data-ng-repeat="item in pager.pageContent">
+						<td><img data-ng-src="{{item.image}}" title="{{item.type}}"></td>
+						<td><a href="#" onclick="doOpenModel({{item}})"
+								title="{{item.description}}">{{item.name}}</a></td>
+						<td class="muted">{{item.id}}</td>
+					</tr>
+				</table>
+				<div style="text-align: center;">
+					<a data-ng-show="pager.pageCount > 1"
+						data-ng-click="pager.previous()">&lt;&lt;</a>
+					<a data-ng-repeat="n in pageNumbers()"
+						data-ng-click="pager.selectPage(n)"
+						data-ng-class="{selectedPage: n==pager.currentPage}">{{" " + n
+						+ " "}}</a>
+					<a data-ng-show="pager.pageCount > 1" data-ng-click="pager.next()">&gt;&gt;</a>
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+	<script src="../../libs/jquery.min_1.9.0.js"></script>
+	<script src="../../libs/angular.min_1.0.3.js"></script>
+	<script src="../../libs/bootstrap_2.2.2/js/bootstrap.min.js"></script>
+	<script src="../../libs/olca.utils.js"></script>
+	<script src="js/usage_view.js"></script>
+
+</body>
+</html>

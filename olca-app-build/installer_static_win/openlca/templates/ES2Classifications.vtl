@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<validClassificationSystems
+
+	#if($systems.contextId)
+		contextId="$systems.contextId"
+	#end
+	
+	#if($systems.majorRelease)
+		majorRelease="$systems.majorRelease"
+	#end
+	
+	#if($systems.minorRelease)
+		minorRelease="$systems.minorRelease"	
+	#end
+	
+	xmlns="http://www.EcoInvent.org/EcoSpold02"
+	xmlns:xml="http://www.w3.org/XML/1998/namespace"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.EcoInvent.org/EcoSpold02 ../../Schemas/MasterData/EcoSpold02Classification.xsd ">
+	
+	#foreach($it in $systems.contextNames)
+		<contextName xml:lang="$it.langCode">$it.value</contextName>
+	#end
+	
+	#foreach($system in $systems.systems)	
+		<classificationSystem
+			
+			#if($system.id)
+				id="$system.id"
+			#end
+			
+			#if($system.type)
+				type="$system.type"
+			#end
+			
+			>
+			
+			#foreach($it in $system.name)
+				<name xml:lang="$it.langCode">$it.value</name>
+			#end
+			
+			#foreach($clazz in $system.classifications)
+				<classificationValue
+				
+					#if($clazz.id)
+						id="$clazz.id"
+					#end										
+					>
+					
+					#foreach($it in $clazz.name)
+						<name xml:lang="$it.langCode">$it.value</name>
+					#end		
+								
+				</classificationValue>
+			#end
+			
+		</classificationSystem>
+	#end
+	
+</validClassificationSystems>

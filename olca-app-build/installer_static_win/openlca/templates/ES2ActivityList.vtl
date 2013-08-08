@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<activityIndex 
+	
+	#if($activities.majorRelease)
+		majorRelease="$activities.majorRelease" 
+	#end
+	
+	#if($activities.minorRelease)
+		minorRelease="$activities.minorRelease" 
+	#end
+	
+	xmlns="http://www.EcoInvent.org/EcoSpold02"
+			
+	#if($activities.contextId)
+		contextId="$activities.contextId" 
+	#end	
+	>
+	
+	#foreach($it in $activities.contextNames)
+		<contextName xml:lang="$it.langCode">$it.value</contextName>
+	#end
+	
+	#foreach($entry in $activities.entries)
+	  <activityIndexEntry 
+	  	
+	  	#if($entry.id)
+			id="$entry.id" 
+		#end
+		
+		#if($entry.activityNameId)
+			activityNameId="$entry.activityNameId" 
+		#end
+		
+		#if($entry.geographyId)
+			geographyId="$entry.geographyId" 
+		#end
+		
+		#if($entry.startDate)
+			startDate="$entry.startDate" 
+		#end
+		
+		#if($entry.endDate)
+			endDate="$entry.endDate" 
+		#end
+		
+		#if($entry.specialActivityType)
+			specialActivityType="$entry.specialActivityType"
+		#end		
+		>
+		
+		#foreach($it in $entry.name)
+	    	<name xml:lang="$it.langCode">$it.value</name>
+	    #end
+	    
+	    #foreach($it in $entry.location)
+	    	<shortname xml:lang="$it.langCode">$it.value</shortname>
+	    #end
+	    
+	  </activityIndexEntry>
+  	#end
+</activityIndex>

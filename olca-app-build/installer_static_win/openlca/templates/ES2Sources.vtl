@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+## template for the EcoSpold 02 source master data
+## the template gets a list of source objects bound to
+## the context name 'sources' as input
+## 
+## author: Michael Srocka
+## last change: 19/12/2009
+##
+
+<validSources 
+	xmlns="http://www.EcoInvent.org/EcoSpold02"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.EcoInvent.org/EcoSpold02 ../../Schemas/MasterData/EcoSpold02Sources.xsd" 
+	
+	#if($sources.contextId)
+		contextId="$sources.contextId" 
+	#end
+	#if($sources.majorRelease)
+		majorRelease="$sources.majorRelease" 
+	#end	
+	#if($sources.minorRelease)
+		minorRelease="$sources.minorRelease" 
+	#end
+	>
+	
+	#foreach($it in $sources.contextNames)
+	<contextName xml:lang="$it.langCode">$it.value</contextName>
+	#end
+	
+	#foreach($source in $sources.sources)
+		<source 
+			
+			#if($source.id)
+			id="$source.id"
+			#end
+			
+			#if($source.sourceType)
+			sourceType="$source.sourceType" 
+			#end
+			
+			#if($source.year)
+			year="$source.year"
+			#end
+			
+			#if($source.volumeNo)
+			volumeNo="$source.volumeNo" 
+			#end
+			
+			#if($source.firstAuthor)
+			firstAuthor="$source.firstAuthor" 
+			#end
+			
+			#if($source.additionalAuthors)
+			additionalAuthors="$source.additionalAuthors" 
+			#end
+			
+			#if($source.title)
+			title="$source.title" 
+			#end
+			
+			#if($source.shortName)
+			shortName="$source.shortName"
+			#end
+			
+			#if($source.pageNumbers)
+			pageNumbers="$source.pageNumbers" 
+			#end
+			
+			#if($source.nameOfEditors)
+			nameOfEditors="$source.nameOfEditors" 
+			#end
+			
+			#if($source.titleOfAnthology)
+			titleOfAnthology="$source.titleOfAnthology" 
+			#end
+			
+			#if($source.placeOfPublications)
+			placeOfPublications="$source.placeOfPublications"
+			#end
+			
+			#if($source.publisher)
+			publisher="$source.publisher" 
+			#end
+			
+			#if($source.journal)
+			journal="$source.journal" 
+			#end
+			
+			#if($source.issueNo)
+			issueNo="$source.issueNo" 
+			#end					
+			>
+			
+		#foreach($it in $source.comment)
+			<comment xml:lang="$it.langCode">$it.value</comment>
+		#end
+		
+	</source>		
+	#end
+</validSources>

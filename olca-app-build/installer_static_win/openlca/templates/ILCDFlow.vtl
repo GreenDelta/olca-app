@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet version="1.0" href="../../stylesheets/flow2html.xsl" type="text/xsl"?>
+<flowDataSet
+	xmlns="http://lca.jrc.it/ILCD/Flow" 
+	xmlns:common="http://lca.jrc.it/ILCD/Common" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://lca.jrc.it/ILCD/Flow ../../schemas/ILCD_FlowDataSet.xsd" 
+	locations="../ILCDLocations.xml" 
+	version="1.1">
+<flowInformation>
+#if ($flow.description)
+	#set ($flowDescription = $flow.description)
+	<dataSetInformation>
+        #if ($flowDescription.uuid)
+          <common:UUID>$flowDescription.uuid</common:UUID>
+		#end
+		
+		<name>
+            #foreach ($it in $flowDescription.name)
+              <baseName xml:lang="$it.langCode">$it.value</baseName>
+            #end
+            #foreach ($it in $flowDescription.treatmentStandardsRoutes)
+              <treatmentStandardsRoutes xml:lang="$it.langCode">$it.value</treatmentStandardsRoutes>
+            #end
+            #foreach ($it in $flowDescription.mixAndLocationTypes)
+              <mixAndLocationTypes xml:lang="$it.langCode">$it.value</mixAndLocationTypes>
+            #end
+            #foreach ($it in $flowDescription.flowProperties)
+              <flowProperties xml:lang="$it.langCode">$it.value</flowProperties>
+			#end
+        </name>
+		
+        #foreach ($it in $flowDescription.synonyms)
+          <synonyms xml:lang="$it.langCode">$it.value</synonyms>
+		#end
+		<classificationInformation>
+			
+			#foreach ($elemFlowCategorization in $flowDescription.elemFlowCategorizations)
+				<common:elementaryFlowCategorization
+					#if ($elemFlowCategorization.fileURI)
+						categories = "$elemFlowCategorization.fileURI"
+					#end
+					#if ($elemFlowCategorization.name)
+                      name = "$elemFlowCategorization.name"
+                    #end
+				>
+				#foreach ($category in $elemFlowCategorization.categories)
+                    <common:category
+                        #if ($category.id)
+							catId = "$category.id"
+						#end
+						#if ($category.level)
+							level = "$category.level"
+						#end
+                    >$category.name</common:category>
+				#end
+				</common:elementaryFlowCategorization>
+			#end
+
+			#foreach ($classification in $flowDescription.classifications)
+				<common:classification
+                    #if ($classification.fileURI)
+                      classes = "$classification.fileURI"
+					#end
+					#if ($classification.name)
+                      name = "$classification.name"
+                    #end
+				>
+    				#foreach ($class in $classification.classes)
+                        <common:class
+                        #if ($class.id)
+                          classId = "$class.id"
+        				#end
+        				#if ($class.level)
+                          level = "$class.level"
+                        #end
+                        >$class.name</common:class>
+    				#end
+				</common:classification>            
+			#end
+		</classificationInformation>
+		
+        #if ($flowDescription.casNumber)
+          <CASNumber>$flowDescription.casNumber</CASNumber>
+        #end
+        #if ($flowDescription.sumFormula)
+          <sumFormula>$flowDescription.sumFormula</sumFormula>
+        #end
+        #foreach ($it in $flowDescription.comment)
+          <generalComment xml:lang="$it.langCode">$it.value</generalComment>
+		#end		
+	</dataSetInformation>
+#end
+
+#if ($flow.referenceFlowProperty)
+	<quantitativeReference>
+		<referenceToReferenceFlowProperty>$flow.referenceFlowProperty</referenceToReferenceFlowProperty>
+	</quantitativeReference>
+#end
+
+#if($flow.location.size() > 0)
+	<geography>
+    #foreach ($it in $flow.location)
+      <locationOfSupply xml:lang="$it.langCode">$it.value</locationOfSupply>
+	#end
+	</geography>
+#end
+
+#if ($flow.technology)
+	#set ($technology = $flow.technology)
+	<technology>
+        #foreach ($it in $technology.applicability)
+          <technologicalApplicability xml:lang="$it.langCode">$it.value</technologicalApplicability>
+		#end
+		#set($refElem = "referenceToTechnicalSpecification")
+        #foreach ($refVal in $technology.technicalSpecifications)
+          #parse("ILCDDataSetRef.vtl")
+        #end
+	</technology>
+#end
+</flowInformation>
+
+<modellingAndValidation>
+	
+    #if ($flow.type)
+    	<LCIMethod>
+    		<typeOfDataSet>$flow.type</typeOfDataSet>
+        </LCIMethod>
+    #end
+
+#if($flow.complianceDeclarations.size() > 0)
+	<complianceDeclarations>
+	#foreach ($complianceDeclaration in $flow.complianceDeclarations)
+		<compliance>
+        #if ($complianceDeclaration.complianceSystem)	
+			#set($refElem = "common:referenceToComplianceSystem")
+			#set($refVal = $complianceDeclaration.complianceSystem)
+			#parse("ILCDDataSetRef.vtl")			
+        #end
+        #if ($complianceDeclaration.overallCompliance)
+          <common:approvalOfOverallCompliance>$complianceDeclaration.overallCompliance</common:approvalOfOverallCompliance>
+        #end
+		</compliance>
+	#end
+    </complianceDeclarations>
+#end
+</modellingAndValidation>
+
+<administrativeInformation>
+#if ($flow.entry)
+	#set ($entry = $flow.entry)
+	<dataEntryBy>
+        #if ($entry.timestamp)
+          <common:timeStamp>$entry.timestamp</common:timeStamp>
+        #end
+		#set($refElem = "common:referenceToDataSetFormat")
+        #foreach ($refVal in $entry.dataSetFormats)
+          #parse("ILCDDataSetRef.vtl")
+		#end
+		#set($refElem = "common:referenceToPersonOrEntityEnteringTheData")
+        #foreach ($refVal in $entry.personsOrEntities)
+          #parse("ILCDDataSetRef.vtl")
+        #end
+	</dataEntryBy>
+#end
+
+#if ($flow.publication)
+	#set ($publication = $flow.publication)
+	<publicationAndOwnership>
+    #if ($publication.dataSetVersion)
+      <common:dataSetVersion>$publication.dataSetVersion</common:dataSetVersion>
+	#end
+	#set($refElem = "common:referenceToPrecedingDataSetVersion")
+    #foreach ($refVal in $publication.precedingDataSets)
+      #parse("ILCDDataSetRef.vtl")
+	#end
+	#if ($publication.permanentDataSetURI)
+		 <common:permanentDataSetURI>$publication.permanentDataSetURI</common:permanentDataSetURI>
+	#end	
+    #if ($publication.ownership)
+		#set($refElem = "common:referenceToOwnershipOfDataSet")
+		#set($refVal = $publication.ownership)
+		#parse("ILCDDataSetRef.vtl")      
+    #end
+	</publicationAndOwnership>
+#end
+</administrativeInformation>
+
+<flowProperties>
+#foreach ($flowPropertyValue in $flow.flowPropertyValues)
+    <flowProperty
+        #if ($flowPropertyValue.id)
+          dataSetInternalID = "$flowPropertyValue.id"
+        #end
+    >
+    #if ($flowPropertyValue.flowPropertyDataSet)
+		#set($refElem = "referenceToFlowPropertyDataSet")
+		#set($refVal = $flowPropertyValue.flowPropertyDataSet)
+		#parse("ILCDDataSetRef.vtl")      
+    #end
+    #if ($flowPropertyValue.meanValue)
+      <meanValue>$flowPropertyValue.meanValue</meanValue>
+    #end
+    #if ($flowPropertyValue.minimumValue)
+      <minimumValue>$flowPropertyValue.minimumValue</minimumValue>
+    #end
+    #if ($flowPropertyValue.maximumValue)
+      <maximumValue>$flowPropertyValue.maximumValue</maximumValue>
+    #end
+    #if ($flowPropertyValue.uncertaintyDistribution)
+      <uncertaintyDistributionType>$flowPropertyValue.uncertaintyDistribution</uncertaintyDistributionType>
+    #end
+    #if ($flowPropertyValue.relStdDeviation95In)
+      <relativeStandardDeviation95In>$flowPropertyValue.relStdDeviation95In</relativeStandardDeviation95In>
+    #end
+    #if ($flowPropertyValue.dataDerivationType)
+      <dataDerivationTypeStatus>$flowPropertyValue.dataDerivationType</dataDerivationTypeStatus>
+    #end
+    #foreach ($it in $flowPropertyValue.comment)
+      <generalComment xml:lang="$it.langCode">$it.value</generalComment>
+    #end
+</flowProperty>
+
+#end
+</flowProperties>  
+
+</flowDataSet>
+
+
+

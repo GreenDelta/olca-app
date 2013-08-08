@@ -1,0 +1,41 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+
+<html>
+	
+	<head>
+		<title>Conversion Result</title>
+	</head>
+
+	<body style="font-family:sans-serif">
+	
+	#if($index)
+		
+		
+		## the optional log file
+		#if($index.log)
+			<p>
+				<b style="color:red">A file with encountered errors was created:</b>
+				<br/>
+				<a href="$index.log">$index.log</a>			
+			</p>		
+		#end
+		
+		#if($index.title)
+			<h2>$index.title</h2>
+		#end
+		
+	    #foreach($reference in $index.dataSets)
+	    	<p>
+	    		<a href="$reference.uri">$reference.name</a>
+	    		<br />
+	    		<span style="font-size:smaller">$reference.type</span>
+	    		<br/>
+	    		<span style="color:green; font-size:smaller">$reference.uri</span>
+	    	</p>
+	    #end
+			
+	#end
+	
+	</body>
+</html>

@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet version="1.0" href="../../stylesheets/unitgroup2html.xsl" type="text/xsl"?>
+<unitGroupDataSet
+	version="1.1" 
+	xmlns="http://lca.jrc.it/ILCD/UnitGroup" 
+	xmlns:common="http://lca.jrc.it/ILCD/Common"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://lca.jrc.it/ILCD/UnitGroup ../../schemas/ILCD_UnitGroupDataSet.xsd">
+<unitGroupInformation>
+	<dataSetInformation>
+	#if ($unitGroup.description)
+		
+		#set ($description = $unitGroup.description)
+        #if ($description.uuid)
+          <common:UUID>$description.uuid</common:UUID>
+        #end
+        #foreach ($it in $description.name)
+          <common:name xml:lang="$it.langCode">$it.value</common:name>
+		#end
+		
+		#foreach ($classification in $description.classifications)
+			<classification
+				#if ($classification.fileURI)
+                  classes = "$classification.fileURI"
+				#end
+				#if ($classification.name)
+                  name = "$classification.name"
+                #end
+			>
+			#foreach ($class in $classification.classes)
+                <class
+                    #if ($class.id)
+                      classId = "$class.id"
+    				#end
+    				#if ($class.level)
+                      level = "$class.level"
+                    #end
+                >$class.name</class>
+			#end
+			</classification>
+		#end
+
+        #foreach ($it in $description.comment)
+          <generalComment xml:lang="$it.langCode">$it.value</generalComment>
+        #end
+	#end
+	
+	</dataSetInformation>
+
+    #if ($unitGroup.referenceUnit)
+		<quantitativeReference>
+			<referenceToReferenceUnit>$unitGroup.referenceUnit</referenceToReferenceUnit>
+        </quantitativeReference>
+	#end
+	
+</unitGroupInformation>
+
+<modellingAndValidation>
+	
+	#if($unitGroup.complianceDeclarations.size() > 0)
+		<complianceDeclarations>
+        #foreach ($complianceDeclaration in $unitGroup.complianceDeclarations)
+        
+            <compliance>
+            #if ($complianceDeclaration.complianceSystem)
+				#set($refElem = "common:referenceToComplianceSystem")
+				#set($refVal = $complianceDeclaration.complianceSystem)
+				#parse("ILCDDataSetRef.vtl")					
+			#end
+			            
+            #if ($complianceDeclaration.overallCompliance)
+              <common:approvalOfOverallCompliance>$complianceDeclaration.overallCompliance</common:approvalOfOverallCompliance>
+            #end            
+            </compliance>
+        
+		#end
+        </complianceDeclarations>
+	#end
+
+</modellingAndValidation>
+
+<administrativeInformation>
+	
+    #if ($unitGroup.entry)
+        #set ($entry = $unitGroup.entry)        
+        <dataEntryBy>
+        #if ($entry.timestamp)
+          <common:timeStamp>$entry.timestamp</common:timeStamp>
+		#end
+		
+        #set ($refElem = "common:referenceToDataSetFormat")
+        #foreach ($refVal in $entry.dataSetFormats)
+          #parse("ILCDDataSetRef.vtl")	
+        #end
+        </dataEntryBy>    
+    #end
+
+    #if ($unitGroup.publication)
+        #set ($publication = $unitGroup.publication)        
+        <publicationAndOwnership>
+			
+        #if ($publication.dataSetVersion)
+          <common:dataSetVersion>$publication.dataSetVersion</common:dataSetVersion>
+        #end
+        
+		#set ($refElem = "common:referenceToPrecedingDataSetVersion")
+        #foreach ($refVal in $publication.precedingDataSets)
+          #parse("ILCDDataSetRef.vtl")	
+		#end
+		
+        #if ($publication.permanentDataSetURI)
+          <common:permanentDataSetURI>$publication.permanentDataSetURI</common:permanentDataSetURI>
+        #end
+        
+        #if ($publication.ownership)
+			#set ($refElem = "common:referenceToOwnershipOfDataSet")
+			#set ($refVal = $publication.ownership)
+			#parse("ILCDDataSetRef.vtl")
+        #end
+        
+        </publicationAndOwnership>    
+    #end
+
+</administrativeInformation>	
+<units>	
+    #foreach ($unit in $unitGroup.units)        
+        <unit
+        #if ($unit.dataSetInternalID)
+          dataSetInternalID = "$unit.dataSetInternalID"
+        #end
+        >        
+        #if ($unit.name)
+          <name>$unit.name</name>
+        #end        
+        #if ($unit.meanValue)
+          <meanValue>$unit.meanValue</meanValue>
+        #end        
+        #foreach ($it in $unit.generalComment)
+          <generalComment xml:lang="$it.langCode">$it.value</generalComment>
+        #end
+        </unit>    
+    #end
+</units>
+</unitGroupDataSet>
+

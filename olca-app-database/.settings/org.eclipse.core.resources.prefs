@@ -1,0 +1,3 @@
+eclipse.preferences.version=1
+encoding//src/org/openlca/core/database/arche_schema.sql=UTF-8
+encoding//src/org/openlca/core/database/current_schema.sql=UTF-8

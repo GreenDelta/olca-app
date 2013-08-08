@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<validUnits 
+	#if($unitList.contextId)
+		contextId="$unitList.contextId" 
+	#end
+	#if($unitList.majorRelease)
+		majorRelease="$unitList.majorRelease" 
+	#end
+	#if($unitList.majorRevision)
+		majorRevision="$unitList.majorRevision" 
+	#end
+	#if($unitList.minorRelease)
+		minorRelease="$unitList.minorRelease" 
+	#end 
+	#if($unitList.minorRevision)
+		minorRevision="$unitList.minorRevision" 
+	#end  
+	#if($unitList.originalSource)
+		originalSource="$unitList.originalSource" 
+	#end
+	xmlns="http://www.EcoInvent.org/EcoSpold02" 
+	xmlns:xml="http://www.w3.org/XML/1998/namespace" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.EcoInvent.org/EcoSpold02 ../../Schemas/MasterData/EcoSpold02Units.xsd ">
+  
+  #foreach($it in $unitList.contextNames)
+	<contextName xml:lang="$it.langCode">$it.value</contextName>
+  #end
+  
+  #foreach($unit in $unitList.units)
+  <unit 
+	#if($unit.id)
+		id="$unit.id"
+	#end
+	>
+	#foreach($it in $unit.names)
+		<name xml:lang="$it.langCode">$it.value</name>
+	#end
+	#foreach($it in $unit.comments)
+		<comment xml:lang="$it.langCode">$it.value</comment>
+	#end
+  </unit>
+  #end
+  
+</validUnits>

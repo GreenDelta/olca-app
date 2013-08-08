@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<validIntermediateExchanges
+
+	#if($exchanges.contextId)
+		contextId="$exchanges.contextId"
+	#end
+	
+	#if($exchanges.majorRelease)
+		majorRelease="$exchanges.majorRelease"
+	#end
+	
+	#if($exchanges.minorRelease)
+		minorRelease="$exchanges.minorRelease"
+	#end
+	
+	xmlns="http://www.EcoInvent.org/EcoSpold02"
+	xmlns:xml="http://www.w3.org/XML/1998/namespace"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.EcoInvent.org/EcoSpold02 ../../Schemas/MasterData/EcoSpold02IntermediateExchanges.xsd ">
+	
+	#foreach($it in $exchanges.contextName)
+		<contextName xml:lang="$it.langCode">$it.value</contextName>	
+	#end
+	
+	#foreach($exchange in $exchanges.productFlows)
+		<intermediateExchange
+		
+			#if($exchange.casNumber)
+				casNumber="$exchange.casNumber"
+			#end
+			
+			#if($exchange.defaultVariableName)
+				defaultVariableName=""
+			#end
+			
+			#if($exchange.id)
+				id="$exchange.id"
+			#end
+			
+			#if($exchange.unitContextId)
+				unitContextId="$exchange.unitContextId"
+			#end
+			
+			#if($exchange.unitId)
+				unitId="$exchange.unitId"
+			#end
+			
+			>
+			
+			#foreach($it in $exchange.name)
+				<name xml:lang="$it.langCode">$it.value</name>
+			#end
+					
+			#foreach($it in $exchange.unitName)				
+				<unitName xml:lang="$it.langCode">$it.value</unitName>
+			#end
+					
+			
+        	#foreach($classification in $exchange.productClassifications)
+        		<classification
+        				
+        			#if($classification.classificationId) 
+        				classificationId="$classification.classificationId" 
+        			#end
+        			>
+        				
+        			#foreach ($it in $classification.classificationSystem)
+                         <classificationSystem xml:lang="$it.langCode">$it.value</classificationSystem>
+        			#end
+        				
+                    #foreach ($it in $classification.classificationValue)
+                        <classificationValue xml:lang="$it.langCode">$it.value</classificationValue>
+                    #end			
+        				
+        			</classification>
+        	#end 
+					
+			#foreach($it in $exchange.comment)
+				<comment xml:lang="$it.langCode">$it.value</comment>
+			#end
+			
+			#foreach($it in $exchange.synonyms)
+				<synonym xml:lang="$it.langCode">$it.value</synonym>	
+			#end
+				
+		</intermediateExchange>
+	#end
+	
+</validIntermediateExchanges>
