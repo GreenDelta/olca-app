@@ -9,7 +9,7 @@ import org.openlca.app.viewers.BaseLabelProvider;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.UnitGroup;
-import org.openlca.core.model.results.AnalysisFlowResult;
+import org.openlca.core.results.AnalysisFlowResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +21,6 @@ public class InventoryContributionLabel extends BaseLabelProvider implements
 	private boolean process;
 
 	public InventoryContributionLabel(IDatabase database, boolean process) {
-		super(database);
 		this.database = database;
 		this.process = process;
 	}

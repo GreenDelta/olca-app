@@ -3,28 +3,34 @@ package org.openlca.core.editors.analyze;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
-import org.openlca.core.database.IDatabase;
+import org.openlca.app.db.Database;
+import org.openlca.core.database.Cache;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
+import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.results.AnalysisFlowResult;
+import org.openlca.core.results.AnalysisFlowResults;
 import org.openlca.core.results.AnalysisResult;
 
-class FlowContributionProvider implements IProcessContributionProvider<Flow> {
+class FlowContributionProvider implements
+		IProcessContributionProvider<FlowDescriptor> {
 
 	private AnalysisResult result;
-	private IDatabase database;
+	private Cache cache;
 
-	public FlowContributionProvider(IDatabase database, AnalysisResult result) {
+	public FlowContributionProvider(AnalysisResult result) {
 		this.result = result;
-		this.database = database;
+		this.cache = Database.getCache();
 	}
 
 	@Override
-	public IDatabase getDatabase() {
-		return database;
+	public FlowDescriptor[] getElements() {
+		Set<FlowDescriptor> set = AnalysisFlowResults.getFlows(result, cache);
+		return set.toArray(new FlowDescriptor[set.size()]);
 	}
 
 	@Override
@@ -33,28 +39,32 @@ class FlowContributionProvider implements IProcessContributionProvider<Flow> {
 	}
 
 	@Override
-	public List<ProcessContributionItem> getItems(Flow selection, double cutOff) {
+	public List<ProcessContributionItem> getItems(FlowDescriptor selection,
+			double cutOff) {
 		return getContributions(selection, cutOff, true);
 	}
 
 	@Override
-	public List<ProcessContributionItem> getHotSpots(Flow selection,
+	public List<ProcessContributionItem> getHotSpots(FlowDescriptor selection,
 			double cutOff) {
 		return getContributions(selection, cutOff, false);
 	}
 
-	private List<ProcessContributionItem> getContributions(Flow selection,
-			double cutOff, boolean total) {
+	private List<ProcessContributionItem> getContributions(
+			FlowDescriptor selection, double cutOff, boolean total) {
 		if (result == null || selection == null)
 			return Collections.emptyList();
-		List<AnalysisFlowResult> flowResults = result.getFlowResults(selection);
+		List<AnalysisFlowResult> flowResults = AnalysisFlowResults.getForFlow(
+				result, selection, Database.getCache());
 		if (flowResults.isEmpty())
 			return Collections.emptyList();
 		double refVale = getRefValue(flowResults);
-		String unit = flowUnit(selection);
+		// String unit = flowUnit(selection);
+		// TODO: flow unit
+		String unit = "";
 		List<ProcessContributionItem> items = new ArrayList<>();
 		for (AnalysisFlowResult result : flowResults) {
-			double val = total ? result.getAggregatedResult() : result
+			double val = total ? result.getTotalResult() : result
 					.getSingleResult();
 			double c = contribution(val, refVale);
 			if (cutOff == 0 || Math.abs(c) >= cutOff)
@@ -70,7 +80,7 @@ class FlowContributionProvider implements IProcessContributionProvider<Flow> {
 		if (result.getProcess() != null)
 			item.setProcessName(result.getProcess().getName());
 		item.setSingleAmount(result.getSingleResult());
-		item.setTotalAmount(result.getAggregatedResult());
+		item.setTotalAmount(result.getTotalResult());
 		item.setUnit(unit);
 		return item;
 	}
@@ -83,11 +93,11 @@ class FlowContributionProvider implements IProcessContributionProvider<Flow> {
 
 	private double getRefValue(List<AnalysisFlowResult> flowResults) {
 		AnalysisFlowResult first = flowResults.get(0);
-		double max = first.getAggregatedResult();
+		double max = first.getTotalResult();
 		double min = max;
 		for (int i = 1; i < flowResults.size(); i++) {
 			AnalysisFlowResult next = flowResults.get(i);
-			double nextVal = next.getAggregatedResult();
+			double nextVal = next.getTotalResult();
 			max = Math.max(max, nextVal);
 			min = Math.min(min, nextVal);
 		}

@@ -191,7 +191,7 @@ class CalculationWizardPage extends WizardPage {
 			methodViewer.select(null);
 		if (nwViewer != null) {
 			nwViewer.select(null);
-			nwViewer.setInput(null);
+			nwViewer.setInput((ImpactMethodDescriptor) null);
 		}
 		setDefaultData();
 	}

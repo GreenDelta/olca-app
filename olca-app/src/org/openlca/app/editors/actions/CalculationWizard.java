@@ -14,8 +14,12 @@ import java.lang.reflect.InvocationTargetException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.Wizard;
+import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
+import org.openlca.app.editors.AnalyzeEditorInput;
+import org.openlca.app.util.Editors;
+import org.openlca.core.editors.analyze.AnalyzeEditor;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.SystemCalculator;
 import org.openlca.core.model.ProductSystem;
@@ -90,7 +94,11 @@ class CalculationWizard extends Wizard {
 			else
 				analysisResult = calculator.analyse(productSystem, method);
 			log.trace("calculation done, open editor");
-			// openEditor(result);
+			String resultKey = App.getCache().put(analysisResult);
+			String setupKey = App.getCache().put(settings);
+			AnalyzeEditorInput input = new AnalyzeEditorInput(setupKey,
+					resultKey);
+			Editors.open(input, AnalyzeEditor.ID);
 		}
 
 		private void solve() {

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.nebula.jface.tablecomboviewer.TableComboViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -33,7 +34,7 @@ class ChartSection<T> {
 	private String sectionTitle = "#no title";
 	private String selectionName = "#no item name";
 	private IProcessContributionProvider<T> provider;
-	private AbstractViewer<T> itemViewer;
+	private AbstractViewer<T, TableComboViewer> itemViewer;
 	private Combo modeCombo;
 	private ContributionChart chart;
 
@@ -68,13 +69,15 @@ class ChartSection<T> {
 	private void createItemCombo(FormToolkit toolkit, Composite header) {
 		toolkit.createLabel(header, selectionName);
 		if (provider instanceof FlowContributionProvider) {
+			FlowContributionProvider _p = (FlowContributionProvider) provider;
 			FlowViewer itemViewer = new FlowViewer(header, Database.getCache());
-			itemViewer.setInput(provider.getAnalysisResult());
-			this.itemViewer = (AbstractViewer<T>) itemViewer;
+			itemViewer.setInput(_p.getElements());
+			this.itemViewer = (AbstractViewer<T, TableComboViewer>) itemViewer;
 		} else if (provider instanceof ImpactContributionProvider) {
+			ImpactContributionProvider _p = (ImpactContributionProvider) provider;
 			ImpactCategoryViewer itemViewer = new ImpactCategoryViewer(header);
-			itemViewer.setInput(provider.getAnalysisResult());
-			this.itemViewer = (AbstractViewer<T>) itemViewer;
+			itemViewer.setInput(_p.getElements());
+			this.itemViewer = (AbstractViewer<T, TableComboViewer>) itemViewer;
 		} else
 			throw new IllegalStateException("Unknown contribution provider");
 		itemViewer.selectFirst();

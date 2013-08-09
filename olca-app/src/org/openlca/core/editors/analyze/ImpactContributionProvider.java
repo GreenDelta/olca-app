@@ -3,11 +3,13 @@ package org.openlca.core.editors.analyze;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
-import org.openlca.core.database.IDatabase;
+import org.openlca.app.db.Database;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.core.model.results.AnalysisImpactResult;
-import org.openlca.core.model.results.AnalysisResult;
+import org.openlca.core.results.AnalysisImpactResult;
+import org.openlca.core.results.AnalysisImpactResults;
+import org.openlca.core.results.AnalysisResult;
 
 class ImpactContributionProvider implements
 		IProcessContributionProvider<ImpactCategoryDescriptor> {
@@ -19,8 +21,12 @@ class ImpactContributionProvider implements
 	}
 
 	@Override
-	public IDatabase getDatabase() {
-		return null;
+	public ImpactCategoryDescriptor[] getElements() {
+		if (!result.hasImpactResults())
+			return new ImpactCategoryDescriptor[0];
+		Set<ImpactCategoryDescriptor> set = AnalysisImpactResults.getImpacts(
+				result, Database.getCache());
+		return set.toArray(new ImpactCategoryDescriptor[set.size()]);
 	}
 
 	@Override
@@ -42,7 +48,8 @@ class ImpactContributionProvider implements
 
 	private List<ProcessContributionItem> getItems(
 			ImpactCategoryDescriptor selection, double cutOff, boolean total) {
-		List<AnalysisImpactResult> results = result.getImpactResults(selection);
+		List<AnalysisImpactResult> results = AnalysisImpactResults
+				.getForImpact(result, selection, Database.getCache());
 		if (results.isEmpty())
 			return Collections.emptyList();
 		double refValue = getRefValue(results);
@@ -91,14 +98,10 @@ class ImpactContributionProvider implements
 	private double getValue(AnalysisImpactResult r, boolean total) {
 		if (r == null)
 			return 0;
-		if (total) {
-			if (r.getAggregatedResult() == null)
-				return 0;
-			return r.getAggregatedResult().getValue();
-		}
-		if (r.getSingleResult() == null)
-			return 0;
-		return r.getSingleResult().getValue();
+		if (total)
+			return r.getTotalResult();
+		else
+			return r.getSingleResult();
 	}
 
 }

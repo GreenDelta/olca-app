@@ -86,7 +86,7 @@ public abstract class AbstractViewer<T, V extends StructuredViewer> implements
 		return (Object[]) viewer.getInput();
 	}
 
-	protected void setInput(T[] input) {
+	public void setInput(T[] input) {
 		this.input = input;
 		Object[] internalInput = new Object[nullable ? input.length + 1
 				: input.length];

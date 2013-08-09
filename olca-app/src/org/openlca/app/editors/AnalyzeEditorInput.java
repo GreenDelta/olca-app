@@ -15,18 +15,25 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
 
 /**
- * Input for the analysis editor.
+ * Input for the analysis editor with a cache key for the calculation setup and
+ * result.
  */
 public class AnalyzeEditorInput implements IEditorInput {
 
+	private String setupKey;
 	private String resultKey;
+
+	public AnalyzeEditorInput(String setupKey, String resultKey) {
+		this.setupKey = setupKey;
+		this.resultKey = resultKey;
+	}
 
 	public String getResultKey() {
 		return resultKey;
 	}
 
-	public void setResultKey(String resultKey) {
-		this.resultKey = resultKey;
+	public String getSetupKey() {
+		return setupKey;
 	}
 
 	@Override

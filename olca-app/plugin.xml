@@ -77,9 +77,12 @@
             id="editors.impactresult"
             name="Result viewer">
       </editor>
+      
+      <!-- re-add the action contributor
+         contributorClass="org.openlca.core.editors.analyze.AnalyzeActionContributor"
+      -->
       <editor
             class="org.openlca.core.editors.analyze.AnalyzeEditor"
-            contributorClass="org.openlca.core.editors.analyze.AnalyzeActionContributor"
             default="false"
             icon="icons/analyze.gif"
             id="editors.analyze"

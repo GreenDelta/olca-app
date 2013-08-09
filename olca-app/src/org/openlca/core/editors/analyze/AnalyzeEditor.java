@@ -13,73 +13,72 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.forms.editor.FormEditor;
 import org.openlca.app.App;
-import org.openlca.app.FeatureFlag;
 import org.openlca.app.Messages;
 import org.openlca.app.editors.AnalyzeEditorInput;
-import org.openlca.app.editors.actions.CalculationResult;
-import org.openlca.core.editors.ModelEditor;
-import org.openlca.core.editors.ModelEditorPage;
 import org.openlca.core.editors.analyze.sankey.SankeyDiagram;
+import org.openlca.core.math.CalculationSetup;
+import org.openlca.core.model.ProductSystem;
 import org.openlca.core.results.AnalysisResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * View for the analysis results of a product system.
  */
-public class AnalyzeEditor extends ModelEditor {
+public class AnalyzeEditor extends FormEditor {
 
-	public static final String ID = "org.openlca.core.editors.analyze.AnalyzeEditor";
+	public static final String ID = "editors.analyze";
+
+	private Logger log = LoggerFactory.getLogger(getClass());
 
 	private SankeyDiagram diagram;
 	private int diagramIndex;
-	private CalculationResult calculationResult;
+	private CalculationSetup setup;
 	private AnalysisResult result;
 
 	@Override
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
+		super.init(site, input);
 		AnalyzeEditorInput editorInput = (AnalyzeEditorInput) input;
 		String resultKey = editorInput.getResultKey();
-		CalculationResult calculationResult = App.getCache().remove(resultKey, CalculationResult.class);
-		result = ca
-		setSite(site);
-		setInput(input);
-		String name = Messages.ResultOf + " "; // TODO: Product system name
-		// + result.getSetup().getProductSystem().getName();
+		String setupKey = editorInput.getSetupKey();
+		result = App.getCache().remove(resultKey, AnalysisResult.class);
+		setup = App.getCache().remove(setupKey, CalculationSetup.class);
+		ProductSystem system = setup.getProductSystem();
+		String name = Messages.ResultOf + " " + system.getName();
 		setPartName(name);
 	}
 
 	@Override
 	protected void addPages() {
 		try {
-			addPage(new AnalyzeInfoPage(this, result, editorInput));
-			addPage(new LCITotalPage(this, result));
-			if (result.hasImpactResults())
-				addPage(new LCIATotalPage(this, result));
+			addPage(new AnalyzeInfoPage(this, result, setup));
 
-			addPage(new ProcessContributionPage(this, result));
-			addPage(new ProcessResultPage(this, result));
-			if (result.hasImpactResults())
-				addPage(new FlowImpactPage(this, result));
-			addPage(new ContributionTreePage(this, result));
-			addPage(new GroupPage(this, result));
-			addPage(new LocationContributionPage(this, result));
-			if (FeatureFlag.SUNBURST_CHART.isEnabled())
-				addPage(new SunBurstView(this, result));
-			if (FeatureFlag.LOCALISED_LCIA.isEnabled()
-					&& result.hasImpactResults())
-				addPage(new LocalisedImpactPage(this, result));
-			diagram = new SankeyDiagram(editorInput, result);
-			diagramIndex = addPage(diagram, getEditorInput());
-			setPageText(diagramIndex, "Sankey diagram");
+			// addPage(new LCITotalPage(this, result));
+			// if (result.hasImpactResults())
+			// addPage(new LCIATotalPage(this, result));
+
+			// addPage(new ProcessContributionPage(this, result));
+			// addPage(new ProcessResultPage(this, result));
+			// if (result.hasImpactResults())
+			// addPage(new FlowImpactPage(this, result));
+			// addPage(new ContributionTreePage(this, result));
+			// addPage(new GroupPage(this, result));
+			// addPage(new LocationContributionPage(this, result));
+			// if (FeatureFlag.SUNBURST_CHART.isEnabled())
+			// addPage(new SunBurstView(this, result));
+			// if (FeatureFlag.LOCALISED_LCIA.isEnabled()
+			// && result.hasImpactResults())
+			// addPage(new LocalisedImpactPage(this, result));
+			// diagram = new SankeyDiagram(editorInput, result);
+			// diagramIndex = addPage(diagram, getEditorInput());
+			// setPageText(diagramIndex, "Sankey diagram");
 		} catch (final PartInitException e) {
 			log.error("Add pages failed", e);
 		}
-	}
-
-	@Override
-	protected ModelEditorPage[] initPages() {
-		return new ModelEditorPage[0];
 	}
 
 	@Override

@@ -15,14 +15,16 @@ import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
 import org.openlca.app.Messages;
-import org.openlca.app.editors.AnalyzeEditorInput;
+import org.openlca.app.db.Database;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.InformationPopup;
 import org.openlca.app.util.UI;
 import org.openlca.core.editors.io.ui.FileChooser;
-import org.openlca.core.model.Flow;
+import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.model.NormalizationWeightingSet;
+import org.openlca.core.model.ProductSystem;
+import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.results.AnalysisResult;
@@ -36,14 +38,14 @@ import org.slf4j.LoggerFactory;
 public class AnalyzeInfoPage extends FormPage {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
-	private AnalyzeEditorInput input;
+	private CalculationSetup setup;
 	private AnalysisResult result;
 	private FormToolkit toolkit;
 
 	public AnalyzeInfoPage(AnalyzeEditor editor, AnalysisResult result,
-			AnalyzeEditorInput editorInput) {
+			CalculationSetup setup) {
 		super(editor, "AnalyzeInfoPage", Messages.GeneralInformation);
-		this.input = editorInput;
+		this.setup = setup;
 		this.result = result;
 	}
 
@@ -66,17 +68,16 @@ public class AnalyzeInfoPage extends FormPage {
 	private void createInfoSection(Composite body) {
 		Composite composite = UI.formSection(body, toolkit,
 				Messages.GeneralInformation);
-		// TODO: system infos
-		// ProductSystem system = result.getSetup().getProductSystem();
-		createText(composite, Messages.ProductSystem, ""); // system.getName());
-		// String targetText = system.getTargetAmount() + " "
-		// + system.getTargetUnit().getName() + " "
-		// + system.getReferenceExchange().getFlow().getName();
-		createText(composite, Messages.TargetAmount, ""); // targetText);
-		ImpactMethodDescriptor method = input.getMethodDescriptor();
+		ProductSystem system = setup.getProductSystem();
+		createText(composite, Messages.ProductSystem, system.getName());
+		String targetText = system.getTargetAmount() + " "
+				+ system.getTargetUnit().getName() + " "
+				+ system.getReferenceExchange().getFlow().getName();
+		createText(composite, Messages.TargetAmount, targetText);
+		ImpactMethodDescriptor method = setup.getImpactMethod();
 		if (method != null)
 			createText(composite, Messages.ImpactMethodTitle, method.getName());
-		NormalizationWeightingSet nwSet = input.getNwSet();
+		NormalizationWeightingSet nwSet = setup.getNwSet();
 		if (nwSet != null)
 			createText(composite, Messages.NormalizationWeightingSet,
 					nwSet.getReferenceSystem());
@@ -106,8 +107,8 @@ public class AnalyzeInfoPage extends FormPage {
 			@Override
 			public void run() {
 				try {
-					new AnalysisResultExport(exportFile, )
-							.run(result);
+					new AnalysisResultExport(setup.getProductSystem(),
+							exportFile, Database.getCache()).run(result);
 					success[0] = true;
 				} catch (Exception exc) {
 					log.error("Excel export failed", exc);
@@ -131,8 +132,9 @@ public class AnalyzeInfoPage extends FormPage {
 
 	private void createResultSections(Composite body) {
 		FlowContributionProvider flowProvider = new FlowContributionProvider(
-				input.getDatabase(), result);
-		ChartSection<Flow> flowSection = new ChartSection<>(flowProvider);
+				result);
+		ChartSection<FlowDescriptor> flowSection = new ChartSection<>(
+				flowProvider);
 		flowSection.setSectionTitle(Messages.FlowContributions);
 		flowSection.setSelectionName(Messages.Flow);
 		flowSection.render(body, toolkit);
