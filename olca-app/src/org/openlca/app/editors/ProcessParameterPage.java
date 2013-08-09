@@ -25,8 +25,13 @@ class ProcessParameterPage extends ModelPage<Process> {
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 
-		Section section = UI.section(body, toolkit,
-				Messages.ParametersPageLabel);
+		// TODO: just a demo to show a section for input parameters
+		Section iSection = UI.section(body, toolkit, "Input parameters");
+		UI.gridData(iSection, true, true);
+		Composite iClient = UI.sectionClient(iSection, toolkit);
+		new ParameterViewer(iClient);
+
+		Section section = UI.section(body, toolkit, "Dependent parameters");
 		UI.gridData(section, true, true);
 		Composite client = UI.sectionClient(section, toolkit);
 

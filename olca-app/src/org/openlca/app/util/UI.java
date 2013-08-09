@@ -270,7 +270,6 @@ public class UI {
 
 	public static Button formCheckBox(Composite parent, String label) {
 		return formCheckBox(parent, null, label);
-
 	}
 
 	public static Button formCheckBox(Composite parent, FormToolkit toolkit,

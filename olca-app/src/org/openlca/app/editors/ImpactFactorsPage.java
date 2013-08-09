@@ -47,8 +47,7 @@ class ImpactFactorsPage extends ModelPage<ImpactMethod> {
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 
-		Section section = UI.section(body, toolkit,
-				Messages.ImpactFactors);
+		Section section = UI.section(body, toolkit, Messages.ImpactFactors);
 		UI.gridData(section, true, true);
 		Composite client = toolkit.createComposite(section);
 		section.setClient(client);
@@ -86,7 +85,7 @@ class ImpactFactorsPage extends ModelPage<ImpactMethod> {
 		public void selectionChanged(ImpactCategoryDescriptor selection) {
 			getBinding().release(factorViewer);
 			if (selection == null)
-				factorViewer.setInput(null);
+				factorViewer.setInput((ImpactCategory) null);
 			else
 				for (ImpactCategory cat : getModel().getImpactCategories())
 					if (cat.getId() == selection.getId())

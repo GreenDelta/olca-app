@@ -20,7 +20,7 @@ public class AllocationMethodViewer extends
 			if (isNullable())
 				((TableCombo) getViewer().getControl()).select(0);
 			else
-				super.select(AllocationMethod.None);
+				super.select(AllocationMethod.NONE);
 		else
 			super.select(value);
 	}

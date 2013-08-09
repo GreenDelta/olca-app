@@ -69,7 +69,7 @@ class ImpactNormalizationWeightingPage extends ModelPage<ImpactMethod> {
 		public void selectionChanged(NormalizationWeightingSet selection) {
 			getBinding().release(factorViewer);
 			if (selection == null)
-				factorViewer.setInput(null);
+				factorViewer.setInput((NormalizationWeightingSet) null);
 			else {
 				getBinding().on(selection, "normalizationWeightingFactors",
 						factorViewer);

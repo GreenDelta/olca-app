@@ -30,6 +30,7 @@ public class ProjectEditor extends ModelEditor<Project> implements IEditor {
 	protected void addPages() {
 		try {
 			addPage(new ProjectInfoPage(this));
+			addPage(new ProjectSetupPage(this));
 		} catch (Exception e) {
 			log.error("failed to add page", e);
 		}
