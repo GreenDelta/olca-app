@@ -3,7 +3,7 @@ package org.openlca.core.editors.analyze;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.openlca.core.model.Indexable;
-import org.openlca.core.model.results.Contribution;
+import org.openlca.core.results.Contribution;
 
 /**
  * The default sorter for contributions in table viewers. The items are sorted

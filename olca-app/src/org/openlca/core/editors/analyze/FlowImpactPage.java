@@ -19,17 +19,19 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.openlca.app.db.Database;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
 import org.openlca.core.editors.ContributionImage;
 import org.openlca.core.model.Flow;
+import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.core.model.results.AnalysisResult;
-import org.openlca.core.model.results.Contribution;
-import org.openlca.core.model.results.ContributionSet;
-import org.openlca.core.model.results.FlowImpactContribution;
+import org.openlca.core.results.AnalysisResult;
+import org.openlca.core.results.Contribution;
+import org.openlca.core.results.ContributionSet;
+import org.openlca.core.results.FlowImpactContribution;
 
 public class FlowImpactPage extends FormPage {
 
@@ -46,7 +48,8 @@ public class FlowImpactPage extends FormPage {
 	public FlowImpactPage(AnalyzeEditor editor, AnalysisResult result) {
 		super(editor, ProcessResultPage.class.getName(), "Flow contributions");
 		this.result = result;
-		this.flowImpactContribution = new FlowImpactContribution(result);
+		this.flowImpactContribution = new FlowImpactContribution(result,
+				Database.getCache());
 	}
 
 	@Override
@@ -72,7 +75,7 @@ public class FlowImpactPage extends FormPage {
 					@Override
 					public void selectionChanged(
 							ImpactCategoryDescriptor selection) {
-						ContributionSet<Flow> contributions = flowImpactContribution
+						ContributionSet<FlowDescriptor> contributions = flowImpactContribution
 								.calculate(selection);
 						flowViewer.setInput(contributions.getContributions());
 					}
@@ -163,7 +166,7 @@ public class FlowImpactPage extends FormPage {
 				return null;
 
 			@SuppressWarnings("unchecked")
-			Contribution<Flow> contribution = (Contribution<Flow>) element;
+			Contribution<FlowDescriptor> contribution = (Contribution<FlowDescriptor>) element;
 			return image.getForTable(getContribution(contribution));
 		}
 

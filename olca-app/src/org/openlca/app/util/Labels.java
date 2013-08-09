@@ -115,13 +115,13 @@ public class Labels {
 		if (allocationMethod == null)
 			return null;
 		switch (allocationMethod) {
-		case Causal:
+		case CAUSAL:
 			return Messages.Causal;
-		case Economic:
+		case ECONOMIC:
 			return Messages.Economic;
-		case None:
+		case NONE:
 			return Messages.None;
-		case Physical:
+		case PHYSICAL:
 			return Messages.Physical;
 		default:
 			return Messages.None;

@@ -9,9 +9,6 @@
  ******************************************************************************/
 package org.openlca.core.editors.analyze;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -20,14 +17,11 @@ import org.openlca.app.App;
 import org.openlca.app.FeatureFlag;
 import org.openlca.app.Messages;
 import org.openlca.app.editors.AnalyzeEditorInput;
-import org.openlca.core.database.IDatabase;
+import org.openlca.app.editors.actions.CalculationResult;
 import org.openlca.core.editors.ModelEditor;
 import org.openlca.core.editors.ModelEditorPage;
 import org.openlca.core.editors.analyze.sankey.SankeyDiagram;
-import org.openlca.core.editors.model.FlowInfo;
-import org.openlca.core.editors.model.FlowInfoDao;
-import org.openlca.core.model.Flow;
-import org.openlca.core.model.results.AnalysisResult;
+import org.openlca.core.results.AnalysisResult;
 
 /**
  * View for the analysis results of a product system.
@@ -38,40 +32,21 @@ public class AnalyzeEditor extends ModelEditor {
 
 	private SankeyDiagram diagram;
 	private int diagramIndex;
-	private AnalyzeEditorInput editorInput;
+	private CalculationResult calculationResult;
 	private AnalysisResult result;
-	private Map<Flow, FlowInfo> flowInfos;
 
 	@Override
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
-		editorInput = (AnalyzeEditorInput) input;
+		AnalyzeEditorInput editorInput = (AnalyzeEditorInput) input;
 		String resultKey = editorInput.getResultKey();
-		result = App.getCache().remove(resultKey, AnalysisResult.class);
+		CalculationResult calculationResult = App.getCache().remove(resultKey, CalculationResult.class);
+		result = ca
 		setSite(site);
 		setInput(input);
-		String name = Messages.ResultOf + " "
-				+ result.getSetup().getProductSystem().getName();
+		String name = Messages.ResultOf + " "; // TODO: Product system name
+		// + result.getSetup().getProductSystem().getName();
 		setPartName(name);
-		initFlowInfows(editorInput.getDatabase());
-	}
-
-	private void initFlowInfows(IDatabase database) {
-		log.trace("Initialize flow infos");
-		flowInfos = new HashMap<Flow, FlowInfo>();
-		if (result == null || database == null)
-			return;
-		try {
-			FlowInfoDao dao = new FlowInfoDao(database);
-			for (Flow flow : result.getFlows())
-				flowInfos.put(flow, dao.fromFlow(flow));
-		} catch (Exception e) {
-			log.error("Failed to init. flow infos", e);
-		}
-	}
-
-	FlowInfo getFlowInfo(Flow flow) {
-		return flowInfos.get(flow);
 	}
 
 	@Override

@@ -20,14 +20,13 @@ import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.InformationPopup;
 import org.openlca.app.util.UI;
-import org.openlca.core.editors.io.AnalysisResultExport;
 import org.openlca.core.editors.io.ui.FileChooser;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.NormalizationWeightingSet;
-import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
-import org.openlca.core.model.results.AnalysisResult;
+import org.openlca.core.results.AnalysisResult;
+import org.openlca.io.xls.results.AnalysisResultExport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,8 +53,8 @@ public class AnalyzeInfoPage extends FormPage {
 		toolkit = managedForm.getToolkit();
 		toolkit.getHyperlinkGroup().setHyperlinkUnderlineMode(
 				HyperlinkSettings.UNDERLINE_HOVER);
-		form.setText(Messages.ResultOf + " "
-				+ result.getSetup().getProductSystem().getName());
+		form.setText(Messages.ResultOf + " "); // TODO: product system name
+		// + result.getSetup().getProductSystem().getName());
 		toolkit.decorateFormHeading(form.getForm());
 		Composite body = UI.formBody(form, toolkit);
 		createInfoSection(body);
@@ -67,16 +66,16 @@ public class AnalyzeInfoPage extends FormPage {
 	private void createInfoSection(Composite body) {
 		Composite composite = UI.formSection(body, toolkit,
 				Messages.GeneralInformation);
-		ProductSystem system = result.getSetup().getProductSystem();
-		createText(composite, Messages.ProductSystem, system.getName());
-		String targetText = system.getTargetAmount() + " "
-				+ system.getTargetUnit().getName() + " "
-				+ system.getReferenceExchange().getFlow().getName();
-		createText(composite, Messages.TargetAmount, targetText);
+		// TODO: system infos
+		// ProductSystem system = result.getSetup().getProductSystem();
+		createText(composite, Messages.ProductSystem, ""); // system.getName());
+		// String targetText = system.getTargetAmount() + " "
+		// + system.getTargetUnit().getName() + " "
+		// + system.getReferenceExchange().getFlow().getName();
+		createText(composite, Messages.TargetAmount, ""); // targetText);
 		ImpactMethodDescriptor method = input.getMethodDescriptor();
 		if (method != null)
-			createText(composite, Messages.ImpactMethodTitle,
-					method.getName());
+			createText(composite, Messages.ImpactMethodTitle, method.getName());
 		NormalizationWeightingSet nwSet = input.getNwSet();
 		if (nwSet != null)
 			createText(composite, Messages.NormalizationWeightingSet,
@@ -107,7 +106,7 @@ public class AnalyzeInfoPage extends FormPage {
 			@Override
 			public void run() {
 				try {
-					new AnalysisResultExport(exportFile, input.getDatabase())
+					new AnalysisResultExport(exportFile, )
 							.run(result);
 					success[0] = true;
 				} catch (Exception exc) {

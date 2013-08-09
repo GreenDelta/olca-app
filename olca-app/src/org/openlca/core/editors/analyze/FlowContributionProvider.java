@@ -9,8 +9,8 @@ import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
-import org.openlca.core.model.results.AnalysisFlowResult;
-import org.openlca.core.model.results.AnalysisResult;
+import org.openlca.core.results.AnalysisFlowResult;
+import org.openlca.core.results.AnalysisResult;
 
 class FlowContributionProvider implements IProcessContributionProvider<Flow> {
 

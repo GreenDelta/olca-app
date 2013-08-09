@@ -20,7 +20,6 @@ import org.eclipse.swt.widgets.Text;
 import org.openlca.app.ApplicationProperties;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
-import org.openlca.app.editors.CalculationType;
 import org.openlca.app.editors.DataBinding;
 import org.openlca.app.editors.DataBinding.TextBindType;
 import org.openlca.app.resources.ImageType;
@@ -29,8 +28,10 @@ import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.AllocationMethodViewer;
 import org.openlca.app.viewers.combo.ImpactMethodViewer;
 import org.openlca.app.viewers.combo.NormalizationWeightingSetViewer;
+import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.NormalizationWeightingSet;
+import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 
 /**
@@ -39,15 +40,21 @@ import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
  */
 class CalculationWizardPage extends WizardPage {
 
+	enum CalculationType {
+		QUICK, ANALYSIS, MONTE_CARLO
+	}
+
 	private AllocationMethodViewer allocationViewer;
 	private ImpactMethodViewer methodViewer;
 	private NormalizationWeightingSetViewer nwViewer;
 	private Text iterationText;
 	private int iterationCount = 100;
 	private CalculationType type = CalculationType.QUICK;
+	private ProductSystem productSystem;
 
-	public CalculationWizardPage() {
+	public CalculationWizardPage(ProductSystem system) {
 		super(CalculationWizardPage.class.getCanonicalName());
+		this.productSystem = system;
 		setTitle(Messages.CalculationWizardTitle);
 		setDescription(Messages.CalculationWizardDescription);
 		setImageDescriptor(ImageType.WIZ_CALCULATION.getDescriptor());
@@ -123,15 +130,30 @@ class CalculationWizardPage extends WizardPage {
 		allocationViewer.setNullable(true);
 	}
 
-	public CalculationSettings getSettings() {
-		CalculationSettings settings = this.new CalculationSettings();
-		settings.setAllocationMethod(allocationViewer.getSelected());
-		settings.setMethod(methodViewer.getSelected());
+	public CalculationSetup getSetup() {
+		CalculationSetup setUp = new CalculationSetup(productSystem,
+				getSetupType());
+		setUp.setAllocationMethod(allocationViewer.getSelected());
+		setUp.setImpactMethod(methodViewer.getSelected());
 		NormalizationWeightingSet set = nwViewer.getSelected();
-		settings.setNwSet(set);
-		settings.setType(type);
-		settings.setIterationCount(iterationCount);
-		return settings;
+		setUp.setNwSet(set);
+		setUp.setNumberOfRuns(iterationCount);
+		return setUp;
+	}
+
+	private int getSetupType() {
+		if (type == null)
+			return CalculationSetup.QUICK_RESULT;
+		switch (type) {
+		case ANALYSIS:
+			return CalculationSetup.ANALYSIS;
+		case MONTE_CARLO:
+			return CalculationSetup.MONTE_CARLO_SIMULATION;
+		case QUICK:
+			return CalculationSetup.QUICK_RESULT;
+		default:
+			return CalculationSetup.QUICK_RESULT;
+		}
 	}
 
 	private void createMethodComboViewer(Composite parent) {
@@ -192,56 +214,6 @@ class CalculationWizardPage extends WizardPage {
 			CalculationWizardPage.this.type = type;
 			iterationText.setEnabled(type == CalculationType.MONTE_CARLO);
 		}
-	}
-
-	class CalculationSettings {
-
-		private NormalizationWeightingSet nwSet;
-		private ImpactMethodDescriptor method;
-		private AllocationMethod allocationMethod;
-		private CalculationType type;
-		private int iterationCount;
-
-		public NormalizationWeightingSet getNwSet() {
-			return nwSet;
-		}
-
-		public void setNwSet(NormalizationWeightingSet nwSet) {
-			this.nwSet = nwSet;
-		}
-
-		public ImpactMethodDescriptor getMethod() {
-			return method;
-		}
-
-		public void setMethod(ImpactMethodDescriptor method) {
-			this.method = method;
-		}
-
-		public AllocationMethod getAllocationMethod() {
-			return allocationMethod;
-		}
-
-		public void setAllocationMethod(AllocationMethod allocationMethod) {
-			this.allocationMethod = allocationMethod;
-		}
-
-		public CalculationType getType() {
-			return type;
-		}
-
-		public void setType(CalculationType type) {
-			this.type = type;
-		}
-
-		public void setIterationCount(int iterationCount) {
-			this.iterationCount = iterationCount;
-		}
-
-		public int getIterationCount() {
-			return iterationCount;
-		}
-
 	}
 
 }

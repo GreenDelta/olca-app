@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
+import org.openlca.app.db.Database;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.AbstractViewer;
 import org.openlca.app.viewers.ISelectionChangedListener;
@@ -67,7 +68,7 @@ class ChartSection<T> {
 	private void createItemCombo(FormToolkit toolkit, Composite header) {
 		toolkit.createLabel(header, selectionName);
 		if (provider instanceof FlowContributionProvider) {
-			FlowViewer itemViewer = new FlowViewer(header);
+			FlowViewer itemViewer = new FlowViewer(header, Database.getCache());
 			itemViewer.setInput(provider.getAnalysisResult());
 			this.itemViewer = (AbstractViewer<T>) itemViewer;
 		} else if (provider instanceof ImpactContributionProvider) {

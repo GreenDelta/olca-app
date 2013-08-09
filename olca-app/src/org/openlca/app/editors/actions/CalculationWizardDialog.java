@@ -15,9 +15,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.openlca.app.ApplicationProperties;
 import org.openlca.app.Messages;
-import org.openlca.app.editors.actions.CalculationWizardPage.CalculationSettings;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ProductSystem;
 
@@ -38,13 +36,13 @@ class CalculationWizardDialog extends WizardDialog {
 				.getPage(CalculationWizardPage.class.getCanonicalName());
 		if (calculationPage == null)
 			return;
-		CalculationSettings settings = calculationPage.getSettings();
-		if (settings.getAllocationMethod() != null)
-			ApplicationProperties.PROP_DEFAULT_ALLOCATION_METHOD
-					.setValue(settings.getAllocationMethod().name());
-		else
-			ApplicationProperties.PROP_DEFAULT_ALLOCATION_METHOD.setValue(null);
-		// TODO save method and nw set
+		// CalculationSettings settings = calculationPage.getSettings();
+		// if (settings.getAllocationMethod() != null)
+		// ApplicationProperties.PROP_DEFAULT_ALLOCATION_METHOD
+		// .setValue(settings.getAllocationMethod().name());
+		// else
+		// ApplicationProperties.PROP_DEFAULT_ALLOCATION_METHOD.setValue(null);
+		// // TODO save method and nw set
 	}
 
 	@Override

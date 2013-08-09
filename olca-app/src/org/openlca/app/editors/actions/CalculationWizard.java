@@ -10,23 +10,18 @@
 package org.openlca.app.editors.actions;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.UUID;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.Wizard;
-import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
-import org.openlca.app.editors.AnalyzeEditorInput;
-import org.openlca.app.editors.CalculationType;
-import org.openlca.app.editors.actions.CalculationWizardPage.CalculationSettings;
-import org.openlca.app.util.Editors;
-import org.openlca.core.editors.analyze.AnalyzeEditor;
+import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.SystemCalculator;
-import org.openlca.core.model.NormalizationWeightingSet;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
+import org.openlca.core.results.AnalysisResult;
+import org.openlca.core.results.InventoryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,13 +44,13 @@ class CalculationWizard extends Wizard {
 
 	@Override
 	public void addPages() {
-		calculationPage = new CalculationWizardPage();
+		calculationPage = new CalculationWizardPage(productSystem);
 		addPage(calculationPage);
 	}
 
 	@Override
 	public boolean performFinish() {
-		CalculationSettings settings = calculationPage.getSettings();
+		CalculationSetup settings = calculationPage.getSetup();
 		try {
 			getContainer().run(true, true, new Calculation(settings));
 			return true;
@@ -67,55 +62,56 @@ class CalculationWizard extends Wizard {
 
 	private class Calculation implements IRunnableWithProgress {
 
-		private CalculationSettings settings;
+		private CalculationSetup settings;
 
-		public Calculation(CalculationSettings settings) {
-			// TODO Auto-generated constructor stub
+		public Calculation(CalculationSetup settings) {
+			this.settings = settings;
 		}
 
 		@Override
 		public void run(IProgressMonitor monitor)
 				throws InvocationTargetException, InterruptedException {
 			monitor.beginTask("Run calculation", IProgressMonitor.UNKNOWN);
-			SystemCalculator calculator = new SystemCalculator(Database.get());
-			ImpactMethodDescriptor method = settings.getMethod();
-			Object result = null;
-			switch (settings.getType()) {
-			case ANALYSIS:
-				if (method != null)
-					result = calculator.analyse(productSystem);
-				else
-					result = calculator.analyse(productSystem, method);
-				break;
-			case QUICK:
-				if (method != null)
-					result = calculator.solve(productSystem);
-				else
-					result = calculator.solve(productSystem, method);
-				break;
-			default:
-				break;
-			}
-			if (result != null)
-				openEditor(result, method, settings.getNwSet(),
-						settings.getType());
+			if (settings.hasType(CalculationSetup.QUICK_RESULT))
+				solve();
+			else if (settings.hasType(CalculationSetup.ANALYSIS))
+				analyse();
+			// TODO: Monte-Carlo-Simulation
 			monitor.done();
 		}
 
-		private void openEditor(Object result, ImpactMethodDescriptor method,
-				NormalizationWeightingSet nwSet, CalculationType type) {
-			AnalyzeEditorInput input = new AnalyzeEditorInput();
-			input.setType(type);
+		private void analyse() {
+			log.trace("run analysis");
+			SystemCalculator calculator = new SystemCalculator(Database.get());
+			ImpactMethodDescriptor method = settings.getImpactMethod();
+			AnalysisResult analysisResult = null;
 			if (method != null)
-				input.setMethodId(method.getId());
-			if (nwSet != null)
-				input.setNwSetId(nwSet.getId());
-			String resultKey = UUID.randomUUID().toString();
-			App.getCache().put(resultKey, result);
-			input.setResultKey(resultKey);
-			Editors.open(input, AnalyzeEditor.ID);
+				analysisResult = calculator.analyse(productSystem);
+			else
+				analysisResult = calculator.analyse(productSystem, method);
+			log.trace("calculation done, open editor");
+			// openEditor(result);
 		}
 
-	}
+		private void solve() {
+			log.trace("run quick calculation");
+			SystemCalculator calculator = new SystemCalculator(Database.get());
+			ImpactMethodDescriptor method = settings.getImpactMethod();
+			InventoryResult inventoryResult = null;
+			if (method != null)
+				inventoryResult = calculator.solve(productSystem);
+			else
+				inventoryResult = calculator.solve(productSystem, method);
+			log.trace("calculation done, open editor");
+			// openEditor(result);
+		}
 
+		// private void openEditor(Calc result) {
+		// AnalyzeEditorInput input = new AnalyzeEditorInput();
+		// String resultKey = UUID.randomUUID().toString();
+		// App.getCache().put(resultKey, result);
+		// input.setResultKey(resultKey);
+		// Editors.open(input, AnalyzeEditor.ID);
+		// }
+	}
 }

@@ -13,10 +13,6 @@ package org.openlca.app.editors;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
-import org.openlca.app.db.Database;
-import org.openlca.core.database.BaseDao;
-import org.openlca.core.model.NormalizationWeightingSet;
-import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 
 /**
  * Input for the analysis editor.
@@ -24,9 +20,6 @@ import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 public class AnalyzeEditorInput implements IEditorInput {
 
 	private String resultKey;
-	private Long nwSetId;
-	private Long methodId;
-	private CalculationType type;
 
 	public String getResultKey() {
 		return resultKey;
@@ -34,41 +27,6 @@ public class AnalyzeEditorInput implements IEditorInput {
 
 	public void setResultKey(String resultKey) {
 		this.resultKey = resultKey;
-	}
-
-	public CalculationType getType() {
-		return type;
-	}
-
-	public void setType(CalculationType type) {
-		this.type = type;
-	}
-
-	/**
-	 * Cache the nw set since it is loaded from the database every time this
-	 * method gets called
-	 */
-	public NormalizationWeightingSet getNwSet() {
-		if (nwSetId == null)
-			return null;
-		if (methodId == null)
-			return null;
-		return new BaseDao<>(NormalizationWeightingSet.class, Database.get())
-				.getForId(nwSetId);
-	}
-
-	public void setNwSetId(Long nwSetId) {
-		this.nwSetId = nwSetId;
-	}
-
-	public ImpactMethodDescriptor getMethodDescriptor() {
-		if (methodId == null)
-			return null;
-		return Database.getCache().getImpactMethodDescriptor(methodId);
-	}
-
-	public void setMethodId(Long methodId) {
-		this.methodId = methodId;
 	}
 
 	@Override

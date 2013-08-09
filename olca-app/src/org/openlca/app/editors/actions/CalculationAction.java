@@ -7,8 +7,12 @@ import org.openlca.app.editors.ProductSystemEditor;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Editors;
 import org.openlca.core.model.ProductSystem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CalculationAction extends Action {
+
+	private Logger log = LoggerFactory.getLogger(getClass());
 
 	@Override
 	public ImageDescriptor getImageDescriptor() {
@@ -23,10 +27,10 @@ public class CalculationAction extends Action {
 	@Override
 	public void run() {
 		ProductSystem productSystem = getProductSystem();
-		if (productSystem == null)
-			// TODO add error handling, something gone wrong. When the action is
-			// active the active editor should always return the product system
+		if (productSystem == null) {
+			log.error("unexpected error: product system is null");
 			return;
+		}
 		new CalculationWizardDialog(productSystem).open();
 	}
 

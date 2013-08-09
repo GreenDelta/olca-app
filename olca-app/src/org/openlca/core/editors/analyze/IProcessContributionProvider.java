@@ -3,7 +3,7 @@ package org.openlca.core.editors.analyze;
 import java.util.List;
 
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.model.results.AnalysisResult;
+import org.openlca.core.results.AnalysisResult;
 
 public interface IProcessContributionProvider<T> {
 
