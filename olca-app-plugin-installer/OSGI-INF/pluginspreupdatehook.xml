@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<component name="pluginspreupdatehook">
-	<implementation class="org.openlca.plugin.installer.PluginsPreUpdateHook"/>
-	<service>
-		<provide interface="org.openlca.core.application.update.PreUpdateHook"/>
-	</service>
-</component>
