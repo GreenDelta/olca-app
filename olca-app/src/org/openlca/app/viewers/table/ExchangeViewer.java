@@ -25,7 +25,6 @@ import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Exchange;
-import org.openlca.core.model.Expression;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.FlowType;
@@ -97,17 +96,6 @@ public class ExchangeViewer extends AbstractTableViewer<Exchange> {
 		}
 	}
 
-	private FlowType[] getFlowTypes() {
-		List<FlowType> flowTypes = new ArrayList<>();
-		if (is(PRODUCTS, types))
-			flowTypes.add(FlowType.PRODUCT_FLOW);
-		if (is(WASTES, types))
-			flowTypes.add(FlowType.WASTE_FLOW);
-		if (is(ELEMENTARIES, types))
-			flowTypes.add(FlowType.ELEMENTARY_FLOW);
-		return flowTypes.toArray(new FlowType[flowTypes.size()]);
-	}
-
 	@Override
 	protected String[] getColumnHeaders() {
 		return COLUMN_HEADERS;
@@ -121,12 +109,13 @@ public class ExchangeViewer extends AbstractTableViewer<Exchange> {
 		this.process = process;
 		if (process == null)
 			setInput(new Exchange[0]);
-		else {
-			if (is(direction, INPUTS))
-				setInput(process.getInputs(getFlowTypes()));
-			else if (is(direction, OUTPUTS))
-				setInput(process.getOutputs(getFlowTypes()));
+		boolean filter = is(direction, INPUTS);
+		List<Exchange> exchanges = new ArrayList<>();
+		for (Exchange exchange : process.getExchanges()) {
+			if (exchange.isInput() == filter)
+				exchanges.add(exchange);
 		}
+		setInput(exchanges.toArray(new Exchange[exchanges.size()]));
 	}
 
 	@Override
@@ -315,23 +304,16 @@ public class ExchangeViewer extends AbstractTableViewer<Exchange> {
 		}
 
 		@Override
-		protected void setText(Exchange element, String text) {
-			Expression expression = element.getResultingAmount();
+		protected void setText(Exchange exchange, String text) {
 			try {
 				// is number
 				double value = Double.parseDouble(text);
-				if (expression.getValue() != value
-						|| expression.getFormula() != null) {
-					expression.setFormula(null);
-					expression.setValue(value);
-					fireModelChanged(ModelChangeType.CHANGE, element);
-				}
+				exchange.setAmountFormula(null);
+				exchange.setAmountValue(value);
+				fireModelChanged(ModelChangeType.CHANGE, exchange);
 			} catch (NumberFormatException e) {
-				// is formula
-				if (!Objects.equals(text, expression.getFormula())) {
-					expression.setFormula(text);
-					fireModelChanged(ModelChangeType.CHANGE, element);
-				}
+				exchange.setAmountFormula(text);
+				fireModelChanged(ModelChangeType.CHANGE, exchange);
 			}
 		}
 
@@ -339,11 +321,10 @@ public class ExchangeViewer extends AbstractTableViewer<Exchange> {
 
 	private String getAmountText(Exchange exchange) {
 		if (viewMode == ViewMode.VALUE
-				|| StringUtils.isEmpty(exchange.getResultingAmount()
-						.getFormula()))
-			return Double.toString(exchange.getResultingAmount().getValue());
+				|| StringUtils.isEmpty(exchange.getAmountFormula()))
+			return Double.toString(exchange.getAmountValue());
 		else
-			return exchange.getResultingAmount().getFormula();
+			return exchange.getAmountFormula();
 	}
 
 }

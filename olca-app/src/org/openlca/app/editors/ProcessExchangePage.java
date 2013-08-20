@@ -17,7 +17,6 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.combo.AllocationMethodViewer;
 import org.openlca.app.viewers.table.ExchangeViewer;
 import org.openlca.core.model.Process;
 
@@ -36,7 +35,6 @@ class ProcessExchangePage extends ModelPage<Process> {
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 
-		createAllocationSection(body);
 		createExchangeSection(body, ExchangeViewer.INPUTS,
 				ExchangeViewer.ALL_TYPES, Messages.Inputs);
 		createExchangeSection(body, ExchangeViewer.OUTPUTS,
@@ -44,13 +42,6 @@ class ProcessExchangePage extends ModelPage<Process> {
 
 		body.setFocus();
 		form.reflow(true);
-	}
-
-	private void createAllocationSection(Composite parent) {
-		Composite composite = UI.formSection(parent, toolkit,
-				Messages.AllocationMethod);
-		AllocationMethodViewer viewer = new AllocationMethodViewer(composite);
-		getBinding().on(getModel(), "allocationMethod", viewer);
 	}
 
 	private void createExchangeSection(Composite parent, int direction,
