@@ -13,22 +13,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.preference.PreferencePage;
-import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
@@ -37,7 +29,7 @@ import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Question;
-import org.openlca.app.util.Viewers;
+import org.openlca.app.util.UI;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ParameterDao;
 import org.openlca.core.model.Parameter;
@@ -45,24 +37,17 @@ import org.openlca.core.model.ParameterScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DatabaseParametersPage extends PreferencePage implements
+public class DatabaseParameterPage extends PreferencePage implements
 		IWorkbenchPreferencePage {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 	private AddParameterAction addParameterAction;
 	private IDatabase database;
 
-	private final String NAME = Messages.Name;
-	private final String DESCRIPTION = Messages.Description;
-	private final String NUMERIC_VALUE = Messages.Amount;
-	private final String[] PROPERTIES = new String[] { NAME, NUMERIC_VALUE,
-			DESCRIPTION };
-
 	private List<Parameter> parameters = new ArrayList<>();
 
-	private TableViewer parameterViewer;
-
 	private RemoveParameterAction removeParameterAction;
+	private DatabaseParameterTable parameterTable;
 
 	@Override
 	public void init(IWorkbench workbench) {
@@ -85,77 +70,33 @@ public class DatabaseParametersPage extends PreferencePage implements
 		body.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		Section section = new Section(body, ExpandableComposite.NO_TITLE);
-		section.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true,
-				true));
+		UI.gridData(section, true, true);
 		Composite composite = new Composite(section, SWT.NONE);
-		composite.setLayoutData(new GridData(GridData.FILL, GridData.FILL,
-				true, true));
-
-		GridLayout layout = new GridLayout();
-		layout.marginWidth = 10;
-		layout.marginHeight = 0;
-
-		composite.setLayout(layout);
+		UI.gridData(composite, true, true);
+		UI.gridLayout(composite, 1);
 		section.setClient(composite);
 
-		parameterViewer = new TableViewer(composite, SWT.BORDER
-				| SWT.FULL_SELECTION);
-		parameterViewer.setContentProvider(new ArrayContentProvider());
-		parameterViewer.setLabelProvider(new ParameterLabel());
-		parameterViewer.getTable().setEnabled(false);
-		Table table = parameterViewer.getTable();
-		table.setLinesVisible(true);
-		table.setHeaderVisible(true);
-		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
-		gd.heightHint = parent.getParent()
-				.computeSize(SWT.DEFAULT, SWT.DEFAULT).y;
-		table.setLayoutData(gd);
-		for (String p : PROPERTIES) {
-			TableColumn c = new TableColumn(table, SWT.NULL);
-			c.setText(p);
-		}
-		for (TableColumn c : table.getColumns()) {
-			if (c.getText().equals(NAME)) {
-				c.setWidth(150);
-			} else {
-				c.pack();
-			}
-		}
-
-		final ToolBarManager parametersBar = new ToolBarManager();
-
-		// create add and remove actions
-		addParameterAction = new AddParameterAction();
-		removeParameterAction = new RemoveParameterAction();
-		parametersBar.add(addParameterAction);
-		parametersBar.add(removeParameterAction);
-		final MenuManager parametersMenu = new MenuManager();
-		section.setTextClient(parametersBar.createControl(section));
-		parametersMenu.add(addParameterAction);
-		parametersMenu.add(removeParameterAction);
-		table.setMenu(parametersMenu.createContextMenu(table));
-		removeParameterAction.setEnabled(false);
-		addParameterAction.setEnabled(false);
-
-		// create cell editors
-		final CellEditor[] editors = new CellEditor[PROPERTIES.length];
-		for (int i = 0; i < editors.length; i++) {
-			editors[i] = new TextCellEditor(table);
-		}
-
-		parameterViewer.setColumnProperties(PROPERTIES);
-		parameterViewer.setCellModifier(new ParameterModifier(parameterViewer));
-		parameterViewer.setCellEditors(editors);
-
+		parameterTable = new DatabaseParameterTable(composite);
+		createActions(section);
 		if (database != null) {
 			loadParameters();
 			addParameterAction.setEnabled(true);
 			removeParameterAction.setEnabled(true);
-			parameterViewer.getTable().setEnabled(true);
-			updateCellEditors();
+			parameterTable.setEnabled(true);
 		}
-
 		return parent;
+	}
+
+	private void createActions(Section section) {
+		addParameterAction = new AddParameterAction();
+		removeParameterAction = new RemoveParameterAction();
+		final ToolBarManager parametersBar = new ToolBarManager();
+		parametersBar.add(addParameterAction);
+		parametersBar.add(removeParameterAction);
+		section.setTextClient(parametersBar.createControl(section));
+		parameterTable.setActions(addParameterAction, removeParameterAction);
+		removeParameterAction.setEnabled(false);
+		addParameterAction.setEnabled(false);
 	}
 
 	private void loadParameters() {
@@ -166,18 +107,9 @@ public class DatabaseParametersPage extends PreferencePage implements
 			for (Parameter parameter : parameters) {
 				this.parameters.add(parameter);
 			}
-			parameterViewer.setInput(this.parameters);
+			parameterTable.setInput(this.parameters);
 		} catch (final Exception e) {
 			log.error("Loading database parameters failed", e);
-		}
-	}
-
-	private void updateCellEditors() {
-		for (CellEditor editor : parameterViewer.getCellEditors()) {
-			if (editor instanceof FormulaTextCellEditor) {
-				((FormulaTextCellEditor) editor).setInput(parameters
-						.toArray(new Parameter[parameters.size()]));
-			}
 		}
 	}
 
@@ -227,9 +159,7 @@ public class DatabaseParametersPage extends PreferencePage implements
 			parameter.setName(name);
 			parameters.add(parameter);
 			parameter.setValue(1.0);
-			parameterViewer.setInput(parameters);
-			parameterViewer.setSelection(new StructuredSelection(parameter));
-			updateCellEditors();
+			parameterTable.setInput(parameters);
 		}
 	}
 
@@ -244,7 +174,7 @@ public class DatabaseParametersPage extends PreferencePage implements
 
 		@Override
 		public void run() {
-			Parameter parameter = Viewers.getFirstSelected(parameterViewer);
+			Parameter parameter = parameterTable.getSelected();
 			if (parameter == null)
 				return;
 			boolean b = Question.ask(
@@ -263,8 +193,7 @@ public class DatabaseParametersPage extends PreferencePage implements
 					dao.delete(parameter);
 				}
 				parameters.remove(parameter);
-				parameterViewer.setInput(parameters);
-				updateCellEditors();
+				parameterTable.setInput(parameters);
 			} catch (Exception e) {
 				log.error("failed to delete parameter " + parameter, e);
 			}

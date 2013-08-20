@@ -214,7 +214,7 @@
             name="%page.name.2">
       </page>
       <page
-            class="org.openlca.app.preferencepages.DatabaseParametersPage"
+            class="org.openlca.app.preferencepages.DatabaseParameterPage"
             id="preferencepages.parameters"
             name="%page.name.1">
       </page>
