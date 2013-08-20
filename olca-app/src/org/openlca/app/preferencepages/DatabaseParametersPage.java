@@ -23,21 +23,16 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.ApplicationProperties;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.resources.ImageType;
@@ -46,7 +41,7 @@ import org.openlca.app.util.Viewers;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ParameterDao;
 import org.openlca.core.model.Parameter;
-import org.openlca.core.model.ParameterType;
+import org.openlca.core.model.ParameterScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,20 +52,17 @@ public class DatabaseParametersPage extends PreferencePage implements
 	private AddParameterAction addParameterAction;
 	private IDatabase database;
 
-	private final String FORMULA = Messages.Formula;
 	private final String NAME = Messages.Name;
 	private final String DESCRIPTION = Messages.Description;
-	private final String NUMERIC_VALUE = Messages.NumericValue;
-	private final String[] PROPERTIES = new String[] { NAME, FORMULA,
-			NUMERIC_VALUE, DESCRIPTION };
+	private final String NUMERIC_VALUE = Messages.Amount;
+	private final String[] PROPERTIES = new String[] { NAME, NUMERIC_VALUE,
+			DESCRIPTION };
 
 	private List<Parameter> parameters = new ArrayList<>();
 
 	private TableViewer parameterViewer;
 
 	private RemoveParameterAction removeParameterAction;
-
-	private int sortMode;
 
 	@Override
 	public void init(IWorkbench workbench) {
@@ -91,7 +83,6 @@ public class DatabaseParametersPage extends PreferencePage implements
 		Composite body = new Composite(parent, SWT.NONE);
 		body.setLayout(new GridLayout());
 		body.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		createDirectionRadios(body);
 
 		Section section = new Section(body, ExpandableComposite.NO_TITLE);
 		section.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true,
@@ -147,26 +138,17 @@ public class DatabaseParametersPage extends PreferencePage implements
 		addParameterAction.setEnabled(false);
 
 		// create cell editors
-		final CellEditor[] editors = new CellEditor[4];
-		for (int i = 0; i < 4; i++) {
-			if (i != 1) {
-				editors[i] = new TextCellEditor(table);
-			} else {
-				editors[i] = new FormulaTextCellEditor(parameterViewer, i);
-			}
+		final CellEditor[] editors = new CellEditor[PROPERTIES.length];
+		for (int i = 0; i < editors.length; i++) {
+			editors[i] = new TextCellEditor(table);
 		}
 
 		parameterViewer.setColumnProperties(PROPERTIES);
-		parameterViewer.setCellModifier(new ParameterModifier(parameterViewer,
-				parameters));
+		parameterViewer.setCellModifier(new ParameterModifier(parameterViewer));
 		parameterViewer.setCellEditors(editors);
 
 		if (database != null) {
 			loadParameters();
-			sortMode = Integer
-					.parseInt(ApplicationProperties.PROP_PARAMETER_SORT_DIRECTION
-							.getValue(database.toString()));
-
 			addParameterAction.setEnabled(true);
 			removeParameterAction.setEnabled(true);
 			parameterViewer.getTable().setEnabled(true);
@@ -176,42 +158,10 @@ public class DatabaseParametersPage extends PreferencePage implements
 		return parent;
 	}
 
-	private void createDirectionRadios(Composite body) {
-		Composite radioComposite = new Composite(body, SWT.NONE);
-		radioComposite.setLayout(new GridLayout(2, true));
-		Label nameLabel = new Label(radioComposite, SWT.NONE);
-		nameLabel.setText(Messages.Direction);
-		new Label(radioComposite, SWT.NONE);
-
-		Button topDownButton = new Button(radioComposite, SWT.RADIO);
-		topDownButton.setText(Messages.ParametersPreferencePage_TopDown);
-		topDownButton.setSelection(false);
-		topDownButton.setEnabled(false);
-		topDownButton.addSelectionListener(new EvaluationDirectionChange(
-				ApplicationProperties.TOP_DOWN));
-
-		Button bottomUpButton = new Button(radioComposite, SWT.RADIO);
-		bottomUpButton.setText(Messages.ParametersPreferencePage_BottomUp);
-		bottomUpButton.setSelection(false);
-		bottomUpButton.setEnabled(false);
-		bottomUpButton.addSelectionListener(new EvaluationDirectionChange(
-				ApplicationProperties.BOTTOM_UP));
-
-		if (database != null) {
-			topDownButton.setEnabled(true);
-			topDownButton
-					.setSelection(sortMode == ApplicationProperties.TOP_DOWN);
-			bottomUpButton.setEnabled(true);
-			bottomUpButton
-					.setSelection(sortMode == ApplicationProperties.BOTTOM_UP);
-		}
-	}
-
 	private void loadParameters() {
 		try {
 			ParameterDao dao = new ParameterDao(database);
-			List<Parameter> parameters = dao
-					.getAllForType(ParameterType.DATABASE);
+			List<Parameter> parameters = dao.getGlobalParameters();
 			this.parameters.clear();
 			for (Parameter parameter : parameters) {
 				this.parameters.add(parameter);
@@ -260,28 +210,6 @@ public class DatabaseParametersPage extends PreferencePage implements
 
 	}
 
-	private class EvaluationDirectionChange implements SelectionListener {
-
-		private int mode;
-
-		public EvaluationDirectionChange(int mode) {
-			this.mode = mode;
-		}
-
-		@Override
-		public void widgetDefaultSelected(SelectionEvent e) {
-			widgetSelected(e);
-		}
-
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			log.trace("direction of parameter evaluation changed mode = {}",
-					mode);
-			sortMode = mode;
-		}
-
-	}
-
 	private class AddParameterAction extends Action {
 
 		public AddParameterAction() {
@@ -294,10 +222,11 @@ public class DatabaseParametersPage extends PreferencePage implements
 		@Override
 		public void run() {
 			Parameter parameter = new Parameter();
-			parameter.setType(ParameterType.DATABASE);
+			parameter.setScope(ParameterScope.GLOBAL);
 			String name = "p" + parameters.size();
 			parameter.setName(name);
 			parameters.add(parameter);
+			parameter.setValue(1.0);
 			parameterViewer.setInput(parameters);
 			parameterViewer.setSelection(new StructuredSelection(parameter));
 			updateCellEditors();

@@ -5,7 +5,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.openlca.core.model.Parameter;
 
-/** The label provider of the parameter table. */
+/** The label provider of the global parameter table. */
 class ParameterLabel extends LabelProvider implements ITableLabelProvider {
 
 	@Override
@@ -22,13 +22,11 @@ class ParameterLabel extends LabelProvider implements ITableLabelProvider {
 		case 0:
 			return parameter.getName();
 		case 1:
-			return parameter.getExpression().getFormula();
-		case 2:
-			Double result = parameter.getExpression().getValue();
+			Double result = parameter.getValue();
 			if (result != null)
 				return Double.toString(result);
 			return null;
-		case 3:
+		case 2:
 			return parameter.getDescription();
 		default:
 			return null;

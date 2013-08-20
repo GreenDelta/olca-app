@@ -64,7 +64,7 @@ public class FormulaTextCellEditor extends AutoCompleteTextCellEditor {
 				final Parameter parameter = (Parameter) element;
 				// name - value - description
 				String text = parameter.getName() + " - "
-						+ parameter.getExpression().getValue();
+						+ parameter.getValue();
 				if (parameter.getDescription() != null) {
 					text += " - ";
 					if (parameter.getDescription().length() > 75) {

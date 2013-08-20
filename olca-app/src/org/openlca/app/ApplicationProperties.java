@@ -72,12 +72,7 @@ public enum ApplicationProperties {
 	/**
 	 * Show outline
 	 */
-	PROP_OUTLINE("outline"),
-
-	/**
-	 * Sort direction of parameters
-	 */
-	PROP_PARAMETER_SORT_DIRECTION("psd");
+	PROP_OUTLINE("outline");
 
 	private static Logger log = LoggerFactory
 			.getLogger(ApplicationProperties.class);
@@ -131,10 +126,7 @@ public enum ApplicationProperties {
 	 */
 	private static String getDefaultValue(final String property) {
 		String defaultValue = null;
-		if (property.equals(PROP_PARAMETER_SORT_DIRECTION.key)) {
-			// sort direction default value = top down
-			defaultValue = Integer.toString(TOP_DOWN);
-		} else if (property.equals(PROP_NATIONAL_LANGUAGE.key)) {
+		if (property.equals(PROP_NATIONAL_LANGUAGE.key)) {
 			// english
 			defaultValue = Language.ENGLISH.getCode();
 		} else if (property.equals(PROP_DEFAULT_CALCULATION_METHOD.key)) {
