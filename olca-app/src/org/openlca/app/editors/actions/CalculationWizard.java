@@ -23,7 +23,6 @@ import org.openlca.core.editors.analyze.AnalyzeEditor;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.SystemCalculator;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.results.AnalysisResult;
 import org.openlca.core.results.InventoryResult;
 import org.slf4j.Logger;
@@ -87,12 +86,7 @@ class CalculationWizard extends Wizard {
 		private void analyse() {
 			log.trace("run analysis");
 			SystemCalculator calculator = new SystemCalculator(Database.get());
-			ImpactMethodDescriptor method = settings.getImpactMethod();
-			AnalysisResult analysisResult = null;
-			if (method != null)
-				analysisResult = calculator.analyse(productSystem);
-			else
-				analysisResult = calculator.analyse(productSystem, method);
+			AnalysisResult analysisResult = calculator.analyse(settings);
 			log.trace("calculation done, open editor");
 			String resultKey = App.getCache().put(analysisResult);
 			String setupKey = App.getCache().put(settings);
@@ -104,12 +98,7 @@ class CalculationWizard extends Wizard {
 		private void solve() {
 			log.trace("run quick calculation");
 			SystemCalculator calculator = new SystemCalculator(Database.get());
-			ImpactMethodDescriptor method = settings.getImpactMethod();
-			InventoryResult inventoryResult = null;
-			if (method != null)
-				inventoryResult = calculator.solve(productSystem);
-			else
-				inventoryResult = calculator.solve(productSystem, method);
+			InventoryResult inventoryResult = calculator.solve(settings);
 			log.trace("calculation done, open editor");
 			// openEditor(result);
 		}
