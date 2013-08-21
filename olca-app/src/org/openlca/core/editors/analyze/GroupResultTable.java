@@ -11,7 +11,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.openlca.app.Messages;
-import org.openlca.app.util.UI;
+import org.openlca.app.util.Tables;
 import org.openlca.core.editors.ContributionImage;
 import org.openlca.core.model.results.Contribution;
 import org.openlca.core.model.results.ProcessGrouping;
@@ -40,7 +40,7 @@ class GroupResultTable {
 			TableColumn column = new TableColumn(table, SWT.NONE);
 			column.setText(col);
 		}
-		UI.bindColumnWidths(table, 0.5, 0.25, 0.25);
+		Tables.bindColumnWidths(table, 0.5, 0.25, 0.25);
 	}
 
 	public TableViewer getViewer() {

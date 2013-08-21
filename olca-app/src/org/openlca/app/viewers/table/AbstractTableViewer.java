@@ -27,6 +27,7 @@ import org.openlca.app.Messages;
 import org.openlca.app.components.ModelTransfer;
 import org.openlca.app.resources.ImageManager;
 import org.openlca.app.resources.ImageType;
+import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
 import org.openlca.app.viewers.AbstractViewer;
@@ -41,7 +42,7 @@ import org.slf4j.LoggerFactory;
  * 
  * There are three extensions that can be implemented by annotating the methods
  * of impelementing classes. To enable creation and removal actions use
- * annotations {@link OnCreate} and {@link OnRemove}. The run methods of each
+ * annotations {@link OnAdd} and {@link OnRemove}. The run methods of each
  * action will call all annotated methods. Implementations are responsible to
  * update the input. To enable drop feature use {@link OnDrop} and specify the
  * type of accepted elements by the input parameter of the annotated method.
@@ -84,11 +85,11 @@ public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 		UI.gridData(table, true, true);
 
 		actions = new ArrayList<>();
-		if (supports(OnCreate.class))
+		if (supports(OnAdd.class))
 			actions.add(new CreateAction());
 		if (supports(OnRemove.class))
 			actions.add(new RemoveAction());
-		UI.bindActions(viewer, actions.toArray(new Action[actions.size()]));
+		Tables.bindActions(viewer, actions.toArray(new Action[actions.size()]));
 
 		if (supports(OnDrop.class))
 			addDropSupport(viewer);
@@ -213,9 +214,10 @@ public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 	private void call(Class<? extends Annotation> clazz) {
 		for (Method method : getMethods(clazz))
 			try {
+				method.setAccessible(true);
 				method.invoke(this);
 			} catch (Exception e) {
-				log.error("Cannot call onAdd method", e);
+				log.error("Cannot call method for " + clazz.getSimpleName(), e);
 			}
 	}
 
@@ -229,7 +231,7 @@ public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.METHOD)
-	protected @interface OnCreate {
+	protected @interface OnAdd {
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
@@ -254,7 +256,7 @@ public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 
 		@Override
 		public void run() {
-			call(OnCreate.class);
+			call(OnAdd.class);
 		}
 
 	}

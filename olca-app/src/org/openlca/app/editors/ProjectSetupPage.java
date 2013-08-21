@@ -13,7 +13,6 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AllocationMethodViewer;
 import org.openlca.app.viewers.combo.ImpactMethodViewer;
 import org.openlca.app.viewers.combo.NormalizationWeightingSetViewer;
-import org.openlca.app.viewers.table.ParameterViewer;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Project;
 
@@ -44,7 +43,7 @@ public class ProjectSetupPage extends ModelPage<Project> {
 					"Parameters for variant xyz" + i);
 			UI.gridData(section, true, true);
 			Composite client = UI.sectionClient(section, toolkit);
-			new ParameterViewer(client);
+			new ProcessParameterSection(client);
 			UI.bindActions(section, new AddParamAction());
 		}
 	}

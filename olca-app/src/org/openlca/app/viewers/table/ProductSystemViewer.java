@@ -37,7 +37,7 @@ public class ProductSystemViewer extends AbstractTableViewer<Long> {
 		}
 	}
 
-	@OnCreate
+	@OnAdd
 	protected void onCreate() {
 		BaseDescriptor[] descriptors = ObjectDialog
 				.multiSelect(ModelType.PRODUCT_SYSTEM);

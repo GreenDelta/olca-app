@@ -1,15 +1,11 @@
 package org.openlca.app.util;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.ToolBarManager;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.ProgressEvent;
 import org.eclipse.swt.browser.ProgressListener;
-import org.eclipse.swt.events.ControlAdapter;
-import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Point;
@@ -23,8 +19,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.ui.forms.HyperlinkSettings;
@@ -123,30 +117,6 @@ public class UI {
 		control.setFont(italicFont(control));
 	}
 
-	/**
-	 * Binds the given percentage values to the column widths of the given table
-	 */
-	public static void bindColumnWidths(final Table table,
-			final double... percents) {
-		if (table == null || percents == null)
-			return;
-		table.addControlListener(new ControlAdapter() {
-			@Override
-			public void controlResized(ControlEvent e) {
-				double width = table.getSize().x - 10;
-				if (width < 50)
-					return;
-				TableColumn[] columns = table.getColumns();
-				for (int i = 0; i < columns.length; i++) {
-					if (i >= percents.length)
-						break;
-					double colWidth = percents[i] * width;
-					columns[i].setWidth((int) colWidth);
-				}
-			}
-		});
-	}
-
 	public static void center(Shell parent, Shell child) {
 		Rectangle shellBounds = parent.getBounds();
 		Point size = child.getSize();
@@ -218,17 +188,6 @@ public class UI {
 			toolBar.add(action);
 		ToolBar control = toolBar.createControl(section);
 		section.setTextClient(control);
-	}
-
-	/** Creates a context menu with the given actions on the table viewer. */
-	public static void bindActions(TableViewer viewer, Action... actions) {
-		Table table = viewer.getTable();
-		if (table == null)
-			return;
-		MenuManager menu = new MenuManager();
-		for (Action action : actions)
-			menu.add(action);
-		table.setMenu(menu.createContextMenu(table));
 	}
 
 	public static Composite formBody(ScrolledForm form, FormToolkit toolkit) {

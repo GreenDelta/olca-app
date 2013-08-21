@@ -33,10 +33,10 @@ public class NormalizationWeightingFactorViewer extends
 			ImpactMethod impactMethod) {
 		super(parent);
 		this.method = impactMethod;
-		getCellModifySupport().support(LABEL.NORMALIZATION,
+		getCellModifySupport().bind(LABEL.NORMALIZATION,
 				new NormalizationModifier());
 		getCellModifySupport()
-				.support(LABEL.WEIGHTING, new WeightingModifier());
+				.bind(LABEL.WEIGHTING, new WeightingModifier());
 	}
 
 	public void setInput(NormalizationWeightingSet set) {

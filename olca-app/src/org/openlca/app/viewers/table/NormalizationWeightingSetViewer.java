@@ -18,9 +18,9 @@ public class NormalizationWeightingSetViewer extends
 
 	public NormalizationWeightingSetViewer(Composite parent) {
 		super(parent);
-		getCellModifySupport().support(LABEL.REFERENCE_SYSTEM,
+		getCellModifySupport().bind(LABEL.REFERENCE_SYSTEM,
 				new ReferenceSystemModifier());
-		getCellModifySupport().support(LABEL.UNIT, new UnitModifier());
+		getCellModifySupport().bind(LABEL.UNIT, new UnitModifier());
 	}
 
 	private interface LABEL {
@@ -53,7 +53,7 @@ public class NormalizationWeightingSetViewer extends
 		return COLUMN_HEADERS;
 	}
 
-	@OnCreate
+	@OnAdd
 	protected void onCreate() {
 		NormalizationWeightingSet set = new NormalizationWeightingSet();
 		set.setReferenceSystem("newSet");

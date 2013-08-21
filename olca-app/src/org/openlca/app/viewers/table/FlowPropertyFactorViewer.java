@@ -42,9 +42,9 @@ public class FlowPropertyFactorViewer extends
 
 	public FlowPropertyFactorViewer(Composite parent, Cache cache) {
 		super(parent);
-		getCellModifySupport().support(LABEL.CONVERSION_FACTOR,
+		getCellModifySupport().bind(LABEL.CONVERSION_FACTOR,
 				new ConversionFactorModifier());
-		getCellModifySupport().support(LABEL.IS_REFERENCE,
+		getCellModifySupport().bind(LABEL.IS_REFERENCE,
 				new ReferenceModifier());
 		this.cache = cache;
 	}
@@ -70,7 +70,7 @@ public class FlowPropertyFactorViewer extends
 		return COLUMN_HEADERS;
 	}
 
-	@OnCreate
+	@OnAdd
 	protected void onCreate() {
 		BaseDescriptor[] descriptors = ObjectDialog
 				.multiSelect(ModelType.FLOW_PROPERTY);

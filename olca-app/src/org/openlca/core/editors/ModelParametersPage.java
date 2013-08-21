@@ -26,6 +26,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.resources.ImageType;
+import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.UIFactory;
 import org.openlca.core.application.actions.DeleteWithQuestionAction;
@@ -117,7 +118,7 @@ public class ModelParametersPage extends ModelEditorPage implements
 		Action addAction = new AddParameterAction();
 		Action removeAction = new RemoveParameterAction();
 		UI.bindActions(section, addAction, removeAction);
-		UI.bindActions(paramViewer, addAction, removeAction);
+		Tables.bindActions(paramViewer, addAction, removeAction);
 	}
 
 	@Override

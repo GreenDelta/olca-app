@@ -13,11 +13,18 @@ import org.openlca.app.viewers.table.modify.ICellModifier.CellEditingType;
 
 import com.google.common.base.Objects;
 
+/**
+ * Provides an easy and type safe way to add cell editors to a table viewer. It
+ * is important that the viewer is configured with column properties that are
+ * used for the binding of cell modifiers. Thus, you have to call
+ * <code>viewer.setColumnProperties(aStringArray)</code> <b>before</b> you
+ * create the modify support.
+ */
 public class CellModifySupport<T> {
 
 	private Map<String, ICellModifier<T>> cellModifiers;
 	private CellEditor[] editors;
-	private String[] columnHeaders;
+	private String[] columnProperties;
 	private TableViewer viewer;
 
 	public CellModifySupport(TableViewer viewer) {
@@ -26,17 +33,20 @@ public class CellModifySupport<T> {
 	}
 
 	private void initCellEditors() {
-		columnHeaders = (String[]) viewer.getColumnProperties();
+		columnProperties = (String[]) viewer.getColumnProperties();
 		viewer.setCellModifier(new CellModifier());
-		editors = new CellEditor[columnHeaders.length];
+		editors = new CellEditor[columnProperties.length];
 		this.cellModifiers = new HashMap<>();
 		viewer.setCellEditors(editors);
 	}
 
-	public void support(String property, ICellModifier<T> modifier) {
+	/**
+	 * Binds the given modifier to the given property of the viewer.
+	 */
+	public void bind(String property, ICellModifier<T> modifier) {
 		int index = -1;
-		for (int i = 0; i < columnHeaders.length; i++)
-			if (Objects.equal(columnHeaders[i], property)) {
+		for (int i = 0; i < columnProperties.length; i++)
+			if (Objects.equal(columnProperties[i], property)) {
 				index = i;
 				break;
 			}
@@ -44,7 +54,7 @@ public class CellModifySupport<T> {
 		if (index == -1)
 			throw new IllegalArgumentException("Property " + property
 					+ " not found");
-		this.cellModifiers.put(columnHeaders[index], modifier);
+		this.cellModifiers.put(columnProperties[index], modifier);
 		switch (modifier.getCellEditingType()) {
 		case TEXTBOX:
 			editors[index] = new TextCellEditor(viewer.getTable());
@@ -62,8 +72,8 @@ public class CellModifySupport<T> {
 	}
 
 	private CellEditor getCellEditor(String property) {
-		for (int i = 0; i < columnHeaders.length; i++)
-			if (columnHeaders[i].equals(property))
+		for (int i = 0; i < columnProperties.length; i++)
+			if (columnProperties[i].equals(property))
 				return viewer.getCellEditors()[i];
 		return null;
 	}

@@ -43,10 +43,10 @@ public class ImpactFactorViewer extends AbstractTableViewer<ImpactFactor> {
 	public ImpactFactorViewer(Composite parent, IDatabase database) {
 		super(parent);
 		flowDao = new FlowDao(database);
-		getCellModifySupport().support(LABEL.FLOW_PROPERTY,
+		getCellModifySupport().bind(LABEL.FLOW_PROPERTY,
 				new FlowPropertyModifier());
-		getCellModifySupport().support(LABEL.UNIT, new UnitModifier());
-		getCellModifySupport().support(LABEL.FACTOR, new FactorModifier());
+		getCellModifySupport().bind(LABEL.UNIT, new UnitModifier());
+		getCellModifySupport().bind(LABEL.FACTOR, new FactorModifier());
 	}
 
 	public void setInput(ImpactCategory impactCategory) {
@@ -68,7 +68,7 @@ public class ImpactFactorViewer extends AbstractTableViewer<ImpactFactor> {
 		return COLUMN_HEADERS;
 	}
 
-	@OnCreate
+	@OnAdd
 	protected void onCreate() {
 		if (category != null) {
 			BaseDescriptor[] descriptors = ObjectDialog

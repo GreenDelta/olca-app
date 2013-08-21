@@ -7,7 +7,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.openlca.app.Messages;
-import org.openlca.app.util.UI;
+import org.openlca.app.util.Tables;
 
 /** Table viewer for process contributions. */
 class ProcessContributionViewer extends TableViewer {
@@ -41,7 +41,7 @@ class ProcessContributionViewer extends TableViewer {
 		table.setLinesVisible(true);
 		setContentProvider(ArrayContentProvider.getInstance());
 		setLabelProvider(new ProcessContributionLabel());
-		UI.bindColumnWidths(table, columnWidths);
+		Tables.bindColumnWidths(table, columnWidths);
 	}
 
 	private void createColumns() {

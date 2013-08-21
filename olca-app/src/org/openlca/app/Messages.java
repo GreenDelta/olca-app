@@ -591,6 +591,7 @@ public class Messages extends NLS {
 	public static String UsageOf;
 	public static String UsedInProcesses;
 	public static String Username;
+	public static String Value;
 	public static String ValueViewMode;
 	public static String Version;
 	public static String Warning;

@@ -16,10 +16,10 @@ public class ImpactCategoryViewer extends AbstractTableViewer<ImpactCategory> {
 
 	public ImpactCategoryViewer(Composite parent) {
 		super(parent);
-		getCellModifySupport().support(LABEL.NAME, new NameModifier());
-		getCellModifySupport().support(LABEL.DESCRIPTION,
+		getCellModifySupport().bind(LABEL.NAME, new NameModifier());
+		getCellModifySupport().bind(LABEL.DESCRIPTION,
 				new DescriptionModifier());
-		getCellModifySupport().support(LABEL.REFERENCE_UNIT,
+		getCellModifySupport().bind(LABEL.REFERENCE_UNIT,
 				new ReferenceUnitModifier());
 	}
 
@@ -54,7 +54,7 @@ public class ImpactCategoryViewer extends AbstractTableViewer<ImpactCategory> {
 		return COLUMN_HEADERS;
 	}
 
-	@OnCreate
+	@OnAdd
 	protected void onCreate() {
 		ImpactCategory category = new ImpactCategory();
 		category.setName("newImpactCategory");

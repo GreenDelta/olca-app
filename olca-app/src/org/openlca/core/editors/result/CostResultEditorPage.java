@@ -20,6 +20,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.core.editors.ContributionImage;
 
@@ -67,7 +68,7 @@ public class CostResultEditorPage extends FormPage {
 			TableColumn col = new TableColumn(table, SWT.NONE);
 			col.setText(property);
 		}
-		UI.bindColumnWidths(table, 0.5, 0.4, 0.1);
+		Tables.bindColumnWidths(table, 0.5, 0.4, 0.1);
 
 		viewer.setContentProvider(new ArrayContentProvider());
 		viewer.setLabelProvider(new LabelProvider());

@@ -25,6 +25,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.util.Numbers;
+import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.ProcessViewer;
@@ -195,7 +196,7 @@ public class ProcessResultPage extends FormPage {
 		viewer.setSorter(new ContributionSorter());
 		viewer.setFilters(new ViewerFilter[] { new CutOffFilter() });
 		UI.gridData(viewer.getTable(), true, true);
-		UI.bindColumnWidths(viewer.getTable(), new double[] { 0.20, 0.30, 0.20,
+		Tables.bindColumnWidths(viewer.getTable(), new double[] { 0.20, 0.30, 0.20,
 				0.20, 0.10 });
 	}
 

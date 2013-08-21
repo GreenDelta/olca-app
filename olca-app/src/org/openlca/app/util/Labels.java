@@ -105,12 +105,6 @@ public class Labels {
 		}
 	}
 
-	public static String allocationMethod(Process process) {
-		if (process == null)
-			return Messages.None;
-		return allocationMethod(process.getAllocationMethod());
-	}
-
 	public static String allocationMethod(AllocationMethod allocationMethod) {
 		if (allocationMethod == null)
 			return null;

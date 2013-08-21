@@ -38,6 +38,7 @@ import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Question;
+import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
 import org.openlca.core.model.Process;
@@ -151,7 +152,7 @@ class GroupPage extends FormPage {
 		groupData.widthHint = 250;
 		configureViewer(groupViewer);
 		groupViewer.setInput(groups);
-		UI.bindActions(groupViewer, new DeleteGroupAction());
+		Tables.bindActions(groupViewer, new DeleteGroupAction());
 		groupViewer
 				.addSelectionChangedListener(new ISelectionChangedListener() {
 					@Override

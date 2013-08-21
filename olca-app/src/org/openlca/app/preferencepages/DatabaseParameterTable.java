@@ -41,7 +41,6 @@ class DatabaseParameterTable {
 		createTableViewer(parent);
 		createColumns();
 		createEditors();
-
 	}
 
 	private void createTableViewer(Composite parent) {

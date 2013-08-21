@@ -39,13 +39,13 @@ public class UnitViewer extends AbstractTableViewer<Unit> {
 
 	public UnitViewer(Composite parent) {
 		super(parent);
-		getCellModifySupport().support(LABEL.NAME, new NameModifier());
-		getCellModifySupport().support(LABEL.DESCRIPTION,
+		getCellModifySupport().bind(LABEL.NAME, new NameModifier());
+		getCellModifySupport().bind(LABEL.DESCRIPTION,
 				new DescriptionModifier());
-		getCellModifySupport().support(LABEL.SYNONYMS, new SynonymsModifier());
-		getCellModifySupport().support(LABEL.CONVERSION_FACTOR,
+		getCellModifySupport().bind(LABEL.SYNONYMS, new SynonymsModifier());
+		getCellModifySupport().bind(LABEL.CONVERSION_FACTOR,
 				new ConversionFactorModifier());
-		getCellModifySupport().support(LABEL.IS_REFERENCE,
+		getCellModifySupport().bind(LABEL.IS_REFERENCE,
 				new ReferenceModifier());
 		getViewer().refresh(true);
 	}
@@ -70,7 +70,7 @@ public class UnitViewer extends AbstractTableViewer<Unit> {
 		return COLUMN_HEADERS;
 	}
 
-	@OnCreate
+	@OnAdd
 	protected void onCreate() {
 		Unit unit = new Unit();
 		unit.setName("newUnit");

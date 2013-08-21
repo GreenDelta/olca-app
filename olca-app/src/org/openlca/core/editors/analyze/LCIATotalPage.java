@@ -17,6 +17,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.util.Numbers;
+import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.results.AnalysisResult;
@@ -81,7 +82,7 @@ public class LCIATotalPage extends FormPage {
 		viewer.setColumnProperties(COLUMN_LABELS.VALUES);
 		viewer.setSorter(new ImpactViewerSorter());
 		UI.gridData(viewer.getTable(), true, true);
-		UI.bindColumnWidths(viewer.getTable(), COLUMN_WIDTHS);
+		Tables.bindColumnWidths(viewer.getTable(), COLUMN_WIDTHS);
 		return viewer;
 	}
 

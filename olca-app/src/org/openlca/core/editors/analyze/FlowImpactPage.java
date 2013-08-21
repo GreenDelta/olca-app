@@ -21,6 +21,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.Numbers;
+import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
@@ -110,7 +111,7 @@ public class FlowImpactPage extends FormPage {
 		flowViewer.setSorter(new ContributionSorter());
 		flowViewer.setFilters(new ViewerFilter[] { new CutOffFilter() });
 		UI.gridData(flowViewer.getTable(), true, true);
-		UI.bindColumnWidths(flowViewer.getTable(), new double[] { 0.17, 0.38,
+		Tables.bindColumnWidths(flowViewer.getTable(), new double[] { 0.17, 0.38,
 				0.17, 0.17, 0.10 });
 	}
 

@@ -14,7 +14,7 @@ import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.openlca.app.util.UI;
+import org.openlca.app.util.Tables;
 import org.openlca.core.model.ProductCostEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +59,7 @@ class ProcessCostViewer {
 			TableColumn col = new TableColumn(table, SWT.NONE);
 			col.setText(prop);
 		}
-		UI.bindColumnWidths(table, 0.5, 0.4, 0.1);
+		Tables.bindColumnWidths(table, 0.5, 0.4, 0.1);
 	}
 
 	private void addEditing() {

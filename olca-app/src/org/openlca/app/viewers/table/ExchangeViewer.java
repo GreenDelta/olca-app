@@ -77,10 +77,10 @@ public class ExchangeViewer extends AbstractTableViewer<Exchange> {
 		this.direction = direction;
 		this.types = types;
 
-		getCellModifySupport().support(LABEL.FLOW_PROPERTY,
+		getCellModifySupport().bind(LABEL.FLOW_PROPERTY,
 				new FlowPropertyModifier());
-		getCellModifySupport().support(LABEL.UNIT, new UnitModifier());
-		getCellModifySupport().support(LABEL.AMOUNT, new AmountModifier());
+		getCellModifySupport().bind(LABEL.UNIT, new UnitModifier());
+		getCellModifySupport().bind(LABEL.AMOUNT, new AmountModifier());
 	}
 
 	private boolean matches(FlowType type) {
@@ -123,7 +123,7 @@ public class ExchangeViewer extends AbstractTableViewer<Exchange> {
 		return new ExchangeLabelProvider();
 	}
 
-	@OnCreate
+	@OnAdd
 	protected void onCreate() {
 		BaseDescriptor[] descriptors = ObjectDialog.multiSelect(ModelType.FLOW,
 				new FlowTypeFilter());
