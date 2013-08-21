@@ -71,7 +71,7 @@ class ProcessParameterPage extends ModelPage<Process> {
 			}
 		});
 		table.setInput(params);
-		Tables.bindColumnWidths(table.getTable(), 0.4, 0.3, 0.4);
+		Tables.bindColumnWidths(table.getTable(), 0.4, 0.3);
 		section.setExpanded(false);
 	}
 
