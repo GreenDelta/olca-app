@@ -15,8 +15,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
-import org.openlca.app.resources.ImageManager;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Dialog;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
@@ -27,8 +26,6 @@ import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterScope;
 import org.openlca.core.model.Process;
 import org.openlca.util.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A section with a table for parameters in processes. It is possible to create
@@ -38,7 +35,6 @@ import org.slf4j.LoggerFactory;
  */
 class ProcessParameterSection {
 
-	private Logger log = LoggerFactory.getLogger(getClass());
 	private TableViewer viewer;
 
 	private final String NAME = Messages.Name;
@@ -92,9 +88,22 @@ class ProcessParameterSection {
 			Tables.bindColumnWidths(table, 0.4, 0.3, 0.3);
 		else
 			Tables.bindColumnWidths(table, 0.3, 0.3, 0.2, 0.2);
-		Action[] actions = { new AddAction(), new RemoveAction() };
-		UI.bindActions(section, actions);
-		Tables.bindActions(viewer, actions);
+		bindActions(section);
+	}
+
+	private void bindActions(Section section) {
+		Action addAction = Actions.createAdd(new Runnable() {
+			public void run() {
+				addParameter();
+			}
+		});
+		Action removeAction = Actions.createRemove(new Runnable() {
+			public void run() {
+				removeParameter();
+			}
+		});
+		Actions.bind(section, addAction, removeAction);
+		Actions.bind(viewer, addAction, removeAction);
 	}
 
 	private void createCellModifiers() {
@@ -128,49 +137,27 @@ class ProcessParameterSection {
 		viewer.setInput(input);
 	}
 
-	private class AddAction extends Action {
-		private AddAction() {
-			setText(Messages.AddAction_Text);
-			setImageDescriptor(ImageManager
-					.getImageDescriptor(ImageType.ADD_ICON));
-			setDisabledImageDescriptor(ImageManager
-					.getImageDescriptor(ImageType.ADD_ICON_DISABLED));
+	private void addParameter() {
+		Parameter parameter = new Parameter();
+		parameter.setName("p_" + process.getParameters().size());
+		parameter.setScope(ParameterScope.PROCESS);
+		parameter.setInputParameter(forInputParameters);
+		parameter.setValue(1.0);
+		if (!forInputParameters) {
+			parameter.setFormula("1.0");
 		}
-
-		@Override
-		public void run() {
-			Parameter parameter = new Parameter();
-			parameter.setName("p_" + process.getParameters().size());
-			parameter.setScope(ParameterScope.PROCESS);
-			parameter.setInputParameter(forInputParameters);
-			parameter.setValue(1.0);
-			if (!forInputParameters) {
-				parameter.setFormula("1.0");
-			}
-			process.getParameters().add(parameter);
-			setInput();
-			editor.setDirty(true);
-		}
+		process.getParameters().add(parameter);
+		setInput();
+		editor.setDirty(true);
 	}
 
-	private class RemoveAction extends Action {
-		private RemoveAction() {
-			setText(Messages.RemoveAction_Text);
-			setImageDescriptor(ImageManager
-					.getImageDescriptor(ImageType.DELETE_ICON));
-			setDisabledImageDescriptor(ImageManager
-					.getImageDescriptor(ImageType.DELETE_ICON_DISABLED));
+	private void removeParameter() {
+		List<Parameter> selection = Viewers.getAllSelected(viewer);
+		for (Parameter parameter : selection) {
+			process.getParameters().remove(parameter);
 		}
-
-		@Override
-		public void run() {
-			List<Parameter> selection = Viewers.getAllSelected(viewer);
-			for (Parameter parameter : selection) {
-				process.getParameters().remove(parameter);
-			}
-			setInput();
-			editor.setDirty(true);
-		}
+		setInput();
+		editor.setDirty(true);
 	}
 
 	private class ParameterLabelProvider extends LabelProvider implements

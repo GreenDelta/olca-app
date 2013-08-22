@@ -15,7 +15,7 @@
 	<classpathentry exported="true" kind="lib" path="libs/commons-compress-1.4.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-httpclient-3.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-io-2.4.jar" sourcepath="C:/Users/Besitzer/.m2/repository/commons-io/commons-io/2.4/commons-io-2.4-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/commons-lang3-3.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/commons-lang3-3.1.jar" sourcepath="C:/Users/Dell/.m2/repository/org/apache/commons/commons-lang3/3.1/commons-lang3-3.1-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-logging-1.1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-math3-3.1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/dom4j-1.6.1.jar"/>

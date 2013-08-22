@@ -37,8 +37,8 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.resources.ImageType;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Question;
-import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
 import org.openlca.core.model.Process;
@@ -135,7 +135,7 @@ class GroupPage extends FormPage {
 		groupingSection = UI.section(body, toolkit, Messages.Groups);
 		Composite composite = UI.sectionClient(groupingSection, toolkit);
 		UI.gridLayout(composite, 2);
-		UI.bindActions(groupingSection, new AddGroupAction(),
+		Actions.bind(groupingSection, new AddGroupAction(),
 				new SaveGroupSetAction(this), new OpenGroupSetAction(this));
 		createGroupViewer(composite);
 		processViewer = new TableViewer(composite, SWT.BORDER | SWT.MULTI);
@@ -152,7 +152,7 @@ class GroupPage extends FormPage {
 		groupData.widthHint = 250;
 		configureViewer(groupViewer);
 		groupViewer.setInput(groups);
-		Tables.bindActions(groupViewer, new DeleteGroupAction());
+		Actions.bind(groupViewer, new DeleteGroupAction());
 		groupViewer
 				.addSelectionChangedListener(new ISelectionChangedListener() {
 					@Override

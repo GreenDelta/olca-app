@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.resources.ImageType;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
 import org.openlca.core.database.IDatabase;
@@ -57,7 +58,7 @@ class ProcessCostSection implements IEditorComponent {
 	public void render(FormToolkit toolkit, Composite parent) {
 		Section section = UI.section(parent, toolkit, product.getFlow()
 				.getName());
-		UI.bindActions(section, new AddAction(), new RemoveAction());
+		Actions.bind(section, new AddAction(), new RemoveAction());
 		Composite client = UI.sectionClient(section, toolkit);
 		ProcessCostViewer costViewer = new ProcessCostViewer(editor);
 		costViewer.render(toolkit, client);

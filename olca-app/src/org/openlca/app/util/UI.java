@@ -1,7 +1,5 @@
 package org.openlca.app.util;
 
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.ProgressEvent;
@@ -20,7 +18,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.ui.forms.HyperlinkSettings;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
@@ -174,20 +171,15 @@ public class UI {
 		return section;
 	}
 
+	/**
+	 * Creates a composite and sets it as section client of the given section.
+	 * The created composite gets a 2-column grid-layout.
+	 */
 	public static Composite sectionClient(Section section, FormToolkit toolkit) {
 		Composite composite = toolkit.createComposite(section);
 		section.setClient(composite);
 		gridLayout(composite, 2);
 		return composite;
-	}
-
-	/** Creates buttons for the given actions in a section tool-bar. */
-	public static void bindActions(Section section, Action... actions) {
-		ToolBarManager toolBar = new ToolBarManager();
-		for (Action action : actions)
-			toolBar.add(action);
-		ToolBar control = toolBar.createControl(section);
-		section.setTextClient(control);
 	}
 
 	public static Composite formBody(ScrolledForm form, FormToolkit toolkit) {

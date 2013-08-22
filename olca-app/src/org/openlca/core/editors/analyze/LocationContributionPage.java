@@ -18,6 +18,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.html.HtmlPage;
 import org.openlca.app.html.IHtmlResource;
 import org.openlca.app.resources.ImageType;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
 import org.openlca.core.editors.FlowImpactSelection;
 import org.openlca.core.editors.FlowImpactSelection.EventHandler;
@@ -101,7 +102,7 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 	private void createBrowser(Composite body, FormToolkit toolkit) {
 		Section section = UI.section(body, toolkit, Messages.Map
 				+ " (beta)");
-		UI.bindActions(section, new RefreshMapAction());
+		Actions.bind(section, new RefreshMapAction());
 		GridData gridData = UI.gridData(section, true, false);
 		gridData.widthHint = 800;
 		gridData.heightHint = 500;

@@ -15,6 +15,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.AbstractViewer;
 import org.openlca.app.viewers.ISelectionChangedListener;
@@ -104,7 +105,7 @@ public class SimulationPage extends FormPage {
 		Section section = UI.section(body, toolkit, Messages.Results);
 		SimulationExportAction exportAction = new SimulationExportAction();
 		exportAction.configure(input, result);
-		UI.bindActions(section, exportAction);
+		Actions.bind(section, exportAction);
 		Composite composite = UI.sectionClient(section, toolkit);
 		initFlowCheckViewer(toolkit, composite);
 		if (result.hasImpactResults())

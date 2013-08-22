@@ -14,6 +14,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.AbstractViewer;
 import org.openlca.app.viewers.ISelectionChangedListener;
@@ -61,7 +62,7 @@ class ChartSection<T> {
 		Composite chartComposite = toolkit.createComposite(sectionClient);
 		UI.gridData(chartComposite, true, false);
 		chart = new ContributionChart(chartComposite, toolkit);
-		UI.bindActions(section, new ImageExportAction(sectionClient));
+		Actions.bind(section, new ImageExportAction(sectionClient));
 		refresh();
 	}
 

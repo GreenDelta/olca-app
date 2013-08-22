@@ -357,6 +357,7 @@ public class Messages extends NLS {
 	public static String Outputs;
 	public static String OverwriteFileQuestion;
 	public static String Parameter;
+	public static String Parameters;
 	public static String ParameterAlreadyDefined;
 	public static String ParametersPageLabel;
 	public static String ParametersPreferencePage_BottomUp;

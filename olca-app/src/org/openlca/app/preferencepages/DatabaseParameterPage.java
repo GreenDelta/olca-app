@@ -13,9 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.preference.PreferencePage;
-import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -27,7 +25,7 @@ import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.IDatabase;
@@ -41,12 +39,12 @@ public class DatabaseParameterPage extends PreferencePage implements
 		IWorkbenchPreferencePage {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
-	private AddParameterAction addParameterAction;
+	private Action addParameterAction;
+	private Action removeParameterAction;
 	private IDatabase database;
 
 	private List<Parameter> parameters = new ArrayList<>();
 
-	private RemoveParameterAction removeParameterAction;
 	private DatabaseParameterTable parameterTable;
 
 	@Override
@@ -88,12 +86,17 @@ public class DatabaseParameterPage extends PreferencePage implements
 	}
 
 	private void createActions(Section section) {
-		addParameterAction = new AddParameterAction();
-		removeParameterAction = new RemoveParameterAction();
-		final ToolBarManager parametersBar = new ToolBarManager();
-		parametersBar.add(addParameterAction);
-		parametersBar.add(removeParameterAction);
-		section.setTextClient(parametersBar.createControl(section));
+		addParameterAction = Actions.createAdd(new Runnable() {
+			public void run() {
+				addParameter();
+			}
+		});
+		removeParameterAction = Actions.createRemove(new Runnable() {
+			public void run() {
+				deleteParameter();
+			}
+		});
+		Actions.bind(section, addParameterAction, removeParameterAction);
 		parameterTable.setActions(addParameterAction, removeParameterAction);
 		removeParameterAction.setEnabled(false);
 		addParameterAction.setEnabled(false);
@@ -142,61 +145,39 @@ public class DatabaseParameterPage extends PreferencePage implements
 
 	}
 
-	private class AddParameterAction extends Action {
-
-		public AddParameterAction() {
-			setText(NLS.bind(Messages.AddAction_Text, Messages.Parameter));
-			setImageDescriptor(ImageType.ADD_ICON.getDescriptor());
-			setDisabledImageDescriptor(ImageType.ADD_ICON_DISABLED
-					.getDescriptor());
-		}
-
-		@Override
-		public void run() {
-			Parameter parameter = new Parameter();
-			parameter.setScope(ParameterScope.GLOBAL);
-			String name = "p" + parameters.size();
-			parameter.setName(name);
-			parameters.add(parameter);
-			parameter.setValue(1.0);
-			parameterTable.setInput(parameters);
-		}
+	private void addParameter() {
+		Parameter parameter = new Parameter();
+		parameter.setScope(ParameterScope.GLOBAL);
+		String name = "p" + parameters.size();
+		parameter.setName(name);
+		parameters.add(parameter);
+		parameter.setValue(1.0);
+		parameter.setInputParameter(true);
+		parameterTable.setInput(parameters);
 	}
 
-	private class RemoveParameterAction extends Action {
+	private void deleteParameter() {
+		Parameter parameter = parameterTable.getSelected();
+		if (parameter == null)
+			return;
+		boolean b = Question.ask("Delete paramater",
+				"Do you really want to delete parameter " + parameter.getName()
+						+ " from the database?");
+		if (!b)
+			return;
+		tryDelete(parameter);
+	}
 
-		public RemoveParameterAction() {
-			setText(NLS.bind(Messages.RemoveAction_Text, Messages.Parameter));
-			setImageDescriptor(ImageType.DELETE_ICON.getDescriptor());
-			setDisabledImageDescriptor(ImageType.DELETE_ICON_DISABLED
-					.getDescriptor());
-		}
-
-		@Override
-		public void run() {
-			Parameter parameter = parameterTable.getSelected();
-			if (parameter == null)
-				return;
-			boolean b = Question.ask(
-					"Delete paramater",
-					"Do you really want to delete parameter "
-							+ parameter.getName() + " from the database?");
-			if (!b)
-				return;
-			tryDelete(parameter);
-		}
-
-		private void tryDelete(Parameter parameter) {
-			try {
-				if (parameter.getId() > 0L) {
-					ParameterDao dao = new ParameterDao(database);
-					dao.delete(parameter);
-				}
-				parameters.remove(parameter);
-				parameterTable.setInput(parameters);
-			} catch (Exception e) {
-				log.error("failed to delete parameter " + parameter, e);
+	private void tryDelete(Parameter parameter) {
+		try {
+			if (parameter.getId() > 0L) {
+				ParameterDao dao = new ParameterDao(database);
+				dao.delete(parameter);
 			}
+			parameters.remove(parameter);
+			parameterTable.setInput(parameters);
+		} catch (Exception e) {
+			log.error("failed to delete parameter " + parameter, e);
 		}
 	}
 

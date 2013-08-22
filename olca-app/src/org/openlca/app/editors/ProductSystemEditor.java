@@ -28,6 +28,7 @@ public class ProductSystemEditor extends ModelEditor<ProductSystem> implements
 	protected void addPages() {
 		try {
 			addPage(new ProductSystemInfoPage(this));
+			addPage(new ProductSystemParameterPage(this));
 		} catch (Exception e) {
 			log.error("failed to add page", e);
 		}

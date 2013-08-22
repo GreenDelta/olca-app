@@ -96,6 +96,7 @@ public class ObjectDialog extends FormDialog {
 
 		UI.applyBoldFont(UI.formLabel(composite, form.getToolkit(),
 				"Filter by name"));
+
 		searchText = UI.formText(composite, SWT.SEARCH);
 		searchText.addModifyListener(new SearchTextModifyListener());
 
@@ -226,7 +227,7 @@ public class ObjectDialog extends FormDialog {
 		private boolean select(INavigationElement<?> element) {
 			if (element instanceof ModelElement)
 				return matches((ModelElement) element);
-			
+
 			for (INavigationElement<?> child : element.getChildren())
 				if (select(child))
 					return true;

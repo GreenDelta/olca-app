@@ -4,22 +4,19 @@ import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
 import org.openlca.app.Messages;
 import org.openlca.app.util.Dialog;
-import org.openlca.app.util.UI;
+import org.openlca.app.util.Tables;
 import org.openlca.app.util.Viewers;
 import org.openlca.core.model.Parameter;
 import org.slf4j.Logger;
@@ -28,7 +25,7 @@ import org.slf4j.LoggerFactory;
 class DatabaseParameterTable {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
-	private TableViewer parameterViewer;
+	private TableViewer viewer;
 	private Table table;
 
 	private final String NAME = Messages.Name;
@@ -39,50 +36,31 @@ class DatabaseParameterTable {
 
 	public DatabaseParameterTable(Composite parent) {
 		createTableViewer(parent);
-		createColumns();
 		createEditors();
 	}
 
 	private void createTableViewer(Composite parent) {
-		parameterViewer = new TableViewer(parent, SWT.BORDER
-				| SWT.FULL_SELECTION);
-		parameterViewer.setContentProvider(new ArrayContentProvider());
-		parameterViewer.setLabelProvider(new ParameterLabel());
-		parameterViewer.setColumnProperties(PROPERTIES);
-		table = parameterViewer.getTable();
+		viewer = Tables.createViewer(parent, PROPERTIES);
+		viewer.setLabelProvider(new ParameterLabel());
+		table = viewer.getTable();
 		table.setEnabled(false);
-		table.setLinesVisible(true);
-		table.setHeaderVisible(true);
-		UI.gridData(table, true, true);
-	}
-
-	private void createColumns() {
-		for (String p : PROPERTIES) {
-			TableColumn c = new TableColumn(table, SWT.NULL);
-			c.setText(p);
-		}
-		for (TableColumn c : table.getColumns()) {
-			if (c.getText().equals(NAME))
-				c.setWidth(150);
-			else
-				c.pack();
-		}
+		Tables.bindColumnWidths(table, 0.4, 0.3, 0.3);
 	}
 
 	private void createEditors() {
 		CellEditor[] editors = new CellEditor[PROPERTIES.length];
 		for (int i = 0; i < editors.length; i++)
 			editors[i] = new TextCellEditor(table);
-		parameterViewer.setCellModifier(new ParameterModifier());
-		parameterViewer.setCellEditors(editors);
+		viewer.setCellModifier(new ParameterModifier());
+		viewer.setCellEditors(editors);
 	}
 
 	public Parameter getSelected() {
-		return Viewers.getFirstSelected(parameterViewer);
+		return Viewers.getFirstSelected(viewer);
 	}
 
 	public void setInput(List<Parameter> parameters) {
-		parameterViewer.setInput(parameters);
+		viewer.setInput(parameters);
 	}
 
 	public void setActions(Action... actions) {
@@ -158,7 +136,7 @@ class DatabaseParameterTable {
 			log.trace("modify parameter {}", parameter);
 			log.trace("modify property {} with value {}", property, value);
 			setValue(property, (String) value, parameter);
-			parameterViewer.refresh();
+			viewer.refresh();
 		}
 
 		private void setValue(String property, String value, Parameter parameter) {

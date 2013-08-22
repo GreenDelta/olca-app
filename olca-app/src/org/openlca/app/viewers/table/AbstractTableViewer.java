@@ -27,7 +27,7 @@ import org.openlca.app.Messages;
 import org.openlca.app.components.ModelTransfer;
 import org.openlca.app.resources.ImageManager;
 import org.openlca.app.resources.ImageType;
-import org.openlca.app.util.Tables;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
 import org.openlca.app.viewers.AbstractViewer;
@@ -89,7 +89,7 @@ public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 			actions.add(new CreateAction());
 		if (supports(OnRemove.class))
 			actions.add(new RemoveAction());
-		Tables.bindActions(viewer, actions.toArray(new Action[actions.size()]));
+		Actions.bind(viewer, actions.toArray(new Action[actions.size()]));
 
 		if (supports(OnDrop.class))
 			addDropSupport(viewer);
@@ -162,7 +162,7 @@ public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 	 * section.
 	 */
 	public void bindTo(Section section) {
-		UI.bindActions(section, actions.toArray(new Action[actions.size()]));
+		Actions.bind(section, actions.toArray(new Action[actions.size()]));
 	}
 
 	@SuppressWarnings("unchecked")

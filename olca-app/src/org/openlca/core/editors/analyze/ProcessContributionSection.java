@@ -16,6 +16,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.resources.ImageType;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.AbstractViewer;
 import org.openlca.app.viewers.ISelectionChangedListener;
@@ -48,7 +49,7 @@ class ProcessContributionSection<T> {
 	public void render(Composite parent, FormToolkit toolkit) {
 		Section section = UI.section(parent, toolkit, sectionTitle);
 		UI.gridData(section, true, true);
-		UI.bindActions(section, new ExportAction());
+		Actions.bind(section, new ExportAction());
 		Composite composite = toolkit.createComposite(section);
 		section.setClient(composite);
 		UI.gridLayout(composite, 1);

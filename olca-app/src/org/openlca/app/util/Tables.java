@@ -1,7 +1,5 @@
 package org.openlca.app.util;
 
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
@@ -48,6 +46,10 @@ public class Tables {
 			c.pack();
 	}
 
+	public static void bindColumnWidths(TableViewer viewer, double... percents) {
+		bindColumnWidths(viewer.getTable(), percents);
+	}
+
 	/**
 	 * Binds the given percentage values (values between 0 and 1) to the column
 	 * widths of the given table
@@ -79,17 +81,6 @@ public class Tables {
 			}
 		});
 
-	}
-
-	/** Creates a context menu with the given actions on the table viewer. */
-	public static void bindActions(TableViewer viewer, Action... actions) {
-		Table table = viewer.getTable();
-		if (table == null)
-			return;
-		MenuManager menu = new MenuManager();
-		for (Action action : actions)
-			menu.add(action);
-		table.setMenu(menu.createContextMenu(table));
 	}
 
 }
