@@ -31,7 +31,7 @@ import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
 import org.openlca.app.viewers.AbstractViewer;
-import org.openlca.app.viewers.table.modify.CellModifySupport;
+import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.IModelChangedListener;
 import org.openlca.app.viewers.table.modify.IModelChangedListener.ModelChangeType;
 import org.slf4j.Logger;
@@ -52,7 +52,7 @@ public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private List<IModelChangedListener<T>> changeListener = new ArrayList<>();
 	private List<Action> actions;
-	private CellModifySupport<T> cellModifySupport;
+	private ModifySupport<T> cellModifySupport;
 
 	protected AbstractTableViewer(Composite parent) {
 		super(parent);
@@ -95,7 +95,7 @@ public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 			addDropSupport(viewer);
 
 		if (useColumnHeaders())
-			cellModifySupport = new CellModifySupport<>(viewer);
+			cellModifySupport = new ModifySupport<>(viewer);
 
 		return viewer;
 	}
@@ -140,7 +140,7 @@ public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 		});
 	}
 
-	protected CellModifySupport<T> getCellModifySupport() {
+	protected ModifySupport<T> getCellModifySupport() {
 		return cellModifySupport;
 	}
 

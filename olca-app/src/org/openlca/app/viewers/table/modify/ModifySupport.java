@@ -20,14 +20,14 @@ import com.google.common.base.Objects;
  * <code>viewer.setColumnProperties(aStringArray)</code> <b>before</b> you
  * create the modify support.
  */
-public class CellModifySupport<T> {
+public class ModifySupport<T> {
 
 	private Map<String, ICellModifier<T>> cellModifiers;
 	private CellEditor[] editors;
 	private String[] columnProperties;
 	private TableViewer viewer;
 
-	public CellModifySupport(TableViewer viewer) {
+	public ModifySupport(TableViewer viewer) {
 		this.viewer = viewer;
 		initCellEditors();
 	}

@@ -20,7 +20,7 @@ import org.openlca.app.util.Dialog;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
-import org.openlca.app.viewers.table.modify.CellModifySupport;
+import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterScope;
@@ -107,7 +107,7 @@ class ProcessParameterSection {
 	}
 
 	private void createCellModifiers() {
-		CellModifySupport<Parameter> modifySupport = new CellModifySupport<>(
+		ModifySupport<Parameter> modifySupport = new ModifySupport<>(
 				viewer);
 		modifySupport.bind(NAME, new NameModifier());
 		modifySupport.bind(DESCRIPTION, new DescriptionModifier());

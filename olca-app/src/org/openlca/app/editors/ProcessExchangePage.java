@@ -35,17 +35,23 @@ class ProcessExchangePage extends ModelPage<Process> {
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 
-		createExchangeSection(body, ExchangeViewer.INPUTS,
-				ExchangeViewer.ALL_TYPES, Messages.Inputs);
-		createExchangeSection(body, ExchangeViewer.OUTPUTS,
-				ExchangeViewer.ALL_TYPES, Messages.Outputs);
+		ExchangeViewer inputViewer = createExchangeSection(body,
+				ExchangeViewer.INPUTS, ExchangeViewer.ALL_TYPES,
+				Messages.Inputs);
+		ExchangeViewer outputViewer = createExchangeSection(body,
+				ExchangeViewer.OUTPUTS, ExchangeViewer.ALL_TYPES,
+				Messages.Outputs);
 
 		body.setFocus();
 		form.reflow(true);
+
+		getBinding().on(getModel(), "exchanges", inputViewer);
+		getBinding().on(getModel(), "exchanges", outputViewer);
+
 	}
 
-	private void createExchangeSection(Composite parent, int direction,
-			int types, String label) {
+	private ExchangeViewer createExchangeSection(Composite parent,
+			int direction, int types, String label) {
 		Section section = UI.section(parent, toolkit, label);
 		UI.gridData(section, true, true);
 		Composite composite = toolkit.createComposite(section);
@@ -55,6 +61,6 @@ class ProcessExchangePage extends ModelPage<Process> {
 		ExchangeViewer viewer = new ExchangeViewer(composite, Database.get(),
 				direction, types);
 		viewer.bindTo(section);
-		getBinding().on(getModel(), "exchanges", viewer);
+		return viewer;
 	}
 }

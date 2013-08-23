@@ -13,11 +13,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
-import org.openlca.app.db.Database;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.table.ProductSystemViewer;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Project;
 
@@ -40,7 +37,6 @@ class ProjectInfoPage extends ModelPage<Project> {
 
 		createGoalAndScopeSection(body);
 		createTimeInfoSection(body);
-		createProductSystemSection(body);
 
 		body.setFocus();
 		form.reflow(true);
@@ -63,18 +59,6 @@ class ProjectInfoPage extends ModelPage<Project> {
 				composite);
 		createDropComponent(Messages.Author, "author", ModelType.ACTOR,
 				composite);
-	}
-
-	private void createProductSystemSection(Composite parent) {
-		Section section = UI.section(parent, toolkit,
-				Messages.ProductSystemsInfoSectionLabel);
-		UI.gridData(section, true, true);
-		Composite client = UI.sectionClient(section, toolkit);
-
-		ProductSystemViewer viewer = new ProductSystemViewer(client,
-				Database.getCache());
-		viewer.bindTo(section);
-		getBinding().on(getModel(), "productSystems", viewer);
 	}
 
 }

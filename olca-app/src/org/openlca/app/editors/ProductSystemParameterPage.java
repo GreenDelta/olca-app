@@ -24,7 +24,7 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
-import org.openlca.app.viewers.table.modify.CellModifySupport;
+import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.database.Cache;
 import org.openlca.core.model.ParameterRedef;
@@ -67,7 +67,7 @@ public class ProductSystemParameterPage extends ModelPage<ProductSystem> {
 		viewer = Tables.createViewer(composite, new String[] { PROCESS,
 				PARAMETER, AMOUNT });
 		viewer.setLabelProvider(new LabelProvider());
-		CellModifySupport<ParameterRedef> modifySupport = new CellModifySupport<>(
+		ModifySupport<ParameterRedef> modifySupport = new ModifySupport<>(
 				viewer);
 		modifySupport.bind(AMOUNT, new AmountModifier());
 		Tables.bindColumnWidths(viewer, 0.4, 0.3, 0.3);
