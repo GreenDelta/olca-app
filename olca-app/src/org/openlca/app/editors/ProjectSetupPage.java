@@ -131,10 +131,20 @@ public class ProjectSetupPage extends ModelPage<Project> {
 		variants.add(variant);
 		variantViewer.setInput(variants);
 		editor.setDirty(true);
-		Section section = UI.section(body, toolkit, variant.getName());
-		UI.gridData(section, true, false).heightHint = 120;
-		parameterSections.add(Pair.of(variant, section));
+		createSection(variant);
 		form.reflow(true);
+	}
+
+	private void createSection(ProjectVariant variant) {
+		Section section = UI.section(body, toolkit, variant.getName());
+		Composite composite = UI.sectionClient(section, toolkit);
+		UI.gridLayout(composite, 1);
+		ParameterRedefTable table = new ParameterRedefTable(editor,
+				variant.getParameterRedefs());
+		table.create(toolkit, composite);
+		table.bindActions(section);
+		UI.gridData(table.getViewer().getTable(), true, false).heightHint = 120;
+		parameterSections.add(Pair.of(variant, section));
 	}
 
 	private void removeVariant() {
