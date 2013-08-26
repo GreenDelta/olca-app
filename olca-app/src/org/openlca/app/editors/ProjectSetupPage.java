@@ -1,10 +1,9 @@
 package org.openlca.app.editors;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-
-import javax.persistence.Entity;
-import javax.persistence.Table;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.jface.action.Action;
@@ -31,12 +30,12 @@ import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ProductSystemDao;
-import org.openlca.core.model.AbstractEntity;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.Project;
+import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,8 +49,7 @@ public class ProjectSetupPage extends ModelPage<Project> {
 
 	private IDatabase database = Database.get();
 
-	// TODO: live reference to the project - variant - list
-	private List<ProjectVariant> variants = new ArrayList<>();
+	private List<ProjectVariant> variants;
 	private TableViewer variantViewer;
 	private Composite body;
 	private List<Pair<ProjectVariant, Section>> parameterSections = new ArrayList<>();
@@ -60,6 +58,7 @@ public class ProjectSetupPage extends ModelPage<Project> {
 	public ProjectSetupPage(ProjectEditor editor) {
 		super(editor, "ProjectSetupPage", "Calculation setup");
 		this.editor = editor;
+		variants = editor.getModel().getVariants();
 	}
 
 	@Override
@@ -70,8 +69,20 @@ public class ProjectSetupPage extends ModelPage<Project> {
 		body = UI.formBody(form, toolkit);
 		createSettingsSection(body);
 		createVariantsSection(body);
-		// TODO initial input
+		initialInput();
 		form.reflow(true);
+	}
+
+	private void initialInput() {
+		Collections.sort(variants, new Comparator<ProjectVariant>() {
+			@Override
+			public int compare(ProjectVariant v1, ProjectVariant v2) {
+				return Strings.compare(v1.getName(), v2.getName());
+			}
+		});
+		variantViewer.setInput(variants);
+		for (ProjectVariant variant : variants)
+			createSection(variant);
 	}
 
 	private void createSettingsSection(Composite body) {
@@ -206,37 +217,6 @@ public class ProjectSetupPage extends ModelPage<Project> {
 					return null;
 			}
 		}
-	}
-
-	// TODO: move this to the core model
-	@Entity
-	@Table(name = "tbl_project_variants")
-	static class ProjectVariant extends AbstractEntity {
-
-		private String name;
-		private ProductSystem productSystem;
-		private List<ParameterRedef> parameterRedefs = new ArrayList<>();
-
-		public String getName() {
-			return name;
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
-
-		public ProductSystem getProductSystem() {
-			return productSystem;
-		}
-
-		public void setProductSystem(ProductSystem productSystem) {
-			this.productSystem = productSystem;
-		}
-
-		public List<ParameterRedef> getParameterRedefs() {
-			return parameterRedefs;
-		}
-
 	}
 
 }
