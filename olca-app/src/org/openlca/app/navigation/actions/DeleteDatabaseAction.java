@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.osgi.util.NLS;
@@ -39,7 +40,7 @@ public class DeleteDatabaseAction extends Action implements INavigationAction {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
-	private List<IDatabaseConfiguration> config;
+	private List<IDatabaseConfiguration> configs;
 
 	public DeleteDatabaseAction() {
 		setImageDescriptor(ImageType.DELETE_ICON.getDescriptor());
@@ -52,7 +53,7 @@ public class DeleteDatabaseAction extends Action implements INavigationAction {
 		if (!(element instanceof DatabaseElement))
 			return false;
 		DatabaseElement e = (DatabaseElement) element;
-		config = Collections.singletonList(e.getContent());
+		configs = Collections.singletonList(e.getContent());
 		return true;
 	}
 
@@ -65,7 +66,7 @@ public class DeleteDatabaseAction extends Action implements INavigationAction {
 			DatabaseElement e = (DatabaseElement) element;
 			config.add(e.getContent());
 		}
-		this.config = config;
+		this.configs = config;
 		return true;
 	}
 
@@ -76,36 +77,43 @@ public class DeleteDatabaseAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		if (createMessageDialog().open() != 0)
+		if (configs == null || configs.isEmpty())
 			return;
-
-		for (IDatabaseConfiguration config : this.config) {
-			if (Database.isActive(config))
-				try {
-					Editors.closeAll();
-					Database.close();
-				} catch (Exception e) {
-					log.error("Failed to close database", e);
-					continue;
-				}
-			// TODO: really delete database
-			if (config instanceof DerbyConfiguration) {
-				String path = ((DerbyConfiguration) config).getFolder()
-						+ File.separator + config.getName();
-				File folder = new File(path);
-				if (folder.isDirectory()) {
-					deleteDatabaseFolder(folder);
-				}
-				Database.remove((DerbyConfiguration) config);
-			} else if (config instanceof MySQLConfiguration) {
-				Database.remove((MySQLConfiguration) config);
+		if (createMessageDialog().open() != MessageDialog.OK)
+			return;
+		for (IDatabaseConfiguration config : this.configs) {
+			try {
+				tryDelete(config);
+			} catch (Exception e) {
+				log.error("failed to delete database {}", config);
 			}
 		}
 		Navigator.refresh();
 	}
 
+	private void tryDelete(IDatabaseConfiguration config) throws Exception {
+		if (Database.isActive(config)) {
+			Editors.closeAll();
+			Database.close();
+		}
+		if (config instanceof DerbyConfiguration)
+			deleteDerbyDatabase(config);
+		else if (config instanceof MySQLConfiguration)
+			Database.remove((MySQLConfiguration) config);
+	}
+
+	private void deleteDerbyDatabase(IDatabaseConfiguration config)
+			throws Exception {
+		String path = ((DerbyConfiguration) config).getFolder()
+				+ File.separator + config.getName();
+		File folder = new File(path);
+		if (folder.isDirectory())
+			FileUtils.deleteDirectory(folder);
+		Database.remove((DerbyConfiguration) config);
+	}
+
 	private MessageDialog createMessageDialog() {
-		String name = config.size() == 1 ? config.get(0).getName()
+		String name = configs.size() == 1 ? configs.get(0).getName()
 				: "the selected databases";
 		return new MessageDialog(UI.shell(), Messages.Delete, null, NLS.bind(
 				Messages.NavigationView_DeleteQuestion, name),
@@ -115,31 +123,4 @@ public class DeleteDatabaseAction extends Action implements INavigationAction {
 				MessageDialog.CANCEL);
 	}
 
-	private boolean deleteDatabaseFolder(File file) {
-
-		File[] flist = null;
-
-		if (file == null) {
-			return false;
-		}
-
-		if (file.isFile()) {
-			return file.delete();
-		}
-
-		if (!file.isDirectory()) {
-			return false;
-		}
-
-		flist = file.listFiles();
-		if (flist != null && flist.length > 0) {
-			for (File f : flist) {
-				if (!deleteDatabaseFolder(f)) {
-					return false;
-				}
-			}
-		}
-
-		return file.delete();
-	}
 }

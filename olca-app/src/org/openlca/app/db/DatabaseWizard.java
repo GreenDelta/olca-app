@@ -66,25 +66,12 @@ public class DatabaseWizard extends Wizard implements IRunnableWithProgress {
 	public void run(IProgressMonitor monitor) throws InvocationTargetException,
 			InterruptedException {
 		monitor.beginTask(Messages.NewDatabase_Create, IProgressMonitor.UNKNOWN);
-		IDatabaseConfiguration configuration = null;
-		if (data instanceof DerbyPageData) {
-			DerbyConfiguration config = new DerbyConfiguration();
-			config.setFolder(new File(data.directory, ""));
-			config.setName(data.databaseName);
-			Database.register(config);
-			configuration = config;
-		} else if (data instanceof MySQLPageData) {
-			MySQLPageData mysqlData = (MySQLPageData) data;
-			MySQLConfiguration config = new MySQLConfiguration();
-			config.setHost(mysqlData.host);
-			config.setPort(mysqlData.port);
-			config.setUser(mysqlData.user);
-			config.setPassword(mysqlData.password);
-			config.setName(mysqlData.databaseName);
-			Database.register(config);
-			configuration = config;
-		}
 		try {
+			IDatabaseConfiguration configuration = null;
+			if (data instanceof DerbyPageData)
+				configuration = createDerbyConfig();
+			else if (data instanceof MySQLPageData)
+				configuration = createMySQLConfig();
 			Database.close();
 			IDatabase database = Database.activate(configuration);
 			fillContent(database);
@@ -94,6 +81,26 @@ public class DatabaseWizard extends Wizard implements IRunnableWithProgress {
 		Navigator.refresh();
 		App.getEventBus().post(new DatabaseCreatedEvent(Database.get()));
 		monitor.done();
+	}
+
+	private MySQLConfiguration createMySQLConfig() {
+		MySQLPageData mysqlData = (MySQLPageData) data;
+		MySQLConfiguration config = new MySQLConfiguration();
+		config.setHost(mysqlData.host);
+		config.setPort(mysqlData.port);
+		config.setUser(mysqlData.user);
+		config.setPassword(mysqlData.password);
+		config.setName(mysqlData.databaseName);
+		Database.register(config);
+		return config;
+	}
+
+	private DerbyConfiguration createDerbyConfig() {
+		DerbyConfiguration config = new DerbyConfiguration();
+		config.setFolder(new File(data.directory, ""));
+		config.setName(data.databaseName);
+		Database.register(config);
+		return config;
 	}
 
 	private void fillContent(IDatabase database) {
