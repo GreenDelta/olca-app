@@ -25,6 +25,7 @@ import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
+import org.openlca.core.database.Cache;
 import org.openlca.core.editors.ContributionImage;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.descriptors.FlowDescriptor;
@@ -39,6 +40,7 @@ public class FlowImpactPage extends FormPage {
 	private final static String[] COLUMN_LABELS = { "Contribution", "Flow",
 			"Total amount", "Single amount", "Unit" };
 
+	private Cache cache = Database.getCache();
 	private AnalysisResult result;
 	private ImpactCategoryViewer impactCategoryViewer;
 	private TableViewer flowViewer;
@@ -69,7 +71,8 @@ public class FlowImpactPage extends FormPage {
 		UI.gridLayout(selectionContainer, 5);
 		UI.formLabel(selectionContainer, toolkit, "Impact category");
 		impactCategoryViewer = new ImpactCategoryViewer(selectionContainer);
-		impactCategoryViewer.setInput(result);
+		impactCategoryViewer.setInput(result.getImpactResults().getImpacts(
+				cache));
 		impactCategoryViewer
 				.addSelectionChangedListener(new ISelectionChangedListener<ImpactCategoryDescriptor>() {
 
@@ -111,8 +114,8 @@ public class FlowImpactPage extends FormPage {
 		flowViewer.setSorter(new ContributionSorter());
 		flowViewer.setFilters(new ViewerFilter[] { new CutOffFilter() });
 		UI.gridData(flowViewer.getTable(), true, true);
-		Tables.bindColumnWidths(flowViewer.getTable(), new double[] { 0.17, 0.38,
-				0.17, 0.17, 0.10 });
+		Tables.bindColumnWidths(flowViewer.getTable(), new double[] { 0.17,
+				0.38, 0.17, 0.17, 0.10 });
 	}
 
 	private double getSingleAmount(Contribution<Flow> flowContribution) {
@@ -120,10 +123,8 @@ public class FlowImpactPage extends FormPage {
 	}
 
 	private double getTotalAmount() {
-		return result
-				.getImpactResult(result.getSetup().getReferenceProcess(),
-						impactCategoryViewer.getSelected(), null)
-				.getAggregatedResult().getValue();
+		return result.getImpactResults().getTotalResult(
+				impactCategoryViewer.getSelected());
 	}
 
 	private double getContribution(Contribution<Flow> flowContribution) {

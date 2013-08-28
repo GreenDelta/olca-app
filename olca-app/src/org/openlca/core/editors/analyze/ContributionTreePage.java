@@ -16,26 +16,26 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.db.Database;
+import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
+import org.openlca.core.database.Cache;
 import org.openlca.core.editors.ContributionImage;
 import org.openlca.core.editors.FlowImpactSelection;
 import org.openlca.core.editors.FlowImpactSelection.EventHandler;
-import org.openlca.core.editors.model.FlowInfo;
-import org.openlca.core.model.Flow;
+import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.core.model.results.AnalysisResult;
-import org.openlca.core.model.results.ContributionTree;
-import org.openlca.core.model.results.ContributionTreeCalculator;
-import org.openlca.core.model.results.ContributionTreeNode;
-import org.openlca.core.model.results.LinkContributions;
+import org.openlca.core.results.AnalysisResult;
+import org.openlca.core.results.ContributionTree;
+import org.openlca.core.results.ContributionTreeNode;
 
 public class ContributionTreePage extends FormPage {
 
+	private Cache cache = Database.getCache();
 	private AnalyzeEditor editor;
 	private AnalysisResult result;
 	private TreeViewer contributionTree;
-	private ContributionTreeCalculator calculator;
 	private Object selection;
 
 	private static final String[] HEADERS = { "Contribution", "Process",
@@ -45,11 +45,6 @@ public class ContributionTreePage extends FormPage {
 		super(editor, "analysis.ContributionTreePage", "Contribution tree");
 		this.editor = editor;
 		this.result = result;
-		LinkContributions linkContributions = LinkContributions.calculate(
-				result.getSetup().getProductSystem(), result.getProductIndex(),
-				result.getScalingFactors());
-		this.calculator = new ContributionTreeCalculator(result,
-				linkContributions);
 	}
 
 	@Override
@@ -61,7 +56,7 @@ public class ContributionTreePage extends FormPage {
 
 		Composite composite = toolkit.createComposite(body);
 		UI.gridLayout(composite, 2);
-		FlowImpactSelection.onDatabase(Database.get())
+		FlowImpactSelection.onCache(Database.getCache())
 				.withAnalysisResult(result)
 				.withEventHandler(new SelectionHandler())
 				.create(composite, toolkit);
@@ -89,25 +84,39 @@ public class ContributionTreePage extends FormPage {
 		toolkit.paintBordersFor(contributionTree.getTree());
 
 		form.reflow(true);
-		selection = result.getFlows()[0];
-		contributionTree.setInput(calculator.calculate(result.getFlows()[0]));
+
+		initInput();
+
 		for (TreeColumn column : contributionTree.getTree().getColumns())
 			column.pack();
+	}
+
+	private void initInput() {
+		if (result.getFlowIndex().isEmpty())
+			return;
+		long flowId = result.getFlowIndex().getFlowAt(0);
+		FlowDescriptor flow = cache.getFlowDescriptor(flowId);
+		selection = flow;
+		ContributionTree tree = result.getContributions().getTree(flow);
+		contributionTree.setInput(tree);
 	}
 
 	private class SelectionHandler implements EventHandler {
 
 		@Override
-		public void flowSelected(Flow flow) {
+		public void flowSelected(FlowDescriptor flow) {
 			selection = flow;
-			contributionTree.setInput(calculator.calculate(flow));
+			ContributionTree tree = result.getContributions().getTree(flow);
+			contributionTree.setInput(tree);
 		}
 
 		@Override
 		public void impactCategorySelected(
 				ImpactCategoryDescriptor impactCategory) {
 			selection = impactCategory;
-			contributionTree.setInput(calculator.calculate(impactCategory));
+			ContributionTree tree = result.getContributions().getTree(
+					impactCategory);
+			contributionTree.setInput(tree);
 		}
 
 	}
@@ -177,7 +186,9 @@ public class ContributionTreePage extends FormPage {
 			case 0:
 				return Numbers.percent(getContribution(node));
 			case 1:
-				return node.getProcess().getName();
+				long processId = node.getProcessProduct().getFirst();
+				BaseDescriptor d = cache.getProcessDescriptor(processId);
+				return Labels.getDisplayName(d);
 			case 2:
 				return Numbers.format(getSingleAmount(node));
 			case 3:
@@ -188,9 +199,9 @@ public class ContributionTreePage extends FormPage {
 		}
 
 		private String getUnit() {
-			if (selection instanceof Flow) {
-				FlowInfo info = editor.getFlowInfo((Flow) selection);
-				return info.getUnit();
+			if (selection instanceof FlowDescriptor) {
+				FlowDescriptor flow = (FlowDescriptor) selection;
+				return Labels.getRefUnit(flow, cache);
 			} else if (selection instanceof ImpactCategoryDescriptor)
 				return ((ImpactCategoryDescriptor) selection)
 						.getReferenceUnit();

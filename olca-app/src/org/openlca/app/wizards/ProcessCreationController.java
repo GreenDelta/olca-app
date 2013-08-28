@@ -112,6 +112,7 @@ class ProcessCreationController {
 
 	private void addQuantitativeReference(Process process, Flow flow) {
 		Exchange qRef = new Exchange();
+		qRef.setAmountValue(1.0);
 		qRef.setFlow(flow);
 		FlowProperty refProp = flow.getReferenceFlowProperty();
 		qRef.setFlowPropertyFactor(flow.getReferenceFactor());

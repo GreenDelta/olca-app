@@ -1,6 +1,7 @@
 package org.openlca.app.util;
 
 import org.openlca.app.Messages;
+import org.openlca.core.database.Cache;
 import org.openlca.core.database.DatabaseContent;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.Flow;
@@ -10,7 +11,10 @@ import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.UncertaintyDistributionType;
+import org.openlca.core.model.Unit;
+import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.FlowDescriptor;
 
 public class Labels {
 
@@ -18,11 +22,32 @@ public class Labels {
 	}
 
 	public static String getDisplayName(BaseDescriptor descriptor) {
+		// TODO: location infos for processes & flows
+		if (descriptor == null)
+			return "";
 		return descriptor.getName();
 	}
 
 	public static String getDisplayInfoText(BaseDescriptor descriptor) {
+		if (descriptor == null)
+			return "";
 		return descriptor.getDescription();
+	}
+
+	public static String getRefUnit(FlowDescriptor flow, Cache cache) {
+		if (flow == null)
+			return "";
+		FlowProperty refProp = cache.getFlowProperty(flow
+				.getRefFlowPropertyId());
+		if (refProp == null)
+			return "";
+		UnitGroup unitGroup = refProp.getUnitGroup();
+		if (unitGroup == null)
+			return "";
+		Unit unit = unitGroup.getReferenceUnit();
+		if (unit == null)
+			return "";
+		return unit.getName();
 	}
 
 	public static String getEnumText(Object enumValue) {

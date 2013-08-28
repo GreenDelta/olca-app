@@ -1,6 +1,6 @@
 package org.openlca.app.viewers.combo;
 
-import java.util.List;
+import java.util.Collection;
 
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
@@ -46,7 +46,7 @@ public class ImpactCategoryViewer extends
 		return COLUMN_HEADERS;
 	}
 
-	public void setInput(List<ImpactCategoryDescriptor> categories) {
+	public void setInput(Collection<ImpactCategoryDescriptor> categories) {
 		setInput(categories.toArray(new ImpactCategoryDescriptor[categories
 				.size()]));
 	}
