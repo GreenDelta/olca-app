@@ -9,6 +9,7 @@
  ******************************************************************************/
 package org.openlca.app.navigation.actions;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -88,21 +89,57 @@ public class DeleteDatabaseAction extends Action implements INavigationAction {
 					continue;
 				}
 			// TODO: really delete database
-			if (config instanceof DerbyConfiguration)
+			if (config instanceof DerbyConfiguration) {
+				String path = ((DerbyConfiguration) config).getFolder()
+						+ File.separator + config.getName();
+				File folder = new File(path);
+				if (folder.isDirectory()) {
+					deleteDatabaseFolder(folder);
+				}
 				Database.remove((DerbyConfiguration) config);
-			else if (config instanceof MySQLConfiguration)
+			} else if (config instanceof MySQLConfiguration) {
 				Database.remove((MySQLConfiguration) config);
+			}
 		}
 		Navigator.refresh();
 	}
 
-	private MessageDialog createMessageDialog() { 
-		String name = config.size() == 1 ? config.get(0).getName() : "the selected databases";
+	private MessageDialog createMessageDialog() {
+		String name = config.size() == 1 ? config.get(0).getName()
+				: "the selected databases";
 		return new MessageDialog(UI.shell(), Messages.Delete, null, NLS.bind(
 				Messages.NavigationView_DeleteQuestion, name),
 				MessageDialog.QUESTION, new String[] {
 						Messages.NavigationView_YesButton,
 						Messages.NavigationView_NoButton, },
 				MessageDialog.CANCEL);
+	}
+
+	private boolean deleteDatabaseFolder(File file) {
+
+		File[] flist = null;
+
+		if (file == null) {
+			return false;
+		}
+
+		if (file.isFile()) {
+			return file.delete();
+		}
+
+		if (!file.isDirectory()) {
+			return false;
+		}
+
+		flist = file.listFiles();
+		if (flist != null && flist.length > 0) {
+			for (File f : flist) {
+				if (!deleteDatabaseFolder(f)) {
+					return false;
+				}
+			}
+		}
+
+		return file.delete();
 	}
 }

@@ -14,6 +14,7 @@ import org.openlca.app.db.DatabaseWizardPage.MySQLPageData;
 import org.openlca.app.db.DatabaseWizardPage.PageData;
 import org.openlca.app.events.DatabaseCreatedEvent;
 import org.openlca.app.navigation.Navigator;
+import org.openlca.app.util.Editors;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.DatabaseContent;
 import org.openlca.core.database.IDatabase;
@@ -44,6 +45,7 @@ public class DatabaseWizard extends Wizard implements IRunnableWithProgress {
 	@Override
 	public boolean performFinish() {
 		try {
+			Editors.closeAll();
 			data = page.getPageData();
 			getContainer().run(true, false, this);
 			Navigator.refresh();
@@ -67,7 +69,7 @@ public class DatabaseWizard extends Wizard implements IRunnableWithProgress {
 		IDatabaseConfiguration configuration = null;
 		if (data instanceof DerbyPageData) {
 			DerbyConfiguration config = new DerbyConfiguration();
-			config.setFolder(new File(App.getWorkspace(), "databases"));
+			config.setFolder(new File(data.directory, ""));
 			config.setName(data.databaseName);
 			Database.register(config);
 			configuration = config;

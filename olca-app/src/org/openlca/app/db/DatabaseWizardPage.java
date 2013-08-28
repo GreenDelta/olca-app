@@ -1,5 +1,7 @@
 package org.openlca.app.db;
 
+import java.io.File;
+
 import org.eclipse.jface.dialogs.DialogPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -17,6 +19,7 @@ import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Labels;
@@ -102,6 +105,8 @@ class DatabaseWizardPage extends WizardPage {
 		UI.gridLayout(browseComposite, 2, 10, 0);
 
 		pathText = UI.formText(browseComposite, null);
+		pathText.setText(App.getWorkspace().getAbsolutePath() + File.separator
+				+ "databases");
 		Button browseButton = new Button(browseComposite, SWT.NONE);
 		browseButton.setText("Browse...");
 
@@ -112,7 +117,11 @@ class DatabaseWizardPage extends WizardPage {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				DirectoryDialog dialog = new DirectoryDialog(new Shell());
-				pathText.setText(dialog.open());
+				String dialogPath = dialog.open();
+				if (dialogPath != null) {
+					pathText.setText(dialogPath);
+				}
+				validateInput();
 			}
 		});
 	}
@@ -201,8 +210,13 @@ class DatabaseWizardPage extends WizardPage {
 	}
 
 	private boolean exists(String name) {
-		// TODO check if exists
-		return false;
+		String path = pathText.getText() + File.separator + name;
+		File file = new File(path);
+		if (file.isDirectory()) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	PageData getPageData() {
@@ -224,6 +238,7 @@ class DatabaseWizardPage extends WizardPage {
 			mData.password = getText(passwordText);
 			data = mData;
 		}
+		data.directory = pathText.getText().trim().toLowerCase();
 		data.databaseName = nameText.getText().trim().toLowerCase();
 		return data;
 	}
@@ -233,6 +248,7 @@ class DatabaseWizardPage extends WizardPage {
 	}
 
 	class PageData {
+		String directory;
 		String databaseName;
 	}
 
