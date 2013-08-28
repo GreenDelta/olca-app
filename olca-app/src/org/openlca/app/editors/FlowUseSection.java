@@ -22,6 +22,7 @@ import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.Descriptors;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,8 +60,8 @@ class FlowUseSection {
 	private List<ProcessDescriptor> getProcesses(boolean forInput) {
 		FlowDao dao = new FlowDao(database);
 		if (forInput)
-			return dao.getRecipients(flow);
-		return dao.getProviders(flow);
+			return dao.getRecipients(Descriptors.toDescriptor(flow));
+		return dao.getProviders(Descriptors.toDescriptor(flow));
 	}
 
 	private void renderLinks(String label, List<ProcessDescriptor> descriptors,
