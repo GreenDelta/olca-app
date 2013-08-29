@@ -73,7 +73,7 @@ public class AnalyzeEditor extends FormEditor {
 			if (result.hasImpactResults())
 				addPage(new FlowImpactPage(this, result));
 			addPage(new ContributionTreePage(this, result));
-			// addPage(new GroupPage(this, result));
+			addPage(new GroupPage(this, result));
 			// addPage(new LocationContributionPage(this, result));
 			// if (FeatureFlag.SUNBURST_CHART.isEnabled())
 			// addPage(new SunBurstView(this, result));

@@ -41,12 +41,13 @@ import org.openlca.app.util.Actions;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
-import org.openlca.core.model.Process;
+import org.openlca.core.database.Cache;
+import org.openlca.core.model.Location;
 import org.openlca.core.model.ProcessGroup;
 import org.openlca.core.model.ProcessGroupSet;
-import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.results.AnalysisResult;
-import org.openlca.core.model.results.ProcessGrouping;
+import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.core.results.AnalysisResult;
+import org.openlca.core.results.ProcessGrouping;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,6 +60,7 @@ class GroupPage extends FormPage {
 	AnalyzeEditor editor;
 	AnalysisResult result;
 
+	private Cache cache = Database.getCache();
 	private TableViewer groupViewer;
 	private TableViewer processViewer;
 	private Menu groupMoveMenu;
@@ -74,22 +76,20 @@ class GroupPage extends FormPage {
 
 	private void initGroups(AnalysisResult result) {
 		groups = new ArrayList<>();
-		ProductSystem system = result.getSetup().getProductSystem();
 		ProcessGrouping restGroup = new ProcessGrouping();
 		restGroup.setName(Messages.Rest);
 		restGroup.setRest(true);
-		for (Process p : system.getProcesses())
+		for (ProcessDescriptor p : result.getFlowResults().getProcesses(cache))
 			restGroup.getProcesses().add(p);
 		groups.add(restGroup);
 	}
 
 	public void applyGrouping(ProcessGroupSet groupSet) {
-		if (groupSet == null || result == null
-				|| result.getSetup().getProductSystem() == null)
+		if (groupSet == null || result == null)
 			return;
 		this.groupSet = groupSet;
-		List<Process> processes = new ArrayList<>();
-		for (Process p : result.getSetup().getProductSystem().getProcesses())
+		List<ProcessDescriptor> processes = new ArrayList<>();
+		for (ProcessDescriptor p : result.getFlowResults().getProcesses(cache))
 			processes.add(p);
 		List<ProcessGrouping> newGroups = ProcessGrouping.applyOn(processes,
 				groupSet, Messages.Rest);
@@ -115,18 +115,17 @@ class GroupPage extends FormPage {
 		if (groupSet == null)
 			groupingSection.setText(Messages.Groups);
 		else
-			groupingSection.setText(Messages.Groups + " ("
-					+ groupSet.getName() + ")");
+			groupingSection.setText(Messages.Groups + " (" + groupSet.getName()
+					+ ")");
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI
-				.formHeader(managedForm, Messages.Grouping);
+		ScrolledForm form = UI.formHeader(managedForm, Messages.Grouping);
 		FormToolkit toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		createGroupingSection(toolkit, body);
-		resultSection = new GroupResultSection(groups, result, Database.get());
+		resultSection = new GroupResultSection(groups, result);
 		resultSection.render(body, toolkit);
 		form.reflow(true);
 	}
@@ -254,14 +253,15 @@ class GroupPage extends FormPage {
 			ProcessGrouping sourceGroup = Viewers.getFirstSelected(groupViewer);
 			if (sourceGroup == null)
 				return;
-			List<Process> processes = Viewers.getAllSelected(processViewer);
+			List<ProcessDescriptor> processes = Viewers
+					.getAllSelected(processViewer);
 			if (processes == null || processes.isEmpty())
 				return;
 			move(sourceGroup, targetGroup, processes);
 		}
 
 		private void move(ProcessGrouping sourceGroup,
-				ProcessGrouping targetGroup, List<Process> processes) {
+				ProcessGrouping targetGroup, List<ProcessDescriptor> processes) {
 			sourceGroup.getProcesses().removeAll(processes);
 			targetGroup.getProcesses().addAll(processes);
 			processViewer.setInput(sourceGroup.getProcesses());
@@ -320,11 +320,13 @@ class GroupPage extends FormPage {
 			if (element instanceof ProcessGrouping) {
 				ProcessGrouping group = (ProcessGrouping) element;
 				return group.getName();
-			} else if (element instanceof Process) {
-				Process p = (Process) element;
+			} else if (element instanceof ProcessDescriptor) {
+				ProcessDescriptor p = (ProcessDescriptor) element;
 				String name = Strings.cut(p.getName(), 75);
 				if (p.getLocation() != null) {
-					name += " " + p.getLocation().getCode();
+					Location location = cache.getLocation(p.getLocation());
+					if (location != null)
+						name += " " + location.getCode();
 				}
 				return name;
 			} else
@@ -341,12 +343,15 @@ class GroupPage extends FormPage {
 					&& (second instanceof ProcessGrouping))
 				return compareGroups((ProcessGrouping) first,
 						(ProcessGrouping) second);
-			if ((first instanceof Process) && (second instanceof Process))
-				return compareProcesses((Process) first, (Process) second);
+			if ((first instanceof ProcessDescriptor)
+					&& (second instanceof ProcessDescriptor))
+				return compareProcesses((ProcessDescriptor) first,
+						(ProcessDescriptor) second);
 			return 0;
 		}
 
-		private int compareProcesses(Process first, Process second) {
+		private int compareProcesses(ProcessDescriptor first,
+				ProcessDescriptor second) {
 			return compareNames(first.getName(), second.getName());
 		}
 
@@ -439,8 +444,8 @@ class GroupPage extends FormPage {
 				ProcessGroup group = new ProcessGroup();
 				group.setName(pageGroup.getName());
 				groups.add(group);
-				for (Process process : pageGroup.getProcesses())
-					group.getProcessIds().add(process.getId());
+				for (ProcessDescriptor process : pageGroup.getProcesses())
+					group.getProcessIds().add(process.getRefId());
 			}
 			return groups;
 		}
