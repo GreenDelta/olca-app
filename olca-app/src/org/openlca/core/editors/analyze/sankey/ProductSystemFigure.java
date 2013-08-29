@@ -84,7 +84,8 @@ public class ProductSystemFigure extends Figure {
 
 		} else {
 			graphics.drawText(Messages.Sankey_NoOptions, new Point(5, 5));
-			graphics.drawText(Messages.ClickHere, new Point(5, 30));
+			graphics.drawText("Click here to change the display", new Point(5,
+					30));
 		}
 
 		graphics.setFont(normalFont);

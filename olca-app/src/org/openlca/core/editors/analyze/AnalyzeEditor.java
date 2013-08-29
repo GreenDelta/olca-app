@@ -80,9 +80,9 @@ public class AnalyzeEditor extends FormEditor {
 			// if (FeatureFlag.LOCALISED_LCIA.isEnabled()
 			// && result.hasImpactResults())
 			// addPage(new LocalisedImpactPage(this, result));
-			// diagram = new SankeyDiagram(editorInput, result);
-			// diagramIndex = addPage(diagram, getEditorInput());
-			// setPageText(diagramIndex, "Sankey diagram");
+			diagram = new SankeyDiagram(setup, result);
+			diagramIndex = addPage(diagram, getEditorInput());
+			setPageText(diagramIndex, "Sankey diagram");
 		} catch (final PartInitException e) {
 			log.error("Add pages failed", e);
 		}

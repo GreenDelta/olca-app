@@ -23,13 +23,8 @@ public class ConnectionLink {
 	public ConnectionLink(ProcessNode sourceNode, ProcessNode targetNode,
 			ProcessLink processLink, double ratio) {
 		this.ratio = ratio;
-		if (processLink.getProviderOutput().isInput()) {
-			this.sourceNode = targetNode;
-			this.targetNode = sourceNode;
-		} else {
-			this.sourceNode = sourceNode;
-			this.targetNode = targetNode;
-		}
+		this.sourceNode = sourceNode;
+		this.targetNode = targetNode;
 		this.processLink = processLink;
 	}
 

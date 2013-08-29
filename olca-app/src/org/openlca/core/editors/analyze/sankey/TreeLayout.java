@@ -216,12 +216,12 @@ public class TreeLayout {
 			final long processKey = node.processKey;
 			for (final ProcessLink link : productSystem
 					.getProcessLinks(processKey)) {
-				if (link.getRecipientProcess().getId() == processKey) {
-					if (!containing.contains(link.getProviderProcess().getId())
+				if (link.getRecipientProcessId() == processKey) {
+					if (!containing.contains(link.getProviderProcessId())
 							&& paintedProcesses.contains(link
-									.getProviderProcess().getId())) {
+									.getProviderProcessId())) {
 						final Node child = new Node();
-						child.processKey = link.getProviderProcess().getId();
+						child.processKey = link.getProviderProcessId();
 						node.leftChildren.add(child);
 						containing.add(child.processKey);
 						children.add(child);
@@ -236,13 +236,13 @@ public class TreeLayout {
 		for (Node node : nodes) {
 			long processKey = node.processKey;
 			for (ProcessLink link : productSystem.getProcessLinks(processKey)) {
-				if (link.getProviderProcess().getId() != processKey)
+				if (link.getProviderProcessId() != processKey)
 					continue;
-				if (!containing.contains(link.getRecipientProcess().getId())
-						&& paintedProcesses.contains(link.getRecipientProcess()
-								.getId())) {
+				if (!containing.contains(link.getRecipientProcessId())
+						&& paintedProcesses.contains(link
+								.getRecipientProcessId())) {
 					Node child = new Node();
-					child.processKey = link.getRecipientProcess().getId();
+					child.processKey = link.getRecipientProcessId();
 					node.rightChildren.add(child);
 					containing.add(child.processKey);
 					children.add(child);

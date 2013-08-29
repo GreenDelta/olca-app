@@ -1,12 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.core.editors.analyze.sankey;
 
 import java.beans.PropertyChangeEvent;
@@ -26,7 +17,9 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.swt.graphics.Font;
-import org.openlca.core.model.Process;
+import org.openlca.app.db.Database;
+import org.openlca.core.database.Cache;
+import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,12 +27,11 @@ import com.google.common.base.Objects;
 
 /**
  * EditPart of a {@link ProductSystemNode}
- * 
- * @author Sebastian Greve
- * 
  */
 public class ProcessEditPart extends AbstractGraphicalEditPart implements
 		NodeEditPart, PropertyChangeListener {
+
+	private Cache cache = Database.getCache();
 
 	@Override
 	public void activate() {
@@ -184,9 +176,12 @@ public class ProcessEditPart extends AbstractGraphicalEditPart implements
 		if (!(linkObj instanceof ConnectionLink))
 			return;
 		ConnectionLink link = (ConnectionLink) linkObj;
-		Process thisProcess = ((ProcessNode) getModel()).getProcess();
-		Process provider = link.getProcessLink().getProviderProcess();
-		Process recipient = link.getProcessLink().getRecipientProcess();
+		ProcessDescriptor thisProcess = ((ProcessNode) getModel()).getProcess();
+
+		ProcessDescriptor provider = cache.getProcessDescriptor(link
+				.getProcessLink().getProviderProcessId());
+		ProcessDescriptor recipient = cache.getProcessDescriptor(link
+				.getProcessLink().getRecipientProcessId());
 		boolean isLoop = Objects.equal(provider, recipient);
 		try {
 			if (thisProcess.equals(provider)) {

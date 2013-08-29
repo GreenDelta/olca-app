@@ -1,6 +1,6 @@
 package org.openlca.core.editors.analyze.sankey;
 
-import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -27,10 +27,10 @@ import org.openlca.app.Messages;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.BaseLabelProvider;
 import org.openlca.app.viewers.BaseNameSorter;
-import org.openlca.core.database.IDatabase;
 import org.openlca.core.editors.ToolTipComboViewer;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.ImpactCategory;
+import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 
 /**
@@ -42,22 +42,20 @@ import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
  */
 public class SankeySelectionDialog extends FormDialog {
 
-	private List<ImpactCategoryDescriptor> categories;
+	private Set<ImpactCategoryDescriptor> categories;
 	private double cutoff = 0.1;
 	private Spinner cutoffSpinner;
-	private IDatabase database;
 	private Object firstSelection;
 	private Button flowRadioButton;
-	private Flow[] flows;
+	private Set<FlowDescriptor> flows;
 	private Button lciaCategoryRadioButton;
 	private ToolTipComboViewer selectionViewer;
 
-	public SankeySelectionDialog(Flow[] flows,
-			List<ImpactCategoryDescriptor> categories, IDatabase database) {
+	public SankeySelectionDialog(Set<FlowDescriptor> flows,
+			Set<ImpactCategoryDescriptor> categories) {
 		super(UI.shell());
 		this.flows = flows;
 		this.categories = categories;
-		this.database = database;
 	}
 
 	/**
@@ -80,24 +78,25 @@ public class SankeySelectionDialog extends FormDialog {
 		radioComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
 				false));
 		tookit.adapt(radioComposite);
-		flowRadioButton = tookit.createButton(radioComposite,
-				Messages.AnalyseFlow, SWT.RADIO);
+		flowRadioButton = tookit.createButton(radioComposite, Messages.Flow,
+				SWT.RADIO);
 		flowRadioButton.setSelection(firstSelection == null
 				|| firstSelection instanceof Flow);
 		tookit.paintBordersFor(radioComposite);
 		if (categories.size() > 0) {
 			lciaCategoryRadioButton = tookit.createButton(radioComposite,
-					Messages.AnalyseImpact, SWT.RADIO);
+					Messages.ImpactCategory, SWT.RADIO);
 			lciaCategoryRadioButton.setSelection(firstSelection != null
 					&& firstSelection instanceof ImpactCategory);
 		}
 		selectionViewer = new ToolTipComboViewer(firstLayer, SWT.NONE);
 		tookit.adapt(selectionViewer);
 		selectionViewer.setLabelProvider(new BaseLabelProvider());
-		selectionViewer.setContentProvider(new ArrayContentProvider());
+		selectionViewer.setContentProvider(ArrayContentProvider.getInstance());
 		selectionViewer.setSorter(new BaseNameSorter());
 		selectionViewer.setInput(firstSelection == null
-				|| firstSelection instanceof Flow ? flows : categories);
+				|| firstSelection instanceof FlowDescriptor ? flows
+				: categories);
 		selectionViewer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
 				false));
 		if (firstSelection != null) {
