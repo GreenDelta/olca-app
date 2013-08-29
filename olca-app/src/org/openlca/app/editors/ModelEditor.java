@@ -6,6 +6,7 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.openlca.app.db.Database;
+import org.openlca.app.navigation.Navigator;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.editors.IEditor;
 import org.openlca.core.model.CategorizedEntity;
@@ -48,6 +49,8 @@ abstract class ModelEditor<T extends CategorizedEntity> extends FormEditor imple
 			dao.update(model);
 			setDirty(false);
 			monitor.done();
+			Navigator.refresh(Navigator.findElement(getEditorInput()
+					.getDescriptor().getModelType()));
 		} catch (Exception e) {
 			log.error("failed to update " + modelClass.getSimpleName());
 		}
