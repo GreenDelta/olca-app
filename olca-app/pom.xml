@@ -119,7 +119,7 @@
 		<dependency>
 			<groupId>org.ojalgo</groupId>
 			<artifactId>ojalgo</artifactId>
-			<version>33.0</version>
+			<version>34.0</version>
 		</dependency>
 
 		<dependency>
