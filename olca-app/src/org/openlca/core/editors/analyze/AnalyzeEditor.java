@@ -58,9 +58,8 @@ public class AnalyzeEditor extends FormEditor {
 			addPage(new AnalyzeInfoPage(this, result, setup));
 
 			addPage(new LCITotalPage(this, result));
-			// if (result.hasImpactResults())
-			// addPage(new LCIATotalPage(this, result));
-
+			if (result.hasImpactResults())
+				addPage(new LCIATotalPage(this, result));
 			addPage(new ProcessContributionPage(this, result));
 			// addPage(new ProcessResultPage(this, result));
 			// if (result.hasImpactResults())
