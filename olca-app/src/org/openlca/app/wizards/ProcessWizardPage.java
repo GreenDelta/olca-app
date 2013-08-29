@@ -120,7 +120,8 @@ class ProcessWizardPage extends AbstractWizardPage<Process> {
 		createRefFlowCheck.setText(Messages.CreateProductFlow);
 
 		labelStack = new Composite(container, SWT.NONE);
-		labelStack.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
+		labelStack
+				.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
 		labelStack.setLayout(new StackLayout());
 
 		contentStack = new Composite(container, SWT.NONE);
@@ -183,7 +184,9 @@ class ProcessWizardPage extends AbstractWizardPage<Process> {
 		if (flow != null)
 			controller.setFlow(Descriptors.toDescriptor(flow));
 		controller.setFlowProperty(flowPropertyViewer.getSelected());
-		return controller.create();
+		Process result = controller.create();
+		Navigator.refresh((Navigator.findElement(ModelType.FLOW)));
+		return result;
 	}
 
 	private Flow getSelectedFlow() {
