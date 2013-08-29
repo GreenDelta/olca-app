@@ -38,6 +38,14 @@ public class AnalyzeEditor extends FormEditor {
 	private CalculationSetup setup;
 	private AnalysisResult result;
 
+	public CalculationSetup getSetup() {
+		return setup;
+	}
+
+	public AnalysisResult getResult() {
+		return result;
+	}
+
 	@Override
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
@@ -61,9 +69,9 @@ public class AnalyzeEditor extends FormEditor {
 			if (result.hasImpactResults())
 				addPage(new LCIATotalPage(this, result));
 			addPage(new ProcessContributionPage(this, result));
-			// addPage(new ProcessResultPage(this, result));
-			// if (result.hasImpactResults())
-			// addPage(new FlowImpactPage(this, result));
+			addPage(new ProcessResultPage(this, result));
+			if (result.hasImpactResults())
+				addPage(new FlowImpactPage(this, result));
 			addPage(new ContributionTreePage(this, result));
 			// addPage(new GroupPage(this, result));
 			// addPage(new LocationContributionPage(this, result));
