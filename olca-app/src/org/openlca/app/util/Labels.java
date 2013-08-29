@@ -1,9 +1,11 @@
 package org.openlca.app.util;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.openlca.app.Messages;
 import org.openlca.core.database.Cache;
 import org.openlca.core.database.DatabaseContent;
 import org.openlca.core.model.AllocationMethod;
+import org.openlca.core.model.Category;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyType;
@@ -48,6 +50,25 @@ public class Labels {
 		if (unit == null)
 			return "";
 		return unit.getName();
+	}
+
+	/**
+	 * We often have to show the category and sub-category of a flow in the
+	 * result pages. This method returns a pair where the left value is the
+	 * category and the right value is the sub-category. Default values are
+	 * empty strings.
+	 */
+	public static Pair<String, String> getFlowCategory(FlowDescriptor flow,
+			Cache cache) {
+		if (flow == null || flow.getCategory() == null)
+			return Pair.of("", "");
+		Category cat = cache.getCategory(flow.getId());
+		if (cat == null)
+			return Pair.of("", "");
+		if (cat.getParentCategory() == null)
+			return Pair.of(cat.getName(), "");
+		else
+			return Pair.of(cat.getParentCategory().getName(), cat.getName());
 	}
 
 	public static String getEnumText(Object enumValue) {
