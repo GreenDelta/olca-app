@@ -2,6 +2,7 @@ package org.openlca.core.editors.analyze;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.swt.browser.Browser;
@@ -20,16 +21,17 @@ import org.openlca.app.html.IHtmlResource;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
+import org.openlca.core.database.Cache;
 import org.openlca.core.editors.FlowImpactSelection;
 import org.openlca.core.editors.FlowImpactSelection.EventHandler;
 import org.openlca.core.editors.HtmlView;
-import org.openlca.core.model.Flow;
 import org.openlca.core.model.Location;
+import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.core.model.results.AnalysisResult;
-import org.openlca.core.model.results.Contribution;
-import org.openlca.core.model.results.ContributionSet;
-import org.openlca.core.model.results.LocationContribution;
+import org.openlca.core.results.AnalysisResult;
+import org.openlca.core.results.Contribution;
+import org.openlca.core.results.ContributionSet;
+import org.openlca.core.results.LocationContribution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +43,7 @@ import com.google.gson.Gson;
  */
 public class LocationContributionPage extends FormPage implements HtmlPage {
 
+	private Cache cache = Database.getCache();
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private AnalysisResult result;
 	private Browser browser;
@@ -53,8 +56,8 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 		super(editor, "analysis.MapPage", Messages.Locations);
 		this.result = result;
 		this.editor = editor;
-		calculator = new LocationContribution(result,
-				Messages.Unspecified);
+		calculator = new LocationContribution(result, Messages.Unspecified,
+				cache);
 	}
 
 	@Override
@@ -64,17 +67,16 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 
 	@Override
 	public void onLoaded() {
-		Flow[] flows = result.getFlowIndex().getFlows();
-		if (flows != null && flows.length > 0) {
-			Flow flow = flows[0];
+		Set<FlowDescriptor> flows = result.getFlowResults().getFlows(cache);
+		if (flows.size() > 0) {
+			FlowDescriptor flow = flows.iterator().next();
 			flowImpactSelection.selectWithEvent(flow);
 		}
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm,
-				Messages.Locations);
+		ScrolledForm form = UI.formHeader(managedForm, Messages.Locations);
 		FormToolkit toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		createCombos(body, toolkit);
@@ -86,10 +88,13 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 	private void createCombos(Composite body, FormToolkit toolkit) {
 		Composite composite = toolkit.createComposite(body);
 		UI.gridLayout(composite, 2);
-		flowImpactSelection = FlowImpactSelection.onDatabase(Database.get())
+		flowImpactSelection = FlowImpactSelection
+				.onCache(cache)
 				.withAnalysisResult(result)
 				.withEventHandler(new SelectionHandler())
-				.withSelection(result.getFlows()[0]).create(composite, toolkit);
+				.withSelection(
+						result.getFlowResults().getFlows(cache).iterator()
+								.next()).create(composite, toolkit);
 	}
 
 	private void createTable(Composite body, FormToolkit toolkit) {
@@ -100,8 +105,7 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 	}
 
 	private void createBrowser(Composite body, FormToolkit toolkit) {
-		Section section = UI.section(body, toolkit, Messages.Map
-				+ " (beta)");
+		Section section = UI.section(body, toolkit, Messages.Map + " (beta)");
 		Actions.bind(section, new RefreshMapAction());
 		GridData gridData = UI.gridData(section, true, false);
 		gridData.widthHint = 800;
@@ -144,7 +148,7 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 	private class SelectionHandler implements EventHandler {
 
 		@Override
-		public void flowSelected(Flow flow) {
+		public void flowSelected(FlowDescriptor flow) {
 			if (table == null || calculator == null || flow == null)
 				return;
 			ContributionSet<Location> set = calculator.calculate(flow);
