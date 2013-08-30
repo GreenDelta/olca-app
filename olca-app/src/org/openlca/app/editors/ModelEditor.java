@@ -51,6 +51,7 @@ abstract class ModelEditor<T extends CategorizedEntity> extends FormEditor imple
 			monitor.done();
 			Navigator.refresh(Navigator.findElement(getEditorInput()
 					.getDescriptor().getModelType()));
+			this.setPartName(model.getName());
 		} catch (Exception e) {
 			log.error("failed to update " + modelClass.getSimpleName());
 		}
