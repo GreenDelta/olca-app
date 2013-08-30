@@ -1,12 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.core.editors.analyze.sankey;
 
 import java.util.List;
@@ -14,15 +5,9 @@ import java.util.List;
 import org.eclipse.draw2d.AbstractConnectionAnchor;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.openlca.core.editors.productsystem.graphical.model.ExchangeNode;
 
 /**
- * 
- * Implementation of {@link AbstractConnectionAnchor} for a
- * {@link ConnectionLink} between two {@link ExchangeNode}s
- * 
- * @author Sebastian Greve
- * 
+ * The anchor of a process link to a process figure.
  */
 public class ProcessLinkAnchor extends AbstractConnectionAnchor {
 
@@ -40,43 +25,45 @@ public class ProcessLinkAnchor extends AbstractConnectionAnchor {
 	}
 
 	@Override
-	public Point getLocation(final Point reference) {
-		final List<ConnectionLink> links = recipient ? processNode
-				.getIncomingLinks() : processNode.getOutgoingLinks();
-		int vTrans = 0;
-		if (links.size() > 1) {
-			int index = getPosition(links);
-			int totalWidth = getTotalWidth(links);
-			// calculate vertical translation
-			vTrans = -(totalWidth - 1) / 2;
-			for (int i = 0; i < index; i++) {
-				double value = links.get(i).getRatio()
-						* ConnectionLink.MAXIMIM_WIDTH;
-				int width = (int) (value >= 0 ? Math.floor(Math.abs(value))
-						: Math.ceil(Math.abs(value)));
-				if (width <= 1) {
-					width = 0;
-				}
-				vTrans += width;
-			}
-			double value = link.getRatio() * ConnectionLink.MAXIMIM_WIDTH;
+	public Point getLocation(Point reference) {
+		// TODO: currently there are problems with the reference process
+		// links when using this translation function.
+		// List<ConnectionLink> links = recipient ?
+		// processNode.getIncomingLinks()
+		// : processNode.getOutgoingLinks();
+		// int horizontalTranslation = calculateTranslation(links);
+		int horizontalTranslation = 0;
+		Rectangle r = getOwner().getBounds().getCopy();
+		r.translate(horizontalTranslation, recipient ? -1 : 0);
+		getOwner().translateToAbsolute(r);
+		Point result = null;
+		if (recipient)
+			result = r.getBottom();
+		else
+			result = r.getTop();
+		return result;
+	}
+
+	private int calculateTranslation(List<ConnectionLink> links) {
+		if (links.size() <= 1)
+			return 0;
+		int index = getPosition(links);
+		int totalWidth = getTotalWidth(links);
+		int translation = -(totalWidth - 1) / 2;
+		for (int i = 0; i < index; i++) {
+			double value = links.get(i).getRatio()
+					* ConnectionLink.MAXIMIM_WIDTH;
 			int width = (int) (value >= 0 ? Math.floor(Math.abs(value)) : Math
 					.ceil(Math.abs(value)));
-			vTrans += Math.floor(width / 2);
+			if (width <= 1)
+				width = 0;
+			translation += width;
 		}
-
-		// translate
-		Rectangle r = getOwner().getBounds().getCopy();
-		r.translate(vTrans, recipient ? -1 : 0);
-		getOwner().translateToAbsolute(r);
-
-		Point result = null;
-		if (recipient) {
-			result = r.getBottom();
-		} else {
-			result = r.getTop();
-		}
-		return result;
+		double value = link.getRatio() * ConnectionLink.MAXIMIM_WIDTH;
+		int width = (int) (value >= 0 ? Math.floor(Math.abs(value)) : Math
+				.ceil(Math.abs(value)));
+		translation += Math.floor(width / 2);
+		return translation;
 	}
 
 	private int getPosition(List<ConnectionLink> links) {
@@ -94,9 +81,8 @@ public class ProcessLinkAnchor extends AbstractConnectionAnchor {
 					* ConnectionLink.MAXIMIM_WIDTH;
 			int width = (int) (value >= 0 ? Math.floor(Math.abs(value)) : Math
 					.ceil(Math.abs(value)));
-			if (width < 1) {
+			if (width < 1)
 				width = 1;
-			}
 			totalWidth += width;
 		}
 		return totalWidth;

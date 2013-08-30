@@ -15,6 +15,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.Messages;
 import org.openlca.app.editors.DataBinding;
+import org.openlca.app.editors.DataBinding.TextBindType;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
@@ -165,11 +166,10 @@ public class UncertaintyDialog extends Dialog {
 			return new Client(composite, Messages.Mean,
 					Messages.StandardDeviation);
 		case TRIANGLE:
-			return new Client(composite, Messages.Minimum,
-					Messages.Mode, Messages.Maximum);
-		case UNIFORM:
-			return new Client(composite, Messages.Minimum,
+			return new Client(composite, Messages.Minimum, Messages.Mode,
 					Messages.Maximum);
+		case UNIFORM:
+			return new Client(composite, Messages.Minimum, Messages.Maximum);
 		default:
 			return new Client(composite);
 		}
@@ -218,8 +218,8 @@ public class UncertaintyDialog extends Dialog {
 
 		void bindFields() {
 			for (int i = 0; i < texts.length; i++)
-				binding.onDouble(UncertaintyDialog.this, properties[i],
-						texts[i]);
+				binding.on(UncertaintyDialog.this, properties[i],
+						TextBindType.DOUBLE, texts[i]);
 		}
 
 		void releaseFields() {
