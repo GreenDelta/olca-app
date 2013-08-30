@@ -97,9 +97,9 @@ public class SankeyDiagram extends GraphicalEditor implements
 		for (ProcessLink processLink : productSystem
 				.getIncomingLinks(processId)) {
 			ProcessNode sourceNode = createdProcesses.get(processLink
-					.getProviderProcessId());
+					.getProviderId());
 			ProcessNode targetNode = createdProcesses.get(processLink
-					.getRecipientProcessId());
+					.getRecipientId());
 			if (sourceNode != null && targetNode != null) {
 				if (!createdLinks.containsKey(processLink.getId())) {
 					double ratio = sankeyResult
@@ -117,7 +117,7 @@ public class SankeyDiagram extends GraphicalEditor implements
 		List<WeightedProcess> recipients = new ArrayList<>();
 		for (ProcessLink link : productSystem.getOutgoingLinks(processId)) {
 			WeightedProcess wp = new WeightedProcess();
-			wp.id = link.getRecipientProcessId();
+			wp.id = link.getRecipientId();
 			wp.weight = Math.abs(sankeyResult.getLinkContribution(link));
 			recipients.add(wp);
 		}
@@ -232,7 +232,7 @@ public class SankeyDiagram extends GraphicalEditor implements
 			// process should be drawn)
 			for (final ProcessLink link : productSystem
 					.getIncomingLinks(actual)) {
-				final Long providerId = link.getProviderProcessId();
+				final Long providerId = link.getProviderId();
 				if (processIds.contains(providerId)) {
 					if (unconnected.contains(providerId)) {
 						unconnected.remove(providerId);

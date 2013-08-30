@@ -179,9 +179,9 @@ public class ProcessEditPart extends AbstractGraphicalEditPart implements
 		ProcessDescriptor thisProcess = ((ProcessNode) getModel()).getProcess();
 
 		ProcessDescriptor provider = cache.getProcessDescriptor(link
-				.getProcessLink().getProviderProcessId());
+				.getProcessLink().getProviderId());
 		ProcessDescriptor recipient = cache.getProcessDescriptor(link
-				.getProcessLink().getRecipientProcessId());
+				.getProcessLink().getRecipientId());
 		boolean isLoop = Objects.equal(provider, recipient);
 		try {
 			if (thisProcess.equals(provider)) {
