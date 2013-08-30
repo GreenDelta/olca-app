@@ -4,9 +4,11 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.osgi.util.NLS;
 import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.components.delete.DeleteWizard;
@@ -84,6 +86,8 @@ public class DeleteModelAction extends Action implements INavigationAction {
 	}
 
 	private void delete(ModelElement element) {
+		if (createMessageDialog(element).open() != MessageDialog.OK)
+			return;
 		IDatabase database = Database.get();
 		Cache cache = Database.getCache();
 		switch (element.getContent().getModelType()) {
@@ -132,5 +136,15 @@ public class DeleteModelAction extends Action implements INavigationAction {
 		default:
 			break;
 		}
+	}
+
+	private MessageDialog createMessageDialog(ModelElement element) {
+		String name = element.getContent().getName();
+		return new MessageDialog(UI.shell(), Messages.Delete, null, NLS.bind(
+				Messages.NavigationView_DeleteQuestion, name),
+				MessageDialog.QUESTION, new String[] {
+						Messages.NavigationView_YesButton,
+						Messages.NavigationView_NoButton, },
+				MessageDialog.CANCEL);
 	}
 }
