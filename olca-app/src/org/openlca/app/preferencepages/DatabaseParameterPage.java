@@ -86,12 +86,12 @@ public class DatabaseParameterPage extends PreferencePage implements
 	}
 
 	private void createActions(Section section) {
-		addParameterAction = Actions.createAdd(new Runnable() {
+		addParameterAction = Actions.onAdd(new Runnable() {
 			public void run() {
 				addParameter();
 			}
 		});
-		removeParameterAction = Actions.createRemove(new Runnable() {
+		removeParameterAction = Actions.onRemove(new Runnable() {
 			public void run() {
 				deleteParameter();
 			}

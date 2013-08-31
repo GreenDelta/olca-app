@@ -55,11 +55,12 @@
             name="%editor.name.4">
       </editor>
       <editor
-            class="org.openlca.app.editors.ProjectEditor"
+            class="org.openlca.app.projects.ProjectEditor"
             default="false"
             icon="icons/project_obj.png"
             id="editors.project"
-            name="%editor.name.5">
+            name="%editor.name.5"
+            contributorClass="org.openlca.app.projects.ProjectActionContributor">
       </editor>
       <editor
             class="org.openlca.app.editors.ProductSystemEditor"
@@ -76,6 +77,14 @@
             icon="icons/expression_obj.gif"
             id="editors.impactresult"
             name="Result viewer">
+            
+      </editor>
+      <editor
+            id="ProjectResultEditor"
+            class="org.openlca.app.projects.ProjectResultEditor"
+            default="false"
+            icon="icons/chart.png"
+            name="Project results">
       </editor>
       
       <!-- re-add the action contributor

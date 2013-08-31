@@ -2,6 +2,7 @@ package org.openlca.app.util;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.openlca.app.Messages;
+import org.openlca.app.db.Database;
 import org.openlca.core.database.Cache;
 import org.openlca.core.database.DatabaseContent;
 import org.openlca.core.model.AllocationMethod;
@@ -10,6 +11,7 @@ import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyType;
 import org.openlca.core.model.FlowType;
+import org.openlca.core.model.Location;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.UncertaintyDistributionType;
@@ -17,6 +19,7 @@ import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
+import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 public class Labels {
 
@@ -24,10 +27,27 @@ public class Labels {
 	}
 
 	public static String getDisplayName(BaseDescriptor descriptor) {
-		// TODO: location infos for processes & flows
 		if (descriptor == null)
 			return "";
-		return descriptor.getName();
+		Cache cache = Database.getCache();
+		String text = descriptor.getName();
+		if (cache == null)
+			return text;
+		Long locationId = null;
+		if (descriptor instanceof ProcessDescriptor) {
+			ProcessDescriptor process = (ProcessDescriptor) descriptor;
+			locationId = process.getLocation();
+		}
+		if (descriptor instanceof FlowDescriptor) {
+			FlowDescriptor flow = (FlowDescriptor) descriptor;
+			locationId = flow.getLocation();
+		}
+		if (locationId != null) {
+			Location location = cache.getLocation(locationId);
+			if (location != null && location.getCode() != null)
+				text = text + " - " + location.getCode();
+		}
+		return text;
 	}
 
 	public static String getDisplayInfoText(BaseDescriptor descriptor) {

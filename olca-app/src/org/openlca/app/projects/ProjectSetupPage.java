@@ -1,4 +1,4 @@
-package org.openlca.app.editors;
+package org.openlca.app.projects;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,6 +19,8 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.components.ObjectDialog;
 import org.openlca.app.db.Database;
+import org.openlca.app.editors.ModelPage;
+import org.openlca.app.editors.ParameterRedefTable;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
@@ -111,12 +113,12 @@ public class ProjectSetupPage extends ModelPage<Project> {
 	}
 
 	private void addVariantActions(TableViewer viewer, Section section) {
-		Action add = Actions.createAdd(new Runnable() {
+		Action add = Actions.onAdd(new Runnable() {
 			public void run() {
 				addVariant();
 			}
 		});
-		Action remove = Actions.createRemove(new Runnable() {
+		Action remove = Actions.onRemove(new Runnable() {
 			public void run() {
 				removeVariant();
 			}

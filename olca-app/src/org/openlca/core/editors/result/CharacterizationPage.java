@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.Messages;
+import org.openlca.app.projects.ProjectResultChart;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.UIFactory;
 import org.openlca.core.editors.ModelEditor;
@@ -69,7 +70,7 @@ public class CharacterizationPage extends ModelEditorPage {
 	/**
 	 * The characterization chart
 	 */
-	private CharacterizationChart chart;
+	private ProjectResultChart chart;
 
 	/**
 	 * The sort direction
@@ -206,7 +207,7 @@ public class CharacterizationPage extends ModelEditorPage {
 				toolBar.add(new SwitchViewMode(SwitchViewMode.SINGLE_SCORE));
 			}
 			toolBar.update(true);
-			chart = new CharacterizationChart(body, lciaCategoryResults, type,
+			chart = new ProjectResultChart(body, lciaCategoryResults, type,
 					weightingUnit);
 			if (type == WEIGHTING) {
 				singleScoreChart = new SingleScoreChart(body,

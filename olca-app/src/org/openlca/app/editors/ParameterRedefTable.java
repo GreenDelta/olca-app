@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * table should be directly the live-list of the respective model (i.e. product
  * system or project variant).
  */
-class ParameterRedefTable {
+public class ParameterRedefTable {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 
@@ -71,12 +71,12 @@ class ParameterRedefTable {
 	}
 
 	public void bindActions(Section section) {
-		Action addAction = Actions.createAdd(new Runnable() {
+		Action addAction = Actions.onAdd(new Runnable() {
 			public void run() {
 				add();
 			}
 		});
-		Action removeAction = Actions.createRemove(new Runnable() {
+		Action removeAction = Actions.onRemove(new Runnable() {
 			public void run() {
 				remove();
 			}

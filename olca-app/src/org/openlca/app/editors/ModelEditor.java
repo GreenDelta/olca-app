@@ -12,7 +12,8 @@ import org.openlca.core.model.CategorizedEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-abstract class ModelEditor<T extends CategorizedEntity> extends FormEditor implements IEditor {
+public abstract class ModelEditor<T extends CategorizedEntity> extends
+		FormEditor implements IEditor {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private boolean dirty;
@@ -20,7 +21,7 @@ abstract class ModelEditor<T extends CategorizedEntity> extends FormEditor imple
 	private BaseDao<T> dao;
 	private Class<T> modelClass;
 
-	ModelEditor(Class<T> modelClass) {
+	public ModelEditor(Class<T> modelClass) {
 		this.modelClass = modelClass;
 	}
 
@@ -52,7 +53,7 @@ abstract class ModelEditor<T extends CategorizedEntity> extends FormEditor imple
 			log.error("failed to update " + modelClass.getSimpleName());
 		}
 	}
-	
+
 	@Override
 	public ModelEditorInput getEditorInput() {
 		return (ModelEditorInput) super.getEditorInput();
