@@ -92,7 +92,7 @@ public class ParameterRedefTable {
 		log.trace("add new parameter redef");
 		for (ParameterRedef redef : redefs) {
 			if (!contains(redef)) {
-				redefinitions.add(redef);
+				redefinitions.add(redef.clone());
 			}
 		}
 		viewer.setInput(redefinitions);

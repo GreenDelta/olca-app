@@ -137,13 +137,13 @@ public class ModifySupport<T> {
 
 		@Override
 		public void modify(Object element, String property, Object value) {
-			if (!(element instanceof Item))
-				return;
+			if (element instanceof Item)
+				element = ((Item) element).getData();
 			ICellModifier<T> modifier = cellModifiers.get(property);
 			if (modifier == null)
 				return;
 			@SuppressWarnings("unchecked")
-			T elem = (T) ((Item) element).getData();
+			T elem = (T) element;
 			switch (modifier.getCellEditingType()) {
 			case TEXTBOX:
 				modifier.modify(elem, value.toString());
