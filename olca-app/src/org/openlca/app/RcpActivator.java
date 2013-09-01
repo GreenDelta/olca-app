@@ -1,13 +1,4 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
-package org.openlca.app.plugin;
+package org.openlca.app;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,8 +14,6 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.openlca.app.OlcaPlugin;
-import org.openlca.app.Preferences;
 import org.openlca.app.logging.Console;
 import org.openlca.app.logging.LoggerConfig;
 import org.openlca.jblas.Library;
@@ -33,19 +22,20 @@ import org.osgi.framework.BundleContext;
 /**
  * The activator class controls the plug-in life cycle
  */
-public class Activator extends AbstractUIPlugin {
+public class RcpActivator extends AbstractUIPlugin {
+
+	public static final String PLUGIN_ID = "olca-app";
 
 	private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(this
 			.getClass());
-	private static Activator plugin;
-	public static final String PLUGIN_ID = "olca-app";
+	private static RcpActivator plugin;
 
 	/**
 	 * Returns the shared instance
 	 * 
 	 * @return the shared instance
 	 */
-	public static Activator getDefault() {
+	public static RcpActivator getDefault() {
 		return plugin;
 	}
 

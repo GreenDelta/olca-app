@@ -17,7 +17,7 @@ import java.util.Queue;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import org.openlca.app.plugin.Activator;
+import org.openlca.app.RcpActivator;
 import org.openlca.app.util.PlatformUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Version;
@@ -474,7 +474,7 @@ public class PluginsService {
 
 	public ArrayList<Bundle> findAllOpenlcaPluginBundles() {
 		ArrayList<Bundle> retval = new ArrayList<>();
-		for (Bundle b : Activator.getDefault().getBundle().getBundleContext()
+		for (Bundle b : RcpActivator.getDefault().getBundle().getBundleContext()
 				.getBundles()) {
 
 			try {
@@ -577,7 +577,7 @@ public class PluginsService {
 	}
 
 	public String getOpenlcaVersion() {
-		for (Bundle b : Activator.getDefault().getBundle().getBundleContext()
+		for (Bundle b : RcpActivator.getDefault().getBundle().getBundleContext()
 				.getBundles()) {
 			if ("olca-app".equals(b.getSymbolicName())) {
 				return b.getVersion().toString();

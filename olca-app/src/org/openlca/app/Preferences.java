@@ -2,7 +2,6 @@ package org.openlca.app;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.openlca.app.plugin.Activator;
 import org.openlca.app.util.Numbers;
 import org.openlca.core.math.MatrixFactory;
 import org.slf4j.Logger;
@@ -21,7 +20,7 @@ public final class Preferences extends AbstractPreferenceInitializer {
 	public static void init() {
 		Logger log = LoggerFactory.getLogger(Preferences.class);
 		log.trace("init preferences");
-		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+		IPreferenceStore store = RcpActivator.getDefault().getPreferenceStore();
 		int acc = store.getDefaultInt(NUMBER_ACCURACY);
 		Numbers.setDefaultAccuracy(acc);
 		log.trace("preference {} = {}", NUMBER_ACCURACY, acc);
@@ -32,7 +31,7 @@ public final class Preferences extends AbstractPreferenceInitializer {
 	}
 
 	public static IPreferenceStore getStore() {
-		return Activator.getDefault().getPreferenceStore();
+		return RcpActivator.getDefault().getPreferenceStore();
 	}
 
 }

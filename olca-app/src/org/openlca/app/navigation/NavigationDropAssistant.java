@@ -22,7 +22,7 @@ import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.navigator.CommonDropAdapter;
 import org.eclipse.ui.navigator.CommonDropAdapterAssistant;
-import org.openlca.app.plugin.Activator;
+import org.openlca.app.RcpActivator;
 import org.openlca.app.util.CopyPaste;
 
 /**
@@ -77,7 +77,7 @@ public class NavigationDropAssistant extends CommonDropAdapterAssistant {
 
 		if (target instanceof CategoryElement
 				|| target instanceof ModelTypeElement)
-			status = new Status(IStatus.OK, Activator.PLUGIN_ID, "");
+			status = new Status(IStatus.OK, RcpActivator.PLUGIN_ID, "");
 		return status;
 	}
 

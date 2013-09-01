@@ -2,7 +2,7 @@ package org.openlca.ilcd.network.rcp.ui;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.openlca.app.plugin.Activator;
+import org.openlca.app.RcpActivator;
 import org.openlca.ilcd.io.NetworkClient;
 
 public class Preference extends AbstractPreferenceInitializer {
@@ -13,7 +13,7 @@ public class Preference extends AbstractPreferenceInitializer {
 
 	@Override
 	public void initializeDefaultPreferences() {
-		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+		IPreferenceStore store = RcpActivator.getDefault().getPreferenceStore();
 		store.setDefault(PASSWORD, "");
 		store.setDefault(USER, "user");
 		store.setDefault(URL, "http://host-adress.web/path/resource");
@@ -38,7 +38,7 @@ public class Preference extends AbstractPreferenceInitializer {
 	}
 
 	private static String valueOf(String name) {
-		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+		IPreferenceStore store = RcpActivator.getDefault().getPreferenceStore();
 		return store.getString(name);
 	}
 

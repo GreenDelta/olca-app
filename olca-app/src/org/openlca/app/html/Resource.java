@@ -1,11 +1,9 @@
-package org.openlca.app.plugin;
+package org.openlca.app.html;
 
 import java.io.File;
 import java.io.IOException;
 
-import org.openlca.app.html.HtmlFolder;
-import org.openlca.app.html.HtmlResource;
-import org.openlca.app.html.IHtmlResource;
+import org.openlca.app.RcpActivator;
 import org.slf4j.LoggerFactory;
 
 enum Resource {
@@ -16,7 +14,7 @@ enum Resource {
 	private Resource[] dependencies;
 
 	private Resource(String fileName, Resource... dependencies) {
-		this.resource = new HtmlResource(Activator.getDefault().getBundle(),
+		this.resource = new HtmlResource(RcpActivator.getDefault().getBundle(),
 				"html" + File.separator + fileName, fileName);
 		this.dependencies = dependencies;
 	}

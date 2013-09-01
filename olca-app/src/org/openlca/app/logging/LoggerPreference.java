@@ -3,7 +3,7 @@ package org.openlca.app.logging;
 import org.apache.log4j.Level;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.openlca.app.plugin.Activator;
+import org.openlca.app.RcpActivator;
 
 /**
  * The preferences of the application logging.
@@ -53,7 +53,7 @@ public class LoggerPreference extends AbstractPreferenceInitializer {
 	}
 
 	static IPreferenceStore getStore() {
-		return Activator.getDefault().getPreferenceStore();
+		return RcpActivator.getDefault().getPreferenceStore();
 	}
 
 }

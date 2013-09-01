@@ -20,6 +20,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.openlca.app.App;
+import org.openlca.app.Config;
 import org.openlca.app.Messages;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Labels;
@@ -106,7 +107,7 @@ class DatabaseWizardPage extends WizardPage {
 
 		pathText = UI.formText(browseComposite, null);
 		pathText.setText(App.getWorkspace().getAbsolutePath() + File.separator
-				+ "databases");
+				+ Config.DATABASE_FOLDER_NAME);
 		Button browseButton = new Button(browseComposite, SWT.NONE);
 		browseButton.setText("Browse...");
 
@@ -238,7 +239,7 @@ class DatabaseWizardPage extends WizardPage {
 			mData.password = getText(passwordText);
 			data = mData;
 		}
-		data.directory = pathText.getText().trim().toLowerCase();
+		data.directory = pathText.getText().trim();
 		data.databaseName = nameText.getText().trim().toLowerCase();
 		return data;
 	}

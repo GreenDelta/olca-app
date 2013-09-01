@@ -4,7 +4,7 @@ import java.io.File;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
-import org.openlca.app.plugin.Activator;
+import org.openlca.app.RcpActivator;
 
 public enum ImageType implements IImageType {
 
@@ -248,7 +248,7 @@ public enum ImageType implements IImageType {
 
 	@Override
 	public Image createImage() {
-		return Activator.getImageDescriptor(getPath()).createImage();
+		return RcpActivator.getImageDescriptor(getPath()).createImage();
 	}
 
 	@Override

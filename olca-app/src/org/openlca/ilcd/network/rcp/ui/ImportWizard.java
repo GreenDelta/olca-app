@@ -96,8 +96,8 @@ public class ImportWizard extends Wizard implements IImportWizard {
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
 		setWindowTitle(NetworkImport);
-		setDefaultPageImageDescriptor(Activator.imageDescriptorFromPlugin(
-				Activator.PLUGIN_ID, "/icons/network_wiz.png")); 
+		setDefaultPageImageDescriptor(RcpActivator.imageDescriptorFromPlugin(
+				RcpActivator.PLUGIN_ID, "/icons/network_wiz.png")); 
 		setNeedsProgressMonitor(true);
 		processSearchPage = new ProcessSearchPage();
 		databasePage = new DatabaseSelectionPage();

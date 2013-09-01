@@ -7,7 +7,7 @@ import java.net.URL;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
-import org.openlca.app.plugin.Activator;
+import org.openlca.app.RcpActivator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,8 +36,8 @@ public class PlatformUtils {
 			return path;
 		}
 
-		if (path.contains(Activator.PLUGIN_ID)) {
-			path = path.substring(0, path.indexOf(Activator.PLUGIN_ID));
+		if (path.contains(RcpActivator.PLUGIN_ID)) {
+			path = path.substring(0, path.indexOf(RcpActivator.PLUGIN_ID));
 			if (path.endsWith("/plugins/")) {
 				path = path.substring(0, path.length() - "/plugins/".length());
 

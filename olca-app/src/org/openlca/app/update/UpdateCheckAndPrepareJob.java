@@ -12,7 +12,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.openlca.app.FeatureFlag;
 import org.openlca.app.Messages;
-import org.openlca.app.plugin.Activator;
+import org.openlca.app.RcpActivator;
 import org.openlca.app.update.Updater.UnzipRequest;
 import org.openlca.app.util.PlatformUtils;
 import org.osgi.framework.BundleContext;
@@ -158,8 +158,8 @@ public class UpdateCheckAndPrepareJob extends Job {
 				.loadNewestVersionFromServer(getUpdateSite());
 		monitor.worked(2);
 
-		if (versionInfo != null && Activator.getDefault().getBundle() != null) {
-			Version currVersion = Activator.getDefault().getBundle()
+		if (versionInfo != null && RcpActivator.getDefault().getBundle() != null) {
+			Version currVersion = RcpActivator.getDefault().getBundle()
 					.getVersion();
 			Version newestVersion;
 			try {
@@ -291,7 +291,7 @@ public class UpdateCheckAndPrepareJob extends Job {
 	protected void runPreUpdateHooks(Updater updater,
 			VersionInfo newAppVersionInfo) {
 		log.debug("Exec preUpdateHooks");
-		BundleContext bundleContext = Activator.getDefault().getBundle()
+		BundleContext bundleContext = RcpActivator.getDefault().getBundle()
 				.getBundleContext();
 
 		ServiceReference[] hookRefs = null;

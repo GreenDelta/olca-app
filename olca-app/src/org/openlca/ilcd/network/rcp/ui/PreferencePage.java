@@ -36,8 +36,8 @@ public class PreferencePage extends FieldEditorPreferencePage implements
 	public void createControl(Composite parent) {
 		super.createControl(parent);
 		getApplyButton().setText("Test");
-		setImageDescriptor(Activator.imageDescriptorFromPlugin(
-				Activator.PLUGIN_ID, "icons/network16.png"));
+		setImageDescriptor(RcpActivator.imageDescriptorFromPlugin(
+				RcpActivator.PLUGIN_ID, "icons/network16.png"));
 	}
 
 	@Override
@@ -72,7 +72,7 @@ public class PreferencePage extends FieldEditorPreferencePage implements
 
 	@Override
 	public void init(IWorkbench workbench) {
-		setPreferenceStore(Activator.getDefault().getPreferenceStore());
+		setPreferenceStore(RcpActivator.getDefault().getPreferenceStore());
 	}
 
 	public static final void open(Shell shell) {

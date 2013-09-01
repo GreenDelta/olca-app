@@ -13,7 +13,7 @@ package org.openlca.app.resources;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
-import org.openlca.app.plugin.Activator;
+import org.openlca.app.RcpActivator;
 
 /**
  * Manager for the application images and icons.
@@ -37,7 +37,7 @@ public class ImageManager {
 		ImageDescriptor d = imageRegistry.getDescriptor(path);
 		if (d != null)
 			return d;
-		d = Activator.getImageDescriptor(path);
+		d = RcpActivator.getImageDescriptor(path);
 		imageRegistry.put(path, d);
 		return d;
 	}

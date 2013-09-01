@@ -1,13 +1,4 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
-package org.openlca.app.plugin;
+package org.openlca.app;
 
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.ICoolBarManager;
@@ -25,11 +16,9 @@ import org.eclipse.ui.actions.ContributionItemFactory;
 import org.eclipse.ui.actions.RetargetAction;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
-import org.openlca.app.FormulaConsoleAction;
-import org.openlca.app.Messages;
 import org.openlca.app.resources.ImageType;
 
-public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
+public class RcpActionBarAdvisor extends ActionBarAdvisor {
 
 	private IWorkbenchAction aboutAction;
 	private IWorkbenchAction closeAction;
@@ -51,7 +40,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 	private IContributionItem showViews;
 	private IWorkbenchAction introAction;
 
-	public ApplicationActionBarAdvisor(final IActionBarConfigurer configurer) {
+	public RcpActionBarAdvisor(final IActionBarConfigurer configurer) {
 		super(configurer);
 	}
 

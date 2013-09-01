@@ -8,8 +8,6 @@ import org.eclipse.osgi.service.datalocation.Location;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.PartInitException;
 import org.openlca.app.editors.ModelEditorInput;
-import org.openlca.app.plugin.Activator;
-import org.openlca.app.plugin.Workspace;
 import org.openlca.app.util.Editors;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.ModelType;
@@ -39,7 +37,7 @@ public class App {
 		String version = CommandArgument.VERSION.getValue();
 		if (version != null)
 			return version;
-		return Activator.getDefault().getBundle().getVersion().toString();
+		return RcpActivator.getDefault().getBundle().getVersion().toString();
 	}
 
 	/**
