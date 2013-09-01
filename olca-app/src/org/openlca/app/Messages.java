@@ -489,6 +489,7 @@ public class Messages extends NLS {
 	public static String StandardDeviation;
 	public static String Start;
 	public static String StartDate;
+	public static String SubCategory;
 	public static String SwitchViewModeActionText;
 	public static String Synonyms;
 	public static String SystemProcess;

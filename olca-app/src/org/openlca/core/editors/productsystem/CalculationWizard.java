@@ -20,12 +20,12 @@ import org.openlca.app.components.JobListenerWithProgress;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.AnalyzeEditorInput;
 import org.openlca.app.editors.ResultEditorInput;
+import org.openlca.app.inventory.InventoryResultEditor;
 import org.openlca.app.util.Editors;
 import org.openlca.core.application.wizards.ProductSystemCleaner;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.editors.analyze.AnalyzeEditor;
-import org.openlca.core.editors.result.ResultEditor;
 import org.openlca.core.jobs.JobHandler;
 import org.openlca.core.jobs.Jobs;
 import org.openlca.core.math.ImpactCalculator;
@@ -178,7 +178,7 @@ class CalculationWizard extends Wizard {
 									.calculate(method, nwSet);
 							input.setImpactResult(lciaResult);
 						}
-						Editors.open(input, ResultEditor.ID);
+						Editors.open(input, InventoryResultEditor.ID);
 					} catch (Exception e1) {
 						log.error("Calculate LCI result failed", e1);
 					}

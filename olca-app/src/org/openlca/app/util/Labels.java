@@ -82,7 +82,7 @@ public class Labels {
 			Cache cache) {
 		if (flow == null || flow.getCategory() == null)
 			return Pair.of("", "");
-		Category cat = cache.getCategory(flow.getId());
+		Category cat = cache.getCategory(flow.getCategory());
 		if (cat == null)
 			return Pair.of("", "");
 		if (cat.getParentCategory() == null)

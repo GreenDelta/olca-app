@@ -1,12 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.app.editors.actions;
 
 import java.lang.reflect.InvocationTargetException;
@@ -18,6 +9,8 @@ import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.AnalyzeEditorInput;
+import org.openlca.app.inventory.InventoryResultEditor;
+import org.openlca.app.inventory.InventoryResultInput;
 import org.openlca.app.util.Editors;
 import org.openlca.core.editors.analyze.AnalyzeEditor;
 import org.openlca.core.math.CalculationSetup;
@@ -65,19 +58,19 @@ class CalculationWizard extends Wizard {
 
 	private class Calculation implements IRunnableWithProgress {
 
-		private CalculationSetup settings;
+		private CalculationSetup setup;
 
 		public Calculation(CalculationSetup settings) {
-			this.settings = settings;
+			this.setup = settings;
 		}
 
 		@Override
 		public void run(IProgressMonitor monitor)
 				throws InvocationTargetException, InterruptedException {
 			monitor.beginTask("Run calculation", IProgressMonitor.UNKNOWN);
-			if (settings.hasType(CalculationSetup.QUICK_RESULT))
+			if (setup.hasType(CalculationSetup.QUICK_RESULT))
 				solve();
-			else if (settings.hasType(CalculationSetup.ANALYSIS))
+			else if (setup.hasType(CalculationSetup.ANALYSIS))
 				analyse();
 			// TODO: Monte-Carlo-Simulation
 			monitor.done();
@@ -86,10 +79,10 @@ class CalculationWizard extends Wizard {
 		private void analyse() {
 			log.trace("run analysis");
 			SystemCalculator calculator = new SystemCalculator(Database.get());
-			AnalysisResult analysisResult = calculator.analyse(settings);
+			AnalysisResult analysisResult = calculator.analyse(setup);
 			log.trace("calculation done, open editor");
 			String resultKey = App.getCache().put(analysisResult);
-			String setupKey = App.getCache().put(settings);
+			String setupKey = App.getCache().put(setup);
 			AnalyzeEditorInput input = new AnalyzeEditorInput(setupKey,
 					resultKey);
 			Editors.open(input, AnalyzeEditor.ID);
@@ -98,17 +91,13 @@ class CalculationWizard extends Wizard {
 		private void solve() {
 			log.trace("run quick calculation");
 			SystemCalculator calculator = new SystemCalculator(Database.get());
-			InventoryResult inventoryResult = calculator.solve(settings);
+			InventoryResult inventoryResult = calculator.solve(setup);
 			log.trace("calculation done, open editor");
-			// openEditor(result);
+			String resultKey = App.getCache().put(inventoryResult);
+			String setupKey = App.getCache().put(setup);
+			InventoryResultInput input = new InventoryResultInput(setup
+					.getProductSystem().getId(), resultKey, setupKey);
+			Editors.open(input, InventoryResultEditor.ID);
 		}
-
-		// private void openEditor(Calc result) {
-		// AnalyzeEditorInput input = new AnalyzeEditorInput();
-		// String resultKey = UUID.randomUUID().toString();
-		// App.getCache().put(resultKey, result);
-		// input.setResultKey(resultKey);
-		// Editors.open(input, AnalyzeEditor.ID);
-		// }
 	}
 }

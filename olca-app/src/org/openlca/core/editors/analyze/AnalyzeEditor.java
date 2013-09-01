@@ -9,6 +9,8 @@
  ******************************************************************************/
 package org.openlca.core.editors.analyze;
 
+import java.util.Collection;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -17,9 +19,13 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.editors.AnalyzeEditorInput;
+import org.openlca.app.results.InventoryResultPage;
+import org.openlca.app.results.InventoryResultProvider;
+import org.openlca.core.database.Cache;
 import org.openlca.core.editors.analyze.sankey.SankeyDiagram;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.model.ProductSystem;
+import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.results.AnalysisResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +71,7 @@ public class AnalyzeEditor extends FormEditor {
 		try {
 			addPage(new AnalyzeInfoPage(this, result, setup));
 
-			addPage(new LCITotalPage(this, result));
+			addPage(new InventoryResultPage(this, new InventoryAdapter()));
 			if (result.hasImpactResults())
 				addPage(new LCIATotalPage(this, result));
 			addPage(new ProcessContributionPage(this, result));
@@ -127,6 +133,25 @@ public class AnalyzeEditor extends FormEditor {
 	@Override
 	public void close(boolean save) {
 		super.close(save);
+	}
+
+	private class InventoryAdapter implements InventoryResultProvider {
+
+		@Override
+		public Collection<FlowDescriptor> getFlows(Cache cache) {
+			return result.getFlowResults().getFlows(cache);
+		}
+
+		@Override
+		public double getAmount(FlowDescriptor flow) {
+			return result.getFlowResults().getTotalResult(flow);
+		}
+
+		@Override
+		public boolean isInput(FlowDescriptor flow) {
+			return result.getFlowIndex().isInput(flow.getId());
+		}
+
 	}
 
 }

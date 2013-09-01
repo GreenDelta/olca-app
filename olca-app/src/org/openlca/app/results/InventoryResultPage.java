@@ -1,25 +1,24 @@
-package org.openlca.core.editors.analyze;
+package org.openlca.app.results;
 
-import java.util.Set;
+import java.util.Collection;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.viewers.ViewerSorter;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.forms.HyperlinkSettings;
 import org.eclipse.ui.forms.IManagedForm;
+import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
@@ -27,32 +26,28 @@ import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.Cache;
 import org.openlca.core.model.descriptors.FlowDescriptor;
-import org.openlca.core.results.AnalysisResult;
 import org.openlca.util.Strings;
 
-public class LCITotalPage extends FormPage {
+/**
+ * Shows the total inventory result of a quick calculation, analysis result,
+ * etc.
+ */
+public class InventoryResultPage extends FormPage {
 
-	private interface COLUMN_LABELS {
-
-		String FLOW = "Flow";
-		String CATEGORY = "Category";
-		String SUBCATEGORY = "Subcategory";
-		String UNIT = "Unit";
-		String RESULT = "Result";
-		String[] VALUES = { FLOW, CATEGORY, SUBCATEGORY, UNIT, RESULT };
-
-	}
-
-	private static final double[] COLUMN_WIDTHS = { 0.40, 0.20, 0.20, 0.08,
-			0.10 };
+	private final String FLOW = Messages.Flow;
+	private final String CATEGORY = Messages.Category;
+	private final String SUB_CATEGORY = Messages.SubCategory;
+	private final String UNIT = Messages.Unit;
+	private final String AMOUNT = Messages.Amount;
 
 	private Cache cache = Database.getCache();
 	private FormToolkit toolkit;
-	private AnalysisResult result;
+	private InventoryResultProvider resultProvider;
 
-	public LCITotalPage(AnalyzeEditor editor, AnalysisResult result) {
-		super(editor, LCITotalPage.class.getCanonicalName(), "LCI - Total");
-		this.result = result;
+	public InventoryResultPage(FormEditor editor,
+			InventoryResultProvider resultProvider) {
+		super(editor, "InventoryResultPage", "Inventory results");
+		this.resultProvider = resultProvider;
 	}
 
 	@Override
@@ -61,16 +56,13 @@ public class LCITotalPage extends FormPage {
 		toolkit = managedForm.getToolkit();
 		toolkit.getHyperlinkGroup().setHyperlinkUnderlineMode(
 				HyperlinkSettings.UNDERLINE_HOVER);
-		form.setText("LCI - Total");
+		form.setText("Inventory results");
 		toolkit.decorateFormHeading(form.getForm());
-
 		Composite body = UI.formBody(form, toolkit);
-		TableViewer inputViewer = createSectionAndViewer(body, true); // input
-		TableViewer outputViewer = createSectionAndViewer(body, false); // output
-
+		TableViewer inputViewer = createSectionAndViewer(body, true);
+		TableViewer outputViewer = createSectionAndViewer(body, false);
 		form.reflow(true);
-
-		Set<FlowDescriptor> flows = result.getFlowResults().getFlows(cache);
+		Collection<FlowDescriptor> flows = resultProvider.getFlows(cache);
 		inputViewer.setInput(flows);
 		outputViewer.setInput(flows);
 	}
@@ -82,26 +74,16 @@ public class LCITotalPage extends FormPage {
 		Composite composite = toolkit.createComposite(section);
 		section.setClient(composite);
 		UI.gridLayout(composite, 1);
-
-		TableViewer viewer = new TableViewer(composite);
-		viewer.setLabelProvider(new LCILabelProvider());
-		viewer.setContentProvider(ArrayContentProvider.getInstance());
-		viewer.getTable().setLinesVisible(true);
-		viewer.getTable().setHeaderVisible(true);
-
-		for (int i = 0; i < COLUMN_LABELS.VALUES.length; i++) {
-			final TableColumn c = new TableColumn(viewer.getTable(), SWT.NULL);
-			c.setText(COLUMN_LABELS.VALUES[i]);
-		}
-		viewer.setColumnProperties(COLUMN_LABELS.VALUES);
+		TableViewer viewer = Tables.createViewer(composite, new String[] {
+				FLOW, CATEGORY, SUB_CATEGORY, UNIT, AMOUNT });
+		viewer.setLabelProvider(new LabelProvider());
 		viewer.setFilters(new ViewerFilter[] { new InputOutputFilter(input) });
 		viewer.setSorter(new FlowViewerSorter());
-		UI.gridData(viewer.getTable(), true, true);
-		Tables.bindColumnWidths(viewer.getTable(), COLUMN_WIDTHS);
+		Tables.bindColumnWidths(viewer.getTable(), 0.40, 0.20, 0.20, 0.08, 0.10);
 		return viewer;
 	}
 
-	private class LCILabelProvider extends BaseLabelProvider implements
+	private class LabelProvider extends BaseLabelProvider implements
 			ITableLabelProvider {
 
 		@Override
@@ -113,23 +95,20 @@ public class LCITotalPage extends FormPage {
 		public String getColumnText(Object element, int columnIndex) {
 			if (!(element instanceof FlowDescriptor))
 				return null;
-
 			FlowDescriptor flow = (FlowDescriptor) element;
 			Pair<String, String> category = Labels.getFlowCategory(flow, cache);
-			String columnLabel = COLUMN_LABELS.VALUES[columnIndex];
-
-			switch (columnLabel) {
-			case COLUMN_LABELS.FLOW:
-				return flow.getName();
-			case COLUMN_LABELS.CATEGORY:
+			switch (columnIndex) {
+			case 0:
+				return Labels.getDisplayName(flow);
+			case 1:
 				return category.getLeft();
-			case COLUMN_LABELS.SUBCATEGORY:
+			case 2:
 				return category.getRight();
-			case COLUMN_LABELS.UNIT:
+			case 3:
 				return Labels.getRefUnit(flow, cache);
-			case COLUMN_LABELS.RESULT:
-				return Numbers.format(result.getFlowResults().getTotalResult(
-						flow));
+			case 4:
+				double v = resultProvider.getAmount(flow);
+				return Numbers.format(v);
 			default:
 				return null;
 			}
@@ -150,9 +129,8 @@ public class LCITotalPage extends FormPage {
 			if (!(element instanceof FlowDescriptor))
 				return false;
 			FlowDescriptor flow = (FlowDescriptor) element;
-			return result.getFlowIndex().isInput(flow.getId()) == input;
+			return resultProvider.isInput(flow) == input;
 		}
-
 	}
 
 	private class FlowViewerSorter extends ViewerSorter {
@@ -165,19 +143,18 @@ public class LCITotalPage extends FormPage {
 				return 0;
 
 			FlowDescriptor flow1 = (FlowDescriptor) e1;
-			Pair<String, String> cat1 = Labels.getFlowCategory(flow1, cache);
 			FlowDescriptor flow2 = (FlowDescriptor) e2;
+			int c = Strings.compare(flow1.getName(), flow2.getName());
+			if (c != 0)
+				return c;
+
+			Pair<String, String> cat1 = Labels.getFlowCategory(flow1, cache);
 			Pair<String, String> cat2 = Labels.getFlowCategory(flow2, cache);
-
-			int c = Strings.compare(cat1.getLeft(), cat2.getLeft());
+			c = Strings.compare(cat1.getLeft(), cat2.getLeft());
 			if (c != 0)
 				return c;
-			c = Strings.compare(cat1.getRight(), cat2.getLeft());
-			if (c != 0)
-				return c;
-			return Strings.compare(flow1.getName(), flow2.getName());
+			return Strings.compare(cat1.getRight(), cat2.getLeft());
 		}
-
 	}
 
 }

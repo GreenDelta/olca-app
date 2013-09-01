@@ -12,6 +12,7 @@ package org.openlca.core.editors.result;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.part.EditorActionBarContributor;
+import org.openlca.app.inventory.InventoryResultEditor;
 
 /**
  * Action bar contributions of the result editor. See the plugin.xml.
@@ -32,8 +33,8 @@ public class ResultActionProvider extends EditorActionBarContributor {
 
 	@Override
 	public void setActiveEditor(IEditorPart targetEditor) {
-		if (targetEditor instanceof ResultEditor) {
-			ResultEditor e = (ResultEditor) targetEditor;
+		if (targetEditor instanceof InventoryResultEditor) {
+			InventoryResultEditor e = (InventoryResultEditor) targetEditor;
 			exportExcelAction.setResults(e.getLCIResult(), e.getLCIAResult(),
 					e.getDatabase());
 			saveResultAction.setData(e.getLCIAResult(), e.getDatabase());

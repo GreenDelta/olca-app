@@ -71,13 +71,11 @@
             contributorClass="org.openlca.app.editors.actions.ProductSystemActionContributor">
       </editor>
       <editor
-            class="org.openlca.core.editors.result.ResultEditor"
-            contributorClass="org.openlca.core.editors.result.ResultActionProvider"
+            class="org.openlca.app.inventory.InventoryResultEditor"
             default="false"
             icon="icons/expression_obj.gif"
-            id="editors.impactresult"
-            name="Result viewer">
-            
+            id="InventoryResultEditor"
+            name="Quick results">
       </editor>
       <editor
             id="ProjectResultEditor"
