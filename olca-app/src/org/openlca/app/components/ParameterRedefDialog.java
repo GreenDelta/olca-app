@@ -84,7 +84,6 @@ public class ParameterRedefDialog extends FormDialog {
 	private static ParameterRedef fetchRedef(ResultSet results)
 			throws Exception {
 		ParameterRedef redef = new ParameterRedef();
-		redef.setId(results.getLong("id"));
 		redef.setName(results.getString("name"));
 		redef.setValue(results.getDouble("value"));
 		long procId = results.getLong("f_owner");

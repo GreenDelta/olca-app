@@ -33,6 +33,7 @@ import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ProductSystemDao;
 import org.openlca.core.model.ModelType;
+import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.Project;
 import org.openlca.core.model.ProjectVariant;
@@ -141,6 +142,8 @@ public class ProjectSetupPage extends ModelPage<Project> {
 		ProjectVariant variant = new ProjectVariant();
 		variant.setProductSystem(system);
 		variant.setName("Variant " + (variants.size() + 1));
+		for (ParameterRedef redef : system.getParameterRedefs())
+			variant.getParameterRedefs().add(redef.clone());
 		variants.add(variant);
 		variantViewer.setInput(variants);
 		editor.setDirty(true);
