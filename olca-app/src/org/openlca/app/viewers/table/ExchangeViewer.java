@@ -152,6 +152,7 @@ public class ExchangeViewer extends AbstractTableViewer<Exchange> {
 		exchange.setFlowPropertyFactor(flow.getReferenceFactor());
 		exchange.setUnit(flow.getReferenceFactor().getFlowProperty()
 				.getUnitGroup().getReferenceUnit());
+		exchange.setAmountValue(1.0);
 		exchange.setInput(is(direction, INPUTS));
 		fireModelChanged(ModelChangeType.CREATE, exchange);
 		setInput(process);
