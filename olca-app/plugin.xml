@@ -55,11 +55,12 @@
             name="%editors.name.7">
       </editor>
       <editor
-            class="org.openlca.app.editors.ProjectEditor"
+            class="org.openlca.app.projects.ProjectEditor"
             default="false"
             icon="icons/project_obj.png"
             id="editors.project"
-            name="%editors.name.4">
+            name="%editors.name.4"
+            contributorClass="org.openlca.app.projects.ProjectActionContributor">
       </editor>
       <editor
             class="org.openlca.app.editors.ProductSystemEditor"
