@@ -11,10 +11,12 @@ import org.slf4j.LoggerFactory;
 
 public class ProductSystemActionContributor extends EditorActionBarContributor {
 
+	private EditAction editAction = new EditAction();
 	private Logger log = LoggerFactory.getLogger(getClass());
 
-	@Override
+	@Override 
 	public void contributeToToolBar(IToolBarManager toolBarManager) {
+		toolBarManager.add(editAction);
 		toolBarManager.add(Actions.onCalculate(new Runnable() {
 			public void run() {
 				tryCalculate();

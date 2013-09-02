@@ -10,56 +10,56 @@
             default="false"
             icon="icons/actor_obj.png"
             id="editors.actor"
-            name="%editor.name">
+            name="%editors.name">
       </editor>
       <editor
             class="org.openlca.app.editors.SourceEditor"
             default="false"
             icon="icons/source_obj.png"
             id="editors.source"
-            name="%editor.name.0">
+            name="%editors.name.5">
       </editor>
       <editor
             class="org.openlca.app.editors.UnitGroupEditor"
             default="false"
             icon="icons/unitgroup_obj.gif"
             id="editors.unitgroup"
-            name="%editor.name.1">
+            name="%editors.name.6">
       </editor>
       <editor
             class="org.openlca.app.editors.FlowPropertyEditor"
             default="false"
             icon="icons/flowprop_obj.gif"
             id="editors.flowproperty"
-            name="%editor.name.2">
+            name="%editors.name.1">
       </editor>
       <editor
             class="org.openlca.app.editors.FlowEditor"
             default="false"
             icon="icons/flow_obj.gif"
             id="editors.flow"
-            name="%editor.name.3">
+            name="%editors.name.0">
       </editor>
       <editor
             class="org.openlca.app.editors.ImpactMethodEditor"
             default="false"
             icon="icons/LCIA_obj.gif"
             id="editors.impactmethod"
-            name="%editor.name.7">
+            name="%editors.name.2">
       </editor>
       <editor
             class="org.openlca.app.editors.ProcessEditor"
             default="false"
             icon="icons/proc_obj.gif"
             id="editors.process"
-            name="%editor.name.4">
+            name="%editors.name.7">
       </editor>
       <editor
             class="org.openlca.app.projects.ProjectEditor"
             default="false"
             icon="icons/project_obj.png"
             id="editors.project"
-            name="%editor.name.5"
+            name="%editors.name.4"
             contributorClass="org.openlca.app.projects.ProjectActionContributor">
       </editor>
       <editor
@@ -67,7 +67,7 @@
             default="false"
             icon="icons/model.gif"
             id="editors.productsystem"
-            name="%editor.name.6" 
+            name="%editors.name.3" 
             contributorClass="org.openlca.app.editors.actions.ProductSystemActionContributor">
       </editor>
       <editor
@@ -115,6 +115,13 @@
             icon="icons/16x16_link_blue.png"
             id="editors.usage"
             name="%usage">
+      </editor>
+      <editor
+            class="org.openlca.app.editors.graphical.ProductSystemGraphEditor"
+            default="false"
+            icon="icons/model.gif"
+            id="editors.productsystem.graphical"
+            name="Product system graphical editor">
       </editor>      
    </extension>
    

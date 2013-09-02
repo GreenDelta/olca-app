@@ -84,7 +84,7 @@ public enum ImageType implements IImageType {
 
 	FLOW_WASTE("flow_waste_16.png"),
 
-	FOLD_ICON("foldall.png"),
+	COLLAPSE_ICON("collapse_all.png"),
 
 	FOLDER_EXPR("folder_expr.png"),
 
