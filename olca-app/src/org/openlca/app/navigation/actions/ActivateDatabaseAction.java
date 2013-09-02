@@ -10,6 +10,7 @@ import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.resources.ImageType;
+import org.openlca.app.util.Editors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +43,7 @@ public class ActivateDatabaseAction extends Action implements INavigationAction 
 
 	@Override
 	public void run() {
+		Editors.closeAll();
 		App.run("Activate database", new Runnable() {
 			public void run() {
 				activate();

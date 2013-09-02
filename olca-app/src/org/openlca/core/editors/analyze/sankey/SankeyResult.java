@@ -2,17 +2,14 @@ package org.openlca.core.editors.analyze.sankey;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.openlca.core.math.Index;
-import org.openlca.core.model.Flow;
-import org.openlca.core.model.Process;
+import org.openlca.core.matrices.LongIndex;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
+import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.core.model.results.AnalysisResult;
+import org.openlca.core.results.AnalysisResult;
 import org.openlca.util.Doubles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,38 +24,37 @@ class SankeyResult {
 	private ProductSystem productSystem;
 	private AnalysisResult results;
 
-	private Index<Process> processIndex;
+	private LongIndex processIndex;
 	private double[] totalResults;
 	private double[] totalContributions;
 	private double[] singleResults;
 	private double[] singleContributions;
-	private Map<Long, Double> linkContribution;
 
 	public SankeyResult(ProductSystem productSystem, AnalysisResult results) {
 		this.productSystem = productSystem;
 		this.results = results;
 	}
 
-	public double getSingleResult(Process process) {
-		return fetchVal(process, singleResults);
+	public double getSingleResult(long processId) {
+		return fetchVal(processId, singleResults);
 	}
 
-	public double getSingleContribution(Process process) {
-		return fetchVal(process, singleContributions);
+	public double getSingleContribution(long processId) {
+		return fetchVal(processId, singleContributions);
 	}
 
-	public double getTotalResult(Process process) {
-		return fetchVal(process, totalResults);
+	public double getTotalResult(long processId) {
+		return fetchVal(processId, totalResults);
 	}
 
-	public double getTotalContribution(Process process) {
-		return fetchVal(process, totalContributions);
+	public double getTotalContribution(long processId) {
+		return fetchVal(processId, totalContributions);
 	}
 
-	private double fetchVal(Process process, double[] values) {
-		if (process == null || values == null || processIndex == null)
+	private double fetchVal(long processId, double[] values) {
+		if (values == null || processIndex == null)
 			return Double.NaN;
-		int idx = processIndex.getIndex(process);
+		int idx = processIndex.getIndex(processId);
 		if (idx < 0 || idx >= values.length)
 			return Double.NaN;
 		return values[idx];
@@ -77,21 +73,18 @@ class SankeyResult {
 
 	public List<Long> getProcesseIdsAboveCutoff(double cutoff) {
 		List<Long> processes = new ArrayList<>();
-		for (Process process : productSystem.getProcesses()) {
+		for (Long process : productSystem.getProcesses()) {
 			double contr = getTotalContribution(process);
 			if (Math.abs(contr) >= cutoff)
-				processes.add(process.getId());
+				processes.add(process);
 		}
 		return processes;
 	}
 
 	public double getLinkContribution(ProcessLink processLink) {
-		if (processLink == null || linkContribution == null)
+		if (processLink == null || results == null)
 			return 0;
-		Double ratio = linkContribution.get(processLink.getId());
-		if (ratio == null)
-			return 0;
-		return ratio;
+		return results.getContributions().getLinkShare(processLink);
 	}
 
 	/** Calculates the results for the given selection and cutoff. */
@@ -99,14 +92,13 @@ class SankeyResult {
 		log.trace("Calculating sankey result");
 		buildProcessIndex();
 		calc(selection);
-		calcLinkContributions();
 	}
 
 	private void calc(Object selection) {
 		log.trace("Calculate for selection {}", selection);
-		if (selection instanceof Flow) {
-			totalResults = calcAggFlowResults((Flow) selection);
-			singleResults = calcSingFlowResults((Flow) selection);
+		if (selection instanceof FlowDescriptor) {
+			totalResults = calcAggFlowResults((FlowDescriptor) selection);
+			singleResults = calcSingFlowResults((FlowDescriptor) selection);
 		} else if (selection instanceof ImpactCategoryDescriptor) {
 			totalResults = calcAggImpactResults((ImpactCategoryDescriptor) selection);
 			singleResults = calcSingImpactResults((ImpactCategoryDescriptor) selection);
@@ -134,21 +126,22 @@ class SankeyResult {
 		return contributions;
 	}
 
-	private double[] calcAggFlowResults(Flow flow) {
+	private double[] calcAggFlowResults(FlowDescriptor flow) {
 		double[] vector = new double[processIndex.size()];
 		for (int i = 0; i < processIndex.size(); i++) {
-			Process process = processIndex.getItemAt(i);
-			double result = results.getResult(process, flow);
+			long processId = processIndex.getKeyAt(i);
+			double result = results.getTotalFlowResult(processId, flow.getId());
 			vector[i] = result;
 		}
 		return vector;
 	}
 
-	private double[] calcSingFlowResults(Flow flow) {
+	private double[] calcSingFlowResults(FlowDescriptor flow) {
 		double[] vector = new double[processIndex.size()];
 		for (int i = 0; i < processIndex.size(); i++) {
-			Process process = processIndex.getItemAt(i);
-			double result = results.getSingleResult(process, flow);
+			long processId = processIndex.getKeyAt(i);
+			double result = results
+					.getSingleFlowResult(processId, flow.getId());
 			vector[i] = result;
 		}
 		return vector;
@@ -157,8 +150,9 @@ class SankeyResult {
 	private double[] calcAggImpactResults(ImpactCategoryDescriptor category) {
 		double[] vector = new double[processIndex.size()];
 		for (int i = 0; i < processIndex.size(); i++) {
-			Process process = processIndex.getItemAt(i);
-			double result = results.getResult(process, category);
+			long processId = processIndex.getKeyAt(i);
+			double result = results.getTotalImpactResult(processId,
+					category.getId());
 			vector[i] = result;
 		}
 		return vector;
@@ -167,55 +161,18 @@ class SankeyResult {
 	private double[] calcSingImpactResults(ImpactCategoryDescriptor category) {
 		double[] vector = new double[processIndex.size()];
 		for (int i = 0; i < processIndex.size(); i++) {
-			Process process = processIndex.getItemAt(i);
-			double result = results.getSingleResult(process, category);
+			long processId = processIndex.getKeyAt(i);
+			double result = results.getSingleImpactResult(processId,
+					category.getId());
 			vector[i] = result;
 		}
 		return vector;
 	}
 
 	private void buildProcessIndex() {
-		processIndex = new Index<>(Process.class);
-		for (Process process : productSystem.getProcesses())
+		processIndex = new LongIndex();
+		for (Long process : productSystem.getProcesses())
 			processIndex.put(process);
 	}
 
-	private void calcLinkContributions() {
-		log.trace("Calculate link contributions");
-		linkContribution = new HashMap<>();
-		for (Process provider : productSystem.getProcesses()) {
-			double providerContribution = getTotalContribution(provider);
-			if (providerContribution == 0)
-				continue;
-			ProcessLink[] links = productSystem.getOutgoingLinks(provider
-					.getId());
-			if (links == null || links.length == 0)
-				continue;
-			if (links.length == 1) {
-				linkContribution.put(links[0].getId(), providerContribution);
-				continue;
-			}
-			double[] recipientFactors = calcRecipientFactors(links);
-			for (int i = 0; i < recipientFactors.length; i++) {
-				double contr = providerContribution * recipientFactors[i];
-				linkContribution.put(links[i].getId(), contr);
-			}
-		}
-		log.trace("Calculation of link contributions done");
-	}
-
-	private double[] calcRecipientFactors(ProcessLink[] links) {
-		double[] recipientAmounts = new double[links.length];
-		for (int i = 0; i < links.length; i++) {
-			Process recipient = links[i].getRecipientProcess();
-			double scaling = results.getScalingFactor(recipient);
-			double amount = links[i].getRecipientInput().getConvertedResult();
-			recipientAmounts[i] = scaling * amount;
-		}
-		double sum = Doubles.sum(recipientAmounts);
-		double[] linkFactors = new double[links.length];
-		for (int i = 0; i < linkFactors.length; i++)
-			linkFactors[i] = recipientAmounts[i] / sum;
-		return linkFactors;
-	}
 }

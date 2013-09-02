@@ -4,8 +4,10 @@ import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.openlca.app.util.CategoryPath;
+import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.viewers.BaseLabelProvider;
+import org.openlca.core.database.Cache;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.UnitGroup;
@@ -16,12 +18,11 @@ import org.slf4j.LoggerFactory;
 public class InventoryContributionLabel extends BaseLabelProvider implements
 		ITableLabelProvider {
 
-	private Logger log = LoggerFactory.getLogger(getClass());
-	private IDatabase database;
+	private Cache cache;
 	private boolean process;
 
-	public InventoryContributionLabel(IDatabase database, boolean process) {
-		this.database = database;
+	public InventoryContributionLabel(Cache cache, boolean process) {
+		this.cache = cache;
 		this.process = process;
 	}
 
@@ -50,13 +51,16 @@ public class InventoryContributionLabel extends BaseLabelProvider implements
 			return process ? result.getProcess().getName() : result.getFlow()
 					.getName();
 		case 1:
-			return CategoryPath.getFull(result.getFlow().getCategory());
+			Long catId = result.getFlow().getCategory();
+			if (catId == null)
+				return null;
+			return CategoryPath.getFull(cache.getCategory(catId));
 		case 2:
-			return Numbers.format(result.getAggregatedResult());
+			return Numbers.format(result.getTotalResult());
 		case 3:
 			return Numbers.format(result.getSingleResult());
 		case 4:
-			return getReferenceUnitName(database, result.getFlow());
+			return Labels.getRefUnit(result.getFlow(), cache);
 		default:
 			return null;
 		}

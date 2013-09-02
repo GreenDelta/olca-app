@@ -25,8 +25,8 @@ import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
+import org.openlca.core.database.Cache;
 import org.openlca.core.editors.ContributionImage;
-import org.openlca.core.model.Flow;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.AnalysisResult;
@@ -39,6 +39,7 @@ public class FlowImpactPage extends FormPage {
 	private final static String[] COLUMN_LABELS = { "Contribution", "Flow",
 			"Total amount", "Single amount", "Unit" };
 
+	private Cache cache = Database.getCache();
 	private AnalysisResult result;
 	private ImpactCategoryViewer impactCategoryViewer;
 	private TableViewer flowViewer;
@@ -69,7 +70,8 @@ public class FlowImpactPage extends FormPage {
 		UI.gridLayout(selectionContainer, 5);
 		UI.formLabel(selectionContainer, toolkit, "Impact category");
 		impactCategoryViewer = new ImpactCategoryViewer(selectionContainer);
-		impactCategoryViewer.setInput(result);
+		impactCategoryViewer.setInput(result.getImpactResults().getImpacts(
+				cache));
 		impactCategoryViewer
 				.addSelectionChangedListener(new ISelectionChangedListener<ImpactCategoryDescriptor>() {
 
@@ -111,22 +113,20 @@ public class FlowImpactPage extends FormPage {
 		flowViewer.setSorter(new ContributionSorter());
 		flowViewer.setFilters(new ViewerFilter[] { new CutOffFilter() });
 		UI.gridData(flowViewer.getTable(), true, true);
-		Tables.bindColumnWidths(flowViewer.getTable(), new double[] { 0.17, 0.38,
-				0.17, 0.17, 0.10 });
+		Tables.bindColumnWidths(flowViewer.getTable(), new double[] { 0.17,
+				0.38, 0.17, 0.17, 0.10 });
 	}
 
-	private double getSingleAmount(Contribution<Flow> flowContribution) {
+	private double getSingleAmount(Contribution<FlowDescriptor> flowContribution) {
 		return flowContribution.getAmount();
 	}
 
 	private double getTotalAmount() {
-		return result
-				.getImpactResult(result.getSetup().getReferenceProcess(),
-						impactCategoryViewer.getSelected(), null)
-				.getAggregatedResult().getValue();
+		return result.getImpactResults().getTotalResult(
+				impactCategoryViewer.getSelected());
 	}
 
-	private double getContribution(Contribution<Flow> flowContribution) {
+	private double getContribution(Contribution<FlowDescriptor> flowContribution) {
 		double singleResult = getSingleAmount(flowContribution);
 		if (singleResult == 0)
 			return 0;
@@ -177,7 +177,7 @@ public class FlowImpactPage extends FormPage {
 				return null;
 
 			@SuppressWarnings("unchecked")
-			Contribution<Flow> contribution = (Contribution<Flow>) element;
+			Contribution<FlowDescriptor> contribution = (Contribution<FlowDescriptor>) element;
 			switch (columnIndex) {
 			case 0:
 				return Numbers.percent(getContribution(contribution));
@@ -202,7 +202,7 @@ public class FlowImpactPage extends FormPage {
 				Object element) {
 			if (!(element instanceof Contribution) || element == null)
 				return false;
-			if (getContribution((Contribution<Flow>) element) * 100 < cutOff)
+			if (getContribution((Contribution<FlowDescriptor>) element) * 100 < cutOff)
 				return false;
 			return true;
 		}
@@ -220,10 +220,10 @@ public class FlowImpactPage extends FormPage {
 
 			double contribution1 = 0;
 			if (e1 instanceof Contribution)
-				contribution1 = getContribution((Contribution<Flow>) e1);
+				contribution1 = getContribution((Contribution<FlowDescriptor>) e1);
 			double contribution2 = 0;
 			if (e2 instanceof Contribution)
-				contribution2 = getContribution((Contribution<Flow>) e2);
+				contribution2 = getContribution((Contribution<FlowDescriptor>) e2);
 
 			return -1 * Double.compare(contribution1, contribution2);
 		}

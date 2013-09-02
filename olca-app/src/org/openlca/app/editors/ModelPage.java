@@ -27,12 +27,12 @@ import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-abstract class ModelPage<T extends CategorizedEntity> extends FormPage {
+public abstract class ModelPage<T extends CategorizedEntity> extends FormPage {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private DataBinding binding;
 
-	ModelPage(ModelEditor<T> editor, String id, String title) {
+	public ModelPage(ModelEditor<T> editor, String id, String title) {
 		super(editor, id, title);
 		this.binding = new DataBinding(editor);
 	}
@@ -47,7 +47,7 @@ abstract class ModelPage<T extends CategorizedEntity> extends FormPage {
 		return getEditor().getModel();
 	}
 
-	DataBinding getBinding() {
+	protected DataBinding getBinding() {
 		return binding;
 	}
 

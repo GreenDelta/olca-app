@@ -3,6 +3,7 @@ package org.openlca.core.editors.analyze;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -24,22 +25,25 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.db.Database;
+import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.ProcessViewer;
+import org.openlca.core.database.Cache;
 import org.openlca.core.editors.ContributionImage;
-import org.openlca.core.editors.model.FlowInfo;
-import org.openlca.core.math.FlowIndex;
-import org.openlca.core.model.Flow;
-import org.openlca.core.model.Process;
+import org.openlca.core.matrices.FlowIndex;
+import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.core.model.results.AnalysisResult;
+import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.core.results.AnalysisResult;
 
 /** Shows the single results of the processes in an analysis result. */
 public class ProcessResultPage extends FormPage {
 
+	private Cache cache = Database.getCache();
 	private AnalyzeEditor editor;
 	private AnalysisResult result;
 	private ResultProvider flowResultProvider;
@@ -85,21 +89,23 @@ public class ProcessResultPage extends FormPage {
 
 	private void setInputs() {
 		FlowIndex flowIndex = result.getFlowIndex();
-		List<Flow> inputFlows = new ArrayList<>();
-		List<Flow> outputFlows = new ArrayList<>();
-		for (Flow flow : flowIndex.getFlows()) {
-			if (flowIndex.isInput(flow))
+		List<FlowDescriptor> inputFlows = new ArrayList<>();
+		List<FlowDescriptor> outputFlows = new ArrayList<>();
+		for (FlowDescriptor flow : result.getFlowResults().getFlows(cache)) {
+			if (flowIndex.isInput(flow.getId()))
 				inputFlows.add(flow);
 			else
 				outputFlows.add(flow);
 		}
 		inputViewer.setInput(inputFlows);
 		outputViewer.setInput(outputFlows);
-		Process p = result.getSetup().getReferenceProcess();
+
+		ProcessDescriptor p = cache.getProcessDescriptor(result
+				.getProductIndex().getRefProduct().getFirst());
 		flowProcessViewer.select(p);
 		if (result.hasImpactResults()) {
 			impactProcessViewer.select(p);
-			impactViewer.setInput(result.getImpactCategories());
+			impactViewer.setInput(result.getImpactResults().getImpacts(cache));
 		}
 	}
 
@@ -114,12 +120,12 @@ public class ProcessResultPage extends FormPage {
 		UI.gridData(container, true, false);
 		UI.gridLayout(container, 5);
 		UI.formLabel(container, toolkit, "Process");
-		flowProcessViewer = new ProcessViewer(container);
-		flowProcessViewer.setInput(result.getSetup().getProductSystem());
+		flowProcessViewer = new ProcessViewer(container, cache);
+		flowProcessViewer.setInput(editor.getSetup().getProductSystem());
 		flowProcessViewer
-				.addSelectionChangedListener(new ISelectionChangedListener<Process>() {
+				.addSelectionChangedListener(new ISelectionChangedListener<ProcessDescriptor>() {
 					@Override
-					public void selectionChanged(Process selection) {
+					public void selectionChanged(ProcessDescriptor selection) {
 						flowResultProvider.setProcess(selection);
 						inputViewer.refresh();
 						outputViewer.refresh();
@@ -161,12 +167,12 @@ public class ProcessResultPage extends FormPage {
 		UI.gridLayout(container, 5);
 		UI.gridData(container, true, false);
 		UI.formLabel(container, toolkit, "Process");
-		impactProcessViewer = new ProcessViewer(container);
-		impactProcessViewer.setInput(result.getSetup().getProductSystem());
+		impactProcessViewer = new ProcessViewer(container, cache);
+		impactProcessViewer.setInput(editor.getSetup().getProductSystem());
 		impactProcessViewer
-				.addSelectionChangedListener(new ISelectionChangedListener<Process>() {
+				.addSelectionChangedListener(new ISelectionChangedListener<ProcessDescriptor>() {
 					@Override
-					public void selectionChanged(Process selection) {
+					public void selectionChanged(ProcessDescriptor selection) {
 						impactResultProvider.setProcess(selection);
 						impactViewer.refresh();
 					}
@@ -196,8 +202,8 @@ public class ProcessResultPage extends FormPage {
 		viewer.setSorter(new ContributionSorter());
 		viewer.setFilters(new ViewerFilter[] { new CutOffFilter() });
 		UI.gridData(viewer.getTable(), true, true);
-		Tables.bindColumnWidths(viewer.getTable(), new double[] { 0.20, 0.30, 0.20,
-				0.20, 0.10 });
+		Tables.bindColumnWidths(viewer.getTable(), new double[] { 0.20, 0.30,
+				0.20, 0.20, 0.10 });
 	}
 
 	private class FlowCutOffChange implements SelectionListener {
@@ -234,74 +240,70 @@ public class ProcessResultPage extends FormPage {
 
 		@Override
 		public Image getColumnImage(Object element, int columnIndex) {
-			if (!(element instanceof Flow) || columnIndex != 0)
+			if (!(element instanceof FlowDescriptor) || columnIndex != 0)
 				return null;
-			Flow flow = (Flow) element;
+			FlowDescriptor flow = (FlowDescriptor) element;
 			return image.getForTable(flowResultProvider
 					.getUpstreamContribution(flow));
 		}
 
 		@Override
 		public String getColumnText(Object element, int columnIndex) {
-			if (!(element instanceof Flow))
+			if (!(element instanceof FlowDescriptor))
 				return null;
-			Flow flow = (Flow) element;
-			FlowInfo info = editor.getFlowInfo(flow);
+			FlowDescriptor flow = (FlowDescriptor) element;
 			switch (columnIndex) {
 			case 0:
 				return Numbers.percent(flowResultProvider
 						.getUpstreamContribution(flow));
 			case 1:
-				return getFlowLabel(info);
+				return getFlowLabel(flow);
 			case 2:
 				return Numbers
 						.format(flowResultProvider.getUpstreamTotal(flow));
 			case 3:
 				return Numbers.format(flowResultProvider.getDirectResult(flow));
 			case 4:
-				return info.getUnit();
+				return Labels.getRefUnit(flow, cache);
 			default:
 				return null;
 			}
 		}
 
-		private String getFlowLabel(FlowInfo flow) {
+		private String getFlowLabel(FlowDescriptor flow) {
 			String val = flow.getName();
-			if (flow.getCategory() == null && flow.getSubCategory() == null
-					&& flow.getLocation() == null)
+			if (flow.getCategory() == null && flow.getLocation() == null)
 				return val;
+			Pair<String, String> cat = Labels.getFlowCategory(flow, cache);
 			val += "(";
-			if (flow.getCategory() != null)
-				val += flow.getCategory();
-			if (flow.getSubCategory() != null)
-				val += "/" + flow.getSubCategory();
-			if (flow.getLocation() != null)
-				val += "/" + flow.getLocation();
+			if (cat.getLeft() != null && !cat.getLeft().isEmpty())
+				val += cat.getLeft();
+			if (cat.getRight() != null && !cat.getRight().isEmpty())
+				val += "/" + cat.getRight();
 			val += ")";
 			return val;
 		}
-
 	}
 
 	private class ContributionSorter extends ViewerSorter {
 
 		@Override
 		public int compare(Viewer viewer, Object e1, Object e2) {
-			if (!((e1 instanceof Flow && e2 instanceof Flow) || (e1 instanceof ImpactCategoryDescriptor && e2 instanceof ImpactCategoryDescriptor)))
+			if (!((e1 instanceof FlowDescriptor && e2 instanceof FlowDescriptor) || (e1 instanceof ImpactCategoryDescriptor && e2 instanceof ImpactCategoryDescriptor)))
 				return 0;
 
 			double contribution1 = 0;
-			if (e1 instanceof Flow)
+			if (e1 instanceof FlowDescriptor)
 				contribution1 = flowResultProvider
-						.getUpstreamContribution((Flow) e1);
+						.getUpstreamContribution((FlowDescriptor) e1);
 			else if (e1 instanceof ImpactCategoryDescriptor)
 				contribution1 = impactResultProvider
 						.getUpstreamContribution((ImpactCategoryDescriptor) e1);
 
 			double contribution2 = 0;
-			if (e2 instanceof Flow)
+			if (e2 instanceof FlowDescriptor)
 				contribution2 = flowResultProvider
-						.getUpstreamContribution((Flow) e2);
+						.getUpstreamContribution((FlowDescriptor) e2);
 			else if (e2 instanceof ImpactCategoryDescriptor)
 				contribution2 = impactResultProvider
 						.getUpstreamContribution((ImpactCategoryDescriptor) e2);
@@ -358,16 +360,16 @@ public class ProcessResultPage extends FormPage {
 		@Override
 		public boolean select(Viewer viewer, Object parentElement,
 				Object element) {
-			if (!(element instanceof Flow || element instanceof ImpactCategoryDescriptor))
+			if (!(element instanceof FlowDescriptor || element instanceof ImpactCategoryDescriptor))
 				return false;
-			boolean forFlow = element instanceof Flow;
+			boolean forFlow = element instanceof FlowDescriptor;
 			double cutoff = forFlow ? flowCutOff : impactCutOff;
 			if (cutoff == 0)
 				return true;
 			double contribution = 0;
 			if (forFlow)
 				contribution = flowResultProvider
-						.getUpstreamContribution((Flow) element);
+						.getUpstreamContribution((FlowDescriptor) element);
 			else
 				contribution = impactResultProvider
 						.getUpstreamContribution((ImpactCategoryDescriptor) element);
@@ -377,52 +379,53 @@ public class ProcessResultPage extends FormPage {
 
 	private class ResultProvider {
 
-		private Process process;
+		private ProcessDescriptor process;
 		private AnalysisResult result;
 
 		public ResultProvider(AnalysisResult result) {
-			this.process = result.getSetup().getReferenceProcess();
+			this.process = cache.getProcessDescriptor(result.getProductIndex()
+					.getRefProduct().getFirst());
 			this.result = result;
 		}
 
-		public void setProcess(Process process) {
+		public void setProcess(ProcessDescriptor process) {
 			this.process = process;
 		}
 
-		private double getUpstreamContribution(Flow flow) {
+		private double getUpstreamContribution(FlowDescriptor flow) {
 			if (process == null || flow == null)
 				return 0;
-			Process refProcess = result.getSetup().getReferenceProcess();
-			double total = result.getResult(refProcess, flow);
+			double total = result.getFlowResults().getTotalResult(flow);
 			if (total == 0)
 				return 0;
-			double val = result.getResult(process, flow);
+			double val = result.getTotalFlowResult(process.getId(),
+					flow.getId());
 			double contribution = val / total;
 			if (contribution > 1)
 				return 1;
 			return contribution;
 		}
 
-		private double getDirectResult(Flow flow) {
+		private double getDirectResult(FlowDescriptor flow) {
 			if (process == null || flow == null)
 				return 0;
-			return result.getSingleResult(process, flow);
+			return result.getSingleFlowResult(process.getId(), flow.getId());
 		}
 
-		private double getUpstreamTotal(Flow flow) {
+		private double getUpstreamTotal(FlowDescriptor flow) {
 			if (process == null || flow == null)
 				return 0;
-			return result.getResult(process, flow);
+			return result.getTotalFlowResult(process.getId(), flow.getId());
 		}
 
 		private double getUpstreamContribution(ImpactCategoryDescriptor category) {
 			if (process == null || category == null)
 				return 0;
-			Process refProcess = result.getSetup().getReferenceProcess();
-			double total = result.getResult(refProcess, category);
+			double total = result.getImpactResults().getTotalResult(category);
 			if (total == 0)
 				return 0;
-			double val = result.getResult(process, category);
+			double val = result.getTotalImpactResult(process.getId(),
+					category.getId());
 			double contribution = val / total;
 			if (contribution > 1)
 				return 1;
@@ -432,13 +435,15 @@ public class ProcessResultPage extends FormPage {
 		private double getDirectResult(ImpactCategoryDescriptor category) {
 			if (process == null || category == null)
 				return 0;
-			return result.getSingleResult(process, category);
+			return result.getSingleImpactResult(process.getId(),
+					category.getId());
 		}
 
 		private double getUpstreamTotal(ImpactCategoryDescriptor category) {
 			if (process == null || category == null)
 				return 0;
-			return result.getResult(process, category);
+			return result.getTotalImpactResult(process.getId(),
+					category.getId());
 		}
 	}
 

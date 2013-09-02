@@ -6,11 +6,10 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.Messages;
-import org.openlca.app.db.Database;
 import org.openlca.app.util.UI;
-import org.openlca.core.model.Flow;
+import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.core.model.results.AnalysisResult;
+import org.openlca.core.results.AnalysisResult;
 
 class ProcessContributionPage extends FormPage {
 
@@ -18,8 +17,7 @@ class ProcessContributionPage extends FormPage {
 	private AnalysisResult result;
 
 	public ProcessContributionPage(AnalyzeEditor editor, AnalysisResult result) {
-		super(editor, "ProcessContributionPage",
-				Messages.ProcessContributions);
+		super(editor, "ProcessContributionPage", Messages.ProcessContributions);
 		this.editor = editor;
 		this.result = result;
 	}
@@ -31,8 +29,8 @@ class ProcessContributionPage extends FormPage {
 		FormToolkit toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 
-		ProcessContributionSection<Flow> flowSection = createFlowSection(body,
-				toolkit);
+		ProcessContributionSection<FlowDescriptor> flowSection = createFlowSection(
+				body, toolkit);
 		ProcessContributionSection<ImpactCategoryDescriptor> impactSection = null;
 		if (result.hasImpactResults())
 			impactSection = createImpactSection(body, toolkit);
@@ -56,11 +54,11 @@ class ProcessContributionPage extends FormPage {
 		return impactSection;
 	}
 
-	private ProcessContributionSection<Flow> createFlowSection(Composite body,
-			FormToolkit toolkit) {
+	private ProcessContributionSection<FlowDescriptor> createFlowSection(
+			Composite body, FormToolkit toolkit) {
 		FlowContributionProvider flowProvider = new FlowContributionProvider(
-				Database.get(), result);
-		ProcessContributionSection<Flow> flowSection = new ProcessContributionSection<>(
+				result);
+		ProcessContributionSection<FlowDescriptor> flowSection = new ProcessContributionSection<>(
 				flowProvider);
 		flowSection.setSectionTitle(Messages.FlowContributions);
 		flowSection.setSelectionName(Messages.Flow);

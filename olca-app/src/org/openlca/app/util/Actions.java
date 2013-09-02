@@ -14,13 +14,13 @@ import org.openlca.app.resources.ImageType;
 /**
  * Factory methods for some standard actions, ready for Java 8, e.g.:
  * 
- * <code> Actions.createAdd(() -> aBlock); </code>
+ * <code> Actions.onAdd(() -> aBlock); </code>
  * 
  */
 public class Actions {
 
-	public static final Action createAdd(final Runnable runnable) {
-		Action action = new Action() {
+	public static final Action onAdd(final Runnable runnable) {
+		return new Action() {
 			{
 				setText(Messages.AddAction_Text);
 				setImageDescriptor(ImageManager
@@ -34,11 +34,24 @@ public class Actions {
 				runnable.run();
 			}
 		};
-		return action;
 	}
 
-	public static final Action createRemove(final Runnable runnable) {
-		Action action = new Action() {
+	public static final Action onCalculate(final Runnable runnable) {
+		return new Action() {
+			{
+				setText(Messages.Systems_CalculateButtonText);
+				setImageDescriptor(ImageType.CALCULATE_ICON.getDescriptor());
+			}
+
+			@Override
+			public void run() {
+				runnable.run();
+			}
+		};
+	}
+
+	public static final Action onRemove(final Runnable runnable) {
+		return new Action() {
 			{
 				setText(Messages.RemoveAction_Text);
 				setImageDescriptor(ImageManager
@@ -52,7 +65,6 @@ public class Actions {
 				runnable.run();
 			}
 		};
-		return action;
 	}
 
 	/** Creates a context menu with the given actions on the table viewer. */

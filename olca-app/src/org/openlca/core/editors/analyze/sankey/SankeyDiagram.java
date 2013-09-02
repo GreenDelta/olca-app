@@ -12,13 +12,13 @@ package org.openlca.core.editors.analyze.sankey;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.ConnectionLayer;
@@ -42,17 +42,18 @@ import org.eclipse.gef.ui.parts.GraphicalEditor;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.swt.SWT;
 import org.openlca.app.App;
-import org.openlca.app.editors.AnalyzeEditorInput;
-import org.openlca.core.database.IDatabase;
+import org.openlca.app.db.Database;
+import org.openlca.core.database.Cache;
 import org.openlca.core.editors.analyze.PropertySelectionAction;
-import org.openlca.core.model.Flow;
+import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.model.NormalizationWeightingSet;
-import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
+import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
-import org.openlca.core.model.results.AnalysisResult;
+import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.core.results.AnalysisResult;
 
 /***
  * 
@@ -68,10 +69,10 @@ public class SankeyDiagram extends GraphicalEditor implements
 
 	public static final String ID = "editor.ProductSystemSankeyDiagram";
 
+	private Cache cache = Database.getCache();
 	private SankeyResult sankeyResult;
 	private Map<Long, ConnectionLink> createdLinks = new HashMap<>();
 	private Map<Long, ProcessNode> createdProcesses = new HashMap<>();
-	private IDatabase database;
 	private ProductSystemNode systemNode;
 	private ImpactMethodDescriptor method;
 	private NormalizationWeightingSet nwSet;
@@ -80,29 +81,25 @@ public class SankeyDiagram extends GraphicalEditor implements
 
 	private double zoom = 1;
 
-	public SankeyDiagram(AnalyzeEditorInput input, AnalysisResult result) {
+	public SankeyDiagram(CalculationSetup setUp, AnalysisResult result) {
 		setEditDomain(new DefaultEditDomain(this));
-		if (input != null) {
-			AnalyzeEditorInput editorInput = input;
-			database = editorInput.getDatabase();
-			this.results = result;
-			productSystem = results.getSetup().getProductSystem();
-			sankeyResult = new SankeyResult(productSystem, results);
-			method = editorInput.getMethodDescriptor();
-			nwSet = editorInput.getNwSet();
-		}
+		this.results = result;
+		productSystem = setUp.getProductSystem();
+		sankeyResult = new SankeyResult(productSystem, results);
+		method = setUp.getImpactMethod();
+		nwSet = setUp.getNwSet();
 		if (productSystem != null) {
 			setPartName(productSystem.getName());
 		}
 	}
 
-	private void createConnections(Process process) {
-		for (ProcessLink processLink : productSystem.getIncomingLinks(process
-				.getId())) {
+	private void createConnections(long processId) {
+		for (ProcessLink processLink : productSystem
+				.getIncomingLinks(processId)) {
 			ProcessNode sourceNode = createdProcesses.get(processLink
-					.getProviderProcess().getId());
+					.getProviderId());
 			ProcessNode targetNode = createdProcesses.get(processLink
-					.getRecipientProcess().getId());
+					.getRecipientId());
 			if (sourceNode != null && targetNode != null) {
 				if (!createdLinks.containsKey(processLink.getId())) {
 					double ratio = sankeyResult
@@ -110,7 +107,7 @@ public class SankeyDiagram extends GraphicalEditor implements
 					ConnectionLink link = new ConnectionLink(sourceNode,
 							targetNode, processLink, ratio);
 					createdLinks.put(processLink.getId(), link);
-					createConnections(sourceNode.getProcess());
+					createConnections(sourceNode.getProcess().getId());
 				}
 			}
 		}
@@ -120,7 +117,7 @@ public class SankeyDiagram extends GraphicalEditor implements
 		List<WeightedProcess> recipients = new ArrayList<>();
 		for (ProcessLink link : productSystem.getOutgoingLinks(processId)) {
 			WeightedProcess wp = new WeightedProcess();
-			wp.id = link.getRecipientProcess().getId();
+			wp.id = link.getRecipientId();
 			wp.weight = Math.abs(sankeyResult.getLinkContribution(link));
 			recipients.add(wp);
 		}
@@ -130,12 +127,14 @@ public class SankeyDiagram extends GraphicalEditor implements
 		return recipients.get(position - 1).id;
 	}
 
-	private ProcessNode createNode(Process process) {
+	private ProcessNode createNode(ProcessDescriptor process) {
 		ProcessNode node = new ProcessNode(process);
-		node.setSingleContribution(sankeyResult.getSingleContribution(process));
-		node.setSingleResult(sankeyResult.getSingleResult(process));
-		node.setTotalContribution(sankeyResult.getTotalContribution(process));
-		node.setTotalResult(sankeyResult.getTotalResult(process));
+		long processId = process.getId();
+		node.setSingleContribution(sankeyResult
+				.getSingleContribution(processId));
+		node.setSingleResult(sankeyResult.getSingleResult(processId));
+		node.setTotalContribution(sankeyResult.getTotalContribution(processId));
+		node.setTotalResult(sankeyResult.getTotalResult(processId));
 		createdProcesses.put(process.getId(), node);
 		return node;
 	}
@@ -233,7 +232,7 @@ public class SankeyDiagram extends GraphicalEditor implements
 			// process should be drawn)
 			for (final ProcessLink link : productSystem
 					.getIncomingLinks(actual)) {
-				final Long providerId = link.getProviderProcess().getId();
+				final Long providerId = link.getProviderId();
 				if (processIds.contains(providerId)) {
 					if (unconnected.contains(providerId)) {
 						unconnected.remove(providerId);
@@ -261,7 +260,7 @@ public class SankeyDiagram extends GraphicalEditor implements
 	 * Updates the connection links
 	 */
 	private void updateConnections() {
-		createConnections(productSystem.getReferenceProcess());
+		createConnections(productSystem.getReferenceProcess().getId());
 		for (final ConnectionLink link : createdLinks.values()) {
 			link.link();
 		}
@@ -270,8 +269,9 @@ public class SankeyDiagram extends GraphicalEditor implements
 	private void updateModel(double cutoff) {
 
 		if (cutoff == 0) {
-			for (Process process : productSystem.getProcesses()) {
-				systemNode.addChild(createNode(process));
+			for (Long processId : productSystem.getProcesses()) {
+				systemNode.addChild(createNode(cache
+						.getProcessDescriptor(processId)));
 			}
 		} else {
 			// collect all process above the cutoff
@@ -294,8 +294,9 @@ public class SankeyDiagram extends GraphicalEditor implements
 
 			// paint processes
 			for (final Long processId : processesToDraw) {
-				ProcessNode node = createNode(productSystem
-						.getProcess(processId));
+				ProcessDescriptor process = cache
+						.getProcessDescriptor(processId);
+				ProcessNode node = createNode(process);
 				systemNode.addChild(node);
 			}
 
@@ -402,14 +403,14 @@ public class SankeyDiagram extends GraphicalEditor implements
 		if (result == null)
 			return null;
 		if (result.hasImpactResults()) {
-			ImpactCategoryDescriptor[] categories = result
-					.getImpactCategories();
-			if (categories != null && categories.length > 0)
-				return categories[0];
+			Set<ImpactCategoryDescriptor> categories = result
+					.getImpactResults().getImpacts(cache);
+			if (!categories.isEmpty())
+				return categories.iterator().next();
 		}
-		Flow[] flows = result.getFlowIndex().getFlows();
-		if (flows != null && flows.length > 0)
-			return flows[0];
+		Set<FlowDescriptor> flows = result.getFlowResults().getFlows(cache);
+		if (!flows.isEmpty())
+			return flows.iterator().next();
 		return null;
 	}
 
@@ -424,20 +425,6 @@ public class SankeyDiagram extends GraphicalEditor implements
 	public void doSave(IProgressMonitor monitor) {
 	}
 
-	public IDatabase getDatabase() {
-		return database;
-	}
-
-	public Flow[] getFlows() {
-		return results.getFlowIndex().getFlows();
-	}
-
-	public List<ImpactCategoryDescriptor> getLCIACategories() {
-		if (method == null)
-			return Collections.emptyList();
-		return Arrays.asList(results.getImpactCategories());
-	}
-
 	public ProductSystemNode getModel() {
 		return systemNode;
 	}
@@ -447,7 +434,8 @@ public class SankeyDiagram extends GraphicalEditor implements
 	}
 
 	public double getProductSystemResult() {
-		return sankeyResult.getTotalResult(productSystem.getReferenceProcess());
+		return sankeyResult.getTotalResult(productSystem.getReferenceProcess()
+				.getId());
 	}
 
 	public double getZoom() {

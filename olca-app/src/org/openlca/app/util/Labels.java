@@ -1,16 +1,25 @@
 package org.openlca.app.util;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.openlca.app.Messages;
+import org.openlca.app.db.Database;
+import org.openlca.core.database.Cache;
 import org.openlca.core.database.DatabaseContent;
 import org.openlca.core.model.AllocationMethod;
+import org.openlca.core.model.Category;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyType;
 import org.openlca.core.model.FlowType;
+import org.openlca.core.model.Location;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.UncertaintyDistributionType;
+import org.openlca.core.model.Unit;
+import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.FlowDescriptor;
+import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 public class Labels {
 
@@ -18,11 +27,68 @@ public class Labels {
 	}
 
 	public static String getDisplayName(BaseDescriptor descriptor) {
-		return descriptor.getName();
+		if (descriptor == null)
+			return "";
+		Cache cache = Database.getCache();
+		String text = descriptor.getName();
+		if (cache == null)
+			return text;
+		Long locationId = null;
+		if (descriptor instanceof ProcessDescriptor) {
+			ProcessDescriptor process = (ProcessDescriptor) descriptor;
+			locationId = process.getLocation();
+		}
+		if (descriptor instanceof FlowDescriptor) {
+			FlowDescriptor flow = (FlowDescriptor) descriptor;
+			locationId = flow.getLocation();
+		}
+		if (locationId != null) {
+			Location location = cache.getLocation(locationId);
+			if (location != null && location.getCode() != null)
+				text = text + " - " + location.getCode();
+		}
+		return text;
 	}
 
 	public static String getDisplayInfoText(BaseDescriptor descriptor) {
+		if (descriptor == null)
+			return "";
 		return descriptor.getDescription();
+	}
+
+	public static String getRefUnit(FlowDescriptor flow, Cache cache) {
+		if (flow == null)
+			return "";
+		FlowProperty refProp = cache.getFlowProperty(flow
+				.getRefFlowPropertyId());
+		if (refProp == null)
+			return "";
+		UnitGroup unitGroup = refProp.getUnitGroup();
+		if (unitGroup == null)
+			return "";
+		Unit unit = unitGroup.getReferenceUnit();
+		if (unit == null)
+			return "";
+		return unit.getName();
+	}
+
+	/**
+	 * We often have to show the category and sub-category of a flow in the
+	 * result pages. This method returns a pair where the left value is the
+	 * category and the right value is the sub-category. Default values are
+	 * empty strings.
+	 */
+	public static Pair<String, String> getFlowCategory(FlowDescriptor flow,
+			Cache cache) {
+		if (flow == null || flow.getCategory() == null)
+			return Pair.of("", "");
+		Category cat = cache.getCategory(flow.getId());
+		if (cat == null)
+			return Pair.of("", "");
+		if (cat.getParentCategory() == null)
+			return Pair.of(cat.getName(), "");
+		else
+			return Pair.of(cat.getParentCategory().getName(), cat.getName());
 	}
 
 	public static String getEnumText(Object enumValue) {

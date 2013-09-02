@@ -3,6 +3,7 @@ package org.openlca.core.editors.analyze;
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.swt.SWT;
@@ -15,21 +16,29 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
 import org.openlca.app.Messages;
+import org.openlca.app.db.Database;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.AbstractViewer;
 import org.openlca.app.viewers.ISelectionChangedListener;
+import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.app.viewers.combo.FlowViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
+import org.openlca.core.database.Cache;
 import org.openlca.core.editors.io.ui.FileChooser;
+import org.openlca.core.model.descriptors.FlowDescriptor;
 
+/**
+ * A section which shows the process contributions to flow or impact results of
+ * an analysis result.
+ */
 class ProcessContributionSection<T> {
 
+	private Cache cache = Database.getCache();
 	private String sectionTitle = "#no title";
 	private String selectionName = "#no item name";
 	private IProcessContributionProvider<T> provider;
-	private AbstractViewer<T> itemViewer;
+	private AbstractComboViewer<T> itemViewer;
 	private ProcessContributionViewer viewer;
 	private Spinner spinner;
 	private Combo modeCombo;
@@ -68,13 +77,17 @@ class ProcessContributionSection<T> {
 	private void createItemCombo(FormToolkit toolkit, Composite header) {
 		toolkit.createLabel(header, selectionName);
 		if (provider instanceof FlowContributionProvider) {
-			FlowViewer itemViewer = new FlowViewer(header);
-			itemViewer.setInput(provider.getAnalysisResult());
-			this.itemViewer = (AbstractViewer<T>) itemViewer;
+			FlowViewer itemViewer = new FlowViewer(header, cache);
+			Set<FlowDescriptor> flows = provider.getAnalysisResult()
+					.getFlowResults().getFlows(cache);
+			itemViewer
+					.setInput(flows.toArray(new FlowDescriptor[flows.size()]));
+			this.itemViewer = (AbstractComboViewer<T>) itemViewer;
 		} else if (provider instanceof ImpactContributionProvider) {
 			ImpactCategoryViewer itemViewer = new ImpactCategoryViewer(header);
-			itemViewer.setInput(provider.getAnalysisResult());
-			this.itemViewer = (AbstractViewer<T>) itemViewer;
+			itemViewer.setInput(provider.getAnalysisResult().getImpactResults()
+					.getImpacts(cache));
+			this.itemViewer = (AbstractComboViewer<T>) itemViewer;
 		} else
 			throw new IllegalStateException("Unknown contribution provider");
 		itemViewer.selectFirst();

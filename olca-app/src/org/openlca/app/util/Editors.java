@@ -34,8 +34,8 @@ public class Editors {
 					.getActivePage().getActiveEditor();
 		} catch (ClassCastException e) {
 			log.error("Error getting active editor", e);
+			return null;
 		}
-		return null;
 	}
 
 	public static void open(IEditorInput input, String editorId) {

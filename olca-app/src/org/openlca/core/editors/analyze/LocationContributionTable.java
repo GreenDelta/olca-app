@@ -18,7 +18,7 @@ import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.core.editors.ContributionImage;
 import org.openlca.core.model.Location;
-import org.openlca.core.model.results.Contribution;
+import org.openlca.core.results.Contribution;
 
 /**
  * Table for showing the result contributions for locations of an analysis
@@ -29,8 +29,8 @@ class LocationContributionTable {
 	private final int LOCATION_COL = 0;
 	private final int AMOUNT_COL = 1;
 	private final int UNIT_COL = 2;
-	private String[] COLUMN_LABELS = { Messages.Location,
-			Messages.Amount, Messages.Unit };
+	private String[] COLUMN_LABELS = { Messages.Location, Messages.Amount,
+			Messages.Unit };
 
 	private TableViewer viewer;
 	private String unit;

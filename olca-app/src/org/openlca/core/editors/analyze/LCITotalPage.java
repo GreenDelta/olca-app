@@ -1,5 +1,8 @@
 package org.openlca.core.editors.analyze;
 
+import java.util.Set;
+
+import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -17,12 +20,14 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.db.Database;
+import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
-import org.openlca.core.editors.model.FlowInfo;
-import org.openlca.core.model.Flow;
-import org.openlca.core.model.results.AnalysisResult;
+import org.openlca.core.database.Cache;
+import org.openlca.core.model.descriptors.FlowDescriptor;
+import org.openlca.core.results.AnalysisResult;
 import org.openlca.util.Strings;
 
 public class LCITotalPage extends FormPage {
@@ -41,13 +46,12 @@ public class LCITotalPage extends FormPage {
 	private static final double[] COLUMN_WIDTHS = { 0.40, 0.20, 0.20, 0.08,
 			0.10 };
 
-	private AnalyzeEditor editor;
+	private Cache cache = Database.getCache();
 	private FormToolkit toolkit;
 	private AnalysisResult result;
 
 	public LCITotalPage(AnalyzeEditor editor, AnalysisResult result) {
 		super(editor, LCITotalPage.class.getCanonicalName(), "LCI - Total");
-		this.editor = editor;
 		this.result = result;
 	}
 
@@ -66,8 +70,9 @@ public class LCITotalPage extends FormPage {
 
 		form.reflow(true);
 
-		inputViewer.setInput(result.getFlowIndex().getFlows());
-		outputViewer.setInput(result.getFlowIndex().getFlows());
+		Set<FlowDescriptor> flows = result.getFlowResults().getFlows(cache);
+		inputViewer.setInput(flows);
+		outputViewer.setInput(flows);
 	}
 
 	private TableViewer createSectionAndViewer(Composite parent, boolean input) {
@@ -106,27 +111,28 @@ public class LCITotalPage extends FormPage {
 
 		@Override
 		public String getColumnText(Object element, int columnIndex) {
-			if (!(element instanceof Flow))
+			if (!(element instanceof FlowDescriptor))
 				return null;
 
-			FlowInfo flow = editor.getFlowInfo((Flow) element);
+			FlowDescriptor flow = (FlowDescriptor) element;
+			Pair<String, String> category = Labels.getFlowCategory(flow, cache);
 			String columnLabel = COLUMN_LABELS.VALUES[columnIndex];
 
 			switch (columnLabel) {
 			case COLUMN_LABELS.FLOW:
 				return flow.getName();
 			case COLUMN_LABELS.CATEGORY:
-				return flow.getCategory();
+				return category.getLeft();
 			case COLUMN_LABELS.SUBCATEGORY:
-				return flow.getSubCategory();
+				return category.getRight();
 			case COLUMN_LABELS.UNIT:
-				return flow.getUnit();
+				return Labels.getRefUnit(flow, cache);
 			case COLUMN_LABELS.RESULT:
-				return Numbers.format(result.getResult(result.getSetup()
-						.getReferenceProcess(), (Flow) element));
+				return Numbers.format(result.getFlowResults().getTotalResult(
+						flow));
+			default:
+				return null;
 			}
-
-			return null;
 		}
 	}
 
@@ -141,7 +147,10 @@ public class LCITotalPage extends FormPage {
 		@Override
 		public boolean select(Viewer viewer, Object parentElement,
 				Object element) {
-			return result.getFlowIndex().isInput((Flow) element) == input;
+			if (!(element instanceof FlowDescriptor))
+				return false;
+			FlowDescriptor flow = (FlowDescriptor) element;
+			return result.getFlowIndex().isInput(flow.getId()) == input;
 		}
 
 	}
@@ -150,33 +159,23 @@ public class LCITotalPage extends FormPage {
 
 		@Override
 		public int compare(Viewer viewer, Object e1, Object e2) {
-			if (!(e1 instanceof Flow)) {
-				if (e2 != null)
-					return -1;
+			if (!(e1 instanceof FlowDescriptor))
 				return 0;
-			}
-			if (!(e2 instanceof Flow))
-				return 1;
+			if (!(e2 instanceof FlowDescriptor))
+				return 0;
 
-			FlowInfo flow1 = editor.getFlowInfo((Flow) e1);
-			FlowInfo flow2 = editor.getFlowInfo((Flow) e2);
+			FlowDescriptor flow1 = (FlowDescriptor) e1;
+			Pair<String, String> cat1 = Labels.getFlowCategory(flow1, cache);
+			FlowDescriptor flow2 = (FlowDescriptor) e2;
+			Pair<String, String> cat2 = Labels.getFlowCategory(flow2, cache);
 
-			// safe compare flow names
-			int flowNameCompare = Strings.compare(flow1.getName(),
-					flow2.getName());
-			if (flowNameCompare != 0)
-				return flowNameCompare;
-
-			int categoryCompare = Strings.compare(flow1.getCategory(),
-					flow2.getCategory());
-			if (categoryCompare != 0)
-				return categoryCompare;
-
-			int subcategoryCompare = Strings.compare(flow1.getSubCategory(),
-					flow2.getSubCategory());
-			if (subcategoryCompare != 0)
-				return subcategoryCompare;
-			return 0;
+			int c = Strings.compare(cat1.getLeft(), cat2.getLeft());
+			if (c != 0)
+				return c;
+			c = Strings.compare(cat1.getRight(), cat2.getLeft());
+			if (c != 0)
+				return c;
+			return Strings.compare(flow1.getName(), flow2.getName());
 		}
 
 	}

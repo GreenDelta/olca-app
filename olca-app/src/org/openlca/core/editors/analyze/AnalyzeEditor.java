@@ -38,6 +38,14 @@ public class AnalyzeEditor extends FormEditor {
 	private CalculationSetup setup;
 	private AnalysisResult result;
 
+	public CalculationSetup getSetup() {
+		return setup;
+	}
+
+	public AnalysisResult getResult() {
+		return result;
+	}
+
 	@Override
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
@@ -57,25 +65,24 @@ public class AnalyzeEditor extends FormEditor {
 		try {
 			addPage(new AnalyzeInfoPage(this, result, setup));
 
-			// addPage(new LCITotalPage(this, result));
-			// if (result.hasImpactResults())
-			// addPage(new LCIATotalPage(this, result));
-
-			// addPage(new ProcessContributionPage(this, result));
-			// addPage(new ProcessResultPage(this, result));
-			// if (result.hasImpactResults())
-			// addPage(new FlowImpactPage(this, result));
-			// addPage(new ContributionTreePage(this, result));
-			// addPage(new GroupPage(this, result));
-			// addPage(new LocationContributionPage(this, result));
+			addPage(new LCITotalPage(this, result));
+			if (result.hasImpactResults())
+				addPage(new LCIATotalPage(this, result));
+			addPage(new ProcessContributionPage(this, result));
+			addPage(new ProcessResultPage(this, result));
+			if (result.hasImpactResults())
+				addPage(new FlowImpactPage(this, result));
+			addPage(new ContributionTreePage(this, result));
+			addPage(new GroupPage(this, result));
+			addPage(new LocationContributionPage(this, result));
 			// if (FeatureFlag.SUNBURST_CHART.isEnabled())
 			// addPage(new SunBurstView(this, result));
 			// if (FeatureFlag.LOCALISED_LCIA.isEnabled()
 			// && result.hasImpactResults())
 			// addPage(new LocalisedImpactPage(this, result));
-			// diagram = new SankeyDiagram(editorInput, result);
-			// diagramIndex = addPage(diagram, getEditorInput());
-			// setPageText(diagramIndex, "Sankey diagram");
+			diagram = new SankeyDiagram(setup, result);
+			diagramIndex = addPage(diagram, getEditorInput());
+			setPageText(diagramIndex, "Sankey diagram");
 		} catch (final PartInitException e) {
 			log.error("Add pages failed", e);
 		}

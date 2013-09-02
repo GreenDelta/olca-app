@@ -92,12 +92,12 @@ class ProcessParameterSection {
 	}
 
 	private void bindActions(Section section) {
-		Action addAction = Actions.createAdd(new Runnable() {
+		Action addAction = Actions.onAdd(new Runnable() {
 			public void run() {
 				addParameter();
 			}
 		});
-		Action removeAction = Actions.createRemove(new Runnable() {
+		Action removeAction = Actions.onRemove(new Runnable() {
 			public void run() {
 				removeParameter();
 			}

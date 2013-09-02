@@ -6,14 +6,10 @@ import java.util.List;
 import java.util.Set;
 
 import org.openlca.app.db.Database;
+import org.openlca.app.util.Labels;
 import org.openlca.core.database.Cache;
-import org.openlca.core.model.Flow;
-import org.openlca.core.model.FlowProperty;
-import org.openlca.core.model.Unit;
-import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.results.AnalysisFlowResult;
-import org.openlca.core.results.AnalysisFlowResults;
 import org.openlca.core.results.AnalysisResult;
 
 class FlowContributionProvider implements
@@ -29,7 +25,7 @@ class FlowContributionProvider implements
 
 	@Override
 	public FlowDescriptor[] getElements() {
-		Set<FlowDescriptor> set = AnalysisFlowResults.getFlows(result, cache);
+		Set<FlowDescriptor> set = result.getFlowResults().getFlows(cache);
 		return set.toArray(new FlowDescriptor[set.size()]);
 	}
 
@@ -50,18 +46,16 @@ class FlowContributionProvider implements
 		return getContributions(selection, cutOff, false);
 	}
 
-	private List<ProcessContributionItem> getContributions(
-			FlowDescriptor selection, double cutOff, boolean total) {
-		if (result == null || selection == null)
+	private List<ProcessContributionItem> getContributions(FlowDescriptor flow,
+			double cutOff, boolean total) {
+		if (result == null || flow == null)
 			return Collections.emptyList();
-		List<AnalysisFlowResult> flowResults = AnalysisFlowResults.getForFlow(
-				result, selection, Database.getCache());
+		List<AnalysisFlowResult> flowResults = result.getFlowResults()
+				.getForFlow(flow, Database.getCache());
 		if (flowResults.isEmpty())
 			return Collections.emptyList();
 		double refVale = getRefValue(flowResults);
-		// String unit = flowUnit(selection);
-		// TODO: flow unit
-		String unit = "";
+		String unit = Labels.getRefUnit(flow, cache);
 		List<ProcessContributionItem> items = new ArrayList<>();
 		for (AnalysisFlowResult result : flowResults) {
 			double val = total ? result.getTotalResult() : result
@@ -104,18 +98,4 @@ class FlowContributionProvider implements
 		return Math.max(Math.abs(max), Math.abs(min));
 	}
 
-	private String flowUnit(Flow flow) {
-		if (flow == null)
-			return null;
-		FlowProperty refProp = flow.getReferenceFlowProperty();
-		if (refProp == null)
-			return null;
-		UnitGroup unitGroup = refProp.getUnitGroup();
-		if (unitGroup == null)
-			return null;
-		Unit unit = unitGroup.getReferenceUnit();
-		if (unit == null)
-			return null;
-		return unit.getName();
-	}
 }

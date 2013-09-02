@@ -15,8 +15,8 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.openlca.core.model.Process;
-import org.openlca.core.model.ProcessType;
+import org.openlca.app.util.Labels;
+import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 /**
  * Internal model representing a process in the graphical viewer
@@ -32,7 +32,7 @@ public class ProcessNode extends Node {
 	private ProcessFigure figure;
 
 	private List<ConnectionLink> links = new ArrayList<>();
-	private Process process;
+	private ProcessDescriptor process;
 
 	private double totalResult;
 	private double singleResult;
@@ -41,7 +41,7 @@ public class ProcessNode extends Node {
 
 	private Rectangle xyLayoutConstraints;
 
-	public ProcessNode(Process process) {
+	public ProcessNode(ProcessDescriptor process) {
 		this.process = process;
 	}
 
@@ -128,13 +128,7 @@ public class ProcessNode extends Node {
 
 	@Override
 	public String getName() {
-		String text = process.getName();
-		text += process.getLocation() != null ? " ["
-				+ process.getLocation().getCode() + "]" : "";
-		if (process.getProcessType() == ProcessType.LCI_Result) {
-			text += " _S";
-		}
-		return text;
+		return Labels.getDisplayName(process);
 	}
 
 	/**
@@ -163,7 +157,7 @@ public class ProcessNode extends Node {
 		return outgoing;
 	}
 
-	public Process getProcess() {
+	public ProcessDescriptor getProcess() {
 		return process;
 	}
 

@@ -16,11 +16,13 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.db.Database;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
+import org.openlca.core.database.Cache;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.core.model.results.AnalysisResult;
+import org.openlca.core.results.AnalysisResult;
 import org.openlca.util.Strings;
 
 public class LCIATotalPage extends FormPage {
@@ -37,6 +39,7 @@ public class LCIATotalPage extends FormPage {
 
 	private static final double[] COLUMN_WIDTHS = { 0.70, 0.20, 0.08 };
 
+	private Cache cache = Database.getCache();
 	private FormToolkit toolkit;
 	private AnalysisResult result;
 
@@ -59,7 +62,7 @@ public class LCIATotalPage extends FormPage {
 
 		form.reflow(true);
 
-		impactViewer.setInput(result.getImpactCategories());
+		impactViewer.setInput(result.getImpactResults().getImpacts(cache));
 	}
 
 	private TableViewer createSectionAndViewer(Composite parent) {
@@ -108,9 +111,8 @@ public class LCIATotalPage extends FormPage {
 			case COLUMN_LABELS.REFERENCE_UNIT:
 				return impactCategory.getReferenceUnit();
 			case COLUMN_LABELS.RESULT:
-				return Numbers.format(result.getResult(result.getSetup()
-						.getReferenceProcess(),
-						(ImpactCategoryDescriptor) element));
+				return Numbers.format(result.getImpactResults().getTotalResult(
+						impactCategory));
 			}
 
 			return null;

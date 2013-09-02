@@ -13,8 +13,8 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.openlca.app.Messages;
 import org.openlca.app.util.Tables;
 import org.openlca.core.editors.ContributionImage;
-import org.openlca.core.model.results.Contribution;
-import org.openlca.core.model.results.ProcessGrouping;
+import org.openlca.core.results.Contribution;
+import org.openlca.core.results.ProcessGrouping;
 
 class GroupResultTable {
 

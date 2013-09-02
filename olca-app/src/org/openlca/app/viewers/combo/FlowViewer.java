@@ -132,13 +132,14 @@ public class FlowViewer extends AbstractComboViewer<FlowDescriptor> {
 		@Override
 		public String getColumnText(Object element, int columnIndex) {
 			FlowDescriptor flow = (FlowDescriptor) element;
-
 			switch (columnIndex) {
 			case 0:
 				return flow.getName();
 			case 1:
-				return CategoryPath.getFull(cache.getCategory(flow
-						.getCategory()));
+				if (flow.getCategory() == null)
+					return null;
+				Category category = cache.getCategory(flow.getCategory());
+				return CategoryPath.getFull(category);
 			case 2:
 				if (flow.getLocation() == null)
 					break;

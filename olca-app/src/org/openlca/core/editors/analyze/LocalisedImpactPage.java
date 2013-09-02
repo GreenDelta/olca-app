@@ -21,7 +21,7 @@ import org.openlca.core.editors.model.LocalisedImpactResult;
 import org.openlca.core.editors.model.LocalisedImpactResult.Entry;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
-import org.openlca.core.model.results.AnalysisResult;
+import org.openlca.core.results.AnalysisResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

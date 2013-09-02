@@ -24,18 +24,18 @@ import org.openlca.core.model.Category;
  * This is the general info section that each editor has: name, description,
  * etc.
  */
-class InfoSection {
+public class InfoSection {
 
 	private CategorizedEntity entity;
 	private DataBinding binding;
 	private Composite container;
 
-	InfoSection(CategorizedEntity entity, DataBinding binding) {
+	public InfoSection(CategorizedEntity entity, DataBinding binding) {
 		this.entity = entity;
 		this.binding = binding;
 	}
 
-	void render(Composite body, FormToolkit toolkit) {
+	public void render(Composite body, FormToolkit toolkit) {
 		container = UI.formSection(body, toolkit, Messages.GeneralInformation);
 		Text nameText = UI.formText(container, toolkit, Messages.Name);
 		binding.on(entity, "name", TextBindType.STRING, nameText);

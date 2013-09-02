@@ -6,15 +6,16 @@ import java.util.List;
 import java.util.Set;
 
 import org.openlca.app.db.Database;
+import org.openlca.core.database.Cache;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.AnalysisImpactResult;
-import org.openlca.core.results.AnalysisImpactResults;
 import org.openlca.core.results.AnalysisResult;
 
 class ImpactContributionProvider implements
 		IProcessContributionProvider<ImpactCategoryDescriptor> {
 
 	private AnalysisResult result;
+	private Cache cache = Database.getCache();
 
 	public ImpactContributionProvider(AnalysisResult result) {
 		this.result = result;
@@ -24,8 +25,8 @@ class ImpactContributionProvider implements
 	public ImpactCategoryDescriptor[] getElements() {
 		if (!result.hasImpactResults())
 			return new ImpactCategoryDescriptor[0];
-		Set<ImpactCategoryDescriptor> set = AnalysisImpactResults.getImpacts(
-				result, Database.getCache());
+		Set<ImpactCategoryDescriptor> set = result.getImpactResults()
+				.getImpacts(cache);
 		return set.toArray(new ImpactCategoryDescriptor[set.size()]);
 	}
 
@@ -48,8 +49,8 @@ class ImpactContributionProvider implements
 
 	private List<ProcessContributionItem> getItems(
 			ImpactCategoryDescriptor selection, double cutOff, boolean total) {
-		List<AnalysisImpactResult> results = AnalysisImpactResults
-				.getForImpact(result, selection, Database.getCache());
+		List<AnalysisImpactResult> results = result.getImpactResults()
+				.getForImpact(selection, cache);
 		if (results.isEmpty())
 			return Collections.emptyList();
 		double refValue = getRefValue(results);

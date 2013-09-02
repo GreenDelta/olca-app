@@ -1,19 +1,21 @@
 package org.openlca.core.editors;
 
+import java.util.Set;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.openlca.app.viewers.AbstractViewer;
 import org.openlca.app.viewers.ISelectionChangedListener;
+import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.app.viewers.combo.FlowViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
-import org.openlca.core.database.IDatabase;
-import org.openlca.core.model.Flow;
+import org.openlca.core.database.Cache;
+import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.core.model.results.AnalysisResult;
+import org.openlca.core.results.AnalysisResult;
 
 /**
  * Two combo boxes showing flows and impact categories. The impact categories
@@ -27,7 +29,7 @@ public class FlowImpactSelection {
 	private final int IMPACT = 1;
 	private int resultType = FLOW;
 
-	private IDatabase database;
+	private Cache cache;
 	private AnalysisResult result;
 	private Object initialSelection;
 	private EventHandler eventHandler;
@@ -35,14 +37,14 @@ public class FlowImpactSelection {
 	private FlowViewer flowViewer;
 	private ImpactCategoryViewer impactViewer;
 
-	private FlowImpactSelection(IDatabase database) {
-		this.database = database;
+	private FlowImpactSelection(Cache cache) {
+		this.cache = cache;
 	}
 
 	public void selectWithEvent(Object o) {
 		if (o == null)
 			return;
-		if (o instanceof Flow)
+		if (o instanceof FlowDescriptor)
 			selectFlow(o);
 		else if (o instanceof ImpactCategoryDescriptor)
 			selectImpact(o);
@@ -68,22 +70,22 @@ public class FlowImpactSelection {
 	private void selectFlow(Object o) {
 		resultType = FLOW;
 		if (flowViewer != null) {
-			flowViewer.select((Flow) o);
+			flowViewer.select((FlowDescriptor) o);
 			flowViewer.setEnabled(true);
 		}
 		if (impactViewer != null)
 			impactViewer.setEnabled(false);
 	}
 
-	public static Dispatch onDatabase(IDatabase database) {
-		Dispatch dispatch = new Dispatch(new FlowImpactSelection(database));
+	public static Dispatch onCache(Cache cache) {
+		Dispatch dispatch = new Dispatch(new FlowImpactSelection(cache));
 		return dispatch;
 	}
 
 	private void render(Composite parent, FormToolkit toolkit) {
-		if (result != null && result.getFlowIndex().getFlows().length > 0)
+		if (result != null && result.getFlowIndex().size() > 0)
 			initFlowCheckViewer(toolkit, parent);
-		if (result != null && result.getImpactCategories().length > 0)
+		if (result != null && result.hasImpactResults())
 			initImpactCheckViewer(toolkit, parent);
 		if (initialSelection instanceof ImpactCategoryDescriptor)
 			resultType = IMPACT;
@@ -95,13 +97,16 @@ public class FlowImpactSelection {
 		boolean typeFlows = !(initialSelection instanceof ImpactCategoryDescriptor);
 		Button flowsCheck = toolkit.createButton(section, "Flows", SWT.RADIO);
 		flowsCheck.setSelection(typeFlows);
-		flowViewer = new FlowViewer(section);
+		flowViewer = new FlowViewer(section, cache);
 		flowViewer.setEnabled(typeFlows);
-		flowViewer.setInput(result);
+		Set<FlowDescriptor> list = result.getFlowResults().getFlows(cache);
+		FlowDescriptor[] input = list.toArray(new FlowDescriptor[list.size()]);
+		flowViewer.setInput(input);
 		flowViewer.selectFirst();
-		flowViewer.addSelectionChangedListener(new SelectionChange<Flow>());
-		if (initialSelection instanceof Flow)
-			flowViewer.select((Flow) initialSelection);
+		flowViewer
+				.addSelectionChangedListener(new SelectionChange<FlowDescriptor>());
+		if (initialSelection instanceof FlowDescriptor)
+			flowViewer.select((FlowDescriptor) initialSelection);
 
 		new ResultTypeCheck(flowViewer, flowsCheck, FLOW);
 	}
@@ -113,7 +118,7 @@ public class FlowImpactSelection {
 		impactCheck.setSelection(typeImpact);
 		impactViewer = new ImpactCategoryViewer(section);
 		impactViewer.setEnabled(typeImpact);
-		impactViewer.setInput(result);
+		impactViewer.setInput(result.getImpactResults().getImpacts(cache));
 		impactViewer.selectFirst();
 		impactViewer
 				.addSelectionChangedListener(new SelectionChange<ImpactCategoryDescriptor>());
@@ -142,11 +147,12 @@ public class FlowImpactSelection {
 
 	private class ResultTypeCheck implements SelectionListener {
 
-		private AbstractViewer<?> viewer;
+		private AbstractComboViewer<?> viewer;
 		private Button check;
 		private int type;
 
-		public ResultTypeCheck(AbstractViewer<?> viewer, Button check, int type) {
+		public ResultTypeCheck(AbstractComboViewer<?> viewer, Button check,
+				int type) {
 			this.viewer = viewer;
 			this.check = check;
 			this.type = type;
@@ -172,7 +178,7 @@ public class FlowImpactSelection {
 	/** The event handler for selection changes. */
 	public interface EventHandler {
 
-		void flowSelected(Flow flow);
+		void flowSelected(FlowDescriptor flow);
 
 		void impactCategorySelected(ImpactCategoryDescriptor impactCategory);
 

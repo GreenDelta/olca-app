@@ -3,6 +3,7 @@ package org.openlca.core.editors.analyze;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
@@ -13,20 +14,21 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
+import org.openlca.app.db.Database;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.AbstractViewer;
 import org.openlca.app.viewers.ISelectionChangedListener;
+import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.app.viewers.combo.FlowViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
-import org.openlca.core.database.IDatabase;
+import org.openlca.core.database.Cache;
 import org.openlca.core.editors.ContributionItem;
 import org.openlca.core.editors.charts.ContributionChart;
-import org.openlca.core.model.Flow;
+import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.core.model.results.AnalysisResult;
-import org.openlca.core.model.results.Contribution;
-import org.openlca.core.model.results.GroupingContribution;
-import org.openlca.core.model.results.ProcessGrouping;
+import org.openlca.core.results.AnalysisResult;
+import org.openlca.core.results.Contribution;
+import org.openlca.core.results.GroupingContribution;
+import org.openlca.core.results.ProcessGrouping;
 
 class GroupResultSection {
 
@@ -34,19 +36,18 @@ class GroupResultSection {
 	private int IMPACT = 1;
 	private int resultType = 0;
 
+	private Cache cache = Database.getCache();
 	private List<ProcessGrouping> groups;
 	private AnalysisResult result;
 	private TableViewer tableViewer;
 	private FlowViewer flowViewer;
 	private ImpactCategoryViewer impactViewer;
 	private ContributionChart chart;
-	private IDatabase database;
 
 	public GroupResultSection(List<ProcessGrouping> groups,
-			AnalysisResult result, IDatabase database) {
+			AnalysisResult result) {
 		this.groups = groups;
 		this.result = result;
-		this.database = database;
 	}
 
 	public void update() {
@@ -66,8 +67,9 @@ class GroupResultSection {
 	private List<Contribution<ProcessGrouping>> calculate(Object selection) {
 		GroupingContribution calculator = new GroupingContribution(result,
 				groups);
-		if (selection instanceof Flow)
-			return calculator.calculate((Flow) selection).getContributions();
+		if (selection instanceof FlowDescriptor)
+			return calculator.calculate((FlowDescriptor) selection)
+					.getContributions();
 		if (selection instanceof ImpactCategoryDescriptor)
 			return calculator.calculate((ImpactCategoryDescriptor) selection)
 					.getContributions();
@@ -121,11 +123,13 @@ class GroupResultSection {
 		Button flowsCheck = toolkit.createButton(parent, Messages.Flows,
 				SWT.RADIO);
 		flowsCheck.setSelection(true);
-		flowViewer = new FlowViewer(parent);
-		flowViewer.setInput(result);
-		flowViewer.addSelectionChangedListener(new SelectionChange<Flow>());
-		if (result.getFlowIndex().getFlows().length > 0)
-			flowViewer.select(result.getFlowIndex().getFlows()[0]);
+		flowViewer = new FlowViewer(parent, cache);
+		Set<FlowDescriptor> flows = result.getFlowResults().getFlows(cache);
+		flowViewer.setInput(flows.toArray(new FlowDescriptor[flows.size()]));
+		flowViewer
+				.addSelectionChangedListener(new SelectionChange<FlowDescriptor>());
+		if (flows.size() > 0)
+			flowViewer.select(flows.iterator().next());
 		new ResultTypeCheck(flowViewer, flowsCheck, FLOW);
 	}
 
@@ -134,11 +138,13 @@ class GroupResultSection {
 				Messages.ImpactCategories, SWT.RADIO);
 		impactViewer = new ImpactCategoryViewer(parent);
 		impactViewer.setEnabled(false);
-		impactViewer.setInput(result);
+		Set<ImpactCategoryDescriptor> impacts = result.getImpactResults()
+				.getImpacts(cache);
+		impactViewer.setInput(impacts);
 		impactViewer
 				.addSelectionChangedListener(new SelectionChange<ImpactCategoryDescriptor>());
-		if (result.getImpactCategories().length > 0)
-			impactViewer.select(result.getImpactCategories()[0]);
+		if (impacts.size() > 0)
+			impactViewer.select(impacts.iterator().next());
 		new ResultTypeCheck(impactViewer, impactCheck, IMPACT);
 	}
 
@@ -152,11 +158,12 @@ class GroupResultSection {
 
 	private class ResultTypeCheck implements SelectionListener {
 
-		private AbstractViewer<?> viewer;
+		private AbstractComboViewer<?> viewer;
 		private Button check;
 		private int type;
 
-		public ResultTypeCheck(AbstractViewer<?> viewer, Button check, int type) {
+		public ResultTypeCheck(AbstractComboViewer<?> viewer, Button check,
+				int type) {
 			this.viewer = viewer;
 			this.check = check;
 			this.type = type;
