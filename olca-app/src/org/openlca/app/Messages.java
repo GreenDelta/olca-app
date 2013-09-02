@@ -502,9 +502,9 @@ public class Messages extends NLS {
 	public static String Systems_DoubleError;
 	public static String Systems_EmptyReferenceProcessError;
 	public static String Systems_ExpandAllAction_Text;
-	public static String Systems_ExpandFoldCommand_ExpandText;
-	public static String Systems_ExpandFoldCommand_FoldText;
-	public static String Systems_FoldAllAction_Text;
+	public static String Systems_ExpansionCommand_ExpandText;
+	public static String Systems_ExpansionCommand_CollapseText;
+	public static String Systems_CollapseAllAction_Text;
 	public static String Systems_GetLinksAction_ProviderText;
 	public static String Systems_GetLinksAction_RecipientText;
 	public static String Systems_GraphLayoutType_MinimalTree;
@@ -537,7 +537,7 @@ public class Messages extends NLS {
 	public static String Systems_Providers;
 	public static String Systems_Recipients;
 	public static String Systems_Remember;
-	public static String Systems_RemoveConnectionsFromProcessAction_Text;
+	public static String Systems_RemoveAllConnectionsAction_Text;
 	public static String Systems_RemoveSupplyChainAction_Text;
 	public static String Systems_Route;
 	public static String Systems_SavingAsImage;

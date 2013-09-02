@@ -140,7 +140,7 @@ public class Images {
 		case UNIT_GROUP:
 			return ImageType.UNIT_GROUP_CATEGORY_ICON;
 		default:
-			return ImageType.FOLD_ICON;
+			return ImageType.COLLAPSE_ICON;
 		}
 	}
 

@@ -5,13 +5,16 @@ import java.util.List;
 import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.components.ObjectDialog;
 import org.openlca.app.navigation.CategoryElement;
@@ -81,6 +84,16 @@ public class ExchangeViewer extends AbstractTableViewer<Exchange> {
 				new FlowPropertyModifier());
 		getCellModifySupport().bind(LABEL.UNIT, new UnitModifier());
 		getCellModifySupport().bind(LABEL.AMOUNT, new AmountModifier());
+
+		addDoubleClickListener(new IDoubleClickListener() {
+
+			@Override
+			public void doubleClick(DoubleClickEvent event) {
+				Exchange firstSelected = getSelected();
+				if (firstSelected != null)
+					App.openEditor(firstSelected.getFlow());
+			}
+		});
 	}
 
 	private boolean matches(FlowType type) {

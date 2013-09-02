@@ -112,7 +112,7 @@ public class ObjectDialog extends FormDialog {
 		Button collapseButton = form.getToolkit().createButton(actionComposite,
 				"", SWT.PUSH);
 		collapseButton.addSelectionListener(new CollapseSelectionListener());
-		collapseButton.setImage(ImageType.FOLD_ICON.get());
+		collapseButton.setImage(ImageType.COLLAPSE_ICON.get());
 
 		if (multiSelection)
 			viewer = NavigationTree.forMultiSelection(composite, modelType);

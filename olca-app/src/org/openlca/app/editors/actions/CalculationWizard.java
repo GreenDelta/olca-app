@@ -24,7 +24,6 @@ import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.SystemCalculator;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.results.AnalysisResult;
-import org.openlca.core.results.InventoryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,8 +96,9 @@ class CalculationWizard extends Wizard {
 
 		private void solve() {
 			log.trace("run quick calculation");
-			SystemCalculator calculator = new SystemCalculator(Database.get());
-			InventoryResult inventoryResult = calculator.solve(settings);
+			// SystemCalculator calculator = new
+			// SystemCalculator(Database.get());
+			// InventoryResult inventoryResult = calculator.solve(settings);
 			log.trace("calculation done, open editor");
 			// openEditor(result);
 		}

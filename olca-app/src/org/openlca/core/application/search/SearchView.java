@@ -111,16 +111,6 @@ public class SearchView extends ViewPart {
 
 				});
 
-		resultViewer.addDoubleClickListener(new IDoubleClickListener() {
-
-			@Override
-			public void doubleClick(DoubleClickEvent event) {
-				BaseDescriptor descriptor = resultViewer.getSelected();
-				if (descriptor != null)
-					App.openEditor(descriptor);
-			}
-		});
-
 		searchButton.addSelectionListener(new SelectionListener() {
 
 			@Override
