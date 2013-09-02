@@ -47,11 +47,10 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 		addPage(importPage);
 
 		mappingPage = new UnitMappingPage() {
-
 			@Override
-			protected String[] checkFiles(final File[] files) {
+			protected String[] checkFiles(File[] files) {
 				String[] unitNames;
-				final EcoSpoldUnitFetch unitChecker = new EcoSpoldUnitFetch();
+				EcoSpoldUnitFetch unitChecker = new EcoSpoldUnitFetch();
 				try {
 					unitNames = unitChecker.getUnits(files);
 				} catch (Exception e) {
