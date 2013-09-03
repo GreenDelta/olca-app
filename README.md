@@ -17,7 +17,7 @@ folder olca-app in this repository and run the Maven build script via
 This will copy the required dependencies into the `lib` folder of this project.
 After this, import the olca-app project into the workspace of an Eclipse 
 installation (we recommend to use the 
-[Eclipse Standard](http://www.eclipse.org/downloads/), you may have to install
+[Eclipse Standard package](http://www.eclipse.org/downloads/), you may have to install
 the Maven plugin for Eclipse).
 
 Download the most recent version of the 
