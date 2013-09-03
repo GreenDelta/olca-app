@@ -7,6 +7,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.openlca.app.App;
 import org.openlca.app.db.Database;
+import org.openlca.core.database.ProjectDao;
 import org.openlca.core.model.Project;
 import org.openlca.core.results.ProjectResult;
 import org.slf4j.Logger;
@@ -28,8 +29,8 @@ public class ProjectResultEditor extends FormEditor {
 			ProjectResultInput input = (ProjectResultInput) editorInput;
 			result = App.getCache().get(input.getResultKey(),
 					ProjectResult.class);
-			project = Database.get().createDao(Project.class)
-					.getForId(input.getProjectId());
+			ProjectDao dao = new ProjectDao(Database.get());
+			project = dao.getForId(input.getProjectId());
 		} catch (Exception e) {
 			log.error("failed to load project result", e);
 			throw new PartInitException("failed to load project result", e);

@@ -4,14 +4,9 @@ import java.util.List;
 
 import org.eclipse.birt.chart.model.ChartWithAxes;
 import org.eclipse.birt.chart.model.attribute.ChartDimension;
-import org.eclipse.birt.chart.model.attribute.FontDefinition;
-import org.eclipse.birt.chart.model.attribute.HorizontalAlignment;
 import org.eclipse.birt.chart.model.attribute.IntersectionType;
 import org.eclipse.birt.chart.model.attribute.LegendItemType;
-import org.eclipse.birt.chart.model.attribute.TextAlignment;
-import org.eclipse.birt.chart.model.attribute.VerticalAlignment;
 import org.eclipse.birt.chart.model.attribute.impl.ColorDefinitionImpl;
-import org.eclipse.birt.chart.model.attribute.impl.TextAlignmentImpl;
 import org.eclipse.birt.chart.model.component.Axis;
 import org.eclipse.birt.chart.model.component.Series;
 import org.eclipse.birt.chart.model.component.impl.SeriesImpl;
@@ -87,22 +82,8 @@ public class ProjectResultChart extends Composite {
 
 	private Axis xAxis(ChartWithAxes chart) {
 		Axis xAxis = chart.getPrimaryBaseAxes()[0];
-		TextAlignment xLabelAlignment = TextAlignmentImpl.create();
-		xLabelAlignment
-				.setHorizontalAlignment(HorizontalAlignment.CENTER_LITERAL);
-		xLabelAlignment.setVerticalAlignment(VerticalAlignment.CENTER_LITERAL);
-		// xAxis.getLabel()
-		// .getCaption()
-		// .setFont(
-		// FontDefinitionImpl.create(xAxis.getLabel().getCaption()
-		// .getFont().getName(), 10, false, false, false,
-		// false, false, -45, xLabelAlignment));
-		FontDefinition font = xAxis.getLabel().getCaption().getFont();
-		font.setSize(10);
-		font.setRotation(-45);
-		font.setAlignment(xLabelAlignment);
 		xAxis.getOrigin().setType(IntersectionType.VALUE_LITERAL);
-		// xAxis.getOrigin().setValue(NumberDataElementImpl.create(0));
+		xAxis.getLabel().setVisible(false);
 		return xAxis;
 	}
 

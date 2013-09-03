@@ -22,6 +22,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.ParameterRedefTable;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.Numbers;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
@@ -32,11 +33,14 @@ import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ProductSystemDao;
+import org.openlca.core.model.FlowProperty;
+import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.Project;
 import org.openlca.core.model.ProjectVariant;
+import org.openlca.core.model.Unit;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
@@ -102,10 +106,11 @@ public class ProjectSetupPage extends ModelPage<Project> {
 		Section section = UI.section(body, toolkit, "Variants");
 		Composite composite = UI.sectionClient(section, toolkit);
 		UI.gridLayout(composite, 1);
-		String[] properties = { Messages.Name, Messages.ProductSystem };
+		String[] properties = { Messages.Name, Messages.ProductSystem,
+				Messages.FlowProperty, Messages.Amount, Messages.Unit };
 		variantViewer = Tables.createViewer(composite, properties);
 		variantViewer.setLabelProvider(new VariantLabelProvider());
-		Tables.bindColumnWidths(variantViewer, 0.5, 0.5);
+		Tables.bindColumnWidths(variantViewer, 0.25, 0.25, 0.20, 0.15, 0.15);
 		ModifySupport<ProjectVariant> support = new ModifySupport<>(
 				variantViewer);
 		support.bind(Messages.Name, new VariantNameEditor());
@@ -153,6 +158,7 @@ public class ProjectSetupPage extends ModelPage<Project> {
 
 	private void createSection(ProjectVariant variant) {
 		Section section = UI.section(body, toolkit, variant.getName());
+		section.setExpanded(false);
 		Composite composite = UI.sectionClient(section, toolkit);
 		UI.gridLayout(composite, 1);
 		ParameterRedefTable table = new ParameterRedefTable(editor,
@@ -213,13 +219,25 @@ public class ProjectSetupPage extends ModelPage<Project> {
 			if (!(element instanceof ProjectVariant))
 				return null;
 			ProjectVariant variant = (ProjectVariant) element;
-			if (columnIndex == 0)
+			ProductSystem system = variant.getProductSystem();
+			if (system == null)
+				return null;
+			switch (columnIndex) {
+			case 0:
 				return variant.getName();
-			else {
-				if (variant.getProductSystem() != null)
-					return variant.getProductSystem().getName();
-				else
-					return null;
+			case 1:
+				return system.getName();
+			case 2:
+				FlowPropertyFactor fac = system.getTargetFlowPropertyFactor();
+				FlowProperty prop = fac == null ? null : fac.getFlowProperty();
+				return prop == null ? null : prop.getName();
+			case 3:
+				return Numbers.format(system.getTargetAmount());
+			case 4:
+				Unit unit = system.getTargetUnit();
+				return unit == null ? null : unit.getName();
+			default:
+				return null;
 			}
 		}
 	}
