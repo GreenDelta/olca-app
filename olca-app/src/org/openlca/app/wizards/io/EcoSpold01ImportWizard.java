@@ -140,6 +140,7 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 				unitGroup.getUnits().add(unit);
 				try {
 					Database.createDao(UnitGroup.class).update(unitGroup);
+					entry.setUnit(unit);
 				} catch (Exception e) {
 					log.error("Update unit group failed", e);
 				}

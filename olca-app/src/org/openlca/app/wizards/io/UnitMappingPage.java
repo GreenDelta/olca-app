@@ -1,12 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.app.wizards.io;
 
 import java.io.File;
@@ -20,14 +11,13 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
-import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
@@ -38,6 +28,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
+import org.openlca.app.util.Numbers;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.Unit;
@@ -80,41 +71,31 @@ public abstract class UnitMappingPage extends WizardPage {
 		setPageComplete(false);
 	}
 
-	/**
-	 * Checks if all units are mapped. If so sets the page completed
-	 */
 	private void checkCompletion() {
-		boolean isCompleted = true;
-		final String[] unitNames = unitMapping.getUnits();
-		int i = 0;
-		while (isCompleted && i < unitNames.length) {
-			if (unitMapping.getFlowProperty(unitNames[i]) == null
-					|| unitMapping.getConversionFactor(unitNames[i]) == null) {
-				isCompleted = false;
-			} else {
-				i++;
+		boolean complete = true;
+		String[] units = unitMapping.getUnits();
+		for (int i = 0; i < units.length; i++) {
+			FlowProperty prop = unitMapping.getFlowProperty(units[i]);
+			Double factor = unitMapping.getConversionFactor(units[i]);
+			if (prop == null || factor == null) {
+				complete = false;
+				break;
 			}
 		}
-		setPageComplete(isCompleted);
+		setPageComplete(complete);
 	}
 
-	/**
-	 * Tries to map the unit names to existing units
-	 * 
-	 * @param unitNames
-	 *            the unit names to be mapped
-	 */
-	private void setUnits(final String[] unitNames) {
-		final Input[] input = new Input[unitNames.length];
-		for (int i = 0; i < unitNames.length; i++) {
-			input[i] = new Input(unitNames[i]);
-			for (final FlowProperty flowProperty : flowProperties) {
-				final Unit unit = unitGroups.get(
-						flowProperty.getUnitGroup().getId()).getUnit(
-						unitNames[i]);
+	private void mapAndSetUnitInput(List<String> units) {
+		List<TableRow> inputs = new ArrayList<>();
+		for (String unitName : units) {
+			TableRow input = new TableRow(unitName);
+			inputs.add(input);
+			for (FlowProperty flowProperty : flowProperties) {
+				Unit unit = unitGroups.get(flowProperty.getUnitGroup().getId())
+						.getUnit(unitName);
 				if (unit != null) {
-					input[i].setFlowProperty(flowProperty);
-					input[i].setConversionFactor(unit.getConversionFactor());
+					input.setFlowProperty(flowProperty);
+					input.setConversionFactor(unit.getConversionFactor());
 					if (unitGroups.get(flowProperty.getUnitGroup().getId())
 							.getDefaultFlowProperty() != null
 							&& flowProperty.getId() == unitGroups
@@ -126,20 +107,17 @@ public abstract class UnitMappingPage extends WizardPage {
 			}
 
 			UnitGroup unitGroup = null;
-			if (input[i].getFlowProperty() != null) {
-				unitGroup = unitGroups.get(input[i].getFlowProperty()
+			if (input.getFlowProperty() != null) {
+				unitGroup = unitGroups.get(input.getFlowProperty()
 						.getUnitGroup().getId());
 			}
-			unitMapping.put(unitNames[i], input[i].getFlowProperty(),
-					unitGroup, input[i].getConversionFactor());
+			unitMapping.put(unitName, input.getFlowProperty(), unitGroup,
+					input.getConversionFactor());
 		}
-		tableViewer.setInput(input);
+		tableViewer.setInput(inputs);
 		checkCompletion();
 	}
 
-	/**
-	 * Updates the unit mapping if new files were selected
-	 */
 	private void update() {
 		try {
 			final File[] files = getFiles();
@@ -178,7 +156,7 @@ public abstract class UnitMappingPage extends WizardPage {
 							}
 
 						});
-				setUnits(unitNames.toArray(new String[unitNames.size()]));
+				mapAndSetUnitInput(unitNames);
 			}
 		} catch (final Exception e) {
 			log.error("Update failed", e);
@@ -223,7 +201,7 @@ public abstract class UnitMappingPage extends WizardPage {
 			c.pack();
 		}
 
-		tableViewer.setContentProvider(new ContentProvider());
+		tableViewer.setContentProvider(ArrayContentProvider.getInstance());
 		tableViewer.setLabelProvider(new LabelProvider());
 		tableViewer.setColumnProperties(PROPERTIES);
 		tableViewer.setCellModifier(new CellModifier());
@@ -243,7 +221,7 @@ public abstract class UnitMappingPage extends WizardPage {
 				new TextCellEditor(tableViewer.getTable()) };
 		tableViewer.setCellEditors(editors);
 
-		tableViewer.setInput(new Input[0]);
+		tableViewer.setInput(new TableRow[0]);
 
 		setControl(body);
 	}
@@ -302,7 +280,7 @@ public abstract class UnitMappingPage extends WizardPage {
 
 		@Override
 		public boolean canModify(final Object element, final String property) {
-			final Input input = (Input) element;
+			final TableRow input = (TableRow) element;
 			return !property.equals(UNIT)
 					&& !property.equals(UNIT_GROUP)
 					&& !property.equals(REFERENCE_UNIT)
@@ -315,7 +293,7 @@ public abstract class UnitMappingPage extends WizardPage {
 		@Override
 		public Object getValue(final Object element, final String property) {
 			Object value = null;
-			final Input input = (Input) element;
+			final TableRow input = (TableRow) element;
 			if (property.equals(FLOW_PROPERTY)) {
 				final List<String> flowPropertyNames = new ArrayList<>();
 				for (final FlowProperty flowProperty : flowProperties) {
@@ -347,7 +325,7 @@ public abstract class UnitMappingPage extends WizardPage {
 		public void modify(final Object element, final String property,
 				final Object value) {
 			final TableItem item = (TableItem) element;
-			final Input input = (Input) item.getData();
+			final TableRow input = (TableRow) item.getData();
 			if (property.equals(FLOW_PROPERTY)) {
 				final List<String> flowPropertyNames = new ArrayList<>();
 				for (final FlowProperty flowProperty : flowProperties) {
@@ -395,103 +373,33 @@ public abstract class UnitMappingPage extends WizardPage {
 		}
 	}
 
-	/**
-	 * Content provider for the unit mapping table
-	 */
-	private class ContentProvider implements IStructuredContentProvider {
+	private class TableRow {
 
-		@Override
-		public void dispose() {
-			// nothing to dispose
-		}
-
-		@Override
-		public Object[] getElements(final Object inputElement) {
-			return (Input[]) inputElement;
-		}
-
-		@Override
-		public void inputChanged(final Viewer viewer, final Object oldInput,
-				final Object newInput) {
-			// nothing to do
-		}
-
-	}
-
-	/**
-	 * Input element of the unit mapping table
-	 */
-	private class Input {
-
-		/**
-		 * The conversion factor of the unit
-		 */
 		private double conversionFactor = 1;
-
-		/**
-		 * The flow property of the unit
-		 */
 		private FlowProperty flowProperty;
+		private String unitName;
 
-		/**
-		 * The units name
-		 */
-		private final String unitName;
-
-		/**
-		 * Creates a new instance
-		 * 
-		 * @param unitName
-		 *            The units name
-		 */
-		protected Input(final String unitName) {
+		protected TableRow(String unitName) {
 			this.unitName = unitName;
 		}
 
-		/**
-		 * Getter of the conversion factor
-		 * 
-		 * @return The conversion factor of the unit
-		 */
 		public double getConversionFactor() {
 			return conversionFactor;
 		}
 
-		/**
-		 * Getter of the flow property
-		 * 
-		 * @return The flow property of the unit
-		 */
 		public FlowProperty getFlowProperty() {
 			return flowProperty;
 		}
 
-		/**
-		 * Getter of the unit name
-		 * 
-		 * @return The units name
-		 */
 		public String getUnitName() {
 			return unitName;
 		}
 
-		/**
-		 * Setter of the conversion factor
-		 * 
-		 * @param conversionFactor
-		 *            The new conversion factor
-		 */
 		public void setConversionFactor(final double conversionFactor) {
 			this.conversionFactor = conversionFactor;
 			unitMapping.set(unitName, conversionFactor);
 		}
 
-		/**
-		 * Setter of the flow property
-		 * 
-		 * @param flowProperty
-		 *            The new flow property
-		 */
 		public void setFlowProperty(final FlowProperty flowProperty) {
 			this.flowProperty = flowProperty;
 			unitMapping.set(unitName, flowProperty,
@@ -500,46 +408,40 @@ public abstract class UnitMappingPage extends WizardPage {
 
 	}
 
-	/**
-	 * Label provider for the unit mapping table
-	 */
 	private class LabelProvider extends
 			org.eclipse.jface.viewers.BaseLabelProvider implements
 			ITableLabelProvider {
 
 		@Override
-		public Image getColumnImage(final Object element, final int columnIndex) {
+		public Image getColumnImage(Object element, int column) {
 			return null;
 		}
 
 		@Override
-		public String getColumnText(final Object element, final int columnIndex) {
-			String text = "";
-			final Input input = (Input) element;
-			if (columnIndex == 0) {
-				text = input.getUnitName();
-			} else if (columnIndex == 1) {
-				if (input.getFlowProperty() != null) {
-					text = input.getFlowProperty().getName();
-				}
-			} else if (columnIndex == 2) {
-				if (input.getFlowProperty() != null) {
-					final UnitGroup unitGroup = unitGroups.get(input
-							.getFlowProperty().getUnitGroup().getId());
-					text = unitGroup.getName();
-				}
-			} else if (columnIndex == 3) {
-				if (input.getFlowProperty() != null) {
-					final UnitGroup unitGroup = unitGroups.get(input
-							.getFlowProperty().getUnitGroup().getId());
-					text = unitGroup.getReferenceUnit().getName();
-				}
-			} else if (columnIndex == 4) {
-				if (input.getFlowProperty() != null) {
-					text = Double.toString(input.getConversionFactor());
-				}
+		public String getColumnText(Object element, int column) {
+			if (!(element instanceof TableRow))
+				return null;
+			TableRow row = (TableRow) element;
+			if (column == 0)
+				return row.getUnitName(); // no flow-prop check
+			if (row.getFlowProperty() == null)
+				return null;
+			FlowProperty prop = row.getFlowProperty();
+			UnitGroup unitGroup = prop.getUnitGroup();
+			switch (column) {
+			case 1:
+				return prop.getName();
+			case 2:
+				return unitGroup.getName();
+			case 3:
+				if (unitGroup.getReferenceUnit() == null)
+					return null;
+				return unitGroup.getReferenceUnit().getName();
+			case 4:
+				return Numbers.format(row.getConversionFactor());
+			default:
+				return null;
 			}
-			return text;
 		}
 	}
 
