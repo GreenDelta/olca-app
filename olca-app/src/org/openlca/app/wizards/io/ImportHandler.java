@@ -1,8 +1,8 @@
 package org.openlca.app.wizards.io;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.openlca.io.FileImport;
 import org.openlca.io.ImportEvent;
-import org.openlca.io.ilcd.ILCDImport;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,17 +25,17 @@ public class ImportHandler {
 		monitor.subTask(Strings.cut(event.getDataSetName(), 50));
 	}
 
-	public void run(ILCDImport iImport) {
+	public void run(FileImport fileImport) {
 		EventBus bus = new EventBus();
 		bus.register(this);
-		iImport.setEventBus(bus);
-		Thread thread = new Thread(iImport);
+		fileImport.setEventBus(bus);
+		Thread thread = new Thread(fileImport);
 		thread.start();
 		while (!monitor.isCanceled() && thread.isAlive())
 			try {
 				thread.join(cancelLookUpTime);
 				if (monitor.isCanceled())
-					iImport.cancel();
+					fileImport.cancel();
 			} catch (Exception e) {
 				log.error("failed to join import thread");
 			}

@@ -37,7 +37,6 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 	private UnitMappingPage mappingPage;
 
 	public EcoSpold01ImportWizard() {
-		super();
 		setNeedsProgressMonitor(true);
 	}
 
@@ -92,7 +91,6 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 
 	@Override
 	public boolean performFinish() {
-		// TODO: select a category for processes
 		try {
 			getContainer().run(true, true, new IRunnableWithProgress() {
 				@Override
@@ -114,14 +112,15 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 
 	private void parse(IProgressMonitor monitor, File[] files,
 			UnitMapping unitMapping) {
-		// TODO: we should pass the monitor to the exporter
 		monitor.beginTask("Import EcoSpold 01 data sets",
 				IProgressMonitor.UNKNOWN);
 		EcoSpold01Import importer = new EcoSpold01Import(Database.get(),
 				unitMapping);
 		importer.setProcessCategory(category);
+		importer.setFiles(files);
+		ImportHandler handler = new ImportHandler(monitor);
 		try {
-			importer.run(files);
+			handler.run(importer);
 		} catch (Exception e) {
 			log.error("Data set import failed", e);
 		}
