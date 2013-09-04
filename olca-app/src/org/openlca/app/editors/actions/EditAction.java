@@ -1,7 +1,6 @@
 package org.openlca.app.editors.actions;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.openlca.app.Messages;
 import org.openlca.app.editors.ProductSystemEditor;
 import org.openlca.app.editors.graphical.GraphicalEditorInput;
@@ -15,14 +14,9 @@ public class EditAction extends Action {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 
-	@Override
-	public ImageDescriptor getImageDescriptor() {
-		return ImageType.INFO_ICON.getDescriptor();
-	}
-
-	@Override
-	public String getText() {
-		return Messages.OpenEditorAction_Text;
+	public EditAction() {
+		setImageDescriptor(ImageType.PRODUCT_SYSTEM_ICON.getDescriptor());
+		setText(Messages.OpenEditorAction_Text);
 	}
 
 	@Override
