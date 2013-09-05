@@ -2,6 +2,7 @@ package org.openlca.app.wizards.io;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 import java.util.UUID;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -97,9 +98,10 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 				public void run(final IProgressMonitor monitor)
 						throws InvocationTargetException, InterruptedException {
 					File[] files = importPage.getFiles();
-					UnitMapping unitMapping = mappingPage.getUnitMapping();
-					saveUnits(unitMapping);
-					parse(monitor, files, unitMapping);
+					List<UnitMappingEntry> mappings = mappingPage
+							.getUnitMappings();
+					UnitMapping mapping = syncMappings(mappings);
+					parse(monitor, files, mapping);
 				}
 			});
 			Navigator.refresh();
@@ -127,24 +129,33 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 		monitor.done();
 	}
 
-	private void saveUnits(UnitMapping unitMapping) {
-		for (String unitName : unitMapping.getUnits()) {
-			UnitMappingEntry entry = unitMapping.getEntry(unitName);
+	private UnitMapping syncMappings(List<UnitMappingEntry> entries) {
+		UnitMapping mapping = new UnitMapping();
+		for (UnitMappingEntry entry : entries) {
 			UnitGroup unitGroup = entry.getUnitGroup();
-			if (unitGroup.getUnit(unitName) == null) {
-				Unit unit = new Unit();
-				unit.setName(unitName);
-				unit.setRefId(UUID.randomUUID().toString());
-				unit.setConversionFactor(unitMapping
-						.getConversionFactor(unitName));
-				unitGroup.getUnits().add(unit);
-				try {
-					Database.createDao(UnitGroup.class).update(unitGroup);
-					entry.setUnit(unit);
-				} catch (Exception e) {
-					log.error("Update unit group failed", e);
-				}
+			String unitName = entry.getUnitName();
+			if (unitGroup.getUnit(unitName) != null) {
+				mapping.put(unitName, entry);
+				continue;
+			}
+			Unit unit = new Unit();
+			unit.setName(unitName);
+			unit.setRefId(UUID.randomUUID().toString());
+			double factor = entry.getFactor() == null ? 1d : entry.getFactor();
+			unit.setConversionFactor(factor);
+			unitGroup.getUnits().add(unit);
+			try {
+				unitGroup = Database.createDao(UnitGroup.class).update(
+						unitGroup);
+				entry.setFactor(factor);
+				entry.setUnitGroup(unitGroup);
+				entry.setUnit(unitGroup.getUnit(unitName));
+				mapping.put(unitName, entry);
+			} catch (Exception e) {
+				log.error("Update unit group failed", e);
 			}
 		}
+		return mapping;
 	}
+
 }
