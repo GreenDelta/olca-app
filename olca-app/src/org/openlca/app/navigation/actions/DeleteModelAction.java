@@ -66,7 +66,7 @@ public class DeleteModelAction extends Action implements INavigationAction {
 		boolean canDelete = true;
 		if (wizard != null && wizard.hasProblems())
 			canDelete = new WizardDialog(UI.shell(), wizard).open() == Window.OK;
-		if (canDelete) {
+		if (canDelete && askDelete(element)) {
 			delete(element);
 			App.closeEditor(element.getContent());
 			Navigator.refresh(element.getParent());
@@ -75,7 +75,7 @@ public class DeleteModelAction extends Action implements INavigationAction {
 
 	@SuppressWarnings("unchecked")
 	private <T> void delete(ModelElement element) {
-		if (element == null || !askDelete(element))
+		if (element == null)
 			return;
 		try {
 			log.trace("delete model {}", element.getContent());
