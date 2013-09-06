@@ -8,9 +8,10 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.core.database.BaseDao;
+import org.openlca.core.database.EntityCache;
 import org.openlca.core.editors.IEditor;
 import org.openlca.core.model.CategorizedEntity;
-import org.openlca.core.model.ModelType;
+import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,8 +52,11 @@ public abstract class ModelEditor<T extends CategorizedEntity> extends
 			dao.update(model);
 			setDirty(false);
 			monitor.done();
-			ModelType type = getEditorInput().getDescriptor().getModelType();
-			Navigator.refresh(Navigator.findElement(type));
+			BaseDescriptor descriptor = getEditorInput().getDescriptor();
+			EntityCache cache = Database.getCache();
+			cache.refresh(descriptor.getClass(), descriptor.getId());
+			cache.invalidate(modelClass, model.getId());
+			Navigator.refresh(Navigator.findElement(descriptor));
 			this.setPartName(model.getName());
 		} catch (Exception e) {
 			log.error("failed to update " + modelClass.getSimpleName());

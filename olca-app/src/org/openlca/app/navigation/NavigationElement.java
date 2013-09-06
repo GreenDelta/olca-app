@@ -34,6 +34,10 @@ abstract class NavigationElement<T> implements INavigationElement<T> {
 		return content;
 	}
 
+	protected void setContent(T content) {
+		this.content = content;
+	}
+
 	@Override
 	public INavigationElement<?> getParent() {
 		return parent;
