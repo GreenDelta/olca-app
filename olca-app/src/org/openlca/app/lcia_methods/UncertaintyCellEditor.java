@@ -1,7 +1,8 @@
-package org.openlca.core.editors.lciamethod;
+package org.openlca.app.lcia_methods;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.openlca.app.components.DialogCellEditor;
 import org.openlca.core.model.ImpactFactor;
 
 public class UncertaintyCellEditor extends DialogCellEditor {

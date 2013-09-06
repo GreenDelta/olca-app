@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.openlca.core.editors.lciamethod;
+package org.openlca.app.components;
 
 import java.text.MessageFormat;
 

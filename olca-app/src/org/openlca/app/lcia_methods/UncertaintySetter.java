@@ -1,4 +1,4 @@
-package org.openlca.core.editors.lciamethod;
+package org.openlca.app.lcia_methods;
 
 import org.openlca.core.model.ImpactFactor;
 import org.openlca.core.model.UncertaintyDistributionType;

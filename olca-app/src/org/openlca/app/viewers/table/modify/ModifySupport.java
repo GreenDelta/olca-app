@@ -91,8 +91,8 @@ public class ModifySupport<T> {
 	private class CellModifier implements
 			org.eclipse.jface.viewers.ICellModifier {
 
-		@SuppressWarnings("unchecked")
 		@Override
+		@SuppressWarnings("unchecked")
 		public boolean canModify(Object element, String property) {
 			return cellModifiers.containsKey(property)
 					&& cellModifiers.get(property) != null
@@ -100,11 +100,11 @@ public class ModifySupport<T> {
 		}
 
 		@Override
+		@SuppressWarnings("unchecked")
 		public Object getValue(Object element, String property) {
 			ICellModifier<T> modifier = cellModifiers.get(property);
 			if (modifier == null)
 				return null;
-			@SuppressWarnings("unchecked")
 			T elem = (T) element;
 			Object value = modifier.getValue(elem);
 			switch (modifier.getCellEditingType()) {
@@ -136,13 +136,13 @@ public class ModifySupport<T> {
 		}
 
 		@Override
+		@SuppressWarnings("unchecked")
 		public void modify(Object element, String property, Object value) {
 			if (element instanceof Item)
 				element = ((Item) element).getData();
 			ICellModifier<T> modifier = cellModifiers.get(property);
 			if (modifier == null)
 				return;
-			@SuppressWarnings("unchecked")
 			T elem = (T) element;
 			switch (modifier.getCellEditingType()) {
 			case TEXTBOX:
