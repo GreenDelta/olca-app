@@ -1,7 +1,9 @@
-package org.openlca.app.wizards;
+package org.openlca.app.lcia_methods;
 
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
+import org.openlca.app.wizards.AbstractWizard;
+import org.openlca.app.wizards.AbstractWizardPage;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.model.ImpactMethod;
 

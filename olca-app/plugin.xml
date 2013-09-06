@@ -41,7 +41,7 @@
             name="%editors.name.0">
       </editor>
       <editor
-            class="org.openlca.app.editors.ImpactMethodEditor"
+            class="org.openlca.app.lcia_methods.ImpactMethodEditor"
             default="false"
             icon="icons/LCIA_obj.gif"
             id="editors.impactmethod"
@@ -158,7 +158,7 @@
             name="%wizard.name.4">
       </wizard>
       <wizard
-            class="org.openlca.app.wizards.ImpactMethodWizard"
+            class="org.openlca.app.lcia_methods.ImpactMethodWizard"
             icon="icons/LCIA_obj_new.gif"
             id="wizards.new.impactmethod"
             name="%wizard.name.1">

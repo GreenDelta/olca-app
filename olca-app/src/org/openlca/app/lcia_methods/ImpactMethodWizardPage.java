@@ -1,10 +1,11 @@
-package org.openlca.app.wizards;
+package org.openlca.app.lcia_methods;
 
 import java.util.UUID;
 
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.Messages;
 import org.openlca.app.resources.ImageType;
+import org.openlca.app.wizards.AbstractWizardPage;
 import org.openlca.core.model.ImpactMethod;
 
 class ImpactMethodWizardPage extends AbstractWizardPage<ImpactMethod> {

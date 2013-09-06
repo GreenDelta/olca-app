@@ -9,7 +9,8 @@ import org.openlca.app.Messages;
 import org.openlca.app.util.UIFactory;
 import org.openlca.core.model.RootEntity;
 
-abstract class AbstractWizardPage<T extends RootEntity> extends WizardPage {
+public abstract class AbstractWizardPage<T extends RootEntity> extends
+		WizardPage {
 
 	private Text descriptionText;
 	private String EMPTY_NAME_ERROR = Messages.PleaseEnterName;
