@@ -1,5 +1,7 @@
 package org.openlca.app;
 
+import java.util.Objects;
+
 public class Event {
 
 	private String message;
@@ -8,6 +10,10 @@ public class Event {
 	public Event(String message, Object source) {
 		this.message = message;
 		this.source = source;
+	}
+
+	public boolean match(String message) {
+		return Objects.equals(message, this.message);
 	}
 
 	public String getMessage() {
