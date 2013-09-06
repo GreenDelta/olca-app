@@ -17,8 +17,9 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.table.modify.CheckBoxCellModifier;
 import org.openlca.app.viewers.table.modify.IModelChangedListener.ModelChangeType;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
-import org.openlca.core.database.Cache;
+import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.Flow;
+import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
@@ -38,14 +39,14 @@ public class FlowPropertyFactorViewer extends
 			LABEL.CONVERSION_FACTOR, LABEL.REFERENCE_UNIT, LABEL.IS_REFERENCE };
 
 	private Flow flow;
-	private Cache cache;
+	private EntityCache cache;
 
-	public FlowPropertyFactorViewer(Composite parent, Cache cache) {
+	public FlowPropertyFactorViewer(Composite parent, EntityCache cache) {
 		super(parent);
 		getCellModifySupport().bind(LABEL.CONVERSION_FACTOR,
 				new ConversionFactorModifier());
-		getCellModifySupport().bind(LABEL.IS_REFERENCE,
-				new ReferenceModifier());
+		getCellModifySupport()
+				.bind(LABEL.IS_REFERENCE, new ReferenceModifier());
 		this.cache = cache;
 	}
 
@@ -81,7 +82,9 @@ public class FlowPropertyFactorViewer extends
 
 	private void add(FlowPropertyDescriptor descriptor) {
 		FlowPropertyFactor factor = new FlowPropertyFactor();
-		factor.setFlowProperty(cache.getFlowProperty(descriptor.getId()));
+		FlowProperty property = cache.get(FlowProperty.class,
+				descriptor.getId());
+		factor.setFlowProperty(property);
 		fireModelChanged(ModelChangeType.CREATE, factor);
 		setInput(flow);
 	}

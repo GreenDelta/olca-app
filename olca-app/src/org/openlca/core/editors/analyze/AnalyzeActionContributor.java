@@ -1,12 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.core.editors.analyze;
 
 import org.eclipse.draw2d.Viewport;
@@ -23,17 +14,11 @@ import org.eclipse.jface.dialogs.PageChangedEvent;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.forms.editor.IFormPage;
 import org.eclipse.ui.part.EditorActionBarContributor;
+import org.openlca.app.editors.graphical.action.OpenMiniatureViewAction;
 import org.openlca.core.editors.analyze.sankey.SankeyDiagram;
-import org.openlca.core.editors.productsystem.graphical.actions.OpenMiniatureViewAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Editor action bar contributor for the analyze editor
- * 
- * @author Sebastian Greve
- * 
- */
 public class AnalyzeActionContributor extends EditorActionBarContributor
 		implements IPageChangedListener {
 

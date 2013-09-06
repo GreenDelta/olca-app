@@ -34,7 +34,7 @@ import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
-import org.openlca.core.database.Cache;
+import org.openlca.core.database.EntityCache;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -63,7 +63,7 @@ public class ParameterRedefDialog extends FormDialog {
 			return dialog.getSelection();
 	}
 
-	private static TreeModel loadModel(IDatabase database, Cache cache) {
+	private static TreeModel loadModel(IDatabase database, EntityCache cache) {
 		try (Connection con = database.createConnection()) {
 			List<ParameterRedef> parameters = new ArrayList<>();
 			String query = "select * from tbl_parameters where is_input_param = 1";
@@ -93,7 +93,7 @@ public class ParameterRedefDialog extends FormDialog {
 	}
 
 	private static TreeModel buildModel(List<ParameterRedef> parameters,
-			Cache cache) {
+			EntityCache cache) {
 		TreeModel model = new TreeModel();
 		HashMap<Long, ProcessNode> createdNodes = new HashMap<>();
 		for (ParameterRedef redef : parameters) {
@@ -106,7 +106,7 @@ public class ParameterRedefDialog extends FormDialog {
 				ProcessNode node = createdNodes.get(procId);
 				if (node == null) {
 					node = new ProcessNode();
-					node.process = cache.getProcessDescriptor(procId);
+					node.process = cache.get(ProcessDescriptor.class, procId);
 					createdNodes.put(procId, node);
 				}
 				paramNode.process = node;

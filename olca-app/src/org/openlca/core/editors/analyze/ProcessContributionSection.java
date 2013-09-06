@@ -24,7 +24,7 @@ import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.app.viewers.combo.FlowViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
-import org.openlca.core.database.Cache;
+import org.openlca.core.database.EntityCache;
 import org.openlca.core.editors.io.ui.FileChooser;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 
@@ -34,7 +34,7 @@ import org.openlca.core.model.descriptors.FlowDescriptor;
  */
 class ProcessContributionSection<T> {
 
-	private Cache cache = Database.getCache();
+	private EntityCache cache = Database.getCache();
 	private String sectionTitle = "#no title";
 	private String selectionName = "#no item name";
 	private IProcessContributionProvider<T> provider;

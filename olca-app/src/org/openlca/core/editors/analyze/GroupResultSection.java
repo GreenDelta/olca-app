@@ -20,7 +20,7 @@ import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.app.viewers.combo.FlowViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
-import org.openlca.core.database.Cache;
+import org.openlca.core.database.EntityCache;
 import org.openlca.core.editors.ContributionItem;
 import org.openlca.core.editors.charts.ContributionChart;
 import org.openlca.core.model.descriptors.FlowDescriptor;
@@ -36,7 +36,7 @@ class GroupResultSection {
 	private int IMPACT = 1;
 	private int resultType = 0;
 
-	private Cache cache = Database.getCache();
+	private EntityCache cache = Database.getCache();
 	private List<ProcessGrouping> groups;
 	private AnalysisResult result;
 	private TableViewer tableViewer;

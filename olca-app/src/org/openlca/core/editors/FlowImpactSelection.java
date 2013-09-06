@@ -12,7 +12,7 @@ import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.app.viewers.combo.FlowViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
-import org.openlca.core.database.Cache;
+import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.AnalysisResult;
@@ -29,7 +29,7 @@ public class FlowImpactSelection {
 	private final int IMPACT = 1;
 	private int resultType = FLOW;
 
-	private Cache cache;
+	private EntityCache cache;
 	private AnalysisResult result;
 	private Object initialSelection;
 	private EventHandler eventHandler;
@@ -37,7 +37,7 @@ public class FlowImpactSelection {
 	private FlowViewer flowViewer;
 	private ImpactCategoryViewer impactViewer;
 
-	private FlowImpactSelection(Cache cache) {
+	private FlowImpactSelection(EntityCache cache) {
 		this.cache = cache;
 	}
 
@@ -77,7 +77,7 @@ public class FlowImpactSelection {
 			impactViewer.setEnabled(false);
 	}
 
-	public static Dispatch onCache(Cache cache) {
+	public static Dispatch onCache(EntityCache cache) {
 		Dispatch dispatch = new Dispatch(new FlowImpactSelection(cache));
 		return dispatch;
 	}

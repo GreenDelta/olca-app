@@ -10,7 +10,7 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.openlca.app.App;
 import org.openlca.app.results.InventoryResultPage;
 import org.openlca.app.results.InventoryResultProvider;
-import org.openlca.core.database.Cache;
+import org.openlca.core.database.EntityCache;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.results.InventoryResult;
@@ -84,7 +84,7 @@ public class InventoryResultEditor extends FormEditor {
 	private class InventoryAdapter implements InventoryResultProvider {
 
 		@Override
-		public Collection<FlowDescriptor> getFlows(Cache cache) {
+		public Collection<FlowDescriptor> getFlows(EntityCache cache) {
 			return result.getFlowResults().getFlows(cache);
 		}
 

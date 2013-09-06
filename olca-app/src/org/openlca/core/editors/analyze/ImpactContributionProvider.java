@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.openlca.app.db.Database;
-import org.openlca.core.database.Cache;
+import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.AnalysisImpactResult;
 import org.openlca.core.results.AnalysisResult;
@@ -15,7 +15,7 @@ class ImpactContributionProvider implements
 		IProcessContributionProvider<ImpactCategoryDescriptor> {
 
 	private AnalysisResult result;
-	private Cache cache = Database.getCache();
+	private EntityCache cache = Database.getCache();
 
 	public ImpactContributionProvider(AnalysisResult result) {
 		this.result = result;

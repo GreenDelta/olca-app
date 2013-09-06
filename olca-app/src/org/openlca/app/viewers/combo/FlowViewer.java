@@ -9,7 +9,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.CategoryPath;
-import org.openlca.core.database.Cache;
+import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.descriptors.FlowDescriptor;
@@ -22,9 +22,9 @@ public class FlowViewer extends AbstractComboViewer<FlowDescriptor> {
 	private static final int[] COLUMN_BOUNDS_PERCENTAGES = new int[] { 45, 40,
 			15 };
 
-	private Cache cache;
+	private EntityCache cache;
 
-	public FlowViewer(Composite parent, Cache cache) {
+	public FlowViewer(Composite parent, EntityCache cache) {
 		super(parent);
 		this.cache = cache;
 		setInput(new FlowDescriptor[0]);
@@ -77,19 +77,19 @@ public class FlowViewer extends AbstractComboViewer<FlowDescriptor> {
 				return flowNameCompare;
 
 			// compare categories
-			Category category1 = flow1.getCategory() != null ? cache
-					.getCategory(flow1.getCategory()) : null;
-			Category category2 = flow2.getCategory() != null ? cache
-					.getCategory(flow2.getCategory()) : null;
+			Category category1 = flow1.getCategory() != null ? cache.get(
+					Category.class, flow1.getCategory()) : null;
+			Category category2 = flow2.getCategory() != null ? cache.get(
+					Category.class, flow2.getCategory()) : null;
 			int categoryCompare = compare(category1, category2);
 			if (categoryCompare != 0)
 				return categoryCompare;
 
 			// compare locations
-			Location location1 = flow1.getLocation() != null ? cache
-					.getLocation(flow1.getLocation()) : null;
-			Location location2 = flow2.getLocation() != null ? cache
-					.getLocation(flow2.getLocation()) : null;
+			Location location1 = flow1.getLocation() != null ? cache.get(
+					Location.class, flow1.getLocation()) : null;
+			Location location2 = flow2.getLocation() != null ? cache.get(
+					Location.class, flow2.getLocation()) : null;
 			return compare(location1, location2);
 		}
 
@@ -138,12 +138,13 @@ public class FlowViewer extends AbstractComboViewer<FlowDescriptor> {
 			case 1:
 				if (flow.getCategory() == null)
 					return null;
-				Category category = cache.getCategory(flow.getCategory());
+				Category category = cache.get(Category.class,
+						flow.getCategory());
 				return CategoryPath.getFull(category);
 			case 2:
 				if (flow.getLocation() == null)
 					break;
-				return cache.getLocation(flow.getLocation()).getCode();
+				return cache.get(Location.class, flow.getLocation()).getCode();
 			}
 			return "";
 		}

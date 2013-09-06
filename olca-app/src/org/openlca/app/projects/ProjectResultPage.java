@@ -13,7 +13,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.FlowViewer;
-import org.openlca.core.database.Cache;
+import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.results.ContributionSet;
@@ -21,7 +21,7 @@ import org.openlca.core.results.ProjectResult;
 
 public class ProjectResultPage extends FormPage {
 
-	private Cache cache = Database.getCache();
+	private EntityCache cache = Database.getCache();
 	private ProjectResult result;
 	private ProjectResultChart chart;
 

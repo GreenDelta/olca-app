@@ -6,7 +6,7 @@ import org.eclipse.ui.IPersistableElement;
 import org.openlca.app.db.Database;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Labels;
-import org.openlca.core.database.Cache;
+import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.descriptors.ProductSystemDescriptor;
 
 public class InventoryResultInput implements IEditorInput {
@@ -52,11 +52,11 @@ public class InventoryResultInput implements IEditorInput {
 
 	@Override
 	public String getName() {
-		Cache cache = Database.getCache();
+		EntityCache cache = Database.getCache();
 		if (cache == null)
 			return "";
-		ProductSystemDescriptor d = cache
-				.getProductSystemDescriptor(productSystemId);
+		ProductSystemDescriptor d = cache.get(ProductSystemDescriptor.class,
+				productSystemId);
 		return "Inventory result of " + Labels.getDisplayName(d);
 	}
 

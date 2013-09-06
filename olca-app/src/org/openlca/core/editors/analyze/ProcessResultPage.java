@@ -32,7 +32,7 @@ import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.ProcessViewer;
-import org.openlca.core.database.Cache;
+import org.openlca.core.database.EntityCache;
 import org.openlca.core.editors.ContributionImage;
 import org.openlca.core.matrices.FlowIndex;
 import org.openlca.core.model.descriptors.FlowDescriptor;
@@ -43,7 +43,7 @@ import org.openlca.core.results.AnalysisResult;
 /** Shows the single results of the processes in an analysis result. */
 public class ProcessResultPage extends FormPage {
 
-	private Cache cache = Database.getCache();
+	private EntityCache cache = Database.getCache();
 	private AnalyzeEditor editor;
 	private AnalysisResult result;
 	private ResultProvider flowResultProvider;
@@ -100,7 +100,7 @@ public class ProcessResultPage extends FormPage {
 		inputViewer.setInput(inputFlows);
 		outputViewer.setInput(outputFlows);
 
-		ProcessDescriptor p = cache.getProcessDescriptor(result
+		ProcessDescriptor p = cache.get(ProcessDescriptor.class, result
 				.getProductIndex().getRefProduct().getFirst());
 		flowProcessViewer.select(p);
 		if (result.hasImpactResults()) {
@@ -383,8 +383,8 @@ public class ProcessResultPage extends FormPage {
 		private AnalysisResult result;
 
 		public ResultProvider(AnalysisResult result) {
-			this.process = cache.getProcessDescriptor(result.getProductIndex()
-					.getRefProduct().getFirst());
+			this.process = cache.get(ProcessDescriptor.class, result
+					.getProductIndex().getRefProduct().getFirst());
 			this.result = result;
 		}
 

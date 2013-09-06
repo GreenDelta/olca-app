@@ -18,7 +18,7 @@ import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.swt.graphics.Font;
 import org.openlca.app.db.Database;
-import org.openlca.core.database.Cache;
+import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +31,7 @@ import com.google.common.base.Objects;
 public class ProcessEditPart extends AbstractGraphicalEditPart implements
 		NodeEditPart, PropertyChangeListener {
 
-	private Cache cache = Database.getCache();
+	private EntityCache cache = Database.getCache();
 
 	@Override
 	public void activate() {
@@ -178,9 +178,9 @@ public class ProcessEditPart extends AbstractGraphicalEditPart implements
 		ConnectionLink link = (ConnectionLink) linkObj;
 		ProcessDescriptor thisProcess = ((ProcessNode) getModel()).getProcess();
 
-		ProcessDescriptor provider = cache.getProcessDescriptor(link
+		ProcessDescriptor provider = cache.get(ProcessDescriptor.class, link
 				.getProcessLink().getProviderId());
-		ProcessDescriptor recipient = cache.getProcessDescriptor(link
+		ProcessDescriptor recipient = cache.get(ProcessDescriptor.class, link
 				.getProcessLink().getRecipientId());
 		boolean isLoop = Objects.equal(provider, recipient);
 		try {

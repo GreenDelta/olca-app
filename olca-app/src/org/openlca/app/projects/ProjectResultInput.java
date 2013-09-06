@@ -5,7 +5,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.Labels;
-import org.openlca.core.database.Cache;
+import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.descriptors.ProjectDescriptor;
 
 /** The editor input of a project result. */
@@ -45,10 +45,10 @@ class ProjectResultInput implements IEditorInput {
 
 	@Override
 	public String getName() {
-		Cache cache = Database.getCache();
+		EntityCache cache = Database.getCache();
 		if (cache == null)
 			return "";
-		ProjectDescriptor d = cache.getProjectDescriptor(projectId);
+		ProjectDescriptor d = cache.get(ProjectDescriptor.class, projectId);
 		return "Project result of " + Labels.getDisplayName(d);
 	}
 

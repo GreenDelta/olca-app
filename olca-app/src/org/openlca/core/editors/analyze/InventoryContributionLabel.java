@@ -7,8 +7,9 @@ import org.openlca.app.util.CategoryPath;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.viewers.BaseLabelProvider;
-import org.openlca.core.database.Cache;
+import org.openlca.core.database.EntityCache;
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.model.Category;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.UnitGroup;
 import org.openlca.core.results.AnalysisFlowResult;
@@ -18,10 +19,10 @@ import org.slf4j.LoggerFactory;
 public class InventoryContributionLabel extends BaseLabelProvider implements
 		ITableLabelProvider {
 
-	private Cache cache;
+	private EntityCache cache;
 	private boolean process;
 
-	public InventoryContributionLabel(Cache cache, boolean process) {
+	public InventoryContributionLabel(EntityCache cache, boolean process) {
 		this.cache = cache;
 		this.process = process;
 	}
@@ -54,7 +55,7 @@ public class InventoryContributionLabel extends BaseLabelProvider implements
 			Long catId = result.getFlow().getCategory();
 			if (catId == null)
 				return null;
-			return CategoryPath.getFull(cache.getCategory(catId));
+			return CategoryPath.getFull(cache.get(Category.class, catId));
 		case 2:
 			return Numbers.format(result.getTotalResult());
 		case 3:

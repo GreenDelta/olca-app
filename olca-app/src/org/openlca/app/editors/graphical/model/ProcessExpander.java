@@ -65,8 +65,8 @@ class ProcessExpander extends ImageFigure {
 					.getRecipientId();
 			ProcessNode node = systemNode.getProcessNode(processId);
 			if (node == null) {
-				ProcessDescriptor descriptor = Database.getCache()
-						.getProcessDescriptor(processId);
+				ProcessDescriptor descriptor = Database.getCache().get(
+						ProcessDescriptor.class, processId);
 				node = new ProcessNode(descriptor);
 				systemNode.add(node);
 			}

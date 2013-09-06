@@ -20,7 +20,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
-import org.openlca.core.database.Cache;
+import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.AnalysisResult;
 import org.openlca.util.Strings;
@@ -39,7 +39,7 @@ public class LCIATotalPage extends FormPage {
 
 	private static final double[] COLUMN_WIDTHS = { 0.70, 0.20, 0.08 };
 
-	private Cache cache = Database.getCache();
+	private EntityCache cache = Database.getCache();
 	private FormToolkit toolkit;
 	private AnalysisResult result;
 

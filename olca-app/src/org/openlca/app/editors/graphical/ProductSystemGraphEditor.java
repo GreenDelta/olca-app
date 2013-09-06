@@ -86,8 +86,8 @@ public class ProductSystemGraphEditor extends GraphicalEditor implements
 	}
 
 	private ProcessNode createProcessNode(long id) {
-		ProcessDescriptor descriptor = Database.getCache()
-				.getProcessDescriptor(id);
+		ProcessDescriptor descriptor = Database.getCache().get(
+				ProcessDescriptor.class, id);
 		ProcessNode processNode = new ProcessNode(descriptor);
 		return processNode;
 	}

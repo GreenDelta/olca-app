@@ -1,25 +1,25 @@
 package org.openlca.app.viewers.combo;
 
-import java.util.List;
+import java.util.Collection;
 
 import org.eclipse.swt.widgets.Composite;
-import org.openlca.core.database.Cache;
+import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 public class ProcessViewer extends AbstractComboViewer<ProcessDescriptor> {
 
-	private Cache cache;
+	private EntityCache cache;
 
-	public ProcessViewer(Composite parent, Cache cache) {
+	public ProcessViewer(Composite parent, EntityCache cache) {
 		super(parent);
 		this.cache = cache;
 		setInput(new ProcessDescriptor[0]);
 	}
 
 	public void setInput(ProductSystem productSystem) {
-		List<ProcessDescriptor> descriptors = cache
-				.getProcessDescriptors(productSystem.getProcesses());
+		Collection<ProcessDescriptor> descriptors = cache.getAll(
+				ProcessDescriptor.class, productSystem.getProcesses()).values();
 		setInput(descriptors.toArray(new ProcessDescriptor[descriptors.size()]));
 	}
 

@@ -3,8 +3,8 @@ package org.openlca.app.util;
 import org.apache.commons.lang3.tuple.Pair;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
-import org.openlca.core.database.Cache;
 import org.openlca.core.database.DatabaseContent;
+import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Flow;
@@ -29,7 +29,7 @@ public class Labels {
 	public static String getDisplayName(BaseDescriptor descriptor) {
 		if (descriptor == null)
 			return "";
-		Cache cache = Database.getCache();
+		EntityCache cache = Database.getCache();
 		String text = descriptor.getName();
 		if (cache == null)
 			return text;
@@ -43,7 +43,7 @@ public class Labels {
 			locationId = flow.getLocation();
 		}
 		if (locationId != null) {
-			Location location = cache.getLocation(locationId);
+			Location location = cache.get(Location.class, locationId);
 			if (location != null && location.getCode() != null)
 				text = text + " - " + location.getCode();
 		}
@@ -56,11 +56,11 @@ public class Labels {
 		return descriptor.getDescription();
 	}
 
-	public static String getRefUnit(FlowDescriptor flow, Cache cache) {
+	public static String getRefUnit(FlowDescriptor flow, EntityCache cache) {
 		if (flow == null)
 			return "";
-		FlowProperty refProp = cache.getFlowProperty(flow
-				.getRefFlowPropertyId());
+		FlowProperty refProp = cache.get(FlowProperty.class,
+				flow.getRefFlowPropertyId());
 		if (refProp == null)
 			return "";
 		UnitGroup unitGroup = refProp.getUnitGroup();
@@ -79,10 +79,10 @@ public class Labels {
 	 * empty strings.
 	 */
 	public static Pair<String, String> getFlowCategory(FlowDescriptor flow,
-			Cache cache) {
+			EntityCache cache) {
 		if (flow == null || flow.getCategory() == null)
 			return Pair.of("", "");
-		Category cat = cache.getCategory(flow.getCategory());
+		Category cat = cache.get(Category.class, flow.getCategory());
 		if (cat == null)
 			return Pair.of("", "");
 		if (cat.getParentCategory() == null)

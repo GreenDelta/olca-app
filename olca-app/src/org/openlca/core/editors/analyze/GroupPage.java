@@ -38,11 +38,11 @@ import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.Labels;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
-import org.openlca.core.database.Cache;
-import org.openlca.core.model.Location;
+import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.ProcessGroup;
 import org.openlca.core.model.ProcessGroupSet;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -60,7 +60,7 @@ class GroupPage extends FormPage {
 	AnalyzeEditor editor;
 	AnalysisResult result;
 
-	private Cache cache = Database.getCache();
+	private EntityCache cache = Database.getCache();
 	private TableViewer groupViewer;
 	private TableViewer processViewer;
 	private Menu groupMoveMenu;
@@ -322,13 +322,7 @@ class GroupPage extends FormPage {
 				return group.getName();
 			} else if (element instanceof ProcessDescriptor) {
 				ProcessDescriptor p = (ProcessDescriptor) element;
-				String name = Strings.cut(p.getName(), 75);
-				if (p.getLocation() != null) {
-					Location location = cache.getLocation(p.getLocation());
-					if (location != null)
-						name += " " + location.getCode();
-				}
-				return name;
+				return Strings.cut(Labels.getDisplayName(p), 75);
 			} else
 				return null;
 		}

@@ -23,9 +23,10 @@ import org.openlca.app.util.Tables;
 import org.openlca.app.util.Viewers;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
-import org.openlca.core.database.Cache;
+import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -140,7 +141,7 @@ public class ParameterRedefTable {
 	private class LabelProvider extends org.eclipse.jface.viewers.LabelProvider
 			implements ITableLabelProvider {
 
-		private Cache cache = Database.getCache();
+		private EntityCache cache = Database.getCache();
 
 		@Override
 		public Image getColumnImage(Object element, int columnIndex) {
@@ -163,8 +164,8 @@ public class ParameterRedefTable {
 			switch (columnIndex) {
 			case 0:
 				if (redef.getProcessId() != null) {
-					BaseDescriptor d = cache.getProcessDescriptor(redef
-							.getProcessId());
+					BaseDescriptor d = cache.get(ProcessDescriptor.class,
+							redef.getProcessId());
 					return Labels.getDisplayName(d);
 				}
 				return "global";
@@ -180,7 +181,7 @@ public class ParameterRedefTable {
 
 	private class ParameterComparator implements Comparator<ParameterRedef> {
 
-		private Cache cache = Database.getCache();
+		private EntityCache cache = Database.getCache();
 
 		@Override
 		public int compare(ParameterRedef o1, ParameterRedef o2) {
@@ -201,9 +202,9 @@ public class ParameterRedefTable {
 		private int compareProcesses(Long processId1, Long processId2) {
 			if (processId1 == null || processId2 == null)
 				return 0;
-			BaseDescriptor d1 = cache.getProcessDescriptor(processId1);
+			BaseDescriptor d1 = cache.get(ProcessDescriptor.class, processId1);
 			String name1 = Labels.getDisplayName(d1);
-			BaseDescriptor d2 = cache.getProcessDescriptor(processId2);
+			BaseDescriptor d2 = cache.get(ProcessDescriptor.class, processId2);
 			String name2 = Labels.getDisplayName(d2);
 			return Strings.compare(name1, name2);
 		}

@@ -1,12 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.core.editors.analyze;
 
 import java.util.Collection;
@@ -21,7 +12,7 @@ import org.openlca.app.Messages;
 import org.openlca.app.editors.AnalyzeEditorInput;
 import org.openlca.app.results.InventoryResultPage;
 import org.openlca.app.results.InventoryResultProvider;
-import org.openlca.core.database.Cache;
+import org.openlca.core.database.EntityCache;
 import org.openlca.core.editors.analyze.sankey.SankeyDiagram;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.model.ProductSystem;
@@ -138,7 +129,7 @@ public class AnalyzeEditor extends FormEditor {
 	private class InventoryAdapter implements InventoryResultProvider {
 
 		@Override
-		public Collection<FlowDescriptor> getFlows(Cache cache) {
+		public Collection<FlowDescriptor> getFlows(EntityCache cache) {
 			return result.getFlowResults().getFlows(cache);
 		}
 

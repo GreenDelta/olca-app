@@ -2,7 +2,7 @@ package org.openlca.app.results;
 
 import java.util.Collection;
 
-import org.openlca.core.database.Cache;
+import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 
 /**
@@ -11,7 +11,7 @@ import org.openlca.core.model.descriptors.FlowDescriptor;
 public interface InventoryResultProvider {
 
 	/** Get all flows of the inventory. */
-	public Collection<FlowDescriptor> getFlows(Cache cache);
+	public Collection<FlowDescriptor> getFlows(EntityCache cache);
 
 	/** Get the result for the given flow in the reference unit of that flow. */
 	public double getAmount(FlowDescriptor flow);

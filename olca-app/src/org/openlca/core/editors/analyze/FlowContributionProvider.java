@@ -7,7 +7,7 @@ import java.util.Set;
 
 import org.openlca.app.db.Database;
 import org.openlca.app.util.Labels;
-import org.openlca.core.database.Cache;
+import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.results.AnalysisFlowResult;
 import org.openlca.core.results.AnalysisResult;
@@ -16,7 +16,7 @@ class FlowContributionProvider implements
 		IProcessContributionProvider<FlowDescriptor> {
 
 	private AnalysisResult result;
-	private Cache cache;
+	private EntityCache cache;
 
 	public FlowContributionProvider(AnalysisResult result) {
 		this.result = result;

@@ -25,7 +25,7 @@ import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
-import org.openlca.core.database.Cache;
+import org.openlca.core.database.EntityCache;
 import org.openlca.core.editors.ContributionImage;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
@@ -39,7 +39,7 @@ public class FlowImpactPage extends FormPage {
 	private final static String[] COLUMN_LABELS = { "Contribution", "Flow",
 			"Total amount", "Single amount", "Unit" };
 
-	private Cache cache = Database.getCache();
+	private EntityCache cache = Database.getCache();
 	private AnalysisResult result;
 	private ImpactCategoryViewer impactCategoryViewer;
 	private TableViewer flowViewer;

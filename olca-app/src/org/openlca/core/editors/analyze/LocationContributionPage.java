@@ -21,7 +21,7 @@ import org.openlca.app.html.IHtmlResource;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
-import org.openlca.core.database.Cache;
+import org.openlca.core.database.EntityCache;
 import org.openlca.core.editors.FlowImpactSelection;
 import org.openlca.core.editors.FlowImpactSelection.EventHandler;
 import org.openlca.core.editors.HtmlView;
@@ -43,7 +43,7 @@ import com.google.gson.Gson;
  */
 public class LocationContributionPage extends FormPage implements HtmlPage {
 
-	private Cache cache = Database.getCache();
+	private EntityCache cache = Database.getCache();
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private AnalysisResult result;
 	private Browser browser;

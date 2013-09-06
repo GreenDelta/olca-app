@@ -19,20 +19,21 @@ import org.openlca.app.db.Database;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
-import org.openlca.core.database.Cache;
+import org.openlca.core.database.EntityCache;
 import org.openlca.core.editors.ContributionImage;
 import org.openlca.core.editors.FlowImpactSelection;
 import org.openlca.core.editors.FlowImpactSelection.EventHandler;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
+import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.AnalysisResult;
 import org.openlca.core.results.ContributionTree;
 import org.openlca.core.results.ContributionTreeNode;
 
 public class ContributionTreePage extends FormPage {
 
-	private Cache cache = Database.getCache();
+	private EntityCache cache = Database.getCache();
 	private AnalyzeEditor editor;
 	private AnalysisResult result;
 	private TreeViewer contributionTree;
@@ -95,7 +96,7 @@ public class ContributionTreePage extends FormPage {
 		if (result.getFlowIndex().isEmpty())
 			return;
 		long flowId = result.getFlowIndex().getFlowAt(0);
-		FlowDescriptor flow = cache.getFlowDescriptor(flowId);
+		FlowDescriptor flow = cache.get(FlowDescriptor.class, flowId);
 		selection = flow;
 		ContributionTree tree = result.getContributions().getTree(flow);
 		contributionTree.setInput(tree);
@@ -187,7 +188,8 @@ public class ContributionTreePage extends FormPage {
 				return Numbers.percent(getContribution(node));
 			case 1:
 				long processId = node.getProcessProduct().getFirst();
-				BaseDescriptor d = cache.getProcessDescriptor(processId);
+				BaseDescriptor d = cache
+						.get(ProcessDescriptor.class, processId);
 				return Labels.getDisplayName(d);
 			case 2:
 				return Numbers.format(getSingleAmount(node));

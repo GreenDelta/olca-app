@@ -1,12 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.core.editors.analyze.sankey;
 
 import java.beans.PropertyChangeEvent;
@@ -43,7 +34,7 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.swt.SWT;
 import org.openlca.app.App;
 import org.openlca.app.db.Database;
-import org.openlca.core.database.Cache;
+import org.openlca.core.database.EntityCache;
 import org.openlca.core.editors.analyze.PropertySelectionAction;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.model.NormalizationWeightingSet;
@@ -55,21 +46,12 @@ import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.AnalysisResult;
 
-/***
- * 
- * The graphical editor. This class creates the product system model,
- * initializes the outline and the actions and configures the graphical viewer.
- * 
- * @see GraphicalEditor
- * 
- * @author Sebastian Greve
- */
 public class SankeyDiagram extends GraphicalEditor implements
 		PropertyChangeListener {
 
 	public static final String ID = "editor.ProductSystemSankeyDiagram";
 
-	private Cache cache = Database.getCache();
+	private EntityCache cache = Database.getCache();
 	private SankeyResult sankeyResult;
 	private Map<Long, ConnectionLink> createdLinks = new HashMap<>();
 	private Map<Long, ProcessNode> createdProcesses = new HashMap<>();
@@ -270,8 +252,8 @@ public class SankeyDiagram extends GraphicalEditor implements
 
 		if (cutoff == 0) {
 			for (Long processId : productSystem.getProcesses()) {
-				systemNode.addChild(createNode(cache
-						.getProcessDescriptor(processId)));
+				systemNode.addChild(createNode(cache.get(
+						ProcessDescriptor.class, processId)));
 			}
 		} else {
 			// collect all process above the cutoff
@@ -294,8 +276,8 @@ public class SankeyDiagram extends GraphicalEditor implements
 
 			// paint processes
 			for (final Long processId : processesToDraw) {
-				ProcessDescriptor process = cache
-						.getProcessDescriptor(processId);
+				ProcessDescriptor process = cache.get(ProcessDescriptor.class,
+						processId);
 				ProcessNode node = createNode(process);
 				systemNode.addChild(node);
 			}
