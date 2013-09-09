@@ -1,11 +1,9 @@
 package org.openlca.app.projects;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -26,7 +24,6 @@ import org.openlca.app.util.Numbers;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
-import org.openlca.app.viewers.combo.AllocationMethodViewer;
 import org.openlca.app.viewers.combo.ImpactMethodViewer;
 import org.openlca.app.viewers.combo.NormalizationWeightingSetViewer;
 import org.openlca.app.viewers.table.modify.ModifySupport;
@@ -46,8 +43,6 @@ import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Objects;
-
 public class ProjectSetupPage extends ModelPage<Project> {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
@@ -59,7 +54,6 @@ public class ProjectSetupPage extends ModelPage<Project> {
 	private List<ProjectVariant> variants;
 	private TableViewer variantViewer;
 	private Composite body;
-	private List<Pair<ProjectVariant, Section>> parameterSections = new ArrayList<>();
 	private ScrolledForm form;
 
 	public ProjectSetupPage(ProjectEditor editor) {
@@ -76,6 +70,7 @@ public class ProjectSetupPage extends ModelPage<Project> {
 		body = UI.formBody(form, toolkit);
 		createSettingsSection(body);
 		createVariantsSection(body);
+		createParameterSection(body);
 		initialInput();
 		form.reflow(true);
 	}
@@ -89,13 +84,11 @@ public class ProjectSetupPage extends ModelPage<Project> {
 		});
 		variantViewer.setInput(variants);
 		for (ProjectVariant variant : variants)
-			createSection(variant);
+			createParameterColumn(variant);
 	}
 
 	private void createSettingsSection(Composite body) {
 		Composite client = UI.formSection(body, toolkit, "Settings");
-		UI.formLabel(client, toolkit, "Allocation method");
-		new AllocationMethodViewer(client);
 		UI.formLabel(client, toolkit, "LCIA Method");
 		new ImpactMethodViewer(client);
 		UI.formLabel(client, toolkit, "Normalisation and Weighting");
@@ -115,7 +108,13 @@ public class ProjectSetupPage extends ModelPage<Project> {
 				variantViewer);
 		support.bind(Messages.Name, new VariantNameEditor());
 		addVariantActions(variantViewer, section);
-		UI.gridData(variantViewer.getTable(), true, false).heightHint = 150;
+		UI.gridData(variantViewer.getTable(), true, true).minimumHeight = 150;
+	}
+
+	private void createParameterSection(Composite body) {
+		Section section = UI.section(body, toolkit, "Parameters");
+		ProjectParameterTable table = new ProjectParameterTable(editor);
+		table.render(section, toolkit);
 	}
 
 	private void addVariantActions(TableViewer viewer, Section section) {
@@ -152,11 +151,11 @@ public class ProjectSetupPage extends ModelPage<Project> {
 		variants.add(variant);
 		variantViewer.setInput(variants);
 		editor.setDirty(true);
-		createSection(variant);
+		createParameterColumn(variant);
 		form.reflow(true);
 	}
 
-	private void createSection(ProjectVariant variant) {
+	private void createParameterColumn(ProjectVariant variant) {
 		Section section = UI.section(body, toolkit, variant.getName());
 		section.setExpanded(false);
 		Composite composite = UI.sectionClient(section, toolkit);
@@ -166,7 +165,6 @@ public class ProjectSetupPage extends ModelPage<Project> {
 		table.create(toolkit, composite);
 		table.bindActions(section);
 		UI.gridData(table.getViewer().getTable(), true, false).heightHint = 120;
-		parameterSections.add(Pair.of(variant, section));
 	}
 
 	private void removeVariant() {
@@ -176,22 +174,24 @@ public class ProjectSetupPage extends ModelPage<Project> {
 			return;
 		for (ProjectVariant var : selection) {
 			variants.remove(var);
-			Section section = findParameterSection(var);
-			if (section != null)
-				section.dispose();
+			// TODO: dispose parameter column
+			// Section section = findParameterSection(var);
+			// if (section != null)
+			// section.dispose();
 		}
 		variantViewer.setInput(variants);
 		editor.setDirty(true);
 		form.reflow(true);
 	}
 
-	private Section findParameterSection(ProjectVariant variant) {
-		for (Pair<ProjectVariant, Section> pair : parameterSections) {
-			if (Objects.equal(variant, pair.getLeft()))
-				return pair.getRight();
-		}
-		return null;
-	}
+	// TODO: find column
+	// private Section findParameterSection(ProjectVariant variant) {
+	// for (Pair<ProjectVariant, Section> pair : parameterSections) {
+	// if (Objects.equal(variant, pair.getLeft()))
+	// return pair.getRight();
+	// }
+	// return null;
+	// }
 
 	private class VariantNameEditor extends TextCellModifier<ProjectVariant> {
 		@Override
@@ -202,8 +202,9 @@ public class ProjectSetupPage extends ModelPage<Project> {
 		@Override
 		protected void setText(ProjectVariant variant, String text) {
 			variant.setName(text);
-			Section section = findParameterSection(variant);
-			section.setText(text);
+			// TODO: update column text
+			// Section section = findParameterSection(variant);
+			// section.setText(text);
 		}
 	}
 
