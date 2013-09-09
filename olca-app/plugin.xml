@@ -96,10 +96,10 @@
             name="Analyze viewer">
       </editor>
       <editor
-            class="org.openlca.core.editors.productsystem.SimulationEditor"
+            class="org.openlca.app.simulation.SimulationEditor"
             default="false"
             icon="icons/simulate_16.png"
-            id="editors.simulation"
+            id="SimulationEditor"
             name="Simulation Editor">
       </editor>      
       <editor

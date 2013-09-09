@@ -1,4 +1,4 @@
-package org.openlca.core.editors.productsystem;
+package org.openlca.app.simulation;
 
 import org.eclipse.jface.operation.ModalContext;
 import org.eclipse.swt.events.SelectionEvent;
@@ -15,15 +15,15 @@ class SimulationControl implements SelectionListener {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private Button button;
-	private SimulationInput input;
 	private SimulationMonitor monitor;
 	private SimulationPage page;
+	private SimulationEditor editor;
 
-	public SimulationControl(Button button, SimulationInput input,
+	public SimulationControl(Button button, SimulationEditor editor,
 			SimulationPage page) {
 		this.button = button;
-		this.input = input;
 		this.page = page;
+		this.editor = editor;
 		monitor = new SimulationMonitor();
 		button.addSelectionListener(this);
 	}
@@ -47,7 +47,7 @@ class SimulationControl implements SelectionListener {
 		try {
 			Display display = Display.getCurrent();
 			SimulationProgress progress = new SimulationProgress(display,
-					input, page);
+					editor, page);
 			ModalContext.run(progress, true, monitor, display);
 		} catch (Exception e) {
 			log.error("Could not start simulation progress", e);

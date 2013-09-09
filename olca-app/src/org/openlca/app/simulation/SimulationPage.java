@@ -1,4 +1,6 @@
-package org.openlca.core.editors.productsystem;
+package org.openlca.app.simulation;
+
+import java.util.Set;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -7,25 +9,25 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
+import org.openlca.app.db.Database;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.AbstractViewer;
 import org.openlca.app.viewers.ISelectionChangedListener;
+import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.app.viewers.combo.FlowViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
-import org.openlca.core.database.IDatabase;
-import org.openlca.core.math.SimulationResult;
-import org.openlca.core.math.SimulationSolver;
-import org.openlca.core.model.Flow;
+import org.openlca.core.database.EntityCache;
+import org.openlca.core.math.CalculationSetup;
+import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
+import org.openlca.core.results.SimulationResult;
+import org.openlca.core.results.SimulationResults;
 
 public class SimulationPage extends FormPage {
 
@@ -33,20 +35,20 @@ public class SimulationPage extends FormPage {
 	private final int IMPACT = 1;
 	private int resultType = FLOW;
 
+	private EntityCache cache = Database.getCache();
+	private SimulationEditor editor;
 	private StatisticsCanvas statisticsCanvas;
 	private ProgressBar progressBar;
-	private SimulationInput input;
 	private FlowViewer flowViewer;
 	private Section progressSection;
 	private ScrolledForm form;
 	private SimulationResult result;
 	private ImpactCategoryViewer impactViewer;
-	private IDatabase database;
 
-	public SimulationPage(SimulationEditor editor, String id, String title,
-			IDatabase database) {
-		super(editor, id, title);
-		this.database = database;
+	public SimulationPage(SimulationEditor editor) {
+		super(editor, "SimulationPage", "Simulation");
+		this.editor = editor;
+		this.result = editor.getSimulator().getResult();
 	}
 
 	@Override
@@ -57,29 +59,27 @@ public class SimulationPage extends FormPage {
 		toolkit.decorateFormHeading(form.getForm());
 		Composite body = UI.formBody(form, toolkit);
 		createSettingsSection(toolkit, body);
-		if (input != null && input.getSolver() != null
-				&& input.getSolver().canRun())
-			createProgressSection(toolkit, body);
+		createProgressSection(toolkit, body);
 		createResultSection(toolkit, body);
 		form.pack();
 	}
 
 	private void createSettingsSection(FormToolkit toolkit, Composite body) {
-		Composite settings = UI.formSection(body, toolkit,
-				Messages.Settings);
-		Text systemText = UI.formText(settings, toolkit,
-				Messages.ProductSystem);
-		Text processText = UI.formText(settings, toolkit,
-				Messages.Process);
+		Composite settings = UI.formSection(body, toolkit, Messages.Settings);
+		Text systemText = UI
+				.formText(settings, toolkit, Messages.ProductSystem);
+		Text processText = UI.formText(settings, toolkit, Messages.Process);
 		Text qRefText = UI.formText(settings, toolkit,
 				Messages.QuantitativeReference);
 		Text simCountText = UI.formText(settings, toolkit,
 				Messages.Simulation_NumberOfSimulations);
-		if (input != null) {
-			systemText.setText(input.getName());
-			processText.setText(input.getReferenceProcessName());
-			qRefText.setText(input.getQuantitativeReference());
-			simCountText.setText(Integer.toString(input.getNumberOfRuns()));
+		if (editor.getSetup() != null) {
+			CalculationSetup setup = editor.getSetup();
+			systemText.setText(setup.getProductSystem().getName());
+			processText.setText(setup.getProductSystem().getReferenceProcess()
+					.getName());
+			// qRefText.setText(input.getQuantitativeReference()); TODO
+			simCountText.setText(Integer.toString(setup.getNumberOfRuns()));
 		}
 		systemText.setEditable(false);
 		processText.setEditable(false);
@@ -91,12 +91,12 @@ public class SimulationPage extends FormPage {
 		progressSection = UI.section(body, toolkit, Messages.Progress);
 		Composite composite = UI.sectionClient(progressSection, toolkit);
 		progressBar = new ProgressBar(composite, SWT.SMOOTH);
-		progressBar.setMaximum(input.getNumberOfRuns());
+		progressBar.setMaximum(editor.getSetup().getNumberOfRuns());
 		UI.gridWidth(progressBar, 470);
 		final Button progressButton = toolkit.createButton(composite,
 				Messages.Start, SWT.NONE);
 		UI.gridWidth(progressButton, 70);
-		new SimulationControl(progressButton, input, this);
+		new SimulationControl(progressButton, editor, this);
 	}
 
 	private void createResultSection(FormToolkit toolkit, Composite body) {
@@ -104,7 +104,7 @@ public class SimulationPage extends FormPage {
 			return;
 		Section section = UI.section(body, toolkit, Messages.Results);
 		SimulationExportAction exportAction = new SimulationExportAction();
-		exportAction.configure(input, result);
+		exportAction.configure(result);
 		Actions.bind(section, exportAction);
 		Composite composite = UI.sectionClient(section, toolkit);
 		initFlowCheckViewer(toolkit, composite);
@@ -119,7 +119,9 @@ public class SimulationPage extends FormPage {
 				Messages.ImpactCategories, SWT.RADIO);
 		impactViewer = new ImpactCategoryViewer(section);
 		impactViewer.setEnabled(false);
-		impactViewer.setInput(result);
+		Set<ImpactCategoryDescriptor> impacts = SimulationResults.getImpacts(
+				result, cache);
+		impactViewer.setInput(impacts);
 		impactViewer
 				.addSelectionChangedListener(new SelectionChange<ImpactCategoryDescriptor>());
 		impactViewer.selectFirst();
@@ -127,13 +129,15 @@ public class SimulationPage extends FormPage {
 	}
 
 	private void initFlowCheckViewer(FormToolkit toolkit, Composite section) {
-		Button flowsCheck = toolkit.createButton(section,
-				Messages.Flows, SWT.RADIO);
+		Button flowsCheck = toolkit.createButton(section, Messages.Flows,
+				SWT.RADIO);
 		flowsCheck.setSelection(true);
-		flowViewer = new FlowViewer(section);
-		flowViewer.setInput(result);
+		flowViewer = new FlowViewer(section, cache);
+		Set<FlowDescriptor> flows = SimulationResults.getFlows(result, cache);
+		flowViewer.setInput(flows.toArray(new FlowDescriptor[flows.size()]));
 		flowViewer.selectFirst();
-		flowViewer.addSelectionChangedListener(new SelectionChange<Flow>());
+		flowViewer
+				.addSelectionChangedListener(new SelectionChange<FlowDescriptor>());
 		new ResultTypeCheck<>(flowViewer, flowsCheck, FLOW);
 	}
 
@@ -141,13 +145,14 @@ public class SimulationPage extends FormPage {
 		if (result == null || statisticsCanvas == null)
 			return;
 		if (resultType == FLOW) {
-			Flow flow = flowViewer.getSelected();
+			FlowDescriptor flow = flowViewer.getSelected();
 			if (flow != null)
-				statisticsCanvas.setValues(result.getResults(flow));
+				statisticsCanvas.setValues(result.getFlowResults(flow.getId()));
 		} else {
 			ImpactCategoryDescriptor cat = impactViewer.getSelected();
 			if (cat != null)
-				statisticsCanvas.setValues(result.getResults(cat));
+				statisticsCanvas
+						.setValues(result.getImpactResults(cat.getId()));
 		}
 	}
 
@@ -167,17 +172,6 @@ public class SimulationPage extends FormPage {
 		form.reflow(true);
 	}
 
-	@Override
-	public void init(IEditorSite site, IEditorInput input) {
-		super.init(site, input);
-		if (input instanceof SimulationInput) {
-			this.input = (SimulationInput) input;
-			SimulationSolver solver = this.input.getSolver();
-			if (solver != null)
-				this.result = solver.getResult();
-		}
-	}
-
 	private class SelectionChange<T> implements ISelectionChangedListener<T> {
 		@Override
 		public void selectionChanged(T selection) {
@@ -187,11 +181,12 @@ public class SimulationPage extends FormPage {
 
 	private class ResultTypeCheck<T> implements SelectionListener {
 
-		private AbstractViewer<T> viewer;
+		private AbstractComboViewer<T> viewer;
 		private Button check;
 		private int type;
 
-		public ResultTypeCheck(AbstractViewer<T> viewer, Button check, int type) {
+		public ResultTypeCheck(AbstractComboViewer<T> viewer, Button check,
+				int type) {
 			this.viewer = viewer;
 			this.check = check;
 			this.type = type;

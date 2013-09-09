@@ -1,4 +1,4 @@
-package org.openlca.core.editors.productsystem;
+package org.openlca.app.simulation;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 

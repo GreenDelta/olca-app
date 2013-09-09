@@ -1,4 +1,4 @@
-package org.openlca.core.editors.productsystem;
+package org.openlca.app.simulation;
 
 import java.util.List;
 
@@ -10,14 +10,14 @@ import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.LineBorder;
 import org.eclipse.draw2d.geometry.Point;
 import org.openlca.app.util.Numbers;
-import org.openlca.core.math.Statistics;
+import org.openlca.core.results.SimulationStatistics;
 
 /**
  * Draws a chart with a frequency distribution and statistic parameters.
  */
 public class StatisticFigure extends Figure {
 
-	private Statistics statistics = Statistics.empty();
+	private SimulationStatistics statistics = SimulationStatistics.empty();
 
 	private int marginLeft = 35;
 	private int marginBottom = 35;
@@ -58,7 +58,7 @@ public class StatisticFigure extends Figure {
 	}
 
 	public void setData(List<Double> values) {
-		statistics = new Statistics(values, 100);
+		statistics = new SimulationStatistics(values, 100);
 		repaint();
 	}
 

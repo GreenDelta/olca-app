@@ -9,7 +9,6 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.openlca.app.App;
 import org.openlca.app.Messages;
-import org.openlca.app.editors.AnalyzeEditorInput;
 import org.openlca.app.results.InventoryResultPage;
 import org.openlca.app.results.InventoryResultProvider;
 import org.openlca.core.database.EntityCache;

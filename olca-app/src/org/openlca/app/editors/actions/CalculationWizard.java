@@ -8,11 +8,12 @@ import org.eclipse.jface.wizard.Wizard;
 import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
-import org.openlca.app.editors.AnalyzeEditorInput;
 import org.openlca.app.inventory.InventoryResultEditor;
 import org.openlca.app.inventory.InventoryResultInput;
+import org.openlca.app.simulation.SimulationInit;
 import org.openlca.app.util.Editors;
 import org.openlca.core.editors.analyze.AnalyzeEditor;
+import org.openlca.core.editors.analyze.AnalyzeEditorInput;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.SystemCalculator;
 import org.openlca.core.model.ProductSystem;
@@ -72,7 +73,8 @@ class CalculationWizard extends Wizard {
 				solve();
 			else if (setup.hasType(CalculationSetup.ANALYSIS))
 				analyse();
-			// TODO: Monte-Carlo-Simulation
+			else if (setup.hasType(CalculationSetup.MONTE_CARLO_SIMULATION))
+				simulate();
 			monitor.done();
 		}
 
@@ -98,6 +100,12 @@ class CalculationWizard extends Wizard {
 			InventoryResultInput input = new InventoryResultInput(setup
 					.getProductSystem().getId(), resultKey, setupKey);
 			Editors.open(input, InventoryResultEditor.ID);
+		}
+
+		private void simulate() {
+			log.trace("init Monte Carlo Simulation");
+			SimulationInit init = new SimulationInit(setup, Database.get());
+			init.run();
 		}
 	}
 }
