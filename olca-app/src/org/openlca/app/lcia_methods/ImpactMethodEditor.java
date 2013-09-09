@@ -12,10 +12,14 @@ import com.google.common.eventbus.EventBus;
 public class ImpactMethodEditor extends ModelEditor<ImpactMethod> implements
 		IEditor {
 
+	public static String ID = "editors.impactmethod";
+
 	/** An event message that indicates a change of an impact category. */
 	final String IMPACT_CATEGORY_CHANGE = "IMPACT_CATEGORY_CHANGE";
 
-	public static String ID = "editors.impactmethod";
+	/** An event message that indicates a change of an impact factor. */
+	final String IMPACT_FACTOR_CHANGE = "IMPACT_FACTOR_CHANGE";
+
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private EventBus eventBus = new EventBus();
 

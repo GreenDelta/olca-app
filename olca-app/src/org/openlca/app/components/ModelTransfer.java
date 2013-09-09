@@ -5,6 +5,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import org.eclipse.swt.dnd.ByteArrayTransfer;
 import org.eclipse.swt.dnd.TransferData;
@@ -33,6 +37,42 @@ public final class ModelTransfer extends ByteArrayTransfer {
 			instance = new ModelTransfer();
 		}
 		return instance;
+	}
+
+	/**
+	 * Get the (first) model descriptor from the given transfer data. The given
+	 * data should be the data of a respective drop-event (event.data) using
+	 * this ModelTransfer class.
+	 */
+	public static BaseDescriptor getDescriptor(Object data) {
+		if (data instanceof BaseDescriptor)
+			return (BaseDescriptor) data;
+		if (data instanceof Object[]) {
+			Object[] objects = (Object[]) data;
+			if (objects.length > 0 && (objects[0] instanceof BaseDescriptor))
+				return (BaseDescriptor) objects[0];
+		}
+		return null;
+	}
+
+	/**
+	 * Get the model descriptors from the given transfer data. The given data
+	 * should be the data of a respective drop-event (event.data) using this
+	 * ModelTransfer class.
+	 */
+	public static List<BaseDescriptor> getBaseDescriptors(Object data) {
+		if (data instanceof BaseDescriptor)
+			return Arrays.asList((BaseDescriptor) data);
+		if (data instanceof Object[]) {
+			Object[] objects = (Object[]) data;
+			ArrayList<BaseDescriptor> descriptors = new ArrayList<>();
+			for (int i = 0; i < objects.length; i++) {
+				if (objects[i] instanceof BaseDescriptor)
+					descriptors.add((BaseDescriptor) objects[i]);
+			}
+			return descriptors;
+		}
+		return Collections.emptyList();
 	}
 
 	@Override

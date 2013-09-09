@@ -1,13 +1,23 @@
 package org.openlca.app.util;
 
+import java.util.List;
+
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.DropTargetAdapter;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.openlca.app.components.IModelDropHandler;
+import org.openlca.app.components.ModelTransfer;
+import org.openlca.core.model.descriptors.BaseDescriptor;
 
 /**
  * A helper class for creating tables, table viewers and related resources.
@@ -26,7 +36,7 @@ public class Tables {
 	 */
 	public static TableViewer createViewer(Composite parent, String[] properties) {
 		TableViewer viewer = new TableViewer(parent, SWT.BORDER
-				| SWT.FULL_SELECTION);
+				| SWT.FULL_SELECTION | SWT.VIRTUAL);
 		viewer.setContentProvider(new ArrayContentProvider());
 		viewer.setColumnProperties(properties);
 		Table table = viewer.getTable();
@@ -44,6 +54,24 @@ public class Tables {
 		}
 		for (TableColumn c : table.getColumns())
 			c.pack();
+	}
+
+	public static void addDropSupport(TableViewer table,
+			final IModelDropHandler handler) {
+		final Transfer transfer = ModelTransfer.getInstance();
+		DropTarget dropTarget = new DropTarget(table.getTable(), DND.DROP_COPY
+				| DND.DROP_MOVE | DND.DROP_DEFAULT);
+		dropTarget.setTransfer(new Transfer[] { transfer });
+		dropTarget.addDropListener(new DropTargetAdapter() {
+			@Override
+			public void drop(DropTargetEvent event) {
+				if (!transfer.isSupportedType(event.currentDataType))
+					return;
+				List<BaseDescriptor> list = ModelTransfer
+						.getBaseDescriptors(event.data);
+				handler.handleDrop(list);
+			}
+		});
 	}
 
 	public static void bindColumnWidths(TableViewer viewer, double... percents) {
@@ -80,7 +108,6 @@ public class Tables {
 
 			}
 		});
-
 	}
 
 }

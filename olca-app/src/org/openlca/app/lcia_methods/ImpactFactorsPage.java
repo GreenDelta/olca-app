@@ -1,6 +1,8 @@
 package org.openlca.app.lcia_methods;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -12,16 +14,15 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Event;
 import org.openlca.app.Messages;
-import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
-import org.openlca.app.viewers.table.ImpactFactorViewer;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.descriptors.Descriptors;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
+import org.openlca.util.Strings;
 
 import com.google.common.eventbus.Subscribe;
 
@@ -29,7 +30,7 @@ class ImpactFactorsPage extends ModelPage<ImpactMethod> {
 
 	private ImpactMethodEditor editor;
 	private FormToolkit toolkit;
-	private ImpactFactorViewer factorViewer;
+	private ImpactFactorTable factorTable;
 	private ImpactCategoryViewer categoryViewer;
 
 	ImpactFactorsPage(ImpactMethodEditor editor) {
@@ -49,8 +50,8 @@ class ImpactFactorsPage extends ModelPage<ImpactMethod> {
 		section.setClient(client);
 		UI.gridLayout(client, 1);
 		createCategoryViewer(client);
-		factorViewer = new ImpactFactorViewer(client, Database.get());
-		factorViewer.bindTo(section);
+		factorTable = new ImpactFactorTable(editor);
+		factorTable.render(client, section);
 		body.setFocus();
 		form.reflow(true);
 	}
@@ -71,6 +72,13 @@ class ImpactFactorsPage extends ModelPage<ImpactMethod> {
 		List<ImpactCategoryDescriptor> list = new ArrayList<>();
 		for (ImpactCategory category : getModel().getImpactCategories())
 			list.add(Descriptors.toDescriptor(category));
+		Collections.sort(list, new Comparator<ImpactCategoryDescriptor>() {
+			@Override
+			public int compare(ImpactCategoryDescriptor o1,
+					ImpactCategoryDescriptor o2) {
+				return Strings.compare(o1.getName(), o2.getName());
+			}
+		});
 		return list;
 	}
 
@@ -79,13 +87,15 @@ class ImpactFactorsPage extends ModelPage<ImpactMethod> {
 
 		@Override
 		public void selectionChanged(ImpactCategoryDescriptor selection) {
-			getBinding().release(factorViewer);
 			if (selection == null)
-				factorViewer.setInput((ImpactCategory) null);
-			else
+				factorTable.setImpactCategory(null);
+			else {
 				for (ImpactCategory cat : getModel().getImpactCategories())
-					if (cat.getId() == selection.getId())
-						getBinding().on(cat, "impactFactors", factorViewer);
+					if (cat.getId() == selection.getId()) {
+						factorTable.setImpactCategory(cat);
+						break;
+					}
+			}
 		}
 
 		@Subscribe
@@ -93,7 +103,7 @@ class ImpactFactorsPage extends ModelPage<ImpactMethod> {
 			if (!event.match(editor.IMPACT_CATEGORY_CHANGE))
 				return;
 			categoryViewer.setInput(getDescriptorList());
-			factorViewer.setInput((ImpactCategory) null);
+			factorTable.setImpactCategory((ImpactCategory) null);
 		}
 	}
 

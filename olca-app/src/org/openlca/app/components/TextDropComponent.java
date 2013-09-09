@@ -155,16 +155,9 @@ public final class TextDropComponent extends Composite {
 	}
 
 	private void handleChange(Object data) {
-		BaseDescriptor descriptor = null;
-		if (data instanceof BaseDescriptor
-				&& ((BaseDescriptor) data).getModelType() == modelType)
-			descriptor = (BaseDescriptor) data;
-		else if (data instanceof Object[]) {
-			Object[] objects = (Object[]) data;
-			if (objects.length > 0 && (objects[0] instanceof BaseDescriptor)
-					&& ((BaseDescriptor) data).getModelType() == modelType)
-				descriptor = (BaseDescriptor) objects[0];
-		}
+		BaseDescriptor descriptor = ModelTransfer.getDescriptor(data);
+		if (descriptor == null || descriptor.getModelType() != modelType)
+			return;
 		setContent(descriptor);
 		if (handler != null)
 			handler.handle(descriptor);
