@@ -3,6 +3,7 @@ package org.openlca.app.projects;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -18,7 +19,6 @@ import org.openlca.app.Messages;
 import org.openlca.app.components.ObjectDialog;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelPage;
-import org.openlca.app.editors.ParameterRedefTable;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.Tables;
@@ -84,8 +84,6 @@ public class ProjectSetupPage extends ModelPage<Project> {
 			}
 		});
 		variantViewer.setInput(variants);
-		for (ProjectVariant variant : variants)
-			createParameterColumn(variant);
 	}
 
 	private void createSettingsSection(Composite body) {
@@ -154,20 +152,7 @@ public class ProjectSetupPage extends ModelPage<Project> {
 		variantViewer.setInput(variants);
 		editor.setDirty(true);
 		parameterTable.addVariant(variant);
-		createParameterColumn(variant);
 		form.reflow(true);
-	}
-
-	private void createParameterColumn(ProjectVariant variant) {
-		Section section = UI.section(body, toolkit, variant.getName());
-		section.setExpanded(false);
-		Composite composite = UI.sectionClient(section, toolkit);
-		UI.gridLayout(composite, 1);
-		ParameterRedefTable table = new ParameterRedefTable(editor,
-				variant.getParameterRedefs());
-		table.create(toolkit, composite);
-		table.bindActions(section);
-		UI.gridData(table.getViewer().getTable(), true, false).heightHint = 120;
 	}
 
 	private void removeVariant() {
@@ -178,24 +163,11 @@ public class ProjectSetupPage extends ModelPage<Project> {
 		for (ProjectVariant var : selection) {
 			variants.remove(var);
 			parameterTable.removeVariant(var);
-			// TODO: dispose parameter column
-			// Section section = findParameterSection(var);
-			// if (section != null)
-			// section.dispose();
 		}
 		variantViewer.setInput(variants);
 		editor.setDirty(true);
 		form.reflow(true);
 	}
-
-	// TODO: find column
-	// private Section findParameterSection(ProjectVariant variant) {
-	// for (Pair<ProjectVariant, Section> pair : parameterSections) {
-	// if (Objects.equal(variant, pair.getLeft()))
-	// return pair.getRight();
-	// }
-	// return null;
-	// }
 
 	private class VariantNameEditor extends TextCellModifier<ProjectVariant> {
 		@Override
@@ -205,10 +177,11 @@ public class ProjectSetupPage extends ModelPage<Project> {
 
 		@Override
 		protected void setText(ProjectVariant variant, String text) {
+			if (Objects.equals(text, variant.getName()))
+				return;
 			variant.setName(text);
-			// TODO: update column text
-			// Section section = findParameterSection(variant);
-			// section.setText(text);
+			parameterTable.updateVariant(variant);
+			editor.setDirty(true);
 		}
 	}
 

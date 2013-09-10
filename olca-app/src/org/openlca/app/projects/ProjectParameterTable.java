@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
@@ -18,11 +19,14 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
+import org.openlca.app.components.ParameterRedefDialog;
 import org.openlca.app.db.Database;
 import org.openlca.app.resources.ImageType;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
+import org.openlca.app.util.Viewers;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.database.EntityCache;
@@ -104,6 +108,7 @@ class ProjectParameterTable {
 		UI.gridData(viewer.getTable(), true, true).minimumHeight = 150;
 		viewer.setInput(redefs);
 		createModifySupport();
+		bindActions(section);
 	}
 
 	private String[] getColumnTitles() {
@@ -126,6 +131,51 @@ class ProjectParameterTable {
 		modifySupport = new ModifySupport<>(viewer);
 		for (int i = 2; i < keys.length; i++)
 			modifySupport.bind(keys[i], new ValueModifier(keys[i]));
+	}
+
+	private void bindActions(Section section) {
+		Action add = Actions.onAdd(new Runnable() {
+			public void run() {
+				onAdd();
+			}
+		});
+		Action remove = Actions.onRemove(new Runnable() {
+			public void run() {
+				onRemove();
+			}
+		});
+		Actions.bind(section, add, remove);
+		Actions.bind(viewer, add, remove);
+	}
+
+	private void onAdd() {
+		List<ParameterRedef> redefs = ParameterRedefDialog.select();
+		for (ParameterRedef redef : redefs) {
+			if (contains(redef))
+				continue;
+			this.redefs.add(redef);
+			for (Column column : columns) {
+				if (findVariantRedef(column.variant, redef) == null)
+					column.variant.getParameterRedefs().add(redef.clone());
+			}
+		}
+		viewer.setInput(this.redefs);
+		editor.setDirty(true);
+	}
+
+	private void onRemove() {
+		List<ParameterRedef> selection = Viewers.getAllSelected(viewer);
+		for (ParameterRedef selected : selection) {
+			this.redefs.remove(selected);
+			for (Column column : columns) {
+				ProjectVariant variant = column.variant;
+				ParameterRedef redef = findVariantRedef(variant, selected);
+				if (redef != null)
+					variant.getParameterRedefs().remove(redef);
+			}
+		}
+		viewer.setInput(this.redefs);
+		editor.setDirty(true);
 	}
 
 	public void addVariant(ProjectVariant variant) {
@@ -155,6 +205,16 @@ class ProjectParameterTable {
 		Table table = viewer.getTable();
 		table.getColumn(idx + 2).dispose();
 		createModifySupport();
+		viewer.refresh();
+	}
+
+	public void updateVariant(ProjectVariant variant) {
+		int idx = getIndex(variant);
+		if (idx == -1)
+			return;
+		Column column = columns[idx];
+		Table table = viewer.getTable();
+		table.getColumn(idx + 2).setText(column.getTitle());
 		viewer.refresh();
 	}
 
