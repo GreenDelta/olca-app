@@ -3,6 +3,7 @@ package org.openlca.app.components;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -15,20 +16,20 @@ import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
+import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.NavigationTree;
 import org.openlca.app.resources.ImageType;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
@@ -40,7 +41,7 @@ public class ObjectDialog extends FormDialog {
 	private boolean multiSelection = false;
 
 	private TreeViewer viewer;
-	private Text searchText;
+	private Text filterText;
 	private BaseDescriptor[] selection;
 
 	public static BaseDescriptor select(ModelType type, ViewerFilter... filters) {
@@ -72,8 +73,6 @@ public class ObjectDialog extends FormDialog {
 	private ObjectDialog(Shell parentShell, ModelType modelType) {
 		super(parentShell);
 		this.modelType = modelType;
-		setShellStyle(SWT.BORDER | SWT.TITLE | SWT.APPLICATION_MODAL
-				| SWT.RESIZE);
 		setBlockOnOpen(true);
 		filters.add(new NameFilter());
 	}
@@ -89,47 +88,76 @@ public class ObjectDialog extends FormDialog {
 
 	@Override
 	protected void createFormContent(IManagedForm form) {
-		Composite composite = UI.formBody(form.getForm(), form.getToolkit());
-		UI.gridLayout(composite, 1);
+		FormToolkit toolkit = form.getToolkit();
 		String title = "Select model" + (multiSelection ? "(s)" : "");
 		UI.formHeader(form, title);
+		Composite body = UI.formBody(form.getForm(), form.getToolkit());
+		UI.gridLayout(body, 1);
+		UI.applyBoldFont(UI.formLabel(body, form.getToolkit(), "Filter"));
 
-		UI.applyBoldFont(UI.formLabel(composite, form.getToolkit(),
-				"Filter by name"));
+		filterText = UI.formText(body, SWT.SEARCH);
+		filterText.addModifyListener(new ModifyListener() {
+			@Override
+			public void modifyText(ModifyEvent e) {
+				viewer.refresh();
+			}
+		});
 
-		searchText = UI.formText(composite, SWT.SEARCH);
-		searchText.addModifyListener(new SearchTextModifyListener());
+		Section section = UI.section(body, toolkit, "Content");
+		addSectionActions(section);
+		UI.gridData(section, true, true);
+		Composite composite = UI.sectionClient(section, toolkit);
+		UI.gridLayout(composite, 1);
+		createViewer(composite);
+	}
 
-		Composite actionComposite = form.getToolkit()
-				.createComposite(composite);
-		UI.gridLayout(actionComposite, 2, 2, 0);
-		UI.gridData(actionComposite, false, false);
-
-		Button expandButton = form.getToolkit().createButton(actionComposite,
-				"", SWT.PUSH);
-		expandButton.setImage(ImageType.EXPAND_ICON.get());
-		expandButton.addSelectionListener(new ExpandSelectionListener());
-		Button collapseButton = form.getToolkit().createButton(actionComposite,
-				"", SWT.PUSH);
-		collapseButton.addSelectionListener(new CollapseSelectionListener());
-		collapseButton.setImage(ImageType.COLLAPSE_ICON.get());
-
+	private void createViewer(Composite composite) {
 		if (multiSelection)
 			viewer = NavigationTree.forMultiSelection(composite, modelType);
 		else
 			viewer = NavigationTree.forSingleSelection(composite, modelType);
 		viewer.setFilters(filters.toArray(new ViewerFilter[filters.size()]));
-
-		viewer.getTree().setLayoutData(
-				new GridData(SWT.FILL, SWT.FILL, true, true));
-
+		UI.gridData(viewer.getTree(), true, true);
 		viewer.addSelectionChangedListener(new SelectionChangedListener());
 		viewer.addDoubleClickListener(new DoubleClickListener());
 	}
 
 	@Override
 	protected Point getInitialSize() {
-		return new Point(600, 600);
+		int width = 600;
+		int height = 600;
+		Rectangle shellBounds = getShell().getDisplay().getBounds();
+		int shellWidth = shellBounds.x;
+		int shellHeight = shellBounds.y;
+		if (shellWidth > 0 && shellWidth < width)
+			width = shellWidth;
+		if (shellHeight > 0 && shellHeight < height)
+			height = shellHeight;
+		return new Point(width, height);
+	}
+
+	private void addSectionActions(Section section) {
+		Action expand = new Action() {
+			{
+				setImageDescriptor(ImageType.EXPAND_ICON.getDescriptor());
+			}
+
+			@Override
+			public void run() {
+				viewer.expandAll();
+			}
+		};
+		Action collapse = new Action() {
+			{
+				setImageDescriptor(ImageType.COLLAPSE_ICON.getDescriptor());
+			}
+
+			@Override
+			public void run() {
+				viewer.collapseAll();
+			}
+		};
+		Actions.bind(section, expand, collapse);
 	}
 
 	@Override
@@ -147,30 +175,7 @@ public class ObjectDialog extends FormDialog {
 
 	private boolean matches(ModelElement element) {
 		return element.getContent().getName().toLowerCase()
-				.contains(searchText.getText().toLowerCase());
-	}
-
-	private class SearchTextModifyListener implements ModifyListener {
-
-		@Override
-		public void modifyText(ModifyEvent e) {
-			viewer.refresh();
-		}
-
-	}
-
-	private class ExpandSelectionListener extends SelectionAdapter {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			viewer.expandAll();
-		}
-	}
-
-	private class CollapseSelectionListener extends SelectionAdapter {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			viewer.collapseAll();
-		}
+				.contains(filterText.getText().toLowerCase());
 	}
 
 	private class SelectionChangedListener implements ISelectionChangedListener {
@@ -237,7 +242,7 @@ public class ObjectDialog extends FormDialog {
 		@Override
 		public boolean select(Viewer viewer, Object parentElement,
 				Object element) {
-			if ("".equals(searchText.getText()))
+			if ("".equals(filterText.getText()))
 				return true;
 			else
 				return select((INavigationElement<?>) element);
