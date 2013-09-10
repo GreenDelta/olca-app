@@ -142,6 +142,22 @@ class ProjectParameterTable {
 		viewer.refresh();
 	}
 
+	public void removeVariant(ProjectVariant variant) {
+		int idx = getIndex(variant);
+		if (idx == -1)
+			return;
+		Column[] newColumns = new Column[columns.length - 1];
+		System.arraycopy(columns, 0, newColumns, 0, idx);
+		if ((idx + 1) < columns.length)
+			System.arraycopy(columns, idx + 1, newColumns, idx,
+					newColumns.length - idx);
+		columns = newColumns;
+		Table table = viewer.getTable();
+		table.getColumn(idx + 2).dispose();
+		createModifySupport();
+		viewer.refresh();
+	}
+
 	private ParameterRedef findVariantRedef(ProjectVariant variant,
 			ParameterRedef redef) {
 		if (variant == null)
@@ -161,6 +177,14 @@ class ProjectParameterTable {
 				return column.getVariant();
 		}
 		return null;
+	}
+
+	public int getIndex(ProjectVariant variant) {
+		for (int i = 0; i < columns.length; i++) {
+			if (Objects.equals(variant, columns[i].getVariant()))
+				return i;
+		}
+		return -1;
 	}
 
 	private class LabelProvider extends org.eclipse.jface.viewers.LabelProvider

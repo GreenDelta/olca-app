@@ -177,6 +177,7 @@ public class ProjectSetupPage extends ModelPage<Project> {
 			return;
 		for (ProjectVariant var : selection) {
 			variants.remove(var);
+			parameterTable.removeVariant(var);
 			// TODO: dispose parameter column
 			// Section section = findParameterSection(var);
 			// if (section != null)
