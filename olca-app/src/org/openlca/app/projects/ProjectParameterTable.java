@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -27,36 +28,39 @@ import org.openlca.core.model.Project;
 import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.util.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class ProjectParameterTable {
 
 	private final String PARAMETER = Messages.Parameter;
 	private final String PROCESS = Messages.Process;
 
-	private Logger log = LoggerFactory.getLogger(getClass());
 	private ProjectEditor editor;
 	private EntityCache cache = Database.getCache();
-	private Project project;
-	private String[] variantNames;
+
 	private List<ParameterRedef> redefs = new ArrayList<>();
 	private ModifySupport<ParameterRedef> modifySupport;
+	private Column[] columns;
 	private TableViewer viewer;
 
 	public ProjectParameterTable(ProjectEditor editor) {
 		this.editor = editor;
-		this.project = editor.getModel();
-		variantNames = new String[project.getVariants().size()];
-		for (int i = 0; i < variantNames.length; i++) {
-			String name = project.getVariants().get(i).getName();
-			variantNames[i] = name == null ? "" : name;
-		}
-		Arrays.sort(variantNames);
-		initParameterRedefs();
+		Project project = editor.getModel();
+		initColumns(project);
+		initParameterRedefs(project);
 	}
 
-	private void initParameterRedefs() {
+	private void initColumns(Project project) {
+		if (project == null) {
+			columns = new Column[0];
+			return;
+		}
+		columns = new Column[project.getVariants().size()];
+		for (int i = 0; i < columns.length; i++)
+			columns[i] = new Column(project.getVariants().get(i));
+		Arrays.sort(columns);
+	}
+
+	private void initParameterRedefs(Project project) {
 		for (ProjectVariant variant : project.getVariants()) {
 			for (ParameterRedef redef : variant.getParameterRedefs()) {
 				if (!contains(redef))
@@ -88,34 +92,44 @@ class ProjectParameterTable {
 	public void render(Section section, FormToolkit toolkit) {
 		Composite composite = UI.sectionClient(section, toolkit);
 		UI.gridLayout(composite, 1);
-		String[] props = new String[variantNames.length + 2];
-		props[0] = PARAMETER;
-		props[1] = PROCESS;
-		for (int i = 0; i < variantNames.length; i++)
-			props[i + 2] = variantNames[i];
-		viewer = Tables.createViewer(composite, props);
+		viewer = Tables.createViewer(composite, getColumnTitles());
 		viewer.setLabelProvider(new LabelProvider());
-		double[] colWeights = new double[props.length];
-		for (int i = 0; i < props.length; i++)
-			colWeights[i] = 0.8 / props.length;
+		double[] colWeights = new double[columns.length + 2];
+		for (int i = 0; i < colWeights.length; i++)
+			colWeights[i] = 0.8 / colWeights.length;
 		Tables.bindColumnWidths(viewer, colWeights);
 		UI.gridData(viewer.getTable(), true, true).minimumHeight = 150;
 		viewer.setInput(redefs);
-		setModifySupport();
+		createModifySupport();
 	}
 
-	private void setModifySupport() {
+	private String[] getColumnTitles() {
+		String[] titles = new String[columns.length + 2];
+		titles[0] = PARAMETER;
+		titles[1] = PROCESS;
+		for (int i = 0; i < columns.length; i++)
+			titles[i + 2] = columns[i].getTitle();
+		return titles;
+	}
+
+	private void createModifySupport() {
+		// we use unique key to map the columns / editors to project variants
+		String[] keys = new String[columns.length + 2];
+		keys[0] = PARAMETER;
+		keys[1] = PROCESS;
+		for (int i = 0; i < columns.length; i++)
+			keys[i + 2] = columns[i].getKey();
+		viewer.setColumnProperties(keys);
 		modifySupport = new ModifySupport<>(viewer);
-		for (String variantName : variantNames)
-			modifySupport.bind(variantName, new ValueModifier(variantName));
+		for (int i = 2; i < keys.length; i++)
+			modifySupport.bind(keys[i], new ValueModifier(keys[i]));
 	}
 
-	private ParameterRedef findVariantRedef(String variantName,
+	private ParameterRedef findVariantRedef(ProjectVariant variant,
 			ParameterRedef redef) {
-		ProjectVariant var = findVariant(variantName);
-		if (var == null)
+		if (variant == null)
 			return null;
-		for (ParameterRedef variantRedef : var.getParameterRedefs()) {
+		for (ParameterRedef variantRedef : variant.getParameterRedefs()) {
 			if (Objects.equals(variantRedef.getName(), redef.getName())
 					&& Objects.equals(variantRedef.getProcessId(),
 							redef.getProcessId()))
@@ -124,12 +138,11 @@ class ProjectParameterTable {
 		return null;
 	}
 
-	private ProjectVariant findVariant(String variantName) {
-		for (ProjectVariant variant : project.getVariants()) {
-			if (Objects.equals(variantName, variant.getName()))
-				return variant;
+	private ProjectVariant findVariant(String key) {
+		for (Column column : columns) {
+			if (Objects.equals(key, column.getKey()))
+				return column.getVariant();
 		}
-		log.warn("could not find variant {}", variantName);
 		return null;
 	}
 
@@ -164,10 +177,10 @@ class ProjectParameterTable {
 
 		private String getVariantValue(int col, ParameterRedef redef) {
 			int idx = col - 2;
-			if (idx < 0 || idx >= variantNames.length)
+			if (idx < 0 || idx >= columns.length)
 				return null;
-			String variantName = variantNames[idx];
-			ParameterRedef variantRedef = findVariantRedef(variantName, redef);
+			ProjectVariant variant = columns[idx].getVariant();
+			ParameterRedef variantRedef = findVariantRedef(variant, redef);
 			if (variantRedef == null)
 				return null;
 			return Double.toString(variantRedef.getValue());
@@ -186,14 +199,15 @@ class ProjectParameterTable {
 
 	private class ValueModifier extends TextCellModifier<ParameterRedef> {
 
-		private String variantName;
+		private String key;
 
-		public ValueModifier(String variantName) {
-			this.variantName = variantName;
+		public ValueModifier(String key) {
+			this.key = key;
 		}
 
 		protected String getText(ParameterRedef redef) {
-			ParameterRedef variantRedef = findVariantRedef(variantName, redef);
+			ProjectVariant variant = findVariant(key);
+			ParameterRedef variantRedef = findVariantRedef(variant, redef);
 			if (variantRedef == null)
 				return "";
 			return Double.toString(variantRedef.getValue());
@@ -203,11 +217,11 @@ class ProjectParameterTable {
 		protected void setText(ParameterRedef redef, String text) {
 			if (redef == null || text == null)
 				return;
-			ParameterRedef variantRedef = findVariantRedef(variantName, redef);
+			ProjectVariant variant = findVariant(key);
+			if (variant == null)
+				return;
+			ParameterRedef variantRedef = findVariantRedef(variant, redef);
 			if (variantRedef == null) {
-				ProjectVariant variant = findVariant(variantName);
-				if (variant == null)
-					return;
 				variantRedef = redef.clone();
 				variant.getParameterRedefs().add(variantRedef);
 			}
@@ -218,6 +232,40 @@ class ProjectParameterTable {
 			} catch (Exception e) {
 			}
 		}
+	}
+
+	private class Column implements Comparable<Column> {
+
+		private ProjectVariant variant;
+		private String key;
+
+		public Column(ProjectVariant variant) {
+			this.variant = variant;
+			key = UUID.randomUUID().toString();
+		}
+
+		public ProjectVariant getVariant() {
+			return variant;
+		}
+
+		public String getKey() {
+			return key;
+		}
+
+		public String getTitle() {
+			if (variant == null)
+				return "";
+			return variant.getName();
+		}
+
+		@Override
+		public int compareTo(Column other) {
+			if (this.variant == null || other.variant == null)
+				return 0;
+			return Strings.compare(this.variant.getName(),
+					other.variant.getName());
+		}
+
 	}
 
 }
