@@ -55,6 +55,7 @@ public class ProjectSetupPage extends ModelPage<Project> {
 	private TableViewer variantViewer;
 	private Composite body;
 	private ScrolledForm form;
+	private ProjectParameterTable parameterTable;
 
 	public ProjectSetupPage(ProjectEditor editor) {
 		super(editor, "ProjectSetupPage", "Calculation setup");
@@ -113,8 +114,8 @@ public class ProjectSetupPage extends ModelPage<Project> {
 
 	private void createParameterSection(Composite body) {
 		Section section = UI.section(body, toolkit, "Parameters");
-		ProjectParameterTable table = new ProjectParameterTable(editor);
-		table.render(section, toolkit);
+		parameterTable = new ProjectParameterTable(editor);
+		parameterTable.render(section, toolkit);
 	}
 
 	private void addVariantActions(TableViewer viewer, Section section) {
@@ -146,11 +147,13 @@ public class ProjectSetupPage extends ModelPage<Project> {
 		ProjectVariant variant = new ProjectVariant();
 		variant.setProductSystem(system);
 		variant.setName("Variant " + (variants.size() + 1));
+		// TODO: parameter redefs
 		for (ParameterRedef redef : system.getParameterRedefs())
 			variant.getParameterRedefs().add(redef.clone());
 		variants.add(variant);
 		variantViewer.setInput(variants);
 		editor.setDirty(true);
+		parameterTable.addVariant(variant);
 		createParameterColumn(variant);
 		form.reflow(true);
 	}

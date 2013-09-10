@@ -10,8 +10,11 @@ import java.util.UUID;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
@@ -123,6 +126,20 @@ class ProjectParameterTable {
 		modifySupport = new ModifySupport<>(viewer);
 		for (int i = 2; i < keys.length; i++)
 			modifySupport.bind(keys[i], new ValueModifier(keys[i]));
+	}
+
+	public void addVariant(ProjectVariant variant) {
+		Column newColumn = new Column(variant);
+		Table table = viewer.getTable();
+		TableColumn tableColumn = new TableColumn(table, SWT.NONE);
+		tableColumn.setWidth(150);
+		tableColumn.setText(newColumn.getTitle());
+		Column[] newColumns = new Column[columns.length + 1];
+		System.arraycopy(columns, 0, newColumns, 0, columns.length);
+		newColumns[columns.length] = newColumn;
+		columns = newColumns;
+		createModifySupport();
+		viewer.refresh();
 	}
 
 	private ParameterRedef findVariantRedef(ProjectVariant variant,
