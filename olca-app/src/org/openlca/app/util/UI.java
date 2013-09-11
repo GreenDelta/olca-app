@@ -219,6 +219,12 @@ public class UI {
 		return composite;
 	}
 
+	public static Composite formComposite(Composite parent, FormToolkit toolkit) {
+		Composite composite = toolkit.createComposite(parent);
+		gridLayout(composite, 2);
+		return composite;
+	}
+
 	public static Button formCheckBox(Composite parent, String label) {
 		return formCheckBox(parent, null, label);
 	}

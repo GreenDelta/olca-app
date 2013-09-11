@@ -14,7 +14,7 @@ import org.openlca.app.navigation.ModelTypeElement;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 
-class ExportAction extends Action implements INavigationAction {
+abstract class ExportAction extends Action implements INavigationAction {
 
 	private List<BaseDescriptor> components;
 	private ModelType type;
