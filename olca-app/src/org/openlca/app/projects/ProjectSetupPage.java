@@ -24,8 +24,8 @@ import org.openlca.app.util.Numbers;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
+import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.ImpactMethodViewer;
-import org.openlca.app.viewers.combo.NormalizationWeightingSetViewer;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.database.IDatabase;
@@ -39,6 +39,7 @@ import org.openlca.core.model.Project;
 import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +52,7 @@ public class ProjectSetupPage extends ModelPage<Project> {
 
 	private IDatabase database = Database.get();
 
+	private Project project;
 	private List<ProjectVariant> variants;
 	private TableViewer variantViewer;
 	private Composite body;
@@ -60,7 +62,8 @@ public class ProjectSetupPage extends ModelPage<Project> {
 	public ProjectSetupPage(ProjectEditor editor) {
 		super(editor, "ProjectSetupPage", "Calculation setup");
 		this.editor = editor;
-		variants = editor.getModel().getVariants();
+		project = editor.getModel();
+		variants = project.getVariants();
 	}
 
 	@Override
@@ -89,9 +92,40 @@ public class ProjectSetupPage extends ModelPage<Project> {
 	private void createSettingsSection(Composite body) {
 		Composite client = UI.formSection(body, toolkit, "Settings");
 		UI.formLabel(client, toolkit, "LCIA Method");
-		new ImpactMethodViewer(client);
-		UI.formLabel(client, toolkit, "Normalisation and Weighting");
-		new NormalizationWeightingSetViewer(client);
+		ImpactMethodViewer impactMethodViewer = new ImpactMethodViewer(client);
+		impactMethodViewer.setNullable(true);
+		impactMethodViewer
+				.addSelectionChangedListener(new ISelectionChangedListener<ImpactMethodDescriptor>() {
+					@Override
+					public void selectionChanged(
+							ImpactMethodDescriptor selection) {
+						handleMethodChange(selection);
+					}
+				});
+		impactMethodViewer.setInput(database);
+		if (project.getImpactMethodId() != null) {
+			ImpactMethodDescriptor d = Database.getCache().get(
+					ImpactMethodDescriptor.class, project.getImpactMethodId());
+			impactMethodViewer.select(d);
+		}
+		// TODO: add nw-sets
+		// UI.formLabel(client, toolkit, "Normalisation and Weighting");
+		// new NormalizationWeightingSetViewer(client);
+	}
+
+	private void handleMethodChange(ImpactMethodDescriptor selection) {
+		if (selection == null && project.getImpactMethodId() == null)
+			return;
+		if (selection != null
+				&& Objects.equals(selection.getId(),
+						project.getImpactMethodId()))
+			return;
+		project.setNwSetId(null);
+		if (selection == null)
+			project.setImpactMethodId(null);
+		else
+			project.setImpactMethodId(selection.getId());
+		editor.setDirty(true);
 	}
 
 	private void createVariantsSection(Composite body) {

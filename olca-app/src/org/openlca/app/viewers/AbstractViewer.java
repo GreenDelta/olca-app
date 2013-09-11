@@ -125,8 +125,12 @@ public abstract class AbstractViewer<T, V extends StructuredViewer> implements
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public void selectionChanged(SelectionChangedEvent event) {
-		T selection = Viewers.getFirst(event.getSelection());
+		Object obj = Viewers.getFirst(event.getSelection());
+		T selection = null;
+		if (!Null.class.isInstance(obj))
+			selection = (T) obj;
 		for (ISelectionChangedListener<T> listener : this.listener) {
 			listener.selectionChanged(selection);
 		}

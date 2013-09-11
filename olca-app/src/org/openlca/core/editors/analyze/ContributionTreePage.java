@@ -57,8 +57,7 @@ public class ContributionTreePage extends FormPage {
 
 		Composite composite = toolkit.createComposite(body);
 		UI.gridLayout(composite, 2);
-		FlowImpactSelection.onCache(Database.getCache())
-				.withAnalysisResult(result)
+		FlowImpactSelection.on(result, Database.getCache())
 				.withEventHandler(new SelectionHandler())
 				.create(composite, toolkit);
 

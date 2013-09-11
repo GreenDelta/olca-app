@@ -89,8 +89,7 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 		Composite composite = toolkit.createComposite(body);
 		UI.gridLayout(composite, 2);
 		flowImpactSelection = FlowImpactSelection
-				.onCache(cache)
-				.withAnalysisResult(result)
+				.on(result, cache)
 				.withEventHandler(new SelectionHandler())
 				.withSelection(
 						result.getFlowResults().getFlows(cache).iterator()

@@ -1,6 +1,6 @@
 package org.openlca.core.editors;
 
-import java.util.Set;
+import java.util.Collection;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -30,12 +30,22 @@ public class FlowImpactSelection {
 	private int resultType = FLOW;
 
 	private EntityCache cache;
-	private AnalysisResult result;
+	private Collection<FlowDescriptor> flows;
+	private Collection<ImpactCategoryDescriptor> impacts;
 	private Object initialSelection;
 	private EventHandler eventHandler;
 
 	private FlowViewer flowViewer;
 	private ImpactCategoryViewer impactViewer;
+
+	public static Dispatch on(AnalysisResult result, EntityCache cache) {
+		FlowImpactSelection selection = new FlowImpactSelection(cache);
+		selection.flows = result.getFlowResults().getFlows(cache);
+		if (result.hasImpactResults())
+			selection.impacts = result.getImpactResults().getImpacts(cache);
+		Dispatch dispatch = new Dispatch(selection);
+		return dispatch;
+	}
 
 	private FlowImpactSelection(EntityCache cache) {
 		this.cache = cache;
@@ -77,15 +87,10 @@ public class FlowImpactSelection {
 			impactViewer.setEnabled(false);
 	}
 
-	public static Dispatch onCache(EntityCache cache) {
-		Dispatch dispatch = new Dispatch(new FlowImpactSelection(cache));
-		return dispatch;
-	}
-
 	private void render(Composite parent, FormToolkit toolkit) {
-		if (result != null && result.getFlowIndex().size() > 0)
+		if (flows != null && !flows.isEmpty())
 			initFlowCheckViewer(toolkit, parent);
-		if (result != null && result.hasImpactResults())
+		if (impacts != null && !impacts.isEmpty())
 			initImpactCheckViewer(toolkit, parent);
 		if (initialSelection instanceof ImpactCategoryDescriptor)
 			resultType = IMPACT;
@@ -99,8 +104,8 @@ public class FlowImpactSelection {
 		flowsCheck.setSelection(typeFlows);
 		flowViewer = new FlowViewer(section, cache);
 		flowViewer.setEnabled(typeFlows);
-		Set<FlowDescriptor> list = result.getFlowResults().getFlows(cache);
-		FlowDescriptor[] input = list.toArray(new FlowDescriptor[list.size()]);
+		FlowDescriptor[] input = flows
+				.toArray(new FlowDescriptor[flows.size()]);
 		flowViewer.setInput(input);
 		flowViewer.selectFirst();
 		flowViewer
@@ -118,7 +123,7 @@ public class FlowImpactSelection {
 		impactCheck.setSelection(typeImpact);
 		impactViewer = new ImpactCategoryViewer(section);
 		impactViewer.setEnabled(typeImpact);
-		impactViewer.setInput(result.getImpactResults().getImpacts(cache));
+		impactViewer.setInput(impacts);
 		impactViewer.selectFirst();
 		impactViewer
 				.addSelectionChangedListener(new SelectionChange<ImpactCategoryDescriptor>());
@@ -184,7 +189,7 @@ public class FlowImpactSelection {
 
 	}
 
-	/** Dispatch class for the initialisation of the widgets. */
+	/** Dispatch class for the initialization of the widgets. */
 	public static class Dispatch {
 
 		private FlowImpactSelection selection;
@@ -195,11 +200,6 @@ public class FlowImpactSelection {
 
 		public Dispatch withSelection(Object item) {
 			selection.initialSelection = item;
-			return this;
-		}
-
-		public Dispatch withAnalysisResult(AnalysisResult result) {
-			selection.result = result;
 			return this;
 		}
 
