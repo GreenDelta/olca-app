@@ -1,17 +1,15 @@
-package org.openlca.core.editors.analyze;
+package org.openlca.app.inventory;
 
-import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.forms.HyperlinkSettings;
 import org.eclipse.ui.forms.IManagedForm;
+import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
@@ -22,29 +20,20 @@ import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.core.results.AnalysisResult;
 import org.openlca.util.Strings;
 
-public class LCIATotalPage extends FormPage {
+public class ImpactResultPage extends FormPage {
 
-	private interface COLUMN_LABELS {
-
-		String IMPACT_CATEGORY = "Impact category";
-		String REFERENCE_UNIT = "Reference unit";
-		String RESULT = "Result";
-
-		String[] VALUES = { IMPACT_CATEGORY, REFERENCE_UNIT, RESULT };
-
-	}
-
-	private static final double[] COLUMN_WIDTHS = { 0.70, 0.20, 0.08 };
+	private final String IMPACT_CATEGORY = "Impact category";
+	private final String RESULT = "Result";
+	private final String REFERENCE_UNIT = "Reference unit";
 
 	private EntityCache cache = Database.getCache();
 	private FormToolkit toolkit;
-	private AnalysisResult result;
+	private ImpactResultProvider result;
 
-	public LCIATotalPage(AnalyzeEditor editor, AnalysisResult result) {
-		super(editor, LCIATotalPage.class.getCanonicalName(), "LCIA - Total");
+	public ImpactResultPage(FormEditor editor, ImpactResultProvider result) {
+		super(editor, "ImpactResultPage", "LCIA Result");
 		this.result = result;
 	}
 
@@ -56,13 +45,10 @@ public class LCIATotalPage extends FormPage {
 				HyperlinkSettings.UNDERLINE_HOVER);
 		form.setText("LCIA - Total");
 		toolkit.decorateFormHeading(form.getForm());
-
 		Composite body = UI.formBody(form, toolkit);
 		TableViewer impactViewer = createSectionAndViewer(body);
-
 		form.reflow(true);
-
-		impactViewer.setInput(result.getImpactResults().getImpacts(cache));
+		impactViewer.setInput(result.getImpactCategories(cache));
 	}
 
 	private TableViewer createSectionAndViewer(Composite parent) {
@@ -71,21 +57,11 @@ public class LCIATotalPage extends FormPage {
 		Composite composite = toolkit.createComposite(section);
 		section.setClient(composite);
 		UI.gridLayout(composite, 1);
-
-		TableViewer viewer = new TableViewer(composite);
+		String[] columns = { IMPACT_CATEGORY, RESULT, REFERENCE_UNIT };
+		TableViewer viewer = Tables.createViewer(composite, columns);
 		viewer.setLabelProvider(new LCIALabelProvider());
-		viewer.setContentProvider(ArrayContentProvider.getInstance());
-		viewer.getTable().setLinesVisible(true);
-		viewer.getTable().setHeaderVisible(true);
-
-		for (int i = 0; i < COLUMN_LABELS.VALUES.length; i++) {
-			final TableColumn c = new TableColumn(viewer.getTable(), SWT.NULL);
-			c.setText(COLUMN_LABELS.VALUES[i]);
-		}
-		viewer.setColumnProperties(COLUMN_LABELS.VALUES);
 		viewer.setSorter(new ImpactViewerSorter());
-		UI.gridData(viewer.getTable(), true, true);
-		Tables.bindColumnWidths(viewer.getTable(), COLUMN_WIDTHS);
+		Tables.bindColumnWidths(viewer.getTable(), 0.50, 0.30, 0.2);
 		return viewer;
 	}
 
@@ -98,24 +74,20 @@ public class LCIATotalPage extends FormPage {
 		}
 
 		@Override
-		public String getColumnText(Object element, int columnIndex) {
+		public String getColumnText(Object element, int col) {
 			if (!(element instanceof ImpactCategoryDescriptor))
 				return null;
-
 			ImpactCategoryDescriptor impactCategory = (ImpactCategoryDescriptor) element;
-			String columnLabel = COLUMN_LABELS.VALUES[columnIndex];
-
-			switch (columnLabel) {
-			case COLUMN_LABELS.IMPACT_CATEGORY:
+			switch (col) {
+			case 0:
 				return impactCategory.getName();
-			case COLUMN_LABELS.REFERENCE_UNIT:
+			case 1:
+				return Numbers.format(result.getAmount(impactCategory));
+			case 2:
 				return impactCategory.getReferenceUnit();
-			case COLUMN_LABELS.RESULT:
-				return Numbers.format(result.getImpactResults().getTotalResult(
-						impactCategory));
+			default:
+				return null;
 			}
-
-			return null;
 		}
 	}
 
@@ -139,7 +111,6 @@ public class LCIATotalPage extends FormPage {
 			return Strings.compare(category1.getReferenceUnit(),
 					category2.getReferenceUnit());
 		}
-
 	}
 
 }

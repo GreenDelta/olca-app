@@ -9,13 +9,16 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.openlca.app.App;
 import org.openlca.app.Messages;
-import org.openlca.app.results.InventoryResultPage;
-import org.openlca.app.results.InventoryResultProvider;
+import org.openlca.app.inventory.ImpactResultPage;
+import org.openlca.app.inventory.ImpactResultProvider;
+import org.openlca.app.inventory.InventoryResultPage;
+import org.openlca.app.inventory.InventoryResultProvider;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.editors.analyze.sankey.SankeyDiagram;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.FlowDescriptor;
+import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.AnalysisResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +66,7 @@ public class AnalyzeEditor extends FormEditor {
 
 			addPage(new InventoryResultPage(this, new InventoryAdapter()));
 			if (result.hasImpactResults())
-				addPage(new LCIATotalPage(this, result));
+				addPage(new ImpactResultPage(this, new ImpactAdapter()));
 			addPage(new ProcessContributionPage(this, result));
 			addPage(new ProcessResultPage(this, result));
 			if (result.hasImpactResults())
@@ -141,7 +144,19 @@ public class AnalyzeEditor extends FormEditor {
 		public boolean isInput(FlowDescriptor flow) {
 			return result.getFlowIndex().isInput(flow.getId());
 		}
+	}
 
+	private class ImpactAdapter implements ImpactResultProvider {
+		@Override
+		public double getAmount(ImpactCategoryDescriptor impact) {
+			return result.getImpactResults().getTotalResult(impact);
+		}
+
+		@Override
+		public Collection<ImpactCategoryDescriptor> getImpactCategories(
+				EntityCache cache) {
+			return result.getImpactResults().getImpacts(cache);
+		}
 	}
 
 }

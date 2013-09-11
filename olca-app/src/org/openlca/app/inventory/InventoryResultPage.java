@@ -1,4 +1,4 @@
-package org.openlca.app.results;
+package org.openlca.app.inventory;
 
 import java.util.Collection;
 
