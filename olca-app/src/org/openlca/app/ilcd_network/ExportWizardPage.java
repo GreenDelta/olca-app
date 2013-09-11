@@ -1,4 +1,4 @@
-package org.openlca.ilcd.network.rcp.ui;
+package org.openlca.app.ilcd_network;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,13 +17,12 @@ import org.openlca.app.navigation.NavigationLabelProvider;
 import org.openlca.app.navigation.NavigationSorter;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.UI;
-import org.openlca.core.database.IDatabase;
-import org.openlca.core.model.modelprovider.IModelComponent;
+import org.openlca.core.model.descriptors.BaseDescriptor;
 
 public class ExportWizardPage extends WizardPage implements ICheckStateListener {
 
 	private CheckboxTreeViewer viewer;
-	private List<ExportTupel> selectedModels = new ArrayList<>();
+	private List<BaseDescriptor> selectedModels = new ArrayList<>();
 
 	public ExportWizardPage() {
 		super("ilcd.network.SelectProcessPage");
@@ -70,18 +69,14 @@ public class ExportWizardPage extends WizardPage implements ICheckStateListener 
 		for (Object element : elements) {
 			if (element instanceof ModelElement) {
 				ModelElement modelElement = (ModelElement) element;
-				IDatabase db = modelElement.getDatabase();
-				Object obj = modelElement.getData();
-				if (obj instanceof IModelComponent && db != null) {
-					selectedModels.add(new ExportTupel((IModelComponent) obj,
-							db));
-				}
+				BaseDescriptor model = modelElement.getContent();
+				selectedModels.add(model);
 			}
 		}
 		setPageComplete(!selectedModels.isEmpty());
 	}
 
-	public List<ExportTupel> getSelectedModels() {
+	public List<BaseDescriptor> getSelectedModels() {
 		return selectedModels;
 	}
 }

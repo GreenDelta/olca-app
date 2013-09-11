@@ -1,7 +1,7 @@
-package org.openlca.ilcd.network.rcp.ui;
+package org.openlca.app.ilcd_network;
 
-import static org.openlca.ilcd.network.rcp.ui.Messages.NetworkImport;
-import static org.openlca.ilcd.network.rcp.ui.Messages.RunImport;
+import static org.openlca.app.ilcd_network.Messages.NetworkImport;
+import static org.openlca.app.ilcd_network.Messages.RunImport;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -12,10 +12,12 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
-import org.openlca.app.io.Activator;
+import org.openlca.app.RcpActivator;
+import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.core.database.IDatabase;
 import org.openlca.ilcd.descriptors.ProcessDescriptor;
+import org.openlca.ilcd.io.DataStoreException;
 import org.openlca.ilcd.io.NetworkClient;
 import org.openlca.ilcd.processes.Process;
 import org.openlca.ilcd.util.ProcessBag;
@@ -25,15 +27,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The wizard for the import of processes from an ILCD network.
- * 
- * @author Michael Srocka
- * 
+ * The wizard for the import of processes from an ILCD network node.
  */
 public class ImportWizard extends Wizard implements IImportWizard {
 
+	private IDatabase database = Database.get();
 	private ProcessSearchPage processSearchPage;
-	private DatabaseSelectionPage databasePage;
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
 	public ImportWizard() {
@@ -42,36 +41,38 @@ public class ImportWizard extends Wizard implements IImportWizard {
 
 	@Override
 	public boolean performFinish() {
+		if (database == null)
+			return false;
 		boolean noError = true;
 		try {
-			final List<ProcessDescriptor> processes = processSearchPage
-					.getSelectedProcesses();
-			final IDatabase database = databasePage.getSelectedDatabase();
-			final NetworkClient client = Preference.createClient();
-			client.connect();
-
-			getContainer().run(true, true, new IRunnableWithProgress() {
-
-				@Override
-				public void run(IProgressMonitor monitor)
-						throws InvocationTargetException, InterruptedException {
-					monitor.beginTask(RunImport, IProgressMonitor.UNKNOWN);
-					try {
-						importProcesses(processes, client, database);
-					} catch (Exception e) {
-						throw new InvocationTargetException(e);
-					}
-					monitor.done();
-				}
-			});
+			tryImport();
 		} catch (Exception e) {
 			log.error("Process import failed.", e);
 			noError = false;
 		}
-
 		Navigator.refresh();
-
 		return noError;
+	}
+
+	private void tryImport() throws DataStoreException,
+			InvocationTargetException, InterruptedException {
+		final List<ProcessDescriptor> processes = processSearchPage
+				.getSelectedProcesses();
+		final NetworkClient client = Preference.createClient();
+		client.connect();
+		getContainer().run(true, true, new IRunnableWithProgress() {
+			@Override
+			public void run(IProgressMonitor monitor)
+					throws InvocationTargetException, InterruptedException {
+				monitor.beginTask(RunImport, IProgressMonitor.UNKNOWN);
+				try {
+					importProcesses(processes, client, database);
+				} catch (Exception e) {
+					throw new InvocationTargetException(e);
+				}
+				monitor.done();
+			}
+		});
 	}
 
 	private void importProcesses(List<ProcessDescriptor> descriptors,
@@ -97,23 +98,20 @@ public class ImportWizard extends Wizard implements IImportWizard {
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
 		setWindowTitle(NetworkImport);
 		setDefaultPageImageDescriptor(RcpActivator.imageDescriptorFromPlugin(
-				RcpActivator.PLUGIN_ID, "/icons/network_wiz.png")); 
+				RcpActivator.PLUGIN_ID, "/icons/network_wiz.png"));
 		setNeedsProgressMonitor(true);
 		processSearchPage = new ProcessSearchPage();
-		databasePage = new DatabaseSelectionPage();
 	}
 
 	@Override
 	public void addPages() {
 		super.addPages();
 		addPage(processSearchPage);
-		addPage(databasePage);
 	}
 
 	@Override
 	public boolean canFinish() {
-		return databasePage.getSelectedDatabase() != null
+		return database != null
 				&& processSearchPage.getSelectedProcesses().size() > 0;
 	}
-
 }

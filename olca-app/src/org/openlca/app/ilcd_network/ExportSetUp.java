@@ -1,13 +1,16 @@
-package org.openlca.ilcd.network.rcp.ui;
+package org.openlca.app.ilcd_network;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.openlca.core.model.descriptors.BaseDescriptor;
 
 public class ExportSetUp {
 
 	private String url;
 	private String user;
 	private String password;
+	private List<BaseDescriptor> exportTupels = new ArrayList<>();
 
 	public String getUser() {
 		return user;
@@ -25,8 +28,6 @@ public class ExportSetUp {
 		this.password = password;
 	}
 
-	private List<ExportTupel> exportTupels = new ArrayList<>();
-
 	public String getUrl() {
 		return url;
 	}
@@ -35,7 +36,7 @@ public class ExportSetUp {
 		this.url = url;
 	}
 
-	public List<ExportTupel> getExportTupels() {
+	public List<BaseDescriptor> getExportTupels() {
 		return exportTupels;
 	}
 

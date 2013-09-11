@@ -1,4 +1,4 @@
-package org.openlca.ilcd.network.rcp.ui;
+package org.openlca.app.ilcd_network;
 
 import java.util.ArrayList;
 import java.util.Iterator;

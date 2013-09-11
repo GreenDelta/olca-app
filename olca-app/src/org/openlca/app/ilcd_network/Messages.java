@@ -1,10 +1,10 @@
-package org.openlca.ilcd.network.rcp.ui;
+package org.openlca.app.ilcd_network;
 
 import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
 
-	private static final String BUNDLE_NAME = "org.openlca.ilcd.network.rcp.ui.messages"; 
+	private static final String BUNDLE_NAME = "org.openlca.app.ilcd_network.messages";
 
 	// ILCD network connection
 	public static String URL;

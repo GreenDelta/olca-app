@@ -1,4 +1,4 @@
-package org.openlca.ilcd.network.rcp.ui;
+package org.openlca.app.ilcd_network;
 
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
@@ -20,15 +20,15 @@ public class NavigationTreeCheck implements ICheckStateListener {
 		Object element = event.getElement();
 		viewer.setGrayed(element, false);
 		if (element instanceof INavigationElement) {
-			INavigationElement naviElement = (INavigationElement) element;
+			INavigationElement<?> naviElement = (INavigationElement<?>) element;
 			updateChildren(naviElement, event.getChecked());
 			updateParent(naviElement);
 		}
 		viewer.getControl().setRedraw(true);
 	}
 
-	private void updateChildren(INavigationElement naviElement, boolean state) {
-		for (final INavigationElement child : naviElement.getChildren(false)) {
+	private void updateChildren(INavigationElement<?> naviElement, boolean state) {
+		for (final INavigationElement<?> child : naviElement.getChildren()) {
 			viewer.setGrayed(child, false);
 			viewer.setChecked(child, state);
 			if (!(child instanceof ModelElement))
@@ -36,14 +36,14 @@ public class NavigationTreeCheck implements ICheckStateListener {
 		}
 	}
 
-	private void updateParent(INavigationElement naviElement) {
-		INavigationElement parent = naviElement.getParent();
+	private void updateParent(INavigationElement<?> naviElement) {
+		INavigationElement<?> parent = naviElement.getParent();
 		if (parent == null)
 			return;
 
 		boolean hasCheckedChilds = false;
 		boolean allChildsChecked = true;
-		for (INavigationElement child : parent.getChildren(false)) {
+		for (INavigationElement<?> child : parent.getChildren()) {
 			boolean isChecked = viewer.getChecked(child);
 			boolean isGrayed = viewer.getGrayed(child);
 			if (isChecked || isGrayed) {

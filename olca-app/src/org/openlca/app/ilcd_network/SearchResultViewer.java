@@ -1,9 +1,9 @@
-package org.openlca.ilcd.network.rcp.ui;
+package org.openlca.app.ilcd_network;
 
-import static org.openlca.ilcd.network.rcp.ui.Messages.Location;
-import static org.openlca.ilcd.network.rcp.ui.Messages.Name;
-import static org.openlca.ilcd.network.rcp.ui.Messages.Time;
-import static org.openlca.ilcd.network.rcp.ui.Messages.Type;
+import static org.openlca.app.ilcd_network.Messages.Location;
+import static org.openlca.app.ilcd_network.Messages.Name;
+import static org.openlca.app.ilcd_network.Messages.Time;
+import static org.openlca.app.ilcd_network.Messages.Type;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.TableViewer;

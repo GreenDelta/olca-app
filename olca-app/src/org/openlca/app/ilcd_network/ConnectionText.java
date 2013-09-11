@@ -1,4 +1,4 @@
-package org.openlca.ilcd.network.rcp.ui;
+package org.openlca.app.ilcd_network;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;

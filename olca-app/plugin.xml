@@ -254,7 +254,7 @@
       </page>
       
       <page
-            class="org.openlca.ilcd.network.rcp.ui.PreferencePage"
+            class="org.openlca.app.ilcd_network.PreferencePage"
             id="preferencepages.ilcdnetwork"
             name="%ilcd.net.preference.page.name">
       </page>
@@ -452,7 +452,7 @@
             class="org.openlca.app.Preferences">
       </initializer>
       <initializer
-            class="org.openlca.ilcd.network.rcp.ui.Preference">
+            class="org.openlca.app.ilcd_network.Preference">
       </initializer>
       <initializer
             class="org.openlca.app.update.UpdatePreference">
@@ -505,7 +505,7 @@
       </category>
       <wizard
             category="import.category.ilcdnetwork"
-            class="org.openlca.ilcd.network.rcp.ui.ImportWizard"
+            class="org.openlca.app.ilcd_network.ImportWizard"
             icon="icons/network16.png"
             id="wizard.import.ilcdnetwork"
             name="%ilcd.net.import.wizard.name">
@@ -602,7 +602,7 @@
       </category>
       <wizard
             category="export.category.ilcdnetwork"
-            class="org.openlca.ilcd.network.rcp.ui.ExportWizard"
+            class="org.openlca.app.ilcd_network.ExportWizard"
             icon="icons/network16.png"
             id="org.openlca.ilcd.network.ExportWizard"
             name="%ilcd.net.export.wizard.name">
