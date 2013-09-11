@@ -47,8 +47,8 @@ class ProcessContributionLabel extends ColumnLabelProvider implements
 
 	@Override
 	public void dispose() {
-		super.dispose();
 		contributionImage.dispose();
+		super.dispose();
 	}
 
 }

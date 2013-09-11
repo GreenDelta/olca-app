@@ -55,8 +55,8 @@ class GroupResultTable {
 
 		@Override
 		public void dispose() {
-			super.dispose();
 			image.dispose();
+			super.dispose();
 		}
 
 		@Override

@@ -8,6 +8,10 @@ import org.eclipse.swt.widgets.Display;
 import org.openlca.app.FaviColor;
 import org.openlca.app.util.Colors;
 
+/**
+ * Generates contribution images for UI items. As this class manages an image
+ * registry you have to call dispose in order to free native resources.
+ */
 public class ContributionImage {
 
 	private ImageRegistry imageRegistry = new ImageRegistry();

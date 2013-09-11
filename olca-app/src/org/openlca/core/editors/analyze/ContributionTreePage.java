@@ -167,12 +167,17 @@ public class ContributionTreePage extends FormPage {
 				Display.getCurrent());
 
 		@Override
+		public void dispose() {
+			image.dispose();
+			super.dispose();
+		}
+
+		@Override
 		public Image getColumnImage(Object element, int columnIndex) {
 			if (!(element instanceof ContributionTreeNode) || element == null)
 				return null;
 			if (columnIndex != 1)
 				return null;
-
 			ContributionTreeNode node = (ContributionTreeNode) element;
 			return image.getForTable(getContribution(node));
 		}

@@ -7,6 +7,7 @@ import org.eclipse.birt.chart.model.attribute.ChartDimension;
 import org.eclipse.birt.chart.model.attribute.IntersectionType;
 import org.eclipse.birt.chart.model.attribute.LegendItemType;
 import org.eclipse.birt.chart.model.attribute.impl.ColorDefinitionImpl;
+import org.eclipse.birt.chart.model.attribute.impl.JavaNumberFormatSpecifierImpl;
 import org.eclipse.birt.chart.model.component.Axis;
 import org.eclipse.birt.chart.model.component.Series;
 import org.eclipse.birt.chart.model.component.impl.SeriesImpl;
@@ -32,8 +33,10 @@ import org.openlca.core.editors.ChartViewer;
 import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
+import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ContributionSet;
+import org.openlca.util.Doubles;
 
 /**
  * A chart that displays the flow or impact results of a set of project
@@ -62,19 +65,51 @@ public class ProjectResultChart extends Composite {
 		chart.getLegend().setItemType(LegendItemType.CATEGORIES_LITERAL);
 		Axis xAxis = xAxis(chart);
 		Axis yAxis = yAxis(chart, xAxis, reference);
+		scale(yAxis, set);
 		createCategorySeries(xAxis, contributions);
 		createBarSeries(yAxis, contributions);
 		viewer.updateChart(chart);
 	}
 
+	private void scale(Axis yAxis, ContributionSet<ProjectVariant> set) {
+		List<Contribution<ProjectVariant>> contributions = set
+				.getContributions();
+		if (contributions.isEmpty())
+			return;
+		double[] vals = new double[contributions.size()];
+		for (int i = 0; i < contributions.size(); i++)
+			vals[i] = contributions.get(i).getAmount();
+		double min = Doubles.min(vals);
+		double max = Doubles.max(vals);
+		if (min == 0 && max == 0)
+			return;
+		double dist = 0;
+		if (max < 0)
+			dist = Math.abs(max);
+		else if (min > 0)
+			dist = max;
+		else
+			dist = max - min; // min is negative
+		yAxis.getScale().setStep(dist / 10);
+		yAxis.getScale().setStepNumber(10);
+		yAxis.setFormatSpecifier(JavaNumberFormatSpecifierImpl
+				.create("#.0###E0"));
+	}
+
 	private Axis yAxis(ChartWithAxes chart, Axis xAxis, BaseDescriptor reference) {
-		String unit = "unit?";
+		String title = "Results";
+		String unit = null;
 		if (reference instanceof FlowDescriptor) {
 			FlowDescriptor flow = (FlowDescriptor) reference;
 			unit = Labels.getRefUnit(flow, Database.getCache());
+		} else if (reference instanceof ImpactCategoryDescriptor) {
+			ImpactCategoryDescriptor impact = (ImpactCategoryDescriptor) reference;
+			unit = impact.getReferenceUnit();
 		}
+		if (unit != null)
+			title += " [" + unit + "]";
 		Axis yAxis = chart.getPrimaryOrthogonalAxis(xAxis);
-		yAxis.getTitle().getCaption().setValue("Results [" + unit + "]");
+		yAxis.getTitle().getCaption().setValue(title);
 		yAxis.getLabel().getCaption().getFont().setSize(10);
 		yAxis.getTitle().setVisible(true);
 		return yAxis;

@@ -192,6 +192,12 @@ public class FlowImpactPage extends FormPage {
 			}
 			return null;
 		}
+
+		@Override
+		public void dispose() {
+			image.dispose();
+			super.dispose();
+		}
 	}
 
 	private class CutOffFilter extends ViewerFilter {

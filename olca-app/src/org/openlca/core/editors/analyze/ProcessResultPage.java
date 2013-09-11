@@ -76,6 +76,12 @@ public class ProcessResultPage extends FormPage {
 	}
 
 	@Override
+	public void dispose() {
+		image.dispose();
+		super.dispose();
+	}
+
+	@Override
 	protected void createFormContent(IManagedForm managedForm) {
 		toolkit = managedForm.getToolkit();
 		ScrolledForm form = UI.formHeader(managedForm, "Process results");
