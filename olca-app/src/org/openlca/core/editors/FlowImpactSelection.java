@@ -16,6 +16,7 @@ import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.AnalysisResult;
+import org.openlca.core.results.ProjectResult;
 
 /**
  * Two combo boxes showing flows and impact categories. The impact categories
@@ -43,6 +44,16 @@ public class FlowImpactSelection {
 		selection.flows = result.getFlowResults().getFlows(cache);
 		if (result.hasImpactResults())
 			selection.impacts = result.getImpactResults().getImpacts(cache);
+		Dispatch dispatch = new Dispatch(selection);
+		return dispatch;
+	}
+
+	public static Dispatch on(ProjectResult result, EntityCache cache) {
+		FlowImpactSelection selection = new FlowImpactSelection(cache);
+		selection.flows = result.getFlows(cache);
+		Collection<ImpactCategoryDescriptor> impacts = result.getImpacts(cache);
+		if (impacts != null && !impacts.isEmpty())
+			selection.impacts = impacts;
 		Dispatch dispatch = new Dispatch(selection);
 		return dispatch;
 	}

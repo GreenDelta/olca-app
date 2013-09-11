@@ -11,11 +11,12 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.ISelectionChangedListener;
-import org.openlca.app.viewers.combo.FlowViewer;
 import org.openlca.core.database.EntityCache;
+import org.openlca.core.editors.FlowImpactSelection;
+import org.openlca.core.editors.FlowImpactSelection.EventHandler;
 import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.descriptors.FlowDescriptor;
+import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.ContributionSet;
 import org.openlca.core.results.ProjectResult;
 
@@ -35,26 +36,23 @@ public class ProjectResultPage extends FormPage {
 		ScrolledForm form = UI.formHeader(managedForm, "Project results");
 		FormToolkit toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
-		FlowViewer viewer = createFlowViewer(body);
+		Composite composite = toolkit.createComposite(body);
+		UI.gridLayout(composite, 2);
+		FlowImpactSelection selector = FlowImpactSelection.on(result, cache)
+				.withEventHandler(new SelectionHandler())
+				.create(composite, toolkit);
 		createChart(body);
 		toolkit.adapt(chart);
-		setResultsFor(viewer.getSelected());
+		initialSelection(selector);
+		form.reflow(true);
 	}
 
-	private FlowViewer createFlowViewer(Composite body) {
-		FlowViewer viewer = new FlowViewer(body, Database.getCache());
+	private void initialSelection(FlowImpactSelection selector) {
 		Set<FlowDescriptor> flowSet = result.getFlows(cache);
-		FlowDescriptor[] flows = flowSet.toArray(new FlowDescriptor[flowSet
-				.size()]);
-		viewer.setInput(flows);
-		viewer.selectFirst();
-		viewer.addSelectionChangedListener(new ISelectionChangedListener<FlowDescriptor>() {
-			@Override
-			public void selectionChanged(FlowDescriptor selection) {
-				setResultsFor(selection);
-			}
-		});
-		return viewer;
+		if (flowSet.isEmpty())
+			return;
+		FlowDescriptor flow = flowSet.iterator().next();
+		selector.selectWithEvent(flow);
 	}
 
 	private void createChart(Composite body) {
@@ -65,10 +63,21 @@ public class ProjectResultPage extends FormPage {
 		gridData.widthHint = 650;
 	}
 
-	private void setResultsFor(FlowDescriptor flow) {
-		ContributionSet<ProjectVariant> contributionSet = result
-				.getContributions(flow);
-		chart.renderChart(flow, contributionSet);
+	private class SelectionHandler implements EventHandler {
+		@Override
+		public void flowSelected(FlowDescriptor flow) {
+			ContributionSet<ProjectVariant> contributionSet = result
+					.getContributions(flow);
+			chart.renderChart(flow, contributionSet);
+		}
+
+		@Override
+		public void impactCategorySelected(
+				ImpactCategoryDescriptor impactCategory) {
+			ContributionSet<ProjectVariant> contributionSet = result
+					.getContributions(impactCategory);
+			chart.renderChart(impactCategory, contributionSet);
+		}
 	}
 
 }
