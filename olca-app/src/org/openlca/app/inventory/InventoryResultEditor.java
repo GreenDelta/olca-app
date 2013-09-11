@@ -11,6 +11,7 @@ import org.openlca.app.App;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.model.descriptors.FlowDescriptor;
+import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.InventoryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +52,8 @@ public class InventoryResultEditor extends FormEditor {
 	protected void addPages() {
 		try {
 			addPage(new InventoryResultPage(this, new InventoryAdapter()));
+			if (result.hasImpactResults())
+				addPage(new ImpactResultPage(this, new ImpactAdapter()));
 		} catch (Exception e) {
 			log.error("failed to add pages", e);
 		}
@@ -94,6 +97,19 @@ public class InventoryResultEditor extends FormEditor {
 		@Override
 		public boolean isInput(FlowDescriptor flow) {
 			return result.getFlowIndex().isInput(flow.getId());
+		}
+	}
+
+	private class ImpactAdapter implements ImpactResultProvider {
+		@Override
+		public double getAmount(ImpactCategoryDescriptor impact) {
+			return result.getImpactResult(impact.getId());
+		}
+
+		@Override
+		public Collection<ImpactCategoryDescriptor> getImpactCategories(
+				EntityCache cache) {
+			return result.getImpactResults().getImpacts(cache);
 		}
 	}
 

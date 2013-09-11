@@ -9,8 +9,6 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ImpactCategoryDao;
-import org.openlca.core.database.MethodDao;
-import org.openlca.core.editors.model.FlowInfo;
 import org.openlca.core.editors.model.LocalisedImpactCategory;
 import org.openlca.core.editors.model.LocalisedImpactFactor;
 import org.openlca.core.editors.model.LocalisedImpactMethod;
@@ -18,6 +16,7 @@ import org.openlca.core.jobs.Status;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
+import org.openlca.io.xls.Excel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,8 +96,7 @@ public class LocalisedMethodImport implements Runnable {
 		String id = Excel.getString(sheet, 2, 2);
 		log.trace("Import impact category {}", id);
 		LocalisedImpactCategory category = new LocalisedImpactCategory();
-		ImpactCategoryDao dao = new ImpactCategoryDao(
-				database);
+		ImpactCategoryDao dao = new ImpactCategoryDao(database);
 		ImpactCategoryDescriptor descriptor = dao.getDescriptor(id);
 		if (descriptor == null)
 			throw new RuntimeException("Unknown impact category " + id);

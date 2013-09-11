@@ -6,14 +6,11 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.HashMap;
 
-import org.openlca.core.database.CategoryPath;
 import org.openlca.core.database.FlowDao;
-import org.openlca.core.math.AllocationMatrix;
-import org.openlca.core.math.FlowIndex;
 import org.openlca.core.math.IMatrix;
-import org.openlca.core.math.InventoryMatrix;
-import org.openlca.core.math.InventoryMatrixBuilder;
-import org.openlca.core.math.ProductIndex;
+import org.openlca.core.matrices.FlowIndex;
+import org.openlca.core.matrices.InventoryMatrix;
+import org.openlca.core.matrices.ProductIndex;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
 import org.slf4j.Logger;

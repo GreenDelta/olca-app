@@ -11,13 +11,13 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.Query;
-import org.openlca.core.editors.model.FlowInfo;
 import org.openlca.core.editors.model.LocalisedImpactCategory;
 import org.openlca.core.editors.model.LocalisedImpactFactor;
 import org.openlca.core.editors.model.LocalisedImpactMethod;
 import org.openlca.core.jobs.Status;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
+import org.openlca.io.xls.Excel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
