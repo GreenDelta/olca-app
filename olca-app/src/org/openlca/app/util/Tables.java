@@ -43,7 +43,7 @@ public class Tables {
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
 		createColumns(table, properties);
-		UI.gridData(table, true, true);
+		UI.gridData(table, true, true).minimumHeight = 150;
 		return viewer;
 	}
 
