@@ -60,7 +60,7 @@
             icon="icons/project_obj.png"
             id="editors.project"
             name="%editors.name.4"
-            contributorClass="org.openlca.app.projects.ProjectActionContributor">
+            contributorClass="org.openlca.app.projects.ProjectEditorActions">
       </editor>
       <editor
             class="org.openlca.app.editors.ProductSystemEditor"
@@ -82,7 +82,8 @@
             class="org.openlca.app.projects.ProjectResultEditor"
             default="false"
             icon="icons/chart.png"
-            name="Project results">
+            name="Project results"
+            contributorClass="org.openlca.app.projects.ProjectResultActions">
       </editor>
       
       <!-- re-add the action contributor

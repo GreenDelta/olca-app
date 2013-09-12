@@ -14,7 +14,7 @@ import org.openlca.core.results.ProjectResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ProjectActionContributor extends EditorActionBarContributor {
+public class ProjectEditorActions extends EditorActionBarContributor {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 
@@ -38,7 +38,7 @@ public class ProjectActionContributor extends EditorActionBarContributor {
 				Database.get());
 		App.run("Calculate project", new Runnable() {
 			public void run() {
-				tryCalculate(calculator, project);
+				result = tryCalculate(calculator, project);
 			}
 		}, new Runnable() {
 			public void run() {
@@ -47,6 +47,7 @@ public class ProjectActionContributor extends EditorActionBarContributor {
 				String key = App.getCache().put(result);
 				Editors.open(new ProjectResultInput(project.getId(), key),
 						ProjectResultEditor.ID);
+				result = null;
 			}
 		});
 	}
@@ -66,12 +67,13 @@ public class ProjectActionContributor extends EditorActionBarContributor {
 		return project;
 	}
 
-	private void tryCalculate(ProjectCalculator calculator, Project project) {
+	private ProjectResult tryCalculate(ProjectCalculator calculator,
+			Project project) {
 		try {
-			result = calculator.solve(project);
+			return calculator.solve(project);
 		} catch (Exception e) {
 			log.error("Calculation of project failed");
-			result = null;
+			return null;
 		}
 	}
 
