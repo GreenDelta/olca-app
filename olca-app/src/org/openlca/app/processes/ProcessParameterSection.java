@@ -14,9 +14,11 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.Event;
 import org.openlca.app.Messages;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Dialog;
+import org.openlca.app.util.Error;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
@@ -26,6 +28,10 @@ import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterScope;
 import org.openlca.core.model.Process;
 import org.openlca.util.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.eventbus.Subscribe;
 
 /**
  * A section with a table for parameters in processes. It is possible to create
@@ -35,6 +41,7 @@ import org.openlca.util.Strings;
  */
 class ProcessParameterSection {
 
+	private Logger log = LoggerFactory.getLogger(getClass());
 	private TableViewer viewer;
 
 	private final String NAME = Messages.Name;
@@ -60,6 +67,12 @@ class ProcessParameterSection {
 		return table;
 	}
 
+	@Subscribe
+	public void handleEvaluation(Event event) {
+		if (event.match(editor.FORMULAS_EVALUATED))
+			viewer.refresh();
+	}
+
 	private ProcessParameterSection(Composite parent, ProcessEditor editor,
 			boolean forInputParams) {
 		this.editor = editor;
@@ -73,6 +86,7 @@ class ProcessParameterSection {
 		createComponents(parent, props);
 		createCellModifiers();
 		fillInitialInput();
+		editor.getEventBus().register(this);
 	}
 
 	private void createComponents(Composite body, String[] properties) {
@@ -107,8 +121,7 @@ class ProcessParameterSection {
 	}
 
 	private void createCellModifiers() {
-		ModifySupport<Parameter> modifySupport = new ModifySupport<>(
-				viewer);
+		ModifySupport<Parameter> modifySupport = new ModifySupport<>(viewer);
 		modifySupport.bind(NAME, new NameModifier());
 		modifySupport.bind(DESCRIPTION, new DescriptionModifier());
 		if (forInputParameters)
@@ -148,7 +161,7 @@ class ProcessParameterSection {
 		}
 		process.getParameters().add(parameter);
 		setInput();
-		editor.setDirty(true);
+		fireChange();
 	}
 
 	private void removeParameter() {
@@ -157,7 +170,12 @@ class ProcessParameterSection {
 			process.getParameters().remove(parameter);
 		}
 		setInput();
+		fireChange();
+	}
+
+	private void fireChange() {
 		editor.setDirty(true);
+		editor.postEvent(editor.PARAMETER_CHANGE, this);
 	}
 
 	private class ParameterLabelProvider extends LabelProvider implements
@@ -203,7 +221,7 @@ class ProcessParameterSection {
 		protected void setText(Parameter element, String text) {
 			if (!Objects.equals(text, element.getName())) {
 				element.setName(text);
-				editor.setDirty(true);
+				fireChange();
 			}
 		}
 	}
@@ -219,7 +237,7 @@ class ProcessParameterSection {
 			try {
 				double d = Double.parseDouble(text);
 				param.setValue(d);
-				editor.setDirty(true);
+				fireChange();
 			} catch (Exception e) {
 				Dialog.showError(viewer.getTable().getShell(), text
 						+ " is not a valid number. ");
@@ -235,9 +253,15 @@ class ProcessParameterSection {
 
 		@Override
 		protected void setText(Parameter param, String formula) {
-			// TODO: evaluate value
-			param.setFormula(formula);
-			editor.setDirty(true);
+			try {
+				double val = editor.eval(formula);
+				param.setFormula(formula);
+				param.setValue(val);
+				fireChange();
+			} catch (Exception e) {
+				Error.showBox("Invalid formula",
+						Strings.cut(e.getMessage(), 75));
+			}
 		}
 	}
 
@@ -251,7 +275,7 @@ class ProcessParameterSection {
 		protected void setText(Parameter param, String text) {
 			if (!Objects.equals(text, param.getDescription())) {
 				param.setDescription(text);
-				editor.setDirty(true);
+				fireChange();
 			}
 		}
 	}
