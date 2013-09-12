@@ -14,6 +14,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.Event;
 import org.openlca.app.Messages;
 import org.openlca.app.components.IModelDropHandler;
 import org.openlca.app.components.ObjectDialog;
@@ -21,6 +22,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.CategoryPath;
+import org.openlca.app.util.Error;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
@@ -36,6 +38,8 @@ import org.openlca.core.model.Process;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
+
+import com.google.common.eventbus.Subscribe;
 
 class ExchangeTable {
 
@@ -67,6 +71,13 @@ class ExchangeTable {
 		this.forInputs = forInputs;
 		this.editor = editor;
 		this.process = editor.getModel();
+		editor.getEventBus().register(this);
+	}
+
+	@Subscribe
+	public void handleEvaluation(Event event) {
+		if (event.match(editor.FORMULAS_EVALUATED))
+			viewer.refresh();
 	}
 
 	private void render(Section section, FormToolkit toolkit) {
@@ -89,7 +100,7 @@ class ExchangeTable {
 		viewer.setInput(process.getExchanges()); // TODO: sort the exchanges
 	}
 
-	private void bindActions(Section section, TableViewer viewer) {
+	private void bindActions(Section section, final TableViewer viewer) {
 		Action add = Actions.onAdd(new Runnable() {
 			public void run() {
 				onAdd();
@@ -100,7 +111,26 @@ class ExchangeTable {
 				onRemove();
 			}
 		});
-		Actions.bind(section, add, remove);
+		Action formulaSwitch = new Action() {
+			{
+				setImageDescriptor(ImageType.NUMBER_ICON.getDescriptor());
+				setText(Messages.ShowValues);
+			}
+
+			@Override
+			public void run() {
+				showFormulas = !showFormulas;
+				if (showFormulas) {
+					setImageDescriptor(ImageType.NUMBER_ICON.getDescriptor());
+					setText(Messages.ValueViewMode);
+				} else {
+					setImageDescriptor(ImageType.FORMULA_ICON.getDescriptor());
+					setText(Messages.FormulaViewMode);
+				}
+				viewer.refresh();
+			}
+		};
+		Actions.bind(section, add, remove, formulaSwitch);
 		Actions.bind(viewer, add, remove);
 	}
 
@@ -149,13 +179,6 @@ class ExchangeTable {
 		editor.setDirty(true);
 	}
 
-	private String getAmountText(Exchange exchange) {
-		if (!showFormulas || exchange.getAmountFormula() == null)
-			return Double.toString(exchange.getAmountValue());
-		else
-			return exchange.getAmountFormula();
-	}
-
 	private class ExchangeLabelProvider extends LabelProvider implements
 			ITableLabelProvider {
 
@@ -201,6 +224,13 @@ class ExchangeTable {
 					return "-";
 			}
 			return null;
+		}
+
+		private String getAmountText(Exchange exchange) {
+			if (!showFormulas || exchange.getAmountFormula() == null)
+				return Double.toString(exchange.getAmountValue());
+			else
+				return exchange.getAmountFormula();
 		}
 	}
 
@@ -267,20 +297,28 @@ class ExchangeTable {
 
 		@Override
 		protected String getText(Exchange element) {
-			return getAmountText(element);
+			if (element.getAmountFormula() == null)
+				return Double.toString(element.getAmountValue());
+			return element.getAmountFormula();
 		}
 
 		@Override
 		protected void setText(Exchange exchange, String text) {
-			// TODO: formula evaluation
 			try {
 				double value = Double.parseDouble(text);
 				exchange.setAmountFormula(null);
 				exchange.setAmountValue(value);
 				fireChange();
 			} catch (NumberFormatException e) {
-				exchange.setAmountFormula(text);
-				fireChange();
+				try {
+					double val = editor.eval(text);
+					exchange.setAmountFormula(text);
+					exchange.setAmountValue(val);
+					fireChange();
+				} catch (Exception ex) {
+					Error.showBox("Invalid formula", text
+							+ " is an invalid formula");
+				}
 			}
 		}
 	}
