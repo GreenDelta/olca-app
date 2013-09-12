@@ -73,7 +73,7 @@ public class InfoSection {
 		}
 	}
 
-	Composite getContainer() {
+	public Composite getContainer() {
 		return container;
 	}
 

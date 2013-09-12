@@ -1,4 +1,4 @@
-package org.openlca.app.editors;
+package org.openlca.app.processes;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -15,6 +15,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
+import org.openlca.app.editors.ModelPage;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.IDatabase;
