@@ -90,7 +90,7 @@
          contributorClass="org.openlca.core.editors.analyze.AnalyzeActionContributor"
       -->
       <editor
-            class="org.openlca.core.editors.analyze.AnalyzeEditor"
+            class="org.openlca.app.analysis.AnalyzeEditor"
             default="false"
             icon="icons/analyze.gif"
             id="editors.analyze"
