@@ -53,6 +53,8 @@ class ExchangeTable {
 	private final String FLOW_PROPERTY = Messages.FlowProperty;
 	private final String UNIT = Messages.Unit;
 	private final String AMOUNT = Messages.Amount;
+	private final String PEDIGREE = Messages.PedigreeUncertainty;
+
 	private TableViewer viewer;
 
 	public static void forInputs(Section section, FormToolkit toolkit,
@@ -89,6 +91,7 @@ class ExchangeTable {
 		modifySupport.bind(FLOW_PROPERTY, new FlowPropertyModifier());
 		modifySupport.bind(UNIT, new UnitModifier());
 		modifySupport.bind(AMOUNT, new AmountModifier());
+		modifySupport.bind(PEDIGREE, new PedigreeCellEditor(viewer, editor));
 		Tables.addDropSupport(viewer, new IModelDropHandler() {
 			@Override
 			public void handleDrop(List<BaseDescriptor> droppedModels) {
@@ -136,9 +139,11 @@ class ExchangeTable {
 
 	private String[] getColumns() {
 		if (forInputs)
-			return new String[] { FLOW, CATEGORY, FLOW_PROPERTY, UNIT, AMOUNT };
+			return new String[] { FLOW, CATEGORY, FLOW_PROPERTY, UNIT, AMOUNT,
+					PEDIGREE };
 		else
-			return new String[] { FLOW, CATEGORY, FLOW_PROPERTY, UNIT, AMOUNT };
+			return new String[] { FLOW, CATEGORY, FLOW_PROPERTY, UNIT, AMOUNT,
+					PEDIGREE };
 	}
 
 	private void onAdd() {
@@ -218,10 +223,12 @@ class ExchangeTable {
 			case 4:
 				return getAmountText(exchange);
 			case 5:
-				if (exchange.getDefaultProviderId() != 0)
-					return Long.toString(exchange.getDefaultProviderId());
-				else
-					return "-";
+				return exchange.getPedigreeUncertainty();
+				// case 5:
+				// if (exchange.getDefaultProviderId() != 0)
+				// return Long.toString(exchange.getDefaultProviderId());
+				// else
+				// return "-";
 			}
 			return null;
 		}

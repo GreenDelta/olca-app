@@ -1,58 +1,53 @@
 package org.openlca.app.processes;
 
-import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Composite;
+import java.util.Objects;
+
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.ui.forms.events.HyperlinkAdapter;
-import org.eclipse.ui.forms.events.HyperlinkEvent;
-import org.eclipse.ui.forms.widgets.Hyperlink;
+import org.openlca.app.components.DialogCellEditor;
 import org.openlca.core.model.Exchange;
 
-class PedigreeCellEditor extends CellEditor {
+class PedigreeCellEditor extends DialogCellEditor {
 
+	private ProcessEditor editor;
+	private TableViewer viewer;
 	private Exchange exchange;
+	private String oldEntryVal;
+	private Double oldBaseVal;
 
-	public PedigreeCellEditor(Composite parent) {
-		super(parent);
-	}
-
-	@Override
-	protected Control createControl(final Composite parent) {
-		Hyperlink hyperlink = new Hyperlink(parent, SWT.NONE);
-		hyperlink.setText("Click to change");
-		hyperlink.setBackground(parent.getShell().getDisplay()
-				.getSystemColor(SWT.COLOR_WHITE));
-		hyperlink.setForeground(parent.getShell().getDisplay()
-				.getSystemColor(SWT.COLOR_BLUE));
-		hyperlink.addHyperlinkListener(new HyperlinkAdapter() {
-
-			@Override
-			public void linkActivated(HyperlinkEvent e) {
-				PedigreeShell shell = new PedigreeShell(parent.getShell(),
-						exchange);
-				shell.open();
-			}
-
-		});
-		return hyperlink;
-	}
-
-	@Override
-	protected Object doGetValue() {
-		return exchange;
-	}
-
-	@Override
-	protected void doSetFocus() {
+	public PedigreeCellEditor(TableViewer viewer, ProcessEditor editor) {
+		super(viewer.getTable());
+		this.editor = editor;
 	}
 
 	@Override
 	protected void doSetValue(Object value) {
-		if (value instanceof Exchange)
+		if (value instanceof Exchange) {
 			exchange = (Exchange) value;
-		else
+			oldEntryVal = exchange.getPedigreeUncertainty();
+			oldBaseVal = exchange.getBaseUncertainty();
+		} else {
 			exchange = null;
+			oldEntryVal = null;
+			oldBaseVal = null;
+		}
 	}
 
+	@Override
+	protected Object openDialogBox(Control cellEditorWindow) {
+		PedigreeShell shell = new PedigreeShell(cellEditorWindow.getShell(),
+				exchange);
+		shell.open();
+		if (valuesChanged()) {
+			editor.setDirty(true);
+			viewer.refresh(true);
+			return exchange;
+		}
+		return null;
+	}
+
+	private boolean valuesChanged() {
+		return !Objects.equals(oldEntryVal, exchange.getPedigreeUncertainty())
+				|| !Objects.equals(oldBaseVal, exchange.getBaseUncertainty());
+	}
 }
