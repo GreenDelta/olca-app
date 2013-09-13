@@ -22,7 +22,7 @@
  * Michael Srocka <srocka@greendeltatc.com> (original author)
  */
 
-package org.openlca.core.editors.charts;
+package org.openlca.app.components.charts;
 
 import org.eclipse.birt.chart.model.attribute.ColorDefinition;
 import org.eclipse.birt.chart.model.attribute.impl.ColorDefinitionImpl;

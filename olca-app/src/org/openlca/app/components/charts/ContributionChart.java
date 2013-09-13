@@ -1,4 +1,4 @@
-package org.openlca.core.editors.charts;
+package org.openlca.app.components.charts;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,10 +20,10 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.openlca.app.FaviColor;
+import org.openlca.app.components.ContributionItem;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
-import org.openlca.core.editors.ContributionItem;
 
 /**
  * A pie chart for showing a set of result contributions.

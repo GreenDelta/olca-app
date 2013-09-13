@@ -1,4 +1,4 @@
-package org.openlca.core.editors;
+package org.openlca.app.components;
 
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.GC;

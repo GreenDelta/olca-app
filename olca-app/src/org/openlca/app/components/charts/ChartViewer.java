@@ -1,15 +1,4 @@
-/***********************************************************************
- * Copyright (c) 2004, 2007 Actuate Corporation.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- * Actuate Corporation - initial API and implementation
- ***********************************************************************/
-
-package org.openlca.core.editors;
+package org.openlca.app.components.charts;
 
 import java.io.File;
 
@@ -57,10 +46,7 @@ import org.slf4j.LoggerFactory;
 import com.ibm.icu.util.ULocale;
 
 /**
- * A SWT Composite for drawing/displaying a {@link Chart}
- * 
- * @author Sebastian Greve
- * 
+ * A SWT Composite for drawing/displaying a BIRT {@link Chart}
  */
 public class ChartViewer extends Composite implements PaintListener,
 		IUpdateNotifier, IActionRenderer {
@@ -216,12 +202,6 @@ public class ChartViewer extends Composite implements PaintListener,
 		update();
 	}
 
-	/**
-	 * Saves the drawn image to file (therefore opens a FileDialog)
-	 * 
-	 * @author Sebastian Greve
-	 * 
-	 */
 	private class SaveImageAction extends Action {
 
 		@Override

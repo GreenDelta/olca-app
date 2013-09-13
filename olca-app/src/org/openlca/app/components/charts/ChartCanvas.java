@@ -1,4 +1,4 @@
-package org.openlca.core.editors.charts;
+package org.openlca.app.components.charts;
 
 import org.eclipse.birt.chart.device.IDeviceRenderer;
 import org.eclipse.birt.chart.exception.ChartException;

@@ -1,4 +1,4 @@
-package org.openlca.core.editors.charts;
+package org.openlca.app.components.charts;
 
 import java.util.Collections;
 import java.util.List;

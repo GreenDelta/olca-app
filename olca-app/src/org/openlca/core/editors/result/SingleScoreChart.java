@@ -42,7 +42,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.Messages;
-import org.openlca.core.editors.ChartViewer;
+import org.openlca.app.components.charts.ChartViewer;
 import org.openlca.core.model.results.LCIACategoryResult;
 
 /**

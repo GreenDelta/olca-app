@@ -13,6 +13,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
+import org.openlca.app.components.ContributionItem;
+import org.openlca.app.components.charts.ContributionChart;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
@@ -20,8 +22,6 @@ import org.openlca.app.viewers.AbstractViewer;
 import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.FlowViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
-import org.openlca.core.editors.ContributionItem;
-import org.openlca.core.editors.charts.ContributionChart;
 import org.openlca.core.editors.io.ImageExportAction;
 
 /**

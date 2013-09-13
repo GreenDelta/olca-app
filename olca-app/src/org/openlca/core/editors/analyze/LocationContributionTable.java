@@ -13,10 +13,10 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.openlca.app.Messages;
+import org.openlca.app.components.ContributionImage;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
-import org.openlca.core.editors.ContributionImage;
 import org.openlca.core.model.Location;
 import org.openlca.core.results.Contribution;
 

@@ -1,4 +1,4 @@
-package org.openlca.core.editors;
+package org.openlca.app.components;
 
 import java.util.List;
 
@@ -6,20 +6,19 @@ import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.openlca.app.Messages;
-import org.openlca.app.components.AutoCompleteTextCellEditor;
 import org.openlca.core.model.Parameter;
 
 /**
- * Text cell editor for editing formulas of a parameter with content assistance
+ * Text cell editor for editing formulas with content assistance.
  */
 public class FormulaTextCellEditor extends AutoCompleteTextCellEditor {
 
 	private List<Parameter> parameters;
 
 	public FormulaTextCellEditor(TableViewer viewer, int column,
-			List<Parameter> objectParameters) {
+			List<Parameter> parameters) {
 		super(viewer, column, Messages.SelectParameter);
-		this.parameters = objectParameters;
+		this.parameters = parameters;
 	}
 
 	public void updateParameters(List<Parameter> parameters) {
@@ -34,24 +33,16 @@ public class FormulaTextCellEditor extends AutoCompleteTextCellEditor {
 	@Override
 	protected ILabelProvider getLabelProvider() {
 		return new LabelProvider() {
-
 			@Override
-			public String getText(final Object element) {
-				final Parameter parameter = (Parameter) element;
-				String text = parameter.getName() + " - "
-						+ parameter.getExpression().getValue();
-				if (parameter.getDescription() != null) {
-					text += " - ";
-					if (parameter.getDescription().length() > 75) {
-						text += parameter.getDescription().substring(0, 75)
-								+ "...";
-					} else {
-						text += parameter.getDescription();
-					}
-				}
+			public String getText(Object element) {
+				if (!(element instanceof Parameter))
+					return null;
+				Parameter parameter = (Parameter) element;
+				String text = parameter.getName() + " = "
+						+ parameter.getValue();
+				// TODO: parameter unit if available
 				return text;
 			}
-
 		};
 	}
 
