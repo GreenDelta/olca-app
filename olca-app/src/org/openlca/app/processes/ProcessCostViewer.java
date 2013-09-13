@@ -7,15 +7,12 @@ import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Item;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.util.Tables;
-import org.openlca.core.model.ProductCostEntry;
+import org.openlca.core.model.ProcessCostEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,25 +38,10 @@ class ProcessCostViewer {
 	}
 
 	public void render(FormToolkit toolkit, Composite parent) {
-		viewer = new TableViewer(parent, SWT.BORDER | SWT.FULL_SELECTION
-				| SWT.MULTI);
-		Table table = viewer.getTable();
-		toolkit.adapt(table);
-		toolkit.paintBordersFor(parent);
-		table.setLinesVisible(true);
-		table.setHeaderVisible(true);
-		addColumns(table);
+		viewer = Tables.createViewer(parent, new String[] { COST_CATEGORY,
+				AMOUNT, FIX });
+		Tables.bindColumnWidths(viewer, 0.5, 0.4, 0.1);
 		addEditing();
-	}
-
-	private void addColumns(Table table) {
-		String[] props = { COST_CATEGORY, AMOUNT, FIX };
-		viewer.setColumnProperties(props);
-		for (String prop : props) {
-			TableColumn col = new TableColumn(table, SWT.NONE);
-			col.setText(prop);
-		}
-		Tables.bindColumnWidths(table, 0.5, 0.4, 0.1);
 	}
 
 	private void addEditing() {
@@ -75,7 +57,7 @@ class ProcessCostViewer {
 
 		@Override
 		public boolean canModify(Object obj, String property) {
-			if (!(obj instanceof ProductCostEntry))
+			if (!(obj instanceof ProcessCostEntry))
 				return false;
 			if (AMOUNT.equals(property))
 				return true;
@@ -84,9 +66,9 @@ class ProcessCostViewer {
 
 		@Override
 		public Object getValue(Object obj, String property) {
-			if (!(obj instanceof ProductCostEntry) || !AMOUNT.equals(property))
+			if (!(obj instanceof ProcessCostEntry) || !AMOUNT.equals(property))
 				return null;
-			ProductCostEntry entry = (ProductCostEntry) obj;
+			ProcessCostEntry entry = (ProcessCostEntry) obj;
 			return Double.toString(entry.getAmount());
 		}
 
@@ -94,15 +76,15 @@ class ProcessCostViewer {
 		public void modify(Object element, String property, Object val) {
 			if (element instanceof Item)
 				element = ((Item) element).getData();
-			if (!(element instanceof ProductCostEntry)
+			if (!(element instanceof ProcessCostEntry)
 					|| !AMOUNT.equals(property) || val == null)
 				return;
-			ProductCostEntry entry = (ProductCostEntry) element;
+			ProcessCostEntry entry = (ProcessCostEntry) element;
 			try {
 				Double v = Double.parseDouble(val.toString());
 				entry.setAmount(v);
 				viewer.refresh();
-				editor.fireChange();
+				editor.setDirty(true);
 			} catch (Exception e) {
 				log.warn("Number parse error for " + val, e);
 			}
@@ -119,9 +101,9 @@ class ProcessCostViewer {
 
 		@Override
 		public String getColumnText(Object element, int column) {
-			if (!(element instanceof ProductCostEntry))
+			if (!(element instanceof ProcessCostEntry))
 				return null;
-			ProductCostEntry entry = (ProductCostEntry) element;
+			ProcessCostEntry entry = (ProcessCostEntry) element;
 			switch (column) {
 			case 0:
 				return costCategory(entry);
@@ -133,13 +115,13 @@ class ProcessCostViewer {
 			return null;
 		}
 
-		private boolean isFix(ProductCostEntry entry) {
+		private boolean isFix(ProcessCostEntry entry) {
 			if (entry.getCostCategory() == null)
 				return false;
 			return entry.getCostCategory().isFix();
 		}
 
-		private String costCategory(ProductCostEntry entry) {
+		private String costCategory(ProcessCostEntry entry) {
 			if (entry.getCostCategory() == null)
 				return null;
 			return entry.getCostCategory().getName();

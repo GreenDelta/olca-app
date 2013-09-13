@@ -2,7 +2,9 @@ package org.openlca.app.processes;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.TableViewer;
@@ -15,82 +17,59 @@ import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
-import org.openlca.core.database.IDatabase;
-import org.openlca.core.database.ProductCostEntryDao;
-import org.openlca.core.editors.IEditorComponent;
 import org.openlca.core.model.Exchange;
-import org.openlca.core.model.ProductCostEntry;
+import org.openlca.core.model.Process;
+import org.openlca.core.model.ProcessCostEntry;
+import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class ProcessCostSection implements IEditorComponent {
+class ProcessCostSection {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 
 	private ProcessEditor editor;
+	private Process process;
 	private Exchange product;
-	private IDatabase database;
-	private List<ProductCostEntry> entries;
-	private List<ProductCostEntry> removals = new ArrayList<>();
+	private List<ProcessCostEntry> entries;
 	private TableViewer viewer;
 
-	public ProcessCostSection(Exchange product, IDatabase database,
-			ProcessEditor editor) {
+	public ProcessCostSection(Exchange product, ProcessEditor editor) {
+		this.process = editor.getModel();
 		this.product = product;
-		this.database = database;
-		this.entries = loadEntries(product, database);
+		this.entries = loadEntries(product);
 		this.editor = editor;
-		editor.registerComponent(this);
 	}
 
-	private List<ProductCostEntry> loadEntries(Exchange product,
-			IDatabase database) {
-		try {
-			ProductCostEntryDao dao = new ProductCostEntryDao(
-					database);
-			return dao.getAllForProduct(product.getId());
-		} catch (Exception e) {
-			log.error("Could not load cost entries", e);
-			return Collections.emptyList();
+	private List<ProcessCostEntry> loadEntries(Exchange product) {
+		List<ProcessCostEntry> entries = new ArrayList<>();
+		for (ProcessCostEntry entry : process.getCostEntries()) {
+			if (Objects.equals(entry.getExchange(), product))
+				entries.add(entry);
 		}
+		Collections.sort(entries, new Comparator<ProcessCostEntry>() {
+			@Override
+			public int compare(ProcessCostEntry o1, ProcessCostEntry o2) {
+				if (o1.getCostCategory() == null
+						|| o2.getCostCategory() == null)
+					return 0;
+				return Strings.compare(o1.getCostCategory().getName(), o2
+						.getCostCategory().getName());
+			}
+		});
+		return entries;
 	}
 
 	public void render(FormToolkit toolkit, Composite parent) {
 		Section section = UI.section(parent, toolkit, product.getFlow()
 				.getName());
+		UI.gridData(section, true, true);
 		Actions.bind(section, new AddAction(), new RemoveAction());
 		Composite client = UI.sectionClient(section, toolkit);
 		ProcessCostViewer costViewer = new ProcessCostViewer(editor);
 		costViewer.render(toolkit, client);
 		viewer = costViewer.getTableViewer();
-		UI.gridData(viewer.getTable(), true, true);
 		viewer.setInput(entries);
-	}
-
-	@Override
-	public void onSaved() {
-		ProductCostEntryDao dao = new ProductCostEntryDao(
-				database);
-		try {
-			for (ProductCostEntry entry : entries) {
-				if (!dao.contains(entry.getId()))
-					dao.insert(entry);
-				else
-					dao.update(entry);
-			}
-			for (ProductCostEntry removal : removals)
-				if (dao.contains(removal.getId()))
-					dao.delete(removal);
-			removals.clear();
-		} catch (Exception e) {
-			log.error("Failed to save cost changes", e);
-		}
-	}
-
-	@Override
-	public void onChange() {
-		// TODO: dispose this section and delete all entries when the product
-		// was removed
 	}
 
 	private class AddAction extends Action {
@@ -104,14 +83,14 @@ class ProcessCostSection implements IEditorComponent {
 		public void run() {
 			Shell shell = viewer.getTable().getShell();
 			ProcessCostEntryDialog dialog = new ProcessCostEntryDialog(shell,
-					database, entries);
+					entries);
 			int code = dialog.open();
 			if (code == Window.OK) {
-				ProductCostEntry newEntry = dialog.getCostEntry();
-				newEntry.setExchangeId(product.getId());
-				newEntry.setProcessId(editor.getModelComponent().getId());
+				ProcessCostEntry newEntry = dialog.getCostEntry();
+				newEntry.setExchange(product);
+				process.getCostEntries().add(newEntry);
 				entries.add(newEntry);
-				editor.fireChange();
+				editor.setDirty(true);
 				viewer.setInput(entries);
 			}
 		}
@@ -126,11 +105,11 @@ class ProcessCostSection implements IEditorComponent {
 
 		@Override
 		public void run() {
-			ProductCostEntry e = Viewers.getFirstSelected(viewer);
+			ProcessCostEntry e = Viewers.getFirstSelected(viewer);
 			if (e != null) {
 				entries.remove(e);
-				removals.add(e);
-				editor.fireChange();
+				process.getCostEntries().remove(e);
+				editor.setDirty(true);
 				viewer.setInput(entries);
 			}
 		}

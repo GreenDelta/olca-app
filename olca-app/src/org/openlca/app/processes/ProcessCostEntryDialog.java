@@ -23,13 +23,15 @@ import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
+import org.openlca.app.db.Database;
 import org.openlca.app.editors.DataBinding;
+import org.openlca.app.editors.DataBinding.TextBindType;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.CostCategory;
-import org.openlca.core.model.ProductCostEntry;
+import org.openlca.core.model.ProcessCostEntry;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,25 +42,24 @@ class ProcessCostEntryDialog extends Dialog {
 	private FormToolkit toolkit;
 
 	private Logger log = LoggerFactory.getLogger(getClass());
-	private IDatabase database;
-	private List<ProductCostEntry> existingEntries;
+	private List<ProcessCostEntry> existingEntries;
 	private CostCategory[] comboItems;
 
+	private IDatabase database = Database.get();
 	private Combo combo;
 	private Text text;
 	private Button fix;
 	private boolean createNew = false;
-	private ProductCostEntry newEntry;
+	private ProcessCostEntry newEntry;
 
 	private Label label;
 
-	public ProcessCostEntryDialog(Shell parentShell, IDatabase database,
-			List<ProductCostEntry> existingEntries) {
+	public ProcessCostEntryDialog(Shell parentShell,
+			List<ProcessCostEntry> existingEntries) {
 		super(parentShell);
 		toolkit = new FormToolkit(parentShell.getDisplay());
-		this.database = database;
 		this.existingEntries = existingEntries;
-		newEntry = new ProductCostEntry();
+		newEntry = new ProcessCostEntry();
 	}
 
 	@Override
@@ -113,7 +114,7 @@ class ProcessCostEntryDialog extends Dialog {
 		}
 	}
 
-	public ProductCostEntry getCostEntry() {
+	public ProcessCostEntry getCostEntry() {
 		return newEntry;
 	}
 
@@ -171,7 +172,8 @@ class ProcessCostEntryDialog extends Dialog {
 		fix.setEnabled(false);
 		fix.setSelection(combo.getItemCount() > 0 ? comboItems[0].isFix()
 				: false);
-		new DataBinding().onDouble(newEntry, "amount", amountText);
+		new DataBinding().on(newEntry, "amount", TextBindType.DOUBLE,
+				amountText);
 	}
 
 	private Combo createCombo(Composite stack) {
@@ -232,7 +234,7 @@ class ProcessCostEntryDialog extends Dialog {
 	}
 
 	private boolean entryExists(CostCategory category) {
-		for (ProductCostEntry entry : existingEntries) {
+		for (ProcessCostEntry entry : existingEntries) {
 			if (category.equals(entry.getCostCategory()))
 				return true;
 		}

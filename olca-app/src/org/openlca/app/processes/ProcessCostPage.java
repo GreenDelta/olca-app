@@ -9,7 +9,6 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.openlca.app.db.Database;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
@@ -23,7 +22,7 @@ public class ProcessCostPage extends FormPage {
 
 	public ProcessCostPage(ProcessEditor editor) {
 		super(editor, "process.CostPage", "Costs");
-		process = (Process) editor.getModelComponent();
+		process = (Process) editor.getModel();
 		this.editor = editor;
 	}
 
@@ -36,13 +35,10 @@ public class ProcessCostPage extends FormPage {
 		toolkit.decorateFormHeading(form.getForm());
 		form.setText("Process costs");
 		Composite body = UI.formBody(form, toolkit);
-
 		for (Exchange e : getOutputProducts()) {
-			ProcessCostSection section = new ProcessCostSection(e,
-					Database.get(), editor);
+			ProcessCostSection section = new ProcessCostSection(e, editor);
 			section.render(toolkit, body);
 		}
-
 		form.reflow(true);
 	}
 
