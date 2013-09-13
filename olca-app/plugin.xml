@@ -283,6 +283,16 @@
    
     <extension
          point="org.eclipse.ui.menus">
+         <menuContribution
+               locationURI="toolbar:org.eclipse.ui.trim.command2">
+               <toolbar
+                     id="olca-app.search.toolbar">
+                     <control
+                     	class="org.openlca.app.SearchText"
+                     	id="org.openlca.app.SearchText">
+               		 </control>
+               </toolbar>
+         </menuContribution>
       <menuContribution
             locationURI="menu:org.eclipse.ui.main.menu?before=help">
          <menu
