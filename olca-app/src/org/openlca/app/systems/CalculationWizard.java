@@ -1,4 +1,4 @@
-package org.openlca.app.editors.actions;
+package org.openlca.app.systems;
 
 import java.lang.reflect.InvocationTargetException;
 

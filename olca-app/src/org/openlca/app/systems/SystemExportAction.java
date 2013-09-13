@@ -7,28 +7,25 @@
  * Contributors: GreenDeltaTC - initial API and implementation
  * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
  ******************************************************************************/
-package org.openlca.core.editors.productsystem;
+package org.openlca.app.systems;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.openlca.app.Messages;
 import org.openlca.app.resources.ImageType;
-import org.openlca.app.util.UI;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.editors.io.ui.MatrixExportShell;
 import org.openlca.core.model.ProductSystem;
 
 /**
  * Opens the matrix export dialog.
  */
-public class MatrixExportAction extends Action {
+public class SystemExportAction extends Action {
 
 	private ProductSystem productSystem;
 	private IDatabase database;
 
 	@Override
 	public ImageDescriptor getImageDescriptor() {
-		return ImageType.MATRIX_ICON.getDescriptor();
+		return ImageType.EXCEL_ICON.getDescriptor();
 	}
 
 	public void setExportData(ProductSystem productSystem, IDatabase database) {
@@ -38,14 +35,11 @@ public class MatrixExportAction extends Action {
 
 	@Override
 	public String getText() {
-		return Messages.Systems_MatrixExportAction_Text;
+		return "Excel export";
 	}
 
 	@Override
 	public void run() {
-		MatrixExportShell shell = new MatrixExportShell(UI.shell(),
-				productSystem, database);
-		shell.open();
+		new SystemExportDialog(productSystem, database).open();
 	}
-
 }

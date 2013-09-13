@@ -63,12 +63,12 @@
             contributorClass="org.openlca.app.projects.ProjectEditorActions">
       </editor>
       <editor
-            class="org.openlca.app.editors.ProductSystemEditor"
+            class="org.openlca.app.systems.ProductSystemEditor"
             default="false"
             icon="icons/model.gif"
             id="editors.productsystem"
             name="%editors.name.3" 
-            contributorClass="org.openlca.app.editors.actions.ProductSystemActionContributor">
+            contributorClass="org.openlca.app.systems.ProductSystemActions">
       </editor>
       <editor
             class="org.openlca.app.inventory.InventoryResultEditor"

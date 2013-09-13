@@ -4,9 +4,9 @@ import java.io.File;
 
 import org.eclipse.jface.action.Action;
 import org.openlca.app.App;
+import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
 import org.openlca.app.resources.ImageType;
-import org.openlca.core.editors.io.ui.FileChooser;
 import org.openlca.core.results.SimulationResult;
 import org.openlca.io.xls.results.SimulationResultExport;
 import org.slf4j.Logger;

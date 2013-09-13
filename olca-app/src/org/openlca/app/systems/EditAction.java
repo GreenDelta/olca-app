@@ -1,8 +1,7 @@
-package org.openlca.app.editors.actions;
+package org.openlca.app.systems;
 
 import org.eclipse.jface.action.Action;
 import org.openlca.app.Messages;
-import org.openlca.app.editors.ProductSystemEditor;
 import org.openlca.app.editors.graphical.GraphicalEditorInput;
 import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
 import org.openlca.app.resources.ImageType;

@@ -1,4 +1,4 @@
-package org.openlca.core.editors.io.ui;
+package org.openlca.app.systems;
 
 import java.io.File;
 
@@ -15,18 +15,20 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.App;
+import org.openlca.app.components.FileSelection;
+import org.openlca.app.db.Database;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Dialog;
+import org.openlca.app.util.InformationPopup;
 import org.openlca.app.util.UI;
-import org.openlca.core.database.IDatabase;
-import org.openlca.core.editors.io.MatrixExport;
-import org.openlca.core.editors.io.MatrixExportData;
 import org.openlca.core.model.ProductSystem;
+import org.openlca.io.xls.CsvMatrixExport;
+import org.openlca.io.xls.CsvMatrixExportData;
 
 /**
  * The dialog for exporting product systems as matrices.
  */
-public class MatrixExportShell extends Shell implements SelectionListener {
+public class CsvExportShell extends Shell implements SelectionListener {
 
 	private final FormToolkit toolkit = new FormToolkit(Display.getDefault());
 
@@ -40,18 +42,18 @@ public class MatrixExportShell extends Shell implements SelectionListener {
 	private Combo columnCombo;
 	private FileSelection techSelection;
 	private FileSelection enviSelection;
-	private MatrixExportData data;
+	private CsvMatrixExportData data;
 
-	public MatrixExportShell(Shell parent, ProductSystem system,
-			IDatabase database) {
+	public CsvExportShell(Shell parent, ProductSystem system) {
 		super(parent, SWT.SHELL_TRIM);
 		setImage(ImageType.MATRIX_ICON.get());
 		setLayout(new FillLayout(SWT.HORIZONTAL));
 		setText("Matrix Export");
 		setSize(450, 450);
 		createContents();
-		data = new MatrixExportData();
-		data.setDatabase(database);
+		data = new CsvMatrixExportData();
+		data.setDatabase(Database.get());
+		data.setCache(Database.getCache());
 		data.setProductSystem(system);
 		UI.center(parent, this);
 	}
@@ -155,7 +157,11 @@ public class MatrixExportShell extends Shell implements SelectionListener {
 		String column = idx >= 0 ? columnSeparators[idx] : columnCombo
 				.getText();
 		data.setColumnSeperator(column);
-		App.run("Export matrix", new MatrixExport(data));
+		App.run("Export matrix", new CsvMatrixExport(data), new Runnable() {
+			public void run() {
+				InformationPopup.show("Export finished", "Export is finished");
+			}
+		});
 		this.dispose();
 	}
 

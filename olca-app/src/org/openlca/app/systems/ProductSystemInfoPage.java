@@ -7,13 +7,15 @@
  * Contributors: GreenDeltaTC - initial API and implementation
  * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
  ******************************************************************************/
-package org.openlca.app.editors;
+package org.openlca.app.systems;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.Messages;
+import org.openlca.app.editors.InfoSection;
+import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.DataBinding.TextBindType;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.ISelectionChangedListener;

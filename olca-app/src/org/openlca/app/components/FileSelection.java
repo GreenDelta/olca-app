@@ -1,4 +1,4 @@
-package org.openlca.core.editors.io.ui;
+package org.openlca.app.components;
 
 import java.io.File;
 import java.util.ArrayList;

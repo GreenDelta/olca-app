@@ -1,6 +1,8 @@
 package org.openlca.app;
 
+import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
@@ -36,10 +38,7 @@ public class RcpWindowAdvisor extends WorkbenchWindowAdvisor {
 
 	@Override
 	public boolean preWindowShellClose() {
-		boolean b = super.preWindowShellClose();
-		if (!b)
-			return false;
-		App.runInUI("Close database", new Runnable() {
+		BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
 			public void run() {
 				try {
 					log.info("close database");
@@ -49,7 +48,7 @@ public class RcpWindowAdvisor extends WorkbenchWindowAdvisor {
 				}
 			}
 		});
-		return true;
+		return super.preWindowShellClose();
 	}
 
 }

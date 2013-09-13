@@ -1,4 +1,4 @@
-package org.openlca.core.editors.process;
+package org.openlca.app.processes;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;

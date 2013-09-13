@@ -1,4 +1,4 @@
-package org.openlca.core.editors.productsystem;
+package org.openlca.app.systems;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.swt.custom.BusyIndicator;

@@ -1,4 +1,4 @@
-package org.openlca.app.editors;
+package org.openlca.app.systems;
 
 import java.util.List;
 
@@ -8,6 +8,8 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
+import org.openlca.app.editors.ModelPage;
+import org.openlca.app.editors.ParameterRedefTable;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.ProductSystem;

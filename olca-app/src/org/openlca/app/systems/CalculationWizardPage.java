@@ -1,13 +1,4 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2012 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
-package org.openlca.core.editors.productsystem;
+package org.openlca.app.systems;
 
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -19,40 +10,42 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.openlca.app.ApplicationProperties;
 import org.openlca.app.Messages;
+import org.openlca.app.db.Database;
 import org.openlca.app.editors.DataBinding;
+import org.openlca.app.editors.DataBinding.TextBindType;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.UI;
+import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.AllocationMethodViewer;
 import org.openlca.app.viewers.combo.ImpactMethodViewer;
 import org.openlca.app.viewers.combo.NormalizationWeightingSetViewer;
-import org.openlca.core.database.IDatabase;
-import org.openlca.core.database.MethodDao;
+import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.NormalizationWeightingSet;
+import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Page for setting the calculation properties of a product system. Class must
  * be public in order to allow data-binding.
  */
-public class CalculationWizardPage extends WizardPage {
+class CalculationWizardPage extends WizardPage {
 
-	private Logger log = LoggerFactory.getLogger(this.getClass());
+	enum CalculationType {
+		QUICK, ANALYSIS, MONTE_CARLO
+	}
 
-	public static String ID = "org.openlca.core.application.wizards.CalculationWizardPage";
-	private IDatabase database;
 	private AllocationMethodViewer allocationViewer;
 	private ImpactMethodViewer methodViewer;
 	private NormalizationWeightingSetViewer nwViewer;
 	private Text iterationText;
 	private int iterationCount = 100;
 	private CalculationType type = CalculationType.QUICK;
+	private ProductSystem productSystem;
 
-	public CalculationWizardPage(IDatabase database) {
-		super(ID);
-		this.database = database;
+	public CalculationWizardPage(ProductSystem system) {
+		super(CalculationWizardPage.class.getCanonicalName());
+		this.productSystem = system;
 		setTitle(Messages.CalculationWizardTitle);
 		setDescription(Messages.CalculationWizardDescription);
 		setImageDescriptor(ImageType.WIZ_CALCULATION.getDescriptor());
@@ -76,7 +69,7 @@ public class CalculationWizardPage extends WizardPage {
 		createMethodComboViewer(body);
 		UI.formLabel(body, Messages.NWSet);
 		nwViewer = new NormalizationWeightingSetViewer(body);
-		nwViewer.setDatabase(database);
+		nwViewer.setDatabase(Database.get());
 
 		UI.formLabel(body, Messages.CalculationWizardPage_CalculationType);
 		Composite typePanel = new Composite(body, SWT.NONE);
@@ -93,7 +86,8 @@ public class CalculationWizardPage extends WizardPage {
 		iterationText = new Text(typePanel, SWT.BORDER);
 		UI.gridData(iterationText, false, false).widthHint = 80;
 		iterationText.setEnabled(false);
-		new DataBinding().onInt(this, "iterationCount", iterationText);
+		new DataBinding().on(this, "iterationCount", TextBindType.INT,
+				iterationText);
 	}
 
 	private void createRadios(Composite parent) {
@@ -123,67 +117,54 @@ public class CalculationWizardPage extends WizardPage {
 
 	private void createAllocationViewer(Composite parent) {
 		UI.formLabel(parent, Messages.AllocationMethod);
-		allocationViewer = new AllocationMethodViewer(parent,
-				AllocationMethodViewer.APPEND_INHERIT_OPTION);
+		allocationViewer = new AllocationMethodViewer(parent);
+		allocationViewer.setNullable(true);
 	}
 
-	public CalculationSettings getSettings() {
-		CalculationSettings settings = new CalculationSettings();
-		settings.setAllocationMethod(allocationViewer.getSelected());
-		settings.setMethod(methodViewer.getSelected());
+	public CalculationSetup getSetup() {
+		CalculationSetup setUp = new CalculationSetup(productSystem,
+				getSetupType());
+		setUp.setAllocationMethod(allocationViewer.getSelected());
+		setUp.setImpactMethod(methodViewer.getSelected());
 		NormalizationWeightingSet set = nwViewer.getSelected();
-		settings.setNwSet(set);
-		settings.setType(type);
-		settings.setIterationCount(iterationCount);
-		return settings;
+		setUp.setNwSet(set);
+		setUp.setNumberOfRuns(iterationCount);
+		return setUp;
+	}
+
+	private int getSetupType() {
+		if (type == null)
+			return CalculationSetup.QUICK_RESULT;
+		switch (type) {
+		case ANALYSIS:
+			return CalculationSetup.ANALYSIS;
+		case MONTE_CARLO:
+			return CalculationSetup.MONTE_CARLO_SIMULATION;
+		case QUICK:
+			return CalculationSetup.QUICK_RESULT;
+		default:
+			return CalculationSetup.QUICK_RESULT;
+		}
 	}
 
 	private void createMethodComboViewer(Composite parent) {
 		UI.formLabel(parent, Messages.ImpactMethod);
 		methodViewer = new ImpactMethodViewer(parent);
-		methodViewer.setInput(database);
+		methodViewer.setInput(Database.get());
 		methodViewer
-				.addSelectionChangedListener(new org.openlca.app.viewers.ISelectionChangedListener<ImpactMethodDescriptor>() {
+				.addSelectionChangedListener(new ISelectionChangedListener<ImpactMethodDescriptor>() {
 
 					@Override
 					public void selectionChanged(
 							ImpactMethodDescriptor selection) {
-						initNwSets();
+						nwViewer.setInput(methodViewer.getSelected());
 					}
 				});
 	}
 
-	private void initNwSets() {
-		nwViewer.setInput(methodViewer.getSelected());
-		String defaultNwId = getDefaultId(ApplicationProperties.PROP_DEFAULT_NORMALIZATION_WEIGHTING_SET);
-		if (defaultNwId == null)
-			return;
-		nwViewer.select(nwViewer.find(defaultNwId));
-	}
-
 	private void setDefaultData() {
 		setDefaultAllocationMethod();
-		setDefaultMethod();
-	}
-
-	private void setDefaultMethod() {
-		String id = getDefaultId(ApplicationProperties.PROP_DEFAULT_LCIA_METHOD);
-		if (id == null)
-			return;
-		try {
-			ImpactMethodDescriptor method = new MethodDao(
-					database).getDescriptor(id);
-			if (method != null) {
-				methodViewer.select(method);
-				initNwSets();
-			}
-		} catch (Exception e) {
-			log.error("Loading method descriptor failed", e);
-		}
-	}
-
-	private String getDefaultId(ApplicationProperties prop) {
-		return prop.getValue(database.getUrl());
+		// TODO set default method and nw set
 	}
 
 	private void setDefaultAllocationMethod() {
@@ -195,15 +176,13 @@ public class CalculationWizardPage extends WizardPage {
 	}
 
 	protected void reset() {
-		if (allocationViewer != null) {
+		if (allocationViewer != null)
 			allocationViewer.select(null);
-		}
-		if (methodViewer != null) {
+		if (methodViewer != null)
 			methodViewer.select(null);
-		}
 		if (nwViewer != null) {
 			nwViewer.select(null);
-			nwViewer.setInput(null);
+			nwViewer.setInput((ImpactMethodDescriptor) null);
 		}
 		setDefaultData();
 	}

@@ -1,4 +1,4 @@
-package org.openlca.core.editors.process;
+package org.openlca.app.processes;
 
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.swt.SWT;

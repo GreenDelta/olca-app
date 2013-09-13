@@ -1,4 +1,4 @@
-package org.openlca.core.editors.io.ui;
+package org.openlca.app.systems;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,6 +15,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.openlca.app.Messages;
+import org.openlca.app.components.FileSelection;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AllocationMethodViewer;
