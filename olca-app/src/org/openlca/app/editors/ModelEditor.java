@@ -10,7 +10,6 @@ import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.Labels;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.EntityCache;
-import org.openlca.core.editors.IEditor;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.slf4j.Logger;

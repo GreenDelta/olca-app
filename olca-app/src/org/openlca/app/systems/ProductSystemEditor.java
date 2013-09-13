@@ -9,8 +9,8 @@
  ******************************************************************************/
 package org.openlca.app.systems;
 
+import org.openlca.app.editors.IEditor;
 import org.openlca.app.editors.ModelEditor;
-import org.openlca.core.editors.IEditor;
 import org.openlca.core.model.ProductSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

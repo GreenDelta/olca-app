@@ -1,8 +1,8 @@
 package org.openlca.app.lcia_methods;
 
 import org.openlca.app.Event;
+import org.openlca.app.editors.IEditor;
 import org.openlca.app.editors.ModelEditor;
-import org.openlca.core.editors.IEditor;
 import org.openlca.core.model.ImpactMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,4 +1,4 @@
-package org.openlca.core.editors;
+package org.openlca.app.editors;
 
 public interface IEditor {
 

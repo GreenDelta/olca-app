@@ -1,8 +1,8 @@
 package org.openlca.app.projects;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.openlca.app.editors.IEditor;
 import org.openlca.app.editors.ModelEditor;
-import org.openlca.core.editors.IEditor;
 import org.openlca.core.model.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,6 +1,5 @@
 package org.openlca.app.editors;
 
-import org.openlca.core.editors.IEditor;
 import org.openlca.core.model.Source;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
