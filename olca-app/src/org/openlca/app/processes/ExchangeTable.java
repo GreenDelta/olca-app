@@ -28,6 +28,7 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
+import org.openlca.app.viewers.table.modify.CheckBoxCellModifier;
 import org.openlca.app.viewers.table.modify.ComboBoxCellModifier;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
@@ -47,6 +48,12 @@ import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 import com.google.common.eventbus.Subscribe;
 
+/**
+ * The table for the display and editing of inputs or outputs of process
+ * exchanges. Avoided products are inputs that are shown on the output site in
+ * this table.
+ * 
+ */
 class ExchangeTable {
 
 	private final boolean forInputs;
@@ -118,6 +125,8 @@ class ExchangeTable {
 		modifySupport.bind(PEDIGREE, new PedigreeCellEditor(viewer, editor));
 		if (forInputs)
 			modifySupport.bind(DEFAULT_PROVIDER, new ProviderModifier());
+		if (!forInputs)
+			modifySupport.bind(AVOIDED_PRODUCT, new AvoidedProductModifier());
 	}
 
 	private void bindActions(Section section, final TableViewer viewer) {
@@ -206,9 +215,29 @@ class ExchangeTable {
 
 		@Override
 		public Image getColumnImage(Object element, int col) {
-			if (!(element instanceof Exchange) || col != 0)
+			if (!(element instanceof Exchange))
 				return null;
 			Exchange exchange = (Exchange) element;
+			if (col == 0)
+				return getFlowTypeIcon(exchange);
+			if (!forInputs && col == 6)
+				return getAvoidedCheck(exchange);
+			return null;
+		}
+
+		private Image getAvoidedCheck(Exchange exchange) {
+			if (exchange.getFlow() == null)
+				return null;
+			if (exchange.getFlow().getFlowType() != FlowType.PRODUCT_FLOW)
+				return null;
+			if (Objects.equals(process.getQuantitativeReference(), exchange))
+				return null;
+			else
+				return exchange.isAvoidedProduct() ? ImageType.CHECK_TRUE.get()
+						: ImageType.CHECK_FALSE.get();
+		}
+
+		private Image getFlowTypeIcon(Exchange exchange) {
 			switch (exchange.getFlow().getFlowType()) {
 			case ELEMENTARY_FLOW:
 				return ImageType.FLOW_SUBSTANCE.get();
@@ -409,7 +438,33 @@ class ExchangeTable {
 				element.setDefaultProviderId(item.getId());
 			fireChange();
 		}
+	}
 
+	private class AvoidedProductModifier extends CheckBoxCellModifier<Exchange> {
+		@Override
+		public boolean canModify(Exchange e) {
+			if (Objects.equals(process.getQuantitativeReference(), e))
+				return false;
+			if (e.getFlow() == null)
+				return false;
+			if (e.getFlow().getFlowType() != FlowType.PRODUCT_FLOW)
+				return false;
+			return true;
+		}
+
+		@Override
+		protected boolean isChecked(Exchange element) {
+			return element.isAvoidedProduct();
+		}
+
+		@Override
+		protected void setChecked(Exchange element, boolean value) {
+			if (element.isAvoidedProduct() == value)
+				return;
+			element.setAvoidedProduct(value);
+			element.setInput(value);
+			fireChange();
+		}
 	}
 
 	private class Filter extends ViewerFilter {
@@ -419,7 +474,10 @@ class ExchangeTable {
 			if (!(element instanceof Exchange))
 				return false;
 			Exchange exchange = (Exchange) element;
-			return exchange.isInput() == forInputs;
+			if (exchange.isAvoidedProduct())
+				return !forInputs;
+			else
+				return exchange.isInput() == forInputs;
 		}
 	}
 
