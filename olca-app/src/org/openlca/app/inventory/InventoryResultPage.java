@@ -1,6 +1,7 @@
 package org.openlca.app.inventory;
 
 import java.util.Collection;
+import java.util.Comparator;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.jface.viewers.BaseLabelProvider;
@@ -20,13 +21,13 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
+import org.openlca.app.util.Comparators;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.descriptors.FlowDescriptor;
-import org.openlca.util.Strings;
 
 /**
  * Shows the total inventory result of a quick calculation, analysis result,
@@ -134,6 +135,8 @@ public class InventoryResultPage extends FormPage {
 	}
 
 	private class FlowViewerSorter extends ViewerSorter {
+		private Comparator<FlowDescriptor> comparator = Comparators
+				.forFlowDescriptors(cache);
 
 		@Override
 		public int compare(Viewer viewer, Object e1, Object e2) {
@@ -141,19 +144,7 @@ public class InventoryResultPage extends FormPage {
 				return 0;
 			if (!(e2 instanceof FlowDescriptor))
 				return 0;
-
-			FlowDescriptor flow1 = (FlowDescriptor) e1;
-			FlowDescriptor flow2 = (FlowDescriptor) e2;
-			int c = Strings.compare(flow1.getName(), flow2.getName());
-			if (c != 0)
-				return c;
-
-			Pair<String, String> cat1 = Labels.getFlowCategory(flow1, cache);
-			Pair<String, String> cat2 = Labels.getFlowCategory(flow2, cache);
-			c = Strings.compare(cat1.getLeft(), cat2.getLeft());
-			if (c != 0)
-				return c;
-			return Strings.compare(cat1.getRight(), cat2.getLeft());
+			return comparator.compare((FlowDescriptor) e1, (FlowDescriptor) e2);
 		}
 	}
 

@@ -2,6 +2,8 @@ package org.openlca.app.processes;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -45,6 +47,7 @@ import org.openlca.core.model.Unit;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.util.Strings;
 
 import com.google.common.eventbus.Subscribe;
 
@@ -114,7 +117,27 @@ class ExchangeTable {
 		});
 		viewer.addFilter(new Filter());
 		bindActions(section, viewer);
-		viewer.setInput(process.getExchanges()); // TODO: sort the exchanges
+		Tables.bindColumnWidths(viewer, 0.2, 0.15, 0.1, 0.1, 0.1, 0.15, 0.1,
+				0.1);
+		setInitialInput();
+	}
+
+	private void setInitialInput() {
+		Collections.sort(process.getExchanges(), new Comparator<Exchange>() {
+			@Override
+			public int compare(Exchange o1, Exchange o2) {
+				if (o1.getFlow() == null || o2.getFlow() == null)
+					return 0;
+				int c = Strings.compare(o1.getFlow().getName(), o2.getFlow()
+						.getName());
+				if (c != 0)
+					return c;
+				String c1 = CategoryPath.getShort(o1.getFlow().getCategory());
+				String c2 = CategoryPath.getShort(o2.getFlow().getCategory());
+				return Strings.compare(c1, c2);
+			}
+		});
+		viewer.setInput(process.getExchanges());
 	}
 
 	private void bindModifiers() {
