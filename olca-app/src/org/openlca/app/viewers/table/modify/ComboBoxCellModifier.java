@@ -1,9 +1,19 @@
 package org.openlca.app.viewers.table.modify;
 
-public abstract class ComboBoxCellModifier<T, V> implements ICellModifier<T> {
+/**
+ * A combo-box modifier for table cells. We have two type variables here: one
+ * for the type of elements behind the rows in the respective table viewer and
+ * one for the respective values in the combo-box.
+ * 
+ * @param <R>
+ *            the row type of the table
+ * @param <C>
+ *            the type of items in the combo-box
+ */
+public abstract class ComboBoxCellModifier<R, C> implements ICellModifier<R> {
 
 	@Override
-	public boolean canModify(T element) {
+	public boolean canModify(R element) {
 		return true;
 	}
 
@@ -13,18 +23,18 @@ public abstract class ComboBoxCellModifier<T, V> implements ICellModifier<T> {
 	}
 
 	@Override
-	public final Object getValue(T element) {
+	public final Object getValue(R element) {
 		return getItem(element);
 	}
 
 	@Override
-	public final Object[] getValues(T element) {
+	public final Object[] getValues(R element) {
 		return getItems(element);
 	}
 
 	@Override
-	public String[] getStringValues(T element) {
-		V[] values = getItems(element);
+	public String[] getStringValues(R element) {
+		C[] values = getItems(element);
 		String[] strings = new String[values.length];
 		for (int i = 0; i < values.length; i++)
 			strings[i] = getText(values[i]);
@@ -33,16 +43,16 @@ public abstract class ComboBoxCellModifier<T, V> implements ICellModifier<T> {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public final void modify(T element, Object value) {
-		setItem(element, (V) value);
+	public final void modify(R element, Object value) {
+		setItem(element, (C) value);
 	}
 
-	protected abstract V[] getItems(T element);
+	protected abstract C[] getItems(R element);
 
-	protected abstract V getItem(T element);
+	protected abstract C getItem(R element);
 
-	protected abstract String getText(V value);
+	protected abstract String getText(C value);
 
-	protected abstract void setItem(T element, V item);
+	protected abstract void setItem(R element, C item);
 
 }

@@ -1,5 +1,7 @@
 package org.openlca.app.editors;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -12,17 +14,18 @@ import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
 import org.openlca.app.Messages;
+import org.openlca.app.db.Database;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
+import org.openlca.core.database.EntityCache;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.BaseDescriptor;
-import org.openlca.core.model.descriptors.Descriptors;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +37,7 @@ class FlowUseSection {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private Flow flow;
+	private EntityCache cache = Database.getCache();
 	private IDatabase database;
 	private Composite parent;
 	private FormToolkit toolkit;
@@ -45,8 +49,8 @@ class FlowUseSection {
 
 	void render(Composite body, FormToolkit toolkit) {
 		log.trace("render flow-use-section for flow {}", flow);
-		List<ProcessDescriptor> recipients = getProcesses(true);
-		List<ProcessDescriptor> providers = getProcesses(false);
+		Collection<ProcessDescriptor> recipients = getProcesses(true);
+		Collection<ProcessDescriptor> providers = getProcesses(false);
 		if (recipients.isEmpty() && providers.isEmpty())
 			return;
 		Section section = UI.section(body, toolkit, Messages.UsedInProcesses);
@@ -57,15 +61,17 @@ class FlowUseSection {
 		renderLinks(Messages.ProducedBy, providers, ImageType.OUTPUT_ICON.get());
 	}
 
-	private List<ProcessDescriptor> getProcesses(boolean forInput) {
+	private Collection<ProcessDescriptor> getProcesses(boolean forInput) {
 		FlowDao dao = new FlowDao(database);
-		if (forInput)
-			return dao.getRecipients(Descriptors.toDescriptor(flow));
-		return dao.getProviders(Descriptors.toDescriptor(flow));
+		List<Long> processIds = forInput ? dao.getRecipients(flow.getId())
+				: dao.getProviders(flow.getId());
+		if (processIds.isEmpty())
+			return Collections.emptyList();
+		return cache.getAll(ProcessDescriptor.class, processIds).values();
 	}
 
-	private void renderLinks(String label, List<ProcessDescriptor> descriptors,
-			Image image) {
+	private void renderLinks(String label,
+			Collection<ProcessDescriptor> descriptors, Image image) {
 		if (descriptors.isEmpty())
 			return;
 		UI.formLabel(parent, toolkit, label);
