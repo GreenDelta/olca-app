@@ -21,6 +21,7 @@ public class UncertaintyCellEditor extends DialogCellEditor {
 	private ImpactFactor factor;
 	private Exchange exchange;
 	private FormulaInterpreter interpreter;
+	private long interpreterScope = -1;
 
 	public UncertaintyCellEditor(Composite parent, ModelEditor<?> editor) {
 		super(parent);
@@ -28,6 +29,7 @@ public class UncertaintyCellEditor extends DialogCellEditor {
 		if (editor instanceof ProcessEditor) {
 			ProcessEditor e = (ProcessEditor) editor;
 			interpreter = e.getInterpreter();
+			interpreterScope = e.getModel().getId();
 		}
 	}
 
@@ -49,7 +51,8 @@ public class UncertaintyCellEditor extends DialogCellEditor {
 		Uncertainty initial = getInitial();
 		UncertaintyDialog dialog = new UncertaintyDialog(control.getShell(),
 				initial);
-		dialog.setInterpreter(interpreter);
+		if (interpreter != null)
+			dialog.setInterpreter(interpreter, interpreterScope);
 		if (dialog.open() != Window.OK)
 			return null;
 		Uncertainty uncertainty = dialog.getUncertainty();
