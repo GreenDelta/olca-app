@@ -1,4 +1,4 @@
-package org.openlca.app.lcia_methods;
+package org.openlca.app.components;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;

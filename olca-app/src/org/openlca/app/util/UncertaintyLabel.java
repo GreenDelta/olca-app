@@ -1,17 +1,16 @@
-package org.openlca.app.lcia_methods;
+package org.openlca.app.util;
 
-import org.openlca.app.util.Numbers;
 import org.openlca.core.model.Uncertainty;
 
 /**
  * Converts uncertainty information to a single label.
  */
-final class UncertaintyLabel {
+public final class UncertaintyLabel {
 
 	private UncertaintyLabel() {
 	}
 
-	static String get(Uncertainty uncertainty) {
+	public static String get(Uncertainty uncertainty) {
 		if (uncertainty == null || uncertainty.getDistributionType() == null)
 			return "none";
 		switch (uncertainty.getDistributionType()) {
