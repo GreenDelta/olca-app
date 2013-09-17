@@ -19,6 +19,7 @@ import org.openlca.app.editors.graphical.layout.GraphLayoutManager;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
+import org.openlca.core.model.Location;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
@@ -83,8 +84,11 @@ public class ProcessNode extends Node {
 	@Override
 	public String getName() {
 		String text = process.getName();
-		text += process.getLocation() != null ? " [" + process.getLocation()
-				+ "]" : "";
+		if (process.getLocation() != null)
+			text += " ["
+					+ Database.getCache()
+							.get(Location.class, process.getLocation())
+							.getCode() + "]";
 		return text;
 	}
 
