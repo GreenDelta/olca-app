@@ -14,7 +14,7 @@ import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessType;
-import org.openlca.core.model.UncertaintyDistributionType;
+import org.openlca.core.model.UncertaintyType;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.descriptors.BaseDescriptor;
@@ -100,9 +100,8 @@ public class Labels {
 			return Labels.flowType((FlowType) enumValue);
 		if (enumValue instanceof ProcessType)
 			return Labels.processType((ProcessType) enumValue);
-		if (enumValue instanceof UncertaintyDistributionType)
-			return Labels
-					.uncertaintyType((UncertaintyDistributionType) enumValue);
+		if (enumValue instanceof UncertaintyType)
+			return Labels.uncertaintyType((UncertaintyType) enumValue);
 		if (enumValue != null)
 			return enumValue.toString();
 		return null;
@@ -112,7 +111,7 @@ public class Labels {
 	 * Returns the label for the given uncertainty distribution type. If the
 	 * given type is NULL the value for 'no distribution' is returned.
 	 */
-	public static String uncertaintyType(UncertaintyDistributionType type) {
+	public static String uncertaintyType(UncertaintyType type) {
 		if (type == null)
 			return Messages.NoDistribution;
 		switch (type) {

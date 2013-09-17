@@ -14,76 +14,53 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.Messages;
-import org.openlca.app.editors.DataBinding;
-import org.openlca.app.editors.DataBinding.TextBindType;
 import org.openlca.app.util.Colors;
+import org.openlca.app.util.Error;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
-import org.openlca.core.model.ImpactFactor;
-import org.openlca.core.model.UncertaintyDistributionType;
+import org.openlca.core.model.Uncertainty;
+import org.openlca.core.model.UncertaintyType;
+import org.openlca.expressions.FormulaInterpreter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-/** Dialog for editing uncertainty information in impact assessment factors. */
+/** Dialog for editing uncertainty informations . */
 public class UncertaintyDialog extends Dialog {
 
+	private Logger log = LoggerFactory.getLogger(getClass());
+
 	private FormToolkit toolkit;
-	private UncertaintyDistributionType[] types = UncertaintyDistributionType
-			.values();
+	private UncertaintyType[] types = UncertaintyType.values();
 	private Combo combo;
 	private StackLayout stackLayout;
 
-	private Client[] clients;
-	private Client selectedClient;
-	private double firstParam;
-	private double secondParam;
-	private double thirdParam;
-	private String[] properties = { "firstParam", "secondParam", "thirdParam" };
+	private UncertaintyPanel[] clients;
+	private UncertaintyPanel selectedClient;
+	private FormulaInterpreter interpreter;
 
-	private ImpactFactor factor;
+	private Uncertainty uncertainty;
+	private double defaultMean;
 
-	public UncertaintyDialog(Shell parentShell, ImpactFactor factor) {
+	public UncertaintyDialog(Shell parentShell, Uncertainty initial) {
 		super(parentShell);
 		toolkit = new FormToolkit(parentShell.getDisplay());
-		this.factor = factor;
-		if (factor != null) {
-			firstParam = factor.getUncertaintyParameter1();
-			secondParam = factor.getUncertaintyParameter2();
-			thirdParam = factor.getUncertaintyParameter3();
-		}
+		this.uncertainty = initial.clone();
+		if (uncertainty.getParameter1Value() != null)
+			defaultMean = uncertainty.getParameter1Value();
+	}
+
+	public Uncertainty getUncertainty() {
+		return uncertainty;
+	}
+
+	public void setInterpreter(FormulaInterpreter interpreter) {
+		this.interpreter = interpreter;
 	}
 
 	@Override
 	protected void okPressed() {
-		int idx = combo.getSelectionIndex();
-		if (factor != null && idx >= 0 && idx < types.length) {
-			UncertaintyDistributionType type = types[idx];
-			UncertaintySetter.setValues(factor, type, firstParam, secondParam,
-					thirdParam);
-		}
+		uncertainty = selectedClient.fetchUncertainty();
 		super.okPressed();
-	}
-
-	public double getFirstParam() {
-		return firstParam;
-	}
-
-	public void setFirstParam(double firstParam) {
-		this.firstParam = firstParam;
-	}
-
-	public double getSecondParam() {
-		return secondParam;
-	}
-
-	public void setSecondParam(double secondParam) {
-		this.secondParam = secondParam;
-	}
-
-	public double getThirdParam() {
-		return thirdParam;
-	}
-
-	public void setThirdParam(double thirdParam) {
-		this.thirdParam = thirdParam;
 	}
 
 	@Override
@@ -112,9 +89,10 @@ public class UncertaintyDialog extends Dialog {
 		String[] items = new String[types.length];
 		int idx = 0;
 		for (int i = 0; i < items.length; i++) {
-			UncertaintyDistributionType type = types[i];
+			UncertaintyType type = types[i];
 			items[i] = Labels.uncertaintyType(type);
-			if (factor.getUncertaintyType() == type)
+			if (uncertainty != null
+					&& uncertainty.getDistributionType() == type)
 				idx = i;
 		}
 		combo.setItems(items);
@@ -131,10 +109,7 @@ public class UncertaintyDialog extends Dialog {
 		int item = combo.getSelectionIndex();
 		if (item == -1)
 			return;
-		if (selectedClient != null)
-			selectedClient.releaseFields();
 		selectedClient = clients[item];
-		selectedClient.bindFields();
 		stackLayout.topControl = selectedClient.composite;
 		getShell().layout(true, true);
 		getShell().pack();
@@ -145,33 +120,12 @@ public class UncertaintyDialog extends Dialog {
 		UI.gridData(stack, true, true);
 		stackLayout = new StackLayout();
 		stack.setLayout(stackLayout);
-		clients = new Client[types.length];
+		clients = new UncertaintyPanel[types.length];
 		for (int i = 0; i < types.length; i++) {
 			Composite composite = toolkit.createComposite(stack);
 			UI.gridLayout(composite, 2);
-			Client client = createClient(types[i], composite);
+			UncertaintyPanel client = new UncertaintyPanel(composite, types[i]);
 			clients[i] = client;
-		}
-	}
-
-	private Client createClient(UncertaintyDistributionType type,
-			Composite composite) {
-		switch (type) {
-		case LOG_NORMAL:
-			return new Client(composite, Messages.GeometricMean,
-					Messages.GeometricStandardDeviation);
-		case NONE:
-			return new Client(composite);
-		case NORMAL:
-			return new Client(composite, Messages.Mean,
-					Messages.StandardDeviation);
-		case TRIANGLE:
-			return new Client(composite, Messages.Minimum, Messages.Mode,
-					Messages.Maximum);
-		case UNIFORM:
-			return new Client(composite, Messages.Minimum, Messages.Maximum);
-		default:
-			return new Client(composite);
 		}
 	}
 
@@ -180,6 +134,7 @@ public class UncertaintyDialog extends Dialog {
 		toolkit.adapt(parent);
 		createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL,
 				true);
+		createButton(parent, IDialogConstants.HELP_ID, "Test", false);
 		createButton(parent, IDialogConstants.CANCEL_ID,
 				IDialogConstants.CANCEL_LABEL, false);
 		getShell().pack();
@@ -197,35 +152,180 @@ public class UncertaintyDialog extends Dialog {
 		return super.close();
 	}
 
-	private class Client {
+	private class UncertaintyPanel {
 
 		private Composite composite;
+		private Uncertainty _uncertainty;
 		private Text[] texts;
 
-		private DataBinding binding = new DataBinding();
-
-		Client(Composite composite, String... labels) {
+		UncertaintyPanel(Composite composite, UncertaintyType type) {
 			this.composite = composite;
-			texts = new Text[labels.length];
-			for (int i = 0; i < labels.length; i++)
-				texts[i] = UI.formText(composite, toolkit, labels[i]);
-			if (labels.length == 0) {
+			if (type == uncertainty.getDistributionType())
+				_uncertainty = uncertainty;
+			else
+				_uncertainty = createUncertainty(type);
+			if (type != UncertaintyType.NONE)
+				createTextFields();
+			else {
 				Label label = toolkit.createLabel(composite,
 						Messages.NoDistribution);
 				label.setForeground(Colors.getDarkGray());
 			}
 		}
 
-		void bindFields() {
-			for (int i = 0; i < texts.length; i++)
-				binding.on(UncertaintyDialog.this, properties[i],
-						TextBindType.DOUBLE, texts[i]);
+		private void createTextFields() {
+			String[] labels = getLabels();
+			texts = new Text[labels.length];
+			for (int param = 1; param <= 3; param++) {
+				if (!hasParameter(param))
+					continue;
+				String label = labels[param - 1];
+				Text text = UI.formText(composite, toolkit, label);
+				text.setText(initialValue(param));
+				texts[param - 1] = text;
+			}
 		}
 
-		void releaseFields() {
-			for (Text text : texts)
-				binding.release(text);
+		private String initialValue(int param) {
+			switch (param) {
+			case 1:
+				return initialValue(_uncertainty.getParameter1Value(),
+						_uncertainty.getParameter1Formula());
+			case 2:
+				return initialValue(_uncertainty.getParameter2Value(),
+						_uncertainty.getParameter2Formula());
+			case 3:
+				return initialValue(_uncertainty.getParameter3Value(),
+						_uncertainty.getParameter3Formula());
+			default:
+				return "";
+			}
+
 		}
+
+		private String initialValue(Double value, String formula) {
+			if (formula != null && !formula.isEmpty())
+				return formula;
+			if (value == null)
+				return "";
+			else
+				return Double.toString(value);
+		}
+
+		private String[] getLabels() {
+			switch (_uncertainty.getDistributionType()) {
+			case LOG_NORMAL:
+				return new String[] { Messages.GeometricMean,
+						Messages.GeometricStandardDeviation };
+			case NONE:
+				return new String[0];
+			case NORMAL:
+				return new String[] { Messages.Mean, Messages.StandardDeviation };
+			case TRIANGLE:
+				return new String[] { Messages.Minimum, Messages.Mode,
+						Messages.Maximum };
+			case UNIFORM:
+				return new String[] { Messages.Minimum, Messages.Maximum };
+			default:
+				return new String[0];
+			}
+		}
+
+		private Uncertainty createUncertainty(UncertaintyType type) {
+			switch (type) {
+			case LOG_NORMAL:
+				return Uncertainty.logNormal(defaultMean, 1);
+			case NONE:
+				return Uncertainty.none(defaultMean);
+			case NORMAL:
+				return Uncertainty.normal(defaultMean, 1);
+			case TRIANGLE:
+				return Uncertainty.triangle(defaultMean, defaultMean,
+						defaultMean);
+			case UNIFORM:
+				return Uncertainty.uniform(defaultMean, defaultMean);
+			default:
+				return null;
+			}
+		}
+
+		private boolean hasParameter(int parameter) {
+			switch (_uncertainty.getDistributionType()) {
+			case LOG_NORMAL:
+				return parameter == 1 || parameter == 2;
+			case NONE:
+				return false;
+			case NORMAL:
+				return parameter == 1 || parameter == 2;
+			case TRIANGLE:
+				return parameter == 1 || parameter == 2 || parameter == 3;
+			case UNIFORM:
+				return parameter == 1 || parameter == 2;
+			default:
+				return false;
+			}
+		}
+
+		Uncertainty fetchUncertainty() {
+			if (texts == null)
+				return _uncertainty;
+			for (int i = 0; i < texts.length; i++) {
+				String s = texts[i].getText();
+				int param = i + 1;
+				try {
+					if (isValidNumber(s))
+						set(param, Double.parseDouble(s), null);
+					else if (isValidFormula(s))
+						set(param, interpreter.eval(s), s);
+				} catch (Exception e) {
+					log.error("failed to set uncertainty value", e);
+				}
+			}
+			return _uncertainty;
+		}
+
+		private void set(int param, double val, String s) {
+			switch (param) {
+			case 1:
+				_uncertainty.setParameter1Formula(s);
+				_uncertainty.setParameter1Value(val);
+				break;
+			case 2:
+				_uncertainty.setParameter2Formula(s);
+				_uncertainty.setParameter2Value(val);
+				break;
+			case 3:
+				_uncertainty.setParameter3Formula(s);
+				_uncertainty.setParameter3Value(val);
+				break;
+			default:
+				break;
+			}
+		}
+
+		private boolean isValidNumber(String s) {
+			try {
+				Double.parseDouble(s);
+				return true;
+			} catch (Exception e) {
+				if (interpreter == null)
+					Error.showBox(s + " is not a valid number");
+				return false;
+			}
+		}
+
+		private boolean isValidFormula(String s) {
+			if (interpreter == null)
+				return false;
+			try {
+				interpreter.eval(s);
+				return true;
+			} catch (Exception e) {
+				Error.showBox("Formula evaluation of " + s + " failed");
+				return false;
+			}
+		}
+
 	}
 
 }

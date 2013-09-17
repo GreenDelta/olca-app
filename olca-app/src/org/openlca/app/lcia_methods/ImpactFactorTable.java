@@ -182,7 +182,7 @@ class ImpactFactorTable {
 			case 4:
 				return Double.toString(factor.getValue());
 			case 5:
-				return UncertaintyLabel.get(factor);
+				return UncertaintyLabel.get(factor.getUncertainty());
 			default:
 				return null;
 			}

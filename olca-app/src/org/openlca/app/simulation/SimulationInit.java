@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Initializes the Monte Carlo simulation of a product system and opens the
+ * Initialises the Monte Carlo simulation of a product system and opens the
  * editor.
  */
 public class SimulationInit {
