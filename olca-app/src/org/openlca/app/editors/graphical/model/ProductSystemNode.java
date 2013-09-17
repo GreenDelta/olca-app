@@ -15,7 +15,6 @@ import java.util.List;
 import org.eclipse.jface.action.IAction;
 import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
 import org.openlca.app.editors.graphical.layout.GraphLayoutType;
-import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
 
 public class ProductSystemNode extends Node {
@@ -25,8 +24,6 @@ public class ProductSystemNode extends Node {
 	private ProductSystemPart part;
 	private ProductSystem productSystem;
 	private List<ProcessNode> outlineNodes = new ArrayList<>();
-	private ExchangeNode actualMatcher = null;
-	private boolean repeat = false;
 
 	public ProductSystemNode(ProductSystem productSystem,
 			ProductSystemGraphEditor editor) {
@@ -60,29 +57,6 @@ public class ProductSystemNode extends Node {
 		getSupport().firePropertyChange(PROPERTY_LAYOUT_MANAGER, action, type);
 	}
 
-	private void highlightMatchingExchanges(ExchangeNode exchangeNode,
-			boolean value) {
-		if (!repeat || !value) {
-			repeat = true;
-			if (value)
-				actualMatcher = exchangeNode;
-			if (actualMatcher != null)
-				for (ProcessNode node : getChildren())
-					for (ExchangeNode exchangeNode2 : node.getExchangeNodes())
-						if (exchangeNode2.matches(actualMatcher))
-							if (!value)
-								exchangeNode2.setHighlighted(value);
-							else if (actualMatcher.getExchange().isInput()
-									|| !hasConnection(exchangeNode2
-											.getExchange().getFlow().getId()))
-								exchangeNode2.setHighlighted(value);
-			if (!value) {
-				actualMatcher = null;
-				repeat = false;
-			}
-		}
-	}
-
 	public void add(ProcessNode node) {
 		if (!getChildren().contains(node))
 			if (outlineNodes.contains(node))
@@ -106,19 +80,28 @@ public class ProductSystemNode extends Node {
 			outlineNodes.add(node);
 	}
 
-	public boolean hasConnection(long flowId) {
-		for (ProcessLink link : getProductSystem().getProcessLinks())
-			if (link.getFlowId() == flowId)
-				return true;
-		return false;
-	}
-
-	public void highlightMatchingExchanges(ExchangeNode exchangeNode) {
-		highlightMatchingExchanges(exchangeNode, true);
+	public void highlightMatchingExchanges(ExchangeNode toMatch) {
+		for (ProcessNode node : getChildren()) {
+			if (node.isVisible() && !node.isMinimized()) {
+				ExchangeNode exchangeNode = node.getExchangeNode(toMatch
+						.getExchange().getFlow().getId());
+				if (exchangeNode != null)
+					if (toMatch.getExchange().isInput() != exchangeNode
+							.getExchange().isInput())
+						if (toMatch.getExchange().isInput()
+								|| !node.hasIncomingConnection(exchangeNode
+										.getExchange().getFlow().getId()))
+							exchangeNode.setHighlighted(true);
+			}
+		}
 	}
 
 	public void removeHighlighting() {
-		highlightMatchingExchanges(null, false);
+		for (ProcessNode node : getChildren())
+			if (node.isVisible() && !node.isMinimized())
+				for (ExchangeNode exchangeNode : node.getChildren().get(0)
+						.getChildren())
+					exchangeNode.setHighlighted(false);
 	}
 
 }

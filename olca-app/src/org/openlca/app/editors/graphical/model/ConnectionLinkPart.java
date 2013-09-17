@@ -24,6 +24,7 @@ import org.eclipse.gef.editparts.AbstractConnectionEditPart;
 import org.eclipse.gef.editpolicies.ComponentEditPolicy;
 import org.eclipse.gef.editpolicies.ConnectionEndpointEditPolicy;
 import org.eclipse.gef.requests.GroupRequest;
+import org.eclipse.gef.requests.ReconnectRequest;
 import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
 import org.openlca.app.editors.graphical.command.CommandFactory;
 
@@ -86,37 +87,34 @@ public class ConnectionLinkPart extends AbstractConnectionEditPart implements
 
 	@Override
 	public void showSourceFeedback(Request req) {
-		// TODO adjust
-		// if (req instanceof ReconnectRequest) {
-		// ReconnectRequest request = ((ReconnectRequest) req);
-		// ConnectionLink link = (ConnectionLink) request
-		// .getConnectionEditPart().getModel();
-		// ExchangeNode target = link.getTargetNode().getExchangeNode(
-		// link.getProcessLink().getFlowId());
-		// ExchangeNode source = link.getSourceNode().getExchangeNode(
-		// link.getProcessLink().getFlowId());
-		//
-		// ExchangeNode n1 = request.isMovingStartAnchor() ? target : source;
-		// ExchangeNode n2 = request.isMovingStartAnchor() ? source : target;
-		// ProductSystemNode productSystemNode = n1.getParent().getParent()
-		// .getParent();
-		// productSystemNode.highlightMatchingExchanges(n1);
-		// n1.setHighlighted(true);
-		// n2.setHighlighted(true);
-		// }
+		if (req instanceof ReconnectRequest) {
+			ReconnectRequest request = ((ReconnectRequest) req);
+			ConnectionLink link = (ConnectionLink) request
+					.getConnectionEditPart().getModel();
+			ExchangeNode target = link.getTargetNode().getExchangeNode(
+					link.getProcessLink().getFlowId());
+			ExchangeNode source = link.getSourceNode().getExchangeNode(
+					link.getProcessLink().getFlowId());
+
+			ExchangeNode n1 = request.isMovingStartAnchor() ? target : source;
+			ExchangeNode n2 = request.isMovingStartAnchor() ? source : target;
+			ProductSystemNode productSystemNode = n1.getParent().getParent()
+					.getParent();
+			productSystemNode.highlightMatchingExchanges(n1);
+			n1.setHighlighted(true);
+			n2.setHighlighted(true);
+		}
 		super.showSourceFeedback(req);
 	}
 
 	@Override
-	public void eraseSourceFeedback(Request request) {
-		// TODO adjust
-		// ProcessPart source = (ProcessPart) getSource();
-		// ProcessPart target = (ProcessPart) getTarget();
-		// ProductSystemNode productSystemNode = source.getModel().getParent();
-		// productSystemNode.removeHighlighting();
-		// source.getModel().setHighlighted(false);
-		// target.getModel().setHighlighted(false);
-		super.eraseSourceFeedback(request);
+	public void eraseSourceFeedback(Request req) {
+		if (req instanceof ReconnectRequest) {
+			ProcessPart source = (ProcessPart) getSource();
+			ProductSystemNode productSystemNode = source.getModel().getParent();
+			productSystemNode.removeHighlighting();
+		}
+		super.eraseSourceFeedback(req);
 	}
 
 	@Override

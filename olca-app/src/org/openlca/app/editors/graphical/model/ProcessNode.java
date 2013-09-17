@@ -21,6 +21,7 @@ import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.Process;
+import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 import com.google.common.base.Objects;
@@ -157,6 +158,14 @@ public class ProcessNode extends Node {
 	public void setXyLayoutConstraints(Rectangle xyLayoutConstraints) {
 		this.xyLayoutConstraints = xyLayoutConstraints;
 		getSupport().firePropertyChange(Node.PROPERTY_LAYOUT, null, "not null");
+	}
+
+	public boolean hasIncomingConnection(long flowId) {
+		for (ProcessLink link : getParent().getProductSystem()
+				.getIncomingLinks(getProcess().getId()))
+			if (link.getFlowId() == flowId)
+				return true;
+		return false;
 	}
 
 	public int getMinimumHeight() {
