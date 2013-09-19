@@ -14,6 +14,7 @@ import org.openlca.core.database.ParameterDao;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.Process;
+import org.openlca.core.model.Uncertainty;
 import org.openlca.expressions.FormulaInterpreter;
 import org.openlca.expressions.InterpreterException;
 import org.openlca.expressions.Scope;
@@ -53,6 +54,10 @@ public class ProcessEditor extends ModelEditor<Process> implements IEditor {
 		super.init(site, input);
 		initInterpreter();
 		eventBus.register(this);
+	}
+
+	public FormulaInterpreter getInterpreter() {
+		return interpreter;
 	}
 
 	private void initInterpreter() {
@@ -120,12 +125,15 @@ public class ProcessEditor extends ModelEditor<Process> implements IEditor {
 	private void evalExchange(Exchange e) throws Exception {
 		if (e.getAmountFormula() != null)
 			e.setAmountValue(eval(e.getAmountFormula()));
-		if (e.getParameter1Formula() != null)
-			e.setParameter1Value(eval(e.getParameter1Formula()));
-		if (e.getParameter2Formula() != null)
-			e.setParameter2Value(eval(e.getParameter2Formula()));
-		if (e.getParameter3Formula() != null)
-			e.setParameter3Value(eval(e.getParameter3Formula()));
+		Uncertainty u = e.getUncertainty();
+		if (u == null)
+			return;
+		if (u.getParameter1Formula() != null)
+			u.setParameter1Value(eval(u.getParameter1Formula()));
+		if (u.getParameter2Formula() != null)
+			u.setParameter2Value(eval(u.getParameter2Formula()));
+		if (u.getParameter3Formula() != null)
+			u.setParameter3Value(eval(u.getParameter3Formula()));
 	}
 
 	@Override

@@ -25,7 +25,7 @@ import org.openlca.core.model.NormalizationWeightingSet;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.RootEntity;
-import org.openlca.core.model.UncertaintyDistributionType;
+import org.openlca.core.model.UncertaintyType;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.util.Strings;
@@ -82,9 +82,8 @@ public class BaseLabelProvider extends ColumnLabelProvider {
 			return Labels.flowType((FlowType) enumValue);
 		if (enumValue instanceof ProcessType)
 			return Labels.processType((ProcessType) enumValue);
-		if (enumValue instanceof UncertaintyDistributionType)
-			return Labels
-					.uncertaintyType((UncertaintyDistributionType) enumValue);
+		if (enumValue instanceof UncertaintyType)
+			return Labels.uncertaintyType((UncertaintyType) enumValue);
 		if (enumValue != null)
 			return enumValue.toString();
 		return null;

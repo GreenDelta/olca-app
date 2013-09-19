@@ -21,6 +21,7 @@ import org.openlca.app.Event;
 import org.openlca.app.Messages;
 import org.openlca.app.components.IModelDropHandler;
 import org.openlca.app.components.ObjectDialog;
+import org.openlca.app.components.UncertaintyCellEditor;
 import org.openlca.app.db.Database;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Actions;
@@ -29,6 +30,7 @@ import org.openlca.app.util.Error;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
+import org.openlca.app.util.UncertaintyLabel;
 import org.openlca.app.util.Viewers;
 import org.openlca.app.viewers.table.modify.CheckBoxCellModifier;
 import org.openlca.app.viewers.table.modify.ComboBoxCellModifier;
@@ -146,6 +148,8 @@ class ExchangeTable {
 		modifySupport.bind(UNIT, new UnitModifier());
 		modifySupport.bind(AMOUNT, new AmountModifier());
 		modifySupport.bind(PEDIGREE, new PedigreeCellEditor(viewer, editor));
+		modifySupport.bind(UNCERTAINTY,
+				new UncertaintyCellEditor(viewer.getTable(), editor));
 		if (forInputs)
 			modifySupport.bind(DEFAULT_PROVIDER, new ProviderModifier());
 		if (!forInputs)
@@ -291,8 +295,7 @@ class ExchangeTable {
 			case 4:
 				return getAmountText(exchange);
 			case 5:
-				// TODO: uncertainty
-				return null;
+				return UncertaintyLabel.get(exchange.getUncertainty());
 			case 6:
 				if (forInputs)
 					return getDefaultProvider(exchange);
