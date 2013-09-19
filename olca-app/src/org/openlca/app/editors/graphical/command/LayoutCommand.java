@@ -18,7 +18,6 @@ import org.eclipse.gef.commands.Command;
 import org.openlca.app.Messages;
 import org.openlca.app.editors.graphical.layout.GraphLayoutManager;
 import org.openlca.app.editors.graphical.layout.GraphLayoutType;
-import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 
@@ -51,7 +50,7 @@ public class LayoutCommand extends Command {
 
 	@Override
 	public void execute() {
-		for (Node node : this.model.getChildren())
+		for (ProcessNode node : model.getChildren())
 			if (node.getFigure().isVisible())
 				oldConstraints.put(node.getFigure(), node.getFigure()
 						.getBounds().getCopy());

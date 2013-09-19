@@ -21,11 +21,13 @@ import org.openlca.app.editors.graphical.layout.GraphLayoutType;
 class ProductSystemFigure extends Figure {
 
 	private boolean firstTime = true;
+	private ProductSystemNode node;
 
 	ProductSystemFigure(ProductSystemNode node) {
 		setForegroundColor(ColorConstants.black);
 		setBorder(new LineBorder(1));
 		node.setFigure(this);
+		this.node = node;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -42,7 +44,7 @@ class ProductSystemFigure extends Figure {
 	@Override
 	public void paint(Graphics graphics) {
 		if (firstTime)
-			firePropertyChange("firstTimeInitialized", "not null", null);
+			node.getEditor().initializeLinks();
 		super.paint(graphics);
 		if (firstTime) {
 			getLayoutManager().layout(this, GraphLayoutType.TREE_LAYOUT);

@@ -1,6 +1,7 @@
 package org.openlca.app.editors.graphical;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.draw2d.ConnectionLayer;
 import org.eclipse.draw2d.Layer;
@@ -17,15 +18,19 @@ import org.eclipse.gef.commands.CommandStack;
 import org.eclipse.gef.editparts.ScalableRootEditPart;
 import org.eclipse.gef.editparts.ZoomManager;
 import org.eclipse.gef.ui.actions.ActionRegistry;
+import org.eclipse.gef.ui.actions.DeleteAction;
 import org.eclipse.gef.ui.actions.GEFActionConstants;
 import org.eclipse.gef.ui.actions.ZoomInAction;
 import org.eclipse.gef.ui.actions.ZoomOutAction;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.ui.IWorkbenchPart;
 import org.openlca.app.components.ModelTransfer;
 import org.openlca.app.editors.graphical.action.ActionFactory;
+import org.openlca.app.editors.graphical.action.ActionIds;
 import org.openlca.app.editors.graphical.model.AppEditPartFactory;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 
@@ -92,25 +97,36 @@ class GraphicalViewerConfigurator {
 		viewer.setRootEditPart(rootEditPart);
 	}
 
-	void configureActions() {
+	List<String> configureActions() {
 		actionRegistry.registerAction(ActionFactory
-				.createBuildSupplyChainMenuAction(model));
+				.createBuildSupplyChainMenuAction(model.getEditor()));
 		actionRegistry.registerAction(ActionFactory
-				.createRemoveSupplyChainAction(null));
+				.createRemoveSupplyChainAction(model.getEditor()));
 		actionRegistry.registerAction(ActionFactory
-				.createRemoveAllConnectionsAction());
+				.createRemoveAllConnectionsAction(model.getEditor()));
+		actionRegistry.registerAction(ActionFactory.createExpandAllAction(model.getEditor()));
+		actionRegistry.registerAction(ActionFactory.createCollapseAllAction(model.getEditor()));
 		actionRegistry.registerAction(new ZoomInAction(getZoomManager()));
 		actionRegistry.registerAction(new ZoomOutAction(getZoomManager()));
 
-		// DeleteAction delAction = new DeleteAction((IWorkbenchPart) this) {
-		//
-		// @Override
-		// protected ISelection getSelection() {
-		// return selectionService.getSelection();
-		// }
-		//
-		// };
-		// actionRegistry.registerAction(delAction);
+		DeleteAction delAction = new DeleteAction(
+				(IWorkbenchPart) model.getEditor()) {
+
+			@Override
+			protected ISelection getSelection() {
+				return model.getEditor().getSite().getWorkbenchWindow()
+						.getSelectionService().getSelection();
+			}
+
+		};
+		actionRegistry.registerAction(delAction);
+		List<String> updateableActions = new ArrayList<>();
+		updateableActions.add(ActionIds.BUILD_SUPPLY_CHAIN_MENU_ACTION_ID);
+		updateableActions.add(ActionIds.REMOVE_SUPPLY_CHAIN_ACTION_ID);
+		updateableActions.add(ActionIds.REMOVE_ALL_CONNECTIONS_ACTION_ID);
+		updateableActions.add(org.eclipse.ui.actions.ActionFactory.DELETE
+				.getId());
+		return updateableActions;
 	}
 
 	void configureZoomManager() {

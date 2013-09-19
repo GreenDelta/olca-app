@@ -1,7 +1,5 @@
 package org.openlca.app.editors.graphical.outline;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,8 +24,7 @@ import org.openlca.app.editors.graphical.action.ActionFactory;
 import org.openlca.app.editors.graphical.action.HideShowAction;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 
-public class OutlinePage extends ContentOutlinePage implements
-		PropertyChangeListener {
+public class OutlinePage extends ContentOutlinePage {
 
 	private HideShowAction showAction;
 	private HideShowAction hideAction;
@@ -84,7 +81,6 @@ public class OutlinePage extends ContentOutlinePage implements
 		getViewer().setContextMenu(createContextMenu());
 		selectionSynchronizer.addViewer(getViewer());
 		searchText.addModifyListener(new SearchModifyListener());
-		model.addPropertyChangeListener(this);
 	}
 
 	@Override
@@ -92,21 +88,11 @@ public class OutlinePage extends ContentOutlinePage implements
 		return sash;
 	}
 
-	@Override
-	public void propertyChange(PropertyChangeEvent arg0) {
-		if (arg0.getPropertyName().equals("processes")
-				|| arg0.getPropertyName().equals("processLinks")
-				|| arg0.getPropertyName().equals("refreshTree")) {
-			getViewer().setEditPartFactory(new AppTreeEditPartFactory(model));
-			getViewer().setContents(model.getProductSystem());
-			getViewer().getControl().redraw();
-			getViewer().getControl().update();
-		}
-	}
-
 	public void refresh() {
-		propertyChange(new PropertyChangeEvent(this, "refreshTree", "not null",
-				null));
+		getViewer().setEditPartFactory(new AppTreeEditPartFactory(model));
+		getViewer().setContents(model.getProductSystem());
+		getViewer().getControl().redraw();
+		getViewer().getControl().update();
 	}
 
 	private class SearchPaintListener implements PaintListener {

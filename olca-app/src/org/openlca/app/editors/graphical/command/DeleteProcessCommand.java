@@ -39,6 +39,8 @@ public class DeleteProcessCommand extends Command {
 		node.getParent().getProductSystem().getProcesses()
 				.remove(node.getProcess().getId());
 		node.getParent().remove(node);
+		if (node.getParent().getEditor().getOutline() != null)
+			node.getParent().getEditor().getOutline().refresh();
 	}
 
 	@Override
@@ -48,9 +50,7 @@ public class DeleteProcessCommand extends Command {
 
 	@Override
 	public void redo() {
-		node.getParent().getProductSystem().getProcesses()
-				.remove(node.getProcess().getId());
-		node.getParent().remove(node);
+		execute();
 	}
 
 	void setNode(ProcessNode node) {
@@ -63,5 +63,7 @@ public class DeleteProcessCommand extends Command {
 		node.setXyLayoutConstraints(oldLayout);
 		node.getParent().getProductSystem().getProcesses()
 				.add(node.getProcess().getId());
+		if (node.getParent().getEditor().getOutline() != null)
+			node.getParent().getEditor().getOutline().refresh();
 	}
 }

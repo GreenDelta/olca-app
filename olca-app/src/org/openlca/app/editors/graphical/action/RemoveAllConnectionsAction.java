@@ -9,13 +9,12 @@
  ******************************************************************************/
 package org.openlca.app.editors.graphical.action;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.gef.EditPart;
 import org.eclipse.gef.commands.Command;
-import org.eclipse.jface.action.Action;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.openlca.app.Messages;
 import org.openlca.app.editors.graphical.command.CommandFactory;
@@ -24,19 +23,17 @@ import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
 
-public class RemoveAllConnectionsAction extends Action {
+public class RemoveAllConnectionsAction extends EditorAction {
 
-	private List<ConnectionLink> links = new ArrayList<>();
-	private ProcessNode[] processNodes;
-	private IStructuredSelection selection;
-	private PropertyChangeSupport support = new PropertyChangeSupport(this);
+	private List<ProcessNode> processNodes = new ArrayList<>();
 
 	RemoveAllConnectionsAction() {
 		setId(ActionIds.REMOVE_ALL_CONNECTIONS_ACTION_ID);
 		setText(Messages.Systems_RemoveAllConnectionsAction_Text);
 	}
 
-	private Command getDeleteCommand(ProcessNode node) {
+	private Command getDeleteCommand(ProcessNode node,
+			List<ConnectionLink> links) {
 		Command chainCommand = null;
 		for (ConnectionLink link : node.getLinks()) {
 			if (!links.contains(link)) {
@@ -51,29 +48,21 @@ public class RemoveAllConnectionsAction extends Action {
 		return chainCommand;
 	}
 
-	public void addPropertyChangeListener(PropertyChangeListener listener) {
-		support.addPropertyChangeListener(listener);
-	}
-
-	public void removePropertyChangeListener(PropertyChangeListener listener) {
-		support.removePropertyChangeListener(listener);
-	}
-
 	@Override
 	public void run() {
-		if (processNodes.length == 0)
+		if (processNodes.size() == 0)
 			return;
 		Command chainCommand = null;
-		ProductSystem productSystem = processNodes[0].getParent()
+		ProductSystem productSystem = processNodes.get(0).getParent()
 				.getProductSystem();
-
+		List<ConnectionLink> links = new ArrayList<>();
 		for (ProcessNode processNode : processNodes) {
 			ProcessLink[] processLinks = productSystem
 					.getProcessLinks(processNode.getProcess().getId());
 			for (ProcessLink link : processLinks)
 				productSystem.getProcessLinks().remove(link);
 
-			Command cmd = getDeleteCommand(processNode);
+			Command cmd = getDeleteCommand(processNode, links);
 			if (cmd != null)
 				if (chainCommand == null)
 					chainCommand = cmd;
@@ -81,19 +70,27 @@ public class RemoveAllConnectionsAction extends Action {
 					chainCommand = chainCommand.chain(cmd);
 		}
 
-		processNodes[0].getParent().getEditor().getCommandStack()
+		processNodes.get(0).getParent().getEditor().getCommandStack()
 				.execute(chainCommand);
-
-		links.clear();
-		support.firePropertyChange("RemovedConnections", null, selection);
 	}
 
-	public void setProcessNodes(ProcessNode[] processNodes) {
-		this.processNodes = processNodes;
-	}
+	@Override
+	protected boolean accept(ISelection selection) {
+		processNodes = new ArrayList<>();
+		if (selection == null)
+			return false;
+		if (selection.isEmpty())
+			return false;
+		if (!(selection instanceof IStructuredSelection))
+			return false;
 
-	public void setSelection(IStructuredSelection selection) {
-		this.selection = selection;
+		IStructuredSelection sel = (IStructuredSelection) selection;
+		for (Object o : sel.toArray())
+			if (o instanceof EditPart) {
+				Object model = ((EditPart) o).getModel();
+				if (model instanceof ProcessNode)
+					processNodes.add((ProcessNode) model);
+			}
+		return processNodes.size() > 0;
 	}
-
 }

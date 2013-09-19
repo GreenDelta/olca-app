@@ -8,7 +8,7 @@ import org.eclipse.gef.requests.CreateConnectionRequest;
 import org.eclipse.gef.requests.ReconnectRequest;
 import org.openlca.app.editors.graphical.command.CreateLinkCommand;
 
-public abstract class AbstractNodeEditPart<N extends Node> extends
+abstract class AbstractNodeEditPart<N extends Node> extends
 		AppAbstractEditPart<N> implements NodeEditPart {
 
 	@Override

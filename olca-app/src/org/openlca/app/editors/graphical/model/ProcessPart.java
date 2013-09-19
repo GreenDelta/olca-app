@@ -9,7 +9,6 @@
  ******************************************************************************/
 package org.openlca.app.editors.graphical.model;
 
-import java.beans.PropertyChangeEvent;
 import java.util.List;
 
 import org.eclipse.draw2d.IFigure;
@@ -26,7 +25,7 @@ import org.openlca.app.editors.graphical.command.CommandFactory;
 import org.openlca.app.editors.graphical.command.DeleteProcessCommand;
 import org.openlca.app.editors.graphical.policy.LayoutPolicy;
 
-public class ProcessPart extends AbstractNodeEditPart<ProcessNode> {
+class ProcessPart extends AbstractNodeEditPart<ProcessNode> {
 
 	@Override
 	protected void addChildVisual(EditPart childEditPart, int index) {
@@ -39,7 +38,6 @@ public class ProcessPart extends AbstractNodeEditPart<ProcessNode> {
 		ProcessFigure figure = new ProcessFigure(getModel());
 		ProcessNode pNode = getModel();
 		pNode.setFigure(figure);
-		figure.addPropertyChangeListener(this);
 		return figure;
 	}
 
@@ -123,30 +121,23 @@ public class ProcessPart extends AbstractNodeEditPart<ProcessNode> {
 			super.setSelected(value);
 			for (ConnectionLink link : getModel().getLinks())
 				if (link.isVisible())
-					link.setHighlighted(value);
+					link.setSelected(value);
 		}
 	}
 
 	@Override
-	public void propertyChange(PropertyChangeEvent evt) {
-		if (Node.PROPERTY_ADD.equals(evt.getPropertyName())
-				|| Node.PROPERTY_REMOVE.equals(evt.getPropertyName()))
-			refreshChildren();
-		if (ProcessNode.CONNECTION.equals(evt.getPropertyName())) {
-			ConnectionLink link = (ConnectionLink) evt.getNewValue();
-			if (link == null)
-				link = (ConnectionLink) evt.getOldValue();
-			if (getModel().equals(link.getSourceNode()))
-				refreshSourceConnections();
-			else
-				refreshTargetConnections();
-		}
-		if ("SELECT".equals(evt.getPropertyName()))
-			if ("true".equals(evt.getNewValue().toString()))
-				setSelected(EditPart.SELECTED);
-			else
-				setSelected(EditPart.SELECTED_NONE);
+	public void refreshSourceConnections() {
+		super.refreshSourceConnections();
+	}
+
+	@Override
+	public void refreshTargetConnections() {
+		super.refreshTargetConnections();
+	}
+
+	void revalidate() {
 		((GraphicalEditPart) getViewer().getContents()).getFigure()
 				.revalidate();
 	}
+
 }

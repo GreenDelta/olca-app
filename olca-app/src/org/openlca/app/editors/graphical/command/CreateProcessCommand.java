@@ -44,6 +44,8 @@ public class CreateProcessCommand extends Command {
 	public void execute() {
 		model.getProductSystem().getProcesses().add(process.getId());
 		model.add(new ProcessNode(process));
+		if (model.getEditor().getOutline() != null)
+			model.getEditor().getOutline().refresh();
 	}
 
 	@Override
@@ -68,5 +70,7 @@ public class CreateProcessCommand extends Command {
 	public void undo() {
 		model.getProductSystem().getProcesses().remove(process.getId());
 		model.remove(model.getProcessNode(process.getId()));
+		if (model.getEditor().getOutline() != null)
+			model.getEditor().getOutline().refresh();
 	}
 }

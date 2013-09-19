@@ -12,16 +12,12 @@ package org.openlca.app.editors.graphical.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.jface.action.IAction;
 import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
-import org.openlca.app.editors.graphical.layout.GraphLayoutType;
 import org.openlca.core.model.ProductSystem;
 
 public class ProductSystemNode extends Node {
 
-	public static String PROPERTY_LAYOUT_MANAGER = "Layout manager";
 	private ProductSystemGraphEditor editor;
-	private ProductSystemPart part;
 	private ProductSystem productSystem;
 	private List<ProcessNode> outlineNodes = new ArrayList<>();
 
@@ -41,20 +37,8 @@ public class ProductSystemNode extends Node {
 		return editor;
 	}
 
-	public ProductSystemPart getPart() {
-		return part;
-	}
-
-	public void setPart(ProductSystemPart part) {
-		this.part = part;
-	}
-
 	public ProductSystem getProductSystem() {
 		return productSystem;
-	}
-
-	public void setGraphLayoutType(GraphLayoutType type, IAction action) {
-		getSupport().firePropertyChange(PROPERTY_LAYOUT_MANAGER, action, type);
 	}
 
 	public void add(ProcessNode node) {
@@ -73,6 +57,11 @@ public class ProductSystemNode extends Node {
 			if (node.getProcess().getId() == id)
 				return node;
 		return null;
+	}
+
+	@Override
+	protected String getName() {
+		return productSystem.getName();
 	}
 
 	public void addOutlineNode(ProcessNode node) {
@@ -102,6 +91,10 @@ public class ProductSystemNode extends Node {
 				for (ExchangeNode exchangeNode : node.getChildren().get(0)
 						.getChildren())
 					exchangeNode.setHighlighted(false);
+	}
+
+	public void refresh() {
+		getEditPart().refresh();
 	}
 
 }

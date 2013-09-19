@@ -31,7 +31,7 @@ public class ExchangeNode extends Node {
 	}
 
 	@Override
-	public String getName() {
+	protected String getName() {
 		if (isDummy())
 			return "";
 		return Labels.getDisplayName(Descriptors.toDescriptor(exchange

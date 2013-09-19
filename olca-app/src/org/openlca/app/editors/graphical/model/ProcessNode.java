@@ -28,8 +28,6 @@ import com.google.common.base.Objects;
 
 public class ProcessNode extends Node {
 
-	public static String CONNECTION = "Connection";
-
 	private ProcessDescriptor process;
 	private List<ConnectionLink> links = new ArrayList<>();
 	private Rectangle xyLayoutConstraints;
@@ -42,6 +40,11 @@ public class ProcessNode extends Node {
 	@Override
 	public ProductSystemNode getParent() {
 		return (ProductSystemNode) super.getParent();
+	}
+
+	@Override
+	ProcessPart getEditPart() {
+		return (ProcessPart) super.getEditPart();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -61,18 +64,31 @@ public class ProcessNode extends Node {
 		super.setFigure(figure);
 	}
 
-	public void add(ConnectionLink connectionLink) {
-		links.add(connectionLink);
-		getSupport().firePropertyChange(CONNECTION, null, connectionLink);
+	public void add(ConnectionLink link) {
+		links.add(link);
+		if (equals(link.getSourceNode()))
+			getEditPart().refreshSourceConnections();
+		else if (equals(link.getTargetNode()))
+			getEditPart().refreshTargetConnections();
 	}
 
-	public void remove(ConnectionLink connectionLink) {
-		links.remove(connectionLink);
-		getSupport().firePropertyChange(CONNECTION, connectionLink, null);
+	public void remove(ConnectionLink link) {
+		links.remove(link);
+		if (equals(link.getSourceNode()))
+			getEditPart().refreshSourceConnections();
+		else if (equals(link.getTargetNode()))
+			getEditPart().refreshTargetConnections();
 	}
 
 	public List<ConnectionLink> getLinks() {
 		return links;
+	}
+
+	public ConnectionLink getLink(ProcessLink link) {
+		for (ConnectionLink l : links)
+			if (l.getProcessLink().equals(link))
+				return l;
+		return null;
 	}
 
 	public void removeAllLinks() {
@@ -83,7 +99,7 @@ public class ProcessNode extends Node {
 	}
 
 	@Override
-	public String getName() {
+	protected String getName() {
 		String text = process.getName();
 		if (process.getLocation() != null)
 			text += " ["
@@ -157,7 +173,7 @@ public class ProcessNode extends Node {
 
 	public void setXyLayoutConstraints(Rectangle xyLayoutConstraints) {
 		this.xyLayoutConstraints = xyLayoutConstraints;
-		getSupport().firePropertyChange(Node.PROPERTY_LAYOUT, null, "not null");
+		getEditPart().revalidate();
 	}
 
 	public boolean hasIncomingConnection(long flowId) {
@@ -181,9 +197,9 @@ public class ProcessNode extends Node {
 	public void setLinksHighlighted(boolean value) {
 		for (ConnectionLink link : links)
 			if (value)
-				link.setHighlighted(1);
+				link.setSelected(1);
 			else
-				link.setHighlighted(0);
+				link.setSelected(0);
 	}
 
 	public boolean hasConnections() {
@@ -221,6 +237,10 @@ public class ProcessNode extends Node {
 				.getFigure().getLayoutManager();
 		layoutManager.layout(getFigure(), getParent().getEditor()
 				.getLayoutType());
+	}
+
+	public void setSelected(int value) {
+		getEditPart().setSelected(value);
 	}
 
 	@Override

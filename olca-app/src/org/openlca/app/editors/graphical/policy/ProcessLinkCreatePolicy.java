@@ -22,7 +22,6 @@ import org.openlca.app.editors.graphical.command.CommandFactory;
 import org.openlca.app.editors.graphical.command.CreateLinkCommand;
 import org.openlca.app.editors.graphical.model.ConnectionLink;
 import org.openlca.app.editors.graphical.model.ExchangeNode;
-import org.openlca.app.editors.graphical.model.ExchangePart;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 
 public class ProcessLinkCreatePolicy extends GraphicalNodeEditPolicy {
@@ -96,7 +95,7 @@ public class ProcessLinkCreatePolicy extends GraphicalNodeEditPolicy {
 
 	@Override
 	protected Command getReconnectSourceCommand(ReconnectRequest request) {
-		if (request.getTarget() instanceof ExchangePart) {
+		if (request.getTarget().getModel() instanceof ExchangeNode) {
 			ConnectionLink link = (ConnectionLink) request
 					.getConnectionEditPart().getModel();
 			ExchangeNode source = (ExchangeNode) request.getTarget().getModel();
@@ -109,7 +108,7 @@ public class ProcessLinkCreatePolicy extends GraphicalNodeEditPolicy {
 
 	@Override
 	protected Command getReconnectTargetCommand(ReconnectRequest request) {
-		if (request.getTarget() instanceof ExchangePart) {
+		if (request.getTarget().getModel() instanceof ExchangeNode) {
 			ConnectionLink link = (ConnectionLink) request
 					.getConnectionEditPart().getModel();
 			ExchangeNode target = (ExchangeNode) request.getTarget().getModel();
@@ -128,22 +127,21 @@ public class ProcessLinkCreatePolicy extends GraphicalNodeEditPolicy {
 
 	@Override
 	public void eraseSourceFeedback(Request request) {
-		if (getHost() instanceof ExchangePart) {
-			ExchangePart part = (ExchangePart) getHost();
-			part.getModel().getParent().getParent().getParent()
-					.removeHighlighting();
-			part.getModel().setHighlighted(false);
+		if (getHost().getModel() instanceof ExchangeNode) {
+			ExchangeNode node = (ExchangeNode) getHost().getModel();
+			node.getParent().getParent().getParent().removeHighlighting();
+			node.setHighlighted(false);
 		}
 		super.eraseSourceFeedback(request);
 	}
 
 	@Override
 	public void showSourceFeedback(Request request) {
-		if (getHost() instanceof ExchangePart) {
-			ExchangePart part = (ExchangePart) getHost();
-			part.getModel().getParent().getParent().getParent()
-					.highlightMatchingExchanges(part.getModel());
-			part.getModel().setHighlighted(true);
+		if (getHost().getModel() instanceof ExchangeNode) {
+			ExchangeNode node = (ExchangeNode) getHost().getModel();
+			node.getParent().getParent().getParent()
+					.highlightMatchingExchanges(node);
+			node.setHighlighted(true);
 		}
 		super.showSourceFeedback(request);
 	}

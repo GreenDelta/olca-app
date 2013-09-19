@@ -2,17 +2,16 @@ package org.openlca.app.editors.graphical.action;
 
 import static org.openlca.app.editors.graphical.action.ChangeAllStateAction.MAXIMIZE;
 import static org.openlca.app.editors.graphical.action.ChangeAllStateAction.MINIMIZE;
-import static org.openlca.app.editors.graphical.action.ExpansionAction.EXPAND;
-import static org.openlca.app.editors.graphical.action.ExpansionAction.COLLAPSE;
-import static org.openlca.app.editors.graphical.action.HideShowAction.SHOW;
+import static org.openlca.app.editors.graphical.action.MassExpansionAction.COLLAPSE;
+import static org.openlca.app.editors.graphical.action.MassExpansionAction.EXPAND;
 import static org.openlca.app.editors.graphical.action.HideShowAction.HIDE;
+import static org.openlca.app.editors.graphical.action.HideShowAction.SHOW;
 
 import org.eclipse.gef.ui.parts.TreeViewer;
+import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
 import org.openlca.app.editors.graphical.layout.GraphLayoutType;
-import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.core.model.ProcessType;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 public class ActionFactory {
 
@@ -22,15 +21,9 @@ public class ActionFactory {
 	}
 
 	public static BuildSupplyChainMenuAction createBuildSupplyChainMenuAction(
-			ProductSystemNode model) {
-		return createBuildSupplyChainMenuAction(model, null);
-	}
-
-	public static BuildSupplyChainMenuAction createBuildSupplyChainMenuAction(
-			ProductSystemNode model, ProcessDescriptor startProcess) {
+			ProductSystemGraphEditor editor) {
 		BuildSupplyChainMenuAction action = new BuildSupplyChainMenuAction();
-		action.setModel(model);
-		action.setStartProcess(startProcess);
+		action.setEditor(editor);
 		return action;
 	}
 
@@ -48,16 +41,17 @@ public class ActionFactory {
 		return action;
 	}
 
-	public static ExpansionAction createExpandAllAction(ProductSystemNode model) {
-		ExpansionAction action = new ExpansionAction(EXPAND);
-		action.setModel(model);
+	public static MassExpansionAction createExpandAllAction(
+			ProductSystemGraphEditor editor) {
+		MassExpansionAction action = new MassExpansionAction(EXPAND);
+		action.setEditor(editor);
 		return action;
 	}
 
-	public static ExpansionAction createCollapseAllAction(
-			ProductSystemNode model) {
-		ExpansionAction action = new ExpansionAction(COLLAPSE);
-		action.setModel(model);
+	public static MassExpansionAction createCollapseAllAction(
+			ProductSystemGraphEditor editor) {
+		MassExpansionAction action = new MassExpansionAction(COLLAPSE);
+		action.setEditor(editor);
 		return action;
 	}
 
@@ -88,16 +82,17 @@ public class ActionFactory {
 		return new OpenMiniatureViewAction();
 	}
 
-	public static RemoveAllConnectionsAction createRemoveAllConnectionsAction() {
+	public static RemoveAllConnectionsAction createRemoveAllConnectionsAction(
+			ProductSystemGraphEditor editor) {
 		RemoveAllConnectionsAction action = new RemoveAllConnectionsAction();
-
+		action.setEditor(editor);
 		return action;
 	}
 
 	public static RemoveSupplyChainAction createRemoveSupplyChainAction(
-			ProcessNode node) {
+			ProductSystemGraphEditor editor) {
 		RemoveSupplyChainAction action = new RemoveSupplyChainAction();
-		action.setNode(node);
+		action.setEditor(editor);
 		return action;
 	}
 

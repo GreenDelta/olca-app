@@ -9,9 +9,6 @@
  ******************************************************************************/
 package org.openlca.app.editors.graphical.model;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-
 import org.eclipse.draw2d.ConnectionRouter;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.PolygonDecoration;
@@ -28,30 +25,22 @@ import org.eclipse.gef.requests.ReconnectRequest;
 import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
 import org.openlca.app.editors.graphical.command.CommandFactory;
 
-public class ConnectionLinkPart extends AbstractConnectionEditPart implements
-		PropertyChangeListener {
+class ConnectionLinkPart extends AbstractConnectionEditPart {
 
 	@Override
 	public void activate() {
-		getModel().addPropertyChangeListener(this);
+		getModel().setEditPart(this);
 		super.activate();
 	}
 
 	@Override
-	public void deactivate() {
-		getModel().removePropertyChangeListener(this);
-		super.deactivate();
-	}
-
-	@Override
 	protected IFigure createFigure() {
-		ConnectionLinkFigure figure = new ConnectionLinkFigure();
+		PolylineConnection figure = new PolylineConnection();
 		figure.setForegroundColor(ConnectionLink.COLOR);
 		figure.setConnectionRouter(getConnectionRouter());
 		figure.setTargetDecoration(new PolygonDecoration());
 		figure.setVisible(isVisible());
 		getModel().setFigure(figure);
-		figure.addPropertyChangeListener(this);
 		return figure;
 	}
 
@@ -145,18 +134,13 @@ public class ConnectionLinkPart extends AbstractConnectionEditPart implements
 	}
 
 	@Override
-	public void propertyChange(PropertyChangeEvent evt) {
-		if (ConnectionLink.REFRESH_SOURCE_ANCHOR.equals(evt.getPropertyName()))
-			refreshSourceAnchor();
-		else if (ConnectionLink.REFRESH_TARGET_ANCHOR.equals(evt
-				.getPropertyName()))
-			refreshTargetAnchor();
-		else if (ConnectionLink.HIGHLIGHT.equals(evt.getPropertyName()))
-			setSelected((Integer) evt.getNewValue());
-		else if ("SELECT".equals(evt.getPropertyName()))
-			if ("false".equals(evt.getNewValue().toString()))
-				setSelected(EditPart.SELECTED_NONE);
+	public void refreshSourceAnchor() {
+		super.refreshSourceAnchor();
+	}
 
+	@Override
+	public void refreshTargetAnchor() {
+		super.refreshTargetAnchor();
 	}
 
 }
