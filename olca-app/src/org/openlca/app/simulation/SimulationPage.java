@@ -35,7 +35,7 @@ public class SimulationPage extends FormPage {
 	private final int IMPACT = 1;
 	private int resultType = FLOW;
 
-	private EntityCache cache = Database.getCache();
+	private EntityCache cache = Database.getEntityCache();
 	private SimulationEditor editor;
 	private StatisticsCanvas statisticsCanvas;
 	private ProgressBar progressBar;

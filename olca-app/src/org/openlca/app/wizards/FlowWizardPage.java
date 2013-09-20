@@ -81,7 +81,7 @@ class FlowWizardPage extends AbstractWizardPage<Flow> {
 	private void addFlowProperty(Flow flow) {
 		try {
 			long id = referenceFlowPropertyViewer.getSelected().getId();
-			FlowProperty flowProp = Database.getCache().get(FlowProperty.class,
+			FlowProperty flowProp = Database.getEntityCache().get(FlowProperty.class,
 					id);
 			flow.setReferenceFlowProperty(flowProp);
 			FlowPropertyFactor factor = new FlowPropertyFactor();

@@ -108,7 +108,7 @@ public class AnalyzeInfoPage extends FormPage {
 			public void run() {
 				try {
 					new AnalysisResultExport(setup.getProductSystem(),
-							exportFile, Database.getCache()).run(result);
+							exportFile, Database.getEntityCache()).run(result);
 					success[0] = true;
 				} catch (Exception exc) {
 					log.error("Excel export failed", exc);

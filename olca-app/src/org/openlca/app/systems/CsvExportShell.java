@@ -53,7 +53,7 @@ public class CsvExportShell extends Shell implements SelectionListener {
 		createContents();
 		data = new CsvMatrixExportData();
 		data.setDatabase(Database.get());
-		data.setCache(Database.getCache());
+		data.setCache(Database.getEntityCache());
 		data.setProductSystem(system);
 		UI.center(parent, this);
 	}

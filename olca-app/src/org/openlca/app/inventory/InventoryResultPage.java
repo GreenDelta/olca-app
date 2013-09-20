@@ -41,7 +41,7 @@ public class InventoryResultPage extends FormPage {
 	private final String UNIT = Messages.Unit;
 	private final String AMOUNT = Messages.Amount;
 
-	private EntityCache cache = Database.getCache();
+	private EntityCache cache = Database.getEntityCache();
 	private FormToolkit toolkit;
 	private InventoryResultProvider resultProvider;
 

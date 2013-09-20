@@ -20,7 +20,7 @@ class FlowContributionProvider implements
 
 	public FlowContributionProvider(AnalysisResult result) {
 		this.result = result;
-		this.cache = Database.getCache();
+		this.cache = Database.getEntityCache();
 	}
 
 	@Override
@@ -51,7 +51,7 @@ class FlowContributionProvider implements
 		if (result == null || flow == null)
 			return Collections.emptyList();
 		List<AnalysisFlowResult> flowResults = result.getFlowResults()
-				.getForFlow(flow, Database.getCache());
+				.getForFlow(flow, Database.getEntityCache());
 		if (flowResults.isEmpty())
 			return Collections.emptyList();
 		double refVale = getRefValue(flowResults);

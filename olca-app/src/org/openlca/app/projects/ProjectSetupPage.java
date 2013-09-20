@@ -104,7 +104,7 @@ public class ProjectSetupPage extends ModelPage<Project> {
 				});
 		impactMethodViewer.setInput(database);
 		if (project.getImpactMethodId() != null) {
-			ImpactMethodDescriptor d = Database.getCache().get(
+			ImpactMethodDescriptor d = Database.getEntityCache().get(
 					ImpactMethodDescriptor.class, project.getImpactMethodId());
 			impactMethodViewer.select(d);
 		}

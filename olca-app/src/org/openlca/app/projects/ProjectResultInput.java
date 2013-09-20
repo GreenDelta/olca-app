@@ -45,7 +45,7 @@ class ProjectResultInput implements IEditorInput {
 
 	@Override
 	public String getName() {
-		EntityCache cache = Database.getCache();
+		EntityCache cache = Database.getEntityCache();
 		if (cache == null)
 			return "";
 		ProjectDescriptor d = cache.get(ProjectDescriptor.class, projectId);

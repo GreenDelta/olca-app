@@ -42,7 +42,7 @@ class ProjectParameterTable {
 	private final String PROCESS = Messages.Process;
 
 	private ProjectEditor editor;
-	private EntityCache cache = Database.getCache();
+	private EntityCache cache = Database.getEntityCache();
 
 	private List<ParameterRedef> redefs = new ArrayList<>();
 	private ModifySupport<ParameterRedef> modifySupport;

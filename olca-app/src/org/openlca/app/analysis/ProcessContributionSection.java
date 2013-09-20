@@ -34,7 +34,7 @@ import org.openlca.core.model.descriptors.FlowDescriptor;
  */
 class ProcessContributionSection<T> {
 
-	private EntityCache cache = Database.getCache();
+	private EntityCache cache = Database.getEntityCache();
 	private String sectionTitle = "#no title";
 	private String selectionName = "#no item name";
 	private IProcessContributionProvider<T> provider;

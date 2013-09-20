@@ -29,7 +29,7 @@ public class Labels {
 	public static String getDisplayName(BaseDescriptor descriptor) {
 		if (descriptor == null)
 			return "";
-		EntityCache cache = Database.getCache();
+		EntityCache cache = Database.getEntityCache();
 		String text = descriptor.getName();
 		if (cache == null)
 			return text;

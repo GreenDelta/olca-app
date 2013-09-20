@@ -37,7 +37,7 @@ class FlowUseSection {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private Flow flow;
-	private EntityCache cache = Database.getCache();
+	private EntityCache cache = Database.getEntityCache();
 	private IDatabase database;
 	private Composite parent;
 	private FormToolkit toolkit;

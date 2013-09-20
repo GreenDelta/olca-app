@@ -43,7 +43,7 @@ import com.google.gson.Gson;
  */
 public class LocationContributionPage extends FormPage implements HtmlPage {
 
-	private EntityCache cache = Database.getCache();
+	private EntityCache cache = Database.getEntityCache();
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private AnalysisResult result;
 	private Browser browser;

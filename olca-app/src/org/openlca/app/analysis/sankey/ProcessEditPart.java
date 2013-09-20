@@ -31,7 +31,7 @@ import com.google.common.base.Objects;
 public class ProcessEditPart extends AbstractGraphicalEditPart implements
 		NodeEditPart, PropertyChangeListener {
 
-	private EntityCache cache = Database.getCache();
+	private EntityCache cache = Database.getEntityCache();
 
 	@Override
 	public void activate() {

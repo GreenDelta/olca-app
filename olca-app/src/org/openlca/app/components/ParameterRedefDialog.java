@@ -54,7 +54,7 @@ public class ParameterRedefDialog extends FormDialog {
 	private IStructuredSelection selection;
 
 	public static List<ParameterRedef> select() {
-		TreeModel model = loadModel(Database.get(), Database.getCache());
+		TreeModel model = loadModel(Database.get(), Database.getEntityCache());
 		ParameterRedefDialog dialog = new ParameterRedefDialog(UI.shell(),
 				model);
 		if (dialog.open() != OK)

@@ -52,7 +52,7 @@ public class ProjectResultActions extends EditorActionBarContributor {
 		if (file == null)
 			return;
 		ProjectResultExport export = new ProjectResultExport(project, file,
-				Database.getCache());
+				Database.getEntityCache());
 		tryRun(export, result);
 	}
 

@@ -10,8 +10,8 @@ import org.openlca.app.Messages;
 import org.openlca.app.components.ProgressAdapter;
 import org.openlca.app.db.Database;
 import org.openlca.core.database.BaseDao;
-import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.IProductSystemBuilder;
+import org.openlca.core.matrix.cache.MatrixCache;
 import org.openlca.core.model.ProductSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,13 +55,13 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 
 		private ProductSystem system;
 		private boolean preferSystemProcesses;
-		private IDatabase db;
+		private MatrixCache cache;
 		private Double cutoff;
 
 		public Runner(ProductSystem system, boolean preferSystemProcesses) {
 			this.system = system;
 			this.preferSystemProcesses = preferSystemProcesses;
-			this.db = Database.get();
+			this.cache = Database.getMatrixCache();
 		}
 
 		public void setCutoff(double cutoff) {
@@ -77,10 +77,10 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 				ProgressAdapter progress = new ProgressAdapter(monitor);
 				IProductSystemBuilder builder = null;
 				if (cutoff == null)
-					builder = IProductSystemBuilder.Factory.create(db,
+					builder = IProductSystemBuilder.Factory.create(cache,
 							progress, preferSystemProcesses);
 				else
-					builder = IProductSystemBuilder.Factory.create(db,
+					builder = IProductSystemBuilder.Factory.create(cache,
 							progress, preferSystemProcesses, cutoff);
 				builder.autoComplete(system);
 				monitor.done();

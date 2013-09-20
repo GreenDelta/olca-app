@@ -52,7 +52,7 @@ public class InventoryResultInput implements IEditorInput {
 
 	@Override
 	public String getName() {
-		EntityCache cache = Database.getCache();
+		EntityCache cache = Database.getEntityCache();
 		if (cache == null)
 			return "";
 		ProductSystemDescriptor d = cache.get(ProductSystemDescriptor.class,

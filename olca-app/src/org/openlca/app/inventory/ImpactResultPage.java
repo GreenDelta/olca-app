@@ -28,7 +28,7 @@ public class ImpactResultPage extends FormPage {
 	private final String RESULT = "Result";
 	private final String REFERENCE_UNIT = "Reference unit";
 
-	private EntityCache cache = Database.getCache();
+	private EntityCache cache = Database.getEntityCache();
 	private FormToolkit toolkit;
 	private ImpactResultProvider result;
 

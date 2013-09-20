@@ -33,7 +33,7 @@ import org.openlca.core.results.ContributionTreeNode;
 
 public class ContributionTreePage extends FormPage {
 
-	private EntityCache cache = Database.getCache();
+	private EntityCache cache = Database.getEntityCache();
 	private AnalyzeEditor editor;
 	private AnalysisResult result;
 	private TreeViewer contributionTree;
@@ -57,7 +57,7 @@ public class ContributionTreePage extends FormPage {
 
 		Composite composite = toolkit.createComposite(body);
 		UI.gridLayout(composite, 2);
-		FlowImpactSelection.on(result, Database.getCache())
+		FlowImpactSelection.on(result, Database.getEntityCache())
 				.withEventHandler(new SelectionHandler())
 				.create(composite, toolkit);
 

@@ -15,7 +15,7 @@ class ImpactContributionProvider implements
 		IProcessContributionProvider<ImpactCategoryDescriptor> {
 
 	private AnalysisResult result;
-	private EntityCache cache = Database.getCache();
+	private EntityCache cache = Database.getEntityCache();
 
 	public ImpactContributionProvider(AnalysisResult result) {
 		this.result = result;

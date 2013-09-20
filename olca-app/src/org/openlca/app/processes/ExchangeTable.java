@@ -66,7 +66,7 @@ class ExchangeTable {
 	private final ProcessEditor editor;
 	private Process process;
 	private IDatabase database = Database.get();
-	private EntityCache cache = Database.getCache();
+	private EntityCache cache = Database.getEntityCache();
 
 	private final String FLOW = Messages.Flow;
 	private final String CATEGORY = Messages.Category;

@@ -42,7 +42,7 @@ class SimulationExportAction extends Action {
 	private void tryRun(File file) {
 		try {
 			SimulationResultExport export = new SimulationResultExport(result,
-					Database.getCache());
+					Database.getEntityCache());
 			export.run(file);
 		} catch (Exception e) {
 			log.error("Result export failed", e);

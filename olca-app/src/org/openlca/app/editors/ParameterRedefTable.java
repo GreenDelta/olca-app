@@ -141,7 +141,7 @@ public class ParameterRedefTable {
 	private class LabelProvider extends org.eclipse.jface.viewers.LabelProvider
 			implements ITableLabelProvider {
 
-		private EntityCache cache = Database.getCache();
+		private EntityCache cache = Database.getEntityCache();
 
 		@Override
 		public Image getColumnImage(Object element, int columnIndex) {
@@ -181,7 +181,7 @@ public class ParameterRedefTable {
 
 	private class ParameterComparator implements Comparator<ParameterRedef> {
 
-		private EntityCache cache = Database.getCache();
+		private EntityCache cache = Database.getEntityCache();
 
 		@Override
 		public int compare(ParameterRedef o1, ParameterRedef o2) {

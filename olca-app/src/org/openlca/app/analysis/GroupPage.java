@@ -60,7 +60,7 @@ class GroupPage extends FormPage {
 	AnalyzeEditor editor;
 	AnalysisResult result;
 
-	private EntityCache cache = Database.getCache();
+	private EntityCache cache = Database.getEntityCache();
 	private TableViewer groupViewer;
 	private TableViewer processViewer;
 	private Menu groupMoveMenu;

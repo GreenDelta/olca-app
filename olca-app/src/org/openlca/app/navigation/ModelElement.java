@@ -20,7 +20,7 @@ public class ModelElement extends NavigationElement<BaseDescriptor> {
 	@Override
 	public void update() {
 		BaseDescriptor content = getContent();
-		BaseDescriptor newContent = Database.getCache().get(content.getClass(),
+		BaseDescriptor newContent = Database.getEntityCache().get(content.getClass(),
 				content.getId());
 		setContent(newContent);
 		super.update();

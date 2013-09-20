@@ -53,7 +53,7 @@ public abstract class ModelEditor<T extends CategorizedEntity> extends
 			setDirty(false);
 			monitor.done();
 			BaseDescriptor descriptor = getEditorInput().getDescriptor();
-			EntityCache cache = Database.getCache();
+			EntityCache cache = Database.getEntityCache();
 			cache.refresh(descriptor.getClass(), descriptor.getId());
 			cache.invalidate(modelClass, model.getId());
 			Navigator.refresh(Navigator.findElement(descriptor));

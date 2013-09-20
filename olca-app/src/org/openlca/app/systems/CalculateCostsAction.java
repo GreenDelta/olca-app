@@ -4,13 +4,13 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.widgets.Display;
 import org.openlca.app.Messages;
+import org.openlca.app.db.Database;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Editors;
 import org.openlca.core.editors.result.CostResultEditor;
 import org.openlca.core.editors.result.CostResultEditorInput;
 import org.openlca.core.math.CostCalculator;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.results.SimpleCostResult;
 
 public class CalculateCostsAction extends Action {
 
@@ -31,7 +31,7 @@ public class CalculateCostsAction extends Action {
 			return;
 		final ProductSystem system = (ProductSystem) editor.getModelComponent();
 		final CostCalculator costCalculator = new CostCalculator(
-				editor.getDatabase());
+				Database.getMatrixCache());
 		BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
 			@Override
 			public void run() {

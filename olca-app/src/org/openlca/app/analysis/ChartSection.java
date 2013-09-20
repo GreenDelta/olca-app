@@ -71,7 +71,7 @@ class ChartSection<T> {
 		toolkit.createLabel(header, selectionName);
 		if (provider instanceof FlowContributionProvider) {
 			FlowContributionProvider _p = (FlowContributionProvider) provider;
-			FlowViewer itemViewer = new FlowViewer(header, Database.getCache());
+			FlowViewer itemViewer = new FlowViewer(header, Database.getEntityCache());
 			itemViewer.setInput(_p.getElements());
 			this.itemViewer = (AbstractViewer<T, TableComboViewer>) itemViewer;
 		} else if (provider instanceof ImpactContributionProvider) {

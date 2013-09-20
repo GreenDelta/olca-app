@@ -51,7 +51,7 @@ public class SankeyDiagram extends GraphicalEditor implements
 
 	public static final String ID = "editor.ProductSystemSankeyDiagram";
 
-	private EntityCache cache = Database.getCache();
+	private EntityCache cache = Database.getEntityCache();
 	private SankeyResult sankeyResult;
 	private Map<Long, ConnectionLink> createdLinks = new HashMap<>();
 	private Map<Long, ProcessNode> createdProcesses = new HashMap<>();

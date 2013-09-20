@@ -101,7 +101,7 @@ public class ProjectResultChart extends Composite {
 		String unit = null;
 		if (reference instanceof FlowDescriptor) {
 			FlowDescriptor flow = (FlowDescriptor) reference;
-			unit = Labels.getRefUnit(flow, Database.getCache());
+			unit = Labels.getRefUnit(flow, Database.getEntityCache());
 		} else if (reference instanceof ImpactCategoryDescriptor) {
 			ImpactCategoryDescriptor impact = (ImpactCategoryDescriptor) reference;
 			unit = impact.getReferenceUnit();

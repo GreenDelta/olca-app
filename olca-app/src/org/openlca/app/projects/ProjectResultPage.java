@@ -32,7 +32,7 @@ import org.openlca.core.results.ProjectResult;
 
 public class ProjectResultPage extends FormPage {
 
-	private EntityCache cache = Database.getCache();
+	private EntityCache cache = Database.getEntityCache();
 	private ProjectResult result;
 	private ProjectResultChart chart;
 	private FlowImpactSelection selector;
@@ -147,7 +147,7 @@ public class ProjectResultPage extends FormPage {
 			Object selection = selector.getSelection();
 			if (selection instanceof FlowDescriptor)
 				return Labels.getRefUnit((FlowDescriptor) selection,
-						Database.getCache());
+						Database.getEntityCache());
 			if (selection instanceof ImpactCategoryDescriptor)
 				return ((ImpactCategoryDescriptor) selection)
 						.getReferenceUnit();

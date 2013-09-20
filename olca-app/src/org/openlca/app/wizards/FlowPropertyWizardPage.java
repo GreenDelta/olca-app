@@ -71,7 +71,7 @@ class FlowPropertyWizardPage extends AbstractWizardPage<FlowProperty> {
 		flowProperty.setName(getModelName());
 		flowProperty.setDescription(getModelDescription());
 		try {
-			UnitGroup unitGroup = Database.getCache().get(UnitGroup.class,
+			UnitGroup unitGroup = Database.getEntityCache().get(UnitGroup.class,
 					unitGroupComboViewer.getSelected().getId());
 			flowProperty.setUnitGroup(unitGroup);
 		} catch (Exception e) {

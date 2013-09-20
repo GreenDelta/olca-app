@@ -36,7 +36,7 @@ class GroupResultSection {
 	private int IMPACT = 1;
 	private int resultType = 0;
 
-	private EntityCache cache = Database.getCache();
+	private EntityCache cache = Database.getEntityCache();
 	private List<ProcessGrouping> groups;
 	private AnalysisResult result;
 	private TableViewer tableViewer;

@@ -39,7 +39,7 @@ public class FlowImpactPage extends FormPage {
 	private final static String[] COLUMN_LABELS = { "Contribution", "Flow",
 			"Total amount", "Single amount", "Unit" };
 
-	private EntityCache cache = Database.getCache();
+	private EntityCache cache = Database.getEntityCache();
 	private AnalysisResult result;
 	private ImpactCategoryViewer impactCategoryViewer;
 	private TableViewer flowViewer;
@@ -51,7 +51,7 @@ public class FlowImpactPage extends FormPage {
 		super(editor, ProcessResultPage.class.getName(), "Flow contributions");
 		this.result = result;
 		this.flowImpactContribution = new FlowImpactContribution(result,
-				Database.getCache());
+				Database.getEntityCache());
 	}
 
 	@Override
