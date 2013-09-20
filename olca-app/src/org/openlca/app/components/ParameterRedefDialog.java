@@ -29,6 +29,7 @@ import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Labels;
@@ -54,7 +55,7 @@ public class ParameterRedefDialog extends FormDialog {
 	private IStructuredSelection selection;
 
 	public static List<ParameterRedef> select() {
-		TreeModel model = loadModel(Database.get(), Database.getEntityCache());
+		TreeModel model = loadModel(Database.get(), Cache.getEntityCache());
 		ParameterRedefDialog dialog = new ParameterRedefDialog(UI.shell(),
 				model);
 		if (dialog.open() != OK)

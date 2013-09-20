@@ -15,7 +15,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
-import org.openlca.app.db.Database;
+import org.openlca.app.db.Cache;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.ISelectionChangedListener;
@@ -35,7 +35,7 @@ public class SimulationPage extends FormPage {
 	private final int IMPACT = 1;
 	private int resultType = FLOW;
 
-	private EntityCache cache = Database.getEntityCache();
+	private EntityCache cache = Cache.getEntityCache();
 	private SimulationEditor editor;
 	private StatisticsCanvas statisticsCanvas;
 	private ProgressBar progressBar;

@@ -35,6 +35,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
+import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Actions;
@@ -60,7 +61,7 @@ class GroupPage extends FormPage {
 	AnalyzeEditor editor;
 	AnalysisResult result;
 
-	private EntityCache cache = Database.getEntityCache();
+	private EntityCache cache = Cache.getEntityCache();
 	private TableViewer groupViewer;
 	private TableViewer processViewer;
 	private Menu groupMoveMenu;

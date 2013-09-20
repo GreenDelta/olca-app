@@ -18,7 +18,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.components.FlowImpactSelection;
 import org.openlca.app.components.FlowImpactSelection.EventHandler;
-import org.openlca.app.db.Database;
+import org.openlca.app.db.Cache;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
@@ -33,7 +33,7 @@ import org.openlca.core.results.ContributionTreeNode;
 
 public class ContributionTreePage extends FormPage {
 
-	private EntityCache cache = Database.getEntityCache();
+	private EntityCache cache = Cache.getEntityCache();
 	private AnalyzeEditor editor;
 	private AnalysisResult result;
 	private TreeViewer contributionTree;
@@ -57,7 +57,7 @@ public class ContributionTreePage extends FormPage {
 
 		Composite composite = toolkit.createComposite(body);
 		UI.gridLayout(composite, 2);
-		FlowImpactSelection.on(result, Database.getEntityCache())
+		FlowImpactSelection.on(result, Cache.getEntityCache())
 				.withEventHandler(new SelectionHandler())
 				.create(composite, toolkit);
 

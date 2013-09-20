@@ -20,7 +20,7 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.components.ContributionImage;
-import org.openlca.app.db.Database;
+import org.openlca.app.db.Cache;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
@@ -39,7 +39,7 @@ public class FlowImpactPage extends FormPage {
 	private final static String[] COLUMN_LABELS = { "Contribution", "Flow",
 			"Total amount", "Single amount", "Unit" };
 
-	private EntityCache cache = Database.getEntityCache();
+	private EntityCache cache = Cache.getEntityCache();
 	private AnalysisResult result;
 	private ImpactCategoryViewer impactCategoryViewer;
 	private TableViewer flowViewer;
@@ -51,7 +51,7 @@ public class FlowImpactPage extends FormPage {
 		super(editor, ProcessResultPage.class.getName(), "Flow contributions");
 		this.result = result;
 		this.flowImpactContribution = new FlowImpactContribution(result,
-				Database.getEntityCache());
+				Cache.getEntityCache());
 	}
 
 	@Override

@@ -14,7 +14,7 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.db.Database;
+import org.openlca.app.db.Cache;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
@@ -28,7 +28,7 @@ public class ImpactResultPage extends FormPage {
 	private final String RESULT = "Result";
 	private final String REFERENCE_UNIT = "Reference unit";
 
-	private EntityCache cache = Database.getEntityCache();
+	private EntityCache cache = Cache.getEntityCache();
 	private FormToolkit toolkit;
 	private ImpactResultProvider result;
 

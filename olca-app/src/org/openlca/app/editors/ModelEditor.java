@@ -5,6 +5,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
+import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.Labels;
@@ -53,7 +54,7 @@ public abstract class ModelEditor<T extends CategorizedEntity> extends
 			setDirty(false);
 			monitor.done();
 			BaseDescriptor descriptor = getEditorInput().getDescriptor();
-			EntityCache cache = Database.getEntityCache();
+			EntityCache cache = Cache.getEntityCache();
 			cache.refresh(descriptor.getClass(), descriptor.getId());
 			cache.invalidate(modelClass, model.getId());
 			Navigator.refresh(Navigator.findElement(descriptor));

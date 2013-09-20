@@ -14,7 +14,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.components.ParameterRedefDialog;
-import org.openlca.app.db.Database;
+import org.openlca.app.db.Cache;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Dialog;
@@ -141,7 +141,7 @@ public class ParameterRedefTable {
 	private class LabelProvider extends org.eclipse.jface.viewers.LabelProvider
 			implements ITableLabelProvider {
 
-		private EntityCache cache = Database.getEntityCache();
+		private EntityCache cache = Cache.getEntityCache();
 
 		@Override
 		public Image getColumnImage(Object element, int columnIndex) {
@@ -181,7 +181,7 @@ public class ParameterRedefTable {
 
 	private class ParameterComparator implements Comparator<ParameterRedef> {
 
-		private EntityCache cache = Database.getEntityCache();
+		private EntityCache cache = Cache.getEntityCache();
 
 		@Override
 		public int compare(ParameterRedef o1, ParameterRedef o2) {

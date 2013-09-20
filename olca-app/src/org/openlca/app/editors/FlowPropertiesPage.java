@@ -16,7 +16,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
-import org.openlca.app.db.Database;
+import org.openlca.app.db.Cache;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.table.FlowPropertyFactorViewer;
 import org.openlca.core.model.Flow;
@@ -42,7 +42,7 @@ class FlowPropertiesPage extends ModelPage<Flow> {
 		Composite client = UI.sectionClient(section, toolkit);
 
 		FlowPropertyFactorViewer factorViewer = new FlowPropertyFactorViewer(
-				client, Database.getEntityCache());
+				client, Cache.getEntityCache());
 		getBinding().on(getModel(), "flowPropertyFactors", factorViewer);
 		factorViewer.bindTo(section);
 

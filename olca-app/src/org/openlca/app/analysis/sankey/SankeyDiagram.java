@@ -34,7 +34,7 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.swt.SWT;
 import org.openlca.app.App;
 import org.openlca.app.analysis.PropertySelectionAction;
-import org.openlca.app.db.Database;
+import org.openlca.app.db.Cache;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.model.NormalizationWeightingSet;
@@ -51,7 +51,7 @@ public class SankeyDiagram extends GraphicalEditor implements
 
 	public static final String ID = "editor.ProductSystemSankeyDiagram";
 
-	private EntityCache cache = Database.getEntityCache();
+	private EntityCache cache = Cache.getEntityCache();
 	private SankeyResult sankeyResult;
 	private Map<Long, ConnectionLink> createdLinks = new HashMap<>();
 	private Map<Long, ProcessNode> createdProcesses = new HashMap<>();

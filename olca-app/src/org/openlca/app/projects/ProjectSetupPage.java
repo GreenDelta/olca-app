@@ -17,6 +17,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.components.ObjectDialog;
+import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.util.Actions;
@@ -104,7 +105,7 @@ public class ProjectSetupPage extends ModelPage<Project> {
 				});
 		impactMethodViewer.setInput(database);
 		if (project.getImpactMethodId() != null) {
-			ImpactMethodDescriptor d = Database.getEntityCache().get(
+			ImpactMethodDescriptor d = Cache.getEntityCache().get(
 					ImpactMethodDescriptor.class, project.getImpactMethodId());
 			impactMethodViewer.select(d);
 		}

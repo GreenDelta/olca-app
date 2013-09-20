@@ -16,7 +16,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.components.FileChooser;
-import org.openlca.app.db.Database;
+import org.openlca.app.db.Cache;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.InformationPopup;
@@ -108,7 +108,7 @@ public class AnalyzeInfoPage extends FormPage {
 			public void run() {
 				try {
 					new AnalysisResultExport(setup.getProductSystem(),
-							exportFile, Database.getEntityCache()).run(result);
+							exportFile, Cache.getEntityCache()).run(result);
 					success[0] = true;
 				} catch (Exception exc) {
 					log.error("Excel export failed", exc);

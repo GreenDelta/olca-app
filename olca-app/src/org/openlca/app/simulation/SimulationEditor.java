@@ -5,7 +5,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
-import org.openlca.app.App;
+import org.openlca.app.db.Cache;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.Simulator;
 import org.openlca.util.Strings;
@@ -26,10 +26,10 @@ public class SimulationEditor extends FormEditor {
 			throws PartInitException {
 		super.init(site, editorInput);
 		SimulationInput input = (SimulationInput) editorInput;
-		setup = App.getCache().remove(input.getSetupKey(),
+		setup = Cache.getAppCache().remove(input.getSetupKey(),
 				CalculationSetup.class);
 		setPartName(Strings.cut(setup.getProductSystem().getName(), 75));
-		simulator = App.getCache()
+		simulator = Cache.getAppCache()
 				.remove(input.getSolverKey(), Simulator.class);
 	}
 

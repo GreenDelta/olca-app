@@ -31,6 +31,7 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
+import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.layout.GraphLayoutType;
 import org.openlca.app.editors.graphical.model.ConnectionLink;
@@ -86,7 +87,7 @@ public class ProductSystemGraphEditor extends GraphicalEditor implements
 	}
 
 	private ProcessNode createProcessNode(long id) {
-		ProcessDescriptor descriptor = Database.getEntityCache().get(
+		ProcessDescriptor descriptor = Cache.getEntityCache().get(
 				ProcessDescriptor.class, id);
 		ProcessNode processNode = new ProcessNode(descriptor);
 		return processNode;

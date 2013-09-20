@@ -17,7 +17,7 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.swt.graphics.Font;
-import org.openlca.app.db.Database;
+import org.openlca.app.db.Cache;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.slf4j.Logger;
@@ -31,7 +31,7 @@ import com.google.common.base.Objects;
 public class ProcessEditPart extends AbstractGraphicalEditPart implements
 		NodeEditPart, PropertyChangeListener {
 
-	private EntityCache cache = Database.getEntityCache();
+	private EntityCache cache = Cache.getEntityCache();
 
 	@Override
 	public void activate() {

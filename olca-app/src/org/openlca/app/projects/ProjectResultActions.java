@@ -8,7 +8,7 @@ import org.eclipse.ui.part.EditorActionBarContributor;
 import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.components.FileChooser;
-import org.openlca.app.db.Database;
+import org.openlca.app.db.Cache;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.InformationPopup;
@@ -52,7 +52,7 @@ public class ProjectResultActions extends EditorActionBarContributor {
 		if (file == null)
 			return;
 		ProjectResultExport export = new ProjectResultExport(project, file,
-				Database.getEntityCache());
+				Cache.getEntityCache());
 		tryRun(export, result);
 	}
 

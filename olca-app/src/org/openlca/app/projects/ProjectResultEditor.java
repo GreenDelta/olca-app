@@ -5,7 +5,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
-import org.openlca.app.App;
+import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.core.database.ProjectDao;
 import org.openlca.core.model.Project;
@@ -27,7 +27,7 @@ public class ProjectResultEditor extends FormEditor {
 		super.init(site, editorInput);
 		try {
 			ProjectResultInput input = (ProjectResultInput) editorInput;
-			result = App.getCache().get(input.getResultKey(),
+			result = Cache.getAppCache().get(input.getResultKey(),
 					ProjectResult.class);
 			ProjectDao dao = new ProjectDao(Database.get());
 			project = dao.getForId(input.getProjectId());

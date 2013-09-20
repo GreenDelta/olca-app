@@ -1,4 +1,4 @@
-package org.openlca.app;
+package org.openlca.app.db;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,7 +11,7 @@ public class AppCache {
 
 	private Map<String, Object> map = new HashMap<>();
 
-	AppCache() {
+	public AppCache() {
 	}
 
 	public void put(String key, Object val) {

@@ -28,7 +28,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.FaviColor;
 import org.openlca.app.Messages;
 import org.openlca.app.components.charts.ChartViewer;
-import org.openlca.app.db.Database;
+import org.openlca.app.db.Cache;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.descriptors.BaseDescriptor;
@@ -101,7 +101,7 @@ public class ProjectResultChart extends Composite {
 		String unit = null;
 		if (reference instanceof FlowDescriptor) {
 			FlowDescriptor flow = (FlowDescriptor) reference;
-			unit = Labels.getRefUnit(flow, Database.getEntityCache());
+			unit = Labels.getRefUnit(flow, Cache.getEntityCache());
 		} else if (reference instanceof ImpactCategoryDescriptor) {
 			ImpactCategoryDescriptor impact = (ImpactCategoryDescriptor) reference;
 			unit = impact.getReferenceUnit();

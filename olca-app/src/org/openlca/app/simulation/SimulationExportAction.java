@@ -5,7 +5,7 @@ import java.io.File;
 import org.eclipse.jface.action.Action;
 import org.openlca.app.App;
 import org.openlca.app.components.FileChooser;
-import org.openlca.app.db.Database;
+import org.openlca.app.db.Cache;
 import org.openlca.app.resources.ImageType;
 import org.openlca.core.results.SimulationResult;
 import org.openlca.io.xls.results.SimulationResultExport;
@@ -42,7 +42,7 @@ class SimulationExportAction extends Action {
 	private void tryRun(File file) {
 		try {
 			SimulationResultExport export = new SimulationResultExport(result,
-					Database.getEntityCache());
+					Cache.getEntityCache());
 			export.run(file);
 		} catch (Exception e) {
 			log.error("Result export failed", e);

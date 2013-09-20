@@ -2,7 +2,7 @@ package org.openlca.app.util;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.openlca.app.Messages;
-import org.openlca.app.db.Database;
+import org.openlca.app.db.Cache;
 import org.openlca.core.database.DatabaseContent;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.AllocationMethod;
@@ -29,7 +29,7 @@ public class Labels {
 	public static String getDisplayName(BaseDescriptor descriptor) {
 		if (descriptor == null)
 			return "";
-		EntityCache cache = Database.getEntityCache();
+		EntityCache cache = Cache.getEntityCache();
 		String text = descriptor.getName();
 		if (cache == null)
 			return text;

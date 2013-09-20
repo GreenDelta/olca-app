@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.Messages;
+import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.UI;
@@ -81,7 +82,7 @@ class FlowWizardPage extends AbstractWizardPage<Flow> {
 	private void addFlowProperty(Flow flow) {
 		try {
 			long id = referenceFlowPropertyViewer.getSelected().getId();
-			FlowProperty flowProp = Database.getEntityCache().get(FlowProperty.class,
+			FlowProperty flowProp = Cache.getEntityCache().get(FlowProperty.class,
 					id);
 			flow.setReferenceFlowProperty(flowProp);
 			FlowPropertyFactor factor = new FlowPropertyFactor();

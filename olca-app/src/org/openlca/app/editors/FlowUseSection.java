@@ -14,7 +14,7 @@ import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
 import org.openlca.app.Messages;
-import org.openlca.app.db.Database;
+import org.openlca.app.db.Cache;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Labels;
@@ -37,7 +37,7 @@ class FlowUseSection {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private Flow flow;
-	private EntityCache cache = Database.getEntityCache();
+	private EntityCache cache = Cache.getEntityCache();
 	private IDatabase database;
 	private Composite parent;
 	private FormToolkit toolkit;

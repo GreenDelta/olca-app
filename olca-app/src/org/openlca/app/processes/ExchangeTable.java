@@ -22,6 +22,7 @@ import org.openlca.app.Messages;
 import org.openlca.app.components.IModelDropHandler;
 import org.openlca.app.components.ObjectDialog;
 import org.openlca.app.components.UncertaintyCellEditor;
+import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Actions;
@@ -66,7 +67,7 @@ class ExchangeTable {
 	private final ProcessEditor editor;
 	private Process process;
 	private IDatabase database = Database.get();
-	private EntityCache cache = Database.getEntityCache();
+	private EntityCache cache = Cache.getEntityCache();
 
 	private final String FLOW = Messages.Flow;
 	private final String CATEGORY = Messages.Category;

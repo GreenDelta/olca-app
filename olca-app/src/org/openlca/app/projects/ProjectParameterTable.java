@@ -20,7 +20,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.components.ParameterRedefDialog;
-import org.openlca.app.db.Database;
+import org.openlca.app.db.Cache;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
@@ -42,7 +42,7 @@ class ProjectParameterTable {
 	private final String PROCESS = Messages.Process;
 
 	private ProjectEditor editor;
-	private EntityCache cache = Database.getEntityCache();
+	private EntityCache cache = Cache.getEntityCache();
 
 	private List<ParameterRedef> redefs = new ArrayList<>();
 	private ModifySupport<ParameterRedef> modifySupport;

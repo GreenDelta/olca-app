@@ -22,7 +22,6 @@ public class App {
 
 	static Logger log = LoggerFactory.getLogger(App.class);
 
-	private static AppCache cache = new AppCache();
 	private static EventBus eventBus = new EventBus();
 
 	private App() {
@@ -60,10 +59,6 @@ public class App {
 			log.error("Error while searching for XUL-Runner", e);
 			return null;
 		}
-	}
-
-	public static AppCache getCache() {
-		return cache;
 	}
 
 	public static EventBus getEventBus() {

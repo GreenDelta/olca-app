@@ -3,7 +3,7 @@ package org.openlca.app.projects;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.ui.part.EditorActionBarContributor;
 import org.openlca.app.App;
-import org.openlca.app.db.Database;
+import org.openlca.app.db.Cache;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Dialog;
 import org.openlca.app.util.Editors;
@@ -35,7 +35,7 @@ public class ProjectEditorActions extends EditorActionBarContributor {
 		if (project == null)
 			return;
 		final ProjectCalculator calculator = new ProjectCalculator(
-				Database.getMatrixCache());
+				Cache.getMatrixCache());
 		App.run("Calculate project", new Runnable() {
 			public void run() {
 				result = tryCalculate(calculator, project);
@@ -44,7 +44,7 @@ public class ProjectEditorActions extends EditorActionBarContributor {
 			public void run() {
 				if (result == null)
 					return;
-				String key = App.getCache().put(result);
+				String key = Cache.getAppCache().put(result);
 				Editors.open(new ProjectResultInput(project.getId(), key),
 						ProjectResultEditor.ID);
 				result = null;

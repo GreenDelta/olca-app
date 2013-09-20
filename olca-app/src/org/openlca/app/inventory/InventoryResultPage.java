@@ -20,7 +20,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
-import org.openlca.app.db.Database;
+import org.openlca.app.db.Cache;
 import org.openlca.app.util.Comparators;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
@@ -41,7 +41,7 @@ public class InventoryResultPage extends FormPage {
 	private final String UNIT = Messages.Unit;
 	private final String AMOUNT = Messages.Amount;
 
-	private EntityCache cache = Database.getEntityCache();
+	private EntityCache cache = Cache.getEntityCache();
 	private FormToolkit toolkit;
 	private InventoryResultProvider resultProvider;
 

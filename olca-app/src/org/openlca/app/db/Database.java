@@ -7,7 +7,6 @@ import org.openlca.app.App;
 import org.openlca.core.database.ActorDao;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.CategorizedEntityDao;
-import org.openlca.core.database.EntityCache;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.FlowPropertyDao;
 import org.openlca.core.database.IDatabase;
@@ -17,7 +16,6 @@ import org.openlca.core.database.ProductSystemDao;
 import org.openlca.core.database.ProjectDao;
 import org.openlca.core.database.SourceDao;
 import org.openlca.core.database.UnitGroupDao;
-import org.openlca.core.matrix.cache.MatrixCache;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 
@@ -27,22 +25,12 @@ public class Database {
 	private static IDatabase database;
 	private static IDatabaseConfiguration config;
 	private static DatabaseList configurations = loadConfigs();
-	private static EntityCache entityCache;
-	private static MatrixCache matrixCache;
 
 	private Database() {
 	}
 
 	public static IDatabase get() {
 		return database;
-	}
-
-	public static EntityCache getEntityCache() {
-		return entityCache;
-	}
-
-	public static MatrixCache getMatrixCache() {
-		return matrixCache;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -57,8 +45,7 @@ public class Database {
 	public static IDatabase activate(IDatabaseConfiguration config)
 			throws Exception {
 		Database.database = config.createInstance();
-		Database.entityCache = EntityCache.create(database);
-		Database.matrixCache = MatrixCache.create(database);
+		Cache.create(database);
 		Database.config = config;
 		return Database.database;
 	}
@@ -76,8 +63,7 @@ public class Database {
 		database.close();
 		database = null;
 		config = null;
-		entityCache = null;
-		matrixCache = null;
+		Cache.close();
 	}
 
 	private static DatabaseList loadConfigs() {

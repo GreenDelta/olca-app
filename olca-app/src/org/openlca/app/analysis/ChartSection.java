@@ -15,7 +15,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.components.ContributionItem;
 import org.openlca.app.components.charts.ContributionChart;
-import org.openlca.app.db.Database;
+import org.openlca.app.db.Cache;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.AbstractViewer;
@@ -71,7 +71,7 @@ class ChartSection<T> {
 		toolkit.createLabel(header, selectionName);
 		if (provider instanceof FlowContributionProvider) {
 			FlowContributionProvider _p = (FlowContributionProvider) provider;
-			FlowViewer itemViewer = new FlowViewer(header, Database.getEntityCache());
+			FlowViewer itemViewer = new FlowViewer(header, Cache.getEntityCache());
 			itemViewer.setInput(_p.getElements());
 			this.itemViewer = (AbstractViewer<T, TableComboViewer>) itemViewer;
 		} else if (provider instanceof ImpactContributionProvider) {

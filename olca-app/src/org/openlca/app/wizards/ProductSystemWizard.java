@@ -8,6 +8,7 @@ import org.openlca.app.App;
 import org.openlca.app.FeatureFlag;
 import org.openlca.app.Messages;
 import org.openlca.app.components.ProgressAdapter;
+import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.IProductSystemBuilder;
@@ -61,7 +62,7 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 		public Runner(ProductSystem system, boolean preferSystemProcesses) {
 			this.system = system;
 			this.preferSystemProcesses = preferSystemProcesses;
-			this.cache = Database.getMatrixCache();
+			this.cache = Cache.getMatrixCache();
 		}
 
 		public void setCutoff(double cutoff) {

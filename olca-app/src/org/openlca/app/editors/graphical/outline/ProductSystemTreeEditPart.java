@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.gef.editparts.AbstractTreeEditPart;
-import org.openlca.app.db.Database;
+import org.openlca.app.db.Cache;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
@@ -20,7 +20,7 @@ public class ProductSystemTreeEditPart extends AbstractTreeEditPart {
 
 	@Override
 	protected List<ProcessDescriptor> getModelChildren() {
-		Map<Long, ProcessDescriptor> resultMap = Database.getEntityCache().getAll(
+		Map<Long, ProcessDescriptor> resultMap = Cache.getEntityCache().getAll(
 				ProcessDescriptor.class, getModel().getProcesses());
 		List<ProcessDescriptor> descriptors = new ArrayList<>(
 				resultMap.values());

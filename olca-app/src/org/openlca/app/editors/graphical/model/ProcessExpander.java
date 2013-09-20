@@ -7,7 +7,7 @@ import org.eclipse.draw2d.ImageFigure;
 import org.eclipse.draw2d.MouseEvent;
 import org.eclipse.draw2d.MouseListener;
 import org.eclipse.gef.commands.Command;
-import org.openlca.app.db.Database;
+import org.openlca.app.db.Cache;
 import org.openlca.app.editors.graphical.command.CommandFactory;
 import org.openlca.app.resources.ImageType;
 import org.openlca.core.model.ProcessLink;
@@ -65,7 +65,7 @@ class ProcessExpander extends ImageFigure {
 					.getRecipientId();
 			ProcessNode node = systemNode.getProcessNode(processId);
 			if (node == null) {
-				ProcessDescriptor descriptor = Database.getEntityCache().get(
+				ProcessDescriptor descriptor = Cache.getEntityCache().get(
 						ProcessDescriptor.class, processId);
 				node = new ProcessNode(descriptor);
 				systemNode.add(node);
