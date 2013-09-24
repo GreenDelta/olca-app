@@ -15,31 +15,32 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.forms.editor.IFormPage;
 import org.eclipse.ui.part.EditorActionBarContributor;
 import org.openlca.app.analysis.sankey.SankeyDiagram;
+import org.openlca.app.analysis.sankey.SankeySelectionAction;
 import org.openlca.app.editors.graphical.action.OpenMiniatureViewAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AnalyzeActionContributor extends EditorActionBarContributor
+public class AnalysisEditorActions extends EditorActionBarContributor
 		implements IPageChangedListener {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
-	private static AnalyzeActionContributor instance; // TODO: delete!
+	private static AnalysisEditorActions instance; // TODO: delete!
 	private SaveImageAction saveImageAction = new SaveImageAction();
-	private final PropertySelectionAction propertySelectionAction = new PropertySelectionAction();
+	private final SankeySelectionAction propertySelectionAction = new SankeySelectionAction();
 	private final OpenMiniatureViewAction viewAction = new OpenMiniatureViewAction();
 	private IToolBarManager toolBarManager;
 	private ZoomManager zoomManager;
 	private Action[] zoomActions = new Action[2];
 
-	public AnalyzeActionContributor() {
+	public AnalysisEditorActions() {
 		instance = this;
 	}
 
-	public static AnalyzeActionContributor getInstance() {
+	public static AnalysisEditorActions getInstance() {
 		return instance;
 	}
 
-	public PropertySelectionAction getPropertySelectionAction() {
+	public SankeySelectionAction getPropertySelectionAction() {
 		return propertySelectionAction;
 	}
 

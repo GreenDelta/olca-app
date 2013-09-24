@@ -24,8 +24,7 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 import org.openlca.app.FaviColor;
 import org.openlca.app.Messages;
-import org.openlca.app.analysis.AnalyzeActionContributor;
-import org.openlca.app.analysis.PropertySelectionAction;
+import org.openlca.app.analysis.AnalysisEditorActions;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Numbers;
 import org.openlca.core.model.Flow;
@@ -166,7 +165,7 @@ public class ProductSystemFigure extends Figure {
 			int x = arg0.getLocation().x;
 			int y = arg0.getLocation().y;
 			if (in(x, 350) && in(y, 120)) {
-				PropertySelectionAction psa = AnalyzeActionContributor
+				SankeySelectionAction psa = AnalysisEditorActions
 						.getInstance().getPropertySelectionAction();
 				psa.setSankeyDiagram(productSystemNode.getEditor());
 				psa.run();

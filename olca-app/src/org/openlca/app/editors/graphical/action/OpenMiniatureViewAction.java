@@ -1,12 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.app.editors.graphical.action;
 
 import org.eclipse.draw2d.IFigure;
@@ -47,7 +38,7 @@ public class OpenMiniatureViewAction extends Action {
 	private MiniView window;
 	private ZoomManager zoomManager;
 
-	OpenMiniatureViewAction() {
+	public OpenMiniatureViewAction() {
 		setId(ActionIds.OPEN_MINIATURE_VIEW_ACTION_ID);
 		setText(Messages.Systems_OpenMiniatureViewAction_Text);
 		setImageDescriptor(ImageType.MINI_VIEW_ICON.getDescriptor());

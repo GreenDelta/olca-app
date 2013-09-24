@@ -85,16 +85,13 @@
             name="Project results"
             contributorClass="org.openlca.app.projects.ProjectResultActions">
       </editor>
-      
-      <!-- re-add the action contributor
-         contributorClass="org.openlca.core.editors.analyze.AnalyzeActionContributor"
-      -->
       <editor
             class="org.openlca.app.analysis.AnalyzeEditor"
             default="false"
             icon="icons/analyze.gif"
             id="editors.analyze"
-            name="Analyze viewer">
+            name="Analyze viewer"
+            contributorClass="org.openlca.app.analysis.AnalysisEditorActions">
       </editor>
       <editor
             class="org.openlca.app.simulation.SimulationEditor"

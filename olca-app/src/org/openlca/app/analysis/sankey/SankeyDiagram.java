@@ -33,7 +33,6 @@ import org.eclipse.gef.ui.parts.GraphicalEditor;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.swt.SWT;
 import org.openlca.app.App;
-import org.openlca.app.analysis.PropertySelectionAction;
 import org.openlca.app.db.Cache;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.math.CalculationSetup;
@@ -59,20 +58,24 @@ public class SankeyDiagram extends GraphicalEditor implements
 	private ImpactMethodDescriptor method;
 	private NormalizationWeightingSet nwSet;
 	private ProductSystem productSystem;
-	private AnalysisResult results;
+	private AnalysisResult result;
 
 	private double zoom = 1;
 
 	public SankeyDiagram(CalculationSetup setUp, AnalysisResult result) {
 		setEditDomain(new DefaultEditDomain(this));
-		this.results = result;
+		this.result = result;
 		productSystem = setUp.getProductSystem();
-		sankeyResult = new SankeyResult(productSystem, results);
+		sankeyResult = new SankeyResult(productSystem, result);
 		method = setUp.getImpactMethod();
 		nwSet = setUp.getNwSet();
 		if (productSystem != null) {
 			setPartName(productSystem.getName());
 		}
+	}
+
+	public AnalysisResult getResult() {
+		return result;
 	}
 
 	private void createConnections(long processId) {
@@ -292,7 +295,7 @@ public class SankeyDiagram extends GraphicalEditor implements
 		super.configureGraphicalViewer();
 
 		MenuManager manager = new MenuManager();
-		PropertySelectionAction action = new PropertySelectionAction();
+		SankeySelectionAction action = new SankeySelectionAction();
 		action.setSankeyDiagram(this);
 		manager.add(action);
 		getGraphicalViewer().setContextMenu(manager);
@@ -370,7 +373,7 @@ public class SankeyDiagram extends GraphicalEditor implements
 
 	// TODO: avoid double calculation here
 	private void initContent() {
-		Object defaultSelection = getDefaultSelection(results);
+		Object defaultSelection = getDefaultSelection(result);
 		if (defaultSelection == null) {
 			getGraphicalViewer().setContents(
 					new ProductSystemNode(productSystem, this, null, 0.1));
