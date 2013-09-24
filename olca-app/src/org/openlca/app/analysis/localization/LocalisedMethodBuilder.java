@@ -1,4 +1,4 @@
-package org.openlca.core.editors.model;
+package org.openlca.app.analysis.localization;
 
 import java.util.List;
 
@@ -22,12 +22,10 @@ public class LocalisedMethodBuilder {
 	private IDatabase database;
 	private ImpactMethod method;
 	private Location defaultLocation;
-	private FlowInfoDao flowInfoDao;
 
 	public LocalisedMethodBuilder(ImpactMethod method, IDatabase database) {
 		this.method = method;
 		this.database = database;
-		this.flowInfoDao = new FlowInfoDao(database);
 	}
 
 	public LocalisedImpactMethod build() {
@@ -75,7 +73,7 @@ public class LocalisedMethodBuilder {
 	}
 
 	private void addCategories(LocalisedImpactMethod locMethod) {
-		for (ImpactCategory category : method.getLCIACategories()) {
+		for (ImpactCategory category : method.getImpactCategories()) {
 			LocalisedImpactCategory locCategory = new LocalisedImpactCategory();
 			locMethod.getImpactCategories().add(locCategory);
 			locCategory.setImpactCategory(Descriptors.toDescriptor(category));
@@ -90,10 +88,20 @@ public class LocalisedMethodBuilder {
 		for (ImpactFactor factor : category.getImpactFactors()) {
 			LocalisedImpactFactor locFactor = new LocalisedImpactFactor();
 			locCategory.getFactors().add(locFactor);
-			FlowInfo flow = flowInfoDao.fromFlow(factor.getFlow());
-			locFactor.setFlow(flow);
-			locFactor.addValue(defaultLocation, factor.getConvertedValue());
+			locFactor.setFlow(Descriptors.toDescriptor(factor.getFlow()));
+			locFactor.addValue(defaultLocation, convertedValue(factor));
 		}
+	}
+
+	private double convertedValue(ImpactFactor factor) {
+		if (factor == null || factor.getUnit() == null)
+			return 0;
+		double f = factor.getValue() * factor.getUnit().getConversionFactor();
+		if (factor.getFlowPropertyFactor() == null
+				|| factor.getFlowPropertyFactor().getConversionFactor() == 0)
+			return f;
+		else
+			return f / factor.getFlowPropertyFactor().getConversionFactor();
 	}
 
 }

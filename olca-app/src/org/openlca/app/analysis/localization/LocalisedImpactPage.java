@@ -1,6 +1,4 @@
-package org.openlca.app.analysis;
-
-import java.util.List;
+package org.openlca.app.analysis.localization;
 
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.widgets.Composite;
@@ -9,16 +7,14 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
+import org.openlca.app.analysis.AnalyzeEditor;
+import org.openlca.app.analysis.localization.LocalisedImpactResult.Entry;
+import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.html.HtmlPage;
 import org.openlca.app.html.IHtmlResource;
 import org.openlca.app.util.UI;
 import org.openlca.core.editors.HtmlView;
-import org.openlca.core.editors.io.LocalisedMethodStorage;
-import org.openlca.core.editors.model.LocalisedImpactCalculator;
-import org.openlca.core.editors.model.LocalisedImpactMethod;
-import org.openlca.core.editors.model.LocalisedImpactResult;
-import org.openlca.core.editors.model.LocalisedImpactResult.Entry;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.results.AnalysisResult;
@@ -32,11 +28,13 @@ import com.google.gson.JsonObject;
 public class LocalisedImpactPage extends FormPage implements HtmlPage {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
+	private AnalyzeEditor editor;
 	private AnalysisResult result;
 	private Browser browser;
 
 	public LocalisedImpactPage(AnalyzeEditor editor, AnalysisResult result) {
 		super(editor, "analyse.LocalisedImpactPage", "Localised LCIA (beta)");
+		this.editor = editor;
 		this.result = result;
 	}
 
@@ -85,20 +83,18 @@ public class LocalisedImpactPage extends FormPage implements HtmlPage {
 				return;
 			LocalisedImpactCalculator calculator = new LocalisedImpactCalculator(
 					result, method);
-			LocalisedImpactResult result = calculator.calculate();
+			LocalisedImpactResult result = calculator.calculate(Cache
+					.getEntityCache());
 			json = new JsonConverter().toJson(result);
 		}
 
 		private LocalisedImpactMethod loadMethod() {
-			ImpactMethodDescriptor impactMethod = result.getSetup()
+			ImpactMethodDescriptor impactMethod = editor.getSetup()
 					.getImpactMethod();
-			List<ImpactCategoryDescriptor> impactCategories = result.getSetup()
-					.getImpactCategories();
-			if (impactMethod == null || impactCategories == null
-					|| impactCategories.isEmpty())
+			if (!result.hasImpactResults() || impactMethod == null)
 				return null;
 			return LocalisedMethodStorage.getOrCreate(Database.get(),
-					impactMethod.getId());
+					impactMethod.getRefId());
 		}
 
 	}

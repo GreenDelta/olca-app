@@ -1,4 +1,4 @@
-package org.openlca.core.editors.io;
+package org.openlca.app.analysis.localization;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -9,20 +9,21 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.openlca.core.database.EntityCache;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.Query;
-import org.openlca.core.editors.model.LocalisedImpactCategory;
-import org.openlca.core.editors.model.LocalisedImpactFactor;
-import org.openlca.core.editors.model.LocalisedImpactMethod;
 import org.openlca.core.jobs.Status;
 import org.openlca.core.model.Location;
+import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
+import org.openlca.io.CategoryPair;
+import org.openlca.io.DisplayValues;
 import org.openlca.io.xls.Excel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Exports a localised impact assessment method set to an Excel file.
+ * Exports a localized impact assessment method set to an Excel file.
  */
 public class LocalisedMethodExport implements Runnable {
 
@@ -34,12 +35,14 @@ public class LocalisedMethodExport implements Runnable {
 	private CellStyle headerStyle;
 	private Status status = new Status(Status.WAITING);
 	private IDatabase database;
+	private EntityCache cache;
 
 	public LocalisedMethodExport(LocalisedImpactMethod method, File file,
-			IDatabase database) {
+			IDatabase database, EntityCache cache) {
 		this.method = method;
 		this.file = file;
 		this.database = database;
+		this.cache = cache;
 	}
 
 	public Status getStatus() {
@@ -72,7 +75,7 @@ public class LocalisedMethodExport implements Runnable {
 		Excel.cell(row, 3, methodInfo.getName());
 		row = sheet.createRow(3);
 		Excel.cell(row, 2, "UUID").setCellStyle(headerStyle);
-		Excel.cell(row, 3, methodInfo.getId());
+		Excel.cell(row, 3, methodInfo.getRefId());
 		row = sheet.createRow(5);
 		Excel.cell(row, 2, "Location").setCellStyle(headerStyle);
 		Excel.cell(row, 3, "UUID").setCellStyle(headerStyle);
@@ -108,7 +111,7 @@ public class LocalisedMethodExport implements Runnable {
 			Excel.cell(row, 2, category.getImpactCategory().getName());
 			row = sheet.createRow(2);
 			Excel.cell(row, 1, "UUID").setCellStyle(headerStyle);
-			Excel.cell(row, 2, category.getImpactCategory().getId());
+			Excel.cell(row, 2, category.getImpactCategory().getRefId());
 			row = sheet.createRow(4);
 			Excel.cell(row, 1, "Flow - UUID").setCellStyle(headerStyle);
 			Excel.cell(row, 2, "Name").setCellStyle(headerStyle);
@@ -132,12 +135,13 @@ public class LocalisedMethodExport implements Runnable {
 		Collections.sort(factors);
 		for (LocalisedImpactFactor factor : factors) {
 			HSSFRow row = sheet.createRow(nextRow);
-			FlowInfo flow = factor.getFlow();
-			Excel.cell(row, 1, flow.getId());
+			FlowDescriptor flow = factor.getFlow();
+			Excel.cell(row, 1, flow.getRefId());
 			Excel.cell(row, 2, flow.getName());
-			Excel.cell(row, 3, flow.getCategory());
-			Excel.cell(row, 4, flow.getSubCategory());
-			Excel.cell(row, 5, flow.getUnit());
+			CategoryPair pair = CategoryPair.create(flow, cache);
+			Excel.cell(row, 3, pair.getCategory());
+			Excel.cell(row, 4, pair.getSubCategory());
+			Excel.cell(row, 5, DisplayValues.referenceUnit(flow, cache));
 			int nextCol = 6;
 			for (Location loc : method.getLocations()) {
 				double val = factor.getValue(loc);
@@ -148,5 +152,4 @@ public class LocalisedMethodExport implements Runnable {
 		}
 		Excel.autoSize(sheet, 1, 2, 3, 4, 5);
 	}
-
 }

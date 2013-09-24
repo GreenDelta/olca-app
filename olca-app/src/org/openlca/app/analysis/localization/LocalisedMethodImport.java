@@ -1,4 +1,4 @@
-package org.openlca.core.editors.io;
+package org.openlca.app.analysis.localization;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -7,15 +7,17 @@ import java.util.List;
 
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.openlca.core.database.EntityCache;
+import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ImpactCategoryDao;
-import org.openlca.core.editors.model.LocalisedImpactCategory;
-import org.openlca.core.editors.model.LocalisedImpactFactor;
-import org.openlca.core.editors.model.LocalisedImpactMethod;
+import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.jobs.Status;
+import org.openlca.core.model.Flow;
+import org.openlca.core.model.ImpactCategory;
+import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.Location;
-import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
+import org.openlca.core.model.descriptors.Descriptors;
 import org.openlca.io.xls.Excel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,13 +30,16 @@ public class LocalisedMethodImport implements Runnable {
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private File file;
 	private IDatabase database;
+	private EntityCache cache;
 	private Status status = new Status(Status.WAITING);
 	private LocalisedImpactMethod method;
 	private List<Location> locations;
 
-	public LocalisedMethodImport(File file, IDatabase database) {
+	public LocalisedMethodImport(File file, IDatabase database,
+			EntityCache entityCache) {
 		this.file = file;
 		this.database = database;
+		this.cache = entityCache;
 	}
 
 	public Status getStatus() {
@@ -66,12 +71,12 @@ public class LocalisedMethodImport implements Runnable {
 	private void createMethod(HSSFSheet infoSheet) {
 		String methodId = Excel.getString(infoSheet, 3, 3);
 		log.trace("Import method {}", methodId);
-		MethodDao dao = new MethodDao(database);
-		ImpactMethodDescriptor descriptor = dao.getDescriptor(methodId);
-		if (descriptor == null)
+		ImpactMethodDao dao = new ImpactMethodDao(database);
+		ImpactMethod realMethod = dao.getForRefId(methodId);
+		if (realMethod == null)
 			throw new RuntimeException("Unkown impact method " + methodId);
 		method = new LocalisedImpactMethod();
-		method.setImpactMethod(descriptor);
+		method.setImpactMethod(Descriptors.toDescriptor(realMethod));
 	}
 
 	private void importCategories(HSSFWorkbook workbook) {
@@ -97,10 +102,10 @@ public class LocalisedMethodImport implements Runnable {
 		log.trace("Import impact category {}", id);
 		LocalisedImpactCategory category = new LocalisedImpactCategory();
 		ImpactCategoryDao dao = new ImpactCategoryDao(database);
-		ImpactCategoryDescriptor descriptor = dao.getDescriptor(id);
-		if (descriptor == null)
+		ImpactCategory realCategory = dao.getForRefId(id);
+		if (realCategory == null)
 			throw new RuntimeException("Unknown impact category " + id);
-		category.setImpactCategory(descriptor);
+		category.setImpactCategory(Descriptors.toDescriptor(realCategory));
 		method.getImpactCategories().add(category);
 		List<Location> usedLocations = getLocations(sheet);
 		if (usedLocations.isEmpty())
@@ -153,16 +158,14 @@ public class LocalisedMethodImport implements Runnable {
 			List<Location> usedLocations) {
 		List<LocalisedImpactFactor> factors = new ArrayList<>();
 		int nextRow = 5;
+		FlowDao dao = new FlowDao(database);
 		String flowId = null;
 		while ((flowId = Excel.getString(sheet, nextRow, 1)) != null) {
-			FlowInfo flow = new FlowInfo();
-			flow.setId(flowId);
-			flow.setName(Excel.getString(sheet, nextRow, 2));
-			flow.setCategory(Excel.getString(sheet, nextRow, 3));
-			flow.setSubCategory(Excel.getString(sheet, nextRow, 4));
-			flow.setUnit(Excel.getString(sheet, nextRow, 5));
+			Flow flow = dao.getForRefId(flowId);
+			if (flow == null)
+				continue;
 			LocalisedImpactFactor factor = new LocalisedImpactFactor();
-			factor.setFlow(flow);
+			factor.setFlow(Descriptors.toDescriptor(flow));
 			factors.add(factor);
 			for (int i = 0; i < usedLocations.size(); i++) {
 				Location location = usedLocations.get(i);

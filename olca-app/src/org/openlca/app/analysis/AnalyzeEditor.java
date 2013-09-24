@@ -7,7 +7,9 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
+import org.openlca.app.FeatureFlag;
 import org.openlca.app.Messages;
+import org.openlca.app.analysis.localization.LocalisedImpactPage;
 import org.openlca.app.analysis.sankey.SankeyDiagram;
 import org.openlca.app.db.Cache;
 import org.openlca.app.inventory.ImpactResultPage;
@@ -76,9 +78,9 @@ public class AnalyzeEditor extends FormEditor {
 			addPage(new LocationContributionPage(this, result));
 			// if (FeatureFlag.SUNBURST_CHART.isEnabled())
 			// addPage(new SunBurstView(this, result));
-			// if (FeatureFlag.LOCALISED_LCIA.isEnabled()
-			// && result.hasImpactResults())
-			// addPage(new LocalisedImpactPage(this, result));
+			if (FeatureFlag.LOCALISED_LCIA.isEnabled()
+					&& result.hasImpactResults())
+				addPage(new LocalisedImpactPage(this, result));
 			diagram = new SankeyDiagram(setup, result);
 			diagramIndex = addPage(diagram, getEditorInput());
 			setPageText(diagramIndex, "Sankey diagram");

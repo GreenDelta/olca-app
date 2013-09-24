@@ -1,12 +1,10 @@
-package org.openlca.core.editors.io;
+package org.openlca.app.analysis.localization;
 
 import java.io.File;
 
 import org.openlca.app.App;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ImpactMethodDao;
-import org.openlca.core.editors.model.LocalisedImpactMethod;
-import org.openlca.core.editors.model.LocalisedMethodBuilder;
 import org.openlca.core.model.ImpactMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

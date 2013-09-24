@@ -1,4 +1,4 @@
-package org.openlca.core.editors.io;
+package org.openlca.app.analysis.localization;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -8,7 +8,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
-import org.openlca.core.editors.model.LocalisedImpactMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,7 +1,8 @@
-package org.openlca.core.editors.model;
+package org.openlca.app.analysis.localization;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.openlca.core.model.Location;
 import org.openlca.core.model.descriptors.FlowDescriptor;
@@ -28,13 +29,10 @@ public class LocalisedImpactCategory {
 	}
 
 	public double getFactor(FlowDescriptor flow, Location location) {
-		if (flow == null || flow.getId() == null || location == null)
+		if (flow == null || location == null)
 			return 0d;
 		for (LocalisedImpactFactor factor : factors) {
-			FlowInfo flowInfo = factor.getFlow();
-			if (flowInfo == null)
-				continue;
-			if (flow.getId().equals(flowInfo.getId()))
+			if (Objects.equals(factor.getFlow(), flow))
 				return factor.getValue(location);
 		}
 		return 0d;

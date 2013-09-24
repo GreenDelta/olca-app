@@ -1,9 +1,10 @@
-package org.openlca.core.editors.model;
+package org.openlca.app.analysis.localization;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.openlca.core.model.Location;
+import org.openlca.core.model.descriptors.FlowDescriptor;
 
 /**
  * Model for a localised characterisation factor. The flow property and unit of
@@ -12,15 +13,15 @@ import org.openlca.core.model.Location;
  */
 public class LocalisedImpactFactor implements Comparable<LocalisedImpactFactor> {
 
-	private FlowInfo flow;
+	private FlowDescriptor flow;
 	private List<Location> locations = new ArrayList<>();
 	private List<Double> factors = new ArrayList<>();
 
-	public FlowInfo getFlow() {
+	public FlowDescriptor getFlow() {
 		return flow;
 	}
 
-	public void setFlow(FlowInfo flow) {
+	public void setFlow(FlowDescriptor flow) {
 		this.flow = flow;
 	}
 

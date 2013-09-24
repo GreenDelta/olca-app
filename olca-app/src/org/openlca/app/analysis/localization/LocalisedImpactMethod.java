@@ -1,4 +1,4 @@
-package org.openlca.core.editors.model;
+package org.openlca.app.analysis.localization;
 
 import java.util.ArrayList;
 import java.util.List;

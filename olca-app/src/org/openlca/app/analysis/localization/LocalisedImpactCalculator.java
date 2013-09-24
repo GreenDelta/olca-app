@@ -1,18 +1,17 @@
-package org.openlca.core.editors.model;
+package org.openlca.app.analysis.localization;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openlca.core.editors.model.LocalisedImpactResult.Entry;
-import org.openlca.core.model.Flow;
+import org.openlca.app.analysis.localization.LocalisedImpactResult.Entry;
+import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.Location;
-import org.openlca.core.model.descriptors.Descriptors;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.core.model.results.AnalysisResult;
-import org.openlca.core.model.results.Contribution;
-import org.openlca.core.model.results.ContributionSet;
-import org.openlca.core.model.results.LocationContribution;
+import org.openlca.core.results.AnalysisResult;
+import org.openlca.core.results.Contribution;
+import org.openlca.core.results.ContributionSet;
+import org.openlca.core.results.LocationContribution;
 
 /**
  * Calculates a localized impact assessment result.
@@ -32,14 +31,15 @@ public class LocalisedImpactCalculator {
 			impactCategories.add(locCat.getImpactCategory());
 	}
 
-	public LocalisedImpactResult calculate() {
+	public LocalisedImpactResult calculate(EntityCache cache) {
 		LocalisedImpactResult localisedResult = new LocalisedImpactResult(
 				method.getImpactMethod());
 		LocationContribution contributions = new LocationContribution(result,
-				"GLO");
-		for (Flow flow : result.getFlowIndex().getFlows()) {
-			FlowDescriptor flowDescriptor = Descriptors.toDescriptor(flow);
-			ContributionSet<Location> set = contributions.calculate(flow);
+				"GLO", cache);
+		for (FlowDescriptor flowDescriptor : result.getFlowResults().getFlows(
+				cache)) {
+			ContributionSet<Location> set = contributions
+					.calculate(flowDescriptor);
 			for (Contribution<Location> contribution : set.getContributions()) {
 				Location location = contribution.getItem();
 				double amount = contribution.getAmount();
