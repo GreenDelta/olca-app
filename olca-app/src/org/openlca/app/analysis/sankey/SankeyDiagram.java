@@ -52,7 +52,7 @@ public class SankeyDiagram extends GraphicalEditor implements
 
 	private EntityCache cache = Cache.getEntityCache();
 	private SankeyResult sankeyResult;
-	private Map<Long, ConnectionLink> createdLinks = new HashMap<>();
+	private Map<ProcessLink, ConnectionLink> createdLinks = new HashMap<>();
 	private Map<Long, ProcessNode> createdProcesses = new HashMap<>();
 	private ProductSystemNode systemNode;
 	private ImpactMethodDescriptor method;
@@ -86,12 +86,12 @@ public class SankeyDiagram extends GraphicalEditor implements
 			ProcessNode targetNode = createdProcesses.get(processLink
 					.getRecipientId());
 			if (sourceNode != null && targetNode != null) {
-				if (!createdLinks.containsKey(processLink.getId())) {
+				if (!createdLinks.containsKey(processLink)) {
 					double ratio = sankeyResult
 							.getLinkContribution(processLink);
 					ConnectionLink link = new ConnectionLink(sourceNode,
 							targetNode, processLink, ratio);
-					createdLinks.put(processLink.getId(), link);
+					createdLinks.put(processLink, link);
 					createConnections(sourceNode.getProcess().getId());
 				}
 			}

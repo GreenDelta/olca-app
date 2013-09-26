@@ -37,14 +37,16 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 		try {
 			createDao().insert(system);
 			boolean autoComplete = page.addSupplyChain();
-			if (!autoComplete)
+			if (!autoComplete) {
+				App.openEditor(system);
 				return true;
+			}
 			boolean preferSystems = page.useSystemProcesses();
 			Runner runner = new Runner(system, preferSystems);
 			if (FeatureFlag.PRODUCT_SYSTEM_CUTOFF.isEnabled())
 				runner.setCutoff(page.getCutoff());
 			getContainer().run(true, true, runner);
-			App.openEditor(system);
+			App.openEditor(runner.system);
 			return true;
 		} catch (Exception e) {
 			log.error("Failed to create model", e);
@@ -83,7 +85,7 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 				else
 					builder = IProductSystemBuilder.Factory.create(cache,
 							progress, preferSystemProcesses, cutoff);
-				builder.autoComplete(system);
+				system = builder.autoComplete(system);
 				monitor.done();
 			} catch (Exception e) {
 				log.error("Failed to auto-complete product system", e);

@@ -171,12 +171,11 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 				.addSelectionChangedListener(new ISelectionChangedListener() {
 
 					@Override
-					public void selectionChanged(
-							final SelectionChangedEvent event) {
-						final IStructuredSelection selection = (IStructuredSelection) event
+					public void selectionChanged(SelectionChangedEvent event) {
+						IStructuredSelection selection = (IStructuredSelection) event
 								.getSelection();
 						if (selection.getFirstElement() instanceof ModelElement) {
-							final ModelElement elem = (ModelElement) ((IStructuredSelection) processViewer
+							ModelElement elem = (ModelElement) ((IStructuredSelection) processViewer
 									.getSelection()).getFirstElement();
 							try {
 								selectedProcess = Database.load(elem
@@ -191,7 +190,6 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 						}
 					}
 				});
-
 	}
 
 }

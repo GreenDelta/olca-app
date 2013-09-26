@@ -60,10 +60,10 @@ public class Database {
 	public static void close() throws Exception {
 		if (database == null)
 			return;
+		Cache.close();
 		database.close();
 		database = null;
 		config = null;
-		Cache.close();
 	}
 
 	private static DatabaseList loadConfigs() {
