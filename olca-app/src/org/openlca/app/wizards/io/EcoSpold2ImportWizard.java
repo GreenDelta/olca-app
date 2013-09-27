@@ -9,6 +9,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
+import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.resources.ImageType;
@@ -54,11 +55,14 @@ public class EcoSpold2ImportWizard extends Wizard implements IImportWizard {
 					handler.run(pi);
 				}
 			});
-			Navigator.refresh();
+			return true;
 		} catch (Exception e) {
 			log.error("EcoSpold 02 import failed", e);
+			return false;
+		} finally {
+			Navigator.refresh();
+			Cache.evictAll();
 		}
-		return true;
 	}
 
 	@Override

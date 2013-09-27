@@ -53,23 +53,24 @@ public final class Cache {
 		return appCache;
 	}
 
-	public static void evict(BaseDescriptor descriptor, long id) {
+	public static void evict(BaseDescriptor descriptor) {
 		if (descriptor == null)
 			return;
-		log.trace("evict {} with ID {}", descriptor.getClass(), id);
+		log.trace("evict {} with ID {}", descriptor.getClass(),
+				descriptor.getId());
 		if (descriptor.getModelType() == null)
 			evictAll(); // to be on the save side
 		else if (shouldEvictAll(descriptor.getModelType()))
 			evictAll();
 		else {
-			evictEntity(descriptor, id);
+			evictEntity(descriptor);
+			evictFromMatrices(descriptor);
 		}
 	}
 
 	private static boolean shouldEvictAll(ModelType type) {
 		return type == ModelType.UNIT || type == ModelType.UNIT_GROUP
-				|| type == ModelType.FLOW_PROPERTY
-				|| type == ModelType.FLOW_PROPERTY
+				|| type == ModelType.FLOW || type == ModelType.FLOW_PROPERTY
 				|| type == ModelType.CATEGORY;
 	}
 
@@ -81,8 +82,52 @@ public final class Cache {
 			matrixCache.evictAll();
 	}
 
-	private static void evictEntity(BaseDescriptor descriptor, long id) {
+	private static void evictEntity(BaseDescriptor descriptor) {
+		if (entityCache == null)
+			return;
+		long id = descriptor.getId();
+		Class<?> clazz = descriptor.getClass();
+		log.trace("evict from entity cache {} with id={}", clazz, id);
+		entityCache.invalidate(clazz, id);
+		if (descriptor.getModelType() == null)
+			return;
+		clazz = descriptor.getModelType().getModelClass();
+		log.trace("evict from entity cache {} with id={}", clazz, id);
+		entityCache.invalidate(clazz, id);
+	}
 
+	private static void evictFromMatrices(BaseDescriptor descriptor) {
+		if (matrixCache == null)
+			return;
+		switch (descriptor.getModelType()) {
+		case FLOW:
+			matrixCache.evictAll();
+			break;
+		case FLOW_PROPERTY:
+			matrixCache.evictAll();
+			break;
+		case IMPACT_CATEGORY:
+			log.trace("evict LCIA category {} from matrix cache",
+					descriptor.getId());
+			matrixCache.getImpactCache().invalidate(descriptor.getId());
+			break;
+		case IMPACT_METHOD:
+			log.trace("clear LCIA matrix cache");
+			matrixCache.getImpactCache().invalidateAll();
+			break;
+		case PROCESS:
+			log.trace("evict process {} from matrix cache", descriptor.getId());
+			matrixCache.evictProcess(descriptor.getId());
+			break;
+		case UNIT:
+			matrixCache.evictAll();
+			break;
+		case UNIT_GROUP:
+			matrixCache.evictAll();
+			break;
+		default:
+			break;
+		}
 	}
 
 }

@@ -10,6 +10,7 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
 import org.openlca.app.Messages;
+import org.openlca.app.db.Cache;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.resources.ImageType;
 import org.openlca.core.database.IDatabase;
@@ -57,6 +58,7 @@ public class ILCDImportWizard extends Wizard implements IImportWizard {
 			return false;
 		} finally {
 			Navigator.refresh();
+			Cache.evictAll();
 		}
 	}
 

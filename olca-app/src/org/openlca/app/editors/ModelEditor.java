@@ -59,6 +59,7 @@ public abstract class ModelEditor<T extends CategorizedEntity> extends
 			cache.invalidate(modelClass, model.getId());
 			Navigator.refresh(Navigator.findElement(descriptor));
 			this.setPartName(Labels.getDisplayName(descriptor));
+			Cache.evict(descriptor);
 		} catch (Exception e) {
 			log.error("failed to update " + modelClass.getSimpleName());
 		}
