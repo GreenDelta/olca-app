@@ -40,7 +40,7 @@ public enum ImageType implements IImageType {
 
 	DB_ICON("db_obj.gif"),
 
-	DB_ICON_DIS("db_obj_dis.gif"),
+	DB_ICON_DIS("db_obj_dis.png"),
 
 	DB_IO("db_io_16.gif"),
 
