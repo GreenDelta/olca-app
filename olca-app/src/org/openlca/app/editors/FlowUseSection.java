@@ -2,7 +2,7 @@ package org.openlca.app.editors;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
@@ -63,7 +63,7 @@ class FlowUseSection {
 
 	private Collection<ProcessDescriptor> getProcesses(boolean forInput) {
 		FlowDao dao = new FlowDao(database);
-		List<Long> processIds = forInput ? dao.getRecipients(flow.getId())
+		Set<Long> processIds = forInput ? dao.getRecipients(flow.getId())
 				: dao.getProviders(flow.getId());
 		if (processIds.isEmpty())
 			return Collections.emptyList();
