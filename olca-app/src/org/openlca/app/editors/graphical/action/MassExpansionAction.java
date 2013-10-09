@@ -11,17 +11,18 @@ package org.openlca.app.editors.graphical.action;
 
 import org.eclipse.jface.action.Action;
 import org.openlca.app.Messages;
-import org.openlca.app.editors.graphical.model.ProductSystemNode;
+import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
 import org.openlca.app.resources.ImageType;
 
-public class ExpansionAction extends Action {
+public class MassExpansionAction extends Action {
 
 	static final int EXPAND = 1;
 	static final int COLLAPSE = 2;
 
 	private int type;
+	private ProductSystemGraphEditor editor;
 
-	ExpansionAction(int type) {
+	MassExpansionAction(int type) {
 		if (type == EXPAND) {
 			setId(ActionIds.EXPAND_ALL_ACTION_ID);
 			setText(Messages.Systems_ExpandAllAction_Text);
@@ -34,18 +35,16 @@ public class ExpansionAction extends Action {
 		this.type = type;
 	}
 
-	private ProductSystemNode model;
-
 	@Override
 	public void run() {
-		// TODO adjust
-		// if (type == EXPAND)
-		// model.getEditor().reset(true);
-		// else if (type == COLLAPSE)
+		if (type == EXPAND)
+			editor.expand();
+		else if (type == COLLAPSE)
+			editor.collapse();
 	}
 
-	void setModel(ProductSystemNode model) {
-		this.model = model;
+	void setEditor(ProductSystemGraphEditor editor) {
+		this.editor = editor;
 	}
 
 }

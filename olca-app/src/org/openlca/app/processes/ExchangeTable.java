@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -428,7 +429,7 @@ class ExchangeTable {
 			if (element.getFlow() == null)
 				return new ProcessDescriptor[0];
 			FlowDao dao = new FlowDao(database);
-			List<Long> providerIds = dao
+			Set<Long> providerIds = dao
 					.getProviders(element.getFlow().getId());
 			Collection<ProcessDescriptor> descriptors = cache.getAll(
 					ProcessDescriptor.class, providerIds).values();

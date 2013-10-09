@@ -9,8 +9,6 @@
  ******************************************************************************/
 package org.openlca.app.editors.graphical;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -25,7 +23,6 @@ import org.eclipse.gef.editparts.ScalableRootEditPart;
 import org.eclipse.gef.editparts.ZoomManager;
 import org.eclipse.gef.ui.parts.GraphicalEditor;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IWorkbenchPart;
@@ -36,7 +33,6 @@ import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.layout.GraphLayoutType;
 import org.openlca.app.editors.graphical.model.ConnectionLink;
 import org.openlca.app.editors.graphical.model.ProcessNode;
-import org.openlca.app.editors.graphical.model.ProcessPart;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.app.editors.graphical.model.TreeConnectionRouter;
 import org.openlca.app.editors.graphical.outline.OutlinePage;
@@ -45,8 +41,7 @@ import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
-public class ProductSystemGraphEditor extends GraphicalEditor implements
-		PropertyChangeListener {
+public class ProductSystemGraphEditor extends GraphicalEditor {
 
 	public static final String ID = "editors.productsystem.graphical";
 
@@ -56,6 +51,12 @@ public class ProductSystemGraphEditor extends GraphicalEditor implements
 	private OutlinePage outline;
 	private boolean routed;
 	private GraphicalViewerConfigurator configurator;
+	private ISelection selection;
+	private List<String> actionIds;
+
+	public ISelection getSelection() {
+		return selection;
+	}
 
 	@Override
 	public void init(IEditorSite site, IEditorInput input)
@@ -86,6 +87,14 @@ public class ProductSystemGraphEditor extends GraphicalEditor implements
 		return productSystemNode;
 	}
 
+	private ProductSystemNode expandModel() {
+		ProductSystemNode productSystemNode = new ProductSystemNode(
+				productSystem, this);
+		for (Long id : productSystem.getProcesses())
+			productSystemNode.add(createProcessNode(id));
+		return productSystemNode;
+	}
+
 	private ProcessNode createProcessNode(long id) {
 		ProcessDescriptor descriptor = Cache.getEntityCache().get(
 				ProcessDescriptor.class, id);
@@ -107,9 +116,8 @@ public class ProductSystemGraphEditor extends GraphicalEditor implements
 		model = createModel();
 		super.configureGraphicalViewer();
 		configurator = createGraphicalViewerConfigurator();
-
 		configurator.configureGraphicalViewer();
-		configurator.configureActions();
+		actionIds = configurator.configureActions();
 		configurator.configureZoomManager();
 		configurator.configureKeyHandler();
 		configurator.configureContextMenu();
@@ -179,21 +187,17 @@ public class ProductSystemGraphEditor extends GraphicalEditor implements
 		return false;
 	}
 
-	@Override
-	public void propertyChange(final PropertyChangeEvent evt) {
-		if (evt.getPropertyName().equals("firstTimeInitialized")) {
-			initializeLinks();
-		} else if (evt.getPropertyName().equals("RemovedConnections")) {
-			// TODO adjust
-			// if connections are removed from a process node it now can be
-			// deleted
-			// refreshDeleteAction((IStructuredSelection) evt.getNewValue());
-		}
-	}
+	public void initializeLinks() {
+		boolean full = model.getChildren().size() == productSystem
+				.getProcesses().size();
+		long referenceId = productSystem.getReferenceProcess().getId();
+		List<ProcessLink> links = new ArrayList<>();
+		if (full)
+			links.addAll(productSystem.getProcessLinks());
+		else
+			for (ProcessLink link : productSystem.getIncomingLinks(referenceId))
+				links.add(link);
 
-	private void initializeLinks() {
-		ProcessLink[] links = productSystem.getIncomingLinks(productSystem
-				.getReferenceProcess().getId());
 		for (ProcessLink processLink : links) {
 			ProcessNode sourceNode = model.getProcessNode(processLink
 					.getProviderId());
@@ -205,61 +209,29 @@ public class ProductSystemGraphEditor extends GraphicalEditor implements
 			link.setProcessLink(processLink);
 			link.link();
 		}
-		getModel().getPart().refresh();
+		model.refresh();
 	}
 
-	public void reset() {
+	public void expand() {
+		model = expandModel();
+		if (getGraphicalViewer() != null) {
+			getGraphicalViewer().deselectAll();
+			getGraphicalViewer().setContents(model);
+		}
+	}
+
+	public void collapse() {
 		model = createModel();
 		if (getGraphicalViewer() != null) {
 			getGraphicalViewer().deselectAll();
 			getGraphicalViewer().setContents(model);
 		}
-		// TODO adjust
-		// if (showAction != null) {
-		// showAction.setProductSystemNode(model);
-		// }
-		// if (hideAction != null) {
-		// hideAction.setProductSystemNode(model);
-		// }
-		// if (bscAction != null) {
-		// bscAction.setProductSystemNode(model);
-		// }
 	}
 
 	@Override
 	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-		super.selectionChanged(part, selection);
-		List<ProcessNode> processNodes = new ArrayList<>();
-		if (!selection.isEmpty() && selection instanceof IStructuredSelection) {
-			IStructuredSelection structuredSelection = (IStructuredSelection) selection;
-			for (Object o : structuredSelection.toArray())
-				if (o instanceof ProcessPart)
-					processNodes.add(((ProcessPart) o).getModel());
-		}
-		// ProcessNode[] nodes = processNodes.toArray(new
-		// ProcessNode[processNodes
-		// .size()]);
-		// TODO adjust
-		// // refresh the actions with the new selection
-		// refreshOpenAction(nodes);
-		// refreshMarkActions(nodes);
-		// if (processNodes.size() == 1) {
-		// refreshSupplyActions(processNodes.get(0));
-		// } else {
-		// refreshSupplyActions(null);
-		// }
-		// if (selection instanceof IStructuredSelection) {
-		// refreshRemoveConnectionLinksAction(
-		// (IStructuredSelection) selection,
-		// processNodes.toArray(new ProcessNode[processNodes.size()]));
-		// } else {
-		// refreshRemoveConnectionLinksAction(new StructuredSelection(),
-		// new ProcessNode[0]);
-		// }
-		// if (selection instanceof IStructuredSelection) {
-		// refreshDeleteAction((IStructuredSelection) selection);
-		// refreshGetLinksAction((IStructuredSelection) selection);
-		// }
+		this.selection = selection;
+		updateActions(actionIds);
 	}
 
 	@Override

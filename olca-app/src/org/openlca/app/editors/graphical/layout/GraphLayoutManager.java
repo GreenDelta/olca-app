@@ -18,29 +18,27 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.openlca.app.editors.graphical.model.ProcessNode;
-import org.openlca.app.editors.graphical.model.ProcessPart;
-import org.openlca.app.editors.graphical.model.ProductSystemPart;
+import org.openlca.app.editors.graphical.model.ProductSystemNode;
 
 public class GraphLayoutManager extends AbstractLayout {
 
 	public static int HORIZONTAL_SPACING = 25;
 	public static int VERTICAL_SPACING = 25;
 
-	private ProductSystemPart diagram;
+	private ProductSystemNode node;
 
-	public GraphLayoutManager(ProductSystemPart diagram) {
-		this.diagram = diagram;
+	public GraphLayoutManager(ProductSystemNode node) {
+		this.node = node;
 	}
 
 	private void layoutAsMinimalTree() {
 		List<ProcessNode> nodes = new ArrayList<>();
-		for (ProcessPart part : diagram.getChildren()) {
-			ProcessNode node = part.getModel();
-			if (node.isVisible())
-				nodes.add(node);
+		for (ProcessNode child : node.getChildren()) {
+			if (child.isVisible())
+				nodes.add(child);
 			else
-				node.setXyLayoutConstraints(new Rectangle(0, 0,
-						node.getSize().width, node.getSize().height));
+				child.setXyLayoutConstraints(new Rectangle(0, 0, child
+						.getSize().width, child.getSize().height));
 		}
 		MinimalTreeLayout layout = new MinimalTreeLayout();
 		layout.layout(nodes.toArray(new ProcessNode[nodes.size()]));
@@ -48,13 +46,12 @@ public class GraphLayoutManager extends AbstractLayout {
 
 	private void layoutAsTree() {
 		TreeLayout layout = new TreeLayout();
-		layout.layout(diagram.getModel());
+		layout.layout(node);
 	}
 
 	private void layoutXY() {
-		for (ProcessPart part : diagram.getChildren())
-			part.getFigure()
-					.setBounds(part.getModel().getXyLayoutConstraints());
+		for (ProcessNode child : node.getChildren())
+			child.getFigure().setBounds(child.getXyLayoutConstraints());
 	}
 
 	@SuppressWarnings("unchecked")

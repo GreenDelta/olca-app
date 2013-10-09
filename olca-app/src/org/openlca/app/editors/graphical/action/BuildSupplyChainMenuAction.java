@@ -1,7 +1,9 @@
 package org.openlca.app.editors.graphical.action;
 
-import org.eclipse.jface.action.Action;
+import org.eclipse.gef.EditPart;
 import org.eclipse.jface.action.IMenuCreator;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -9,15 +11,13 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.openlca.app.Messages;
-import org.openlca.app.editors.graphical.model.ProductSystemNode;
+import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.resources.ImageType;
 import org.openlca.core.model.ProcessType;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
 
-public class BuildSupplyChainMenuAction extends Action {
+public class BuildSupplyChainMenuAction extends EditorAction {
 
-	private ProductSystemNode model;
-	private ProcessDescriptor startProcess;
+	private ProcessNode node;
 	private BuildSupplyChainAction systemBuild = new BuildSupplyChainAction(
 			ProcessType.LCI_RESULT);
 	private BuildSupplyChainAction unitBuild = new BuildSupplyChainAction(
@@ -30,29 +30,15 @@ public class BuildSupplyChainMenuAction extends Action {
 		setMenuCreator(new MenuCreator());
 	}
 
-	void setModel(ProductSystemNode model) {
-		this.model = model;
-		systemBuild.setProductSystemNode(model);
-		unitBuild.setProductSystemNode(model);
-	}
-
-	void setStartProcess(ProcessDescriptor startProcess) {
-		this.startProcess = startProcess;
-		systemBuild.setStartProcess(startProcess);
-		unitBuild.setStartProcess(startProcess);
-	}
-
 	private class MenuCreator implements IMenuCreator {
 
 		private Menu createMenu(Menu menu) {
-			systemBuild.setProductSystemNode(model);
-			systemBuild.setStartProcess(startProcess);
+			systemBuild.setNode(node);
 			MenuItem systemItem = new MenuItem(menu, SWT.NONE);
 			systemItem.setText(systemBuild.getText());
 			systemItem.addSelectionListener(new RunBuildListener(systemBuild));
 
-			unitBuild.setProductSystemNode(model);
-			unitBuild.setStartProcess(startProcess);
+			unitBuild.setNode(node);
 			MenuItem unitItem = new MenuItem(menu, SWT.NONE);
 			unitItem.setText(unitBuild.getText());
 			unitItem.addSelectionListener(new RunBuildListener(unitBuild));
@@ -91,9 +77,31 @@ public class BuildSupplyChainMenuAction extends Action {
 
 		@Override
 		public void widgetSelected(SelectionEvent e) {
+			action.setNode(node);
 			action.run();
 		}
 
 	}
 
+	@Override
+	protected boolean accept(ISelection selection) {
+		node = null;
+		if (selection == null)
+			return false;
+		if (selection.isEmpty())
+			return false;
+		if (!(selection instanceof IStructuredSelection))
+			return false;
+
+		IStructuredSelection sel = (IStructuredSelection) selection;
+		if (sel.size() > 1)
+			return false;
+		if (!(sel.getFirstElement() instanceof EditPart))
+			return false;
+		Object model = ((EditPart) sel.getFirstElement()).getModel();
+		if (!(model instanceof ProcessNode))
+			return false;
+		node = (ProcessNode) model;
+		return true;
+	}
 }

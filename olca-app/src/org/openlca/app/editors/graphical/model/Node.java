@@ -9,31 +9,31 @@
  ******************************************************************************/
 package org.openlca.app.editors.graphical.model;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Dimension;
+import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 
-public abstract class Node implements Comparable<Node> {
-
-	public static final String PROPERTY_ADD = "NodeAddChild";
-	public static final String PROPERTY_LAYOUT = "NodeLayout";
-	public static final String PROPERTY_REMOVE = "NodeRemoveChild";
+abstract class Node implements Comparable<Node> {
 
 	private Node parent;
 	private List<Node> children;
 	private IFigure figure;
-	private String name;
-	private PropertyChangeSupport support;
+	private AppAbstractEditPart<?> editPart;
 
-	public Node() {
-		name = "Unknown";
+	Node() {
 		children = new ArrayList<>();
 		parent = null;
-		support = new PropertyChangeSupport(this);
+	}
+
+	void setEditPart(AppAbstractEditPart<?> editPart) {
+		this.editPart = editPart;
+	}
+
+	AbstractGraphicalEditPart getEditPart() {
+		return editPart;
 	}
 
 	public Node getParent() {
@@ -44,19 +44,21 @@ public abstract class Node implements Comparable<Node> {
 		this.parent = parent;
 	}
 
-	protected boolean add(Node child) {
+	boolean add(Node child) {
 		boolean b = children.add(child);
 		if (b) {
 			child.setParent(this);
-			getSupport().firePropertyChange(PROPERTY_ADD, null, child);
+			if (editPart != null)
+				editPart.refreshChildren();
 		}
 		return b;
 	}
 
-	protected boolean remove(Node child) {
+	boolean remove(Node child) {
 		boolean b = children.remove(child);
 		if (b)
-			getSupport().firePropertyChange(PROPERTY_REMOVE, child, null);
+			if (editPart != null)
+				editPart.refreshChildren();
 		return b;
 	}
 
@@ -72,13 +74,11 @@ public abstract class Node implements Comparable<Node> {
 		return figure;
 	}
 
-	protected void setFigure(IFigure figure) {
+	void setFigure(IFigure figure) {
 		this.figure = figure;
 	}
 
-	public String getName() {
-		return name;
-	}
+	protected abstract String getName();
 
 	public boolean isVisible() {
 		return getFigure() != null ? getFigure().isVisible() : false;
@@ -91,18 +91,6 @@ public abstract class Node implements Comparable<Node> {
 
 	public Dimension getSize() {
 		return getFigure() != null ? getFigure().getSize() : new Dimension();
-	}
-
-	public PropertyChangeSupport getSupport() {
-		return support;
-	}
-
-	public void addPropertyChangeListener(PropertyChangeListener listener) {
-		getSupport().addPropertyChangeListener(listener);
-	}
-
-	public void removePropertyChangeListener(PropertyChangeListener listener) {
-		getSupport().removePropertyChangeListener(listener);
 	}
 
 	@Override

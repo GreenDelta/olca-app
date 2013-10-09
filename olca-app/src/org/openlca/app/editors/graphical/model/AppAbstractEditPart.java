@@ -9,24 +9,22 @@
  ******************************************************************************/
 package org.openlca.app.editors.graphical.model;
 
-import java.beans.PropertyChangeListener;
 import java.util.List;
 
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 
-public abstract class AppAbstractEditPart<N extends Node> extends
-		AbstractGraphicalEditPart implements PropertyChangeListener {
+abstract class AppAbstractEditPart<N extends Node> extends
+		AbstractGraphicalEditPart {
 
 	@Override
 	public void activate() {
+		getModel().setEditPart(this);
 		super.activate();
-		getModel().addPropertyChangeListener(this);
 	}
 
 	@Override
-	public void deactivate() {
-		super.deactivate();
-		getModel().removePropertyChangeListener(this);
+	public void refreshChildren() {
+		super.refreshChildren(); // make visible
 	}
 
 	@SuppressWarnings("unchecked")

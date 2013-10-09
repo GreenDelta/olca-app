@@ -24,7 +24,6 @@ import org.openlca.core.model.FlowType;
 
 class ExchangeFigure extends Label {
 
-	static final String HIGHLIGHT = "HighlightExchange";
 	private static final Color BACKGROUND_COLOR = ColorConstants.white;
 	private static final Color TEXT_COLOR = ColorConstants.gray;
 	private static final Color TEXT_HIGHLIGHTED_COLOR = ColorConstants.lightBlue;

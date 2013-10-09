@@ -9,12 +9,10 @@
  ******************************************************************************/
 package org.openlca.app.editors.graphical.model;
 
-import java.beans.PropertyChangeEvent;
 import java.util.EventObject;
 import java.util.List;
 
 import org.eclipse.draw2d.IFigure;
-import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.commands.CommandStackListener;
 import org.eclipse.gef.editpolicies.ComponentEditPolicy;
@@ -22,7 +20,7 @@ import org.openlca.app.editors.graphical.layout.GraphAnimation;
 import org.openlca.app.editors.graphical.layout.GraphLayoutManager;
 import org.openlca.app.editors.graphical.policy.LayoutPolicy;
 
-public class ProductSystemPart extends AppAbstractEditPart<ProductSystemNode> {
+class ProductSystemPart extends AppAbstractEditPart<ProductSystemNode> {
 
 	CommandStackListener stackListener = new CommandStackChangedListener();
 
@@ -43,8 +41,7 @@ public class ProductSystemPart extends AppAbstractEditPart<ProductSystemNode> {
 	@Override
 	protected IFigure createFigure() {
 		ProductSystemFigure figure = new ProductSystemFigure(getModel());
-		figure.addPropertyChangeListener(getModel().getEditor());
-		getModel().setPart(this);
+		getModel().setEditPart(this);
 		return figure;
 	}
 
@@ -53,7 +50,7 @@ public class ProductSystemPart extends AppAbstractEditPart<ProductSystemNode> {
 		installEditPolicy(EditPolicy.LAYOUT_ROLE, new LayoutPolicy());
 		installEditPolicy(EditPolicy.COMPONENT_ROLE, new ComponentEditPolicy() {
 		});
-		GraphLayoutManager manager = new GraphLayoutManager(this);
+		GraphLayoutManager manager = new GraphLayoutManager(getModel());
 		getFigure().setLayoutManager(manager);
 	}
 
@@ -66,18 +63,6 @@ public class ProductSystemPart extends AppAbstractEditPart<ProductSystemNode> {
 	@Override
 	public boolean isSelectable() {
 		return false;
-	}
-
-	@Override
-	public void propertyChange(PropertyChangeEvent evt) {
-		if (Node.PROPERTY_ADD.equals(evt.getPropertyName())
-				|| Node.PROPERTY_REMOVE.equals(evt.getPropertyName()))
-			refreshChildren();
-		else if ("SELECT".equals(evt.getPropertyName()))
-			if ("true".equals(evt.getNewValue().toString()))
-				setSelected(EditPart.SELECTED);
-			else
-				setSelected(EditPart.SELECTED_NONE);
 	}
 
 	private class CommandStackChangedListener implements CommandStackListener {

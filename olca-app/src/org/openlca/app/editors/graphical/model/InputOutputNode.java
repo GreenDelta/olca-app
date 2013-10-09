@@ -66,6 +66,11 @@ public class InputOutputNode extends Node {
 		return (List<ExchangeNode>) super.getChildren();
 	}
 
+	@Override
+	protected String getName() {
+		return null;
+	}
+
 	private final class ExchangeComparator implements Comparator<Exchange> {
 
 		@Override

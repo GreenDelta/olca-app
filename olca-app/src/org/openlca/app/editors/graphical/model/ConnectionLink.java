@@ -9,9 +9,6 @@
  ******************************************************************************/
 package org.openlca.app.editors.graphical.model;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
-
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.Connection;
 import org.eclipse.swt.graphics.Color;
@@ -21,18 +18,19 @@ public class ConnectionLink {
 
 	public static Color COLOR = ColorConstants.gray;
 	public static Color HIGHLIGHT_COLOR = ColorConstants.blue;
-	public static String HIGHLIGHT = "Highlight link";
-	public static String REFRESH_SOURCE_ANCHOR = "Refresh source anchor";
-	public static String REFRESH_TARGET_ANCHOR = "Refresh target anchor";
 
 	private Connection figure;
 	private ProcessLink processLink;
 	private ProcessNode sourceNode;
 	private ProcessNode targetNode;
-	private PropertyChangeSupport support = new PropertyChangeSupport(this);
+	private ConnectionLinkPart editPart;
 
 	public ConnectionLink() {
 
+	}
+
+	void setEditPart(ConnectionLinkPart editPart) {
+		this.editPart = editPart;
 	}
 
 	public void setSourceNode(ProcessNode sourceNode) {
@@ -63,24 +61,20 @@ public class ConnectionLink {
 		return sourceNode;
 	}
 
-	public void refreshSourceAnchor() {
-		support.firePropertyChange(REFRESH_SOURCE_ANCHOR, null, "not null");
+	void refreshSourceAnchor() {
+		editPart.refreshSourceAnchor();
 	}
 
 	public ProcessNode getTargetNode() {
 		return targetNode;
 	}
 
-	public void refreshTargetAnchor() {
-		support.firePropertyChange(REFRESH_TARGET_ANCHOR, null, "not null");
+	void refreshTargetAnchor() {
+		editPart.refreshTargetAnchor();
 	}
 
-	/**
-	 * @param value
-	 *            0 = unhighlight, 1 = hightlight, 2 = highlight (first element)
-	 */
-	public void setHighlighted(int value) {
-		support.firePropertyChange(HIGHLIGHT, null, value);
+	void setSelected(int value) {
+		editPart.setSelected(value);
 	}
 
 	public void link() {
@@ -91,15 +85,6 @@ public class ConnectionLink {
 	public void unlink() {
 		sourceNode.remove(this);
 		targetNode.remove(this);
-	}
-
-	public void addPropertyChangeListener(PropertyChangeListener listener) {
-		support.addPropertyChangeListener(listener);
-	}
-
-	public void removePropertyChangeListener(
-			final PropertyChangeListener listener) {
-		support.removePropertyChangeListener(listener);
 	}
 
 	@Override

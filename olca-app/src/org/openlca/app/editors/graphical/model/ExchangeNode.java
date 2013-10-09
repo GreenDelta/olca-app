@@ -31,7 +31,7 @@ public class ExchangeNode extends Node {
 	}
 
 	@Override
-	public String getName() {
+	protected String getName() {
 		if (isDummy())
 			return "";
 		return Labels.getDisplayName(Descriptors.toDescriptor(exchange
@@ -47,6 +47,8 @@ public class ExchangeNode extends Node {
 			return false;
 		if (node.isDummy())
 			return false;
+		if (isDummy())
+			return false;
 		if (!exchange.getFlow().equals(node.getExchange().getFlow()))
 			return false;
 		if (exchange.isInput() == node.getExchange().isInput())
@@ -55,7 +57,8 @@ public class ExchangeNode extends Node {
 	}
 
 	public void setHighlighted(boolean value) {
-		((ExchangeFigure) getFigure()).setHighlighted(value);
+		if (!isDummy())
+			((ExchangeFigure) getFigure()).setHighlighted(value);
 	}
 
 }

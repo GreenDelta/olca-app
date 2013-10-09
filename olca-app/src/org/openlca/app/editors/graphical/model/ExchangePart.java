@@ -9,8 +9,6 @@
  ******************************************************************************/
 package org.openlca.app.editors.graphical.model;
 
-import java.beans.PropertyChangeEvent;
-
 import org.eclipse.draw2d.GridData;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.DragTracker;
@@ -20,7 +18,7 @@ import org.eclipse.gef.tools.ConnectionDragCreationTool;
 import org.eclipse.swt.SWT;
 import org.openlca.app.editors.graphical.policy.ProcessLinkCreatePolicy;
 
-public class ExchangePart extends AbstractNodeEditPart<ExchangeNode> {
+class ExchangePart extends AbstractNodeEditPart<ExchangeNode> {
 
 	@Override
 	protected IFigure createFigure() {
@@ -28,7 +26,6 @@ public class ExchangePart extends AbstractNodeEditPart<ExchangeNode> {
 		getModel().setFigure(figure);
 		String name = getModel().getName();
 		figure.setText(name);
-		figure.addPropertyChangeListener(this);
 		return figure;
 	}
 
@@ -57,11 +54,6 @@ public class ExchangePart extends AbstractNodeEditPart<ExchangeNode> {
 		else
 			getFigure().getParent().setConstraint(getFigure(),
 					new GridData(SWT.RIGHT, SWT.TOP, true, false));
-	}
-
-	@Override
-	public void propertyChange(final PropertyChangeEvent evt) {
-
 	}
 
 }

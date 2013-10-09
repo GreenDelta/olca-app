@@ -10,7 +10,7 @@
 package org.openlca.app.editors.graphical.outline;
 
 import org.eclipse.gef.editparts.AbstractTreeEditPart;
-import org.openlca.app.editors.graphical.model.ProcessPart;
+import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -36,9 +36,9 @@ public class ProcessTreeEditPart extends AbstractTreeEditPart {
 	@Override
 	public void setSelected(int value) {
 		super.setSelected(value);
-		for (ProcessPart part : node.getPart().getChildren()) {
-			if (part.getModel().getProcess().getId() == getModel().getId()) {
-				part.setSelected(value);
+		for (ProcessNode node : this.node.getChildren()) {
+			if (node.getProcess().getId() == getModel().getId()) {
+				node.setSelected(value);
 				break;
 			}
 		}

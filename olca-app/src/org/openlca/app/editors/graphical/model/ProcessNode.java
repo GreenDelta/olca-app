@@ -1,12 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.app.editors.graphical.model;
 
 import java.util.ArrayList;
@@ -14,19 +5,20 @@ import java.util.List;
 
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.layout.GraphLayoutManager;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
+import org.openlca.core.model.Location;
 import org.openlca.core.model.Process;
+import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 import com.google.common.base.Objects;
 
 public class ProcessNode extends Node {
-
-	public static String CONNECTION = "Connection";
 
 	private ProcessDescriptor process;
 	private List<ConnectionLink> links = new ArrayList<>();
@@ -40,6 +32,11 @@ public class ProcessNode extends Node {
 	@Override
 	public ProductSystemNode getParent() {
 		return (ProductSystemNode) super.getParent();
+	}
+
+	@Override
+	ProcessPart getEditPart() {
+		return (ProcessPart) super.getEditPart();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -59,18 +56,31 @@ public class ProcessNode extends Node {
 		super.setFigure(figure);
 	}
 
-	public void add(ConnectionLink connectionLink) {
-		links.add(connectionLink);
-		getSupport().firePropertyChange(CONNECTION, null, connectionLink);
+	public void add(ConnectionLink link) {
+		links.add(link);
+		if (equals(link.getSourceNode()))
+			getEditPart().refreshSourceConnections();
+		else if (equals(link.getTargetNode()))
+			getEditPart().refreshTargetConnections();
 	}
 
-	public void remove(ConnectionLink connectionLink) {
-		links.remove(connectionLink);
-		getSupport().firePropertyChange(CONNECTION, connectionLink, null);
+	public void remove(ConnectionLink link) {
+		links.remove(link);
+		if (equals(link.getSourceNode()))
+			getEditPart().refreshSourceConnections();
+		else if (equals(link.getTargetNode()))
+			getEditPart().refreshTargetConnections();
 	}
 
 	public List<ConnectionLink> getLinks() {
 		return links;
+	}
+
+	public ConnectionLink getLink(ProcessLink link) {
+		for (ConnectionLink l : links)
+			if (l.getProcessLink().equals(link))
+				return l;
+		return null;
 	}
 
 	public void removeAllLinks() {
@@ -81,10 +91,13 @@ public class ProcessNode extends Node {
 	}
 
 	@Override
-	public String getName() {
+	protected String getName() {
 		String text = process.getName();
-		text += process.getLocation() != null ? " [" + process.getLocation()
-				+ "]" : "";
+		Long locationId = process.getLocation();
+		if (locationId != null)
+			text += " ["
+					+ Cache.getEntityCache().get(Location.class, locationId)
+							.getCode() + "]";
 		return text;
 	}
 
@@ -152,7 +165,15 @@ public class ProcessNode extends Node {
 
 	public void setXyLayoutConstraints(Rectangle xyLayoutConstraints) {
 		this.xyLayoutConstraints = xyLayoutConstraints;
-		getSupport().firePropertyChange(Node.PROPERTY_LAYOUT, null, "not null");
+		getEditPart().revalidate();
+	}
+
+	public boolean hasIncomingConnection(long flowId) {
+		for (ProcessLink link : getParent().getProductSystem()
+				.getIncomingLinks(getProcess().getId()))
+			if (link.getFlowId() == flowId)
+				return true;
+		return false;
 	}
 
 	public int getMinimumHeight() {
@@ -168,9 +189,9 @@ public class ProcessNode extends Node {
 	public void setLinksHighlighted(boolean value) {
 		for (ConnectionLink link : links)
 			if (value)
-				link.setHighlighted(1);
+				link.setSelected(1);
 			else
-				link.setHighlighted(0);
+				link.setSelected(0);
 	}
 
 	public boolean hasConnections() {
@@ -208,6 +229,10 @@ public class ProcessNode extends Node {
 				.getFigure().getLayoutManager();
 		layoutManager.layout(getFigure(), getParent().getEditor()
 				.getLayoutType());
+	}
+
+	public void setSelected(int value) {
+		getEditPart().setSelected(value);
 	}
 
 	@Override

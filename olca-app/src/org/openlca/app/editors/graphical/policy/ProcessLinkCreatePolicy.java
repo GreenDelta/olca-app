@@ -22,7 +22,6 @@ import org.openlca.app.editors.graphical.command.CommandFactory;
 import org.openlca.app.editors.graphical.command.CreateLinkCommand;
 import org.openlca.app.editors.graphical.model.ConnectionLink;
 import org.openlca.app.editors.graphical.model.ExchangeNode;
-import org.openlca.app.editors.graphical.model.ExchangePart;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 
 public class ProcessLinkCreatePolicy extends GraphicalNodeEditPolicy {
@@ -57,7 +56,7 @@ public class ProcessLinkCreatePolicy extends GraphicalNodeEditPolicy {
 				ProcessNode targetNode = target.getParent().getParent();
 				if (!target.getExchange().isInput())
 					cmd.setSourceNode(targetNode);
-				else if (!targetNode.getParent().hasConnection(cmd.getFlowId()))
+				else if (!targetNode.hasIncomingConnection(cmd.getFlowId()))
 					cmd.setTargetNode(targetNode);
 				request.setStartCommand(cmd);
 				return cmd;
@@ -77,10 +76,12 @@ public class ProcessLinkCreatePolicy extends GraphicalNodeEditPolicy {
 		if (!target.getExchange().isInput()) {
 			cmd = CommandFactory.createCreateLinkCommand(flowId);
 			cmd.setSourceNode(targetNode);
+			cmd.setStartedFromSource(true);
 			request.setStartCommand(cmd);
-		} else if (!targetNode.getParent().hasConnection(flowId)) {
+		} else if (!targetNode.hasIncomingConnection(flowId)) {
 			cmd = CommandFactory.createCreateLinkCommand(flowId);
 			cmd.setTargetNode(targetNode);
+			cmd.setStartedFromSource(false);
 			request.setStartCommand(cmd);
 		}
 		return cmd;
@@ -94,7 +95,7 @@ public class ProcessLinkCreatePolicy extends GraphicalNodeEditPolicy {
 
 	@Override
 	protected Command getReconnectSourceCommand(ReconnectRequest request) {
-		if (request.getTarget() instanceof ExchangePart) {
+		if (request.getTarget().getModel() instanceof ExchangeNode) {
 			ConnectionLink link = (ConnectionLink) request
 					.getConnectionEditPart().getModel();
 			ExchangeNode source = (ExchangeNode) request.getTarget().getModel();
@@ -107,7 +108,7 @@ public class ProcessLinkCreatePolicy extends GraphicalNodeEditPolicy {
 
 	@Override
 	protected Command getReconnectTargetCommand(ReconnectRequest request) {
-		if (request.getTarget() instanceof ExchangePart) {
+		if (request.getTarget().getModel() instanceof ExchangeNode) {
 			ConnectionLink link = (ConnectionLink) request
 					.getConnectionEditPart().getModel();
 			ExchangeNode target = (ExchangeNode) request.getTarget().getModel();
@@ -115,7 +116,7 @@ public class ProcessLinkCreatePolicy extends GraphicalNodeEditPolicy {
 			long flowId = link.getProcessLink().getFlowId();
 			boolean canConnect = true;
 			if (!link.getTargetNode().equals(targetNode)
-					&& targetNode.getParent().hasConnection(flowId))
+					&& targetNode.hasIncomingConnection(flowId))
 				canConnect = false;
 			if (canConnect)
 				return CommandFactory.createReconnectLinkCommand(link,
@@ -125,31 +126,23 @@ public class ProcessLinkCreatePolicy extends GraphicalNodeEditPolicy {
 	}
 
 	@Override
-	public void eraseSourceFeedback(final Request request) {
-		// TODO adjust
-		// if (getHost() instanceof ExchangePart) {
-		// // unhighlight matching exchanges
-		// ((ProductSystemNode) ((ExchangeNode) getHost().getModel())
-		// .getParentProcessNode().getParent())
-		// .unhighlightMatchingExchangeLabels();
-		// ((ExchangeNode) getHost().getModel()).getFigure().setHighlight(
-		// false);
-		// }
+	public void eraseSourceFeedback(Request request) {
+		if (getHost().getModel() instanceof ExchangeNode) {
+			ExchangeNode node = (ExchangeNode) getHost().getModel();
+			node.getParent().getParent().getParent().removeHighlighting();
+			node.setHighlighted(false);
+		}
 		super.eraseSourceFeedback(request);
 	}
 
 	@Override
-	public void showSourceFeedback(final Request request) {
-		// TODO adjust
-		// if (getHost() instanceof ExchangePart) {
-		// // highlight matching exchanges
-		// ((ProductSystemNode) ((ExchangeNode) getHost().getModel())
-		// .getParentProcessNode().getParent())
-		// .highlightMatchingExchangeLabels(selectedExchangeNode);
-		// ((ExchangeNode) getHost().getModel()).getFigure()
-		// .setHighlight(true);
-		// }
+	public void showSourceFeedback(Request request) {
+		if (getHost().getModel() instanceof ExchangeNode) {
+			ExchangeNode node = (ExchangeNode) getHost().getModel();
+			node.getParent().getParent().getParent()
+					.highlightMatchingExchanges(node);
+			node.setHighlighted(true);
+		}
 		super.showSourceFeedback(request);
 	}
-
 }

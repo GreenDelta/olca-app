@@ -38,6 +38,8 @@ public class AppContextMenuProvider extends ContextMenuProvider {
 				.getAction(ActionIds.REMOVE_SUPPLY_CHAIN_ACTION_ID));
 		menu.add(actionRegistry
 				.getAction(ActionIds.REMOVE_ALL_CONNECTIONS_ACTION_ID));
+		menu.add(actionRegistry.getAction(ActionIds.EXPAND_ALL_ACTION_ID));
+		menu.add(actionRegistry.getAction(ActionIds.COLLAPSE_ALL_ACTION_ID));
 		menu.appendToGroup(GEFActionConstants.GROUP_UNDO,
 				actionRegistry.getAction(ActionFactory.UNDO.getId()));
 		menu.appendToGroup(GEFActionConstants.GROUP_UNDO,
@@ -47,5 +49,4 @@ public class AppContextMenuProvider extends ContextMenuProvider {
 		deleteAction.setText(Messages.Delete);
 		menu.appendToGroup(GEFActionConstants.GROUP_EDIT, deleteAction);
 	}
-
 }

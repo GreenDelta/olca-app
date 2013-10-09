@@ -22,10 +22,19 @@ public class CreateLinkCommand extends Command {
 	private ProcessLink processLink;
 	private ProcessNode sourceNode;
 	private ProcessNode targetNode;
+	private boolean startedFromSource;
 	private long flowId;
 
 	CreateLinkCommand() {
 
+	}
+
+	public void setStartedFromSource(boolean startedFromSource) {
+		this.startedFromSource = startedFromSource;
+	}
+
+	public boolean isStartedFromSource() {
+		return startedFromSource;
 	}
 
 	@Override

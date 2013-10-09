@@ -8,7 +8,7 @@ import org.eclipse.gef.requests.CreateConnectionRequest;
 import org.eclipse.gef.requests.ReconnectRequest;
 import org.openlca.app.editors.graphical.command.CreateLinkCommand;
 
-public abstract class AbstractNodeEditPart<N extends Node> extends
+abstract class AbstractNodeEditPart<N extends Node> extends
 		AppAbstractEditPart<N> implements NodeEditPart {
 
 	@Override
@@ -56,12 +56,21 @@ public abstract class AbstractNodeEditPart<N extends Node> extends
 		if (request instanceof CreateConnectionRequest) {
 			CreateLinkCommand cmd = (CreateLinkCommand) ((CreateConnectionRequest) request)
 					.getStartCommand();
-			if (cmd.getTargetNode() != null)
-				return new ConnectionLinkAnchor(cmd.getTargetNode(),
-						cmd.getLink());
-			else if (cmd.getSourceNode() != null)
-				return new ConnectionLinkAnchor(cmd.getSourceNode(),
-						cmd.getLink());
+			if (cmd.isStartedFromSource()) {
+				if (cmd.getTargetNode() != null)
+					return new ConnectionLinkAnchor(cmd.getTargetNode(),
+							cmd.getLink());
+				else if (cmd.getSourceNode() != null)
+					return new ConnectionLinkAnchor(cmd.getSourceNode(),
+							cmd.getLink());
+			} else {
+				if (cmd.getSourceNode() != null)
+					return new ConnectionLinkAnchor(cmd.getSourceNode(),
+							cmd.getLink());
+				else if (cmd.getTargetNode() != null)
+					return new ConnectionLinkAnchor(cmd.getTargetNode(),
+							cmd.getLink());
+			}
 		} else if (request instanceof ReconnectRequest) {
 			ReconnectRequest req = (ReconnectRequest) request;
 			ConnectionLink link = (ConnectionLink) req.getConnectionEditPart()
@@ -80,8 +89,10 @@ public abstract class AbstractNodeEditPart<N extends Node> extends
 	}
 
 	private boolean canConnect(ExchangeNode node, ExchangeNode withNode) {
-		if (withNode.getParent().getParent().getParent()
-				.hasConnection(withNode.getExchange().getFlow().getId()))
+		if (withNode
+				.getParent()
+				.getParent()
+				.hasIncomingConnection(withNode.getExchange().getFlow().getId()))
 			return false;
 		if (node.getExchange().getFlow()
 				.equals(withNode.getExchange().getFlow()))

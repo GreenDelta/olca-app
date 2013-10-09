@@ -1,23 +1,22 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.app.editors.graphical.action;
 
-import org.eclipse.jface.action.Action;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.gef.EditPart;
+import org.eclipse.gef.commands.Command;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.openlca.app.Messages;
+import org.openlca.app.editors.graphical.model.ConnectionLink;
 import org.openlca.app.editors.graphical.model.ProcessNode;
-import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
 
-public class RemoveSupplyChainAction extends Action {
+public class RemoveSupplyChainAction extends EditorAction {
 
 	private ProcessNode node;
 
@@ -28,29 +27,129 @@ public class RemoveSupplyChainAction extends Action {
 
 	@Override
 	public void run() {
-		ProcessDescriptor process = node.getProcess();
-		ProductSystemNode productSystemNode = node.getParent();
-		ProductSystem productSystem = productSystemNode.getProductSystem();
-		removeSupplyChain(process.getId(), productSystem);
-		// TODO adjust
-		// productSystemNode.getEditor().reset(null);
-		productSystemNode.getEditor().getOutline().refresh();
+		Set<ConnectionLink> links = new HashSet<>();
+		Set<ProcessNode> nodes = new HashSet<>();
+		removeSupplyChain(node.getProcess().getId(), links, nodes);
+		if (links.size() > 0 || nodes.size() > 0)
+			getEditor().getCommandStack().execute(
+					new RemoveCommand(nodes, links));
 	}
 
-	private void removeSupplyChain(long processId, ProductSystem productSystem) {
-		ProcessLink[] links = productSystem.getIncomingLinks(processId);
-		for (ProcessLink link : links) {
-			productSystem.getProcessLinks().remove(link);
-			ProcessLink[] providerLinks = productSystem.getOutgoingLinks(link
-					.getProviderId());
-			if (providerLinks.length == 0) {
-				removeSupplyChain(link.getProviderId(), productSystem);
-				productSystem.getProcessLinks().remove(link.getProviderId());
+	private void removeSupplyChain(long processId, Set<ConnectionLink> links,
+			Set<ProcessNode> nodes) {
+		ProductSystem system = getEditor().getModel().getProductSystem();
+		ProcessNode node = getEditor().getModel().getProcessNode(processId);
+		ProcessLink[] incomingLinks = system.getIncomingLinks(processId);
+		for (ProcessLink link : incomingLinks) {
+			if (node != null) {
+				ConnectionLink l = node.getLink(link);
+				if (l != null)
+					links.add(l);
+			}
+			system.getProcessLinks().remove(link);
+			if (system.getOutgoingLinks(link.getProviderId()).length == 0) {
+				removeSupplyChain(link.getProviderId(), links, nodes);
+				system.getProcesses().remove(link.getProviderId());
+				ProcessNode providerNode = getEditor().getModel()
+						.getProcessNode(link.getProviderId());
+				if (providerNode != null)
+					nodes.add(providerNode);
 			}
 		}
 	}
 
-	void setNode(ProcessNode node) {
-		this.node = node;
+	@Override
+	protected boolean accept(ISelection selection) {
+		node = null;
+		if (selection == null)
+			return false;
+		if (selection.isEmpty())
+			return false;
+		if (!(selection instanceof IStructuredSelection))
+			return false;
+
+		IStructuredSelection sel = (IStructuredSelection) selection;
+		if (sel.size() > 1)
+			return false;
+		if (!(sel.getFirstElement() instanceof EditPart))
+			return false;
+		Object model = ((EditPart) sel.getFirstElement()).getModel();
+		if (!(model instanceof ProcessNode))
+			return false;
+		node = (ProcessNode) model;
+		return true;
 	}
+
+	private class RemoveCommand extends Command {
+
+		private Set<ProcessNode> nodes;
+		private Set<ConnectionLink> links;
+		private Map<Long, Rectangle> layouts = new HashMap<>();
+		private Map<ProcessLink, Boolean> visibility = new HashMap<>();
+
+		private RemoveCommand(Set<ProcessNode> nodes, Set<ConnectionLink> links) {
+			this.nodes = nodes;
+			this.links = links;
+		}
+
+		@Override
+		public boolean canExecute() {
+			return true;
+		}
+
+		@Override
+		public String getLabel() {
+			return Messages.Systems_RemoveSupplyChainAction_Text;
+		}
+
+		@Override
+		public void execute() {
+			for (ConnectionLink link : links) {
+				visibility.put(link.getProcessLink(), link.isVisible());
+				link.unlink();
+				link.getSourceNode().getParent().getProductSystem()
+						.getProcessLinks().remove(link.getProcessLink());
+			}
+			for (ProcessNode node : nodes) {
+				layouts.put(node.getProcess().getId(),
+						node.getXyLayoutConstraints());
+				node.getParent().getProductSystem().getProcesses()
+						.remove(node.getProcess().getId());
+				node.getParent().remove(node);
+				if (node.getParent().getEditor().getOutline() != null)
+					node.getParent().getEditor().getOutline().refresh();
+			}
+		}
+
+		@Override
+		public boolean canUndo() {
+			return true;
+		}
+
+		@Override
+		public void undo() {
+			for (ProcessNode node : nodes) {
+				node.getParent().add(node);
+				node.setXyLayoutConstraints(layouts.remove(node.getProcess()
+						.getId()));
+				node.getParent().getProductSystem().getProcesses()
+						.add(node.getProcess().getId());
+				if (node.getParent().getEditor().getOutline() != null)
+					node.getParent().getEditor().getOutline().refresh();
+			}
+			for (ConnectionLink link : links) {
+				link.getSourceNode().getParent().getProductSystem()
+						.getProcessLinks().add(link.getProcessLink());
+				link.link();
+				link.setVisible(visibility.remove(link.getProcessLink()));
+			}
+		}
+
+		@Override
+		public void redo() {
+			execute();
+		}
+
+	}
+
 }

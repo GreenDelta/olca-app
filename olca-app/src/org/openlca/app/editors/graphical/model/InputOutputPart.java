@@ -9,14 +9,13 @@
  ******************************************************************************/
 package org.openlca.app.editors.graphical.model;
 
-import java.beans.PropertyChangeEvent;
 import java.util.List;
 
 import org.eclipse.draw2d.GridData;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.swt.SWT;
 
-public class InputOutputPart extends AppAbstractEditPart<InputOutputNode> {
+class InputOutputPart extends AppAbstractEditPart<InputOutputNode> {
 
 	@Override
 	protected IFigure createFigure() {
@@ -48,13 +47,6 @@ public class InputOutputPart extends AppAbstractEditPart<InputOutputNode> {
 	protected void refreshVisuals() {
 		getFigure().getParent().setConstraint(getFigure(),
 				new GridData(SWT.FILL, SWT.FILL, true, true));
-	}
-
-	@Override
-	public void propertyChange(PropertyChangeEvent evt) {
-		if (Node.PROPERTY_ADD.equals(evt.getPropertyName())
-				|| Node.PROPERTY_REMOVE.equals(evt.getPropertyName()))
-			refreshChildren();
 	}
 
 }
