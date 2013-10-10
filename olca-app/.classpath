@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="libs/zt-zip-1.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/derby-10.10.1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/guava-14.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-core-1.0.0.jar"/>

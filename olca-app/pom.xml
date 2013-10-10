@@ -19,7 +19,7 @@
 			<artifactId>poi</artifactId>
 			<version>3.9</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml</artifactId>
@@ -133,7 +133,7 @@
 			<artifactId>bonecp</artifactId>
 			<version>0.8.0-rc3</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>net.sf.trove4j</groupId>
 			<artifactId>trove4j</artifactId>
@@ -206,6 +206,13 @@
 			<version>1.0.0</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.zeroturnaround</groupId>
+			<artifactId>zt-zip</artifactId>
+			<version>1.6</version>
+			<type>jar</type>
+		</dependency>
+
 	</dependencies>
 
 	<build>
@@ -228,7 +235,7 @@
 					</execution>
 				</executions>
 			</plugin>
-		
+
 		</plugins>
 
 	</build>

@@ -85,4 +85,5 @@ Bundle-ClassPath: .,
  libs/olca-core-1.0.0.jar,
  libs/derby-10.10.1.1.jar,
  libs/guava-14.0.1.jar,
- libs/bonecp-0.8.0-rc3.jar
+ libs/bonecp-0.8.0-rc3.jar,
+ libs/zt-zip-1.6.jar

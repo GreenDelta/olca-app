@@ -14,12 +14,12 @@ import org.openlca.app.util.Editors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ActivateDatabaseAction extends Action implements INavigationAction {
+public class DatabaseActivateAction extends Action implements INavigationAction {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private IDatabaseConfiguration config;
 
-	public ActivateDatabaseAction() {
+	public DatabaseActivateAction() {
 		setText("Activate");
 		setImageDescriptor(ImageType.CONNECT_ICON.getDescriptor());
 	}

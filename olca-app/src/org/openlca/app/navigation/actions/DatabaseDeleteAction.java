@@ -36,13 +36,13 @@ import org.slf4j.LoggerFactory;
  * Deletes a database. Works only for local Derby databases; remote databases
  * cannot be deleted.
  */
-public class DeleteDatabaseAction extends Action implements INavigationAction {
+public class DatabaseDeleteAction extends Action implements INavigationAction {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
 	private List<IDatabaseConfiguration> configs;
 
-	public DeleteDatabaseAction() {
+	public DatabaseDeleteAction() {
 		setImageDescriptor(ImageType.DELETE_ICON.getDescriptor());
 		setDisabledImageDescriptor(ImageType.DELETE_ICON_DISABLED
 				.getDescriptor());

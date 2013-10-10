@@ -16,16 +16,17 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.actions.ActionContext;
 import org.eclipse.ui.navigator.CommonActionProvider;
-import org.openlca.app.navigation.actions.ActivateDatabaseAction;
-import org.openlca.app.navigation.actions.CloseDatabaseAction;
 import org.openlca.app.navigation.actions.CopyAction;
 import org.openlca.app.navigation.actions.CreateCategoryAction;
-import org.openlca.app.navigation.actions.CreateDatabaseAction;
 import org.openlca.app.navigation.actions.CreateModelAction;
 import org.openlca.app.navigation.actions.CutAction;
+import org.openlca.app.navigation.actions.DatabaseActivateAction;
+import org.openlca.app.navigation.actions.DatabaseCloseAction;
+import org.openlca.app.navigation.actions.DatabaseCreateAction;
+import org.openlca.app.navigation.actions.DatabaseDeleteAction;
+import org.openlca.app.navigation.actions.DatabaseExportAction;
 import org.openlca.app.navigation.actions.DatabasePropertiesAction;
 import org.openlca.app.navigation.actions.DeleteCategoryAction;
-import org.openlca.app.navigation.actions.DeleteDatabaseAction;
 import org.openlca.app.navigation.actions.DeleteModelAction;
 import org.openlca.app.navigation.actions.EcoSpold1ExportAction;
 import org.openlca.app.navigation.actions.EcoSpold1ImportAction;
@@ -46,11 +47,12 @@ public class NavigationActionProvider extends CommonActionProvider {
 	//@formatter:off
 	private INavigationAction[][] actions = new INavigationAction[][] {
 			// database actions
-			new INavigationAction[] {
-				new ActivateDatabaseAction(), 
+			new INavigationAction[] {					
+				new DatabaseActivateAction(), 
 				new DatabasePropertiesAction(),
-				new CloseDatabaseAction(), 
-				new DeleteDatabaseAction()
+				new DatabaseCloseAction(), 
+				new DatabaseExportAction(),
+				new DatabaseDeleteAction()
 			},			
 			// model actions
 			new INavigationAction[] {
@@ -94,7 +96,7 @@ public class NavigationActionProvider extends CommonActionProvider {
 			registered += registerMultiActions(elements, menu);
 		if (registered > 0)
 			menu.add(new Separator());
-		menu.add(new CreateDatabaseAction());
+		menu.add(new DatabaseCreateAction());
 	}
 
 	private int registerSingleActions(INavigationElement<?> element,

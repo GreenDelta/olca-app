@@ -22,7 +22,7 @@ import org.openlca.app.resources.ImageType;
 /**
  * Opens the wizard for creating a new database.
  */
-public class CreateDatabaseAction extends Action implements INavigationAction {
+public class DatabaseCreateAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean accept(INavigationElement<?> element) {
