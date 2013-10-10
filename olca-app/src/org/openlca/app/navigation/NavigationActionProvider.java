@@ -25,6 +25,7 @@ import org.openlca.app.navigation.actions.DatabaseCloseAction;
 import org.openlca.app.navigation.actions.DatabaseCreateAction;
 import org.openlca.app.navigation.actions.DatabaseDeleteAction;
 import org.openlca.app.navigation.actions.DatabaseExportAction;
+import org.openlca.app.navigation.actions.DatabaseImportAction;
 import org.openlca.app.navigation.actions.DatabasePropertiesAction;
 import org.openlca.app.navigation.actions.DeleteCategoryAction;
 import org.openlca.app.navigation.actions.DeleteModelAction;
@@ -97,6 +98,7 @@ public class NavigationActionProvider extends CommonActionProvider {
 		if (registered > 0)
 			menu.add(new Separator());
 		menu.add(new DatabaseCreateAction());
+		menu.add(new DatabaseImportAction());
 	}
 
 	private int registerSingleActions(INavigationElement<?> element,

@@ -162,11 +162,10 @@ public class Messages extends NLS {
 	public static String Exchanges;
 	public static String ExchangeType;
 	public static String Export;
-	public static String ExportingToScript;
 	public static String ExportTitle;
 	public static String ExportTo;
 	public static String ExportToExcel;
-	public static String ExportToScript;
+	public static String ExportDatabase;
 	public static String Factor;
 	public static String FancyToolTip_NoDescription;
 	public static String FileAlreadyExists;
@@ -229,8 +228,7 @@ public class Messages extends NLS {
 	public static String ImpactResultSavedMessage;
 	public static String ImpactResultSavedTitle;
 	public static String Import;
-	public static String ImportingScript;
-	public static String ImportScript;
+	public static String ImportDatabase;
 	public static String INFO;
 	public static String Information;
 	public static String InfrastructureProcess;

@@ -26,7 +26,7 @@ public class DatabaseExportAction extends Action implements INavigationAction {
 	private DatabaseElement element;
 
 	public DatabaseExportAction() {
-		setText(Messages.Export);
+		setText(Messages.ExportDatabase);
 		setImageDescriptor(ImageType.DB_IO.getDescriptor());
 	}
 
@@ -55,7 +55,8 @@ public class DatabaseExportAction extends Action implements INavigationAction {
 		if (!(c instanceof DerbyConfiguration))
 			return;
 		DerbyConfiguration config = (DerbyConfiguration) c;
-		File file = FileChooser.forExport("zolca", config.getName() + ".zolca");
+		File file = FileChooser.forExport("*.zolca", config.getName()
+				+ ".zolca");
 		if (file == null)
 			return;
 		if (Database.isActive(config))
