@@ -35,7 +35,7 @@ public class BuildSupplyChainAction extends Action {
 	private ProcessType preferredType;
 
 	BuildSupplyChainAction(ProcessType preferredType) {
-		setId(ActionIds.BUILD_SUPPLY_CHAIN_ACTION_ID);
+		setId(ActionIds.BUILD_SUPPLY_CHAIN);
 		String processType = Labels.processType(preferredType);
 		setText(NLS.bind(Messages.Systems_Prefer, processType));
 		this.preferredType = preferredType;

@@ -2,19 +2,25 @@ package org.openlca.app.editors.graphical.action;
 
 public interface ActionIds {
 
-	String BUILD_SUPPLY_CHAIN_ACTION_ID = "graphical.actions.BuildSupplyChainAction";
-	String BUILD_SUPPLY_CHAIN_MENU_ACTION_ID = "graphical.actions.BuildSupplyChainMenuAction";
-	String MINIMIZE_ALL_ACTION_ID = "graphical.actions.ChangeAllStateAction.MINIMIZE";
-	String MAXIMIZE_ALL_ACTION_ID = "graphical.actions.ChangeAllStateAction.MAXIMIZE";
-	String EXPAND_ALL_ACTION_ID = "graphical.actions.ExpansionAction.EXPAND";
-	String COLLAPSE_ALL_ACTION_ID = "graphical.actions.ExpansionAction.COLLAPSE";
-	String HIDE_ACTION_ID = "graphical.actions.HideShowAction.HIDE";
-	String SHOW_ACTION_ID = "graphical.actions.HideShowAction.SHOW";
-	String LAYOUT_MINIMAL_TREE_ACTION_ID = "graphical.actions.LayoutAction.MINIMAL_TREE_LAYOUT";
-	String LAYOUT_TREE_ACTION_ID = "graphical.actions.LayoutAction.TREE_LAYOUT";
-	String OPEN_MINIATURE_VIEW_ACTION_ID = "graphical.actions.OpenMiniatureViewAction";
-	String REMOVE_ALL_CONNECTIONS_ACTION_ID = "graphical.actions.RemoveAllConnectionsAction";
-	String REMOVE_SUPPLY_CHAIN_ACTION_ID = "graphical.actions.RemoveSupplyChainAction";
-	String SAVE_IMAGE_ACTION_ID = "graphical.actions.SaveImageAction";
-
+	String BUILD_SUPPLY_CHAIN = "graphical.actions.BuildSupplyChainAction";
+	String BUILD_SUPPLY_CHAIN_MENU = "graphical.actions.BuildSupplyChainMenuAction";
+	String MINIMIZE_ALL = "graphical.actions.ChangeAllStateAction.MINIMIZE";
+	String MAXIMIZE_ALL = "graphical.actions.ChangeAllStateAction.MAXIMIZE";
+	String EXPAND_ALL = "graphical.actions.ExpansionAction.EXPAND";
+	String COLLAPSE_ALL = "graphical.actions.ExpansionAction.COLLAPSE";
+	String HIDE = "graphical.actions.HideShowAction.HIDE";
+	String SHOW = "graphical.actions.HideShowAction.SHOW";
+	String LAYOUT_MENU = "graphical.actions.LayoutMenuAction";
+	String LAYOUT_MINIMAL_TREE = "graphical.actions.LayoutAction.MINIMAL_TREE_LAYOUT";
+	String LAYOUT_TREE = "graphical.actions.LayoutAction.TREE_LAYOUT";
+	String OPEN_MINIATURE_VIEW = "graphical.actions.OpenMiniatureViewAction";
+	String REMOVE_ALL_CONNECTIONS = "graphical.actions.RemoveAllConnectionsAction";
+	String REMOVE_SUPPLY_CHAIN = "graphical.actions.RemoveSupplyChainAction";
+	String SAVE_IMAGE = "graphical.actions.SaveImageAction";
+	String MARK = "graphical.actions.MarkingAction.MARK";
+	String UNMARK = "graphical.actions.MarkingAction.UNMARK";
+	String SEARCH_PROVIDERS = "graphical.actions.SearchConnectorsAction.PROVIDERS";
+	String SEARCH_RECIPIENTS = "graphical.actions.SearchConnectorsAction.RECIPIENTS";
+	String OPEN = "graphical.actions.OpenAction";
+	
 }

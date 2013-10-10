@@ -129,6 +129,8 @@ class ProcessFigure extends Figure {
 				link.refreshTargetAnchor();
 			else
 				link.refreshSourceAnchor();
+		leftExpander.refresh();
+		rightExpander.refresh();
 	}
 
 	@Override
@@ -159,7 +161,9 @@ class ProcessFigure extends Figure {
 
 	private void paintTop(Graphics graphics) {
 		Image file = null;
-		if (node.getProcess().getProcessType() == ProcessType.LCI_RESULT)
+		if (node.isMarked())
+			file = ImageType.PROCESS_BG_MARKED.get();
+		else if (node.getProcess().getProcessType() == ProcessType.LCI_RESULT)
 			file = ImageType.PROCESS_BG_LCI.get();
 		else
 			file = ImageType.PROCESS_BG.get();

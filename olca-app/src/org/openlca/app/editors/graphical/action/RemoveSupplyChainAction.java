@@ -6,10 +6,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.gef.EditPart;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.openlca.app.Messages;
 import org.openlca.app.editors.graphical.model.ConnectionLink;
 import org.openlca.app.editors.graphical.model.ProcessNode;
@@ -21,7 +19,7 @@ public class RemoveSupplyChainAction extends EditorAction {
 	private ProcessNode node;
 
 	RemoveSupplyChainAction() {
-		setId(ActionIds.REMOVE_SUPPLY_CHAIN_ACTION_ID);
+		setId(ActionIds.REMOVE_SUPPLY_CHAIN);
 		setText(Messages.Systems_RemoveSupplyChainAction_Text);
 	}
 
@@ -60,24 +58,8 @@ public class RemoveSupplyChainAction extends EditorAction {
 
 	@Override
 	protected boolean accept(ISelection selection) {
-		node = null;
-		if (selection == null)
-			return false;
-		if (selection.isEmpty())
-			return false;
-		if (!(selection instanceof IStructuredSelection))
-			return false;
-
-		IStructuredSelection sel = (IStructuredSelection) selection;
-		if (sel.size() > 1)
-			return false;
-		if (!(sel.getFirstElement() instanceof EditPart))
-			return false;
-		Object model = ((EditPart) sel.getFirstElement()).getModel();
-		if (!(model instanceof ProcessNode))
-			return false;
-		node = (ProcessNode) model;
-		return true;
+		node = getSingleSelectionOfType(selection, ProcessNode.class);
+		return node != null;
 	}
 
 	private class RemoveCommand extends Command {
@@ -85,7 +67,7 @@ public class RemoveSupplyChainAction extends EditorAction {
 		private Set<ProcessNode> nodes;
 		private Set<ConnectionLink> links;
 		private Map<Long, Rectangle> layouts = new HashMap<>();
-		private Map<ProcessLink, Boolean> visibility = new HashMap<>();
+		private Map<String, Boolean> visibility = new HashMap<>();
 
 		private RemoveCommand(Set<ProcessNode> nodes, Set<ConnectionLink> links) {
 			this.nodes = nodes;
@@ -105,7 +87,7 @@ public class RemoveSupplyChainAction extends EditorAction {
 		@Override
 		public void execute() {
 			for (ConnectionLink link : links) {
-				visibility.put(link.getProcessLink(), link.isVisible());
+				visibility.put(getKey(link.getProcessLink()), link.isVisible());
 				link.unlink();
 				link.getSourceNode().getParent().getProductSystem()
 						.getProcessLinks().remove(link.getProcessLink());
@@ -141,7 +123,7 @@ public class RemoveSupplyChainAction extends EditorAction {
 				link.getSourceNode().getParent().getProductSystem()
 						.getProcessLinks().add(link.getProcessLink());
 				link.link();
-				link.setVisible(visibility.remove(link.getProcessLink()));
+				link.setVisible(visibility.remove(getKey(link.getProcessLink())));
 			}
 		}
 
@@ -150,6 +132,11 @@ public class RemoveSupplyChainAction extends EditorAction {
 			execute();
 		}
 
+	}
+
+	private String getKey(ProcessLink link) {
+		return link.getProviderId() + "_" + link.getRecipientId() + "_"
+				+ link.getFlowId();
 	}
 
 }

@@ -545,7 +545,6 @@ public class Messages extends NLS {
 	public static String Systems_SD;
 	public static String Systems_SelectPossibleProcessesDialog_Connect;
 	public static String Systems_SelectPossibleProcessesDialog_Create;
-	public static String Systems_SelectPossibleProcessesDialog_Exchange;
 	public static String Systems_SelectPossibleProcessesDialog_Exists;
 	public static String Systems_SelectPossibleProcessesDialog_IsConnected;
 	public static String Systems_SelectPossibleProcessesDialog_SelectProviders;

@@ -1,9 +1,7 @@
 package org.openlca.app.editors.graphical.action;
 
-import org.eclipse.gef.EditPart;
 import org.eclipse.jface.action.IMenuCreator;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -15,7 +13,7 @@ import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.resources.ImageType;
 import org.openlca.core.model.ProcessType;
 
-public class BuildSupplyChainMenuAction extends EditorAction {
+class BuildSupplyChainMenuAction extends EditorAction {
 
 	private ProcessNode node;
 	private BuildSupplyChainAction systemBuild = new BuildSupplyChainAction(
@@ -23,8 +21,8 @@ public class BuildSupplyChainMenuAction extends EditorAction {
 	private BuildSupplyChainAction unitBuild = new BuildSupplyChainAction(
 			ProcessType.UNIT_PROCESS);
 
-	public BuildSupplyChainMenuAction() {
-		setId(ActionIds.BUILD_SUPPLY_CHAIN_MENU_ACTION_ID);
+	BuildSupplyChainMenuAction() {
+		setId(ActionIds.BUILD_SUPPLY_CHAIN_MENU);
 		setText(Messages.Systems_BuildSupplyChainAction_Text);
 		setImageDescriptor(ImageType.BUILD_SUPPLY_CHAIN_ICON.getDescriptor());
 		setMenuCreator(new MenuCreator());
@@ -85,23 +83,7 @@ public class BuildSupplyChainMenuAction extends EditorAction {
 
 	@Override
 	protected boolean accept(ISelection selection) {
-		node = null;
-		if (selection == null)
-			return false;
-		if (selection.isEmpty())
-			return false;
-		if (!(selection instanceof IStructuredSelection))
-			return false;
-
-		IStructuredSelection sel = (IStructuredSelection) selection;
-		if (sel.size() > 1)
-			return false;
-		if (!(sel.getFirstElement() instanceof EditPart))
-			return false;
-		Object model = ((EditPart) sel.getFirstElement()).getModel();
-		if (!(model instanceof ProcessNode))
-			return false;
-		node = (ProcessNode) model;
-		return true;
+		node = getSingleSelectionOfType(selection, ProcessNode.class);
+		return node != null;
 	}
 }

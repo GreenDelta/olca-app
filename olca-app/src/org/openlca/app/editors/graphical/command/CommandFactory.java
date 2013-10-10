@@ -125,4 +125,11 @@ public class CommandFactory {
 		command.setLayoutType(layoutType);
 		return command;
 	}
+	
+	public static MarkingCommand createMarkingCommand(ProcessNode node) {
+		MarkingCommand command = new MarkingCommand();
+		command.setNode(node);
+		return command;
+	}
+	
 }

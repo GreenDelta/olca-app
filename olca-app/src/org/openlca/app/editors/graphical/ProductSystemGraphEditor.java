@@ -1,18 +1,6 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.app.editors.graphical;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.ConnectionRouter;
@@ -36,14 +24,21 @@ import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.app.editors.graphical.model.TreeConnectionRouter;
 import org.openlca.app.editors.graphical.outline.OutlinePage;
+import org.openlca.app.navigation.Navigator;
+import org.openlca.app.util.Labels;
+import org.openlca.core.database.EntityCache;
 import org.openlca.core.database.ProductSystemDao;
-import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
+import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.Descriptors;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ProductSystemGraphEditor extends GraphicalEditor {
 
 	public static final String ID = "editors.productsystem.graphical";
+	private Logger log = LoggerFactory.getLogger(getClass());
 
 	private ProductSystem productSystem;
 	private ProductSystemNode model;
@@ -53,6 +48,19 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 	private GraphicalViewerConfigurator configurator;
 	private ISelection selection;
 	private List<String> actionIds;
+	private boolean dirty;
+
+	public void setDirty(boolean value) {
+		if (dirty != value) {
+			dirty = value;
+			firePropertyChange(PROP_DIRTY);
+		}
+	}
+
+	@Override
+	public boolean isDirty() {
+		return dirty;
+	}
 
 	public ISelection getSelection() {
 		return selection;
@@ -73,17 +81,10 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 	}
 
 	private ProductSystemNode createModel() {
-		Set<Long> processes = new HashSet<>();
 		long referenceId = productSystem.getReferenceProcess().getId();
-		processes.add(referenceId);
-		for (ProcessLink link : productSystem.getIncomingLinks(referenceId))
-			processes.add(link.getProviderId());
-
 		ProductSystemNode productSystemNode = new ProductSystemNode(
 				productSystem, this);
-		for (Long id : processes)
-			productSystemNode.add(createProcessNode(id));
-
+		productSystemNode.add(createProcessNode(referenceId));
 		return productSystemNode;
 	}
 
@@ -135,7 +136,23 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 
 	@Override
 	public void doSave(final IProgressMonitor monitor) {
+		try {
+			monitor.beginTask("Save " + ProductSystem.class.getSimpleName()
+					+ "...", IProgressMonitor.UNKNOWN);
+			ProductSystemDao dao = new ProductSystemDao(Database.get());
+			dao.update(productSystem);
+			monitor.done();
+			BaseDescriptor descriptor = Descriptors.toDescriptor(productSystem);
+			EntityCache cache = Cache.getEntityCache();
+			cache.refresh(descriptor.getClass(), descriptor.getId());
+			cache.invalidate(ProductSystem.class, productSystem.getId());
+			Navigator.refresh(Navigator.findElement(descriptor));
+			this.setPartName(Labels.getDisplayName(descriptor));
+			setDirty(false);
 
+		} catch (Exception e) {
+			log.error("failed to update " + ProductSystem.class.getSimpleName());
+		}
 	}
 
 	@Override
@@ -185,31 +202,6 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 	@Override
 	public boolean isSaveAsAllowed() {
 		return false;
-	}
-
-	public void initializeLinks() {
-		boolean full = model.getChildren().size() == productSystem
-				.getProcesses().size();
-		long referenceId = productSystem.getReferenceProcess().getId();
-		List<ProcessLink> links = new ArrayList<>();
-		if (full)
-			links.addAll(productSystem.getProcessLinks());
-		else
-			for (ProcessLink link : productSystem.getIncomingLinks(referenceId))
-				links.add(link);
-
-		for (ProcessLink processLink : links) {
-			ProcessNode sourceNode = model.getProcessNode(processLink
-					.getProviderId());
-			ProcessNode targetNode = model.getProcessNode(processLink
-					.getRecipientId());
-			ConnectionLink link = new ConnectionLink();
-			link.setSourceNode(sourceNode);
-			link.setTargetNode(targetNode);
-			link.setProcessLink(processLink);
-			link.link();
-		}
-		model.refresh();
 	}
 
 	public void expand() {
