@@ -27,7 +27,7 @@ import org.openlca.app.Messages;
 import org.openlca.app.analysis.AnalysisEditorActions;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Numbers;
-import org.openlca.core.model.Flow;
+import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 
 /**
@@ -103,8 +103,8 @@ public class ProductSystemFigure extends Figure {
 	}
 
 	private String selectionLabel(Object selection) {
-		if (selection instanceof Flow) {
-			Flow flow = (Flow) selection;
+		if (selection instanceof FlowDescriptor) {
+			FlowDescriptor flow = (FlowDescriptor) selection;
 			return Messages.Flow + ": " + flow.getName();
 		}
 		if (selection instanceof ImpactCategoryDescriptor) {
@@ -165,8 +165,8 @@ public class ProductSystemFigure extends Figure {
 			int x = arg0.getLocation().x;
 			int y = arg0.getLocation().y;
 			if (in(x, 350) && in(y, 120)) {
-				SankeySelectionAction psa = AnalysisEditorActions
-						.getInstance().getPropertySelectionAction();
+				SankeySelectionAction psa = AnalysisEditorActions.getInstance()
+						.getPropertySelectionAction();
 				psa.setSankeyDiagram(productSystemNode.getEditor());
 				psa.run();
 			}
