@@ -1,17 +1,10 @@
 package org.openlca.app.analysis.sankey;
 
-import java.util.Collections;
-import java.util.Set;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.window.Window;
 import org.openlca.app.Messages;
-import org.openlca.app.db.Cache;
 import org.openlca.app.resources.ImageType;
-import org.openlca.core.database.EntityCache;
-import org.openlca.core.model.descriptors.FlowDescriptor;
-import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.AnalysisResult;
 
 /**
@@ -48,23 +41,17 @@ public class SankeySelectionAction extends Action {
 		AnalysisResult result = sankeyDiagram.getResult();
 		if (result == null)
 			return;
-		EntityCache cache = Cache.getEntityCache();
-		Set<FlowDescriptor> flows = result.getFlowResults().getFlows(cache);
-		Set<ImpactCategoryDescriptor> impacts = null;
-		if (result.hasImpactResults())
-			impacts = result.getImpactResults().getImpacts(cache);
-		else
-			impacts = Collections.emptySet();
-		openAndUpdate(flows, impacts);
+		openAndUpdate(result);
 	}
 
-	private void openAndUpdate(Set<FlowDescriptor> flows,
-			Set<ImpactCategoryDescriptor> impacts) {
-		SankeySelectionDialog dialog = new SankeySelectionDialog(flows, impacts);
+	private void openAndUpdate(AnalysisResult result) {
+		SankeySelectionDialog dialog = new SankeySelectionDialog(result);
 		dialog.setCutoff(cutoff);
 		dialog.setSelection(lastSelection);
 		if (dialog.open() == Window.OK) {
 			lastSelection = dialog.getSelection();
+			if (lastSelection == null)
+				return;
 			cutoff = dialog.getCutoff();
 			sankeyDiagram.update(lastSelection, cutoff);
 		}

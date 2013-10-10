@@ -105,7 +105,6 @@ public class Tables {
 					double colWidth = percents[i] * width;
 					columns[i].setWidth((int) colWidth);
 				}
-
 			}
 		});
 	}
