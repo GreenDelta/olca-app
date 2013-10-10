@@ -208,6 +208,11 @@ class ExchangeTable {
 
 	private void onRemove() {
 		List<Exchange> selection = Viewers.getAllSelected(viewer);
+		if (selection.contains(process.getQuantitativeReference())) {
+			Error.showBox("Cannot delete reference flow",
+					"You cannot delete the reference flow of a process");
+			return;
+		}
 		for (Exchange exchange : selection)
 			process.getExchanges().remove(exchange);
 		viewer.setInput(process.getExchanges());
@@ -429,8 +434,7 @@ class ExchangeTable {
 			if (element.getFlow() == null)
 				return new ProcessDescriptor[0];
 			FlowDao dao = new FlowDao(database);
-			Set<Long> providerIds = dao
-					.getProviders(element.getFlow().getId());
+			Set<Long> providerIds = dao.getProviders(element.getFlow().getId());
 			Collection<ProcessDescriptor> descriptors = cache.getAll(
 					ProcessDescriptor.class, providerIds).values();
 			ProcessDescriptor[] array = new ProcessDescriptor[descriptors
