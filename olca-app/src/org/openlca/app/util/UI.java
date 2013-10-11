@@ -93,10 +93,6 @@ public class UI {
 		return font;
 	}
 
-	public static void applyBoldFont(Control control) {
-		control.setFont(boldFont(control));
-	}
-
 	/**
 	 * Creates an italic font using the font data of the given control. The
 	 * returned font must be disposed by the respective caller.

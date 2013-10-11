@@ -16,9 +16,11 @@ import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.FormDialog;
@@ -43,6 +45,7 @@ public class ObjectDialog extends FormDialog {
 	private TreeViewer viewer;
 	private Text filterText;
 	private BaseDescriptor[] selection;
+	private Font boldLabelFont;
 
 	public static BaseDescriptor select(ModelType type, ViewerFilter... filters) {
 		ObjectDialog dialog = new ObjectDialog(UI.shell(), type);
@@ -78,6 +81,13 @@ public class ObjectDialog extends FormDialog {
 	}
 
 	@Override
+	public boolean close() {
+		if (boldLabelFont != null && !boldLabelFont.isDisposed())
+			boldLabelFont.dispose();
+		return super.close();
+	}
+
+	@Override
 	protected void createButtonsForButtonBar(final Composite parent) {
 		createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL,
 				false);
@@ -93,7 +103,9 @@ public class ObjectDialog extends FormDialog {
 		UI.formHeader(form, title);
 		Composite body = UI.formBody(form.getForm(), form.getToolkit());
 		UI.gridLayout(body, 1);
-		UI.applyBoldFont(UI.formLabel(body, form.getToolkit(), "Filter"));
+		Label filterLabel = UI.formLabel(body, form.getToolkit(), "Filter");
+		boldLabelFont = UI.boldFont(filterLabel);
+		filterLabel.setFont(boldLabelFont);
 
 		filterText = UI.formText(body, SWT.SEARCH);
 		filterText.addModifyListener(new ModifyListener() {
