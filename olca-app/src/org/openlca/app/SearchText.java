@@ -72,8 +72,13 @@ public class SearchText extends WorkbenchWindowControlContribution {
 			InformationPopup.show("You first need to activate a database");
 			return;
 		}
+		final String term = text.getText();
 		final Search search = new Search(Database.get(), text.getText());
-		App.run(Messages.Searching, search);
+		App.run(Messages.Searching, search, new Runnable() {
+			public void run() {
+				SearchResultView.show(term, search.getResult());
+			}
+		});
 	}
 
 	private class SearchAction extends Action {

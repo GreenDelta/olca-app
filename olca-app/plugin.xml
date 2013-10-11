@@ -120,7 +120,14 @@
             icon="icons/model.gif"
             id="editors.productsystem.graphical"
             name="Product system graphical editor">
-      </editor>      
+      </editor>  
+      <editor
+            id="SearchResultView"
+            class="org.openlca.app.SearchResultView"
+            icon="icons/search_obj.png"
+            default="false"
+            name="Search result view">
+      </editor>    
    </extension>
    
    <extension
@@ -208,16 +215,8 @@
             id="views.navigation"
             name="%view.name">
       </view>  
- 	  <view
-            class="org.openlca.core.application.search.SearchView"
-            icon="icons/search_obj.png"
-            id="views.search"
-            name="%view.name.0"
-            restorable="true">
-      </view> 
    </extension>
    
- 
    <extension
          point="org.eclipse.ui.preferencePages">
 	  <page
