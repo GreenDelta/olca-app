@@ -25,15 +25,16 @@ class Search implements Runnable {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private IDatabase database;
-	private String term;
+	private String rawTerm;
+	private String[] terms;
 	private List<BaseDescriptor> result = new ArrayList<>();
 
-	/**
-	 * Creates a new search.
-	 */
 	public Search(IDatabase database, String term) {
 		this.database = database;
-		this.term = term == null ? "" : term.toLowerCase().trim();
+		this.rawTerm = term == null ? "" : term.toLowerCase().trim();
+		terms = rawTerm.split(" ");
+		for (int i = 0; i < terms.length; i++)
+			terms[i] = terms[i].trim();
 	}
 
 	public List<BaseDescriptor> getResult() {
@@ -43,8 +44,8 @@ class Search implements Runnable {
 	@Override
 	public void run() {
 		result.clear();
-		log.trace("run search with term {}", term);
-		if (term == null || term.isEmpty())
+		log.trace("run search with term {}", rawTerm);
+		if (rawTerm.isEmpty())
 			return;
 		RootEntityDao<?, ?>[] daos = { new ProjectDao(database),
 				new ProductSystemDao(database), new ImpactMethodDao(database),
@@ -71,9 +72,14 @@ class Search implements Runnable {
 
 	private boolean match(BaseDescriptor descriptor) {
 		String label = Labels.getDisplayName(descriptor);
-		if (term == null || label == null)
+		if (terms == null || label == null)
 			return false;
-		return label.toLowerCase().contains(term);
+		String feed = label.toLowerCase();
+		for (String term : terms) {
+			if (!feed.contains(term))
+				return false;
+		}
+		return true;
 	}
 
 	private class ResultComparator implements Comparator<BaseDescriptor> {
@@ -81,9 +87,14 @@ class Search implements Runnable {
 		public int compare(BaseDescriptor o1, BaseDescriptor o2) {
 			String label1 = Labels.getDisplayName(o1).toLowerCase();
 			String label2 = Labels.getDisplayName(o2).toLowerCase();
-			int idx1 = label1.indexOf(term);
-			int idx2 = label2.indexOf(term);
-			return idx1 - idx2;
+			for (String term : terms) {
+				int idx1 = label1.indexOf(term);
+				int idx2 = label2.indexOf(term);
+				int diff = idx1 - idx2;
+				if (diff != 0)
+					return diff;
+			}
+			return label1.compareToIgnoreCase(label2);
 		}
 	}
 }
