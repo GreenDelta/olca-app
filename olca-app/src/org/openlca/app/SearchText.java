@@ -7,6 +7,8 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.events.TraverseEvent;
+import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridLayout;
@@ -17,8 +19,10 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.ui.menus.WorkbenchWindowControlContribution;
+import org.openlca.app.db.Database;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Images;
+import org.openlca.app.util.InformationPopup;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ModelType;
 import org.slf4j.Logger;
@@ -42,15 +46,52 @@ public class SearchText extends WorkbenchWindowControlContribution {
 		layout.verticalSpacing = 0;
 		composite.setLayout(layout);
 		text = new Text(composite, SWT.BORDER | SWT.SEARCH);
+		text.addTraverseListener(new TraverseListener() {
+			@Override
+			public void keyTraversed(TraverseEvent e) {
+				if (e.detail == SWT.TRAVERSE_RETURN) {
+					doSearch();
+				}
+			}
+		});
 		UI.gridData(text, true, false).minimumWidth = 180;
-		ToolBar toolBar = new ToolBar(composite, SWT.NONE);
-		ToolBarManager manager = new ToolBarManager(toolBar);
-		manager.add(new DropDownAction());
-		manager.update(true);
-		toolBar.pack();
+		createActionMenu(composite);
 		return composite;
 	}
 
+	private void createActionMenu(Composite composite) {
+		ToolBar toolBar = new ToolBar(composite, SWT.NONE);
+		ToolBarManager manager = new ToolBarManager(toolBar);
+		manager.add(new SearchAction());
+		manager.update(true);
+		toolBar.pack();
+	}
+
+	private void doSearch() {
+		if (Database.get() == null) {
+			InformationPopup.show("You first need to activate a database");
+			return;
+		}
+		final Search search = new Search(Database.get(), text.getText());
+		App.run(Messages.Searching, search);
+	}
+
+	private class SearchAction extends Action {
+		public SearchAction() {
+			setText("Search");
+			setImageDescriptor(ImageType.SEARCH_ICON.getDescriptor());
+		}
+
+		@Override
+		public void run() {
+			doSearch();
+		}
+	}
+
+	/**
+	 * A drop down menu for optionally selecting a model type as a search
+	 * filter.
+	 */
 	private class DropDownAction extends Action implements IMenuCreator {
 
 		private Menu menu;
