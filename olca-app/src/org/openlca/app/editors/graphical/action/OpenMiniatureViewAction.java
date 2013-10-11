@@ -38,8 +38,8 @@ public class OpenMiniatureViewAction extends Action {
 	private MiniView window;
 	private ZoomManager zoomManager;
 
-	public OpenMiniatureViewAction() {
-		setId(ActionIds.OPEN_MINIATURE_VIEW_ACTION_ID);
+	OpenMiniatureViewAction() {
+		setId(ActionIds.OPEN_MINIATURE_VIEW);
 		setText(Messages.Systems_OpenMiniatureViewAction_Text);
 		setImageDescriptor(ImageType.MINI_VIEW_ICON.getDescriptor());
 	}

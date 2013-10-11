@@ -16,18 +16,20 @@ import org.eclipse.ui.forms.editor.IFormPage;
 import org.eclipse.ui.part.EditorActionBarContributor;
 import org.openlca.app.analysis.sankey.SankeyDiagram;
 import org.openlca.app.analysis.sankey.SankeySelectionAction;
+import org.openlca.app.editors.graphical.action.ActionFactory;
 import org.openlca.app.editors.graphical.action.OpenMiniatureViewAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AnalysisEditorActions extends EditorActionBarContributor
-		implements IPageChangedListener {
+public class AnalysisEditorActions extends EditorActionBarContributor implements
+		IPageChangedListener {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private static AnalysisEditorActions instance; // TODO: delete!
 	private SaveImageAction saveImageAction = new SaveImageAction();
 	private final SankeySelectionAction propertySelectionAction = new SankeySelectionAction();
-	private final OpenMiniatureViewAction viewAction = new OpenMiniatureViewAction();
+	private final OpenMiniatureViewAction viewAction = ActionFactory
+			.createOpenMiniatureViewAction();
 	private IToolBarManager toolBarManager;
 	private ZoomManager zoomManager;
 	private Action[] zoomActions = new Action[2];

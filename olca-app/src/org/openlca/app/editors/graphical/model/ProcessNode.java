@@ -24,6 +24,7 @@ public class ProcessNode extends Node {
 	private List<ConnectionLink> links = new ArrayList<>();
 	private Rectangle xyLayoutConstraints;
 	private boolean minimized = true;
+	private boolean marked = false;
 
 	public ProcessNode(ProcessDescriptor process) {
 		this.process = process;
@@ -62,6 +63,7 @@ public class ProcessNode extends Node {
 			getEditPart().refreshSourceConnections();
 		else if (equals(link.getTargetNode()))
 			getEditPart().refreshTargetConnections();
+		getProcessFigure().refresh();
 	}
 
 	public void remove(ConnectionLink link) {
@@ -70,6 +72,7 @@ public class ProcessNode extends Node {
 			getEditPart().refreshSourceConnections();
 		else if (equals(link.getTargetNode()))
 			getEditPart().refreshTargetConnections();
+		getProcessFigure().refresh();
 	}
 
 	public List<ConnectionLink> getLinks() {
@@ -91,12 +94,12 @@ public class ProcessNode extends Node {
 	}
 
 	@Override
-	protected String getName() {
+	public String getName() {
 		String text = process.getName();
-		Long locationId = process.getLocation();
-		if (locationId != null)
+		if (process.getLocation() != null)
 			text += " ["
-					+ Cache.getEntityCache().get(Location.class, locationId)
+					+ Cache.getEntityCache()
+							.get(Location.class, process.getLocation())
 							.getCode() + "]";
 		return text;
 	}
@@ -119,6 +122,20 @@ public class ProcessNode extends Node {
 		if (getChildren().isEmpty())
 			initializeExchangeNodes();
 		refresh();
+	}
+
+	public void mark() {
+		this.marked = true;
+		refresh();
+	}
+
+	public void unmark() {
+		this.marked = false;
+		refresh();
+	}
+
+	public boolean isMarked() {
+		return marked;
 	}
 
 	private void initializeExchangeNodes() {
@@ -159,6 +176,12 @@ public class ProcessNode extends Node {
 		return result;
 	}
 
+	public ExchangeNode[] loadExchangeNodes() {
+		if (getChildren().isEmpty())
+			initializeExchangeNodes();
+		return getExchangeNodes();
+	}
+
 	public Rectangle getXyLayoutConstraints() {
 		return xyLayoutConstraints;
 	}
@@ -197,6 +220,20 @@ public class ProcessNode extends Node {
 	public boolean hasConnections() {
 		if (links.size() > 0)
 			return true;
+		return false;
+	}
+
+	public boolean hasOutgoingConnections() {
+		for (ConnectionLink link : links)
+			if (link.getSourceNode().equals(this))
+				return true;
+		return false;
+	}
+
+	public boolean hasIncomingConnections() {
+		for (ConnectionLink link : links)
+			if (link.getTargetNode().equals(this))
+				return true;
 		return false;
 	}
 

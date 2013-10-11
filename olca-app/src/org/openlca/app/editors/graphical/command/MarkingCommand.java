@@ -4,12 +4,11 @@ import org.eclipse.gef.commands.Command;
 import org.openlca.app.Messages;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 
-public class ChangeStateCommand extends Command {
+public class MarkingCommand extends Command {
 
 	private ProcessNode node;
-	private boolean initiallyMinimized;
 
-	ChangeStateCommand() {
+	MarkingCommand() {
 
 	}
 
@@ -27,25 +26,18 @@ public class ChangeStateCommand extends Command {
 
 	@Override
 	public void execute() {
-		if (node.isMinimized())
-			node.maximize();
+		if (node.isMarked())
+			node.unmark();
 		else
-			node.minimize();
+			node.mark();
 	}
 
 	@Override
 	public String getLabel() {
-		if (node.isMinimized())
-			if (initiallyMinimized)
-				return Messages.Systems_MaximizeCommand_Text;
-			else
-				return Messages.Systems_MinimizeCommand_Text;
-		else {
-			if (initiallyMinimized)
-				return Messages.Systems_MinimizeCommand_Text;
-			else
-				return Messages.Systems_MaximizeCommand_Text;
-		}
+		if (node.isMarked())
+			return Messages.Systems_UnmarkProcess;
+		else
+			return Messages.Systems_MarkProcess;
 	}
 
 	@Override
@@ -60,7 +52,6 @@ public class ChangeStateCommand extends Command {
 
 	void setNode(ProcessNode node) {
 		this.node = node;
-		initiallyMinimized = node.isMinimized();
 	}
 
 }

@@ -8,6 +8,8 @@ import org.openlca.app.RcpActivator;
 
 public enum ImageType implements IImageType {
 
+	ACCEPT_ICON("accept.png"),
+
 	ACTOR_CATEGORY_ICON("folder_user.png"),
 
 	ACTOR_ICON("actor_obj.png"),
@@ -49,6 +51,8 @@ public enum ImageType implements IImageType {
 	DELETE_ICON("delete.gif"),
 
 	DELETE_ICON_DISABLED("delete_dis.gif"),
+
+	DENY_ICON("deny.png"),
 
 	DISCONNECT_ICON("disconnect.png"),
 

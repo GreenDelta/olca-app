@@ -24,11 +24,11 @@ class ProcessExpander extends ImageFigure {
 		this.node = node;
 		this.side = side;
 		setImage(ImageType.PLUS_ICON.get());
-		setVisible(isInitiallyVisible());
+		setVisible(shouldBeVisible());
 		addMouseListener(new ExpansionListener());
 	}
 
-	private boolean isInitiallyVisible() {
+	boolean shouldBeVisible() {
 		ProductSystem system = node.getParent().getProductSystem();
 		long processId = node.getProcess().getId();
 		for (ProcessLink link : system.getProcessLinks(processId))
@@ -43,6 +43,7 @@ class ProcessExpander extends ImageFigure {
 		createNecessaryNodes();
 		showLinksAndNodes();
 		expanded = true;
+		setImage(ImageType.MINUS_ICON.get());
 	}
 
 	private List<ProcessNode> getNodesToShow() {
@@ -81,58 +82,41 @@ class ProcessExpander extends ImageFigure {
 	}
 
 	void collapse() {
-		List<ProcessNode> nodes = getNodesToCollapse();
-		hideLinksAndNodes(nodes);
+		// TODO something is still not working 100%
+		ConnectionLink[] links = node.getLinks().toArray(
+				new ConnectionLink[node.getLinks().size()]);
+		for (ConnectionLink link : links) {
+			ProcessNode thisNode = side == Side.LEFT ? link.getTargetNode()
+					: link.getSourceNode();
+			ProcessNode otherNode = side == Side.LEFT ? link.getSourceNode()
+					: link.getTargetNode();
+			if (thisNode.equals(node)) {
+				link.unlink();
+				boolean hasOtherConnections = side == Side.LEFT ? otherNode
+						.hasOutgoingConnections() : otherNode
+						.hasIncomingConnections();
+				if (!hasOtherConnections) {
+					otherNode.collapseLeft();
+					otherNode.collapseRight();
+					node.getParent().remove(otherNode);
+				}
+			}
+		}
 		expanded = false;
-
-		for (ProcessNode node : nodes) {
-			if (node.equals(this.node))
-				continue;
-			if (node.isExpandedLeft())
-				node.collapseLeft();
-			if (node.isExpandedRight())
-				node.collapseRight();
-		}
-	}
-
-	private List<ProcessNode> getNodesToCollapse() {
-		List<ProcessNode> nodes = new ArrayList<>();
-		for (ConnectionLink link : node.getLinks()) {
-			ProcessNode match = getMatchingNode(link);
-			if (match != null && !nodes.contains(match))
-				if (!needsToBeVisible(match))
-					nodes.add(match);
-		}
-		return nodes;
-	}
-
-	boolean needsToBeVisible(ProcessNode node) {
-		for (ConnectionLink link : node.getLinks()) {
-			ProcessNode source = link.getSourceNode();
-			ProcessNode target = link.getTargetNode();
-			if (source.equals(node))
-				if (!target.equals(this.node))
-					if (target.isVisible() && target.isExpandedLeft())
-						return true;
-			if (target.equals(node))
-				if (!source.equals(this.node))
-					if (source.isVisible() && source.isExpandedRight())
-						return true;
-		}
-		return false;
+		setImage(ImageType.PLUS_ICON.get());
 	}
 
 	private ProcessNode getMatchingNode(ConnectionLink link) {
 		ProcessNode source = link.getSourceNode();
 		ProcessNode target = link.getTargetNode();
 		if (side == Side.LEFT)
-			if (source.equals(node))
-				if (!target.equals(node))
-					return target;
-		if (side == Side.RIGHT)
 			if (target.equals(node))
 				if (!source.equals(node))
 					return source;
+		if (side == Side.RIGHT)
+			if (source.equals(node))
+				if (!target.equals(node))
+					return target;
 		return null;
 	}
 
@@ -146,20 +130,17 @@ class ProcessExpander extends ImageFigure {
 		}
 	}
 
-	private void hideLinksAndNodes(List<ProcessNode> nodes) {
-		for (ProcessNode node : nodes) {
-			node.setVisible(true);
-			for (ConnectionLink link : node.getLinks())
-				link.setVisible(false);
-		}
-	}
-
 	private boolean processFiguresVisible(ConnectionLink link) {
 		if (!link.getSourceNode().getFigure().isVisible())
 			return false;
 		if (!link.getTargetNode().getFigure().isVisible())
 			return false;
 		return true;
+	}
+
+	void refresh() {
+		setVisible(shouldBeVisible());
+		
 	}
 
 	boolean isExpanded() {
@@ -182,14 +163,14 @@ class ProcessExpander extends ImageFigure {
 			Command command = null;
 			if (side == Side.LEFT)
 				if (expanded)
-					command = CommandFactory.createExpandLeftCommand(node);
-				else
 					command = CommandFactory.createCollapseLeftCommand(node);
+				else
+					command = CommandFactory.createExpandLeftCommand(node);
 			else if (side == Side.RIGHT)
 				if (expanded)
-					command = CommandFactory.createExpandRightCommand(node);
-				else
 					command = CommandFactory.createCollapseRightCommand(node);
+				else
+					command = CommandFactory.createExpandRightCommand(node);
 			node.getParent().getEditor().getCommandStack().execute(command);
 		}
 

@@ -47,8 +47,10 @@ public class OutlinePage extends ContentOutlinePage {
 	}
 
 	private void initializeActions() {
-		showAction = ActionFactory.createShowAction(model, getViewer());
-		hideAction = ActionFactory.createHideAction(model, getViewer());
+		showAction = ActionFactory.createShowAction(model.getEditor(),
+				getViewer());
+		hideAction = ActionFactory.createHideAction(model.getEditor(),
+				getViewer());
 	}
 
 	public void setEditDomain(EditDomain editDomain) {

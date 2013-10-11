@@ -1,12 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.app.editors.graphical.action;
 
 import java.io.File;
@@ -30,7 +21,7 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.ui.PlatformUI;
 import org.openlca.app.Messages;
 import org.openlca.app.components.JobListenerWithProgress;
-import org.openlca.app.editors.graphical.model.ProductSystemNode;
+import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.UI;
 import org.slf4j.Logger;
@@ -39,17 +30,17 @@ import org.slf4j.LoggerFactory;
 public class SaveImageAction extends Action {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
-	private ProductSystemNode model;
+	private ProductSystemGraphEditor editor;
 
 	SaveImageAction() {
-		setId(ActionIds.SAVE_IMAGE_ACTION_ID);
+		setId(ActionIds.SAVE_IMAGE);
 		setText(Messages.SaveAsImage);
 		setImageDescriptor(ImageType.SAVE_AS_IMAGE_ICON.getDescriptor());
 	}
 
 	@Override
 	public void run() {
-		if (model == null)
+		if (editor == null)
 			return;
 		FileDialog dialog = new FileDialog(UI.shell(), SWT.SAVE);
 		dialog.setText(Messages.SaveAsImage);
@@ -81,9 +72,8 @@ public class SaveImageAction extends Action {
 						public void run() {
 							jobStarted(NLS.bind(Messages.Systems_SavingAsImage,
 									file), IProgressMonitor.UNKNOWN);
-							ScalableRootEditPart rootEditPart = (ScalableRootEditPart) model
-									.getEditor().getGraphicalViewer()
-									.getRootEditPart();
+							ScalableRootEditPart rootEditPart = (ScalableRootEditPart) editor
+									.getGraphicalViewer().getRootEditPart();
 
 							IFigure rootFigure = rootEditPart
 									.getLayer(LayerConstants.PRINTABLE_LAYERS);
@@ -106,8 +96,8 @@ public class SaveImageAction extends Action {
 		}
 	}
 
-	void setModel(ProductSystemNode model) {
-		this.model = model;
+	void setEditor(ProductSystemGraphEditor editor) {
+		this.editor = editor;
 	}
 
 }
