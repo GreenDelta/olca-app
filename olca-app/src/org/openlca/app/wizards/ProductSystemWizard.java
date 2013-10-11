@@ -14,6 +14,7 @@ import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.IProductSystemBuilder;
 import org.openlca.core.matrix.cache.MatrixCache;
 import org.openlca.core.model.ProductSystem;
+import org.openlca.core.model.descriptors.Descriptors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +47,9 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 			if (FeatureFlag.PRODUCT_SYSTEM_CUTOFF.isEnabled())
 				runner.setCutoff(page.getCutoff());
 			getContainer().run(true, true, runner);
-			App.openEditor(runner.system);
+			system = runner.system;
+			Cache.registerNew(Descriptors.toDescriptor(system));
+			App.openEditor(system);
 			return true;
 		} catch (Exception e) {
 			log.error("Failed to create model", e);
