@@ -83,6 +83,8 @@ public class ProcessFigure extends Figure {
 		Font normalFont = g.getFont();
 		Font boldFont = getBoldFont(normalFont);
 		g.setFont(boldFont);
+		Color black = g.getForegroundColor();
+		g.setForegroundColor(Colors.getWhite());
 		String name = Strings.cut(processNode.getName(), 30);
 		g.drawText(name, loc.x + 5, loc.y + 5);
 		g.setFont(normalFont);
@@ -90,6 +92,7 @@ public class ProcessFigure extends Figure {
 		g.drawText(single, loc.x + 5, loc.y + 50);
 		g.drawText(Messages.TotalAmount + ":", loc.x + 5, loc.y + 80);
 		g.drawText(total, loc.x + 5, loc.y + 95);
+		g.setForegroundColor(black);
 	}
 
 	private Font getBoldFont(Font normalFont) {

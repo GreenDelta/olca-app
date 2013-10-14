@@ -117,11 +117,11 @@ public class ProductSystemFigure extends Figure {
 	private void drawColorScale(Graphics graphics) {
 		int x = 25;
 		int y = 140;
-		for (int i = 0; i < 10; i++) {
-			RGB rgb = FaviColor.getContributionColor(i);
+		for (int i = -100; i < 100; i += 2) {
+			RGB rgb = FaviColor.getForContribution(i / 100d);
 			graphics.setBackgroundColor(Colors.getColor(rgb));
-			int posX = x + 30 * i;
-			graphics.fillRectangle(new Rectangle(posX, y, 30, 20));
+			int posX = x + 3 * ((100 + i) / 2);
+			graphics.fillRectangle(new Rectangle(posX, y, 4, 20));
 		}
 
 		// draw percentage texts

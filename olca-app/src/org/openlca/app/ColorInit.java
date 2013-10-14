@@ -28,16 +28,9 @@ class ColorInit {
 				colorDir.mkdirs();
 			log.trace("Initialize colors from {}", colorDir);
 			initChartColors(colorDir);
-			initContributionColors(colorDir);
 		} catch (Exception e) {
 			log.error("Failed to initialize colors", e);
 		}
-	}
-
-	private void initContributionColors(File colorDir) {
-		File file = new File(colorDir, "contribution_colors.txt");
-		RGB[] defaultColors = FaviColor.getContributionColors();
-		FaviColor.setContributionColors(sync(defaultColors, file));
 	}
 
 	private void initChartColors(File colorDir) {
