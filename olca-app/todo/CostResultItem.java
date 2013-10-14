@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.openlca.core.model.CostCategory;
-import org.openlca.core.model.results.SimpleCostResult;
 import org.openlca.util.Doubles;
 
 /** Data class of cost results for the display in tables and charts. */
