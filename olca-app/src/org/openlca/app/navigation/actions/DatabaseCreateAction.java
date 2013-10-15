@@ -1,13 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2013 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
-
 package org.openlca.app.navigation.actions;
 
 import java.util.List;
@@ -22,7 +12,7 @@ import org.openlca.app.resources.ImageType;
 /**
  * Opens the wizard for creating a new database.
  */
-public class CreateDatabaseAction extends Action implements INavigationAction {
+public class DatabaseCreateAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean accept(INavigationElement<?> element) {

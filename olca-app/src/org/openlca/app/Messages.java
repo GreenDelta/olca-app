@@ -1,12 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.app;
 
 import org.eclipse.osgi.util.NLS;
@@ -162,11 +153,10 @@ public class Messages extends NLS {
 	public static String Exchanges;
 	public static String ExchangeType;
 	public static String Export;
-	public static String ExportingToScript;
 	public static String ExportTitle;
 	public static String ExportTo;
 	public static String ExportToExcel;
-	public static String ExportToScript;
+	public static String ExportDatabase;
 	public static String Factor;
 	public static String FancyToolTip_NoDescription;
 	public static String FileAlreadyExists;
@@ -229,8 +219,7 @@ public class Messages extends NLS {
 	public static String ImpactResultSavedMessage;
 	public static String ImpactResultSavedTitle;
 	public static String Import;
-	public static String ImportingScript;
-	public static String ImportScript;
+	public static String ImportDatabase;
 	public static String INFO;
 	public static String Information;
 	public static String InfrastructureProcess;
@@ -545,6 +534,7 @@ public class Messages extends NLS {
 	public static String Systems_SD;
 	public static String Systems_SelectPossibleProcessesDialog_Connect;
 	public static String Systems_SelectPossibleProcessesDialog_Create;
+	public static String Systems_SelectPossibleProcessesDialog_Exchange;
 	public static String Systems_SelectPossibleProcessesDialog_Exists;
 	public static String Systems_SelectPossibleProcessesDialog_IsConnected;
 	public static String Systems_SelectPossibleProcessesDialog_SelectProviders;

@@ -14,10 +14,13 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.App;
 import org.openlca.app.Event;
 import org.openlca.app.Messages;
 import org.openlca.app.components.IModelDropHandler;
@@ -121,6 +124,7 @@ class ExchangeTable {
 		});
 		viewer.addFilter(new Filter());
 		bindActions(section, viewer);
+		bindDoubleClick(viewer);
 		Tables.bindColumnWidths(viewer, 0.2, 0.15, 0.1, 0.1, 0.1, 0.15, 0.1,
 				0.1);
 		setInitialInput();
@@ -192,6 +196,18 @@ class ExchangeTable {
 		Actions.bind(viewer, add, remove);
 	}
 
+	private void bindDoubleClick(final TableViewer viewer) {
+		viewer.getTable().addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDoubleClick(MouseEvent e) {
+				Exchange exchange = Viewers.getFirstSelected(viewer);
+				if (exchange == null || exchange.getFlow() == null)
+					return;
+				App.openEditor(exchange.getFlow());
+			}
+		});
+	}
+
 	private String[] getColumns() {
 		if (forInputs)
 			return new String[] { FLOW, CATEGORY, FLOW_PROPERTY, UNIT, AMOUNT,
@@ -208,6 +224,11 @@ class ExchangeTable {
 
 	private void onRemove() {
 		List<Exchange> selection = Viewers.getAllSelected(viewer);
+		if (selection.contains(process.getQuantitativeReference())) {
+			Error.showBox("Cannot delete reference flow",
+					"You cannot delete the reference flow of a process");
+			return;
+		}
 		for (Exchange exchange : selection)
 			process.getExchanges().remove(exchange);
 		viewer.setInput(process.getExchanges());
@@ -429,8 +450,7 @@ class ExchangeTable {
 			if (element.getFlow() == null)
 				return new ProcessDescriptor[0];
 			FlowDao dao = new FlowDao(database);
-			Set<Long> providerIds = dao
-					.getProviders(element.getFlow().getId());
+			Set<Long> providerIds = dao.getProviders(element.getFlow().getId());
 			Collection<ProcessDescriptor> descriptors = cache.getAll(
 					ProcessDescriptor.class, providerIds).values();
 			ProcessDescriptor[] array = new ProcessDescriptor[descriptors

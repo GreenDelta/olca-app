@@ -1,7 +1,6 @@
 package org.openlca.app.systems;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -21,7 +20,6 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AllocationMethodViewer;
 import org.openlca.app.viewers.combo.ImpactMethodViewer;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.editors.io.SystemExport;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.BaseDescriptor;
@@ -132,15 +130,15 @@ public class SystemExportDialog extends WizardDialog {
 							InterruptedException {
 						monitor.beginTask("Exporting...",
 								IProgressMonitor.UNKNOWN);
-						SystemExport export = new SystemExport(productSystem,
-								database, allocation, impactMethod);
-						try {
-							export.exportTo(directory);
-						} catch (IOException e) {
-							throw new InvocationTargetException(e);
-						} finally {
-							monitor.done();
-						}
+						// SystemExport export = new SystemExport(productSystem,
+						// database, allocation, impactMethod);
+						// try {
+						// export.exportTo(directory);
+						// } catch (IOException e) {
+						// throw new InvocationTargetException(e);
+						// } finally {
+						// monitor.done();
+						// }
 					}
 				});
 			} catch (Exception e) {
