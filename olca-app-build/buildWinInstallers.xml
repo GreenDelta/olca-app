@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="project" default="main">
+
+	<loadproperties srcFile="build.properties" />
+
+	<target name="main">
+		<antcall target="build32bit" />
+		<antcall target="build64bit" />
+	</target>
+
+	<target name="build32bit">
+		<loadproperties srcFile="buildwin32bit.properties" />
+		<echo message="build Windows 32bit installer" />
+		<echo message="xmx: ${openlcaxmxval}" />
+		<echo message="jre: ${jre_path}" />
+		<antcall target="package">
+			<param name="package_tmpdir_part" value="@temp_32" />
+			<param name="package_srczip_pattern" value="*win32.x86.zip" />
+			<param name="package_name_suffix" value="win-32bit" />
+		</antcall>
+
+	</target>
+
+	<target name="build64bit">
+		<loadproperties srcFile="buildwin64bit.properties" />
+		<echo message="build Windows 64bit installer" />
+		<echo message="xmx: ${openlcaxmxval}" />
+		<echo message="jre: ${jre_path}" />
+		<antcall target="package">
+			<param name="package_tmpdir_part" value="@temp_64" />
+			<param name="package_srczip_pattern" value="*win32.x86_64.zip" />
+			<param name="package_name_suffix" value="win-64bit" />
+		</antcall>
+
+	</target>
+
+	<target name="package"
+	        description="requires package_tmpdir_part, package_name_suffix, package_srczip_pattern properties">
+		<mkdir dir="${basedir}/packages" />
+		<property name="package_dir"
+		          value="${basedir}/packages/${package_tmpdir_part}" />
+		<mkdir dir="${package_dir}" />
+
+		<!-- copy the static resources into the build directory -->
+		<copy todir="${package_dir}">
+			<fileset dir="${basedir}/installer_static_win" />
+		</copy>
+
+		<!-- now again for those resources that need filtering -->
+		<filter token="openlcaxmxval" value="${openlcaxmxval}" />
+		<filter token="openlcaupdatesiteparam"
+		        value="${openlcaupdatesiteparam}" />
+		<filter token="openlcaversion" value="${openlca_version_id}" />
+		<copy todir="${package_dir}" filtering="true" overwrite="true">
+			<fileset dir="${basedir}/installer_static_win">
+				<include name="**/*.ini" />
+			</fileset>
+		</copy>
+
+		<!-- copy the nsis setup file with openlca version-->
+		<filter token="openlcaversion" value="${openlca_version}" />
+		<copy todir="${package_dir}" filtering="true">
+			<fileset file="${basedir}/scripts/setup.nsi" />
+		</copy>
+
+		<!-- copy lisence files -->
+		<copy todir="${package_dir}/openlca">
+			<fileset dir="${basedir}/legal" />
+		</copy>
+
+		<!-- copy JRE -->
+		<copy todir="${package_dir}/openlca/jre">
+			<fileset dir="${jre_path}" />
+		</copy>
+
+		<!-- copy XUL-Runner -->
+		<available file="${xulrunner_path}" property="copy_xulrunner"/>
+		<antcall target="copyXulRunner" />
+
+		<!-- extract and move the compiled files to the build directory -->
+		<unzip dest="${package_dir}/openlca">
+			<fileset dir="${basedir}/builds">
+				<include name="${package_srczip_pattern}" />
+			</fileset>
+		</unzip>
+		<move todir="${package_dir}/openlca">
+			<fileset dir="${package_dir}/openlca/openLCA" />
+		</move>
+
+		<!-- eclipse stupidly creates packages with locked profiles, -->
+		<!-- killing p2 (at least on Mac OS, but to be sure del for win, too) -->
+		<delete>
+			<fileset dir="${package_dir}/openlca/p2">
+				<include name="**/.lock" />
+			</fileset>
+		</delete>
+
+		<!-- run NISI and move the installer package -->
+		<exec executable="${basedir}/nsis-2.46/makensis.exe">
+			<arg file="${package_dir}/setup.nsi" />
+		</exec>
+		<move todir="${basedir}/packages/" file="${package_dir}/setup.exe" />
+		<tstamp />
+		<rename dest="${basedir}/packages/openlca-${openlca_version_id}.${DSTAMP}-${package_name_suffix}.exe"
+		        src="${basedir}/packages/setup.exe" />
+
+		<!-- delete the temporary build directory -->
+		<delete dir="${package_dir}" />
+	</target>
+
+	<target name="copyXulRunner" if="copy_xulrunner">
+		<copy todir="${package_dir}/openlca/xulrunner">
+			<fileset dir="${xulrunner_path}" />
+		</copy>
+	</target>
+
+
+</project>
