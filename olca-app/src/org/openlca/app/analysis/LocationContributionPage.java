@@ -47,7 +47,6 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private AnalysisResult result;
 	private Browser browser;
-	private AnalyzeEditor editor;
 	private LocationContributionTable table;
 	private LocationContribution calculator;
 	private FlowImpactSelection flowImpactSelection;
@@ -55,7 +54,6 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 	public LocationContributionPage(AnalyzeEditor editor, AnalysisResult result) {
 		super(editor, "analysis.MapPage", Messages.Locations);
 		this.result = result;
-		this.editor = editor;
 		calculator = new LocationContribution(result, Messages.Unspecified,
 				cache);
 	}

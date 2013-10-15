@@ -13,12 +13,10 @@ import org.openlca.core.results.AnalysisResult;
 
 class ProcessContributionPage extends FormPage {
 
-	private AnalyzeEditor editor;
 	private AnalysisResult result;
 
 	public ProcessContributionPage(AnalyzeEditor editor, AnalysisResult result) {
 		super(editor, "ProcessContributionPage", Messages.ProcessContributions);
-		this.editor = editor;
 		this.result = result;
 	}
 

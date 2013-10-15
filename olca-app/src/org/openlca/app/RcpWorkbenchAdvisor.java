@@ -7,12 +7,8 @@ import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 import org.openlca.app.logging.Console;
 import org.openlca.app.logging.LoggerPreference;
 import org.openlca.app.update.UpdateCheckAndPrepareJob;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class RcpWorkbenchAdvisor extends WorkbenchAdvisor {
-
-	private Logger log = LoggerFactory.getLogger(getClass());
 
 	/**
 	 * The ID of the openLCA perspective

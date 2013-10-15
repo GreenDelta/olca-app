@@ -30,7 +30,6 @@ public class LocalisedMethodImport implements Runnable {
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private File file;
 	private IDatabase database;
-	private EntityCache cache;
 	private Status status = new Status(Status.WAITING);
 	private LocalisedImpactMethod method;
 	private List<Location> locations;
@@ -39,7 +38,6 @@ public class LocalisedMethodImport implements Runnable {
 			EntityCache entityCache) {
 		this.file = file;
 		this.database = database;
-		this.cache = entityCache;
 	}
 
 	public Status getStatus() {
