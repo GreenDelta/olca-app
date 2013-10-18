@@ -124,6 +124,8 @@ class GraphicalViewerConfigurator {
 				.createSearchRecipientsAction(model.getEditor()));
 		actionRegistry.registerAction(ActionFactory.createOpenAction(model
 				.getEditor()));
+		actionRegistry.registerAction(ActionFactory
+				.createOpenMiniatureViewAction(model.getEditor()));
 		actionRegistry.registerAction(new ZoomInAction(getZoomManager()));
 		actionRegistry.registerAction(new ZoomOutAction(getZoomManager()));
 
@@ -149,6 +151,7 @@ class GraphicalViewerConfigurator {
 		updateableActions.add(ActionIds.UNMARK);
 		updateableActions.add(ActionIds.SEARCH_PROVIDERS);
 		updateableActions.add(ActionIds.SEARCH_RECIPIENTS);
+		updateableActions.add(ActionIds.OPEN_MINIATURE_VIEW);
 		return updateableActions;
 	}
 
@@ -189,4 +192,5 @@ class GraphicalViewerConfigurator {
 	private ScalableRootEditPart getRootEditPart() {
 		return (ScalableRootEditPart) viewer.getRootEditPart();
 	}
+
 }
