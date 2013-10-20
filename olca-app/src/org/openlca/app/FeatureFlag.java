@@ -1,6 +1,5 @@
 package org.openlca.app;
 
-
 /**
  * Feature flags of the application. The flags are stored in the preference
  * store where their names are used as keys.
@@ -16,13 +15,10 @@ public enum FeatureFlag {
 	USAGE_MENU(
 			"Usage menu in navigation (shows usages of the selected element)"),
 
-	// TODO: can be removed if no errors occur in release 1.3.0
-	// ANALYSIS_EXCEL_EXPORT("Export analysis results to MS Excel"),
-
 	// there are problems with the single precision calculation
 	// thus we currently do not support this feature
-	// USE_SINGLE_PRECISION(
-	// "Calculation with single precision numbers (requires restart)"),
+	USE_SINGLE_PRECISION(
+			"Calculation with single precision numbers (requires restart)"),
 
 	PRODUCT_SYSTEM_CUTOFF("Enable cut-offs in product system creations"),
 
