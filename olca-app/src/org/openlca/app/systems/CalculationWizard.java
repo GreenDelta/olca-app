@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.Wizard;
+import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.analysis.AnalyzeEditor;
 import org.openlca.app.analysis.AnalyzeEditorInput;
@@ -80,7 +81,7 @@ class CalculationWizard extends Wizard {
 		private void analyse() {
 			log.trace("run analysis");
 			SystemCalculator calculator = new SystemCalculator(
-					Cache.getMatrixCache());
+					Cache.getMatrixCache(), App.getMatrixFactory());
 			AnalysisResult analysisResult = calculator.analyse(setup);
 			log.trace("calculation done, open editor");
 			String resultKey = Cache.getAppCache().put(analysisResult);
@@ -93,7 +94,7 @@ class CalculationWizard extends Wizard {
 		private void solve() {
 			log.trace("run quick calculation");
 			SystemCalculator calculator = new SystemCalculator(
-					Cache.getMatrixCache());
+					Cache.getMatrixCache(), App.getMatrixFactory());
 			InventoryResult inventoryResult = calculator.solve(setup);
 			log.trace("calculation done, open editor");
 			String resultKey = Cache.getAppCache().put(inventoryResult);

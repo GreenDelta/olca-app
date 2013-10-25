@@ -9,10 +9,14 @@ import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.PartInitException;
 import org.openlca.app.editors.ModelEditorInput;
 import org.openlca.app.util.Editors;
+import org.openlca.core.math.BlasMatrixFactory;
+import org.openlca.core.math.IMatrixFactory;
+import org.openlca.core.math.JavaMatrixFactory;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.Descriptors;
+import org.openlca.jblas.Library;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,8 +27,19 @@ public class App {
 	static Logger log = LoggerFactory.getLogger(App.class);
 
 	private static EventBus eventBus = new EventBus();
+	private static IMatrixFactory matrixFactory;
 
 	private App() {
+	}
+
+	public static IMatrixFactory getMatrixFactory() {
+		if (matrixFactory != null)
+			return matrixFactory;
+		if (Library.isLoaded())
+			matrixFactory = new BlasMatrixFactory();
+		else
+			matrixFactory = new JavaMatrixFactory();
+		return matrixFactory;
 	}
 
 	/**

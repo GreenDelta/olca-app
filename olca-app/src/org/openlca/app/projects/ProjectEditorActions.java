@@ -35,7 +35,7 @@ public class ProjectEditorActions extends EditorActionBarContributor {
 		if (project == null)
 			return;
 		final ProjectCalculator calculator = new ProjectCalculator(
-				Cache.getMatrixCache());
+				Cache.getMatrixCache(), App.getMatrixFactory());
 		App.run("Calculate project", new Runnable() {
 			public void run() {
 				result = tryCalculate(calculator, project);

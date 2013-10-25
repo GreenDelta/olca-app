@@ -4,6 +4,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.openlca.app.App;
 import org.openlca.app.db.Cache;
 import org.openlca.app.util.Editors;
 import org.openlca.core.math.CalculationSetup;
@@ -43,7 +44,8 @@ public class SimulationInit {
 		public IStatus run(IProgressMonitor monitor) {
 			monitor.beginTask("Initialize simulation", IProgressMonitor.UNKNOWN);
 			try {
-				Simulator solver = new Simulator(setup, matrixCache);
+				Simulator solver = new Simulator(setup, matrixCache,
+						App.getMatrixFactory());
 				// do a first calculation that initialises the result;
 				solver.nextRun();
 				String setupKey = Cache.getAppCache().put(setup);
