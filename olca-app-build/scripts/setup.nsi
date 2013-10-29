@@ -118,8 +118,6 @@ Section "-openLCA @openlcaversion@" SEC0000
     ${Else}
         File /r english\openLCA.ini
     ${EndIf}
-    NSISdl::download http://guciodb.googlecode.com/files/guciodb-mysql-5.1.43-win.zip $TEMP\guciodb-mysql-5.1.43-win.zip
-    ZipDLL::extractall $TEMP\guciodb-mysql-5.1.43-win.zip $INSTDIR
     WriteRegStr SHCTX "${REGKEY}\Components" "openLCA @openlcaversion@" 1
 
     ${If} $MultiUser.InstallMode == "CurrentUser"
