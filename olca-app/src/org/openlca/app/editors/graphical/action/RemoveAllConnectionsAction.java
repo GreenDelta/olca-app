@@ -6,6 +6,7 @@ import java.util.List;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.viewers.ISelection;
 import org.openlca.app.Messages;
+import org.openlca.app.editors.graphical.ProcessLinks;
 import org.openlca.app.editors.graphical.command.CommandFactory;
 import org.openlca.app.editors.graphical.model.ConnectionLink;
 import org.openlca.app.editors.graphical.model.ProcessNode;
@@ -46,8 +47,8 @@ public class RemoveAllConnectionsAction extends EditorAction {
 				.getProductSystem();
 		List<ConnectionLink> links = new ArrayList<>();
 		for (ProcessNode processNode : processNodes) {
-			ProcessLink[] processLinks = productSystem
-					.getProcessLinks(processNode.getProcess().getId());
+			List<ProcessLink> processLinks = ProcessLinks.getAll(productSystem,
+					processNode.getProcess().getId());
 			for (ProcessLink link : processLinks)
 				productSystem.getProcessLinks().remove(link);
 

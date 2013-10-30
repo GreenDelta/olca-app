@@ -2,6 +2,7 @@ package org.openlca.app.editors.graphical.action;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -9,6 +10,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.viewers.ISelection;
 import org.openlca.app.Messages;
+import org.openlca.app.editors.graphical.ProcessLinks;
 import org.openlca.app.editors.graphical.model.ConnectionLink;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.core.model.ProcessLink;
@@ -37,7 +39,8 @@ public class RemoveSupplyChainAction extends EditorAction {
 			Set<ProcessNode> nodes) {
 		ProductSystem system = getEditor().getModel().getProductSystem();
 		ProcessNode node = getEditor().getModel().getProcessNode(processId);
-		ProcessLink[] incomingLinks = system.getIncomingLinks(processId);
+		List<ProcessLink> incomingLinks = ProcessLinks.getIncoming(system,
+				processId);
 		for (ProcessLink link : incomingLinks) {
 			if (node != null) {
 				ConnectionLink l = node.getLink(link);
@@ -45,7 +48,7 @@ public class RemoveSupplyChainAction extends EditorAction {
 					links.add(l);
 			}
 			system.getProcessLinks().remove(link);
-			if (system.getOutgoingLinks(link.getProviderId()).length == 0) {
+			if (ProcessLinks.getOutgoing(system, link.getProviderId()).size() == 0) {
 				removeSupplyChain(link.getProviderId(), links, nodes);
 				system.getProcesses().remove(link.getProviderId());
 				ProcessNode providerNode = getEditor().getModel()

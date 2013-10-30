@@ -2,6 +2,7 @@ package org.openlca.app.editors.graphical.command;
 
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.Messages;
+import org.openlca.app.editors.graphical.ProcessLinks;
 import org.openlca.app.editors.graphical.model.ConnectionLink;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
@@ -74,7 +75,7 @@ public class HideShowCommand extends Command {
 	}
 
 	private void createNecessaryLinks(ProcessNode node) {
-		for (ProcessLink link : model.getProductSystem().getProcessLinks(
+		for (ProcessLink link : ProcessLinks.getAll(model.getProductSystem(),
 				process.getId())) {
 			long processId = link.getRecipientId() == process.getId() ? link
 					.getProviderId() : link.getRecipientId();

@@ -10,6 +10,7 @@ import java.util.Map;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.openlca.app.editors.graphical.ProcessLinks;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.core.model.ProcessLink;
@@ -59,7 +60,8 @@ public class TreeLayout {
 		List<Node> children = new ArrayList<>();
 		for (Node node : nodes) {
 			long processId = node.processId;
-			for (ProcessLink link : productSystem.getProcessLinks(processId)) {
+			for (ProcessLink link : ProcessLinks.getAll(productSystem,
+					processId)) {
 				if (link.getRecipientId() != processId)
 					continue;
 				long providerId = link.getProviderId();
@@ -77,7 +79,8 @@ public class TreeLayout {
 		children.clear();
 		for (Node node : nodes) {
 			long processId = node.processId;
-			for (ProcessLink link : productSystem.getProcessLinks(processId)) {
+			for (ProcessLink link : ProcessLinks.getAll(productSystem,
+					processId)) {
 				if (link.getProviderId() != processId)
 					continue;
 				long recipientId = link.getRecipientId();

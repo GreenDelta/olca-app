@@ -168,8 +168,8 @@ public class ConnectorDialog extends Dialog {
 			boolean alreadyConnected = false;
 			if (alreadyExisting) {
 				if (selectProvider) {
-					for (ProcessLink link : productSystem
-							.getOutgoingLinks(process.getId())) {
+					for (ProcessLink link : ProcessLinks.getOutgoing(
+							productSystem, process.getId())) {
 						if (link.getRecipientId() == parentProcess.getId()
 								&& link.getFlowId() == exchange.getFlow()
 										.getId()) {
@@ -178,8 +178,8 @@ public class ConnectorDialog extends Dialog {
 						}
 					}
 				} else {
-					for (ProcessLink link : productSystem
-							.getIncomingLinks(process.getId())) {
+					for (ProcessLink link : ProcessLinks.getIncoming(
+							productSystem, process.getId())) {
 						if (link.getProviderId() == parentProcess.getId()
 								&& link.getFlowId() == exchange.getFlow()
 										.getId()) {
@@ -202,10 +202,10 @@ public class ConnectorDialog extends Dialog {
 	private boolean hasConnection(ConnectableProcess process) {
 		if (process.isAlreadyConnected())
 			return true;
-
-		ProcessLink[] links = selectProvider ? productSystem
-				.getOutgoingLinks(process.getProcess().getId()) : productSystem
-				.getIncomingLinks(process.getProcess().getId());
+		long processId = process.getProcess().getId();
+		List<ProcessLink> links = selectProvider ? ProcessLinks.getOutgoing(
+				productSystem, processId) : ProcessLinks.getIncoming(
+				productSystem, processId);
 		for (ProcessLink link : links)
 			if (link.getFlowId() == exchange.getFlow().getId())
 				return true;

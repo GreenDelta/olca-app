@@ -28,6 +28,7 @@ import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.Labels;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.database.ProductSystemDao;
+import org.openlca.core.matrix.ProcessLinkSearchMap;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.Descriptors;
@@ -41,6 +42,7 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 	private Logger log = LoggerFactory.getLogger(getClass());
 
 	private ProductSystem productSystem;
+	private ProcessLinkSearchMap linkSearchMap;
 	private ProductSystemNode model;
 	private GraphLayoutType layoutType = GraphLayoutType.TREE_LAYOUT;
 	private OutlinePage outline;
