@@ -27,7 +27,7 @@ class ColorCalculator {
 			perc = -100;
 		if (perc > 100)
 			perc = 100;
-		int value = percentage + 100;
+		int value = perc + 100;
 		int prev = 0;
 		int index = 0;
 		double steps = 0;
