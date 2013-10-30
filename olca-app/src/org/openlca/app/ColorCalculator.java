@@ -22,10 +22,11 @@ class ColorCalculator {
 	}
 
 	public RGB getColor(int percentage) {
-		if (percentage < -100 || percentage > 100)
-			throw new IllegalArgumentException(
-					"Percentage value must be between -100 and 100");
-
+		int perc = percentage;
+		if (perc < -100)
+			perc = -100;
+		if (perc > 100)
+			perc = 100;
 		int value = percentage + 100;
 		int prev = 0;
 		int index = 0;

@@ -140,7 +140,7 @@ class ProcessExpander extends ImageFigure {
 
 	void refresh() {
 		setVisible(shouldBeVisible());
-		
+
 	}
 
 	boolean isExpanded() {
