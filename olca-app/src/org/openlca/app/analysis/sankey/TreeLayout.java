@@ -20,6 +20,7 @@ import java.util.Set;
 
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.openlca.core.matrix.ProcessLinkSearchMap;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
 
@@ -47,13 +48,10 @@ public class TreeLayout {
 	 */
 	private final Set<Long> paintedProcesses = new HashSet<>();
 
-	/**
-	 * Lays out the product system node
-	 * 
-	 * @param productSystemNode
-	 *            The node to be layed out
-	 */
+	private ProcessLinkSearchMap linkSearchMap;
+
 	public void layout(final ProductSystemNode productSystemNode) {
+		linkSearchMap = productSystemNode.getEditor().getLinkSearchMap();
 		prepare(productSystemNode);
 		final List<Node> nodes = new ArrayList<>();
 		final Node mainNode = build(productSystemNode.getProductSystem());
@@ -211,15 +209,14 @@ public class TreeLayout {
 	 *            The next nodes
 	 */
 	private void build(final ProductSystem productSystem, final Node[] nodes) {
-		final List<Node> children = new ArrayList<>();
-		for (final Node node : nodes) {
-			final long processKey = node.processKey;
-			for (final ProcessLink link : productSystem
-					.getProcessLinks(processKey)) {
+		List<Node> children = new ArrayList<>();
+		for (Node node : nodes) {
+			long processKey = node.processKey;
+			for (ProcessLink link : linkSearchMap.getLinks(processKey)) {
 				if (link.getRecipientId() == processKey) {
 					if (!containing.contains(link.getProviderId())
 							&& paintedProcesses.contains(link.getProviderId())) {
-						final Node child = new Node();
+						Node child = new Node();
 						child.processKey = link.getProviderId();
 						node.leftChildren.add(child);
 						containing.add(child.processKey);
@@ -234,7 +231,7 @@ public class TreeLayout {
 		children.clear();
 		for (Node node : nodes) {
 			long processKey = node.processKey;
-			for (ProcessLink link : productSystem.getProcessLinks(processKey)) {
+			for (ProcessLink link : linkSearchMap.getLinks(processKey)) {
 				if (link.getProviderId() != processKey)
 					continue;
 				if (!containing.contains(link.getRecipientId())
@@ -252,12 +249,6 @@ public class TreeLayout {
 		}
 	}
 
-	/**
-	 * Prepares the containing map for building the tree
-	 * 
-	 * @param productSystemNode
-	 *            The node to be layed out
-	 */
 	private void prepare(final ProductSystemNode productSystemNode) {
 		for (final Object node : productSystemNode.getChildrenArray()) {
 			if (node instanceof ProcessNode) {

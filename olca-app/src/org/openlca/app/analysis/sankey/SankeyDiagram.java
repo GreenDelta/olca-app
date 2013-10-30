@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.ConnectionLayer;
@@ -36,6 +37,7 @@ import org.openlca.app.App;
 import org.openlca.app.db.Cache;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.math.CalculationSetup;
+import org.openlca.core.matrix.ProcessLinkSearchMap;
 import org.openlca.core.model.NormalizationWeightingSet;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
@@ -52,6 +54,7 @@ public class SankeyDiagram extends GraphicalEditor implements
 
 	private EntityCache cache = Cache.getEntityCache();
 	private SankeyResult sankeyResult;
+	private ProcessLinkSearchMap linkSearchMap;
 	private Map<ProcessLink, ConnectionLink> createdLinks = new HashMap<>();
 	private Map<Long, ProcessNode> createdProcesses = new HashMap<>();
 	private ProductSystemNode systemNode;
@@ -66,6 +69,8 @@ public class SankeyDiagram extends GraphicalEditor implements
 		setEditDomain(new DefaultEditDomain(this));
 		this.result = result;
 		productSystem = setUp.getProductSystem();
+		linkSearchMap = new ProcessLinkSearchMap(
+				productSystem.getProcessLinks());
 		sankeyResult = new SankeyResult(productSystem, result);
 		method = setUp.getImpactMethod();
 		nwSet = setUp.getNwSet();
@@ -78,8 +83,12 @@ public class SankeyDiagram extends GraphicalEditor implements
 		return result;
 	}
 
+	public ProcessLinkSearchMap getLinkSearchMap() {
+		return linkSearchMap;
+	}
+
 	private void createConnections(long processId) {
-		for (ProcessLink processLink : productSystem
+		for (ProcessLink processLink : linkSearchMap
 				.getIncomingLinks(processId)) {
 			ProcessNode sourceNode = createdProcesses.get(processLink
 					.getProviderId());
@@ -100,7 +109,7 @@ public class SankeyDiagram extends GraphicalEditor implements
 
 	private Long getGreatestRecipient(long processId, int position) {
 		List<WeightedProcess> recipients = new ArrayList<>();
-		for (ProcessLink link : productSystem.getOutgoingLinks(processId)) {
+		for (ProcessLink link : linkSearchMap.getOutgoingLinks(processId)) {
 			WeightedProcess wp = new WeightedProcess();
 			wp.id = link.getRecipientId();
 			wp.weight = Math.abs(sankeyResult.getLinkContribution(link));
@@ -215,9 +224,8 @@ public class SankeyDiagram extends GraphicalEditor implements
 
 			// check each provider and add him to the connected list (if the
 			// process should be drawn)
-			for (final ProcessLink link : productSystem
-					.getIncomingLinks(actual)) {
-				final Long providerId = link.getProviderId();
+			for (ProcessLink link : linkSearchMap.getIncomingLinks(actual)) {
+				Long providerId = link.getProviderId();
 				if (processIds.contains(providerId)) {
 					if (unconnected.contains(providerId)) {
 						unconnected.remove(providerId);
@@ -448,6 +456,7 @@ public class SankeyDiagram extends GraphicalEditor implements
 	public void update(final Object selection, final double cutoff) {
 		if (selection == null || cutoff < 0d || cutoff > 1d)
 			return;
+		final AtomicBoolean failed = new AtomicBoolean(false);
 		App.run("Calculate sankey results", new Runnable() {
 			@Override
 			public void run() {
