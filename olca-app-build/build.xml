@@ -1,14 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="project" default="main">
 
+	
 	<tstamp />
 	<property name="buildId" value="openlca_${DSTAMP}" />	
 	<property name="product"
 	              value="/olca-app/openLCA.product" />
 	
+	<!-- 
+		We assume that the workspace is located next to the eclipse installation
+		and that the target platform is located in this workspace. If this is
+		not the case, set these parameters here.		
+	 -->
+	<property name="workspace" value="${eclipse.home}/../workspace"></property>
 	<property 
 		name="platform_path" 
-		value="C:/Users/Dell/projects/openlca/v1.4/workspace_single_app/openlca.runtime/platform"/>
+		value="${workspace}/openlca.runtime/platform"/>
 	
 	<!-- Provides for example a version in openlca_version -->
 	<property file="build.properties"/>
