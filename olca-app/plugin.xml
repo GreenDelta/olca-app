@@ -75,7 +75,8 @@
             default="false"
             icon="icons/expression_obj.gif"
             id="InventoryResultEditor"
-            name="Quick results">
+            name="Quick results"
+            contributorClass="org.openlca.app.inventory.InventoryResultActions">
       </editor>
       <editor
             id="ProjectResultEditor"
