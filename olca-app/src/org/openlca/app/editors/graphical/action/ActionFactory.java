@@ -80,8 +80,11 @@ public class ActionFactory {
 		return action;
 	}
 
-	public static OpenMiniatureViewAction createOpenMiniatureViewAction() {
-		return new OpenMiniatureViewAction();
+	public static OpenMiniatureViewAction createOpenMiniatureViewAction(
+			ProductSystemGraphEditor editor) {
+		OpenMiniatureViewAction action = new OpenMiniatureViewAction();
+		action.setEditor(editor);
+		return action;
 	}
 
 	public static RemoveAllConnectionsAction createRemoveAllConnectionsAction(

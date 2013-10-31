@@ -85,7 +85,6 @@ class ProcessExpander extends ImageFigure {
 	}
 
 	void collapse() {
-		// TODO something is still not working 100%
 		ConnectionLink[] links = node.getLinks().toArray(
 				new ConnectionLink[node.getLinks().size()]);
 		for (ConnectionLink link : links) {
@@ -143,7 +142,6 @@ class ProcessExpander extends ImageFigure {
 
 	void refresh() {
 		setVisible(shouldBeVisible());
-
 	}
 
 	boolean isExpanded() {

@@ -1,5 +1,7 @@
 package org.openlca.app.editors.graphical.model;
 
+import java.util.Objects;
+
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.Connection;
 import org.eclipse.swt.graphics.Color;
@@ -82,18 +84,13 @@ public class ConnectionLink {
 	public boolean equals(Object obj) {
 		if (!(obj instanceof ConnectionLink))
 			return false;
-		if (getSourceNode() == null)
-			return false;
-		if (getTargetNode() == null)
-			return false;
 
 		ConnectionLink link = (ConnectionLink) obj;
-		if (link.getSourceNode() == null)
+		if (!Objects.equals(getProcessLink(), link.getProcessLink()))
 			return false;
-		if (link.getTargetNode() == null)
+		if (!Objects.equals(getSourceNode(), link.getSourceNode()))
 			return false;
-
-		if (link.getProcessLink().getFlowId() != getProcessLink().getFlowId())
+		if (!Objects.equals(getTargetNode(), link.getTargetNode()))
 			return false;
 		return true;
 	}

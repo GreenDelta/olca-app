@@ -1,13 +1,11 @@
-package org.openlca.app.editors.graphical.action;
+package org.openlca.app.analysis;
 
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.LightweightSystem;
 import org.eclipse.draw2d.Viewport;
 import org.eclipse.draw2d.parts.ScrollableThumbnail;
-import org.eclipse.gef.LayerConstants;
-import org.eclipse.gef.editparts.ScalableRootEditPart;
 import org.eclipse.gef.editparts.ZoomManager;
-import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
@@ -29,10 +27,11 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
+import org.openlca.app.editors.graphical.action.ActionIds;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.UI;
 
-public class OpenMiniatureViewAction extends EditorAction {
+public class OpenMiniatureViewAction extends Action {
 
 	private Control control;
 	private IFigure figure;
@@ -55,7 +54,7 @@ public class OpenMiniatureViewAction extends EditorAction {
 			window.refresh();
 	}
 
-	private void update(Viewport port, IFigure figure, Control control,
+	public void update(Viewport port, IFigure figure, Control control,
 			ZoomManager zoomManager) {
 		this.port = port;
 		this.figure = figure;
@@ -153,23 +152,4 @@ public class OpenMiniatureViewAction extends EditorAction {
 
 	}
 
-	@Override
-	protected boolean accept(ISelection selection) {
-		if (getEditor() == null)
-			return false;
-		update(getViewport(),
-				getRootEditPart().getLayer(LayerConstants.PRINTABLE_LAYERS),
-				getEditor().getGraphicalViewer().getControl(), getEditor()
-						.getZoomManager());
-		return true;
-	}
-
-	private Viewport getViewport() {
-		return (Viewport) getRootEditPart().getFigure();
-	}
-
-	private ScalableRootEditPart getRootEditPart() {
-		return (ScalableRootEditPart) getEditor().getGraphicalViewer()
-				.getRootEditPart();
-	}
 }

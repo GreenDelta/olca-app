@@ -48,5 +48,7 @@ public class AppContextMenuProvider extends ContextMenuProvider {
 		menu.add(actionRegistry.getAction(ActionIds.MAXIMIZE_ALL));
 		menu.add(actionRegistry.getAction(ActionIds.MINIMIZE_ALL));
 		menu.add(actionRegistry.getAction(ActionIds.LAYOUT_MENU));
+		menu.add(new Separator());
+		menu.add(actionRegistry.getAction(ActionIds.OPEN_MINIATURE_VIEW));
 	}
 }
