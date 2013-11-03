@@ -20,6 +20,8 @@ public enum FeatureFlag {
 	USE_SINGLE_PRECISION(
 			"Calculation with single precision numbers (requires restart)"),
 
+	USE_SPARSE_MATRICES("Calculate with sparse matrices (requires restart)"),
+
 	PRODUCT_SYSTEM_CUTOFF("Enable cut-offs in product system creations"),
 
 	PRODUCT_SYSTEM_EXPORT("Enable product system excel export"),

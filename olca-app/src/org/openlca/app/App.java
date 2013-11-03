@@ -18,6 +18,7 @@ import org.openlca.core.model.descriptors.Descriptors;
 import org.openlca.eigen.DenseFloatMatrixFactory;
 import org.openlca.eigen.DenseMatrixFactory;
 import org.openlca.eigen.NativeLibrary;
+import org.openlca.eigen.SparseMatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +42,9 @@ public class App {
 			matrixFactory = new JavaMatrixFactory();
 			return matrixFactory;
 		}
-		if (FeatureFlag.USE_SINGLE_PRECISION.isEnabled())
+		if (FeatureFlag.USE_SPARSE_MATRICES.isEnabled())
+			matrixFactory = new SparseMatrixFactory();
+		else if (FeatureFlag.USE_SINGLE_PRECISION.isEnabled())
 			matrixFactory = new DenseFloatMatrixFactory();
 		else
 			matrixFactory = new DenseMatrixFactory();
