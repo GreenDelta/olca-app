@@ -24,11 +24,6 @@ public final class Preferences extends AbstractPreferenceInitializer {
 		Numbers.setDefaultAccuracy(acc);
 		log.trace("preference {} = {}", NUMBER_ACCURACY, acc);
 		new ColorInit().run();
-
-		// if (FeatureFlag.USE_SINGLE_PRECISION.isEnabled())
-		// MatrixFactory.configure(MatrixFactory.PREFER_FLOATS);
-		// else
-		// MatrixFactory.configure(MatrixFactory.PREFER_DOUBLES);
 	}
 
 	public static IPreferenceStore getStore() {

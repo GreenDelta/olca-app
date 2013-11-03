@@ -9,14 +9,15 @@ import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.PartInitException;
 import org.openlca.app.editors.ModelEditorInput;
 import org.openlca.app.util.Editors;
-import org.openlca.core.math.BlasMatrixFactory;
 import org.openlca.core.math.IMatrixFactory;
 import org.openlca.core.math.JavaMatrixFactory;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.Descriptors;
-import org.openlca.jblas.Library;
+import org.openlca.eigen.DenseFloatMatrixFactory;
+import org.openlca.eigen.DenseMatrixFactory;
+import org.openlca.eigen.NativeLibrary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,10 +36,15 @@ public class App {
 	public static IMatrixFactory getMatrixFactory() {
 		if (matrixFactory != null)
 			return matrixFactory;
-		if (Library.isLoaded())
-			matrixFactory = new BlasMatrixFactory();
-		else
+		if (!NativeLibrary.isLoaded()) {
+			log.warn("could not load a high-performance library for calculations");
 			matrixFactory = new JavaMatrixFactory();
+			return matrixFactory;
+		}
+		if (FeatureFlag.USE_SINGLE_PRECISION.isEnabled())
+			matrixFactory = new DenseFloatMatrixFactory();
+		else
+			matrixFactory = new DenseMatrixFactory();
 		return matrixFactory;
 	}
 
