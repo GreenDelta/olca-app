@@ -34,11 +34,9 @@
 
 	</target>
 
-	<target name="package"
-	        description="requires package_tmpdir_part, package_name_suffix, package_srczip_pattern properties">
+	<target name="package" description="requires package_tmpdir_part, package_name_suffix, package_srczip_pattern properties">
 		<mkdir dir="${basedir}/packages" />
-		<property name="package_dir"
-		          value="${basedir}/packages/${package_tmpdir_part}" />
+		<property name="package_dir" value="${basedir}/packages/${package_tmpdir_part}" />
 		<mkdir dir="${package_dir}" />
 
 		<!-- copy the static resources into the build directory -->
@@ -48,8 +46,7 @@
 
 		<!-- now again for those resources that need filtering -->
 		<filter token="openlcaxmxval" value="${openlcaxmxval}" />
-		<filter token="openlcaupdatesiteparam"
-		        value="${openlcaupdatesiteparam}" />
+		<filter token="openlcaupdatesiteparam" value="${openlcaupdatesiteparam}" />
 		<filter token="openlcaversion" value="${openlca_version_id}" />
 		<copy todir="${package_dir}" filtering="true" overwrite="true">
 			<fileset dir="${basedir}/installer_static_win">
@@ -57,11 +54,7 @@
 			</fileset>
 		</copy>
 
-		<!-- copy the nsis setup file with openlca version-->
-		<filter token="openlcaversion" value="${openlca_version}" />
-		<copy todir="${package_dir}" filtering="true">
-			<fileset file="${basedir}/scripts/setup.nsi" />
-		</copy>
+
 
 		<!-- copy lisence files -->
 		<copy todir="${package_dir}/openlca">
@@ -74,7 +67,7 @@
 		</copy>
 
 		<!-- copy XUL-Runner -->
-		<available file="${xulrunner_path}" property="copy_xulrunner"/>
+		<available file="${xulrunner_path}" property="copy_xulrunner" />
 		<antcall target="copyXulRunner" />
 
 		<!-- extract and move the compiled files to the build directory -->
@@ -95,14 +88,25 @@
 			</fileset>
 		</delete>
 
+		<!-- Create the non-installer package -->
+		<tstamp />
+		<zip destfile="${basedir}/packages/openlca-${openlca_version_id}.${DSTAMP}-${package_name_suffix}.zip">
+			<fileset dir="${package_dir}"/>
+		</zip>
+		
+		<!-- copy the nsis setup file with openlca version-->
+		<filter token="openlcaversion" value="${openlca_version}" />
+		<copy todir="${package_dir}" filtering="true">
+			<fileset file="${basedir}/scripts/setup.nsi" />
+		</copy>
+
 		<!-- run NISI and move the installer package -->
 		<exec executable="${basedir}/nsis-2.46/makensis.exe">
 			<arg file="${package_dir}/setup.nsi" />
 		</exec>
 		<move todir="${basedir}/packages/" file="${package_dir}/setup.exe" />
 		<tstamp />
-		<rename dest="${basedir}/packages/openlca-${openlca_version_id}.${DSTAMP}-${package_name_suffix}.exe"
-		        src="${basedir}/packages/setup.exe" />
+		<rename dest="${basedir}/packages/openlca-${openlca_version_id}.${DSTAMP}-${package_name_suffix}.exe" src="${basedir}/packages/setup.exe" />
 
 		<!-- delete the temporary build directory -->
 		<delete dir="${package_dir}" />
