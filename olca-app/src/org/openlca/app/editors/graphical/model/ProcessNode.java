@@ -59,21 +59,25 @@ public class ProcessNode extends Node {
 	}
 
 	public void add(ConnectionLink link) {
-		links.add(link);
-		if (equals(link.getSourceNode()))
-			getEditPart().refreshSourceConnections();
-		else if (equals(link.getTargetNode()))
-			getEditPart().refreshTargetConnections();
-		getProcessFigure().refresh();
+		if (!links.contains(link)) {
+			links.add(link);
+			if (equals(link.getSourceNode()))
+				getEditPart().refreshSourceConnections();
+			if (equals(link.getTargetNode()))
+				getEditPart().refreshTargetConnections();
+			getProcessFigure().refresh();
+		}
 	}
 
 	public void remove(ConnectionLink link) {
-		links.remove(link);
-		if (equals(link.getSourceNode()))
-			getEditPart().refreshSourceConnections();
-		else if (equals(link.getTargetNode()))
-			getEditPart().refreshTargetConnections();
-		getProcessFigure().refresh();
+		if (links.contains(link)) {
+			links.remove(link);
+			if (equals(link.getSourceNode()))
+				getEditPart().refreshSourceConnections();
+			if (equals(link.getTargetNode()))
+				getEditPart().refreshTargetConnections();
+			getProcessFigure().refresh();
+		}
 	}
 
 	public List<ConnectionLink> getLinks() {
@@ -159,11 +163,21 @@ public class ProcessNode extends Node {
 		getProcessFigure().refresh();
 	}
 
-	public ExchangeNode getExchangeNode(long flowId) {
+	public ExchangeNode getInputNode(long flowId) {
 		for (ExchangeNode node : getExchangeNodes())
 			if (!node.isDummy())
-				if (node.getExchange().getFlow().getId() == flowId)
-					return node;
+				if (node.getExchange().isInput())
+					if (node.getExchange().getFlow().getId() == flowId)
+						return node;
+		return null;
+	}
+
+	public ExchangeNode getOutputNode(long flowId) {
+		for (ExchangeNode node : getExchangeNodes())
+			if (!node.isDummy())
+				if (!node.getExchange().isInput())
+					if (node.getExchange().getFlow().getId() == flowId)
+						return node;
 		return null;
 	}
 

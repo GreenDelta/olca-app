@@ -199,23 +199,24 @@ public class ConnectorDialog extends Dialog {
 		return new Point(800, 500);
 	}
 
-	private boolean hasConnection(ConnectableProcess process) {
-		if (process.isAlreadyConnected())
-			return true;
-		long processId = process.getProcess().getId();
-		List<ProcessLink> links = selectProvider ? ProcessLinks.getOutgoing(
-				productSystem, processId) : ProcessLinks.getIncoming(
-				productSystem, processId);
-		for (ProcessLink link : links)
-			if (link.getFlowId() == exchange.getFlow().getId())
-				return true;
+	private boolean canBeConnected(ConnectableProcess process) {
+		if (process.isAlreadyConnectedToExchange())
+			return false;
 
-		if (!process.doConnect())
-			for (ConnectableProcess proc : connectableProcesses)
-				if (proc != process
-						&& (proc.isAlreadyConnected() || proc.doConnect()))
-					return true;
-		return false;
+		// check if recipient already has a provider
+		if (!selectProvider)
+			for (ProcessLink link : ProcessLinks.getIncoming(productSystem,
+					process.getProcess().getId()))
+				if (link.getFlowId() == exchange.getFlow().getId())
+					return false;
+
+		// check if the user already selected a provider
+		if (selectProvider)
+			for (ConnectableProcess connectable : connectableProcesses)
+				if (connectable.isAlreadyConnectedToExchange()
+						|| connectable.doConnect())
+					return false;
+		return true;
 	}
 
 	public ProcessDescriptor[] getProcessesToCreate() {
@@ -249,7 +250,7 @@ public class ConnectorDialog extends Dialog {
 			this.alreadyConnected = alreadyConnected;
 		}
 
-		public boolean isAlreadyConnected() {
+		public boolean isAlreadyConnectedToExchange() {
 			return alreadyConnected;
 		}
 
@@ -300,7 +301,7 @@ public class ConnectorDialog extends Dialog {
 			if (property.equals(LABELS.CREATE))
 				return canModifyCreateField(process);
 			else if (property.equals(LABELS.CONNECT))
-				return !hasConnection(process);
+				return process.doConnect() || canBeConnected(process);
 			return false;
 		}
 
@@ -375,7 +376,7 @@ public class ConnectorDialog extends Dialog {
 			case 2:
 				if (process.doConnect())
 					return ImageType.CHECK_TRUE.get();
-				if (!hasConnection(process))
+				if (canBeConnected(process))
 					return ImageType.CHECK_FALSE.get();
 				return null;
 			case 3:
@@ -383,7 +384,7 @@ public class ConnectorDialog extends Dialog {
 					return ImageType.ACCEPT_ICON.get();
 				return ImageType.DENY_ICON.get();
 			case 4:
-				if (process.isAlreadyConnected())
+				if (process.isAlreadyConnectedToExchange())
 					return ImageType.ACCEPT_ICON.get();
 				return ImageType.DENY_ICON.get();
 			default:
