@@ -91,9 +91,11 @@
 		<!-- Create the non-installer package -->
 		<tstamp />
 		<zip destfile="${basedir}/packages/openlca-${openlca_version_id}.${DSTAMP}-${package_name_suffix}.zip">
-			<fileset dir="${package_dir}"/>
+			<fileset dir="${package_dir}">
+				<include name="openlca/**" />
+			</fileset>
 		</zip>
-		
+
 		<!-- copy the nsis setup file with openlca version-->
 		<filter token="openlcaversion" value="${openlca_version}" />
 		<copy todir="${package_dir}" filtering="true">
