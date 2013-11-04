@@ -71,18 +71,21 @@ class ConnectionLinkPart extends AbstractConnectionEditPart {
 			ReconnectRequest request = ((ReconnectRequest) req);
 			ConnectionLink link = (ConnectionLink) request
 					.getConnectionEditPart().getModel();
-			ExchangeNode target = link.getTargetNode().getExchangeNode(
+			ExchangeNode target = link.getTargetNode().getInputNode(
 					link.getProcessLink().getFlowId());
-			ExchangeNode source = link.getSourceNode().getExchangeNode(
+			ExchangeNode source = link.getSourceNode().getOutputNode(
 					link.getProcessLink().getFlowId());
 
 			ExchangeNode n1 = request.isMovingStartAnchor() ? target : source;
 			ExchangeNode n2 = request.isMovingStartAnchor() ? source : target;
-			ProductSystemNode productSystemNode = n1.getParent().getParent()
-					.getParent();
-			productSystemNode.highlightMatchingExchanges(n1);
-			n1.setHighlighted(true);
-			n2.setHighlighted(true);
+			if (n1 != null) {
+				ProductSystemNode productSystemNode = n1.getParent()
+						.getParent().getParent();
+				productSystemNode.highlightMatchingExchanges(n1);
+				n1.setHighlighted(true);
+			}
+			if (n2 != null)
+				n2.setHighlighted(true);
 		}
 		super.showSourceFeedback(req);
 	}
