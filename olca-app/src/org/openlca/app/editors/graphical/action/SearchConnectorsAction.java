@@ -27,9 +27,9 @@ public class SearchConnectorsAction extends EditorAction {
 
 	static final int PROVIDER = 1;
 	static final int RECIPIENTS = 2;
-	private MenuCreator menuCreator;
 	private ProcessNode node;
 	private int type;
+	private Menu menu;
 
 	public SearchConnectorsAction(int type) {
 		super(type == PROVIDER ? Messages.Systems_GetLinksAction_ProviderText
@@ -40,13 +40,14 @@ public class SearchConnectorsAction extends EditorAction {
 		else if (type == RECIPIENTS)
 			setId(ActionIds.SEARCH_RECIPIENTS);
 		this.type = type;
-		menuCreator = new MenuCreator();
-		setMenuCreator(menuCreator);
+		setMenuCreator(new MenuCreator());
 	}
 
 	@Override
 	protected boolean accept(ISelection selection) {
 		node = getSingleSelectionOfType(selection, ProcessNode.class);
+		if (node != null)
+			((MenuCreator) getMenuCreator()).fillMenu();
 		return node != null;
 	}
 
@@ -88,11 +89,6 @@ public class SearchConnectorsAction extends EditorAction {
 		}
 	}
 
-	public void dispose() {
-		if (menuCreator != null)
-			menuCreator.dispose();
-	}
-
 	@Override
 	public void run() {
 		// nothing to do (pop up menu)
@@ -100,31 +96,31 @@ public class SearchConnectorsAction extends EditorAction {
 
 	private class MenuCreator implements IMenuCreator {
 
-		private Menu createMenu(Menu parent) {
-			Menu menu = new Menu(parent);
-			for (MenuItem item : menu.getItems())
-				item.dispose();
+		private void fillMenu() {
+			if (menu != null) {
+				for (MenuItem item : menu.getItems())
+					item.dispose();
 
-			boolean providers = type == PROVIDER;
-			List<ExchangeNode> exchangeNodes = new ArrayList<>();
-			for (ExchangeNode exchangeNode : node.loadExchangeNodes()) {
-				if (exchangeNode.isDummy())
-					continue;
-				if (exchangeNode.getExchange().isInput() == providers)
-					exchangeNodes.add(exchangeNode);
-			}
+				boolean providers = type == PROVIDER;
+				List<ExchangeNode> exchangeNodes = new ArrayList<>();
+				for (ExchangeNode exchangeNode : node.loadExchangeNodes()) {
+					if (exchangeNode.isDummy())
+						continue;
+					if (exchangeNode.getExchange().isInput() == providers)
+						exchangeNodes.add(exchangeNode);
+				}
 
-			for (final ExchangeNode exchangeNode : exchangeNodes) {
-				MenuItem item = new MenuItem(menu, SWT.NONE);
-				item.setText(exchangeNode.getName());
-				item.addSelectionListener(new SelectionAdapter() {
-					@Override
-					public void widgetSelected(final SelectionEvent e) {
-						executeRequest(exchangeNode);
-					}
-				});
+				for (final ExchangeNode exchangeNode : exchangeNodes) {
+					MenuItem item = new MenuItem(menu, SWT.NONE);
+					item.setText(exchangeNode.getName());
+					item.addSelectionListener(new SelectionAdapter() {
+						@Override
+						public void widgetSelected(final SelectionEvent e) {
+							executeRequest(exchangeNode);
+						}
+					});
+				}
 			}
-			return menu;
 		}
 
 		@Override
@@ -134,16 +130,16 @@ public class SearchConnectorsAction extends EditorAction {
 
 		@Override
 		public Menu getMenu(Control control) {
-			Menu menu = new Menu(control);
-			createMenu(menu);
-			control.setMenu(menu);
+			menu = new Menu(control);
+			fillMenu();
 			return menu;
 		}
 
 		@Override
 		public Menu getMenu(Menu parent) {
-			return createMenu(parent);
+			menu = new Menu(parent);
+			fillMenu();
+			return menu;
 		}
-
 	}
 }
