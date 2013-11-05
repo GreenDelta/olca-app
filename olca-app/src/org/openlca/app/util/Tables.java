@@ -4,14 +4,17 @@ import java.util.List;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -86,15 +89,9 @@ public class Tables {
 			final double... percents) {
 		if (table == null || percents == null)
 			return;
-		table.addPaintListener(new PaintListener() {
-
-			private boolean first = true;
-
+		table.addControlListener(new ControlAdapter() {
 			@Override
-			public void paintControl(PaintEvent e) {
-				if (!first)
-					return;
-				first = false;
+			public void controlResized(ControlEvent e) {
 				double width = table.getSize().x - 25;
 				if (width < 50)
 					return;
@@ -109,4 +106,16 @@ public class Tables {
 		});
 	}
 
+	public static void sort(final TableViewer viewer, int col,
+			final ViewerSorter sorter) {
+		Table table = viewer.getTable();
+		TableColumn column = table.getColumn(col);
+		column.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+				super.widgetSelected(e);
+			}
+		});
+	}
 }

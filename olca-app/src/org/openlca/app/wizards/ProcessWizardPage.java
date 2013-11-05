@@ -23,11 +23,13 @@ import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
 import org.openlca.app.viewers.combo.FlowPropertyViewer;
+import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.Descriptors;
+import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -191,8 +193,10 @@ class ProcessWizardPage extends AbstractWizardPage<Process> {
 
 	private Flow getSelectedFlow() {
 		INavigationElement<?> e = Viewers.getFirstSelected(productViewer);
-		if (e == null || !(e.getContent() instanceof Flow))
+		if (e == null || !(e.getContent() instanceof FlowDescriptor))
 			return null;
-		return (Flow) e.getContent();
+		FlowDescriptor flow = (FlowDescriptor) e.getContent();
+		IDatabase db = Database.get();
+		return db.createDao(Flow.class).getForId(flow.getId());
 	}
 }
