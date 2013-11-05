@@ -214,7 +214,8 @@ class ProjectParameterTable {
 			return;
 		Column column = columns[idx];
 		Table table = viewer.getTable();
-		table.getColumn(idx + 2).setText(column.getTitle());
+		String title = column.getTitle() == null ? "" : column.getTitle();
+		table.getColumn(idx + 2).setText(title);
 		viewer.refresh();
 	}
 

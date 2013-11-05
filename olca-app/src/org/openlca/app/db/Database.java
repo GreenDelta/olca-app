@@ -44,10 +44,17 @@ public class Database {
 
 	public static IDatabase activate(IDatabaseConfiguration config)
 			throws Exception {
-		Database.database = config.createInstance();
-		Cache.create(database);
-		Database.config = config;
-		return Database.database;
+		try {
+			Database.database = config.createInstance();
+			Cache.create(database);
+			Database.config = config;
+			return Database.database;
+		} catch (Exception e) {
+			Database.database = null;
+			Cache.close();
+			Database.config = null;
+			throw e;
+		}
 	}
 
 	public static boolean isActive(IDatabaseConfiguration config) {

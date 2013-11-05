@@ -75,11 +75,11 @@ public class DatabaseWizard extends Wizard implements IRunnableWithProgress {
 			Database.close();
 			IDatabase database = Database.activate(configuration);
 			fillContent(database);
+			App.getEventBus().post(new DatabaseCreatedEvent(Database.get()));
 		} catch (Exception e) {
 			log.error("Create database failed", e);
 		}
 		Navigator.refresh();
-		App.getEventBus().post(new DatabaseCreatedEvent(Database.get()));
 		monitor.done();
 	}
 
