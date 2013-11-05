@@ -14,6 +14,7 @@ import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessType;
+import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.UncertaintyType;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
@@ -24,6 +25,26 @@ import org.openlca.core.model.descriptors.ProcessDescriptor;
 public class Labels {
 
 	private Labels() {
+	}
+
+	public static String getDisplayName(RootEntity entity) {
+		if (entity == null || entity.getName() == null)
+			return "";
+		if (entity instanceof Flow) {
+			Flow flow = (Flow) entity;
+			Location location = flow.getLocation();
+			if (location != null && location.getCode() != null) {
+				return flow.getName() + " - " + location.getCode();
+			}
+		}
+		if (entity instanceof Process) {
+			Process process = (Process) entity;
+			Location location = process.getLocation();
+			if (location != null && location.getCode() != null) {
+				return process.getName() + " - " + location.getCode();
+			}
+		}
+		return entity.getName();
 	}
 
 	public static String getDisplayName(BaseDescriptor descriptor) {

@@ -114,7 +114,8 @@ class ExchangeTable {
 		Composite composite = UI.sectionClient(section, toolkit);
 		UI.gridLayout(composite, 1);
 		viewer = Tables.createViewer(composite, getColumns());
-		viewer.setLabelProvider(new ExchangeLabelProvider());
+		ExchangeLabelProvider labelProvider = new ExchangeLabelProvider();
+		viewer.setLabelProvider(labelProvider);
 		bindModifiers();
 		Tables.addDropSupport(viewer, new IModelDropHandler() {
 			@Override
@@ -127,6 +128,7 @@ class ExchangeTable {
 		bindDoubleClick(viewer);
 		Tables.bindColumnWidths(viewer, 0.2, 0.15, 0.1, 0.1, 0.1, 0.15, 0.1,
 				0.1);
+		ExchangeTableSorters.register(viewer, labelProvider);
 		setInitialInput();
 	}
 
@@ -307,14 +309,14 @@ class ExchangeTable {
 			Exchange exchange = (Exchange) element;
 			switch (columnIndex) {
 			case 0:
-				return exchange.getFlow().getName();
+				return Labels.getDisplayName(exchange.getFlow());
 			case 1:
 				return CategoryPath.getShort(exchange.getFlow().getCategory());
 			case 2:
-				return exchange.getFlowPropertyFactor().getFlowProperty()
-						.getName();
+				return Labels.getDisplayName(exchange.getFlowPropertyFactor()
+						.getFlowProperty());
 			case 3:
-				return exchange.getUnit().getName();
+				return Labels.getDisplayName(exchange.getUnit());
 			case 4:
 				return getAmountText(exchange);
 			case 5:
@@ -323,7 +325,7 @@ class ExchangeTable {
 				if (forInputs)
 					return getDefaultProvider(exchange);
 				else
-					return null; // TODO: avoided product
+					return null;
 			case 7:
 				return exchange.getPedigreeUncertainty();
 			}

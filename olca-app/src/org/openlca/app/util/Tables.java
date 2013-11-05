@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
@@ -106,16 +105,31 @@ public class Tables {
 		});
 	}
 
-	public static void sort(final TableViewer viewer, int col,
-			final ViewerSorter sorter) {
-		Table table = viewer.getTable();
-		TableColumn column = table.getColumn(col);
-		column.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-				super.widgetSelected(e);
-			}
-		});
+	public static void registerSorters(final TableViewer viewer,
+			TableColumnSorter<?>... sorters) {
+		if (viewer == null || sorters == null)
+			return;
+		final Table table = viewer.getTable();
+		int count = table.getColumnCount();
+		for (final TableColumnSorter<?> sorter : sorters) {
+			if (sorter.getColumn() >= count)
+				continue;
+			final TableColumn column = table.getColumn(sorter.getColumn());
+			column.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					TableColumn current = table.getSortColumn();
+					if (column == current)
+						sorter.setAscending(!sorter.isAscending());
+					else
+						sorter.setAscending(true);
+					int direction = sorter.isAscending() ? SWT.UP : SWT.DOWN;
+					table.setSortDirection(direction);
+					table.setSortColumn(column);
+					viewer.setSorter(sorter);
+					viewer.refresh();
+				}
+			});
+		}
 	}
 }
