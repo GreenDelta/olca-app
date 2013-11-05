@@ -114,6 +114,8 @@ public class Tables {
 		for (final TableColumnSorter<?> sorter : sorters) {
 			if (sorter.getColumn() >= count)
 				continue;
+			if (sorter.getColumn() == 0)
+				viewer.setSorter(sorter);
 			final TableColumn column = table.getColumn(sorter.getColumn());
 			column.addSelectionListener(new SelectionAdapter() {
 				@Override

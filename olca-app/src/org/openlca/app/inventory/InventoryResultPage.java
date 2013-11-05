@@ -1,7 +1,6 @@
 package org.openlca.app.inventory;
 
 import java.util.Collection;
-import java.util.Comparator;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.jface.viewers.BaseLabelProvider;
@@ -9,7 +8,6 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
-import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.HyperlinkSettings;
@@ -21,13 +19,15 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
-import org.openlca.app.util.Comparators;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
+import org.openlca.app.util.TableColumnSorter;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.descriptors.FlowDescriptor;
+
+import com.google.common.primitives.Doubles;
 
 /**
  * Shows the total inventory result of a quick calculation, analysis result,
@@ -77,11 +77,23 @@ public class InventoryResultPage extends FormPage {
 		UI.gridLayout(composite, 1);
 		TableViewer viewer = Tables.createViewer(composite, new String[] {
 				FLOW, CATEGORY, SUB_CATEGORY, UNIT, AMOUNT });
-		viewer.setLabelProvider(new LabelProvider());
+		LabelProvider labelProvider = new LabelProvider();
+		viewer.setLabelProvider(labelProvider);
 		viewer.setFilters(new ViewerFilter[] { new InputOutputFilter(input) });
-		viewer.setSorter(new FlowViewerSorter());
+		createColumnSorters(viewer, labelProvider);
 		Tables.bindColumnWidths(viewer.getTable(), 0.40, 0.20, 0.20, 0.08, 0.10);
 		return viewer;
+	}
+
+	private void createColumnSorters(TableViewer viewer, LabelProvider p) {
+		//@formatter:off
+		Tables.registerSorters(viewer, 
+				new TableColumnSorter<>(FlowDescriptor.class, 0, p),
+				new TableColumnSorter<>(FlowDescriptor.class, 1, p),
+				new TableColumnSorter<>(FlowDescriptor.class, 2, p),
+				new TableColumnSorter<>(FlowDescriptor.class, 3, p),
+				new AmountSorter());
+		//@formatter:on
 	}
 
 	private class LabelProvider extends BaseLabelProvider implements
@@ -134,17 +146,16 @@ public class InventoryResultPage extends FormPage {
 		}
 	}
 
-	private class FlowViewerSorter extends ViewerSorter {
-		private Comparator<FlowDescriptor> comparator = Comparators
-				.forFlowDescriptors(cache);
+	private class AmountSorter extends TableColumnSorter<FlowDescriptor> {
+		public AmountSorter() {
+			super(FlowDescriptor.class, 4);
+		}
 
 		@Override
-		public int compare(Viewer viewer, Object e1, Object e2) {
-			if (!(e1 instanceof FlowDescriptor))
-				return 0;
-			if (!(e2 instanceof FlowDescriptor))
-				return 0;
-			return comparator.compare((FlowDescriptor) e1, (FlowDescriptor) e2);
+		public int compare(FlowDescriptor obj1, FlowDescriptor obj2) {
+			double v1 = resultProvider.getAmount(obj1);
+			double v2 = resultProvider.getAmount(obj2);
+			return Doubles.compare(v1, v2);
 		}
 	}
 

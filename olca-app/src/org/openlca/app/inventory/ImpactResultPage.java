@@ -3,8 +3,6 @@ package org.openlca.app.inventory;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.HyperlinkSettings;
@@ -16,11 +14,13 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.db.Cache;
 import org.openlca.app.util.Numbers;
+import org.openlca.app.util.TableColumnSorter;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.util.Strings;
+
+import com.google.common.primitives.Doubles;
 
 public class ImpactResultPage extends FormPage {
 
@@ -59,10 +59,20 @@ public class ImpactResultPage extends FormPage {
 		UI.gridLayout(composite, 1);
 		String[] columns = { IMPACT_CATEGORY, RESULT, REFERENCE_UNIT };
 		TableViewer viewer = Tables.createViewer(composite, columns);
-		viewer.setLabelProvider(new LCIALabelProvider());
-		viewer.setSorter(new ImpactViewerSorter());
+		LCIALabelProvider labelProvider = new LCIALabelProvider();
+		viewer.setLabelProvider(labelProvider);
+		createColumnSorters(viewer, labelProvider);
 		Tables.bindColumnWidths(viewer.getTable(), 0.50, 0.30, 0.2);
 		return viewer;
+	}
+
+	private void createColumnSorters(TableViewer viewer, LCIALabelProvider p) {
+		//@formatter:off
+		Tables.registerSorters(viewer, 
+				new TableColumnSorter<>(ImpactCategoryDescriptor.class, 0, p),
+				new AmountSorter(),
+				new TableColumnSorter<>(ImpactCategoryDescriptor.class, 2, p));
+		//@formatter:on
 	}
 
 	private class LCIALabelProvider extends BaseLabelProvider implements
@@ -91,25 +101,18 @@ public class ImpactResultPage extends FormPage {
 		}
 	}
 
-	private class ImpactViewerSorter extends ViewerSorter {
+	private class AmountSorter extends
+			TableColumnSorter<ImpactCategoryDescriptor> {
+		public AmountSorter() {
+			super(ImpactCategoryDescriptor.class, 1);
+		}
 
 		@Override
-		public int compare(Viewer viewer, Object e1, Object e2) {
-			if (!(e1 instanceof ImpactCategoryDescriptor) || e1 == null) {
-				if (e2 != null)
-					return -1;
-				return 0;
-			}
-			if (!(e2 instanceof ImpactCategoryDescriptor) || e2 == null)
-				return 1;
-			ImpactCategoryDescriptor category1 = (ImpactCategoryDescriptor) e1;
-			ImpactCategoryDescriptor category2 = (ImpactCategoryDescriptor) e2;
-			int compare = Strings.compare(category1.getName(),
-					category2.getName());
-			if (compare != 0)
-				return compare;
-			return Strings.compare(category1.getReferenceUnit(),
-					category2.getReferenceUnit());
+		public int compare(ImpactCategoryDescriptor d1,
+				ImpactCategoryDescriptor d2) {
+			double val1 = result.getAmount(d1);
+			double val2 = result.getAmount(d2);
+			return Doubles.compare(val1, val2);
 		}
 	}
 
