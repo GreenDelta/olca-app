@@ -35,6 +35,10 @@ public abstract class AbstractWizard<T extends CategorizedEntity> extends
 		this.category = category;
 	}
 
+	protected Category getCategory() {
+		return category;
+	}
+
 	@Override
 	public void addPages() {
 		page = createPage();

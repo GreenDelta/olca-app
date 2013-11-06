@@ -35,6 +35,7 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 			log.error("Unexpected error: no page or product system");
 			return false;
 		}
+		system.setCategory(getCategory());
 		try {
 			createDao().insert(system);
 			boolean autoComplete = page.addSupplyChain();
