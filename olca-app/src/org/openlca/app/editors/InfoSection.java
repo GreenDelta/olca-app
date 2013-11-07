@@ -42,9 +42,10 @@ public class InfoSection {
 		Text descriptionText = UI.formMultiText(container, toolkit,
 				Messages.Description);
 		binding.on(entity, "description", TextBindType.STRING, descriptionText);
-		new Label(container, SWT.NONE).setText(Messages.Category);
-
-		createBreadcrumb(container);
+		if (entity.getCategory() != null) {
+			new Label(container, SWT.NONE).setText(Messages.Category);
+			createBreadcrumb(container);
+		}
 	}
 
 	private void createBreadcrumb(Composite parent) {

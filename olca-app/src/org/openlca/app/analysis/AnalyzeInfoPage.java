@@ -3,22 +3,21 @@ package org.openlca.app.analysis;
 import java.io.File;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.HyperlinkSettings;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
-import org.eclipse.ui.forms.events.HyperlinkAdapter;
-import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Cache;
 import org.openlca.app.resources.ImageType;
-import org.openlca.app.util.Colors;
 import org.openlca.app.util.InformationPopup;
 import org.openlca.app.util.UI;
 import org.openlca.core.math.CalculationSetup;
@@ -60,7 +59,6 @@ public class AnalyzeInfoPage extends FormPage {
 		toolkit.decorateFormHeading(form.getForm());
 		Composite body = UI.formBody(form, toolkit);
 		createInfoSection(body);
-		createExportSection(body);
 		createResultSections(body);
 		form.reflow(true);
 	}
@@ -81,17 +79,17 @@ public class AnalyzeInfoPage extends FormPage {
 		if (nwSet != null)
 			createText(composite, Messages.NormalizationWeightingSet,
 					nwSet.getReferenceSystem());
+		createExportButton(composite);
 	}
 
-	private void createExportSection(Composite body) {
-		Composite composite = UI.formSection(body, toolkit, "Export");
-		ImageHyperlink excelLink = new ImageHyperlink(composite, SWT.NONE);
-		excelLink.setImage(ImageType.EXCEL_ICON.get());
-		excelLink.setText("Export complete result to MS Excel");
-		excelLink.setForeground(Colors.getLinkBlue());
-		excelLink.addHyperlinkListener(new HyperlinkAdapter() {
+	private void createExportButton(Composite composite) {
+		toolkit.createLabel(composite, "");
+		Button button = toolkit.createButton(composite, Messages.ExportToExcel,
+				SWT.NONE);
+		button.setImage(ImageType.EXCEL_ICON.get());
+		button.addSelectionListener(new SelectionAdapter() {
 			@Override
-			public void linkActivated(HyperlinkEvent e) {
+			public void widgetSelected(SelectionEvent e) {
 				tryExport();
 			}
 		});

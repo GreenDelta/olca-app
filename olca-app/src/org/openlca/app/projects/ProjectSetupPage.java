@@ -9,7 +9,11 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -20,6 +24,7 @@ import org.openlca.app.components.ObjectDialog;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelPage;
+import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.Tables;
@@ -112,6 +117,20 @@ public class ProjectSetupPage extends ModelPage<Project> {
 		// TODO: add nw-sets
 		// UI.formLabel(client, toolkit, "Normalisation and Weighting");
 		// new NormalizationWeightingSetViewer(client);
+		createCalculationButton(client);
+	}
+
+	private void createCalculationButton(Composite client) {
+		toolkit.createLabel(client, "");
+		Button button = toolkit.createButton(client, Messages.Calculate,
+				SWT.NONE);
+		button.setImage(ImageType.CALCULATE_ICON.get());
+		button.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				Calculation.run(getModel());
+			}
+		});
 	}
 
 	private void handleMethodChange(ImpactMethodDescriptor selection) {
