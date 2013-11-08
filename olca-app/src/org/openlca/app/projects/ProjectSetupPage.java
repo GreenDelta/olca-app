@@ -79,7 +79,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 		Composite body = UI.formBody(form, toolkit);
 		InfoSection infoSection = new InfoSection(getModel(), getBinding());
 		infoSection.render(body, toolkit);
-		createSettingsSection(body);
+		createSettingsSection(infoSection.getContainer());
 		createVariantsSection(body);
 		createParameterSection(body);
 		initialInput();
@@ -98,10 +98,10 @@ class ProjectSetupPage extends ModelPage<Project> {
 		variantViewer.setInput(variants);
 	}
 
-	private void createSettingsSection(Composite body) {
-		Composite client = UI.formSection(body, toolkit, "Settings");
-		UI.formLabel(client, toolkit, "LCIA Method");
-		ImpactMethodViewer impactMethodViewer = new ImpactMethodViewer(client);
+	private void createSettingsSection(Composite composite) {
+		UI.formLabel(composite, toolkit, "LCIA Method");
+		ImpactMethodViewer impactMethodViewer = new ImpactMethodViewer(
+				composite);
 		impactMethodViewer.setNullable(true);
 		impactMethodViewer
 				.addSelectionChangedListener(new ISelectionChangedListener<ImpactMethodDescriptor>() {
@@ -120,12 +120,12 @@ class ProjectSetupPage extends ModelPage<Project> {
 		// TODO: add nw-sets
 		// UI.formLabel(client, toolkit, "Normalisation and Weighting");
 		// new NormalizationWeightingSetViewer(client);
-		createCalculationButton(client);
+		createCalculationButton(composite);
 	}
 
-	private void createCalculationButton(Composite client) {
-		toolkit.createLabel(client, "");
-		Button button = toolkit.createButton(client, Messages.Calculate,
+	private void createCalculationButton(Composite composite) {
+		toolkit.createLabel(composite, "");
+		Button button = toolkit.createButton(composite, Messages.Calculate,
 				SWT.NONE);
 		button.setImage(ImageType.CALCULATE_ICON.get());
 		button.addSelectionListener(new SelectionAdapter() {
