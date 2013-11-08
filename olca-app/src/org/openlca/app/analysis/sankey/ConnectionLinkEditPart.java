@@ -44,6 +44,8 @@ public class ConnectionLinkEditPart extends AbstractConnectionEditPart {
 				* ConnectionLink.MAXIMIM_WIDTH));
 		if (width == 0)
 			width = 1;
+		if (width > ConnectionLink.MAXIMIM_WIDTH)
+			width = ConnectionLink.MAXIMIM_WIDTH;
 		PolylineConnection conn = new ConnectionLinkFigure(width,
 				((ProductSystemNode) link.getSourceNode().getParent())
 						.getEditor());

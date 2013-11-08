@@ -23,6 +23,7 @@ import org.openlca.app.Messages;
 import org.openlca.app.components.ObjectDialog;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
+import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Actions;
@@ -50,23 +51,21 @@ import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ProjectSetupPage extends ModelPage<Project> {
+class ProjectSetupPage extends ModelPage<Project> {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private FormToolkit toolkit;
 	private ProjectEditor editor;
-
 	private IDatabase database = Database.get();
 
 	private Project project;
 	private List<ProjectVariant> variants;
 	private TableViewer variantViewer;
-	private Composite body;
 	private ScrolledForm form;
 	private ProjectParameterTable parameterTable;
 
-	public ProjectSetupPage(ProjectEditor editor) {
-		super(editor, "ProjectSetupPage", "Calculation setup");
+	ProjectSetupPage(ProjectEditor editor) {
+		super(editor, "ProjectSetupPage", "Project setup");
 		this.editor = editor;
 		project = editor.getModel();
 		variants = project.getVariants();
@@ -74,14 +73,18 @@ public class ProjectSetupPage extends ModelPage<Project> {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		form = UI.formHeader(managedForm, Messages.Project + ": "
+		ScrolledForm form = UI.formHeader(managedForm, Messages.Project + ": "
 				+ getModel().getName());
 		toolkit = managedForm.getToolkit();
-		body = UI.formBody(form, toolkit);
+		Composite body = UI.formBody(form, toolkit);
+		InfoSection infoSection = new InfoSection(getModel(), getBinding());
+		infoSection.render(body, toolkit);
 		createSettingsSection(body);
 		createVariantsSection(body);
 		createParameterSection(body);
 		initialInput();
+
+		body.setFocus();
 		form.reflow(true);
 	}
 

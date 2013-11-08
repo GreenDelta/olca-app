@@ -101,10 +101,7 @@ class ProjectParameterTable {
 		UI.gridLayout(composite, 1);
 		viewer = Tables.createViewer(composite, getColumnTitles());
 		viewer.setLabelProvider(new LabelProvider());
-		double[] colWeights = new double[columns.length + 2];
-		for (int i = 0; i < colWeights.length; i++)
-			colWeights[i] = 0.8 / colWeights.length;
-		Tables.bindColumnWidths(viewer, colWeights);
+		Tables.bindColumnWidths(viewer, 0.15, 0.2);
 		UI.gridData(viewer.getTable(), true, true).minimumHeight = 150;
 		viewer.setInput(redefs);
 		createModifySupport();
