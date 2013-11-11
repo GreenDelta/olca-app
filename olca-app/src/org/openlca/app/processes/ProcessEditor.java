@@ -144,6 +144,7 @@ public class ProcessEditor extends ModelEditor<Process> implements IEditor {
 			addPage(new ProcessAdminInfoPage(this));
 			addPage(new ProcessModelingPage(this));
 			addPage(new ProcessParameterPage(this));
+			addPage(new AllocationPage(this));
 			addPage(new ProcessCostPage(this));
 		} catch (Exception e) {
 			log.error("failed to add page", e);

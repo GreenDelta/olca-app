@@ -269,6 +269,7 @@ public class Messages extends NLS {
 	public static String Minimum;
 	public static String MinimumCharactersError;
 	public static String Mode;
+	public static String ModelGraph;
 	public static String ModelingAndValidationPageLabel;
 	public static String ModelingConstants;
 	public static String ModelParametersPageDuplicateParameter;

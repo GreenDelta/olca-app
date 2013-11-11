@@ -18,7 +18,6 @@ public class ProductSystemActions extends EditorActionBarContributor {
 
 	@Override
 	public void contributeToToolBar(IToolBarManager toolBarManager) {
-		toolBarManager.add(new EditAction());
 		toolBarManager.add(new CsvExportAction());
 		toolBarManager.add(Actions.onCalculate(new Runnable() {
 			public void run() {

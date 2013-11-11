@@ -2,6 +2,8 @@ package org.openlca.app.systems;
 
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
@@ -11,9 +13,8 @@ import org.eclipse.swt.widgets.Text;
 import org.openlca.app.ApplicationProperties;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
-import org.openlca.app.editors.DataBinding;
-import org.openlca.app.editors.DataBinding.TextBindType;
 import org.openlca.app.resources.ImageType;
+import org.openlca.app.util.Error;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.AllocationMethodViewer;
@@ -52,14 +53,6 @@ class CalculationWizardPage extends WizardPage {
 		setPageComplete(true);
 	}
 
-	public int getIterationCount() {
-		return iterationCount;
-	}
-
-	public void setIterationCount(int iterationCount) {
-		this.iterationCount = iterationCount;
-	}
-
 	@Override
 	public void createControl(Composite parent) {
 		Composite body = new Composite(parent, SWT.NULL);
@@ -86,8 +79,19 @@ class CalculationWizardPage extends WizardPage {
 		iterationText = new Text(typePanel, SWT.BORDER);
 		UI.gridData(iterationText, false, false).widthHint = 80;
 		iterationText.setEnabled(false);
-		new DataBinding().on(this, "iterationCount", TextBindType.INT,
-				iterationText);
+		iterationText.setText(Integer.toString(iterationCount));
+		iterationText.addModifyListener(new ModifyListener() {
+			@Override
+			public void modifyText(ModifyEvent e) {
+				String text = iterationText.getText();
+				try {
+					iterationCount = Integer.parseInt(text);
+				} catch (Exception e2) {
+					Error.showBox("Invalid number", text
+							+ " is not a valid number");
+				}
+			}
+		});
 	}
 
 	private void createRadios(Composite parent) {
