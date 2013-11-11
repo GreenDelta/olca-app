@@ -10,7 +10,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.Messages;
-import org.openlca.app.components.ObjectDialog;
+import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
@@ -73,7 +73,7 @@ public class FlowPropertyFactorViewer extends
 
 	@OnAdd
 	protected void onCreate() {
-		BaseDescriptor[] descriptors = ObjectDialog
+		BaseDescriptor[] descriptors = ModelSelectionDialog
 				.multiSelect(ModelType.FLOW_PROPERTY);
 		if (descriptors != null)
 			for (BaseDescriptor descriptor : descriptors)

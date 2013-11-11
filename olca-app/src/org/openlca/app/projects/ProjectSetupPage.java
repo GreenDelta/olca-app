@@ -20,7 +20,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
-import org.openlca.app.components.ObjectDialog;
+import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.InfoSection;
@@ -190,7 +190,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 
 	private void addVariant() {
 		log.trace("add variabt");
-		BaseDescriptor d = ObjectDialog.select(ModelType.PRODUCT_SYSTEM);
+		BaseDescriptor d = ModelSelectionDialog.select(ModelType.PRODUCT_SYSTEM);
 		if (d == null)
 			return;
 		ProductSystemDao dao = new ProductSystemDao(database);

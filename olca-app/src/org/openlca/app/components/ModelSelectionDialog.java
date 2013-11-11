@@ -36,22 +36,17 @@ import org.openlca.app.util.UI;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 
-public class ObjectDialog extends FormDialog {
+public class ModelSelectionDialog extends FormDialog {
 
-	private final List<ViewerFilter> filters = new ArrayList<>();
 	private final ModelType modelType;
 	private boolean multiSelection = false;
-
 	private TreeViewer viewer;
 	private Text filterText;
 	private BaseDescriptor[] selection;
 	private Font boldLabelFont;
 
-	public static BaseDescriptor select(ModelType type, ViewerFilter... filters) {
-		ObjectDialog dialog = new ObjectDialog(UI.shell(), type);
-		if (filters != null)
-			for (ViewerFilter filter : filters)
-				dialog.filters.add(filter);
+	public static BaseDescriptor select(ModelType type) {
+		ModelSelectionDialog dialog = new ModelSelectionDialog(UI.shell(), type);
 		if (dialog.open() == OK) {
 			BaseDescriptor[] selection = dialog.getSelection();
 			if (selection == null || selection.length == 0)
@@ -61,23 +56,18 @@ public class ObjectDialog extends FormDialog {
 		return null;
 	}
 
-	public static BaseDescriptor[] multiSelect(ModelType type,
-			ViewerFilter... filters) {
-		ObjectDialog dialog = new ObjectDialog(UI.shell(), type);
+	public static BaseDescriptor[] multiSelect(ModelType type) {
+		ModelSelectionDialog dialog = new ModelSelectionDialog(UI.shell(), type);
 		dialog.multiSelection = true;
-		if (filters != null)
-			for (ViewerFilter filter : filters)
-				dialog.filters.add(filter);
 		if (dialog.open() == OK)
 			return dialog.getSelection();
 		return null;
 	}
 
-	private ObjectDialog(Shell parentShell, ModelType modelType) {
+	private ModelSelectionDialog(Shell parentShell, ModelType modelType) {
 		super(parentShell);
 		this.modelType = modelType;
 		setBlockOnOpen(true);
-		filters.add(new NameFilter());
 	}
 
 	@Override
@@ -128,7 +118,7 @@ public class ObjectDialog extends FormDialog {
 			viewer = NavigationTree.forMultiSelection(composite, modelType);
 		else
 			viewer = NavigationTree.forSingleSelection(composite, modelType);
-		viewer.setFilters(filters.toArray(new ViewerFilter[filters.size()]));
+		viewer.setFilters(new ViewerFilter[] { new NameFilter() });
 		UI.gridData(viewer.getTree(), true, true);
 		viewer.addSelectionChangedListener(new SelectionChangedListener());
 		viewer.addDoubleClickListener(new DoubleClickListener());

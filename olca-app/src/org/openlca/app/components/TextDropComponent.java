@@ -100,7 +100,7 @@ public final class TextDropComponent extends Composite {
 		addButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(final MouseEvent e) {
-				BaseDescriptor descriptor = ObjectDialog.select(modelType);
+				BaseDescriptor descriptor = ModelSelectionDialog.select(modelType);
 				if (descriptor != null)
 					handleChange(descriptor);
 			}

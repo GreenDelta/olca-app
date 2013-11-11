@@ -24,7 +24,7 @@ import org.openlca.app.App;
 import org.openlca.app.Event;
 import org.openlca.app.Messages;
 import org.openlca.app.components.IModelDropHandler;
-import org.openlca.app.components.ObjectDialog;
+import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.components.UncertaintyCellEditor;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
@@ -220,8 +220,10 @@ class ExchangeTable {
 	}
 
 	private void onAdd() {
-		BaseDescriptor[] descriptors = ObjectDialog.multiSelect(ModelType.FLOW);
-		add(Arrays.asList(descriptors));
+		BaseDescriptor[] descriptors = ModelSelectionDialog
+				.multiSelect(ModelType.FLOW);
+		if (descriptors != null)
+			add(Arrays.asList(descriptors));
 	}
 
 	private void onRemove() {
