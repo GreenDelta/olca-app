@@ -14,6 +14,8 @@ public enum ImageType implements IImageType {
 
 	ACTOR_ICON("actor_obj.png"),
 
+	ACTOR_ICON_NEW("actor_obj_new.png"),
+
 	ADD_ICON("add.png"),
 
 	ADD_ICON_DISABLED("add_dis.png"),
@@ -78,11 +80,15 @@ public enum ImageType implements IImageType {
 
 	FLOW_ICON("flow_obj.gif"),
 
+	FLOW_ICON_NEW("flow_obj_new.gif"),
+
 	FLOW_PRODUCT("flow_product_16.png"),
 
 	FLOW_PROPERTY_CATEGORY_ICON("folder_fp.png"),
 
 	FLOW_PROPERTY_ICON("flowprop_obj.gif"),
+
+	FLOW_PROPERTY_ICON_NEW("flowprop_obj_new.gif"),
 
 	FLOW_SUBSTANCE("flow_substance_16.png"),
 
@@ -115,6 +121,8 @@ public enum ImageType implements IImageType {
 	LCIA_CATEGORY_ICON_DIS("folder_wa_dis.png"),
 
 	LCIA_ICON("LCIA_obj.gif"),
+
+	LCIA_ICON_NEW("LCIA_obj_new.gif"),
 
 	LINK_16_BLUE("16x16_link_blue.png"),
 
@@ -192,13 +200,19 @@ public enum ImageType implements IImageType {
 
 	PROCESS_ICON("proc_obj.gif"),
 
+	PROCESS_ICON_NEW("proc_obj_new.gif"),
+
 	PRODUCT_SYSTEM_CATEGORY_ICON("folder_prodsystem.png"),
 
 	PRODUCT_SYSTEM_ICON("system_obj.gif"),
 
+	PRODUCT_SYSTEM_ICON_NEW("chart_organisation_new.png"),
+
 	PROJECT_CATEGORY_ICON("folder_proj.png"),
 
 	PROJECT_ICON("project_obj.png"),
+
+	PROJECT_ICON_NEW("project_obj_new.png"),
 
 	REFRESH_ICON("refresh_16.png"),
 
@@ -215,6 +229,8 @@ public enum ImageType implements IImageType {
 	SOURCE_CATEGORY_ICON("folder_source.png"),
 
 	SOURCE_ICON("source_obj.png"),
+
+	SOURCE_ICON_NEW("source_obj_new.png"),
 
 	SP_ICON("sp.png"),
 
@@ -233,6 +249,8 @@ public enum ImageType implements IImageType {
 	UNIT_GROUP_CATEGORY_ICON("folder_unit.png"),
 
 	UNIT_GROUP_ICON("unitgroup_obj.gif"),
+
+	UNIT_GROUP_ICON_NEW("unitgroup_obj_new.gif"),
 
 	UNSELECT_ICON("unselectAll.gif"),
 

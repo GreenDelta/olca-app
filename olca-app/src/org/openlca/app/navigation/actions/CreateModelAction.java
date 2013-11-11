@@ -1,12 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.app.navigation.actions;
 
 import java.util.List;
@@ -21,7 +12,7 @@ import org.openlca.app.navigation.CategoryElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelTypeElement;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.util.Images;
+import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.UI;
 import org.openlca.app.wizards.INewModelWizard;
 import org.openlca.core.model.Category;
@@ -128,7 +119,30 @@ public class CreateModelAction extends Action implements INavigationAction {
 
 	@Override
 	public ImageDescriptor getImageDescriptor() {
-		return Images.getIconDescriptor(type);
+		if (type == null)
+			return null;
+		switch (type) {
+		case ACTOR:
+			return ImageType.ACTOR_ICON_NEW.getDescriptor();
+		case FLOW:
+			return ImageType.FLOW_ICON_NEW.getDescriptor();
+		case FLOW_PROPERTY:
+			return ImageType.FLOW_PROPERTY_ICON_NEW.getDescriptor();
+		case IMPACT_METHOD:
+			return ImageType.LCIA_ICON_NEW.getDescriptor();
+		case PROCESS:
+			return ImageType.PROCESS_ICON_NEW.getDescriptor();
+		case PRODUCT_SYSTEM:
+			return ImageType.PRODUCT_SYSTEM_ICON_NEW.getDescriptor();
+		case PROJECT:
+			return ImageType.PROJECT_ICON_NEW.getDescriptor();
+		case SOURCE:
+			return ImageType.SOURCE_ICON_NEW.getDescriptor();
+		case UNIT_GROUP:
+			return ImageType.UNIT_GROUP_ICON_NEW.getDescriptor();
+		default:
+			return null;
+		}
 	}
 
 }
