@@ -17,6 +17,8 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.Labels;
+import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
@@ -24,10 +26,16 @@ import org.openlca.app.viewers.combo.FlowViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.math.CalculationSetup;
+import org.openlca.core.model.Exchange;
+import org.openlca.core.model.Flow;
+import org.openlca.core.model.ProductSystem;
+import org.openlca.core.model.Unit;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.SimulationResult;
 import org.openlca.core.results.SimulationResults;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SimulationPage extends FormPage {
 
@@ -78,13 +86,30 @@ public class SimulationPage extends FormPage {
 			systemText.setText(setup.getProductSystem().getName());
 			processText.setText(setup.getProductSystem().getReferenceProcess()
 					.getName());
-			// qRefText.setText(input.getQuantitativeReference()); TODO
+			qRefText.setText(getQRefText());
 			simCountText.setText(Integer.toString(setup.getNumberOfRuns()));
 		}
 		systemText.setEditable(false);
 		processText.setEditable(false);
 		qRefText.setEditable(false);
 		simCountText.setEditable(false);
+	}
+
+	private String getQRefText() {
+		try {
+			CalculationSetup setup = editor.getSetup();
+			ProductSystem system = setup.getProductSystem();
+			Exchange exchange = system.getReferenceExchange();
+			double amount = system.getTargetAmount();
+			Flow flow = exchange.getFlow();
+			Unit unit = system.getTargetUnit();
+			return String.format("%s %s %s", Numbers.format(amount, 2),
+					unit.getName(), Labels.getDisplayName(flow));
+		} catch (Exception e) {
+			Logger log = LoggerFactory.getLogger(getClass());
+			log.error("failed to create text for quan. ref.", e);
+			return "";
+		}
 	}
 
 	private void createProgressSection(FormToolkit toolkit, Composite body) {
