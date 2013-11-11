@@ -24,6 +24,11 @@ public class DatabaseActivateAction extends Action implements INavigationAction 
 		setImageDescriptor(ImageType.CONNECT_ICON.getDescriptor());
 	}
 
+	public DatabaseActivateAction(IDatabaseConfiguration config) {
+		this();
+		this.config = config;
+	}
+
 	@Override
 	public boolean accept(INavigationElement<?> element) {
 		if (!(element instanceof DatabaseElement))

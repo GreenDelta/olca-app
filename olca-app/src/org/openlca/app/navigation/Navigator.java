@@ -1,12 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.app.navigation;
 
 import java.util.LinkedList;
@@ -27,6 +18,9 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.CommonViewer;
 import org.openlca.app.App;
+import org.openlca.app.db.Database;
+import org.openlca.app.db.IDatabaseConfiguration;
+import org.openlca.app.navigation.actions.DatabaseActivateAction;
 import org.openlca.app.util.Viewers;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 
@@ -54,18 +48,23 @@ public class Navigator extends CommonNavigator {
 		viewer.addDoubleClickListener(new IDoubleClickListener() {
 			@Override
 			public void doubleClick(DoubleClickEvent event) {
-				openModel(event.getSelection());
+				onDoubleClick(event.getSelection());
 			}
 		});
 	}
 
-	private void openModel(ISelection selection) {
+	private void onDoubleClick(ISelection selection) {
 		Object element = Viewers.getFirst(selection);
-		if (!(element instanceof ModelElement))
-			return;
-		ModelElement e = (ModelElement) element;
-		BaseDescriptor d = e.getContent();
-		App.openEditor(d);
+		if (element instanceof ModelElement) {
+			ModelElement e = (ModelElement) element;
+			BaseDescriptor d = e.getContent();
+			App.openEditor(d);
+		} else if (element instanceof DatabaseElement) {
+			DatabaseElement e = (DatabaseElement) element;
+			IDatabaseConfiguration config = e.getContent();
+			if (config != null && !Database.isActive(config))
+				new DatabaseActivateAction(config).run();
+		}
 	}
 
 	/**
