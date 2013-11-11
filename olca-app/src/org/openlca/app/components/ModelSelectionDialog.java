@@ -27,6 +27,7 @@ import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.Messages;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.NavigationTree;
@@ -89,8 +90,7 @@ public class ModelSelectionDialog extends FormDialog {
 	@Override
 	protected void createFormContent(IManagedForm form) {
 		FormToolkit toolkit = form.getToolkit();
-		String title = "Select model" + (multiSelection ? "(s)" : "");
-		UI.formHeader(form, title);
+		UI.formHeader(form, getTitle());
 		Composite body = UI.formBody(form.getForm(), form.getToolkit());
 		UI.gridLayout(body, 1);
 		Label filterLabel = UI.formLabel(body, form.getToolkit(), "Filter");
@@ -111,6 +111,36 @@ public class ModelSelectionDialog extends FormDialog {
 		Composite composite = UI.sectionClient(section, toolkit);
 		UI.gridLayout(composite, 1);
 		createViewer(composite);
+	}
+
+	private String getTitle() {
+		if (modelType == null)
+			return "unknown?";
+		switch (modelType) {
+		case ACTOR:
+			return multiSelection ? Messages.Actors : Messages.Actor;
+		case FLOW:
+			return multiSelection ? Messages.Flows : Messages.Flow;
+		case FLOW_PROPERTY:
+			return multiSelection ? Messages.FlowProperties
+					: Messages.FlowProperty;
+		case IMPACT_METHOD:
+			return multiSelection ? Messages.ImpactMethods
+					: Messages.ImpactMethod;
+		case PROCESS:
+			return multiSelection ? Messages.Processes : Messages.Process;
+		case PRODUCT_SYSTEM:
+			return multiSelection ? Messages.ProductSystems
+					: Messages.ProductSystem;
+		case PROJECT:
+			return multiSelection ? Messages.Projects : Messages.Project;
+		case SOURCE:
+			return multiSelection ? Messages.Sources : Messages.Source;
+		case UNIT_GROUP:
+			return multiSelection ? Messages.UnitGroups : Messages.UnitGroup;
+		default:
+			return "unknown?";
+		}
 	}
 
 	private void createViewer(Composite composite) {

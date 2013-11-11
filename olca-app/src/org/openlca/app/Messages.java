@@ -380,6 +380,7 @@ public class Messages extends NLS {
 	public static String ProductSystemsInfoSectionLabel;
 	public static String Progress;
 	public static String Project;
+	public static String Projects;
 	public static String ProjectComparisonPageLabel;
 	public static String ProjectInfoSectionLabel;
 	public static String Projects_WizardMessage;
