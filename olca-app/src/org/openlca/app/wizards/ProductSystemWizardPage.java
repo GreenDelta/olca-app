@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -18,6 +19,7 @@ import org.eclipse.swt.widgets.Text;
 import org.openlca.app.FeatureFlag;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
+import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.ModelTextFilter;
 import org.openlca.app.navigation.NavigationTree;
@@ -29,6 +31,8 @@ import org.openlca.app.util.UIFactory;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
+import org.openlca.core.model.descriptors.Descriptors;
+import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,6 +55,10 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 		setMessage(Messages.Systems_WizardMessage);
 		setImageDescriptor(ImageType.NEW_WIZ_PRODUCT_SYSTEM.getDescriptor());
 		setPageComplete(false);
+	}
+
+	public void setProcess(Process process) {
+		this.selectedProcess = process;
 	}
 
 	public boolean addSupplyChain() {
@@ -104,11 +112,20 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 	}
 
 	@Override
-	protected void createContents(final Composite container) {
+	protected void createContents(Composite container) {
 		filterText = UI.formText(container, Messages.Filter);
 		UI.formLabel(container, Messages.ReferenceProcess);
 		createProcessViewer(container);
 		createOptions(container);
+		if (selectedProcess != null) {
+			nameText.setText(selectedProcess.getName());
+			ProcessDescriptor descriptor = Descriptors
+					.toDescriptor(selectedProcess);
+			INavigationElement<?> elem = Navigator.findElement(descriptor);
+			if (elem != null)
+				processViewer.setSelection(new StructuredSelection(elem));
+			checkInput();
+		}
 	}
 
 	private void createProcessViewer(Composite container) {

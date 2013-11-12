@@ -13,6 +13,7 @@ import org.openlca.app.db.Database;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.IProductSystemBuilder;
 import org.openlca.core.matrix.cache.MatrixCache;
+import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.Descriptors;
 import org.slf4j.Logger;
@@ -21,10 +22,19 @@ import org.slf4j.LoggerFactory;
 public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
+	private Process process;
 
 	public ProductSystemWizard() {
 		super();
 		setNeedsProgressMonitor(true);
+	}
+
+	/**
+	 * Optionally sets the reference process for the product system that should
+	 * be created.
+	 */
+	public void setProcess(Process process) {
+		this.process = process;
 	}
 
 	@Override
@@ -109,6 +119,8 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 
 	@Override
 	protected AbstractWizardPage<ProductSystem> createPage() {
-		return new ProductSystemWizardPage();
+		ProductSystemWizardPage page = new ProductSystemWizardPage();
+		page.setProcess(process);
+		return page;
 	}
 }

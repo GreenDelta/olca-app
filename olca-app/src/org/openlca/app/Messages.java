@@ -84,6 +84,7 @@ public class Messages extends NLS {
 	public static String Country;
 	public static String CreateDatabaseAction;
 	public static String CreateProductFlow;
+	public static String CreateProductSystem;
 	public static String CreatingImpactSheet;
 	public static String CreatingInfoSheet;
 	public static String CreatingLCISheet;
