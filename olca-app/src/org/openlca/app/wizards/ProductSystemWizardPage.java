@@ -12,15 +12,14 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.openlca.app.FeatureFlag;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.ModelElement;
+import org.openlca.app.navigation.ModelTextFilter;
 import org.openlca.app.navigation.NavigationTree;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.filters.EmptyCategoryFilter;
@@ -44,6 +43,7 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 	private Process selectedProcess;
 	private Button useSystemProcesses;
 	private double cutoff = 0;
+	private Text filterText;
 
 	public ProductSystemWizardPage() {
 		super("ProductSystemWizardPage");
@@ -105,10 +105,8 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 
 	@Override
 	protected void createContents(final Composite container) {
-		Composite label = new Composite(container, SWT.NONE);
-		label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
-		label.setLayout(new GridLayout(1, true));
-		new Label(label, SWT.NONE).setText(Messages.ReferenceProcess);
+		filterText = UI.formText(container, Messages.Filter);
+		UI.formLabel(container, Messages.ReferenceProcess);
 		createProcessViewer(container);
 		createOptions(container);
 	}
@@ -117,6 +115,7 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 		processViewer = NavigationTree.createViewer(container);
 		processViewer.setInput(Navigator.findElement(ModelType.PROCESS));
 		processViewer.addFilter(new EmptyCategoryFilter());
+		processViewer.addFilter(new ModelTextFilter(filterText, processViewer));
 		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
 		gd.heightHint = 200;
 		processViewer.getTree().setLayoutData(gd);

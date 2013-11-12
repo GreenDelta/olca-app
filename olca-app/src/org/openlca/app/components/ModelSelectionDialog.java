@@ -91,7 +91,8 @@ public class ModelSelectionDialog extends FormDialog {
 		UI.formHeader(form, getTitle());
 		Composite body = UI.formBody(form.getForm(), form.getToolkit());
 		UI.gridLayout(body, 1);
-		Label filterLabel = UI.formLabel(body, form.getToolkit(), "Filter");
+		Label filterLabel = UI.formLabel(body, form.getToolkit(),
+				Messages.Filter);
 		boldLabelFont = UI.boldFont(filterLabel);
 		filterLabel.setFont(boldLabelFont);
 		filterText = UI.formText(body, SWT.SEARCH);

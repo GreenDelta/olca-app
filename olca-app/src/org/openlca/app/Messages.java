@@ -164,6 +164,7 @@ public class Messages extends NLS {
 	public static String FileImportPage_ChooseDirectoryLabel;
 	public static String FileImportPage_Description;
 	public static String FileImportPage_Title;
+	public static String Filter;
 	public static String Flow;
 	public static String FlowContributions;
 	public static String FlowInfoPage_CASNotValid;
