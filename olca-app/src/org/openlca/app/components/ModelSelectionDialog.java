@@ -11,11 +11,8 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -30,6 +27,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
+import org.openlca.app.navigation.ModelTextFilter;
 import org.openlca.app.navigation.NavigationTree;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Actions;
@@ -96,15 +94,7 @@ public class ModelSelectionDialog extends FormDialog {
 		Label filterLabel = UI.formLabel(body, form.getToolkit(), "Filter");
 		boldLabelFont = UI.boldFont(filterLabel);
 		filterLabel.setFont(boldLabelFont);
-
 		filterText = UI.formText(body, SWT.SEARCH);
-		filterText.addModifyListener(new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
-				viewer.refresh();
-			}
-		});
-
 		Section section = UI.section(body, toolkit, "Content");
 		addSectionActions(section);
 		UI.gridData(section, true, true);
@@ -148,7 +138,8 @@ public class ModelSelectionDialog extends FormDialog {
 			viewer = NavigationTree.forMultiSelection(composite, modelType);
 		else
 			viewer = NavigationTree.forSingleSelection(composite, modelType);
-		viewer.setFilters(new ViewerFilter[] { new NameFilter() });
+		ModelTextFilter filter = new ModelTextFilter(filterText, viewer);
+		viewer.setFilters(new ViewerFilter[] { filter });
 		UI.gridData(viewer.getTree(), true, true);
 		viewer.addSelectionChangedListener(new SelectionChangedListener());
 		viewer.addDoubleClickListener(new DoubleClickListener());
@@ -255,29 +246,6 @@ public class ModelSelectionDialog extends FormDialog {
 				selection = new BaseDescriptor[] { modelComponent };
 				okPressed();
 			}
-		}
-
-	}
-
-	private class NameFilter extends ViewerFilter {
-
-		private boolean select(INavigationElement<?> element) {
-			if (element instanceof ModelElement)
-				return matches((ModelElement) element);
-
-			for (INavigationElement<?> child : element.getChildren())
-				if (select(child))
-					return true;
-			return false;
-		}
-
-		@Override
-		public boolean select(Viewer viewer, Object parentElement,
-				Object element) {
-			if ("".equals(filterText.getText()))
-				return true;
-			else
-				return select((INavigationElement<?>) element);
 		}
 	}
 
