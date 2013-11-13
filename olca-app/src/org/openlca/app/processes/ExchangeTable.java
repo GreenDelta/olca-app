@@ -237,6 +237,7 @@ class ExchangeTable {
 			process.getExchanges().remove(exchange);
 		viewer.setInput(process.getExchanges());
 		fireChange();
+		editor.postEvent(editor.EXCHANGES_CHANGED, this);
 	}
 
 	private void add(List<BaseDescriptor> descriptors) {
@@ -256,8 +257,9 @@ class ExchangeTable {
 			exchange.setInput(forInputs);
 			process.getExchanges().add(exchange);
 		}
-		fireChange();
 		viewer.setInput(process.getExchanges());
+		fireChange();
+		editor.postEvent(editor.EXCHANGES_CHANGED, this);
 	}
 
 	private void fireChange() {

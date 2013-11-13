@@ -10,6 +10,7 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.Event;
 import org.openlca.app.Messages;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Labels;
@@ -20,17 +21,35 @@ import org.openlca.core.model.AllocationFactor;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Process;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.eventbus.Subscribe;
 
 class AllocationPage extends FormPage {
 
+	private Logger log = LoggerFactory.getLogger(getClass());
 	private Process process;
 	private ProcessEditor editor;
 	private FormToolkit toolkit;
+	private TableViewer factorViewer;
+	private CausalFactorTable causalFactorTable;
 
 	public AllocationPage(ProcessEditor editor) {
 		super(editor, "process.AllocationPage", "Allocation");
 		this.process = editor.getModel();
 		this.editor = editor;
+		editor.getEventBus().register(this);
+	}
+
+	@Subscribe
+	public void handleExchangesChange(Event event) {
+		if (!event.match(editor.EXCHANGES_CHANGED))
+			return;
+		log.trace("update allocation page");
+		AllocationSync.updateFactors(process);
+		factorViewer.setInput(Processes.getOutputProducts(process));
+		causalFactorTable.refresh();
 	}
 
 	@Override
@@ -50,7 +69,7 @@ class AllocationPage extends FormPage {
 		UI.gridLayout(composite, 1);
 		String[] colNames = { Messages.Product, Messages.Physical,
 				Messages.Economic };
-		TableViewer factorViewer = Tables.createViewer(composite, colNames);
+		factorViewer = Tables.createViewer(composite, colNames);
 		Tables.bindColumnWidths(factorViewer, 0.3, 0.3, 0.3);
 		factorViewer.setLabelProvider(new FactorLabel());
 		factorViewer.setInput(Processes.getOutputProducts(process));
@@ -58,7 +77,8 @@ class AllocationPage extends FormPage {
 
 	private void createCausalSection(Composite body) {
 		Section section = UI.section(body, toolkit, "Causal allocation");
-		new CausalFactorTable(editor).render(section, toolkit);
+		causalFactorTable = new CausalFactorTable(editor);
+		causalFactorTable.render(section, toolkit);
 	}
 
 	private String productText(Exchange exchange) {

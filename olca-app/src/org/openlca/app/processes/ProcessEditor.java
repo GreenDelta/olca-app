@@ -39,6 +39,12 @@ public class ProcessEditor extends ModelEditor<Process> implements IEditor {
 	 */
 	final String FORMULAS_EVALUATED = "FORMULAS_EVALUATED";
 
+	/**
+	 * An event message that indicates the removal or addition of one or more
+	 * exchanges exchange.
+	 */
+	final String EXCHANGES_CHANGED = "EXCHANGE_REMOVED";
+
 	public static String ID = "editors.process";
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private FormulaInterpreter interpreter;

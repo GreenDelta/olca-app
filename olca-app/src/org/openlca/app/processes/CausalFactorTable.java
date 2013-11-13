@@ -1,5 +1,6 @@
 package org.openlca.app.processes;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -8,8 +9,11 @@ import java.util.UUID;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
@@ -38,6 +42,47 @@ class CausalFactorTable {
 	public CausalFactorTable(ProcessEditor editor) {
 		this.process = editor.getModel();
 		initColumns();
+	}
+
+	public void refresh() {
+		List<Exchange> products = Processes.getOutputProducts(process);
+		List<Exchange> newProducts = new ArrayList<>(products);
+		List<Integer> removalIndices = new ArrayList<>();
+		for (int i = 0; i < columns.length; i++) {
+			Exchange product = columns[i].product;
+			if (products.contains(product))
+				newProducts.remove(product);
+			else
+				removalIndices.add(i);
+		}
+		for (int col : removalIndices)
+			removeColumn(col);
+		for (Exchange product : newProducts)
+			addColumn(product);
+		viewer.setInput(Processes.getNonOutputProducts(process));
+	}
+
+	private void removeColumn(int col) {
+		Column[] newColumns = new Column[columns.length - 1];
+		System.arraycopy(columns, 0, newColumns, 0, col);
+		if ((col + 1) < columns.length)
+			System.arraycopy(columns, col + 1, newColumns, col,
+					newColumns.length - col);
+		columns = newColumns;
+		Table table = viewer.getTable();
+		table.getColumn(col + 4).dispose();
+	}
+
+	private void addColumn(Exchange product) {
+		Column newColumn = new Column(product);
+		Table table = viewer.getTable();
+		TableColumn tableColumn = new TableColumn(table, SWT.NONE);
+		tableColumn.setWidth(150);
+		tableColumn.setText(newColumn.getTitle());
+		Column[] newColumns = new Column[columns.length + 1];
+		System.arraycopy(columns, 0, newColumns, 0, columns.length);
+		newColumns[columns.length] = newColumn;
+		columns = newColumns;
 	}
 
 	private void initColumns() {
