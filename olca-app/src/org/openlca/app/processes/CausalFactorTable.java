@@ -18,11 +18,14 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.util.CategoryPath;
+import org.openlca.app.util.Error;
 import org.openlca.app.util.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
+import org.openlca.app.viewers.table.modify.ModifySupport;
+import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.model.AllocationFactor;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.Exchange;
@@ -35,11 +38,13 @@ import org.openlca.util.Strings;
  */
 class CausalFactorTable {
 
+	private ProcessEditor editor;
 	private Process process;
 	private Column[] columns;
 	private TableViewer viewer;
 
 	public CausalFactorTable(ProcessEditor editor) {
+		this.editor = editor;
 		this.process = editor.getModel();
 		initColumns();
 	}
@@ -60,6 +65,7 @@ class CausalFactorTable {
 		for (Exchange product : newProducts)
 			addColumn(product);
 		viewer.setInput(Processes.getNonOutputProducts(process));
+		createModifySupport();
 	}
 
 	private void removeColumn(int col) {
@@ -100,6 +106,18 @@ class CausalFactorTable {
 		viewer.setLabelProvider(new FactorLabel());
 		Tables.bindColumnWidths(viewer, 0.2, 0.1, 0.1, 0.1);
 		viewer.setInput(Processes.getNonOutputProducts(process));
+		createModifySupport();
+	}
+
+	private void createModifySupport() {
+		String[] keys = getColumnTitles();
+		for (int i = 0; i < columns.length; i++)
+			keys[i + 4] = columns[i].getKey();
+		viewer.setColumnProperties(keys);
+		ModifySupport<Exchange> modifySupport = new ModifySupport<>(viewer);
+		for (int i = 0; i < columns.length; i++)
+			modifySupport.bind(keys[i + 4], new ValueModifier(
+					columns[i].product));
 	}
 
 	private String[] getColumnTitles() {
@@ -171,7 +189,7 @@ class CausalFactorTable {
 			Column column = columns[idx];
 			AllocationFactor factor = getFactor(column.getProduct(), exchange);
 			if (factor == null)
-				return Numbers.format(1.0, 2);
+				return Double.toString(1.0);
 			else
 				return Double.toString(factor.getValue());
 		}
@@ -205,7 +223,45 @@ class CausalFactorTable {
 		public int compareTo(Column o) {
 			return Strings.compare(this.getTitle(), o.getTitle());
 		}
+	}
 
+	private class ValueModifier extends TextCellModifier<Exchange> {
+
+		private Exchange product;
+
+		public ValueModifier(Exchange product) {
+			this.product = product;
+		}
+
+		@Override
+		protected String getText(Exchange exchange) {
+			AllocationFactor factor = getFactor(product, exchange);
+			if (factor == null)
+				return Double.toString(1);
+			else
+				return Double.toString(factor.getValue());
+		}
+
+		@Override
+		protected void setText(Exchange exchange, String text) {
+			double val = 0;
+			try {
+				val = Double.parseDouble(text);
+			} catch (Exception e) {
+				Error.showBox("Invalid number", text + " is not a valid number");
+				return;
+			}
+			AllocationFactor factor = getFactor(product, exchange);
+			if (factor == null) {
+				factor = new AllocationFactor();
+				factor.setAllocationType(AllocationMethod.CAUSAL);
+				factor.setExchange(exchange);
+				factor.setProductId(product.getFlow().getId());
+				process.getAllocationFactors().add(factor);
+			}
+			factor.setValue(val);
+			editor.setDirty(true);
+		}
 	}
 
 }

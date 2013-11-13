@@ -17,12 +17,15 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Event;
 import org.openlca.app.Messages;
 import org.openlca.app.resources.ImageType;
+import org.openlca.app.util.Error;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.AllocationMethodViewer;
+import org.openlca.app.viewers.table.modify.ModifySupport;
+import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.model.AllocationFactor;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.Exchange;
@@ -118,6 +121,12 @@ class AllocationPage extends FormPage {
 		Tables.bindColumnWidths(factorViewer, 0.3, 0.3, 0.3);
 		factorViewer.setLabelProvider(new FactorLabel());
 		factorViewer.setInput(Processes.getOutputProducts(process));
+		ModifySupport<Exchange> modifySupport = new ModifySupport<>(
+				factorViewer);
+		modifySupport.bind(Messages.Physical, new ValueModifier(
+				AllocationMethod.PHYSICAL));
+		modifySupport.bind(Messages.Economic, new ValueModifier(
+				AllocationMethod.ECONOMIC));
 	}
 
 	private void createCausalSection(Composite body) {
@@ -133,6 +142,29 @@ class AllocationPage extends FormPage {
 		return text;
 	}
 
+	private AllocationFactor getFactor(Exchange exchange,
+			AllocationMethod method) {
+		if (exchange == null || method == null)
+			return null;
+		AllocationFactor factor = null;
+		for (AllocationFactor f : process.getAllocationFactors()) {
+			if (f.getAllocationType() == method
+					&& f.getProductId() == exchange.getFlow().getId()) {
+				factor = f;
+				break;
+			}
+		}
+		return factor;
+	}
+
+	private String getFactorLabel(Exchange exchange, AllocationMethod method) {
+		AllocationFactor factor = getFactor(exchange, method);
+		if (factor == null)
+			return Double.toString(1);
+		else
+			return Double.toString(factor.getValue());
+	}
+
 	private class FactorLabel extends LabelProvider implements
 			ITableLabelProvider {
 
@@ -145,28 +177,12 @@ class AllocationPage extends FormPage {
 			case 0:
 				return productText(exchange);
 			case 1:
-				return Numbers.format(getFactor(exchange,
-						AllocationMethod.PHYSICAL));
+				return getFactorLabel(exchange, AllocationMethod.PHYSICAL);
 			case 2:
-				return Numbers.format(getFactor(exchange,
-						AllocationMethod.ECONOMIC));
+				return getFactorLabel(exchange, AllocationMethod.ECONOMIC);
 			default:
 				return null;
 			}
-		}
-
-		private double getFactor(Exchange exchange, AllocationMethod method) {
-			if (exchange == null || method == null)
-				return 0;
-			AllocationFactor factor = null;
-			for (AllocationFactor f : process.getAllocationFactors()) {
-				if (f.getAllocationType() == method
-						&& f.getProductId() == exchange.getFlow().getId()) {
-					factor = f;
-					break;
-				}
-			}
-			return factor == null ? 1 : factor.getValue();
 		}
 
 		@Override
@@ -175,6 +191,47 @@ class AllocationPage extends FormPage {
 				return ImageType.FLOW_PRODUCT.get();
 			return null;
 		}
+	}
+
+	private class ValueModifier extends TextCellModifier<Exchange> {
+
+		private AllocationMethod method;
+
+		public ValueModifier(AllocationMethod method) {
+			this.method = method;
+		}
+
+		@Override
+		protected String getText(Exchange exchange) {
+			return getFactorLabel(exchange, method);
+		}
+
+		@Override
+		protected void setText(Exchange exchange, String text) {
+			double val = 0;
+			try {
+				val = Double.parseDouble(text);
+			} catch (Exception e) {
+				Error.showBox("Invalid number", text
+						+ " is not a valid number.");
+				return;
+			}
+			AllocationFactor factor = getFactor(exchange, method);
+			if (factor == null) {
+				factor = new AllocationFactor();
+				factor.setAllocationType(method);
+				factor.setProductId(exchange.getFlow().getId());
+				process.getAllocationFactors().add(factor);
+			}
+			factor.setValue(val);
+			editor.setDirty(true);
+		}
+
+		@Override
+		public boolean canModify(Exchange element) {
+			return Processes.getOutputProducts(process).size() > 1;
+		}
+
 	}
 
 }
