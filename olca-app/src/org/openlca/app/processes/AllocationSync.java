@@ -4,9 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.openlca.core.model.AllocationFactor;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.Exchange;
+import org.openlca.core.model.Flow;
+import org.openlca.core.model.FlowProperty;
+import org.openlca.core.model.FlowPropertyFactor;
+import org.openlca.core.model.FlowPropertyType;
 import org.openlca.core.model.Process;
 
 class AllocationSync {
@@ -22,6 +27,52 @@ class AllocationSync {
 		if (process == null)
 			return;
 		new AllocationSync(process).doUpdate();
+	}
+
+	public static void calculateDefaults(Process process) {
+		if (process == null)
+			return;
+		new AllocationSync(process).doCalc();
+	}
+
+	private void doCalc() {
+		doUpdate();
+		List<Exchange> products = Processes.getOutputProducts(process);
+		if (products.size() < 2)
+			return;
+		List<Pair<Exchange, Double>> physFactors = calcFactors(
+				AllocationMethod.PHYSICAL, products);
+		List<Pair<Exchange, Double>> ecoFactors = calcFactors(
+				AllocationMethod.ECONOMIC, products);
+		setNewValues(physFactors, AllocationMethod.PHYSICAL);
+		setNewValues(ecoFactors, AllocationMethod.ECONOMIC);
+		setNewCausalValues(physFactors);
+	}
+
+	private void setNewValues(List<Pair<Exchange, Double>> newFactors,
+			AllocationMethod method) {
+		for (Pair<Exchange, Double> ecoFactor : newFactors) {
+			Exchange product = ecoFactor.getKey();
+			double value = ecoFactor.getValue();
+			AllocationFactor factor = getFactor(product, method);
+			if (factor == null)
+				continue;
+			factor.setValue(value);
+		}
+	}
+
+	private void setNewCausalValues(List<Pair<Exchange, Double>> physFactors) {
+		for (Pair<Exchange, Double> physFactor : physFactors) {
+			Exchange product = physFactor.getKey();
+			double value = physFactor.getValue();
+			for (Exchange exchange : Processes.getNonOutputProducts(process)) {
+				AllocationFactor causalFactor = getCausalFactor(product,
+						exchange);
+				if (causalFactor == null)
+					continue;
+				causalFactor.setValue(value);
+			}
+		}
 	}
 
 	private void doUpdate() {
@@ -115,6 +166,80 @@ class AllocationSync {
 				return factor;
 		}
 		return null;
+	}
+
+	private List<Pair<Exchange, Double>> calcFactors(AllocationMethod method,
+			List<Exchange> products) {
+		FlowProperty commonProp = getCommonProperty(products, method);
+		if (commonProp == null && method != AllocationMethod.PHYSICAL)
+			commonProp = getCommonProperty(products, AllocationMethod.PHYSICAL);
+		List<Pair<Exchange, Double>> amounts = new ArrayList<>();
+		double totalAmount = 0;
+		for (Exchange product : products) {
+			double amount = product.getAmountValue()
+					* product.getUnit().getConversionFactor();
+			if (commonProp != null) {
+				Flow flow = product.getFlow();
+				FlowPropertyFactor factor = flow.getFactor(commonProp);
+				if (factor != null)
+					amount = amount / factor.getConversionFactor();
+			}
+			totalAmount += amount;
+			amounts.add(Pair.of(product, amount));
+		}
+		return makeRelative(amounts, totalAmount);
+	}
+
+	private List<Pair<Exchange, Double>> makeRelative(
+			List<Pair<Exchange, Double>> amounts, double totalAmount) {
+		if (totalAmount == 0)
+			return amounts;
+		// pair is immutable, so we create a new list here
+		List<Pair<Exchange, Double>> relatives = new ArrayList<>();
+		for (Pair<Exchange, Double> pair : amounts) {
+			double amount = pair.getValue();
+			relatives.add(Pair.of(pair.getKey(), amount / totalAmount));
+		}
+		return relatives;
+	}
+
+	private FlowProperty getCommonProperty(List<Exchange> products,
+			AllocationMethod method) {
+		List<FlowProperty> candidates = null;
+		for (Exchange product : products) {
+			Flow flow = product.getFlow();
+			List<FlowProperty> props = getProperties(flow, method);
+			if (candidates == null)
+				candidates = props;
+			else
+				candidates.retainAll(props);
+		}
+		if (candidates == null || candidates.isEmpty())
+			return null;
+		return candidates.get(0);
+	}
+
+	private List<FlowProperty> getProperties(Flow flow, AllocationMethod method) {
+		List<FlowProperty> properties = new ArrayList<>();
+		for (FlowPropertyFactor factor : flow.getFlowPropertyFactors()) {
+			FlowProperty prop = factor.getFlowProperty();
+			if (match(prop.getFlowPropertyType(), method))
+				properties.add(prop);
+		}
+		return properties;
+	}
+
+	private boolean match(FlowPropertyType propertyType, AllocationMethod method) {
+		if (propertyType == null || method == null)
+			return false;
+		else if (propertyType == FlowPropertyType.ECONOMIC
+				&& method == AllocationMethod.ECONOMIC)
+			return true;
+		else if (propertyType == FlowPropertyType.PHYSICAL
+				&& method == AllocationMethod.PHYSICAL)
+			return true;
+		else
+			return false;
 	}
 
 }

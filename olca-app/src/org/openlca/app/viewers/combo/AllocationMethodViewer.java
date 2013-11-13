@@ -8,10 +8,10 @@ import org.openlca.core.model.AllocationMethod;
 public class AllocationMethodViewer extends
 		AbstractComboViewer<AllocationMethod> {
 
-	public AllocationMethodViewer(Composite parent) {
+	public AllocationMethodViewer(Composite parent, AllocationMethod[] values) {
 		super(parent);
-		setNullText(Messages.AsDefinedInProcesses);
-		setInput(AllocationMethod.values());
+		setNullText(Messages.None);
+		setInput(values);
 	}
 
 	@Override

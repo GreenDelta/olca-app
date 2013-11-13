@@ -121,8 +121,10 @@ class CalculationWizardPage extends WizardPage {
 
 	private void createAllocationViewer(Composite parent) {
 		UI.formLabel(parent, Messages.AllocationMethod);
-		allocationViewer = new AllocationMethodViewer(parent);
-		allocationViewer.setNullable(true);
+		allocationViewer = new AllocationMethodViewer(parent,
+				AllocationMethod.values());
+		allocationViewer.setNullable(false);
+		allocationViewer.select(AllocationMethod.NONE);
 	}
 
 	public CalculationSetup getSetup() {

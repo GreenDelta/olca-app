@@ -61,7 +61,8 @@ public class SystemExportDialog extends WizardDialog {
 
 				Group methodGroup = createGroup("Methods", composite, 1);
 				UI.formLabel(methodGroup, Messages.AllocationMethod);
-				allocationMethodViewer = new AllocationMethodViewer(methodGroup);
+				allocationMethodViewer = new AllocationMethodViewer(
+						methodGroup, AllocationMethod.values());
 				UI.formLabel(methodGroup, Messages.ImpactMethod);
 				impactMethodViewer = new ImpactMethodViewer(methodGroup);
 				impactMethodViewer.setInput(database);

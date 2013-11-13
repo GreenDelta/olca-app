@@ -202,6 +202,8 @@ public class Labels {
 			return Messages.None;
 		case PHYSICAL:
 			return Messages.Physical;
+		case USE_DEFAULT:
+			return Messages.AsDefinedInProcesses;
 		default:
 			return Messages.None;
 		}

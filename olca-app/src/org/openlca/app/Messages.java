@@ -39,6 +39,7 @@ public class Messages extends NLS {
 	public static String Button_Yes;
 	public static String Calculate;
 	public static String CalculateCosts;
+	public static String CalculateDefaults;
 	public static String Calculating;
 	public static String CalculatingImpact;
 	public static String CalculatingLCI;
@@ -109,7 +110,7 @@ public class Messages extends NLS {
 	public static String DataSetOwner;
 	public static String DataSourceInfoSectionLabel;
 	public static String DataTreatment;
-	public static String DefaultAMSectionLabel;
+	public static String DefaultMethod;
 	public static String DefaultFlowProperty;
 	public static String DefaultProvider;
 	public static String Delete;
