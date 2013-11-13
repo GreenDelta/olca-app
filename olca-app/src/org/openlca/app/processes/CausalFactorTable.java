@@ -18,7 +18,6 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.util.CategoryPath;
-import org.openlca.app.util.Error;
 import org.openlca.app.util.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
@@ -244,13 +243,9 @@ class CausalFactorTable {
 
 		@Override
 		protected void setText(Exchange exchange, String text) {
-			double val = 0;
-			try {
-				val = Double.parseDouble(text);
-			} catch (Exception e) {
-				Error.showBox("Invalid number", text + " is not a valid number");
+			Double val = AllocationPage.parseFactor(text);
+			if (val == null)
 				return;
-			}
 			AllocationFactor factor = getFactor(product, exchange);
 			if (factor == null) {
 				factor = new AllocationFactor();

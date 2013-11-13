@@ -51,6 +51,21 @@ class AllocationPage extends FormPage {
 		editor.getEventBus().register(this);
 	}
 
+	static Double parseFactor(String text) {
+		try {
+			double val = Double.parseDouble(text);
+			if (val < -0.0001 || val > 1.0001) {
+				Error.showBox("Invalid factor",
+						"An allocation factor should have a value between 0 and 1.");
+				return null;
+			}
+			return val;
+		} catch (Exception e) {
+			Error.showBox("Invalid number", text + " is not a valid number");
+			return null;
+		}
+	}
+
 	@Subscribe
 	public void handleExchangesChange(Event event) {
 		if (!event.match(editor.EXCHANGES_CHANGED))
@@ -208,14 +223,9 @@ class AllocationPage extends FormPage {
 
 		@Override
 		protected void setText(Exchange exchange, String text) {
-			double val = 0;
-			try {
-				val = Double.parseDouble(text);
-			} catch (Exception e) {
-				Error.showBox("Invalid number", text
-						+ " is not a valid number.");
+			Double val = parseFactor(text);
+			if (val == null)
 				return;
-			}
 			AllocationFactor factor = getFactor(exchange, method);
 			if (factor == null) {
 				factor = new AllocationFactor();
