@@ -54,8 +54,6 @@
 			</fileset>
 		</copy>
 
-
-
 		<!-- copy lisence files -->
 		<copy todir="${package_dir}/openlca">
 			<fileset dir="${basedir}/legal" />
@@ -79,6 +77,12 @@
 		<move todir="${package_dir}/openlca">
 			<fileset dir="${package_dir}/openlca/openLCA" />
 		</move>
+		<!-- the ini-file for the non-installer version -->
+		<copy 
+			tofile="${package_dir}/openlca/openLCA.ini" 
+			filtering="true" 
+			overwrite="true" 
+			file="${basedir}/installer_static_win/english/openLCA.ini" />
 
 		<!-- eclipse stupidly creates packages with locked profiles, -->
 		<!-- killing p2 (at least on Mac OS, but to be sure del for win, too) -->

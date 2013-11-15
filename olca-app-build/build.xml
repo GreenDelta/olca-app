@@ -1,24 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="project" default="main">
 
-	
 	<tstamp />
-	<property name="buildId" value="openlca_${DSTAMP}" />	
-	<property name="product"
-	              value="/olca-app/openLCA.product" />
-	
+	<property name="buildId" value="openlca_${DSTAMP}" />
+	<property name="product" value="/olca-app/openLCA.product" />
+
 	<!-- 
 		We assume that the workspace is located next to the eclipse installation
 		and that the target platform is located in this workspace. If this is
 		not the case, set these parameters here.		
 	 -->
-	<property name="workspace" value="${eclipse.home}/../workspace"></property>
-	<property 
-		name="platform_path" 
-		value="${workspace}/openlca.runtime/platform"/>
-	
+	<property name="workspace" value="${eclipse.home}/../workspace">
+	</property>
+	<property name="platform_path" value="${workspace}/openlca.runtime/platform" />
+
 	<!-- Provides for example a version in openlca_version -->
-	<property file="build.properties"/>
+	<property file="build.properties" />
 
 	<target name="main" depends="compile">
 		<mkdir dir="${basedir}/packages" />
@@ -29,10 +26,9 @@
 		<ant antfile="${basedir}/buildWinInstallers.xml" />
 		<ant antfile="${basedir}/buildMacOSX.xml" />
 		<ant antfile="${basedir}/buildLinuxZips.xml" />
-		<eclipse.refreshLocal resource="org.openlca.target.build"
-		                      depth="infinite" />
+		<eclipse.refreshLocal resource="olca-app-build" depth="infinite" />
 	</target>
-	
+
 	<!--
 	PDE needs the following properties to be defined:
 	   builder: the location with the build and property script (build.properties) of the PDE build
@@ -58,7 +54,7 @@
 	<target name="clean">
 		<delete dir="${buildDirectory}" />
 	</target>
-	
+
 	<target name="prepareBuildDir">
 		<delete failonerror="false">
 			<fileset dir="${basedir}/builds" includes="*.zip" />
