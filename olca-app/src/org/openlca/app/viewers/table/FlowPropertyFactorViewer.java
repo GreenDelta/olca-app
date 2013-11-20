@@ -32,11 +32,13 @@ public class FlowPropertyFactorViewer extends
 		String NAME = Messages.Name;
 		String CONVERSION_FACTOR = Messages.ConversionFactor;
 		String REFERENCE_UNIT = Messages.ReferenceUnit;
+		String FORMULA = Messages.Formula;
 		String IS_REFERENCE = Messages.IsReference;
 	}
 
 	private static final String[] COLUMN_HEADERS = { LABEL.NAME,
-			LABEL.CONVERSION_FACTOR, LABEL.REFERENCE_UNIT, LABEL.IS_REFERENCE };
+			LABEL.CONVERSION_FACTOR, LABEL.REFERENCE_UNIT, LABEL.FORMULA,
+			LABEL.IS_REFERENCE };
 
 	private Flow flow;
 	private EntityCache cache;
@@ -117,7 +119,7 @@ public class FlowPropertyFactorViewer extends
 		public Image getColumnImage(Object element, int column) {
 			if (column == 0)
 				return ImageType.FLOW_PROPERTY_ICON.get();
-			if (column != 3)
+			if (column != 4)
 				return null;
 			FlowPropertyFactor refFactor = flow != null ? flow
 					.getReferenceFactor() : null;
@@ -139,9 +141,22 @@ public class FlowPropertyFactorViewer extends
 			case 2:
 				return factor.getFlowProperty().getUnitGroup()
 						.getReferenceUnit().getName();
+			case 3:
+				return getFormula(factor);
 			default:
 				return null;
 			}
+		}
+
+		private String getFormula(FlowPropertyFactor factor) {
+			FlowPropertyFactor refFactor = flow.getReferenceFactor();
+			String refUnit = refFactor.getFlowProperty().getUnitGroup()
+					.getReferenceUnit().getName();
+			String unit = factor.getFlowProperty().getUnitGroup()
+					.getReferenceUnit().getName();
+			return "1.0 " + unit + " = "
+					+ Numbers.format(factor.getConversionFactor()) + " "
+					+ refUnit;
 		}
 
 		@Override
