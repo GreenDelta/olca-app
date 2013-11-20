@@ -29,7 +29,8 @@ class SimulationExportAction extends Action {
 
 	@Override
 	public void run() {
-		final File file = FileChooser.forExport("xls", "simulation_result.xls");
+		final File file = FileChooser.forExport("*.xlsx",
+				"simulation_result.xlsx");
 		if (file == null)
 			return;
 		App.run("Export simulation result", new Runnable() {
