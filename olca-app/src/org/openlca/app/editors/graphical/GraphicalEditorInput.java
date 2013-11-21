@@ -7,13 +7,13 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
 import org.openlca.app.util.Images;
 import org.openlca.app.util.Labels;
-import org.openlca.core.model.descriptors.ProductSystemDescriptor;
+import org.openlca.core.model.descriptors.BaseDescriptor;
 
 public final class GraphicalEditorInput implements IEditorInput {
 
-	private ProductSystemDescriptor descriptor;
+	private BaseDescriptor descriptor;
 
-	public GraphicalEditorInput(ProductSystemDescriptor descriptor) {
+	public GraphicalEditorInput(BaseDescriptor descriptor) {
 		this.descriptor = descriptor;
 	}
 
@@ -37,7 +37,7 @@ public final class GraphicalEditorInput implements IEditorInput {
 		return null;
 	}
 
-	public ProductSystemDescriptor getDescriptor() {
+	public BaseDescriptor getDescriptor() {
 		return descriptor;
 	}
 
