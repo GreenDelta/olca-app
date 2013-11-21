@@ -81,7 +81,7 @@ class CausalFactorTable {
 	private void addColumn(Exchange product) {
 		Column newColumn = new Column(product);
 		Table table = viewer.getTable();
-		TableColumn tableColumn = new TableColumn(table, SWT.NONE);
+		TableColumn tableColumn = new TableColumn(table, SWT.VIRTUAL);
 		tableColumn.setWidth(150);
 		tableColumn.setText(newColumn.getTitle());
 		Column[] newColumns = new Column[columns.length + 1];

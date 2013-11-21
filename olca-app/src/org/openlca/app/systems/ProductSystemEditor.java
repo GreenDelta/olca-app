@@ -28,7 +28,8 @@ public class ProductSystemEditor extends ModelEditor<ProductSystem> implements
 			ProductSystemDescriptor descriptor = (ProductSystemDescriptor) getEditorInput()
 					.getDescriptor();
 			GraphicalEditorInput gInput = new GraphicalEditorInput(descriptor);
-			int gIdx = addPage(new ProductSystemGraphEditor(), gInput);
+			int gIdx = addPage(new ProductSystemGraphEditor(getModel(), this),
+					gInput);
 			setPageText(gIdx, Messages.ModelGraph);
 		} catch (Exception e) {
 			log.error("failed to add page", e);
