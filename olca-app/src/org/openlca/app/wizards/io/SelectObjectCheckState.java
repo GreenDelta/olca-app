@@ -33,18 +33,17 @@ public class SelectObjectCheckState implements ICheckStateListener {
 
 	private void updateParent(INavigationElement<?> element) {
 		INavigationElement<?> parent = element.getParent();
-		boolean check = false;
+		if (parent == null)
+			return;
+		boolean checked = false;
 		boolean all = true;
 		for (INavigationElement<?> child : parent.getChildren()) {
-			if (viewer.getChecked(child) || viewer.getGrayed(child)) {
-				check = true;
-			}
-			if (!viewer.getChecked(child) || viewer.getGrayed(child)) {
+			checked = viewer.getChecked(child) || viewer.getGrayed(child);
+			if (!viewer.getChecked(child) || viewer.getGrayed(child))
 				all = false;
-			}
 		}
-		viewer.setGrayed(parent, !all && check);
-		viewer.setChecked(parent, check);
+		viewer.setGrayed(parent, !all && checked);
+		viewer.setChecked(parent, checked);
 		updateParent(parent);
 	}
 
