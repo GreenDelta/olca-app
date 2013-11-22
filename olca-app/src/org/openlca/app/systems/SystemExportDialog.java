@@ -1,6 +1,7 @@
 package org.openlca.app.systems;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -13,8 +14,10 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
+import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.components.FileSelection;
+import org.openlca.app.db.Cache;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AllocationMethodViewer;
@@ -23,6 +26,8 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.io.xls.systems.SystemExport;
+import org.openlca.io.xls.systems.SystemExportConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -131,15 +136,21 @@ public class SystemExportDialog extends WizardDialog {
 							InterruptedException {
 						monitor.beginTask("Exporting...",
 								IProgressMonitor.UNKNOWN);
-						// SystemExport export = new SystemExport(productSystem,
-						// database, allocation, impactMethod);
-						// try {
-						// export.exportTo(directory);
-						// } catch (IOException e) {
-						// throw new InvocationTargetException(e);
-						// } finally {
-						// monitor.done();
-						// }
+						SystemExportConfig conf = new SystemExportConfig(
+								productSystem, database, App.getMatrixFactory());
+						conf.setAllocationMethod(allocation);
+						conf.setEntityCache(Cache.getEntityCache());
+						conf.setImpactMethod(impactMethod);
+						conf.setMatrixCache(Cache.getMatrixCache());
+						conf.setOlcaVersion(App.getVersion());
+						SystemExport export = new SystemExport(conf);
+						try {
+							export.exportTo(directory);
+						} catch (IOException e) {
+							throw new InvocationTargetException(e);
+						} finally {
+							monitor.done();
+						}
 					}
 				});
 			} catch (Exception e) {

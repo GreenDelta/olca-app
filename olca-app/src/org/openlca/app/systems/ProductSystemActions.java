@@ -4,6 +4,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.ui.part.EditorActionBarContributor;
 import org.openlca.app.Messages;
+import org.openlca.app.db.Database;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Editors;
@@ -19,6 +20,7 @@ public class ProductSystemActions extends EditorActionBarContributor {
 	@Override
 	public void contributeToToolBar(IToolBarManager toolBarManager) {
 		toolBarManager.add(new CsvExportAction());
+		toolBarManager.add(new ExcelExportAction());
 		toolBarManager.add(Actions.onCalculate(new Runnable() {
 			public void run() {
 				log.trace("action -> calculate product system");
@@ -53,6 +55,19 @@ public class ProductSystemActions extends EditorActionBarContributor {
 			ProductSystem system = getProductSystem();
 			CsvExportShell shell = new CsvExportShell(UI.shell(), system);
 			shell.open();
+		}
+	}
+
+	private class ExcelExportAction extends Action {
+		public ExcelExportAction() {
+			setImageDescriptor(ImageType.EXCEL_ICON.getDescriptor());
+			setText(Messages.Systems_MatrixExportAction_Text);
+		}
+
+		@Override
+		public void run() {
+			ProductSystem system = getProductSystem();
+			new SystemExportDialog(system, Database.get()).open();
 		}
 	}
 
