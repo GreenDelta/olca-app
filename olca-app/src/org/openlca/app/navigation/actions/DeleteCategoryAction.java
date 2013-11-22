@@ -31,7 +31,6 @@ import org.slf4j.LoggerFactory;
 public class DeleteCategoryAction extends Action implements INavigationAction {
 
 	private CategoryElement categoryElement;
-	private INavigationElement<?> parentElement;
 
 	public DeleteCategoryAction() {
 		setText(Messages.NavigationView_RemoveCategoryText);
@@ -43,7 +42,6 @@ public class DeleteCategoryAction extends Action implements INavigationAction {
 		if (!(element instanceof CategoryElement))
 			return false;
 		categoryElement = (CategoryElement) element;
-		parentElement = element.getParent();
 		return true;
 	}
 
@@ -77,7 +75,11 @@ public class DeleteCategoryAction extends Action implements INavigationAction {
 				dao.update(parent);
 			}
 			dao.delete(category);
-			Navigator.refresh(parentElement);
+			// we have to refresh the category starting from it's root
+			// otherwise the object model is out of sync.
+			INavigationElement<?> element = Navigator.findElement(category
+					.getModelType());
+			Navigator.refresh(element);
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(getClass());
 			log.error("failed to delete category " + category, e);

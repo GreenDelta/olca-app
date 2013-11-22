@@ -1,5 +1,6 @@
 package org.openlca.app.navigation;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -87,14 +88,42 @@ public class Navigator extends CommonNavigator {
 		}
 	}
 
+	/**
+	 * Refreshes the content *under* the given element.
+	 */
 	public static void refresh(INavigationElement<?> element) {
 		CommonViewer viewer = getNavigationViewer();
 		if (viewer == null || element == null)
 			return;
 		element.update();
-		getNavigationViewer().refresh(element);
+		Object[] oldExpansion = viewer.getExpandedElements();
+		viewer.refresh(element);
+		if (oldExpansion == null)
+			return;
+		setRefreshedExpansion(viewer, oldExpansion);
 	}
 
+	/**
+	 * Expands the elements in the viewer that have the same content as in the
+	 * elements of the <code>oldExpansion</code> array.
+	 */
+	private static void setRefreshedExpansion(CommonViewer viewer,
+			Object[] oldExpansion) {
+		List<INavigationElement<?>> newExpanded = new ArrayList<>();
+		for (Object expandedElem : oldExpansion) {
+			if (!(expandedElem instanceof INavigationElement))
+				continue;
+			INavigationElement<?> oldElem = (INavigationElement<?>) expandedElem;
+			INavigationElement<?> newElem = findElement(oldElem.getContent());
+			if (newElem != null)
+				newExpanded.add(newElem);
+		}
+		viewer.setExpandedElements(newExpanded.toArray());
+	}
+
+	/**
+	 * Selects the navigation element with the given *content* in the tree.
+	 */
 	public static void select(Object element) {
 		if (element == null)
 			return;
@@ -104,7 +133,6 @@ public class Navigator extends CommonNavigator {
 		INavigationElement<?> navElement = findElement(element);
 		if (navElement == null)
 			return;
-
 		instance.selectReveal(new StructuredSelection(navElement));
 	}
 

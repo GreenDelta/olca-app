@@ -1,12 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.app.navigation.actions;
 
 import java.util.List;
@@ -39,7 +30,6 @@ public class CreateCategoryAction extends Action implements INavigationAction {
 
 	private Category parent;
 	private ModelType modelType;
-	private INavigationElement<?> parentElement;
 
 	public CreateCategoryAction() {
 		setText(Messages.NavigationView_AddCategoryText);
@@ -52,14 +42,12 @@ public class CreateCategoryAction extends Action implements INavigationAction {
 			ModelType type = (ModelType) element.getContent();
 			this.parent = null;
 			this.modelType = type;
-			this.parentElement = element;
 			return true;
 		}
 		if (element instanceof CategoryElement) {
 			Category category = (Category) element.getContent();
 			parent = category;
 			modelType = category.getModelType();
-			this.parentElement = element;
 			return true;
 		}
 		return false;
@@ -79,7 +67,12 @@ public class CreateCategoryAction extends Action implements INavigationAction {
 			return;
 		try {
 			tryInsert(category);
-			Navigator.refresh(parentElement);
+			// we have to refresh the category starting from it's root
+			// otherwise the object model is out of sync.
+			INavigationElement<?> element = Navigator.findElement(category
+					.getModelType());
+			Navigator.refresh(element);
+			Navigator.select(category);
 		} catch (Exception e) {
 			log.error("failed to save category", e);
 		}
