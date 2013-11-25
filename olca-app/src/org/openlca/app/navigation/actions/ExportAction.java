@@ -1,112 +1,61 @@
 package org.openlca.app.navigation.actions;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.actions.ActionFactory;
+import org.eclipse.ui.handlers.IHandlerService;
+import org.openlca.app.Messages;
+import org.openlca.app.db.Database;
 import org.openlca.app.navigation.CategoryElement;
+import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.ModelTypeElement;
-import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.app.resources.ImageType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-abstract class ExportAction extends Action implements INavigationAction {
+public class ExportAction extends Action implements INavigationAction {
 
-	private List<BaseDescriptor> components;
-	private ModelType type;
-	private Set<Long> visited;
-	private ModelType[] acceptedTypes;
+	private Logger log = LoggerFactory.getLogger(getClass());
 
-	ExportAction(ModelType... acceptedTypes) {
-		if (acceptedTypes == null)
-			this.acceptedTypes = new ModelType[0];
-		else
-			this.acceptedTypes = acceptedTypes;
-	}
-
-	private boolean accepted(ModelType type) {
-		for (ModelType t : acceptedTypes)
-			if (type == t)
-				return true;
-		return false;
-	}
-
-	private boolean accepted(INavigationElement<?> element) {
-		if (!(element instanceof ModelTypeElement
-				|| element instanceof CategoryElement || element instanceof ModelElement))
-			return false;
-
-		ModelType elementType = null;
-		if (element instanceof ModelTypeElement)
-			elementType = ((ModelTypeElement) element).getContent();
-		else if (element instanceof CategoryElement)
-			elementType = ((CategoryElement) element).getContent()
-					.getModelType();
-		else
-			elementType = ((ModelElement) element).getContent().getModelType();
-
-		if (type != null && type != elementType)
-			return false;
-		if (!accepted(elementType))
-			return false;
-		type = elementType;
-		return true;
-	}
-
-	private List<BaseDescriptor> getComponents(INavigationElement<?> element) {
-		if (!(element instanceof ModelTypeElement
-				|| element instanceof CategoryElement || element instanceof ModelElement))
-			return Collections.emptyList();
-
-		if (element instanceof ModelTypeElement
-				|| element instanceof CategoryElement) {
-			List<BaseDescriptor> list = new ArrayList<>();
-			for (INavigationElement<?> child : element.getChildren())
-				list.addAll(getComponents(child));
-			return list;
-		}
-
-		BaseDescriptor descriptor = ((ModelElement) element).getContent();
-		if (visited.contains(descriptor.getId()))
-			return Collections.emptyList();
-
-		visited.add(descriptor.getId());
-		return Collections.singletonList(descriptor);
-	}
-
-	protected ModelType getType() {
-		return type;
-	}
-
-	List<BaseDescriptor> getComponents() {
-		return components;
+	public ExportAction() {
+		setText(Messages.Export);
+		setImageDescriptor(ImageType.EXPORT_ICON.getDescriptor());
 	}
 
 	@Override
 	public boolean accept(INavigationElement<?> element) {
-		visited = new HashSet<>();
-		type = null;
-		if (!accepted(element))
-			return false;
-		components = getComponents(element);
-		return !components.isEmpty();
+		if (element instanceof DatabaseElement) {
+			DatabaseElement dbElement = (DatabaseElement) element;
+			return Database.isActive(dbElement.getContent());
+		} else {
+			return (element instanceof ModelTypeElement)
+					|| (element instanceof CategoryElement)
+					|| (element instanceof ModelElement);
+		}
 	}
 
 	@Override
 	public boolean accept(List<INavigationElement<?>> elements) {
-		visited = new HashSet<>();
-		type = null;
-		for (INavigationElement<?> element : elements)
-			if (!accepted(element))
-				return false;
-		components = new ArrayList<>();
-		for (INavigationElement<?> element : elements)
-			components.addAll(getComponents(element));
-		return !components.isEmpty();
+		for (INavigationElement<?> e : elements) {
+			if (accept(e))
+				return true;
+		}
+		return false;
+	}
+
+	@Override
+	public void run() {
+		try {
+			IHandlerService service = (IHandlerService) PlatformUI
+					.getWorkbench().getService(IHandlerService.class);
+			service.executeCommand(ActionFactory.EXPORT.getCommandId(), null);
+		} catch (Exception e) {
+			log.error("Failed to open export wizard", e);
+		}
 	}
 
 }

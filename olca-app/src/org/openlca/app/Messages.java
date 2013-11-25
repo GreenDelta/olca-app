@@ -83,7 +83,6 @@ public class Messages extends NLS {
 	public static String Copying;
 	public static String Copyright;
 	public static String Country;
-	public static String CreateDatabaseAction;
 	public static String CreateProductFlow;
 	public static String CreateProductSystem;
 	public static String CreatingImpactSheet;

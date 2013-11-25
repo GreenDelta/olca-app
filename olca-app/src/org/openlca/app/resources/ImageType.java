@@ -70,6 +70,8 @@ public enum ImageType implements IImageType {
 
 	EXPAND_ICON("expandall.gif"),
 
+	EXPORT_ICON("export_wiz_16x16.gif"),
+
 	EXPRESSION_ICON("expression_obj.gif"),
 
 	EXPRESSION_ICON_DIS("expression_obj_dis.gif"),
@@ -107,6 +109,8 @@ public enum ImageType implements IImageType {
 	HIDE_ICON("hide.gif"),
 
 	ILCD_ICON("ilcd16.png"),
+
+	IMPORT_ICON("import_wiz_16x16.gif"),
 
 	IMPORT_ZIP_WIZARD("import_zip_wizard.png"),
 

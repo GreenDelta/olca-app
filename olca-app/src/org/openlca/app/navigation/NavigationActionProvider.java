@@ -1,12 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.app.navigation;
 
 import java.util.List;
@@ -29,11 +20,9 @@ import org.openlca.app.navigation.actions.DatabaseImportAction;
 import org.openlca.app.navigation.actions.DatabasePropertiesAction;
 import org.openlca.app.navigation.actions.DeleteCategoryAction;
 import org.openlca.app.navigation.actions.DeleteModelAction;
-import org.openlca.app.navigation.actions.EcoSpold1ExportAction;
-import org.openlca.app.navigation.actions.EcoSpold1ImportAction;
-import org.openlca.app.navigation.actions.ILCDExportAction;
-import org.openlca.app.navigation.actions.ILCDImportAction;
+import org.openlca.app.navigation.actions.ExportAction;
 import org.openlca.app.navigation.actions.INavigationAction;
+import org.openlca.app.navigation.actions.ImportAction;
 import org.openlca.app.navigation.actions.OpenModelAction;
 import org.openlca.app.navigation.actions.OpenUsageAction;
 import org.openlca.app.navigation.actions.PasteAction;
@@ -70,10 +59,8 @@ public class NavigationActionProvider extends CommonActionProvider {
 			}, 
 			// IO actions
 			new INavigationAction[] {
-				new EcoSpold1ExportAction(),
-				new EcoSpold1ImportAction(),
-				new ILCDExportAction(),
-				new ILCDImportAction()
+				new ImportAction(),
+				new ExportAction(),
 			},
 			// category actions
 			new INavigationAction[] {
