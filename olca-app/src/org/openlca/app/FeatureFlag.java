@@ -26,8 +26,7 @@ public enum FeatureFlag {
 
 	PRODUCT_SYSTEM_EXPORT("Enable product system excel export"),
 
-	// TODO: can be removed if no errors occur in release 1.3.0
-	// CONTRIBUTION_TREE("Enable contribution tree"),
+	MATRIX_IMAGE_EXPORT("Export a product system matrix as image"),
 
 	AUTOMATIC_UPDATES("Enable automatic updates");
 
