@@ -64,6 +64,17 @@ public class App {
 	}
 
 	/**
+	 * Indicates if the application runs in developer mode (for activation of
+	 * experimental features and development tools).
+	 */
+	public static boolean runsInDevMode() {
+		String val = CommandArgument.DEV_MODE.getValue();
+		if (val == null)
+			return false;
+		return val.equals("true");
+	}
+
+	/**
 	 * Returns the absolute path to the installed XUL-Runner. Returns null if no
 	 * XUL runner installation could be found.
 	 */

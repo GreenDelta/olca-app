@@ -23,7 +23,13 @@ public enum CommandArgument {
 	/**
 	 * olcaVersion: the openLCA version which was set in the build.
 	 */
-	VERSION("olcaVersion");
+	VERSION("olcaVersion"),
+
+	/**
+	 * olcaDevMode: has the value true or false (default) and indicates if the
+	 * application is running in developer modus or not.
+	 */
+	DEV_MODE("olcaDevMode");
 
 	private final String key;
 

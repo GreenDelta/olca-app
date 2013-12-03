@@ -7,6 +7,7 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.actions.ActionContext;
 import org.eclipse.ui.navigator.CommonActionProvider;
+import org.openlca.app.App;
 import org.openlca.app.navigation.actions.CopyAction;
 import org.openlca.app.navigation.actions.CreateCategoryAction;
 import org.openlca.app.navigation.actions.CreateModelAction;
@@ -27,6 +28,7 @@ import org.openlca.app.navigation.actions.OpenModelAction;
 import org.openlca.app.navigation.actions.OpenUsageAction;
 import org.openlca.app.navigation.actions.PasteAction;
 import org.openlca.app.navigation.actions.RenameCategoryAction;
+import org.openlca.app.navigation.actions.XEI3MetaDataImportAction;
 import org.openlca.app.util.Viewers;
 
 /**
@@ -36,14 +38,9 @@ public class NavigationActionProvider extends CommonActionProvider {
 
 	//@formatter:off
 	private INavigationAction[][] actions = new INavigationAction[][] {
-			// database actions
-			new INavigationAction[] {					
-				new DatabaseActivateAction(), 
-				new DatabasePropertiesAction(),
-				new DatabaseCloseAction(), 
-				new DatabaseExportAction(),
-				new DatabaseDeleteAction()
-			},			
+			
+			getDatabaseActions(),
+			
 			// model actions
 			new INavigationAction[] {
 				new OpenModelAction(),
@@ -86,6 +83,20 @@ public class NavigationActionProvider extends CommonActionProvider {
 			menu.add(new Separator());
 		menu.add(new DatabaseCreateAction());
 		menu.add(new DatabaseImportAction());
+	}
+
+	private INavigationAction[] getDatabaseActions() {
+		int count = App.runsInDevMode() ? 6 : 5;
+		INavigationAction[] actions = new INavigationAction[count];
+		actions[0] = new DatabaseActivateAction();
+		actions[1] = new DatabasePropertiesAction();
+		actions[2] = new DatabaseCloseAction();
+		actions[3] = new DatabaseExportAction();
+		actions[4] = new DatabaseDeleteAction();
+		if (count == 6) {
+			actions[5] = new XEI3MetaDataImportAction();
+		}
+		return actions;
 	}
 
 	private int registerSingleActions(INavigationElement<?> element,
