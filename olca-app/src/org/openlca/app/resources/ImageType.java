@@ -76,6 +76,8 @@ public enum ImageType implements IImageType {
 
 	EXPRESSION_ICON_DIS("expression_obj_dis.gif"),
 
+	EXTENSION_ICON("extension_16.gif"),
+
 	FILE_ICON("file_16.gif"),
 
 	FLOW_CATEGORY_ICON("folder_flow.png"),

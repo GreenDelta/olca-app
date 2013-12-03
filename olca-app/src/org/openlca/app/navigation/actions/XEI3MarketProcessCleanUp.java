@@ -7,21 +7,15 @@ import org.openlca.app.App;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
-import org.openlca.app.navigation.Navigator;
 import org.openlca.app.resources.ImageType;
-import org.openlca.core.model.ModelType;
-import org.openlca.io.ecospold2.IsicCategoryTreeSync;
+import org.openlca.io.ecospold2.MarketProcessCleanUp;
 
-/**
- * Navigation extension that imports ecoinvent 3 meta data into an existing
- * database.
- */
-public class XEI3MetaDataImportAction extends Action implements
+public class XEI3MarketProcessCleanUp extends Action implements
 		INavigationAction {
 
-	public XEI3MetaDataImportAction() {
+	public XEI3MarketProcessCleanUp() {
 		setImageDescriptor(ImageType.EXTENSION_ICON.getDescriptor());
-		setText("Import ecoinvent 3 meta data");
+		setText("Merge EI3 market processes");
 	}
 
 	@Override
@@ -39,15 +33,8 @@ public class XEI3MetaDataImportAction extends Action implements
 
 	@Override
 	public void run() {
-		App.run("Update flow categories",
-				new IsicCategoryTreeSync(Database.get(), ModelType.FLOW));
-		App.run("Update process categories",
-				new IsicCategoryTreeSync(Database.get(), ModelType.PROCESS),
-				new Runnable() {
-					@Override
-					public void run() {
-						Navigator.refresh();
-					}
-				});
+		App.run("Merge market processes",
+				new MarketProcessCleanUp(Database.get()));
 	}
+
 }

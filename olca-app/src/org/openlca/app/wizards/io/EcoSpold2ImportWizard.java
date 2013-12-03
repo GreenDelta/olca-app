@@ -9,12 +9,14 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
+import org.openlca.app.App;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.resources.ImageType;
 import org.openlca.core.database.IDatabase;
 import org.openlca.io.ecospold2.EcoSpold2Import;
+import org.openlca.io.ecospold2.ImportConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,12 +41,9 @@ public class EcoSpold2ImportWizard extends Wizard implements IImportWizard {
 
 	@Override
 	public boolean performFinish() {
-		File[] files = importPage.getFiles();
-		IDatabase database = Database.get();
-		if (files == null || files.length == 0 || database == null)
+		final EcoSpold2Import pi = createImport();
+		if (pi == null)
 			return false;
-		final EcoSpold2Import pi = new EcoSpold2Import(database);
-		pi.setFiles(files);
 		try {
 			getContainer().run(true, true, new IRunnableWithProgress() {
 				@Override
@@ -63,6 +62,24 @@ public class EcoSpold2ImportWizard extends Wizard implements IImportWizard {
 			Navigator.refresh();
 			Cache.evictAll();
 		}
+	}
+
+	private EcoSpold2Import createImport() {
+		File[] files = importPage.getFiles();
+		IDatabase database = Database.get();
+		if (files == null || files.length == 0 || database == null)
+			return null;
+		EcoSpold2Import pi = new EcoSpold2Import(database);
+		pi.setFiles(files);
+		if (App.runsInDevMode()) {
+			ImportConfig conf = new ImportConfig();
+			conf.setCheckFormulas(true);
+			conf.setSkipNullExchanges(true);
+			conf.setWithParameterFormulas(false);
+			conf.setWithParameters(false);
+			pi.setConfig(conf);
+		}
+		return pi;
 	}
 
 	@Override
