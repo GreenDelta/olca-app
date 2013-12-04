@@ -545,6 +545,16 @@
             %wizard.description.0
          </description>
       </wizard>
+       <wizard
+            category="export.category.ecospold"
+            class="org.openlca.app.wizards.io.EcoSpold2ExportWizard"
+            icon="icons/xml.png"
+            id="wizard.export.ecospold.process"
+            name="EcoSpold 2">
+         <description>
+            Export processes as EcoSpold 2 activity data sets
+         </description>
+      </wizard>
       <wizard
             category="export.category.ecospold"
             class="org.openlca.app.wizards.io.EcoSpold01ExportMethodWizard"

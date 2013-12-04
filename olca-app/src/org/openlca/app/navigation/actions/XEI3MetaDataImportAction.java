@@ -10,7 +10,7 @@ import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.resources.ImageType;
 import org.openlca.core.model.ModelType;
-import org.openlca.io.ecospold2.IsicCategoryTreeSync;
+import org.openlca.io.ecospold2.input.IsicCategoryTreeSync;
 
 /**
  * Navigation extension that imports ecoinvent 3 meta data into an existing
