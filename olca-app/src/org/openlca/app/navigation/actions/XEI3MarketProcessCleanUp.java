@@ -8,7 +8,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.resources.ImageType;
-import org.openlca.io.ecospold2.MarketProcessCleanUp;
+import org.openlca.io.ecospold2.input.MarketProcessCleanUp;
 
 public class XEI3MarketProcessCleanUp extends Action implements
 		INavigationAction {

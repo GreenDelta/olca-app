@@ -15,8 +15,8 @@ import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.resources.ImageType;
 import org.openlca.core.database.IDatabase;
-import org.openlca.io.ecospold2.EcoSpold2Import;
-import org.openlca.io.ecospold2.ImportConfig;
+import org.openlca.io.ecospold2.input.EcoSpold2Import;
+import org.openlca.io.ecospold2.input.ImportConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
