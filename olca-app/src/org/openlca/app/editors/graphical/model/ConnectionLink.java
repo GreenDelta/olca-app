@@ -18,10 +18,6 @@ public class ConnectionLink {
 	private ProcessNode targetNode;
 	private ConnectionLinkPart editPart;
 
-	public ConnectionLink() {
-
-	}
-
 	void setEditPart(ConnectionLinkPart editPart) {
 		this.editPart = editPart;
 	}

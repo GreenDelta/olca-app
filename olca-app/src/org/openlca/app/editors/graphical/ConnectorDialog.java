@@ -32,11 +32,13 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.model.ExchangeNode;
+import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.ProcessDao;
+import org.openlca.core.matrix.ProcessLinkSearchMap;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
@@ -56,6 +58,7 @@ public class ConnectorDialog extends Dialog {
 	private Exchange exchange;
 	private ProcessDescriptor parentProcess;
 	private ProductSystem productSystem;
+	private ProcessLinkSearchMap linkSearch;
 	private TableViewer viewer;
 	private boolean selectProvider;
 	private List<ConnectableProcess> connectableProcesses = new ArrayList<>();
@@ -66,8 +69,10 @@ public class ConnectorDialog extends Dialog {
 		setBlockOnOpen(true);
 		exchange = exchangeNode.getExchange();
 		parentProcess = exchangeNode.getParent().getParent().getProcess();
-		productSystem = exchangeNode.getParent().getParent().getParent()
-				.getProductSystem();
+		ProductSystemNode systemNode = exchangeNode.getParent().getParent()
+				.getParent();
+		productSystem = systemNode.getProductSystem();
+		linkSearch = systemNode.getLinkSearch();
 		selectProvider = exchange.isInput();
 	}
 
@@ -168,8 +173,8 @@ public class ConnectorDialog extends Dialog {
 			boolean alreadyConnected = false;
 			if (alreadyExisting) {
 				if (selectProvider) {
-					for (ProcessLink link : ProcessLinks.getOutgoing(
-							productSystem, process.getId())) {
+					for (ProcessLink link : linkSearch.getOutgoingLinks(process
+							.getId())) {
 						if (link.getRecipientId() == parentProcess.getId()
 								&& link.getFlowId() == exchange.getFlow()
 										.getId()) {
@@ -178,8 +183,8 @@ public class ConnectorDialog extends Dialog {
 						}
 					}
 				} else {
-					for (ProcessLink link : ProcessLinks.getIncoming(
-							productSystem, process.getId())) {
+					for (ProcessLink link : linkSearch.getIncomingLinks(process
+							.getId())) {
 						if (link.getProviderId() == parentProcess.getId()
 								&& link.getFlowId() == exchange.getFlow()
 										.getId()) {
@@ -205,8 +210,8 @@ public class ConnectorDialog extends Dialog {
 
 		// check if recipient already has a provider
 		if (!selectProvider)
-			for (ProcessLink link : ProcessLinks.getIncoming(productSystem,
-					process.getProcess().getId()))
+			for (ProcessLink link : linkSearch.getIncomingLinks(process
+					.getProcess().getId()))
 				if (link.getFlowId() == exchange.getFlow().getId())
 					return false;
 

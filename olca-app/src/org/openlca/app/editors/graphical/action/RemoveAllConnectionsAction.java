@@ -6,10 +6,11 @@ import java.util.List;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.viewers.ISelection;
 import org.openlca.app.Messages;
-import org.openlca.app.editors.graphical.ProcessLinks;
 import org.openlca.app.editors.graphical.command.CommandFactory;
 import org.openlca.app.editors.graphical.model.ConnectionLink;
 import org.openlca.app.editors.graphical.model.ProcessNode;
+import org.openlca.app.editors.graphical.model.ProductSystemNode;
+import org.openlca.core.matrix.ProcessLinkSearchMap;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
 
@@ -43,15 +44,15 @@ public class RemoveAllConnectionsAction extends EditorAction {
 		if (processNodes.size() == 0)
 			return;
 		Command chainCommand = null;
-		ProductSystem productSystem = processNodes.get(0).getParent()
-				.getProductSystem();
+		ProductSystemNode systemNode = processNodes.get(0).getParent();
+		ProductSystem system = systemNode.getProductSystem();
+		ProcessLinkSearchMap linkSearch = systemNode.getLinkSearch();
 		List<ConnectionLink> links = new ArrayList<>();
 		for (ProcessNode processNode : processNodes) {
-			List<ProcessLink> processLinks = ProcessLinks.getAll(productSystem,
-					processNode.getProcess().getId());
+			List<ProcessLink> processLinks = linkSearch.getLinks(processNode
+					.getProcess().getId());
 			for (ProcessLink link : processLinks)
-				productSystem.getProcessLinks().remove(link);
-
+				system.getProcessLinks().remove(link);
 			Command cmd = getDeleteCommand(processNode, links);
 			if (cmd != null)
 				if (chainCommand == null)
@@ -59,7 +60,7 @@ public class RemoveAllConnectionsAction extends EditorAction {
 				else
 					chainCommand = chainCommand.chain(cmd);
 		}
-
+		systemNode.reindexLinks(); // remove deleted links from the search index
 		processNodes.get(0).getParent().getEditor().getCommandStack()
 				.execute(chainCommand);
 	}

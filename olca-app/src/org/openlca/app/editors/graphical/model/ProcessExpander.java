@@ -10,11 +10,10 @@ import org.eclipse.draw2d.MouseEvent;
 import org.eclipse.draw2d.MouseListener;
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.db.Cache;
-import org.openlca.app.editors.graphical.ProcessLinks;
 import org.openlca.app.editors.graphical.command.CommandFactory;
 import org.openlca.app.resources.ImageType;
+import org.openlca.core.matrix.ProcessLinkSearchMap;
 import org.openlca.core.model.ProcessLink;
-import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 class ProcessExpander extends ImageFigure {
@@ -32,9 +31,9 @@ class ProcessExpander extends ImageFigure {
 	}
 
 	boolean shouldBeVisible() {
-		ProductSystem system = node.getParent().getProductSystem();
+		ProcessLinkSearchMap linkSearch = node.getParent().getLinkSearch();
 		long processId = node.getProcess().getId();
-		for (ProcessLink link : ProcessLinks.getAll(system, processId))
+		for (ProcessLink link : linkSearch.getLinks(processId))
 			if (side == Side.LEFT && link.getRecipientId() == processId)
 				return true;
 			else if (side == Side.RIGHT && link.getProviderId() == processId)
@@ -61,11 +60,11 @@ class ProcessExpander extends ImageFigure {
 
 	private void createNecessaryNodes() {
 		ProductSystemNode systemNode = node.getParent();
-		ProductSystem system = systemNode.getProductSystem();
+		ProcessLinkSearchMap linkSearch = systemNode.getLinkSearch();
 		long processId = node.getProcess().getId();
-		List<ProcessLink> links = side == Side.LEFT ? ProcessLinks.getIncoming(
-				system, processId) : ProcessLinks
-				.getOutgoing(system, processId);
+		List<ProcessLink> links = side == Side.LEFT ? linkSearch
+				.getIncomingLinks(processId) : linkSearch
+				.getOutgoingLinks(processId);
 		Map<Long, ProcessDescriptor> map = getLinkedProcesses(links);
 		for (ProcessLink link : links) {
 			long linkedProcessId = side == Side.LEFT ? link.getProviderId()

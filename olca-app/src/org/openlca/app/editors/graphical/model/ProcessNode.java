@@ -7,9 +7,9 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
-import org.openlca.app.editors.graphical.ProcessLinks;
 import org.openlca.app.editors.graphical.layout.GraphLayoutManager;
 import org.openlca.core.database.ProcessDao;
+import org.openlca.core.matrix.ProcessLinkSearchMap;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Location;
@@ -207,8 +207,9 @@ public class ProcessNode extends Node {
 	}
 
 	public boolean hasIncomingConnection(long flowId) {
-		for (ProcessLink link : ProcessLinks.getIncoming(getParent()
-				.getProductSystem(), getProcess().getId()))
+		ProcessLinkSearchMap linkSearch = getParent().getLinkSearch();
+		for (ProcessLink link : linkSearch.getIncomingLinks(getProcess()
+				.getId()))
 			if (link.getFlowId() == flowId)
 				return true;
 		return false;

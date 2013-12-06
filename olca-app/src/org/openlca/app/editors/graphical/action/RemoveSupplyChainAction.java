@@ -10,9 +10,10 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.viewers.ISelection;
 import org.openlca.app.Messages;
-import org.openlca.app.editors.graphical.ProcessLinks;
 import org.openlca.app.editors.graphical.model.ConnectionLink;
 import org.openlca.app.editors.graphical.model.ProcessNode;
+import org.openlca.app.editors.graphical.model.ProductSystemNode;
+import org.openlca.core.matrix.ProcessLinkSearchMap;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
 
@@ -37,10 +38,12 @@ public class RemoveSupplyChainAction extends EditorAction {
 
 	private void removeSupplyChain(long processId, Set<ConnectionLink> links,
 			Set<ProcessNode> nodes) {
-		ProductSystem system = getEditor().getModel().getProductSystem();
-		ProcessNode node = getEditor().getModel().getProcessNode(processId);
-		List<ProcessLink> incomingLinks = ProcessLinks.getIncoming(system,
-				processId);
+		ProductSystemNode systemNode = getEditor().getModel();
+		ProductSystem system = systemNode.getProductSystem();
+		ProcessNode node = systemNode.getProcessNode(processId);
+		ProcessLinkSearchMap linkSearch = systemNode.getLinkSearch();
+		List<ProcessLink> incomingLinks = linkSearch
+				.getIncomingLinks(processId);
 		for (ProcessLink link : incomingLinks) {
 			if (node != null) {
 				ConnectionLink l = node.getLink(link);
@@ -48,7 +51,7 @@ public class RemoveSupplyChainAction extends EditorAction {
 					links.add(l);
 			}
 			system.getProcessLinks().remove(link);
-			if (ProcessLinks.getOutgoing(system, link.getProviderId()).size() == 0) {
+			if (linkSearch.getOutgoingLinks(link.getProviderId()).size() == 0) {
 				removeSupplyChain(link.getProviderId(), links, nodes);
 				system.getProcesses().remove(link.getProviderId());
 				ProcessNode providerNode = getEditor().getModel()
@@ -57,6 +60,7 @@ public class RemoveSupplyChainAction extends EditorAction {
 					nodes.add(providerNode);
 			}
 		}
+		systemNode.reindexLinks();
 	}
 
 	@Override
