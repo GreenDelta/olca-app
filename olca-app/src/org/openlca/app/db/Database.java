@@ -18,6 +18,8 @@ import org.openlca.core.database.SourceDao;
 import org.openlca.core.database.UnitGroupDao;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Database management of the application. */
 public class Database {
@@ -48,6 +50,9 @@ public class Database {
 			Database.database = config.createInstance();
 			Cache.create(database);
 			Database.config = config;
+			Logger log = LoggerFactory.getLogger(Database.class);
+			log.trace("acitvated database {} with version{}",
+					database.getName(), database.getVersion());
 			return Database.database;
 		} catch (Exception e) {
 			Database.database = null;

@@ -18,6 +18,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
+import org.openlca.app.util.UncertaintyLabel;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ParameterDao;
 import org.openlca.core.model.Parameter;
@@ -59,7 +60,7 @@ class ProcessParameterPage extends ModelPage<Process> {
 		Composite client = UI.sectionClient(section, toolkit);
 		UI.gridLayout(client, 1);
 		String[] columns = { Messages.Name, Messages.Value,
-				Messages.Description };
+				Messages.Uncertainty, Messages.Description };
 		TableViewer table = Tables.createViewer(client, columns);
 		table.setLabelProvider(new ParameterLabel());
 		IDatabase database = Database.get();
@@ -95,6 +96,8 @@ class ProcessParameterPage extends ModelPage<Process> {
 			case 1:
 				return Double.toString(parameter.getValue());
 			case 2:
+				return UncertaintyLabel.get(parameter.getUncertainty());
+			case 3:
 				return parameter.getDescription();
 			default:
 				return null;

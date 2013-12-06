@@ -8,6 +8,7 @@ import org.openlca.app.processes.ProcessEditor;
 import org.openlca.app.util.UncertaintyLabel;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.ImpactFactor;
+import org.openlca.core.model.Parameter;
 import org.openlca.core.model.Uncertainty;
 import org.openlca.core.model.UncertaintyType;
 import org.openlca.expressions.FormulaInterpreter;
@@ -20,6 +21,7 @@ public class UncertaintyCellEditor extends DialogCellEditor {
 	private ModelEditor<?> editor;
 	private ImpactFactor factor;
 	private Exchange exchange;
+	private Parameter parameter;
 	private FormulaInterpreter interpreter;
 	private long interpreterScope = -1;
 
@@ -42,6 +44,9 @@ public class UncertaintyCellEditor extends DialogCellEditor {
 		} else if (value instanceof Exchange) {
 			exchange = (Exchange) value;
 			uncertainty = exchange.getUncertainty();
+		} else if (value instanceof Parameter) {
+			parameter = (Parameter) value;
+			uncertainty = parameter.getUncertainty();
 		}
 		super.doSetValue(UncertaintyLabel.get(uncertainty));
 	}
@@ -67,6 +72,8 @@ public class UncertaintyCellEditor extends DialogCellEditor {
 			exchange.setUncertainty(uncertainty);
 		else if (factor != null)
 			factor.setUncertainty(uncertainty);
+		else if (parameter != null)
+			parameter.setUncertainty(uncertainty);
 		updateContents(UncertaintyLabel.get(uncertainty));
 		editor.setDirty(true);
 	}
@@ -80,6 +87,9 @@ public class UncertaintyCellEditor extends DialogCellEditor {
 		} else if (factor != null) {
 			uncertainty = factor.getUncertainty();
 			val = factor.getValue();
+		} else if (parameter != null) {
+			uncertainty = parameter.getUncertainty();
+			val = parameter.getValue();
 		}
 		if (uncertainty != null)
 			return uncertainty;
