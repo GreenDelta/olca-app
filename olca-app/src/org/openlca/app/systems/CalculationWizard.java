@@ -69,6 +69,8 @@ class CalculationWizard extends Wizard {
 		public void run(IProgressMonitor monitor)
 				throws InvocationTargetException, InterruptedException {
 			monitor.beginTask("Run calculation", IProgressMonitor.UNKNOWN);
+			int size = productSystem.getProcesses().size();
+			log.trace("calculate a {} x {} system", size, size);
 			if (setup.hasType(CalculationSetup.QUICK_RESULT))
 				solve();
 			else if (setup.hasType(CalculationSetup.ANALYSIS))
