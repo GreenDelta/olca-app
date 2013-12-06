@@ -295,4 +295,9 @@ public class ProcessNode extends Node {
 		return Objects.equal(getProcess(), other.getProcess());
 	}
 
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(getProcess());
+	}
+
 }

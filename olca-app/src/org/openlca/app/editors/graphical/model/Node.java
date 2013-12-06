@@ -7,7 +7,7 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 
-abstract class Node implements Comparable<Node> {
+public abstract class Node implements Comparable<Node> {
 
 	private Node parent;
 	private List<Node> children;
@@ -35,7 +35,7 @@ abstract class Node implements Comparable<Node> {
 		this.parent = parent;
 	}
 
-	boolean add(Node child) {
+	public boolean add(Node child) {
 		boolean b = children.add(child);
 		if (b) {
 			child.setParent(this);
@@ -45,7 +45,7 @@ abstract class Node implements Comparable<Node> {
 		return b;
 	}
 
-	boolean remove(Node child) {
+	public boolean remove(Node child) {
 		boolean b = children.remove(child);
 		if (b)
 			if (editPart != null)

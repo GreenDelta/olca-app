@@ -15,6 +15,10 @@ import org.openlca.core.model.ProductSystem;
  */
 public class ProcessLinks {
 
+	/**
+	 * Get the links where the given process is either the recipient or the
+	 * provider.
+	 */
 	public static List<ProcessLink> getAll(ProductSystem system, long processId) {
 		if (system == null)
 			return Collections.emptyList();
@@ -27,11 +31,13 @@ public class ProcessLinks {
 		return links;
 	}
 
+	/** Get the links where the given process is the recipient. */
 	public static List<ProcessLink> getIncoming(ProductSystem system,
 			long processId) {
 		return getLinks(system, processId, true);
 	}
 
+	/** Get the links where the given process is the provider. */
 	public static List<ProcessLink> getOutgoing(ProductSystem system,
 			long processId) {
 		return getLinks(system, processId, false);

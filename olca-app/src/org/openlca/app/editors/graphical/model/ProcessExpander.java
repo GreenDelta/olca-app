@@ -1,7 +1,9 @@
 package org.openlca.app.editors.graphical.model;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.draw2d.ImageFigure;
 import org.eclipse.draw2d.MouseEvent;
@@ -64,13 +66,13 @@ class ProcessExpander extends ImageFigure {
 		List<ProcessLink> links = side == Side.LEFT ? ProcessLinks.getIncoming(
 				system, processId) : ProcessLinks
 				.getOutgoing(system, processId);
+		Map<Long, ProcessDescriptor> map = getLinkedProcesses(links);
 		for (ProcessLink link : links) {
-			processId = side == Side.LEFT ? link.getProviderId() : link
-					.getRecipientId();
-			ProcessNode node = systemNode.getProcessNode(processId);
+			long linkedProcessId = side == Side.LEFT ? link.getProviderId()
+					: link.getRecipientId();
+			ProcessNode node = systemNode.getProcessNode(linkedProcessId);
 			if (node == null) {
-				ProcessDescriptor descriptor = Cache.getEntityCache().get(
-						ProcessDescriptor.class, processId);
+				ProcessDescriptor descriptor = map.get(linkedProcessId);
 				node = new ProcessNode(descriptor);
 				systemNode.add(node);
 			}
@@ -82,6 +84,19 @@ class ProcessExpander extends ImageFigure {
 			connectionLink.setProcessLink(link);
 			connectionLink.link();
 		}
+	}
+
+	private Map<Long, ProcessDescriptor> getLinkedProcesses(
+			List<ProcessLink> links) {
+		HashSet<Long> processIds = new HashSet<>();
+		for (ProcessLink link : links) {
+			if (side == Side.LEFT)
+				processIds.add(link.getProviderId());
+			else
+				processIds.add(link.getRecipientId());
+		}
+		return Cache.getEntityCache().getAll(ProcessDescriptor.class,
+				processIds);
 	}
 
 	void collapse() {
