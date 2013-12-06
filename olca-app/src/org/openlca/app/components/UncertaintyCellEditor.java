@@ -9,21 +9,26 @@ import org.openlca.app.util.UncertaintyLabel;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.ImpactFactor;
 import org.openlca.core.model.Parameter;
+import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.Uncertainty;
 import org.openlca.core.model.UncertaintyType;
 import org.openlca.expressions.FormulaInterpreter;
 
 /**
- * An uncertainty cell editor for exchanges and LCIA factors.
+ * An uncertainty cell editor for exchanges, LCIA factors, parameters, and
+ * parameter redefinitions.
  */
 public class UncertaintyCellEditor extends DialogCellEditor {
 
 	private ModelEditor<?> editor;
+	private FormulaInterpreter interpreter;
+	private long interpreterScope = -1;
+
+	// types for which this cell editor can be used
 	private ImpactFactor factor;
 	private Exchange exchange;
 	private Parameter parameter;
-	private FormulaInterpreter interpreter;
-	private long interpreterScope = -1;
+	private ParameterRedef parameterRedef;
 
 	public UncertaintyCellEditor(Composite parent, ModelEditor<?> editor) {
 		super(parent);
@@ -47,6 +52,9 @@ public class UncertaintyCellEditor extends DialogCellEditor {
 		} else if (value instanceof Parameter) {
 			parameter = (Parameter) value;
 			uncertainty = parameter.getUncertainty();
+		} else if (value instanceof ParameterRedef) {
+			parameterRedef = (ParameterRedef) value;
+			uncertainty = parameterRedef.getUncertainty();
 		}
 		super.doSetValue(UncertaintyLabel.get(uncertainty));
 	}
@@ -74,6 +82,8 @@ public class UncertaintyCellEditor extends DialogCellEditor {
 			factor.setUncertainty(uncertainty);
 		else if (parameter != null)
 			parameter.setUncertainty(uncertainty);
+		else if (parameterRedef != null)
+			parameterRedef.setUncertainty(uncertainty);
 		updateContents(UncertaintyLabel.get(uncertainty));
 		editor.setDirty(true);
 	}
@@ -90,6 +100,9 @@ public class UncertaintyCellEditor extends DialogCellEditor {
 		} else if (parameter != null) {
 			uncertainty = parameter.getUncertainty();
 			val = parameter.getValue();
+		} else if (parameterRedef != null) {
+			uncertainty = parameterRedef.getUncertainty();
+			val = parameterRedef.getValue();
 		}
 		if (uncertainty != null)
 			return uncertainty;
