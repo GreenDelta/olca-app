@@ -52,6 +52,7 @@ public class ReconnectLinkCommand extends Command {
 		link.setProcessLink(processLink);
 		link.link();
 		systemNode.getEditor().setDirty(true);
+		systemNode.reindexLinks();
 	}
 
 	@Override
@@ -63,20 +64,24 @@ public class ReconnectLinkCommand extends Command {
 	public void redo() {
 		link.link();
 		oldLink.unlink();
-		ProductSystem system = sourceNode.getParent().getProductSystem();
+		ProductSystemNode systemNode = sourceNode.getParent();
+		ProductSystem system = systemNode.getProductSystem();
 		system.getProcessLinks().remove(oldLink.getProcessLink());
 		system.getProcessLinks().add(link.getProcessLink());
-		sourceNode.getParent().getEditor().setDirty(true);
+		systemNode.getEditor().setDirty(true);
+		systemNode.reindexLinks();
 	}
 
 	@Override
 	public void undo() {
-		ProductSystem system = sourceNode.getParent().getProductSystem();
+		ProductSystemNode systemNode = sourceNode.getParent();
+		ProductSystem system = systemNode.getProductSystem();
 		system.getProcessLinks().remove(link.getProcessLink());
 		system.getProcessLinks().add(oldLink.getProcessLink());
 		link.unlink();
 		oldLink.link();
 		sourceNode.getParent().getEditor().setDirty(true);
+		systemNode.reindexLinks();
 	}
 
 	void setLink(ConnectionLink oldLink) {

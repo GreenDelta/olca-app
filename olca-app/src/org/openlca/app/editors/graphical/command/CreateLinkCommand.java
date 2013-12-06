@@ -4,6 +4,7 @@ import org.eclipse.gef.commands.Command;
 import org.openlca.app.Messages;
 import org.openlca.app.editors.graphical.model.ConnectionLink;
 import org.openlca.app.editors.graphical.model.ProcessNode;
+import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
 
@@ -44,12 +45,14 @@ public class CreateLinkCommand extends Command {
 
 	@Override
 	public void execute() {
-		ProductSystem system = sourceNode.getParent().getProductSystem();
+		ProductSystemNode systemNode = sourceNode.getParent();
+		ProductSystem system = systemNode.getProductSystem();
 		processLink = getProcessLink();
 		system.getProcessLinks().add(processLink);
 		link = getLink();
 		link.link();
-		sourceNode.getParent().getEditor().setDirty(true);
+		systemNode.getEditor().setDirty(true);
+		systemNode.reindexLinks();
 	}
 
 	private ProcessLink getProcessLink() {
@@ -70,18 +73,22 @@ public class CreateLinkCommand extends Command {
 
 	@Override
 	public void redo() {
+		ProductSystemNode systemNode = sourceNode.getParent();
 		link.link();
-		ProductSystem system = sourceNode.getParent().getProductSystem();
+		ProductSystem system = systemNode.getProductSystem();
 		system.getProcessLinks().add(processLink);
-		sourceNode.getParent().getEditor().setDirty(true);
+		systemNode.getEditor().setDirty(true);
+		systemNode.reindexLinks();
 	}
 
 	@Override
 	public void undo() {
-		ProductSystem system = sourceNode.getParent().getProductSystem();
+		ProductSystemNode systemNode = sourceNode.getParent();
+		ProductSystem system = systemNode.getProductSystem();
 		system.getProcessLinks().remove(processLink);
 		link.unlink();
-		sourceNode.getParent().getEditor().setDirty(true);
+		systemNode.getEditor().setDirty(true);
+		systemNode.reindexLinks();
 	}
 
 	public void setSourceNode(ProcessNode sourceNode) {

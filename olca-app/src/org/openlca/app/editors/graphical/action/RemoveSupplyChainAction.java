@@ -93,21 +93,20 @@ public class RemoveSupplyChainAction extends EditorAction {
 
 		@Override
 		public void execute() {
+			ProductSystemNode systemNode = node.getParent();
+			ProductSystem system = systemNode.getProductSystem();
 			for (ConnectionLink link : links) {
 				visibility.put(getKey(link.getProcessLink()), link.isVisible());
 				link.unlink();
-				link.getSourceNode().getParent().getProductSystem()
-						.getProcessLinks().remove(link.getProcessLink());
+				system.getProcessLinks().remove(link.getProcessLink());
 			}
-			for (ProcessNode node : nodes) {
-				layouts.put(node.getProcess().getId(),
-						node.getXyLayoutConstraints());
-				node.getParent().getProductSystem().getProcesses()
-						.remove(node.getProcess().getId());
-				node.getParent().remove(node);
-				if (node.getParent().getEditor().getOutline() != null)
-					node.getParent().getEditor().getOutline().refresh();
+			for (ProcessNode processNode : nodes) {
+				layouts.put(processNode.getProcess().getId(),
+						processNode.getXyLayoutConstraints());
+				system.getProcesses().remove(processNode.getProcess().getId());
+				systemNode.remove(processNode);
 			}
+			refresh(systemNode);
 		}
 
 		@Override
@@ -117,21 +116,29 @@ public class RemoveSupplyChainAction extends EditorAction {
 
 		@Override
 		public void undo() {
+			ProductSystemNode systemNode = node.getParent();
 			for (ProcessNode node : nodes) {
-				node.getParent().add(node);
+				systemNode.add(node);
 				node.setXyLayoutConstraints(layouts.remove(node.getProcess()
 						.getId()));
-				node.getParent().getProductSystem().getProcesses()
+				systemNode.getProductSystem().getProcesses()
 						.add(node.getProcess().getId());
 				if (node.getParent().getEditor().getOutline() != null)
 					node.getParent().getEditor().getOutline().refresh();
 			}
 			for (ConnectionLink link : links) {
-				link.getSourceNode().getParent().getProductSystem()
-						.getProcessLinks().add(link.getProcessLink());
+				systemNode.getProductSystem().getProcessLinks()
+						.add(link.getProcessLink());
 				link.link();
 				link.setVisible(visibility.remove(getKey(link.getProcessLink())));
 			}
+			refresh(systemNode);
+		}
+
+		private void refresh(ProductSystemNode systemNode) {
+			systemNode.reindexLinks();
+			if (systemNode.getEditor().getOutline() != null)
+				systemNode.getEditor().getOutline().refresh();
 		}
 
 		@Override
