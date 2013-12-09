@@ -64,11 +64,6 @@ public class FlowViewer extends AbstractComboViewer<FlowDescriptor> {
 	}
 
 	@Override
-	public void setInput(FlowDescriptor[] input) {
-		super.setInput(input);
-	}
-
-	@Override
 	protected void internalSelect(Object value) {
 		super.internalSelect(value);
 		if (value instanceof FlowDescriptor)
@@ -88,10 +83,11 @@ public class FlowViewer extends AbstractComboViewer<FlowDescriptor> {
 			Category category = cache.get(Category.class,
 					descriptor.getCategory());
 			if (category != null) {
-				text += " ( " + CategoryPath.getShort(category) + ")";
+				text += " ( " + CategoryPath.getFull(category) + ")";
 			}
 		}
-		combo.setText(text);
+		combo.setToolTipText(text);
+		// combo.setText(text); // this removes the selection from the viewer!
 	}
 
 	private class FlowSorter extends ViewerSorter {
