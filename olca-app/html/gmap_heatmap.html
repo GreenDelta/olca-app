@@ -35,19 +35,23 @@ html,body,#map_canvas {
 				streetViewControl : false,
 				overviewMapControl : false,
 				mapTypeId : google.maps.MapTypeId.TERRAIN,
-
-				styles : [ {
-					stylers : [ {
-						visibility : "off"
-					} ]
-				}, {
-					featureType : "water",
-					elementType : "geometry",
-					stylers : [ {
-						visibility : "on"
-					} ]
-				} ]
-
+				styles : [ 
+  					{ featureType : "water", elementType : "geometry",
+    				  	stylers : [ { visibility : "on" } ]
+  					}, 
+  					{ featureType: "administrative", elementType: "labels",
+    					stylers: [ { visibility: "off" } ]
+  					}, 
+  					{ featureType: "poi", elementType: "labels",
+    					stylers: [ { visibility: "off" } ]
+  					}, 
+  					{ featureType: "water", elementType: "labels",
+    					stylers: [ { visibility: "off" } ]
+  					}, 
+  					{ featureType: "road", elementType: "labels",
+    					stylers: [ { visibility: "off" } ]
+  					}
+				]
 			};
 			map = new google.maps.Map(document.getElementById("map_canvas"),
 					mapOptions);
