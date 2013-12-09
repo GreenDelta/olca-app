@@ -40,6 +40,10 @@ public class UncertaintyCellEditor extends DialogCellEditor {
 		}
 	}
 
+	public UncertaintyCellEditor(Composite parent) {
+		super(parent);
+	}
+
 	@Override
 	protected void doSetValue(Object value) {
 		Uncertainty uncertainty = null;
@@ -85,7 +89,8 @@ public class UncertaintyCellEditor extends DialogCellEditor {
 		else if (parameterRedef != null)
 			parameterRedef.setUncertainty(uncertainty);
 		updateContents(UncertaintyLabel.get(uncertainty));
-		editor.setDirty(true);
+		if (editor != null)
+			editor.setDirty(true);
 	}
 
 	private Uncertainty getInitial() {
