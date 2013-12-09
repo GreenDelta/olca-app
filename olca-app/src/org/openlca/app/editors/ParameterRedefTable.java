@@ -14,12 +14,14 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.components.ParameterRedefDialog;
+import org.openlca.app.components.UncertaintyCellEditor;
 import org.openlca.app.db.Cache;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Dialog;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Tables;
+import org.openlca.app.util.UncertaintyLabel;
 import org.openlca.app.util.Viewers;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
@@ -46,6 +48,7 @@ public class ParameterRedefTable {
 	private final String PARAMETER = Messages.Parameter;
 	private final String PROCESS = Messages.Process;
 	private final String AMOUNT = Messages.Amount;
+	private final String UNCERTAINTY = Messages.Uncertainty;
 
 	private TableViewer viewer;
 
@@ -61,12 +64,14 @@ public class ParameterRedefTable {
 
 	public void create(FormToolkit toolkit, Composite composite) {
 		viewer = Tables.createViewer(composite, new String[] { PROCESS,
-				PARAMETER, AMOUNT });
+				PARAMETER, AMOUNT, UNCERTAINTY });
 		viewer.setLabelProvider(new LabelProvider());
 		ModifySupport<ParameterRedef> modifySupport = new ModifySupport<>(
 				viewer);
 		modifySupport.bind(AMOUNT, new AmountModifier());
-		Tables.bindColumnWidths(viewer, 0.4, 0.3, 0.3);
+		modifySupport.bind(UNCERTAINTY,
+				new UncertaintyCellEditor(viewer.getTable(), editor));
+		Tables.bindColumnWidths(viewer, 0.3, 0.3, 0.2, 0.2);
 		Collections.sort(redefinitions, new ParameterComparator());
 		viewer.setInput(redefinitions);
 	}
@@ -173,6 +178,8 @@ public class ParameterRedefTable {
 				return redef.getName();
 			case 2:
 				return Double.toString(redef.getValue());
+			case 3:
+				return UncertaintyLabel.get(redef.getUncertainty());
 			default:
 				return null;
 			}
