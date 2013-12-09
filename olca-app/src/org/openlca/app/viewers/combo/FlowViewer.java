@@ -5,10 +5,12 @@ import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
+import org.eclipse.nebula.widgets.tablecombo.TableCombo;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.CategoryPath;
+import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Location;
@@ -28,6 +30,12 @@ public class FlowViewer extends AbstractComboViewer<FlowDescriptor> {
 		super(parent);
 		this.cache = cache;
 		setInput(new FlowDescriptor[0]);
+		addSelectionChangedListener(new ISelectionChangedListener<FlowDescriptor>() {
+			@Override
+			public void selectionChanged(FlowDescriptor selection) {
+				fillText(selection);
+			}
+		});
 	}
 
 	@Override
@@ -53,6 +61,37 @@ public class FlowViewer extends AbstractComboViewer<FlowDescriptor> {
 	@Override
 	public Class<FlowDescriptor> getType() {
 		return FlowDescriptor.class;
+	}
+
+	@Override
+	public void setInput(FlowDescriptor[] input) {
+		super.setInput(input);
+	}
+
+	@Override
+	protected void internalSelect(Object value) {
+		super.internalSelect(value);
+		if (value instanceof FlowDescriptor)
+			fillText((FlowDescriptor) value);
+		else
+			fillText(null);
+	}
+
+	private void fillText(FlowDescriptor descriptor) {
+		TableCombo combo = getViewer().getTableCombo();
+		if (descriptor == null) {
+			combo.setText("");
+			return;
+		}
+		String text = descriptor.getName();
+		if (descriptor.getCategory() != null) {
+			Category category = cache.get(Category.class,
+					descriptor.getCategory());
+			if (category != null) {
+				text += " ( " + CategoryPath.getShort(category) + ")";
+			}
+		}
+		combo.setText(text);
 	}
 
 	private class FlowSorter extends ViewerSorter {

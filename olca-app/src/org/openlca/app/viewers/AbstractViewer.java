@@ -107,7 +107,7 @@ public abstract class AbstractViewer<T, V extends StructuredViewer> implements
 		internalSelect(value);
 	}
 
-	private void internalSelect(Object value) {
+	protected void internalSelect(Object value) {
 		if (value != null)
 			viewer.setSelection(new StructuredSelection(value));
 		else if (nullable)
