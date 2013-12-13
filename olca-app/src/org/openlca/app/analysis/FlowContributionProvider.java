@@ -71,8 +71,7 @@ class FlowContributionProvider implements
 			double c, String unit) {
 		ProcessContributionItem item = new ProcessContributionItem();
 		item.setContribution(c);
-		if (result.getProcess() != null)
-			item.setProcessName(result.getProcess().getName());
+		item.setProcessName(Labels.getDisplayName(result.getProcess()));
 		item.setSingleAmount(result.getSingleResult());
 		item.setTotalAmount(result.getTotalResult());
 		item.setUnit(unit);
