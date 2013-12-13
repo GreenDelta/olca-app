@@ -182,7 +182,5 @@ public class FlowViewer extends AbstractComboViewer<FlowDescriptor> {
 				t += " - " + location.getCode();
 			return t;
 		}
-
 	}
-
 }

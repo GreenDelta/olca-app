@@ -215,16 +215,24 @@ class ProcessParameterSection {
 
 	private class NameModifier extends TextCellModifier<Parameter> {
 		@Override
-		protected String getText(Parameter element) {
-			return element.getName();
+		protected String getText(Parameter param) {
+			return param.getName();
 		}
 
 		@Override
-		protected void setText(Parameter element, String text) {
-			if (!Objects.equals(text, element.getName())) {
-				element.setName(text);
-				fireChange();
+		protected void setText(Parameter param, String text) {
+			if (text == null)
+				return;
+			if (Objects.equals(text, param.getName()))
+				return;
+			String name = text.trim();
+			if (!Parameter.isValidName(name)) {
+				Error.showBox("Invalid parameter name", name
+						+ " is not a valid parameter name");
+				return;
 			}
+			param.setName(name);
+			fireChange();
 		}
 	}
 

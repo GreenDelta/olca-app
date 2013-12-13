@@ -1,6 +1,7 @@
 package org.openlca.app.preferencepages;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
@@ -109,10 +110,15 @@ class DatabaseParameterTable {
 
 		@Override
 		protected void setText(Parameter param, String text) {
-			if (Parameter.isValidName(text))
-				param.setName(text);
+			if (text == null)
+				return;
+			if (Objects.equals(text, param.getName()))
+				return;
+			String name = text.trim();
+			if (Parameter.isValidName(name))
+				param.setName(name);
 			else {
-				Error.showBox("Invalid parameter name", "'" + text
+				Error.showBox("Invalid parameter name", "'" + name
 						+ "' is not a valid parameter name");
 			}
 		}
