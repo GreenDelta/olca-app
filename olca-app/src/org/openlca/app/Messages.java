@@ -338,6 +338,7 @@ public class Messages extends NLS {
 	public static String Object;
 	public static String ObjectType;
 	public static String OnlyNumbersLetters;
+	public static String OnlineHelp;
 	public static String Open;
 	public static String OpenAnalyzeWizard_Text;
 	public static String OpenEditorAction_Text;

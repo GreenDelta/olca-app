@@ -116,6 +116,8 @@ public enum ImageType implements IImageType {
 
 	IMPORT_ZIP_WIZARD("import_zip_wizard.png"),
 
+	HELP_ICON("help_16x16.gif"),
+
 	INFO_ICON("info_tsk.gif"),
 
 	INPUT_ICON("input_16.png"),

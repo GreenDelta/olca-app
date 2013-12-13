@@ -34,4 +34,8 @@ public final class Config {
 	 */
 	public static final String DATABASE_FOLDER_NAME = "databases";
 
+	/**
+	 * Link to the openLCA online help.
+	 */
+	public static final String HELP_URL = "http://www.openlca.org/documentation";
 }

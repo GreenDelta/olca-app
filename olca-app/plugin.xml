@@ -290,23 +290,6 @@
                		 </control>
                </toolbar>
          </menuContribution>
-      <menuContribution
-            locationURI="menu:org.eclipse.ui.main.menu?before=help">
-         <menu
-               label="Settings"
-               mnemonic="S"
-               id="org.openlca.core.application.settings.menu">
-            <command
-                  commandId="commands.updatecheck"
-                  mnemonic="%updatecheck.commandmnemonic"
-                  id="menus.updatecheck">
-            </command>
-            <command
-                  commandId="org.eclipse.ui.window.preferences"
-                  id="org.openlca.core.application.settings.menu.preferencesSettinsEntry">
-            </command>
-         </menu>
-      </menuContribution>
    </extension>
 
    <extension
