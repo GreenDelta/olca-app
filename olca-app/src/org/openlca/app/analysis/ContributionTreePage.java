@@ -1,5 +1,7 @@
 package org.openlca.app.analysis;
 
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -10,19 +12,25 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.openlca.app.App;
+import org.openlca.app.Messages;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.components.FlowImpactSelection;
 import org.openlca.app.components.FlowImpactSelection.EventHandler;
 import org.openlca.app.db.Cache;
+import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
+import org.openlca.app.util.Viewers;
 import org.openlca.core.database.EntityCache;
+import org.openlca.core.matrix.LongPair;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
@@ -34,7 +42,6 @@ import org.openlca.core.results.ContributionTreeNode;
 public class ContributionTreePage extends FormPage {
 
 	private EntityCache cache = Cache.getEntityCache();
-	private AnalyzeEditor editor;
 	private AnalysisResult result;
 	private TreeViewer contributionTree;
 	private Object selection;
@@ -44,35 +51,37 @@ public class ContributionTreePage extends FormPage {
 
 	public ContributionTreePage(AnalyzeEditor editor, AnalysisResult result) {
 		super(editor, "analysis.ContributionTreePage", "Contribution tree");
-		this.editor = editor;
 		this.result = result;
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
 		FormToolkit toolkit = managedForm.getToolkit();
-
 		ScrolledForm form = UI.formHeader(managedForm, "Contribution tree");
 		Composite body = UI.formBody(form, toolkit);
-
 		Composite composite = toolkit.createComposite(body);
 		UI.gridLayout(composite, 2);
 		FlowImpactSelection.on(result, Cache.getEntityCache())
 				.withEventHandler(new SelectionHandler())
 				.create(composite, toolkit);
-
 		Composite treeContainer = toolkit.createComposite(body);
 		UI.gridLayout(treeContainer, 1);
 		UI.gridData(treeContainer, true, true);
+		createTree(toolkit, treeContainer);
+		form.reflow(true);
+		initInput();
+		for (TreeColumn column : contributionTree.getTree().getColumns())
+			column.pack();
+	}
 
-		contributionTree = new TreeViewer(treeContainer);
+	private void createTree(FormToolkit toolkit, Composite treeContainer) {
+		contributionTree = new TreeViewer(treeContainer, SWT.FULL_SELECTION
+				| SWT.SINGLE | SWT.BORDER);
 		contributionTree.setAutoExpandLevel(2);
 		contributionTree.getTree().setLinesVisible(false);
 		contributionTree.getTree().setHeaderVisible(true);
-
 		for (int i = 0; i < HEADERS.length; i++) {
-			final TreeColumn c = new TreeColumn(contributionTree.getTree(),
-					SWT.NULL);
+			TreeColumn c = new TreeColumn(contributionTree.getTree(), SWT.NULL);
 			c.setText(HEADERS[i]);
 		}
 		contributionTree.setColumnProperties(HEADERS);
@@ -82,13 +91,11 @@ public class ContributionTreePage extends FormPage {
 		UI.gridData(contributionTree.getTree(), true, true);
 		toolkit.adapt(contributionTree.getTree(), false, false);
 		toolkit.paintBordersFor(contributionTree.getTree());
-
-		form.reflow(true);
-
-		initInput();
-
-		for (TreeColumn column : contributionTree.getTree().getColumns())
-			column.pack();
+		MenuManager menuManager = new MenuManager();
+		menuManager.add(new OpenEditorAction());
+		Menu menu = menuManager
+				.createContextMenu(contributionTree.getControl());
+		contributionTree.getControl().setMenu(menu);
 	}
 
 	private void initInput() {
@@ -249,6 +256,28 @@ public class ContributionTreePage extends FormPage {
 			ContributionTreeNode node2 = (ContributionTreeNode) e2;
 			return -1 * Double.compare(node1.getAmount(), node2.getAmount());
 		}
+	}
+
+	private class OpenEditorAction extends Action {
+
+		public OpenEditorAction() {
+			setText(Messages.Open);
+			setImageDescriptor(ImageType.PROCESS_ICON.getDescriptor());
+		}
+
+		@Override
+		public void run() {
+			Object selection = Viewers.getFirstSelected(contributionTree);
+			if (!(selection instanceof ContributionTreeNode))
+				return;
+			ContributionTreeNode node = (ContributionTreeNode) selection;
+			LongPair processProduct = node.getProcessProduct();
+			ProcessDescriptor process = Cache.getEntityCache().get(
+					ProcessDescriptor.class, processProduct.getFirst());
+			if (process != null)
+				App.openEditor(process);
+		}
+
 	}
 
 }
