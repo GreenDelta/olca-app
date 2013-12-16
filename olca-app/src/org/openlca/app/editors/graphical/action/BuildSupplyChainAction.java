@@ -7,15 +7,11 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.osgi.util.NLS;
-import org.eclipse.ui.IEditorReference;
-import org.eclipse.ui.PartInitException;
+import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.components.ProgressAdapter;
 import org.openlca.app.db.Cache;
-import org.openlca.app.editors.graphical.GraphicalEditorInput;
-import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
 import org.openlca.app.editors.graphical.model.ProcessNode;
-import org.openlca.app.util.Editors;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.IProductSystemBuilder;
@@ -53,23 +49,10 @@ public class BuildSupplyChainAction extends Action {
 		} catch (final Exception e) {
 			log.error("Failed to complete product system. ", e);
 		}
-		reloadEditor();
-	}
-
-	private void reloadEditor() {
 		ProductSystemDescriptor descriptor = Descriptors.toDescriptor(node
 				.getParent().getProductSystem());
-		GraphicalEditorInput input = new GraphicalEditorInput(descriptor);
-		for (IEditorReference ref : Editors.getReferences())
-			try {
-				if (input.equals(ref.getEditorInput())) {
-					Editors.close(ref);
-					break;
-				}
-			} catch (PartInitException e) {
-				log.error("Error closing editor", e);
-			}
-		Editors.open(input, ProductSystemGraphEditor.ID);
+		App.closeEditor(descriptor);
+		App.openEditor(descriptor);
 	}
 
 	private class Runner implements IRunnableWithProgress {
