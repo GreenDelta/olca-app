@@ -28,6 +28,7 @@ import org.openlca.app.navigation.filters.EmptyCategoryFilter;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.UIFactory;
+import org.openlca.core.model.Exchange;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
@@ -44,7 +45,7 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 
 	private Button addSupplyChainButton;
 	private TreeViewer processViewer;
-	private Process selectedProcess;
+	private Process refProcess;
 	private Button useSystemProcesses;
 	private double cutoff = 0;
 	private Text filterText;
@@ -58,7 +59,7 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 	}
 
 	public void setProcess(Process process) {
-		this.selectedProcess = process;
+		this.refProcess = process;
 	}
 
 	public boolean addSupplyChain() {
@@ -67,29 +68,21 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 
 	@Override
 	public ProductSystem createModel() {
-		final ProductSystem productSystem = new ProductSystem();
+		ProductSystem productSystem = new ProductSystem();
 		productSystem.setRefId(UUID.randomUUID().toString());
 		productSystem.setName(getModelName());
 		productSystem.setDescription(getModelDescription());
-
 		try {
-			final Process process = selectedProcess;
-			productSystem.getProcesses().add(process.getId());
-			productSystem.setReferenceProcess(process);
-			if (process.getQuantitativeReference() != null) {
-				productSystem.setReferenceExchange(process
-						.getQuantitativeReference());
-				productSystem.setTargetUnit(productSystem
-						.getReferenceExchange().getUnit());
-				productSystem.setTargetFlowPropertyFactor(productSystem
-						.getReferenceExchange().getFlowPropertyFactor());
-			} else {
-				log.error("No quantitative reference on process '{}', "
-						+ "calculation will fail.", process.getName());
-			}
-			productSystem.setTargetAmount(1);
+			productSystem.getProcesses().add(refProcess.getId());
+			productSystem.setReferenceProcess(refProcess);
+			Exchange qRef = refProcess.getQuantitativeReference();
+			productSystem.setReferenceExchange(qRef);
+			productSystem.setTargetUnit(qRef.getUnit());
+			productSystem.setTargetFlowPropertyFactor(qRef
+					.getFlowPropertyFactor());
+			productSystem.setTargetAmount(qRef.getAmountValue());
 		} catch (final Exception e) {
-			log.error("Loading reference process failed", e);
+			log.error("Loading reference process failed / no selected", e);
 		}
 		return productSystem;
 	}
@@ -105,7 +98,7 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 	@Override
 	protected void checkInput() {
 		super.checkInput();
-		if (getErrorMessage() == null && selectedProcess == null) {
+		if (getErrorMessage() == null && refProcess == null) {
 			setErrorMessage(EMPTY_REFERENCEPROCESS_ERROR);
 		}
 		setPageComplete(getErrorMessage() == null);
@@ -117,10 +110,9 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 		UI.formLabel(container, Messages.ReferenceProcess);
 		createProcessViewer(container);
 		createOptions(container);
-		if (selectedProcess != null) {
-			nameText.setText(selectedProcess.getName());
-			ProcessDescriptor descriptor = Descriptors
-					.toDescriptor(selectedProcess);
+		if (refProcess != null) {
+			nameText.setText(refProcess.getName());
+			ProcessDescriptor descriptor = Descriptors.toDescriptor(refProcess);
 			INavigationElement<?> elem = Navigator.findElement(descriptor);
 			if (elem != null)
 				processViewer.setSelection(new StructuredSelection(elem));
@@ -194,14 +186,13 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 							ModelElement elem = (ModelElement) ((IStructuredSelection) processViewer
 									.getSelection()).getFirstElement();
 							try {
-								selectedProcess = Database.load(elem
-										.getContent());
+								refProcess = Database.load(elem.getContent());
 								checkInput();
 							} catch (Exception e) {
 								log.error("failed to load process", e);
 							}
 						} else {
-							selectedProcess = null;
+							refProcess = null;
 							checkInput();
 						}
 					}
