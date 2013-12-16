@@ -24,7 +24,16 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.usage.IUseSearch;
+import org.openlca.core.model.descriptors.ActorDescriptor;
 import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.FlowDescriptor;
+import org.openlca.core.model.descriptors.FlowPropertyDescriptor;
+import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
+import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.core.model.descriptors.ProductSystemDescriptor;
+import org.openlca.core.model.descriptors.ProjectDescriptor;
+import org.openlca.core.model.descriptors.SourceDescriptor;
+import org.openlca.core.model.descriptors.UnitGroupDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,7 +105,6 @@ public class UsageView extends FormEditor {
 				Gson gson = new Gson();
 				String json = gson.toJson(list);
 				String function = "setData(" + json + ")";
-				System.out.println(function);
 				browser.evaluate(function);
 			} catch (Exception e) {
 				log.trace("Failed to load data: where used", e);
@@ -141,12 +149,44 @@ public class UsageView extends FormEditor {
 			String json = args[0].toString();
 			log.trace("open model: json={}", json);
 			try {
-				Gson gson = new Gson();
-				BaseDescriptor descriptor = gson.fromJson(json,
-						BaseDescriptor.class);
-				App.openEditor(descriptor);
+				BaseDescriptor descriptor = getDescriptor(json);
+				if (descriptor != null)
+					App.openEditor(descriptor);
 			} catch (Exception e) {
 				log.error("Failed to open model from usage page", e);
+			}
+		}
+
+		private BaseDescriptor getDescriptor(String json) {
+			Gson gson = new Gson();
+			BaseDescriptor descriptor = gson.fromJson(json,
+					BaseDescriptor.class);
+			if (descriptor == null || descriptor.getModelType() == null)
+				return descriptor;
+			// load the descriptor specific attributes for the given model type
+			// this also assures object equality when comparing different
+			// descriptor objects, e.g. when opening the editor
+			switch (descriptor.getModelType()) {
+			case ACTOR:
+				return gson.fromJson(json, ActorDescriptor.class);
+			case FLOW:
+				return gson.fromJson(json, FlowDescriptor.class);
+			case FLOW_PROPERTY:
+				return gson.fromJson(json, FlowPropertyDescriptor.class);
+			case IMPACT_METHOD:
+				return gson.fromJson(json, ImpactMethodDescriptor.class);
+			case PROCESS:
+				return gson.fromJson(json, ProcessDescriptor.class);
+			case PRODUCT_SYSTEM:
+				return gson.fromJson(json, ProductSystemDescriptor.class);
+			case PROJECT:
+				return gson.fromJson(json, ProjectDescriptor.class);
+			case SOURCE:
+				return gson.fromJson(json, SourceDescriptor.class);
+			case UNIT_GROUP:
+				return gson.fromJson(json, UnitGroupDescriptor.class);
+			default:
+				return descriptor;
 			}
 		}
 	}
