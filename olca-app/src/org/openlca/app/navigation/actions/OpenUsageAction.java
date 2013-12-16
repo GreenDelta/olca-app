@@ -30,7 +30,8 @@ public class OpenUsageAction extends Action implements INavigationAction {
 			ModelType.UNIT_GROUP, 
 			ModelType.FLOW_PROPERTY,
 			ModelType.FLOW, 
-			ModelType.PROCESS);
+			ModelType.PROCESS,
+			ModelType.IMPACT_METHOD);
 	//@formatter:on
 
 	public OpenUsageAction() {
