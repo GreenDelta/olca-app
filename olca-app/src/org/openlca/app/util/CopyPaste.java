@@ -280,14 +280,33 @@ public class CopyPaste {
 
 	private static CategorizedEntity copy(ModelElement element) {
 		BaseDescriptor descriptor = element.getContent();
-
 		CategorizedEntityDao<?, ?> dao = Database.createRootDao(descriptor
 				.getModelType());
-		@SuppressWarnings("cast")
-		CategorizedEntity entity = (CategorizedEntity) dao.getForId(descriptor
-				.getId());
-		CategorizedEntity copy = CloneUtil.clone(entity);
+		CategorizedEntity entity = dao.getForId(descriptor.getId());
+		CategorizedEntity copy = cloneIt(entity);
+		if (copy != null)
+			copy.setName(copy.getName() + " (copy)");
 		return copy;
+	}
+
+	private static CategorizedEntity cloneIt(CategorizedEntity entity) {
+		if (entity instanceof Actor)
+			return ((Actor) entity).clone();
+		else if (entity instanceof Source)
+			return ((Source) entity).clone();
+		else if (entity instanceof UnitGroup)
+			return ((UnitGroup) entity).clone();
+		else if (entity instanceof FlowProperty)
+			return ((FlowProperty) entity).clone();
+		else if (entity instanceof Flow)
+			return ((Flow) entity).clone();
+		else if (entity instanceof Process)
+			return ((Process) entity).clone();
+		else if (entity instanceof ProductSystem)
+			return ((ProductSystem) entity).clone();
+		else if (entity instanceof Project)
+			return ((Project) entity).clone();
+		return null;
 	}
 
 	private static void insert(CategorizedEntity entity) {

@@ -17,7 +17,6 @@ public class PasteAction extends Action implements INavigationAction {
 			return false;
 		if (!CopyPaste.canPasteTo(element))
 			return false;
-
 		category = element;
 		return true;
 	}
