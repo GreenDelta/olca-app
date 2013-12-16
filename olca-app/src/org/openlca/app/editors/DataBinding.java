@@ -186,18 +186,14 @@ public class DataBinding {
 				property);
 		if (bean == null || property == null || text == null)
 			return;
-
 		checkType(bean, property, text);
-
 		initValue(bean, property, text);
 		text.setHandler(new ISingleModelDrop() {
-
 			@Override
 			public void handle(BaseDescriptor descriptor) {
 				setModel(bean, property, text);
 				editorChange();
 			}
-
 		});
 	}
 

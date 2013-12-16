@@ -100,9 +100,10 @@ public final class TextDropComponent extends Composite {
 		addButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(final MouseEvent e) {
-				BaseDescriptor descriptor = ModelSelectionDialog.select(modelType);
+				BaseDescriptor descriptor = ModelSelectionDialog
+						.select(modelType);
 				if (descriptor != null)
-					handleChange(descriptor);
+					handleAdd(descriptor);
 			}
 		});
 	}
@@ -130,7 +131,9 @@ public final class TextDropComponent extends Composite {
 		removeButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(final MouseEvent e) {
-				handleChange(null);
+				setContent(null);
+				if (handler != null)
+					handler.handle(null);
 			}
 		});
 	}
@@ -148,13 +151,13 @@ public final class TextDropComponent extends Composite {
 			@Override
 			public void drop(DropTargetEvent event) {
 				if (transferType.isSupportedType(event.currentDataType)) {
-					handleChange(event.data);
+					handleAdd(event.data);
 				}
 			}
 		});
 	}
 
-	private void handleChange(Object data) {
+	private void handleAdd(Object data) {
 		BaseDescriptor descriptor = ModelTransfer.getDescriptor(data);
 		if (descriptor == null || descriptor.getModelType() != modelType)
 			return;
