@@ -1,23 +1,23 @@
 package org.openlca.app.navigation.actions;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.window.Window;
-import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.osgi.util.NLS;
 import org.openlca.app.App;
 import org.openlca.app.Messages;
-import org.openlca.app.components.delete.DeleteWizard;
+import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.resources.ImageType;
+import org.openlca.app.util.Error;
+import org.openlca.app.util.Labels;
 import org.openlca.app.util.Question;
-import org.openlca.app.util.UI;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.usage.IUseSearch;
@@ -32,15 +32,27 @@ public class DeleteModelAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean accept(INavigationElement<?> element) {
-		if (!(element instanceof ModelElement))
+		if (!(element instanceof ModelElement)) {
+			elements = null;
 			return false;
+		}
 		elements = Collections.singletonList((ModelElement) element);
 		return true;
 	}
 
 	@Override
 	public boolean accept(List<INavigationElement<?>> elements) {
-		return false;
+		if (elements == null)
+			return false;
+		List<ModelElement> candidates = new ArrayList<>();
+		for (INavigationElement<?> candidate : elements) {
+			if (candidate instanceof ModelElement)
+				candidates.add((ModelElement) candidate);
+		}
+		if (candidates.isEmpty())
+			return false;
+		this.elements = candidates;
+		return true;
 	}
 
 	@Override
@@ -57,46 +69,56 @@ public class DeleteModelAction extends Action implements INavigationAction {
 	public void run() {
 		if (elements == null)
 			return;
-		// TODO implement deletion of list
-		// current list contains only one element
-		ModelElement element = elements.get(0);
-		DeleteWizard<BaseDescriptor> wizard = new DeleteWizard<>(
-				IUseSearch.FACTORY.createFor(element.getContent()
-						.getModelType(), Database.get()), element.getContent());
-		boolean canDelete = true;
-		if (wizard != null && wizard.hasProblems())
-			canDelete = new WizardDialog(UI.shell(), wizard).open() == Window.OK;
-		if (canDelete && askDelete(element)) {
-			delete(element);
-			App.closeEditor(element.getContent());
+		for (ModelElement element : elements) {
+			BaseDescriptor descriptor = element.getContent();
+			if (descriptor == null)
+				continue;
+			if (!askDelete(descriptor))
+				break;
+			if (isUsed(descriptor))
+				continue;
+			App.closeEditor(descriptor);
+			delete(descriptor);
 			Navigator.refresh(element.getParent());
 		}
+		elements = null;
+	}
+
+	private boolean isUsed(BaseDescriptor descriptor) {
+		IUseSearch<BaseDescriptor> search = IUseSearch.FACTORY.createFor(
+				descriptor.getModelType(), Database.get());
+		List<BaseDescriptor> descriptors = search.findUses(descriptor);
+		if (descriptors.isEmpty())
+			return false;
+		String name = Labels.getDisplayName(descriptor);
+		Error.showBox("Cannot delete", name
+				+ " cannot be deleted because it is used in other data "
+				+ "sets. See the usage view to see where it is used.");
+		return true;
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> void delete(ModelElement element) {
-		if (element == null)
-			return;
+	private <T> void delete(BaseDescriptor descriptor) {
 		try {
-			log.trace("delete model {}", element.getContent());
+			log.trace("delete model {}", descriptor);
 			IDatabase database = Database.get();
-			BaseDescriptor descriptor = element.getContent();
 			Class<T> clazz = (Class<T>) descriptor.getModelType()
 					.getModelClass();
 			BaseDao<T> dao = database.createDao(clazz);
 			T instance = dao.getForId(descriptor.getId());
 			dao.delete(instance);
-			// TODO: evict element from cache
+			Cache.evict(descriptor);
 			log.trace("element deleted");
+
 		} catch (Exception e) {
-			log.error("failed to delete element " + element, e);
+			log.error("failed to delete element " + descriptor, e);
 		}
 	}
 
-	private boolean askDelete(ModelElement element) {
-		if (element == null || element.getContent() == null)
+	private boolean askDelete(BaseDescriptor descriptor) {
+		if (descriptor == null)
 			return false;
-		String name = element.getContent().getName();
+		String name = Labels.getDisplayName(descriptor);
 		String message = NLS.bind(Messages.NavigationView_DeleteQuestion, name);
 		return Question.ask(Messages.Delete, message);
 	}

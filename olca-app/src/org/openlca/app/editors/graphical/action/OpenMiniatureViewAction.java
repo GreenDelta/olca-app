@@ -1,20 +1,13 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.app.editors.graphical.action;
 
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.LightweightSystem;
 import org.eclipse.draw2d.Viewport;
 import org.eclipse.draw2d.parts.ScrollableThumbnail;
+import org.eclipse.gef.LayerConstants;
+import org.eclipse.gef.editparts.ScalableRootEditPart;
 import org.eclipse.gef.editparts.ZoomManager;
-import org.eclipse.jface.action.Action;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
@@ -39,7 +32,7 @@ import org.openlca.app.Messages;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.UI;
 
-public class OpenMiniatureViewAction extends Action {
+public class OpenMiniatureViewAction extends EditorAction {
 
 	private Control control;
 	private IFigure figure;
@@ -48,7 +41,7 @@ public class OpenMiniatureViewAction extends Action {
 	private ZoomManager zoomManager;
 
 	OpenMiniatureViewAction() {
-		setId(ActionIds.OPEN_MINIATURE_VIEW_ACTION_ID);
+		setId(ActionIds.OPEN_MINIATURE_VIEW);
 		setText(Messages.Systems_OpenMiniatureViewAction_Text);
 		setImageDescriptor(ImageType.MINI_VIEW_ICON.getDescriptor());
 	}
@@ -62,7 +55,7 @@ public class OpenMiniatureViewAction extends Action {
 			window.refresh();
 	}
 
-	public void update(Viewport port, IFigure figure, Control control,
+	private void update(Viewport port, IFigure figure, Control control,
 			ZoomManager zoomManager) {
 		this.port = port;
 		this.figure = figure;
@@ -158,5 +151,25 @@ public class OpenMiniatureViewAction extends Action {
 			return super.close();
 		}
 
+	}
+
+	@Override
+	protected boolean accept(ISelection selection) {
+		if (getEditor() == null)
+			return false;
+		update(getViewport(),
+				getRootEditPart().getLayer(LayerConstants.PRINTABLE_LAYERS),
+				getEditor().getGraphicalViewer().getControl(), getEditor()
+						.getZoomManager());
+		return true;
+	}
+
+	private Viewport getViewport() {
+		return (Viewport) getRootEditPart().getFigure();
+	}
+
+	private ScalableRootEditPart getRootEditPart() {
+		return (ScalableRootEditPart) getEditor().getGraphicalViewer()
+				.getRootEditPart();
 	}
 }

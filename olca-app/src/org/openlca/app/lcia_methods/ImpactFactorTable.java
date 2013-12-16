@@ -16,7 +16,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.components.IModelDropHandler;
-import org.openlca.app.components.ObjectDialog;
+import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.components.UncertaintyCellEditor;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.Actions;
@@ -117,9 +117,10 @@ class ImpactFactorTable {
 	private void onAdd() {
 		if (category == null)
 			return;
-		BaseDescriptor[] descriptors = ObjectDialog
+		BaseDescriptor[] descriptors = ModelSelectionDialog
 				.multiSelect((ModelType.FLOW));
-		createFactors(Arrays.asList(descriptors));
+		if (descriptors != null)
+			createFactors(Arrays.asList(descriptors));
 	}
 
 	private void createFactors(List<BaseDescriptor> descriptors) {

@@ -10,9 +10,10 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
 import org.openlca.app.Messages;
+import org.openlca.app.db.Cache;
+import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.resources.ImageType;
-import org.openlca.core.database.IDatabase;
 import org.openlca.io.ilcd.ILCDImport;
 
 /**
@@ -21,15 +22,9 @@ import org.openlca.io.ilcd.ILCDImport;
 public class ILCDImportWizard extends Wizard implements IImportWizard {
 
 	private FileImportPage importPage;
-	private IDatabase database;
 
 	public ILCDImportWizard() {
 		setNeedsProgressMonitor(true);
-	}
-
-	public ILCDImportWizard(IDatabase database) {
-		setNeedsProgressMonitor(true);
-		this.database = database;
 	}
 
 	@Override
@@ -57,6 +52,7 @@ public class ILCDImportWizard extends Wizard implements IImportWizard {
 			return false;
 		} finally {
 			Navigator.refresh();
+			Cache.evictAll();
 		}
 	}
 
@@ -74,7 +70,7 @@ public class ILCDImportWizard extends Wizard implements IImportWizard {
 					throws InvocationTargetException, InterruptedException {
 				monitor.beginTask("Import: ", IProgressMonitor.UNKNOWN);
 				ImportHandler handler = new ImportHandler(monitor);
-				ILCDImport iImport = new ILCDImport(zip, database);
+				ILCDImport iImport = new ILCDImport(zip, Database.get());
 				handler.run(iImport);
 			}
 		});

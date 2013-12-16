@@ -14,15 +14,19 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.App;
 import org.openlca.app.Event;
 import org.openlca.app.Messages;
 import org.openlca.app.components.IModelDropHandler;
-import org.openlca.app.components.ObjectDialog;
+import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.components.UncertaintyCellEditor;
+import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Actions;
@@ -67,7 +71,7 @@ class ExchangeTable {
 	private final ProcessEditor editor;
 	private Process process;
 	private IDatabase database = Database.get();
-	private EntityCache cache = Database.getCache();
+	private EntityCache cache = Cache.getEntityCache();
 
 	private final String FLOW = Messages.Flow;
 	private final String CATEGORY = Messages.Category;
@@ -110,7 +114,8 @@ class ExchangeTable {
 		Composite composite = UI.sectionClient(section, toolkit);
 		UI.gridLayout(composite, 1);
 		viewer = Tables.createViewer(composite, getColumns());
-		viewer.setLabelProvider(new ExchangeLabelProvider());
+		ExchangeLabelProvider labelProvider = new ExchangeLabelProvider();
+		viewer.setLabelProvider(labelProvider);
 		bindModifiers();
 		Tables.addDropSupport(viewer, new IModelDropHandler() {
 			@Override
@@ -120,8 +125,10 @@ class ExchangeTable {
 		});
 		viewer.addFilter(new Filter());
 		bindActions(section, viewer);
+		bindDoubleClick(viewer);
 		Tables.bindColumnWidths(viewer, 0.2, 0.15, 0.1, 0.1, 0.1, 0.15, 0.1,
 				0.1);
+		ExchangeTableSorters.register(viewer, labelProvider);
 		setInitialInput();
 	}
 
@@ -191,6 +198,18 @@ class ExchangeTable {
 		Actions.bind(viewer, add, remove);
 	}
 
+	private void bindDoubleClick(final TableViewer viewer) {
+		viewer.getTable().addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDoubleClick(MouseEvent e) {
+				Exchange exchange = Viewers.getFirstSelected(viewer);
+				if (exchange == null || exchange.getFlow() == null)
+					return;
+				App.openEditor(exchange.getFlow());
+			}
+		});
+	}
+
 	private String[] getColumns() {
 		if (forInputs)
 			return new String[] { FLOW, CATEGORY, FLOW_PROPERTY, UNIT, AMOUNT,
@@ -201,16 +220,24 @@ class ExchangeTable {
 	}
 
 	private void onAdd() {
-		BaseDescriptor[] descriptors = ObjectDialog.multiSelect(ModelType.FLOW);
-		add(Arrays.asList(descriptors));
+		BaseDescriptor[] descriptors = ModelSelectionDialog
+				.multiSelect(ModelType.FLOW);
+		if (descriptors != null)
+			add(Arrays.asList(descriptors));
 	}
 
 	private void onRemove() {
 		List<Exchange> selection = Viewers.getAllSelected(viewer);
+		if (selection.contains(process.getQuantitativeReference())) {
+			Error.showBox("Cannot delete reference flow",
+					"You cannot delete the reference flow of a process");
+			return;
+		}
 		for (Exchange exchange : selection)
 			process.getExchanges().remove(exchange);
 		viewer.setInput(process.getExchanges());
 		fireChange();
+		editor.postEvent(editor.EXCHANGES_CHANGED, this);
 	}
 
 	private void add(List<BaseDescriptor> descriptors) {
@@ -230,8 +257,9 @@ class ExchangeTable {
 			exchange.setInput(forInputs);
 			process.getExchanges().add(exchange);
 		}
-		fireChange();
 		viewer.setInput(process.getExchanges());
+		fireChange();
+		editor.postEvent(editor.EXCHANGES_CHANGED, this);
 	}
 
 	private void fireChange() {
@@ -285,14 +313,14 @@ class ExchangeTable {
 			Exchange exchange = (Exchange) element;
 			switch (columnIndex) {
 			case 0:
-				return exchange.getFlow().getName();
+				return Labels.getDisplayName(exchange.getFlow());
 			case 1:
 				return CategoryPath.getShort(exchange.getFlow().getCategory());
 			case 2:
-				return exchange.getFlowPropertyFactor().getFlowProperty()
-						.getName();
+				return Labels.getDisplayName(exchange.getFlowPropertyFactor()
+						.getFlowProperty());
 			case 3:
-				return exchange.getUnit().getName();
+				return Labels.getDisplayName(exchange.getUnit());
 			case 4:
 				return getAmountText(exchange);
 			case 5:
@@ -301,7 +329,7 @@ class ExchangeTable {
 				if (forInputs)
 					return getDefaultProvider(exchange);
 				else
-					return null; // TODO: avoided product
+					return null;
 			case 7:
 				return exchange.getPedigreeUncertainty();
 			}
@@ -428,8 +456,7 @@ class ExchangeTable {
 			if (element.getFlow() == null)
 				return new ProcessDescriptor[0];
 			FlowDao dao = new FlowDao(database);
-			Set<Long> providerIds = dao
-					.getProviders(element.getFlow().getId());
+			Set<Long> providerIds = dao.getProviders(element.getFlow().getId());
 			Collection<ProcessDescriptor> descriptors = cache.getAll(
 					ProcessDescriptor.class, providerIds).values();
 			ProcessDescriptor[] array = new ProcessDescriptor[descriptors

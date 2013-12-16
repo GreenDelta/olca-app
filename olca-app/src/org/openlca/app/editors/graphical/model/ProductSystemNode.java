@@ -1,30 +1,31 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.app.editors.graphical.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
+import org.openlca.core.matrix.ProcessLinkSearchMap;
 import org.openlca.core.model.ProductSystem;
 
 public class ProductSystemNode extends Node {
 
 	private ProductSystemGraphEditor editor;
 	private ProductSystem productSystem;
-	private List<ProcessNode> outlineNodes = new ArrayList<>();
+	private ProcessLinkSearchMap linkSearch;
 
 	public ProductSystemNode(ProductSystem productSystem,
 			ProductSystemGraphEditor editor) {
 		this.productSystem = productSystem;
+		this.linkSearch = new ProcessLinkSearchMap(
+				productSystem.getProcessLinks());
 		this.editor = editor;
+	}
+
+	public ProcessLinkSearchMap getLinkSearch() {
+		return linkSearch;
+	}
+
+	public void reindexLinks() {
+		linkSearch = new ProcessLinkSearchMap(productSystem.getProcessLinks());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -41,17 +42,6 @@ public class ProductSystemNode extends Node {
 		return productSystem;
 	}
 
-	public void add(ProcessNode node) {
-		if (!getChildren().contains(node))
-			if (outlineNodes.contains(node))
-				outlineNodes.remove(node);
-		super.add(node);
-	}
-
-	public void remove(ProcessNode node) {
-		super.remove(node);
-	}
-
 	public ProcessNode getProcessNode(long id) {
 		for (ProcessNode node : getChildren())
 			if (node.getProcess().getId() == id)
@@ -60,29 +50,32 @@ public class ProductSystemNode extends Node {
 	}
 
 	@Override
-	protected String getName() {
+	public String getName() {
 		return productSystem.getName();
-	}
-
-	public void addOutlineNode(ProcessNode node) {
-		if (!outlineNodes.contains(node))
-			outlineNodes.add(node);
 	}
 
 	public void highlightMatchingExchanges(ExchangeNode toMatch) {
 		for (ProcessNode node : getChildren()) {
 			if (node.isVisible() && !node.isMinimized()) {
-				ExchangeNode exchangeNode = node.getExchangeNode(toMatch
+				ExchangeNode inputNode = node.getInputNode(toMatch
 						.getExchange().getFlow().getId());
-				if (exchangeNode != null)
-					if (toMatch.getExchange().isInput() != exchangeNode
-							.getExchange().isInput())
-						if (toMatch.getExchange().isInput()
-								|| !node.hasIncomingConnection(exchangeNode
-										.getExchange().getFlow().getId()))
-							exchangeNode.setHighlighted(true);
+				highlightExchange(node, inputNode, toMatch);
+				ExchangeNode outputNode = node.getOutputNode(toMatch
+						.getExchange().getFlow().getId());
+				highlightExchange(node, outputNode, toMatch);
 			}
 		}
+	}
+
+	private void highlightExchange(ProcessNode node, ExchangeNode exchangeNode,
+			ExchangeNode toMatch) {
+		if (exchangeNode != null)
+			if (toMatch.getExchange().isInput() != exchangeNode.getExchange()
+					.isInput())
+				if (toMatch.getExchange().isInput()
+						|| !node.hasIncomingConnection(exchangeNode
+								.getExchange().getFlow().getId()))
+					exchangeNode.setHighlighted(true);
 	}
 
 	public void removeHighlighting() {
@@ -95,6 +88,10 @@ public class ProductSystemNode extends Node {
 
 	public void refresh() {
 		getEditPart().refresh();
+	}
+
+	public void refreshChildren() {
+		((ProductSystemPart) getEditPart()).refreshChildren();
 	}
 
 }

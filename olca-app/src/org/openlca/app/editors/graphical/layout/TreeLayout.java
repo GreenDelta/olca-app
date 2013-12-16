@@ -1,12 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.app.editors.graphical.layout;
 
 import java.util.ArrayList;
@@ -21,6 +12,7 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
+import org.openlca.core.matrix.ProcessLinkSearchMap;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
 
@@ -30,6 +22,7 @@ public class TreeLayout {
 	private Map<Integer, Integer> heights = new HashMap<>();
 	private Map<Integer, Integer> widths = new HashMap<>();
 	private Map<Point, Long> locations = new HashMap<>();
+	private ProcessLinkSearchMap linkSearch;
 
 	private void applyLayout(Node node, int addition, int actualDepth) {
 		int x = actualDepth;
@@ -68,7 +61,7 @@ public class TreeLayout {
 		List<Node> children = new ArrayList<>();
 		for (Node node : nodes) {
 			long processId = node.processId;
-			for (ProcessLink link : productSystem.getProcessLinks(processId)) {
+			for (ProcessLink link : linkSearch.getLinks(processId)) {
 				if (link.getRecipientId() != processId)
 					continue;
 				long providerId = link.getProviderId();
@@ -86,7 +79,7 @@ public class TreeLayout {
 		children.clear();
 		for (Node node : nodes) {
 			long processId = node.processId;
-			for (ProcessLink link : productSystem.getProcessLinks(processId)) {
+			for (ProcessLink link : linkSearch.getLinks(processId)) {
 				if (link.getProviderId() != processId)
 					continue;
 				long recipientId = link.getRecipientId();
@@ -128,6 +121,7 @@ public class TreeLayout {
 	}
 
 	public void layout(ProductSystemNode productSystemNode) {
+		this.linkSearch = productSystemNode.getLinkSearch();
 		prepare(productSystemNode);
 		List<Node> nodes = new ArrayList<>();
 		Node mainNode = build(productSystemNode.getProductSystem());
@@ -223,7 +217,7 @@ public class TreeLayout {
 		locations.clear();
 	}
 
-	class Node {
+	private class Node {
 
 		long processId;
 		List<Node> leftChildren = new ArrayList<>();

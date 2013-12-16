@@ -9,7 +9,7 @@ import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.analysis.AnalyzeEditor;
 import org.openlca.app.analysis.AnalyzeEditorInput;
-import org.openlca.app.db.Database;
+import org.openlca.app.db.Cache;
 import org.openlca.app.inventory.InventoryResultEditor;
 import org.openlca.app.inventory.InventoryResultInput;
 import org.openlca.app.simulation.SimulationInit;
@@ -69,6 +69,8 @@ class CalculationWizard extends Wizard {
 		public void run(IProgressMonitor monitor)
 				throws InvocationTargetException, InterruptedException {
 			monitor.beginTask("Run calculation", IProgressMonitor.UNKNOWN);
+			int size = productSystem.getProcesses().size();
+			log.trace("calculate a {} x {} system", size, size);
 			if (setup.hasType(CalculationSetup.QUICK_RESULT))
 				solve();
 			else if (setup.hasType(CalculationSetup.ANALYSIS))
@@ -80,11 +82,12 @@ class CalculationWizard extends Wizard {
 
 		private void analyse() {
 			log.trace("run analysis");
-			SystemCalculator calculator = new SystemCalculator(Database.get());
+			SystemCalculator calculator = new SystemCalculator(
+					Cache.getMatrixCache(), App.getMatrixFactory());
 			AnalysisResult analysisResult = calculator.analyse(setup);
 			log.trace("calculation done, open editor");
-			String resultKey = App.getCache().put(analysisResult);
-			String setupKey = App.getCache().put(setup);
+			String resultKey = Cache.getAppCache().put(analysisResult);
+			String setupKey = Cache.getAppCache().put(setup);
 			AnalyzeEditorInput input = new AnalyzeEditorInput(setupKey,
 					resultKey);
 			Editors.open(input, AnalyzeEditor.ID);
@@ -92,11 +95,12 @@ class CalculationWizard extends Wizard {
 
 		private void solve() {
 			log.trace("run quick calculation");
-			SystemCalculator calculator = new SystemCalculator(Database.get());
+			SystemCalculator calculator = new SystemCalculator(
+					Cache.getMatrixCache(), App.getMatrixFactory());
 			InventoryResult inventoryResult = calculator.solve(setup);
 			log.trace("calculation done, open editor");
-			String resultKey = App.getCache().put(inventoryResult);
-			String setupKey = App.getCache().put(setup);
+			String resultKey = Cache.getAppCache().put(inventoryResult);
+			String setupKey = Cache.getAppCache().put(setup);
 			InventoryResultInput input = new InventoryResultInput(setup
 					.getProductSystem().getId(), resultKey, setupKey);
 			Editors.open(input, InventoryResultEditor.ID);
@@ -104,7 +108,8 @@ class CalculationWizard extends Wizard {
 
 		private void simulate() {
 			log.trace("init Monte Carlo Simulation");
-			SimulationInit init = new SimulationInit(setup, Database.get());
+			SimulationInit init = new SimulationInit(setup,
+					Cache.getMatrixCache());
 			init.run();
 		}
 	}

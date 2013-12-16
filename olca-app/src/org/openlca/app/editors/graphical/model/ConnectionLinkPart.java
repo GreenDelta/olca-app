@@ -1,12 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.app.editors.graphical.model;
 
 import org.eclipse.draw2d.ConnectionRouter;
@@ -80,18 +71,21 @@ class ConnectionLinkPart extends AbstractConnectionEditPart {
 			ReconnectRequest request = ((ReconnectRequest) req);
 			ConnectionLink link = (ConnectionLink) request
 					.getConnectionEditPart().getModel();
-			ExchangeNode target = link.getTargetNode().getExchangeNode(
+			ExchangeNode target = link.getTargetNode().getInputNode(
 					link.getProcessLink().getFlowId());
-			ExchangeNode source = link.getSourceNode().getExchangeNode(
+			ExchangeNode source = link.getSourceNode().getOutputNode(
 					link.getProcessLink().getFlowId());
 
 			ExchangeNode n1 = request.isMovingStartAnchor() ? target : source;
 			ExchangeNode n2 = request.isMovingStartAnchor() ? source : target;
-			ProductSystemNode productSystemNode = n1.getParent().getParent()
-					.getParent();
-			productSystemNode.highlightMatchingExchanges(n1);
-			n1.setHighlighted(true);
-			n2.setHighlighted(true);
+			if (n1 != null) {
+				ProductSystemNode productSystemNode = n1.getParent()
+						.getParent().getParent();
+				productSystemNode.highlightMatchingExchanges(n1);
+				n1.setHighlighted(true);
+			}
+			if (n2 != null)
+				n2.setHighlighted(true);
 		}
 		super.showSourceFeedback(req);
 	}

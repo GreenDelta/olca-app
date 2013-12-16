@@ -13,14 +13,17 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
+import org.openlca.core.math.NumberGenerator;
 import org.openlca.core.model.Uncertainty;
 import org.openlca.core.model.UncertaintyType;
 import org.openlca.expressions.FormulaInterpreter;
+import org.openlca.expressions.Scope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +39,7 @@ public class UncertaintyDialog extends Dialog {
 
 	private UncertaintyPanel[] clients;
 	private UncertaintyPanel selectedClient;
-	private FormulaInterpreter interpreter;
+	private Scope interpreterScope;
 
 	private Uncertainty uncertainty;
 	private double defaultMean;
@@ -53,14 +56,73 @@ public class UncertaintyDialog extends Dialog {
 		return uncertainty;
 	}
 
-	public void setInterpreter(FormulaInterpreter interpreter) {
-		this.interpreter = interpreter;
+	public void setInterpreter(FormulaInterpreter interpreter, long scope) {
+		if (!interpreter.hasScope(scope))
+			this.interpreterScope = interpreter.getGlobalScope();
+		else
+			this.interpreterScope = interpreter.getScope(scope);
+	}
+
+	@Override
+	protected void createButtonsForButtonBar(Composite parent) {
+		toolkit.adapt(parent);
+		createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL,
+				true);
+		createButton(parent, IDialogConstants.HELP_ID, "Test", false);
+		createButton(parent, IDialogConstants.CANCEL_ID,
+				IDialogConstants.CANCEL_LABEL, false);
+		getShell().pack();
+	}
+
+	@Override
+	protected Point getInitialSize() {
+		return new Point(450, 300);
 	}
 
 	@Override
 	protected void okPressed() {
 		uncertainty = selectedClient.fetchUncertainty();
 		super.okPressed();
+	}
+
+	@Override
+	protected void buttonPressed(int buttonId) {
+		super.buttonPressed(buttonId);
+		if (buttonId != IDialogConstants.HELP_ID)
+			return;
+		try {
+			final NumberGenerator generator = makeGenerator();
+			App.run("test", new Runnable() {
+				public void run() {
+					UncertaintyShell.show(generator);
+				}
+			});
+		} catch (Exception e) {
+			log.error("failed to run uncertainty test");
+		}
+	}
+
+	private NumberGenerator makeGenerator() {
+		Uncertainty uncertainty = selectedClient.fetchUncertainty();
+		switch (uncertainty.getDistributionType()) {
+		case LOG_NORMAL:
+			return NumberGenerator.logNormal(uncertainty.getParameter1Value(),
+					uncertainty.getParameter2Value());
+		case NONE:
+			return NumberGenerator.discrete(uncertainty.getParameter1Value());
+		case NORMAL:
+			return NumberGenerator.normal(uncertainty.getParameter1Value(),
+					uncertainty.getParameter2Value());
+		case TRIANGLE:
+			return NumberGenerator.triangular(uncertainty.getParameter1Value(),
+					uncertainty.getParameter2Value(),
+					uncertainty.getParameter3Value());
+		case UNIFORM:
+			return NumberGenerator.uniform(uncertainty.getParameter1Value(),
+					uncertainty.getParameter2Value());
+		default:
+			return NumberGenerator.discrete(1);
+		}
 	}
 
 	@Override
@@ -127,22 +189,6 @@ public class UncertaintyDialog extends Dialog {
 			UncertaintyPanel client = new UncertaintyPanel(composite, types[i]);
 			clients[i] = client;
 		}
-	}
-
-	@Override
-	protected void createButtonsForButtonBar(Composite parent) {
-		toolkit.adapt(parent);
-		createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL,
-				true);
-		createButton(parent, IDialogConstants.HELP_ID, "Test", false);
-		createButton(parent, IDialogConstants.CANCEL_ID,
-				IDialogConstants.CANCEL_LABEL, false);
-		getShell().pack();
-	}
-
-	@Override
-	protected Point getInitialSize() {
-		return new Point(450, 300);
 	}
 
 	@Override
@@ -276,7 +322,7 @@ public class UncertaintyDialog extends Dialog {
 					if (isValidNumber(s))
 						set(param, Double.parseDouble(s), null);
 					else if (isValidFormula(s))
-						set(param, interpreter.eval(s), s);
+						set(param, interpreterScope.eval(s), s);
 				} catch (Exception e) {
 					log.error("failed to set uncertainty value", e);
 				}
@@ -308,17 +354,17 @@ public class UncertaintyDialog extends Dialog {
 				Double.parseDouble(s);
 				return true;
 			} catch (Exception e) {
-				if (interpreter == null)
+				if (interpreterScope == null)
 					Error.showBox(s + " is not a valid number");
 				return false;
 			}
 		}
 
 		private boolean isValidFormula(String s) {
-			if (interpreter == null)
+			if (interpreterScope == null)
 				return false;
 			try {
-				interpreter.eval(s);
+				interpreterScope.eval(s);
 				return true;
 			} catch (Exception e) {
 				Error.showBox("Formula evaluation of " + s + " failed");

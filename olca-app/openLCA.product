@@ -6,7 +6,7 @@
    <aboutInfo>
       <image path="/olca-app/icons/about.png"/>
       <text>
-         openLCA 1.3.0
+         openLCA 1.4.0
 
 Copyright (c) 2007 - 2013 GreenDelta. All rights reserved.
 Visit http://openlca.org and http://greendelta.com
@@ -30,7 +30,7 @@ en
    <windowImages i16="/olca-app/icons/logo_16_32bit.png" i32="/olca-app/icons/logo_32_32bit.png" i48="/olca-app/icons/logo_48_32bit.png" i64="/olca-app/icons/logo_64.png" i128="/olca-app/icons/logo_128.png"/>
 
    <splash
-      location="olca-app-core" />
+      location="olca-app" />
    <launcher name="openLCA">
       <macosx icon="/olca-app/icons/logo.icns"/>
       <solaris/>
@@ -48,7 +48,7 @@ en
    <intro introId="org.openlca.core.welcome.intro"/>
 
    <vm>
-      <windows include="true">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7</windows>
+      <windows include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7</windows>
    </vm>
 
    <license>

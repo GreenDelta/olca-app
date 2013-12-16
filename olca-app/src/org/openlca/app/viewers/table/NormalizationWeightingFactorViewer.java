@@ -35,8 +35,7 @@ public class NormalizationWeightingFactorViewer extends
 		this.method = impactMethod;
 		getCellModifySupport().bind(LABEL.NORMALIZATION,
 				new NormalizationModifier());
-		getCellModifySupport()
-				.bind(LABEL.WEIGHTING, new WeightingModifier());
+		getCellModifySupport().bind(LABEL.WEIGHTING, new WeightingModifier());
 	}
 
 	public void setInput(NormalizationWeightingSet set) {
@@ -48,7 +47,9 @@ public class NormalizationWeightingFactorViewer extends
 			for (int i = 0; i < wrapper.length; i++) {
 				ImpactCategory category = method.getImpactCategories().get(i);
 				wrapper[i] = new Wrapper(category);
-				wrapper[i].factor = set.getFactor(category.getId());
+				NormalizationWeightingFactor f = set
+						.getFactor(category.getId());
+				wrapper[i].factor = f;
 			}
 			setInput(wrapper);
 		}

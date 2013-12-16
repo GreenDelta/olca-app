@@ -29,6 +29,18 @@ After this, your development environment is ready. The project is build on
 the Eclipse 3.x platform. For tutorials about Eclipse RCP development see for 
 example http://www.vogella.com/eclipse.html. 
 
+Embedding a XulRunner
+---------------------
+To display HTML views it is possible to embed a 
+[XulRunner](https://developer.mozilla.org/en/docs/XULRunner) in openLCA. When 
+openLCA tries to open an HTML view the first time in a session, it checks if 
+the feature-flag USE_MOZILLA_BROWSER is enabled and if a XULRunner directory 
+is located in the installation folder. To 'install' a XulRunner just copy the
+`xulrunner` folder into your target platform project (next to the folders
+`plugins` and `features`). You can get the XulRunner runtime from 
+[here](http://ftp.mozilla.org/pub/mozilla.org/xulrunner/releases/10.0/runtimes/).
+Eclipse 3.8 which we currently use as runtime platform supports XulRunner 10.0.
+
 License
 -------
 Unless stated otherwise, all source code of the openLCA project is licensed under the 

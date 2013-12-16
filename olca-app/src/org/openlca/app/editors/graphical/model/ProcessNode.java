@@ -1,12 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.app.editors.graphical.model;
 
 import java.util.ArrayList;
@@ -14,9 +5,11 @@ import java.util.List;
 
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.layout.GraphLayoutManager;
 import org.openlca.core.database.ProcessDao;
+import org.openlca.core.matrix.ProcessLinkSearchMap;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Location;
@@ -32,6 +25,7 @@ public class ProcessNode extends Node {
 	private List<ConnectionLink> links = new ArrayList<>();
 	private Rectangle xyLayoutConstraints;
 	private boolean minimized = true;
+	private boolean marked = false;
 
 	public ProcessNode(ProcessDescriptor process) {
 		this.process = process;
@@ -65,19 +59,25 @@ public class ProcessNode extends Node {
 	}
 
 	public void add(ConnectionLink link) {
-		links.add(link);
-		if (equals(link.getSourceNode()))
-			getEditPart().refreshSourceConnections();
-		else if (equals(link.getTargetNode()))
-			getEditPart().refreshTargetConnections();
+		if (!links.contains(link)) {
+			links.add(link);
+			if (equals(link.getSourceNode()))
+				getEditPart().refreshSourceConnections();
+			if (equals(link.getTargetNode()))
+				getEditPart().refreshTargetConnections();
+			getProcessFigure().refresh();
+		}
 	}
 
 	public void remove(ConnectionLink link) {
-		links.remove(link);
-		if (equals(link.getSourceNode()))
-			getEditPart().refreshSourceConnections();
-		else if (equals(link.getTargetNode()))
-			getEditPart().refreshTargetConnections();
+		if (links.contains(link)) {
+			links.remove(link);
+			if (equals(link.getSourceNode()))
+				getEditPart().refreshSourceConnections();
+			if (equals(link.getTargetNode()))
+				getEditPart().refreshTargetConnections();
+			getProcessFigure().refresh();
+		}
 	}
 
 	public List<ConnectionLink> getLinks() {
@@ -99,11 +99,11 @@ public class ProcessNode extends Node {
 	}
 
 	@Override
-	protected String getName() {
+	public String getName() {
 		String text = process.getName();
 		if (process.getLocation() != null)
 			text += " ["
-					+ Database.getCache()
+					+ Cache.getEntityCache()
 							.get(Location.class, process.getLocation())
 							.getCode() + "]";
 		return text;
@@ -129,6 +129,20 @@ public class ProcessNode extends Node {
 		refresh();
 	}
 
+	public void mark() {
+		this.marked = true;
+		refresh();
+	}
+
+	public void unmark() {
+		this.marked = false;
+		refresh();
+	}
+
+	public boolean isMarked() {
+		return marked;
+	}
+
 	private void initializeExchangeNodes() {
 		Process process = new ProcessDao(Database.get()).getForId(this.process
 				.getId());
@@ -149,11 +163,21 @@ public class ProcessNode extends Node {
 		getProcessFigure().refresh();
 	}
 
-	public ExchangeNode getExchangeNode(long flowId) {
+	public ExchangeNode getInputNode(long flowId) {
 		for (ExchangeNode node : getExchangeNodes())
 			if (!node.isDummy())
-				if (node.getExchange().getFlow().getId() == flowId)
-					return node;
+				if (node.getExchange().isInput())
+					if (node.getExchange().getFlow().getId() == flowId)
+						return node;
+		return null;
+	}
+
+	public ExchangeNode getOutputNode(long flowId) {
+		for (ExchangeNode node : getExchangeNodes())
+			if (!node.isDummy())
+				if (!node.getExchange().isInput())
+					if (node.getExchange().getFlow().getId() == flowId)
+						return node;
 		return null;
 	}
 
@@ -167,6 +191,12 @@ public class ProcessNode extends Node {
 		return result;
 	}
 
+	public ExchangeNode[] loadExchangeNodes() {
+		if (getChildren().isEmpty())
+			initializeExchangeNodes();
+		return getExchangeNodes();
+	}
+
 	public Rectangle getXyLayoutConstraints() {
 		return xyLayoutConstraints;
 	}
@@ -177,8 +207,9 @@ public class ProcessNode extends Node {
 	}
 
 	public boolean hasIncomingConnection(long flowId) {
-		for (ProcessLink link : getParent().getProductSystem()
-				.getIncomingLinks(getProcess().getId()))
+		ProcessLinkSearchMap linkSearch = getParent().getLinkSearch();
+		for (ProcessLink link : linkSearch.getIncomingLinks(getProcess()
+				.getId()))
 			if (link.getFlowId() == flowId)
 				return true;
 		return false;
@@ -205,6 +236,20 @@ public class ProcessNode extends Node {
 	public boolean hasConnections() {
 		if (links.size() > 0)
 			return true;
+		return false;
+	}
+
+	public boolean hasOutgoingConnections() {
+		for (ConnectionLink link : links)
+			if (link.getSourceNode().equals(this))
+				return true;
+		return false;
+	}
+
+	public boolean hasIncomingConnections() {
+		for (ConnectionLink link : links)
+			if (link.getTargetNode().equals(this))
+				return true;
 		return false;
 	}
 
@@ -249,6 +294,11 @@ public class ProcessNode extends Node {
 			return false;
 		ProcessNode other = (ProcessNode) obj;
 		return Objects.equal(getProcess(), other.getProcess());
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(getProcess());
 	}
 
 }

@@ -8,9 +8,13 @@ import org.openlca.app.RcpActivator;
 
 public enum ImageType implements IImageType {
 
+	ACCEPT_ICON("accept.png"),
+
 	ACTOR_CATEGORY_ICON("folder_user.png"),
 
 	ACTOR_ICON("actor_obj.png"),
+
+	ACTOR_ICON_NEW("actor_obj_new.png"),
 
 	ADD_ICON("add.png"),
 
@@ -40,7 +44,7 @@ public enum ImageType implements IImageType {
 
 	DB_ICON("db_obj.gif"),
 
-	DB_ICON_DIS("db_obj_dis.gif"),
+	DB_ICON_DIS("db_obj_dis.png"),
 
 	DB_IO("db_io_16.gif"),
 
@@ -49,6 +53,8 @@ public enum ImageType implements IImageType {
 	DELETE_ICON("delete.gif"),
 
 	DELETE_ICON_DISABLED("delete_dis.gif"),
+
+	DENY_ICON("deny.png"),
 
 	DISCONNECT_ICON("disconnect.png"),
 
@@ -64,9 +70,13 @@ public enum ImageType implements IImageType {
 
 	EXPAND_ICON("expandall.gif"),
 
+	EXPORT_ICON("export_wiz_16x16.gif"),
+
 	EXPRESSION_ICON("expression_obj.gif"),
 
 	EXPRESSION_ICON_DIS("expression_obj_dis.gif"),
+
+	EXTENSION_ICON("extension_16.gif"),
 
 	FILE_ICON("file_16.gif"),
 
@@ -74,11 +84,15 @@ public enum ImageType implements IImageType {
 
 	FLOW_ICON("flow_obj.gif"),
 
+	FLOW_ICON_NEW("flow_obj_new.gif"),
+
 	FLOW_PRODUCT("flow_product_16.png"),
 
 	FLOW_PROPERTY_CATEGORY_ICON("folder_fp.png"),
 
 	FLOW_PROPERTY_ICON("flowprop_obj.gif"),
+
+	FLOW_PROPERTY_ICON_NEW("flowprop_obj_new.gif"),
 
 	FLOW_SUBSTANCE("flow_substance_16.png"),
 
@@ -98,7 +112,11 @@ public enum ImageType implements IImageType {
 
 	ILCD_ICON("ilcd16.png"),
 
+	IMPORT_ICON("import_wiz_16x16.gif"),
+
 	IMPORT_ZIP_WIZARD("import_zip_wizard.png"),
+
+	HELP_ICON("help_16x16.gif"),
 
 	INFO_ICON("info_tsk.gif"),
 
@@ -111,6 +129,8 @@ public enum ImageType implements IImageType {
 	LCIA_CATEGORY_ICON_DIS("folder_wa_dis.png"),
 
 	LCIA_ICON("LCIA_obj.gif"),
+
+	LCIA_ICON_NEW("LCIA_obj_new.gif"),
 
 	LINK_16_BLUE("16x16_link_blue.png"),
 
@@ -188,13 +208,19 @@ public enum ImageType implements IImageType {
 
 	PROCESS_ICON("proc_obj.gif"),
 
+	PROCESS_ICON_NEW("proc_obj_new.gif"),
+
 	PRODUCT_SYSTEM_CATEGORY_ICON("folder_prodsystem.png"),
 
 	PRODUCT_SYSTEM_ICON("system_obj.gif"),
 
+	PRODUCT_SYSTEM_ICON_NEW("chart_organisation_new.png"),
+
 	PROJECT_CATEGORY_ICON("folder_proj.png"),
 
 	PROJECT_ICON("project_obj.png"),
+
+	PROJECT_ICON_NEW("project_obj_new.png"),
 
 	REFRESH_ICON("refresh_16.png"),
 
@@ -211,6 +237,8 @@ public enum ImageType implements IImageType {
 	SOURCE_CATEGORY_ICON("folder_source.png"),
 
 	SOURCE_ICON("source_obj.png"),
+
+	SOURCE_ICON_NEW("source_obj_new.png"),
 
 	SP_ICON("sp.png"),
 
@@ -229,6 +257,8 @@ public enum ImageType implements IImageType {
 	UNIT_GROUP_CATEGORY_ICON("folder_unit.png"),
 
 	UNIT_GROUP_ICON("unitgroup_obj.gif"),
+
+	UNIT_GROUP_ICON_NEW("unitgroup_obj_new.gif"),
 
 	UNSELECT_ICON("unselectAll.gif"),
 

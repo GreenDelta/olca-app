@@ -26,7 +26,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.components.ContributionImage;
-import org.openlca.app.db.Database;
+import org.openlca.app.db.Cache;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.Tables;
@@ -34,7 +34,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.ProcessViewer;
 import org.openlca.core.database.EntityCache;
-import org.openlca.core.matrices.FlowIndex;
+import org.openlca.core.matrix.FlowIndex;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -43,7 +43,7 @@ import org.openlca.core.results.AnalysisResult;
 /** Shows the single results of the processes in an analysis result. */
 public class ProcessResultPage extends FormPage {
 
-	private EntityCache cache = Database.getCache();
+	private EntityCache cache = Cache.getEntityCache();
 	private AnalyzeEditor editor;
 	private AnalysisResult result;
 	private ResultProvider flowResultProvider;

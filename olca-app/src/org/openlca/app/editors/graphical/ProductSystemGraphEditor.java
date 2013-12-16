@@ -1,18 +1,6 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.app.editors.graphical;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.ConnectionRouter;
@@ -28,15 +16,15 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
-import org.openlca.app.db.Database;
+import org.openlca.app.db.Cache;
 import org.openlca.app.editors.graphical.layout.GraphLayoutType;
 import org.openlca.app.editors.graphical.model.ConnectionLink;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.app.editors.graphical.model.TreeConnectionRouter;
 import org.openlca.app.editors.graphical.outline.OutlinePage;
-import org.openlca.core.database.ProductSystemDao;
-import org.openlca.core.model.ProcessLink;
+import org.openlca.app.systems.ProductSystemEditor;
+import org.openlca.app.util.Labels;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
@@ -44,7 +32,8 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 
 	public static final String ID = "editors.productsystem.graphical";
 
-	private ProductSystem productSystem;
+	private ProductSystem system;
+	private ProductSystemEditor systemEditor;
 	private ProductSystemNode model;
 	private GraphLayoutType layoutType = GraphLayoutType.TREE_LAYOUT;
 	private OutlinePage outline;
@@ -52,6 +41,21 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 	private GraphicalViewerConfigurator configurator;
 	private ISelection selection;
 	private List<String> actionIds;
+
+	public ProductSystemGraphEditor(ProductSystem system,
+			ProductSystemEditor editor) {
+		this.system = system;
+		this.systemEditor = editor;
+	}
+
+	public void setDirty(boolean value) {
+		systemEditor.setDirty(value);
+	}
+
+	@Override
+	public boolean isDirty() {
+		return systemEditor.isDirty();
+	}
 
 	public ISelection getSelection() {
 		return selection;
@@ -63,39 +67,30 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 		setEditDomain(new DefaultEditDomain(this));
 		if (input instanceof GraphicalEditorInput) {
 			GraphicalEditorInput modelInput = (GraphicalEditorInput) input;
-			productSystem = new ProductSystemDao(Database.get())
-					.getForId(modelInput.getDescriptor().getId());
-			if (productSystem != null)
-				setPartName(productSystem.getName());
+			if (modelInput.getDescriptor() != null)
+				setPartName(Labels.getDisplayName(modelInput.getDescriptor()));
 		}
 		super.init(site, input);
 	}
 
 	private ProductSystemNode createModel() {
-		Set<Long> processes = new HashSet<>();
-		long referenceId = productSystem.getReferenceProcess().getId();
-		processes.add(referenceId);
-		for (ProcessLink link : productSystem.getIncomingLinks(referenceId))
-			processes.add(link.getProviderId());
-
-		ProductSystemNode productSystemNode = new ProductSystemNode(
-				productSystem, this);
-		for (Long id : processes)
-			productSystemNode.add(createProcessNode(id));
-
+		long referenceId = system.getReferenceProcess().getId();
+		ProductSystemNode productSystemNode = new ProductSystemNode(system,
+				this);
+		productSystemNode.add(createProcessNode(referenceId));
 		return productSystemNode;
 	}
 
 	private ProductSystemNode expandModel() {
-		ProductSystemNode productSystemNode = new ProductSystemNode(
-				productSystem, this);
-		for (Long id : productSystem.getProcesses())
+		ProductSystemNode productSystemNode = new ProductSystemNode(system,
+				this);
+		for (Long id : system.getProcesses())
 			productSystemNode.add(createProcessNode(id));
 		return productSystemNode;
 	}
 
 	private ProcessNode createProcessNode(long id) {
-		ProcessDescriptor descriptor = Database.getCache().get(
+		ProcessDescriptor descriptor = Cache.getEntityCache().get(
 				ProcessDescriptor.class, id);
 		ProcessNode processNode = new ProcessNode(descriptor);
 		return processNode;
@@ -134,7 +129,7 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 
 	@Override
 	public void doSave(final IProgressMonitor monitor) {
-
+		// do nothing as this editor is embedded in a system editor
 	}
 
 	@Override
@@ -184,31 +179,6 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 	@Override
 	public boolean isSaveAsAllowed() {
 		return false;
-	}
-
-	public void initializeLinks() {
-		boolean full = model.getChildren().size() == productSystem
-				.getProcesses().size();
-		long referenceId = productSystem.getReferenceProcess().getId();
-		List<ProcessLink> links = new ArrayList<>();
-		if (full)
-			links.addAll(productSystem.getProcessLinks());
-		else
-			for (ProcessLink link : productSystem.getIncomingLinks(referenceId))
-				links.add(link);
-
-		for (ProcessLink processLink : links) {
-			ProcessNode sourceNode = model.getProcessNode(processLink
-					.getProviderId());
-			ProcessNode targetNode = model.getProcessNode(processLink
-					.getRecipientId());
-			ConnectionLink link = new ConnectionLink();
-			link.setSourceNode(sourceNode);
-			link.setTargetNode(targetNode);
-			link.setProcessLink(processLink);
-			link.link();
-		}
-		model.refresh();
 	}
 
 	public void expand() {

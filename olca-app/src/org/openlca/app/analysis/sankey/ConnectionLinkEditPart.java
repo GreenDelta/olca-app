@@ -40,10 +40,12 @@ public class ConnectionLinkEditPart extends AbstractConnectionEditPart {
 	@Override
 	protected IFigure createFigure() {
 		ConnectionLink link = (ConnectionLink) getModel();
-		int width = (int) Math.ceil(Math.abs(link.getRatio()
-				* ConnectionLink.MAXIMIM_WIDTH));
+		double dWidth = link.getRatio() * ConnectionLink.MAXIMIM_WIDTH;
+		int width = (int) Math.ceil(Math.abs(dWidth));
 		if (width == 0)
 			width = 1;
+		if (width > ConnectionLink.MAXIMIM_WIDTH)
+			width = ConnectionLink.MAXIMIM_WIDTH;
 		PolylineConnection conn = new ConnectionLinkFigure(width,
 				((ProductSystemNode) link.getSourceNode().getParent())
 						.getEditor());

@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -12,24 +13,27 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.openlca.app.FeatureFlag;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
+import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
+import org.openlca.app.navigation.ModelTextFilter;
 import org.openlca.app.navigation.NavigationTree;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.filters.EmptyCategoryFilter;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.UIFactory;
+import org.openlca.core.model.Exchange;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
+import org.openlca.core.model.descriptors.Descriptors;
+import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,9 +45,10 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 
 	private Button addSupplyChainButton;
 	private TreeViewer processViewer;
-	private Process selectedProcess;
+	private Process refProcess;
 	private Button useSystemProcesses;
 	private double cutoff = 0;
+	private Text filterText;
 
 	public ProductSystemWizardPage() {
 		super("ProductSystemWizardPage");
@@ -53,35 +58,31 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 		setPageComplete(false);
 	}
 
+	public void setProcess(Process process) {
+		this.refProcess = process;
+	}
+
 	public boolean addSupplyChain() {
 		return addSupplyChainButton.getSelection();
 	}
 
 	@Override
 	public ProductSystem createModel() {
-		final ProductSystem productSystem = new ProductSystem();
+		ProductSystem productSystem = new ProductSystem();
 		productSystem.setRefId(UUID.randomUUID().toString());
 		productSystem.setName(getModelName());
 		productSystem.setDescription(getModelDescription());
-
 		try {
-			final Process process = selectedProcess;
-			productSystem.getProcesses().add(process.getId());
-			productSystem.setReferenceProcess(process);
-			if (process.getQuantitativeReference() != null) {
-				productSystem.setReferenceExchange(process
-						.getQuantitativeReference());
-				productSystem.setTargetUnit(productSystem
-						.getReferenceExchange().getUnit());
-				productSystem.setTargetFlowPropertyFactor(productSystem
-						.getReferenceExchange().getFlowPropertyFactor());
-			} else {
-				log.error("No quantitative reference on process '{}', "
-						+ "calculation will fail.", process.getName());
-			}
-			productSystem.setTargetAmount(1);
+			productSystem.getProcesses().add(refProcess.getId());
+			productSystem.setReferenceProcess(refProcess);
+			Exchange qRef = refProcess.getQuantitativeReference();
+			productSystem.setReferenceExchange(qRef);
+			productSystem.setTargetUnit(qRef.getUnit());
+			productSystem.setTargetFlowPropertyFactor(qRef
+					.getFlowPropertyFactor());
+			productSystem.setTargetAmount(qRef.getAmountValue());
 		} catch (final Exception e) {
-			log.error("Loading reference process failed", e);
+			log.error("Loading reference process failed / no selected", e);
 		}
 		return productSystem;
 	}
@@ -97,26 +98,33 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 	@Override
 	protected void checkInput() {
 		super.checkInput();
-		if (getErrorMessage() == null && selectedProcess == null) {
+		if (getErrorMessage() == null && refProcess == null) {
 			setErrorMessage(EMPTY_REFERENCEPROCESS_ERROR);
 		}
 		setPageComplete(getErrorMessage() == null);
 	}
 
 	@Override
-	protected void createContents(final Composite container) {
-		Composite label = new Composite(container, SWT.NONE);
-		label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
-		label.setLayout(new GridLayout(1, true));
-		new Label(label, SWT.NONE).setText(Messages.ReferenceProcess);
+	protected void createContents(Composite container) {
+		filterText = UI.formText(container, Messages.Filter);
+		UI.formLabel(container, Messages.ReferenceProcess);
 		createProcessViewer(container);
 		createOptions(container);
+		if (refProcess != null) {
+			nameText.setText(refProcess.getName());
+			ProcessDescriptor descriptor = Descriptors.toDescriptor(refProcess);
+			INavigationElement<?> elem = Navigator.findElement(descriptor);
+			if (elem != null)
+				processViewer.setSelection(new StructuredSelection(elem));
+			checkInput();
+		}
 	}
 
 	private void createProcessViewer(Composite container) {
 		processViewer = NavigationTree.createViewer(container);
 		processViewer.setInput(Navigator.findElement(ModelType.PROCESS));
 		processViewer.addFilter(new EmptyCategoryFilter());
+		processViewer.addFilter(new ModelTextFilter(filterText, processViewer));
 		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
 		gd.heightHint = 200;
 		processViewer.getTree().setLayoutData(gd);
@@ -171,27 +179,24 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 				.addSelectionChangedListener(new ISelectionChangedListener() {
 
 					@Override
-					public void selectionChanged(
-							final SelectionChangedEvent event) {
-						final IStructuredSelection selection = (IStructuredSelection) event
+					public void selectionChanged(SelectionChangedEvent event) {
+						IStructuredSelection selection = (IStructuredSelection) event
 								.getSelection();
 						if (selection.getFirstElement() instanceof ModelElement) {
-							final ModelElement elem = (ModelElement) ((IStructuredSelection) processViewer
+							ModelElement elem = (ModelElement) ((IStructuredSelection) processViewer
 									.getSelection()).getFirstElement();
 							try {
-								selectedProcess = Database.load(elem
-										.getContent());
+								refProcess = Database.load(elem.getContent());
 								checkInput();
 							} catch (Exception e) {
 								log.error("failed to load process", e);
 							}
 						} else {
-							selectedProcess = null;
+							refProcess = null;
 							checkInput();
 						}
 					}
 				});
-
 	}
 
 }

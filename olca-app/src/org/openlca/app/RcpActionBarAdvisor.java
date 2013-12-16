@@ -1,5 +1,6 @@
 package org.openlca.app;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.ICoolBarManager;
 import org.eclipse.jface.action.IMenuManager;
@@ -13,26 +14,22 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.actions.ActionFactory.IWorkbenchAction;
 import org.eclipse.ui.actions.ContributionItemFactory;
-import org.eclipse.ui.actions.RetargetAction;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 import org.openlca.app.resources.ImageType;
+import org.openlca.app.util.Desktop;
 
 public class RcpActionBarAdvisor extends ActionBarAdvisor {
 
 	private IWorkbenchAction aboutAction;
 	private IWorkbenchAction closeAction;
 	private IWorkbenchAction closeAllAction;
-	private RetargetAction deleteAction;
-	private IWorkbenchAction dynamicHelpAction;
 	private IWorkbenchAction exitAction;
 	private IWorkbenchAction exportAction;
-	private IWorkbenchAction helpContentsAction;
-	private IWorkbenchAction helpSearchAction;
+
 	private IWorkbenchAction importAction;
 	private IWorkbenchAction newEditorAction;
 	private IWorkbenchAction newWindowAction;
-	private RetargetAction openAction;
 	private IWorkbenchAction preferencesAction;
 	private IWorkbenchAction saveAction;
 	private IWorkbenchAction saveAllAction;
@@ -40,31 +37,19 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	private IContributionItem showViews;
 	private IWorkbenchAction introAction;
 
-	public RcpActionBarAdvisor(final IActionBarConfigurer configurer) {
+	public RcpActionBarAdvisor(IActionBarConfigurer configurer) {
 		super(configurer);
 	}
 
 	@Override
-	protected void fillCoolBar(final ICoolBarManager coolBar) {
-		// create save tool bar
-		final IToolBarManager saveToolbar = new ToolBarManager(SWT.FLAT
-				| SWT.RIGHT);
+	protected void fillCoolBar(ICoolBarManager coolBar) {
+		IToolBarManager saveToolbar = new ToolBarManager(SWT.FLAT | SWT.RIGHT);
 		saveToolbar.add(saveAction);
 		saveToolbar.add(saveAsAction);
 		saveToolbar.add(saveAllAction);
-
-		// create open tool bar
-		final IToolBarManager openDeleteToolbar = new ToolBarManager(SWT.FLAT
-				| SWT.RIGHT);
-		openDeleteToolbar.add(openAction);
-		openDeleteToolbar.add(deleteAction);
-
 		coolBar.add(saveToolbar);
-		coolBar.add(openDeleteToolbar);
-
 		if (introAction != null) {
-			// create welcome tool bar
-			final IToolBarManager welcomeToolbar = new ToolBarManager(SWT.FLAT
+			IToolBarManager welcomeToolbar = new ToolBarManager(SWT.FLAT
 					| SWT.RIGHT);
 			welcomeToolbar.add(introAction);
 			coolBar.add(welcomeToolbar);
@@ -72,58 +57,54 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	}
 
 	@Override
-	protected void fillMenuBar(final IMenuManager menuBar) {
+	protected void fillMenuBar(IMenuManager menuBar) {
 		super.fillMenuBar(menuBar);
-		// create file menu
-		final MenuManager menuFile = new MenuManager(Messages.Menu_File,
-				IWorkbenchActionConstants.M_FILE);
-		menuFile.add(saveAction);
-		menuFile.add(saveAsAction);
-		menuFile.add(saveAllAction);
-		menuFile.add(new Separator());
-		menuFile.add(closeAction);
-		menuFile.add(closeAllAction);
-		menuFile.add(new Separator());
-		menuFile.add(preferencesAction);
-		menuFile.add(new Separator());
-		menuFile.add(importAction);
-		menuFile.add(exportAction);
-		menuFile.add(new Separator());
-		menuFile.add(exitAction);
-		menuBar.add(menuFile);
+		fillFileMenu(menuBar);
+		fillWindowMenu(menuBar);
+		fillHelpMenu(menuBar);
+	}
 
-		// create edit menu
-		final MenuManager menuEdit = new MenuManager(Messages.Menu_Edit,
-				IWorkbenchActionConstants.M_EDIT);
-		menuEdit.add(openAction);
-		menuEdit.add(deleteAction);
-		menuBar.add(menuEdit);
-
-		// create window menu
-		final MenuManager menuWindow = new MenuManager(Messages.Menu_Window,
-				IWorkbenchActionConstants.M_WINDOW);
-		menuWindow.add(newWindowAction);
-		menuWindow.add(newEditorAction);
-
-		// create show view sub menu
-		final MenuManager viewMenu = new MenuManager(Messages.Menu_ShowViews);
-		viewMenu.add(showViews);
-		menuWindow.add(viewMenu);
-		menuWindow.add(new FormulaConsoleAction());
-		menuBar.add(menuWindow);
-
-		// create help menu
-		final MenuManager menuHelp = new MenuManager(Messages.Menu_Help,
+	private void fillHelpMenu(IMenuManager menuBar) {
+		MenuManager helpMenu = new MenuManager(Messages.Menu_Help,
 				IWorkbenchActionConstants.M_HELP);
-		if (introAction != null) {
-			menuHelp.add(introAction);
-		}
-		menuHelp.add(helpContentsAction);
-		menuHelp.add(helpSearchAction);
-		menuHelp.add(dynamicHelpAction);
-		menuHelp.add(new Separator());
-		menuHelp.add(aboutAction);
-		menuBar.add(menuHelp);
+		if (introAction != null)
+			helpMenu.add(introAction);
+		HelpAction helpAction = new HelpAction();
+		helpMenu.add(helpAction);
+		helpMenu.add(new Separator());
+		helpMenu.add(aboutAction);
+		menuBar.add(helpMenu);
+	}
+
+	private void fillFileMenu(IMenuManager menuBar) {
+		MenuManager fileMenu = new MenuManager(Messages.Menu_File,
+				IWorkbenchActionConstants.M_FILE);
+		fileMenu.add(saveAction);
+		fileMenu.add(saveAsAction);
+		fileMenu.add(saveAllAction);
+		fileMenu.add(new Separator());
+		fileMenu.add(closeAction);
+		fileMenu.add(closeAllAction);
+		fileMenu.add(new Separator());
+		fileMenu.add(preferencesAction);
+		fileMenu.add(new Separator());
+		fileMenu.add(importAction);
+		fileMenu.add(exportAction);
+		fileMenu.add(new Separator());
+		fileMenu.add(exitAction);
+		menuBar.add(fileMenu);
+	}
+
+	private void fillWindowMenu(IMenuManager menuBar) {
+		MenuManager windowMenu = new MenuManager(Messages.Menu_Window,
+				IWorkbenchActionConstants.M_WINDOW);
+		windowMenu.add(newWindowAction);
+		windowMenu.add(newEditorAction);
+		MenuManager viewMenu = new MenuManager(Messages.Menu_ShowViews);
+		viewMenu.add(showViews);
+		windowMenu.add(viewMenu);
+		windowMenu.add(new FormulaConsoleAction());
+		menuBar.add(windowMenu);
 	}
 
 	@Override
@@ -147,29 +128,11 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 
 		exitAction = ActionFactory.QUIT.create(window);
 
-		openAction = new RetargetAction("open.action", Messages.Menu_Open);
-		openAction.setToolTipText(openAction.getText());
-		openAction.setImageDescriptor(ImageType.LOAD_ICON.getDescriptor());
-		window.getPartService().addPartListener(openAction);
-
-		deleteAction = new RetargetAction("delete.action", Messages.Menu_Delete);
-		deleteAction.setToolTipText(deleteAction.getText());
-		deleteAction.setImageDescriptor(ImageType.DELETE_ICON.getDescriptor());
-		deleteAction.setDisabledImageDescriptor(ImageType.DELETE_ICON_DISABLED
-				.getDescriptor());
-		window.getPartService().addPartListener(deleteAction);
-
 		newWindowAction = ActionFactory.OPEN_NEW_WINDOW.create(window);
 
 		newEditorAction = ActionFactory.NEW_EDITOR.create(window);
 
 		showViews = ContributionItemFactory.VIEWS_SHORTLIST.create(window);
-
-		helpContentsAction = ActionFactory.HELP_CONTENTS.create(window);
-
-		helpSearchAction = ActionFactory.HELP_SEARCH.create(window);
-
-		dynamicHelpAction = ActionFactory.DYNAMIC_HELP.create(window);
 
 		aboutAction = ActionFactory.ABOUT.create(window);
 
@@ -180,4 +143,18 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		// log.debug("Welcome/intro page plugin not found");
 		// }
 	}
+
+	private class HelpAction extends Action {
+		public HelpAction() {
+			setText(Messages.OnlineHelp);
+			setToolTipText(Messages.OnlineHelp);
+			setImageDescriptor(ImageType.HELP_ICON.getDescriptor());
+		}
+
+		@Override
+		public void run() {
+			Desktop.browse(Config.HELP_URL);
+		}
+	}
+
 }

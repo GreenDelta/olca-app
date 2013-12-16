@@ -3,7 +3,7 @@ package org.openlca.app.inventory;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
-import org.openlca.app.db.Database;
+import org.openlca.app.db.Cache;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Labels;
 import org.openlca.core.database.EntityCache;
@@ -52,7 +52,7 @@ public class InventoryResultInput implements IEditorInput {
 
 	@Override
 	public String getName() {
-		EntityCache cache = Database.getCache();
+		EntityCache cache = Cache.getEntityCache();
 		if (cache == null)
 			return "";
 		ProductSystemDescriptor d = cache.get(ProductSystemDescriptor.class,

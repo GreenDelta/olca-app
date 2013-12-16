@@ -75,7 +75,8 @@
             default="false"
             icon="icons/expression_obj.gif"
             id="InventoryResultEditor"
-            name="Quick results">
+            name="Quick results"
+            contributorClass="org.openlca.app.inventory.InventoryResultActions">
       </editor>
       <editor
             id="ProjectResultEditor"
@@ -85,16 +86,13 @@
             name="Project results"
             contributorClass="org.openlca.app.projects.ProjectResultActions">
       </editor>
-      
-      <!-- re-add the action contributor
-         contributorClass="org.openlca.core.editors.analyze.AnalyzeActionContributor"
-      -->
       <editor
             class="org.openlca.app.analysis.AnalyzeEditor"
             default="false"
             icon="icons/analyze.gif"
             id="editors.analyze"
-            name="Analyze viewer">
+            name="Analyze viewer"
+            contributorClass="org.openlca.app.analysis.AnalysisEditorActions">
       </editor>
       <editor
             class="org.openlca.app.simulation.SimulationEditor"
@@ -123,7 +121,14 @@
             icon="icons/model.gif"
             id="editors.productsystem.graphical"
             name="Product system graphical editor">
-      </editor>      
+      </editor>  
+      <editor
+            id="SearchResultView"
+            class="org.openlca.app.SearchResultView"
+            icon="icons/search_obj.png"
+            default="false"
+            name="Search result view">
+      </editor>    
    </extension>
    
    <extension
@@ -211,16 +216,8 @@
             id="views.navigation"
             name="%view.name">
       </view>  
- 	  <view
-            class="org.openlca.core.application.search.SearchView"
-            icon="icons/search_obj.png"
-            id="views.search"
-            name="%view.name.0"
-            restorable="true">
-      </view> 
    </extension>
    
- 
    <extension
          point="org.eclipse.ui.preferencePages">
 	  <page
@@ -293,23 +290,6 @@
                		 </control>
                </toolbar>
          </menuContribution>
-      <menuContribution
-            locationURI="menu:org.eclipse.ui.main.menu?before=help">
-         <menu
-               label="Settings"
-               mnemonic="S"
-               id="org.openlca.core.application.settings.menu">
-            <command
-                  commandId="commands.updatecheck"
-                  mnemonic="%updatecheck.commandmnemonic"
-                  id="menus.updatecheck">
-            </command>
-            <command
-                  commandId="org.eclipse.ui.window.preferences"
-                  id="org.openlca.core.application.settings.menu.preferencesSettinsEntry">
-            </command>
-         </menu>
-      </menuContribution>
    </extension>
 
    <extension
@@ -331,7 +311,7 @@
          </property>
          <property
                name="aboutText"
-               value="openLCA 1.3.0&#x0A;&#x0A;Copyright (c) 2007 - 2013 GreenDelta. All rights reserved.&#x0A;Visit http://openlca.org and http://greendelta.com&#x0A;&#x0A;This product includes software developed in the openLCA &#x0A;project and other open source software.">
+               value="openLCA 1.4.0&#x0A;&#x0A;Copyright (c) 2007 - 2013 GreenDelta. All rights reserved.&#x0A;Visit http://openlca.org and http://greendelta.com&#x0A;&#x0A;This product includes software developed in the openLCA &#x0A;project and other open source software.">
          </property>
          <property
                name="aboutImage"
@@ -546,6 +526,16 @@
             name="%wizard.name.0">
          <description>
             %wizard.description.0
+         </description>
+      </wizard>
+       <wizard
+            category="export.category.ecospold"
+            class="org.openlca.app.wizards.io.EcoSpold2ExportWizard"
+            icon="icons/xml.png"
+            id="wizard.export.ecospold.process"
+            name="EcoSpold 2">
+         <description>
+            Export processes as EcoSpold 2 activity data sets
          </description>
       </wizard>
       <wizard

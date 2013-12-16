@@ -17,7 +17,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.components.FlowImpactSelection;
 import org.openlca.app.components.FlowImpactSelection.EventHandler;
-import org.openlca.app.db.Database;
+import org.openlca.app.db.Cache;
 import org.openlca.app.html.HtmlPage;
 import org.openlca.app.html.IHtmlResource;
 import org.openlca.app.resources.ImageType;
@@ -43,11 +43,10 @@ import com.google.gson.Gson;
  */
 public class LocationContributionPage extends FormPage implements HtmlPage {
 
-	private EntityCache cache = Database.getCache();
+	private EntityCache cache = Cache.getEntityCache();
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private AnalysisResult result;
 	private Browser browser;
-	private AnalyzeEditor editor;
 	private LocationContributionTable table;
 	private LocationContribution calculator;
 	private FlowImpactSelection flowImpactSelection;
@@ -55,7 +54,6 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 	public LocationContributionPage(AnalyzeEditor editor, AnalysisResult result) {
 		super(editor, "analysis.MapPage", Messages.Locations);
 		this.result = result;
-		this.editor = editor;
 		calculator = new LocationContribution(result, Messages.Unspecified,
 				cache);
 	}

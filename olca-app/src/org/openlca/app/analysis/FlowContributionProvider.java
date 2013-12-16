@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.openlca.app.db.Database;
+import org.openlca.app.db.Cache;
 import org.openlca.app.util.Labels;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.descriptors.FlowDescriptor;
@@ -20,7 +20,7 @@ class FlowContributionProvider implements
 
 	public FlowContributionProvider(AnalysisResult result) {
 		this.result = result;
-		this.cache = Database.getCache();
+		this.cache = Cache.getEntityCache();
 	}
 
 	@Override
@@ -51,7 +51,7 @@ class FlowContributionProvider implements
 		if (result == null || flow == null)
 			return Collections.emptyList();
 		List<AnalysisFlowResult> flowResults = result.getFlowResults()
-				.getForFlow(flow, Database.getCache());
+				.getForFlow(flow, Cache.getEntityCache());
 		if (flowResults.isEmpty())
 			return Collections.emptyList();
 		double refVale = getRefValue(flowResults);
@@ -71,8 +71,7 @@ class FlowContributionProvider implements
 			double c, String unit) {
 		ProcessContributionItem item = new ProcessContributionItem();
 		item.setContribution(c);
-		if (result.getProcess() != null)
-			item.setProcessName(result.getProcess().getName());
+		item.setProcessName(Labels.getDisplayName(result.getProcess()));
 		item.setSingleAmount(result.getSingleResult());
 		item.setTotalAmount(result.getTotalResult());
 		item.setUnit(unit);

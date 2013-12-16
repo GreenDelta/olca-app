@@ -16,7 +16,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.openlca.app.logging.Console;
 import org.openlca.app.logging.LoggerConfig;
-import org.openlca.jblas.Library;
+import org.openlca.eigen.NativeLibrary;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -65,9 +65,9 @@ public class RcpActivator extends AbstractUIPlugin {
 		LoggerConfig.setUp();
 		log.trace("Start application. Workspace: {}.", Platform.getLocation());
 		log.trace("Bundle {} started", PLUGIN_ID);
-		log.trace("Try init jblas");
-		Library.loadFromDir(workspace);
-		log.trace("jblas loaded: {}", Library.isLoaded());
+		log.trace("Try init olca-eigen");
+		NativeLibrary.loadFromDir(workspace);
+		log.trace("olca-eigen loaded: {}", NativeLibrary.isLoaded());
 		Preferences.init();
 		startOlcaPlugins();
 	}

@@ -17,7 +17,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.components.FileChooser;
-import org.openlca.app.db.Database;
+import org.openlca.app.db.Cache;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
@@ -34,7 +34,7 @@ import org.openlca.core.model.descriptors.FlowDescriptor;
  */
 class ProcessContributionSection<T> {
 
-	private EntityCache cache = Database.getCache();
+	private EntityCache cache = Cache.getEntityCache();
 	private String sectionTitle = "#no title";
 	private String selectionName = "#no item name";
 	private IProcessContributionProvider<T> provider;

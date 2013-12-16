@@ -7,6 +7,7 @@ import org.openlca.app.editors.graphical.model.ProcessNode;
 public class ChangeStateCommand extends Command {
 
 	private ProcessNode node;
+	private boolean initiallyMinimized;
 
 	ChangeStateCommand() {
 
@@ -35,9 +36,16 @@ public class ChangeStateCommand extends Command {
 	@Override
 	public String getLabel() {
 		if (node.isMinimized())
-			return Messages.Systems_MaximizeCommand_Text;
-		else
-			return Messages.Systems_MinimizeCommand_Text;
+			if (initiallyMinimized)
+				return Messages.Systems_MaximizeCommand_Text;
+			else
+				return Messages.Systems_MinimizeCommand_Text;
+		else {
+			if (initiallyMinimized)
+				return Messages.Systems_MinimizeCommand_Text;
+			else
+				return Messages.Systems_MaximizeCommand_Text;
+		}
 	}
 
 	@Override
@@ -52,6 +60,7 @@ public class ChangeStateCommand extends Command {
 
 	void setNode(ProcessNode node) {
 		this.node = node;
+		initiallyMinimized = node.isMinimized();
 	}
 
 }

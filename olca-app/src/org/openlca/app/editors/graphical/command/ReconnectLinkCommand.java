@@ -1,12 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.app.editors.graphical.command;
 
 import org.eclipse.gef.commands.Command;
@@ -60,6 +51,8 @@ public class ReconnectLinkCommand extends Command {
 		link.setTargetNode(targetNode);
 		link.setProcessLink(processLink);
 		link.link();
+		systemNode.getEditor().setDirty(true);
+		systemNode.reindexLinks();
 	}
 
 	@Override
@@ -71,18 +64,24 @@ public class ReconnectLinkCommand extends Command {
 	public void redo() {
 		link.link();
 		oldLink.unlink();
-		ProductSystem system = sourceNode.getParent().getProductSystem();
+		ProductSystemNode systemNode = sourceNode.getParent();
+		ProductSystem system = systemNode.getProductSystem();
 		system.getProcessLinks().remove(oldLink.getProcessLink());
 		system.getProcessLinks().add(link.getProcessLink());
+		systemNode.getEditor().setDirty(true);
+		systemNode.reindexLinks();
 	}
 
 	@Override
 	public void undo() {
-		ProductSystem system = sourceNode.getParent().getProductSystem();
+		ProductSystemNode systemNode = sourceNode.getParent();
+		ProductSystem system = systemNode.getProductSystem();
 		system.getProcessLinks().remove(link.getProcessLink());
 		system.getProcessLinks().add(oldLink.getProcessLink());
 		link.unlink();
 		oldLink.link();
+		sourceNode.getParent().getEditor().setDirty(true);
+		systemNode.reindexLinks();
 	}
 
 	void setLink(ConnectionLink oldLink) {

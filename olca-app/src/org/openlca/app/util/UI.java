@@ -93,10 +93,6 @@ public class UI {
 		return font;
 	}
 
-	public static void applyBoldFont(Control control) {
-		control.setFont(boldFont(control));
-	}
-
 	/**
 	 * Creates an italic font using the font data of the given control. The
 	 * returned font must be disposed by the respective caller.
@@ -234,7 +230,7 @@ public class UI {
 		formLabel(parent, label);
 		Button button = null;
 		if (toolkit != null)
-			button = toolkit.createButton(parent, label, SWT.CHECK);
+			button = toolkit.createButton(parent, null, SWT.CHECK);
 		else
 			button = new Button(parent, SWT.CHECK);
 		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, false);

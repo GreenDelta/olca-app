@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /** The list of registered databases which is stored in a configuration file. */
 public class DatabaseList {
@@ -47,7 +48,7 @@ public class DatabaseList {
 		log.info("write database configurations to {}", file);
 		try (FileOutputStream out = new FileOutputStream(file);
 				Writer writer = new OutputStreamWriter(out, "utf-8")) {
-			Gson gson = new Gson();
+			Gson gson = new GsonBuilder().setPrettyPrinting().create();
 			String s = gson.toJson(this);
 			writer.write(s);
 		} catch (Exception e) {

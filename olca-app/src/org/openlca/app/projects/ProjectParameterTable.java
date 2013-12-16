@@ -20,7 +20,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.components.ParameterRedefDialog;
-import org.openlca.app.db.Database;
+import org.openlca.app.db.Cache;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
@@ -42,7 +42,7 @@ class ProjectParameterTable {
 	private final String PROCESS = Messages.Process;
 
 	private ProjectEditor editor;
-	private EntityCache cache = Database.getCache();
+	private EntityCache cache = Cache.getEntityCache();
 
 	private List<ParameterRedef> redefs = new ArrayList<>();
 	private ModifySupport<ParameterRedef> modifySupport;
@@ -101,10 +101,7 @@ class ProjectParameterTable {
 		UI.gridLayout(composite, 1);
 		viewer = Tables.createViewer(composite, getColumnTitles());
 		viewer.setLabelProvider(new LabelProvider());
-		double[] colWeights = new double[columns.length + 2];
-		for (int i = 0; i < colWeights.length; i++)
-			colWeights[i] = 0.8 / colWeights.length;
-		Tables.bindColumnWidths(viewer, colWeights);
+		Tables.bindColumnWidths(viewer, 0.15, 0.2);
 		UI.gridData(viewer.getTable(), true, true).minimumHeight = 150;
 		viewer.setInput(redefs);
 		createModifySupport();
@@ -214,7 +211,8 @@ class ProjectParameterTable {
 			return;
 		Column column = columns[idx];
 		Table table = viewer.getTable();
-		table.getColumn(idx + 2).setText(column.getTitle());
+		String title = column.getTitle() == null ? "" : column.getTitle();
+		table.getColumn(idx + 2).setText(title);
 		viewer.refresh();
 	}
 

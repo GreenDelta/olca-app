@@ -1,12 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.app.editors.graphical.model;
 
 import java.util.Objects;
@@ -17,14 +8,21 @@ import org.eclipse.draw2d.geometry.Rectangle;
 
 class ConnectionLinkAnchor extends AbstractConnectionAnchor {
 
+	public static final int SOURCE_ANCHOR = 1;
+	public static final int TARGET_ANCHOR = 2;
+	private int type;
 	private ProcessNode node;
 	private ConnectionLink link;
 
-	ConnectionLinkAnchor(ProcessNode node, ConnectionLink link) {
-		super(node.isMinimized() ? node.getFigure() : node.getExchangeNode(
-				link.getProcessLink().getFlowId()).getFigure());
+	ConnectionLinkAnchor(ProcessNode node, ConnectionLink link, int type) {
+		super(node.isMinimized() ? node.getFigure()
+				: (type == SOURCE_ANCHOR ? node.getOutputNode(
+						link.getProcessLink().getFlowId()).getFigure() : node
+						.getInputNode(link.getProcessLink().getFlowId())
+						.getFigure()));
 		this.node = node;
 		this.link = link;
+		this.type = type;
 	}
 
 	@Override
@@ -41,9 +39,9 @@ class ConnectionLinkAnchor extends AbstractConnectionAnchor {
 		getOwner().translateToAbsolute(r);
 
 		Point location = null;
-		if (Objects.equals(link.getTargetNode(), node))
+		if (type == TARGET_ANCHOR)
 			location = r.getLeft();
-		else if (Objects.equals(link.getSourceNode(), node))
+		else if (type == SOURCE_ANCHOR)
 			location = r.getRight();
 		return location;
 	}

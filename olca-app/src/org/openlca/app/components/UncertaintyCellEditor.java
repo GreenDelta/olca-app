@@ -8,19 +8,27 @@ import org.openlca.app.processes.ProcessEditor;
 import org.openlca.app.util.UncertaintyLabel;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.ImpactFactor;
+import org.openlca.core.model.Parameter;
+import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.Uncertainty;
 import org.openlca.core.model.UncertaintyType;
 import org.openlca.expressions.FormulaInterpreter;
 
 /**
- * An uncertainty cell editor for exchanges and LCIA factors.
+ * An uncertainty cell editor for exchanges, LCIA factors, parameters, and
+ * parameter redefinitions.
  */
 public class UncertaintyCellEditor extends DialogCellEditor {
 
 	private ModelEditor<?> editor;
+	private FormulaInterpreter interpreter;
+	private long interpreterScope = -1;
+
+	// types for which this cell editor can be used
 	private ImpactFactor factor;
 	private Exchange exchange;
-	private FormulaInterpreter interpreter;
+	private Parameter parameter;
+	private ParameterRedef parameterRedef;
 
 	public UncertaintyCellEditor(Composite parent, ModelEditor<?> editor) {
 		super(parent);
@@ -28,7 +36,12 @@ public class UncertaintyCellEditor extends DialogCellEditor {
 		if (editor instanceof ProcessEditor) {
 			ProcessEditor e = (ProcessEditor) editor;
 			interpreter = e.getInterpreter();
+			interpreterScope = e.getModel().getId();
 		}
+	}
+
+	public UncertaintyCellEditor(Composite parent) {
+		super(parent);
 	}
 
 	@Override
@@ -40,6 +53,12 @@ public class UncertaintyCellEditor extends DialogCellEditor {
 		} else if (value instanceof Exchange) {
 			exchange = (Exchange) value;
 			uncertainty = exchange.getUncertainty();
+		} else if (value instanceof Parameter) {
+			parameter = (Parameter) value;
+			uncertainty = parameter.getUncertainty();
+		} else if (value instanceof ParameterRedef) {
+			parameterRedef = (ParameterRedef) value;
+			uncertainty = parameterRedef.getUncertainty();
 		}
 		super.doSetValue(UncertaintyLabel.get(uncertainty));
 	}
@@ -49,7 +68,8 @@ public class UncertaintyCellEditor extends DialogCellEditor {
 		Uncertainty initial = getInitial();
 		UncertaintyDialog dialog = new UncertaintyDialog(control.getShell(),
 				initial);
-		dialog.setInterpreter(interpreter);
+		if (interpreter != null)
+			dialog.setInterpreter(interpreter, interpreterScope);
 		if (dialog.open() != Window.OK)
 			return null;
 		Uncertainty uncertainty = dialog.getUncertainty();
@@ -64,8 +84,13 @@ public class UncertaintyCellEditor extends DialogCellEditor {
 			exchange.setUncertainty(uncertainty);
 		else if (factor != null)
 			factor.setUncertainty(uncertainty);
+		else if (parameter != null)
+			parameter.setUncertainty(uncertainty);
+		else if (parameterRedef != null)
+			parameterRedef.setUncertainty(uncertainty);
 		updateContents(UncertaintyLabel.get(uncertainty));
-		editor.setDirty(true);
+		if (editor != null)
+			editor.setDirty(true);
 	}
 
 	private Uncertainty getInitial() {
@@ -77,6 +102,12 @@ public class UncertaintyCellEditor extends DialogCellEditor {
 		} else if (factor != null) {
 			uncertainty = factor.getUncertainty();
 			val = factor.getValue();
+		} else if (parameter != null) {
+			uncertainty = parameter.getUncertainty();
+			val = parameter.getValue();
+		} else if (parameterRedef != null) {
+			uncertainty = parameterRedef.getUncertainty();
+			val = parameterRedef.getValue();
 		}
 		if (uncertainty != null)
 			return uncertainty;

@@ -104,8 +104,28 @@ class GraphicalViewerConfigurator {
 				.createRemoveSupplyChainAction(model.getEditor()));
 		actionRegistry.registerAction(ActionFactory
 				.createRemoveAllConnectionsAction(model.getEditor()));
-		actionRegistry.registerAction(ActionFactory.createExpandAllAction(model.getEditor()));
-		actionRegistry.registerAction(ActionFactory.createCollapseAllAction(model.getEditor()));
+		actionRegistry.registerAction(ActionFactory.createMarkAction(model
+				.getEditor()));
+		actionRegistry.registerAction(ActionFactory.createUnmarkAction(model
+				.getEditor()));
+		actionRegistry.registerAction(ActionFactory.createExpandAllAction(model
+				.getEditor()));
+		actionRegistry.registerAction(ActionFactory
+				.createCollapseAllAction(model.getEditor()));
+		actionRegistry.registerAction(ActionFactory
+				.createMaximizeAllAction(model.getEditor()));
+		actionRegistry.registerAction(ActionFactory
+				.createMinimizeAllAction(model.getEditor()));
+		actionRegistry.registerAction(ActionFactory
+				.createLayoutMenuAction(model.getEditor()));
+		actionRegistry.registerAction(ActionFactory
+				.createSearchProvidersAction(model.getEditor()));
+		actionRegistry.registerAction(ActionFactory
+				.createSearchRecipientsAction(model.getEditor()));
+		actionRegistry.registerAction(ActionFactory.createOpenAction(model
+				.getEditor()));
+		actionRegistry.registerAction(ActionFactory
+				.createOpenMiniatureViewAction(model.getEditor()));
 		actionRegistry.registerAction(new ZoomInAction(getZoomManager()));
 		actionRegistry.registerAction(new ZoomOutAction(getZoomManager()));
 
@@ -121,11 +141,17 @@ class GraphicalViewerConfigurator {
 		};
 		actionRegistry.registerAction(delAction);
 		List<String> updateableActions = new ArrayList<>();
-		updateableActions.add(ActionIds.BUILD_SUPPLY_CHAIN_MENU_ACTION_ID);
-		updateableActions.add(ActionIds.REMOVE_SUPPLY_CHAIN_ACTION_ID);
-		updateableActions.add(ActionIds.REMOVE_ALL_CONNECTIONS_ACTION_ID);
+		updateableActions.add(ActionIds.BUILD_SUPPLY_CHAIN_MENU);
+		updateableActions.add(ActionIds.REMOVE_SUPPLY_CHAIN);
+		updateableActions.add(ActionIds.REMOVE_ALL_CONNECTIONS);
 		updateableActions.add(org.eclipse.ui.actions.ActionFactory.DELETE
 				.getId());
+		updateableActions.add(ActionIds.OPEN);
+		updateableActions.add(ActionIds.MARK);
+		updateableActions.add(ActionIds.UNMARK);
+		updateableActions.add(ActionIds.SEARCH_PROVIDERS);
+		updateableActions.add(ActionIds.SEARCH_RECIPIENTS);
+		updateableActions.add(ActionIds.OPEN_MINIATURE_VIEW);
 		return updateableActions;
 	}
 
@@ -166,4 +192,5 @@ class GraphicalViewerConfigurator {
 	private ScalableRootEditPart getRootEditPart() {
 		return (ScalableRootEditPart) viewer.getRootEditPart();
 	}
+
 }

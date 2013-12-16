@@ -10,8 +10,10 @@ import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -86,15 +88,9 @@ public class Tables {
 			final double... percents) {
 		if (table == null || percents == null)
 			return;
-		table.addPaintListener(new PaintListener() {
-
-			private boolean first = true;
-
+		table.addControlListener(new ControlAdapter() {
 			@Override
-			public void paintControl(PaintEvent e) {
-				if (!first)
-					return;
-				first = false;
+			public void controlResized(ControlEvent e) {
 				double width = table.getSize().x - 25;
 				if (width < 50)
 					return;
@@ -105,9 +101,37 @@ public class Tables {
 					double colWidth = percents[i] * width;
 					columns[i].setWidth((int) colWidth);
 				}
-
 			}
 		});
 	}
 
+	public static void registerSorters(final TableViewer viewer,
+			TableColumnSorter<?>... sorters) {
+		if (viewer == null || sorters == null)
+			return;
+		final Table table = viewer.getTable();
+		int count = table.getColumnCount();
+		for (final TableColumnSorter<?> sorter : sorters) {
+			if (sorter.getColumn() >= count)
+				continue;
+			if (sorter.getColumn() == 0)
+				viewer.setSorter(sorter);
+			final TableColumn column = table.getColumn(sorter.getColumn());
+			column.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					TableColumn current = table.getSortColumn();
+					if (column == current)
+						sorter.setAscending(!sorter.isAscending());
+					else
+						sorter.setAscending(true);
+					int direction = sorter.isAscending() ? SWT.UP : SWT.DOWN;
+					table.setSortDirection(direction);
+					table.setSortColumn(column);
+					viewer.setSorter(sorter);
+					viewer.refresh();
+				}
+			});
+		}
+	}
 }

@@ -26,6 +26,7 @@ class PedigreeCellEditor extends DialogCellEditor {
 			exchange = (Exchange) value;
 			oldEntryVal = exchange.getPedigreeUncertainty();
 			oldBaseVal = exchange.getBaseUncertainty();
+			super.doSetValue(exchange.getPedigreeUncertainty());
 		} else {
 			exchange = null;
 			oldEntryVal = null;
@@ -39,8 +40,8 @@ class PedigreeCellEditor extends DialogCellEditor {
 				exchange);
 		shell.open();
 		if (valuesChanged()) {
+			updateContents(exchange.getPedigreeUncertainty());
 			editor.setDirty(true);
-			viewer.refresh(true);
 			return exchange;
 		}
 		return null;

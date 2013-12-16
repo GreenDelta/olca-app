@@ -19,7 +19,7 @@
 			<artifactId>poi</artifactId>
 			<version>3.9</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml</artifactId>
@@ -99,12 +99,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.codehaus.groovy</groupId>
-			<artifactId>groovy-all</artifactId>
-			<version>2.1.1</version>
-		</dependency>
-
-		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 			<version>2.2.2</version>
@@ -119,7 +113,7 @@
 		<dependency>
 			<groupId>org.ojalgo</groupId>
 			<artifactId>ojalgo</artifactId>
-			<version>34.0</version>
+			<version>34.8</version>
 		</dependency>
 
 		<dependency>
@@ -131,8 +125,9 @@
 		<dependency>
 			<groupId>com.jolbox</groupId>
 			<artifactId>bonecp</artifactId>
-			<version>0.8.0-rc1</version>
+			<version>0.8.0-rc3</version>
 		</dependency>
+
 		<dependency>
 			<groupId>net.sf.trove4j</groupId>
 			<artifactId>trove4j</artifactId>
@@ -171,8 +166,8 @@
 
 		<dependency>
 			<groupId>org.openlca</groupId>
-			<artifactId>olca-blas</artifactId>
-			<version>1.1.0</version>
+			<artifactId>olca-eigen</artifactId>
+			<version>0.1.0</version>
 		</dependency>
 
 		<dependency>
@@ -205,6 +200,13 @@
 			<version>1.0.0</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.zeroturnaround</groupId>
+			<artifactId>zt-zip</artifactId>
+			<version>1.6</version>
+			<type>jar</type>
+		</dependency>
+
 	</dependencies>
 
 	<build>
@@ -227,7 +229,7 @@
 					</execution>
 				</executions>
 			</plugin>
-		
+
 		</plugins>
 
 	</build>

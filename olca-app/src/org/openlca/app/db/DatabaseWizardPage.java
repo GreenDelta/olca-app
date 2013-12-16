@@ -23,7 +23,6 @@ import org.openlca.app.App;
 import org.openlca.app.Config;
 import org.openlca.app.Messages;
 import org.openlca.app.resources.ImageType;
-import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.DatabaseContent;
 
@@ -145,10 +144,24 @@ class DatabaseWizardPage extends WizardPage {
 		contentRadios = new Button[DatabaseContent.values().length];
 		for (int i = 0; i < DatabaseContent.values().length; i++) {
 			contentRadios[i] = new Button(radioGroup, SWT.RADIO);
-			contentRadios[i].setText(Labels.databaseContent(DatabaseContent
-					.values()[i]));
+			contentRadios[i].setText(contentLabel(DatabaseContent.values()[i]));
 		}
 		contentRadios[2].setSelection(true);
+	}
+
+	private String contentLabel(DatabaseContent content) {
+		if (content == null)
+			return null;
+		switch (content) {
+		case EMPTY:
+			return Messages.EmptyDatabase;
+		case UNITS:
+			return Messages.UnitsAndFlowProps;
+		case ALL_REF_DATA:
+			return Messages.CompleteRefData;
+		default:
+			return null;
+		}
 	}
 
 	private void validateInput() {

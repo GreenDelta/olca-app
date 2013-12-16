@@ -7,19 +7,15 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.osgi.util.NLS;
-import org.eclipse.ui.IEditorReference;
-import org.eclipse.ui.PartInitException;
+import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.components.ProgressAdapter;
-import org.openlca.app.db.Database;
-import org.openlca.app.editors.graphical.GraphicalEditorInput;
-import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
+import org.openlca.app.db.Cache;
 import org.openlca.app.editors.graphical.model.ProcessNode;
-import org.openlca.app.util.Editors;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.IProductSystemBuilder;
-import org.openlca.core.matrices.LongPair;
+import org.openlca.core.matrix.LongPair;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.Descriptors;
@@ -35,7 +31,7 @@ public class BuildSupplyChainAction extends Action {
 	private ProcessType preferredType;
 
 	BuildSupplyChainAction(ProcessType preferredType) {
-		setId(ActionIds.BUILD_SUPPLY_CHAIN_ACTION_ID);
+		setId(ActionIds.BUILD_SUPPLY_CHAIN);
 		String processType = Labels.processType(preferredType);
 		setText(NLS.bind(Messages.Systems_Prefer, processType));
 		this.preferredType = preferredType;
@@ -53,23 +49,10 @@ public class BuildSupplyChainAction extends Action {
 		} catch (final Exception e) {
 			log.error("Failed to complete product system. ", e);
 		}
-		reloadEditor();
-	}
-
-	private void reloadEditor() {
 		ProductSystemDescriptor descriptor = Descriptors.toDescriptor(node
 				.getParent().getProductSystem());
-		GraphicalEditorInput input = new GraphicalEditorInput(descriptor);
-		for (IEditorReference ref : Editors.getReferences())
-			try {
-				if (input.equals(ref.getEditorInput())) {
-					Editors.close(ref);
-					break;
-				}
-			} catch (PartInitException e) {
-				log.error("Error closing editor", e);
-			}
-		Editors.open(input, ProductSystemGraphEditor.ID);
+		App.closeEditor(descriptor);
+		App.openEditor(descriptor);
 	}
 
 	private class Runner implements IRunnableWithProgress {
@@ -84,9 +67,9 @@ public class BuildSupplyChainAction extends Action {
 			ProgressAdapter progress = new ProgressAdapter(monitor);
 			LongPair idPair = new LongPair(node.getProcess().getId(), node
 					.getProcess().getQuantitativeReference());
-			IProductSystemBuilder.Factory.create(Database.get(), progress,
-					preferredType == ProcessType.LCI_RESULT).autoComplete(
-					system, idPair);
+			IProductSystemBuilder.Factory.create(Cache.getMatrixCache(),
+					progress, preferredType == ProcessType.LCI_RESULT)
+					.autoComplete(system, idPair);
 			progress.done();
 		}
 	}

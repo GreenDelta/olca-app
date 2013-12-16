@@ -7,7 +7,6 @@ import org.openlca.app.App;
 import org.openlca.core.database.ActorDao;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.CategorizedEntityDao;
-import org.openlca.core.database.EntityCache;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.FlowPropertyDao;
 import org.openlca.core.database.IDatabase;
@@ -19,6 +18,8 @@ import org.openlca.core.database.SourceDao;
 import org.openlca.core.database.UnitGroupDao;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Database management of the application. */
 public class Database {
@@ -26,17 +27,12 @@ public class Database {
 	private static IDatabase database;
 	private static IDatabaseConfiguration config;
 	private static DatabaseList configurations = loadConfigs();
-	private static EntityCache cache;
 
 	private Database() {
 	}
 
 	public static IDatabase get() {
 		return database;
-	}
-
-	public static EntityCache getCache() {
-		return cache;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -50,10 +46,20 @@ public class Database {
 
 	public static IDatabase activate(IDatabaseConfiguration config)
 			throws Exception {
-		Database.database = config.createInstance();
-		Database.cache = EntityCache.create(database);
-		Database.config = config;
-		return Database.database;
+		try {
+			Database.database = config.createInstance();
+			Cache.create(database);
+			Database.config = config;
+			Logger log = LoggerFactory.getLogger(Database.class);
+			log.trace("acitvated database {} with version{}",
+					database.getName(), database.getVersion());
+			return Database.database;
+		} catch (Exception e) {
+			Database.database = null;
+			Cache.close();
+			Database.config = null;
+			throw e;
+		}
 	}
 
 	public static boolean isActive(IDatabaseConfiguration config) {
@@ -66,10 +72,10 @@ public class Database {
 	public static void close() throws Exception {
 		if (database == null)
 			return;
+		Cache.close();
 		database.close();
 		database = null;
 		config = null;
-		cache = null;
 	}
 
 	private static DatabaseList loadConfigs() {

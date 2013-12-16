@@ -16,12 +16,11 @@ public class FaviColor {
 			new RGB(255, 137, 0), new RGB(53, 155, 88), new RGB(49, 148, 68),
 			new RGB(252, 255, 100) };
 
-	private static RGB[] contributionColors = { new RGB(53, 155, 88),
-			new RGB(87, 197, 124), new RGB(152, 220, 175),
-			new RGB(183, 231, 199), new RGB(214, 242, 223),
-			new RGB(218, 218, 235), new RGB(188, 189, 220),
-			new RGB(158, 154, 200), new RGB(117, 107, 177),
-			new RGB(162, 107, 177) };
+	private static final RGB[] COLORS = { new RGB(0, 150, 0),
+			new RGB(0, 100, 180), new RGB(0, 150, 230), new RGB(255, 0, 0) };
+	private static final int[] STEPS = { 80, 40, 81 };
+	private static final ColorCalculator colorCalc = new ColorCalculator(
+			COLORS, STEPS);
 
 	private FaviColor() {
 	}
@@ -32,14 +31,6 @@ public class FaviColor {
 
 	static RGB[] getChartColors() {
 		return chartColors;
-	}
-
-	static RGB[] getContributionColors() {
-		return contributionColors;
-	}
-
-	static void setContributionColors(RGB[] contributionColors) {
-		FaviColor.contributionColors = contributionColors;
 	}
 
 	/**
@@ -70,26 +61,8 @@ public class FaviColor {
 		return new RGB(red, green, blue);
 	}
 
-	public static RGB getContributionColor(int idx) {
-		if (idx < 0)
-			return contributionColors[0];
-		if (idx > (contributionColors.length - 1))
-			return contributionColors[contributionColors.length - 1];
-		return contributionColors[idx];
-	}
-
 	public static RGB getForContribution(double ratio) {
-		int idx = contributionIndex(ratio);
-		return contributionColors[idx];
-	}
-
-	private static int contributionIndex(double val) {
-		int i = (int) ((val + 1) / 0.2);
-		if (i < 0)
-			return 0;
-		if (i > 9)
-			return 9;
-		return i;
+		return colorCalc.getColor((int) (ratio * 100));
 	}
 
 	/**

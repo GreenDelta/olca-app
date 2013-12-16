@@ -16,11 +16,13 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Event;
 import org.openlca.app.Messages;
+import org.openlca.app.components.UncertaintyCellEditor;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Dialog;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
+import org.openlca.app.util.UncertaintyLabel;
 import org.openlca.app.util.Viewers;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
@@ -28,8 +30,6 @@ import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterScope;
 import org.openlca.core.model.Process;
 import org.openlca.util.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.eventbus.Subscribe;
 
@@ -41,12 +41,12 @@ import com.google.common.eventbus.Subscribe;
  */
 class ProcessParameterSection {
 
-	private Logger log = LoggerFactory.getLogger(getClass());
 	private TableViewer viewer;
 
 	private final String NAME = Messages.Name;
 	private final String VALUE = Messages.Value;
 	private final String FORMULA = Messages.Formula;
+	private final String UNCERTAINTY = Messages.Uncertainty;
 	private final String DESCRIPTION = Messages.Description;
 
 	private ProcessEditor editor;
@@ -80,7 +80,7 @@ class ProcessParameterSection {
 		this.forInputParameters = forInputParams;
 		String[] props = {};
 		if (forInputParams)
-			props = new String[] { NAME, VALUE, DESCRIPTION };
+			props = new String[] { NAME, VALUE, UNCERTAINTY, DESCRIPTION };
 		else
 			props = new String[] { NAME, FORMULA, VALUE, DESCRIPTION };
 		createComponents(parent, props);
@@ -99,7 +99,7 @@ class ProcessParameterSection {
 		viewer.setLabelProvider(new ParameterLabelProvider());
 		Table table = viewer.getTable();
 		if (forInputParameters)
-			Tables.bindColumnWidths(table, 0.4, 0.3, 0.3);
+			Tables.bindColumnWidths(table, 0.3, 0.3, 0.2, 0.2);
 		else
 			Tables.bindColumnWidths(table, 0.3, 0.3, 0.2, 0.2);
 		bindActions(section);
@@ -124,9 +124,11 @@ class ProcessParameterSection {
 		ModifySupport<Parameter> modifySupport = new ModifySupport<>(viewer);
 		modifySupport.bind(NAME, new NameModifier());
 		modifySupport.bind(DESCRIPTION, new DescriptionModifier());
-		if (forInputParameters)
+		if (forInputParameters) {
 			modifySupport.bind(VALUE, new ValueModifier());
-		else
+			modifySupport.bind(UNCERTAINTY,
+					new UncertaintyCellEditor(viewer.getTable(), editor));
+		} else
 			modifySupport.bind(FORMULA, new FormulaModifier());
 	}
 
@@ -200,7 +202,7 @@ class ProcessParameterSection {
 					return parameter.getFormula();
 			case 2:
 				if (forInputParameters)
-					return parameter.getDescription();
+					return UncertaintyLabel.get(parameter.getUncertainty());
 				else
 					return Double.toString(parameter.getValue());
 			case 3:
@@ -213,16 +215,24 @@ class ProcessParameterSection {
 
 	private class NameModifier extends TextCellModifier<Parameter> {
 		@Override
-		protected String getText(Parameter element) {
-			return element.getName();
+		protected String getText(Parameter param) {
+			return param.getName();
 		}
 
 		@Override
-		protected void setText(Parameter element, String text) {
-			if (!Objects.equals(text, element.getName())) {
-				element.setName(text);
-				fireChange();
+		protected void setText(Parameter param, String text) {
+			if (text == null)
+				return;
+			if (Objects.equals(text, param.getName()))
+				return;
+			String name = text.trim();
+			if (!Parameter.isValidName(name)) {
+				Error.showBox("Invalid parameter name", name
+						+ " is not a valid parameter name");
+				return;
 			}
+			param.setName(name);
+			fireChange();
 		}
 	}
 

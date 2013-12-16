@@ -7,7 +7,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
-import org.openlca.app.App;
+import org.openlca.app.db.Cache;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.model.descriptors.FlowDescriptor;
@@ -30,9 +30,9 @@ public class InventoryResultEditor extends FormEditor {
 		super.init(site, editorInput);
 		try {
 			InventoryResultInput input = (InventoryResultInput) editorInput;
-			setup = App.getCache().get(input.getSetupKey(),
+			setup = Cache.getAppCache().get(input.getSetupKey(),
 					CalculationSetup.class);
-			result = App.getCache().get(input.getResultKey(),
+			result = Cache.getAppCache().get(input.getResultKey(),
 					InventoryResult.class);
 		} catch (Exception e) {
 			log.error("failed to load inventory result", e);

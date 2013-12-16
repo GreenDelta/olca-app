@@ -8,21 +8,33 @@ import org.openlca.app.App;
 import org.openlca.app.FeatureFlag;
 import org.openlca.app.Messages;
 import org.openlca.app.components.ProgressAdapter;
+import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.core.database.BaseDao;
-import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.IProductSystemBuilder;
+import org.openlca.core.matrix.cache.MatrixCache;
+import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
+import org.openlca.core.model.descriptors.Descriptors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
+	private Process process;
 
 	public ProductSystemWizard() {
 		super();
 		setNeedsProgressMonitor(true);
+	}
+
+	/**
+	 * Optionally sets the reference process for the product system that should
+	 * be created.
+	 */
+	public void setProcess(Process process) {
+		this.process = process;
 	}
 
 	@Override
@@ -33,16 +45,21 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 			log.error("Unexpected error: no page or product system");
 			return false;
 		}
+		system.setCategory(getCategory());
 		try {
 			createDao().insert(system);
 			boolean autoComplete = page.addSupplyChain();
-			if (!autoComplete)
+			if (!autoComplete) {
+				App.openEditor(system);
 				return true;
+			}
 			boolean preferSystems = page.useSystemProcesses();
 			Runner runner = new Runner(system, preferSystems);
 			if (FeatureFlag.PRODUCT_SYSTEM_CUTOFF.isEnabled())
 				runner.setCutoff(page.getCutoff());
 			getContainer().run(true, true, runner);
+			system = runner.system;
+			Cache.registerNew(Descriptors.toDescriptor(system));
 			App.openEditor(system);
 			return true;
 		} catch (Exception e) {
@@ -55,13 +72,13 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 
 		private ProductSystem system;
 		private boolean preferSystemProcesses;
-		private IDatabase db;
+		private MatrixCache cache;
 		private Double cutoff;
 
 		public Runner(ProductSystem system, boolean preferSystemProcesses) {
 			this.system = system;
 			this.preferSystemProcesses = preferSystemProcesses;
-			this.db = Database.get();
+			this.cache = Cache.getMatrixCache();
 		}
 
 		public void setCutoff(double cutoff) {
@@ -77,12 +94,12 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 				ProgressAdapter progress = new ProgressAdapter(monitor);
 				IProductSystemBuilder builder = null;
 				if (cutoff == null)
-					builder = IProductSystemBuilder.Factory.create(db,
+					builder = IProductSystemBuilder.Factory.create(cache,
 							progress, preferSystemProcesses);
 				else
-					builder = IProductSystemBuilder.Factory.create(db,
+					builder = IProductSystemBuilder.Factory.create(cache,
 							progress, preferSystemProcesses, cutoff);
-				builder.autoComplete(system);
+				system = builder.autoComplete(system);
 				monitor.done();
 			} catch (Exception e) {
 				log.error("Failed to auto-complete product system", e);
@@ -102,6 +119,8 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 
 	@Override
 	protected AbstractWizardPage<ProductSystem> createPage() {
-		return new ProductSystemWizardPage();
+		ProductSystemWizardPage page = new ProductSystemWizardPage();
+		page.setProcess(process);
+		return page;
 	}
 }

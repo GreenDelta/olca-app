@@ -1,13 +1,6 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.app.editors.graphical.model;
+
+import java.util.Objects;
 
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.Connection;
@@ -24,10 +17,6 @@ public class ConnectionLink {
 	private ProcessNode sourceNode;
 	private ProcessNode targetNode;
 	private ConnectionLinkPart editPart;
-
-	public ConnectionLink() {
-
-	}
 
 	void setEditPart(ConnectionLinkPart editPart) {
 		this.editPart = editPart;
@@ -91,18 +80,13 @@ public class ConnectionLink {
 	public boolean equals(Object obj) {
 		if (!(obj instanceof ConnectionLink))
 			return false;
-		if (getSourceNode() == null)
-			return false;
-		if (getTargetNode() == null)
-			return false;
 
 		ConnectionLink link = (ConnectionLink) obj;
-		if (link.getSourceNode() == null)
+		if (!Objects.equals(getProcessLink(), link.getProcessLink()))
 			return false;
-		if (link.getTargetNode() == null)
+		if (!Objects.equals(getSourceNode(), link.getSourceNode()))
 			return false;
-
-		if (link.getProcessLink().getFlowId() != getProcessLink().getFlowId())
+		if (!Objects.equals(getTargetNode(), link.getTargetNode()))
 			return false;
 		return true;
 	}

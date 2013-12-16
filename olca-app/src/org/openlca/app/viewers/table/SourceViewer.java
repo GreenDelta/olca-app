@@ -3,7 +3,7 @@ package org.openlca.app.viewers.table;
 import java.util.List;
 
 import org.eclipse.swt.widgets.Composite;
-import org.openlca.app.components.ObjectDialog;
+import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.viewers.table.modify.IModelChangedListener.ModelChangeType;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.SourceDao;
@@ -35,7 +35,7 @@ public class SourceViewer extends AbstractTableViewer<Source> {
 
 	@OnAdd
 	protected void onCreate() {
-		BaseDescriptor[] descriptors = ObjectDialog
+		BaseDescriptor[] descriptors = ModelSelectionDialog
 				.multiSelect(ModelType.SOURCE);
 		if (descriptors != null)
 			for (BaseDescriptor descriptor : descriptors)

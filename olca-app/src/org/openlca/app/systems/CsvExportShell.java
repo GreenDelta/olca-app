@@ -16,7 +16,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.App;
 import org.openlca.app.components.FileSelection;
-import org.openlca.app.db.Database;
+import org.openlca.app.db.Cache;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Dialog;
 import org.openlca.app.util.InformationPopup;
@@ -52,8 +52,8 @@ public class CsvExportShell extends Shell implements SelectionListener {
 		setSize(450, 450);
 		createContents();
 		data = new CsvMatrixExportData();
-		data.setDatabase(Database.get());
-		data.setCache(Database.getCache());
+		data.setMatrixCache(Cache.getMatrixCache());
+		data.setEntityCache(Cache.getEntityCache());
 		data.setProductSystem(system);
 		UI.center(parent, this);
 	}

@@ -24,7 +24,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Item;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
-import org.openlca.app.util.Numbers;
 import org.openlca.app.util.Tables;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.FlowProperty;
@@ -50,10 +49,10 @@ public abstract class UnitMappingPage extends WizardPage {
 	private final String FLOW_PROPERTY = Messages.FlowProperty;
 	private final String REFERENCE_UNIT = Messages.ReferenceUnit;
 	private final String UNIT = Messages.Unit;
-	private final String UNIT_GROUP = Messages.UnitGroup;
+	private final String FORMULA = Messages.Formula;
 
 	private final String[] PROPERTIES = new String[] { UNIT, FLOW_PROPERTY,
-			UNIT_GROUP, REFERENCE_UNIT, CONVERSION_FACTOR };
+			REFERENCE_UNIT, CONVERSION_FACTOR, FORMULA };
 
 	private List<FlowProperty> flowProperties = new ArrayList<>();
 	private ComboBoxCellEditor flowPropertyCellEditor;
@@ -166,6 +165,7 @@ public abstract class UnitMappingPage extends WizardPage {
 		tableViewer = Tables.createViewer(body, PROPERTIES);
 		tableViewer.setLabelProvider(new LabelProvider());
 		tableViewer.setCellModifier(new CellModifier());
+		Tables.bindColumnWidths(tableViewer, 0.1, 0.2, 0.2, 0.2, 0.3);
 		createCellEditors();
 		setControl(body);
 	}
@@ -360,18 +360,27 @@ public abstract class UnitMappingPage extends WizardPage {
 			case 1:
 				return prop.getName();
 			case 2:
-				return unitGroup.getName();
-			case 3:
 				if (unitGroup.getReferenceUnit() == null)
 					return null;
 				return unitGroup.getReferenceUnit().getName();
-			case 4:
+			case 3:
 				if (row.getFactor() == null)
 					return null;
-				return Numbers.format(row.getFactor());
+				return Double.toString(row.getFactor());
+			case 4:
+				return getFormula(row);
 			default:
 				return null;
 			}
+		}
+
+		private String getFormula(UnitMappingEntry row) {
+			if (row == null || row.getFactor() == null
+					|| row.getUnitGroup() == null)
+				return "";
+			return "1.0 " + row.getUnitName() + " = "
+					+ row.getFactor().toString() + " "
+					+ row.getUnitGroup().getReferenceUnit().getName();
 		}
 	}
 

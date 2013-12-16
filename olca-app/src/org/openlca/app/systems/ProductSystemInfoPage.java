@@ -1,22 +1,18 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.app.systems;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.Messages;
+import org.openlca.app.editors.DataBinding.TextBindType;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
-import org.openlca.app.editors.DataBinding.TextBindType;
+import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.ExchangeViewer;
@@ -45,6 +41,7 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 		Composite body = UI.formBody(form, toolkit);
 		InfoSection infoSection = new InfoSection(getModel(), getBinding());
 		infoSection.render(body, toolkit);
+		addCalculationButton(infoSection.getContainer());
 		createAdditionalInfo(body);
 		body.setFocus();
 		form.reflow(true);
@@ -73,13 +70,26 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 				unitViewer));
 
 		productViewer.setInput(getModel().getReferenceProcess());
-		
+
 		getBinding().on(getModel(), "referenceExchange", productViewer);
 		getBinding().on(getModel(), "targetFlowPropertyFactor", propertyViewer);
 		getBinding().on(getModel(), "targetUnit", unitViewer);
 
 		createText(Messages.TargetAmount, "targetAmount", TextBindType.DOUBLE,
 				composite);
+	}
+
+	private void addCalculationButton(Composite composite) {
+		toolkit.createLabel(composite, "");
+		Button button = toolkit.createButton(composite, Messages.Calculate,
+				SWT.NONE);
+		button.setImage(ImageType.CALCULATE_ICON.get());
+		button.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				new CalculationWizardDialog(getModel()).open();
+			}
+		});
 	}
 
 	private class ProductChangedListener implements
@@ -95,14 +105,8 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 		public void selectionChanged(Exchange selection) {
 			Flow flow = selection.getFlow();
 			propertyViewer.setInput(flow);
-			FlowPropertyFactor previousSelection = getModel()
-					.getTargetFlowPropertyFactor();
-			if (flow.getFlowPropertyFactors().contains(previousSelection))
-				propertyViewer.select(previousSelection);
-			else
-				propertyViewer.select(flow.getReferenceFactor());
+			propertyViewer.select(flow.getReferenceFactor());
 		}
-
 	}
 
 	private class PropertyChangedListener implements
@@ -116,6 +120,8 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 
 		@Override
 		public void selectionChanged(FlowPropertyFactor selection) {
+			if (selection == null)
+				return;
 			UnitGroup unitGroup = selection.getFlowProperty().getUnitGroup();
 			unitViewer.setInput(unitGroup);
 			Unit previousSelection = getModel().getTargetUnit();
@@ -124,7 +130,5 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 			else
 				unitViewer.select(unitGroup.getReferenceUnit());
 		}
-
 	}
-
 }

@@ -1,12 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.app.editors.graphical.command;
 
 import org.eclipse.gef.commands.Command;
@@ -14,6 +5,7 @@ import org.openlca.app.Messages;
 import org.openlca.app.editors.graphical.model.ConnectionLink;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
+import org.openlca.core.matrix.ProcessLinkSearchMap;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
@@ -83,8 +75,8 @@ public class HideShowCommand extends Command {
 	}
 
 	private void createNecessaryLinks(ProcessNode node) {
-		for (ProcessLink link : model.getProductSystem().getProcessLinks(
-				process.getId())) {
+		ProcessLinkSearchMap linkSearch = node.getParent().getLinkSearch();
+		for (ProcessLink link : linkSearch.getLinks(process.getId())) {
 			long processId = link.getRecipientId() == process.getId() ? link
 					.getProviderId() : link.getRecipientId();
 			ProcessNode newNode = model.getProcessNode(processId);

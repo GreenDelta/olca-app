@@ -2,8 +2,7 @@ package org.openlca.app.util;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.openlca.app.Messages;
-import org.openlca.app.db.Database;
-import org.openlca.core.database.DatabaseContent;
+import org.openlca.app.db.Cache;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.Category;
@@ -14,6 +13,7 @@ import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessType;
+import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.UncertaintyType;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
@@ -26,10 +26,30 @@ public class Labels {
 	private Labels() {
 	}
 
+	public static String getDisplayName(RootEntity entity) {
+		if (entity == null || entity.getName() == null)
+			return "";
+		if (entity instanceof Flow) {
+			Flow flow = (Flow) entity;
+			Location location = flow.getLocation();
+			if (location != null && location.getCode() != null) {
+				return flow.getName() + " - " + location.getCode();
+			}
+		}
+		if (entity instanceof Process) {
+			Process process = (Process) entity;
+			Location location = process.getLocation();
+			if (location != null && location.getCode() != null) {
+				return process.getName() + " - " + location.getCode();
+			}
+		}
+		return entity.getName();
+	}
+
 	public static String getDisplayName(BaseDescriptor descriptor) {
 		if (descriptor == null)
 			return "";
-		EntityCache cache = Database.getCache();
+		EntityCache cache = Cache.getEntityCache();
 		String text = descriptor.getName();
 		if (cache == null)
 			return text;
@@ -182,6 +202,8 @@ public class Labels {
 			return Messages.None;
 		case PHYSICAL:
 			return Messages.Physical;
+		case USE_DEFAULT:
+			return Messages.AsDefinedInProcesses;
 		default:
 			return Messages.None;
 		}
@@ -206,18 +228,4 @@ public class Labels {
 		}
 	}
 
-	public static String databaseContent(DatabaseContent content) {
-		if (content == null)
-			return null;
-		switch (content) {
-		case EMPTY:
-			return Messages.EmptyDatabase;
-		case UNITS:
-			return Messages.UnitsAndFlowProps;
-		case ALL_REF_DATA:
-			return Messages.CompleteRefData;
-		default:
-			return null;
-		}
-	}
 }

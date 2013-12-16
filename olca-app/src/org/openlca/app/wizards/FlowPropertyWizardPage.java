@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.Messages;
+import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.UI;
@@ -71,7 +72,7 @@ class FlowPropertyWizardPage extends AbstractWizardPage<FlowProperty> {
 		flowProperty.setName(getModelName());
 		flowProperty.setDescription(getModelDescription());
 		try {
-			UnitGroup unitGroup = Database.getCache().get(UnitGroup.class,
+			UnitGroup unitGroup = Cache.getEntityCache().get(UnitGroup.class,
 					unitGroupComboViewer.getSelected().getId());
 			flowProperty.setUnitGroup(unitGroup);
 		} catch (Exception e) {

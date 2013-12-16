@@ -17,7 +17,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.components.FlowImpactSelection;
 import org.openlca.app.components.FlowImpactSelection.EventHandler;
-import org.openlca.app.db.Database;
+import org.openlca.app.db.Cache;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.Tables;
@@ -32,7 +32,7 @@ import org.openlca.core.results.ProjectResult;
 
 public class ProjectResultPage extends FormPage {
 
-	private EntityCache cache = Database.getCache();
+	private EntityCache cache = Cache.getEntityCache();
 	private ProjectResult result;
 	private ProjectResultChart chart;
 	private FlowImpactSelection selector;
@@ -147,7 +147,7 @@ public class ProjectResultPage extends FormPage {
 			Object selection = selector.getSelection();
 			if (selection instanceof FlowDescriptor)
 				return Labels.getRefUnit((FlowDescriptor) selection,
-						Database.getCache());
+						Cache.getEntityCache());
 			if (selection instanceof ImpactCategoryDescriptor)
 				return ((ImpactCategoryDescriptor) selection)
 						.getReferenceUnit();

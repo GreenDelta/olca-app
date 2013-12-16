@@ -2,15 +2,17 @@ package org.openlca.app.editors.graphical.action;
 
 import static org.openlca.app.editors.graphical.action.ChangeAllStateAction.MAXIMIZE;
 import static org.openlca.app.editors.graphical.action.ChangeAllStateAction.MINIMIZE;
-import static org.openlca.app.editors.graphical.action.MassExpansionAction.COLLAPSE;
-import static org.openlca.app.editors.graphical.action.MassExpansionAction.EXPAND;
 import static org.openlca.app.editors.graphical.action.HideShowAction.HIDE;
 import static org.openlca.app.editors.graphical.action.HideShowAction.SHOW;
+import static org.openlca.app.editors.graphical.action.MassExpansionAction.COLLAPSE;
+import static org.openlca.app.editors.graphical.action.MassExpansionAction.EXPAND;
+import static org.openlca.app.editors.graphical.action.MarkingAction.MARK;
+import static org.openlca.app.editors.graphical.action.MarkingAction.UNMARK;
+import static org.openlca.app.editors.graphical.action.SearchConnectorsAction.PROVIDER;
+import static org.openlca.app.editors.graphical.action.SearchConnectorsAction.RECIPIENTS;
 
 import org.eclipse.gef.ui.parts.TreeViewer;
 import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
-import org.openlca.app.editors.graphical.layout.GraphLayoutType;
-import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.core.model.ProcessType;
 
 public class ActionFactory {
@@ -28,16 +30,16 @@ public class ActionFactory {
 	}
 
 	public static ChangeAllStateAction createMinimizeAllAction(
-			ProductSystemNode model) {
+			ProductSystemGraphEditor editor) {
 		ChangeAllStateAction action = new ChangeAllStateAction(MINIMIZE);
-		action.setModel(model);
+		action.setEditor(editor);
 		return action;
 	}
 
 	public static ChangeAllStateAction createMaximizeAllAction(
-			ProductSystemNode model) {
+			ProductSystemGraphEditor editor) {
 		ChangeAllStateAction action = new ChangeAllStateAction(MAXIMIZE);
-		action.setModel(model);
+		action.setEditor(editor);
 		return action;
 	}
 
@@ -55,31 +57,34 @@ public class ActionFactory {
 		return action;
 	}
 
-	public static HideShowAction createShowAction(ProductSystemNode model,
-			TreeViewer viewer) {
+	public static HideShowAction createShowAction(
+			ProductSystemGraphEditor editor, TreeViewer viewer) {
 		HideShowAction action = new HideShowAction(SHOW);
-		action.setModel(model);
+		action.setEditor(editor);
 		action.setViewer(viewer);
 		return action;
 	}
 
-	public static HideShowAction createHideAction(ProductSystemNode model,
-			TreeViewer viewer) {
+	public static HideShowAction createHideAction(
+			ProductSystemGraphEditor editor, TreeViewer viewer) {
 		HideShowAction action = new HideShowAction(HIDE);
-		action.setModel(model);
+		action.setEditor(editor);
 		action.setViewer(viewer);
 		return action;
 	}
 
-	public static LayoutAction createLayoutAction(ProductSystemNode model,
-			GraphLayoutType layoutType) {
-		LayoutAction action = new LayoutAction(layoutType);
-		action.setModel(model);
+	public static LayoutMenuAction createLayoutMenuAction(
+			ProductSystemGraphEditor editor) {
+		LayoutMenuAction action = new LayoutMenuAction();
+		action.setEditor(editor);
 		return action;
 	}
 
-	public static OpenMiniatureViewAction createOpenMiniatureViewAction() {
-		return new OpenMiniatureViewAction();
+	public static OpenMiniatureViewAction createOpenMiniatureViewAction(
+			ProductSystemGraphEditor editor) {
+		OpenMiniatureViewAction action = new OpenMiniatureViewAction();
+		action.setEditor(editor);
+		return action;
 	}
 
 	public static RemoveAllConnectionsAction createRemoveAllConnectionsAction(
@@ -96,9 +101,43 @@ public class ActionFactory {
 		return action;
 	}
 
-	public static SaveImageAction createSaveImageAction(ProductSystemNode model) {
+	public static SaveImageAction createSaveImageAction(
+			ProductSystemGraphEditor editor) {
 		SaveImageAction action = new SaveImageAction();
-		action.setModel(model);
+		action.setEditor(editor);
+		return action;
+	}
+
+	public static MarkingAction createMarkAction(ProductSystemGraphEditor editor) {
+		MarkingAction action = new MarkingAction(MARK);
+		action.setEditor(editor);
+		return action;
+	}
+
+	public static MarkingAction createUnmarkAction(
+			ProductSystemGraphEditor editor) {
+		MarkingAction action = new MarkingAction(UNMARK);
+		action.setEditor(editor);
+		return action;
+	}
+
+	public static SearchConnectorsAction createSearchProvidersAction(
+			ProductSystemGraphEditor editor) {
+		SearchConnectorsAction action = new SearchConnectorsAction(PROVIDER);
+		action.setEditor(editor);
+		return action;
+	}
+
+	public static SearchConnectorsAction createSearchRecipientsAction(
+			ProductSystemGraphEditor editor) {
+		SearchConnectorsAction action = new SearchConnectorsAction(RECIPIENTS);
+		action.setEditor(editor);
+		return action;
+	}
+
+	public static OpenAction createOpenAction(ProductSystemGraphEditor editor) {
+		OpenAction action = new OpenAction();
+		action.setEditor(editor);
 		return action;
 	}
 

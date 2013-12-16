@@ -9,10 +9,16 @@ import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.PartInitException;
 import org.openlca.app.editors.ModelEditorInput;
 import org.openlca.app.util.Editors;
+import org.openlca.core.math.IMatrixFactory;
+import org.openlca.core.math.JavaMatrixFactory;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.Descriptors;
+import org.openlca.eigen.DenseFloatMatrixFactory;
+import org.openlca.eigen.DenseMatrixFactory;
+import org.openlca.eigen.NativeLibrary;
+import org.openlca.eigen.SparseMatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,10 +28,27 @@ public class App {
 
 	static Logger log = LoggerFactory.getLogger(App.class);
 
-	private static AppCache cache = new AppCache();
 	private static EventBus eventBus = new EventBus();
+	private static IMatrixFactory matrixFactory;
 
 	private App() {
+	}
+
+	public static IMatrixFactory getMatrixFactory() {
+		if (matrixFactory != null)
+			return matrixFactory;
+		if (!NativeLibrary.isLoaded()) {
+			log.warn("could not load a high-performance library for calculations");
+			matrixFactory = new JavaMatrixFactory();
+			return matrixFactory;
+		}
+		if (FeatureFlag.USE_SPARSE_MATRICES.isEnabled())
+			matrixFactory = new SparseMatrixFactory();
+		else if (FeatureFlag.USE_SINGLE_PRECISION.isEnabled())
+			matrixFactory = new DenseFloatMatrixFactory();
+		else
+			matrixFactory = new DenseMatrixFactory();
+		return matrixFactory;
 	}
 
 	/**
@@ -38,6 +61,17 @@ public class App {
 		if (version != null)
 			return version;
 		return RcpActivator.getDefault().getBundle().getVersion().toString();
+	}
+
+	/**
+	 * Indicates if the application runs in developer mode (for activation of
+	 * experimental features and development tools).
+	 */
+	public static boolean runsInDevMode() {
+		String val = CommandArgument.DEV_MODE.getValue();
+		if (val == null)
+			return false;
+		return val.equals("true");
 	}
 
 	/**
@@ -60,10 +94,6 @@ public class App {
 			log.error("Error while searching for XUL-Runner", e);
 			return null;
 		}
-	}
-
-	public static AppCache getCache() {
-		return cache;
 	}
 
 	public static EventBus getEventBus() {

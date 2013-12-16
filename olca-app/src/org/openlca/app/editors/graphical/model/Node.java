@@ -1,12 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.app.editors.graphical.model;
 
 import java.util.ArrayList;
@@ -16,7 +7,7 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 
-abstract class Node implements Comparable<Node> {
+public abstract class Node implements Comparable<Node> {
 
 	private Node parent;
 	private List<Node> children;
@@ -44,7 +35,7 @@ abstract class Node implements Comparable<Node> {
 		this.parent = parent;
 	}
 
-	boolean add(Node child) {
+	public boolean add(Node child) {
 		boolean b = children.add(child);
 		if (b) {
 			child.setParent(this);
@@ -54,7 +45,7 @@ abstract class Node implements Comparable<Node> {
 		return b;
 	}
 
-	boolean remove(Node child) {
+	public boolean remove(Node child) {
 		boolean b = children.remove(child);
 		if (b)
 			if (editPart != null)
@@ -78,7 +69,7 @@ abstract class Node implements Comparable<Node> {
 		this.figure = figure;
 	}
 
-	protected abstract String getName();
+	public abstract String getName();
 
 	public boolean isVisible() {
 		return getFigure() != null ? getFigure().isVisible() : false;

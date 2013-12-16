@@ -1,6 +1,7 @@
 package org.openlca.app.viewers.table;
 
 import java.util.Objects;
+
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -45,8 +46,8 @@ public class UnitViewer extends AbstractTableViewer<Unit> {
 		getCellModifySupport().bind(LABEL.SYNONYMS, new SynonymsModifier());
 		getCellModifySupport().bind(LABEL.CONVERSION_FACTOR,
 				new ConversionFactorModifier());
-		getCellModifySupport().bind(LABEL.IS_REFERENCE,
-				new ReferenceModifier());
+		getCellModifySupport()
+				.bind(LABEL.IS_REFERENCE, new ReferenceModifier());
 		getViewer().refresh(true);
 	}
 
@@ -137,10 +138,10 @@ public class UnitViewer extends AbstractTableViewer<Unit> {
 					: null;
 			if (refUnit == null)
 				return null;
-			String amount = "[" + unit.getName() + "]";
-			String refAmount = "[" + refUnit.getName() + "]";
+			String amount = "1.0 " + unit.getName();
 			String factor = Numbers.format(unit.getConversionFactor());
-			return amount + " = " + factor + " * " + refAmount;
+			String refAmount = factor + " " + refUnit.getName();
+			return amount + " = " + refAmount;
 		}
 
 		@Override

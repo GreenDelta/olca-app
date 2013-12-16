@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Queue;
 
 import org.openlca.app.db.Database;
@@ -95,7 +96,7 @@ public class CopyPaste {
 			if (!isSupported(element))
 				return false;
 
-			ModelType currentModelType = getType(element);
+			ModelType currentModelType = getModelType(element);
 			if (modelType == null)
 				modelType = currentModelType;
 			else if (currentModelType != modelType)
@@ -104,7 +105,7 @@ public class CopyPaste {
 		return true;
 	}
 
-	private static ModelType getType(INavigationElement<?> element) {
+	private static ModelType getModelType(INavigationElement<?> element) {
 		if (element instanceof ModelElement)
 			return ((ModelElement) element).getContent().getModelType();
 		if (element instanceof CategoryElement)
@@ -135,20 +136,22 @@ public class CopyPaste {
 			return;
 		for (INavigationElement<?> element : cache) {
 			paste(element, element.getParent());
-			Navigator.refresh(element.getParent());
+			INavigationElement<?> root = Navigator
+					.findElement(getModelType(element));
+			Navigator.refresh(root);
 		}
 	}
 
-	public static void pasteTo(INavigationElement<?> category) {
+	public static void pasteTo(INavigationElement<?> categoryElement) {
 		if (cacheIsEmpty())
 			return;
-		if (!canPasteTo(category))
+		if (!canPasteTo(categoryElement))
 			throw new IllegalArgumentException("Can only paste to same type");
-
 		for (INavigationElement<?> element : cache) {
-			paste(element, category);
-			Navigator.refresh(element.getParent());
-			Navigator.refresh(category);
+			paste(element, categoryElement);
+			INavigationElement<?> root = Navigator
+					.findElement(getModelType(element));
+			Navigator.refresh(root);
 		}
 		if (currentAction == Action.CUT) {
 			cache = null;
@@ -168,13 +171,14 @@ public class CopyPaste {
 				target);
 	}
 
-	public static boolean canMove(INavigationElement<?>[] elements,
+	private static boolean canMove(INavigationElement<?>[] elements,
 			INavigationElement<?> target) {
 		if (!isSupported(elements))
 			return false;
+
 		if (!(target instanceof CategoryElement || target instanceof ModelTypeElement))
 			return false;
-		return getType(target) == getType(elements[0]);
+		return getModelType(target) == getModelType(elements[0]);
 	}
 
 	public static boolean canPasteTo(INavigationElement<?> element) {
@@ -182,7 +186,7 @@ public class CopyPaste {
 			return false;
 		if (!(element instanceof CategoryElement || element instanceof ModelTypeElement))
 			return false;
-		return getType(element) == getType(cache[0]);
+		return getModelType(element) == getModelType(cache[0]);
 	}
 
 	private static void paste(INavigationElement<?> element,
@@ -210,12 +214,13 @@ public class CopyPaste {
 		Category newParent = getCategory(category);
 		Category oldParent = getCategory(element.getParent());
 		Category content = element.getContent();
+		if (Objects.equals(content, newParent))
+			return;
 		if (oldParent != null)
 			oldParent.getChildCategories().remove(content);
 		if (newParent != null)
 			newParent.getChildCategories().add(content);
 		content.setParentCategory(newParent);
-
 		if (oldParent != null)
 			new CategoryDao(Database.get()).update(oldParent);
 		if (newParent != null)
@@ -275,14 +280,33 @@ public class CopyPaste {
 
 	private static CategorizedEntity copy(ModelElement element) {
 		BaseDescriptor descriptor = element.getContent();
-
 		CategorizedEntityDao<?, ?> dao = Database.createRootDao(descriptor
 				.getModelType());
-		@SuppressWarnings("cast")
-		CategorizedEntity entity = (CategorizedEntity) dao.getForId(descriptor
-				.getId());
-		CategorizedEntity copy = CloneUtil.clone(entity);
+		CategorizedEntity entity = dao.getForId(descriptor.getId());
+		CategorizedEntity copy = cloneIt(entity);
+		if (copy != null)
+			copy.setName(copy.getName() + " (copy)");
 		return copy;
+	}
+
+	private static CategorizedEntity cloneIt(CategorizedEntity entity) {
+		if (entity instanceof Actor)
+			return ((Actor) entity).clone();
+		else if (entity instanceof Source)
+			return ((Source) entity).clone();
+		else if (entity instanceof UnitGroup)
+			return ((UnitGroup) entity).clone();
+		else if (entity instanceof FlowProperty)
+			return ((FlowProperty) entity).clone();
+		else if (entity instanceof Flow)
+			return ((Flow) entity).clone();
+		else if (entity instanceof Process)
+			return ((Process) entity).clone();
+		else if (entity instanceof ProductSystem)
+			return ((ProductSystem) entity).clone();
+		else if (entity instanceof Project)
+			return ((Project) entity).clone();
+		return null;
 	}
 
 	private static void insert(CategorizedEntity entity) {

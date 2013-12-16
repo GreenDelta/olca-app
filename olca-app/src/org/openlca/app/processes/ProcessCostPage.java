@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.forms.HyperlinkSettings;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -22,18 +21,14 @@ public class ProcessCostPage extends FormPage {
 
 	public ProcessCostPage(ProcessEditor editor) {
 		super(editor, "process.CostPage", "Costs");
-		process = (Process) editor.getModel();
+		process = editor.getModel();
 		this.editor = editor;
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = managedForm.getForm();
+		ScrolledForm form = UI.formHeader(managedForm, "Process costs");
 		FormToolkit toolkit = managedForm.getToolkit();
-		toolkit.getHyperlinkGroup().setHyperlinkUnderlineMode(
-				HyperlinkSettings.UNDERLINE_HOVER);
-		toolkit.decorateFormHeading(form.getForm());
-		form.setText("Process costs");
 		Composite body = UI.formBody(form, toolkit);
 		for (Exchange e : getOutputProducts()) {
 			ProcessCostSection section = new ProcessCostSection(e, editor);

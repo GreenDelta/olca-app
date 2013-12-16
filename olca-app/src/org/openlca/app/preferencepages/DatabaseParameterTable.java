@@ -1,38 +1,37 @@
 package org.openlca.app.preferencepages;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Table;
 import org.openlca.app.Messages;
-import org.openlca.app.util.Dialog;
+import org.openlca.app.components.UncertaintyCellEditor;
+import org.openlca.app.util.Error;
 import org.openlca.app.util.Tables;
+import org.openlca.app.util.UncertaintyLabel;
 import org.openlca.app.util.Viewers;
+import org.openlca.app.viewers.table.modify.ModifySupport;
+import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.model.Parameter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class DatabaseParameterTable {
 
-	private Logger log = LoggerFactory.getLogger(getClass());
 	private TableViewer viewer;
 	private Table table;
 
 	private final String NAME = Messages.Name;
 	private final String DESCRIPTION = Messages.Description;
-	private final String NUMERIC_VALUE = Messages.Amount;
-	private final String[] PROPERTIES = new String[] { NAME, NUMERIC_VALUE,
-			DESCRIPTION };
+	private final String AMOUNT = Messages.Amount;
+	private final String UNCERTAINTY = Messages.Uncertainty;
+	private final String[] PROPERTIES = new String[] { NAME, AMOUNT,
+			UNCERTAINTY, DESCRIPTION };
 
 	public DatabaseParameterTable(Composite parent) {
 		createTableViewer(parent);
@@ -44,15 +43,15 @@ class DatabaseParameterTable {
 		viewer.setLabelProvider(new ParameterLabel());
 		table = viewer.getTable();
 		table.setEnabled(false);
-		Tables.bindColumnWidths(table, 0.4, 0.3, 0.3);
+		Tables.bindColumnWidths(table, 0.2, 0.2, 0.3, 0.3);
 	}
 
 	private void createEditors() {
-		CellEditor[] editors = new CellEditor[PROPERTIES.length];
-		for (int i = 0; i < editors.length; i++)
-			editors[i] = new TextCellEditor(table);
-		viewer.setCellModifier(new ParameterModifier());
-		viewer.setCellEditors(editors);
+		ModifySupport<Parameter> support = new ModifySupport<>(viewer);
+		support.bind(NAME, new NameModifier());
+		support.bind(AMOUNT, new AmountModifier());
+		support.bind(DESCRIPTION, new DescriptionModifier());
+		support.bind(UNCERTAINTY, new UncertaintyCellEditor(viewer.getTable()));
 	}
 
 	public Parameter getSelected() {
@@ -93,6 +92,8 @@ class DatabaseParameterTable {
 			case 1:
 				return Double.toString(parameter.getValue());
 			case 2:
+				return UncertaintyLabel.get(parameter.getUncertainty());
+			case 3:
 				return parameter.getDescription();
 			default:
 				return null;
@@ -100,76 +101,59 @@ class DatabaseParameterTable {
 		}
 	}
 
-	private class ParameterModifier implements ICellModifier {
+	private class NameModifier extends TextCellModifier<Parameter> {
 
 		@Override
-		public boolean canModify(Object element, String property) {
-			return true;
+		protected String getText(Parameter param) {
+			return param.getName();
 		}
 
 		@Override
-		public Object getValue(Object element, String property) {
-			if (element instanceof Item) {
-				element = ((Item) element).getData();
-			}
-			if (!(element instanceof Parameter) || property == null)
-				return null;
-			Parameter parameter = (Parameter) element;
-			if (property.equals(NAME))
-				return parameter.getName();
-			else if (property.equals(NUMERIC_VALUE))
-				return Double.toString(parameter.getValue());
-			else if (property.equals(DESCRIPTION))
-				return parameter.getDescription();
-			else
-				return null;
-		}
-
-		@Override
-		public void modify(Object element, String property, Object value) {
-			if (element instanceof Item) {
-				element = ((Item) element).getData();
-			}
-			if (!(element instanceof Parameter))
+		protected void setText(Parameter param, String text) {
+			if (text == null)
 				return;
-			Parameter parameter = (Parameter) element;
-			log.trace("modify parameter {}", parameter);
-			log.trace("modify property {} with value {}", property, value);
-			setValue(property, (String) value, parameter);
-			viewer.refresh();
-		}
-
-		private void setValue(String property, String value, Parameter parameter) {
-			if (property.equals(NAME)) {
-				setParameterName(parameter, value);
-			} else if (property.equals(NUMERIC_VALUE)) {
-				setParameterValue(parameter, value);
-			} else if (property.equals(DESCRIPTION)) {
-				log.trace("set description to {}", value);
-				parameter.setDescription(value);
+			if (Objects.equals(text, param.getName()))
+				return;
+			String name = text.trim();
+			if (Parameter.isValidName(name))
+				param.setName(name);
+			else {
+				Error.showBox("Invalid parameter name", "'" + name
+						+ "' is not a valid parameter name");
 			}
 		}
-
-		private void setParameterName(Parameter parameter, String value) {
-			log.trace("set name to {}", value);
-			if (Parameter.isValidName(value)) {
-				parameter.setName(value);
-			} else {
-				Dialog.showError(table.getShell(), "Invalid parameter name: "
-						+ value);
-			}
-		}
-
-		private void setParameterValue(Parameter parameter, String value) {
-			log.trace("set value to {}", value);
-			try {
-				double val = Double.parseDouble(value);
-				parameter.setValue(val);
-			} catch (Exception e) {
-				Dialog.showError(table.getShell(), value
-						+ " is not a valid number.");
-			}
-		}
-
 	}
+
+	private class AmountModifier extends TextCellModifier<Parameter> {
+
+		@Override
+		protected String getText(Parameter param) {
+			return Double.toString(param.getValue());
+		}
+
+		@Override
+		protected void setText(Parameter param, String text) {
+			try {
+				double val = Double.parseDouble(text);
+				param.setValue(val);
+			} catch (Exception e) {
+				Error.showBox("Invalid parameter amount", "'" + text
+						+ "' is not a valid number");
+			}
+		}
+	}
+
+	private class DescriptionModifier extends TextCellModifier<Parameter> {
+
+		@Override
+		protected String getText(Parameter param) {
+			return param.getDescription();
+		}
+
+		@Override
+		protected void setText(Parameter param, String text) {
+			param.setDescription(text);
+		}
+	}
+
 }

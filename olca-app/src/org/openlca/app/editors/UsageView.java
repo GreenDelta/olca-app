@@ -35,7 +35,7 @@ import com.google.gson.Gson;
  */
 public class UsageView extends FormEditor {
 
-	public static String ID = "views.usage";
+	public static String ID = "editors.usage";
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private BaseDescriptor model;

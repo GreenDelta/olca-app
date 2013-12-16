@@ -7,9 +7,11 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
-import org.openlca.app.App;
+import org.openlca.app.FeatureFlag;
 import org.openlca.app.Messages;
+import org.openlca.app.analysis.localization.LocalisedImpactPage;
 import org.openlca.app.analysis.sankey.SankeyDiagram;
+import org.openlca.app.db.Cache;
 import org.openlca.app.inventory.ImpactResultPage;
 import org.openlca.app.inventory.ImpactResultProvider;
 import org.openlca.app.inventory.InventoryResultPage;
@@ -52,8 +54,8 @@ public class AnalyzeEditor extends FormEditor {
 		AnalyzeEditorInput editorInput = (AnalyzeEditorInput) input;
 		String resultKey = editorInput.getResultKey();
 		String setupKey = editorInput.getSetupKey();
-		result = App.getCache().remove(resultKey, AnalysisResult.class);
-		setup = App.getCache().remove(setupKey, CalculationSetup.class);
+		result = Cache.getAppCache().remove(resultKey, AnalysisResult.class);
+		setup = Cache.getAppCache().remove(setupKey, CalculationSetup.class);
 		ProductSystem system = setup.getProductSystem();
 		String name = Messages.ResultOf + " " + system.getName();
 		setPartName(name);
@@ -74,11 +76,11 @@ public class AnalyzeEditor extends FormEditor {
 			addPage(new ContributionTreePage(this, result));
 			addPage(new GroupPage(this, result));
 			addPage(new LocationContributionPage(this, result));
-			// if (FeatureFlag.SUNBURST_CHART.isEnabled())
-			// addPage(new SunBurstView(this, result));
-			// if (FeatureFlag.LOCALISED_LCIA.isEnabled()
-			// && result.hasImpactResults())
-			// addPage(new LocalisedImpactPage(this, result));
+			if (FeatureFlag.SUNBURST_CHART.isEnabled())
+				addPage(new SunBurstView(this, result));
+			if (FeatureFlag.LOCALISED_LCIA.isEnabled()
+					&& result.hasImpactResults())
+				addPage(new LocalisedImpactPage(this, result));
 			diagram = new SankeyDiagram(setup, result);
 			diagramIndex = addPage(diagram, getEditorInput());
 			setPageText(diagramIndex, "Sankey diagram");

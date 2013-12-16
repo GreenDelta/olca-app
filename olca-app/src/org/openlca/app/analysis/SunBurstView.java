@@ -9,12 +9,12 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
 import org.openlca.app.components.FlowImpactSelection;
 import org.openlca.app.components.FlowImpactSelection.EventHandler;
-import org.openlca.app.db.Database;
+import org.openlca.app.db.Cache;
 import org.openlca.app.html.HtmlPage;
 import org.openlca.app.html.IHtmlResource;
 import org.openlca.app.util.UI;
 import org.openlca.core.editors.HtmlView;
-import org.openlca.core.model.Flow;
+import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.AnalysisResult;
 import org.openlca.core.results.ContributionTree;
@@ -33,6 +33,7 @@ public class SunBurstView extends FormPage implements HtmlPage {
 	public SunBurstView(AnalyzeEditor editor, AnalysisResult result) {
 		super(editor, "analysis.SunBurstView", "Sun burst");
 		this.result = result;
+
 	}
 
 	@Override
@@ -45,19 +46,28 @@ public class SunBurstView extends FormPage implements HtmlPage {
 		App.run("Calculate result", new Runnable() {
 			@Override
 			public void run() {
-				createCalculator();
+				FlowDescriptor first = firstFlow();
+				if (first == null)
+					return;
+				log.trace("initialize the tree");
+				result.getContributions().getTree(first);
 			}
 		}, new Runnable() {
 			@Override
 			public void run() {
-				if (calculator == null)
+				FlowDescriptor first = firstFlow();
+				if (first == null)
 					return;
-				Flow[] flows = result.getFlowIndex().getFlows();
-				if (flows == null || flows.length == 0)
-					return;
-				flowImpactSelection.selectWithEvent(flows[0]);
+				flowImpactSelection.selectWithEvent(first);
 			}
 		});
+	}
+
+	private FlowDescriptor firstFlow() {
+		long flowId = result.getFlowIndex().getFlowAt(0);
+		FlowDescriptor flow = Cache.getEntityCache().get(FlowDescriptor.class,
+				flowId);
+		return flow;
 	}
 
 	@Override
@@ -67,8 +77,8 @@ public class SunBurstView extends FormPage implements HtmlPage {
 		Composite body = UI.formBody(form, toolkit);
 		Composite composite = toolkit.createComposite(body);
 		UI.gridLayout(composite, 2);
-		flowImpactSelection = FlowImpactSelection.onDatabase(Database.get())
-				.withAnalysisResult(result)
+		flowImpactSelection = FlowImpactSelection
+				.on(result, Cache.getEntityCache())
 				.withEventHandler(new SelectionHandler())
 				.create(composite, toolkit);
 		browser = UI.createBrowser(body, this);
@@ -78,19 +88,21 @@ public class SunBurstView extends FormPage implements HtmlPage {
 
 	private class SelectionHandler implements EventHandler {
 		@Override
-		public void flowSelected(Flow flow) {
-			if (calculator == null || flow == null)
+		public void flowSelected(FlowDescriptor flow) {
+			if (result == null || flow == null)
 				return;
-			ContributionTree tree = calculator.calculate(flow);
+			ContributionTree tree = result.getContributions().getTree(flow);
 			setResultData(tree);
 		}
 
 		@Override
 		public void impactCategorySelected(
 				ImpactCategoryDescriptor impactCategory) {
-			if (calculator == null || impactCategory == null)
+			if (result == null || impactCategory == null
+					|| !result.hasImpactResults())
 				return;
-			ContributionTree tree = calculator.calculate(impactCategory);
+			ContributionTree tree = result.getContributions().getTree(
+					impactCategory);
 			setResultData(tree);
 		}
 
@@ -104,6 +116,7 @@ public class SunBurstView extends FormPage implements HtmlPage {
 				e.printStackTrace();
 			}
 		}
+
 	}
 
 }

@@ -16,7 +16,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.components.ContributionItem;
 import org.openlca.app.components.charts.ContributionChart;
-import org.openlca.app.db.Database;
+import org.openlca.app.db.Cache;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
@@ -36,7 +36,7 @@ class GroupResultSection {
 	private int IMPACT = 1;
 	private int resultType = 0;
 
-	private EntityCache cache = Database.getCache();
+	private EntityCache cache = Cache.getEntityCache();
 	private List<ProcessGrouping> groups;
 	private AnalysisResult result;
 	private TableViewer tableViewer;

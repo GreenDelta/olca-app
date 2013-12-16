@@ -1,6 +1,7 @@
 package org.openlca.app.util;
 
 import org.openlca.core.model.Category;
+import org.openlca.util.Strings;
 
 public class CategoryPath {
 
@@ -24,15 +25,16 @@ public class CategoryPath {
 	}
 
 	/**
-	 * Max. 2 category names
+	 * Max. 2 category names and 75 characters
 	 */
 	public static String getShort(Category category) {
 		if (category == null)
 			return "";
 		if (category.getParentCategory() == null)
 			return category.getName();
-		return category.getParentCategory().getName() + "/"
+		String shortPath = category.getParentCategory().getName() + "/"
 				+ category.getName();
+		return Strings.cut(shortPath, 75);
 	}
 
 }

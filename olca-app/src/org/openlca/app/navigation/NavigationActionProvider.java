@@ -1,12 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.app.navigation;
 
 import java.util.List;
@@ -16,26 +7,29 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.actions.ActionContext;
 import org.eclipse.ui.navigator.CommonActionProvider;
-import org.openlca.app.navigation.actions.ActivateDatabaseAction;
-import org.openlca.app.navigation.actions.CloseDatabaseAction;
+import org.openlca.app.App;
 import org.openlca.app.navigation.actions.CopyAction;
 import org.openlca.app.navigation.actions.CreateCategoryAction;
-import org.openlca.app.navigation.actions.CreateDatabaseAction;
 import org.openlca.app.navigation.actions.CreateModelAction;
 import org.openlca.app.navigation.actions.CutAction;
+import org.openlca.app.navigation.actions.DatabaseActivateAction;
+import org.openlca.app.navigation.actions.DatabaseCloseAction;
+import org.openlca.app.navigation.actions.DatabaseCreateAction;
+import org.openlca.app.navigation.actions.DatabaseDeleteAction;
+import org.openlca.app.navigation.actions.DatabaseExportAction;
+import org.openlca.app.navigation.actions.DatabaseImportAction;
 import org.openlca.app.navigation.actions.DatabasePropertiesAction;
 import org.openlca.app.navigation.actions.DeleteCategoryAction;
-import org.openlca.app.navigation.actions.DeleteDatabaseAction;
 import org.openlca.app.navigation.actions.DeleteModelAction;
-import org.openlca.app.navigation.actions.EcoSpold1ExportAction;
-import org.openlca.app.navigation.actions.EcoSpold1ImportAction;
-import org.openlca.app.navigation.actions.ILCDExportAction;
-import org.openlca.app.navigation.actions.ILCDImportAction;
+import org.openlca.app.navigation.actions.ExportAction;
 import org.openlca.app.navigation.actions.INavigationAction;
+import org.openlca.app.navigation.actions.ImportAction;
 import org.openlca.app.navigation.actions.OpenModelAction;
 import org.openlca.app.navigation.actions.OpenUsageAction;
 import org.openlca.app.navigation.actions.PasteAction;
 import org.openlca.app.navigation.actions.RenameCategoryAction;
+import org.openlca.app.navigation.actions.XEI3MarketProcessCleanUp;
+import org.openlca.app.navigation.actions.XEI3MetaDataImportAction;
 import org.openlca.app.util.Viewers;
 
 /**
@@ -45,13 +39,9 @@ public class NavigationActionProvider extends CommonActionProvider {
 
 	//@formatter:off
 	private INavigationAction[][] actions = new INavigationAction[][] {
-			// database actions
-			new INavigationAction[] {
-				new ActivateDatabaseAction(), 
-				new DatabasePropertiesAction(),
-				new CloseDatabaseAction(), 
-				new DeleteDatabaseAction()
-			},			
+			
+			getDatabaseActions(),
+			
 			// model actions
 			new INavigationAction[] {
 				new OpenModelAction(),
@@ -67,10 +57,8 @@ public class NavigationActionProvider extends CommonActionProvider {
 			}, 
 			// IO actions
 			new INavigationAction[] {
-				new EcoSpold1ExportAction(),
-				new EcoSpold1ImportAction(),
-				new ILCDExportAction(),
-				new ILCDImportAction()
+				new ImportAction(),
+				new ExportAction(),
 			},
 			// category actions
 			new INavigationAction[] {
@@ -94,7 +82,23 @@ public class NavigationActionProvider extends CommonActionProvider {
 			registered += registerMultiActions(elements, menu);
 		if (registered > 0)
 			menu.add(new Separator());
-		menu.add(new CreateDatabaseAction());
+		menu.add(new DatabaseCreateAction());
+		menu.add(new DatabaseImportAction());
+	}
+
+	private INavigationAction[] getDatabaseActions() {
+		int count = App.runsInDevMode() ? 7 : 5;
+		INavigationAction[] actions = new INavigationAction[count];
+		actions[0] = new DatabaseActivateAction();
+		actions[1] = new DatabasePropertiesAction();
+		actions[2] = new DatabaseCloseAction();
+		actions[3] = new DatabaseExportAction();
+		actions[4] = new DatabaseDeleteAction();
+		if (count == 7) {
+			actions[5] = new XEI3MetaDataImportAction();
+			actions[6] = new XEI3MarketProcessCleanUp();
+		}
+		return actions;
 	}
 
 	private int registerSingleActions(INavigationElement<?> element,

@@ -1,12 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.app;
 
 import org.eclipse.osgi.util.NLS;
@@ -48,6 +39,7 @@ public class Messages extends NLS {
 	public static String Button_Yes;
 	public static String Calculate;
 	public static String CalculateCosts;
+	public static String CalculateDefaults;
 	public static String Calculating;
 	public static String CalculatingImpact;
 	public static String CalculatingLCI;
@@ -91,8 +83,8 @@ public class Messages extends NLS {
 	public static String Copying;
 	public static String Copyright;
 	public static String Country;
-	public static String CreateDatabaseAction;
 	public static String CreateProductFlow;
+	public static String CreateProductSystem;
 	public static String CreatingImpactSheet;
 	public static String CreatingInfoSheet;
 	public static String CreatingLCISheet;
@@ -117,7 +109,7 @@ public class Messages extends NLS {
 	public static String DataSetOwner;
 	public static String DataSourceInfoSectionLabel;
 	public static String DataTreatment;
-	public static String DefaultAMSectionLabel;
+	public static String DefaultMethod;
 	public static String DefaultFlowProperty;
 	public static String DefaultProvider;
 	public static String Delete;
@@ -162,11 +154,10 @@ public class Messages extends NLS {
 	public static String Exchanges;
 	public static String ExchangeType;
 	public static String Export;
-	public static String ExportingToScript;
 	public static String ExportTitle;
 	public static String ExportTo;
 	public static String ExportToExcel;
-	public static String ExportToScript;
+	public static String ExportDatabase;
 	public static String Factor;
 	public static String FancyToolTip_NoDescription;
 	public static String FileAlreadyExists;
@@ -174,6 +165,7 @@ public class Messages extends NLS {
 	public static String FileImportPage_ChooseDirectoryLabel;
 	public static String FileImportPage_Description;
 	public static String FileImportPage_Title;
+	public static String Filter;
 	public static String Flow;
 	public static String FlowContributions;
 	public static String FlowInfoPage_CASNotValid;
@@ -229,8 +221,7 @@ public class Messages extends NLS {
 	public static String ImpactResultSavedMessage;
 	public static String ImpactResultSavedTitle;
 	public static String Import;
-	public static String ImportingScript;
-	public static String ImportScript;
+	public static String ImportDatabase;
 	public static String INFO;
 	public static String Information;
 	public static String InfrastructureProcess;
@@ -280,6 +271,7 @@ public class Messages extends NLS {
 	public static String Minimum;
 	public static String MinimumCharactersError;
 	public static String Mode;
+	public static String ModelGraph;
 	public static String ModelingAndValidationPageLabel;
 	public static String ModelingConstants;
 	public static String ModelParametersPageDuplicateParameter;
@@ -346,6 +338,7 @@ public class Messages extends NLS {
 	public static String Object;
 	public static String ObjectType;
 	public static String OnlyNumbersLetters;
+	public static String OnlineHelp;
 	public static String Open;
 	public static String OpenAnalyzeWizard_Text;
 	public static String OpenEditorAction_Text;
@@ -390,6 +383,7 @@ public class Messages extends NLS {
 	public static String ProductSystemsInfoSectionLabel;
 	public static String Progress;
 	public static String Project;
+	public static String Projects;
 	public static String ProjectComparisonPageLabel;
 	public static String ProjectInfoSectionLabel;
 	public static String Projects_WizardMessage;

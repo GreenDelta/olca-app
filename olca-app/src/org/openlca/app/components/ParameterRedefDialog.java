@@ -19,6 +19,7 @@ import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
@@ -29,6 +30,7 @@ import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Labels;
@@ -52,9 +54,10 @@ public class ParameterRedefDialog extends FormDialog {
 	private Text filterText;
 	private TreeViewer viewer;
 	private IStructuredSelection selection;
+	private Font boldLabelFont;
 
 	public static List<ParameterRedef> select() {
-		TreeModel model = loadModel(Database.get(), Database.getCache());
+		TreeModel model = loadModel(Database.get(), Cache.getEntityCache());
 		ParameterRedefDialog dialog = new ParameterRedefDialog(UI.shell(),
 				model);
 		if (dialog.open() != OK)
@@ -124,6 +127,13 @@ public class ParameterRedefDialog extends FormDialog {
 	}
 
 	@Override
+	public boolean close() {
+		if (boldLabelFont != null && !boldLabelFont.isDisposed())
+			boldLabelFont.dispose();
+		return super.close();
+	}
+
+	@Override
 	protected Point getInitialSize() {
 		// TODO: calculate from screen size
 		return new Point(600, 600);
@@ -158,8 +168,9 @@ public class ParameterRedefDialog extends FormDialog {
 		UI.formHeader(mform, "Search parameters");
 		Composite body = UI.formBody(mform.getForm(), mform.getToolkit());
 		UI.gridLayout(body, 1);
-		Label label = UI.formLabel(body, toolkit, "Filter");
-		UI.applyBoldFont(label);
+		Label filterLabel = UI.formLabel(body, toolkit, "Filter");
+		boldLabelFont = UI.boldFont(filterLabel);
+		filterLabel.setFont(boldLabelFont);
 
 		filterText = UI.formText(body, SWT.SEARCH);
 		filterText.addModifyListener(new ModifyListener() {

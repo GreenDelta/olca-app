@@ -9,16 +9,23 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
-import org.openlca.app.components.ObjectDialog;
+import org.openlca.app.components.ModelSelectionDialog;
+import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
+import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
+import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.Tables;
@@ -44,23 +51,21 @@ import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ProjectSetupPage extends ModelPage<Project> {
+class ProjectSetupPage extends ModelPage<Project> {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private FormToolkit toolkit;
 	private ProjectEditor editor;
-
 	private IDatabase database = Database.get();
 
 	private Project project;
 	private List<ProjectVariant> variants;
 	private TableViewer variantViewer;
-	private Composite body;
 	private ScrolledForm form;
 	private ProjectParameterTable parameterTable;
 
-	public ProjectSetupPage(ProjectEditor editor) {
-		super(editor, "ProjectSetupPage", "Calculation setup");
+	ProjectSetupPage(ProjectEditor editor) {
+		super(editor, "ProjectSetupPage", "Project setup");
 		this.editor = editor;
 		project = editor.getModel();
 		variants = project.getVariants();
@@ -68,14 +73,18 @@ public class ProjectSetupPage extends ModelPage<Project> {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		form = UI.formHeader(managedForm, Messages.Project + ": "
+		ScrolledForm form = UI.formHeader(managedForm, Messages.Project + ": "
 				+ getModel().getName());
 		toolkit = managedForm.getToolkit();
-		body = UI.formBody(form, toolkit);
-		createSettingsSection(body);
+		Composite body = UI.formBody(form, toolkit);
+		InfoSection infoSection = new InfoSection(getModel(), getBinding());
+		infoSection.render(body, toolkit);
+		createSettingsSection(infoSection.getContainer());
 		createVariantsSection(body);
 		createParameterSection(body);
 		initialInput();
+
+		body.setFocus();
 		form.reflow(true);
 	}
 
@@ -89,10 +98,10 @@ public class ProjectSetupPage extends ModelPage<Project> {
 		variantViewer.setInput(variants);
 	}
 
-	private void createSettingsSection(Composite body) {
-		Composite client = UI.formSection(body, toolkit, "Settings");
-		UI.formLabel(client, toolkit, "LCIA Method");
-		ImpactMethodViewer impactMethodViewer = new ImpactMethodViewer(client);
+	private void createSettingsSection(Composite composite) {
+		UI.formLabel(composite, toolkit, "LCIA Method");
+		ImpactMethodViewer impactMethodViewer = new ImpactMethodViewer(
+				composite);
 		impactMethodViewer.setNullable(true);
 		impactMethodViewer
 				.addSelectionChangedListener(new ISelectionChangedListener<ImpactMethodDescriptor>() {
@@ -104,13 +113,27 @@ public class ProjectSetupPage extends ModelPage<Project> {
 				});
 		impactMethodViewer.setInput(database);
 		if (project.getImpactMethodId() != null) {
-			ImpactMethodDescriptor d = Database.getCache().get(
+			ImpactMethodDescriptor d = Cache.getEntityCache().get(
 					ImpactMethodDescriptor.class, project.getImpactMethodId());
 			impactMethodViewer.select(d);
 		}
 		// TODO: add nw-sets
 		// UI.formLabel(client, toolkit, "Normalisation and Weighting");
 		// new NormalizationWeightingSetViewer(client);
+		createCalculationButton(composite);
+	}
+
+	private void createCalculationButton(Composite composite) {
+		toolkit.createLabel(composite, "");
+		Button button = toolkit.createButton(composite, Messages.Calculate,
+				SWT.NONE);
+		button.setImage(ImageType.CALCULATE_ICON.get());
+		button.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				Calculation.run(getModel());
+			}
+		});
 	}
 
 	private void handleMethodChange(ImpactMethodDescriptor selection) {
@@ -167,7 +190,7 @@ public class ProjectSetupPage extends ModelPage<Project> {
 
 	private void addVariant() {
 		log.trace("add variabt");
-		BaseDescriptor d = ObjectDialog.select(ModelType.PRODUCT_SYSTEM);
+		BaseDescriptor d = ModelSelectionDialog.select(ModelType.PRODUCT_SYSTEM);
 		if (d == null)
 			return;
 		ProductSystemDao dao = new ProductSystemDao(database);

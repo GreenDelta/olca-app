@@ -39,6 +39,12 @@ public class ProcessEditor extends ModelEditor<Process> implements IEditor {
 	 */
 	final String FORMULAS_EVALUATED = "FORMULAS_EVALUATED";
 
+	/**
+	 * An event message that indicates the removal or addition of one or more
+	 * exchanges exchange.
+	 */
+	final String EXCHANGES_CHANGED = "EXCHANGE_REMOVED";
+
 	public static String ID = "editors.process";
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private FormulaInterpreter interpreter;
@@ -144,6 +150,7 @@ public class ProcessEditor extends ModelEditor<Process> implements IEditor {
 			addPage(new ProcessAdminInfoPage(this));
 			addPage(new ProcessModelingPage(this));
 			addPage(new ProcessParameterPage(this));
+			addPage(new AllocationPage(this));
 			addPage(new ProcessCostPage(this));
 		} catch (Exception e) {
 			log.error("failed to add page", e);

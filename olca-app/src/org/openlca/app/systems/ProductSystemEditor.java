@@ -1,17 +1,12 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.app.systems;
 
+import org.openlca.app.Messages;
 import org.openlca.app.editors.IEditor;
 import org.openlca.app.editors.ModelEditor;
+import org.openlca.app.editors.graphical.GraphicalEditorInput;
+import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
 import org.openlca.core.model.ProductSystem;
+import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,9 +25,13 @@ public class ProductSystemEditor extends ModelEditor<ProductSystem> implements
 		try {
 			addPage(new ProductSystemInfoPage(this));
 			addPage(new ProductSystemParameterPage(this));
+			BaseDescriptor descriptor = getEditorInput().getDescriptor();
+			GraphicalEditorInput gInput = new GraphicalEditorInput(descriptor);
+			int gIdx = addPage(new ProductSystemGraphEditor(getModel(), this),
+					gInput);
+			setPageText(gIdx, Messages.ModelGraph);
 		} catch (Exception e) {
 			log.error("failed to add page", e);
 		}
 	}
-
 }

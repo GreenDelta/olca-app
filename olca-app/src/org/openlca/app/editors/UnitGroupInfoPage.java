@@ -36,12 +36,10 @@ class UnitGroupInfoPage extends ModelPage<UnitGroup> {
 		createDropComponent(Messages.DefaultFlowProperty,
 				"defaultFlowProperty", ModelType.FLOW_PROPERTY,
 				infoSection.getContainer());
-
 		Section section = UI.section(body, toolkit,
 				Messages.UnitGroupInfoSectionLabel);
 		UI.gridData(section, true, true);
 		Composite client = UI.sectionClient(section, toolkit);
-
 		UnitViewer unitViewer = new UnitViewer(client);
 		getBinding().on(getModel(), "units", unitViewer);
 		unitViewer.bindTo(section);

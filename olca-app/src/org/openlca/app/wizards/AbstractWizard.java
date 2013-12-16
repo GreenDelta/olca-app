@@ -4,10 +4,12 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IWorkbench;
 import org.openlca.app.App;
+import org.openlca.app.db.Cache;
 import org.openlca.app.resources.ImageType;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Category;
+import org.openlca.core.model.descriptors.Descriptors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +35,10 @@ public abstract class AbstractWizard<T extends CategorizedEntity> extends
 		this.category = category;
 	}
 
+	protected Category getCategory() {
+		return category;
+	}
+
 	@Override
 	public void addPages() {
 		page = createPage();
@@ -46,6 +52,7 @@ public abstract class AbstractWizard<T extends CategorizedEntity> extends
 		try {
 			model.setCategory(category);
 			createDao().insert(model);
+			Cache.registerNew(Descriptors.toDescriptor(model));
 			App.openEditor(model);
 			return true;
 		} catch (Exception e) {
