@@ -1,5 +1,6 @@
 package org.openlca.app.projects;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -27,17 +28,20 @@ import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Actions;
-import org.openlca.app.util.Numbers;
+import org.openlca.app.util.Error;
+import org.openlca.app.util.Labels;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
 import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.ImpactMethodViewer;
+import org.openlca.app.viewers.table.modify.ComboBoxCellModifier;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ProductSystemDao;
-import org.openlca.core.model.FlowProperty;
+import org.openlca.core.model.AllocationMethod;
+import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ParameterRedef;
@@ -45,6 +49,7 @@ import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.Project;
 import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.Unit;
+import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.util.Strings;
@@ -156,13 +161,17 @@ class ProjectSetupPage extends ModelPage<Project> {
 		Composite composite = UI.sectionClient(section, toolkit);
 		UI.gridLayout(composite, 1);
 		String[] properties = { Messages.Name, Messages.ProductSystem,
-				Messages.FlowProperty, Messages.Amount, Messages.Unit };
+				Messages.AllocationMethod, Messages.Flow, Messages.Amount,
+				Messages.Unit };
 		variantViewer = Tables.createViewer(composite, properties);
 		variantViewer.setLabelProvider(new VariantLabelProvider());
-		Tables.bindColumnWidths(variantViewer, 0.25, 0.25, 0.20, 0.15, 0.15);
+		Tables.bindColumnWidths(variantViewer, 0.2, 0.2, 0.2, 0.2, 0.1, 0.1);
 		ModifySupport<ProjectVariant> support = new ModifySupport<>(
 				variantViewer);
 		support.bind(Messages.Name, new VariantNameEditor());
+		support.bind(Messages.AllocationMethod, new VariantAllocationEditor());
+		support.bind(Messages.Amount, new VariantAmountEditor());
+		support.bind(Messages.Unit, new VariantUnitEditor());
 		addVariantActions(variantViewer, section);
 		UI.gridData(variantViewer.getTable(), true, true).minimumHeight = 150;
 	}
@@ -190,7 +199,8 @@ class ProjectSetupPage extends ModelPage<Project> {
 
 	private void addVariant() {
 		log.trace("add variabt");
-		BaseDescriptor d = ModelSelectionDialog.select(ModelType.PRODUCT_SYSTEM);
+		BaseDescriptor d = ModelSelectionDialog
+				.select(ModelType.PRODUCT_SYSTEM);
 		if (d == null)
 			return;
 		ProductSystemDao dao = new ProductSystemDao(database);
@@ -199,17 +209,25 @@ class ProjectSetupPage extends ModelPage<Project> {
 			log.error("failed to load product system");
 			return;
 		}
-		ProjectVariant variant = new ProjectVariant();
-		variant.setProductSystem(system);
-		variant.setName("Variant " + (variants.size() + 1));
-		// TODO: parameter redefs
-		for (ParameterRedef redef : system.getParameterRedefs())
-			variant.getParameterRedefs().add(redef.clone());
+		ProjectVariant variant = createVariant(system);
 		variants.add(variant);
 		variantViewer.setInput(variants);
 		editor.setDirty(true);
 		parameterTable.addVariant(variant);
 		form.reflow(true);
+	}
+
+	private ProjectVariant createVariant(ProductSystem system) {
+		ProjectVariant variant = new ProjectVariant();
+		variant.setProductSystem(system);
+		variant.setName("Variant " + (variants.size() + 1));
+		variant.setAllocationMethod(AllocationMethod.NONE);
+		variant.setAmount(system.getTargetAmount());
+		variant.setFlowPropertyFactor(system.getTargetFlowPropertyFactor());
+		variant.setUnit(system.getTargetUnit());
+		for (ParameterRedef redef : system.getParameterRedefs())
+			variant.getParameterRedefs().add(redef.clone());
+		return variant;
 	}
 
 	private void removeVariant() {
@@ -242,8 +260,93 @@ class ProjectSetupPage extends ModelPage<Project> {
 		}
 	}
 
+	private class VariantAmountEditor extends TextCellModifier<ProjectVariant> {
+		@Override
+		protected String getText(ProjectVariant variant) {
+			return Double.toString(variant.getAmount());
+		}
+
+		@Override
+		protected void setText(ProjectVariant variant, String text) {
+			try {
+				double val = Double.parseDouble(text);
+				variant.setAmount(val);
+				editor.setDirty(true);
+			} catch (Exception e) {
+				Error.showBox("Invalid number", text + " is not a valid number");
+			}
+		}
+	}
+
+	private class VariantAllocationEditor extends
+			ComboBoxCellModifier<ProjectVariant, AllocationMethod> {
+		@Override
+		protected AllocationMethod getItem(ProjectVariant var) {
+			return var.getAllocationMethod() != null ? var
+					.getAllocationMethod() : AllocationMethod.NONE;
+		}
+
+		@Override
+		protected AllocationMethod[] getItems(ProjectVariant element) {
+			return AllocationMethod.values();
+		}
+
+		@Override
+		protected String getText(AllocationMethod value) {
+			return Labels.getEnumText(value);
+		}
+
+		@Override
+		protected void setItem(ProjectVariant var, AllocationMethod item) {
+			var.setAllocationMethod(item);
+			editor.setDirty(true);
+		}
+	}
+
+	private class VariantUnitEditor extends
+			ComboBoxCellModifier<ProjectVariant, Unit> {
+		@Override
+		protected Unit getItem(ProjectVariant var) {
+			return var.getUnit();
+		}
+
+		@Override
+		protected Unit[] getItems(ProjectVariant var) {
+			FlowPropertyFactor fac = var.getFlowPropertyFactor();
+			if (fac == null || fac.getFlowProperty() == null
+					|| fac.getFlowProperty().getUnitGroup() == null)
+				return new Unit[0];
+			UnitGroup unitGroup = fac.getFlowProperty().getUnitGroup();
+			Unit[] units = unitGroup.getUnits().toArray(
+					new Unit[unitGroup.getUnits().size()]);
+			Arrays.sort(units, new Comparator<Unit>() {
+				@Override
+				public int compare(Unit u1, Unit u2) {
+					if (u1 == null || u2 == null)
+						return 0;
+					return Strings.compare(u1.getName(), u2.getName());
+				}
+			});
+			return units;
+		}
+
+		@Override
+		protected String getText(Unit unit) {
+			if (unit == null)
+				return "";
+			return unit.getName();
+		}
+
+		@Override
+		protected void setItem(ProjectVariant var, Unit unit) {
+			var.setUnit(unit);
+			editor.setDirty(true);
+		}
+	}
+
 	private class VariantLabelProvider extends LabelProvider implements
 			ITableLabelProvider {
+
 		@Override
 		public Image getColumnImage(Object element, int columnIndex) {
 			return null;
@@ -263,18 +366,26 @@ class ProjectSetupPage extends ModelPage<Project> {
 			case 1:
 				return system.getName();
 			case 2:
-				FlowPropertyFactor fac = system.getTargetFlowPropertyFactor();
-				FlowProperty prop = fac == null ? null : fac.getFlowProperty();
-				return prop == null ? null : prop.getName();
+				return Labels.getEnumText(variant.getAllocationMethod());
 			case 3:
-				return Numbers.format(system.getTargetAmount());
+				return getFlowText(system);
 			case 4:
-				Unit unit = system.getTargetUnit();
+				return Double.toString(variant.getAmount());
+			case 5:
+				Unit unit = variant.getUnit();
 				return unit == null ? null : unit.getName();
 			default:
 				return null;
 			}
 		}
+
+		private String getFlowText(ProductSystem system) {
+			if (system == null || system.getReferenceExchange() == null)
+				return null;
+			Exchange refExchange = system.getReferenceExchange();
+			return Labels.getDisplayName(refExchange.getFlow());
+		}
+
 	}
 
 }
