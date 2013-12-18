@@ -1,6 +1,7 @@
 package org.openlca.app.lcia_methods;
 
 import org.openlca.app.Event;
+import org.openlca.app.FeatureFlag;
 import org.openlca.app.editors.IEditor;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.core.model.ImpactMethod;
@@ -41,6 +42,8 @@ public class ImpactMethodEditor extends ModelEditor<ImpactMethod> implements
 			addPage(new ImpactMethodInfoPage(this));
 			addPage(new ImpactFactorsPage(this));
 			addPage(new ImpactNormalizationWeightingPage(this));
+			if (FeatureFlag.LOCALISED_LCIA.isEnabled())
+				addPage(new ImpactLocalisationPage(this));
 		} catch (Exception e) {
 			log.error("failed to add page", e);
 		}
