@@ -495,6 +495,16 @@
             name="%ilcd.net.import.category.name">
       </category>
       <wizard
+            category="import.category.file"
+            class="org.openlca.app.wizards.io.CSVImportWizard"
+            icon="icons/simaPro.png"
+            id="wizard.import.csv"
+            name="SimaPro CSV">
+         <description>
+            Import SimaPro CSV files.
+         </description>
+      </wizard>
+      <wizard
             category="import.category.ilcdnetwork"
             class="org.openlca.app.ilcd_network.ImportWizard"
             icon="icons/network16.png"

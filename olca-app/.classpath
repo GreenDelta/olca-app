@@ -38,7 +38,7 @@
 	<classpathentry exported="true" kind="lib" path="libs/joda-time-2.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/log4j-1.2.17.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/mysql-connector-java-5.1.23.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-ecospold-1-1.0.0.jar"/>
+	<classpathentry kind="lib" path="libs/olca-ecospold-1-1.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-formula-1.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-ilcd-1.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-io-1.0.0.jar" sourcepath="/olca-io"/>
