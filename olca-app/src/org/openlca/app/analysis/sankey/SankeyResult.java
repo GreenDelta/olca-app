@@ -84,7 +84,9 @@ class SankeyResult {
 	public double getLinkContribution(ProcessLink processLink) {
 		if (processLink == null || results == null)
 			return 0;
-		return results.getContributions().getLinkShare(processLink);
+		double totalContr = getTotalContribution(processLink.getProviderId());
+		double linkShare = results.getContributions().getLinkShare(processLink);
+		return totalContr * linkShare;
 	}
 
 	/** Calculates the results for the given selection and cutoff. */
