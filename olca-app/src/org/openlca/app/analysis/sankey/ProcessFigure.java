@@ -61,7 +61,7 @@ public class ProcessFigure extends Figure {
 	}
 
 	private Color getColor() {
-		double contribution = processNode.getSingleContribution();
+		double contribution = processNode.getTotalContribution();
 		RGB rgb = FaviColor.getForContribution(contribution);
 		return Colors.getColor(rgb);
 	}
