@@ -43,9 +43,8 @@ public class HtmlFolder {
 	private static void initializeBaseFiles() throws IOException {
 		boolean upToDate = readVersionInformation();
 		if (!upToDate || !allBaseFilesExist()) {
-			if (!upToDate) {
-				FileUtils.deleteDirectory(htmlDirectory);
-			}
+			if (!upToDate)
+				tryDeleteBaseDir();
 			if (!htmlDirectory.exists())
 				htmlDirectory.mkdirs();
 			File zipFile = new File(htmlDirectory, "@temp.zip");
@@ -56,10 +55,19 @@ public class HtmlFolder {
 				unzip(zipFile, htmlDirectory, !upToDate);
 				if (!zipFile.delete())
 					zipFile.deleteOnExit();
-				if (!upToDate) {
+				if (!upToDate)
 					writeVersionInformation();
-				}
 			}
+		}
+	}
+
+	private static void tryDeleteBaseDir() {
+		try {
+			// this can fail, e.g. when the html folder is open
+			log.trace("try to delete html directory {}", htmlDirectory);
+			FileUtils.deleteDirectory(htmlDirectory);
+		} catch (Exception e) {
+			log.warn("failed to delete html directory {}", htmlDirectory);
 		}
 	}
 
