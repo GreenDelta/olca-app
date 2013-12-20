@@ -18,7 +18,7 @@ public final class Config {
 	/**
 	 * The name of the application that is shown to the user.
 	 */
-	public static final String APPLICATION_NAME = "openLCA - demo";
+	public static final String APPLICATION_NAME = "openLCA";
 
 	/**
 	 * The name of the workspace folder. This folder is located in the user
@@ -26,7 +26,7 @@ public final class Config {
 	 * "openLCA-data", but it can be renamed in development versions (so that
 	 * the users can run multiple versions of openLCA in parallel).
 	 */
-	public static final String WORK_SPACE_FOLDER_NAME = "openLCA-data-demo-1.4";
+	public static final String WORK_SPACE_FOLDER_NAME = "openLCA-data-1.4";
 
 	/**
 	 * The name of default folder where the local databases are stored. This
