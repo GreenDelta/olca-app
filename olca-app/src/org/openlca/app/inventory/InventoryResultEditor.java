@@ -40,17 +40,18 @@ public class InventoryResultEditor extends FormEditor {
 		}
 	}
 
-	public CalculationSetup getSetup() {
+	CalculationSetup getSetup() {
 		return setup;
 	}
 
-	public InventoryResult getResult() {
+	InventoryResult getResult() {
 		return result;
 	}
 
 	@Override
 	protected void addPages() {
 		try {
+			addPage(new QuickResultInfoPage(this));
 			addPage(new InventoryResultPage(this, new InventoryAdapter()));
 			if (result.hasImpactResults())
 				addPage(new ImpactResultPage(this, new ImpactAdapter()));

@@ -1,4 +1,4 @@
-package org.openlca.app.analysis;
+package org.openlca.app.inventory;
 
 import java.io.File;
 
@@ -8,7 +8,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.forms.HyperlinkSettings;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -24,51 +23,40 @@ import org.openlca.app.util.UI;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.model.NormalizationWeightingSet;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.descriptors.FlowDescriptor;
-import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
-import org.openlca.core.results.AnalysisResult;
-import org.openlca.io.xls.results.AnalysisResultExport;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.openlca.io.xls.results.InventoryResultExport;
 
-/**
- * Overall information page of the analysis editor.
- */
-public class AnalyzeInfoPage extends FormPage {
+public class QuickResultInfoPage extends FormPage {
 
-	private Logger log = LoggerFactory.getLogger(getClass());
-	private CalculationSetup setup;
-	private AnalysisResult result;
+	private InventoryResultEditor editor;
 	private FormToolkit toolkit;
 
-	public AnalyzeInfoPage(AnalyzeEditor editor, AnalysisResult result,
-			CalculationSetup setup) {
-		super(editor, "AnalyzeInfoPage", Messages.GeneralInformation);
-		this.setup = setup;
-		this.result = result;
+	public QuickResultInfoPage(InventoryResultEditor editor) {
+		super(editor, "QuickResultInfoPage", Messages.GeneralInformation);
+		this.editor = editor;
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = managedForm.getForm();
-		toolkit = managedForm.getToolkit();
-		toolkit.getHyperlinkGroup().setHyperlinkUnderlineMode(
-				HyperlinkSettings.UNDERLINE_HOVER);
-		form.setText(Messages.ResultOf + " "
-				+ Labels.getDisplayName(setup.getProductSystem()));
-		toolkit.decorateFormHeading(form.getForm());
+		ScrolledForm form = UI.formHeader(managedForm, Messages.ResultsOf + " "
+				+ Labels.getDisplayName(editor.getSetup().getProductSystem()));
+		this.toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		createInfoSection(body);
-		createResultSections(body);
 		form.reflow(true);
 	}
 
 	private void createInfoSection(Composite body) {
+		CalculationSetup setup = editor.getSetup();
+		if (setup == null || setup.getProductSystem() == null)
+			return;
+		ProductSystem system = setup.getProductSystem();
 		Composite composite = UI.formSection(body, toolkit,
 				Messages.GeneralInformation);
-		ProductSystem system = setup.getProductSystem();
-		createText(composite, Messages.ProductSystem, system.getName());
+		String sysText = Labels.getDisplayName(setup.getProductSystem());
+		createText(composite, Messages.ProductSystem, sysText);
+		String allocText = Labels.getEnumText(setup.getAllocationMethod());
+		createText(composite, Messages.AllocationMethod, allocText);
 		String targetText = system.getTargetAmount() + " "
 				+ system.getTargetUnit().getName() + " "
 				+ system.getReferenceExchange().getFlow().getName();
@@ -98,25 +86,16 @@ public class AnalyzeInfoPage extends FormPage {
 
 	private void tryExport() {
 		final File exportFile = FileChooser.forExport("*.xlsx",
-				"analysis_result.xlsx");
+				"quick_result.xlsx");
 		if (exportFile == null)
 			return;
-		final boolean[] success = { false };
-		App.run("Export...", new Runnable() {
+		final InventoryResultExport export = new InventoryResultExport(
+				editor.getSetup(), editor.getResult(), Cache.getEntityCache());
+		export.setExportFile(exportFile);
+		App.run(Messages.Export, export, new Runnable() {
 			@Override
 			public void run() {
-				try {
-					new AnalysisResultExport(setup.getProductSystem(),
-							exportFile, Cache.getEntityCache()).run(result);
-					success[0] = true;
-				} catch (Exception exc) {
-					log.error("Excel export failed", exc);
-				}
-			}
-		}, new Runnable() {
-			@Override
-			public void run() {
-				if (success[0]) {
+				if (export.doneWithSuccess()) {
 					InformationPopup.show("Export done");
 				}
 			}
@@ -127,25 +106,6 @@ public class AnalyzeInfoPage extends FormPage {
 		Text text = UI.formText(parent, toolkit, label);
 		text.setText(val);
 		text.setEditable(false);
-	}
-
-	private void createResultSections(Composite body) {
-		FlowContributionProvider flowProvider = new FlowContributionProvider(
-				result);
-		ChartSection<FlowDescriptor> flowSection = new ChartSection<>(
-				flowProvider);
-		flowSection.setSectionTitle(Messages.FlowContributions);
-		flowSection.setSelectionName(Messages.Flow);
-		flowSection.render(body, toolkit);
-		if (result.hasImpactResults()) {
-			ImpactContributionProvider impactProvider = new ImpactContributionProvider(
-					result);
-			ChartSection<ImpactCategoryDescriptor> impactSection = new ChartSection<>(
-					impactProvider);
-			impactSection.setSectionTitle(Messages.ImpactContributions);
-			impactSection.setSelectionName(Messages.ImpactCategory);
-			impactSection.render(body, toolkit);
-		}
 	}
 
 }

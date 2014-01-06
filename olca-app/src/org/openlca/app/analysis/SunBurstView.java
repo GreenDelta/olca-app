@@ -113,10 +113,9 @@ public class SunBurstView extends FormPage implements HtmlPage {
 			try {
 				browser.evaluate(command);
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.error("failed to set sunburst chart data", e);
 			}
 		}
-
 	}
 
 }
