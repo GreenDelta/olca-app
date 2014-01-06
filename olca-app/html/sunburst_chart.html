@@ -64,7 +64,7 @@
 						return d.depth ? null : "none";
 					}).attr("d", arc).style("stroke", "#fff").style("fill",
 					function(d) {
-						return color(d.process.id);
+						return color(d.processId);
 					}).style("fill-rule", "evenodd").on("mouseover", mouseover)
 					.on("mouseout", mouseout).on("mousedown", mousedown).each(
 							stash);
@@ -122,7 +122,7 @@
 			function applySelection(d, segment) {
 				var color = "#ff6801";
 				d3.select(segment).style("stroke", color).style("fill", color);
-				d3.select("#contributionText").text(d.process.name + ": " + d.amount);
+				d3.select("#contributionText").text(d.processName + ": " + d.amount);
 			}
 
 			function findSegment(index) {
@@ -131,7 +131,7 @@
 			}
 
 			function applyDefaultStyle(d, segment) {
-				var fill = color(d.process.id);
+				var fill = color(d.processId);
 				d3.select(segment).style("stroke", "#fff").style("fill", fill)
 						.style("fill-rule", "evenodd");
 			}

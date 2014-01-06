@@ -65,9 +65,7 @@ public class SunBurstView extends FormPage implements HtmlPage {
 
 	private FlowDescriptor firstFlow() {
 		long flowId = result.getFlowIndex().getFlowAt(0);
-		FlowDescriptor flow = Cache.getEntityCache().get(FlowDescriptor.class,
-				flowId);
-		return flow;
+		return Cache.getEntityCache().get(FlowDescriptor.class, flowId);
 	}
 
 	@Override
@@ -108,7 +106,8 @@ public class SunBurstView extends FormPage implements HtmlPage {
 
 		private void setResultData(ContributionTree tree) {
 			Gson gson = new Gson();
-			String json = gson.toJson(tree);
+			SunBurstTree model = SunBurstTree.create(tree, Cache.getEntityCache());
+			String json = gson.toJson(model);
 			String command = "setData(" + json + ")";
 			try {
 				browser.evaluate(command);
