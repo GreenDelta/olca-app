@@ -34,6 +34,7 @@ import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.NavigationContentProvider;
 import org.openlca.app.navigation.NavigationLabelProvider;
+import org.openlca.app.navigation.NavigationSorter;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.UI;
@@ -325,6 +326,7 @@ public class SelectObjectsExportPage extends WizardPage {
 				new GridData(SWT.FILL, SWT.FILL, true, true));
 		viewer.setContentProvider(new NavigationContentProvider());
 		viewer.setLabelProvider(new NavigationLabelProvider());
+		viewer.setSorter(new NavigationSorter());
 		viewer.addCheckStateListener(new SelectObjectCheckState(this, viewer));
 		if (type != null)
 			viewer.setInput(Navigator.findElement(type));
