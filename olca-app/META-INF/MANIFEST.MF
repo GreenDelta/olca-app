@@ -86,4 +86,5 @@ Bundle-ClassPath: .,
  libs/zt-zip-1.6.jar,
  libs/olca-eigen-0.1.0.jar,
  libs/ojalgo-34.8.jarlibs/olca-simapro-csv-1.0.0.jar,
- libs/olca-simapro-csv-1.0.0.jar
+ libs/olca-simapro-csv-1.0.0.jar,
+ libs/json-simple-1.1.jar

@@ -215,7 +215,11 @@
             icon="icons/categories.gif"
             id="views.navigation"
             name="%view.name">
-      </view>  
+      </view>
+      <category
+            id="mapping.cat"
+            name="MappingName">
+      </category>  
    </extension>
    
    <extension
@@ -229,6 +233,12 @@
             class="org.openlca.app.preferencepages.DatabaseParameterPage"
             id="preferencepages.parameters"
             name="%page.name.1">
+      </page>
+      <page
+            category="org.eclipse.ant.ui.AntCodeAssistPreferencePage"
+            class="org.openlca.app.preferencepages.MappingPage"
+            id="preferencepages.mapping"
+            name="Mapping">
       </page>
       <page
             class="org.openlca.app.logging.LoggerConfigPage"
