@@ -137,7 +137,8 @@ public class SystemExportDialog extends WizardDialog {
 						monitor.beginTask("Exporting...",
 								IProgressMonitor.UNKNOWN);
 						SystemExportConfig conf = new SystemExportConfig(
-								productSystem, database, App.getMatrixFactory());
+								productSystem, database, App.getSolver()
+										.getMatrixFactory());
 						conf.setAllocationMethod(allocation);
 						conf.setEntityCache(Cache.getEntityCache());
 						conf.setImpactMethod(impactMethod);

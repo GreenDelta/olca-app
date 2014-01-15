@@ -45,7 +45,7 @@ public class SimulationInit {
 			monitor.beginTask("Initialize simulation", IProgressMonitor.UNKNOWN);
 			try {
 				Simulator solver = new Simulator(setup, matrixCache,
-						App.getMatrixFactory());
+						App.getSolver());
 				// do a first calculation that initialises the result;
 				solver.nextRun();
 				String setupKey = Cache.getAppCache().put(setup);

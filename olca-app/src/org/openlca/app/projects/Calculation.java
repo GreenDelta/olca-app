@@ -28,7 +28,7 @@ class Calculation {
 		if (project == null)
 			return;
 		final ProjectCalculator calculator = new ProjectCalculator(
-				Cache.getMatrixCache(), App.getMatrixFactory());
+				Cache.getMatrixCache(), App.getSolver());
 		App.run("Calculate project", new Runnable() {
 			public void run() {
 				result = tryCalculate(calculator, project);

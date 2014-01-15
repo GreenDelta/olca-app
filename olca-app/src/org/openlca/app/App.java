@@ -9,16 +9,15 @@ import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.PartInitException;
 import org.openlca.app.editors.ModelEditorInput;
 import org.openlca.app.util.Editors;
-import org.openlca.core.math.IMatrixFactory;
-import org.openlca.core.math.JavaMatrixFactory;
+import org.openlca.core.math.IMatrixSolver;
+import org.openlca.core.math.JavaSolver;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.Descriptors;
-import org.openlca.eigen.DenseFloatMatrixFactory;
-import org.openlca.eigen.DenseMatrixFactory;
 import org.openlca.eigen.NativeLibrary;
-import org.openlca.eigen.SparseMatrixFactory;
+import org.openlca.eigen.solvers.BalancedSolver;
+import org.openlca.eigen.solvers.DenseSolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,26 +28,26 @@ public class App {
 	static Logger log = LoggerFactory.getLogger(App.class);
 
 	private static EventBus eventBus = new EventBus();
-	private static IMatrixFactory matrixFactory;
+	private static IMatrixSolver solver;
 
 	private App() {
 	}
 
-	public static IMatrixFactory getMatrixFactory() {
-		if (matrixFactory != null)
-			return matrixFactory;
+	public static IMatrixSolver getSolver() {
+		if (solver != null)
+			return solver;
 		if (!NativeLibrary.isLoaded()) {
 			log.warn("could not load a high-performance library for calculations");
-			matrixFactory = new JavaMatrixFactory();
-			return matrixFactory;
+			solver = new JavaSolver();
+			return solver;
 		}
 		if (FeatureFlag.USE_SPARSE_MATRICES.isEnabled())
-			matrixFactory = new SparseMatrixFactory();
-		else if (FeatureFlag.USE_SINGLE_PRECISION.isEnabled())
-			matrixFactory = new DenseFloatMatrixFactory();
+			solver = new BalancedSolver();
+		// else if (FeatureFlag.USE_SINGLE_PRECISION.isEnabled())
+		// solver = new DenseFloatMatrixFactory();
 		else
-			matrixFactory = new DenseMatrixFactory();
-		return matrixFactory;
+			solver = new DenseSolver();
+		return solver;
 	}
 
 	/**

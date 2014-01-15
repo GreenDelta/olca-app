@@ -83,7 +83,7 @@ class CalculationWizard extends Wizard {
 		private void analyse() {
 			log.trace("run analysis");
 			SystemCalculator calculator = new SystemCalculator(
-					Cache.getMatrixCache(), App.getMatrixFactory());
+					Cache.getMatrixCache(), App.getSolver());
 			AnalysisResult analysisResult = calculator.analyse(setup);
 			log.trace("calculation done, open editor");
 			String resultKey = Cache.getAppCache().put(analysisResult);
@@ -96,7 +96,7 @@ class CalculationWizard extends Wizard {
 		private void solve() {
 			log.trace("run quick calculation");
 			SystemCalculator calculator = new SystemCalculator(
-					Cache.getMatrixCache(), App.getMatrixFactory());
+					Cache.getMatrixCache(), App.getSolver());
 			InventoryResult inventoryResult = calculator.solve(setup);
 			log.trace("calculation done, open editor");
 			String resultKey = Cache.getAppCache().put(inventoryResult);

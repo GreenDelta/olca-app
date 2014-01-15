@@ -16,6 +16,7 @@ import org.openlca.app.util.Actions;
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.UI;
 import org.openlca.core.math.IMatrix;
+import org.openlca.core.math.IMatrixFactory;
 import org.openlca.core.math.MatrixRowSorter;
 import org.openlca.core.math.ProductSystems;
 import org.openlca.core.matrix.Inventory;
@@ -101,10 +102,11 @@ public class ProductSystemActions extends EditorActionBarContributor {
 					try {
 						Inventory inventory = ProductSystems.createInventory(
 								system, Cache.getMatrixCache());
+						IMatrixFactory<?> factory = App.getSolver()
+								.getMatrixFactory();
 						IMatrix matrix = inventory.getTechnologyMatrix()
-								.createRealMatrix(App.getMatrixFactory());
-						matrix = new MatrixRowSorter(matrix, App
-								.getMatrixFactory()).run();
+								.createRealMatrix(factory);
+						matrix = new MatrixRowSorter(matrix, factory).run();
 						new MatrixImageExport(matrix, file).run();
 					} catch (Exception e) {
 						log.error("Matrix image export failed", e);

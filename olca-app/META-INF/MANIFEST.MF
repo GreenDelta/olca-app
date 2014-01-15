@@ -84,5 +84,5 @@ Bundle-ClassPath: .,
  libs/guava-14.0.1.jar,
  libs/bonecp-0.8.0-rc3.jar,
  libs/zt-zip-1.6.jar,
- libs/olca-eigen-0.1.0.jar,
- libs/ojalgo-34.8.jar
+ libs/ojalgo-34.8.jar,
+ libs/olca-eigen-0.3.0.jar
