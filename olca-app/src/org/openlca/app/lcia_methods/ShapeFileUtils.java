@@ -128,6 +128,4 @@ class ShapeFileUtils {
 		for(File file : files)
 			file.delete();
 	}
-
-
 }

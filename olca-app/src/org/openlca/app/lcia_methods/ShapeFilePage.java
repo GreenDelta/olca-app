@@ -1,5 +1,9 @@
 package org.openlca.app.lcia_methods;
 
+import java.awt.Desktop;
+import java.io.File;
+import java.util.List;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -14,6 +18,14 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
+import org.geotools.data.shapefile.ShapefileDataStore;
+import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.map.FeatureLayer;
+import org.geotools.map.Layer;
+import org.geotools.map.MapContent;
+import org.geotools.styling.SLD;
+import org.geotools.styling.Style;
+import org.geotools.swing.JMapFrame;
 import org.openlca.app.Messages;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.resources.ImageType;
@@ -25,13 +37,9 @@ import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.Desktop;
-import java.io.File;
-import java.util.List;
-
 /**
- * Shows imported shape-files and parameters from these shape-files that
- * can be used in a localised LCIA method.
+ * Shows imported shape-files and parameters from these shape-files that can be
+ * used in a localised LCIA method.
  */
 class ShapeFilePage extends FormPage {
 
@@ -49,7 +57,7 @@ class ShapeFilePage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		form = UI.formHeader(managedForm, "Shape files");
+		form = UI.formHeader(managedForm, "Shape file parameters");
 		toolkit = managedForm.getToolkit();
 		body = UI.formBody(form, toolkit);
 		createFileSection();
@@ -103,8 +111,11 @@ class ShapeFilePage extends FormPage {
 			return;
 		}
 		if (ShapeFileUtils.alreadyExists(method, file)) {
-			org.openlca.app.util.Error.showBox("File already exists", "A shape "
-					+ "file with the given name already exists for this method.");
+			org.openlca.app.util.Error
+					.showBox(
+							"File already exists",
+							"A shape "
+									+ "file with the given name already exists for this method.");
 			return;
 		}
 		try {
@@ -139,18 +150,56 @@ class ShapeFilePage extends FormPage {
 
 		private void render() {
 			section = UI.section(body, toolkit, shapeFile);
+			Action show = new Action() {
+				{
+					setToolTipText("Show features");
+					setImageDescriptor(ImageType.LCIA_ICON.getDescriptor());
+				}
+
+				@Override
+				public void run() {
+					openFile();
+				}
+			};
 			Action delete = Actions.onRemove(new Runnable() {
 				@Override
 				public void run() {
 					delete();
 				}
 			});
-			Actions.bind(section, delete);
+			Actions.bind(section, show, delete);
+		}
+
+		private void openFile() {
+			File folder = ShapeFileUtils.getFolder(method);
+			if (folder == null)
+				return;
+			try {
+
+				File file = new File(folder, shapeFile + ".shp");
+				log.trace("open shape-file in map: {}", file);
+				ShapefileDataStore dataStore = new ShapefileDataStore(
+						file.toURL());
+				// URL fileUrl = file.toURI().toURL();
+				// Map<String, URL> map = new HashMap<>();
+				// map.put("url", fileUrl);
+				// DataStore dataStore = DataStoreFinder.getDataStore(map);
+				SimpleFeatureCollection source = dataStore.getFeatureSource(
+						dataStore.getTypeNames()[0]).getFeatures();
+				MapContent mapContent = new MapContent();
+				mapContent.setTitle("Features of " + shapeFile);
+				Style style = SLD.createSimpleStyle(source.getSchema());
+				Layer layer = new FeatureLayer(source, style);
+				mapContent.addLayer(layer);
+				JMapFrame.showMap(mapContent);
+			} catch (Exception e) {
+				log.error("Failed to open shape-file", e);
+			}
 		}
 
 		private void delete() {
-			boolean del = Question.ask("Delete " + shapeFile + "?", "Do you " +
-					"really want to delete " + shapeFile + "?");
+			boolean del = Question.ask("Delete " + shapeFile + "?", "Do you "
+					+ "really want to delete " + shapeFile + "?");
 			if (!del)
 				return;
 			ShapeFileUtils.deleteFile(method, shapeFile);
@@ -164,6 +213,5 @@ class ShapeFilePage extends FormPage {
 			form.reflow(true);
 		}
 	}
-
 
 }
