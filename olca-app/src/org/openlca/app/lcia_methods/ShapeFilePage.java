@@ -8,7 +8,10 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
+import org.eclipse.ui.forms.events.HyperlinkAdapter;
+import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
@@ -18,9 +21,11 @@ import org.openlca.app.util.Actions;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ImpactMethod;
+import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.Desktop;
 import java.io.File;
 import java.util.List;
 
@@ -47,7 +52,7 @@ class ShapeFilePage extends FormPage {
 		form = UI.formHeader(managedForm, "Shape files");
 		toolkit = managedForm.getToolkit();
 		body = UI.formBody(form, toolkit);
-		createImportButton(body);
+		createFileSection();
 		List<String> shapeFiles = ShapeFileUtils.getShapeFiles(method);
 		sections = new ShapeFileSection[shapeFiles.size()];
 		for (int i = 0; i < shapeFiles.size(); i++)
@@ -55,8 +60,10 @@ class ShapeFilePage extends FormPage {
 		form.reflow(true);
 	}
 
-	private void createImportButton(Composite body) {
-		Composite composite = UI.formComposite(body);
+	private void createFileSection() {
+		Composite composite = UI.formSection(body, toolkit, "Files");
+		createFolderLink(composite);
+		UI.formLabel(composite, toolkit, "");
 		Button importButton = toolkit.createButton(composite, Messages.Import,
 				SWT.NONE);
 		importButton.setImage(ImageType.IMPORT_ICON.get());
@@ -66,6 +73,25 @@ class ShapeFilePage extends FormPage {
 				File file = FileChooser.forImport("*.shp");
 				if (file != null)
 					checkRunImport(file);
+			}
+		});
+	}
+
+	private void createFolderLink(Composite composite) {
+		UI.formLabel(composite, toolkit, "Location");
+		Hyperlink hyperlink = new Hyperlink(composite, SWT.NONE);
+		toolkit.adapt(hyperlink);
+		final File folder = ShapeFileUtils.getFolder(method);
+		hyperlink.setText(Strings.cut(folder.getAbsolutePath(), 75));
+		hyperlink.setToolTipText(folder.getAbsolutePath());
+		hyperlink.addHyperlinkListener(new HyperlinkAdapter() {
+			@Override
+			public void linkActivated(HyperlinkEvent e) {
+				try {
+					Desktop.getDesktop().open(folder);
+				} catch (Exception ex) {
+					log.error("failed to open shape-file folder", ex);
+				}
 			}
 		});
 	}
