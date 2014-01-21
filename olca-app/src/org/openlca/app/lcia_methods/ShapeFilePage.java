@@ -1,13 +1,13 @@
 package org.openlca.app.lcia_methods;
 
-import java.awt.Desktop;
-import java.io.File;
-import java.util.List;
-
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
@@ -31,11 +31,20 @@ import org.openlca.app.components.FileChooser;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Question;
+import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
+import org.openlca.app.util.Viewers;
+import org.openlca.app.viewers.table.modify.ModifySupport;
+import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.awt.Desktop;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Shows imported shape-files and parameters from these shape-files that can be
@@ -141,6 +150,7 @@ class ShapeFilePage extends FormPage {
 		private int index;
 		private String shapeFile;
 		private Section section;
+		private ShapeFileParameterTable parameterTable;
 
 		ShapeFileSection(int index, String shapeFile) {
 			this.index = index;
@@ -149,7 +159,13 @@ class ShapeFilePage extends FormPage {
 		}
 
 		private void render() {
-			section = UI.section(body, toolkit, shapeFile);
+			section = UI.section(body, toolkit, "Parameters of " + shapeFile);
+			Composite composite = UI.sectionClient(section, toolkit);
+			parameterTable = new ShapeFileParameterTable(shapeFile, composite);
+			bindActions();
+		}
+
+		private void bindActions() {
 			Action show = new Action() {
 				{
 					setToolTipText("Show features");
@@ -161,13 +177,19 @@ class ShapeFilePage extends FormPage {
 					openFile();
 				}
 			};
+			Action save = Actions.onSave(new Runnable() {
+				@Override
+				public void run() {
+					parameterTable.onSave();
+				}
+			});
 			Action delete = Actions.onRemove(new Runnable() {
 				@Override
 				public void run() {
 					delete();
 				}
 			});
-			Actions.bind(section, show, delete);
+			Actions.bind(section, show, save, delete);
 		}
 
 		private void openFile() {
@@ -175,15 +197,10 @@ class ShapeFilePage extends FormPage {
 			if (folder == null)
 				return;
 			try {
-
 				File file = new File(folder, shapeFile + ".shp");
 				log.trace("open shape-file in map: {}", file);
 				ShapefileDataStore dataStore = new ShapefileDataStore(
-						file.toURL());
-				// URL fileUrl = file.toURI().toURL();
-				// Map<String, URL> map = new HashMap<>();
-				// map.put("url", fileUrl);
-				// DataStore dataStore = DataStoreFinder.getDataStore(map);
+						file.toURI().toURL());
 				SimpleFeatureCollection source = dataStore.getFeatureSource(
 						dataStore.getTypeNames()[0]).getFeatures();
 				MapContent mapContent = new MapContent();
@@ -214,4 +231,122 @@ class ShapeFilePage extends FormPage {
 		}
 	}
 
+	private class ShapeFileParameterTable {
+
+		private String[] columns = {Messages.Name, Messages.Description};
+		private TableViewer viewer;
+		private String shapeFile;
+		private List<ShapeFileParameter> params;
+
+		ShapeFileParameterTable(String shapeFile, Composite parent) {
+			this.shapeFile = shapeFile;
+			viewer = Tables.createViewer(parent, columns);
+			viewer.setLabelProvider(new ShapeFileParameterLabel());
+			Tables.bindColumnWidths(viewer, 0.2, 0.8);
+			bindActions();
+			ModifySupport<ShapeFileParameter> modifySupport =
+					new ModifySupport<>(viewer);
+			modifySupport.bind(Messages.Name, new NameModifier());
+			modifySupport.bind(Messages.Description, new DescriptionModifier());
+			try {
+				params = ShapeFileUtils.readParameters(method, shapeFile);
+				viewer.setInput(params);
+			} catch (Exception e) {
+				log.error("failed to read parameteres for shape file " +
+						shapeFile, e);
+			}
+		}
+
+		private void bindActions() {
+			Action add = Actions.onAdd(new Runnable() {
+				@Override
+				public void run() {
+					onAdd();
+				}
+			});
+			Action remove = Actions.onRemove(new Runnable() {
+				@Override
+				public void run() {
+					onRemove();
+				}
+			});
+			Actions.bind(viewer, add, remove);
+		}
+
+		private void onAdd() {
+			ShapeFileParameter p = new ShapeFileParameter();
+			p.setName("p_" + (params.size() + 1));
+			params = new ArrayList<>(params);
+			params.add(p);
+			viewer.setInput(params);
+		}
+
+		private void onRemove() {
+			ShapeFileParameter p = Viewers.getFirstSelected(viewer);
+			if (p == null)
+				return;
+			params = new ArrayList<>(params);
+			params.remove(p);
+			viewer.setInput(params);
+		}
+
+		private void onSave() {
+			try {
+				ShapeFileUtils.writeParameters(method, shapeFile, params);
+			} catch (Exception e) {
+				log.error("failed to save parameters for shape file "
+						+ shapeFile, e);
+			}
+		}
+
+
+		private class NameModifier extends TextCellModifier<ShapeFileParameter> {
+			@Override
+			protected String getText(ShapeFileParameter param) {
+				return param.getName();
+			}
+
+			@Override
+			protected void setText(ShapeFileParameter param, String text) {
+				param.setName(text);
+				viewer.refresh();
+			}
+		}
+
+		private class DescriptionModifier extends TextCellModifier<ShapeFileParameter> {
+			@Override
+			protected String getText(ShapeFileParameter param) {
+				return param.getDescription();
+			}
+
+			@Override
+			protected void setText(ShapeFileParameter param, String text) {
+				param.setDescription(text);
+				viewer.refresh();
+			}
+		}
+
+		private class ShapeFileParameterLabel extends LabelProvider implements
+				ITableLabelProvider {
+
+			@Override
+			public Image getColumnImage(Object o, int i) {
+				if (i == 0)
+					return ImageType.FORMULA_ICON.get();
+				else
+					return null;
+			}
+
+			@Override
+			public String getColumnText(Object o, int i) {
+				if (!(o instanceof ShapeFileParameter))
+					return null;
+				ShapeFileParameter p = (ShapeFileParameter) o;
+				if (i == 0)
+					return p.getName();
+				else
+					return p.getDescription();
+			}
+		}
+	}
 }

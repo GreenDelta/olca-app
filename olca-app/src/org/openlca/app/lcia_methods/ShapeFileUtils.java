@@ -1,15 +1,25 @@
 package org.openlca.app.lcia_methods;
 
 import com.google.common.io.Files;
+import com.google.gson.Gson;
 import org.apache.commons.io.FilenameUtils;
 import org.openlca.app.App;
 import org.openlca.app.db.Database;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.util.Strings;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 class ShapeFileUtils {
@@ -121,11 +131,52 @@ class ShapeFileUtils {
 	 */
 	static void deleteFile(ImpactMethod method, String shapeFileName) {
 		File folder = getFolder(method);
-		if(folder == null || !folder.exists())
+		if (folder == null || !folder.exists())
 			return;
 		File shapeFile = new File(folder, shapeFileName + ".shp");
 		List<File> files = getAllFiles(shapeFile);
-		for(File file : files)
+		for (File file : files)
 			file.delete();
 	}
+
+	static List<ShapeFileParameter> readParameters(ImpactMethod method, String
+			shapeFileName) throws IOException {
+		File folder = getFolder(method);
+		File paramFile = new File(folder, shapeFileName + ".gisolca");
+		if (!paramFile.exists())
+			return Collections.emptyList();
+		try (FileInputStream is = new FileInputStream(paramFile);
+		     InputStreamReader reader = new InputStreamReader(is, "utf-8");
+		     BufferedReader buffer = new BufferedReader(reader);
+		) {
+			Gson gson = new Gson();
+			ShapeFileParameter[] params = gson.fromJson(buffer,
+					ShapeFileParameter[].class);
+			List<ShapeFileParameter> list = Arrays.asList(params);
+			Collections.sort(list, new Comparator<ShapeFileParameter>() {
+				@Override
+				public int compare(ShapeFileParameter o1, ShapeFileParameter o2) {
+					return Strings.compare(o1.getName(), o2.getName());
+				}
+			});
+			return list;
+		}
+	}
+
+	static void writeParameters(ImpactMethod method, String shapeFileName,
+	                            List<ShapeFileParameter> parameters)
+			throws IOException {
+		File folder = getFolder(method);
+		if (!folder.exists())
+			folder.mkdirs();
+		File paramFile = new File(folder, shapeFileName + ".gisolca");
+		try (FileOutputStream os = new FileOutputStream(paramFile);
+		     OutputStreamWriter writer = new OutputStreamWriter(os, "utf-8");
+		     BufferedWriter buffer = new BufferedWriter(writer);
+		) {
+			Gson gson = new Gson();
+			gson.toJson(parameters, buffer);
+		}
+	}
+
 }
