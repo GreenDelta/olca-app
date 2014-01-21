@@ -3,10 +3,23 @@ package org.openlca.app.lcia_methods;
 import com.google.common.io.Files;
 import com.google.gson.Gson;
 import org.apache.commons.io.FilenameUtils;
+import org.geotools.data.DataStore;
+import org.geotools.data.shapefile.ShapefileDataStore;
+import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureIterator;
+import org.geotools.map.FeatureLayer;
+import org.geotools.map.Layer;
+import org.geotools.map.MapContent;
+import org.geotools.styling.SLD;
+import org.geotools.styling.Style;
+import org.geotools.swing.JMapFrame;
+import org.opengis.feature.simple.SimpleFeature;
 import org.openlca.app.App;
 import org.openlca.app.db.Database;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.util.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -176,6 +189,91 @@ class ShapeFileUtils {
 		) {
 			Gson gson = new Gson();
 			gson.toJson(parameters, buffer);
+		}
+	}
+
+	static void openFileInMap(ImpactMethod method, String shapeFileName) {
+		DataStore dataStore = openDataStore(method, shapeFileName);
+		if (dataStore == null)
+			return;
+		Logger log = LoggerFactory.getLogger(ShapeFileUtils.class);
+		try {
+			SimpleFeatureCollection source = dataStore.getFeatureSource(
+					dataStore.getTypeNames()[0]).getFeatures();
+			MapContent mapContent = new MapContent();
+			mapContent.setTitle("Features of " + shapeFileName);
+			Style style = SLD.createSimpleStyle(source.getSchema());
+			Layer layer = new FeatureLayer(source, style);
+			mapContent.addLayer(layer);
+			JMapFrame.showMap(mapContent);
+		} catch (Exception e) {
+			log.error("Failed to open shape-file", e);
+		}
+	}
+
+	static void openFileInMap(ImpactMethod method, String shapeFileName,
+	                     String parameter) {
+		DataStore dataStore = openDataStore(method, shapeFileName);
+		if (dataStore == null)
+			return;
+		double[] range = getRange(dataStore, parameter);
+		Logger log = LoggerFactory.getLogger(ShapeFileUtils.class);
+		try {
+			SimpleFeatureCollection source = dataStore.getFeatureSource(
+					dataStore.getTypeNames()[0]).getFeatures();
+			MapContent mapContent = new MapContent();
+			mapContent.setTitle("Features of " + shapeFileName);
+			Style style = ShapeFileStyle.create(dataStore, parameter, range[0],
+					range[1]);
+			Layer layer = new FeatureLayer(source, style);
+			mapContent.addLayer(layer);
+			JMapFrame.showMap(mapContent);
+		} catch (Exception e) {
+			log.error("Failed to open shape-file", e);
+		}
+	}
+
+	private static DataStore openDataStore(ImpactMethod method,
+	                                       String shapeFileName) {
+		File folder = ShapeFileUtils.getFolder(method);
+		if (folder == null)
+			return null;
+		Logger log = LoggerFactory.getLogger(ShapeFileUtils.class);
+		try {
+			File file = new File(folder, shapeFileName + ".shp");
+			log.trace("open shape-file in map: {}", file);
+			ShapefileDataStore dataStore = new ShapefileDataStore(
+					file.toURI().toURL());
+			return dataStore;
+		} catch (Exception e) {
+			log.error("Failed to open shape-file", e);
+			return null;
+		}
+	}
+
+	private static double[] getRange(DataStore dataStore, String parameter) {
+		Logger log = LoggerFactory.getLogger(ShapeFileUtils.class);
+		try {
+
+			String typeName = dataStore.getTypeNames()[0];
+			SimpleFeatureCollection source = dataStore.getFeatureSource(
+					typeName).getFeatures();
+			SimpleFeatureIterator it = source.features();
+			double min = 0;
+			double max = 0;
+			while (it.hasNext()) {
+				SimpleFeature feature = it.next();
+				Double val = (Double) feature.getAttribute(parameter);
+				if (val == null)
+					continue;
+				double v = val.doubleValue();
+				max = Math.max(max, v);
+				min = Math.min(min, v);
+			}
+			return new double[]{min, max};
+		} catch (Exception e) {
+			log.error("failed to get parameter range from shape file", e);
+			return new double[]{0d, 0d};
 		}
 	}
 

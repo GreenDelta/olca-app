@@ -18,14 +18,6 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.geotools.data.shapefile.ShapefileDataStore;
-import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.map.FeatureLayer;
-import org.geotools.map.Layer;
-import org.geotools.map.MapContent;
-import org.geotools.styling.SLD;
-import org.geotools.styling.Style;
-import org.geotools.swing.JMapFrame;
 import org.openlca.app.Messages;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.resources.ImageType;
@@ -174,7 +166,7 @@ class ShapeFilePage extends FormPage {
 
 				@Override
 				public void run() {
-					openFile();
+					ShapeFileUtils.openFileInMap(method, shapeFile);
 				}
 			};
 			Action save = Actions.onSave(new Runnable() {
@@ -190,28 +182,6 @@ class ShapeFilePage extends FormPage {
 				}
 			});
 			Actions.bind(section, show, save, delete);
-		}
-
-		private void openFile() {
-			File folder = ShapeFileUtils.getFolder(method);
-			if (folder == null)
-				return;
-			try {
-				File file = new File(folder, shapeFile + ".shp");
-				log.trace("open shape-file in map: {}", file);
-				ShapefileDataStore dataStore = new ShapefileDataStore(
-						file.toURI().toURL());
-				SimpleFeatureCollection source = dataStore.getFeatureSource(
-						dataStore.getTypeNames()[0]).getFeatures();
-				MapContent mapContent = new MapContent();
-				mapContent.setTitle("Features of " + shapeFile);
-				Style style = SLD.createSimpleStyle(source.getSchema());
-				Layer layer = new FeatureLayer(source, style);
-				mapContent.addLayer(layer);
-				JMapFrame.showMap(mapContent);
-			} catch (Exception e) {
-				log.error("Failed to open shape-file", e);
-			}
 		}
 
 		private void delete() {
@@ -270,7 +240,7 @@ class ShapeFilePage extends FormPage {
 					onRemove();
 				}
 			});
-			Actions.bind(viewer, add, remove);
+			Actions.bind(viewer, new ShowAction(), add, remove);
 		}
 
 		private void onAdd() {
@@ -326,6 +296,25 @@ class ShapeFilePage extends FormPage {
 			}
 		}
 
+		private class ShowAction extends Action {
+
+			public ShowAction() {
+				setToolTipText("Show in map");
+				setText("Show in map");
+				setImageDescriptor(ImageType.LCIA_ICON.getDescriptor());
+			}
+
+			@Override
+			public void run() {
+				ShapeFileParameter param = Viewers.getFirstSelected(viewer);
+				if (param == null)
+					ShapeFileUtils.openFileInMap(method, shapeFile);
+				else
+					ShapeFileUtils.openFileInMap(method, shapeFile,
+							param.getName());
+			}
+		}
+
 		private class ShapeFileParameterLabel extends LabelProvider implements
 				ITableLabelProvider {
 
@@ -348,5 +337,7 @@ class ShapeFilePage extends FormPage {
 					return p.getDescription();
 			}
 		}
+
+
 	}
 }
