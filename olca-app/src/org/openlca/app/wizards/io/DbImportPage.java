@@ -29,8 +29,6 @@ class DbImportPage extends WizardPage {
 
 	private final ImportConfig config;
 
-	private Button existingCheck;
-	private Button fileCheck;
 	private Button browseButton;
 	private ComboViewer existingViewer;
 	private Text fileText;
@@ -59,7 +57,7 @@ class DbImportPage extends WizardPage {
 	}
 
 	private void createExistingSection(Composite body) {
-		existingCheck = new Button(body, SWT.RADIO);
+		Button existingCheck = new Button(body, SWT.RADIO);
 		existingCheck.setText("Existing database");
 		existingCheck.setSelection(true);
 		existingCheck.addSelectionListener(new SelectionAdapter() {
@@ -78,7 +76,7 @@ class DbImportPage extends WizardPage {
 		existingViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			@Override
 			public void selectionChanged(SelectionChangedEvent e) {
-				    selectDatabase();
+				selectDatabase();
 			}
 		});
 		fillExistingViewer();
@@ -105,7 +103,7 @@ class DbImportPage extends WizardPage {
 	}
 
 	private void createFileSection(Composite body) {
-		fileCheck = new Button(body, SWT.RADIO);
+		Button fileCheck = new Button(body, SWT.RADIO);
 		fileCheck.setText("From exported zolca-File");
 		fileCheck.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -155,8 +153,11 @@ class DbImportPage extends WizardPage {
 
 	static class ImportConfig {
 
-		private final int EXISTING_MODE = 0;
-		private final int FILE_MODE = 1;
+		final int EXISTING_MODE = 0;
+		final int FILE_MODE = 1;
+
+		private File file;
+		private IDatabaseConfiguration databaseConfiguration;
 
 		private int mode;
 
@@ -167,9 +168,6 @@ class DbImportPage extends WizardPage {
 		public void setMode(int mode) {
 			this.mode = mode;
 		}
-
-		private File file;
-		private IDatabaseConfiguration databaseConfiguration;
 
 		public File getFile() {
 			return file;
