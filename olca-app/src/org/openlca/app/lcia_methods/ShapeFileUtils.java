@@ -263,9 +263,10 @@ class ShapeFileUtils {
 			double max = 0;
 			while (it.hasNext()) {
 				SimpleFeature feature = it.next();
-				Double val = (Double) feature.getAttribute(parameter);
-				if (val == null)
+				Object attVal = feature.getAttribute(parameter);
+				if(!(attVal instanceof Number))
 					continue;
+				Number val = (Number) attVal;
 				double v = val.doubleValue();
 				max = Math.max(max, v);
 				min = Math.min(min, v);
