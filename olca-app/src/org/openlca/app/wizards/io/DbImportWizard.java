@@ -1,7 +1,6 @@
 package org.openlca.app.wizards.io;
 
-import java.lang.reflect.InvocationTargetException;
-
+import org.apache.commons.io.FileUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -14,9 +13,15 @@ import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.resources.ImageType;
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.database.derby.DerbyDatabase;
 import org.openlca.io.olca.DatabaseImport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.zeroturnaround.zip.ZipUtil;
+
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.util.UUID;
 
 /**
  * Wizards for the import of data from an openLCA database to another openLCA
@@ -29,7 +34,7 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 
 	@Override
 	public void init(IWorkbench iWorkbench,
-			IStructuredSelection iStructuredSelection) {
+	                 IStructuredSelection iStructuredSelection) {
 		setWindowTitle(Messages.DatabaseImport);
 		setDefaultPageImageDescriptor(ImageType.IMPORT_ZIP_WIZARD
 				.getDescriptor());
@@ -63,6 +68,7 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 	private class ImportDispatch implements IRunnableWithProgress {
 
 		private DbImportPage.ImportConfig importConfig;
+		private File tempDbFolder;
 
 		ImportDispatch(DbImportPage.ImportConfig importConfig) {
 			this.importConfig = importConfig;
@@ -78,6 +84,7 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 				monitor.subTask("Import data...");
 				DatabaseImport dbImport = new DatabaseImport(source,
 						Database.get());
+				log.trace("run data import");
 				dbImport.run();
 				monitor.subTask("Close source database...");
 				closeDatabase(source);
@@ -88,16 +95,25 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 		}
 
 		private IDatabase connectToSource() throws Exception {
+			log.trace("connect to source database");
 			if (importConfig.getMode() == importConfig.EXISTING_MODE)
 				return importConfig.getDatabaseConfiguration().createInstance();
-			// TODO: extract zolca-file in temporary folder and create
-			// connection
-			return null;
+			File zipFile = importConfig.getFile();
+			File tempDir = new File(System.getProperty("java.io.tmpdir"));
+			tempDbFolder = new File(tempDir, UUID.randomUUID().toString());
+			tempDbFolder.mkdirs();
+			log.trace("unpack zolca file to {}", tempDbFolder);
+			ZipUtil.unpack(zipFile, tempDbFolder);
+			return new DerbyDatabase(tempDbFolder);
 		}
 
 		private void closeDatabase(IDatabase source) throws Exception {
+			log.trace("close source database");
 			source.close();
-			// TODO: delete files for file-based import
+			if (tempDbFolder != null) {
+				log.trace("delete temporary db-folder {}", tempDbFolder);
+				FileUtils.deleteDirectory(tempDbFolder);
+			}
 		}
 	}
 }
