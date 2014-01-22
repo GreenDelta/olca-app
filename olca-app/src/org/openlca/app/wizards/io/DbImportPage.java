@@ -1,29 +1,200 @@
 package org.openlca.app.wizards.io;
 
+import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Text;
 import org.openlca.app.Messages;
+import org.openlca.app.components.FileChooser;
+import org.openlca.app.db.Database;
+import org.openlca.app.db.DatabaseList;
+import org.openlca.app.db.IDatabaseConfiguration;
+import org.openlca.app.util.Colors;
 import org.openlca.app.util.UI;
+import org.openlca.app.util.Viewers;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 class DbImportPage extends WizardPage {
 
+	private final ImportConfig config;
+
+	private Button existingCheck;
+	private Button fileCheck;
+	private Button browseButton;
+	private ComboViewer existingViewer;
+	private Text fileText;
+
 	public DbImportPage() {
 		super("DbImportPage");
+		config = new ImportConfig();
+		config.setMode(config.EXISTING_MODE);
 		setTitle(Messages.DatabaseImport);
 		setDescription(Messages.DatabaseImportDescription);
+		setPageComplete(false);
+	}
+
+	public ImportConfig getConfig() {
+		return config;
 	}
 
 	@Override
 	public void createControl(Composite parent) {
 		Composite body = new Composite(parent, SWT.NONE);
 		UI.gridLayout(body, 1);
-		Button button = new Button(body, SWT.RADIO);
-		button.setText("Existing database");
-		button.setSelection(true);
-
-
+		createExistingSection(body);
+		createFileSection(body);
+		setSelection(config.EXISTING_MODE);
 		setControl(body);
+	}
+
+	private void createExistingSection(Composite body) {
+		existingCheck = new Button(body, SWT.RADIO);
+		existingCheck.setText("Existing database");
+		existingCheck.setSelection(true);
+		existingCheck.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				setSelection(config.EXISTING_MODE);
+			}
+		});
+		Composite composite = new Composite(body, SWT.NONE);
+		UI.gridLayout(composite, 1);
+		UI.gridData(composite, true, false);
+		existingViewer = new ComboViewer(composite);
+		UI.gridData(existingViewer.getControl(), true, false);
+		existingViewer.setLabelProvider(new DbLabel());
+		existingViewer.setContentProvider(ArrayContentProvider.getInstance());
+		existingViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			@Override
+			public void selectionChanged(SelectionChangedEvent e) {
+				    selectDatabase();
+			}
+		});
+		fillExistingViewer();
+	}
+
+	private void fillExistingViewer() {
+		DatabaseList dbList = Database.getConfigurations();
+		List<IDatabaseConfiguration> configs = new ArrayList<>();
+		for (IDatabaseConfiguration config : dbList.getLocalDatabases()) {
+			if (!Database.isActive(config))
+				configs.add(config);
+		}
+		for (IDatabaseConfiguration config : dbList.getRemoteDatabases()) {
+			if (!Database.isActive(config))
+				configs.add(config);
+		}
+		existingViewer.setInput(configs);
+	}
+
+	private void selectDatabase() {
+		IDatabaseConfiguration db = Viewers.getFirstSelected(existingViewer);
+		config.setDatabaseConfiguration(db);
+		setPageComplete(db != null);
+	}
+
+	private void createFileSection(Composite body) {
+		fileCheck = new Button(body, SWT.RADIO);
+		fileCheck.setText("From exported zolca-File");
+		fileCheck.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				setSelection(config.FILE_MODE);
+			}
+		});
+		Composite composite = UI.formComposite(body);
+		UI.gridData(composite, true, false);
+		fileText = new Text(composite, SWT.READ_ONLY | SWT.BORDER);
+		fileText.setBackground(Colors.getWhite());
+		UI.gridData(fileText, true, false);
+		browseButton = new Button(composite, SWT.NONE);
+		browseButton.setText("Browse");
+		browseButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				selectFile();
+			}
+		});
+	}
+
+	private void selectFile() {
+		File zolcaFile = FileChooser.forImport("*.zolca");
+		if (zolcaFile == null)
+			return;
+		fileText.setText(zolcaFile.getAbsolutePath());
+		config.setFile(zolcaFile);
+		setPageComplete(true);
+	}
+
+	private void setSelection(int mode) {
+		config.setMode(mode);
+		if (mode == config.EXISTING_MODE) {
+			existingViewer.getCombo().setEnabled(true);
+			fileText.setEnabled(false);
+			browseButton.setEnabled(false);
+			setPageComplete(config.databaseConfiguration != null);
+		} else {
+			existingViewer.getCombo().setEnabled(false);
+			fileText.setEnabled(true);
+			browseButton.setEnabled(true);
+			setPageComplete(config.file != null);
+		}
+	}
+
+
+	static class ImportConfig {
+
+		private final int EXISTING_MODE = 0;
+		private final int FILE_MODE = 1;
+
+		private int mode;
+
+		public int getMode() {
+			return mode;
+		}
+
+		public void setMode(int mode) {
+			this.mode = mode;
+		}
+
+		private File file;
+		private IDatabaseConfiguration databaseConfiguration;
+
+		public File getFile() {
+			return file;
+		}
+
+		public void setFile(File file) {
+			this.file = file;
+		}
+
+		public IDatabaseConfiguration getDatabaseConfiguration() {
+			return databaseConfiguration;
+		}
+
+		public void setDatabaseConfiguration(IDatabaseConfiguration databaseConfiguration) {
+			this.databaseConfiguration = databaseConfiguration;
+		}
+	}
+
+	private class DbLabel extends LabelProvider {
+		@Override
+		public String getText(Object element) {
+			if (!(element instanceof IDatabaseConfiguration))
+				return null;
+			IDatabaseConfiguration config = (IDatabaseConfiguration) element;
+			return config.getName();
+		}
 	}
 }
