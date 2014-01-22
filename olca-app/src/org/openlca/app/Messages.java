@@ -93,6 +93,8 @@ public class Messages extends NLS {
 	public static String CutOff;
 	public static String Daily;
 	public static String Database;
+	public static String DatabaseImport;
+	public static String DatabaseImportDescription;
 	public static String DatabaseParametersPreferencePage_ErrorsOccured;
 	public static String DatabaseParametersPreferencePage_ErrorText;
 	public static String DatabaseParametersPreferencePage_Restore;

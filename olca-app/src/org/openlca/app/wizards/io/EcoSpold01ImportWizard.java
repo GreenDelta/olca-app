@@ -1,9 +1,5 @@
 package org.openlca.app.wizards.io;
 
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.util.List;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -24,9 +20,12 @@ import org.openlca.io.ecospold1.importer.EcoSpold01Import;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
+
 /**
  * Import wizard for EcoSpold 01 data sets
- * 
  */
 public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 
@@ -42,7 +41,7 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 
 	@Override
 	public void addPages() {
-		importPage = new FileImportPage(new String[] { "zip", "xml" }, true);
+		importPage = new FileImportPage(new String[]{"zip", "xml"}, true);
 		addPage(importPage);
 
 		mappingPage = new UnitMappingPage() {
@@ -68,22 +67,12 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 		addPage(mappingPage);
 	}
 
-	@Override
-	public void dispose() {
-		super.dispose();
-		if (importPage != null)
-			importPage.dispose();
-		if (mappingPage != null)
-			mappingPage.dispose();
-	}
-
 	public File[] getFiles() {
 		return importPage.getFiles();
 	}
 
 	@Override
-	public void init(final IWorkbench workbench,
-			final IStructuredSelection selection) {
+	public void init(IWorkbench workbench, IStructuredSelection selection) {
 		setWindowTitle(Messages.EcoSpoldImportWizard_WindowTitle);
 		setDefaultPageImageDescriptor(ImageType.IMPORT_ZIP_WIZARD
 				.getDescriptor());
@@ -115,7 +104,7 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 	}
 
 	private void parse(IProgressMonitor monitor, File[] files,
-			UnitMapping unitMapping) {
+	                   UnitMapping unitMapping) {
 		monitor.beginTask("Import EcoSpold 01 data sets",
 				IProgressMonitor.UNKNOWN);
 		EcoSpold01Import importer = new EcoSpold01Import(Database.get(),

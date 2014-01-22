@@ -460,6 +460,10 @@
             id="import.category.file"
             name="File Import">
       </category>
+       <category
+               id="import.category.ilcdnetwork"
+               name="%ilcd.net.import.category.name">
+       </category>
       <wizard
             category="import.category.file"
             class="org.openlca.app.wizards.io.EcoSpold01ImportWizard"
@@ -490,11 +494,7 @@
             %ilcd.import.description
          </description>
       </wizard>
-      <category
-            id="import.category.ilcdnetwork"
-            name="%ilcd.net.import.category.name">
-      </category>
-      <wizard
+       <wizard
             category="import.category.ilcdnetwork"
             class="org.openlca.app.ilcd_network.ImportWizard"
             icon="icons/network16.png"
@@ -503,6 +503,12 @@
          <description>
             %ilcd.net.import.wizard.description
          </description>
+      </wizard>
+      <wizard
+           class="org.openlca.app.wizards.io.DbImportWizard"
+           icon="icons/logo_16_32bit.png"
+           id="wizard.import.db"
+           name="Database Import">
       </wizard>
    </extension>
    
