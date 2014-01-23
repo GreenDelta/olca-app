@@ -68,12 +68,14 @@ class AllocationPage extends FormPage {
 
 	@Subscribe
 	public void handleExchangesChange(Event event) {
-		if (!event.match(editor.EXCHANGES_CHANGED))
+		if (!event.match(editor.EXCHANGES_CHANGED) || process == null)
 			return;
 		log.trace("update allocation page");
 		AllocationSync.updateFactors(process);
-		factorViewer.setInput(Processes.getOutputProducts(process));
-		causalFactorTable.refresh();
+		if (factorViewer != null)
+			factorViewer.setInput(Processes.getOutputProducts(process));
+		if (causalFactorTable != null)
+			causalFactorTable.refresh();
 	}
 
 	@Override
