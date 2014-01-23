@@ -25,6 +25,7 @@ import org.openlca.app.Messages;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.DatabaseContent;
+import org.openlca.core.database.DbUtils;
 
 class DatabaseWizardPage extends WizardPage {
 
@@ -198,9 +199,7 @@ class DatabaseWizardPage extends WizardPage {
 	private boolean validateName(String name) {
 		if (name == null || name.length() < 4)
 			error(Messages.NewDatabase_NameToShort);
-		else if (name.equals("test") || name.equals("mysql"))
-			error(name + " " + Messages.NewDatabase_ReservedName);
-		else if (!isIdentifier(name))
+		else if (!DbUtils.isValidName(name))
 			error(Messages.NewDatabase_InvalidName);
 		else if (exists(name))
 			error(Messages.NewDatabase_AlreadyExists);
@@ -212,15 +211,6 @@ class DatabaseWizardPage extends WizardPage {
 	private void error(String string) {
 		setMessage(string, DialogPage.ERROR);
 		setPageComplete(false);
-	}
-
-	private boolean isIdentifier(String s) {
-		if (s.length() == 0 || !Character.isJavaIdentifierStart(s.charAt(0)))
-			return false;
-		for (int i = 1; i < s.length(); i++)
-			if (!Character.isJavaIdentifierPart(s.charAt(i)))
-				return false;
-		return true;
 	}
 
 	private boolean exists(String name) {

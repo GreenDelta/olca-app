@@ -299,8 +299,8 @@ public class Messages extends NLS {
 	public static String NavigationView_NewCategoryDialogTitle;
 	public static String NavigationView_NoButton;
 	public static String NavigationView_RemoveCategoryText;
-	public static String NavigationView_RenameCategoryDialogText;
-	public static String NavigationView_RenameCategoryText;
+	public static String PleaseEnterNewName;
+	public static String Rename;
 	public static String NavigationView_YesAllButton;
 	public static String NavigationView_YesButton;
 	public static String Never;
