@@ -33,12 +33,12 @@ import org.openlca.app.db.Cache;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.matrix.ProcessLinkSearchMap;
-import org.openlca.core.model.NormalizationWeightingSet;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
+import org.openlca.core.model.descriptors.NwSetDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.AnalysisResult;
 
@@ -54,7 +54,7 @@ public class SankeyDiagram extends GraphicalEditor implements
 	private Map<Long, ProcessNode> createdProcesses = new HashMap<>();
 	private ProductSystemNode systemNode;
 	private ImpactMethodDescriptor method;
-	private NormalizationWeightingSet nwSet;
+	private NwSetDescriptor nwSet;
 	private ProductSystem productSystem;
 	private AnalysisResult result;
 
@@ -269,7 +269,7 @@ public class SankeyDiagram extends GraphicalEditor implements
 		return systemNode;
 	}
 
-	public NormalizationWeightingSet getNwSet() {
+	public NwSetDescriptor getNwSet() {
 		return nwSet;
 	}
 

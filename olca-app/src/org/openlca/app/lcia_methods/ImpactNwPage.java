@@ -13,17 +13,15 @@ import org.openlca.app.Messages;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.ISelectionChangedListener;
-import org.openlca.app.viewers.table.NormalizationWeightingFactorViewer;
-import org.openlca.app.viewers.table.NormalizationWeightingSetViewer;
 import org.openlca.core.model.ImpactMethod;
-import org.openlca.core.model.NormalizationWeightingSet;
+import org.openlca.core.model.NwSet;
 
-class ImpactNormalizationWeightingPage extends ModelPage<ImpactMethod> {
+class ImpactNwPage extends ModelPage<ImpactMethod> {
 
 	private FormToolkit toolkit;
-	private NormalizationWeightingFactorViewer factorViewer;
+	private NwFactorViewer factorViewer;
 
-	ImpactNormalizationWeightingPage(ImpactMethodEditor editor) {
+	ImpactNwPage(ImpactMethodEditor editor) {
 		super(editor, "ImpactNormalizationWeightingPage",
 				Messages.NormalizationWeightingPageLabel);
 	}
@@ -48,14 +46,14 @@ class ImpactNormalizationWeightingPage extends ModelPage<ImpactMethod> {
 		sashForm.setLayoutData(sashGD);
 		sashForm.setLayout(new GridLayout(2, false));
 
-		NormalizationWeightingSetViewer setViewer = new NormalizationWeightingSetViewer(
+		NwSetViewer setViewer = new NwSetViewer(
 				sashForm);
 		setViewer.bindTo(section);
 		setViewer
 				.addSelectionChangedListener(new SetSelectionChangedListener());
 		getBinding().on(getModel(), "normalizationWeightingSets", setViewer);
 
-		factorViewer = new NormalizationWeightingFactorViewer(sashForm,
+		factorViewer = new NwFactorViewer(sashForm,
 				getModel());
 
 		sashForm.setWeights(new int[] { 25, 75 });
@@ -64,13 +62,13 @@ class ImpactNormalizationWeightingPage extends ModelPage<ImpactMethod> {
 	}
 
 	private class SetSelectionChangedListener implements
-			ISelectionChangedListener<NormalizationWeightingSet> {
+			ISelectionChangedListener<NwSet> {
 
 		@Override
-		public void selectionChanged(NormalizationWeightingSet selection) {
+		public void selectionChanged(NwSet selection) {
 			getBinding().release(factorViewer);
 			if (selection == null)
-				factorViewer.setInput((NormalizationWeightingSet) null);
+				factorViewer.setInput((NwSet) null);
 			else {
 				getBinding().on(selection, "normalizationWeightingFactors",
 						factorViewer);

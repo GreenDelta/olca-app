@@ -1,6 +1,7 @@
-package org.openlca.app.viewers.table;
+package org.openlca.app.lcia_methods;
 
 import java.util.Objects;
+import java.util.UUID;
 
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -8,18 +9,17 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.Messages;
+import org.openlca.app.viewers.table.AbstractTableViewer;
 import org.openlca.app.viewers.table.modify.IModelChangedListener.ModelChangeType;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.model.ImpactMethod;
-import org.openlca.core.model.NormalizationWeightingSet;
+import org.openlca.core.model.NwSet;
 
-public class NormalizationWeightingSetViewer extends
-		AbstractTableViewer<NormalizationWeightingSet> {
+public class NwSetViewer extends AbstractTableViewer<NwSet> {
 
-	public NormalizationWeightingSetViewer(Composite parent) {
+	public NwSetViewer(Composite parent) {
 		super(parent);
-		getCellModifySupport().bind(LABEL.REFERENCE_SYSTEM,
-				new ReferenceSystemModifier());
+		getCellModifySupport().bind(LABEL.REFERENCE_SYSTEM, new NameModifier());
 		getCellModifySupport().bind(LABEL.UNIT, new UnitModifier());
 	}
 
@@ -36,11 +36,10 @@ public class NormalizationWeightingSetViewer extends
 	public void setInput(ImpactMethod impactMethod) {
 		this.method = impactMethod;
 		if (method == null)
-			setInput(new NormalizationWeightingSet[0]);
+			setInput(new NwSet[0]);
 		else
-			setInput(impactMethod.getNormalizationWeightingSets().toArray(
-					new NormalizationWeightingSet[impactMethod
-							.getNormalizationWeightingSets().size()]));
+			setInput(impactMethod.getNwSets().toArray(
+					new NwSet[impactMethod.getNwSets().size()]));
 	}
 
 	@Override
@@ -55,15 +54,16 @@ public class NormalizationWeightingSetViewer extends
 
 	@OnAdd
 	protected void onCreate() {
-		NormalizationWeightingSet set = new NormalizationWeightingSet();
-		set.setReferenceSystem("newSet");
+		NwSet set = new NwSet();
+		set.setName("newSet");
+		set.setRefId(UUID.randomUUID().toString());
 		fireModelChanged(ModelChangeType.CREATE, set);
 		setInput(method);
 	}
 
 	@OnRemove
 	protected void onRemove() {
-		for (NormalizationWeightingSet set : getAllSelected())
+		for (NwSet set : getAllSelected())
 			fireModelChanged(ModelChangeType.REMOVE, set);
 		setInput(method);
 	}
@@ -78,14 +78,14 @@ public class NormalizationWeightingSetViewer extends
 
 		@Override
 		public String getColumnText(Object element, int columnIndex) {
-			if (!(element instanceof NormalizationWeightingSet))
+			if (!(element instanceof NwSet))
 				return null;
-			NormalizationWeightingSet set = (NormalizationWeightingSet) element;
+			NwSet set = (NwSet) element;
 			switch (columnIndex) {
 			case 0:
-				return set.getReferenceSystem();
+				return set.getName();
 			case 1:
-				return set.getUnit();
+				return set.getWeightedScoreUnit();
 			default:
 				return null;
 			}
@@ -93,35 +93,33 @@ public class NormalizationWeightingSetViewer extends
 
 	}
 
-	private class ReferenceSystemModifier extends
-			TextCellModifier<NormalizationWeightingSet> {
+	private class NameModifier extends TextCellModifier<NwSet> {
 
 		@Override
-		protected String getText(NormalizationWeightingSet element) {
-			return element.getReferenceSystem();
+		protected String getText(NwSet element) {
+			return element.getName();
 		}
 
 		@Override
-		protected void setText(NormalizationWeightingSet element, String text) {
-			if (!Objects.equals(text, element.getReferenceSystem())) {
-				element.setReferenceSystem(text);
+		protected void setText(NwSet element, String text) {
+			if (!Objects.equals(text, element.getName())) {
+				element.setName(text);
 				fireModelChanged(ModelChangeType.CHANGE, element);
 			}
 		}
 	}
 
-	private class UnitModifier extends
-			TextCellModifier<NormalizationWeightingSet> {
+	private class UnitModifier extends TextCellModifier<NwSet> {
 
 		@Override
-		protected String getText(NormalizationWeightingSet element) {
-			return element.getUnit();
+		protected String getText(NwSet element) {
+			return element.getWeightedScoreUnit();
 		}
 
 		@Override
-		protected void setText(NormalizationWeightingSet element, String text) {
-			if (!Objects.equals(text, element.getUnit())) {
-				element.setUnit(text);
+		protected void setText(NwSet element, String text) {
+			if (!Objects.equals(text, element.getWeightedScoreUnit())) {
+				element.setWeightedScoreUnit(text);
 				fireModelChanged(ModelChangeType.CHANGE, element);
 			}
 		}

@@ -19,12 +19,12 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.AllocationMethodViewer;
 import org.openlca.app.viewers.combo.ImpactMethodViewer;
-import org.openlca.app.viewers.combo.NormalizationWeightingSetViewer;
+import org.openlca.app.viewers.combo.NwSetComboViewer;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.model.AllocationMethod;
-import org.openlca.core.model.NormalizationWeightingSet;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
+import org.openlca.core.model.descriptors.NwSetDescriptor;
 
 /**
  * Page for setting the calculation properties of a product system. Class must
@@ -38,7 +38,7 @@ class CalculationWizardPage extends WizardPage {
 
 	private AllocationMethodViewer allocationViewer;
 	private ImpactMethodViewer methodViewer;
-	private NormalizationWeightingSetViewer nwViewer;
+	private NwSetComboViewer nwViewer;
 	private Text iterationText;
 	private int iterationCount = 100;
 	private CalculationType type = CalculationType.QUICK;
@@ -61,7 +61,7 @@ class CalculationWizardPage extends WizardPage {
 		createAllocationViewer(body);
 		createMethodComboViewer(body);
 		UI.formLabel(body, Messages.NWSet);
-		nwViewer = new NormalizationWeightingSetViewer(body);
+		nwViewer = new NwSetComboViewer(body);
 		nwViewer.setDatabase(Database.get());
 
 		UI.formLabel(body, Messages.CalculationWizardPage_CalculationType);
@@ -132,7 +132,7 @@ class CalculationWizardPage extends WizardPage {
 				getSetupType());
 		setUp.setAllocationMethod(allocationViewer.getSelected());
 		setUp.setImpactMethod(methodViewer.getSelected());
-		NormalizationWeightingSet set = nwViewer.getSelected();
+		NwSetDescriptor set = nwViewer.getSelected();
 		setUp.setNwSet(set);
 		setUp.setNumberOfRuns(iterationCount);
 		return setUp;

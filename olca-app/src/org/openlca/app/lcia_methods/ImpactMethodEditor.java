@@ -44,7 +44,7 @@ public class ImpactMethodEditor extends ModelEditor<ImpactMethod> implements
 		try {
 			addPage(new ImpactMethodInfoPage(this));
 			addPage(new ImpactFactorsPage(this));
-			addPage(new ImpactNormalizationWeightingPage(this));
+			addPage(new ImpactNwPage(this));
 			if (FeatureFlag.LOCALISED_LCIA.isEnabled()) {
 				addPage(new ShapeFilePage(this));
 				addPage(new ImpactLocalisationPage(this));

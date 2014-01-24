@@ -1,4 +1,4 @@
-package org.openlca.app.viewers.table;
+package org.openlca.app.lcia_methods;
 
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -6,16 +6,16 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.Messages;
-import org.openlca.app.viewers.table.NormalizationWeightingFactorViewer.Wrapper;
+import org.openlca.app.lcia_methods.NwFactorViewer.Wrapper;
+import org.openlca.app.viewers.table.AbstractTableViewer;
 import org.openlca.app.viewers.table.modify.IModelChangedListener.ModelChangeType;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ImpactMethod;
-import org.openlca.core.model.NormalizationWeightingFactor;
-import org.openlca.core.model.NormalizationWeightingSet;
+import org.openlca.core.model.NwFactor;
+import org.openlca.core.model.NwSet;
 
-public class NormalizationWeightingFactorViewer extends
-		AbstractTableViewer<Wrapper> {
+class NwFactorViewer extends AbstractTableViewer<Wrapper> {
 
 	private interface LABEL {
 		String IMPACT_CATEGORY = Messages.ImpactCategory;
@@ -27,10 +27,9 @@ public class NormalizationWeightingFactorViewer extends
 			LABEL.NORMALIZATION, LABEL.WEIGHTING };
 
 	private final ImpactMethod method;
-	private NormalizationWeightingSet set;
+	private NwSet set;
 
-	public NormalizationWeightingFactorViewer(Composite parent,
-			ImpactMethod impactMethod) {
+	public NwFactorViewer(Composite parent, ImpactMethod impactMethod) {
 		super(parent);
 		this.method = impactMethod;
 		getCellModifySupport().bind(LABEL.NORMALIZATION,
@@ -38,7 +37,7 @@ public class NormalizationWeightingFactorViewer extends
 		getCellModifySupport().bind(LABEL.WEIGHTING, new WeightingModifier());
 	}
 
-	public void setInput(NormalizationWeightingSet set) {
+	public void setInput(NwSet set) {
 		this.set = set;
 		if (set == null)
 			setInput(new Wrapper[0]);
@@ -47,8 +46,7 @@ public class NormalizationWeightingFactorViewer extends
 			for (int i = 0; i < wrapper.length; i++) {
 				ImpactCategory category = method.getImpactCategories().get(i);
 				wrapper[i] = new Wrapper(category);
-				NormalizationWeightingFactor f = set
-						.getFactor(category.getId());
+				NwFactor f = set.getFactor(category);
 				wrapper[i].factor = f;
 			}
 			setInput(wrapper);
@@ -68,7 +66,7 @@ public class NormalizationWeightingFactorViewer extends
 	public class Wrapper {
 
 		private ImpactCategory category;
-		private NormalizationWeightingFactor factor;
+		private NwFactor factor;
 
 		private Wrapper(ImpactCategory category) {
 			this.category = category;
@@ -95,9 +93,9 @@ public class NormalizationWeightingFactorViewer extends
 			case 1:
 				if (wrapper.factor == null)
 					return "-";
-				if (wrapper.factor.getNormalizationFactor() == null)
+				if (wrapper.factor.getNormalisationFactor() == null)
 					return "-";
-				return Double.toString(wrapper.factor.getNormalizationFactor());
+				return Double.toString(wrapper.factor.getNormalisationFactor());
 			case 2:
 				if (wrapper.factor == null)
 					return "-";
@@ -116,9 +114,9 @@ public class NormalizationWeightingFactorViewer extends
 		protected String getText(Wrapper element) {
 			if (element.factor == null)
 				return "-";
-			if (element.factor.getNormalizationFactor() == null)
+			if (element.factor.getNormalisationFactor() == null)
 				return "-";
-			return Double.toString(element.factor.getNormalizationFactor());
+			return Double.toString(element.factor.getNormalisationFactor());
 		}
 
 		@Override
@@ -126,14 +124,13 @@ public class NormalizationWeightingFactorViewer extends
 			try {
 				double factor = Double.parseDouble(text);
 				if (element.factor == null) {
-					element.factor = new NormalizationWeightingFactor();
-					element.factor
-							.setImpactCategoryId(element.category.getId());
-					set.getNormalizationWeightingFactors().add(element.factor);
+					element.factor = new NwFactor();
+					element.factor.setImpactCategory(element.category);
+					set.getFactors().add(element.factor);
 				}
-				if (element.factor.getNormalizationFactor() == null
-						|| element.factor.getNormalizationFactor() != factor) {
-					element.factor.setNormalizationFactor(factor);
+				if (element.factor.getNormalisationFactor() == null
+						|| element.factor.getNormalisationFactor() != factor) {
+					element.factor.setNormalisationFactor(factor);
 					fireModelChanged(ModelChangeType.CHANGE, element);
 				}
 			} catch (NumberFormatException e) {
@@ -158,10 +155,9 @@ public class NormalizationWeightingFactorViewer extends
 			try {
 				double factor = Double.parseDouble(text);
 				if (element.factor == null) {
-					element.factor = new NormalizationWeightingFactor();
-					element.factor
-							.setImpactCategoryId(element.category.getId());
-					set.getNormalizationWeightingFactors().add(element.factor);
+					element.factor = new NwFactor();
+					element.factor.setImpactCategory(element.category);
+					set.getFactors().add(element.factor);
 				}
 				if (element.factor.getWeightingFactor() == null
 						|| element.factor.getWeightingFactor() != factor) {

@@ -21,9 +21,9 @@ import org.openlca.app.util.InformationPopup;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.math.CalculationSetup;
-import org.openlca.core.model.NormalizationWeightingSet;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
+import org.openlca.core.model.descriptors.NwSetDescriptor;
 import org.openlca.io.xls.results.InventoryResultExport;
 
 public class QuickResultInfoPage extends FormPage {
@@ -64,10 +64,10 @@ public class QuickResultInfoPage extends FormPage {
 		ImpactMethodDescriptor method = setup.getImpactMethod();
 		if (method != null)
 			createText(composite, Messages.ImpactMethodTitle, method.getName());
-		NormalizationWeightingSet nwSet = setup.getNwSet();
+		NwSetDescriptor nwSet = setup.getNwSet();
 		if (nwSet != null)
 			createText(composite, Messages.NormalizationWeightingSet,
-					nwSet.getReferenceSystem());
+					nwSet.getName());
 		createExportButton(composite);
 	}
 
