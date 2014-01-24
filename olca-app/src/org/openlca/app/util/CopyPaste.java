@@ -28,6 +28,7 @@ import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
+import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
@@ -204,6 +205,15 @@ public class CopyPaste {
 		}
 	}
 
+	private static void copy(ModelElement element,
+			INavigationElement<?> category) {
+		CategorizedEntity copy = copy(element);
+		if (copy == null)
+			return;
+		copy.setCategory(getCategory(category));
+		insert(copy);
+	}
+
 	private static Category getCategory(INavigationElement<?> element) {
 		return element instanceof CategoryElement ? ((CategoryElement) element)
 				.getContent() : null;
@@ -271,13 +281,6 @@ public class CopyPaste {
 			insert(entity);
 	}
 
-	private static void copy(ModelElement element,
-			INavigationElement<?> category) {
-		CategorizedEntity copy = copy(element);
-		copy.setCategory(getCategory(category));
-		insert(copy);
-	}
-
 	private static CategorizedEntity copy(ModelElement element) {
 		BaseDescriptor descriptor = element.getContent();
 		CategorizedEntityDao<?, ?> dao = Database.createRootDao(descriptor
@@ -304,6 +307,8 @@ public class CopyPaste {
 			return ((Process) entity).clone();
 		else if (entity instanceof ProductSystem)
 			return ((ProductSystem) entity).clone();
+		else if (entity instanceof ImpactMethod)
+			return ((ImpactMethod) entity).clone();
 		else if (entity instanceof Project)
 			return ((Project) entity).clone();
 		return null;
