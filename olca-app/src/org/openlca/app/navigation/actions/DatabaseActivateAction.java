@@ -1,7 +1,9 @@
 package org.openlca.app.navigation.actions;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.Action;
-import org.openlca.app.App;
+import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.ui.PlatformUI;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.navigation.DatabaseElement;
@@ -16,6 +18,7 @@ import org.openlca.core.database.upgrades.VersionState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 /**
@@ -57,20 +60,31 @@ public class DatabaseActivateAction extends Action implements INavigationAction 
 	public void run() {
 		Editors.closeAll();
 		Activation activation = new Activation();
-		ActivationCallback callback = new ActivationCallback(activation);
-		App.run("Activate database", activation, callback);
+		// App.run does not work as we have to show a modal dialog in the callback
+		try {
+			PlatformUI.getWorkbench().getProgressService()
+					.busyCursorWhile(activation);
+			ActivationCallback callback = new ActivationCallback(activation);
+			callback.run();
+		} catch (Exception e) {
+			log.error("Database activation failed");
+		}
 	}
 
-	private class Activation implements Runnable {
+	private class Activation implements IRunnableWithProgress {
 
 		private VersionState versionState;
 
+
 		@Override
-		public void run() {
+		public void run(IProgressMonitor monitor) throws
+				InvocationTargetException, InterruptedException {
 			try {
+				monitor.beginTask("Activate database", IProgressMonitor.UNKNOWN);
 				Database.close();
 				IDatabase database = Database.activate(config);
 				versionState = Upgrades.checkVersion(database);
+				monitor.done();
 			} catch (Exception e) {
 				log.error("Failed to activate database", e);
 			}
@@ -122,9 +136,8 @@ public class DatabaseActivateAction extends Action implements INavigationAction 
 
 		private void askRunUpdates() {
 			IDatabase db = Database.get();
-			boolean doIt = Question.ask("Run update?", "The database "
-					+ db.getName() + " needs to be updated. Do you want to " +
-					"run the update?");
+			boolean doIt = Question.ask("Run update?", "The database " +
+					db.getName() + " needs an update. Do you want to run it?");
 			if (!doIt) {
 				closeDatabase();
 				return;
@@ -135,7 +148,7 @@ public class DatabaseActivateAction extends Action implements INavigationAction 
 				Navigator.refresh();
 			} catch (Exception e) {
 				log.error("Failed to update database", e);
-			 	closeDatabase();
+				closeDatabase();
 			}
 		}
 
