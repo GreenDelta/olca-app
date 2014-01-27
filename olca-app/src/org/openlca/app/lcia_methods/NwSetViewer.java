@@ -15,21 +15,20 @@ import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.NwSet;
 
-public class NwSetViewer extends AbstractTableViewer<NwSet> {
+class NwSetViewer extends AbstractTableViewer<NwSet> {
 
 	public NwSetViewer(Composite parent) {
 		super(parent);
-		getCellModifySupport().bind(LABEL.REFERENCE_SYSTEM, new NameModifier());
+		getCellModifySupport().bind(LABEL.NAME, new NameModifier());
 		getCellModifySupport().bind(LABEL.UNIT, new UnitModifier());
 	}
 
 	private interface LABEL {
-		String REFERENCE_SYSTEM = Messages.NormalizationWeightingSet;
+		String NAME = Messages.NormalizationWeightingSet;
 		String UNIT = Messages.ReferenceUnit;
 	}
 
-	private static final String[] COLUMN_HEADERS = { LABEL.REFERENCE_SYSTEM,
-			LABEL.UNIT };
+	private static final String[] COLUMN_HEADERS = { LABEL.NAME, LABEL.UNIT };
 
 	private ImpactMethod method;
 

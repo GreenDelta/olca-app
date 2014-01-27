@@ -46,15 +46,13 @@ class ImpactNwPage extends ModelPage<ImpactMethod> {
 		sashForm.setLayoutData(sashGD);
 		sashForm.setLayout(new GridLayout(2, false));
 
-		NwSetViewer setViewer = new NwSetViewer(
-				sashForm);
+		NwSetViewer setViewer = new NwSetViewer(sashForm);
 		setViewer.bindTo(section);
 		setViewer
 				.addSelectionChangedListener(new SetSelectionChangedListener());
-		getBinding().on(getModel(), "normalizationWeightingSets", setViewer);
+		getBinding().on(getModel(), "nwSets", setViewer);
 
-		factorViewer = new NwFactorViewer(sashForm,
-				getModel());
+		factorViewer = new NwFactorViewer(sashForm, getModel());
 
 		sashForm.setWeights(new int[] { 25, 75 });
 		body.setFocus();
@@ -70,8 +68,7 @@ class ImpactNwPage extends ModelPage<ImpactMethod> {
 			if (selection == null)
 				factorViewer.setInput((NwSet) null);
 			else {
-				getBinding().on(selection, "normalizationWeightingFactors",
-						factorViewer);
+				getBinding().on(selection, "factors", factorViewer);
 			}
 		}
 	}
