@@ -16,6 +16,7 @@ import org.openlca.app.inventory.ImpactResultPage;
 import org.openlca.app.inventory.ImpactResultProvider;
 import org.openlca.app.inventory.InventoryResultPage;
 import org.openlca.app.inventory.InventoryResultProvider;
+import org.openlca.app.results.FlowImpactPage;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.model.ProductSystem;
