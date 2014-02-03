@@ -17,8 +17,8 @@ import org.openlca.app.util.Editors;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.SystemCalculator;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.results.AnalysisResult;
-import org.openlca.core.results.InventoryResult;
+import org.openlca.core.results.ContributionResult;
+import org.openlca.core.results.FullResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,7 +84,7 @@ class CalculationWizard extends Wizard {
 			log.trace("run analysis");
 			SystemCalculator calculator = new SystemCalculator(
 					Cache.getMatrixCache(), App.getSolver());
-			AnalysisResult analysisResult = calculator.analyse(setup);
+			FullResult analysisResult = calculator.calculateFull(setup);
 			log.trace("calculation done, open editor");
 			String resultKey = Cache.getAppCache().put(analysisResult);
 			String setupKey = Cache.getAppCache().put(setup);
@@ -97,7 +97,8 @@ class CalculationWizard extends Wizard {
 			log.trace("run quick calculation");
 			SystemCalculator calculator = new SystemCalculator(
 					Cache.getMatrixCache(), App.getSolver());
-			InventoryResult inventoryResult = calculator.solve(setup);
+			ContributionResult inventoryResult = calculator
+					.calculateContributions(setup);
 			log.trace("calculation done, open editor");
 			String resultKey = Cache.getAppCache().put(inventoryResult);
 			String setupKey = Cache.getAppCache().put(setup);

@@ -35,21 +35,21 @@ import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
-import org.openlca.core.results.AnalysisResult;
-import org.openlca.core.results.ContributionTree;
-import org.openlca.core.results.ContributionTreeNode;
+import org.openlca.core.results.FullResultProvider;
+import org.openlca.core.results.UpstreamTree;
+import org.openlca.core.results.UpstreamTreeNode;
 
 public class ContributionTreePage extends FormPage {
 
 	private EntityCache cache = Cache.getEntityCache();
-	private AnalysisResult result;
+	private FullResultProvider result;
 	private TreeViewer contributionTree;
 	private Object selection;
 
-	private static final String[] HEADERS = { "Contribution", "Process",
-			"Amount", "Unit" };
+	private static final String[] HEADERS = { Messages.Contribution,
+			Messages.Process, Messages.Amount, Messages.Unit };
 
-	public ContributionTreePage(AnalyzeEditor editor, AnalysisResult result) {
+	public ContributionTreePage(AnalyzeEditor editor, FullResultProvider result) {
 		super(editor, "analysis.ContributionTreePage", "Contribution tree");
 		this.result = result;
 	}
@@ -99,12 +99,12 @@ public class ContributionTreePage extends FormPage {
 	}
 
 	private void initInput() {
-		if (result.getFlowIndex().isEmpty())
+		if (result.getResult().getFlowIndex().isEmpty())
 			return;
-		long flowId = result.getFlowIndex().getFlowAt(0);
+		long flowId = result.getResult().getFlowIndex().getFlowAt(0);
 		FlowDescriptor flow = cache.get(FlowDescriptor.class, flowId);
 		selection = flow;
-		ContributionTree tree = result.getContributions().getTree(flow);
+		UpstreamTree tree = result.getTree(flow);
 		contributionTree.setInput(tree);
 	}
 
@@ -113,7 +113,7 @@ public class ContributionTreePage extends FormPage {
 		@Override
 		public void flowSelected(FlowDescriptor flow) {
 			selection = flow;
-			ContributionTree tree = result.getContributions().getTree(flow);
+			UpstreamTree tree = result.getTree(flow);
 			contributionTree.setInput(tree);
 		}
 
@@ -121,8 +121,7 @@ public class ContributionTreePage extends FormPage {
 		public void impactCategorySelected(
 				ImpactCategoryDescriptor impactCategory) {
 			selection = impactCategory;
-			ContributionTree tree = result.getContributions().getTree(
-					impactCategory);
+			UpstreamTree tree = result.getTree(impactCategory);
 			contributionTree.setInput(tree);
 		}
 
@@ -132,17 +131,16 @@ public class ContributionTreePage extends FormPage {
 
 		@Override
 		public Object[] getChildren(Object parentElement) {
-			if (!(parentElement instanceof ContributionTreeNode))
+			if (!(parentElement instanceof UpstreamTreeNode))
 				return null;
-			return ((ContributionTreeNode) parentElement).getChildren()
-					.toArray();
+			return ((UpstreamTreeNode) parentElement).getChildren().toArray();
 		}
 
 		@Override
 		public Object[] getElements(Object inputElement) {
-			if (!(inputElement instanceof ContributionTree))
+			if (!(inputElement instanceof UpstreamTree))
 				return null;
-			return new Object[] { ((ContributionTree) inputElement).getRoot() };
+			return new Object[] { ((UpstreamTree) inputElement).getRoot() };
 		}
 
 		@Override
@@ -152,9 +150,9 @@ public class ContributionTreePage extends FormPage {
 
 		@Override
 		public boolean hasChildren(Object element) {
-			if (!(element instanceof ContributionTreeNode))
+			if (!(element instanceof UpstreamTreeNode))
 				return false;
-			return !((ContributionTreeNode) element).getChildren().isEmpty();
+			return !((UpstreamTreeNode) element).getChildren().isEmpty();
 		}
 
 		@Override
@@ -181,19 +179,19 @@ public class ContributionTreePage extends FormPage {
 
 		@Override
 		public Image getColumnImage(Object element, int columnIndex) {
-			if (!(element instanceof ContributionTreeNode) || element == null)
+			if (!(element instanceof UpstreamTreeNode) || element == null)
 				return null;
 			if (columnIndex != 1)
 				return null;
-			ContributionTreeNode node = (ContributionTreeNode) element;
+			UpstreamTreeNode node = (UpstreamTreeNode) element;
 			return image.getForTable(getContribution(node));
 		}
 
 		@Override
 		public String getColumnText(Object element, int columnIndex) {
-			if (!(element instanceof ContributionTreeNode))
+			if (!(element instanceof UpstreamTreeNode))
 				return null;
-			ContributionTreeNode node = (ContributionTreeNode) element;
+			UpstreamTreeNode node = (UpstreamTreeNode) element;
 			switch (columnIndex) {
 			case 0:
 				return Numbers.percent(getContribution(node));
@@ -222,11 +220,11 @@ public class ContributionTreePage extends FormPage {
 		}
 
 		private double getTotalAmount() {
-			return ((ContributionTree) contributionTree.getInput()).getRoot()
+			return ((UpstreamTree) contributionTree.getInput()).getRoot()
 					.getAmount();
 		}
 
-		private double getContribution(ContributionTreeNode node) {
+		private double getContribution(UpstreamTreeNode node) {
 			double singleResult = getSingleAmount(node);
 			if (singleResult == 0)
 				return 0;
@@ -239,7 +237,7 @@ public class ContributionTreePage extends FormPage {
 			return contribution;
 		}
 
-		private double getSingleAmount(ContributionTreeNode node) {
+		private double getSingleAmount(UpstreamTreeNode node) {
 			return node.getAmount();
 		}
 
@@ -249,11 +247,11 @@ public class ContributionTreePage extends FormPage {
 
 		@Override
 		public int compare(Viewer viewer, Object e1, Object e2) {
-			if (!(e1 instanceof ContributionTreeNode && e2 instanceof ContributionTreeNode)
+			if (!(e1 instanceof UpstreamTreeNode && e2 instanceof UpstreamTreeNode)
 					|| e1 == null || e2 == null)
 				return 0;
-			ContributionTreeNode node1 = (ContributionTreeNode) e1;
-			ContributionTreeNode node2 = (ContributionTreeNode) e2;
+			UpstreamTreeNode node1 = (UpstreamTreeNode) e1;
+			UpstreamTreeNode node2 = (UpstreamTreeNode) e2;
 			return -1 * Double.compare(node1.getAmount(), node2.getAmount());
 		}
 	}
@@ -268,9 +266,9 @@ public class ContributionTreePage extends FormPage {
 		@Override
 		public void run() {
 			Object selection = Viewers.getFirstSelected(contributionTree);
-			if (!(selection instanceof ContributionTreeNode))
+			if (!(selection instanceof UpstreamTreeNode))
 				return;
-			ContributionTreeNode node = (ContributionTreeNode) selection;
+			UpstreamTreeNode node = (UpstreamTreeNode) selection;
 			LongPair processProduct = node.getProcessProduct();
 			ProcessDescriptor process = Cache.getEntityCache().get(
 					ProcessDescriptor.class, processProduct.getFirst());
