@@ -4,8 +4,8 @@ import org.openlca.app.util.Labels;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.matrix.LongPair;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
-import org.openlca.core.results.ContributionTree;
-import org.openlca.core.results.ContributionTreeNode;
+import org.openlca.core.results.UpstreamTree;
+import org.openlca.core.results.UpstreamTreeNode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,17 +17,17 @@ public class SunBurstTree {
 
 	private Node root;
 
-	public static SunBurstTree create(ContributionTree contributionTree,
+	public static SunBurstTree create(UpstreamTree contributionTree,
 	                                  EntityCache cache) {
 		SunBurstTree tree = new SunBurstTree();
-		ContributionTreeNode cRoot = contributionTree.getRoot();
+		UpstreamTreeNode cRoot = contributionTree.getRoot();
 		Node root = createNode(cRoot, cache);
 		tree.setRoot(root);
 		synchChilds(cRoot, root, cache);
 		return tree;
 	}
 
-	private static Node createNode(ContributionTreeNode cNode, EntityCache cache) {
+	private static Node createNode(UpstreamTreeNode cNode, EntityCache cache) {
 		if (cNode == null)
 			return null;
 		LongPair product = cNode.getProcessProduct();
@@ -43,15 +43,15 @@ public class SunBurstTree {
 		return node;
 	}
 
-	private static void synchChilds(ContributionTreeNode cNode, Node node,
+	private static void synchChilds(UpstreamTreeNode cNode, Node node,
 	                                EntityCache cache) {
 		if (cNode == null || node == null)
 			return;
-		for(ContributionTreeNode cChild : cNode.getChildren()) {
-			if(cChild.getAmount() == 0)
+		for (UpstreamTreeNode cChild : cNode.getChildren()) {
+			if (cChild.getAmount() == 0)
 				continue;
 			Node child = createNode(cChild, cache);
-			if(child == null)
+			if (child == null)
 				return;
 			node.getChildren().add(child);
 			synchChilds(cChild, child, cache);

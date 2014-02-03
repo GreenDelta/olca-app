@@ -18,16 +18,15 @@ import org.openlca.app.Messages;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Cache;
 import org.openlca.app.resources.ImageType;
+import org.openlca.app.results.ContributionChartSection;
 import org.openlca.app.util.InformationPopup;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.descriptors.FlowDescriptor;
-import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.NwSetDescriptor;
-import org.openlca.core.results.AnalysisResult;
+import org.openlca.core.results.FullResultProvider;
 import org.openlca.io.xls.results.AnalysisResultExport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,10 +38,10 @@ public class AnalyzeInfoPage extends FormPage {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private CalculationSetup setup;
-	private AnalysisResult result;
+	private FullResultProvider result;
 	private FormToolkit toolkit;
 
-	public AnalyzeInfoPage(AnalyzeEditor editor, AnalysisResult result,
+	public AnalyzeInfoPage(AnalyzeEditor editor, FullResultProvider result,
 			CalculationSetup setup) {
 		super(editor, "AnalyzeInfoPage", Messages.GeneralInformation);
 		this.setup = setup;
@@ -130,22 +129,9 @@ public class AnalyzeInfoPage extends FormPage {
 	}
 
 	private void createResultSections(Composite body) {
-		FlowContributionProvider flowProvider = new FlowContributionProvider(
-				result);
-		ChartSection<FlowDescriptor> flowSection = new ChartSection<>(
-				flowProvider);
-		flowSection.setSectionTitle(Messages.FlowContributions);
-		flowSection.setSelectionName(Messages.Flow);
-		flowSection.render(body, toolkit);
-		if (result.hasImpactResults()) {
-			ImpactContributionProvider impactProvider = new ImpactContributionProvider(
-					result);
-			ChartSection<ImpactCategoryDescriptor> impactSection = new ChartSection<>(
-					impactProvider);
-			impactSection.setSectionTitle(Messages.ImpactContributions);
-			impactSection.setSelectionName(Messages.ImpactCategory);
-			impactSection.render(body, toolkit);
-		}
-	}
+		ContributionChartSection.forFlows(result).render(body, toolkit);
+		if (result.hasImpactResults())
+			ContributionChartSection.forImpacts(result).render(body, toolkit);
 
+	}
 }

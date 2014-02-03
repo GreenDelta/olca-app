@@ -21,7 +21,7 @@ import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.core.results.AnalysisResult;
+import org.openlca.core.results.FullResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,13 +37,13 @@ public class AnalyzeEditor extends FormEditor {
 	private SankeyDiagram diagram;
 	private int diagramIndex;
 	private CalculationSetup setup;
-	private AnalysisResult result;
+	private FullResult result;
 
 	public CalculationSetup getSetup() {
 		return setup;
 	}
 
-	public AnalysisResult getResult() {
+	public FullResult getResult() {
 		return result;
 	}
 
@@ -54,7 +54,7 @@ public class AnalyzeEditor extends FormEditor {
 		AnalyzeEditorInput editorInput = (AnalyzeEditorInput) input;
 		String resultKey = editorInput.getResultKey();
 		String setupKey = editorInput.getSetupKey();
-		result = Cache.getAppCache().remove(resultKey, AnalysisResult.class);
+		result = Cache.getAppCache().remove(resultKey, FullResult.class);
 		setup = Cache.getAppCache().remove(setupKey, CalculationSetup.class);
 		ProductSystem system = setup.getProductSystem();
 		String name = Messages.ResultOf + " " + system.getName();

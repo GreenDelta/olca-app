@@ -1,4 +1,4 @@
-package org.openlca.app.components.charts;
+package org.openlca.app.results;
 
 import java.util.Collections;
 import java.util.List;
@@ -21,6 +21,7 @@ import org.eclipse.birt.chart.model.impl.ChartWithoutAxesImpl;
 import org.eclipse.birt.chart.model.type.PieSeries;
 import org.eclipse.birt.chart.model.type.impl.PieSeriesImpl;
 import org.eclipse.emf.common.util.EList;
+import org.openlca.app.components.charts.ChartFaviColor;
 
 /**
  * Creates a simple pie-chart for a set of numbers. No title or legend entries

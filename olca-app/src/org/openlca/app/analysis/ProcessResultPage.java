@@ -39,13 +39,15 @@ import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.AnalysisResult;
+import org.openlca.core.results.FullResult;
+import org.openlca.core.results.FullResultProvider;
 
 /** Shows the single results of the processes in an analysis result. */
 public class ProcessResultPage extends FormPage {
 
 	private EntityCache cache = Cache.getEntityCache();
 	private AnalyzeEditor editor;
-	private AnalysisResult result;
+	private FullResultProvider result;
 	private ResultProvider flowResultProvider;
 	private ResultProvider impactResultProvider;
 
@@ -67,7 +69,7 @@ public class ProcessResultPage extends FormPage {
 	private final static String[] IMPACT_COLUMN_LABELS = { "Contribution",
 			"Impact category", "Upstream total", "Direct impact", "Unit" };
 
-	public ProcessResultPage(AnalyzeEditor editor, AnalysisResult result) {
+	public ProcessResultPage(AnalyzeEditor editor, FullResultProvider result) {
 		super(editor, ProcessResultPage.class.getName(), "Process results");
 		this.editor = editor;
 		this.result = result;
@@ -386,11 +388,12 @@ public class ProcessResultPage extends FormPage {
 	private class ResultProvider {
 
 		private ProcessDescriptor process;
-		private AnalysisResult result;
+		private FullResultProvider result;
 
-		public ResultProvider(AnalysisResult result) {
-			this.process = cache.get(ProcessDescriptor.class, result
-					.getProductIndex().getRefProduct().getFirst());
+		public ResultProvider(FullResultProvider result) {
+			long refProcessId = result.getResult().getProductIndex()
+					.getRefProduct().getFirst();
+			this.process = cache.get(ProcessDescriptor.class, refProcessId);
 			this.result = result;
 		}
 
@@ -401,7 +404,7 @@ public class ProcessResultPage extends FormPage {
 		private double getUpstreamContribution(FlowDescriptor flow) {
 			if (process == null || flow == null)
 				return 0;
-			double total = result.getFlowResults().getTotalResult(flow);
+			double total = result.getTotalFlowResult(flow).getValue();
 			if (total == 0)
 				return 0;
 			double val = result.getTotalFlowResult(process.getId(),
