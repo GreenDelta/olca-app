@@ -1,5 +1,7 @@
 package org.openlca.app.analysis;
 
+// TODO: take directly contribution-items from the results
+@Deprecated
 class ProcessContributionItem implements Comparable<ProcessContributionItem> {
 
 	private double contribution;

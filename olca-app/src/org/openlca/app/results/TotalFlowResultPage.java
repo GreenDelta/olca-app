@@ -1,4 +1,4 @@
-package org.openlca.app.inventory;
+package org.openlca.app.results;
 
 import java.util.Collection;
 
@@ -25,15 +25,17 @@ import org.openlca.app.util.TableColumnSorter;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.EntityCache;
+import org.openlca.core.matrix.FlowIndex;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 
 import com.google.common.primitives.Doubles;
+import org.openlca.core.results.SimpleResultProvider;
 
 /**
  * Shows the total inventory result of a quick calculation, analysis result,
  * etc.
  */
-public class InventoryResultPage extends FormPage {
+public class TotalFlowResultPage extends FormPage {
 
 	private final String FLOW = Messages.Flow;
 	private final String CATEGORY = Messages.Category;
@@ -43,10 +45,10 @@ public class InventoryResultPage extends FormPage {
 
 	private EntityCache cache = Cache.getEntityCache();
 	private FormToolkit toolkit;
-	private InventoryResultProvider resultProvider;
+	private SimpleResultProvider<?> resultProvider;
 
-	public InventoryResultPage(FormEditor editor,
-			InventoryResultProvider resultProvider) {
+	public TotalFlowResultPage(FormEditor editor,
+	                           SimpleResultProvider<?> resultProvider) {
 		super(editor, "InventoryResultPage", "Inventory results");
 		this.resultProvider = resultProvider;
 	}
@@ -63,7 +65,7 @@ public class InventoryResultPage extends FormPage {
 		TableViewer inputViewer = createSectionAndViewer(body, true);
 		TableViewer outputViewer = createSectionAndViewer(body, false);
 		form.reflow(true);
-		Collection<FlowDescriptor> flows = resultProvider.getFlows(cache);
+		Collection<FlowDescriptor> flows = resultProvider.getFlowDescriptors();
 		inputViewer.setInput(flows);
 		outputViewer.setInput(flows);
 	}
@@ -120,7 +122,7 @@ public class InventoryResultPage extends FormPage {
 			case 3:
 				return Labels.getRefUnit(flow, cache);
 			case 4:
-				double v = resultProvider.getAmount(flow);
+				double v = resultProvider.getTotalFlowResult(flow).getValue();
 				return Numbers.format(v);
 			default:
 				return null;
@@ -141,8 +143,9 @@ public class InventoryResultPage extends FormPage {
 				Object element) {
 			if (!(element instanceof FlowDescriptor))
 				return false;
+			FlowIndex index = resultProvider.getResult().getFlowIndex();
 			FlowDescriptor flow = (FlowDescriptor) element;
-			return resultProvider.isInput(flow) == input;
+			return index.isInput(flow.getId()) == input;
 		}
 	}
 
@@ -153,8 +156,8 @@ public class InventoryResultPage extends FormPage {
 
 		@Override
 		public int compare(FlowDescriptor obj1, FlowDescriptor obj2) {
-			double v1 = resultProvider.getAmount(obj1);
-			double v2 = resultProvider.getAmount(obj2);
+			double v1 = resultProvider.getTotalFlowResult(obj1).getValue();
+			double v2 = resultProvider.getTotalFlowResult(obj2).getValue();
 			return Doubles.compare(v1, v2);
 		}
 	}

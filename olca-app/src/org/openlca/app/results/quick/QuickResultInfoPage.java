@@ -1,4 +1,4 @@
-package org.openlca.app.inventory;
+package org.openlca.app.results.quick;
 
 import java.io.File;
 
@@ -28,10 +28,10 @@ import org.openlca.io.xls.results.InventoryResultExport;
 
 public class QuickResultInfoPage extends FormPage {
 
-	private InventoryResultEditor editor;
+	private QuickResultEditor editor;
 	private FormToolkit toolkit;
 
-	public QuickResultInfoPage(InventoryResultEditor editor) {
+	public QuickResultInfoPage(QuickResultEditor editor) {
 		super(editor, "QuickResultInfoPage", Messages.GeneralInformation);
 		this.editor = editor;
 	}
@@ -85,21 +85,22 @@ public class QuickResultInfoPage extends FormPage {
 	}
 
 	private void tryExport() {
-		final File exportFile = FileChooser.forExport("*.xlsx",
-				"quick_result.xlsx");
-		if (exportFile == null)
-			return;
-		final InventoryResultExport export = new InventoryResultExport(
-				editor.getSetup(), editor.getResult(), Cache.getEntityCache());
-		export.setExportFile(exportFile);
-		App.run(Messages.Export, export, new Runnable() {
-			@Override
-			public void run() {
-				if (export.doneWithSuccess()) {
-					InformationPopup.show("Export done");
-				}
-			}
-		});
+		// TODO: run export
+//		final File exportFile = FileChooser.forExport("*.xlsx",
+//				"quick_result.xlsx");
+//		if (exportFile == null)
+//			return;
+//		final InventoryResultExport export = new InventoryResultExport(
+//				editor.getSetup(), editor.getResult(), Cache.getEntityCache());
+//		export.setExportFile(exportFile);
+//		App.run(Messages.Export, export, new Runnable() {
+//			@Override
+//			public void run() {
+//				if (export.doneWithSuccess()) {
+//					InformationPopup.show("Export done");
+//				}
+//			}
+//		});
 	}
 
 	private void createText(Composite parent, String label, String val) {

@@ -8,6 +8,8 @@ import org.openlca.app.components.ContributionImage;
 import org.openlca.app.util.Numbers;
 
 /** Label and image provider for the process contribution viewer. */
+// TODO: inline this class in the contribution section
+@Deprecated
 class ProcessContributionLabel extends ColumnLabelProvider implements
 		ITableLabelProvider {
 

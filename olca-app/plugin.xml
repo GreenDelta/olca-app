@@ -71,12 +71,12 @@
             contributorClass="org.openlca.app.systems.ProductSystemActions">
       </editor>
       <editor
-            class="org.openlca.app.inventory.InventoryResultEditor"
+            class="org.openlca.app.results.quick.QuickResultEditor"
             default="false"
             icon="icons/expression_obj.gif"
-            id="InventoryResultEditor"
+            id="QuickResultEditor"
             name="Quick results"
-            contributorClass="org.openlca.app.inventory.InventoryResultActions">
+            contributorClass="org.openlca.app.results.quick.QuickResultActions">
       </editor>
       <editor
             id="ProjectResultEditor"

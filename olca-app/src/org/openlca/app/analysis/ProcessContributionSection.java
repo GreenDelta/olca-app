@@ -27,6 +27,7 @@ import org.openlca.app.viewers.combo.FlowViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.descriptors.FlowDescriptor;
+import org.openlca.core.results.ContributionResultProvider;
 
 /**
  * A section which shows the process contributions to flow or impact results of
@@ -37,13 +38,14 @@ class ProcessContributionSection<T> {
 	private EntityCache cache = Cache.getEntityCache();
 	private String sectionTitle = "#no title";
 	private String selectionName = "#no item name";
-	private IProcessContributionProvider<T> provider;
+	private ContributionResultProvider<?> provider;
 	private AbstractComboViewer<T> itemViewer;
 	private ProcessContributionViewer viewer;
 	private Spinner spinner;
 	private Combo modeCombo;
 
-	public ProcessContributionSection(IProcessContributionProvider<T> provider) {
+
+	public ProcessContributionSection(ContributionResultProvider<?> provider) {
 		this.provider = provider;
 	}
 

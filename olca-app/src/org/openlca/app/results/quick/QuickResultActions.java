@@ -1,4 +1,4 @@
-package org.openlca.app.inventory;
+package org.openlca.app.results.quick;
 
 import java.io.File;
 
@@ -13,12 +13,12 @@ import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.InformationPopup;
 import org.openlca.core.math.CalculationSetup;
-import org.openlca.core.results.InventoryResult;
+import org.openlca.core.results.ContributionResultProvider;
 import org.openlca.io.xls.results.InventoryResultExport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class InventoryResultActions extends EditorActionBarContributor {
+public class QuickResultActions extends EditorActionBarContributor {
 
 	@Override
 	public void contributeToToolBar(IToolBarManager toolBarManager) {
@@ -37,12 +37,12 @@ public class InventoryResultActions extends EditorActionBarContributor {
 
 		@Override
 		public void run() {
-			InventoryResultEditor editor = Editors.getActive();
+			QuickResultEditor editor = Editors.getActive();
 			if (editor == null) {
 				log.error("unexpected error: the product system editor is not active");
 				return;
 			}
-			InventoryResult result = editor.getResult();
+			ContributionResultProvider<?> result = editor.getResult();
 			CalculationSetup setup = editor.getSetup();
 			final File file = FileChooser.forExport("xlsx",
 					"inventory_result.xlsx");
@@ -52,18 +52,19 @@ public class InventoryResultActions extends EditorActionBarContributor {
 
 		}
 
-		private void runExport(InventoryResult result, CalculationSetup setup,
+		private void runExport(ContributionResultProvider<?> result, CalculationSetup setup,
 				final File file) {
-			final InventoryResultExport export = new InventoryResultExport(
-					setup, result, Cache.getEntityCache());
-			export.setExportFile(file);
-			App.run("Export results", export, new Runnable() {
-				public void run() {
-					if (export.doneWithSuccess())
-						InformationPopup.show("Export done",
-								"Exported successfully to " + file.getName());
-				}
-			});
+			// TODO: run export
+//			final InventoryResultExport export = new InventoryResultExport(
+//					setup, result, Cache.getEntityCache());
+//			export.setExportFile(file);
+//			App.run("Export results", export, new Runnable() {
+//				public void run() {
+//					if (export.doneWithSuccess())
+//						InformationPopup.show("Export done",
+//								"Exported successfully to " + file.getName());
+//				}
+//			});
 		}
 
 	}

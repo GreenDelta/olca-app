@@ -1,4 +1,4 @@
-package org.openlca.app.inventory;
+package org.openlca.app.results.quick;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
@@ -9,13 +9,13 @@ import org.openlca.app.util.Labels;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.descriptors.ProductSystemDescriptor;
 
-public class InventoryResultInput implements IEditorInput {
+public class QuickResultInput implements IEditorInput {
 
 	private long productSystemId;
 	private String resultKey;
 	private String setupKey;
 
-	public InventoryResultInput(long productSystemId, String resultKey,
+	public QuickResultInput(long productSystemId, String resultKey,
 			String setupKey) {
 		this.productSystemId = productSystemId;
 		this.resultKey = resultKey;

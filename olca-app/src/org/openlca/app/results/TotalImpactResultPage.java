@@ -1,4 +1,4 @@
-package org.openlca.app.inventory;
+package org.openlca.app.results;
 
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -12,27 +12,26 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.db.Cache;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.TableColumnSorter;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
-import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
+import org.openlca.core.results.SimpleResultProvider;
 
 import com.google.common.primitives.Doubles;
 
-public class ImpactResultPage extends FormPage {
+public class TotalImpactResultPage extends FormPage {
 
 	private final String IMPACT_CATEGORY = "Impact category";
 	private final String RESULT = "Result";
 	private final String REFERENCE_UNIT = "Reference unit";
 
-	private EntityCache cache = Cache.getEntityCache();
 	private FormToolkit toolkit;
-	private ImpactResultProvider result;
+	private SimpleResultProvider<?> result;
 
-	public ImpactResultPage(FormEditor editor, ImpactResultProvider result) {
+	public TotalImpactResultPage(FormEditor editor,
+			SimpleResultProvider<?> result) {
 		super(editor, "ImpactResultPage", "LCIA Result");
 		this.result = result;
 	}
@@ -48,7 +47,7 @@ public class ImpactResultPage extends FormPage {
 		Composite body = UI.formBody(form, toolkit);
 		TableViewer impactViewer = createSectionAndViewer(body);
 		form.reflow(true);
-		impactViewer.setInput(result.getImpactCategories(cache));
+		impactViewer.setInput(result.getImpactDescriptors());
 	}
 
 	private TableViewer createSectionAndViewer(Composite parent) {
@@ -92,7 +91,9 @@ public class ImpactResultPage extends FormPage {
 			case 0:
 				return impactCategory.getName();
 			case 1:
-				return Numbers.format(result.getAmount(impactCategory));
+				double val = result.getTotalImpactResult(impactCategory)
+						.getValue();
+				return Numbers.format(val);
 			case 2:
 				return impactCategory.getReferenceUnit();
 			default:
@@ -110,8 +111,8 @@ public class ImpactResultPage extends FormPage {
 		@Override
 		public int compare(ImpactCategoryDescriptor d1,
 				ImpactCategoryDescriptor d2) {
-			double val1 = result.getAmount(d1);
-			double val2 = result.getAmount(d2);
+			double val1 = result.getTotalImpactResult(d1).getValue();
+			double val2 = result.getTotalImpactResult(d2).getValue();
 			return Doubles.compare(val1, val2);
 		}
 	}

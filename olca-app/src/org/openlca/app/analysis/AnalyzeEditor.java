@@ -12,11 +12,11 @@ import org.openlca.app.Messages;
 import org.openlca.app.analysis.localization.LocalisedImpactPage;
 import org.openlca.app.analysis.sankey.SankeyDiagram;
 import org.openlca.app.db.Cache;
-import org.openlca.app.inventory.ImpactResultPage;
-import org.openlca.app.inventory.ImpactResultProvider;
-import org.openlca.app.inventory.InventoryResultPage;
-import org.openlca.app.inventory.InventoryResultProvider;
 import org.openlca.app.results.FlowImpactPage;
+import org.openlca.app.results.TotalFlowResultPage;
+import org.openlca.app.results.TotalImpactResultPage;
+import org.openlca.app.results.quick.ImpactResultProvider;
+import org.openlca.app.results.quick.InventoryResultProvider;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.model.ProductSystem;
@@ -67,9 +67,9 @@ public class AnalyzeEditor extends FormEditor {
 		try {
 			addPage(new AnalyzeInfoPage(this, result, setup));
 
-			addPage(new InventoryResultPage(this, new InventoryAdapter()));
+			addPage(new TotalFlowResultPage(this, new InventoryAdapter()));
 			if (result.hasImpactResults())
-				addPage(new ImpactResultPage(this, new ImpactAdapter()));
+				addPage(new TotalImpactResultPage(this, new ImpactAdapter()));
 			addPage(new ProcessContributionPage(this, result));
 			addPage(new ProcessResultPage(this, result));
 			if (result.hasImpactResults())

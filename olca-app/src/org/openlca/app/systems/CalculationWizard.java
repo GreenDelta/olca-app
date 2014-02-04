@@ -10,8 +10,8 @@ import org.openlca.app.Messages;
 import org.openlca.app.analysis.AnalyzeEditor;
 import org.openlca.app.analysis.AnalyzeEditorInput;
 import org.openlca.app.db.Cache;
-import org.openlca.app.inventory.InventoryResultEditor;
-import org.openlca.app.inventory.InventoryResultInput;
+import org.openlca.app.results.quick.QuickResultEditor;
+import org.openlca.app.results.quick.QuickResultInput;
 import org.openlca.app.simulation.SimulationInit;
 import org.openlca.app.util.Editors;
 import org.openlca.core.math.CalculationSetup;
@@ -102,9 +102,9 @@ class CalculationWizard extends Wizard {
 			log.trace("calculation done, open editor");
 			String resultKey = Cache.getAppCache().put(inventoryResult);
 			String setupKey = Cache.getAppCache().put(setup);
-			InventoryResultInput input = new InventoryResultInput(setup
+			QuickResultInput input = new QuickResultInput(setup
 					.getProductSystem().getId(), resultKey, setupKey);
-			Editors.open(input, InventoryResultEditor.ID);
+			Editors.open(input, QuickResultEditor.ID);
 		}
 
 		private void simulate() {
