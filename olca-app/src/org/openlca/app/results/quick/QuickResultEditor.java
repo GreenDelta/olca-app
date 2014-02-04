@@ -6,6 +6,7 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.openlca.app.db.Cache;
+import org.openlca.app.results.ContributionTablePage;
 import org.openlca.app.results.TotalFlowResultPage;
 import org.openlca.app.results.TotalImpactResultPage;
 import org.openlca.core.math.CalculationSetup;
@@ -55,6 +56,7 @@ public class QuickResultEditor extends FormEditor {
 			addPage(new TotalFlowResultPage(this, result));
 			if (result.hasImpactResults())
 				addPage(new TotalImpactResultPage(this, result));
+			addPage(new ContributionTablePage(this, result));
 		} catch (Exception e) {
 			log.error("failed to add pages", e);
 		}
