@@ -25,6 +25,7 @@ import org.openlca.app.components.FlowImpactSelection;
 import org.openlca.app.components.FlowImpactSelection.EventHandler;
 import org.openlca.app.db.Cache;
 import org.openlca.app.resources.ImageType;
+import org.openlca.app.results.analysis.AnalyzeEditor;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;

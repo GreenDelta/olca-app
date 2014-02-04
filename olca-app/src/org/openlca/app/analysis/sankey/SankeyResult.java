@@ -3,13 +3,15 @@ package org.openlca.app.analysis.sankey;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import org.openlca.core.matrix.LongIndex;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.core.results.AnalysisResult;
+import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.core.results.FullResultProvider;
 import org.openlca.util.Doubles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,15 +24,16 @@ class SankeyResult {
 	private Logger log = LoggerFactory.getLogger(getClass());
 
 	private ProductSystem productSystem;
-	private AnalysisResult results;
+	private FullResultProvider results;
 
 	private LongIndex processIndex;
+	private ProcessDescriptor[] processes;
 	private double[] totalResults;
 	private double[] totalContributions;
 	private double[] singleResults;
 	private double[] singleContributions;
 
-	public SankeyResult(ProductSystem productSystem, AnalysisResult results) {
+	public SankeyResult(ProductSystem productSystem, FullResultProvider results) {
 		this.productSystem = productSystem;
 		this.results = results;
 	}
@@ -85,7 +88,7 @@ class SankeyResult {
 		if (processLink == null || results == null)
 			return 0;
 		double totalContr = getTotalContribution(processLink.getProviderId());
-		double linkShare = results.getContributions().getLinkShare(processLink);
+		double linkShare = results.getLinkShare(processLink);
 		return totalContr * linkShare;
 	}
 
@@ -131,8 +134,9 @@ class SankeyResult {
 	private double[] calcAggFlowResults(FlowDescriptor flow) {
 		double[] vector = new double[processIndex.size()];
 		for (int i = 0; i < processIndex.size(); i++) {
-			long processId = processIndex.getKeyAt(i);
-			double result = results.getTotalFlowResult(processId, flow.getId());
+			ProcessDescriptor process = processes[i];
+			double result = results.getUpstreamFlowResult(process, flow)
+					.getValue();
 			vector[i] = result;
 		}
 		return vector;
@@ -141,31 +145,31 @@ class SankeyResult {
 	private double[] calcSingFlowResults(FlowDescriptor flow) {
 		double[] vector = new double[processIndex.size()];
 		for (int i = 0; i < processIndex.size(); i++) {
-			long processId = processIndex.getKeyAt(i);
-			double result = results
-					.getSingleFlowResult(processId, flow.getId());
+			ProcessDescriptor process = processes[i];
+			double result = results.getSingleFlowResult(process, flow)
+					.getValue();
 			vector[i] = result;
 		}
 		return vector;
 	}
 
-	private double[] calcAggImpactResults(ImpactCategoryDescriptor category) {
+	private double[] calcAggImpactResults(ImpactCategoryDescriptor impact) {
 		double[] vector = new double[processIndex.size()];
 		for (int i = 0; i < processIndex.size(); i++) {
-			long processId = processIndex.getKeyAt(i);
-			double result = results.getTotalImpactResult(processId,
-					category.getId());
+			ProcessDescriptor process = processes[i];
+			double result = results.getUpstreamImpactResult(process, impact)
+					.getValue();
 			vector[i] = result;
 		}
 		return vector;
 	}
 
-	private double[] calcSingImpactResults(ImpactCategoryDescriptor category) {
+	private double[] calcSingImpactResults(ImpactCategoryDescriptor impact) {
 		double[] vector = new double[processIndex.size()];
 		for (int i = 0; i < processIndex.size(); i++) {
-			long processId = processIndex.getKeyAt(i);
-			double result = results.getSingleImpactResult(processId,
-					category.getId());
+			ProcessDescriptor process = processes[i];
+			double result = results.getSingleImpactResult(process, impact)
+					.getValue();
 			vector[i] = result;
 		}
 		return vector;
@@ -173,8 +177,12 @@ class SankeyResult {
 
 	private void buildProcessIndex() {
 		processIndex = new LongIndex();
-		for (Long process : productSystem.getProcesses())
-			processIndex.put(process);
+		Set<ProcessDescriptor> processSet = results.getProcessDescriptors();
+		processes = new ProcessDescriptor[processSet.size()];
+		for (ProcessDescriptor process : processSet) {
+			int i = processIndex.put(process.getId());
+			processes[i] = process;
+		}
 	}
 
 }

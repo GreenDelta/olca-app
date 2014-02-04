@@ -27,6 +27,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.db.Cache;
+import org.openlca.app.results.analysis.AnalyzeEditor;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.Tables;

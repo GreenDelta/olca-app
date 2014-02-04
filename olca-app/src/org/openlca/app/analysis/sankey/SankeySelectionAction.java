@@ -5,7 +5,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.window.Window;
 import org.openlca.app.Messages;
 import org.openlca.app.resources.ImageType;
-import org.openlca.core.results.AnalysisResult;
+import org.openlca.core.results.FullResultProvider;
 
 /**
  * Opens the {@link SankeySelectionDialog} and updates the Sankey diagram with
@@ -38,13 +38,13 @@ public class SankeySelectionAction extends Action {
 	public void run() {
 		if (sankeyDiagram == null)
 			return;
-		AnalysisResult result = sankeyDiagram.getResult();
+		FullResultProvider result = sankeyDiagram.getResult();
 		if (result == null)
 			return;
 		openAndUpdate(result);
 	}
 
-	private void openAndUpdate(AnalysisResult result) {
+	private void openAndUpdate(FullResultProvider result) {
 		SankeySelectionDialog dialog = new SankeySelectionDialog(result);
 		dialog.setCutoff(cutoff);
 		dialog.setSelection(lastSelection);

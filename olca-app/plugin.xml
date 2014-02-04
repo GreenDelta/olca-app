@@ -87,7 +87,7 @@
             contributorClass="org.openlca.app.projects.ProjectResultActions">
       </editor>
       <editor
-            class="org.openlca.app.analysis.AnalyzeEditor"
+            class="org.openlca.app.results.analysis.AnalyzeEditor"
             default="false"
             icon="icons/analyze.gif"
             id="editors.analyze"

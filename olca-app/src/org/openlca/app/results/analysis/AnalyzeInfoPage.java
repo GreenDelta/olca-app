@@ -1,6 +1,4 @@
-package org.openlca.app.analysis;
-
-import java.io.File;
+package org.openlca.app.results.analysis;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -13,13 +11,9 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.openlca.app.App;
 import org.openlca.app.Messages;
-import org.openlca.app.components.FileChooser;
-import org.openlca.app.db.Cache;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.results.ContributionChartSection;
-import org.openlca.app.util.InformationPopup;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.math.CalculationSetup;
@@ -27,7 +21,6 @@ import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.NwSetDescriptor;
 import org.openlca.core.results.FullResultProvider;
-import org.openlca.io.xls.results.AnalysisResultExport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,30 +89,31 @@ public class AnalyzeInfoPage extends FormPage {
 	}
 
 	private void tryExport() {
-		final File exportFile = FileChooser.forExport("*.xlsx",
-				"analysis_result.xlsx");
-		if (exportFile == null)
-			return;
-		final boolean[] success = { false };
-		App.run("Export...", new Runnable() {
-			@Override
-			public void run() {
-				try {
-					new AnalysisResultExport(setup.getProductSystem(),
-							exportFile, Cache.getEntityCache()).run(result);
-					success[0] = true;
-				} catch (Exception exc) {
-					log.error("Excel export failed", exc);
-				}
-			}
-		}, new Runnable() {
-			@Override
-			public void run() {
-				if (success[0]) {
-					InformationPopup.show("Export done");
-				}
-			}
-		});
+		// TODO: result export
+		// final File exportFile = FileChooser.forExport("*.xlsx",
+		// "analysis_result.xlsx");
+		// if (exportFile == null)
+		// return;
+		// final boolean[] success = { false };
+		// App.run("Export...", new Runnable() {
+		// @Override
+		// public void run() {
+		// try {
+		// new AnalysisResultExport(setup.getProductSystem(),
+		// exportFile, Cache.getEntityCache()).run(result);
+		// success[0] = true;
+		// } catch (Exception exc) {
+		// log.error("Excel export failed", exc);
+		// }
+		// }
+		// }, new Runnable() {
+		// @Override
+		// public void run() {
+		// if (success[0]) {
+		// InformationPopup.show("Export done");
+		// }
+		// }
+		// });
 	}
 
 	private void createText(Composite parent, String label, String val) {

@@ -40,7 +40,7 @@ import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.NwSetDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
-import org.openlca.core.results.AnalysisResult;
+import org.openlca.core.results.FullResultProvider;
 
 public class SankeyDiagram extends GraphicalEditor implements
 		PropertyChangeListener {
@@ -56,11 +56,11 @@ public class SankeyDiagram extends GraphicalEditor implements
 	private ImpactMethodDescriptor method;
 	private NwSetDescriptor nwSet;
 	private ProductSystem productSystem;
-	private AnalysisResult result;
+	private FullResultProvider result;
 
 	private double zoom = 1;
 
-	public SankeyDiagram(CalculationSetup setUp, AnalysisResult result) {
+	public SankeyDiagram(CalculationSetup setUp, FullResultProvider result) {
 		setEditDomain(new DefaultEditDomain(this));
 		this.result = result;
 		productSystem = setUp.getProductSystem();
@@ -74,7 +74,7 @@ public class SankeyDiagram extends GraphicalEditor implements
 		}
 	}
 
-	public AnalysisResult getResult() {
+	public FullResultProvider getResult() {
 		return result;
 	}
 
@@ -239,16 +239,16 @@ public class SankeyDiagram extends GraphicalEditor implements
 		update(defaultSelection, cutoff);
 	}
 
-	private Object getDefaultSelection(AnalysisResult result) {
+	private Object getDefaultSelection(FullResultProvider result) {
 		if (result == null)
 			return null;
 		if (result.hasImpactResults()) {
 			Set<ImpactCategoryDescriptor> categories = result
-					.getImpactResults().getImpacts(cache);
+					.getImpactDescriptors();
 			if (!categories.isEmpty())
 				return categories.iterator().next();
 		}
-		Set<FlowDescriptor> flows = result.getFlowResults().getFlows(cache);
+		Set<FlowDescriptor> flows = result.getFlowDescriptors();
 		if (!flows.isEmpty())
 			return flows.iterator().next();
 		return null;

@@ -16,6 +16,7 @@ import org.eclipse.ui.forms.editor.IFormPage;
 import org.eclipse.ui.part.EditorActionBarContributor;
 import org.openlca.app.analysis.sankey.SankeyDiagram;
 import org.openlca.app.analysis.sankey.SankeySelectionAction;
+import org.openlca.app.results.analysis.AnalyzeEditor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +25,7 @@ public class AnalysisEditorActions extends EditorActionBarContributor implements
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private static AnalysisEditorActions instance; // TODO: delete!
-	private SaveImageAction saveImageAction = new SaveImageAction();
+	private SankeyImageAction saveImageAction = new SankeyImageAction();
 	private final SankeySelectionAction propertySelectionAction = new SankeySelectionAction();
 	private final OpenMiniatureViewAction viewAction = new OpenMiniatureViewAction();
 	private IToolBarManager toolBarManager;
