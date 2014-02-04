@@ -1,4 +1,4 @@
-package org.openlca.app.analysis.sankey;
+package org.openlca.app.results.analysis.sankey;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;

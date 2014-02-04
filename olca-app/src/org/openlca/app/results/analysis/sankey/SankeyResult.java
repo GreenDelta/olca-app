@@ -1,4 +1,4 @@
-package org.openlca.app.analysis.sankey;
+package org.openlca.app.results.analysis.sankey;
 
 import java.util.ArrayList;
 import java.util.Arrays;

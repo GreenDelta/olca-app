@@ -7,7 +7,7 @@
  * Contributors: GreenDeltaTC - initial API and implementation
  * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
  ******************************************************************************/
-package org.openlca.app.analysis.sankey;
+package org.openlca.app.results.analysis.sankey;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;

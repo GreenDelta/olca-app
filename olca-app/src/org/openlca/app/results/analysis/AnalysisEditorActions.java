@@ -1,4 +1,4 @@
-package org.openlca.app.analysis;
+package org.openlca.app.results.analysis;
 
 import org.eclipse.draw2d.Viewport;
 import org.eclipse.gef.LayerConstants;
@@ -14,9 +14,8 @@ import org.eclipse.jface.dialogs.PageChangedEvent;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.forms.editor.IFormPage;
 import org.eclipse.ui.part.EditorActionBarContributor;
-import org.openlca.app.analysis.sankey.SankeyDiagram;
-import org.openlca.app.analysis.sankey.SankeySelectionAction;
-import org.openlca.app.results.analysis.AnalyzeEditor;
+import org.openlca.app.results.analysis.sankey.SankeyDiagram;
+import org.openlca.app.results.analysis.sankey.SankeySelectionAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

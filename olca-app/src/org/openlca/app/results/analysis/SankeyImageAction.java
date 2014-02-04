@@ -1,4 +1,4 @@
-package org.openlca.app.analysis;
+package org.openlca.app.results.analysis;
 
 import java.io.File;
 
@@ -17,9 +17,9 @@ import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageLoader;
 import org.openlca.app.App;
 import org.openlca.app.Messages;
-import org.openlca.app.analysis.sankey.SankeyDiagram;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.resources.ImageType;
+import org.openlca.app.results.analysis.sankey.SankeyDiagram;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.openlca.app.analysis.sankey;
+package org.openlca.app.results.analysis.sankey;
 
 import java.util.List;
 

@@ -92,7 +92,7 @@
             icon="icons/analyze.gif"
             id="editors.analyze"
             name="Analyze viewer"
-            contributorClass="org.openlca.app.analysis.AnalysisEditorActions">
+            contributorClass="org.openlca.app.results.analysis.AnalysisEditorActions">
       </editor>
       <editor
             class="org.openlca.app.simulation.SimulationEditor"

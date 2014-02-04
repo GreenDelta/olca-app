@@ -6,11 +6,14 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.openlca.app.Messages;
-import org.openlca.app.analysis.AnalyzeEditorInput;
-import org.openlca.app.analysis.sankey.SankeyDiagram;
 import org.openlca.app.db.Cache;
+import org.openlca.app.results.ContributionTablePage;
+import org.openlca.app.results.FlowImpactPage;
+import org.openlca.app.results.GroupPage;
+import org.openlca.app.results.LocationContributionPage;
 import org.openlca.app.results.TotalFlowResultPage;
 import org.openlca.app.results.TotalImpactResultPage;
+import org.openlca.app.results.analysis.sankey.SankeyDiagram;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.results.FullResult;
@@ -63,21 +66,21 @@ public class AnalyzeEditor extends FormEditor {
 			addPage(new TotalFlowResultPage(this, result));
 			if (result.hasImpactResults())
 				addPage(new TotalImpactResultPage(this, result));
-			// addPage(new ContributionTablePage(this, result));
+			addPage(new ContributionTablePage(this, result));
 			// addPage(new ProcessResultPage(this, result));
-			// if (result.hasImpactResults())
-			// addPage(new FlowImpactPage(this, result));
+			if (result.hasImpactResults())
+				addPage(new FlowImpactPage(this, result));
 			// addPage(new ContributionTreePage(this, result));
-			// addPage(new GroupPage(this, result));
-			// addPage(new LocationContributionPage(this, result));
+			addPage(new GroupPage(this, result));
+			addPage(new LocationContributionPage(this, result));
 			// if (FeatureFlag.SUNBURST_CHART.isEnabled())
 			// addPage(new SunBurstView(this, result));
 			// if (FeatureFlag.LOCALISED_LCIA.isEnabled()
 			// && result.hasImpactResults())
 			// addPage(new LocalisedImpactPage(this, result));
-			// diagram = new SankeyDiagram(setup, result);
-			// diagramIndex = addPage(diagram, getEditorInput());
-			// setPageText(diagramIndex, "Sankey diagram");
+			diagram = new SankeyDiagram(setup, result);
+			diagramIndex = addPage(diagram, getEditorInput());
+			setPageText(diagramIndex, "Sankey diagram");
 		} catch (final PartInitException e) {
 			log.error("Add pages failed", e);
 		}

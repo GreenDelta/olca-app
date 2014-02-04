@@ -1,4 +1,4 @@
-package org.openlca.app.analysis.sankey;
+package org.openlca.app.results.analysis.sankey;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;

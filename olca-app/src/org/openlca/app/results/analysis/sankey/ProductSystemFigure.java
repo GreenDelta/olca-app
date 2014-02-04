@@ -7,7 +7,7 @@
  * Contributors: GreenDeltaTC - initial API and implementation
  * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
  ******************************************************************************/
-package org.openlca.app.analysis.sankey;
+package org.openlca.app.results.analysis.sankey;
 
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.Figure;
@@ -24,7 +24,7 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 import org.openlca.app.FaviColor;
 import org.openlca.app.Messages;
-import org.openlca.app.analysis.AnalysisEditorActions;
+import org.openlca.app.results.analysis.AnalysisEditorActions;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Numbers;
 import org.openlca.core.model.descriptors.FlowDescriptor;
