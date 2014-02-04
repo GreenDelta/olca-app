@@ -1,9 +1,6 @@
 package org.openlca.app.analysis;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
+import com.google.gson.Gson;
 import org.eclipse.jface.action.Action;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.layout.FillLayout;
@@ -28,14 +25,16 @@ import org.openlca.core.editors.HtmlView;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.core.results.AnalysisResult;
-import org.openlca.core.results.Contribution;
+import org.openlca.core.results.ContributionItem;
+import org.openlca.core.results.ContributionResultProvider;
 import org.openlca.core.results.ContributionSet;
 import org.openlca.core.results.LocationContribution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Shows the contributions of the locations in the product system to an analysis
@@ -45,17 +44,17 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 
 	private EntityCache cache = Cache.getEntityCache();
 	private Logger log = LoggerFactory.getLogger(getClass());
-	private AnalysisResult result;
+	private ContributionResultProvider<?> result;
 	private Browser browser;
 	private LocationContributionTable table;
 	private LocationContribution calculator;
 	private FlowImpactSelection flowImpactSelection;
 
-	public LocationContributionPage(AnalyzeEditor editor, AnalysisResult result) {
+	public LocationContributionPage(AnalyzeEditor editor,
+	                                ContributionResultProvider<?> result) {
 		super(editor, "analysis.MapPage", Messages.Locations);
 		this.result = result;
-		calculator = new LocationContribution(result, Messages.Unspecified,
-				cache);
+		calculator = new LocationContribution(result);
 	}
 
 	@Override
@@ -65,7 +64,7 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 
 	@Override
 	public void onLoaded() {
-		Set<FlowDescriptor> flows = result.getFlowResults().getFlows(cache);
+		Set<FlowDescriptor> flows = result.getFlowDescriptors();
 		if (flows.size() > 0) {
 			FlowDescriptor flow = flows.iterator().next();
 			flowImpactSelection.selectWithEvent(flow);
@@ -90,8 +89,9 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 				.on(result, cache)
 				.withEventHandler(new SelectionHandler())
 				.withSelection(
-						result.getFlowResults().getFlows(cache).iterator()
-								.next()).create(composite, toolkit);
+						result.getFlowDescriptors().iterator()
+								.next())
+				.create(composite, toolkit);
 	}
 
 	private void createTable(Composite body, FormToolkit toolkit) {
@@ -112,9 +112,9 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 		browser = UI.createBrowser(browserComp, this);
 	}
 
-	private void renderMap(List<Contribution<Location>> contributions) {
+	private void renderMap(List<ContributionItem<Location>> contributions) {
 		List<HeatmapPoint> points = new ArrayList<>();
-		for (Contribution<Location> contribution : contributions) {
+		for (ContributionItem<Location> contribution : contributions) {
 			if (!showContribution(contribution))
 				continue;
 			Location location = contribution.getItem();
@@ -131,7 +131,7 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 		browser.execute("setData(" + json + ")");
 	}
 
-	private boolean showContribution(Contribution<Location> contribution) {
+	private boolean showContribution(ContributionItem<Location> contribution) {
 		Location location = contribution.getItem();
 		if (location == null)
 			return false;

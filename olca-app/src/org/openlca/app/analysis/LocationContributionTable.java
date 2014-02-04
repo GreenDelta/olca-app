@@ -1,7 +1,5 @@
 package org.openlca.app.analysis;
 
-import java.util.List;
-
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -18,7 +16,9 @@ import org.openlca.app.util.Numbers;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.Location;
-import org.openlca.core.results.Contribution;
+import org.openlca.core.results.ContributionItem;
+
+import java.util.List;
 
 /**
  * Table for showing the result contributions for locations of an analysis
@@ -29,8 +29,8 @@ class LocationContributionTable {
 	private final int LOCATION_COL = 0;
 	private final int AMOUNT_COL = 1;
 	private final int UNIT_COL = 2;
-	private String[] COLUMN_LABELS = { Messages.Location, Messages.Amount,
-			Messages.Unit };
+	private String[] COLUMN_LABELS = {Messages.Location, Messages.Amount,
+			Messages.Unit};
 
 	private TableViewer viewer;
 	private String unit;
@@ -40,7 +40,6 @@ class LocationContributionTable {
 		viewer = new TableViewer(parent);
 		viewer.setContentProvider(ArrayContentProvider.getInstance());
 		viewer.setLabelProvider(new LabelProvider());
-		viewer.setSorter(new ContributionSorter());
 		Table table = viewer.getTable();
 		UI.gridData(table, true, true).heightHint = 150;
 		table.setHeaderVisible(true);
@@ -56,7 +55,7 @@ class LocationContributionTable {
 		this.unit = unit;
 	}
 
-	public void setInput(List<Contribution<Location>> contributions) {
+	public void setInput(List<ContributionItem<Location>> contributions) {
 		viewer.setInput(contributions);
 	}
 
@@ -77,9 +76,9 @@ class LocationContributionTable {
 		public Image getColumnImage(Object element, int col) {
 			if (col != 0)
 				return null;
-			if (!(element instanceof Contribution))
+			if (!(element instanceof ContributionItem))
 				return null;
-			Contribution<Location> contribution = Contribution.class
+			ContributionItem<Location> contribution = ContributionItem.class
 					.cast(element);
 			return image.getForTable(contribution.getShare());
 		}
@@ -87,20 +86,20 @@ class LocationContributionTable {
 		@Override
 		@SuppressWarnings("unchecked")
 		public String getColumnText(Object element, int col) {
-			if (!(element instanceof Contribution))
+			if (!(element instanceof ContributionItem))
 				return null;
-			Contribution<Location> contribution = Contribution.class
+			ContributionItem<Location> contribution = ContributionItem.class
 					.cast(element);
 			switch (col) {
-			case LOCATION_COL:
-				return contribution.getItem() == null ? null : contribution
-						.getItem().getName();
-			case AMOUNT_COL:
-				return Numbers.format(contribution.getAmount());
-			case UNIT_COL:
-				return unit;
-			default:
-				return null;
+				case LOCATION_COL:
+					return contribution.getItem() == null ? null : contribution
+							.getItem().getName();
+				case AMOUNT_COL:
+					return Numbers.format(contribution.getAmount());
+				case UNIT_COL:
+					return unit;
+				default:
+					return null;
 			}
 		}
 
