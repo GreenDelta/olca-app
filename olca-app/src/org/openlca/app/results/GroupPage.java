@@ -1,4 +1,9 @@
-package org.openlca.app.analysis;
+package org.openlca.app.results;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.InputDialog;
@@ -25,12 +30,12 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.IManagedForm;
+import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
-import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Actions;
@@ -38,7 +43,6 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
-import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.ProcessGroup;
 import org.openlca.core.model.ProcessGroupSet;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -48,31 +52,23 @@ import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
 /**
  * The page of the analysis editor with the grouping function.
  */
-class GroupPage extends FormPage {
+public class GroupPage extends FormPage {
 
 	List<ProcessGrouping> groups;
 	ProcessGroupSet groupSet;
-	AnalyzeEditor editor;
 	ContributionResultProvider<?> result;
 
-	private EntityCache cache = Cache.getEntityCache();
 	private TableViewer groupViewer;
 	private TableViewer processViewer;
 	private Menu groupMoveMenu;
 	private GroupResultSection resultSection;
 	private Section groupingSection;
 
-	public GroupPage(AnalyzeEditor editor, ContributionResultProvider<?> result) {
+	public GroupPage(FormEditor editor, ContributionResultProvider<?> result) {
 		super(editor, "analysis.GroupPage", Messages.Grouping);
-		this.editor = editor;
 		this.result = result;
 		initGroups(result);
 	}
@@ -140,7 +136,7 @@ class GroupPage extends FormPage {
 		Composite composite = UI.sectionClient(groupingSection, toolkit);
 		UI.gridLayout(composite, 2);
 		Actions.bind(groupingSection, new AddGroupAction(),
-				new SaveGroupSetAction(this), new OpenGroupSetAction(this));
+				new SaveGroupSetAction(this), new GroupSetAction(this));
 		createGroupViewer(composite);
 		processViewer = new TableViewer(composite, SWT.BORDER | SWT.MULTI);
 		UI.gridData(processViewer.getControl(), true, false).heightHint = 200;
@@ -268,7 +264,7 @@ class GroupPage extends FormPage {
 		}
 
 		private void move(ProcessGrouping sourceGroup,
-		                  ProcessGrouping targetGroup, List<ProcessDescriptor> processes) {
+				ProcessGrouping targetGroup, List<ProcessDescriptor> processes) {
 			sourceGroup.getProcesses().removeAll(processes);
 			targetGroup.getProcesses().addAll(processes);
 			processViewer.setInput(sourceGroup.getProcesses());
@@ -356,7 +352,7 @@ class GroupPage extends FormPage {
 		}
 
 		private int compareProcesses(ProcessDescriptor first,
-		                             ProcessDescriptor second) {
+				ProcessDescriptor second) {
 			return compareNames(first.getName(), second.getName());
 		}
 

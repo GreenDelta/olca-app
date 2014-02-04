@@ -1,5 +1,9 @@
 package org.openlca.app.results;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
+
 import org.eclipse.birt.chart.model.Chart;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.SWT;
@@ -23,10 +27,7 @@ import org.openlca.app.util.UI;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.results.ContributionItem;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
+import org.openlca.core.results.ProcessGrouping;
 
 /**
  * A pie chart for showing a set of result contributions.
@@ -110,15 +111,17 @@ public class ContributionChart {
 			number += " " + unit;
 		String text = "";
 		Object content = item.getItem();
+		// TODO: it would be better if a label provider could be set here
 		if (content instanceof BaseDescriptor)
 			text = Labels.getDisplayName((BaseDescriptor) content);
 		else if (content instanceof RootEntity)
 			text = Labels.getDisplayName((RootEntity) content);
+		else if (content instanceof ProcessGrouping)
+			text = ((ProcessGrouping) content).getName();
 		else if (item.isRest())
 			text = Messages.Rest;
 		return number + ": " + text;
 	}
-
 
 	private Image getLinkImage(int index) {
 		String key = Integer.toString(index);

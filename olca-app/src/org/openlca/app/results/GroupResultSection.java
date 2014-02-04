@@ -1,6 +1,10 @@
-package org.openlca.app.analysis;
+package org.openlca.app.results;
 
-import org.eclipse.jface.viewers.TableViewer;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -10,7 +14,6 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
-import org.openlca.app.results.ContributionChart;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.ISelectionChangedListener;
@@ -26,11 +29,6 @@ import org.openlca.core.results.Contributions;
 import org.openlca.core.results.GroupingContribution;
 import org.openlca.core.results.ProcessGrouping;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
 class GroupResultSection {
 
 	private final int FLOW = 0;
@@ -40,13 +38,13 @@ class GroupResultSection {
 	private EntityCache cache = Cache.getEntityCache();
 	private List<ProcessGrouping> groups;
 	private ContributionResultProvider<?> result;
-	private TableViewer tableViewer;
 	private FlowViewer flowViewer;
 	private ImpactCategoryViewer impactViewer;
 	private ContributionChart chart;
+	private GroupResultTable table;
 
 	public GroupResultSection(List<ProcessGrouping> groups,
-	                          ContributionResultProvider<?> result) {
+			ContributionResultProvider<?> result) {
 		this.groups = groups;
 		this.result = result;
 	}
@@ -67,10 +65,10 @@ class GroupResultSection {
 	}
 
 	private void updateResults(Object selection, String unit) {
-		if (selection != null && tableViewer != null) {
+		if (selection != null && table != null) {
 			List<ContributionItem<ProcessGrouping>> items = calculate(selection);
 			Contributions.sortDescending(items);
-			tableViewer.setInput(items); // TODO: unit in viewer
+			table.setInput(items, unit);
 			List<ContributionItem<?>> chartData = new ArrayList<>();
 			chartData.addAll(items);
 			chart.setData(chartData, unit);
@@ -95,9 +93,7 @@ class GroupResultSection {
 		Composite client = UI.sectionClient(section, toolkit);
 		UI.gridLayout(client, 1);
 		createCombos(toolkit, client);
-		GroupResultTable table = new GroupResultTable(client);
-		tableViewer = table.getViewer();
-		UI.gridData(tableViewer.getControl(), true, false).heightHint = 200;
+		table = new GroupResultTable(client);
 		createChartSection(client, toolkit);
 		update();
 	}
@@ -160,7 +156,7 @@ class GroupResultSection {
 		private int type;
 
 		public ResultTypeCheck(AbstractComboViewer<?> viewer, Button check,
-		                       int type) {
+				int type) {
 			this.viewer = viewer;
 			this.check = check;
 			this.type = type;

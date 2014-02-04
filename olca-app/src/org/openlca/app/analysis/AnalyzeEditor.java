@@ -14,6 +14,7 @@ import org.openlca.app.analysis.sankey.SankeyDiagram;
 import org.openlca.app.db.Cache;
 import org.openlca.app.results.FlowImpactPage;
 import org.openlca.app.results.ContributionTablePage;
+import org.openlca.app.results.GroupPage;
 import org.openlca.app.results.LocationContributionPage;
 import org.openlca.app.results.TotalFlowResultPage;
 import org.openlca.app.results.TotalImpactResultPage;

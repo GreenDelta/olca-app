@@ -1,4 +1,4 @@
-package org.openlca.app.analysis;
+package org.openlca.app.results;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -29,12 +29,12 @@ import org.slf4j.LoggerFactory;
  * The action for opening a grouping set from the database in the grouping page
  * of the analysis editor.
  */
-class OpenGroupSetAction extends Action {
+class GroupSetAction extends Action {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private GroupPage page;
 
-	public OpenGroupSetAction(GroupPage page) {
+	public GroupSetAction(GroupPage page) {
 		this.page = page;
 		setToolTipText(Messages.Open);
 		setImageDescriptor(ImageType.FOLDER_ICON_OPEN.getDescriptor());
@@ -42,7 +42,7 @@ class OpenGroupSetAction extends Action {
 
 	@Override
 	public void run() {
-		Shell shell = page.editor.getEditorSite().getShell();
+		Shell shell = UI.shell();
 		GroupDialog dialog = new GroupDialog(shell);
 		if (Window.OK == dialog.open()) {
 			ProcessGroupSet set = dialog.selectedGrouping;
