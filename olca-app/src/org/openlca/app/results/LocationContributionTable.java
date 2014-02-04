@@ -1,4 +1,6 @@
-package org.openlca.app.analysis;
+package org.openlca.app.results;
+
+import java.util.List;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -18,8 +20,6 @@ import org.openlca.app.util.UI;
 import org.openlca.core.model.Location;
 import org.openlca.core.results.ContributionItem;
 
-import java.util.List;
-
 /**
  * Table for showing the result contributions for locations of an analysis
  * result.
@@ -29,8 +29,8 @@ class LocationContributionTable {
 	private final int LOCATION_COL = 0;
 	private final int AMOUNT_COL = 1;
 	private final int UNIT_COL = 2;
-	private String[] COLUMN_LABELS = {Messages.Location, Messages.Amount,
-			Messages.Unit};
+	private String[] COLUMN_LABELS = { Messages.Location, Messages.Amount,
+			Messages.Unit };
 
 	private TableViewer viewer;
 	private String unit;
@@ -51,11 +51,9 @@ class LocationContributionTable {
 		Tables.bindColumnWidths(table, 0.5, 0.25, 0.25);
 	}
 
-	public void setUnit(String unit) {
+	public void setInput(List<ContributionItem<Location>> contributions,
+			String unit) {
 		this.unit = unit;
-	}
-
-	public void setInput(List<ContributionItem<Location>> contributions) {
 		viewer.setInput(contributions);
 	}
 
@@ -91,15 +89,15 @@ class LocationContributionTable {
 			ContributionItem<Location> contribution = ContributionItem.class
 					.cast(element);
 			switch (col) {
-				case LOCATION_COL:
-					return contribution.getItem() == null ? null : contribution
-							.getItem().getName();
-				case AMOUNT_COL:
-					return Numbers.format(contribution.getAmount());
-				case UNIT_COL:
-					return unit;
-				default:
-					return null;
+			case LOCATION_COL:
+				return contribution.getItem() == null ? Messages.Rest
+						: contribution.getItem().getName();
+			case AMOUNT_COL:
+				return Numbers.format(contribution.getAmount());
+			case UNIT_COL:
+				return unit;
+			default:
+				return null;
 			}
 		}
 

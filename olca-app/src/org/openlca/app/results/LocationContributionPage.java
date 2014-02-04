@@ -1,12 +1,16 @@
-package org.openlca.app.analysis;
+package org.openlca.app.results;
 
-import com.google.gson.Gson;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
+import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
@@ -19,6 +23,7 @@ import org.openlca.app.html.HtmlPage;
 import org.openlca.app.html.IHtmlResource;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.editors.HtmlView;
@@ -28,13 +33,12 @@ import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.ContributionItem;
 import org.openlca.core.results.ContributionResultProvider;
 import org.openlca.core.results.ContributionSet;
+import org.openlca.core.results.Contributions;
 import org.openlca.core.results.LocationContribution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import com.google.gson.Gson;
 
 /**
  * Shows the contributions of the locations in the product system to an analysis
@@ -50,8 +54,8 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 	private LocationContribution calculator;
 	private FlowImpactSelection flowImpactSelection;
 
-	public LocationContributionPage(AnalyzeEditor editor,
-	                                ContributionResultProvider<?> result) {
+	public LocationContributionPage(FormEditor editor,
+			ContributionResultProvider<?> result) {
 		super(editor, "analysis.MapPage", Messages.Locations);
 		this.result = result;
 		calculator = new LocationContribution(result);
@@ -85,12 +89,9 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 	private void createCombos(Composite body, FormToolkit toolkit) {
 		Composite composite = toolkit.createComposite(body);
 		UI.gridLayout(composite, 2);
-		flowImpactSelection = FlowImpactSelection
-				.on(result, cache)
+		flowImpactSelection = FlowImpactSelection.on(result, cache)
 				.withEventHandler(new SelectionHandler())
-				.withSelection(
-						result.getFlowDescriptors().iterator()
-								.next())
+				.withSelection(result.getFlowDescriptors().iterator().next())
 				.create(composite, toolkit);
 	}
 
@@ -148,19 +149,24 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 		public void flowSelected(FlowDescriptor flow) {
 			if (table == null || calculator == null || flow == null)
 				return;
+			String unit = Labels.getRefUnit(flow, result.getCache());
 			ContributionSet<Location> set = calculator.calculate(flow);
-			table.setInput(set.getContributions());
-			renderMap(set.getContributions());
+			setData(unit, set);
 		}
 
 		@Override
-		public void impactCategorySelected(
-				ImpactCategoryDescriptor impactCategory) {
-			if (table == null || calculator == null || impactCategory == null)
+		public void impactCategorySelected(ImpactCategoryDescriptor impact) {
+			if (table == null || calculator == null || impact == null)
 				return;
-			ContributionSet<Location> set = calculator
-					.calculate(impactCategory);
-			table.setInput(set.getContributions());
+			String unit = impact.getReferenceUnit();
+			ContributionSet<Location> set = calculator.calculate(impact);
+			setData(unit, set);
+		}
+
+		private void setData(String unit, ContributionSet<Location> set) {
+			List<ContributionItem<Location>> items = set.getContributions();
+			Contributions.sortDescending(items);
+			table.setInput(items, unit);
 			renderMap(set.getContributions());
 		}
 	}
