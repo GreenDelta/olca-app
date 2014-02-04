@@ -1,10 +1,5 @@
 package org.openlca.app.analysis;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -14,9 +9,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
-import org.openlca.app.components.ContributionItem;
 import org.openlca.app.db.Cache;
 import org.openlca.app.results.ContributionChart;
+import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
@@ -25,46 +20,64 @@ import org.openlca.app.viewers.combo.ImpactCategoryViewer;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.core.results.AnalysisResult;
-import org.openlca.core.results.Contribution;
+import org.openlca.core.results.ContributionItem;
+import org.openlca.core.results.ContributionResultProvider;
+import org.openlca.core.results.Contributions;
 import org.openlca.core.results.GroupingContribution;
 import org.openlca.core.results.ProcessGrouping;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+
 class GroupResultSection {
 
-	private int FLOW = 0;
-	private int IMPACT = 1;
+	private final int FLOW = 0;
+	private final int IMPACT = 1;
 	private int resultType = 0;
 
 	private EntityCache cache = Cache.getEntityCache();
 	private List<ProcessGrouping> groups;
-	private AnalysisResult result;
+	private ContributionResultProvider<?> result;
 	private TableViewer tableViewer;
 	private FlowViewer flowViewer;
 	private ImpactCategoryViewer impactViewer;
 	private ContributionChart chart;
 
 	public GroupResultSection(List<ProcessGrouping> groups,
-			AnalysisResult result) {
+	                          ContributionResultProvider<?> result) {
 		this.groups = groups;
 		this.result = result;
 	}
 
 	public void update() {
-		Object selection = null;
-		if (resultType == FLOW)
-			selection = flowViewer.getSelected();
-		else
-			selection = impactViewer.getSelected();
+		Object selection;
+		String unit;
+		if (resultType == FLOW) {
+			FlowDescriptor flow = flowViewer.getSelected();
+			unit = Labels.getRefUnit(flow, result.getCache());
+			selection = flow;
+		} else {
+			ImpactCategoryDescriptor impact = impactViewer.getSelected();
+			unit = impact.getReferenceUnit();
+			selection = impact;
+		}
+		updateResults(selection, unit);
+	}
+
+	private void updateResults(Object selection, String unit) {
 		if (selection != null && tableViewer != null) {
-			List<Contribution<ProcessGrouping>> items = calculate(selection);
-			tableViewer.setInput(items);
-			List<ContributionItem> chartData = createChartData(items);
-			chart.setData(chartData);
+			List<ContributionItem<ProcessGrouping>> items = calculate(selection);
+			Contributions.sortDescending(items);
+			tableViewer.setInput(items); // TODO: unit in viewer
+			List<ContributionItem<?>> chartData = new ArrayList<>();
+			chartData.addAll(items);
+			chart.setData(chartData, unit);
 		}
 	}
 
-	private List<Contribution<ProcessGrouping>> calculate(Object selection) {
+	private List<ContributionItem<ProcessGrouping>> calculate(Object selection) {
 		GroupingContribution calculator = new GroupingContribution(result,
 				groups);
 		if (selection instanceof FlowDescriptor)
@@ -74,21 +87,6 @@ class GroupResultSection {
 			return calculator.calculate((ImpactCategoryDescriptor) selection)
 					.getContributions();
 		return Collections.emptyList();
-	}
-
-	private List<ContributionItem> createChartData(
-			List<Contribution<ProcessGrouping>> items) {
-		List<ContributionItem> data = new ArrayList<>();
-		for (Contribution<ProcessGrouping> item : items) {
-			ContributionItem dataItem = new ContributionItem();
-			dataItem.setAmount(item.getAmount());
-			dataItem.setContribution(item.getShare());
-			dataItem.setLabel(item.getItem().getName());
-			dataItem.setRest(item.getItem().isRest());
-			data.add(dataItem);
-			// dataItem.setUnit(); TODO: units in chart
-		}
-		return data;
 	}
 
 	public void render(Composite body, FormToolkit toolkit) {
@@ -124,7 +122,7 @@ class GroupResultSection {
 				SWT.RADIO);
 		flowsCheck.setSelection(true);
 		flowViewer = new FlowViewer(parent, cache);
-		Set<FlowDescriptor> flows = result.getFlowResults().getFlows(cache);
+		Set<FlowDescriptor> flows = result.getFlowDescriptors();
 		flowViewer.setInput(flows.toArray(new FlowDescriptor[flows.size()]));
 		flowViewer
 				.addSelectionChangedListener(new SelectionChange<FlowDescriptor>());
@@ -138,8 +136,7 @@ class GroupResultSection {
 				Messages.ImpactCategories, SWT.RADIO);
 		impactViewer = new ImpactCategoryViewer(parent);
 		impactViewer.setEnabled(false);
-		Set<ImpactCategoryDescriptor> impacts = result.getImpactResults()
-				.getImpacts(cache);
+		Set<ImpactCategoryDescriptor> impacts = result.getImpactDescriptors();
 		impactViewer.setInput(impacts);
 		impactViewer
 				.addSelectionChangedListener(new SelectionChange<ImpactCategoryDescriptor>());
@@ -163,7 +160,7 @@ class GroupResultSection {
 		private int type;
 
 		public ResultTypeCheck(AbstractComboViewer<?> viewer, Button check,
-				int type) {
+		                       int type) {
 			this.viewer = viewer;
 			this.check = check;
 			this.type = type;

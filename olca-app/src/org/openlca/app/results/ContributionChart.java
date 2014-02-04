@@ -16,15 +16,12 @@ import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.openlca.app.FaviColor;
 import org.openlca.app.Messages;
 import org.openlca.app.components.charts.ChartCanvas;
-import org.openlca.app.db.Cache;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.BaseDescriptor;
-import org.openlca.core.model.descriptors.FlowDescriptor;
-import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.ContributionItem;
 
 import java.util.ArrayList;
@@ -40,6 +37,7 @@ public class ContributionChart {
 	private Stack<ImageHyperlink> createdLinks = new Stack<>();
 	private ChartCanvas chartCanvas;
 	private Composite linkComposite;
+	private String unit;
 
 	public ContributionChart(Composite parent, FormToolkit toolkit) {
 		parent.addDisposeListener(new Dispose());
@@ -57,6 +55,11 @@ public class ContributionChart {
 		linkComposite = toolkit.createComposite(composite);
 		UI.gridData(linkComposite, true, true);
 		UI.gridLayout(linkComposite, 1).verticalSpacing = 0;
+	}
+
+	public void setData(List<ContributionItem<?>> data, String unit) {
+		this.unit = unit;
+		setData(data);
 	}
 
 	public void setData(List<ContributionItem<?>> data) {
@@ -103,7 +106,6 @@ public class ContributionChart {
 
 	private String getLinkText(ContributionItem<?> item) {
 		String number = Numbers.format(item.getAmount(), 3);
-		String unit = getUnit(item);
 		if (unit != null)
 			number += " " + unit;
 		String text = "";
@@ -117,15 +119,6 @@ public class ContributionChart {
 		return number + ": " + text;
 	}
 
-	private String getUnit(ContributionItem<?> item) {
-		Object t = item.getItem();
-		if (t instanceof FlowDescriptor)
-			return Labels
-					.getRefUnit((FlowDescriptor) t, Cache.getEntityCache());
-		if (t instanceof ImpactCategoryDescriptor)
-			return ((ImpactCategoryDescriptor) t).getReferenceUnit();
-		return null;
-	}
 
 	private Image getLinkImage(int index) {
 		String key = Integer.toString(index);

@@ -13,7 +13,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.openlca.app.Messages;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.util.Tables;
-import org.openlca.core.results.Contribution;
+import org.openlca.core.results.ContributionItem;
 import org.openlca.core.results.ProcessGrouping;
 
 class GroupResultTable {
@@ -31,11 +31,10 @@ class GroupResultTable {
 		viewer = new TableViewer(parent);
 		viewer.setContentProvider(ArrayContentProvider.getInstance());
 		viewer.setLabelProvider(new GroupResultLabel());
-		viewer.setSorter(new ContributionSorter());
 		Table table = viewer.getTable();
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
-		String[] colLabels = { GROUP, AMOUNT, UNIT };
+		String[] colLabels = {GROUP, AMOUNT, UNIT};
 		for (String col : colLabels) {
 			TableColumn column = new TableColumn(table, SWT.NONE);
 			column.setText(col);
@@ -62,29 +61,30 @@ class GroupResultTable {
 		@Override
 		@SuppressWarnings("rawtypes")
 		public Image getColumnImage(Object element, int column) {
-			if (!(element instanceof Contribution) || column != 0)
+			if (!(element instanceof ContributionItem) || column != 0)
 				return null;
-			Contribution resultItem = (Contribution) element;
-			return image.getForTable(resultItem.getShare());
+			ContributionItem<?> item = (ContributionItem) element;
+			return image.getForTable(item.getShare());
 		}
 
 		@Override
 		@SuppressWarnings("unchecked")
 		public String getColumnText(Object element, int column) {
-			if (!(element instanceof Contribution))
+			if (!(element instanceof ContributionItem))
 				return null;
-			Contribution<ProcessGrouping> resultItem = (Contribution<ProcessGrouping>) element;
+			ContributionItem<ProcessGrouping> resultItem
+					= (ContributionItem<ProcessGrouping>) element;
 			switch (column) {
-			case GROUP_COL:
-				return getName(resultItem);
-			case AMOUNT_COL:
-				return Double.toString(resultItem.getAmount());
-			default:
-				return null;
+				case GROUP_COL:
+					return getName(resultItem);
+				case AMOUNT_COL:
+					return Double.toString(resultItem.getAmount());
+				default:
+					return null;
 			}
 		}
 
-		private String getName(Contribution<ProcessGrouping> resultItem) {
+		private String getName(ContributionItem<ProcessGrouping> resultItem) {
 			ProcessGrouping group = resultItem.getItem();
 			if (group != null)
 				return group.getName();

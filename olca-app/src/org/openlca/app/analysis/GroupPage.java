@@ -1,10 +1,5 @@
 package org.openlca.app.analysis;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -47,19 +42,26 @@ import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.ProcessGroup;
 import org.openlca.core.model.ProcessGroupSet;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
-import org.openlca.core.results.AnalysisResult;
+import org.openlca.core.results.ContributionResultProvider;
 import org.openlca.core.results.ProcessGrouping;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** The page of the analysis editor with the grouping function. */
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+/**
+ * The page of the analysis editor with the grouping function.
+ */
 class GroupPage extends FormPage {
 
 	List<ProcessGrouping> groups;
 	ProcessGroupSet groupSet;
 	AnalyzeEditor editor;
-	AnalysisResult result;
+	ContributionResultProvider<?> result;
 
 	private EntityCache cache = Cache.getEntityCache();
 	private TableViewer groupViewer;
@@ -68,19 +70,19 @@ class GroupPage extends FormPage {
 	private GroupResultSection resultSection;
 	private Section groupingSection;
 
-	public GroupPage(AnalyzeEditor editor, AnalysisResult result) {
+	public GroupPage(AnalyzeEditor editor, ContributionResultProvider<?> result) {
 		super(editor, "analysis.GroupPage", Messages.Grouping);
 		this.editor = editor;
 		this.result = result;
 		initGroups(result);
 	}
 
-	private void initGroups(AnalysisResult result) {
+	private void initGroups(ContributionResultProvider<?> result) {
 		groups = new ArrayList<>();
 		ProcessGrouping restGroup = new ProcessGrouping();
 		restGroup.setName(Messages.Rest);
 		restGroup.setRest(true);
-		for (ProcessDescriptor p : result.getFlowResults().getProcesses(cache))
+		for (ProcessDescriptor p : result.getProcessDescriptors())
 			restGroup.getProcesses().add(p);
 		groups.add(restGroup);
 	}
@@ -90,7 +92,7 @@ class GroupPage extends FormPage {
 			return;
 		this.groupSet = groupSet;
 		List<ProcessDescriptor> processes = new ArrayList<>();
-		for (ProcessDescriptor p : result.getFlowResults().getProcesses(cache))
+		for (ProcessDescriptor p : result.getProcessDescriptors())
 			processes.add(p);
 		List<ProcessGrouping> newGroups = ProcessGrouping.applyOn(processes,
 				groupSet, Messages.Rest);
@@ -109,7 +111,9 @@ class GroupPage extends FormPage {
 		}
 	}
 
-	/** Add the current group set name to the section title, if it is not null. */
+	/**
+	 * Add the current group set name to the section title, if it is not null.
+	 */
 	void updateTitle() {
 		if (groupingSection == null)
 			return;
@@ -244,7 +248,9 @@ class GroupPage extends FormPage {
 			widgetSelected(e);
 		}
 
-		/** Executed when an item is selected: moves processes to a group. */
+		/**
+		 * Executed when an item is selected: moves processes to a group.
+		 */
 		@Override
 		public void widgetSelected(SelectionEvent e) {
 			Object o = e.widget.getData();
@@ -262,14 +268,16 @@ class GroupPage extends FormPage {
 		}
 
 		private void move(ProcessGrouping sourceGroup,
-				ProcessGrouping targetGroup, List<ProcessDescriptor> processes) {
+		                  ProcessGrouping targetGroup, List<ProcessDescriptor> processes) {
 			sourceGroup.getProcesses().removeAll(processes);
 			targetGroup.getProcesses().addAll(processes);
 			processViewer.setInput(sourceGroup.getProcesses());
 			resultSection.update();
 		}
 
-		/** Executed when the menu is shown: fills the group-menu */
+		/**
+		 * Executed when the menu is shown: fills the group-menu
+		 */
 		@Override
 		public void handleEvent(Event event) {
 			ProcessGrouping group = Viewers.getFirstSelected(groupViewer);
@@ -329,7 +337,9 @@ class GroupPage extends FormPage {
 		}
 	}
 
-	/** A viewer sorter for groups and processes on the grouping page. */
+	/**
+	 * A viewer sorter for groups and processes on the grouping page.
+	 */
 	private class GroupPageSorter extends ViewerSorter {
 
 		@Override
@@ -346,7 +356,7 @@ class GroupPage extends FormPage {
 		}
 
 		private int compareProcesses(ProcessDescriptor first,
-				ProcessDescriptor second) {
+		                             ProcessDescriptor second) {
 			return compareNames(first.getName(), second.getName());
 		}
 
