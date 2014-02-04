@@ -11,6 +11,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.AbstractViewer;
 import org.openlca.app.viewers.ISelectionChangedListener;
@@ -119,19 +120,24 @@ public class ContributionChartSection {
 	}
 
 	private void refresh() {
+		if (chart == null)
+			return;
 		Object selection = itemViewer.getSelected();
+		String unit = null;
 		ContributionSet<ProcessDescriptor> contributionSet = null;
 		if (selection instanceof FlowDescriptor) {
 			FlowDescriptor flow = (FlowDescriptor) selection;
+			unit = Labels.getRefUnit(flow, provider.getCache());
 			contributionSet = provider.getProcessContributions(flow);
 		} else if (selection instanceof ImpactCategoryDescriptor) {
 			ImpactCategoryDescriptor impact = (ImpactCategoryDescriptor) selection;
+			unit = impact.getReferenceUnit();
 			contributionSet = provider.getProcessContributions(impact);
 		}
 		List<ContributionItem<ProcessDescriptor>> items = Contributions
 				.topWithRest(contributionSet.getContributions(), maxItems);
 		List<ContributionItem<?>> chartData = new ArrayList<>();
 		chartData.addAll(items);
-		chart.setData(chartData);
+		chart.setData(chartData, unit);
 	}
 }
