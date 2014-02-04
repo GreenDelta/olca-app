@@ -1,4 +1,4 @@
-package org.openlca.app.analysis;
+package org.openlca.app.results.analysis;
 
 import com.google.gson.Gson;
 
@@ -14,7 +14,6 @@ import org.openlca.app.components.FlowImpactSelection.EventHandler;
 import org.openlca.app.db.Cache;
 import org.openlca.app.html.HtmlPage;
 import org.openlca.app.html.IHtmlResource;
-import org.openlca.app.results.analysis.AnalyzeEditor;
 import org.openlca.app.util.UI;
 import org.openlca.core.editors.HtmlView;
 import org.openlca.core.matrix.FlowIndex;

@@ -1,4 +1,4 @@
-package org.openlca.app.analysis;
+package org.openlca.app.results.analysis;
 
 import org.openlca.app.util.Labels;
 import org.openlca.core.database.EntityCache;
