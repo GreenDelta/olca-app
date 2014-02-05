@@ -52,19 +52,18 @@ public class QuickResultActions extends EditorActionBarContributor {
 
 		}
 
-		private void runExport(ContributionResultProvider<?> result, CalculationSetup setup,
-				final File file) {
-			// TODO: run export
-//			final InventoryResultExport export = new InventoryResultExport(
-//					setup, result, Cache.getEntityCache());
-//			export.setExportFile(file);
-//			App.run("Export results", export, new Runnable() {
-//				public void run() {
-//					if (export.doneWithSuccess())
-//						InformationPopup.show("Export done",
-//								"Exported successfully to " + file.getName());
-//				}
-//			});
+		private void runExport(ContributionResultProvider<?> result,
+				CalculationSetup setup, final File file) {
+			final InventoryResultExport export = new InventoryResultExport(
+					setup, result, Cache.getEntityCache());
+			export.setExportFile(file);
+			App.run("Export results", export, new Runnable() {
+				public void run() {
+					if (export.doneWithSuccess())
+						InformationPopup.show("Export done",
+								"Exported successfully to " + file.getName());
+				}
+			});
 		}
 
 	}

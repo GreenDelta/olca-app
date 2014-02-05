@@ -1,5 +1,7 @@
 package org.openlca.app.results.quick;
 
+import java.io.File;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -10,15 +12,20 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.openlca.app.App;
 import org.openlca.app.Messages;
+import org.openlca.app.components.FileChooser;
+import org.openlca.app.db.Cache;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.results.ContributionChartSection;
+import org.openlca.app.util.InformationPopup;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.NwSetDescriptor;
+import org.openlca.io.xls.results.InventoryResultExport;
 
 public class QuickResultInfoPage extends FormPage {
 
@@ -89,22 +96,21 @@ public class QuickResultInfoPage extends FormPage {
 	}
 
 	private void tryExport() {
-		// TODO: run export
-		// final File exportFile = FileChooser.forExport("*.xlsx",
-		// "quick_result.xlsx");
-		// if (exportFile == null)
-		// return;
-		// final InventoryResultExport export = new InventoryResultExport(
-		// editor.getSetup(), editor.getResult(), Cache.getEntityCache());
-		// export.setExportFile(exportFile);
-		// App.run(Messages.Export, export, new Runnable() {
-		// @Override
-		// public void run() {
-		// if (export.doneWithSuccess()) {
-		// InformationPopup.show("Export done");
-		// }
-		// }
-		// });
+		final File exportFile = FileChooser.forExport("*.xlsx",
+				"quick_result.xlsx");
+		if (exportFile == null)
+			return;
+		final InventoryResultExport export = new InventoryResultExport(
+				editor.getSetup(), editor.getResult(), Cache.getEntityCache());
+		export.setExportFile(exportFile);
+		App.run(Messages.Export, export, new Runnable() {
+			@Override
+			public void run() {
+				if (export.doneWithSuccess()) {
+					InformationPopup.show("Export done");
+				}
+			}
+		});
 	}
 
 	private void createText(Composite parent, String label, String val) {
