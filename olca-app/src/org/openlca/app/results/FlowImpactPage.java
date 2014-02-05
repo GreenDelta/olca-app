@@ -20,7 +20,6 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.Messages;
-import org.openlca.app.analysis.ProcessResultPage;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
@@ -51,7 +50,7 @@ public class FlowImpactPage extends FormPage {
 
 	public FlowImpactPage(FormEditor editor,
 			ContributionResultProvider<?> result) {
-		super(editor, ProcessResultPage.class.getName(), "Flow contributions");
+		super(editor, "FlowImpactPage", "Flow contributions");
 		this.result = result;
 	}
 

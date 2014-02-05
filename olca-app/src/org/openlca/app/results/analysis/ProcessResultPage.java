@@ -1,4 +1,4 @@
-package org.openlca.app.analysis;
+package org.openlca.app.results.analysis;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +27,6 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.db.Cache;
-import org.openlca.app.results.analysis.AnalyzeEditor;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.Tables;
@@ -39,12 +38,12 @@ import org.openlca.core.matrix.FlowIndex;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
-import org.openlca.core.results.AnalysisResult;
-import org.openlca.core.results.FullResult;
 import org.openlca.core.results.FullResultProvider;
 
-/** Shows the single results of the processes in an analysis result. */
-public class ProcessResultPage extends FormPage {
+/**
+ * Shows the single and upstream results of the processes in an analysis result.
+ */
+class ProcessResultPage extends FormPage {
 
 	private EntityCache cache = Cache.getEntityCache();
 	private AnalyzeEditor editor;
@@ -97,10 +96,10 @@ public class ProcessResultPage extends FormPage {
 	}
 
 	private void setInputs() {
-		FlowIndex flowIndex = result.getFlowIndex();
+		FlowIndex flowIndex = result.getResult().getFlowIndex();
 		List<FlowDescriptor> inputFlows = new ArrayList<>();
 		List<FlowDescriptor> outputFlows = new ArrayList<>();
-		for (FlowDescriptor flow : result.getFlowResults().getFlows(cache)) {
+		for (FlowDescriptor flow : result.getFlowDescriptors()) {
 			if (flowIndex.isInput(flow.getId()))
 				inputFlows.add(flow);
 			else
@@ -110,11 +109,11 @@ public class ProcessResultPage extends FormPage {
 		outputViewer.setInput(outputFlows);
 
 		ProcessDescriptor p = cache.get(ProcessDescriptor.class, result
-				.getProductIndex().getRefProduct().getFirst());
+				.getResult().getProductIndex().getRefProduct().getFirst());
 		flowProcessViewer.select(p);
 		if (result.hasImpactResults()) {
 			impactProcessViewer.select(p);
-			impactViewer.setInput(result.getImpactResults().getImpacts(cache));
+			impactViewer.setInput(result.getImpactDescriptors());
 		}
 	}
 
@@ -408,8 +407,7 @@ public class ProcessResultPage extends FormPage {
 			double total = result.getTotalFlowResult(flow).getValue();
 			if (total == 0)
 				return 0;
-			double val = result.getTotalFlowResult(process.getId(),
-					flow.getId());
+			double val = result.getUpstreamFlowResult(process, flow).getValue();
 			double contribution = val / total;
 			if (contribution > 1)
 				return 1;
@@ -419,23 +417,23 @@ public class ProcessResultPage extends FormPage {
 		private double getDirectResult(FlowDescriptor flow) {
 			if (process == null || flow == null)
 				return 0;
-			return result.getSingleFlowResult(process.getId(), flow.getId());
+			return result.getSingleFlowResult(process, flow).getValue();
 		}
 
 		private double getUpstreamTotal(FlowDescriptor flow) {
 			if (process == null || flow == null)
 				return 0;
-			return result.getTotalFlowResult(process.getId(), flow.getId());
+			return result.getUpstreamFlowResult(process, flow).getValue();
 		}
 
 		private double getUpstreamContribution(ImpactCategoryDescriptor category) {
 			if (process == null || category == null)
 				return 0;
-			double total = result.getImpactResults().getTotalResult(category);
+			double total = result.getTotalImpactResult(category).getValue();
 			if (total == 0)
 				return 0;
-			double val = result.getTotalImpactResult(process.getId(),
-					category.getId());
+			double val = result.getUpstreamImpactResult(process, category)
+					.getValue();
 			double contribution = val / total;
 			if (contribution > 1)
 				return 1;
@@ -445,15 +443,13 @@ public class ProcessResultPage extends FormPage {
 		private double getDirectResult(ImpactCategoryDescriptor category) {
 			if (process == null || category == null)
 				return 0;
-			return result.getSingleImpactResult(process.getId(),
-					category.getId());
+			return result.getSingleImpactResult(process, category).getValue();
 		}
 
 		private double getUpstreamTotal(ImpactCategoryDescriptor category) {
 			if (process == null || category == null)
 				return 0;
-			return result.getTotalImpactResult(process.getId(),
-					category.getId());
+			return result.getUpstreamImpactResult(process, category).getValue();
 		}
 	}
 

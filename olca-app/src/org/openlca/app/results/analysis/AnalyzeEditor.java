@@ -69,7 +69,7 @@ public class AnalyzeEditor extends FormEditor {
 			if (result.hasImpactResults())
 				addPage(new TotalImpactResultPage(this, result));
 			addPage(new ContributionTablePage(this, result));
-			// addPage(new ProcessResultPage(this, result));
+			addPage(new ProcessResultPage(this, result));
 			if (result.hasImpactResults())
 				addPage(new FlowImpactPage(this, result));
 			addPage(new ContributionTreePage(this, result));
