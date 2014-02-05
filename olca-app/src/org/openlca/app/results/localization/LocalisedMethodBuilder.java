@@ -1,4 +1,4 @@
-package org.openlca.app.analysis.localization;
+package org.openlca.app.results.localization;
 
 import java.util.List;
 

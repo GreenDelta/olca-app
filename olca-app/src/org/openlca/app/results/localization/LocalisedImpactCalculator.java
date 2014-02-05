@@ -1,15 +1,15 @@
-package org.openlca.app.analysis.localization;
+package org.openlca.app.results.localization;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openlca.app.analysis.localization.LocalisedImpactResult.Entry;
+import org.openlca.app.results.localization.LocalisedImpactResult.Entry;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.core.results.AnalysisResult;
-import org.openlca.core.results.Contribution;
+import org.openlca.core.results.ContributionItem;
+import org.openlca.core.results.ContributionResultProvider;
 import org.openlca.core.results.ContributionSet;
 import org.openlca.core.results.LocationContribution;
 
@@ -18,11 +18,11 @@ import org.openlca.core.results.LocationContribution;
  */
 public class LocalisedImpactCalculator {
 
-	private AnalysisResult result;
+	private ContributionResultProvider<?> result;
 	private LocalisedImpactMethod method;
 	private List<ImpactCategoryDescriptor> impactCategories;
 
-	public LocalisedImpactCalculator(AnalysisResult result,
+	public LocalisedImpactCalculator(ContributionResultProvider<?> result,
 			LocalisedImpactMethod method) {
 		this.result = result;
 		this.method = method;
@@ -34,13 +34,12 @@ public class LocalisedImpactCalculator {
 	public LocalisedImpactResult calculate(EntityCache cache) {
 		LocalisedImpactResult localisedResult = new LocalisedImpactResult(
 				method.getImpactMethod());
-		LocationContribution contributions = new LocationContribution(result,
-				"GLO", cache);
-		for (FlowDescriptor flowDescriptor : result.getFlowResults().getFlows(
-				cache)) {
+		LocationContribution contributions = new LocationContribution(result);
+		for (FlowDescriptor flowDescriptor : result.getFlowDescriptors()) {
 			ContributionSet<Location> set = contributions
 					.calculate(flowDescriptor);
-			for (Contribution<Location> contribution : set.getContributions()) {
+			for (ContributionItem<Location> contribution : set
+					.getContributions()) {
 				Location location = contribution.getItem();
 				double amount = contribution.getAmount();
 				for (ImpactCategoryDescriptor impact : impactCategories) {

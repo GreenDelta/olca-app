@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -14,8 +13,6 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
-import org.openlca.app.resources.ImageType;
-import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.ISelectionChangedListener;
@@ -71,7 +68,6 @@ public class ContributionTableSection {
 	public void render(Composite parent, FormToolkit toolkit) {
 		Section section = UI.section(parent, toolkit, sectionTitle);
 		UI.gridData(section, true, true);
-		Actions.bind(section, new ExportAction());
 		Composite composite = toolkit.createComposite(section);
 		section.setClient(composite);
 		UI.gridLayout(composite, 1);
@@ -177,30 +173,6 @@ public class ContributionTableSection {
 		@Override
 		public void widgetSelected(SelectionEvent e) {
 			refreshValues();
-		}
-	}
-
-	private class ExportAction extends Action {
-		public ExportAction() {
-			setToolTipText(Messages.ExportToExcel);
-			setImageDescriptor(ImageType.EXCEL_ICON.getDescriptor());
-		}
-
-		@Override
-		public void run() {
-			// TODO: export to excel
-			// File file = FileChooser.forExport(".xls", sectionTitle + ".xls");
-			// if (file == null)
-			// return;
-			// ContributionExportData data = new ContributionExportData();
-			// data.setCutoff(spinner.getSelection());
-			// data.setFile(file);
-			// data.setItemName(selectionName);
-			// data.setItems((List<ProcessContributionItem>) viewer.getInput());
-			// data.setSelectedItem(itemViewer.getSelected().toString());
-			// data.setTitle(sectionTitle);
-			// ContributionExport export = new ContributionExport(data);
-			// App.run("Export of process contributions", export);
 		}
 	}
 

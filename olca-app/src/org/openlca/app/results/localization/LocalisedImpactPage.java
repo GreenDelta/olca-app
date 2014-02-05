@@ -1,4 +1,4 @@
-package org.openlca.app.analysis.localization;
+package org.openlca.app.results.localization;
 
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.widgets.Composite;
@@ -7,17 +7,17 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
-import org.openlca.app.analysis.localization.LocalisedImpactResult.Entry;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.html.HtmlPage;
 import org.openlca.app.html.IHtmlResource;
 import org.openlca.app.results.analysis.AnalyzeEditor;
+import org.openlca.app.results.localization.LocalisedImpactResult.Entry;
 import org.openlca.app.util.UI;
 import org.openlca.core.editors.HtmlView;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
-import org.openlca.core.results.AnalysisResult;
+import org.openlca.core.results.ContributionResultProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,10 +29,11 @@ public class LocalisedImpactPage extends FormPage implements HtmlPage {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private AnalyzeEditor editor;
-	private AnalysisResult result;
+	private ContributionResultProvider<?> result;
 	private Browser browser;
 
-	public LocalisedImpactPage(AnalyzeEditor editor, AnalysisResult result) {
+	public LocalisedImpactPage(AnalyzeEditor editor,
+			ContributionResultProvider<?> result) {
 		super(editor, "analyse.LocalisedImpactPage", "Localised LCIA (beta)");
 		this.editor = editor;
 		this.result = result;

@@ -15,6 +15,7 @@ import org.openlca.app.results.LocationContributionPage;
 import org.openlca.app.results.TotalFlowResultPage;
 import org.openlca.app.results.TotalImpactResultPage;
 import org.openlca.app.results.analysis.sankey.SankeyDiagram;
+import org.openlca.app.results.localization.LocalisedImpactPage;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.results.FullResult;
@@ -76,9 +77,9 @@ public class AnalyzeEditor extends FormEditor {
 			addPage(new LocationContributionPage(this, result));
 			if (FeatureFlag.SUNBURST_CHART.isEnabled())
 				addPage(new SunBurstView(this, result));
-			// if (FeatureFlag.LOCALISED_LCIA.isEnabled()
-			// && result.hasImpactResults())
-			// addPage(new LocalisedImpactPage(this, result));
+			if (FeatureFlag.LOCALISED_LCIA.isEnabled()
+					&& result.hasImpactResults())
+				addPage(new LocalisedImpactPage(this, result));
 			diagram = new SankeyDiagram(setup, result);
 			diagramIndex = addPage(diagram, getEditorInput());
 			setPageText(diagramIndex, "Sankey diagram");
