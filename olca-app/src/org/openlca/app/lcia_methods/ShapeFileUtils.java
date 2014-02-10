@@ -1,26 +1,5 @@
 package org.openlca.app.lcia_methods;
 
-import com.google.common.io.Files;
-import com.google.gson.Gson;
-import org.apache.commons.io.FilenameUtils;
-import org.geotools.data.DataStore;
-import org.geotools.data.shapefile.ShapefileDataStore;
-import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.data.simple.SimpleFeatureIterator;
-import org.geotools.map.FeatureLayer;
-import org.geotools.map.Layer;
-import org.geotools.map.MapContent;
-import org.geotools.styling.SLD;
-import org.geotools.styling.Style;
-import org.geotools.swing.JMapFrame;
-import org.opengis.feature.simple.SimpleFeature;
-import org.openlca.app.App;
-import org.openlca.app.db.Database;
-import org.openlca.core.model.ImpactMethod;
-import org.openlca.util.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -34,6 +13,33 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
+import org.apache.commons.io.FilenameUtils;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Shell;
+import org.geotools.data.DataStore;
+import org.geotools.data.shapefile.ShapefileDataStore;
+import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureIterator;
+import org.geotools.map.FeatureLayer;
+import org.geotools.map.Layer;
+import org.geotools.map.MapContent;
+import org.geotools.styling.SLD;
+import org.geotools.styling.Style;
+import org.geotools.swt.SwtMapFrame;
+import org.opengis.feature.simple.SimpleFeature;
+import org.openlca.app.App;
+import org.openlca.app.db.Database;
+import org.openlca.app.util.UI;
+import org.openlca.core.model.ImpactMethod;
+import org.openlca.util.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.io.Files;
+import com.google.gson.Gson;
 
 class ShapeFileUtils {
 
@@ -52,8 +58,8 @@ class ShapeFileUtils {
 	}
 
 	/**
-	 * Check if the mandatory files that define the shape-file are
-	 * available (see http://en.wikipedia.org/wiki/Shapefile).
+	 * Check if the mandatory files that define the shape-file are available
+	 * (see http://en.wikipedia.org/wiki/Shapefile).
 	 */
 	static boolean isValid(File shapeFile) {
 		if (shapeFile == null)
@@ -65,7 +71,7 @@ class ShapeFileUtils {
 			return false;
 		String rawName = FilenameUtils.removeExtension(fileName);
 		File folder = shapeFile.getParentFile();
-		String[] mandatoryExtensions = {".shx", ".dbf"};
+		String[] mandatoryExtensions = { ".shx", ".dbf" };
 		for (String ext : mandatoryExtensions) {
 			File file = new File(folder, rawName + ext);
 			if (!file.exists())
@@ -75,8 +81,8 @@ class ShapeFileUtils {
 	}
 
 	/**
-	 * Returns true if a shape-file with the given name already exists for
-	 * the given method.
+	 * Returns true if a shape-file with the given name already exists for the
+	 * given method.
 	 */
 	static boolean alreadyExists(ImpactMethod method, File shapeFile) {
 		File folder = getFolder(method);
@@ -87,10 +93,11 @@ class ShapeFileUtils {
 	}
 
 	/**
-	 * Imports the given shape-file and the associated files into the folder
-	 * for the given impact method.
+	 * Imports the given shape-file and the associated files into the folder for
+	 * the given impact method.
 	 */
-	static String importFile(ImpactMethod method, File shapeFile) throws Exception {
+	static String importFile(ImpactMethod method, File shapeFile)
+			throws Exception {
 		File methodFolder = getFolder(method);
 		if (!methodFolder.exists())
 			methodFolder.mkdirs();
@@ -152,16 +159,15 @@ class ShapeFileUtils {
 			file.delete();
 	}
 
-	static List<ShapeFileParameter> readParameters(ImpactMethod method, String
-			shapeFileName) throws IOException {
+	static List<ShapeFileParameter> readParameters(ImpactMethod method,
+			String shapeFileName) throws IOException {
 		File folder = getFolder(method);
 		File paramFile = new File(folder, shapeFileName + ".gisolca");
 		if (!paramFile.exists())
 			return Collections.emptyList();
 		try (FileInputStream is = new FileInputStream(paramFile);
-		     InputStreamReader reader = new InputStreamReader(is, "utf-8");
-		     BufferedReader buffer = new BufferedReader(reader);
-		) {
+				InputStreamReader reader = new InputStreamReader(is, "utf-8");
+				BufferedReader buffer = new BufferedReader(reader);) {
 			Gson gson = new Gson();
 			ShapeFileParameter[] params = gson.fromJson(buffer,
 					ShapeFileParameter[].class);
@@ -177,16 +183,14 @@ class ShapeFileUtils {
 	}
 
 	static void writeParameters(ImpactMethod method, String shapeFileName,
-	                            List<ShapeFileParameter> parameters)
-			throws IOException {
+			List<ShapeFileParameter> parameters) throws IOException {
 		File folder = getFolder(method);
 		if (!folder.exists())
 			folder.mkdirs();
 		File paramFile = new File(folder, shapeFileName + ".gisolca");
 		try (FileOutputStream os = new FileOutputStream(paramFile);
-		     OutputStreamWriter writer = new OutputStreamWriter(os, "utf-8");
-		     BufferedWriter buffer = new BufferedWriter(writer);
-		) {
+				OutputStreamWriter writer = new OutputStreamWriter(os, "utf-8");
+				BufferedWriter buffer = new BufferedWriter(writer);) {
 			Gson gson = new Gson();
 			gson.toJson(parameters, buffer);
 		}
@@ -200,41 +204,68 @@ class ShapeFileUtils {
 		try {
 			SimpleFeatureCollection source = dataStore.getFeatureSource(
 					dataStore.getTypeNames()[0]).getFeatures();
-			MapContent mapContent = new MapContent();
-			mapContent.setTitle("Features of " + shapeFileName);
 			Style style = SLD.createSimpleStyle(source.getSchema());
-			Layer layer = new FeatureLayer(source, style);
-			mapContent.addLayer(layer);
-			JMapFrame.showMap(mapContent);
+			showMapFrame(shapeFileName, source, style);
 		} catch (Exception e) {
 			log.error("Failed to open shape-file", e);
 		}
 	}
 
 	static void openFileInMap(ImpactMethod method, String shapeFileName,
-	                     String parameter) {
+			String parameter) {
 		DataStore dataStore = openDataStore(method, shapeFileName);
 		if (dataStore == null)
 			return;
 		double[] range = getRange(dataStore, parameter);
 		Logger log = LoggerFactory.getLogger(ShapeFileUtils.class);
 		try {
-			SimpleFeatureCollection source = dataStore.getFeatureSource(
-					dataStore.getTypeNames()[0]).getFeatures();
-			MapContent mapContent = new MapContent();
-			mapContent.setTitle("Features of " + shapeFileName);
 			Style style = ShapeFileStyle.create(dataStore, parameter, range[0],
 					range[1]);
-			Layer layer = new FeatureLayer(source, style);
-			mapContent.addLayer(layer);
-			JMapFrame.showMap(mapContent);
+			SimpleFeatureCollection source = dataStore.getFeatureSource(
+					dataStore.getTypeNames()[0]).getFeatures();
+			showMapFrame(shapeFileName, source, style);
 		} catch (Exception e) {
 			log.error("Failed to open shape-file", e);
 		}
 	}
 
+	private static void showMapFrame(String shapeFileName,
+			SimpleFeatureCollection source, Style style) {
+		MapContent mapContent = new MapContent();
+		mapContent.setTitle("Features of " + shapeFileName);
+		Layer layer = new FeatureLayer(source, style);
+		mapContent.addLayer(layer);
+		SwtMapFrame frame = createMapFrame(mapContent);
+		frame.setBlockOnOpen(true);
+		frame.open();
+	}
+
+	private static SwtMapFrame createMapFrame(MapContent mapContent) {
+		boolean showMenu = false;
+		boolean showToolBar = true;
+		boolean showStatusBar = false;
+		boolean showLayerTable = false;
+		SwtMapFrame frame = new SwtMapFrame(showMenu, showToolBar,
+				showStatusBar, showLayerTable, mapContent) {
+			@Override
+			protected Control createContents(Composite parent) {
+				Control control = super.createContents(parent);
+				Shell shell = getShell();
+				Shell parentShell = UI.shell();
+				if (shell != null && parentShell != null) {
+					Point parentSize = parentShell.getSize();
+					shell.setSize((int) (parentSize.x * 0.7),
+							(int) (parentSize.y * 0.7));
+					UI.center(parentShell, shell);
+				}
+				return control;
+			}
+		};
+		return frame;
+	}
+
 	private static DataStore openDataStore(ImpactMethod method,
-	                                       String shapeFileName) {
+			String shapeFileName) {
 		File folder = ShapeFileUtils.getFolder(method);
 		if (folder == null)
 			return null;
@@ -242,8 +273,8 @@ class ShapeFileUtils {
 		try {
 			File file = new File(folder, shapeFileName + ".shp");
 			log.trace("open shape-file in map: {}", file);
-			ShapefileDataStore dataStore = new ShapefileDataStore(
-					file.toURI().toURL());
+			ShapefileDataStore dataStore = new ShapefileDataStore(file.toURI()
+					.toURL());
 			return dataStore;
 		} catch (Exception e) {
 			log.error("Failed to open shape-file", e);
@@ -264,17 +295,17 @@ class ShapeFileUtils {
 			while (it.hasNext()) {
 				SimpleFeature feature = it.next();
 				Object attVal = feature.getAttribute(parameter);
-				if(!(attVal instanceof Number))
+				if (!(attVal instanceof Number))
 					continue;
 				Number val = (Number) attVal;
 				double v = val.doubleValue();
 				max = Math.max(max, v);
 				min = Math.min(min, v);
 			}
-			return new double[]{min, max};
+			return new double[] { min, max };
 		} catch (Exception e) {
 			log.error("failed to get parameter range from shape file", e);
-			return new double[]{0d, 0d};
+			return new double[] { 0d, 0d };
 		}
 	}
 
