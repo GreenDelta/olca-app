@@ -95,7 +95,7 @@
             contributorClass="org.openlca.app.results.analysis.AnalysisEditorActions">
       </editor>
       <editor
-            class="org.openlca.app.simulation.SimulationEditor"
+            class="org.openlca.app.results.simulation.SimulationEditor"
             default="false"
             icon="icons/simulate_16.png"
             id="SimulationEditor"

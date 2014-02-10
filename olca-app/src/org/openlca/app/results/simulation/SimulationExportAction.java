@@ -1,4 +1,4 @@
-package org.openlca.app.simulation;
+package org.openlca.app.results.simulation;
 
 import java.io.File;
 
@@ -8,6 +8,7 @@ import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Cache;
 import org.openlca.app.resources.ImageType;
 import org.openlca.core.results.SimulationResult;
+import org.openlca.core.results.SimulationResultProvider;
 import org.openlca.io.xls.results.SimulationResultExport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,8 +43,9 @@ class SimulationExportAction extends Action {
 
 	private void tryRun(File file) {
 		try {
-			SimulationResultExport export = new SimulationResultExport(result,
-					Cache.getEntityCache());
+			SimulationResultProvider<?> provider = new SimulationResultProvider<>(
+					result, Cache.getEntityCache());
+			SimulationResultExport export = new SimulationResultExport(provider);
 			export.run(file);
 		} catch (Exception e) {
 			log.error("Result export failed", e);

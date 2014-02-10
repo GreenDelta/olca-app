@@ -6,7 +6,7 @@ import java.util.List;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.openlca.app.simulation.StatisticsCanvas;
+import org.openlca.app.results.simulation.StatisticsCanvas;
 import org.openlca.core.math.NumberGenerator;
 
 public class UncertaintyShell {

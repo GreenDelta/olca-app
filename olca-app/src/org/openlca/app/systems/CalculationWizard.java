@@ -12,7 +12,7 @@ import org.openlca.app.results.analysis.AnalyzeEditor;
 import org.openlca.app.results.analysis.AnalyzeEditorInput;
 import org.openlca.app.results.quick.QuickResultEditor;
 import org.openlca.app.results.quick.QuickResultInput;
-import org.openlca.app.simulation.SimulationInit;
+import org.openlca.app.results.simulation.SimulationInit;
 import org.openlca.app.util.Editors;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.SystemCalculator;

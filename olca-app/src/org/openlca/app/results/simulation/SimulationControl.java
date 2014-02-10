@@ -1,4 +1,4 @@
-package org.openlca.app.simulation;
+package org.openlca.app.results.simulation;
 
 import org.eclipse.jface.operation.ModalContext;
 import org.eclipse.swt.events.SelectionEvent;

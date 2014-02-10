@@ -1,4 +1,4 @@
-package org.openlca.app.simulation;
+package org.openlca.app.results.simulation;
 
 import java.util.Set;
 
@@ -24,7 +24,6 @@ import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.app.viewers.combo.FlowViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
-import org.openlca.core.database.EntityCache;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
@@ -33,7 +32,7 @@ import org.openlca.core.model.Unit;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.SimulationResult;
-import org.openlca.core.results.SimulationResults;
+import org.openlca.core.results.SimulationResultProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,20 +42,21 @@ public class SimulationPage extends FormPage {
 	private final int IMPACT = 1;
 	private int resultType = FLOW;
 
-	private EntityCache cache = Cache.getEntityCache();
 	private SimulationEditor editor;
 	private StatisticsCanvas statisticsCanvas;
 	private ProgressBar progressBar;
 	private FlowViewer flowViewer;
 	private Section progressSection;
 	private ScrolledForm form;
-	private SimulationResult result;
+	private SimulationResultProvider<?> result;
 	private ImpactCategoryViewer impactViewer;
 
 	public SimulationPage(SimulationEditor editor) {
 		super(editor, "SimulationPage", "Simulation");
 		this.editor = editor;
-		this.result = editor.getSimulator().getResult();
+		SimulationResult result = editor.getSimulator().getResult();
+		this.result = new SimulationResultProvider<>(result,
+				Cache.getEntityCache());
 	}
 
 	@Override
@@ -129,7 +129,7 @@ public class SimulationPage extends FormPage {
 			return;
 		Section section = UI.section(body, toolkit, Messages.Results);
 		SimulationExportAction exportAction = new SimulationExportAction();
-		exportAction.configure(result);
+		exportAction.configure(result.getResult());
 		Actions.bind(section, exportAction);
 		Composite composite = UI.sectionClient(section, toolkit);
 		initFlowCheckViewer(toolkit, composite);
@@ -144,8 +144,7 @@ public class SimulationPage extends FormPage {
 				Messages.ImpactCategories, SWT.RADIO);
 		impactViewer = new ImpactCategoryViewer(section);
 		impactViewer.setEnabled(false);
-		Set<ImpactCategoryDescriptor> impacts = SimulationResults.getImpacts(
-				result, cache);
+		Set<ImpactCategoryDescriptor> impacts = result.getImpactDescriptors();
 		impactViewer.setInput(impacts);
 		impactViewer
 				.addSelectionChangedListener(new SelectionChange<ImpactCategoryDescriptor>());
@@ -157,8 +156,8 @@ public class SimulationPage extends FormPage {
 		Button flowsCheck = toolkit.createButton(section, Messages.Flows,
 				SWT.RADIO);
 		flowsCheck.setSelection(true);
-		flowViewer = new FlowViewer(section, cache);
-		Set<FlowDescriptor> flows = SimulationResults.getFlows(result, cache);
+		flowViewer = new FlowViewer(section, result.getCache());
+		Set<FlowDescriptor> flows = result.getFlowDescriptors();
 		flowViewer.setInput(flows.toArray(new FlowDescriptor[flows.size()]));
 		flowViewer.selectFirst();
 		flowViewer
@@ -172,12 +171,11 @@ public class SimulationPage extends FormPage {
 		if (resultType == FLOW) {
 			FlowDescriptor flow = flowViewer.getSelected();
 			if (flow != null)
-				statisticsCanvas.setValues(result.getFlowResults(flow.getId()));
+				statisticsCanvas.setValues(result.getFlowResults(flow));
 		} else {
 			ImpactCategoryDescriptor cat = impactViewer.getSelected();
 			if (cat != null)
-				statisticsCanvas
-						.setValues(result.getImpactResults(cat.getId()));
+				statisticsCanvas.setValues(result.getImpactResults(cat));
 		}
 	}
 
