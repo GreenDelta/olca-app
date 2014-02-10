@@ -1,4 +1,4 @@
-package org.openlca.app.projects;
+package org.openlca.app.results.projects;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
@@ -9,12 +9,12 @@ import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.descriptors.ProjectDescriptor;
 
 /** The editor input of a project result. */
-class ProjectResultInput implements IEditorInput {
+public class ProjectResultInput implements IEditorInput {
 
 	private long projectId;
 	private String resultKey;
 
-	ProjectResultInput(long projectId, String resultKey) {
+	public ProjectResultInput(long projectId, String resultKey) {
 		this.projectId = projectId;
 		this.resultKey = resultKey;
 	}

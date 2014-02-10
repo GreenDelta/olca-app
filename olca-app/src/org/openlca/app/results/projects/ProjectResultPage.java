@@ -1,4 +1,4 @@
-package org.openlca.app.projects;
+package org.openlca.app.results.projects;
 
 import java.util.Set;
 
@@ -26,14 +26,14 @@ import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.core.results.Contribution;
+import org.openlca.core.results.ContributionItem;
 import org.openlca.core.results.ContributionSet;
-import org.openlca.core.results.ProjectResult;
+import org.openlca.core.results.ProjectResultProvider;
 
 public class ProjectResultPage extends FormPage {
 
 	private EntityCache cache = Cache.getEntityCache();
-	private ProjectResult result;
+	private ProjectResultProvider result;
 	private ProjectResultChart chart;
 	private FlowImpactSelection selector;
 	private TableViewer tableViewer;
@@ -71,7 +71,7 @@ public class ProjectResultPage extends FormPage {
 	}
 
 	private void initialSelection(FlowImpactSelection selector) {
-		Set<FlowDescriptor> flowSet = result.getFlows(cache);
+		Set<FlowDescriptor> flowSet = result.getFlowDescriptors();
 		if (flowSet.isEmpty())
 			return;
 		FlowDescriptor flow = flowSet.iterator().next();
@@ -119,18 +119,18 @@ public class ProjectResultPage extends FormPage {
 
 		@Override
 		public Image getColumnImage(Object element, int columnIndex) {
-			if (!(element instanceof Contribution) || columnIndex > 0)
+			if (!(element instanceof ContributionItem) || columnIndex > 0)
 				return null;
-			Contribution<?> contribution = (Contribution<?>) element;
+			ContributionItem<?> contribution = (ContributionItem<?>) element;
 			return image.getForTable(contribution.getShare());
 		}
 
 		@Override
 		@SuppressWarnings("unchecked")
 		public String getColumnText(Object element, int col) {
-			if (!(element instanceof Contribution))
+			if (!(element instanceof ContributionItem))
 				return null;
-			Contribution<ProjectVariant> contribution = (Contribution<ProjectVariant>) element;
+			ContributionItem<ProjectVariant> contribution = (ContributionItem<ProjectVariant>) element;
 			switch (col) {
 			case 0:
 				return contribution.getItem().getName();

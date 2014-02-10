@@ -1,4 +1,4 @@
-package org.openlca.app.projects;
+package org.openlca.app.results.projects;
 
 import java.util.List;
 
@@ -34,7 +34,7 @@ import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.core.results.Contribution;
+import org.openlca.core.results.ContributionItem;
 import org.openlca.core.results.ContributionSet;
 import org.openlca.util.Doubles;
 
@@ -56,7 +56,7 @@ public class ProjectResultChart extends Composite {
 
 	public void renderChart(BaseDescriptor reference,
 			ContributionSet<ProjectVariant> set) {
-		List<Contribution<ProjectVariant>> contributions = set
+		List<ContributionItem<ProjectVariant>> contributions = set
 				.getContributions();
 		ChartWithAxes chart = ChartWithAxesImpl.create();
 		chart.setDimension(ChartDimension.TWO_DIMENSIONAL_LITERAL);
@@ -72,7 +72,7 @@ public class ProjectResultChart extends Composite {
 	}
 
 	private void scale(Axis yAxis, ContributionSet<ProjectVariant> set) {
-		List<Contribution<ProjectVariant>> contributions = set
+		List<ContributionItem<ProjectVariant>> contributions = set
 				.getContributions();
 		if (contributions.isEmpty())
 			return;
@@ -123,7 +123,7 @@ public class ProjectResultChart extends Composite {
 	}
 
 	private void createCategorySeries(Axis xAxis,
-			List<Contribution<ProjectVariant>> contributions) {
+			List<ContributionItem<ProjectVariant>> contributions) {
 		String[] variantNames = new String[contributions.size()];
 		for (int i = 0; i < contributions.size(); i++)
 			variantNames[i] = contributions.get(i).getItem().getName();
@@ -137,7 +137,7 @@ public class ProjectResultChart extends Composite {
 	}
 
 	private void addFaviColors(
-			List<Contribution<ProjectVariant>> contributions,
+			List<ContributionItem<ProjectVariant>> contributions,
 			SeriesDefinition seriesDefinition) {
 		seriesDefinition.getSeriesPalette().getEntries().clear();
 		for (int i = 0; i < contributions.size(); i++) {
@@ -151,7 +151,7 @@ public class ProjectResultChart extends Composite {
 	}
 
 	private void createBarSeries(Axis yAxis,
-			List<Contribution<ProjectVariant>> contributions) {
+			List<ContributionItem<ProjectVariant>> contributions) {
 		double[] values = new double[contributions.size()];
 		for (int i = 0; i < contributions.size(); i++)
 			values[i] = contributions.get(i).getAmount();

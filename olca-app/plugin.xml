@@ -80,11 +80,11 @@
       </editor>
       <editor
             id="ProjectResultEditor"
-            class="org.openlca.app.projects.ProjectResultEditor"
+            class="org.openlca.app.results.projects.ProjectResultEditor"
             default="false"
             icon="icons/chart.png"
             name="Project results"
-            contributorClass="org.openlca.app.projects.ProjectResultActions">
+            contributorClass="org.openlca.app.results.projects.ProjectResultActions">
       </editor>
       <editor
             class="org.openlca.app.results.analysis.AnalyzeEditor"

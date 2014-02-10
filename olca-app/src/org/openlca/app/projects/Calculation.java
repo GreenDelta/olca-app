@@ -2,10 +2,12 @@ package org.openlca.app.projects;
 
 import org.openlca.app.App;
 import org.openlca.app.db.Cache;
+import org.openlca.app.results.projects.ProjectResultEditor;
+import org.openlca.app.results.projects.ProjectResultInput;
 import org.openlca.app.util.Editors;
 import org.openlca.core.math.ProjectCalculator;
 import org.openlca.core.model.Project;
-import org.openlca.core.results.ProjectResult;
+import org.openlca.core.results.ProjectResultProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,7 +15,7 @@ import org.slf4j.LoggerFactory;
 class Calculation {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
-	private ProjectResult result;
+	private ProjectResultProvider result;
 	private Project project;
 
 	private Calculation(final Project project) {
@@ -45,10 +47,10 @@ class Calculation {
 		});
 	}
 
-	private ProjectResult tryCalculate(ProjectCalculator calculator,
+	private ProjectResultProvider tryCalculate(ProjectCalculator calculator,
 			Project project) {
 		try {
-			return calculator.solve(project);
+			return calculator.solve(project, Cache.getEntityCache());
 		} catch (Exception e) {
 			log.error("Calculation of project failed");
 			return null;

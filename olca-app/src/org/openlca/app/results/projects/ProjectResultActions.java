@@ -1,4 +1,4 @@
-package org.openlca.app.projects;
+package org.openlca.app.results.projects;
 
 import java.io.File;
 
@@ -13,7 +13,7 @@ import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.InformationPopup;
 import org.openlca.core.model.Project;
-import org.openlca.core.results.ProjectResult;
+import org.openlca.core.results.ProjectResultProvider;
 import org.openlca.io.xls.results.ProjectResultExport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +47,7 @@ public class ProjectResultActions extends EditorActionBarContributor {
 			return;
 		}
 		Project project = editor.getProject();
-		ProjectResult result = editor.getResult();
+		ProjectResultProvider result = editor.getResult();
 		File file = FileChooser.forExport(".xlsx", project.getName() + ".xlsx");
 		if (file == null)
 			return;
@@ -57,7 +57,7 @@ public class ProjectResultActions extends EditorActionBarContributor {
 	}
 
 	private void tryRun(final ProjectResultExport export,
-			final ProjectResult result) {
+			final ProjectResultProvider result) {
 		App.run("Export result", new Runnable() {
 			public void run() {
 				try {

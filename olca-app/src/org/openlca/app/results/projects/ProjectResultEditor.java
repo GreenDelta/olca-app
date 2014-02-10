@@ -1,4 +1,4 @@
-package org.openlca.app.projects;
+package org.openlca.app.results.projects;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
@@ -9,7 +9,7 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.core.database.ProjectDao;
 import org.openlca.core.model.Project;
-import org.openlca.core.results.ProjectResult;
+import org.openlca.core.results.ProjectResultProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,7 +18,7 @@ public class ProjectResultEditor extends FormEditor {
 	public static final String ID = "ProjectResultEditor";
 
 	private Logger log = LoggerFactory.getLogger(getClass());
-	private ProjectResult result;
+	private ProjectResultProvider result;
 	private Project project;
 
 	@Override
@@ -28,7 +28,7 @@ public class ProjectResultEditor extends FormEditor {
 		try {
 			ProjectResultInput input = (ProjectResultInput) editorInput;
 			result = Cache.getAppCache().get(input.getResultKey(),
-					ProjectResult.class);
+					ProjectResultProvider.class);
 			ProjectDao dao = new ProjectDao(Database.get());
 			project = dao.getForId(input.getProjectId());
 		} catch (Exception e) {
@@ -37,7 +37,7 @@ public class ProjectResultEditor extends FormEditor {
 		}
 	}
 
-	ProjectResult getResult() {
+	ProjectResultProvider getResult() {
 		return result;
 	}
 
