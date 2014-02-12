@@ -1,4 +1,4 @@
-package org.openlca.app.update;
+package org.openlca.app.rcp.update;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -12,9 +12,9 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.openlca.app.FeatureFlag;
 import org.openlca.app.Messages;
+import org.openlca.app.rcp.PlatformUtils;
 import org.openlca.app.rcp.RcpActivator;
-import org.openlca.app.update.Updater.UnzipRequest;
-import org.openlca.app.util.PlatformUtils;
+import org.openlca.app.rcp.update.Updater.UnzipRequest;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;

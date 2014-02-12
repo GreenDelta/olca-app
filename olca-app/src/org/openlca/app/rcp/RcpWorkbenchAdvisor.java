@@ -6,7 +6,7 @@ import org.eclipse.ui.application.WorkbenchAdvisor;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 import org.openlca.app.logging.Console;
 import org.openlca.app.logging.LoggerPreference;
-import org.openlca.app.update.UpdateCheckAndPrepareJob;
+import org.openlca.app.rcp.update.UpdateCheckAndPrepareJob;
 
 public class RcpWorkbenchAdvisor extends WorkbenchAdvisor {
 

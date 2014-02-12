@@ -17,8 +17,8 @@ import java.util.Queue;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.openlca.app.rcp.PlatformUtils;
 import org.openlca.app.rcp.RcpActivator;
-import org.openlca.app.util.PlatformUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Version;
 import org.slf4j.Logger;

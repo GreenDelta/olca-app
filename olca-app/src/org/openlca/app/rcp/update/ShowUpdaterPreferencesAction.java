@@ -1,4 +1,4 @@
-package org.openlca.app.update;
+package org.openlca.app.rcp.update;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.preference.PreferenceDialog;

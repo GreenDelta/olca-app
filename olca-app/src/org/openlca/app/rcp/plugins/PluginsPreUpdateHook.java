@@ -1,8 +1,8 @@
 package org.openlca.app.rcp.plugins;
 
-import org.openlca.app.update.PreUpdateHook;
-import org.openlca.app.update.Updater;
-import org.openlca.app.update.VersionInfo;
+import org.openlca.app.rcp.update.PreUpdateHook;
+import org.openlca.app.rcp.update.Updater;
+import org.openlca.app.rcp.update.VersionInfo;
 
 public class PluginsPreUpdateHook implements PreUpdateHook {
 

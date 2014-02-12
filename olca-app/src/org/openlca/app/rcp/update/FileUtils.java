@@ -1,4 +1,4 @@
-package org.openlca.app.update;
+package org.openlca.app.rcp.update;
 
 import java.io.IOException;
 import java.io.InputStream;

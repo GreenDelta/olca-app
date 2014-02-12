@@ -241,7 +241,7 @@
       		name="%number.format.page.name">
       </page>
       <page
-            class="org.openlca.app.update.UpdatePreferencePage"
+            class="org.openlca.app.rcp.update.UpdatePreferencePage"
             id="preferencepages.update"
             name="%update.preference.page.name">
       </page>
@@ -274,7 +274,7 @@
          point="org.eclipse.ui.handlers">
       <handler
             commandId="commands.updatecheck"
-            class="org.openlca.app.update.UpdateCheckHandler">
+            class="org.openlca.app.rcp.update.UpdateCheckHandler">
       </handler>
    </extension>
    
@@ -446,10 +446,10 @@
             class="org.openlca.app.ilcd_network.Preference">
       </initializer>
       <initializer
-            class="org.openlca.app.update.UpdatePreference">
+            class="org.openlca.app.rcp.update.UpdatePreference">
       </initializer>
       <initializer
-            class="org.openlca.app.update.UpdatePreference">
+            class="org.openlca.app.rcp.update.UpdatePreference">
       </initializer>
    </extension>
    

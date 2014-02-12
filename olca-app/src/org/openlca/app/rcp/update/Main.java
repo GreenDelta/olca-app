@@ -1,4 +1,4 @@
-package org.openlca.app.update;
+package org.openlca.app.rcp.update;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.JOptionPane;
 
-import org.openlca.app.update.Updater.UnzipRequest;
+import org.openlca.app.rcp.update.Updater.UnzipRequest;
 
 public class Main {
 

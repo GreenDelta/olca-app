@@ -1,4 +1,4 @@
-package org.openlca.app.update;
+package org.openlca.app.rcp.update;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -31,7 +31,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.border.TitledBorder;
 
-import org.openlca.app.update.DeletionFailedCallback.DeletionFailedResponse;
+import org.openlca.app.rcp.update.DeletionFailedCallback.DeletionFailedResponse;
 
 /**
  * Simple delete-before-unzip updater which does no logging (no access to stdout

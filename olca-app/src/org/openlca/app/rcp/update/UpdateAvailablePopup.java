@@ -1,4 +1,4 @@
-package org.openlca.app.update;
+package org.openlca.app.rcp.update;
 
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.SWT;

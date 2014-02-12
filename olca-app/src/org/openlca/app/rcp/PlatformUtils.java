@@ -1,4 +1,4 @@
-package org.openlca.app.util;
+package org.openlca.app.rcp;
 
 import java.io.File;
 import java.io.IOException;
@@ -7,7 +7,6 @@ import java.net.URL;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
-import org.openlca.app.rcp.RcpActivator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

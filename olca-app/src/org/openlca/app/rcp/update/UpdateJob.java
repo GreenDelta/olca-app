@@ -1,4 +1,4 @@
-package org.openlca.app.update;
+package org.openlca.app.rcp.update;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,7 +15,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.UIJob;
-import org.openlca.app.util.PlatformUtils;
+import org.openlca.app.rcp.PlatformUtils;
 import org.openlca.app.util.UI;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
