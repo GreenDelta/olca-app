@@ -31,6 +31,7 @@ import org.openlca.app.navigation.actions.PasteAction;
 import org.openlca.app.navigation.actions.RenameCategoryAction;
 import org.openlca.app.navigation.actions.XEI3MarketProcessCleanUp;
 import org.openlca.app.navigation.actions.XEI3MetaDataImportAction;
+import org.openlca.app.navigation.actions.XParameterCheckAction;
 import org.openlca.app.util.Viewers;
 
 /**
@@ -88,7 +89,7 @@ public class NavigationActionProvider extends CommonActionProvider {
 	}
 
 	private INavigationAction[] getDatabaseActions() {
-		int count = App.runsInDevMode() ? 8 : 6;
+		int count = App.runsInDevMode() ? 9 : 6;
 		INavigationAction[] actions = new INavigationAction[count];
 		actions[0] = new DatabaseActivateAction();
 		actions[1] = new DatabasePropertiesAction();
@@ -96,9 +97,10 @@ public class NavigationActionProvider extends CommonActionProvider {
 		actions[3] = new DatabaseExportAction();
 		actions[4] = new DatabaseRenameAction();
 		actions[5] = new DatabaseDeleteAction();
-		if (count == 8) {
+		if (count == 9) {
 			actions[6] = new XEI3MetaDataImportAction();
 			actions[7] = new XEI3MarketProcessCleanUp();
+			actions[8] = new XParameterCheckAction();
 		}
 		return actions;
 	}
