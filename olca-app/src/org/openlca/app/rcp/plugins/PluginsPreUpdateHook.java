@@ -1,4 +1,4 @@
-package org.openlca.app.plugin.installer;
+package org.openlca.app.rcp.plugins;
 
 import org.openlca.app.update.PreUpdateHook;
 import org.openlca.app.update.Updater;

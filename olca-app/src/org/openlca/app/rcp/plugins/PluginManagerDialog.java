@@ -7,7 +7,7 @@
  * Contributors: GreenDeltaTC - initial API and implementation
  * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
  ******************************************************************************/
-package org.openlca.app.plugin.installer;
+package org.openlca.app.rcp.plugins;
 
 import java.util.ArrayList;
 import java.util.List;

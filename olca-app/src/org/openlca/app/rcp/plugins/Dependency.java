@@ -1,4 +1,4 @@
-package org.openlca.app.plugin.installer;
+package org.openlca.app.rcp.plugins;
 
 /**
  * Even though the Dependency class is a subset of the Plugin class an own class

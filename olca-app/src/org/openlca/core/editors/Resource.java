@@ -3,10 +3,10 @@ package org.openlca.core.editors;
 import java.io.File;
 import java.io.IOException;
 
-import org.openlca.app.RcpActivator;
 import org.openlca.app.html.HtmlFolder;
 import org.openlca.app.html.HtmlResource;
 import org.openlca.app.html.IHtmlResource;
+import org.openlca.app.rcp.RcpActivator;
 
 enum Resource {
 

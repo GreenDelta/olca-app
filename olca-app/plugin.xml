@@ -195,7 +195,7 @@
          point="org.eclipse.core.runtime.applications">
       <application>
          <run
-               class="org.openlca.app.RcpApplication">
+               class="org.openlca.app.rcp.RcpApplication">
          </run>
       </application>
    </extension>
@@ -203,7 +203,7 @@
          point="org.eclipse.ui.perspectives">
       <perspective
             name="%perspective.name"
-            class="org.openlca.app.RcpPerspective"
+            class="org.openlca.app.rcp.RcpPerspective"
             id="perspectives.standard">
       </perspective>
    </extension>

@@ -1,4 +1,4 @@
-package org.openlca.app;
+package org.openlca.app.rcp;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IContributionItem;
@@ -16,8 +16,12 @@ import org.eclipse.ui.actions.ActionFactory.IWorkbenchAction;
 import org.eclipse.ui.actions.ContributionItemFactory;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
+import org.openlca.app.Config;
+import org.openlca.app.Messages;
+import org.openlca.app.rcp.plugins.PluginManagerDialog;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Desktop;
+import org.openlca.app.util.UI;
 
 public class RcpActionBarAdvisor extends ActionBarAdvisor {
 
@@ -72,6 +76,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		HelpAction helpAction = new HelpAction();
 		helpMenu.add(helpAction);
 		helpMenu.add(new Separator());
+		helpMenu.add(new PluginAction());
 		helpMenu.add(aboutAction);
 		menuBar.add(helpMenu);
 	}
@@ -136,12 +141,6 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 
 		aboutAction = ActionFactory.ABOUT.create(window);
 
-		// try {
-		// introAction = ActionFactory.INTRO.create(window);
-		// register(introAction);
-		// } catch (NullPointerException npe) {
-		// log.debug("Welcome/intro page plugin not found");
-		// }
 	}
 
 	private class HelpAction extends Action {
@@ -154,6 +153,22 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		@Override
 		public void run() {
 			Desktop.browse(Config.HELP_URL);
+		}
+	}
+
+	private class PluginAction extends Action {
+		public PluginAction() {
+			setText("Plugins");
+			setToolTipText("Open the plugin manager");
+			setImageDescriptor(ImageType.LOGO_16_32.getDescriptor());
+		}
+
+		@Override
+		public void run() {
+			PluginManagerDialog dialog = new PluginManagerDialog(UI.shell());
+			dialog.create();
+			dialog.getShell().setSize(500, 600);
+			dialog.open();
 		}
 	}
 

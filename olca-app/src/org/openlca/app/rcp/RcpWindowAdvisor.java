@@ -1,4 +1,4 @@
-package org.openlca.app;
+package org.openlca.app.rcp;
 
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.graphics.Point;
@@ -7,6 +7,7 @@ import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
+import org.openlca.app.Config;
 import org.openlca.app.db.Database;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,4 +1,4 @@
-package org.openlca.app;
+package org.openlca.app.rcp;
 
 import org.eclipse.ui.application.IWorkbenchConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;

@@ -1,9 +1,9 @@
-package org.openlca.app.plugin.installer;
+package org.openlca.app.rcp.plugins;
 
 import java.io.File;
 
 import org.eclipse.swt.graphics.Image;
-import org.openlca.app.RcpActivator;
+import org.openlca.app.rcp.RcpActivator;
 import org.openlca.app.resources.IImageType;
 import org.openlca.app.resources.ImageManager;
 

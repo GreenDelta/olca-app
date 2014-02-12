@@ -1,4 +1,4 @@
-package org.openlca.app.plugin.installer;
+package org.openlca.app.rcp.plugins;
 
 import java.util.LinkedList;
 import java.util.List;

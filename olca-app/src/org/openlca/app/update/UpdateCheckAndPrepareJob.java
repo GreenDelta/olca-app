@@ -12,7 +12,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.openlca.app.FeatureFlag;
 import org.openlca.app.Messages;
-import org.openlca.app.RcpActivator;
+import org.openlca.app.rcp.RcpActivator;
 import org.openlca.app.update.Updater.UnzipRequest;
 import org.openlca.app.util.PlatformUtils;
 import org.osgi.framework.BundleContext;

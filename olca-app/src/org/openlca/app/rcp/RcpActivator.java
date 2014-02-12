@@ -1,4 +1,4 @@
-package org.openlca.app;
+package org.openlca.app.rcp;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,6 +14,9 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.openlca.app.OlcaPlugin;
+import org.openlca.app.Preferences;
+import org.openlca.app.Workspace;
 import org.openlca.app.logging.Console;
 import org.openlca.app.logging.LoggerConfig;
 import org.openlca.eigen.NativeLibrary;

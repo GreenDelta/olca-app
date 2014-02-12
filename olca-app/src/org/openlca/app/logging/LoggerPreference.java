@@ -3,7 +3,7 @@ package org.openlca.app.logging;
 import org.apache.log4j.Level;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.openlca.app.RcpActivator;
+import org.openlca.app.rcp.RcpActivator;
 
 /**
  * The preferences of the application logging.

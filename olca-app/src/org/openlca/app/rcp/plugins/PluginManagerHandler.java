@@ -1,4 +1,4 @@
-package org.openlca.app.plugin.installer;
+package org.openlca.app.rcp.plugins;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;

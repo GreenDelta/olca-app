@@ -2,6 +2,7 @@ package org.openlca.app;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.openlca.app.rcp.RcpActivator;
 import org.openlca.app.util.Numbers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

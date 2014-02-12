@@ -4,7 +4,7 @@ import java.io.File;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
-import org.openlca.app.RcpActivator;
+import org.openlca.app.rcp.RcpActivator;
 
 public enum ImageType implements IImageType {
 

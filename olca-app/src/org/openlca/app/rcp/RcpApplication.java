@@ -1,4 +1,4 @@
-package org.openlca.app;
+package org.openlca.app.rcp;
 
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;

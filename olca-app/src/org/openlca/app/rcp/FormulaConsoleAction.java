@@ -1,4 +1,4 @@
-package org.openlca.app;
+package org.openlca.app.rcp;
 
 import java.io.PrintStream;
 
@@ -18,7 +18,7 @@ import org.openlca.expressions.Repl;
  * An action that opens a console and starts the formula interpreter REPL in the
  * console.
  */
-public class FormulaConsoleAction extends Action {
+class FormulaConsoleAction extends Action {
 
 	public FormulaConsoleAction() {
 		setId("FormulaConsoleAction");

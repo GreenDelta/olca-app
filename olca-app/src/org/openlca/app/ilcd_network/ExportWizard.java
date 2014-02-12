@@ -4,8 +4,8 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IExportWizard;
 import org.eclipse.ui.IWorkbench;
-import org.openlca.app.RcpActivator;
 import org.openlca.app.db.Database;
+import org.openlca.app.rcp.RcpActivator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
