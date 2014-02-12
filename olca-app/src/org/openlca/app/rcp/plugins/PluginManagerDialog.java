@@ -28,8 +28,7 @@ import org.slf4j.LoggerFactory;
 
 public class PluginManagerDialog extends FormDialog {
 
-	private static final Logger log = LoggerFactory
-			.getLogger(PluginManagerDialog.class);
+	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	private static AtomicReference<PluginManagerDialog> lastOpenedPluginsManagerDialog = new AtomicReference<>(
 			null);
@@ -82,11 +81,9 @@ public class PluginManagerDialog extends FormDialog {
 
 			reloadPlugins();
 
-		} catch (UserMessageException ume) {
-			mform.getMessageManager().addMessage("conn", ume.getMessage(),
-					null, IMessageProvider.ERROR);
 		} catch (Exception e) {
-			log.error("Exception", e);
+			mform.getMessageManager().addMessage("conn", e.getMessage(), null,
+					IMessageProvider.ERROR);
 		}
 	}
 
@@ -152,7 +149,7 @@ public class PluginManagerDialog extends FormDialog {
 				try {
 					installedPlugins = pluginsService.getInstalledPlugins();
 				} catch (Exception e) {
-					throw new UserMessageException("Plugins service failed: "
+					throw new RuntimeException("Plugins service failed: "
 							+ e.getMessage());
 				}
 
@@ -178,7 +175,7 @@ public class PluginManagerDialog extends FormDialog {
 						}
 					}
 				});
-			} catch (final UserMessageException ume) {
+			} catch (final Exception ume) {
 				Display.getDefault().asyncExec(new Runnable() {
 					@Override
 					public void run() {
@@ -239,9 +236,7 @@ public class PluginManagerDialog extends FormDialog {
 	}
 
 	public static void restartNecessary() {
-
 		setRequestRestart(true);
-
 	}
 
 }

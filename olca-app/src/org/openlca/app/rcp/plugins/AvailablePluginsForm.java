@@ -314,18 +314,16 @@ public class AvailablePluginsForm {
 						monitor.worked(5);
 						pluginsService.installOrUpdatePlugin(p);
 						monitor.worked(95);
-					} catch (UserMessageException e) {
-						throw e;
 					} catch (Exception e) {
 						log.error("Installation of plugin failed", e);
-						throw new UserMessageException("Installation failed: "
+						throw new RuntimeException("Installation failed: "
 								+ e.getMessage());
 					}
 
 					pluginChanged(p, "Installed, please restart");
 					showInstallationSuccessfulMessage();
 
-				} catch (final UserMessageException ume) {
+				} catch (final Exception ume) {
 					showInstallationErrorMessage(ume);
 				}
 
@@ -336,8 +334,7 @@ public class AvailablePluginsForm {
 			return Status.OK_STATUS;
 		}
 
-		protected void showInstallationErrorMessage(
-				final UserMessageException ume) {
+		protected void showInstallationErrorMessage(final Exception ume) {
 			Display.getDefault().asyncExec(new Runnable() {
 
 				@Override

@@ -45,8 +45,7 @@ public class PluginsService {
 
 	private static final ObjectMapper mapper = new ObjectMapper();
 
-	public PluginListWrapper loadPluginsFromServer()
-			throws UserMessageException {
+	public PluginListWrapper loadPluginsFromServer() throws Exception {
 		try {
 			Client c = createWSClient();
 			WebResource r2 = c.resource(getUpdateSite() + "plugins.json");
@@ -60,11 +59,11 @@ public class PluginsService {
 			}
 		} catch (ClientHandlerException che) {
 			log.debug("Server connection", che);
-			throw new UserMessageException("Update Server connection failed: "
+			throw new Exception("Update Server connection failed: "
 					+ che.getMessage());
 		} catch (Exception e) {
 			log.debug("Server plugin loading", e);
-			throw new UserMessageException("Could not load openLCA plugins: "
+			throw new Exception("Could not load openLCA plugins: "
 					+ e.getMessage());
 		}
 	}
@@ -165,7 +164,7 @@ public class PluginsService {
 	}
 
 	public void downloadPlugins(PluginListWrapper plugins, File toZip)
-			throws UserMessageException {
+			throws Exception {
 		if (plugins.getPlugins().isEmpty())
 			return;
 		try {
@@ -175,12 +174,10 @@ public class PluginsService {
 					downloadPlugin(p, zipOut);
 				}
 			}
-		} catch (UserMessageException ume) {
-			throw ume;
 		} catch (Exception e) {
 			log.debug("Downloading plugins failed", e);
-			throw new UserMessageException(
-					"Downloading plugins for update failed: " + e.getMessage());
+			throw new Exception("Downloading plugins for update failed: "
+					+ e.getMessage());
 		}
 	}
 
@@ -233,7 +230,7 @@ public class PluginsService {
 	}
 
 	private void checkDependencies(Plugin p, PluginListWrapper availablePlugins)
-			throws MissingDependencyException {
+			throws Exception {
 		List<Plugin> alreadyChecked = new ArrayList<>();
 		Queue<Plugin> toCheck = new LinkedList<>();
 		toCheck.add(p);
@@ -243,8 +240,7 @@ public class PluginsService {
 			for (Dependency d : current.getDependencies()) {
 				Plugin plugin = availablePlugins.get(d);
 				if (plugin == null)
-					throw new MissingDependencyException("Plugin "
-							+ current.getSymbolicName()
+					throw new Exception("Plugin " + current.getSymbolicName()
 							+ " is missing required dependency "
 							+ d.getSymbolicName() + " (" + d.getVersion() + ")");
 				if (!alreadyChecked.contains(plugin)
@@ -281,9 +277,9 @@ public class PluginsService {
 
 	// impacts of closing output stream not clear, maybe used later on
 	public File downloadPlugin(Plugin p, Object targetDirOrZipOut)
-			throws MalformedURLException, IOException {
+			throws Exception {
 		if (Strings.isNullOrEmpty(p.getDownloadUrl())) {
-			throw new UserMessageException(
+			throw new Exception(
 					"Plugin is missing download URL, cannot download");
 		}
 		URL url;
@@ -306,8 +302,8 @@ public class PluginsService {
 					log.warn("Trying to overwrite existing plugins file {}",
 							file);
 					if (!file.canWrite()) {
-						throw new UserMessageException(
-								"Cannot overwrite existing file " + file);
+						throw new Exception("Cannot overwrite existing file "
+								+ file);
 					}
 				}
 				outputStream = new FileOutputStream(file);
@@ -413,7 +409,7 @@ public class PluginsService {
 	}
 
 	protected void downloadNewFile(final OutputStream fileOutputStream,
-			String downloadUrl) throws IOException {
+			String downloadUrl) throws Exception {
 
 		Client c = createWSClient();
 		log.debug("Downloading {}", downloadUrl);
@@ -421,7 +417,7 @@ public class PluginsService {
 		final InputStream s = r2.get(InputStream.class);
 		log.debug("Inputstream for {} s null? {}", downloadUrl, (s == null));
 		if (s == null) {
-			throw new UserMessageException("Could not install plugin, "
+			throw new Exception("Could not install plugin, "
 					+ "download failed: No data returned.");
 		}
 		ByteStreams.copy(new InputSupplier<InputStream>() {
@@ -437,34 +433,34 @@ public class PluginsService {
 		});
 	}
 
-	protected File getDropinsDirEnsuringPresence() {
+	protected File getDropinsDirEnsuringPresence() throws Exception {
 		String installRoot;
 		try {
 			installRoot = PlatformUtils.getInstallRoot();
 
 		} catch (Exception ioe) {
-			throw new UserMessageException(
+			throw new Exception(
 					"Plugins disabled - cannot investigate installation: "
 							+ ioe.getMessage());
 		}
 		if (Strings.isNullOrEmpty(installRoot)) {
-			throw new UserMessageException(
+			throw new Exception(
 					"Plugins disabled - cannot determine installation location");
 		}
 		log.debug("Plugins service install root before check: {}", installRoot);
 		if (!PlatformUtils.checkInstallPath(installRoot)) {
-			throw new UserMessageException(
+			throw new Exception(
 					"Plugins disabled - cannot verify installation location");
 		}
 		File dropinsDir = new File(installRoot, "dropins");
 		if (dropinsDir.exists()) {
 			if (!dropinsDir.isDirectory()) {
-				throw new UserMessageException(
+				throw new Exception(
 						"Plugins installation disabled - dropins is not a directory but a file");
 			}
 		} else {
 			if (!dropinsDir.mkdir()) {
-				throw new UserMessageException(
+				throw new Exception(
 						"Plugins installation disabled - cannot create dropins directory in installation dir.");
 			}
 		}
@@ -474,8 +470,8 @@ public class PluginsService {
 
 	public ArrayList<Bundle> findAllOpenlcaPluginBundles() {
 		ArrayList<Bundle> retval = new ArrayList<>();
-		for (Bundle b : RcpActivator.getDefault().getBundle().getBundleContext()
-				.getBundles()) {
+		for (Bundle b : RcpActivator.getDefault().getBundle()
+				.getBundleContext().getBundles()) {
 
 			try {
 				Object olcaPluginVersion = b.getHeaders().get(
@@ -577,8 +573,8 @@ public class PluginsService {
 	}
 
 	public String getOpenlcaVersion() {
-		for (Bundle b : RcpActivator.getDefault().getBundle().getBundleContext()
-				.getBundles()) {
+		for (Bundle b : RcpActivator.getDefault().getBundle()
+				.getBundleContext().getBundles()) {
 			if ("olca-app".equals(b.getSymbolicName())) {
 				return b.getVersion().toString();
 			}
