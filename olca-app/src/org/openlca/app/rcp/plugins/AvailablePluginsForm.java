@@ -40,13 +40,12 @@ import com.google.common.base.Strings;
 
 public class AvailablePluginsForm {
 
-	private static final Logger log = LoggerFactory
-			.getLogger(AvailablePluginsForm.class);
+	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	/**
 	 * symbolic name to message.
 	 */
-	private static final HashMap<String, String> changedPlugins = new HashMap<>();
+	private HashMap<String, String> changedPlugins = new HashMap<>();
 
 	private HashMap<String, Plugin> plugins = new HashMap<>();
 
@@ -184,82 +183,61 @@ public class AvailablePluginsForm {
 	}
 
 	private void addButtons(Composite buttonComposite, final Plugin p) {
-		boolean available = false;
-		boolean installed = false;
-		boolean newerAvailable = false;
-		if (!Strings.isNullOrEmpty(p.getVersion())) {
-			available = true;
-		}
-		if (!Strings.isNullOrEmpty(p.getInstalledVersion())) {
-			installed = true;
-		}
-		if (available && installed) {
-			newerAvailable = PluginsService.isNewer(p.getVersion(),
-					p.getInstalledVersion());
-		}
-
+		PluginState state = PluginState.get(p);
 		boolean changed = changedPlugins.containsKey(p.getSymbolicName());
 		if (changed) {
 			getToolkit().createLabel(buttonComposite,
 					changedPlugins.get(p.getSymbolicName()), SWT.WRAP);
-		} else {
-			if (available && !installed) {
-				final Button b = getToolkit().createButton(buttonComposite,
-						"Install", SWT.PUSH);
-				b.addListener(SWT.Selection, new InstallOrUpdateButtonListener(
-						"Installation of " + p.getSymbolicName(), p));
-				b.addListener(SWT.Selection, new Listener() {
-					@Override
-					public void handleEvent(Event event) {
-						b.setEnabled(false);
-						pluginChanged(p, "Installing...");
-					}
-				});
-			} else if (newerAvailable) {
-				final Button b = getToolkit().createButton(buttonComposite,
-						"Update", SWT.PUSH);
-				b.addListener(SWT.Selection, new InstallOrUpdateButtonListener(
-						"Update of " + p.getSymbolicName(), p));
-				b.addListener(SWT.Selection, new Listener() {
-					@Override
-					public void handleEvent(Event event) {
-						b.setEnabled(false);
-						pluginChanged(p, "Updating...");
-					}
-				});
-			}
-			if (installed) {
-				log.debug("Adding the remove button for {}", p);
-				getToolkit().createButton(buttonComposite, "Remove", SWT.PUSH)
-						.addListener(SWT.Selection, new Listener() {
-
-							@Override
-							public void handleEvent(Event event) {
-								log.debug("Remove requested for {}", p);
-								try {
-									if (pluginsService.uninstall(
-											p.getSymbolicName(),
-											p.getInstalledVersion(), null)) {
-
-										pluginChanged(p,
-												"Removed, please restart");
-										PluginManagerDialog.restartNecessary();
-										PluginManagerDialog.reloadPlugins();
-									}
-								} catch (Exception e) {
-									log.debug("Removal failed", e);
-									getMessageManager()
-											.addMessage(
-													"inst",
-													"Removal failed: "
-															+ e.getMessage(),
-													null,
-													IMessageProvider.ERROR);
-								}
-							}
-						});
-			}
+			return;
 		}
+		if (state.isAvailable() && !state.isInstalled())
+			createInstallButton(buttonComposite, p, false);
+		else if (state.isNewerAvailable())
+			createInstallButton(buttonComposite, p, true);
+
+		if (state.isInstalled()) {
+			log.debug("Adding the remove button for {}", p);
+			getToolkit().createButton(buttonComposite, "Remove", SWT.PUSH)
+					.addListener(SWT.Selection, new Listener() {
+
+						@Override
+						public void handleEvent(Event event) {
+							log.debug("Remove requested for {}", p);
+							try {
+								if (pluginsService.uninstall(
+										p.getSymbolicName(),
+										p.getInstalledVersion(), null)) {
+
+									pluginChanged(p, "Removed, please restart");
+									PluginManagerDialog.restartNecessary();
+									PluginManagerDialog.reloadPlugins();
+								}
+							} catch (Exception e) {
+								log.debug("Removal failed", e);
+								getMessageManager().addMessage("inst",
+										"Removal failed: " + e.getMessage(),
+										null, IMessageProvider.ERROR);
+							}
+						}
+					});
+		}
+	}
+
+	private void createInstallButton(Composite composite, final Plugin plugin,
+			boolean forUpdate) {
+		String buttonText = forUpdate ? "Update" : "Install";
+		final String jobName = forUpdate ? "Update of " : "Installation of ";
+		final String progressText = forUpdate ? "Updating..." : "Installing...";
+		final Button b = getToolkit().createButton(composite, buttonText,
+				SWT.PUSH);
+		b.addListener(SWT.Selection, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				new InstallOrUpdateJob(jobName, plugin).schedule();
+				b.setEnabled(false);
+				pluginChanged(plugin, progressText);
+			}
+		});
 	}
 
 	private FormToolkit getToolkit() {
@@ -276,23 +254,6 @@ public class AvailablePluginsForm {
 
 	private void pluginChanged(Plugin p2, String message) {
 		changedPlugins.put(p2.getSymbolicName(), message);
-	}
-
-	protected class InstallOrUpdateButtonListener implements Listener {
-
-		private final Plugin p;
-		private String jobName;
-
-		private InstallOrUpdateButtonListener(String jobName, Plugin p) {
-			this.jobName = jobName;
-			this.p = p;
-		}
-
-		@Override
-		public void handleEvent(Event event) {
-
-			new InstallOrUpdateJob(jobName, p).schedule();
-		}
 	}
 
 	private final class InstallOrUpdateJob extends Job {
