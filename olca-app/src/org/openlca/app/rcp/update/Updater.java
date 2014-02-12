@@ -114,7 +114,7 @@ public class Updater {
 		cmd.add("-unzip");
 		for (UnzipRequest req : unzipRequests) {
 			cmd.add(req.getZipFile());
-			cmd.add(req.getTargetDir());
+			cmd.add(req.getTargetDir().getAbsolutePath());
 			cmd.add(Integer.toString(req.getLevelsToStripOnUnzip()));
 		}
 
@@ -191,7 +191,7 @@ public class Updater {
 	}
 
 	private void extract(UnzipRequest req) throws Exception {
-		File targetDir = new File(req.getTargetDir());
+		File targetDir = req.getTargetDir();
 		try (ZipFile zipFile = new ZipFile(req.getZipFile())) {
 			extract(zipFile, targetDir, req.getLevelsToStripOnUnzip());
 		}
@@ -203,7 +203,7 @@ public class Updater {
 
 			}
 
-			File targetDir = new File(req.getTargetDir());
+			File targetDir = req.getTargetDir();
 			if (!targetDir.exists()) {
 				if (!targetDir.mkdirs()) {
 					throw new RuntimeException("Target dir creation failed: "
@@ -584,13 +584,13 @@ public class Updater {
 	}
 
 	public static class UnzipRequest {
-		private String targetDir;
+		private File targetDir;
 
 		private String zipFile;
 
 		private int levelsToStripOnUnzip;
 
-		public UnzipRequest(String targetDir, String zipFile,
+		public UnzipRequest(File targetDir, String zipFile,
 				int levelsToStripOnUnzip) {
 			super();
 			this.targetDir = targetDir;
@@ -598,11 +598,11 @@ public class Updater {
 			this.levelsToStripOnUnzip = levelsToStripOnUnzip;
 		}
 
-		public String getTargetDir() {
+		public File getTargetDir() {
 			return targetDir;
 		}
 
-		public void setTargetDir(String targetDir) {
+		public void setTargetDir(File targetDir) {
 			this.targetDir = targetDir;
 		}
 

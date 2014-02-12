@@ -17,6 +17,8 @@ import java.util.Queue;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.osgi.service.datalocation.Location;
 import org.openlca.app.rcp.PlatformUtils;
 import org.openlca.app.rcp.RcpActivator;
 import org.osgi.framework.Bundle;
@@ -256,7 +258,7 @@ public class PluginsService {
 
 		checkDependencies(p, availablePlugins);
 
-		File targetDir = getDropinsDirEnsuringPresence();
+		File targetDir = getDropinsDir();
 
 		File downloadedPluginFile = downloadPlugin(p, targetDir);
 
@@ -433,38 +435,20 @@ public class PluginsService {
 		});
 	}
 
-	protected File getDropinsDirEnsuringPresence() throws Exception {
-		String installRoot;
-		try {
-			installRoot = PlatformUtils.getInstallRoot();
-
-		} catch (Exception ioe) {
-			throw new Exception(
-					"Plugins disabled - cannot investigate installation: "
-							+ ioe.getMessage());
+	private File getDropinsDir() throws Exception {
+		Location installLocation = Platform.getInstallLocation();
+		if (installLocation == null)
+			return null;
+		log.trace("install location: {}", installLocation.getURL());
+		File installDir = new File(installLocation.getURL().getFile());
+		if (!installDir.exists()) {
+			log.warn("install folder {} does not exist", installDir);
+			return null;
 		}
-		if (Strings.isNullOrEmpty(installRoot)) {
-			throw new Exception(
-					"Plugins disabled - cannot determine installation location");
-		}
-		log.debug("Plugins service install root before check: {}", installRoot);
-		if (!PlatformUtils.checkInstallPath(installRoot)) {
-			throw new Exception(
-					"Plugins disabled - cannot verify installation location");
-		}
-		File dropinsDir = new File(installRoot, "dropins");
-		if (dropinsDir.exists()) {
-			if (!dropinsDir.isDirectory()) {
-				throw new Exception(
-						"Plugins installation disabled - dropins is not a directory but a file");
-			}
-		} else {
-			if (!dropinsDir.mkdir()) {
-				throw new Exception(
-						"Plugins installation disabled - cannot create dropins directory in installation dir.");
-			}
-		}
-		// now either created or existing and a directory
+		log.trace("has write access {}", installDir.canWrite());
+		File dropinsDir = new File(installDir, "dropins");
+		if (!dropinsDir.exists())
+			dropinsDir.mkdirs();
 		return dropinsDir;
 	}
 

@@ -7,6 +7,7 @@ import java.net.URL;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.osgi.service.datalocation.Location;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,33 +18,13 @@ public class PlatformUtils {
 	private static final Logger log = LoggerFactory
 			.getLogger(PlatformUtils.class);
 
-	/**
-	 * Assumes that the <code>org.openlca.util</code> plugin is installed
-	 * underneath the install path in the plugins dir.
-	 * 
-	 * @return "" if the install root could not be determined successfully
-	 */
-	public static String getInstallRoot() throws Exception {
-		String path = getBundleJarPath("org.openlca.core.application");
-
-		return getInstallRootInternal(path);
-	}
-
-	protected static String getInstallRootInternal(String path) {
-		if (path.contains("/dropins")) {
-			path = path.substring(0, path.indexOf("/dropins"));
-			return path;
-		}
-
-		if (path.contains(RcpActivator.PLUGIN_ID)) {
-			path = path.substring(0, path.indexOf(RcpActivator.PLUGIN_ID));
-			if (path.endsWith("/plugins/")) {
-				path = path.substring(0, path.length() - "/plugins/".length());
-
-				return path;
-			}
-		}
-		return "";
+	public static File getInstallRoot() throws Exception {
+		Location installLocation = Platform.getInstallLocation();
+		if (installLocation == null)
+			return null;
+		log.trace("get install location {}", installLocation.getURL());
+		File installDir = new File(installLocation.getURL().getFile());
+		return installDir;
 	}
 
 	/**
@@ -85,32 +66,32 @@ public class PlatformUtils {
 		return path;
 	}
 
-	public static boolean checkInstallPath(String path) {
+	public static boolean checkInstallPath(File installDir) {
 		// need two points!
 		int points = 0;
-		if (new File(path, "p2").exists()) {
+		if (new File(installDir, "p2").exists()) {
 			points++;
 		}
-		if (new File(path, ".eclipseproduct").exists()) {
+		if (new File(installDir, ".eclipseproduct").exists()) {
 			points++;
 		}
-		if (new File(path, "configuration").exists()) {
+		if (new File(installDir, "configuration").exists()) {
 			points++;
 		}
-		if (new File(path, "openLCA").exists()) {
+		if (new File(installDir, "openLCA").exists()) {
 			points++;
 		}
-		if (new File(path, "openLCA.exe").exists()) {
+		if (new File(installDir, "openLCA.exe").exists()) {
 			points++;
 		}
-		if (new File(path, "artifacts.xml").exists()) {
+		if (new File(installDir, "artifacts.xml").exists()) {
 			points++;
 		}
-		if (new File(path, "plugins").exists()) {
+		if (new File(installDir, "plugins").exists()) {
 			points++;
 		}
 		log.debug("Checked found installation path, {} points for {}", points,
-				path);
+				installDir);
 		return points > 2;
 	}
 

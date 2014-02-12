@@ -112,7 +112,7 @@ public class UpdateCheckAndPrepareJob extends Job {
 	private boolean isSelfUpdatingInstallation() {
 		boolean retval = false;
 		try {
-			String installRoot = PlatformUtils.getInstallRoot();
+			File installRoot = PlatformUtils.getInstallRoot();
 			if (installRoot != null) {
 				if (PlatformUtils.isWindows()
 						&& !(new File(installRoot, "singleuserinstall.mrk")
@@ -122,8 +122,7 @@ public class UpdateCheckAndPrepareJob extends Job {
 				} else {
 					try {
 						File accessRightsTestFile = File.createTempFile(
-								"testaccessrights", "tmp",
-								new File(installRoot));
+								"testaccessrights", "tmp", installRoot);
 						try (FileOutputStream fileOutputStream = new FileOutputStream(
 								accessRightsTestFile)) {
 							fileOutputStream.write(5);
@@ -158,7 +157,8 @@ public class UpdateCheckAndPrepareJob extends Job {
 				.loadNewestVersionFromServer(getUpdateSite());
 		monitor.worked(2);
 
-		if (versionInfo != null && RcpActivator.getDefault().getBundle() != null) {
+		if (versionInfo != null
+				&& RcpActivator.getDefault().getBundle() != null) {
 			Version currVersion = RcpActivator.getDefault().getBundle()
 					.getVersion();
 			Version newestVersion;
@@ -256,10 +256,9 @@ public class UpdateCheckAndPrepareJob extends Job {
 
 	public Updater prepareUpdater(File appZip, VersionInfo newAppVersionInfo)
 			throws Exception {
-		String installDir = PlatformUtils.getInstallRoot();
+		File installDir = PlatformUtils.getInstallRoot();
 		log.debug("Found install dir: {}", installDir);
-		if (Strings.isNullOrEmpty(installDir)
-				|| !PlatformUtils.checkInstallPath(installDir)
+		if (!PlatformUtils.checkInstallPath(installDir)
 		// make sure this is not an eclipse installation
 		// to avoid deletion of dev (or other) environment
 		) {

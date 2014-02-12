@@ -127,7 +127,7 @@ public class Main {
 					throw new RuntimeException("Argument " + i + " for "
 							+ "levels to strip on unzip not a number");
 				}
-				toUnzip.add(new UnzipRequest(targetDir, zip,
+				toUnzip.add(new UnzipRequest(new File(targetDir), zip,
 						levelsToStripOnUnzip));
 			} else {
 				toAddTo.add(args[i]);
