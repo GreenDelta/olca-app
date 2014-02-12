@@ -6,7 +6,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 import org.openlca.app.rcp.RcpActivator;
 
-public enum ImageType implements IImageType {
+public enum ImageType {
 
 	ACCEPT_ICON("accept.png"),
 
@@ -276,12 +276,10 @@ public enum ImageType implements IImageType {
 		this.fileName = fileName;
 	}
 
-	@Override
-	public Image createImage() {
+	Image createImage() {
 		return RcpActivator.getImageDescriptor(getPath()).createImage();
 	}
 
-	@Override
 	public Image get() {
 		return ImageManager.getImage(this);
 	}
@@ -290,7 +288,6 @@ public enum ImageType implements IImageType {
 		return ImageManager.getImageDescriptor(this);
 	}
 
-	@Override
 	public String getPath() {
 		return File.separator + "icons" + File.separator + this.fileName;
 	}

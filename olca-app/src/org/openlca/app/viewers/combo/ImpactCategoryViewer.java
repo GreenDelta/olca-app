@@ -63,7 +63,7 @@ public class ImpactCategoryViewer extends
 		public Image getColumnImage(Object element, int columnIndex) {
 			switch (columnIndex) {
 			case 0:
-				return ImageType.LCIA_CATEGORY_ICON.createImage();
+				return ImageType.LCIA_CATEGORY_ICON.get();
 			}
 			return null;
 		}

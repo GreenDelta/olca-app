@@ -6,21 +6,13 @@ import java.util.List;
 public class Plugin {
 
 	private String symbolicName;
-
 	private String downloadUrl;
-
 	private String image;
-
 	private String version;
-
 	private String installedVersion;
-
 	private String minOpenLcaVersion;
-
 	private String name;
-
 	private String description;
-
 	private boolean installable;
 
 	public String getImage() {
