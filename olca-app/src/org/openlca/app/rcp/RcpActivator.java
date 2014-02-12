@@ -3,18 +3,12 @@ package org.openlca.app.rcp;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.openlca.app.OlcaPlugin;
 import org.openlca.app.Preferences;
 import org.openlca.app.Workspace;
 import org.openlca.app.logging.Console;
@@ -72,35 +66,11 @@ public class RcpActivator extends AbstractUIPlugin {
 		NativeLibrary.loadFromDir(workspace);
 		log.trace("olca-eigen loaded: {}", NativeLibrary.isLoaded());
 		Preferences.init();
-		startOlcaPlugins();
-	}
-
-	private OlcaPlugin[] getOlcaPlugins() throws CoreException {
-		IExtensionRegistry registry = Platform.getExtensionRegistry();
-		IConfigurationElement[] elements = registry
-				.getConfigurationElementsFor("org.openlca.app.plugin");
-		List<OlcaPlugin> plugins = new ArrayList<>();
-		for (IConfigurationElement elem : elements) {
-			plugins.add((OlcaPlugin) elem
-					.createExecutableExtension("pluginClass"));
-		}
-		return plugins.toArray(new OlcaPlugin[plugins.size()]);
-	}
-
-	private void startOlcaPlugins() throws CoreException {
-		for (OlcaPlugin plugin : getOlcaPlugins())
-			plugin.start();
-	}
-
-	private void stopOlcaPlugins() throws CoreException {
-		for (OlcaPlugin plugin : getOlcaPlugins())
-			plugin.stop();
 	}
 
 	@Override
 	public void stop(final BundleContext context) throws Exception {
 		log.trace("Stop bundle {}", PLUGIN_ID);
-		stopOlcaPlugins();
 		Console.dispose();
 		plugin = null;
 		super.stop(context);

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-   <extension-point id="org.openlca.app.plugin" name="openLCA Plugin" schema="schema/org.openlca.app.plugin.exsd"/>
 
 	<extension
          point="org.eclipse.ui.editors">
