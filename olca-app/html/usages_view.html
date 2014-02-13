@@ -3,7 +3,7 @@
 
 <head>
     <title>Usages</title>
-    <link href="../libs/bootstrap_2.2.2/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="../libs/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
     <style type="text/css">
         .selectedPage {
         	color: black;
@@ -15,23 +15,23 @@
 <body>
     <div class="container-fluid" data-ng-controller="Controller" id="contentDiv">
         <div class="row-fluid">
-            <div class="span12 row-fluid" style="padding: 30px">
+            <div class="col-sm-12 row-fluid" style="padding: 30px">
 
 
                 <!-- Search box -->
-                <div class="span4 offset1">
+                <div class="col-sm-4 col-sm-offset-1">
                     <form class="form-horizontal">
                         <div class="control-group">
-                            <label class="control-label">Search</label>
+                            <label class="control-label">Filter results</label>
                             <div class="controls">
-                                <input type="text" style="width: 350px" data-ng-model="nameFilter" data-ng-change="search()"></input>
+                                <input type="text" class="form-control" style="width: 350px" data-ng-model="nameFilter" data-ng-change="search()"></input>
                             </div>
                         </div>
                     </form>
                 </div>
             </div>
 
-            <div class="span11">
+            <div class="col-sm-12">
                 <table class="table table-hover">
                     <tr>
                         <th>Type</th>
@@ -43,9 +43,9 @@
                             <img data-ng-src="{{item.image}}" title="{{item.type}}">
                         </td>
                         <td>
-                            <a href="#" onclick="doOpenModel({{item}})" title="{{item.description}}">{{item.name}}</a>
+                            <a href="#" data-ng-click="doOpenModel(item)" title="{{item.description}}">{{item.name}}</a>
                         </td>
-                        <td class="muted">{{item.id}}</td>
+                        <td class="muted">{{item.refId}}</td>
                     </tr>
                 </table>
                 <div style="text-align: center;">
@@ -59,8 +59,8 @@
     </div>
 
     <script src="../libs/jquery.min_1.9.0.js"></script>
-    <script src="../libs/angular.min_1.0.3.js"></script>
-    <script src="../libs/bootstrap_2.2.2/js/bootstrap.min.js"></script>
+    <script src="../libs/angular.min.js"></script>
+    <script src="../libs/bootstrap/js/bootstrap.min.js"></script>
     <script src="../libs/olca.utils.js"></script>
 
     <script>
@@ -98,6 +98,14 @@
                     }
                     $scope.pager.setItems(filtered);
                 }
+            };
+            
+            $scope.doOpenModel = function(item) {
+                if (typeof (openModel) != 'undefined') {
+                    openModel(angular.toJson(item.descriptor));
+                } else {
+                    console.log('openModel is not a registered function');
+                }
             }
         
         };
@@ -131,14 +139,7 @@
             return items;
         }
         
-        // calls the external method 'openModel'
-        function doOpenModel(item) {
-            if (typeof (openModel) != 'undefined') {
-                openModel(angular.toJson(item.descriptor));
-            } else {
-                console.log('openModel is not a registered function');
-            }
-        }
+       
         
         // get the image for the
         function getImage(descriptor) {
