@@ -1,4 +1,4 @@
-package org.openlca.core.editors.io;
+package org.openlca.app.results;
 
 import java.io.File;
 

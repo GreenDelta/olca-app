@@ -22,6 +22,10 @@ import org.openlca.app.App;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Provides methods for registering HTML resources and retrieving URLs for these
+ * resources.
+ */
 public class HtmlFolder {
 
 	private static final Logger log = LoggerFactory.getLogger(HtmlFolder.class);
@@ -61,6 +65,29 @@ public class HtmlFolder {
 		}
 	}
 
+	private static boolean readVersionInformation() throws IOException {
+		if (baseFiles != null)
+			return true;
+		baseFiles = new HashSet<>();
+		if (!htmlDirectory.exists())
+			htmlDirectory.mkdirs();
+		if (!versionFile.exists())
+			return false;
+		try (BufferedReader reader = new BufferedReader(new FileReader(
+				versionFile))) {
+			String line = reader.readLine();
+			if (line == null || !line.contains("Version:"))
+				return false;
+			else if (!line.substring(line.indexOf(":") + 1).trim()
+					.equals(App.getVersion()))
+				return false;
+			else
+				while ((line = reader.readLine()) != null)
+					baseFiles.add(line);
+		}
+		return true;
+	}
+
 	private static void tryDeleteBaseDir() {
 		try {
 			// this can fail, e.g. when the html folder is open
@@ -69,29 +96,6 @@ public class HtmlFolder {
 		} catch (Exception e) {
 			log.warn("failed to delete html directory {}", htmlDirectory);
 		}
-	}
-
-	private static boolean readVersionInformation() throws IOException {
-		if (baseFiles == null) {
-			baseFiles = new HashSet<>();
-			if (!htmlDirectory.exists())
-				htmlDirectory.mkdirs();
-			if (!versionFile.exists())
-				return false;
-			try (BufferedReader reader = new BufferedReader(new FileReader(
-					versionFile))) {
-				String line = reader.readLine();
-				if (line == null || !line.contains("Version:"))
-					return false;
-				else if (!line.substring(line.indexOf(":") + 1).trim()
-						.equals(App.getVersion()))
-					return false;
-				else
-					while ((line = reader.readLine()) != null)
-						baseFiles.add(line);
-			}
-		}
-		return true;
 	}
 
 	private static boolean allBaseFilesExist() {
@@ -141,11 +145,10 @@ public class HtmlFolder {
 	public static String getUrl(IHtmlResource resource) throws IOException {
 		initializeBaseFiles();
 		register(resource);
-
-		log.trace("get html page {}", resource.getFileName());
-		File file = new File(htmlDirectory, resource.getBundleName()
-				+ File.separator + resource.getBundleVersion() + File.separator
-				+ resource.getFileName());
+		log.trace("get html resource {}", resource.getTargetFilePath());
+		File file = new File(htmlDirectory, resource.getBundleName() + "_"
+				+ resource.getBundleVersion() + File.separator
+				+ resource.getTargetFilePath());
 		URL url = file.toURI().toURL();
 		String s = url.toString();
 		log.trace("resolved it to {}", s);
@@ -153,40 +156,28 @@ public class HtmlFolder {
 	}
 
 	public static void register(IHtmlResource resource) throws IOException {
-		if (!exists(resource))
-			extract(resource);
-	}
-
-	private static boolean exists(IHtmlResource resource) {
-		File bundleDirectory = new File(htmlDirectory, resource.getBundleName());
-		if (!bundleDirectory.exists())
-			return false;
-		File versionDirectory = new File(bundleDirectory,
-				resource.getBundleVersion());
-		if (!versionDirectory.exists())
-			return false;
-		File file = new File(versionDirectory, resource.getFileName());
-		if (!file.exists())
-			return false;
-		return true;
-	}
-
-	private static void extract(IHtmlResource resource) throws IOException {
-		String path = getPath(resource);
-		File file = new File(htmlDirectory, path);
-		file.getParentFile().mkdirs();
+		File file = getResourceFile(resource);
+		if (file.exists())
+			return;
+		File parentFile = file.getParentFile();
+		if (!parentFile.exists())
+			file.getParentFile().mkdirs();
 		file.createNewFile();
-
 		try (InputStream is = resource.openStream();
 				OutputStream os = new FileOutputStream(file)) {
 			IOUtils.copy(is, os);
 		}
+		if (resource.getDependencies() == null)
+			return;
+		for (IHtmlResource dependency : resource.getDependencies())
+			register(dependency);
 	}
 
-	private static String getPath(IHtmlResource resource) {
-		return resource.getBundleName() + File.separator
-				+ resource.getBundleVersion() + File.separator
-				+ resource.getFileName();
+	private static File getResourceFile(IHtmlResource resource) {
+		String dirName = resource.getBundleName() + "_"
+				+ resource.getBundleVersion();
+		File dir = new File(htmlDirectory, dirName);
+		File file = new File(dir, resource.getTargetFilePath());
+		return file;
 	}
-
 }
