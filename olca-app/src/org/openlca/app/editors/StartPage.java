@@ -2,6 +2,8 @@ package org.openlca.app.editors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
@@ -13,8 +15,10 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.html.HtmlPage;
 import org.openlca.app.html.HtmlResource;
 import org.openlca.app.html.IHtmlResource;
+import org.openlca.app.navigation.actions.DatabaseImportAction;
 import org.openlca.app.rcp.RcpActivator;
 import org.openlca.app.resources.ImageType;
+import org.openlca.app.util.Desktop;
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.UI;
 import org.slf4j.Logger;
@@ -53,6 +57,8 @@ public class StartPage extends FormEditor {
 
 	private class Page extends FormPage implements HtmlPage {
 
+		private Browser browser;
+
 		public Page() {
 			super(StartPage.this, "olca.StartPage.Page", "Welcome");
 		}
@@ -65,6 +71,9 @@ public class StartPage extends FormEditor {
 
 		@Override
 		public void onLoaded() {
+			new ImportDatabaseCallback(browser);
+			new OpenUrlCallback(browser);
+
 		}
 
 		@Override
@@ -72,9 +81,42 @@ public class StartPage extends FormEditor {
 			ScrolledForm form = managedForm.getForm();
 			Composite composite = form.getBody();
 			composite.setLayout(new FillLayout());
-			UI.createBrowser(composite, this);
+			browser = UI.createBrowser(composite, this);
 		}
 
+	}
+
+	private class ImportDatabaseCallback extends BrowserFunction {
+		public ImportDatabaseCallback(Browser browser) {
+			super(browser, "importDatabase");
+		}
+
+		@Override
+		public Object function(Object[] arguments) {
+			log.trace("js-callback: importDatabase");
+			new DatabaseImportAction().run();
+			return null;
+		}
+	}
+
+	private class OpenUrlCallback extends BrowserFunction {
+		public OpenUrlCallback(Browser browser) {
+			super(browser, "openUrl");
+		}
+
+		@Override
+		public Object function(Object[] arguments) {
+			log.trace("js-callback: openUrl");
+			if (arguments == null || arguments.length == 0
+					|| arguments[0] == null) {
+				log.warn("openUrl: no url given");
+				return null;
+			}
+			String url = arguments[0].toString();
+			log.trace("open URL {}", url);
+			Desktop.browse(url);
+			return null;
+		}
 	}
 
 	private static class StartPageInput implements IEditorInput {
