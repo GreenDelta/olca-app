@@ -7,7 +7,6 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import org.eclipse.jface.action.Action;
 import org.openlca.app.App;
@@ -129,7 +128,7 @@ public class XNexusIndexExportAction extends Action implements
 		private Date validityTimeEnd;
 
 		private IndexEntry(org.openlca.core.model.Process process) {
-			id = UUID.randomUUID().toString();
+			id = process.getRefId();
 			name = process.getName();
 			categoryPath = CategoryPath.getFull(process.getCategory());
 			description = process.getDescription();

@@ -1,30 +1,62 @@
 package org.openlca.app.results.analysis;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.openlca.app.util.Labels;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.matrix.LongPair;
+import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.FlowDescriptor;
+import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.UpstreamTree;
 import org.openlca.core.results.UpstreamTreeNode;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The data model of the sunburst-tree view.
  */
 public class SunBurstTree {
 
-	private Node root;
+	private static final double EPSILON = 1e-12;
+
+	/** The total amount of the tree. */
+	@SuppressWarnings("unused")
+	private double amount;
+
+	/** The unit of the values in the tree nodes. */
+	@SuppressWarnings("unused")
+	private String unit;
+
+	/**
+	 * The top-level children of the sun-burst tree. This list usally contains
+	 * only the reference process.
+	 */
+	private List<Node> children = new ArrayList<>();
 
 	public static SunBurstTree create(UpstreamTree contributionTree,
-	                                  EntityCache cache) {
+			EntityCache cache) {
 		SunBurstTree tree = new SunBurstTree();
 		UpstreamTreeNode cRoot = contributionTree.getRoot();
+		tree.amount = cRoot.getAmount();
+		tree.unit = getUnit(contributionTree, cache);
 		Node root = createNode(cRoot, cache);
-		tree.setRoot(root);
 		synchChilds(cRoot, root, cache);
+		if (root != null)
+			tree.children.add(root);
 		return tree;
+	}
+
+	private static String getUnit(UpstreamTree tree, EntityCache cache) {
+		if (tree == null || tree.getReference() == null)
+			return "";
+		BaseDescriptor ref = tree.getReference();
+		if (ref instanceof ImpactCategoryDescriptor)
+			return ((ImpactCategoryDescriptor) ref).getReferenceUnit();
+		if (ref instanceof FlowDescriptor)
+			return Labels.getRefUnit((FlowDescriptor) ref, cache);
+		else
+			return "";
 	}
 
 	private static Node createNode(UpstreamTreeNode cNode, EntityCache cache) {
@@ -44,11 +76,11 @@ public class SunBurstTree {
 	}
 
 	private static void synchChilds(UpstreamTreeNode cNode, Node node,
-	                                EntityCache cache) {
+			EntityCache cache) {
 		if (cNode == null || node == null)
 			return;
 		for (UpstreamTreeNode cChild : cNode.getChildren()) {
-			if (cChild.getAmount() == 0)
+			if (Math.abs(cChild.getAmount()) < EPSILON)
 				continue;
 			Node child = createNode(cChild, cache);
 			if (child == null)
@@ -56,14 +88,6 @@ public class SunBurstTree {
 			node.getChildren().add(child);
 			synchChilds(cChild, child, cache);
 		}
-	}
-
-	public Node getRoot() {
-		return root;
-	}
-
-	public void setRoot(Node root) {
-		this.root = root;
 	}
 
 	public static class Node {
