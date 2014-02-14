@@ -1,5 +1,8 @@
 package org.openlca.app.navigation.actions;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -17,9 +20,6 @@ import org.openlca.core.database.upgrades.Upgrades;
 import org.openlca.core.database.upgrades.VersionState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.List;
 
 /**
  * Activates a database with a version check and possible upgrade.
@@ -58,9 +58,11 @@ public class DatabaseActivateAction extends Action implements INavigationAction 
 
 	@Override
 	public void run() {
-		Editors.closeAll();
+		if (Database.get() != null)
+			Editors.closeAll();
 		Activation activation = new Activation();
-		// App.run does not work as we have to show a modal dialog in the callback
+		// App.run does not work as we have to show a modal dialog in the
+		// callback
 		try {
 			PlatformUI.getWorkbench().getProgressService()
 					.busyCursorWhile(activation);
@@ -75,10 +77,9 @@ public class DatabaseActivateAction extends Action implements INavigationAction 
 
 		private VersionState versionState;
 
-
 		@Override
-		public void run(IProgressMonitor monitor) throws
-				InvocationTargetException, InterruptedException {
+		public void run(IProgressMonitor monitor)
+				throws InvocationTargetException, InterruptedException {
 			try {
 				monitor.beginTask("Activate database", IProgressMonitor.UNKNOWN);
 				Database.close();
@@ -105,8 +106,8 @@ public class DatabaseActivateAction extends Action implements INavigationAction 
 				return;
 			VersionState state = activation.versionState;
 			if (state == null || state == VersionState.ERROR) {
-				error("Could not get the version from the database. Is this an " +
-						"openLCA database?");
+				error("Could not get the version from the database. Is this an "
+						+ "openLCA database?");
 				return;
 			}
 			handleVersionState(state);
@@ -114,17 +115,17 @@ public class DatabaseActivateAction extends Action implements INavigationAction 
 
 		private void handleVersionState(VersionState state) {
 			switch (state) {
-				case NEWER:
-					error("The given database is newer than this openLCA version.");
-					break;
-				case OLDER:
-					askRunUpdates();
-					break;
-				case CURRENT:
-					Navigator.refresh();
-					break;
-				default:
-					break;
+			case NEWER:
+				error("The given database is newer than this openLCA version.");
+				break;
+			case OLDER:
+				askRunUpdates();
+				break;
+			case CURRENT:
+				Navigator.refresh();
+				break;
+			default:
+				break;
 			}
 		}
 
@@ -136,8 +137,9 @@ public class DatabaseActivateAction extends Action implements INavigationAction 
 
 		private void askRunUpdates() {
 			IDatabase db = Database.get();
-			boolean doIt = Question.ask("Run update?", "The database " +
-					db.getName() + " needs an update. Do you want to run it?");
+			boolean doIt = Question.ask("Run update?",
+					"The database " + db.getName()
+							+ " needs an update. Do you want to run it?");
 			if (!doIt) {
 				closeDatabase();
 				return;

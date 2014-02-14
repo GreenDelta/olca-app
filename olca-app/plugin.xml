@@ -4,6 +4,12 @@
 
 	<extension
          point="org.eclipse.ui.editors">
+      <editor 
+			class="org.openlca.app.editors.StartPage"
+			default="false"
+			id="olca.StartPage"
+			name="Welcome">      
+      </editor>
       <editor
             class="org.openlca.app.editors.ActorEditor"
             default="false"

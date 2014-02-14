@@ -9,6 +9,7 @@ import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 import org.openlca.app.Config;
 import org.openlca.app.db.Database;
+import org.openlca.app.editors.StartPage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +36,11 @@ public class RcpWindowAdvisor extends WorkbenchWindowAdvisor {
 		configurer.setShowProgressIndicator(true);
 		configurer.setShowMenuBar(true);
 		configurer.setTitle(Config.APPLICATION_NAME + " " + Config.VERSION);
+	}
+
+	@Override
+	public void postWindowOpen() {
+		StartPage.open();
 	}
 
 	@Override
