@@ -19,7 +19,6 @@ import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.DatabaseContent;
 import org.openlca.core.database.DbUtils;
-import org.openlca.util.Strings;
 
 class DatabaseWizardPage extends WizardPage {
 
@@ -122,14 +121,14 @@ class DatabaseWizardPage extends WizardPage {
 		if (content == null)
 			return null;
 		switch (content) {
-			case EMPTY:
-				return Messages.EmptyDatabase;
-			case UNITS:
-				return Messages.UnitsAndFlowProps;
-			case ALL_REF_DATA:
-				return Messages.CompleteRefData;
-			default:
-				return null;
+		case EMPTY:
+			return Messages.EmptyDatabase;
+		case UNITS:
+			return Messages.UnitsAndFlowProps;
+		case ALL_REF_DATA:
+			return Messages.CompleteRefData;
+		default:
+			return null;
 		}
 	}
 
@@ -209,7 +208,6 @@ class DatabaseWizardPage extends WizardPage {
 	private String getText(Text text) {
 		return text.getText().trim();
 	}
-
 
 	private class RadioGroupListener implements SelectionListener {
 
