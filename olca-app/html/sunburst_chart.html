@@ -10,13 +10,15 @@
 
     <div class="container-fluid" style="padding:20px">
         <div>
-            <p id="contributionText" class="lead">No data available</p>
+            <p id="contributionText" class="lead" data-toggle="collapse" data-target="#vizInfo" style="cursor: pointer;">No data available</p>
+            <p id="vizInfo" class="collapse out">This visualization shows the upstream-contributions of processes in the supply chain to a flow or LCIA result. The overall result of the reference process in the product system is represented by the inner circle of the chart. Each outer circle represents the upstream contributions of the next tier in the product system where the sizes of the segments are scaled by the amount of the contribution.</p>
         </div>
         <div id="chartDiv"></div>
     </div>
 
-
-    <script src="../libs/d3.v3.min.js"></script>
+    <script type="text/javascript" src="../libs/jquery.min_1.9.0.js"></script>
+    <script type="text/javascript" src="../libs/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../libs/d3.v3.min.js"></script>
     <script type="text/javascript">
         function setData(tree) {
             d3.select("#contributionText")

@@ -18,7 +18,9 @@ public enum HtmlView {
 
 	RESULT_LOCALISED_LCIA("result_localised_lcia.html", Resource.OLCA_CHARTS_JS),
 
-	SUNBURST_CHART("sunburst_chart.html");
+	SUNBURST_CHART("sunburst_chart.html"),
+
+	BUBBLE_CHART("bubble_chart.html");
 
 	private IHtmlResource resource;
 	private Resource[] dependencies;
