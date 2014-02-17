@@ -5,6 +5,7 @@ import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.window.Window;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
+import org.openlca.app.db.DatabaseFolder;
 import org.openlca.app.db.DerbyConfiguration;
 import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.navigation.DatabaseElement;
@@ -61,8 +62,8 @@ public class DatabaseRenameAction extends Action implements INavigationAction {
 		if (dialog.open() != Window.OK)
 			return;
 		String newName = dialog.getValue();
-		File newDbFolder = new File(config.getFolder(), newName);
-		if (!DbUtils.isValidName(newName) || newDbFolder.exists()) {
+		if (!DbUtils.isValidName(newName) || Database.getConfigurations()
+				.nameExists(newName.trim())) {
 			org.openlca.app.util.Error.showBox("The given name is not a valid" +
 					" database name or the database already exists.");
 			return;
@@ -77,8 +78,8 @@ public class DatabaseRenameAction extends Action implements INavigationAction {
 				Editors.closeAll();
 				Database.close();
 			}
-			File oldDbFolder = new File(config.getFolder(), config.getName());
-			File newDbFolder = new File(config.getFolder(), newName);
+			File oldDbFolder = DatabaseFolder.getRootFolder(config.getName());
+			File newDbFolder = DatabaseFolder.getRootFolder(newName);
 			boolean success = oldDbFolder.renameTo(newDbFolder);
 			if (!success) {
 				log.error("failed to rename folder");

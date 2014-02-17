@@ -1,17 +1,11 @@
 package org.openlca.app.db;
 
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.openlca.app.App;
 import org.openlca.app.Messages;
-import org.openlca.app.db.DatabaseWizardPage.DerbyPageData;
-import org.openlca.app.db.DatabaseWizardPage.MySQLPageData;
-import org.openlca.app.db.DatabaseWizardPage.PageData;
 import org.openlca.app.events.DatabaseCreatedEvent;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.Editors;
@@ -22,6 +16,8 @@ import org.openlca.core.database.derby.DerbyDatabase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.InvocationTargetException;
+
 /**
  * The wizard for database creation.
  */
@@ -29,7 +25,6 @@ public class DatabaseWizard extends Wizard implements IRunnableWithProgress {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 	private DatabaseWizardPage page;
-	private PageData data;
 
 	public DatabaseWizard() {
 		setNeedsProgressMonitor(true);
@@ -46,7 +41,6 @@ public class DatabaseWizard extends Wizard implements IRunnableWithProgress {
 	public boolean performFinish() {
 		try {
 			Editors.closeAll();
-			data = page.getPageData();
 			getContainer().run(true, false, this);
 			Navigator.refresh();
 			return true;
@@ -67,13 +61,13 @@ public class DatabaseWizard extends Wizard implements IRunnableWithProgress {
 			InterruptedException {
 		monitor.beginTask(Messages.NewDatabase_Create, IProgressMonitor.UNKNOWN);
 		try {
-			IDatabaseConfiguration configuration = null;
-			if (data instanceof DerbyPageData)
-				configuration = createDerbyConfig();
-			else if (data instanceof MySQLPageData)
-				configuration = createMySQLConfig();
+			IDatabaseConfiguration config = page.getPageData();
+			if (config instanceof DerbyConfiguration)
+				Database.register((DerbyConfiguration) config);
+			else if (config instanceof MySQLConfiguration)
+				Database.register((MySQLConfiguration) config);
 			Database.close();
-			IDatabase database = Database.activate(configuration);
+			IDatabase database = Database.activate(config);
 			fillContent(database);
 			App.getEventBus().post(new DatabaseCreatedEvent(Database.get()));
 		} catch (Exception e) {
@@ -83,32 +77,11 @@ public class DatabaseWizard extends Wizard implements IRunnableWithProgress {
 		monitor.done();
 	}
 
-	private MySQLConfiguration createMySQLConfig() {
-		MySQLPageData mysqlData = (MySQLPageData) data;
-		MySQLConfiguration config = new MySQLConfiguration();
-		config.setHost(mysqlData.host);
-		config.setPort(mysqlData.port);
-		config.setUser(mysqlData.user);
-		config.setPassword(mysqlData.password);
-		config.setName(mysqlData.databaseName);
-		Database.register(config);
-		return config;
-	}
-
-	private DerbyConfiguration createDerbyConfig() {
-		DerbyConfiguration config = new DerbyConfiguration();
-		config.setFolder(new File(data.directory, ""));
-		config.setName(data.databaseName);
-		Database.register(config);
-		return config;
-	}
-
 	private void fillContent(IDatabase database) {
 		if (!(database instanceof DerbyDatabase))
 			return;
 		DerbyDatabase db = (DerbyDatabase) database;
-		DerbyPageData dData = (DerbyPageData) data;
-		DatabaseContent content = dData.contentType;
+		DatabaseContent content = page.getSelectedContent();
 		if (content != DatabaseContent.EMPTY)
 			db.fill(content);
 	}

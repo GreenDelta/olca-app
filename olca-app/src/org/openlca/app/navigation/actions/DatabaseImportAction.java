@@ -74,7 +74,6 @@ public class DatabaseImportAction extends Action implements INavigationAction {
 		}, new Runnable() {
 			public void run() {
 				DerbyConfiguration conf = new DerbyConfiguration();
-				conf.setFolder(dbFolder);
 				conf.setName(dbName);
 				Database.register(conf);
 				Navigator.refresh();

@@ -170,8 +170,11 @@ public class App {
 		job.schedule();
 	}
 
+	/**
+	 * Returns the workspace directory where databases and other resources
+	 * are stored (native libraries, HTML resources, etc.).
+	 */
 	public static File getWorkspace() {
 		return Workspace.getDir();
 	}
-
 }
