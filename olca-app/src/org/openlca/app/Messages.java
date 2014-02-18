@@ -162,6 +162,7 @@ public class Messages extends NLS {
 	public static String ExportDatabase;
 	public static String Factor;
 	public static String FancyToolTip_NoDescription;
+	public static String File;
 	public static String FileAlreadyExists;
 	public static String FileImportPage_ChooseDirectoryButton;
 	public static String FileImportPage_ChooseDirectoryLabel;
