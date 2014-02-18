@@ -77,7 +77,7 @@ public class DatabaseDeleteAction extends Action implements INavigationAction {
 			try {
 				tryDelete(config);
 			} catch (Exception e) {
-				log.error("failed to delete database {}", config);
+				log.error("failed to delete database", e);
 			}
 		}
 		Navigator.refresh();

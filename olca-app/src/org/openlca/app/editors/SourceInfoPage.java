@@ -98,7 +98,7 @@ class SourceInfoPage extends ModelPage<Source> {
 	}
 
 	private void createFileLink(Composite composite) {
-		fileLink = new ImageHyperlink(composite, SWT.TOP);
+		fileLink = toolkit.createImageHyperlink(composite, SWT.TOP);
 		fileLink.setForeground(Colors.getLinkBlue());
 		fileLink.addHyperlinkListener(new OpenFileListener());
 		fileLink.addMouseTrackListener(new DeleteFileVisibility());

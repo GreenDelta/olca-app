@@ -30,8 +30,8 @@ import org.geotools.styling.SLD;
 import org.geotools.styling.Style;
 import org.geotools.swt.SwtMapFrame;
 import org.opengis.feature.simple.SimpleFeature;
-import org.openlca.app.App;
 import org.openlca.app.db.Database;
+import org.openlca.app.db.DatabaseFolder;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.util.Strings;
@@ -50,11 +50,8 @@ class ShapeFileUtils {
 	static File getFolder(ImpactMethod method) {
 		if (method == null || method.getRefId() == null)
 			return null;
-		File workspace = App.getWorkspace();
-		File dbFolder = new File(workspace, Database.get().getName());
-		File shapeFileFolder = new File(dbFolder, "shapefiles");
-		File methodFolder = new File(shapeFileFolder, method.getRefId());
-		return methodFolder;
+		return DatabaseFolder.getShapeFileLocation(Database.get(),
+				method.getRefId());
 	}
 
 	/**

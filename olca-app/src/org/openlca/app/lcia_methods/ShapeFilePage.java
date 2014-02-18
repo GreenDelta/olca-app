@@ -1,5 +1,10 @@
 package org.openlca.app.lcia_methods;
 
+import java.awt.Desktop;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -15,13 +20,14 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.Hyperlink;
+import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.Colors;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
@@ -32,11 +38,6 @@ import org.openlca.core.model.ImpactMethod;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.awt.Desktop;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Shows imported shape-files and parameters from these shape-files that can be
@@ -88,21 +89,33 @@ class ShapeFilePage extends FormPage {
 
 	private void createFolderLink(Composite composite) {
 		UI.formLabel(composite, toolkit, "Location");
-		Hyperlink hyperlink = new Hyperlink(composite, SWT.NONE);
-		toolkit.adapt(hyperlink);
+		ImageHyperlink link = toolkit.createImageHyperlink(composite, SWT.TOP);
 		final File folder = ShapeFileUtils.getFolder(method);
-		hyperlink.setText(Strings.cut(folder.getAbsolutePath(), 75));
-		hyperlink.setToolTipText(folder.getAbsolutePath());
-		hyperlink.addHyperlinkListener(new HyperlinkAdapter() {
+		link.setText(Strings.cut(folder.getAbsolutePath(), 75));
+		link.setImage(ImageType.FOLDER_SMALL.get());
+		link.setForeground(Colors.getLinkBlue());
+		link.setToolTipText(folder.getAbsolutePath());
+		link.addHyperlinkListener(new HyperlinkAdapter() {
 			@Override
 			public void linkActivated(HyperlinkEvent e) {
-				try {
-					Desktop.getDesktop().open(folder);
-				} catch (Exception ex) {
-					log.error("failed to open shape-file folder", ex);
-				}
+				openFolder(folder);
 			}
 		});
+	}
+
+	private void openFolder(final File folder) {
+		try {
+			File f = folder;
+			do {
+				if (f.exists()) {
+					Desktop.getDesktop().open(f);
+					break;
+				}
+				f = f.getParentFile();
+			} while (f != null);
+		} catch (Exception ex) {
+			log.error("failed to open shape-file folder", ex);
+		}
 	}
 
 	private void checkRunImport(File file) {
@@ -203,7 +216,7 @@ class ShapeFilePage extends FormPage {
 
 	private class ShapeFileParameterTable {
 
-		private String[] columns = {Messages.Name, Messages.Description};
+		private String[] columns = { Messages.Name, Messages.Description };
 		private TableViewer viewer;
 		private String shapeFile;
 		private List<ShapeFileParameter> params;
@@ -214,16 +227,16 @@ class ShapeFilePage extends FormPage {
 			viewer.setLabelProvider(new ShapeFileParameterLabel());
 			Tables.bindColumnWidths(viewer, 0.2, 0.8);
 			bindActions();
-			ModifySupport<ShapeFileParameter> modifySupport =
-					new ModifySupport<>(viewer);
+			ModifySupport<ShapeFileParameter> modifySupport = new ModifySupport<>(
+					viewer);
 			modifySupport.bind(Messages.Name, new NameModifier());
 			modifySupport.bind(Messages.Description, new DescriptionModifier());
 			try {
 				params = ShapeFileUtils.readParameters(method, shapeFile);
 				viewer.setInput(params);
 			} catch (Exception e) {
-				log.error("failed to read parameteres for shape file " +
-						shapeFile, e);
+				log.error("failed to read parameteres for shape file "
+						+ shapeFile, e);
 			}
 		}
 
@@ -269,7 +282,6 @@ class ShapeFilePage extends FormPage {
 			}
 		}
 
-
 		private class NameModifier extends TextCellModifier<ShapeFileParameter> {
 			@Override
 			protected String getText(ShapeFileParameter param) {
@@ -283,7 +295,8 @@ class ShapeFilePage extends FormPage {
 			}
 		}
 
-		private class DescriptionModifier extends TextCellModifier<ShapeFileParameter> {
+		private class DescriptionModifier extends
+				TextCellModifier<ShapeFileParameter> {
 			@Override
 			protected String getText(ShapeFileParameter param) {
 				return param.getDescription();
@@ -337,7 +350,6 @@ class ShapeFilePage extends FormPage {
 					return p.getDescription();
 			}
 		}
-
 
 	}
 }

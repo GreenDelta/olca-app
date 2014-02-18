@@ -110,6 +110,8 @@ public enum ImageType {
 
 	FLOW_WASTE("flow_waste_16.png"),
 
+	FOLDER_SMALL("folder_16.gif"),
+
 	COLLAPSE_ICON("collapse_all.png"),
 
 	FOLDER_EXPR("folder_expr.png"),
