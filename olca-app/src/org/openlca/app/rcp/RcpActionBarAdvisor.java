@@ -18,6 +18,7 @@ import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 import org.openlca.app.Config;
 import org.openlca.app.Messages;
+import org.openlca.app.db.sql.SqlEditor;
 import org.openlca.app.rcp.plugins.PluginManagerDialog;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Desktop;
@@ -108,6 +109,8 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		MenuManager viewMenu = new MenuManager(Messages.Menu_ShowViews);
 		viewMenu.add(showViews);
 		windowMenu.add(viewMenu);
+		windowMenu.add(new Separator());
+		windowMenu.add(new SqlEditorAction());
 		windowMenu.add(new FormulaConsoleAction());
 		menuBar.add(windowMenu);
 	}
@@ -116,29 +119,17 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	protected void makeActions(final IWorkbenchWindow window) {
 
 		saveAction = ActionFactory.SAVE.create(window);
-
 		saveAsAction = ActionFactory.SAVE_AS.create(window);
-
 		saveAllAction = ActionFactory.SAVE_ALL.create(window);
-
 		closeAction = ActionFactory.CLOSE.create(window);
-
 		closeAllAction = ActionFactory.CLOSE_ALL.create(window);
-
 		preferencesAction = ActionFactory.PREFERENCES.create(window);
-
 		importAction = ActionFactory.IMPORT.create(window);
-
 		exportAction = ActionFactory.EXPORT.create(window);
-
 		exitAction = ActionFactory.QUIT.create(window);
-
 		newWindowAction = ActionFactory.OPEN_NEW_WINDOW.create(window);
-
 		newEditorAction = ActionFactory.NEW_EDITOR.create(window);
-
 		showViews = ContributionItemFactory.VIEWS_SHORTLIST.create(window);
-
 		aboutAction = ActionFactory.ABOUT.create(window);
 
 	}
@@ -172,4 +163,15 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		}
 	}
 
+	private class SqlEditorAction extends Action {
+		public SqlEditorAction() {
+			setText("SQL Query Browser");
+			setToolTipText("Open the SQL Query Browser");
+		}
+
+		@Override
+		public void run() {
+			SqlEditor.open();
+		}
+	}
 }

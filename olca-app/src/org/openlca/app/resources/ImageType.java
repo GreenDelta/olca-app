@@ -224,6 +224,8 @@ public enum ImageType {
 
 	REFRESH_ICON("refresh_16.png"),
 
+	RUN_SMALL("run_16.gif"),
+
 	SANKEY_OPTIONS_ICON("sankey_options.gif"),
 
 	SAVE_AS_IMAGE_ICON("image_save.png"),
