@@ -21,7 +21,7 @@ class SimulationExportAction extends Action {
 	public SimulationExportAction() {
 		setId("SimulationResultExport");
 		setToolTipText("Export results to Excel");
-		setImageDescriptor(ImageType.EXCEL_ICON.getDescriptor());
+		setImageDescriptor(ImageType.FILE_EXCEL_SMALL.getDescriptor());
 	}
 
 	public void configure(SimulationResult result) {

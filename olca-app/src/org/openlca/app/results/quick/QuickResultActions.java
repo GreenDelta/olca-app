@@ -30,7 +30,7 @@ public class QuickResultActions extends EditorActionBarContributor {
 		private Logger log = LoggerFactory.getLogger(getClass());
 
 		public ExcelExport() {
-			setImageDescriptor(ImageType.EXCEL_ICON.getDescriptor());
+			setImageDescriptor(ImageType.FILE_EXCEL_SMALL.getDescriptor());
 			setText(Messages.ExportToExcel);
 			setToolTipText(Messages.ExportToExcel);
 		}

@@ -6,6 +6,8 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 import org.openlca.app.rcp.RcpActivator;
 
+import com.google.common.io.Files;
+
 public enum ImageType {
 
 	ACCEPT_ICON("accept.png"),
@@ -60,8 +62,6 @@ public enum ImageType {
 
 	ERROR_ICON("error.gif"),
 
-	EXCEL_ICON("excel_obj.png"),
-
 	EXCHANGE_BG_LEFT("left.jpg"),
 
 	EXCHANGE_BG_MIDDLE("middle.jpg"),
@@ -78,7 +78,19 @@ public enum ImageType {
 
 	EXTENSION_ICON("extension_16.gif"),
 
-	FILE_ICON("file_16.gif"),
+	FILE_SMALL("file_16.gif"),
+
+	FILE_EXCEL_SMALL("file_excel_16.png"),
+
+	FILE_IMAGE_SMALL("file_image_16.png"),
+
+	FILE_MARKUP_SMALL("file_markup_16.png"),
+
+	FILE_PDF_SMALL("file_pdf_16.png"),
+
+	FILE_POWERPOINT_SMALL("file_powerpoint_16.png"),
+
+	FILE_WORD_SMALL("file_word_16.png"),
 
 	FLOW_CATEGORY_ICON("folder_flow.png"),
 
@@ -292,6 +304,43 @@ public enum ImageType {
 
 	public String getPath() {
 		return File.separator + "icons" + File.separator + this.fileName;
+	}
+
+	public static ImageType forFile(String fileName) {
+		if (fileName == null)
+			return FILE_SMALL;
+		String extension = Files.getFileExtension(fileName);
+		if (extension == null)
+			return FILE_SMALL;
+		switch (extension) {
+		case "pdf":
+			return FILE_PDF_SMALL;
+		case "doc":
+		case "docx":
+		case "odt":
+			return FILE_WORD_SMALL;
+		case "xls":
+		case "xlsx":
+		case "ods":
+		case "csv":
+			return FILE_EXCEL_SMALL;
+		case "png":
+		case "jpg":
+		case "gif":
+			return FILE_IMAGE_SMALL;
+		case "ppt":
+		case "pptx":
+		case "odp":
+			return FILE_POWERPOINT_SMALL;
+		case "xml":
+		case "html":
+		case "spold":
+		case "htm":
+		case "xhtml":
+			return FILE_MARKUP_SMALL;
+		default:
+			return FILE_SMALL;
+		}
 	}
 
 }

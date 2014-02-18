@@ -106,7 +106,7 @@ class SourceInfoPage extends ModelPage<Source> {
 		if (file != null) {
 			fileLink.setText(file);
 			fileLink.setToolTipText(Messages.Open);
-			fileLink.setImage(ImageType.FILE_ICON.get());
+			fileLink.setImage(ImageType.forFile(file).get());
 		}
 	}
 
@@ -152,7 +152,7 @@ class SourceInfoPage extends ModelPage<Source> {
 		} else {
 			fileLink.setToolTipText(Messages.Open);
 			fileLink.setText(file);
-			fileLink.setImage(ImageType.FILE_ICON.get());
+			fileLink.setImage(ImageType.forFile(file).get());
 		}
 		fileLink.getParent().getParent().layout();
 	}

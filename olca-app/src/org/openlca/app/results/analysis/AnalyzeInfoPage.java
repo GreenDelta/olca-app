@@ -85,7 +85,7 @@ public class AnalyzeInfoPage extends FormPage {
 		toolkit.createLabel(composite, "");
 		Button button = toolkit.createButton(composite, Messages.ExportToExcel,
 				SWT.NONE);
-		button.setImage(ImageType.EXCEL_ICON.get());
+		button.setImage(ImageType.FILE_EXCEL_SMALL.get());
 		button.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {

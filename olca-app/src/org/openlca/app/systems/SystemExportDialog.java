@@ -45,7 +45,7 @@ public class SystemExportDialog extends WizardDialog {
 
 			protected SystemExportWizardPage() {
 				super("SystemExportWizardPage");
-				setImageDescriptor(ImageType.EXCEL_ICON.getDescriptor());
+				setImageDescriptor(ImageType.FILE_EXCEL_SMALL.getDescriptor());
 				setTitle("Product System Excel Export");
 				setDescription("Please select a directory to export the product system to. \nA new one, where all created files are placed, will be created under the selected directory.");
 				setPageComplete(false);

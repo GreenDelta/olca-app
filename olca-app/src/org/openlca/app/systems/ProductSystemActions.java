@@ -74,7 +74,7 @@ public class ProductSystemActions extends EditorActionBarContributor {
 
 	private class ExcelExportAction extends Action {
 		public ExcelExportAction() {
-			setImageDescriptor(ImageType.EXCEL_ICON.getDescriptor());
+			setImageDescriptor(ImageType.FILE_EXCEL_SMALL.getDescriptor());
 			setText(Messages.Systems_MatrixExportAction_Text);
 		}
 
