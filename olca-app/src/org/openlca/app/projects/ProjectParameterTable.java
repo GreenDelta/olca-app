@@ -89,8 +89,8 @@ class ProjectParameterTable {
 	private boolean contains(ParameterRedef redef) {
 		for (ParameterRedef contained : redefs) {
 			if (Objects.equals(redef.getName(), contained.getName())
-					&& Objects.equals(redef.getProcessId(),
-							contained.getProcessId()))
+					&& Objects.equals(redef.getContextId(),
+							contained.getContextId()))
 				return true;
 		}
 		return false;
@@ -222,8 +222,8 @@ class ProjectParameterTable {
 			return null;
 		for (ParameterRedef variantRedef : variant.getParameterRedefs()) {
 			if (Objects.equals(variantRedef.getName(), redef.getName())
-					&& Objects.equals(variantRedef.getProcessId(),
-							redef.getProcessId()))
+					&& Objects.equals(variantRedef.getContextId(),
+							redef.getContextId()))
 				return variantRedef;
 		}
 		return null;
@@ -255,7 +255,7 @@ class ProjectParameterTable {
 			if (!(element instanceof ParameterRedef))
 				return null;
 			ParameterRedef redef = (ParameterRedef) element;
-			if (redef.getProcessId() == null)
+			if (redef.getContextId() == null)
 				return ImageType.FORMULA_ICON.get();
 			else
 				return ImageType.PROCESS_ICON.get();
@@ -286,11 +286,11 @@ class ProjectParameterTable {
 		}
 
 		private String getProcessColumnText(ParameterRedef redef) {
-			if (redef.getProcessId() == null)
+			if (redef.getContextId() == null)
 				return "global";
 			else {
 				ProcessDescriptor descriptor = cache.get(
-						ProcessDescriptor.class, redef.getProcessId());
+						ProcessDescriptor.class, redef.getContextId());
 				return Labels.getDisplayName(descriptor);
 			}
 		}

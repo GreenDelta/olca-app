@@ -16,7 +16,7 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.NativeSql;
 import org.openlca.core.database.NativeSql.QueryResultHandler;
 import org.openlca.core.database.ProcessDao;
-import org.openlca.core.matrix.FormulaInterpreterBuilder;
+import org.openlca.core.matrix.ParameterTable;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.expressions.FormulaInterpreter;
 import org.slf4j.Logger;
@@ -75,8 +75,9 @@ public class XParameterCheckAction extends Action implements INavigationAction {
 			ProcessDao dao = new ProcessDao(database);
 			for (ProcessDescriptor descriptor : dao.getDescriptors())
 				processes.put(descriptor.getId(), descriptor);
-			interpreter = FormulaInterpreterBuilder.build(database,
+			ParameterTable parameterTable = ParameterTable.build(database,
 					processes.keySet());
+			interpreter = parameterTable.createInterpreter();
 		}
 
 		private void evalAll(IDatabase database) {

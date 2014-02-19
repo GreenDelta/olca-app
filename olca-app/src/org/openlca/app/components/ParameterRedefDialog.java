@@ -91,7 +91,7 @@ public class ParameterRedefDialog extends FormDialog {
 		redef.setValue(results.getDouble("value"));
 		long procId = results.getLong("f_owner");
 		if (!results.wasNull())
-			redef.setProcessId(procId);
+			redef.setContextId(procId);
 		return redef;
 	}
 
@@ -102,7 +102,7 @@ public class ParameterRedefDialog extends FormDialog {
 		for (ParameterRedef redef : parameters) {
 			ParameterNode paramNode = new ParameterNode();
 			paramNode.parameter = redef;
-			Long procId = redef.getProcessId();
+			Long procId = redef.getContextId();
 			if (procId == null)
 				model.globalParameters.add(paramNode);
 			else {
