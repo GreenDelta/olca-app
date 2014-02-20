@@ -23,7 +23,7 @@ import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.app.editors.graphical.model.TreeConnectionRouter;
 import org.openlca.app.editors.graphical.outline.OutlinePage;
-import org.openlca.app.systems.ProductSystemEditor;
+import org.openlca.app.editors.systems.ProductSystemEditor;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.ProcessDescriptor;

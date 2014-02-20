@@ -4,7 +4,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.openlca.app.Messages;
 import org.openlca.app.editors.ModelEditorInput;
 import org.openlca.app.editors.graphical.model.ProcessNode;
-import org.openlca.app.processes.ProcessEditor;
+import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.util.Editors;
 
 public class OpenAction extends EditorAction {

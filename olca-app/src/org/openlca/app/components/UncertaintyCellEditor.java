@@ -4,7 +4,7 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.openlca.app.editors.ModelEditor;
-import org.openlca.app.processes.ProcessEditor;
+import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.util.UncertaintyLabel;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.ImpactFactor;

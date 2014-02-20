@@ -25,62 +25,62 @@
             name="%editors.name">
       </editor>
       <editor
-            class="org.openlca.app.editors.SourceEditor"
+            class="org.openlca.app.editors.sources.SourceEditor"
             default="false"
             icon="icons/source_obj.png"
             id="editors.source"
             name="%editors.name.5">
       </editor>
       <editor
-            class="org.openlca.app.editors.UnitGroupEditor"
+            class="org.openlca.app.editors.units.UnitGroupEditor"
             default="false"
             icon="icons/unitgroup_obj.gif"
             id="editors.unitgroup"
             name="%editors.name.6">
       </editor>
       <editor
-            class="org.openlca.app.editors.FlowPropertyEditor"
+            class="org.openlca.app.editors.flow_properties.FlowPropertyEditor"
             default="false"
             icon="icons/flowprop_obj.gif"
             id="editors.flowproperty"
             name="%editors.name.1">
       </editor>
       <editor
-            class="org.openlca.app.editors.FlowEditor"
+            class="org.openlca.app.editors.flows.FlowEditor"
             default="false"
             icon="icons/flow_obj.gif"
             id="editors.flow"
             name="%editors.name.0">
       </editor>
       <editor
-            class="org.openlca.app.lcia_methods.ImpactMethodEditor"
+            class="org.openlca.app.editors.lcia_methods.ImpactMethodEditor"
             default="false"
             icon="icons/LCIA_obj.gif"
             id="editors.impactmethod"
             name="%editors.name.2">
       </editor>
       <editor
-            class="org.openlca.app.processes.ProcessEditor"
+            class="org.openlca.app.editors.processes.ProcessEditor"
             default="false"
             icon="icons/proc_obj.gif"
             id="editors.process"
             name="%editors.name.7">
       </editor>
       <editor
-            class="org.openlca.app.projects.ProjectEditor"
+            class="org.openlca.app.editors.projects.ProjectEditor"
             default="false"
             icon="icons/project_obj.png"
             id="editors.project"
             name="%editors.name.4"
-            contributorClass="org.openlca.app.projects.ProjectEditorActions">
+            contributorClass="org.openlca.app.editors.projects.ProjectEditorActions">
       </editor>
       <editor
-            class="org.openlca.app.systems.ProductSystemEditor"
+            class="org.openlca.app.editors.systems.ProductSystemEditor"
             default="false"
             icon="icons/model.gif"
             id="editors.productsystem"
             name="%editors.name.3" 
-            contributorClass="org.openlca.app.systems.ProductSystemActions">
+            contributorClass="org.openlca.app.editors.systems.ProductSystemActions">
       </editor>
       <editor
             class="org.openlca.app.results.quick.QuickResultEditor"
@@ -176,7 +176,7 @@
             name="%wizard.name.4">
       </wizard>
       <wizard
-            class="org.openlca.app.lcia_methods.ImpactMethodWizard"
+            class="org.openlca.app.editors.lcia_methods.ImpactMethodWizard"
             icon="icons/LCIA_obj_new.gif"
             id="wizards.new.impactmethod"
             name="%wizard.name.1">
