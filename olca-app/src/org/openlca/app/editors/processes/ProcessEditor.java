@@ -8,11 +8,14 @@ import org.openlca.app.Event;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.IEditor;
 import org.openlca.app.editors.ModelEditor;
+import org.openlca.app.editors.ParameterPage;
+import org.openlca.app.editors.ParameterPageInput;
 import org.openlca.app.util.Error;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ParameterDao;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Parameter;
+import org.openlca.core.model.ParameterScope;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.Uncertainty;
 import org.openlca.expressions.FormulaInterpreter;
@@ -126,12 +129,21 @@ public class ProcessEditor extends ModelEditor<Process> implements IEditor {
 			addPage(new ProcessExchangePage(this));
 			addPage(new ProcessAdminInfoPage(this));
 			addPage(new ProcessModelingPage(this));
-			addPage(new ProcessParameterPage(this));
+			addParameterPage();
 			addPage(new AllocationPage(this));
 			addPage(new ProcessCostPage(this));
 		} catch (Exception e) {
 			log.error("failed to add page", e);
 		}
+	}
+
+	private void addParameterPage() throws PartInitException {
+		ParameterPageInput input = new ParameterPageInput();
+		input.setEditor(this);
+		input.setInterpreter(interpreter);
+		input.setParameters(getModel().getParameters());
+		input.setScope(ParameterScope.PROCESS);
+		addPage(new ParameterPage(input));
 	}
 
 	@Override

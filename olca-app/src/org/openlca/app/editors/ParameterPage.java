@@ -1,4 +1,4 @@
-package org.openlca.app.editors.processes;
+package org.openlca.app.editors;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -10,53 +10,42 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
+import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
-import org.openlca.app.editors.ModelPage;
-import org.openlca.app.editors.ParameterSection;
-import org.openlca.app.editors.ParameterSectionInput;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.UncertaintyLabel;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ParameterDao;
 import org.openlca.core.model.Parameter;
-import org.openlca.core.model.ParameterScope;
-import org.openlca.core.model.Process;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class ProcessParameterPage extends ModelPage<Process> {
+public class ParameterPage extends FormPage {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private FormToolkit toolkit;
-	private ProcessEditor editor;
+	private ParameterPageInput input;
 
-	ProcessParameterPage(ProcessEditor editor) {
-		super(editor, "ProcessParameterPage", Messages.ParametersPageLabel);
-		this.editor = editor;
+	public ParameterPage(ParameterPageInput input) {
+		super(input.getEditor(), "ParameterPage", Messages.Parameters);
+		this.input = input;
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, Messages.Process + ": "
-				+ getModel().getName());
+		ScrolledForm form = UI.formHeader(managedForm, Messages.Parameters);
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		try {
 			createGlobalParamterSection(body);
-			ParameterSectionInput input = new ParameterSectionInput();
-			input.setComposite(body);
-			input.setEditor(editor);
-			input.setInterpreter(editor.getInterpreter());
-			input.setParameters(getModel().getParameters());
-			input.setScope(ParameterScope.PROCESS);
-			ParameterSection.forInputParameters(input);
-			ParameterSection.forDependentParameters(input);
+			ParameterSection.forInputParameters(input, body);
+			ParameterSection.forDependentParameters(input, body);
 			body.setFocus();
 			form.reflow(true);
 		} catch (Exception e) {

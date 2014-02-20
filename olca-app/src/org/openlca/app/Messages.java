@@ -355,7 +355,6 @@ public class Messages extends NLS {
 	public static String Parameter;
 	public static String Parameters;
 	public static String ParameterAlreadyDefined;
-	public static String ParametersPageLabel;
 	public static String ParametersPreferencePage_BottomUp;
 	public static String ParametersPreferencePage_TopDown;
 	public static String Password;

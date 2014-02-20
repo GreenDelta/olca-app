@@ -2,7 +2,6 @@ package org.openlca.app.editors;
 
 import java.util.List;
 
-import org.eclipse.swt.widgets.Composite;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterScope;
 import org.openlca.expressions.FormulaInterpreter;
@@ -10,12 +9,11 @@ import org.openlca.expressions.FormulaInterpreter;
 /**
  * The input of a parameter section.
  */
-public class ParameterSectionInput {
+public class ParameterPageInput {
 
 	private ModelEditor<?> editor;
 	private List<Parameter> parameters;
 	private FormulaInterpreter interpreter;
-	private Composite composite;
 	private ParameterScope scope;
 
 	public ModelEditor<?> getEditor() {
@@ -40,14 +38,6 @@ public class ParameterSectionInput {
 
 	public void setInterpreter(FormulaInterpreter interpreter) {
 		this.interpreter = interpreter;
-	}
-
-	public Composite getComposite() {
-		return composite;
-	}
-
-	public void setComposite(Composite composite) {
-		this.composite = composite;
 	}
 
 	public ParameterScope getScope() {

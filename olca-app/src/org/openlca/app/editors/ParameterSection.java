@@ -49,23 +49,24 @@ public class ParameterSection {
 	private final String DESCRIPTION = Messages.Description;
 
 	private boolean forInputParameters = true;
-	private ParameterSectionInput input;
+	private ParameterPageInput input;
 	private ModelEditor<?> editor;
 	private List<Parameter> parameters;
 
-	public static ParameterSection forInputParameters(
-			ParameterSectionInput input) {
-		ParameterSection table = new ParameterSection(input, true);
+	public static ParameterSection forInputParameters(ParameterPageInput input,
+			Composite body) {
+		ParameterSection table = new ParameterSection(input, body, true);
 		return table;
 	}
 
 	public static ParameterSection forDependentParameters(
-			ParameterSectionInput input) {
-		ParameterSection table = new ParameterSection(input, false);
+			ParameterPageInput input, Composite body) {
+		ParameterSection table = new ParameterSection(input, body, false);
 		return table;
 	}
 
-	private ParameterSection(ParameterSectionInput input, boolean forInputParams) {
+	private ParameterSection(ParameterPageInput input, Composite body,
+			boolean forInputParams) {
 		this.forInputParameters = forInputParams;
 		this.editor = input.getEditor();
 		this.input = input;
@@ -75,7 +76,7 @@ public class ParameterSection {
 			props = new String[] { NAME, VALUE, UNCERTAINTY, DESCRIPTION };
 		else
 			props = new String[] { NAME, FORMULA, VALUE, DESCRIPTION };
-		createComponents(input.getComposite(), props);
+		createComponents(body, props);
 		createCellModifiers();
 		fillInitialInput();
 		input.getEditor().getEventBus().register(this);
