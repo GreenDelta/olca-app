@@ -22,18 +22,6 @@ import com.google.common.eventbus.EventBus;
 public abstract class ModelEditor<T extends CategorizedEntity> extends
 		FormEditor implements IEditor {
 
-	/**
-	 * An event message that indicates a change in the parameters of this
-	 * process.
-	 */
-	public final String PARAMETER_CHANGE = "PARAMETER_CHANGE";
-
-	/**
-	 * An event message that indicates that all formulas in exchanges and
-	 * parameters were evaluated (this is a message to refresh the viewers).
-	 */
-	public final String FORMULAS_EVALUATED = "FORMULAS_EVALUATED";
-
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private boolean dirty;
 	private T model;

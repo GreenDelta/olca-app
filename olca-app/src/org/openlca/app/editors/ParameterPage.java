@@ -30,9 +30,9 @@ public class ParameterPage extends FormPage {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private FormToolkit toolkit;
-	private ParameterPageInput input;
+	private ParameterPageSupport input;
 
-	public ParameterPage(ParameterPageInput input) {
+	public ParameterPage(ParameterPageSupport input) {
 		super(input.getEditor(), "ParameterPage", Messages.Parameters);
 		this.input = input;
 	}

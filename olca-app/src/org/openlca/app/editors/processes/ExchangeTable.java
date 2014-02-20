@@ -21,13 +21,13 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
-import org.openlca.app.Event;
 import org.openlca.app.Messages;
 import org.openlca.app.components.IModelDropHandler;
 import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.components.UncertaintyCellEditor;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
+import org.openlca.app.editors.ParameterPageListener;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.CategoryPath;
@@ -55,8 +55,8 @@ import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.util.Strings;
-
-import com.google.common.eventbus.Subscribe;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The table for the display and editing of inputs or outputs of process
@@ -64,7 +64,9 @@ import com.google.common.eventbus.Subscribe;
  * this table.
  * 
  */
-class ExchangeTable {
+class ExchangeTable implements ParameterPageListener {
+
+	private Logger log = LoggerFactory.getLogger(getClass());
 
 	private final boolean forInputs;
 	private boolean showFormulas = true;
@@ -101,13 +103,13 @@ class ExchangeTable {
 		this.forInputs = forInputs;
 		this.editor = editor;
 		this.process = editor.getModel();
-		editor.getEventBus().register(this);
+		editor.getParameterSupport().addListener(this);
 	}
 
-	@Subscribe
-	public void handleEvaluation(Event event) {
-		if (event.match(editor.FORMULAS_EVALUATED))
-			viewer.refresh();
+	@Override
+	public void parameterChanged() {
+		log.trace("refresh exchange tables after parameter change");
+		viewer.refresh();
 	}
 
 	private void render(Section section, FormToolkit toolkit) {
@@ -430,7 +432,7 @@ class ExchangeTable {
 				fireChange();
 			} catch (NumberFormatException e) {
 				try {
-					double val = editor.eval(text);
+					double val = editor.getParameterSupport().eval(text);
 					exchange.setAmountFormula(text);
 					exchange.setAmountValue(val);
 					fireChange();

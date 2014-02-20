@@ -14,7 +14,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.Event;
 import org.openlca.app.Messages;
 import org.openlca.app.components.UncertaintyCellEditor;
 import org.openlca.app.util.Actions;
@@ -30,15 +29,13 @@ import org.openlca.core.model.Parameter;
 import org.openlca.expressions.FormulaInterpreter;
 import org.openlca.util.Strings;
 
-import com.google.common.eventbus.Subscribe;
-
 /**
  * A section with a table for parameters in processes and LCIA methods. It is
  * possible to create two kinds of tables with this class: for input parameters
  * with the columns name, value, and description, or for dependent parameters
  * with the columns name, formula, value, and description.
  */
-public class ParameterSection {
+public class ParameterSection implements ParameterPageListener {
 
 	private TableViewer viewer;
 
@@ -49,28 +46,29 @@ public class ParameterSection {
 	private final String DESCRIPTION = Messages.Description;
 
 	private boolean forInputParameters = true;
-	private ParameterPageInput input;
+	private ParameterPageSupport support;
 	private ModelEditor<?> editor;
 	private List<Parameter> parameters;
 
-	public static ParameterSection forInputParameters(ParameterPageInput input,
-			Composite body) {
-		ParameterSection table = new ParameterSection(input, body, true);
+	public static ParameterSection forInputParameters(
+			ParameterPageSupport support, Composite body) {
+		ParameterSection table = new ParameterSection(support, body, true);
 		return table;
 	}
 
 	public static ParameterSection forDependentParameters(
-			ParameterPageInput input, Composite body) {
-		ParameterSection table = new ParameterSection(input, body, false);
+			ParameterPageSupport support, Composite body) {
+		ParameterSection table = new ParameterSection(support, body, false);
 		return table;
 	}
 
-	private ParameterSection(ParameterPageInput input, Composite body,
+	private ParameterSection(ParameterPageSupport support, Composite body,
 			boolean forInputParams) {
 		this.forInputParameters = forInputParams;
-		this.editor = input.getEditor();
-		this.input = input;
-		this.parameters = input.getParameters();
+		this.editor = support.getEditor();
+		this.support = support;
+		support.addListener(this);
+		this.parameters = support.getParameters();
 		String[] props = {};
 		if (forInputParams)
 			props = new String[] { NAME, VALUE, UNCERTAINTY, DESCRIPTION };
@@ -79,13 +77,12 @@ public class ParameterSection {
 		createComponents(body, props);
 		createCellModifiers();
 		fillInitialInput();
-		input.getEditor().getEventBus().register(this);
+		support.getEditor().getEventBus().register(this);
 	}
 
-	@Subscribe
-	public void handleEvaluation(Event event) {
-		if (event.match(input.getEditor().FORMULAS_EVALUATED))
-			viewer.refresh();
+	@Override
+	public void parameterChanged() {
+		viewer.refresh();
 	}
 
 	private void createComponents(Composite body, String[] properties) {
@@ -154,7 +151,7 @@ public class ParameterSection {
 	private void addParameter() {
 		Parameter parameter = new Parameter();
 		parameter.setName("p_" + parameters.size());
-		parameter.setScope(input.getScope());
+		parameter.setScope(support.getScope());
 		parameter.setInputParameter(forInputParameters);
 		parameter.setValue(1.0);
 		if (!forInputParameters) {
@@ -162,7 +159,7 @@ public class ParameterSection {
 		}
 		parameters.add(parameter);
 		setInput();
-		fireChange();
+		support.fireParameterChange();
 	}
 
 	private void removeParameter() {
@@ -171,12 +168,7 @@ public class ParameterSection {
 			parameters.remove(parameter);
 		}
 		setInput();
-		fireChange();
-	}
-
-	private void fireChange() {
-		editor.setDirty(true);
-		editor.postEvent(editor.PARAMETER_CHANGE, this);
+		support.fireParameterChange();
 	}
 
 	private class ParameterLabelProvider extends LabelProvider implements
@@ -231,7 +223,7 @@ public class ParameterSection {
 				return;
 			}
 			param.setName(name);
-			fireChange();
+			support.fireParameterChange();
 		}
 	}
 
@@ -246,7 +238,7 @@ public class ParameterSection {
 			try {
 				double d = Double.parseDouble(text);
 				param.setValue(d);
-				fireChange();
+				support.fireParameterChange();
 			} catch (Exception e) {
 				Dialog.showError(viewer.getTable().getShell(), text
 						+ " is not a valid number. ");
@@ -263,12 +255,12 @@ public class ParameterSection {
 		@Override
 		protected void setText(Parameter param, String formula) {
 			try {
-				FormulaInterpreter interpreter = input.getInterpreter();
+				FormulaInterpreter interpreter = support.getInterpreter();
 				long scope = editor.getModel().getId();
 				double val = interpreter.getScope(scope).eval(formula);
 				param.setFormula(formula);
 				param.setValue(val);
-				fireChange();
+				support.fireParameterChange();
 			} catch (Exception e) {
 				Error.showBox("Invalid formula",
 						Strings.cut(e.getMessage(), 75));
@@ -286,7 +278,7 @@ public class ParameterSection {
 		protected void setText(Parameter param, String text) {
 			if (!Objects.equals(text, param.getDescription())) {
 				param.setDescription(text);
-				fireChange();
+				support.fireParameterChange();
 			}
 		}
 	}
