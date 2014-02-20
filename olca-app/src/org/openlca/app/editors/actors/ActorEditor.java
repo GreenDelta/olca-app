@@ -7,8 +7,10 @@
  * Contributors: GreenDeltaTC - initial API and implementation
  * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
  ******************************************************************************/
-package org.openlca.app.editors;
+package org.openlca.app.editors.actors;
 
+import org.openlca.app.editors.IEditor;
+import org.openlca.app.editors.ModelEditor;
 import org.openlca.core.model.Actor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

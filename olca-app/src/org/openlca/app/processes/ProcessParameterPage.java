@@ -16,12 +16,15 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelPage;
+import org.openlca.app.editors.ParameterSection;
+import org.openlca.app.editors.ParameterSectionInput;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.UncertaintyLabel;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ParameterDao;
 import org.openlca.core.model.Parameter;
+import org.openlca.core.model.ParameterScope;
 import org.openlca.core.model.Process;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
@@ -46,8 +49,14 @@ class ProcessParameterPage extends ModelPage<Process> {
 		Composite body = UI.formBody(form, toolkit);
 		try {
 			createGlobalParamterSection(body);
-			ProcessParameterSection.forInputParameters(body, editor);
-			ProcessParameterSection.forDependentParameters(body, editor);
+			ParameterSectionInput input = new ParameterSectionInput();
+			input.setComposite(body);
+			input.setEditor(editor);
+			input.setInterpreter(editor.getInterpreter());
+			input.setParameters(getModel().getParameters());
+			input.setScope(ParameterScope.PROCESS);
+			ParameterSection.forInputParameters(input);
+			ParameterSection.forDependentParameters(input);
 			body.setFocus();
 			form.reflow(true);
 		} catch (Exception e) {

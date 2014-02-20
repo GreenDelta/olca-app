@@ -21,23 +21,10 @@ import org.openlca.expressions.Scope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.ibm.icu.util.Calendar;
 
 public class ProcessEditor extends ModelEditor<Process> implements IEditor {
-
-	/**
-	 * An event message that indicates a change in the parameters of this
-	 * process.
-	 */
-	final String PARAMETER_CHANGE = "PARAMETER_CHANGE";
-
-	/**
-	 * An event message that indicates that all formulas in exchanges and
-	 * parameters were evaluated (this is a message to refresh the viewers).
-	 */
-	final String FORMULAS_EVALUATED = "FORMULAS_EVALUATED";
 
 	/**
 	 * An event message that indicates the removal or addition of one or more
@@ -47,8 +34,7 @@ public class ProcessEditor extends ModelEditor<Process> implements IEditor {
 
 	public static String ID = "editors.process";
 	private Logger log = LoggerFactory.getLogger(getClass());
-	private FormulaInterpreter interpreter;
-	private EventBus eventBus = new EventBus();
+	private final FormulaInterpreter interpreter = new FormulaInterpreter();
 
 	public ProcessEditor() {
 		super(Process.class);
@@ -59,7 +45,6 @@ public class ProcessEditor extends ModelEditor<Process> implements IEditor {
 			throws PartInitException {
 		super.init(site, input);
 		initInterpreter();
-		eventBus.register(this);
 	}
 
 	public FormulaInterpreter getInterpreter() {
@@ -71,7 +56,7 @@ public class ProcessEditor extends ModelEditor<Process> implements IEditor {
 		log.trace("init formula interpreter for process {}", process);
 		IDatabase database = Database.get();
 		ParameterDao dao = new ParameterDao(database);
-		interpreter = new FormulaInterpreter();
+		interpreter.clear();
 		for (Parameter globalParam : dao.getGlobalParameters()) {
 			interpreter.getGlobalScope().bind(globalParam.getName(),
 					Double.toString(globalParam.getValue()));
@@ -83,14 +68,6 @@ public class ProcessEditor extends ModelEditor<Process> implements IEditor {
 			else
 				scope.bind(param.getName(), param.getFormula());
 		}
-	}
-
-	public EventBus getEventBus() {
-		return eventBus;
-	}
-
-	public void postEvent(String message, Object source) {
-		eventBus.post(new Event(message, source));
 	}
 
 	/**

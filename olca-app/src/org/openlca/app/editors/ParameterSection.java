@@ -1,4 +1,4 @@
-package org.openlca.app.processes;
+package org.openlca.app.editors;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,19 +27,18 @@ import org.openlca.app.util.Viewers;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.model.Parameter;
-import org.openlca.core.model.ParameterScope;
-import org.openlca.core.model.Process;
+import org.openlca.expressions.FormulaInterpreter;
 import org.openlca.util.Strings;
 
 import com.google.common.eventbus.Subscribe;
 
 /**
- * A section with a table for parameters in processes. It is possible to create
- * two kinds of tables with this class: for input parameters with the columns
- * name, value, and description, or for dependent parameters with the columns
- * name, formula, value, and description.
+ * A section with a table for parameters in processes and LCIA methods. It is
+ * possible to create two kinds of tables with this class: for input parameters
+ * with the columns name, value, and description, or for dependent parameters
+ * with the columns name, formula, value, and description.
  */
-class ProcessParameterSection {
+public class ParameterSection {
 
 	private TableViewer viewer;
 
@@ -49,44 +48,43 @@ class ProcessParameterSection {
 	private final String UNCERTAINTY = Messages.Uncertainty;
 	private final String DESCRIPTION = Messages.Description;
 
-	private ProcessEditor editor;
-	private Process process;
 	private boolean forInputParameters = true;
+	private ParameterSectionInput input;
+	private ModelEditor<?> editor;
+	private List<Parameter> parameters;
 
-	public static ProcessParameterSection forInputParameters(Composite parent,
-			ProcessEditor editor) {
-		ProcessParameterSection table = new ProcessParameterSection(parent,
-				editor, true);
+	public static ParameterSection forInputParameters(
+			ParameterSectionInput input) {
+		ParameterSection table = new ParameterSection(input, true);
 		return table;
 	}
 
-	public static ProcessParameterSection forDependentParameters(
-			Composite parent, ProcessEditor editor) {
-		ProcessParameterSection table = new ProcessParameterSection(parent,
-				editor, false);
+	public static ParameterSection forDependentParameters(
+			ParameterSectionInput input) {
+		ParameterSection table = new ParameterSection(input, false);
 		return table;
 	}
 
-	@Subscribe
-	public void handleEvaluation(Event event) {
-		if (event.match(editor.FORMULAS_EVALUATED))
-			viewer.refresh();
-	}
-
-	private ProcessParameterSection(Composite parent, ProcessEditor editor,
-			boolean forInputParams) {
-		this.editor = editor;
-		this.process = editor.getModel();
+	private ParameterSection(ParameterSectionInput input, boolean forInputParams) {
 		this.forInputParameters = forInputParams;
+		this.editor = input.getEditor();
+		this.input = input;
+		this.parameters = input.getParameters();
 		String[] props = {};
 		if (forInputParams)
 			props = new String[] { NAME, VALUE, UNCERTAINTY, DESCRIPTION };
 		else
 			props = new String[] { NAME, FORMULA, VALUE, DESCRIPTION };
-		createComponents(parent, props);
+		createComponents(input.getComposite(), props);
 		createCellModifiers();
 		fillInitialInput();
-		editor.getEventBus().register(this);
+		input.getEditor().getEventBus().register(this);
+	}
+
+	@Subscribe
+	public void handleEvaluation(Event event) {
+		if (event.match(input.getEditor().FORMULAS_EVALUATED))
+			viewer.refresh();
 	}
 
 	private void createComponents(Composite body, String[] properties) {
@@ -134,7 +132,7 @@ class ProcessParameterSection {
 
 	private void fillInitialInput() {
 		// when the viewer is created, we first sort the parameters by name
-		Collections.sort(process.getParameters(), new Comparator<Parameter>() {
+		Collections.sort(parameters, new Comparator<Parameter>() {
 			@Override
 			public int compare(Parameter o1, Parameter o2) {
 				return Strings.compare(o1.getName(), o2.getName());
@@ -145,7 +143,7 @@ class ProcessParameterSection {
 
 	private void setInput() {
 		List<Parameter> input = new ArrayList<>();
-		for (Parameter param : process.getParameters()) {
+		for (Parameter param : parameters) {
 			if (param.isInputParameter() == forInputParameters)
 				input.add(param);
 		}
@@ -154,14 +152,14 @@ class ProcessParameterSection {
 
 	private void addParameter() {
 		Parameter parameter = new Parameter();
-		parameter.setName("p_" + process.getParameters().size());
-		parameter.setScope(ParameterScope.PROCESS);
+		parameter.setName("p_" + parameters.size());
+		parameter.setScope(input.getScope());
 		parameter.setInputParameter(forInputParameters);
 		parameter.setValue(1.0);
 		if (!forInputParameters) {
 			parameter.setFormula("1.0");
 		}
-		process.getParameters().add(parameter);
+		parameters.add(parameter);
 		setInput();
 		fireChange();
 	}
@@ -169,7 +167,7 @@ class ProcessParameterSection {
 	private void removeParameter() {
 		List<Parameter> selection = Viewers.getAllSelected(viewer);
 		for (Parameter parameter : selection) {
-			process.getParameters().remove(parameter);
+			parameters.remove(parameter);
 		}
 		setInput();
 		fireChange();
@@ -264,7 +262,9 @@ class ProcessParameterSection {
 		@Override
 		protected void setText(Parameter param, String formula) {
 			try {
-				double val = editor.eval(formula);
+				FormulaInterpreter interpreter = input.getInterpreter();
+				long scope = editor.getModel().getId();
+				double val = interpreter.getScope(scope).eval(formula);
 				param.setFormula(formula);
 				param.setValue(val);
 				fireChange();
