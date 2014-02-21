@@ -1,10 +1,5 @@
 package org.openlca.app.editors.lcia_methods;
 
-import java.awt.Desktop;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -32,12 +27,14 @@ import org.openlca.app.util.Question;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
-import org.openlca.app.viewers.table.modify.ModifySupport;
-import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.awt.Desktop;
+import java.io.File;
+import java.util.List;
 
 /**
  * Shows imported shape-files and parameters from these shape-files that can be
@@ -147,6 +144,9 @@ class ShapeFilePage extends FormPage {
 		System.arraycopy(sections, 0, newSections, 0, sections.length);
 		newSections[sections.length] = section;
 		this.sections = newSections;
+		List<ShapeFileParameter> params = ShapeFileUtils.getParameters(method,
+				shapeFile);
+		section.parameterTable.viewer.setInput(params);
 		form.reflow(true);
 	}
 
@@ -167,34 +167,15 @@ class ShapeFilePage extends FormPage {
 			section = UI.section(body, toolkit, "Parameters of " + shapeFile);
 			Composite composite = UI.sectionClient(section, toolkit);
 			parameterTable = new ShapeFileParameterTable(shapeFile, composite);
-			bindActions();
-		}
-
-		private void bindActions() {
-			Action show = new Action() {
-				{
-					setToolTipText("Show features");
-					setImageDescriptor(ImageType.LCIA_ICON.getDescriptor());
-				}
-
-				@Override
-				public void run() {
-					ShapeFileUtils.openFileInMap(method, shapeFile);
-				}
-			};
-			Action save = Actions.onSave(new Runnable() {
-				@Override
-				public void run() {
-					parameterTable.onSave();
-				}
-			});
 			Action delete = Actions.onRemove(new Runnable() {
 				@Override
 				public void run() {
 					delete();
 				}
 			});
-			Actions.bind(section, show, save, delete);
+			ShowMapAction showAction = new ShowMapAction(this);
+			Actions.bind(section, showAction, delete);
+			Actions.bind(parameterTable.viewer, showAction);
 		}
 
 		private void delete() {
@@ -216,115 +197,21 @@ class ShapeFilePage extends FormPage {
 
 	private class ShapeFileParameterTable {
 
-		private String[] columns = { Messages.Name, Messages.Description };
+		private String[] columns = {Messages.Name, Messages.Minimum,
+				Messages.Maximum};
 		private TableViewer viewer;
-		private String shapeFile;
 		private List<ShapeFileParameter> params;
 
 		ShapeFileParameterTable(String shapeFile, Composite parent) {
-			this.shapeFile = shapeFile;
 			viewer = Tables.createViewer(parent, columns);
 			viewer.setLabelProvider(new ShapeFileParameterLabel());
-			Tables.bindColumnWidths(viewer, 0.2, 0.8);
-			bindActions();
-			ModifySupport<ShapeFileParameter> modifySupport = new ModifySupport<>(
-					viewer);
-			modifySupport.bind(Messages.Name, new NameModifier());
-			modifySupport.bind(Messages.Description, new DescriptionModifier());
+			Tables.bindColumnWidths(viewer, 0.4, 0.3, 0.3);
 			try {
-				params = ShapeFileUtils.readParameters(method, shapeFile);
+				params = ShapeFileUtils.getParameters(method, shapeFile);
 				viewer.setInput(params);
 			} catch (Exception e) {
 				log.error("failed to read parameteres for shape file "
 						+ shapeFile, e);
-			}
-		}
-
-		private void bindActions() {
-			Action add = Actions.onAdd(new Runnable() {
-				@Override
-				public void run() {
-					onAdd();
-				}
-			});
-			Action remove = Actions.onRemove(new Runnable() {
-				@Override
-				public void run() {
-					onRemove();
-				}
-			});
-			Actions.bind(viewer, new ShowAction(), add, remove);
-		}
-
-		private void onAdd() {
-			ShapeFileParameter p = new ShapeFileParameter();
-			p.setName("p_" + (params.size() + 1));
-			params = new ArrayList<>(params);
-			params.add(p);
-			viewer.setInput(params);
-		}
-
-		private void onRemove() {
-			ShapeFileParameter p = Viewers.getFirstSelected(viewer);
-			if (p == null)
-				return;
-			params = new ArrayList<>(params);
-			params.remove(p);
-			viewer.setInput(params);
-		}
-
-		private void onSave() {
-			try {
-				ShapeFileUtils.writeParameters(method, shapeFile, params);
-			} catch (Exception e) {
-				log.error("failed to save parameters for shape file "
-						+ shapeFile, e);
-			}
-		}
-
-		private class NameModifier extends TextCellModifier<ShapeFileParameter> {
-			@Override
-			protected String getText(ShapeFileParameter param) {
-				return param.getName();
-			}
-
-			@Override
-			protected void setText(ShapeFileParameter param, String text) {
-				param.setName(text);
-				viewer.refresh();
-			}
-		}
-
-		private class DescriptionModifier extends
-				TextCellModifier<ShapeFileParameter> {
-			@Override
-			protected String getText(ShapeFileParameter param) {
-				return param.getDescription();
-			}
-
-			@Override
-			protected void setText(ShapeFileParameter param, String text) {
-				param.setDescription(text);
-				viewer.refresh();
-			}
-		}
-
-		private class ShowAction extends Action {
-
-			public ShowAction() {
-				setToolTipText("Show in map");
-				setText("Show in map");
-				setImageDescriptor(ImageType.LCIA_ICON.getDescriptor());
-			}
-
-			@Override
-			public void run() {
-				ShapeFileParameter param = Viewers.getFirstSelected(viewer);
-				if (param == null)
-					ShapeFileUtils.openFileInMap(method, shapeFile);
-				else
-					ShapeFileUtils.openFileInMap(method, shapeFile,
-							param.getName());
 			}
 		}
 
@@ -344,12 +231,41 @@ class ShapeFilePage extends FormPage {
 				if (!(o instanceof ShapeFileParameter))
 					return null;
 				ShapeFileParameter p = (ShapeFileParameter) o;
-				if (i == 0)
-					return p.getName();
-				else
-					return p.getDescription();
+				switch (i) {
+					case 0:
+						return p.getName();
+					case 1:
+						return Double.toString(p.getMin());
+					case 2:
+						return Double.toString(p.getMax());
+					default:
+						return null;
+				}
 			}
 		}
+	}
 
+	private class ShowMapAction extends Action {
+
+		private ShapeFileSection section;
+
+		public ShowMapAction(ShapeFileSection section) {
+			this.section = section;
+			setToolTipText("Show in map");
+			setText("Show in map");
+			setImageDescriptor(ImageType.LCIA_ICON.getDescriptor());
+		}
+
+		@Override
+		public void run() {
+			if (section == null || section.parameterTable == null)
+				return;
+			ShapeFileParameter param = Viewers.getFirstSelected(section
+					.parameterTable.viewer);
+			if (param == null)
+				ShapeFileUtils.openFileInMap(method, section.shapeFile);
+			else
+				ShapeFileUtils.openFileInMap(method, section.shapeFile, param);
+		}
 	}
 }

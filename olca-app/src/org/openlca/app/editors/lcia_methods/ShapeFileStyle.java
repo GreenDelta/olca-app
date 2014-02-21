@@ -25,14 +25,14 @@ class ShapeFileStyle {
 	private ShapeFileStyle() {
 	}
 
-	public static Style create(DataStore dataStore, String parameter,
-	                           double min, double max) {
+	public static Style create(DataStore dataStore, ShapeFileParameter param) {
 		try {
 			StyleBuilder styleBuilder = new StyleBuilder();
 			Style style = styleBuilder.createStyle();
-			double[] breaks = createBreaks(min, max);
+			double[] breaks = createBreaks(param.getMin(), param.getMax());
 			Color[] colors = createColors();
-			Rule[] rules = createRules(parameter, styleBuilder, breaks, colors);
+			Rule[] rules = createRules(param.getName(), styleBuilder, breaks,
+					colors);
 			String typeName = dataStore.getTypeNames()[0];
 			FeatureTypeStyle fts = styleBuilder.createFeatureTypeStyle(
 					typeName, rules);

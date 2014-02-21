@@ -1,9 +1,13 @@
 package org.openlca.app.editors.lcia_methods;
 
+/**
+ * A numeric attribute of features in a shapefile.
+ */
 public class ShapeFileParameter {
 
 	private String name;
-	private String description;
+	private double min;
+	private double max;
 
 	public String getName() {
 		return name;
@@ -13,11 +17,19 @@ public class ShapeFileParameter {
 		this.name = name;
 	}
 
-	public String getDescription() {
-		return description;
+	public double getMin() {
+		return min;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
+	public void setMin(double min) {
+		this.min = min;
+	}
+
+	public double getMax() {
+		return max;
+	}
+
+	public void setMax(double max) {
+		this.max = max;
 	}
 }
