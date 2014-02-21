@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="libs/bonecp-0.8.0.RELEASE.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/gt-swt-10.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/bcprov-jdk16-1.46.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/bonecp-0.8.0-rc3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-beanutils-1.8.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-codec-1.5.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-collections-3.2.1.jar"/>
