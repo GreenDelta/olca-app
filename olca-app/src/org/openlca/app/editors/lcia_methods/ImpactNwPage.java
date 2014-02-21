@@ -56,6 +56,9 @@ class ImpactNwPage extends ModelPage<ImpactMethod> {
 
 		sashForm.setWeights(new int[] { 25, 75 });
 		body.setFocus();
+
+		setViewer.selectFirst();
+
 		form.reflow(true);
 	}
 
