@@ -19,8 +19,11 @@ import org.openlca.app.components.IModelDropHandler;
 import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.components.UncertaintyCellEditor;
 import org.openlca.app.db.Database;
+import org.openlca.app.editors.ParameterPageListener;
+import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.CategoryPath;
+import org.openlca.app.util.Error;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UncertaintyLabel;
 import org.openlca.app.util.Viewers;
@@ -38,7 +41,7 @@ import org.openlca.core.model.Unit;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.util.Strings;
 
-class ImpactFactorTable {
+class ImpactFactorTable implements ParameterPageListener {
 
 	private final String FLOW = Messages.Flow;
 	private final String CATEGORY = Messages.Category;
@@ -47,6 +50,7 @@ class ImpactFactorTable {
 	private final String FACTOR = Messages.Factor;
 	private final String UNCERTAINTY = Messages.Uncertainty;
 
+	private boolean showFormulas = true;
 	private IDatabase database = Database.get();
 	private ImpactMethodEditor editor;
 	private ImpactCategory category;
@@ -54,6 +58,12 @@ class ImpactFactorTable {
 
 	public ImpactFactorTable(ImpactMethodEditor editor) {
 		this.editor = editor;
+		editor.getParameterSupport().addListener(this);
+	}
+
+	@Override
+	public void parameterChanged() {
+		viewer.refresh();
 	}
 
 	public void render(Composite parent, Section section) {
@@ -64,7 +74,7 @@ class ImpactFactorTable {
 		ModifySupport<ImpactFactor> support = new ModifySupport<>(viewer);
 		support.bind(FLOW_PROPERTY, new FlowPropertyModifier());
 		support.bind(UNIT, new UnitModifier());
-		support.bind(FACTOR, new FactorModifier());
+		support.bind(FACTOR, new ValueModifier());
 		support.bind(UNCERTAINTY, new UncertaintyCellEditor(viewer.getTable(),
 				editor));
 		bindActions(viewer, section);
@@ -110,8 +120,9 @@ class ImpactFactorTable {
 				createFactors(descriptors);
 			}
 		});
-		Actions.bind(section, add, remove);
-		Actions.bind(viewer, add, remove);
+		Action formulaSwitch = new FormulaSwitchAction();
+		Actions.bind(section, add, remove, formulaSwitch);
+		Actions.bind(viewer, add, remove, formulaSwitch);
 	}
 
 	private void onAdd() {
@@ -183,7 +194,10 @@ class ImpactFactorTable {
 			case 3:
 				return factor.getUnit().getName();
 			case 4:
-				return Double.toString(factor.getValue());
+				if (factor.getFormula() == null || !showFormulas)
+					return Double.toString(factor.getValue());
+				else
+					return factor.getFormula();
 			case 5:
 				return UncertaintyLabel.get(factor.getUncertainty());
 			default:
@@ -256,23 +270,56 @@ class ImpactFactorTable {
 		}
 	}
 
-	private class FactorModifier extends TextCellModifier<ImpactFactor> {
+	private class ValueModifier extends TextCellModifier<ImpactFactor> {
 
 		@Override
-		protected String getText(ImpactFactor element) {
-			return Double.toString(element.getValue());
+		protected String getText(ImpactFactor factor) {
+			if (factor.getFormula() == null)
+				return Double.toString(factor.getValue());
+			else
+				return factor.getFormula();
 		}
 
 		@Override
-		protected void setText(ImpactFactor element, String text) {
+		protected void setText(ImpactFactor factor, String text) {
 			try {
 				double value = Double.parseDouble(text);
-				if (value != element.getValue()) {
-					element.setValue(value);
-					fireChange();
-				}
+				if (value == factor.getValue() && factor.getFormula() == null)
+					return; // nothing changed
+				factor.setValue(value);
+				factor.setFormula(null);
+				fireChange();
 			} catch (NumberFormatException e) {
+				try {
+					double val = editor.getParameterSupport().eval(text);
+					factor.setValue(val);
+					factor.setFormula(text);
+					fireChange();
+				} catch (Exception ex) {
+					Error.showBox("Invalid formula", text
+							+ " is an invalid formula");
+				}
 			}
+		}
+	}
+
+	private class FormulaSwitchAction extends Action {
+		public FormulaSwitchAction() {
+			setImageDescriptor(ImageType.NUMBER_ICON.getDescriptor());
+			setText(Messages.ShowValues);
+		}
+
+		@Override
+		public void run() {
+			showFormulas = !showFormulas;
+			if (showFormulas) {
+				setImageDescriptor(ImageType.NUMBER_ICON.getDescriptor());
+				setText(Messages.ShowValues);
+			} else {
+				setImageDescriptor(ImageType.FORMULA_ICON.getDescriptor());
+				setText(Messages.ShowFormulas);
+			}
+			viewer.refresh();
 		}
 	}
 

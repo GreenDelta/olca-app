@@ -185,7 +185,6 @@ public class Messages extends NLS {
 	public static String FlowType;
 	public static String Formula;
 	public static String FormulaTitle;
-	public static String FormulaViewMode;
 	public static String French;
 	public static String FunctionalUnit;
 	public static String GeneralInformation;
@@ -469,6 +468,7 @@ public class Messages extends NLS {
 	public static String Settings;
 	public static String SettingUp;
 	public static String ShowAs;
+	public static String ShowFormulas;
 	public static String ShowValues;
 	public static String Simulation_NumberOfSimulations;
 	public static String SingleAmount;
@@ -590,7 +590,6 @@ public class Messages extends NLS {
 	public static String UsedInProcesses;
 	public static String Username;
 	public static String Value;
-	public static String ValueViewMode;
 	public static String Version;
 	public static String Warning;
 	public static String WasteFlow;

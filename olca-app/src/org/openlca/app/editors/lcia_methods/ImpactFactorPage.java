@@ -26,14 +26,14 @@ import org.openlca.util.Strings;
 
 import com.google.common.eventbus.Subscribe;
 
-class ImpactFactorsPage extends ModelPage<ImpactMethod> {
+class ImpactFactorPage extends ModelPage<ImpactMethod> {
 
 	private ImpactMethodEditor editor;
 	private FormToolkit toolkit;
 	private ImpactFactorTable factorTable;
 	private ImpactCategoryViewer categoryViewer;
 
-	ImpactFactorsPage(ImpactMethodEditor editor) {
+	ImpactFactorPage(ImpactMethodEditor editor) {
 		super(editor, "ImpactFactorsPage", Messages.ImpactFactors);
 		this.editor = editor;
 	}
@@ -52,7 +52,7 @@ class ImpactFactorsPage extends ModelPage<ImpactMethod> {
 		createCategoryViewer(client);
 		factorTable = new ImpactFactorTable(editor);
 		factorTable.render(client, section);
-		body.setFocus();
+		categoryViewer.selectFirst();
 		form.reflow(true);
 	}
 

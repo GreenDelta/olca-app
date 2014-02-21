@@ -48,7 +48,7 @@ public class ProcessEditor extends ModelEditor<Process> implements IEditor {
 			public void parameterChanged() {
 				log.trace("evaluate exchange formulas");
 				for (Exchange exchange : getModel().getExchanges()) {
-					parameterSupport.evalExchange(exchange);
+					parameterSupport.eval(exchange);
 				}
 			}
 		});

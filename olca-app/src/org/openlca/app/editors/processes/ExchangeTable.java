@@ -188,10 +188,10 @@ class ExchangeTable implements ParameterPageListener {
 				showFormulas = !showFormulas;
 				if (showFormulas) {
 					setImageDescriptor(ImageType.NUMBER_ICON.getDescriptor());
-					setText(Messages.ValueViewMode);
+					setText(Messages.ShowValues);
 				} else {
 					setImageDescriptor(ImageType.FORMULA_ICON.getDescriptor());
-					setText(Messages.FormulaViewMode);
+					setText(Messages.ShowFormulas);
 				}
 				viewer.refresh();
 			}

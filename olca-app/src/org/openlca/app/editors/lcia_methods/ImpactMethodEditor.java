@@ -9,6 +9,8 @@ import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.ParameterPage;
 import org.openlca.app.editors.ParameterPageListener;
 import org.openlca.app.editors.ParameterPageSupport;
+import org.openlca.core.model.ImpactCategory;
+import org.openlca.core.model.ImpactFactor;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.ParameterScope;
 import org.slf4j.Logger;
@@ -36,6 +38,10 @@ public class ImpactMethodEditor extends ModelEditor<ImpactMethod> implements
 		super(ImpactMethod.class);
 	}
 
+	public ParameterPageSupport getParameterSupport() {
+		return parameterSupport;
+	}
+
 	@Override
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
@@ -49,7 +55,11 @@ public class ImpactMethodEditor extends ModelEditor<ImpactMethod> implements
 			@Override
 			public void parameterChanged() {
 				log.trace("evaluate LCIA factor formulas");
-				// TODO: evaluate LCIA factor formulas
+				for (ImpactCategory category : getModel().getImpactCategories()) {
+					for (ImpactFactor factor : category.getImpactFactors()) {
+						parameterSupport.equals(factor);
+					}
+				}
 			}
 		});
 	}
@@ -58,7 +68,7 @@ public class ImpactMethodEditor extends ModelEditor<ImpactMethod> implements
 	protected void addPages() {
 		try {
 			addPage(new ImpactMethodInfoPage(this));
-			addPage(new ImpactFactorsPage(this));
+			addPage(new ImpactFactorPage(this));
 			addPage(new ImpactNwPage(this));
 			addPage(new ParameterPage(parameterSupport));
 			if (FeatureFlag.LOCALISED_LCIA.isEnabled()) {

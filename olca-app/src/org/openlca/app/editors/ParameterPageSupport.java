@@ -9,6 +9,7 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ParameterDao;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Exchange;
+import org.openlca.core.model.ImpactFactor;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterScope;
 import org.openlca.core.model.Uncertainty;
@@ -100,22 +101,35 @@ public class ParameterPageSupport {
 		}
 	}
 
-	public void evalExchange(Exchange e) {
+	public void eval(Exchange e) {
 		try {
 			if (e.getAmountFormula() != null)
 				e.setAmountValue(eval(e.getAmountFormula()));
-			Uncertainty u = e.getUncertainty();
-			if (u == null)
-				return;
-			if (u.getParameter1Formula() != null)
-				u.setParameter1Value(eval(u.getParameter1Formula()));
-			if (u.getParameter2Formula() != null)
-				u.setParameter2Value(eval(u.getParameter2Formula()));
-			if (u.getParameter3Formula() != null)
-				u.setParameter3Value(eval(u.getParameter3Formula()));
+			eval(e.getUncertainty());
 		} catch (Exception ex) {
 			Error.showBox("Formula evaluation failed", ex.getMessage());
 		}
+	}
+
+	public void eval(ImpactFactor f) {
+		try {
+			if (f.getFormula() != null)
+				f.setValue(eval(f.getFormula()));
+			eval(f.getUncertainty());
+		} catch (Exception e) {
+			Error.showBox("Formula evaluation failed", e.getMessage());
+		}
+	}
+
+	private void eval(Uncertainty u) throws InterpreterException {
+		if (u == null)
+			return;
+		if (u.getParameter1Formula() != null)
+			u.setParameter1Value(eval(u.getParameter1Formula()));
+		if (u.getParameter2Formula() != null)
+			u.setParameter2Value(eval(u.getParameter2Formula()));
+		if (u.getParameter3Formula() != null)
+			u.setParameter3Value(eval(u.getParameter3Formula()));
 	}
 
 	/**
