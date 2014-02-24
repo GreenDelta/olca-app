@@ -215,7 +215,11 @@
             icon="icons/categories.gif"
             id="views.navigation"
             name="%view.name">
-      </view>  
+      </view>
+      <category
+            id="mapping.cat"
+            name="MappingName">
+      </category>  
    </extension>
    
    <extension
@@ -229,6 +233,12 @@
             class="org.openlca.app.preferencepages.DatabaseParameterPage"
             id="preferencepages.parameters"
             name="%page.name.1">
+      </page>
+      <page
+            category="org.eclipse.ant.ui.AntCodeAssistPreferencePage"
+            class="org.openlca.app.preferencepages.MappingPage"
+            id="preferencepages.mapping"
+            name="Mapping">
       </page>
       <page
             class="org.openlca.app.logging.LoggerConfigPage"
@@ -612,12 +622,26 @@
             name="%ilcd.net.export.category.name">
       </category>
       <wizard
+            category="export.category.csv"
+            class="org.openlca.app.wizards.io.CSVExportWizard"
+            icon="icons/simaPro.png"
+            id="wizard.export.csv"
+            name="Processes">
+         <description>
+            Import SimaPro CSV files.
+         </description>
+      </wizard>
+      <wizard
             category="export.category.ilcdnetwork"
             class="org.openlca.app.ilcd_network.ExportWizard"
             icon="icons/network16.png"
             id="org.openlca.ilcd.network.ExportWizard"
             name="%ilcd.net.export.wizard.name">
       </wizard>
+      <category
+            id="export.category.csv"
+            name="SimaPro CSV">
+      </category>
    </extension>
    
    
