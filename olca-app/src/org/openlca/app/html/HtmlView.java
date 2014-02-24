@@ -5,12 +5,22 @@ import static org.openlca.app.html.Resource.USAGE_VIEW_JS;
 import java.io.File;
 import java.io.IOException;
 
-import org.openlca.app.RcpActivator;
+import org.openlca.app.rcp.RcpActivator;
 import org.slf4j.LoggerFactory;
 
 public enum HtmlView {
 
-	USAGES_VIEW("usages_view.html", USAGE_VIEW_JS);
+	USAGES_VIEW("usages_view.html", USAGE_VIEW_JS),
+
+	GMAP_HEATMAP("gmap_heatmap.html"),
+
+	IMPACT_LOCALISATION_PAGE("impact_localisation_page.html"),
+
+	RESULT_LOCALISED_LCIA("result_localised_lcia.html", Resource.OLCA_CHARTS_JS),
+
+	SUNBURST_CHART("sunburst_chart.html"),
+
+	BUBBLE_CHART("bubble_chart.html");
 
 	private IHtmlResource resource;
 	private Resource[] dependencies;

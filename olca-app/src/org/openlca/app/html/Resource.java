@@ -3,12 +3,14 @@ package org.openlca.app.html;
 import java.io.File;
 import java.io.IOException;
 
-import org.openlca.app.RcpActivator;
+import org.openlca.app.rcp.RcpActivator;
 import org.slf4j.LoggerFactory;
 
 enum Resource {
 
-	USAGE_VIEW_JS("js" + File.separator + "usage_view.js");
+	USAGE_VIEW_JS("js" + File.separator + "usage_view.js"),
+
+	OLCA_CHARTS_JS("js" + File.separator + "olca.charts.js");
 
 	private IHtmlResource resource;
 	private Resource[] dependencies;

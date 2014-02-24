@@ -1,12 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.app.navigation.actions;
 
 import java.io.File;
@@ -20,6 +11,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.osgi.util.NLS;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
+import org.openlca.app.db.DatabaseFolder;
 import org.openlca.app.db.DerbyConfiguration;
 import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.db.MySQLConfiguration;
@@ -85,7 +77,7 @@ public class DatabaseDeleteAction extends Action implements INavigationAction {
 			try {
 				tryDelete(config);
 			} catch (Exception e) {
-				log.error("failed to delete database {}", config);
+				log.error("failed to delete database", e);
 			}
 		}
 		Navigator.refresh();
@@ -96,20 +88,13 @@ public class DatabaseDeleteAction extends Action implements INavigationAction {
 			Editors.closeAll();
 			Database.close();
 		}
+		File dbFolder = DatabaseFolder.getRootFolder(config.getName());
+		if (dbFolder.isDirectory())
+			FileUtils.deleteDirectory(dbFolder);
 		if (config instanceof DerbyConfiguration)
-			deleteDerbyDatabase(config);
+			Database.remove((DerbyConfiguration) config);
 		else if (config instanceof MySQLConfiguration)
 			Database.remove((MySQLConfiguration) config);
-	}
-
-	private void deleteDerbyDatabase(IDatabaseConfiguration config)
-			throws Exception {
-		String path = ((DerbyConfiguration) config).getFolder()
-				+ File.separator + config.getName();
-		File folder = new File(path);
-		if (folder.isDirectory())
-			FileUtils.deleteDirectory(folder);
-		Database.remove((DerbyConfiguration) config);
 	}
 
 	private MessageDialog createMessageDialog() {

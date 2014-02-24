@@ -51,7 +51,7 @@ public class Database {
 			Cache.create(database);
 			Database.config = config;
 			Logger log = LoggerFactory.getLogger(Database.class);
-			log.trace("acitvated database {} with version{}",
+			log.trace("activated database {} with version{}",
 					database.getName(), database.getVersion());
 			return Database.database;
 		} catch (Exception e) {

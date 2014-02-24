@@ -2,6 +2,8 @@ package org.openlca.app.html;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
+import java.util.List;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
@@ -11,12 +13,12 @@ public class HtmlResource implements IHtmlResource {
 
 	private Bundle bundle;
 	private String internalPath;
-	private String fileName;
+	private String targetPath;
 
-	public HtmlResource(Bundle bundle, String internalPath, String fileName) {
+	public HtmlResource(Bundle bundle, String internalPath, String targetPath) {
 		this.bundle = bundle;
 		this.internalPath = internalPath;
-		this.fileName = fileName;
+		this.targetPath = targetPath;
 	}
 
 	@Override
@@ -30,8 +32,13 @@ public class HtmlResource implements IHtmlResource {
 	}
 
 	@Override
-	public String getFileName() {
-		return fileName;
+	public String getTargetFilePath() {
+		return targetPath;
+	}
+
+	@Override
+	public List<IHtmlResource> getDependencies() {
+		return Collections.emptyList();
 	}
 
 	@Override

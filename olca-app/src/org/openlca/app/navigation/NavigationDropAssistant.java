@@ -13,7 +13,7 @@ import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.navigator.CommonDropAdapter;
 import org.eclipse.ui.navigator.CommonDropAdapterAssistant;
-import org.openlca.app.RcpActivator;
+import org.openlca.app.rcp.RcpActivator;
 import org.openlca.app.util.CopyPaste;
 
 import com.google.common.base.Objects;

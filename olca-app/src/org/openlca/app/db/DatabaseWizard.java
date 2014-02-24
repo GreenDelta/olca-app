@@ -1,6 +1,5 @@
 package org.openlca.app.db;
 
-import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -9,9 +8,6 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.openlca.app.App;
 import org.openlca.app.Messages;
-import org.openlca.app.db.DatabaseWizardPage.DerbyPageData;
-import org.openlca.app.db.DatabaseWizardPage.MySQLPageData;
-import org.openlca.app.db.DatabaseWizardPage.PageData;
 import org.openlca.app.events.DatabaseCreatedEvent;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.Editors;
@@ -25,11 +21,10 @@ import org.slf4j.LoggerFactory;
 /**
  * The wizard for database creation.
  */
-public class DatabaseWizard extends Wizard implements IRunnableWithProgress {
+public class DatabaseWizard extends Wizard {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 	private DatabaseWizardPage page;
-	private PageData data;
 
 	public DatabaseWizard() {
 		setNeedsProgressMonitor(true);
@@ -46,8 +41,10 @@ public class DatabaseWizard extends Wizard implements IRunnableWithProgress {
 	public boolean performFinish() {
 		try {
 			Editors.closeAll();
-			data = page.getPageData();
-			getContainer().run(true, false, this);
+			IDatabaseConfiguration config = page.getPageData();
+			Runner runner = (config instanceof DerbyConfiguration) ? new Runner(
+					config, page.getSelectedContent()) : new Runner(config);
+			getContainer().run(true, false, runner);
 			Navigator.refresh();
 			return true;
 		} catch (Exception e) {
@@ -62,54 +59,48 @@ public class DatabaseWizard extends Wizard implements IRunnableWithProgress {
 		dialog.open();
 	}
 
-	@Override
-	public void run(IProgressMonitor monitor) throws InvocationTargetException,
-			InterruptedException {
-		monitor.beginTask(Messages.NewDatabase_Create, IProgressMonitor.UNKNOWN);
-		try {
-			IDatabaseConfiguration configuration = null;
-			if (data instanceof DerbyPageData)
-				configuration = createDerbyConfig();
-			else if (data instanceof MySQLPageData)
-				configuration = createMySQLConfig();
-			Database.close();
-			IDatabase database = Database.activate(configuration);
-			fillContent(database);
-			App.getEventBus().post(new DatabaseCreatedEvent(Database.get()));
-		} catch (Exception e) {
-			log.error("Create database failed", e);
+	private class Runner implements IRunnableWithProgress {
+
+		private IDatabaseConfiguration config;
+		private DatabaseContent content;
+
+		Runner(IDatabaseConfiguration config) {
+			this.config = config;
 		}
-		Navigator.refresh();
-		monitor.done();
-	}
 
-	private MySQLConfiguration createMySQLConfig() {
-		MySQLPageData mysqlData = (MySQLPageData) data;
-		MySQLConfiguration config = new MySQLConfiguration();
-		config.setHost(mysqlData.host);
-		config.setPort(mysqlData.port);
-		config.setUser(mysqlData.user);
-		config.setPassword(mysqlData.password);
-		config.setName(mysqlData.databaseName);
-		Database.register(config);
-		return config;
-	}
+		Runner(IDatabaseConfiguration config, DatabaseContent content) {
+			this(config);
+			this.content = content;
+		}
 
-	private DerbyConfiguration createDerbyConfig() {
-		DerbyConfiguration config = new DerbyConfiguration();
-		config.setFolder(new File(data.directory, ""));
-		config.setName(data.databaseName);
-		Database.register(config);
-		return config;
-	}
+		@Override
+		public void run(IProgressMonitor monitor)
+				throws InvocationTargetException, InterruptedException {
+			monitor.beginTask(Messages.NewDatabase_Create,
+					IProgressMonitor.UNKNOWN);
+			try {
+				if (config instanceof DerbyConfiguration)
+					Database.register((DerbyConfiguration) config);
+				else if (config instanceof MySQLConfiguration)
+					Database.register((MySQLConfiguration) config);
+				Database.close();
+				IDatabase database = Database.activate(config);
+				fillContent(database);
+				App.getEventBus()
+						.post(new DatabaseCreatedEvent(Database.get()));
+			} catch (Exception e) {
+				log.error("Create database failed", e);
+			}
+			Navigator.refresh();
+			monitor.done();
+		}
 
-	private void fillContent(IDatabase database) {
-		if (!(database instanceof DerbyDatabase))
-			return;
-		DerbyDatabase db = (DerbyDatabase) database;
-		DerbyPageData dData = (DerbyPageData) data;
-		DatabaseContent content = dData.contentType;
-		if (content != DatabaseContent.EMPTY)
+		private void fillContent(IDatabase database) {
+			if (content == null || content == DatabaseContent.EMPTY)
+				return;
+			DerbyDatabase db = (DerbyDatabase) database;
 			db.fill(content);
+		}
 	}
+
 }

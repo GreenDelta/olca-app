@@ -13,7 +13,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.progress.UIJob;
-import org.openlca.app.resources.IImageType;
 import org.openlca.app.resources.ImageType;
 import org.openlca.util.Strings;
 
@@ -25,7 +24,7 @@ public class Popup {
 
 	private String message;
 	private String title;
-	private IImageType imageType = ImageType.INFO_ICON;
+	private ImageType imageType = ImageType.INFO_ICON;
 	private String defaultTitle = "Popup";
 
 	public Popup() {
@@ -60,7 +59,7 @@ public class Popup {
 		return this;
 	}
 
-	public Popup popupShellImage(IImageType imageType) {
+	public Popup popupShellImage(ImageType imageType) {
 		this.imageType = imageType;
 		return this;
 	}

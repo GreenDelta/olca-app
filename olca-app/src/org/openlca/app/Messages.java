@@ -93,6 +93,8 @@ public class Messages extends NLS {
 	public static String CutOff;
 	public static String Daily;
 	public static String Database;
+	public static String DatabaseImport;
+	public static String DatabaseImportDescription;
 	public static String DatabaseParametersPreferencePage_ErrorsOccured;
 	public static String DatabaseParametersPreferencePage_ErrorText;
 	public static String DatabaseParametersPreferencePage_Restore;
@@ -160,6 +162,7 @@ public class Messages extends NLS {
 	public static String ExportDatabase;
 	public static String Factor;
 	public static String FancyToolTip_NoDescription;
+	public static String File;
 	public static String FileAlreadyExists;
 	public static String FileImportPage_ChooseDirectoryButton;
 	public static String FileImportPage_ChooseDirectoryLabel;
@@ -182,7 +185,6 @@ public class Messages extends NLS {
 	public static String FlowType;
 	public static String Formula;
 	public static String FormulaTitle;
-	public static String FormulaViewMode;
 	public static String French;
 	public static String FunctionalUnit;
 	public static String GeneralInformation;
@@ -297,8 +299,8 @@ public class Messages extends NLS {
 	public static String NavigationView_NewCategoryDialogTitle;
 	public static String NavigationView_NoButton;
 	public static String NavigationView_RemoveCategoryText;
-	public static String NavigationView_RenameCategoryDialogText;
-	public static String NavigationView_RenameCategoryText;
+	public static String PleaseEnterNewName;
+	public static String Rename;
 	public static String NavigationView_YesAllButton;
 	public static String NavigationView_YesButton;
 	public static String Never;
@@ -352,7 +354,6 @@ public class Messages extends NLS {
 	public static String Parameter;
 	public static String Parameters;
 	public static String ParameterAlreadyDefined;
-	public static String ParametersPageLabel;
 	public static String ParametersPreferencePage_BottomUp;
 	public static String ParametersPreferencePage_TopDown;
 	public static String Password;
@@ -467,6 +468,7 @@ public class Messages extends NLS {
 	public static String Settings;
 	public static String SettingUp;
 	public static String ShowAs;
+	public static String ShowFormulas;
 	public static String ShowValues;
 	public static String Simulation_NumberOfSimulations;
 	public static String SingleAmount;
@@ -588,7 +590,6 @@ public class Messages extends NLS {
 	public static String UsedInProcesses;
 	public static String Username;
 	public static String Value;
-	public static String ValueViewMode;
 	public static String Version;
 	public static String Warning;
 	public static String WasteFlow;

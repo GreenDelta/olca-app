@@ -3,7 +3,7 @@ package org.openlca.app.wizards.io;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.statushandlers.StatusManager;
-import org.openlca.app.RcpActivator;
+import org.openlca.app.rcp.RcpActivator;
 import org.slf4j.Logger;
 
 public class UIHelper {

@@ -2,7 +2,7 @@ package org.openlca.app.ilcd_network;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.openlca.app.RcpActivator;
+import org.openlca.app.rcp.RcpActivator;
 import org.openlca.ilcd.io.NetworkClient;
 
 public class Preference extends AbstractPreferenceInitializer {

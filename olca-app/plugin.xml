@@ -1,101 +1,113 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-   <extension-point id="org.openlca.app.plugin" name="openLCA Plugin" schema="schema/org.openlca.app.plugin.exsd"/>
 
 	<extension
          point="org.eclipse.ui.editors">
+      <editor 
+			class="org.openlca.app.editors.StartPage"
+			default="false"
+			id="olca.StartPage"
+			name="Welcome">      
+      </editor>
       <editor
-            class="org.openlca.app.editors.ActorEditor"
+      		class="org.openlca.app.db.sql.SqlEditor"
+      		default="false"
+      		id="SqlEditor"
+      		name="SQL Query Browser"
+      		icon="icons/sql_16.png">
+      </editor>
+      <editor
+            class="org.openlca.app.editors.actors.ActorEditor"
             default="false"
             icon="icons/actor_obj.png"
             id="editors.actor"
             name="%editors.name">
       </editor>
       <editor
-            class="org.openlca.app.editors.SourceEditor"
+            class="org.openlca.app.editors.sources.SourceEditor"
             default="false"
             icon="icons/source_obj.png"
             id="editors.source"
             name="%editors.name.5">
       </editor>
       <editor
-            class="org.openlca.app.editors.UnitGroupEditor"
+            class="org.openlca.app.editors.units.UnitGroupEditor"
             default="false"
             icon="icons/unitgroup_obj.gif"
             id="editors.unitgroup"
             name="%editors.name.6">
       </editor>
       <editor
-            class="org.openlca.app.editors.FlowPropertyEditor"
+            class="org.openlca.app.editors.flow_properties.FlowPropertyEditor"
             default="false"
             icon="icons/flowprop_obj.gif"
             id="editors.flowproperty"
             name="%editors.name.1">
       </editor>
       <editor
-            class="org.openlca.app.editors.FlowEditor"
+            class="org.openlca.app.editors.flows.FlowEditor"
             default="false"
             icon="icons/flow_obj.gif"
             id="editors.flow"
             name="%editors.name.0">
       </editor>
       <editor
-            class="org.openlca.app.lcia_methods.ImpactMethodEditor"
+            class="org.openlca.app.editors.lcia_methods.ImpactMethodEditor"
             default="false"
             icon="icons/LCIA_obj.gif"
             id="editors.impactmethod"
             name="%editors.name.2">
       </editor>
       <editor
-            class="org.openlca.app.processes.ProcessEditor"
+            class="org.openlca.app.editors.processes.ProcessEditor"
             default="false"
             icon="icons/proc_obj.gif"
             id="editors.process"
             name="%editors.name.7">
       </editor>
       <editor
-            class="org.openlca.app.projects.ProjectEditor"
+            class="org.openlca.app.editors.projects.ProjectEditor"
             default="false"
             icon="icons/project_obj.png"
             id="editors.project"
             name="%editors.name.4"
-            contributorClass="org.openlca.app.projects.ProjectEditorActions">
+            contributorClass="org.openlca.app.editors.projects.ProjectEditorActions">
       </editor>
       <editor
-            class="org.openlca.app.systems.ProductSystemEditor"
+            class="org.openlca.app.editors.systems.ProductSystemEditor"
             default="false"
             icon="icons/model.gif"
             id="editors.productsystem"
             name="%editors.name.3" 
-            contributorClass="org.openlca.app.systems.ProductSystemActions">
+            contributorClass="org.openlca.app.editors.systems.ProductSystemActions">
       </editor>
       <editor
-            class="org.openlca.app.inventory.InventoryResultEditor"
+            class="org.openlca.app.results.quick.QuickResultEditor"
             default="false"
             icon="icons/expression_obj.gif"
-            id="InventoryResultEditor"
+            id="QuickResultEditor"
             name="Quick results"
-            contributorClass="org.openlca.app.inventory.InventoryResultActions">
+            contributorClass="org.openlca.app.results.quick.QuickResultActions">
       </editor>
       <editor
             id="ProjectResultEditor"
-            class="org.openlca.app.projects.ProjectResultEditor"
+            class="org.openlca.app.results.projects.ProjectResultEditor"
             default="false"
             icon="icons/chart.png"
             name="Project results"
-            contributorClass="org.openlca.app.projects.ProjectResultActions">
+            contributorClass="org.openlca.app.results.projects.ProjectResultActions">
       </editor>
       <editor
-            class="org.openlca.app.analysis.AnalyzeEditor"
+            class="org.openlca.app.results.analysis.AnalyzeEditor"
             default="false"
             icon="icons/analyze.gif"
             id="editors.analyze"
             name="Analyze viewer"
-            contributorClass="org.openlca.app.analysis.AnalysisEditorActions">
+            contributorClass="org.openlca.app.results.analysis.AnalysisEditorActions">
       </editor>
       <editor
-            class="org.openlca.app.simulation.SimulationEditor"
+            class="org.openlca.app.results.simulation.SimulationEditor"
             default="false"
             icon="icons/simulate_16.png"
             id="SimulationEditor"
@@ -164,7 +176,7 @@
             name="%wizard.name.4">
       </wizard>
       <wizard
-            class="org.openlca.app.lcia_methods.ImpactMethodWizard"
+            class="org.openlca.app.editors.lcia_methods.ImpactMethodWizard"
             icon="icons/LCIA_obj_new.gif"
             id="wizards.new.impactmethod"
             name="%wizard.name.1">
@@ -195,7 +207,7 @@
          point="org.eclipse.core.runtime.applications">
       <application>
          <run
-               class="org.openlca.app.RcpApplication">
+               class="org.openlca.app.rcp.RcpApplication">
          </run>
       </application>
    </extension>
@@ -203,7 +215,7 @@
          point="org.eclipse.ui.perspectives">
       <perspective
             name="%perspective.name"
-            class="org.openlca.app.RcpPerspective"
+            class="org.openlca.app.rcp.RcpPerspective"
             id="perspectives.standard">
       </perspective>
    </extension>
@@ -215,11 +227,7 @@
             icon="icons/categories.gif"
             id="views.navigation"
             name="%view.name">
-      </view>
-      <category
-            id="mapping.cat"
-            name="MappingName">
-      </category>  
+      </view>  
    </extension>
    
    <extension
@@ -235,12 +243,6 @@
             name="%page.name.1">
       </page>
       <page
-            category="org.eclipse.ant.ui.AntCodeAssistPreferencePage"
-            class="org.openlca.app.preferencepages.MappingPage"
-            id="preferencepages.mapping"
-            name="Mapping">
-      </page>
-      <page
             class="org.openlca.app.logging.LoggerConfigPage"
             id="preferencepages.logging"
             name="%logger.config.page.name">
@@ -251,7 +253,7 @@
       		name="%number.format.page.name">
       </page>
       <page
-            class="org.openlca.app.update.UpdatePreferencePage"
+            class="org.openlca.app.rcp.update.UpdatePreferencePage"
             id="preferencepages.update"
             name="%update.preference.page.name">
       </page>
@@ -284,7 +286,7 @@
          point="org.eclipse.ui.handlers">
       <handler
             commandId="commands.updatecheck"
-            class="org.openlca.app.update.UpdateCheckHandler">
+            class="org.openlca.app.rcp.update.UpdateCheckHandler">
       </handler>
    </extension>
    
@@ -456,10 +458,10 @@
             class="org.openlca.app.ilcd_network.Preference">
       </initializer>
       <initializer
-            class="org.openlca.app.update.UpdatePreference">
+            class="org.openlca.app.rcp.update.UpdatePreference">
       </initializer>
       <initializer
-            class="org.openlca.app.update.UpdatePreference">
+            class="org.openlca.app.rcp.update.UpdatePreference">
       </initializer>
    </extension>
    
@@ -470,6 +472,10 @@
             id="import.category.file"
             name="File Import">
       </category>
+       <category
+               id="import.category.ilcdnetwork"
+               name="%ilcd.net.import.category.name">
+       </category>
       <wizard
             category="import.category.file"
             class="org.openlca.app.wizards.io.EcoSpold01ImportWizard"
@@ -500,21 +506,7 @@
             %ilcd.import.description
          </description>
       </wizard>
-      <category
-            id="import.category.ilcdnetwork"
-            name="%ilcd.net.import.category.name">
-      </category>
-      <wizard
-            category="import.category.file"
-            class="org.openlca.app.wizards.io.CSVImportWizard"
-            icon="icons/simaPro.png"
-            id="wizard.import.csv"
-            name="SimaPro CSV">
-         <description>
-            Import SimaPro CSV files.
-         </description>
-      </wizard>
-      <wizard
+       <wizard
             category="import.category.ilcdnetwork"
             class="org.openlca.app.ilcd_network.ImportWizard"
             icon="icons/network16.png"
@@ -524,6 +516,20 @@
             %ilcd.net.import.wizard.description
          </description>
       </wizard>
+      <wizard
+           class="org.openlca.app.wizards.io.DbImportWizard"
+           icon="icons/logo_16_32bit.png"
+           id="wizard.import.db"
+           name="Database Import">
+      </wizard>
+  	  <wizard
+	       category="import.category.file"
+		   class="org.openlca.app.wizards.io.CSVImportWizard"
+		   icon="icons/simaPro.png"
+		   id="wizard.import.csv"
+		   name="SimaPro CSV">
+		   <description>Import SimaPro CSV files.</description>
+	   </wizard>
    </extension>
    
    <!-- export wizards -->
@@ -622,31 +628,11 @@
             name="%ilcd.net.export.category.name">
       </category>
       <wizard
-            category="export.category.csv"
-            class="org.openlca.app.wizards.io.CSVExportWizard"
-            icon="icons/simaPro.png"
-            id="wizard.export.csv"
-            name="Processes">
-         <description>
-            Import SimaPro CSV files.
-         </description>
-      </wizard>
-      <wizard
             category="export.category.ilcdnetwork"
             class="org.openlca.app.ilcd_network.ExportWizard"
             icon="icons/network16.png"
             id="org.openlca.ilcd.network.ExportWizard"
             name="%ilcd.net.export.wizard.name">
       </wizard>
-      <category
-            id="export.category.csv"
-            name="SimaPro CSV">
-      </category>
    </extension>
-   
-   
-      
-   
-   
-   
 </plugin>

@@ -1,5 +1,10 @@
 bin
 libs
+
+# IDE settings
+/.idea
+*.iml
+
 /.classpath
 /.gitignore
 *.*~

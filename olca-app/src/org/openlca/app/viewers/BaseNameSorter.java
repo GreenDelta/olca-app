@@ -1,13 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
-
 package org.openlca.app.viewers;
 
 import org.eclipse.jface.viewers.Viewer;
@@ -15,14 +5,12 @@ import org.eclipse.jface.viewers.ViewerSorter;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.ImpactCategory;
-import org.openlca.core.model.NormalizationWeightingSet;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 
 /**
  * Sorts objects by their respective names.
- * 
  */
 public class BaseNameSorter extends ViewerSorter {
 
@@ -39,10 +27,6 @@ public class BaseNameSorter extends ViewerSorter {
 		} else if (e1 instanceof Category && e2 instanceof Category) {
 			s1 = ((Category) e1).getName();
 			s2 = ((Category) e2).getName();
-		} else if (e1 instanceof NormalizationWeightingSet
-				&& e2 instanceof NormalizationWeightingSet) {
-			s1 = ((NormalizationWeightingSet) e1).getReferenceSystem();
-			s2 = ((NormalizationWeightingSet) e2).getReferenceSystem();
 		} else if (e1 instanceof Parameter && e2 instanceof Parameter) {
 			s1 = ((Parameter) e1).getName();
 			s2 = ((Parameter) e2).getName();

@@ -1,30 +1,24 @@
 package org.openlca.app.db;
 
-import java.io.File;
-
 import org.eclipse.jface.dialogs.DialogPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.openlca.app.App;
-import org.openlca.app.Config;
 import org.openlca.app.Messages;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.DatabaseContent;
+import org.openlca.core.database.DbUtils;
 
 class DatabaseWizardPage extends WizardPage {
 
@@ -33,7 +27,6 @@ class DatabaseWizardPage extends WizardPage {
 	private Button buttonLocal;
 	private Button buttonRemote;
 	private Composite localComposite;
-	private Text pathText;
 	private Button[] contentRadios;
 	private Composite remoteComposite;
 	private Text hostText;
@@ -97,33 +90,8 @@ class DatabaseWizardPage extends WizardPage {
 		localComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
 				false));
 		UI.gridLayout(localComposite, 2);
-		UI.formLabel(localComposite, "Directory");
-
-		Composite browseComposite = new Composite(localComposite, SWT.NONE);
-		browseComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
-				false));
-		UI.gridLayout(browseComposite, 2, 10, 0);
-
-		pathText = UI.formText(browseComposite, null);
-		pathText.setText(App.getWorkspace().getAbsolutePath() + File.separator
-				+ Config.DATABASE_FOLDER_NAME);
-		Button browseButton = new Button(browseComposite, SWT.NONE);
-		browseButton.setText("Browse...");
-
 		UI.formLabel(localComposite, Messages.NewDatabase_RefData);
 		createContentRadios(localComposite);
-
-		browseButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				DirectoryDialog dialog = new DirectoryDialog(new Shell());
-				String dialogPath = dialog.open();
-				if (dialogPath != null) {
-					pathText.setText(dialogPath);
-				}
-				validateInput();
-			}
-		});
 	}
 
 	private void createRemoteComposite(Composite stackComposite) {
@@ -198,11 +166,9 @@ class DatabaseWizardPage extends WizardPage {
 	private boolean validateName(String name) {
 		if (name == null || name.length() < 4)
 			error(Messages.NewDatabase_NameToShort);
-		else if (name.equals("test") || name.equals("mysql"))
-			error(name + " " + Messages.NewDatabase_ReservedName);
-		else if (!isIdentifier(name))
+		else if (!DbUtils.isValidName(name))
 			error(Messages.NewDatabase_InvalidName);
-		else if (exists(name))
+		else if (Database.getConfigurations().nameExists(name))
 			error(Messages.NewDatabase_AlreadyExists);
 		else
 			return true;
@@ -214,67 +180,33 @@ class DatabaseWizardPage extends WizardPage {
 		setPageComplete(false);
 	}
 
-	private boolean isIdentifier(String s) {
-		if (s.length() == 0 || !Character.isJavaIdentifierStart(s.charAt(0)))
-			return false;
-		for (int i = 1; i < s.length(); i++)
-			if (!Character.isJavaIdentifierPart(s.charAt(i)))
-				return false;
-		return true;
-	}
-
-	private boolean exists(String name) {
-		String path = pathText.getText() + File.separator + name;
-		File file = new File(path);
-		if (file.isDirectory()) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	PageData getPageData() {
-		PageData data = null;
+	IDatabaseConfiguration getPageData() {
 		if (buttonLocal.getSelection()) {
-			DerbyPageData dData = new DerbyPageData();
-			for (int i = 0; i < contentRadios.length; i++) {
-				if (contentRadios[i].getSelection()) {
-					dData.contentType = DatabaseContent.values()[i];
-					break;
-				}
-			}
-			data = dData;
-		} else if (buttonRemote.getSelection()) {
-			MySQLPageData mData = new MySQLPageData();
-			mData.host = getText(hostText).toLowerCase();
-			mData.port = Integer.parseInt(getText(portText));
-			mData.user = getText(userText);
-			mData.password = getText(passwordText);
-			data = mData;
+			DerbyConfiguration derbyConfig = new DerbyConfiguration();
+			derbyConfig.setName(getText(nameText));
+			return derbyConfig;
+		} else {
+			MySQLConfiguration config = new MySQLConfiguration();
+			config.setName(getText(nameText));
+			config.setHost(getText(hostText));
+			config.setPort(Integer.parseInt(getText(portText)));
+			config.setPassword(getText(passwordText));
+			config.setUser(getText(userText));
+			return config;
 		}
-		data.directory = pathText.getText().trim();
-		data.databaseName = nameText.getText().trim().toLowerCase();
-		return data;
+	}
+
+	DatabaseContent getSelectedContent() {
+		for (int i = 0; i < contentRadios.length; i++) {
+			if (contentRadios[i].getSelection()) {
+				return DatabaseContent.values()[i];
+			}
+		}
+		return DatabaseContent.ALL_REF_DATA;
 	}
 
 	private String getText(Text text) {
 		return text.getText().trim();
-	}
-
-	class PageData {
-		String directory;
-		String databaseName;
-	}
-
-	class DerbyPageData extends PageData {
-		DatabaseContent contentType;
-	}
-
-	class MySQLPageData extends PageData {
-		String host;
-		int port;
-		String user;
-		String password;
 	}
 
 	private class RadioGroupListener implements SelectionListener {

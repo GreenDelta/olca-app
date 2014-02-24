@@ -108,8 +108,8 @@ public class ParameterRedefTable {
 	private boolean contains(ParameterRedef redef) {
 		for (ParameterRedef contained : redefinitions) {
 			if (Strings.nullOrEqual(contained.getName(), redef.getName())
-					&& Objects.equals(contained.getProcessId(),
-							redef.getProcessId()))
+					&& Objects.equals(contained.getContextId(),
+							redef.getContextId()))
 				return true;
 		}
 		return false;
@@ -155,7 +155,7 @@ public class ParameterRedefTable {
 			if (!(element instanceof ParameterRedef))
 				return null;
 			ParameterRedef redef = (ParameterRedef) element;
-			if (redef.getProcessId() == null)
+			if (redef.getContextId() == null)
 				return ImageType.FORMULA_ICON.get();
 			else
 				return ImageType.PROCESS_ICON.get();
@@ -168,9 +168,9 @@ public class ParameterRedefTable {
 			ParameterRedef redef = (ParameterRedef) element;
 			switch (columnIndex) {
 			case 0:
-				if (redef.getProcessId() != null) {
+				if (redef.getContextId() != null) {
 					BaseDescriptor d = cache.get(ProcessDescriptor.class,
-							redef.getProcessId());
+							redef.getContextId());
 					return Labels.getDisplayName(d);
 				}
 				return "global";
@@ -192,14 +192,14 @@ public class ParameterRedefTable {
 
 		@Override
 		public int compare(ParameterRedef o1, ParameterRedef o2) {
-			if (Objects.equals(o1.getProcessId(), o2.getProcessId()))
+			if (Objects.equals(o1.getContextId(), o2.getContextId()))
 				return byName(o1, o2);
-			if (o1.getProcessId() == null) {
+			if (o1.getContextId() == null) {
 				return -1; // global before process
 			}
-			if (o2.getProcessId() == null)
+			if (o2.getContextId() == null)
 				return 1; // process after global
-			return compareProcesses(o1.getProcessId(), o2.getProcessId());
+			return compareProcesses(o1.getContextId(), o2.getContextId());
 		}
 
 		private int byName(ParameterRedef o1, ParameterRedef o2) {

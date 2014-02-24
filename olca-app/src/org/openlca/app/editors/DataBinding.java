@@ -132,9 +132,14 @@ public class DataBinding {
 		try {
 			Method setInput = viewer.getClass().getDeclaredMethod("setInput",
 					bean.getClass());
+			setInput.setAccessible(true);
 			setInput.invoke(viewer, bean);
 		} catch (Exception e) {
-			log.error("Cannot find setInput method for type " + bean.getClass());
+			log.error(
+					"Cannot set viewer input for type " + bean.getClass()
+							+ " on viewer " + viewer.getClass()
+							+ ". Note that there must be" + "a setInput<"
+							+ bean.getClass() + "> method in the viewer.", e);
 			return;
 		}
 

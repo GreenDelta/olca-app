@@ -1,7 +1,5 @@
 package org.openlca.app.components;
 
-import java.util.Collection;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -15,8 +13,9 @@ import org.openlca.app.viewers.combo.ImpactCategoryViewer;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.core.results.AnalysisResult;
-import org.openlca.core.results.ProjectResult;
+import org.openlca.core.results.IResultProvider;
+
+import java.util.Collection;
 
 /**
  * Two combo boxes showing flows and impact categories. The impact categories
@@ -39,23 +38,12 @@ public class FlowImpactSelection {
 	private FlowViewer flowViewer;
 	private ImpactCategoryViewer impactViewer;
 
-	public static Dispatch on(AnalysisResult result, EntityCache cache) {
+	public static Dispatch on(IResultProvider result, EntityCache cache) {
 		FlowImpactSelection selection = new FlowImpactSelection(cache);
-		selection.flows = result.getFlowResults().getFlows(cache);
+		selection.flows = result.getFlowDescriptors();
 		if (result.hasImpactResults())
-			selection.impacts = result.getImpactResults().getImpacts(cache);
-		Dispatch dispatch = new Dispatch(selection);
-		return dispatch;
-	}
-
-	public static Dispatch on(ProjectResult result, EntityCache cache) {
-		FlowImpactSelection selection = new FlowImpactSelection(cache);
-		selection.flows = result.getFlows(cache);
-		Collection<ImpactCategoryDescriptor> impacts = result.getImpacts(cache);
-		if (impacts != null && !impacts.isEmpty())
-			selection.impacts = impacts;
-		Dispatch dispatch = new Dispatch(selection);
-		return dispatch;
+			selection.impacts = result.getImpactDescriptors();
+		return new Dispatch(selection);
 	}
 
 	private FlowImpactSelection(EntityCache cache) {
@@ -168,7 +156,7 @@ public class FlowImpactSelection {
 		private int type;
 
 		public ResultTypeCheck(AbstractComboViewer<?> viewer, Button check,
-				int type) {
+		                       int type) {
 			this.viewer = viewer;
 			this.check = check;
 			this.type = type;
@@ -191,7 +179,9 @@ public class FlowImpactSelection {
 		}
 	}
 
-	/** The event handler for selection changes. */
+	/**
+	 * The event handler for selection changes.
+	 */
 	public interface EventHandler {
 
 		void flowSelected(FlowDescriptor flow);
@@ -200,7 +190,9 @@ public class FlowImpactSelection {
 
 	}
 
-	/** Dispatch class for the initialization of the widgets. */
+	/**
+	 * Dispatch class for the initialization of the widgets.
+	 */
 	public static class Dispatch {
 
 		private FlowImpactSelection selection;

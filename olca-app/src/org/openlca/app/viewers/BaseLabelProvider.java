@@ -1,12 +1,3 @@
-/*******************************************************************************
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
-
 package org.openlca.app.viewers;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -21,7 +12,6 @@ import org.openlca.core.model.FlowPropertyType;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.Location;
-import org.openlca.core.model.NormalizationWeightingSet;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.RootEntity;
@@ -62,8 +52,6 @@ public class BaseLabelProvider extends ColumnLabelProvider {
 			return ((Unit) element).getName();
 		if (element instanceof Location)
 			return ((Location) element).getName();
-		if (element instanceof NormalizationWeightingSet)
-			return ((NormalizationWeightingSet) element).getReferenceSystem();
 		if (element instanceof BaseDescriptor)
 			return Labels.getDisplayName((BaseDescriptor) element);
 		if (element instanceof Enum<?>)

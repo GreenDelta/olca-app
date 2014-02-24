@@ -8,14 +8,14 @@ import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
+import org.openlca.app.db.DatabaseFolder;
 import org.openlca.app.db.DerbyConfiguration;
 import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.resources.ImageType;
-import org.openlca.app.util.Editors;
-import org.openlca.app.util.InformationPopup;
+import org.openlca.app.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeroturnaround.zip.ZipUtil;
@@ -69,7 +69,12 @@ public class DatabaseExportAction extends Action implements INavigationAction {
 			final boolean active) {
 		if (zip.exists()) {
 			log.trace("delete existing file {}", zip);
-			zip.delete();
+			boolean deleted = zip.delete();
+			if(!deleted) {
+				org.openlca.app.util.Error.showBox("Could not overwrite " +
+				zip.getName());
+				return;
+			}
 		}
 		if (active)
 			Editors.closeAll();
@@ -90,7 +95,7 @@ public class DatabaseExportAction extends Action implements INavigationAction {
 		try {
 			if (active)
 				Database.close();
-			File folder = new File(config.getFolder(), config.getName());
+			File folder = DatabaseFolder.getRootFolder(config.getName());
 			ZipUtil.pack(folder, zip);
 		} catch (Exception e) {
 			log.error("Export failed " + zip, e);

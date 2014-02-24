@@ -31,9 +31,9 @@ import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
 import org.openlca.app.viewers.AbstractViewer;
-import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.IModelChangedListener;
 import org.openlca.app.viewers.table.modify.IModelChangedListener.ModelChangeType;
+import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -231,17 +231,17 @@ public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.METHOD)
-	protected @interface OnAdd {
+	public @interface OnAdd {
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.METHOD)
-	protected @interface OnRemove {
+	public @interface OnRemove {
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.METHOD)
-	protected @interface OnDrop {
+	public @interface OnDrop {
 	}
 
 	private class CreateAction extends Action {

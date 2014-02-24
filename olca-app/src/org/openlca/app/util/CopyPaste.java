@@ -13,21 +13,15 @@ import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.ModelTypeElement;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.core.database.ActorDao;
+import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.CategorizedEntityDao;
 import org.openlca.core.database.CategoryDao;
-import org.openlca.core.database.FlowDao;
-import org.openlca.core.database.FlowPropertyDao;
-import org.openlca.core.database.ProcessDao;
-import org.openlca.core.database.ProductSystemDao;
-import org.openlca.core.database.ProjectDao;
-import org.openlca.core.database.SourceDao;
-import org.openlca.core.database.UnitGroupDao;
 import org.openlca.core.model.Actor;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
+import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
@@ -204,6 +198,15 @@ public class CopyPaste {
 		}
 	}
 
+	private static void copy(ModelElement element,
+			INavigationElement<?> category) {
+		CategorizedEntity copy = copy(element);
+		if (copy == null)
+			return;
+		copy.setCategory(getCategory(category));
+		insert(copy);
+	}
+
 	private static Category getCategory(INavigationElement<?> element) {
 		return element instanceof CategoryElement ? ((CategoryElement) element)
 				.getContent() : null;
@@ -271,13 +274,6 @@ public class CopyPaste {
 			insert(entity);
 	}
 
-	private static void copy(ModelElement element,
-			INavigationElement<?> category) {
-		CategorizedEntity copy = copy(element);
-		copy.setCategory(getCategory(category));
-		insert(copy);
-	}
-
 	private static CategorizedEntity copy(ModelElement element) {
 		BaseDescriptor descriptor = element.getContent();
 		CategorizedEntityDao<?, ?> dao = Database.createRootDao(descriptor
@@ -304,28 +300,18 @@ public class CopyPaste {
 			return ((Process) entity).clone();
 		else if (entity instanceof ProductSystem)
 			return ((ProductSystem) entity).clone();
+		else if (entity instanceof ImpactMethod)
+			return ((ImpactMethod) entity).clone();
 		else if (entity instanceof Project)
 			return ((Project) entity).clone();
 		return null;
 	}
 
-	private static void insert(CategorizedEntity entity) {
-		if (entity instanceof Actor)
-			new ActorDao(Database.get()).insert((Actor) entity);
-		else if (entity instanceof Source)
-			new SourceDao(Database.get()).insert((Source) entity);
-		else if (entity instanceof UnitGroup)
-			new UnitGroupDao(Database.get()).insert((UnitGroup) entity);
-		else if (entity instanceof FlowProperty)
-			new FlowPropertyDao(Database.get()).insert((FlowProperty) entity);
-		else if (entity instanceof Flow)
-			new FlowDao(Database.get()).insert((Flow) entity);
-		else if (entity instanceof Process)
-			new ProcessDao(Database.get()).insert((Process) entity);
-		else if (entity instanceof ProductSystem)
-			new ProductSystemDao(Database.get()).insert((ProductSystem) entity);
-		else if (entity instanceof Project)
-			new ProjectDao(Database.get()).insert((Project) entity);
+	@SuppressWarnings("unchecked")
+	private static <T extends CategorizedEntity> void insert(T entity) {
+		BaseDao<T> dao = (BaseDao<T>) Database.get().createDao(
+				entity.getClass());
+		dao.insert(entity);
 	}
 
 	public static boolean cacheIsEmpty() {

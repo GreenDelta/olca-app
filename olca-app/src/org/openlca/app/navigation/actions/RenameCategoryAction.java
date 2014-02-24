@@ -37,7 +37,7 @@ public class RenameCategoryAction extends Action implements INavigationAction {
 	private INavigationElement<?> element;
 
 	public RenameCategoryAction() {
-		setText(Messages.NavigationView_RenameCategoryText);
+		setText(Messages.Rename);
 		setImageDescriptor(ImageType.CHANGE_ICON.getDescriptor());
 	}
 
@@ -59,8 +59,8 @@ public class RenameCategoryAction extends Action implements INavigationAction {
 	@Override
 	public void run() {
 		InputDialog dialog = new InputDialog(UI.shell(),
-				Messages.NavigationView_RenameCategoryText,
-				Messages.NavigationView_RenameCategoryDialogText,
+				Messages.Rename,
+				Messages.PleaseEnterNewName,
 				category.getName(), null);
 		if (dialog.open() != Window.OK)
 			return;

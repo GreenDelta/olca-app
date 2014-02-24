@@ -1,30 +1,21 @@
 package org.openlca.app.db;
 
-import java.io.File;
-import java.util.Objects;
-
 import org.openlca.core.database.derby.DerbyDatabase;
 
+import java.util.Objects;
+
 /**
- * Configuration of a derby database.
+ * Configuration of a local derby database. Derby databases are stored directly
+ * in the workspace folder: <workspace>/databases/<database_name>.
  */
 public class DerbyConfiguration implements IDatabaseConfiguration {
 
-	private File folder;
 	private String name;
 
+	@Override
 	public DerbyDatabase createInstance() throws Exception {
-		File dbFolder = new File(folder, name);
-		DerbyDatabase db = new DerbyDatabase(dbFolder);
+		DerbyDatabase db = new DerbyDatabase(DatabaseFolder.getRootFolder(name));
 		return db;
-	}
-
-	public File getFolder() {
-		return folder;
-	}
-
-	public void setFolder(File folder) {
-		this.folder = folder;
 	}
 
 	@Override
@@ -50,13 +41,12 @@ public class DerbyConfiguration implements IDatabaseConfiguration {
 		if (!getClass().equals(obj.getClass()))
 			return false;
 		DerbyConfiguration other = (DerbyConfiguration) obj;
-		return Objects.equals(this.folder, other.folder)
-				&& Objects.equals(this.name, other.name);
+		return Objects.equals(this.name, other.name);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(folder, name);
+		return Objects.hash(name);
 	}
 
 }

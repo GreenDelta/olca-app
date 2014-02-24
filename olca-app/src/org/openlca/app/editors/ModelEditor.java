@@ -5,6 +5,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
+import org.openlca.app.Event;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
@@ -16,6 +17,8 @@ import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.eventbus.EventBus;
+
 public abstract class ModelEditor<T extends CategorizedEntity> extends
 		FormEditor implements IEditor {
 
@@ -24,9 +27,18 @@ public abstract class ModelEditor<T extends CategorizedEntity> extends
 	private T model;
 	private BaseDao<T> dao;
 	private Class<T> modelClass;
+	private EventBus eventBus = new EventBus();
 
 	public ModelEditor(Class<T> modelClass) {
 		this.modelClass = modelClass;
+	}
+
+	public EventBus getEventBus() {
+		return eventBus;
+	}
+
+	public void postEvent(String message, Object source) {
+		eventBus.post(new Event(message, source));
 	}
 
 	@Override
@@ -39,6 +51,7 @@ public abstract class ModelEditor<T extends CategorizedEntity> extends
 			dao = new BaseDao<>(modelClass, Database.get());
 			ModelEditorInput i = (ModelEditorInput) input;
 			model = dao.getForId(i.getDescriptor().getId());
+			eventBus.register(this);
 		} catch (Exception e) {
 			log.error("failed to load " + modelClass.getSimpleName()
 					+ " from editor input", e);

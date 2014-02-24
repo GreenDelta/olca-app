@@ -1,0 +1,87 @@
+package org.openlca.app.editors.processes;
+
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorSite;
+import org.eclipse.ui.PartInitException;
+import org.openlca.app.editors.IEditor;
+import org.openlca.app.editors.ModelEditor;
+import org.openlca.app.editors.ParameterPage;
+import org.openlca.app.editors.ParameterPageListener;
+import org.openlca.app.editors.ParameterPageSupport;
+import org.openlca.core.model.Exchange;
+import org.openlca.core.model.ParameterScope;
+import org.openlca.core.model.Process;
+import org.openlca.expressions.FormulaInterpreter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.ibm.icu.util.Calendar;
+
+public class ProcessEditor extends ModelEditor<Process> implements IEditor {
+
+	/**
+	 * An event message that indicates the removal or addition of one or more
+	 * exchanges exchange.
+	 */
+	final String EXCHANGES_CHANGED = "EXCHANGE_REMOVED";
+
+	public static String ID = "editors.process";
+	private Logger log = LoggerFactory.getLogger(getClass());
+	private ParameterPageSupport parameterSupport;
+
+	public ProcessEditor() {
+		super(Process.class);
+	}
+
+	@Override
+	public void init(IEditorSite site, IEditorInput input)
+			throws PartInitException {
+		super.init(site, input);
+		parameterSupport = new ParameterPageSupport(this, getModel()
+				.getParameters(), ParameterScope.PROCESS);
+		// it is important that this listener is added before the listener
+		// in the exchange page, otherwise the exchange tables will be refreshed
+		// with old values
+		parameterSupport.addListener(new ParameterPageListener() {
+			@Override
+			public void parameterChanged() {
+				log.trace("evaluate exchange formulas");
+				for (Exchange exchange : getModel().getExchanges()) {
+					parameterSupport.eval(exchange);
+				}
+			}
+		});
+	}
+
+	public FormulaInterpreter getInterpreter() {
+		return parameterSupport.getInterpreter();
+	}
+
+	public ParameterPageSupport getParameterSupport() {
+		return parameterSupport;
+	}
+
+	@Override
+	protected void addPages() {
+		try {
+			addPage(new ProcessInfoPage(this));
+			addPage(new ProcessExchangePage(this));
+			addPage(new ProcessAdminInfoPage(this));
+			addPage(new ProcessModelingPage(this));
+			addPage(new ParameterPage(parameterSupport));
+			addPage(new AllocationPage(this));
+			addPage(new ProcessCostPage(this));
+		} catch (Exception e) {
+			log.error("failed to add page", e);
+		}
+	}
+
+	@Override
+	public void doSave(IProgressMonitor monitor) {
+		getModel().getDocumentation().setLastChange(
+				Calendar.getInstance().getTime());
+		super.doSave(monitor);
+	}
+
+}

@@ -22,6 +22,11 @@ import org.openlca.core.model.UnitGroup;
 public class Images {
 
 	public static Image getIcon(RootEntity entity) {
+		if (entity instanceof Source) {
+			Source source = (Source) entity;
+			if (source.getExternalFile() != null)
+				return ImageType.forFile(source.getExternalFile()).get();
+		}
 		return getIcon(getType(entity));
 	}
 

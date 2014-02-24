@@ -16,6 +16,8 @@ import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+
 public class DatabasePropertiesDialog extends FormDialog {
 
 	private IDatabaseConfiguration config;
@@ -41,7 +43,7 @@ public class DatabasePropertiesDialog extends FormDialog {
 	}
 
 	private void renderMysqlConfiguration(MySQLConfiguration conf,
-			Composite parent, FormToolkit toolkit) {
+	                                      Composite parent, FormToolkit toolkit) {
 		UI.formText(parent, toolkit, "Type", SWT.READ_ONLY).setText(
 				"Remote database");
 		UI.formText(parent, toolkit, "Name", SWT.READ_ONLY).setText(
@@ -58,21 +60,19 @@ public class DatabasePropertiesDialog extends FormDialog {
 	}
 
 	private void renderDerbyConfig(final DerbyConfiguration conf,
-			Composite parent, FormToolkit toolkit) {
+	                               Composite parent, FormToolkit toolkit) {
 		UI.formText(parent, toolkit, "Type", SWT.READ_ONLY).setText(
 				"Local database");
 		UI.formText(parent, toolkit, "Name", SWT.READ_ONLY).setText(
 				conf.getName());
 		UI.formLabel(parent, toolkit, "Folder");
-		if (conf.getFolder() != null)
-			renderFolderLink(conf, parent, toolkit);
+		renderFolderLink(conf, parent, toolkit);
 	}
 
 	private void renderFolderLink(final DerbyConfiguration conf,
-			Composite parent, FormToolkit toolkit) {
-		final String path = conf.getFolder().getPath(); // absolute path does
-														// not work due to Gson
-														// serialization
+	                              Composite parent, FormToolkit toolkit) {
+		File folder = DatabaseFolder.getRootFolder(conf.getName());
+		final String path = folder.toURI().toString();
 		Hyperlink link = new Hyperlink(parent, SWT.NONE);
 		toolkit.adapt(link);
 		link.setText(Strings.cut(path, 75));
@@ -81,7 +81,7 @@ public class DatabasePropertiesDialog extends FormDialog {
 			@Override
 			public void linkActivated(HyperlinkEvent e) {
 				try {
-					Desktop.browse("file://" + path.replaceAll("\\\\", "/"));
+					Desktop.browse(path);
 				} catch (Exception ex) {
 					Logger log = LoggerFactory.getLogger(getClass());
 					log.error("failed to open folder", ex);
