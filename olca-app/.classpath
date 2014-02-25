@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="libs/opencsv-2.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/bonecp-0.8.0.RELEASE.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/gt-swt-10.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/bcprov-jdk16-1.46.jar"/>
@@ -26,7 +27,7 @@
 	<classpathentry exported="true" kind="lib" path="libs/gt-referencing-10.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/gt-render-10.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/gt-shapefile-10.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/guava-14.0.1.jar" sourcepath="C:/Users/Besitzer/.m2/repository/com/google/guava/guava/14.0.1/guava-14.0.1-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/guava-14.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/httpclient-4.1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/httpcore-4.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/imageio-ext-tiff-1.1.7.jar"/>
