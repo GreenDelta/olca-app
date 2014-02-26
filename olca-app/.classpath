@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry exported="true" kind="lib" path="libs/opencsv-2.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/super-csv-2.1.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/bonecp-0.8.0.RELEASE.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/gt-swt-10.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/bcprov-jdk16-1.46.jar"/>

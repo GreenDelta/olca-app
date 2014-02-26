@@ -111,7 +111,7 @@ Bundle-ClassPath: .,
  libs/zt-zip-1.6.jar,
  libs/gt-swt-10.3.jar,
  libs/bonecp-0.8.0.RELEASE.jar,
- libs/opencsv-2.3.jar
+ libs/super-csv-2.1.0.jar
 Export-Package: org.apache.commons.io,
  org.apache.commons.io.comparator,
  org.apache.commons.io.filefilter,
