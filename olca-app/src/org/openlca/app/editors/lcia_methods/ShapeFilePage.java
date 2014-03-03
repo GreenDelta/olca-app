@@ -24,14 +24,18 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.components.FileChooser;
+import org.openlca.app.editors.ParameterPage;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Colors;
+import org.openlca.app.util.Error;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
 import org.openlca.core.model.ImpactMethod;
+import org.openlca.core.model.Parameter;
+import org.openlca.core.model.Uncertainty;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,10 +52,12 @@ class ShapeFilePage extends FormPage {
 	private Composite body;
 	private ShapeFileSection[] sections;
 	private ScrolledForm form;
+	private ImpactMethodEditor editor;
 
 	public ShapeFilePage(ImpactMethodEditor editor) {
 		super(editor, "ShapeFilePage", "Shape files (beta)");
 		this.method = editor.getModel();
+		this.editor = editor;
 	}
 
 	@Override
@@ -174,8 +180,9 @@ class ShapeFilePage extends FormPage {
 				}
 			});
 			ShowMapAction showAction = new ShowMapAction(this);
+			AddParamAction addAction = new AddParamAction(this);
 			Actions.bind(section, showAction, delete);
-			Actions.bind(parameterTable.viewer, showAction);
+			Actions.bind(parameterTable.viewer, showAction, addAction);
 		}
 
 		private void delete() {
@@ -268,4 +275,81 @@ class ShapeFilePage extends FormPage {
 				ShapeFileUtils.openFileInMap(method, section.shapeFile, param);
 		}
 	}
+
+	private class AddParamAction extends Action {
+
+		private ShapeFileSection section;
+
+		public AddParamAction(ShapeFileSection section) {
+			this.section = section;
+			setToolTipText("Add to method parameters");
+			setText("Add to method parameters");
+			setImageDescriptor(ImageType.ADD_ICON.getDescriptor());
+		}
+
+		@Override
+		public void run() {
+			ShapeFileParameter param = getSelected();
+			if (param == null || exists(param))
+				return;
+			if (otherExists(param)) {
+				Error.showBox("Parameter with same name exists",
+						"An other parameter with the same name already exists "
+								+ "in this LCIA method");
+				return;
+			}
+			addParam(param);
+		}
+
+		private ShapeFileParameter getSelected() {
+			if (section == null || section.parameterTable == null)
+				return null;
+			ShapeFileParameter param = Viewers
+					.getFirstSelected(section.parameterTable.viewer);
+			if (param == null) {
+				Error.showBox("No parameter selected", "There is no shapefile "
+						+ "parameter selected that could be added as "
+						+ "method parameter");
+				return null;
+			}
+			return param;
+		}
+
+		private boolean exists(ShapeFileParameter param) {
+			for (Parameter realParam : method.getParameters()) {
+				if (Strings.nullOrEqual(param.getName(), realParam.getName())
+						&& Strings.nullOrEqual("SHAPE_FILE",
+								realParam.getSourceType())
+						&& Strings.nullOrEqual(section.shapeFile,
+								realParam.getExternalSource()))
+					return true;
+			}
+			return false;
+		}
+
+		private boolean otherExists(ShapeFileParameter param) {
+			for (Parameter realParam : method.getParameters()) {
+				if (Strings.nullOrEqual(param.getName(), realParam.getName())
+						&& !Strings.nullOrEqual(section.shapeFile,
+								realParam.getExternalSource()))
+					return true;
+			}
+			return false;
+		}
+
+		private void addParam(ShapeFileParameter param) {
+			Parameter realParam = new Parameter();
+			realParam.setExternalSource(section.shapeFile);
+			realParam.setInputParameter(true);
+			realParam.setName(param.getName());
+			realParam.setValue((param.getMin() + param.getMax()) / 2);
+			realParam.setUncertainty(Uncertainty.uniform(param.getMin(),
+					param.getMax()));
+			realParam.setSourceType("SHAPE_FILE");
+			method.getParameters().add(realParam);
+			editor.setActivePage(ParameterPage.ID);
+			editor.getParameterSupport().fireParameterChange();
+		}
+	}
+
 }

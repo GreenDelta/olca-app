@@ -28,12 +28,14 @@ import org.slf4j.LoggerFactory;
 
 public class ParameterPage extends FormPage {
 
+	public static final String ID = "ParameterPage";
+
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private FormToolkit toolkit;
 	private ParameterPageSupport input;
 
 	public ParameterPage(ParameterPageSupport input) {
-		super(input.getEditor(), "ParameterPage", Messages.Parameters);
+		super(input.getEditor(), ID, Messages.Parameters);
 		this.input = input;
 	}
 

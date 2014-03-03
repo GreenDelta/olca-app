@@ -82,7 +82,7 @@ public class ParameterSection implements ParameterPageListener {
 
 	@Override
 	public void parameterChanged() {
-		viewer.refresh();
+		setInput();
 	}
 
 	private void createComponents(Composite body, String[] properties) {
