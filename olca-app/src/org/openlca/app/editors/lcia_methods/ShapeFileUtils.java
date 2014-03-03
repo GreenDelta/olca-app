@@ -1,7 +1,22 @@
 package org.openlca.app.editors.lcia_methods;
 
-import com.google.common.io.Files;
-import com.google.gson.Gson;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
@@ -27,22 +42,8 @@ import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.google.common.io.Files;
+import com.google.gson.Gson;
 
 class ShapeFileUtils {
 
@@ -71,7 +72,7 @@ class ShapeFileUtils {
 			return false;
 		String rawName = FilenameUtils.removeExtension(fileName);
 		File folder = shapeFile.getParentFile();
-		String[] mandatoryExtensions = {".shx", ".dbf"};
+		String[] mandatoryExtensions = { ".shx", ".dbf" };
 		for (String ext : mandatoryExtensions) {
 			File file = new File(folder, rawName + ext);
 			if (!file.exists())
@@ -106,10 +107,12 @@ class ShapeFileUtils {
 			File file = new File(methodFolder, importFile.getName());
 			Files.copy(importFile, file);
 		}
-		String shapeFileName = FilenameUtils.removeExtension(shapeFile.getName());
+		String shapeFileName = FilenameUtils.removeExtension(shapeFile
+				.getName());
 		DataStore dataStore = openDataStore(method, shapeFileName);
 		Collection<ShapeFileParameter> params = readParameters(dataStore);
 		writeParameters(method, shapeFileName, params);
+		dataStore.dispose();
 		return shapeFileName;
 	}
 
@@ -159,20 +162,20 @@ class ShapeFileUtils {
 			return;
 		File shapeFile = new File(folder, shapeFileName + ".shp");
 		List<File> files = getAllFiles(shapeFile);
-		for (File file : files)
+		for (File file : files) {
 			file.delete();
+		}
 	}
 
 	static List<ShapeFileParameter> getParameters(ImpactMethod method,
-	                                               String shapeFileName)
-			throws IOException {
+			String shapeFileName) throws IOException {
 		File folder = getFolder(method);
 		File paramFile = new File(folder, shapeFileName + ".gisolca");
 		if (!paramFile.exists())
 			return Collections.emptyList();
 		try (FileInputStream is = new FileInputStream(paramFile);
-		     InputStreamReader reader = new InputStreamReader(is, "utf-8");
-		     BufferedReader buffer = new BufferedReader(reader)) {
+				InputStreamReader reader = new InputStreamReader(is, "utf-8");
+				BufferedReader buffer = new BufferedReader(reader)) {
 			Gson gson = new Gson();
 			ShapeFileParameter[] params = gson.fromJson(buffer,
 					ShapeFileParameter[].class);
@@ -187,16 +190,16 @@ class ShapeFileUtils {
 		}
 	}
 
-	private static void writeParameters(ImpactMethod method, String shapeFileName,
-	                            Collection<ShapeFileParameter> parameters)
+	private static void writeParameters(ImpactMethod method,
+			String shapeFileName, Collection<ShapeFileParameter> parameters)
 			throws IOException {
 		File folder = getFolder(method);
 		if (!folder.exists())
 			folder.mkdirs();
 		File paramFile = new File(folder, shapeFileName + ".gisolca");
 		try (FileOutputStream os = new FileOutputStream(paramFile);
-		     OutputStreamWriter writer = new OutputStreamWriter(os, "utf-8");
-		     BufferedWriter buffer = new BufferedWriter(writer)) {
+				OutputStreamWriter writer = new OutputStreamWriter(os, "utf-8");
+				BufferedWriter buffer = new BufferedWriter(writer)) {
 			Gson gson = new Gson();
 			gson.toJson(parameters, buffer);
 		}
@@ -218,7 +221,7 @@ class ShapeFileUtils {
 	}
 
 	static void openFileInMap(ImpactMethod method, String shapeFileName,
-	                          ShapeFileParameter parameter) {
+			ShapeFileParameter parameter) {
 		DataStore dataStore = openDataStore(method, shapeFileName);
 		if (dataStore == null)
 			return;
@@ -234,7 +237,7 @@ class ShapeFileUtils {
 	}
 
 	private static void showMapFrame(String shapeFileName,
-	                                 SimpleFeatureCollection source, Style style) {
+			SimpleFeatureCollection source, Style style) {
 		MapContent mapContent = new MapContent();
 		mapContent.setTitle("Features of " + shapeFileName);
 		Layer layer = new FeatureLayer(source, style);
@@ -249,8 +252,8 @@ class ShapeFileUtils {
 		boolean showToolBar = true;
 		boolean showStatusBar = false;
 		boolean showLayerTable = false;
-		return new SwtMapFrame(showMenu, showToolBar,
-				showStatusBar, showLayerTable, mapContent) {
+		return new SwtMapFrame(showMenu, showToolBar, showStatusBar,
+				showLayerTable, mapContent) {
 			@Override
 			protected Control createContents(Composite parent) {
 				Control control = super.createContents(parent);
@@ -268,7 +271,7 @@ class ShapeFileUtils {
 	}
 
 	private static DataStore openDataStore(ImpactMethod method,
-	                                       String shapeFileName) {
+			String shapeFileName) {
 		File folder = ShapeFileUtils.getFolder(method);
 		if (folder == null)
 			return null;
@@ -283,8 +286,9 @@ class ShapeFileUtils {
 		}
 	}
 
-	private static Collection<ShapeFileParameter> readParameters(DataStore dataStore) {
-		if(dataStore == null)
+	private static Collection<ShapeFileParameter> readParameters(
+			DataStore dataStore) {
+		if (dataStore == null)
 			return Collections.emptyList();
 		Logger log = LoggerFactory.getLogger(ShapeFileUtils.class);
 		try {
@@ -297,6 +301,7 @@ class ShapeFileUtils {
 				SimpleFeature feature = it.next();
 				readParameters(params, feature);
 			}
+			it.close();
 			return params.values();
 		} catch (Exception e) {
 			log.error("failed to get parameters from shape file", e);
@@ -305,7 +310,7 @@ class ShapeFileUtils {
 	}
 
 	private static void readParameters(Map<String, ShapeFileParameter> params,
-	                                    SimpleFeature feature) {
+			SimpleFeature feature) {
 		for (Property property : feature.getProperties()) {
 			if (!(property.getValue() instanceof Number))
 				continue;

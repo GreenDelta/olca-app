@@ -1,5 +1,9 @@
 package org.openlca.app.editors.lcia_methods;
 
+import java.awt.Desktop;
+import java.io.File;
+import java.util.List;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -31,10 +35,6 @@ import org.openlca.core.model.ImpactMethod;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.awt.Desktop;
-import java.io.File;
-import java.util.List;
 
 /**
  * Shows imported shape-files and parameters from these shape-files that can be
@@ -197,8 +197,8 @@ class ShapeFilePage extends FormPage {
 
 	private class ShapeFileParameterTable {
 
-		private String[] columns = {Messages.Name, Messages.Minimum,
-				Messages.Maximum};
+		private String[] columns = { Messages.Name, Messages.Minimum,
+				Messages.Maximum };
 		private TableViewer viewer;
 		private List<ShapeFileParameter> params;
 
@@ -232,14 +232,14 @@ class ShapeFilePage extends FormPage {
 					return null;
 				ShapeFileParameter p = (ShapeFileParameter) o;
 				switch (i) {
-					case 0:
-						return p.getName();
-					case 1:
-						return Double.toString(p.getMin());
-					case 2:
-						return Double.toString(p.getMax());
-					default:
-						return null;
+				case 0:
+					return p.getName();
+				case 1:
+					return Double.toString(p.getMin());
+				case 2:
+					return Double.toString(p.getMax());
+				default:
+					return null;
 				}
 			}
 		}
@@ -260,8 +260,8 @@ class ShapeFilePage extends FormPage {
 		public void run() {
 			if (section == null || section.parameterTable == null)
 				return;
-			ShapeFileParameter param = Viewers.getFirstSelected(section
-					.parameterTable.viewer);
+			ShapeFileParameter param = Viewers
+					.getFirstSelected(section.parameterTable.viewer);
 			if (param == null)
 				ShapeFileUtils.openFileInMap(method, section.shapeFile);
 			else
