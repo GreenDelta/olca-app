@@ -20,7 +20,9 @@ public enum HtmlView {
 
 	SUNBURST_CHART("sunburst_chart.html"),
 
-	BUBBLE_CHART("bubble_chart.html");
+	BUBBLE_CHART("bubble_chart.html"),
+
+	TREEMAP("treemap.html");
 
 	private IHtmlResource resource;
 	private Resource[] dependencies;

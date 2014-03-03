@@ -13,6 +13,7 @@ import org.openlca.app.results.LocationContributionPage;
 import org.openlca.app.results.TotalFlowResultPage;
 import org.openlca.app.results.TotalImpactResultPage;
 import org.openlca.app.results.viz.ContributionBubblePage;
+import org.openlca.app.results.viz.ProcessTreemapPage;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.results.ContributionResult;
 import org.openlca.core.results.ContributionResultProvider;
@@ -65,6 +66,7 @@ public class QuickResultEditor extends FormEditor {
 			addPage(new LocationContributionPage(this, result));
 			addPage(new GroupPage(this, result));
 			addPage(new ContributionBubblePage(this, result));
+			addPage(new ProcessTreemapPage(this, result));
 		} catch (Exception e) {
 			log.error("failed to add pages", e);
 		}
