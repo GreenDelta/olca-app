@@ -1,5 +1,15 @@
 package org.openlca.app.editors.projects;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -30,14 +40,6 @@ import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.util.Strings;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
 
 class ProjectParameterTable {
 
@@ -127,7 +129,8 @@ class ProjectParameterTable {
 		for (int i = 0; i < columns.length; i++)
 			keys[i + 2] = columns[i].getKey();
 		viewer.setColumnProperties(keys);
-		ModifySupport modifySupport = new ModifySupport<>(viewer);
+		ModifySupport<ParameterRedef> modifySupport = new ModifySupport<>(
+				viewer);
 		for (int i = 2; i < keys.length; i++)
 			modifySupport.bind(keys[i], new ValueModifier(keys[i]));
 	}
@@ -148,7 +151,8 @@ class ProjectParameterTable {
 	}
 
 	private void onAdd() {
-		List<ParameterRedef> redefs = ParameterRedefDialog.select();
+		Set<Long> contexts = getParameterContexts();
+		List<ParameterRedef> redefs = ParameterRedefDialog.select(contexts);
 		for (ParameterRedef redef : redefs) {
 			if (contains(redef))
 				continue;
@@ -160,6 +164,19 @@ class ProjectParameterTable {
 		}
 		viewer.setInput(this.redefs);
 		editor.setDirty(true);
+	}
+
+	private Set<Long> getParameterContexts() {
+		Project project = editor.getModel();
+		HashSet<Long> contexts = new HashSet<Long>();
+		if (project.getImpactMethodId() != null)
+			contexts.add(project.getImpactMethodId());
+		for (ProjectVariant variant : project.getVariants()) {
+			if (variant.getProductSystem() == null)
+				continue;
+			contexts.addAll(variant.getProductSystem().getProcesses());
+		}
+		return contexts;
 	}
 
 	private void onRemove() {
@@ -297,11 +314,12 @@ class ProjectParameterTable {
 		}
 
 		private BaseDescriptor getModel(ParameterRedef redef) {
-			if(redef == null || redef.getContextId() == null)
+			if (redef == null || redef.getContextId() == null)
 				return null;
 			long modelId = redef.getContextId();
-			BaseDescriptor model = cache.get(ImpactMethodDescriptor.class, modelId);
-			if(model != null)
+			BaseDescriptor model = cache.get(ImpactMethodDescriptor.class,
+					modelId);
+			if (model != null)
 				return model;
 			else
 				return cache.get(ProcessDescriptor.class, modelId);
@@ -342,8 +360,8 @@ class ProjectParameterTable {
 				variantRedef.setValue(d);
 				editor.setDirty(true);
 			} catch (Exception e) {
-				org.openlca.app.util.Error.showBox("Invalid number",
-						text + " is not a valid number.");
+				org.openlca.app.util.Error.showBox("Invalid number", text
+						+ " is not a valid number.");
 			}
 		}
 	}

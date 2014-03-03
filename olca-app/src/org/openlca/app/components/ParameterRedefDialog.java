@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -59,8 +60,14 @@ public class ParameterRedefDialog extends FormDialog {
 	private IStructuredSelection selection;
 	private Font boldLabelFont;
 
-	public static List<ParameterRedef> select() {
-		TreeModel model = loadModel(Database.get(), Cache.getEntityCache());
+	/**
+	 * Opens the dialog which contains all global parameters and parameters of
+	 * processes and LCIA methods which IDs are contained in the set of valid
+	 * contexts.
+	 */
+	public static List<ParameterRedef> select(Set<Long> validContexts) {
+		TreeModel model = loadModel(Database.get(), Cache.getEntityCache(),
+				validContexts);
 		ParameterRedefDialog dialog = new ParameterRedefDialog(UI.shell(),
 				model);
 		if (dialog.open() != OK)
@@ -69,14 +76,17 @@ public class ParameterRedefDialog extends FormDialog {
 			return dialog.getSelection();
 	}
 
-	private static TreeModel loadModel(IDatabase database, EntityCache cache) {
+	private static TreeModel loadModel(IDatabase database, EntityCache cache,
+			Set<Long> validContexts) {
 		try (Connection con = database.createConnection()) {
 			List<ParameterRedef> parameters = new ArrayList<>();
 			String query = "select * from tbl_parameters where is_input_param = 1";
 			ResultSet results = con.createStatement().executeQuery(query);
 			while (results.next()) {
 				ParameterRedef redef = fetchRedef(results);
-				parameters.add(redef);
+				if (redef.getContextId() == null
+						|| validContexts.contains(redef.getContextId()))
+					parameters.add(redef);
 			}
 			results.close();
 			return buildModel(parameters, cache);

@@ -1,4 +1,9 @@
-package org.openlca.app.editors;
+package org.openlca.app.editors.systems;
+
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -23,6 +28,7 @@ import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.ParameterRedef;
+import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -30,22 +36,16 @@ import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-
 /**
  * A table with parameter redefinitions. The list which is modified by this
- * table should be directly the live-list of the respective model (i.e. product
- * system or project variant).
+ * table should be directly the live-list of the respective product system.
  */
-public class ParameterRedefTable {
+class ParameterRedefTable {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 
 	private List<ParameterRedef> redefinitions;
-	private ModelEditor<?> editor;
+	private ProductSystemEditor editor;
 
 	private final String PARAMETER = Messages.Parameter;
 	private final String CONTEXT = Messages.Context;
@@ -54,7 +54,7 @@ public class ParameterRedefTable {
 
 	private TableViewer viewer;
 
-	public ParameterRedefTable(ModelEditor<?> editor,
+	public ParameterRedefTable(ProductSystemEditor editor,
 			List<ParameterRedef> redefinitions) {
 		this.editor = editor;
 		this.redefinitions = redefinitions;
@@ -94,7 +94,9 @@ public class ParameterRedefTable {
 	}
 
 	private void add() {
-		List<ParameterRedef> redefs = ParameterRedefDialog.select();
+		ProductSystem system = editor.getModel();
+		List<ParameterRedef> redefs = ParameterRedefDialog.select(system
+				.getProcesses());
 		if (redefs.isEmpty())
 			return;
 		log.trace("add new parameter redef");
@@ -187,12 +189,12 @@ public class ParameterRedefTable {
 		}
 
 		private BaseDescriptor getModel(ParameterRedef redef) {
-			if(redef == null || redef.getContextId() == null)
+			if (redef == null || redef.getContextId() == null)
 				return null;
 			long modelId = redef.getContextId();
 			BaseDescriptor model = cache.get(ImpactMethodDescriptor.class,
 					modelId);
-			if(model != null)
+			if (model != null)
 				return model;
 			else
 				return cache.get(ProcessDescriptor.class, modelId);
