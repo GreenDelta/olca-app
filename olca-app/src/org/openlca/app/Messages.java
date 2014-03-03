@@ -77,6 +77,7 @@ public class Messages extends NLS {
 	public static String Connect;
 	public static String Connecting;
 	public static String ConsumedBy;
+	public static String Context;
 	public static String Contribution;
 	public static String ConversionFactor;
 	public static String Copy;

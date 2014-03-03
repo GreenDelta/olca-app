@@ -1,13 +1,5 @@
 package org.openlca.app.editors.projects;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -23,6 +15,7 @@ import org.openlca.app.components.ParameterRedefDialog;
 import org.openlca.app.db.Cache;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
@@ -33,19 +26,28 @@ import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.Project;
 import org.openlca.core.model.ProjectVariant;
+import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.util.Strings;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 class ProjectParameterTable {
 
 	private final String PARAMETER = Messages.Parameter;
-	private final String PROCESS = Messages.Process;
+	private final String CONTEXT = Messages.Context;
 
 	private ProjectEditor editor;
 	private EntityCache cache = Cache.getEntityCache();
 
 	private List<ParameterRedef> redefs = new ArrayList<>();
-	private ModifySupport<ParameterRedef> modifySupport;
 	private Column[] columns;
 	private TableViewer viewer;
 
@@ -111,7 +113,7 @@ class ProjectParameterTable {
 	private String[] getColumnTitles() {
 		String[] titles = new String[columns.length + 2];
 		titles[0] = PARAMETER;
-		titles[1] = PROCESS;
+		titles[1] = CONTEXT;
 		for (int i = 0; i < columns.length; i++)
 			titles[i + 2] = columns[i].getTitle();
 		return titles;
@@ -121,11 +123,11 @@ class ProjectParameterTable {
 		// we use unique key to map the columns / editors to project variants
 		String[] keys = new String[columns.length + 2];
 		keys[0] = PARAMETER;
-		keys[1] = PROCESS;
+		keys[1] = CONTEXT;
 		for (int i = 0; i < columns.length; i++)
 			keys[i + 2] = columns[i].getKey();
 		viewer.setColumnProperties(keys);
-		modifySupport = new ModifySupport<>(viewer);
+		ModifySupport modifySupport = new ModifySupport<>(viewer);
 		for (int i = 2; i < keys.length; i++)
 			modifySupport.bind(keys[i], new ValueModifier(keys[i]));
 	}
@@ -255,10 +257,11 @@ class ProjectParameterTable {
 			if (!(element instanceof ParameterRedef))
 				return null;
 			ParameterRedef redef = (ParameterRedef) element;
-			if (redef.getContextId() == null)
+			BaseDescriptor model = getModel(redef);
+			if (model == null)
 				return ImageType.FORMULA_ICON.get();
 			else
-				return ImageType.PROCESS_ICON.get();
+				return Images.getIcon(model);
 		}
 
 		@Override
@@ -269,7 +272,7 @@ class ProjectParameterTable {
 			if (col == 0)
 				return redef.getName();
 			if (col == 1)
-				return getProcessColumnText(redef);
+				return getModelColumnText(redef);
 			else
 				return getVariantValue(col, redef);
 		}
@@ -285,15 +288,25 @@ class ProjectParameterTable {
 			return Double.toString(variantRedef.getValue());
 		}
 
-		private String getProcessColumnText(ParameterRedef redef) {
-			if (redef.getContextId() == null)
+		private String getModelColumnText(ParameterRedef redef) {
+			BaseDescriptor model = getModel(redef);
+			if (model == null)
 				return "global";
-			else {
-				ProcessDescriptor descriptor = cache.get(
-						ProcessDescriptor.class, redef.getContextId());
-				return Labels.getDisplayName(descriptor);
-			}
+			else
+				return Labels.getDisplayName(model);
 		}
+
+		private BaseDescriptor getModel(ParameterRedef redef) {
+			if(redef == null || redef.getContextId() == null)
+				return null;
+			long modelId = redef.getContextId();
+			BaseDescriptor model = cache.get(ImpactMethodDescriptor.class, modelId);
+			if(model != null)
+				return model;
+			else
+				return cache.get(ProcessDescriptor.class, modelId);
+		}
+
 	}
 
 	private class ValueModifier extends TextCellModifier<ParameterRedef> {
@@ -329,6 +342,8 @@ class ProjectParameterTable {
 				variantRedef.setValue(d);
 				editor.setDirty(true);
 			} catch (Exception e) {
+				org.openlca.app.util.Error.showBox("Invalid number",
+						text + " is not a valid number.");
 			}
 		}
 	}

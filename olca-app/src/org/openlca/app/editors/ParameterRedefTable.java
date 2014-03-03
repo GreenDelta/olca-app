@@ -1,10 +1,5 @@
 package org.openlca.app.editors;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -19,6 +14,7 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Dialog;
+import org.openlca.app.util.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UncertaintyLabel;
@@ -28,10 +24,16 @@ import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * A table with parameter redefinitions. The list which is modified by this
@@ -46,7 +48,7 @@ public class ParameterRedefTable {
 	private ModelEditor<?> editor;
 
 	private final String PARAMETER = Messages.Parameter;
-	private final String PROCESS = Messages.Process;
+	private final String CONTEXT = Messages.Context;
 	private final String AMOUNT = Messages.Amount;
 	private final String UNCERTAINTY = Messages.Uncertainty;
 
@@ -63,7 +65,7 @@ public class ParameterRedefTable {
 	}
 
 	public void create(FormToolkit toolkit, Composite composite) {
-		viewer = Tables.createViewer(composite, new String[] { PROCESS,
+		viewer = Tables.createViewer(composite, new String[] { CONTEXT,
 				PARAMETER, AMOUNT, UNCERTAINTY });
 		viewer.setLabelProvider(new LabelProvider());
 		ModifySupport<ParameterRedef> modifySupport = new ModifySupport<>(
@@ -155,10 +157,11 @@ public class ParameterRedefTable {
 			if (!(element instanceof ParameterRedef))
 				return null;
 			ParameterRedef redef = (ParameterRedef) element;
-			if (redef.getContextId() == null)
+			BaseDescriptor model = getModel(redef);
+			if (model == null)
 				return ImageType.FORMULA_ICON.get();
 			else
-				return ImageType.PROCESS_ICON.get();
+				return Images.getIcon(model);
 		}
 
 		@Override
@@ -168,11 +171,9 @@ public class ParameterRedefTable {
 			ParameterRedef redef = (ParameterRedef) element;
 			switch (columnIndex) {
 			case 0:
-				if (redef.getContextId() != null) {
-					BaseDescriptor d = cache.get(ProcessDescriptor.class,
-							redef.getContextId());
-					return Labels.getDisplayName(d);
-				}
+				BaseDescriptor model = getModel(redef);
+				if (model != null)
+					return Labels.getDisplayName(model);
 				return "global";
 			case 1:
 				return redef.getName();
@@ -183,6 +184,18 @@ public class ParameterRedefTable {
 			default:
 				return null;
 			}
+		}
+
+		private BaseDescriptor getModel(ParameterRedef redef) {
+			if(redef == null || redef.getContextId() == null)
+				return null;
+			long modelId = redef.getContextId();
+			BaseDescriptor model = cache.get(ImpactMethodDescriptor.class,
+					modelId);
+			if(model != null)
+				return model;
+			else
+				return cache.get(ProcessDescriptor.class, modelId);
 		}
 	}
 
