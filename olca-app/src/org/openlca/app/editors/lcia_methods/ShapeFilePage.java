@@ -35,6 +35,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.Parameter;
+import org.openlca.core.model.ParameterScope;
 import org.openlca.core.model.Uncertainty;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
@@ -342,9 +343,11 @@ class ShapeFilePage extends FormPage {
 			realParam.setExternalSource(section.shapeFile);
 			realParam.setInputParameter(true);
 			realParam.setName(param.getName());
+			realParam.setDescription("from shapefile: " + section.shapeFile);
 			realParam.setValue((param.getMin() + param.getMax()) / 2);
 			realParam.setUncertainty(Uncertainty.uniform(param.getMin(),
 					param.getMax()));
+			realParam.setScope(ParameterScope.IMPACT_METHOD);
 			realParam.setSourceType("SHAPE_FILE");
 			method.getParameters().add(realParam);
 			editor.setActivePage(ParameterPage.ID);

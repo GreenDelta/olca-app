@@ -18,6 +18,7 @@ import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.Source;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
+import org.openlca.core.model.descriptors.BaseDescriptor;
 
 public class Images {
 
@@ -28,6 +29,13 @@ public class Images {
 				return ImageType.forFile(source.getExternalFile()).get();
 		}
 		return getIcon(getType(entity));
+	}
+
+	public static Image getIcon(BaseDescriptor descriptor) {
+		if (descriptor == null)
+			return null;
+		else
+			return getIcon(descriptor.getModelType());
 	}
 
 	public static Image getIcon(ModelType type) {
@@ -87,6 +95,8 @@ public class Images {
 		case FLOW_PROPERTY:
 			return ImageType.FLOW_PROPERTY_ICON;
 		case IMPACT_METHOD:
+			return ImageType.LCIA_ICON;
+		case IMPACT_CATEGORY:
 			return ImageType.LCIA_CATEGORY_ICON;
 		case PROCESS:
 			return ImageType.PROCESS_ICON;

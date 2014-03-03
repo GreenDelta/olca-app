@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.components.UncertaintyCellEditor;
+import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Dialog;
 import org.openlca.app.util.Error;
@@ -174,8 +175,15 @@ public class ParameterSection implements ParameterPageListener {
 	private class ParameterLabelProvider extends LabelProvider implements
 			ITableLabelProvider {
 		@Override
-		public Image getColumnImage(Object element, int columnIndex) {
-			return null;
+		public Image getColumnImage(Object element, int col) {
+			if (col != 0 || !(element instanceof Parameter))
+				return null;
+			Parameter parameter = (Parameter) element;
+			if (parameter.getExternalSource() != null)
+				return ImageType.LCIA_ICON.get(); // currently the only external
+													// sources are shape files
+			else
+				return null;
 		}
 
 		@Override

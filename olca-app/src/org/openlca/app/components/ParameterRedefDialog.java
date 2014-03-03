@@ -33,12 +33,15 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.resources.ImageType;
+import org.openlca.app.util.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ParameterRedef;
+import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
@@ -98,19 +101,19 @@ public class ParameterRedefDialog extends FormDialog {
 	private static TreeModel buildModel(List<ParameterRedef> parameters,
 			EntityCache cache) {
 		TreeModel model = new TreeModel();
-		HashMap<Long, ProcessNode> createdNodes = new HashMap<>();
+		HashMap<Long, ModelNode> createdNodes = new HashMap<>();
 		for (ParameterRedef redef : parameters) {
 			ParameterNode paramNode = new ParameterNode();
 			paramNode.parameter = redef;
-			Long procId = redef.getContextId();
-			if (procId == null)
+			Long modelId = redef.getContextId();
+			if (modelId == null)
 				model.globalParameters.add(paramNode);
 			else {
-				ProcessNode node = createdNodes.get(procId);
+				ModelNode node = createdNodes.get(modelId);
 				if (node == null) {
-					node = new ProcessNode();
-					node.process = cache.get(ProcessDescriptor.class, procId);
-					createdNodes.put(procId, node);
+					node = new ModelNode();
+					node.model = getModel(modelId, cache);
+					createdNodes.put(modelId, node);
 				}
 				paramNode.process = node;
 				node.parameters.add(paramNode);
@@ -118,6 +121,14 @@ public class ParameterRedefDialog extends FormDialog {
 		}
 		model.processes.addAll(createdNodes.values());
 		return model;
+	}
+
+	private static BaseDescriptor getModel(long modelId, EntityCache cache) {
+		BaseDescriptor model = cache.get(ImpactMethodDescriptor.class, modelId);
+		if (model != null)
+			return model;
+		else
+			return cache.get(ProcessDescriptor.class, modelId);
 	}
 
 	private ParameterRedefDialog(Shell shell, TreeModel model) {
@@ -224,12 +235,12 @@ public class ParameterRedefDialog extends FormDialog {
 			}
 			return -1; // global parameters before processes
 		}
-		if (e1 instanceof ProcessNode) {
-			ProcessNode node1 = (ProcessNode) e1;
-			if (e2 instanceof ProcessNode) {
-				ProcessNode node2 = (ProcessNode) e2;
-				return Strings.compare(node1.process.getName(),
-						node2.process.getName());
+		if (e1 instanceof ModelNode) {
+			ModelNode node1 = (ModelNode) e1;
+			if (e2 instanceof ModelNode) {
+				ModelNode node2 = (ModelNode) e2;
+				return Strings.compare(node1.model.getName(),
+						node2.model.getName());
 			}
 			return 1; // process nodes after global parameters
 		}
@@ -245,7 +256,7 @@ public class ParameterRedefDialog extends FormDialog {
 		String term = text.trim();
 		if (element instanceof ParameterNode)
 			return filterParameter(element, term);
-		if (element instanceof ProcessNode)
+		if (element instanceof ModelNode)
 			return filterProcess(element, term);
 		return false;
 	}
@@ -258,9 +269,9 @@ public class ParameterRedefDialog extends FormDialog {
 	}
 
 	private boolean filterProcess(Object element, String term) {
-		ProcessNode node = (ProcessNode) element;
-		ProcessDescriptor proc = node.process;
-		if (StringUtils.containsIgnoreCase(proc.getName(), term))
+		ModelNode node = (ModelNode) element;
+		BaseDescriptor model = node.model;
+		if (StringUtils.containsIgnoreCase(model.getName(), term))
 			return true;
 		for (ParameterNode param : node.parameters)
 			if (contains(param, term))
@@ -274,18 +285,18 @@ public class ParameterRedefDialog extends FormDialog {
 	}
 
 	private static class TreeModel {
-		private List<ProcessNode> processes = new ArrayList<>();
+		private List<ModelNode> processes = new ArrayList<>();
 		private List<ParameterNode> globalParameters = new ArrayList<>();
 	}
 
-	private static class ProcessNode {
-		private ProcessDescriptor process;
+	private static class ModelNode {
+		private BaseDescriptor model;
 		private List<ParameterNode> parameters = new ArrayList<>();
 	}
 
 	private static class ParameterNode {
 		private ParameterRedef parameter;
-		private ProcessNode process;
+		private ModelNode process;
 	}
 
 	private class ContentProvider implements ITreeContentProvider {
@@ -311,9 +322,9 @@ public class ParameterRedefDialog extends FormDialog {
 
 		@Override
 		public Object[] getChildren(Object parentElement) {
-			if (!(parentElement instanceof ProcessNode))
+			if (!(parentElement instanceof ModelNode))
 				return null;
-			ProcessNode node = (ProcessNode) parentElement;
+			ModelNode node = (ModelNode) parentElement;
 			return node.parameters.toArray();
 		}
 
@@ -327,7 +338,7 @@ public class ParameterRedefDialog extends FormDialog {
 
 		@Override
 		public boolean hasChildren(Object element) {
-			return element instanceof ProcessNode;
+			return element instanceof ModelNode;
 		}
 
 	}
@@ -336,18 +347,20 @@ public class ParameterRedefDialog extends FormDialog {
 
 		@Override
 		public Image getImage(Object element) {
-			if (element instanceof ProcessNode)
-				return ImageType.PROCESS_ICON.get();
 			if (element instanceof ParameterNode)
 				return ImageType.FORMULA_ICON.get();
+			if (element instanceof ModelNode) {
+				ModelNode node = (ModelNode) element;
+				return Images.getIcon(node.model);
+			}
 			return null;
 		}
 
 		@Override
 		public String getText(Object element) {
-			if (element instanceof ProcessNode) {
-				ProcessNode node = (ProcessNode) element;
-				return Labels.getDisplayName(node.process);
+			if (element instanceof ModelNode) {
+				ModelNode node = (ModelNode) element;
+				return Labels.getDisplayName(node.model);
 			}
 			if (element instanceof ParameterNode) {
 				ParameterNode node = (ParameterNode) element;
