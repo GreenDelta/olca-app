@@ -13,16 +13,16 @@ import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.resources.ImageType;
 import org.openlca.core.database.IDatabase;
-import org.openlca.io.csv.input.CSVImporter;
+import org.openlca.io.simapro.csv.input.SimaProCsvImport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CSVImportWizard extends Wizard implements IImportWizard {
+public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private FileImportPage importPage;
 
-	public CSVImportWizard() {
+	public SimaProCsvImportWizard() {
 		setNeedsProgressMonitor(true);
 	}
 
@@ -39,7 +39,8 @@ public class CSVImportWizard extends Wizard implements IImportWizard {
 		IDatabase database = Database.get();
 		if (files == null || files.length == 0 || database == null)
 			return false;
-		final CSVImporter importer = new CSVImporter(database, files);
+		final SimaProCsvImport importer = new SimaProCsvImport(database,
+				files[0]);
 		try {
 			getContainer().run(true, true, new IRunnableWithProgress() {
 				@Override

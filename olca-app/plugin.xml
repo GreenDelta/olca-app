@@ -524,7 +524,7 @@
       </wizard>
   	  <wizard
 	       category="import.category.file"
-		   class="org.openlca.app.wizards.io.CSVImportWizard"
+		   class="org.openlca.app.wizards.io.SimaProCsvImportWizard"
 		   icon="icons/simaPro.png"
 		   id="wizard.import.csv"
 		   name="SimaPro CSV">
