@@ -135,6 +135,7 @@ class CalculationWizardPage extends WizardPage {
 		NwSetDescriptor set = nwViewer.getSelected();
 		setUp.setNwSet(set);
 		setUp.setNumberOfRuns(iterationCount);
+		setUp.getParameterRedefs().addAll(productSystem.getParameterRedefs());
 		return setUp;
 	}
 

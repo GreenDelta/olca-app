@@ -47,9 +47,9 @@ class CalculationWizard extends Wizard {
 
 	@Override
 	public boolean performFinish() {
-		CalculationSetup settings = calculationPage.getSetup();
+		CalculationSetup setup = calculationPage.getSetup();
 		try {
-			getContainer().run(true, true, new Calculation(settings));
+			getContainer().run(true, true, new Calculation(setup));
 			return true;
 		} catch (Exception e) {
 			log.error("Calculation failed", e);
