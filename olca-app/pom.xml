@@ -215,13 +215,6 @@
 		</dependency>
 		
 		<dependency>
-			<groupId>org.zeroturnaround</groupId>
-			<artifactId>zt-zip</artifactId>
-			<version>1.6</version>
-			<type>jar</type>
-		</dependency>
-		
-		<dependency>
 			<groupId>org.openlca</groupId>
 			<artifactId>olca-simapro-csv</artifactId>
 			<version>1.0.0</version>
