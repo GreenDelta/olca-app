@@ -1,12 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.app.components;
 
 import org.eclipse.jface.dialogs.PopupDialog;
@@ -33,62 +24,23 @@ import org.eclipse.swt.widgets.Text;
 import org.openlca.app.viewers.BaseLabelProvider;
 import org.openlca.app.viewers.BaseNameSorter;
 
-/**
- * An text cell editor with content assistance
- */
 public abstract class AutoCompleteTextCellEditor extends TextCellEditor {
 
-	/**
-	 * The column of the text cell
-	 */
 	private final int column;
-
-	/**
-	 * The edited element (the data of the text cell)
-	 */
 	private Object editedElement;
-
-	/**
-	 * The title of the content assistance window
-	 */
 	private String popupTitle;
-
-	/**
-	 * Determines if STRG/CTRL is pressed
-	 */
 	private boolean strgPressed = false;
-
-	/**
-	 * The owner of the text cell
-	 */
 	private TableViewer viewer;
-
-	/**
-	 * The text widget of this cell editor
-	 */
 	protected Text text;
 
-	/**
-	 * Creates a new {@link AutoCompleteTextCellEditor}
-	 * 
-	 * @param viewer
-	 *            the owner of this text cell
-	 * @param column
-	 *            the column of this cell
-	 * @param popupTitle
-	 *            the title of the content assistance window
-	 */
-	public AutoCompleteTextCellEditor(final TableViewer viewer,
-			final int column, final String popupTitle) {
+	public AutoCompleteTextCellEditor( TableViewer viewer,
+			 int column,  String popupTitle) {
 		super(viewer.getTable(), SWT.SINGLE);
 		this.viewer = viewer;
 		this.column = column;
 		this.popupTitle = popupTitle;
 	}
 
-	/**
-	 * Open the content assistance window
-	 */
 	private void openContentAssistent() {
 		int cursorPosition = text.getCaretPosition();
 		boolean cursorIsAtBeginningOfSelection = false;
