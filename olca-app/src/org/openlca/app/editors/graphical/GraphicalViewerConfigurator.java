@@ -98,48 +98,7 @@ class GraphicalViewerConfigurator {
 	}
 
 	List<String> configureActions() {
-		actionRegistry.registerAction(ActionFactory
-				.createBuildSupplyChainMenuAction(model.getEditor()));
-		actionRegistry.registerAction(ActionFactory
-				.createRemoveSupplyChainAction(model.getEditor()));
-		actionRegistry.registerAction(ActionFactory
-				.createRemoveAllConnectionsAction(model.getEditor()));
-		actionRegistry.registerAction(ActionFactory.createMarkAction(model
-				.getEditor()));
-		actionRegistry.registerAction(ActionFactory.createUnmarkAction(model
-				.getEditor()));
-		actionRegistry.registerAction(ActionFactory.createExpandAllAction(model
-				.getEditor()));
-		actionRegistry.registerAction(ActionFactory
-				.createCollapseAllAction(model.getEditor()));
-		actionRegistry.registerAction(ActionFactory
-				.createMaximizeAllAction(model.getEditor()));
-		actionRegistry.registerAction(ActionFactory
-				.createMinimizeAllAction(model.getEditor()));
-		actionRegistry.registerAction(ActionFactory
-				.createLayoutMenuAction(model.getEditor()));
-		actionRegistry.registerAction(ActionFactory
-				.createSearchProvidersAction(model.getEditor()));
-		actionRegistry.registerAction(ActionFactory
-				.createSearchRecipientsAction(model.getEditor()));
-		actionRegistry.registerAction(ActionFactory.createOpenAction(model
-				.getEditor()));
-		actionRegistry.registerAction(ActionFactory
-				.createOpenMiniatureViewAction(model.getEditor()));
-		actionRegistry.registerAction(new ZoomInAction(getZoomManager()));
-		actionRegistry.registerAction(new ZoomOutAction(getZoomManager()));
-
-		DeleteAction delAction = new DeleteAction(
-				(IWorkbenchPart) model.getEditor()) {
-
-			@Override
-			protected ISelection getSelection() {
-				return model.getEditor().getSite().getWorkbenchWindow()
-						.getSelectionService().getSelection();
-			}
-
-		};
-		actionRegistry.registerAction(delAction);
+		registerStaticActions();
 		List<String> updateableActions = new ArrayList<>();
 		updateableActions.add(ActionIds.BUILD_SUPPLY_CHAIN_MENU);
 		updateableActions.add(ActionIds.REMOVE_SUPPLY_CHAIN);
@@ -153,6 +112,48 @@ class GraphicalViewerConfigurator {
 		updateableActions.add(ActionIds.SEARCH_RECIPIENTS);
 		updateableActions.add(ActionIds.OPEN_MINIATURE_VIEW);
 		return updateableActions;
+	}
+
+	private void registerStaticActions() {
+		final ProductSystemGraphEditor editor = model.getEditor();
+		actionRegistry.registerAction(ActionFactory
+				.createBuildSupplyChainMenuAction(editor));
+		actionRegistry.registerAction(ActionFactory
+				.createRemoveSupplyChainAction(editor));
+		actionRegistry.registerAction(ActionFactory
+				.createRemoveAllConnectionsAction(editor));
+		actionRegistry.registerAction(ActionFactory.createMarkAction(editor));
+		actionRegistry.registerAction(ActionFactory.createUnmarkAction(editor));
+		actionRegistry.registerAction(ActionFactory
+				.createSaveImageAction(editor));
+		actionRegistry.registerAction(ActionFactory
+				.createExpandAllAction(editor));
+		actionRegistry.registerAction(ActionFactory
+				.createCollapseAllAction(editor));
+		actionRegistry.registerAction(ActionFactory
+				.createMaximizeAllAction(editor));
+		actionRegistry.registerAction(ActionFactory
+				.createMinimizeAllAction(editor));
+		actionRegistry.registerAction(ActionFactory
+				.createLayoutMenuAction(editor));
+		actionRegistry.registerAction(ActionFactory
+				.createSearchProvidersAction(editor));
+		actionRegistry.registerAction(ActionFactory
+				.createSearchRecipientsAction(editor));
+		actionRegistry.registerAction(ActionFactory.createOpenAction(editor));
+		actionRegistry.registerAction(ActionFactory
+				.createOpenMiniatureViewAction(editor));
+		actionRegistry.registerAction(new ZoomInAction(getZoomManager()));
+		actionRegistry.registerAction(new ZoomOutAction(getZoomManager()));
+
+		DeleteAction delAction = new DeleteAction((IWorkbenchPart) editor) {
+			@Override
+			protected ISelection getSelection() {
+				return editor.getSite().getWorkbenchWindow()
+						.getSelectionService().getSelection();
+			}
+		};
+		actionRegistry.registerAction(delAction);
 	}
 
 	void configureZoomManager() {
@@ -180,7 +181,7 @@ class GraphicalViewerConfigurator {
 	}
 
 	void configureContextMenu() {
-		ContextMenuProvider provider = new AppContextMenuProvider(viewer,
+		ContextMenuProvider provider = new MenuProvider(viewer,
 				actionRegistry);
 		viewer.setContextMenu(provider);
 	}

@@ -38,6 +38,10 @@ public class SaveImageAction extends Action {
 		setImageDescriptor(ImageType.SAVE_AS_IMAGE_ICON.getDescriptor());
 	}
 
+	void setEditor(ProductSystemGraphEditor editor) {
+		this.editor = editor;
+	}
+
 	@Override
 	public void run() {
 		if (editor == null)
@@ -94,10 +98,6 @@ public class SaveImageAction extends Action {
 		} catch (final Exception e) {
 			log.error("Run error", e);
 		}
-	}
-
-	void setEditor(ProductSystemGraphEditor editor) {
-		this.editor = editor;
 	}
 
 }
