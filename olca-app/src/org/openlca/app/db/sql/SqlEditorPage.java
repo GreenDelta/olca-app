@@ -159,14 +159,21 @@ public class SqlEditorPage extends FormPage {
 				if (word == null)
 					continue;
 				else {
-					if (isKeyWord(word))
-						styleRange(wordStart, word.length());
+					setWordStyle(word, wordStart);
 					word = null;
 					wordStart = -1;
 				}
 			}
+			setWordStyle(word, wordStart);
+		}
+
+		private void setWordStyle(StringBuilder word, int wordStart) {
+			if (word == null)
+				return;
 			if (isKeyWord(word))
-				styleRange(wordStart, word.length());
+				setKeywordStyle(wordStart, word.length());
+			else
+				setDefaultStyle(wordStart, word.length());
 		}
 
 		private boolean isKeyWord(StringBuilder word) {
@@ -180,12 +187,19 @@ public class SqlEditorPage extends FormPage {
 			return false;
 		}
 
-		private void styleRange(int wordStart, int length) {
+		private void setKeywordStyle(int wordStart, int length) {
 			StyleRange styleRange = new StyleRange();
 			styleRange.start = wordStart;
 			styleRange.length = length;
 			styleRange.fontStyle = SWT.BOLD;
 			styleRange.foreground = Colors.getColor(0, 0, 255);
+			text.setStyleRange(styleRange);
+		}
+
+		private void setDefaultStyle(int wordStart, int length) {
+			StyleRange styleRange = new StyleRange();
+			styleRange.start = wordStart;
+			styleRange.length = length;
 			text.setStyleRange(styleRange);
 		}
 	}
