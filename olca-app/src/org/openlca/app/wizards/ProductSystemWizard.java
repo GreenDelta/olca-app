@@ -7,7 +7,6 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.openlca.app.App;
 import org.openlca.app.FeatureFlag;
 import org.openlca.app.Messages;
-import org.openlca.app.components.ProgressAdapter;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.core.database.BaseDao;
@@ -91,14 +90,13 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 			try {
 				monitor.beginTask(Messages.Systems_CreatingProductSystem,
 						IProgressMonitor.UNKNOWN);
-				ProgressAdapter progress = new ProgressAdapter(monitor);
 				IProductSystemBuilder builder = null;
 				if (cutoff == null)
 					builder = IProductSystemBuilder.Factory.create(cache,
-							progress, preferSystemProcesses);
+							preferSystemProcesses);
 				else
 					builder = IProductSystemBuilder.Factory.create(cache,
-							progress, preferSystemProcesses, cutoff);
+							preferSystemProcesses, cutoff);
 				system = builder.autoComplete(system);
 				monitor.done();
 			} catch (Exception e) {

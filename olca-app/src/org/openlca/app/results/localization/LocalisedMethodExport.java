@@ -12,7 +12,6 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.Query;
-import org.openlca.core.jobs.Status;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
@@ -33,7 +32,7 @@ public class LocalisedMethodExport implements Runnable {
 	private File file;
 	private HSSFWorkbook workbook;
 	private CellStyle headerStyle;
-	private Status status = new Status(Status.WAITING);
+	private boolean finishedWithSuccess = false;
 	private IDatabase database;
 	private EntityCache cache;
 
@@ -45,13 +44,13 @@ public class LocalisedMethodExport implements Runnable {
 		this.cache = cache;
 	}
 
-	public Status getStatus() {
-		return status;
+	public boolean isFinishedWithSuccess() {
+		return finishedWithSuccess;
 	}
 
 	@Override
 	public void run() {
-		status = new Status(Status.RUNNING);
+		finishedWithSuccess = false;
 		try {
 			workbook = new HSSFWorkbook();
 			headerStyle = Excel.headerStyle(workbook);
@@ -60,9 +59,8 @@ public class LocalisedMethodExport implements Runnable {
 			try (FileOutputStream fos = new FileOutputStream(file)) {
 				workbook.write(fos);
 			}
-			status = new Status(Status.OK);
+			finishedWithSuccess = true;
 		} catch (Exception e) {
-			status = new Status(Status.FAILED);
 			log.error("Failed to export impact method", e);
 		}
 	}

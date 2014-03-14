@@ -12,7 +12,6 @@ import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ImpactCategoryDao;
 import org.openlca.core.database.ImpactMethodDao;
-import org.openlca.core.jobs.Status;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ImpactMethod;
@@ -30,7 +29,7 @@ public class LocalisedMethodImport implements Runnable {
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private File file;
 	private IDatabase database;
-	private Status status = new Status(Status.WAITING);
+	private boolean finishedWithSuccess = false;
 	private LocalisedImpactMethod method;
 	private List<Location> locations;
 
@@ -40,8 +39,8 @@ public class LocalisedMethodImport implements Runnable {
 		this.database = database;
 	}
 
-	public Status getStatus() {
-		return status;
+	public boolean isFinishedWithSuccess() {
+		return finishedWithSuccess;
 	}
 
 	public LocalisedImpactMethod getMethod() {
@@ -50,7 +49,7 @@ public class LocalisedMethodImport implements Runnable {
 
 	@Override
 	public void run() {
-		status = new Status(Status.RUNNING);
+		finishedWithSuccess = false;
 		try {
 			locations = database.createDao(Location.class).getAll();
 			try (FileInputStream in = new FileInputStream(file)) {
@@ -59,10 +58,9 @@ public class LocalisedMethodImport implements Runnable {
 				createMethod(infoSheet);
 				importCategories(workbook);
 			}
-			status = new Status(Status.OK);
+			finishedWithSuccess = true;
 		} catch (Exception e) {
 			log.error("Failed to import impact method", e);
-			status = new Status(Status.FAILED);
 		}
 	}
 

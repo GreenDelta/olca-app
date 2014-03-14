@@ -26,7 +26,6 @@ import org.openlca.app.util.InformationPopup;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.jobs.Status;
 import org.openlca.core.model.ImpactMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,7 +113,7 @@ public class ImpactLocalisationPage extends ModelPage<ImpactMethod> implements
 			App.run("Export impact method", export, new Runnable() {
 				@Override
 				public void run() {
-					if (export.getStatus().getFlag() == Status.OK)
+					if (export.isFinishedWithSuccess())
 						InformationPopup.show("Export done");
 				}
 			});
@@ -149,7 +148,7 @@ public class ImpactLocalisationPage extends ModelPage<ImpactMethod> implements
 			App.run("Import LCIA method", methodImport, new Runnable() {
 				@Override
 				public void run() {
-					if (methodImport.getStatus().getFlag() == Status.OK) {
+					if (methodImport.isFinishedWithSuccess()) {
 						localisedMethod = methodImport.getMethod();
 						LocalisedMethodStorage.save(localisedMethod, database);
 						setBrowserData();

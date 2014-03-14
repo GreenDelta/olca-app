@@ -9,7 +9,6 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.osgi.util.NLS;
 import org.openlca.app.App;
 import org.openlca.app.Messages;
-import org.openlca.app.components.ProgressAdapter;
 import org.openlca.app.db.Cache;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.util.Labels;
@@ -64,13 +63,11 @@ public class BuildSupplyChainAction extends Action {
 			monitor.beginTask(Messages.Systems_CreatingProductSystem,
 					IProgressMonitor.UNKNOWN);
 			ProductSystem system = node.getParent().getProductSystem();
-			ProgressAdapter progress = new ProgressAdapter(monitor);
 			LongPair idPair = new LongPair(node.getProcess().getId(), node
 					.getProcess().getQuantitativeReference());
 			IProductSystemBuilder.Factory.create(Cache.getMatrixCache(),
-					progress, preferredType == ProcessType.LCI_RESULT)
-					.autoComplete(system, idPair);
-			progress.done();
+					preferredType == ProcessType.LCI_RESULT).autoComplete(
+					system, idPair);
 		}
 	}
 
