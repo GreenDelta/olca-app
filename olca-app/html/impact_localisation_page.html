@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Impact localisation</title>
-<link href="../../libs/bootstrap_2.2.2/css/bootstrap.min.css" rel="stylesheet"
-	media="screen">
+<link href="../libs/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
 <style type="text/css">
 .selectedPage {
 	color: black;
@@ -13,46 +12,43 @@
 </style>
 </head>
 <body>
-	<div id="container" class="container-fluid"
-		data-ng-controller="Controller">
-		<div class="row-fluid">
+	<div id="container" class="container-fluid" data-ng-controller="Controller">
+		<div class="row container-fluid">
 
 			<!-- page header -->
-			<div class="span12 page-header">
-				<div class="span4">
-					<strong>Localised characterisation factors</strong>
-				</div>
-				<div class="offset6 span2">
-					<a class="btn" onclick="runExport()">Export</a>
-					<a class="btn" onclick="runImport()">Import</a>
+			<div class="col-sm-12 page-header">
+				<h3 class="pull-left">Localised characterisation factors</h3>
+				<div class="pull-right" style="bottom: 15px;position: relative; top: 15px;">
+					<button class="btn" onclick="runExport()">Export</button>
+					<button class="btn" onclick="runImport()">Import</button>
 				</div>
 			</div>
 
 			<!-- value selection -->
-			<div class="span11">
-				<form class="form-horizontal">
-					<div class="control-group">
-						<label class="control-label">Impact category</label>
-						<div class="controls">
-							<select style="width: 400px" data-ng-model="selectedCategory"
+			<div class="col-sm-12">
+				<form class="form-horizontal" role="form">
+					<div class="form-group">
+						<label class="col-sm-4 control-label">Impact category</label>
+						<div class="col-sm-6">
+							<select class="form-control" style="width: 400px" data-ng-model="selectedCategory"
 								data-ng-options="c.impactCategory.name for c in method.impactCategories | orderBy:'impactCategory.name'"
 								data-ng-change="categoryChanged()">
 							</select>
 						</div>
 					</div>
-					<div class="control-group">
-						<label class="control-label">Location</label>
-						<div class="controls">
-							<select style="width: 400px" data-ng-model="selectedLocation"
+					<div class="form-group">
+						<label class="col-sm-4 control-label">Location</label>
+						<div class="col-sm-6">
+							<select class="form-control" style="width: 400px" data-ng-model="selectedLocation"
 								data-ng-options="(location.name + ' (' + location.code + ')') for location in method.locations | orderBy:'name'">
 							</select>
 						</div>
 					</div>
-					<div class="control-group">
-						<label class="control-label">Flow filter</label>
-						<div class="controls">
-							<input type="text" placeholder="Enter a flow name"
-								style="width: 390px" data-ng-change="search()"
+					<div class="form-group">
+						<label class="col-sm-4 control-label">Flow filter</label>
+						<div class="col-sm-6">
+							<input class="form-control" style="width: 400px" type="text" placeholder="Enter a flow name"
+								style="width: 400px" data-ng-change="search()"
 								data-ng-model="nameFilter">
 						</div>
 					</div>
@@ -60,7 +56,7 @@
 			</div>
 
 			<!-- table -->
-			<div class="span11">
+			<div class="col-sm-12">
 				<table class="table table-hover">
 					<tr>
 						<th width="30%">Flow</th>
@@ -91,10 +87,10 @@
 	</div>
 
 
-	<script src="../../libs/jquery.min_1.9.0.js"></script>
-	<script src="../../libs/angular.min_1.0.3.js"></script>
-	<script src="../../libs/bootstrap_2.2.2/js/bootstrap.min.js"></script>
-	<script src="../../libs/olca.utils.js"></script>
+	<script src="../libs/jquery.min_1.9.0.js"></script>
+	<script src="../libs/angular.min.js"></script>
+	<script src="../libs/bootstrap/js/bootstrap.min.js"></script>
+	<script src="../libs/olca.utils.js"></script>
 	<script type="text/javascript">
 		var app = angular.module('PageModule', []);
 		var Controller = function($scope) {
