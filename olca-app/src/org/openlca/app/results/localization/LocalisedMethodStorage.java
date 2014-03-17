@@ -2,7 +2,7 @@ package org.openlca.app.results.localization;
 
 import java.io.File;
 
-import org.openlca.app.App;
+import org.openlca.app.db.DatabaseFolder;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.model.ImpactMethod;
@@ -43,9 +43,8 @@ public class LocalisedMethodStorage {
 	 * returns false on file.exists() there is no localised version stored yet.
 	 */
 	private static File getFile(IDatabase database, String methodId) {
-		File workspace = App.getWorkspace();
-		File mDir = new File(workspace, "localised_methods");
-		File dir = new File(mDir, database.getName());
+		File dbDir = DatabaseFolder.getFileStorageLocation(database);
+		File dir = new File(dbDir, "localised_methods");
 		if (!dir.exists())
 			dir.mkdirs();
 		File methodFile = new File(dir, methodId + ".llciam");
@@ -55,8 +54,7 @@ public class LocalisedMethodStorage {
 	private static LocalisedImpactMethod createNew(IDatabase database,
 			String methodId, File file) {
 		try {
-			ImpactMethodDao dao = new ImpactMethodDao(
-					database);
+			ImpactMethodDao dao = new ImpactMethodDao(database);
 			ImpactMethod realMethod = dao.getForRefId(methodId);
 			LocalisedMethodBuilder builder = new LocalisedMethodBuilder(
 					realMethod, database);
