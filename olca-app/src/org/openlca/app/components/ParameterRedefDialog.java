@@ -102,9 +102,9 @@ public class ParameterRedefDialog extends FormDialog {
 		ParameterRedef redef = new ParameterRedef();
 		redef.setName(results.getString("name"));
 		redef.setValue(results.getDouble("value"));
-		long procId = results.getLong("f_owner");
+		long modelId = results.getLong("f_owner");
 		if (!results.wasNull())
-			redef.setContextId(procId);
+			redef.setContextId(modelId);
 		return redef;
 	}
 
@@ -125,11 +125,13 @@ public class ParameterRedefDialog extends FormDialog {
 					node.model = getModel(modelId, cache);
 					createdNodes.put(modelId, node);
 				}
-				paramNode.process = node;
+				if (node.model != null)
+					redef.setContextType(node.model.getModelType());
+				paramNode.modelNode = node;
 				node.parameters.add(paramNode);
 			}
 		}
-		model.processes.addAll(createdNodes.values());
+		model.modelNodes.addAll(createdNodes.values());
 		return model;
 	}
 
@@ -273,7 +275,7 @@ public class ParameterRedefDialog extends FormDialog {
 
 	private boolean filterParameter(Object element, String term) {
 		ParameterNode node = (ParameterNode) element;
-		if (node.process != null && filterNode(null, node.process))
+		if (node.modelNode != null && filterNode(null, node.modelNode))
 			return true;
 		return contains(node, term);
 	}
@@ -295,7 +297,7 @@ public class ParameterRedefDialog extends FormDialog {
 	}
 
 	private static class TreeModel {
-		private List<ModelNode> processes = new ArrayList<>();
+		private List<ModelNode> modelNodes = new ArrayList<>();
 		private List<ParameterNode> globalParameters = new ArrayList<>();
 	}
 
@@ -306,7 +308,7 @@ public class ParameterRedefDialog extends FormDialog {
 
 	private static class ParameterNode {
 		private ParameterRedef parameter;
-		private ModelNode process;
+		private ModelNode modelNode;
 	}
 
 	private class ContentProvider implements ITreeContentProvider {
@@ -326,7 +328,7 @@ public class ParameterRedefDialog extends FormDialog {
 			TreeModel model = (TreeModel) inputElement;
 			List<Object> elements = new ArrayList<>();
 			elements.addAll(model.globalParameters);
-			elements.addAll(model.processes);
+			elements.addAll(model.modelNodes);
 			return elements.toArray();
 		}
 
@@ -343,7 +345,7 @@ public class ParameterRedefDialog extends FormDialog {
 			if (!(element instanceof ParameterNode))
 				return null;
 			ParameterNode node = (ParameterNode) element;
-			return node.process;
+			return node.modelNode;
 		}
 
 		@Override
