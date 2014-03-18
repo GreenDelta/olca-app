@@ -22,9 +22,18 @@
                 height = 600,
                 color = d3.scale.category20c();
             
+            var refVal = getRefValue(input);
+            
+            function getColor(d) {
+            	if(d.children)
+            		return "#ffffff";
+            	else
+            		return olca.contributionColor(d.value, refVal);
+            }
+            
             var treemap = d3.layout.treemap()
                 .size([width, height])
-                .padding(4)
+                .padding(10)
                 .sticky(true);
             
             var svg = d3.select("center").append("svg")
@@ -48,7 +57,25 @@
                 .attr("y", function(d){return d.y;})
                 .attr("width", function(d) { return d.dx; })
                 .attr("height", function(d) { return d.dy; })
-                .style("fill", function(d) { return color(d.name); });            
+                .style("fill", getColor)
+                .style("stroke", "gray")
+                .style("stroke-width", "1");
+                       
          }
+         
+         function getRefValue(input) {
+         	if(!input.children)
+         		return input.value;         	
+         	var min = 0;
+         	var max = 0;
+         	var childs = input.children;
+         	for(var i = 0; i < childs.length; i++) {         		
+         		var next = getRefValue(childs[i]);
+         		min = Math.min(min, next);
+         		max = Math.max(max, next);
+         	}
+         	return Math.max(Math.abs(max), Math.abs(min));
+         }
+         
     </script>
 </body>
