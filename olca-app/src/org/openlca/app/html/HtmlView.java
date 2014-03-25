@@ -22,7 +22,9 @@ public enum HtmlView {
 
 	BUBBLE_CHART("bubble_chart.html"),
 
-	TREEMAP("treemap.html");
+	TREEMAP("treemap.html"),
+
+	KML_EDITOR("kml_editor.html");
 
 	private IHtmlResource resource;
 	private Resource[] dependencies;
