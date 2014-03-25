@@ -7,13 +7,16 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.openlca.app.CommandArgument;
 
+import com.google.common.base.Objects;
+
 /**
  * The configuration of the application logging.
  */
 public class LoggerConfig {
 
 	public static void setLevel(Level level) {
-		Logger logger = Logger.getLogger("org.openlca");
+		Logger logger = Objects.equal(level, Level.ALL) ? Logger
+				.getLogger("org.openlca") : Logger.getRootLogger();
 		logger.setLevel(level);
 		logger.info("Log-level=" + level);
 	}
