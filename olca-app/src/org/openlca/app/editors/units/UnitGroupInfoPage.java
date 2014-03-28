@@ -27,7 +27,7 @@ class UnitGroupInfoPage extends ModelPage<UnitGroup> {
 				+ ": " + getModel().getName());
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
-		InfoSection infoSection = new InfoSection(getModel(), getBinding());
+		InfoSection infoSection = new InfoSection(getEditor());
 		infoSection.render(body, toolkit);
 		createAdditionalInfo(infoSection, body);
 		body.setFocus();

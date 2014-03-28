@@ -46,7 +46,7 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 				+ ": " + getModel().getName());
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
-		InfoSection infoSection = new InfoSection(getModel(), getBinding());
+		InfoSection infoSection = new InfoSection(getEditor());
 		infoSection.render(body, toolkit);
 		createImpactCategoryViewer(body);
 		body.setFocus();

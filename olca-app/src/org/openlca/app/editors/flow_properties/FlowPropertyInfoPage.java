@@ -28,8 +28,7 @@ class FlowPropertyInfoPage extends ModelPage<FlowProperty> {
 	private FormToolkit toolkit;
 
 	FlowPropertyInfoPage(FlowPropertyEditor editor) {
-		super(editor, "FlowPropertyInfoPage",
-				Messages.GeneralInformation);
+		super(editor, "FlowPropertyInfoPage", Messages.GeneralInformation);
 	}
 
 	@Override
@@ -38,7 +37,7 @@ class FlowPropertyInfoPage extends ModelPage<FlowProperty> {
 				+ ": " + getModel().getName());
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
-		InfoSection infoSection = new InfoSection(getModel(), getBinding());
+		InfoSection infoSection = new InfoSection(getEditor());
 		infoSection.render(body, toolkit);
 		createAdditionalInfo(infoSection);
 		body.setFocus();

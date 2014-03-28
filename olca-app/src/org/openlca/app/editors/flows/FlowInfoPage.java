@@ -29,7 +29,7 @@ class FlowInfoPage extends ModelPage<Flow> {
 				+ getModel().getName());
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
-		InfoSection infoSection = new InfoSection(getModel(), getBinding());
+		InfoSection infoSection = new InfoSection(getEditor());
 		infoSection.render(body, toolkit);
 		FlowUseSection useSection = new FlowUseSection(getModel(),
 				Database.get());
