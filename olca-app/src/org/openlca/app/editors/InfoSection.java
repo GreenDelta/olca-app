@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.Stack;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -17,6 +19,7 @@ import org.openlca.app.Messages;
 import org.openlca.app.editors.DataBinding.TextBindType;
 import org.openlca.app.events.EventHandler;
 import org.openlca.app.navigation.Navigator;
+import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Images;
 import org.openlca.app.util.UI;
@@ -35,6 +38,7 @@ public class InfoSection {
 	private final ModelEditor<?> editor;
 
 	private Composite container;
+	private Label versionLabel;
 
 	public InfoSection(ModelEditor<?> editor) {
 		this.entity = editor.getModel();
@@ -54,26 +58,34 @@ public class InfoSection {
 			createBreadcrumb(container);
 		}
 		createVersionText(toolkit);
+		// UI.formLabel(container, "ID");
+		// UI.formLabel(container, entity.getRefId());
 		createDateText(toolkit);
 	}
 
 	private void createVersionText(FormToolkit toolkit) {
-		final Text text = UI.formText(container, toolkit, Messages.Version,
-				SWT.READ_ONLY);
-		text.setText(Version.asString(entity.getVersion()));
+		UI.formLabel(container, toolkit, Messages.Version);
+		Composite composite = toolkit.createComposite(container);
+		GridLayout layout = UI.gridLayout(composite, 3);
+		layout.marginWidth = 0;
+		layout.marginHeight = 0;
+		versionLabel = toolkit.createLabel(composite,
+				Version.asString(entity.getVersion()));
 		editor.onSaved(new EventHandler() {
 			@Override
 			public void handleEvent() {
 				entity = editor.getModel();
-				text.setText(Version.asString(entity.getVersion()));
+				versionLabel.setText(Version.asString(entity.getVersion()));
 			}
 		});
+		new VersionLink(composite, toolkit, VersionLink.MAJOR);
+		new VersionLink(composite, toolkit, VersionLink.MINOR);
 	}
 
 	private void createDateText(FormToolkit toolkit) {
 		final SimpleDateFormat format = new SimpleDateFormat();
-		final Text text = UI.formText(container, toolkit, Messages.LastChange,
-				SWT.READ_ONLY);
+		UI.formLabel(container, toolkit, Messages.LastChange);
+		final Label text = UI.formLabel(container, toolkit, "");
 		if (entity.getLastChange() != 0)
 			text.setText(format.format(new Date(entity.getLastChange())));
 		editor.onSaved(new EventHandler() {
@@ -83,7 +95,6 @@ public class InfoSection {
 				text.setText(format.format(new Date(entity.getLastChange())));
 			}
 		});
-
 	}
 
 	private void createBreadcrumb(Composite parent) {
@@ -93,7 +104,6 @@ public class InfoSection {
 			stack.push(current);
 			current = current.getParentCategory();
 		}
-
 		Composite breadcrumb = new Composite(parent, SWT.NONE);
 		UI.gridLayout(breadcrumb, stack.size() * 2 - 1, 0, 0);
 		while (!stack.isEmpty()) {
@@ -130,4 +140,61 @@ public class InfoSection {
 		}
 	}
 
+	private class VersionLink extends HyperlinkAdapter {
+
+		static final int MAJOR = 1;
+		static final int MINOR = 2;
+		private final int type;
+		private final ImageHyperlink link;
+
+		private Image hoverIcon = null;
+		private Image icon = null;
+		private String tooltip = null;
+
+		public VersionLink(Composite parent, FormToolkit toolkit, int type) {
+			this.type = type;
+			link = toolkit.createImageHyperlink(parent, SWT.TOP);
+			link.addHyperlinkListener(this);
+			configureLink();
+		}
+
+		private void configureLink() {
+			if (type == MAJOR) {
+				tooltip = "Update major version";
+				hoverIcon = ImageType.UPDATE_MAJOR_16.get();
+				icon = ImageType.UPDATE_MAJOR_DIS_16.get();
+			} else {
+				tooltip = "Update minor version";
+				hoverIcon = ImageType.UPDATE_MINOR_16.get();
+				icon = ImageType.UPDATE_MINOR_DIS_16.get();
+			}
+			link.setToolTipText(tooltip);
+			link.setActiveImage(hoverIcon);
+			link.setImage(icon);
+		}
+
+		@Override
+		public void linkActivated(HyperlinkEvent e) {
+			if (entity == null || versionLabel == null)
+				return;
+			Version version = new Version(entity.getVersion());
+			if (type == MAJOR)
+				version.incMajor();
+			else
+				version.incMinor();
+			entity.setVersion(version.getValue());
+			versionLabel.setText(version.toString());
+			editor.setDirty(true);
+		}
+
+		@Override
+		public void linkEntered(HyperlinkEvent e) {
+			link.setImage(hoverIcon);
+		}
+
+		@Override
+		public void linkExited(HyperlinkEvent e) {
+			link.setImage(icon);
+		}
+	}
 }

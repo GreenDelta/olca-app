@@ -270,6 +270,14 @@ public enum ImageType {
 
 	TREE_LAYOUT_ICON("layout_treelayout.gif"),
 
+	UPDATE_MAJOR_16("update_major_16.png"),
+
+	UPDATE_MAJOR_DIS_16("update_major_dis_16.png"),
+
+	UPDATE_MINOR_16("update_minor_16.png"),
+
+	UPDATE_MINOR_DIS_16("update_minor_dis_16.png"),
+
 	UNIT_GROUP_CATEGORY_ICON("folder_unit.png"),
 
 	UNIT_GROUP_ICON("unitgroup_obj.gif"),

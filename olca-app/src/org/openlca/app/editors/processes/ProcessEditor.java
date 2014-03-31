@@ -67,7 +67,7 @@ public class ProcessEditor extends ModelEditor<Process> implements IEditor {
 		try {
 			addPage(new ProcessInfoPage(this));
 			addPage(new ProcessExchangePage(this));
-			addPage(new ProcessAdminInfoPage(this));
+			addPage(new AdminInfoPage(this));
 			addPage(new ProcessModelingPage(this));
 			addPage(new ParameterPage(parameterSupport));
 			addPage(new AllocationPage(this));

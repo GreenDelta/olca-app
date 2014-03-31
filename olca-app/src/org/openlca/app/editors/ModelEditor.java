@@ -1,8 +1,6 @@
 package org.openlca.app.editors;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.google.common.eventbus.EventBus;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -17,11 +15,13 @@ import org.openlca.app.util.Labels;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.CategorizedEntity;
+import org.openlca.core.model.Version;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.eventbus.EventBus;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class ModelEditor<T extends CategorizedEntity> extends
 		FormEditor implements IEditor {
@@ -39,6 +39,9 @@ public abstract class ModelEditor<T extends CategorizedEntity> extends
 		this.modelClass = modelClass;
 	}
 
+	/**
+	 * Calls the given event handler AFTER the model in this editor was saved.
+	 */
 	public void onSaved(EventHandler handler) {
 		savedHandlers.add(handler);
 	}
@@ -73,21 +76,29 @@ public abstract class ModelEditor<T extends CategorizedEntity> extends
 		try {
 			monitor.beginTask("Save " + modelClass.getSimpleName() + "...",
 					IProgressMonitor.UNKNOWN);
+			model.setLastChange(System.currentTimeMillis());
+			Version version = new Version(model.getVersion());
+			version.incUpdate();
+			model.setVersion(version.getValue());
 			model = dao.update(model);
-			setDirty(false);
+			doAfterUpdate();
 			monitor.done();
-			BaseDescriptor descriptor = getEditorInput().getDescriptor();
-			EntityCache cache = Cache.getEntityCache();
-			cache.refresh(descriptor.getClass(), descriptor.getId());
-			cache.invalidate(modelClass, model.getId());
-			Navigator.refresh(Navigator.findElement(descriptor));
-			this.setPartName(Labels.getDisplayName(descriptor));
-			Cache.evict(descriptor);
-			for (EventHandler handler : savedHandlers)
-				handler.handleEvent();
 		} catch (Exception e) {
 			log.error("failed to update " + modelClass.getSimpleName());
 		}
+	}
+
+	private void doAfterUpdate() {
+		setDirty(false);
+		BaseDescriptor descriptor = getEditorInput().getDescriptor();
+		EntityCache cache = Cache.getEntityCache();
+		cache.refresh(descriptor.getClass(), descriptor.getId());
+		cache.invalidate(modelClass, model.getId());
+		Navigator.refresh(Navigator.findElement(descriptor));
+		this.setPartName(Labels.getDisplayName(descriptor));
+		Cache.evict(descriptor);
+		for (EventHandler handler : savedHandlers)
+			handler.handleEvent();
 	}
 
 	@Override
