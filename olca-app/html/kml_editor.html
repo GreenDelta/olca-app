@@ -31,9 +31,6 @@
             <button class="btn btn-primary" onclick="onDestroyFeatures()">
                 Clear
             </button>
-            <button class="btn btn-primary" onclick="onCancel()">
-                Cancel
-            </button>
         </div>
     </div>
 
@@ -145,14 +142,6 @@
             		'externalProjection': new OpenLayers.Projection("EPSG:4326")
         		});
           		return format.write(editLayer.features);
-          	}
-          	
-          	function onCancel() {
-          		if(typeof(doCancel) == "function") {
-          			doCancel();
-          		} else {
-          			showError("Cancel function not bound.");          			
-          		}
           	}
           	
           	function setKML(kml) {

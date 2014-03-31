@@ -24,21 +24,19 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.ExchangeViewer;
 import org.openlca.app.viewers.combo.LocationViewer;
 import org.openlca.core.model.Process;
-import org.openlca.util.Strings;
+import org.openlca.util.BinUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-class ProcessInfoPage extends ModelPage<Process> {
+class InfoPage extends ModelPage<Process> {
+
+	private Logger log = LoggerFactory.getLogger(getClass());
 
 	private FormToolkit toolkit;
-
-	// TODO: this is just a temporary field until the KML feature is implemented
-	// in the process directly
-	private String kml;
-
 	private ImageHyperlink kmlLink;
-
 	private ScrolledForm form;
 
-	ProcessInfoPage(ProcessEditor editor) {
+	InfoPage(ProcessEditor editor) {
 		super(editor, "ProcessInfoPage", Messages.GeneralInformation);
 	}
 
@@ -129,9 +127,32 @@ class ProcessInfoPage extends ModelPage<Process> {
 		textButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				TextEditor.open(kml, new MapEditorDispatch());
+				TextEditor.open(toKml(getModel().getKmz()),
+						new MapEditorDispatch());
 			}
 		});
+	}
+
+	private byte[] toKmz(String kml) {
+		if (kml == null)
+			return null;
+		try {
+			return BinUtils.zip(kml.getBytes("utf-8"));
+		} catch (Exception e) {
+			log.error("failed to zip KML", e);
+			return null;
+		}
+	}
+
+	private String toKml(byte[] kmz) {
+		if (kmz == null)
+			return null;
+		try {
+			return new String(BinUtils.unzip(kmz), "utf-8");
+		} catch (Exception e) {
+			log.error("failed to unzip KMZ", e);
+			return null;
+		}
 	}
 
 	private class MapEditorDispatch extends HyperlinkAdapter implements
@@ -153,13 +174,14 @@ class ProcessInfoPage extends ModelPage<Process> {
 
 		@Override
 		public void contentSaved(String kml) {
-			ProcessInfoPage.this.kml = kml;
-			kmlLink.setText(Strings.cut(kml, 80));
+			Process process = getModel();
+			process.setKmz(toKmz(kml));
 			form.reflow(true);
+			getEditor().setDirty(true);
 		}
 
 		private void openEditor() {
-			MapEditor.open(kml, this);
+			MapEditor.open(toKml(getModel().getKmz()), this);
 		}
 	}
 

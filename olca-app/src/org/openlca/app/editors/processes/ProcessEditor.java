@@ -62,7 +62,7 @@ public class ProcessEditor extends ModelEditor<Process> implements IEditor {
 	@Override
 	protected void addPages() {
 		try {
-			addPage(new ProcessInfoPage(this));
+			addPage(new InfoPage(this));
 			addPage(new ProcessExchangePage(this));
 			addPage(new AdminInfoPage(this));
 			addPage(new ProcessModelingPage(this));
