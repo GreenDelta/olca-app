@@ -4,6 +4,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
@@ -17,6 +18,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.processes.kml.EditorHandler;
+import org.openlca.app.editors.processes.kml.KmlUtil;
 import org.openlca.app.editors.processes.kml.MapEditor;
 import org.openlca.app.editors.processes.kml.TextEditor;
 import org.openlca.app.resources.ImageType;
@@ -24,13 +26,8 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.ExchangeViewer;
 import org.openlca.app.viewers.combo.LocationViewer;
 import org.openlca.core.model.Process;
-import org.openlca.util.BinUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class InfoPage extends ModelPage<Process> {
-
-	private Logger log = LoggerFactory.getLogger(getClass());
 
 	private FormToolkit toolkit;
 	private ImageHyperlink kmlLink;
@@ -85,7 +82,8 @@ class InfoPage extends ModelPage<Process> {
 	private void createTechnologySection(Composite body) {
 		Composite composite = UI.formSection(body, toolkit,
 				Messages.TechnologyInfoSectionLabel);
-		createMultiText(Messages.Comment, "documentation.technology", composite);
+		createMultiText(Messages.Description, "documentation.technology",
+				composite);
 	}
 
 	private void createTimeSection(Composite body) {
@@ -93,7 +91,7 @@ class InfoPage extends ModelPage<Process> {
 				Messages.TimeInfoSectionLabel);
 		createDate(Messages.StartDate, "documentation.validFrom", composite);
 		createDate(Messages.EndDate, "documentation.validUntil", composite);
-		createMultiText(Messages.Comment, "documentation.time", composite);
+		createMultiText(Messages.Description, "documentation.time", composite);
 	}
 
 	private void createGeographySection(Composite body) {
@@ -104,19 +102,22 @@ class InfoPage extends ModelPage<Process> {
 		locationViewer.setNullable(true);
 		locationViewer.setInput(Database.get());
 		getBinding().on(getModel(), "location", locationViewer);
-		UI.formText(composite, toolkit, "Sub-location");
 		createKmlSection(composite);
-		createMultiText(Messages.Comment, "documentation.geography", composite);
+		createMultiText(Messages.Description, "documentation.geography",
+				composite);
 	}
 
 	private void createKmlSection(Composite parent) {
 		UI.formLabel(parent, "KML");
 		Composite composite = toolkit.createComposite(parent);
 		UI.gridData(composite, true, true);
-		UI.gridLayout(composite, 2);
+		GridLayout layout = UI.gridLayout(composite, 2);
+		layout.marginWidth = 0;
+		layout.marginHeight = 0;
 		kmlLink = toolkit.createImageHyperlink(composite, SWT.TOP);
 		kmlLink.addHyperlinkListener(new MapEditorDispatch());
 		UI.gridData(kmlLink, true, false).horizontalSpan = 2;
+		kmlLink.setText(KmlUtil.getDisplayText(getModel().getKmz()));
 		Button mapButton = toolkit.createButton(composite, "Map editor",
 				SWT.NONE);
 		mapButton.addSelectionListener(new MapEditorDispatch());
@@ -127,32 +128,10 @@ class InfoPage extends ModelPage<Process> {
 		textButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				TextEditor.open(toKml(getModel().getKmz()),
+				TextEditor.open(KmlUtil.toKml(getModel().getKmz()),
 						new MapEditorDispatch());
 			}
 		});
-	}
-
-	private byte[] toKmz(String kml) {
-		if (kml == null)
-			return null;
-		try {
-			return BinUtils.zip(kml.getBytes("utf-8"));
-		} catch (Exception e) {
-			log.error("failed to zip KML", e);
-			return null;
-		}
-	}
-
-	private String toKml(byte[] kmz) {
-		if (kmz == null)
-			return null;
-		try {
-			return new String(BinUtils.unzip(kmz), "utf-8");
-		} catch (Exception e) {
-			log.error("failed to unzip KMZ", e);
-			return null;
-		}
 	}
 
 	private class MapEditorDispatch extends HyperlinkAdapter implements
@@ -175,13 +154,13 @@ class InfoPage extends ModelPage<Process> {
 		@Override
 		public void contentSaved(String kml) {
 			Process process = getModel();
-			process.setKmz(toKmz(kml));
-			form.reflow(true);
+			process.setKmz(KmlUtil.toKmz(kml));
 			getEditor().setDirty(true);
+			kmlLink.setText(KmlUtil.getDisplayText(process.getKmz()));
 		}
 
 		private void openEditor() {
-			MapEditor.open(toKml(getModel().getKmz()), this);
+			MapEditor.open(KmlUtil.toKml(getModel().getKmz()), this);
 		}
 	}
 

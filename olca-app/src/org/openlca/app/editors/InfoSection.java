@@ -1,9 +1,5 @@
 package org.openlca.app.editors;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Stack;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridLayout;
@@ -26,6 +22,10 @@ import org.openlca.app.util.UI;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Version;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Stack;
 
 /**
  * This is the general info section that each editor has: name, description,
