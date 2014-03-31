@@ -1,6 +1,5 @@
 package org.openlca.app.editors.processes;
 
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
@@ -15,8 +14,6 @@ import org.openlca.core.model.Process;
 import org.openlca.expressions.FormulaInterpreter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.ibm.icu.util.Calendar;
 
 public class ProcessEditor extends ModelEditor<Process> implements IEditor {
 
@@ -76,12 +73,4 @@ public class ProcessEditor extends ModelEditor<Process> implements IEditor {
 			log.error("failed to add page", e);
 		}
 	}
-
-	@Override
-	public void doSave(IProgressMonitor monitor) {
-		getModel().getDocumentation().setLastChange(
-				Calendar.getInstance().getTime());
-		super.doSave(monitor);
-	}
-
 }

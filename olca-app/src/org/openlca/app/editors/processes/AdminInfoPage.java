@@ -45,10 +45,7 @@ class AdminInfoPage extends ModelPage<Process> {
 		createMultiText(Messages.AccessAndUseRestrictions,
 				"documentation.restrictions", composite);
 		createMultiText(Messages.Project, "documentation.project", composite);
-		createMultiText(Messages.Version, "documentation.version", composite);
 		createReadOnly(Messages.CreationDate, "documentation.creationDate",
-				composite);
-		createReadOnly(Messages.LastChange, "documentation.lastChange",
 				composite);
 		createCheckBox(Messages.Copyright, "documentation.copyright", composite);
 	}

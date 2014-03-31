@@ -73,11 +73,11 @@ class ProcessCreationController {
 			process.setRefId(UUID.randomUUID().toString());
 			process.setName(name);
 			process.setDescription(description);
+			process.setLastChange(System.currentTimeMillis());
 			Flow flow = getFlow();
 			addQuantitativeReference(process, flow);
 			ProcessDocumentation doc = new ProcessDocumentation();
 			doc.setCreationDate(Calendar.getInstance().getTime());
-			doc.setLastChange(Calendar.getInstance().getTime());
 			doc.setId(process.getId());
 			process.setDocumentation(doc);
 			return process;

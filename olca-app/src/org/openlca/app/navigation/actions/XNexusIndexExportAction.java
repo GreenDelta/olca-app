@@ -20,6 +20,7 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessDocumentation;
+import org.openlca.core.model.Version;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -110,6 +111,7 @@ public class XNexusIndexExportAction extends Action implements
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private class IndexEntry {
 
 		private String id;
@@ -132,6 +134,7 @@ public class XNexusIndexExportAction extends Action implements
 			name = process.getName();
 			categoryPath = CategoryPath.getFull(process.getCategory());
 			description = process.getDescription();
+			version = Version.asString(process.getVersion());
 			if (process.getLocation() != null)
 				location = process.getLocation().getCode();
 			ProcessDocumentation doc = process.getDocumentation();
@@ -141,7 +144,6 @@ public class XNexusIndexExportAction extends Action implements
 		}
 
 		private void writeDocValues(ProcessDocumentation doc) {
-			version = doc.getVersion();
 			technology = doc.getTechnology();
 			if (doc.getDataSetOwner() != null)
 				owner = doc.getDataSetOwner().getName();
