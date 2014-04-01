@@ -30,6 +30,7 @@ public class ProductSystemEditor extends ModelEditor<ProductSystem> implements
 			int gIdx = addPage(new ProductSystemGraphEditor(getModel(), this),
 					gInput);
 			setPageText(gIdx, Messages.ModelGraph);
+			addPage(new HtmlGraph(this, getModel()));
 		} catch (Exception e) {
 			log.error("failed to add page", e);
 		}

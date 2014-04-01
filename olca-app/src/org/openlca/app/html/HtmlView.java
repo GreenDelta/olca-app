@@ -24,7 +24,9 @@ public enum HtmlView {
 
 	TREEMAP("treemap.html"),
 
-	KML_EDITOR("kml_editor.html");
+	KML_EDITOR("kml_editor.html"),
+
+	GRAPH_VIEW("graph_view.html");
 
 	private IHtmlResource resource;
 	private Resource[] dependencies;

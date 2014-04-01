@@ -62,11 +62,12 @@ public class QuickResultEditor extends FormEditor {
 			if (result.hasImpactResults())
 				addPage(new TotalImpactResultPage(this, result));
 			addPage(new ContributionTablePage(this, result));
-			addPage(new FlowImpactPage(this, result));
+			if (result.hasImpactResults())
+				addPage(new FlowImpactPage(this, result));
 			addPage(new LocationContributionPage(this, result));
 			addPage(new GroupPage(this, result));
-			addPage(new ContributionBubblePage(this, result));
 			addPage(new ProcessTreemapPage(this, result));
+			addPage(new ContributionBubblePage(this, result));
 		} catch (Exception e) {
 			log.error("failed to add pages", e);
 		}
