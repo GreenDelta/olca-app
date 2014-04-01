@@ -1,7 +1,6 @@
 package org.openlca.app.results;
 
-import java.util.Collection;
-
+import com.google.common.primitives.Doubles;
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -10,7 +9,6 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.forms.HyperlinkSettings;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
@@ -27,9 +25,9 @@ import org.openlca.app.util.UI;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.matrix.FlowIndex;
 import org.openlca.core.model.descriptors.FlowDescriptor;
-
-import com.google.common.primitives.Doubles;
 import org.openlca.core.results.SimpleResultProvider;
+
+import java.util.Collection;
 
 /**
  * Shows the total inventory result of a quick calculation, analysis result,
@@ -55,12 +53,8 @@ public class TotalFlowResultPage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = managedForm.getForm();
+		ScrolledForm form = UI.formHeader(managedForm, "Inventory results");
 		toolkit = managedForm.getToolkit();
-		toolkit.getHyperlinkGroup().setHyperlinkUnderlineMode(
-				HyperlinkSettings.UNDERLINE_HOVER);
-		form.setText("Inventory results");
-		toolkit.decorateFormHeading(form.getForm());
 		Composite body = UI.formBody(form, toolkit);
 		TableViewer inputViewer = createSectionAndViewer(body, true);
 		TableViewer outputViewer = createSectionAndViewer(body, false);

@@ -12,6 +12,7 @@ import org.openlca.app.results.ContributionTablePage;
 import org.openlca.app.results.FlowImpactPage;
 import org.openlca.app.results.GroupPage;
 import org.openlca.app.results.LocationContributionPage;
+import org.openlca.app.results.NwResultPage;
 import org.openlca.app.results.TotalFlowResultPage;
 import org.openlca.app.results.TotalImpactResultPage;
 import org.openlca.app.results.analysis.sankey.SankeyDiagram;
@@ -68,6 +69,8 @@ public class AnalyzeEditor extends FormEditor {
 			addPage(new TotalFlowResultPage(this, result));
 			if (result.hasImpactResults())
 				addPage(new TotalImpactResultPage(this, result));
+			if (result.hasImpactResults() && setup.getNwSet() != null)
+				addPage(new NwResultPage(this, result, setup));
 			addPage(new ContributionTablePage(this, result));
 			addPage(new ProcessResultPage(this, result));
 			if (result.hasImpactResults())

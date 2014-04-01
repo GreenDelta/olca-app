@@ -10,6 +10,7 @@ import org.openlca.app.results.ContributionTablePage;
 import org.openlca.app.results.FlowImpactPage;
 import org.openlca.app.results.GroupPage;
 import org.openlca.app.results.LocationContributionPage;
+import org.openlca.app.results.NwResultPage;
 import org.openlca.app.results.TotalFlowResultPage;
 import org.openlca.app.results.TotalImpactResultPage;
 import org.openlca.app.results.viz.ContributionBubblePage;
@@ -61,6 +62,8 @@ public class QuickResultEditor extends FormEditor {
 			addPage(new TotalFlowResultPage(this, result));
 			if (result.hasImpactResults())
 				addPage(new TotalImpactResultPage(this, result));
+			if (result.hasImpactResults() && setup.getNwSet() != null)
+				addPage(new NwResultPage(this, result, setup));
 			addPage(new ContributionTablePage(this, result));
 			if (result.hasImpactResults())
 				addPage(new FlowImpactPage(this, result));
