@@ -1,5 +1,12 @@
 package org.openlca.app.editors.processes.kml;
 
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
+import java.util.Objects;
+
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
@@ -8,13 +15,6 @@ import org.jdom2.output.XMLOutputter;
 import org.openlca.util.BinUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.util.Locale;
-import java.util.Objects;
 
 public class KmlUtil {
 
@@ -104,8 +104,8 @@ public class KmlUtil {
 		if (parts.length == 1)
 			return " [" + formatCoordinate(parts[0]) + "]";
 		else
-			return " [" + formatCoordinate(parts[0]) + " ... " +
-				formatCoordinate(parts[parts.length - 1]) + "]";
+			return " [" + formatCoordinate(parts[0]) + " ... "
+					+ formatCoordinate(parts[parts.length - 1]) + "]";
 	}
 
 	private static String formatCoordinate(String part) {
@@ -122,7 +122,6 @@ public class KmlUtil {
 			return "invalid coordinate";
 		}
 	}
-
 
 	private static boolean contains(Element root, String name) {
 		return findElement(root, name) != null;

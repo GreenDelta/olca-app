@@ -83,7 +83,8 @@ public class InfoSection {
 	}
 
 	private void createDateText(FormToolkit toolkit) {
-		final SimpleDateFormat format = new SimpleDateFormat();
+		final SimpleDateFormat format = new SimpleDateFormat(
+				"yyyy-MM-dd'T'HH:mm:ssZ");
 		UI.formLabel(container, toolkit, Messages.LastChange);
 		final Label text = UI.formLabel(container, toolkit, "");
 		if (entity.getLastChange() != 0)

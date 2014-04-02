@@ -1,7 +1,5 @@
 package org.openlca.app.results;
 
-import java.util.List;
-
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -29,6 +27,8 @@ import org.openlca.core.results.ImpactResult;
 import org.openlca.core.results.SimpleResultProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 /**
  * Shows normalisation and weighting results.

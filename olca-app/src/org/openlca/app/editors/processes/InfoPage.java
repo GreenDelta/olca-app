@@ -23,8 +23,10 @@ import org.openlca.app.editors.processes.kml.MapEditor;
 import org.openlca.app.editors.processes.kml.TextEditor;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.UI;
+import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.ExchangeViewer;
 import org.openlca.app.viewers.combo.LocationViewer;
+import org.openlca.core.model.Location;
 import org.openlca.core.model.Process;
 
 class InfoPage extends ModelPage<Process> {
@@ -102,6 +104,13 @@ class InfoPage extends ModelPage<Process> {
 		locationViewer.setNullable(true);
 		locationViewer.setInput(Database.get());
 		getBinding().on(getModel(), "location", locationViewer);
+		locationViewer
+				.addSelectionChangedListener(new ISelectionChangedListener<Location>() {
+					@Override
+					public void selectionChanged(Location selection) {
+						kmlLink.setText(getKmlDisplayText());
+					}
+				});
 		createKmlSection(composite);
 		createMultiText(Messages.Description, "documentation.geography",
 				composite);
@@ -117,7 +126,7 @@ class InfoPage extends ModelPage<Process> {
 		kmlLink = toolkit.createImageHyperlink(composite, SWT.TOP);
 		kmlLink.addHyperlinkListener(new MapEditorDispatch());
 		UI.gridData(kmlLink, true, false).horizontalSpan = 2;
-		kmlLink.setText(KmlUtil.getDisplayText(getModel().getKmz()));
+		kmlLink.setText(getKmlDisplayText());
 		Button mapButton = toolkit.createButton(composite, "Map editor",
 				SWT.NONE);
 		mapButton.addSelectionListener(new MapEditorDispatch());
@@ -128,27 +137,56 @@ class InfoPage extends ModelPage<Process> {
 		textButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				TextEditor.open(KmlUtil.toKml(getModel().getKmz()),
-						new MapEditorDispatch());
+				TextEditor.open(getKml(), new MapEditorDispatch());
 			}
 		});
+	}
+
+	private String getKmlDisplayText() {
+		Process process = getModel();
+		if (process.getKmz() != null)
+			return KmlUtil.getDisplayText(process.getKmz());
+		if (process.getLocation() != null)
+			return KmlUtil.getDisplayText(process.getLocation().getKmz());
+		else
+			return "none";
+	}
+
+	private void openMap(EditorHandler handler) {
+		String kml = getKml();
+		if (kml != null) {
+			// prepare the KML for the map so that no syntax errors are thrown
+			kml = kml.trim().replace("\n", "").replace("\r", "");
+		}
+		MapEditor.open(kml, handler);
+
+	}
+
+	private String getKml() {
+		Process process = getModel();
+		if (process.getKmz() != null)
+			return KmlUtil.toKml(process.getKmz());
+		if (process.getLocation() != null)
+			return KmlUtil.toKml(process.getLocation().getKmz());
+		else
+			return null;
 	}
 
 	private class MapEditorDispatch extends HyperlinkAdapter implements
 			SelectionListener, EditorHandler {
 
 		public void widgetDefaultSelected(SelectionEvent e) {
-			openEditor();
+			openMap(this);
 		}
 
 		@Override
 		public void widgetSelected(SelectionEvent e) {
-			openEditor();
+			openMap(this);
 		}
 
 		@Override
 		public void linkActivated(HyperlinkEvent e) {
-			openEditor();
+			openMap(this);
 		}
 
 		@Override
@@ -156,11 +194,7 @@ class InfoPage extends ModelPage<Process> {
 			Process process = getModel();
 			process.setKmz(KmlUtil.toKmz(kml));
 			getEditor().setDirty(true);
-			kmlLink.setText(KmlUtil.getDisplayText(process.getKmz()));
-		}
-
-		private void openEditor() {
-			MapEditor.open(KmlUtil.toKml(getModel().getKmz()), this);
+			kmlLink.setText(getKmlDisplayText());
 		}
 	}
 
