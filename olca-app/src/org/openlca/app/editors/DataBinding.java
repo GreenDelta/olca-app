@@ -173,8 +173,6 @@ public class DataBinding {
 				property);
 		if (bean == null || property == null || viewer == null)
 			return;
-
-		checkType(bean, property, viewer);
 		initValue(bean, property, viewer);
 		viewer.addSelectionChangedListener(new ISelectionChangedListener<T>() {
 			@Override
@@ -191,7 +189,6 @@ public class DataBinding {
 				property);
 		if (bean == null || property == null || text == null)
 			return;
-		checkType(bean, property, text);
 		initValue(bean, property, text);
 		text.setHandler(new ISingleModelDrop() {
 			@Override
@@ -208,56 +205,17 @@ public class DataBinding {
 			return;
 		initValue(bean, property, button);
 		button.addSelectionListener(new SelectionListener() {
-
-			private void selected() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
 				setBooleanValue(bean, property, button);
 				editorChange();
 			}
 
 			@Override
-			public void widgetSelected(SelectionEvent e) {
-				selected();
-			}
-
-			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
-				selected();
+				widgetSelected(e);
 			}
 		});
-	}
-
-	@SuppressWarnings("unchecked")
-	private <T> void checkType(final Object bean, final String property,
-			final AbstractComboViewer<T> viewer) {
-		try {
-			Class<?> propertyType = Bean.getType(bean, property);
-			if (propertyType != viewer.getType())
-				if (RootEntity.class.isAssignableFrom(propertyType)
-						&& BaseDescriptor.class.isAssignableFrom(viewer
-								.getType()))
-					if (propertyType != Descriptors
-							.getModelClass((Class<? extends BaseDescriptor>) viewer
-									.getType()))
-						throw new IllegalArgumentException("Cannot bind "
-								+ viewer.getType().getCanonicalName() + " to "
-								+ propertyType.getCanonicalName());
-		} catch (Exception e) {
-			error("Cannot bind bean", e);
-		}
-	}
-
-	private void checkType(final Object bean, final String property,
-			final TextDropComponent text) {
-		try {
-			Class<?> propertyType = Bean.getType(bean, property);
-			if (propertyType != text.getModelType().getModelClass())
-				throw new IllegalArgumentException("Cannot bind "
-						+ text.getModelType().getModelClass()
-								.getCanonicalName() + " to "
-						+ propertyType.getCanonicalName());
-		} catch (Exception e) {
-			error("Cannot bind bean", e);
-		}
 	}
 
 	public void on(final Object bean, final String property,
@@ -267,19 +225,15 @@ public class DataBinding {
 			return;
 		initValue(bean, property, dateTime);
 		dateTime.addSelectionListener(new SelectionListener() {
-			private void selected() {
-				setDateValue(bean, property, dateTime);
-				editorChange();
-			}
-
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
-				selected();
+				widgetSelected(e);
 			}
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				selected();
+				setDateValue(bean, property, dateTime);
+				editorChange();
 			}
 		});
 	}
@@ -300,7 +254,6 @@ public class DataBinding {
 			onShort(bean, property, text);
 			break;
 		default:
-			// Enum values are read only
 			break;
 		}
 	}
@@ -383,19 +336,18 @@ public class DataBinding {
 	private void initValue(Object bean, String property, DateTime dateTime) {
 		try {
 			Object val = Bean.getValue(bean, property);
-			if (val != null) {
-				GregorianCalendar calendar = null;
-				if (val instanceof Date) {
-					calendar = new GregorianCalendar();
-					calendar.setTime((Date) val);
-				} else if (val instanceof GregorianCalendar)
-					calendar = (GregorianCalendar) val;
-
-				if (calendar != null) {
-					dateTime.setDay(calendar.get(Calendar.DAY_OF_MONTH));
-					dateTime.setMonth(calendar.get(Calendar.MONTH));
-					dateTime.setYear(calendar.get(Calendar.YEAR));
-				}
+			if (val == null)
+				return;
+			GregorianCalendar calendar = null;
+			if (val instanceof Date) {
+				calendar = new GregorianCalendar();
+				calendar.setTime((Date) val);
+			} else if (val instanceof GregorianCalendar)
+				calendar = (GregorianCalendar) val;
+			if (calendar != null) {
+				dateTime.setDay(calendar.get(Calendar.DAY_OF_MONTH));
+				dateTime.setMonth(calendar.get(Calendar.MONTH));
+				dateTime.setYear(calendar.get(Calendar.YEAR));
 			}
 		} catch (Exception e) {
 			error("Cannot set text value", e);
@@ -433,23 +385,23 @@ public class DataBinding {
 	}
 
 	private String getValueAsString(Object val) {
-		if (val != null)
-			if (val.getClass().isEnum())
-				return Labels.getEnumText(val);
-			else if (val instanceof RootEntity)
-				return ((RootEntity) val).getName();
-			else if (val instanceof BaseDescriptor)
-				return ((BaseDescriptor) val).getName();
-			else if (val instanceof Date)
-				return DateFormat.getDateTimeInstance(DateFormat.SHORT,
-						DateFormat.SHORT).format((Date) val);
-			else if (val instanceof GregorianCalendar)
-				return DateFormat.getDateTimeInstance(DateFormat.SHORT,
-						DateFormat.SHORT).format(
-						((GregorianCalendar) val).getTime());
-			else
-				return val.toString();
-		return "";
+		if (val == null)
+			return "";
+		if (val.getClass().isEnum())
+			return Labels.getEnumText(val);
+		else if (val instanceof RootEntity)
+			return ((RootEntity) val).getName();
+		else if (val instanceof BaseDescriptor)
+			return ((BaseDescriptor) val).getName();
+		else if (val instanceof Date)
+			return DateFormat.getDateTimeInstance(DateFormat.SHORT,
+					DateFormat.SHORT).format((Date) val);
+		else if (val instanceof GregorianCalendar)
+			return DateFormat.getDateTimeInstance(DateFormat.SHORT,
+					DateFormat.SHORT).format(
+					((GregorianCalendar) val).getTime());
+		else
+			return val.toString();
 	}
 
 	private void initValue(Object bean, String property, Button button) {
@@ -468,14 +420,13 @@ public class DataBinding {
 			AbstractComboViewer<T> viewer) {
 		try {
 			Object val = Bean.getValue(bean, property);
-			if (val != null) {
-				if (BaseDescriptor.class.isAssignableFrom(viewer.getType())
-						&& !BaseDescriptor.class.isAssignableFrom(val
-								.getClass())) {
-					val = Descriptors.toDescriptor((RootEntity) val);
-				}
-				viewer.select((T) val);
+			if (val == null)
+				return;
+			if (BaseDescriptor.class.isAssignableFrom(viewer.getType())
+					&& !BaseDescriptor.class.isAssignableFrom(val.getClass())) {
+				val = Descriptors.toDescriptor((RootEntity) val);
 			}
+			viewer.select((T) val);
 		} catch (Exception e) {
 			error("Cannot set text value", e);
 		}
