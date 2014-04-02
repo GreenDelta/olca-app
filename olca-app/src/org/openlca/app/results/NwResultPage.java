@@ -1,5 +1,7 @@
 package org.openlca.app.results;
 
+import java.util.List;
+
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -27,8 +29,6 @@ import org.openlca.core.results.ImpactResult;
 import org.openlca.core.results.SimpleResultProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 /**
  * Shows normalisation and weighting results.
@@ -160,7 +160,8 @@ public class NwResultPage extends FormPage {
 			case 1:
 				return Numbers.format(item.getAmount());
 			case 2:
-				// TODO: get weighting score unit
+				if (setup.getNwSet() != null)
+					return setup.getNwSet().getWeightedScoreUnit();
 			default:
 				return null;
 			}
