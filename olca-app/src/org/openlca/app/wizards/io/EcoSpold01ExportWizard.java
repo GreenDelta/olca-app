@@ -1,12 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.app.wizards.io;
 
 import java.lang.reflect.InvocationTargetException;
@@ -36,9 +27,8 @@ import org.slf4j.LoggerFactory;
 public class EcoSpold01ExportWizard extends Wizard implements IExportWizard {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
-	private SelectObjectsExportPage exportPage;
+	private ModelSelectionPage page;
 	private final ModelType type;
-	private List<BaseDescriptor> components;
 
 	public EcoSpold01ExportWizard(ModelType type) {
 		super();
@@ -46,18 +36,11 @@ public class EcoSpold01ExportWizard extends Wizard implements IExportWizard {
 		this.type = type;
 	}
 
-	public final void setComponents(List<BaseDescriptor> components) {
-		this.components = components;
-	}
-
 	@Override
 	public void addPages() {
-		if (components != null)
-			exportPage = SelectObjectsExportPage.withoutSelection(type);
-		else
-			exportPage = SelectObjectsExportPage.withSelection(type);
-		exportPage.setSubDirectory("EcoSpold1");
-		addPage(exportPage);
+		page = new ModelSelectionPage(type);
+		page.setSubDirectory("EcoSpold1");
+		addPage(page);
 	}
 
 	@Override
@@ -69,9 +52,7 @@ public class EcoSpold01ExportWizard extends Wizard implements IExportWizard {
 	@Override
 	public boolean performFinish() {
 		boolean errorOccured = false;
-		if (components == null) {
-			components = exportPage.getSelectedModelComponents();
-		}
+		final List<BaseDescriptor> models = page.getSelectedModels();
 		try {
 			getContainer().run(true, true, new IRunnableWithProgress() {
 
@@ -79,16 +60,16 @@ public class EcoSpold01ExportWizard extends Wizard implements IExportWizard {
 				public void run(IProgressMonitor monitor)
 						throws InvocationTargetException, InterruptedException {
 					// set up
-					int objectAmount = components.size();
+					int objectAmount = models.size();
 					monitor.beginTask(Messages.EcoSpoldExporting,
 							objectAmount + 1);
 					monitor.subTask(Messages.EcoSpoldCreatingFolder);
 					EcoSpold01Outputter outputter = new EcoSpold01Outputter(
-							exportPage.getExportDestination());
+							page.getExportDestination());
 					monitor.worked(1);
 
 					try {
-						for (BaseDescriptor descriptor : components) {
+						for (BaseDescriptor descriptor : models) {
 							if (!monitor.isCanceled()) {
 								monitor.subTask(descriptor.getName());
 								if (type == ModelType.PROCESS) {
@@ -112,7 +93,6 @@ public class EcoSpold01ExportWizard extends Wizard implements IExportWizard {
 				}
 			});
 		} catch (final Exception e) {
-			// TODO: handle exception
 			log.error("Perform finish failed", e);
 			errorOccured = true;
 		}

@@ -10,9 +10,9 @@ import org.openlca.core.model.descriptors.BaseDescriptor;
 public class SelectObjectCheckState implements ICheckStateListener {
 
 	private CheckboxTreeViewer viewer;
-	private SelectObjectsExportPage page;
+	private ModelSelectionPage page;
 
-	public SelectObjectCheckState(SelectObjectsExportPage page,
+	public SelectObjectCheckState(ModelSelectionPage page,
 			CheckboxTreeViewer viewer) {
 		this.page = page;
 		this.viewer = viewer;
@@ -50,9 +50,9 @@ public class SelectObjectCheckState implements ICheckStateListener {
 	private void updateSelection(ModelElement element, boolean selected) {
 		BaseDescriptor component = element.getContent();
 		if (selected)
-			page.getSelectedModelComponents().add(component);
+			page.getSelectedModels().add(component);
 		else
-			page.getSelectedModelComponents().remove(component);
+			page.getSelectedModels().remove(component);
 	}
 
 	@Override

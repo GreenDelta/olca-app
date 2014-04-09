@@ -24,8 +24,7 @@ import org.openlca.io.ilcd.ILCDExport;
  */
 public class ILCDExportWizard extends Wizard implements IExportWizard {
 
-	private SelectObjectsExportPage exportPage;
-	private List<BaseDescriptor> components;
+	private ModelSelectionPage exportPage;
 	private final ModelType type;
 
 	public ILCDExportWizard(ModelType type) {
@@ -33,16 +32,9 @@ public class ILCDExportWizard extends Wizard implements IExportWizard {
 		this.type = type;
 	}
 
-	public void setComponents(List<BaseDescriptor> components) {
-		this.components = components;
-	}
-
 	@Override
 	public void addPages() {
-		if (components != null)
-			exportPage = SelectObjectsExportPage.withoutSelection(type);
-		else
-			exportPage = SelectObjectsExportPage.withSelection(type);
+		exportPage = new ModelSelectionPage(type);
 		exportPage.setSubDirectory("ILCD");
 		addPage(exportPage);
 	}
@@ -57,29 +49,16 @@ public class ILCDExportWizard extends Wizard implements IExportWizard {
 	public boolean performFinish() {
 		final IDatabase database = Database.get();
 		if (database == null)
-			// TODO: show error message
 			return false;
-		// test the export parameters
-		// the target directory
 		final File targetDir = exportPage.getExportDestination();
 		if (targetDir == null || !targetDir.isDirectory()) {
-			// TODO: show error message
 			return false;
 		}
+		final List<BaseDescriptor> components = exportPage.getSelectedModels();
 
-		// the components to be exported
-		final List<BaseDescriptor> components = this.components != null ? this.components
-				: exportPage.getSelectedModelComponents();
-		if (components == null || components.size() == 0) {
-			// TODO: show error message
-			return false;
-		}
-
-		// run the export
 		boolean errorOccured = false;
 		try {
 
-			// create the runnable
 			IRunnableWithProgress runnable = new IRunnableWithProgress() {
 
 				@Override

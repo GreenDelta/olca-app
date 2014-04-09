@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 public class EcoSpold2ExportWizard extends Wizard implements IExportWizard {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
-	private SelectObjectsExportPage exportPage;
+	private ModelSelectionPage page;
 
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
@@ -32,9 +32,8 @@ public class EcoSpold2ExportWizard extends Wizard implements IExportWizard {
 
 	@Override
 	public boolean performFinish() {
-		File targetDir = exportPage.getExportDestination();
-		List<BaseDescriptor> selection = exportPage
-				.getSelectedModelComponents();
+		File targetDir = page.getExportDestination();
+		List<BaseDescriptor> selection = page.getSelectedModels();
 		List<ProcessDescriptor> processes = new ArrayList<>();
 		for (BaseDescriptor descriptor : selection) {
 			if (descriptor instanceof ProcessDescriptor)
@@ -62,9 +61,9 @@ public class EcoSpold2ExportWizard extends Wizard implements IExportWizard {
 
 	@Override
 	public void addPages() {
-		exportPage = SelectObjectsExportPage.withSelection(ModelType.PROCESS);
-		exportPage.setSubDirectory("EcoSpold02");
-		addPage(exportPage);
+		page = new ModelSelectionPage(ModelType.PROCESS);
+		page.setSubDirectory("EcoSpold02");
+		addPage(page);
 	}
 
 }
