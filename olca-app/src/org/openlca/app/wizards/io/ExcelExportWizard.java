@@ -1,10 +1,5 @@
 package org.openlca.app.wizards.io;
 
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -18,6 +13,11 @@ import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.io.xls.process.output.ExcelExport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ExcelExportWizard extends Wizard implements IExportWizard {
 

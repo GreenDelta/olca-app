@@ -15,13 +15,13 @@ import org.openlca.app.db.Database;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.resources.ImageType;
-import org.openlca.app.util.CategoryPath;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessDocumentation;
 import org.openlca.core.model.Version;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.io.CategoryPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

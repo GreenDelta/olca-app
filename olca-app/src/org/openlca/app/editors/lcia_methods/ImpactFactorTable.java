@@ -22,7 +22,6 @@ import org.openlca.app.db.Database;
 import org.openlca.app.editors.ParameterPageListener;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Actions;
-import org.openlca.app.util.CategoryPath;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UncertaintyLabel;
@@ -39,6 +38,7 @@ import org.openlca.core.model.ImpactFactor;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.io.CategoryPath;
 import org.openlca.util.Strings;
 
 class ImpactFactorTable implements ParameterPageListener {

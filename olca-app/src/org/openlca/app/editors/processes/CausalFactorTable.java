@@ -17,7 +17,6 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
-import org.openlca.app.util.CategoryPath;
 import org.openlca.app.util.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
@@ -29,6 +28,7 @@ import org.openlca.core.model.AllocationFactor;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Process;
+import org.openlca.io.CategoryPath;
 import org.openlca.util.Strings;
 
 /**
