@@ -7,12 +7,12 @@ import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 
-public class SelectObjectCheckState implements ICheckStateListener {
+class ModelSelectionState implements ICheckStateListener {
 
 	private CheckboxTreeViewer viewer;
 	private ModelSelectionPage page;
 
-	public SelectObjectCheckState(ModelSelectionPage page,
+	public ModelSelectionState(ModelSelectionPage page,
 			CheckboxTreeViewer viewer) {
 		this.page = page;
 		this.viewer = viewer;
@@ -20,7 +20,6 @@ public class SelectObjectCheckState implements ICheckStateListener {
 
 	private void updateChildren(INavigationElement<?> element, boolean state) {
 		for (INavigationElement<?> child : element.getChildren()) {
-			// if (isVisible(child)) {
 			viewer.setGrayed(child, false);
 			viewer.setChecked(child, state);
 			if (child instanceof ModelElement) {

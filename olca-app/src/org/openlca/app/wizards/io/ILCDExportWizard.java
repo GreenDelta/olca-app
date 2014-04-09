@@ -35,7 +35,6 @@ public class ILCDExportWizard extends Wizard implements IExportWizard {
 	@Override
 	public void addPages() {
 		exportPage = new ModelSelectionPage(type);
-		exportPage.setSubDirectory("ILCD");
 		addPage(exportPage);
 	}
 

@@ -62,7 +62,6 @@ public class EcoSpold2ExportWizard extends Wizard implements IExportWizard {
 	@Override
 	public void addPages() {
 		page = new ModelSelectionPage(ModelType.PROCESS);
-		page.setSubDirectory("EcoSpold02");
 		addPage(page);
 	}
 

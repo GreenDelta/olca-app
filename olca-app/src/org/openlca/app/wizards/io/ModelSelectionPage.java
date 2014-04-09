@@ -7,7 +7,6 @@ import java.util.List;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.wizard.WizardPage;
-import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -43,21 +42,15 @@ class ModelSelectionPage extends WizardPage {
 		super(ModelSelectionPage.class.getCanonicalName());
 		this.type = type;
 		setPageComplete(false);
+		createTexts();
 	}
 
-	public void setSubDirectory(String directory) {
-		createTexts(directory);
-	}
-
-	private void createTexts(String subDirectory) {
+	private void createTexts() {
 		String typeName = getTypeName(type);
 		String title = Messages.bind(Messages.SelectObjectPage_Title, typeName);
 		setTitle(title);
 		String descr = Messages.SelectObjectPage_Description;
 		descr = Messages.bind(descr, typeName);
-		if (subDirectory != null)
-			descr += ". "
-					+ NLS.bind(Messages.DirectoryWillBeCreated, subDirectory);
 		setDescription(descr);
 	}
 
@@ -191,7 +184,7 @@ class ModelSelectionPage extends WizardPage {
 		viewer.setContentProvider(new NavigationContentProvider());
 		viewer.setLabelProvider(new NavigationLabelProvider());
 		viewer.setSorter(new NavigationSorter());
-		viewer.addCheckStateListener(new SelectObjectCheckState(this, viewer));
+		viewer.addCheckStateListener(new ModelSelectionState(this, viewer));
 		if (type != null)
 			viewer.setInput(Navigator.findElement(type));
 		else

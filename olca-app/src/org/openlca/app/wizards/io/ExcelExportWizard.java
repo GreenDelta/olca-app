@@ -1,7 +1,5 @@
 package org.openlca.app.wizards.io;
 
-import java.io.File;
-
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IExportWizard;
@@ -10,6 +8,8 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
 
 public class ExcelExportWizard extends Wizard implements IExportWizard {
 
