@@ -541,8 +541,16 @@
             name="EcoSpold">
       </category>
       <category
+            id="export.category.excel"
+            name="Excel">
+      </category>
+      <category
             id="export.category.ilcd"
             name="ILCD">
+      </category>
+      <category
+            id="export.category.ilcdnetwork"
+            name="%ilcd.net.export.category.name">
       </category>
       <wizard
             category="export.category.ecospold"
@@ -553,7 +561,14 @@
          <description>
             %wizard.description.0
          </description>
-      </wizard>
+       </wizard>
+       <wizard
+            category="export.category.excel"
+            class="org.openlca.app.wizards.io.ExcelExportWizard"
+            icon="icons/file_excel_16.png"
+            id="wizard.export.excel.process"
+            name="%wizard.name.0">
+       </wizard>
        <wizard
             category="export.category.ecospold"
             class="org.openlca.app.wizards.io.EcoSpold2ExportWizard"
@@ -623,10 +638,6 @@
             id="wizard.export.source"
             name="%Sources">
       </wizard>
-      <category
-            id="export.category.ilcdnetwork"
-            name="%ilcd.net.export.category.name">
-      </category>
       <wizard
             category="export.category.ilcdnetwork"
             class="org.openlca.app.ilcd_network.ExportWizard"
