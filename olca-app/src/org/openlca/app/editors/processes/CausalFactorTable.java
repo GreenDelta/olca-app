@@ -82,8 +82,8 @@ class CausalFactorTable {
 		Column newColumn = new Column(product);
 		Table table = viewer.getTable();
 		TableColumn tableColumn = new TableColumn(table, SWT.VIRTUAL);
-		tableColumn.setWidth(150);
 		tableColumn.setText(newColumn.getTitle());
+		tableColumn.setWidth(150);
 		Column[] newColumns = new Column[columns.length + 1];
 		System.arraycopy(columns, 0, newColumns, 0, columns.length);
 		newColumns[columns.length] = newColumn;
@@ -101,11 +101,20 @@ class CausalFactorTable {
 	public void render(Section section, FormToolkit toolkit) {
 		Composite composite = UI.sectionClient(section, toolkit);
 		UI.gridLayout(composite, 1);
-		viewer = Tables.createViewer(composite, getColumnTitles());
+		String[] columnTitles = getColumnTitles();
+		viewer = Tables.createViewer(composite, columnTitles);
 		viewer.setLabelProvider(new FactorLabel());
 		Tables.bindColumnWidths(viewer, 0.2, 0.1, 0.1, 0.1);
 		viewer.setInput(Processes.getNonOutputProducts(process));
 		createModifySupport();
+		Table table = viewer.getTable();
+		for (int i = 0; i < table.getColumnCount(); i++) {
+			if (i < 4)
+				continue;
+			TableColumn column = table.getColumn(i);
+			column.setWidth(80);
+			column.setToolTipText(columnTitles[i]);
+		}
 	}
 
 	private void createModifySupport() {
