@@ -507,6 +507,13 @@
          </description>
       </wizard>
        <wizard
+            category="import.category.file"
+            class="org.openlca.app.wizards.io.ExcelImportWizard"
+            icon="icons/file_excel_16.png"
+            id="wizard.import.excel"
+            name="Excel">
+      </wizard>
+       <wizard
             category="import.category.ilcdnetwork"
             class="org.openlca.app.ilcd_network.ImportWizard"
             icon="icons/network16.png"
