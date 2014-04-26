@@ -89,6 +89,7 @@ class AllocationPage extends FormPage {
 		createPhysicalEconomicSection(body);
 		createCausalSection(body);
 		form.reflow(true);
+		causalFactorTable.setInitialInput();
 	}
 
 	private void createDefaultCombo(Composite composite) {
@@ -148,6 +149,7 @@ class AllocationPage extends FormPage {
 
 	private void createCausalSection(Composite body) {
 		Section section = UI.section(body, toolkit, "Causal allocation");
+		UI.gridData(section, true, true);
 		causalFactorTable = new CausalFactorTable(editor);
 		causalFactorTable.render(section, toolkit);
 	}

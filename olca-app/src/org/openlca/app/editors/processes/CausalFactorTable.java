@@ -105,7 +105,6 @@ class CausalFactorTable {
 		viewer = Tables.createViewer(composite, columnTitles);
 		viewer.setLabelProvider(new FactorLabel());
 		Tables.bindColumnWidths(viewer, 0.2, 0.1, 0.1, 0.1);
-		viewer.setInput(Processes.getNonOutputProducts(process));
 		createModifySupport();
 		Table table = viewer.getTable();
 		for (int i = 0; i < table.getColumnCount(); i++) {
@@ -115,6 +114,10 @@ class CausalFactorTable {
 			column.setWidth(80);
 			column.setToolTipText(columnTitles[i]);
 		}
+	}
+
+	void setInitialInput() {
+		viewer.setInput(Processes.getNonOutputProducts(process));
 	}
 
 	private void createModifySupport() {

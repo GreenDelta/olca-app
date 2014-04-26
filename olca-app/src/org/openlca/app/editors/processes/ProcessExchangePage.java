@@ -26,12 +26,21 @@ class ProcessExchangePage extends ModelPage<Process> {
 				+ getModel().getName());
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
-		Section inputSection = UI.section(body, toolkit, Messages.Inputs);
-		ExchangeTable.forInputs(inputSection, toolkit, editor);
-		Section outputSection = UI.section(body, toolkit, Messages.Outputs);
-		ExchangeTable.forOutputs(outputSection, toolkit, editor);
+		ExchangeTable inputTable = createTable(body, true);
+		ExchangeTable outputTable = createTable(body, false);
 		body.setFocus();
 		form.reflow(true);
+		inputTable.setInitialInput();
+		outputTable.setInitialInput();
 	}
 
+	private ExchangeTable createTable(Composite body, boolean forInputs) {
+		String title = forInputs ? Messages.Inputs : Messages.Outputs;
+		Section section = UI.section(body, toolkit, title);
+		UI.gridData(section, true, true);
+		if (forInputs)
+			return ExchangeTable.forInputs(section, toolkit, editor);
+		else
+			return ExchangeTable.forOutputs(section, toolkit, editor);
+	}
 }

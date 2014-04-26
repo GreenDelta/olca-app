@@ -87,16 +87,18 @@ class ExchangeTable implements ParameterPageListener {
 
 	private TableViewer viewer;
 
-	public static void forInputs(Section section, FormToolkit toolkit,
+	public static ExchangeTable forInputs(Section section, FormToolkit toolkit,
 			ProcessEditor editor) {
 		ExchangeTable table = new ExchangeTable(true, editor);
 		table.render(section, toolkit);
+		return table;
 	}
 
-	public static void forOutputs(Section section, FormToolkit toolkit,
-			ProcessEditor editor) {
+	public static ExchangeTable forOutputs(Section section,
+			FormToolkit toolkit, ProcessEditor editor) {
 		ExchangeTable table = new ExchangeTable(false, editor);
 		table.render(section, toolkit);
+		return table;
 	}
 
 	private ExchangeTable(boolean forInputs, ProcessEditor editor) {
@@ -128,13 +130,11 @@ class ExchangeTable implements ParameterPageListener {
 		viewer.addFilter(new Filter());
 		bindActions(section, viewer);
 		bindDoubleClick(viewer);
-		Tables.bindColumnWidths(viewer, 0.2, 0.15, 0.1, 0.1, 0.1, 0.15, 0.1,
-				0.1);
+		Tables.bindColumnWidths(viewer, 0.2, 0.15, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1);
 		ExchangeTableSorters.register(viewer, labelProvider);
-		setInitialInput();
 	}
 
-	private void setInitialInput() {
+	void setInitialInput() {
 		Collections.sort(process.getExchanges(), new Comparator<Exchange>() {
 			@Override
 			public int compare(Exchange o1, Exchange o2) {
