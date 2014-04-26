@@ -1,5 +1,6 @@
 package org.openlca.app.db;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -14,7 +15,6 @@ import org.openlca.app.util.Editors;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.DatabaseContent;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.database.derby.DerbyDatabase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,15 +79,15 @@ public class DatabaseWizard extends Wizard {
 			monitor.beginTask(Messages.NewDatabase_Create,
 					IProgressMonitor.UNKNOWN);
 			try {
-				if (config instanceof DerbyConfiguration)
-					Database.register((DerbyConfiguration) config);
-				else if (config instanceof MySQLConfiguration)
-					Database.register((MySQLConfiguration) config);
 				Database.close();
+				if (config instanceof MySQLConfiguration)
+					Database.register((MySQLConfiguration) config);
+				else if (config instanceof DerbyConfiguration) {
+					Database.register((DerbyConfiguration) config);
+					extractDerbyTemplate();
+				}
 				IDatabase database = Database.activate(config);
-				fillContent(database);
-				App.getEventBus()
-						.post(new DatabaseCreatedEvent(Database.get()));
+				App.getEventBus().post(new DatabaseCreatedEvent(database));
 			} catch (Exception e) {
 				log.error("Create database failed", e);
 			}
@@ -95,12 +95,36 @@ public class DatabaseWizard extends Wizard {
 			monitor.done();
 		}
 
-		private void fillContent(IDatabase database) {
-			if (content == null || content == DatabaseContent.EMPTY)
+		private void extractDerbyTemplate() {
+			File dir = DatabaseFolder.getRootFolder(config.getName());
+			if (dir.exists()) {
+				log.error("could not create database {}; folder with name "
+						+ "already exists", config);
 				return;
-			DerbyDatabase db = (DerbyDatabase) database;
-			db.fill(content);
+			}
+			try {
+				DbTemplate template = getTemplate();
+				template.extract(dir);
+			} catch (Exception e) {
+				log.error("failed to extract database template", e);
+			}
 		}
+
+		private DbTemplate getTemplate() {
+			if (content == null)
+				return DbTemplate.EMPTY;
+			switch (content) {
+			case ALL_REF_DATA:
+				return DbTemplate.FLOWS;
+			case EMPTY:
+				return DbTemplate.EMPTY;
+			case UNITS:
+				return DbTemplate.UNITS;
+			default:
+				return DbTemplate.EMPTY;
+			}
+		}
+
 	}
 
 }
