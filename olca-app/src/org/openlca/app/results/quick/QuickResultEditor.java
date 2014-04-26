@@ -6,6 +6,7 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.openlca.app.db.Cache;
+import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.results.ContributionTablePage;
 import org.openlca.app.results.FlowImpactPage;
 import org.openlca.app.results.GroupPage;
@@ -69,8 +70,10 @@ public class QuickResultEditor extends FormEditor {
 				addPage(new FlowImpactPage(this, result));
 			addPage(new LocationContributionPage(this, result));
 			addPage(new GroupPage(this, result));
-			addPage(new ProcessTreemapPage(this, result));
-			addPage(new ContributionBubblePage(this, result));
+			if (FeatureFlag.EXPERIMENTAL_VISUALISATIONS.isEnabled()) {
+				addPage(new ProcessTreemapPage(this, result));
+				addPage(new ContributionBubblePage(this, result));
+			}
 		} catch (Exception e) {
 			log.error("failed to add pages", e);
 		}

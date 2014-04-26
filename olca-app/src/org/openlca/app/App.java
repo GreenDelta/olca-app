@@ -8,6 +8,7 @@ import org.eclipse.osgi.service.datalocation.Location;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.PartInitException;
 import org.openlca.app.editors.ModelEditorInput;
+import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.rcp.RcpActivator;
 import org.openlca.app.util.Editors;
 import org.openlca.core.math.IMatrixSolver;

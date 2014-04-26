@@ -10,7 +10,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.openlca.app.FeatureFlag;
 import org.openlca.app.Messages;
 import org.openlca.app.rcp.PlatformUtils;
 import org.openlca.app.rcp.RcpActivator;
@@ -66,10 +65,10 @@ public class UpdateCheckAndPrepareJob extends Job {
 
 	@Override
 	protected IStatus run(IProgressMonitor monitor) {
-		if (!FeatureFlag.AUTOMATIC_UPDATES.isEnabled()) {
-			log.trace("Automatic updates not enabled.");
-			return Status.OK_STATUS;
-		}
+		// if (!FeatureFlag.AUTOMATIC_UPDATES.isEnabled()) {
+		// log.trace("Automatic updates not enabled.");
+		// return Status.OK_STATUS;
+		// }
 		if (!isSelfUpdatingInstallation()) {
 			log.debug("No update checks, not a self-updating installation");
 			return Status.OK_STATUS;

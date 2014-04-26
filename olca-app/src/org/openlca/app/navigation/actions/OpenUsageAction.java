@@ -4,7 +4,6 @@ import java.util.EnumSet;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
-import org.openlca.app.FeatureFlag;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.UsageView;
@@ -51,8 +50,6 @@ public class OpenUsageAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean accept(INavigationElement<?> navigationElement) {
-		if (!FeatureFlag.USAGE_MENU.isEnabled())
-			return false;
 		if (!(navigationElement instanceof ModelElement))
 			return false;
 		ModelElement element = (ModelElement) navigationElement;

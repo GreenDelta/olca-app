@@ -5,6 +5,7 @@ import org.openlca.app.editors.IEditor;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.graphical.GraphicalEditorInput;
 import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
+import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.slf4j.Logger;
@@ -30,7 +31,8 @@ public class ProductSystemEditor extends ModelEditor<ProductSystem> implements
 			int gIdx = addPage(new ProductSystemGraphEditor(getModel(), this),
 					gInput);
 			setPageText(gIdx, Messages.ModelGraph);
-			addPage(new HtmlGraph(this, getModel()));
+			if (FeatureFlag.EXPERIMENTAL_VISUALISATIONS.isEnabled())
+				addPage(new HtmlGraph(this, getModel()));
 		} catch (Exception e) {
 			log.error("failed to add page", e);
 		}

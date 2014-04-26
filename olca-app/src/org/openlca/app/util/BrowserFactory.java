@@ -4,7 +4,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.App;
-import org.openlca.app.FeatureFlag;
+import org.openlca.app.preferencepages.FeatureFlag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

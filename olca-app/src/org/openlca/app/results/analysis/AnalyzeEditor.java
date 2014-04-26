@@ -5,9 +5,9 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
-import org.openlca.app.FeatureFlag;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
+import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.results.ContributionTablePage;
 import org.openlca.app.results.FlowImpactPage;
 import org.openlca.app.results.GroupPage;
@@ -17,6 +17,8 @@ import org.openlca.app.results.TotalFlowResultPage;
 import org.openlca.app.results.TotalImpactResultPage;
 import org.openlca.app.results.analysis.sankey.SankeyDiagram;
 import org.openlca.app.results.localization.LocalisedImpactPage;
+import org.openlca.app.results.viz.ContributionBubblePage;
+import org.openlca.app.results.viz.ProcessTreemapPage;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.results.FullResult;
@@ -78,8 +80,11 @@ public class AnalyzeEditor extends FormEditor {
 			addPage(new ContributionTreePage(this, result));
 			addPage(new GroupPage(this, result));
 			addPage(new LocationContributionPage(this, result));
-			if (FeatureFlag.SUNBURST_CHART.isEnabled())
+			if (FeatureFlag.EXPERIMENTAL_VISUALISATIONS.isEnabled()) {
+				addPage(new ProcessTreemapPage(this, result));
+				addPage(new ContributionBubblePage(this, result));
 				addPage(new SunBurstView(this, result));
+			}
 			if (FeatureFlag.LOCALISED_LCIA.isEnabled()
 					&& result.hasImpactResults())
 				addPage(new LocalisedImpactPage(this, result));
