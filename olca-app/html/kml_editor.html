@@ -115,12 +115,8 @@
           		$('#errorBox').modal('show'); 
           	}
           	
-          	function onSave() {
-          		if(!editLayer.features || editLayer.features.length == 0) {
-          			showError("Map is empty. Use the drawing tools to add a feature");
-          			return;
-          		}
-          		if(editLayer.features.length > 1) {
+          	function onSave() {          		
+          		if(editLayer.features && editLayer.features.length > 1) {
           			showError("There are more than one features on the map but only one is allowed");
           			return;
           		}
@@ -136,6 +132,9 @@
           	}
           	      	      
           	function getKML() {
+          		if(!editLayer.features || editLayer.features.length == 0) {
+          			return "";
+          		}
           		var format = new OpenLayers.Format.KML({
             		'maxDepth':10,
             		'internalProjection': map.baseLayer.projection,

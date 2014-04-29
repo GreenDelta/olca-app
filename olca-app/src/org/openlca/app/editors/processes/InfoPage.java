@@ -145,9 +145,10 @@ class InfoPage extends ModelPage<Process> {
 	private String getKmlDisplayText() {
 		Process process = getModel();
 		if (process.getKmz() != null)
-			return KmlUtil.getDisplayText(process.getKmz());
+			return KmlUtil.getDisplayText(process.getKmz()) + " (process)";
 		if (process.getLocation() != null)
-			return KmlUtil.getDisplayText(process.getLocation().getKmz());
+			return KmlUtil.getDisplayText(process.getLocation().getKmz())
+					+ " (location)";
 		else
 			return "none";
 	}
@@ -192,7 +193,10 @@ class InfoPage extends ModelPage<Process> {
 		@Override
 		public void contentSaved(String kml) {
 			Process process = getModel();
-			process.setKmz(KmlUtil.toKmz(kml));
+			if (kml == null || kml.trim().isEmpty())
+				process.setKmz(null);
+			else
+				process.setKmz(KmlUtil.toKmz(kml));
 			getEditor().setDirty(true);
 			kmlLink.setText(getKmlDisplayText());
 		}
