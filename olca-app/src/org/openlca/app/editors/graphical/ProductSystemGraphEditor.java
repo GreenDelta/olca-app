@@ -186,6 +186,10 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 		if (getGraphicalViewer() != null) {
 			getGraphicalViewer().deselectAll();
 			getGraphicalViewer().setContents(model);
+			for (ProcessNode node : model.getChildren()) {
+				node.expandLeft();
+				node.expandRight();
+			}
 		}
 	}
 
