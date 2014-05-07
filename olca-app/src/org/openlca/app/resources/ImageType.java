@@ -124,6 +124,8 @@ public enum ImageType {
 
 	HIDE_ICON("hide.gif"),
 
+	HOME_ICON("home_16.gif"),
+
 	ILCD_ICON("ilcd16.png"),
 
 	IMPORT_ICON("import_wiz_16x16.gif"),
