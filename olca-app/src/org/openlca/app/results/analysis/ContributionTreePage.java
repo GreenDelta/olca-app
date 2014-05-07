@@ -1,5 +1,7 @@
 package org.openlca.app.results.analysis;
 
+import java.util.Iterator;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.BaseLabelProvider;
@@ -52,6 +54,9 @@ public class ContributionTreePage extends FormPage {
 	public ContributionTreePage(AnalyzeEditor editor, FullResultProvider result) {
 		super(editor, "analysis.ContributionTreePage", "Contribution tree");
 		this.result = result;
+		Iterator<FlowDescriptor> it = result.getFlowDescriptors().iterator();
+		if (it.hasNext())
+			selection = it.next();
 	}
 
 	@Override
@@ -61,7 +66,8 @@ public class ContributionTreePage extends FormPage {
 		Composite body = UI.formBody(form, toolkit);
 		Composite composite = toolkit.createComposite(body);
 		UI.gridLayout(composite, 2);
-		FlowImpactSelection.on(result, Cache.getEntityCache())
+		FlowImpactSelection selector = FlowImpactSelection
+				.on(result, Cache.getEntityCache())
 				.withEventHandler(new SelectionHandler())
 				.create(composite, toolkit);
 		Composite treeContainer = toolkit.createComposite(body);
@@ -69,9 +75,9 @@ public class ContributionTreePage extends FormPage {
 		UI.gridData(treeContainer, true, true);
 		createTree(toolkit, treeContainer);
 		form.reflow(true);
-		initInput();
 		for (TreeColumn column : contributionTree.getTree().getColumns())
 			column.pack();
+		selector.selectWithEvent(selection);
 	}
 
 	private void createTree(FormToolkit toolkit, Composite treeContainer) {
@@ -98,16 +104,6 @@ public class ContributionTreePage extends FormPage {
 		contributionTree.getControl().setMenu(menu);
 	}
 
-	private void initInput() {
-		if (result.getResult().getFlowIndex().isEmpty())
-			return;
-		long flowId = result.getResult().getFlowIndex().getFlowAt(0);
-		FlowDescriptor flow = cache.get(FlowDescriptor.class, flowId);
-		selection = flow;
-		UpstreamTree tree = result.getTree(flow);
-		contributionTree.setInput(tree);
-	}
-
 	private class SelectionHandler implements EventHandler {
 
 		@Override
@@ -124,7 +120,6 @@ public class ContributionTreePage extends FormPage {
 			UpstreamTree tree = result.getTree(impactCategory);
 			contributionTree.setInput(tree);
 		}
-
 	}
 
 	private class ContributionContentProvider implements ITreeContentProvider {
@@ -275,7 +270,5 @@ public class ContributionTreePage extends FormPage {
 			if (process != null)
 				App.openEditor(process);
 		}
-
 	}
-
 }
