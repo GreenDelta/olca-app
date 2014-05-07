@@ -15,10 +15,10 @@ import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.UI;
+import org.openlca.core.math.DataStructures;
 import org.openlca.core.math.IMatrix;
 import org.openlca.core.math.IMatrixFactory;
 import org.openlca.core.math.MatrixRowSorter;
-import org.openlca.core.math.ProductSystems;
 import org.openlca.core.matrix.Inventory;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.io.MatrixImageExport;
@@ -100,7 +100,7 @@ public class ProductSystemActions extends EditorActionBarContributor {
 			App.run("Image export", new Runnable() {
 				public void run() {
 					try {
-						Inventory inventory = ProductSystems.createInventory(
+						Inventory inventory = DataStructures.createInventory(
 								system, Cache.getMatrixCache());
 						IMatrixFactory<?> factory = App.getSolver()
 								.getMatrixFactory();
