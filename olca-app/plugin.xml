@@ -112,7 +112,13 @@
             icon="icons/simulate_16.png"
             id="SimulationEditor"
             name="Simulation Editor">
-      </editor>      
+      </editor> 
+      <editor
+            id="RegionalizedResultEditor"
+            class="org.openlca.app.results.regionalized.RegionalizedResultEditor"
+            icon="icons/LCIA_obj.gif"
+            name="Regionalized LCIA result">
+      </editor>     
       <editor
             class="org.openlca.core.editors.result.CostResultEditor"
             default="false"

@@ -32,10 +32,6 @@ import org.openlca.core.model.descriptors.NwSetDescriptor;
  */
 class CalculationWizardPage extends WizardPage {
 
-	enum CalculationType {
-		QUICK, ANALYSIS, MONTE_CARLO
-	}
-
 	private AllocationMethodViewer allocationViewer;
 	private ImpactMethodViewer methodViewer;
 	private NwSetComboViewer nwViewer;
@@ -96,7 +92,8 @@ class CalculationWizardPage extends WizardPage {
 
 	private void createRadios(Composite parent) {
 		CalculationType[] types = { CalculationType.QUICK,
-				CalculationType.ANALYSIS, CalculationType.MONTE_CARLO };
+				CalculationType.ANALYSIS, CalculationType.REGIONALIZED,
+				CalculationType.MONTE_CARLO };
 		for (CalculationType type : types) {
 			Button radio = new Button(parent, SWT.RADIO);
 			radio.setSelection(type == this.type);
@@ -114,6 +111,8 @@ class CalculationWizardPage extends WizardPage {
 			return Messages.MonteCarloSimulation;
 		case QUICK:
 			return Messages.CalculationWizardPage_QuickResults;
+		case REGIONALIZED:
+			return "Regionalized LCIA";
 		default:
 			return "unknown";
 		}
@@ -137,6 +136,10 @@ class CalculationWizardPage extends WizardPage {
 		setUp.setNumberOfRuns(iterationCount);
 		setUp.getParameterRedefs().addAll(productSystem.getParameterRedefs());
 		return setUp;
+	}
+
+	public CalculationType getCalculationType() {
+		return type;
 	}
 
 	private int getSetupType() {
