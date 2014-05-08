@@ -48,6 +48,7 @@ public class RegionalizedResultEditor extends FormEditor {
 						result.getRegionalizedResult()));
 				addPage(new ContributionTablePage(this,
 						result.getRegionalizedResult()));
+				addPage(new KmlResultView(this, result));
 			}
 		} catch (Exception e) {
 			log.error("failed to add pages", e);

@@ -466,9 +466,6 @@
       <initializer
             class="org.openlca.app.rcp.update.UpdatePreference">
       </initializer>
-      <initializer
-            class="org.openlca.app.rcp.update.UpdatePreference">
-      </initializer>
    </extension>
    
    

@@ -26,6 +26,8 @@ public enum HtmlView {
 
 	KML_EDITOR("kml_editor.html"),
 
+	KML_RESULT_VIEW("kml_result_view.html"),
+
 	GRAPH_VIEW("graph_view.html");
 
 	private IHtmlResource resource;
