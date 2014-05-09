@@ -112,7 +112,6 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 		configurator = createGraphicalViewerConfigurator();
 		configurator.configureGraphicalViewer();
 		actionIds = configurator.configureActions();
-		configurator.configureZoomManager();
 		configurator.configureKeyHandler();
 		configurator.configureContextMenu();
 	}
@@ -120,6 +119,7 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 	@Override
 	protected void initializeGraphicalViewer() {
 		configurator.initializeGraphicalViewer();
+		configurator.configureZoomManager();
 	}
 
 	@Override

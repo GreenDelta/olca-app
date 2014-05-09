@@ -29,6 +29,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
+import org.openlca.app.editors.graphical.GraphicalViewerConfigurator;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.UI;
 
@@ -103,20 +104,20 @@ public class OpenMiniatureViewAction extends EditorAction {
 			toolkit.paintBordersFor(composite);
 			final Scale scale = new Scale(composite, SWT.NONE);
 			scale.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-			final double[] values = new double[] { 0.25, 0.5, 0.75, 1.0, 1.5,
-					2.0, 2.5, 3.0, 4.0, 5.0, 10.0, 20.0 };
-			scale.setIncrement(9);
+			final double[] values = GraphicalViewerConfigurator.ZOOM_LEVELS;
+			final int increment = 100 / values.length - 1;
+			scale.setIncrement(increment);
 			scale.setMinimum(0);
-			scale.setMaximum(99);
+			scale.setMaximum(100);
 			scale.addSelectionListener(new SelectionAdapter() {
 
 				@Override
 				public void widgetSelected(final SelectionEvent e) {
-					zoomManager.setZoom(values[scale.getSelection() / 9]);
+					zoomManager.setZoom(values[scale.getSelection() / increment]);
 				}
 
 			});
-			scale.setSelection(33);
+			scale.setSelection(increment * (values.length - 1) / 2);
 			Canvas canvas = new Canvas(composite, SWT.BORDER);
 			canvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 			lws = new LightweightSystem(canvas);
