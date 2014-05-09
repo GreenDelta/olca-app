@@ -48,6 +48,8 @@ class LayoutMenuAction extends Action {
 			minimalItem.addSelectionListener(new LayoutListener(
 					minimalLayoutAction));
 
+			new MenuItem(menu, SWT.SEPARATOR);
+
 			final MenuItem routedCheck = new MenuItem(menu, SWT.CHECK);
 			routedCheck.setText(Messages.Systems_Route);
 			routedCheck.setSelection(editor.isRouted());
