@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html data-ng-app="ReportPreviewPage">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+
+
+    <title>Report Preview</title>
+    <link href="../libs/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+
+    <style type="text/css">
+        .well {            
+            background-color: #ffffff;
+        }
+        .box-row1 {
+            padding-bottom: 0px;
+            padding-left: 20px;
+            padding-right: 20px;
+            padding-top: 20px;
+        }
+        .box-row2 {
+            padding: 20px;
+        }
+        .btn-primary {
+            width:225px;
+        }
+    </style>
+</head>
+
+<body>
+	<div id="contentDiv" data-ng-controller="Controller">
+
+		<div class="container-fluid" style="margin:20px">
+			
+			<div class="row">
+				<h1 class="col-sm-12 box-row1">{{report.title}}</h1>
+			</div>
+		
+			<div class="row">
+				<div data-ng-repeat="section in report.sections" class="col-sm-12 box-row1">
+					<h3>{{section.title}}</h3>
+					<p>
+						{{section.text}}
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+    <script src="../libs/jquery.min_1.9.0.js"></script>
+    <script src="../libs/angular.min.js"></script>
+    <script src="../libs/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../libs/olca.utils.js"></script>
+
+    <script type="text/javascript">
+        var app = angular.module('ReportPreviewPage', []);
+        var Controller = function ($scope) {        	
+        	$scope.report = {};
+        };
+        app.controller('Controller', Controller);
+        
+        function setData(report) {
+            var element = document.getElementById("contentDiv");
+            var scope = angular.element(element).scope();
+            scope.$apply(function () {
+                scope.report = report;
+            });
+        }
+    </script>
+
+</body>
+
+
+</html>

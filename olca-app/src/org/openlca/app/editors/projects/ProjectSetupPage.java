@@ -26,6 +26,9 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
+import org.openlca.app.editors.reports.ReportEditor;
+import org.openlca.app.editors.reports.Reports;
+import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Error;
@@ -125,18 +128,40 @@ class ProjectSetupPage extends ModelPage<Project> {
 		// TODO: add nw-sets
 		// UI.formLabel(client, toolkit, "Normalisation and Weighting");
 		// new NormalizationWeightingSetViewer(client);
-		createCalculationButton(composite);
+
+		createButtons(composite);
+	}
+
+	private void createButtons(Composite composite) {
+		toolkit.createLabel(composite, "");
+		Composite buttonContainer = toolkit.createComposite(composite);
+		UI.gridLayout(buttonContainer, 2).marginHeight = 5;
+		createCalculationButton(buttonContainer);
+		if (FeatureFlag.REPORTS.isEnabled())
+			createReportButton(buttonContainer);
 	}
 
 	private void createCalculationButton(Composite composite) {
-		toolkit.createLabel(composite, "");
 		Button button = toolkit.createButton(composite, Messages.Calculate,
 				SWT.NONE);
+		UI.gridData(button, false, false).widthHint = 100;
 		button.setImage(ImageType.CALCULATE_ICON.get());
 		button.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				Calculation.run(getModel());
+			}
+		});
+	}
+
+	private void createReportButton(Composite composite) {
+		Button button = toolkit.createButton(composite, "Report", SWT.NONE);
+		UI.gridData(button, false, false).widthHint = 100;
+		button.setImage(ImageType.PROJECT_ICON.get());
+		button.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				ReportEditor.open(Reports.create(project));
 			}
 		});
 	}

@@ -118,7 +118,19 @@
             class="org.openlca.app.results.regionalized.RegionalizedResultEditor"
             icon="icons/LCIA_obj.gif"
             name="Regionalized LCIA result">
-      </editor>     
+      </editor>   
+      <editor
+            id="ReportEditor"
+            class="org.openlca.app.editors.reports.ReportEditor"
+            icon="icons/project_obj.png"
+            name="Report Editor">
+      </editor>  
+       <editor
+            id="ReportViewer"
+            class="org.openlca.app.editors.reports.ReportViewer"
+            icon="icons/project_obj.png"
+            name="Report Viewer">
+      </editor>  
       <editor
             class="org.openlca.core.editors.result.CostResultEditor"
             default="false"
