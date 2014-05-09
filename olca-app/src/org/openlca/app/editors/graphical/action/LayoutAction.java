@@ -8,7 +8,6 @@ import org.openlca.app.editors.graphical.command.LayoutCommand;
 import org.openlca.app.editors.graphical.layout.GraphLayoutManager;
 import org.openlca.app.editors.graphical.layout.GraphLayoutType;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
-import org.openlca.app.resources.ImageType;
 
 public class LayoutAction extends Action {
 
@@ -21,12 +20,9 @@ public class LayoutAction extends Action {
 		switch (layoutType) {
 		case TREE_LAYOUT:
 			setId(ActionIds.LAYOUT_TREE);
-			setImageDescriptor(ImageType.TREE_LAYOUT_ICON.getDescriptor());
 			break;
 		case MINIMAL_TREE_LAYOUT:
 			setId(ActionIds.LAYOUT_MINIMAL_TREE);
-			setImageDescriptor(ImageType.MINIMAL_TREE_LAYOUT_ICON
-					.getDescriptor());
 			break;
 		}
 		this.layoutType = layoutType;
