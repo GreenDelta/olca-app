@@ -1,16 +1,16 @@
 package org.openlca.app.editors.reports;
 
-import org.openlca.core.model.Project;
-import org.openlca.core.model.RootEntity;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.openlca.core.model.Project;
+import org.openlca.core.model.RootEntity;
+
 public class Report extends RootEntity {
 
 	private String title;
-	private Project project;
+	private transient Project project;
 	private List<ReportSection> sections = new ArrayList<>();
 
 	@Override
@@ -21,7 +21,7 @@ public class Report extends RootEntity {
 		clone.setName(getName());
 		clone.setRefId(UUID.randomUUID().toString());
 		clone.setProject(getProject());
-		for(ReportSection section : getSections())
+		for (ReportSection section : getSections())
 			clone.getSections().add(section.clone());
 		return clone;
 	}
