@@ -22,7 +22,7 @@ import org.openlca.app.resources.ImageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SaveImageAction extends Action {
+class SaveImageAction extends Action {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 	private ProductSystemGraphEditor editor;

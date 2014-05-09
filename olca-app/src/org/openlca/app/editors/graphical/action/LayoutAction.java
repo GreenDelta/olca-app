@@ -9,7 +9,7 @@ import org.openlca.app.editors.graphical.layout.GraphLayoutManager;
 import org.openlca.app.editors.graphical.layout.GraphLayoutType;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 
-public class LayoutAction extends Action {
+class LayoutAction extends Action {
 
 	private ProductSystemNode model;
 	private GraphLayoutType layoutType;

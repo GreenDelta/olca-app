@@ -33,7 +33,7 @@ import org.openlca.app.editors.graphical.GraphicalViewerConfigurator;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.UI;
 
-public class OpenMiniatureViewAction extends EditorAction {
+class OpenMiniatureViewAction extends EditorAction {
 
 	private Control control;
 	private IFigure figure;

@@ -10,7 +10,7 @@ import org.openlca.app.editors.graphical.command.CommandFactory;
 import org.openlca.app.editors.graphical.command.MarkingCommand;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 
-public class MarkingAction extends EditorAction {
+class MarkingAction extends EditorAction {
 
 	static final int MARK = 1;
 	static final int UNMARK = 2;

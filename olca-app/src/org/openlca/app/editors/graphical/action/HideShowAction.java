@@ -10,7 +10,7 @@ import org.openlca.app.editors.graphical.command.CommandFactory;
 import org.openlca.app.editors.graphical.outline.ProcessTreeEditPart;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
-public class HideShowAction extends Action {
+class HideShowAction extends Action {
 
 	final static int SHOW = 1;
 	final static int HIDE = 2;

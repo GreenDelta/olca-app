@@ -11,15 +11,15 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
 
-public abstract class EditorAction extends Action implements UpdateAction {
+abstract class EditorAction extends Action implements UpdateAction {
 
 	private ProductSystemGraphEditor editor;
 
-	public EditorAction() {
+	EditorAction() {
 
 	}
 
-	public EditorAction(String text, int style) {
+	EditorAction(String text, int style) {
 		super(text, style);
 	}
 

@@ -17,7 +17,7 @@ import org.openlca.core.matrix.ProcessLinkSearchMap;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
 
-public class RemoveSupplyChainAction extends EditorAction {
+class RemoveSupplyChainAction extends EditorAction {
 
 	private ProcessNode node;
 

@@ -7,6 +7,7 @@ import org.eclipse.gef.EditDomain;
 import org.eclipse.gef.ui.parts.ContentOutlinePage;
 import org.eclipse.gef.ui.parts.SelectionSynchronizer;
 import org.eclipse.gef.ui.parts.TreeViewer;
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
@@ -21,13 +22,12 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.openlca.app.Messages;
 import org.openlca.app.editors.graphical.action.ActionFactory;
-import org.openlca.app.editors.graphical.action.HideShowAction;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 
 public class OutlinePage extends ContentOutlinePage {
 
-	private HideShowAction showAction;
-	private HideShowAction hideAction;
+	private Action showAction;
+	private Action hideAction;
 
 	private ProductSystemNode model;
 	private EditDomain editDomain;

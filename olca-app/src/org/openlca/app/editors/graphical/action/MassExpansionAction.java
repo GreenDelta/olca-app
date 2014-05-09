@@ -5,7 +5,7 @@ import org.openlca.app.Messages;
 import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
 import org.openlca.app.resources.ImageType;
 
-public class MassExpansionAction extends Action {
+class MassExpansionAction extends Action {
 
 	static final int EXPAND = 1;
 	static final int COLLAPSE = 2;

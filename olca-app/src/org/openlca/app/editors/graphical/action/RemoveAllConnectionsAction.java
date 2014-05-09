@@ -14,7 +14,7 @@ import org.openlca.core.matrix.ProcessLinkSearchMap;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
 
-public class RemoveAllConnectionsAction extends EditorAction {
+class RemoveAllConnectionsAction extends EditorAction {
 
 	private List<ProcessNode> processNodes = new ArrayList<>();
 

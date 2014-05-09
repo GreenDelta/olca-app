@@ -22,7 +22,7 @@ import org.openlca.core.model.descriptors.ProductSystemDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BuildSupplyChainAction extends Action {
+class BuildSupplyChainAction extends Action {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
