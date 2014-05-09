@@ -35,6 +35,7 @@ class MenuProvider extends ContextMenuProvider {
 		menu.add(new Separator());
 		addLayoutActions(menu);
 		menu.add(new Separator());
+		menu.add(registry.getAction(ActionIds.SHOW_OUTLINE));
 		menu.add(registry.getAction(ActionIds.OPEN_MINIATURE_VIEW));
 	}
 

@@ -141,4 +141,9 @@ public class ActionFactory {
 		return action;
 	}
 
+	public static ShowOutlineAction createShowOutlineAction() {
+		ShowOutlineAction action = new ShowOutlineAction();
+		return action;
+	}
+
 }

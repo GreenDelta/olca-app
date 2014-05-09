@@ -142,6 +142,7 @@ public class GraphicalViewerConfigurator {
 		actionRegistry.registerAction(ActionFactory.createOpenAction(editor));
 		actionRegistry.registerAction(ActionFactory
 				.createOpenMiniatureViewAction(editor));
+		actionRegistry.registerAction(ActionFactory.createShowOutlineAction());
 		actionRegistry.registerAction(new ZoomInAction(getZoomManager()));
 		actionRegistry.registerAction(new ZoomOutAction(getZoomManager()));
 

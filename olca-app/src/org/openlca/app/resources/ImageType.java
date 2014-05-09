@@ -202,6 +202,8 @@ public enum ImageType {
 
 	OK_CHECK_ICON("ok_check_16.png"),
 
+	OUTLINE_ICON("outline_co.gif"),
+
 	OUTPUT_ICON("output_16.png"),
 
 	PLUS_ICON("add_stat.gif"),
