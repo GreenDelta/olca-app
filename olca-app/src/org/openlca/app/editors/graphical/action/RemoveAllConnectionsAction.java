@@ -68,6 +68,11 @@ public class RemoveAllConnectionsAction extends EditorAction {
 	@Override
 	protected boolean accept(ISelection selection) {
 		processNodes = getMultiSelectionOfType(selection, ProcessNode.class);
-		return processNodes.size() > 0;
+		if (processNodes.size() == 0)
+			return false;
+		for (ProcessNode node : processNodes)
+			if (node.getLinks().size() > 0)
+				return true;
+		return false;
 	}
 }
