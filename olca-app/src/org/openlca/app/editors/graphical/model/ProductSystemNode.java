@@ -2,9 +2,11 @@ package org.openlca.app.editors.graphical.model;
 
 import java.util.List;
 
+import org.eclipse.gef.EditPart;
 import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
 import org.openlca.core.matrix.ProcessLinkSearchMap;
 import org.openlca.core.model.ProductSystem;
+import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 public class ProductSystemNode extends Node {
 
@@ -92,6 +94,25 @@ public class ProductSystemNode extends Node {
 
 	public void refreshChildren() {
 		((ProductSystemPart) getEditPart()).refreshChildren();
+	}
+
+	public void reveal(ProcessDescriptor descriptor) {
+		EditPart editorEditPart = findEditPartInEditor(descriptor);
+		if (editorEditPart != null)
+			getEditor().getGraphicalViewer().reveal(editorEditPart);
+	}
+
+	private EditPart findEditPartInEditor(ProcessDescriptor descriptor) {
+		if (descriptor == null)
+			return null;
+		for (Object childPart : getEditPart().getChildren()) {
+			if (!(childPart instanceof ProcessPart))
+				continue;
+			ProcessPart processPart = (ProcessPart) childPart;
+			if (descriptor.equals(processPart.getModel().getProcess()))
+				return processPart;
+		}
+		return null;
 	}
 
 }

@@ -46,16 +46,21 @@ public class ProcessEditPart extends AbstractGraphicalEditPart implements
 
 	@Override
 	protected IFigure createFigure() {
-		ProcessNode process = (ProcessNode) getModel();
+		ProcessNode process = getModel();
 		ProcessFigure figure = new ProcessFigure(process);
 		figure.addPropertyChangeListener(this);
 		return figure;
 	}
 
 	@Override
+	public ProcessNode getModel() {
+		return (ProcessNode) super.getModel();
+	}
+
+	@Override
 	protected List<ConnectionLink> getModelSourceConnections() {
 		List<ConnectionLink> sourceConnections = new ArrayList<>();
-		ProcessNode thisNode = ((ProcessNode) getModel());
+		ProcessNode thisNode = getModel();
 		for (ConnectionLink link : thisNode.getLinks()) {
 			if (link.getSourceNode().equals(thisNode))
 				sourceConnections.add(link);
@@ -66,7 +71,7 @@ public class ProcessEditPart extends AbstractGraphicalEditPart implements
 	@Override
 	protected List<ConnectionLink> getModelTargetConnections() {
 		List<ConnectionLink> targetConnections = new ArrayList<>();
-		for (ConnectionLink link : ((ProcessNode) getModel()).getLinks()) {
+		for (ConnectionLink link : getModel().getLinks()) {
 			if (link.getTargetNode().equals(getModel())) {
 				targetConnections.add(link);
 			}
@@ -98,18 +103,16 @@ public class ProcessEditPart extends AbstractGraphicalEditPart implements
 					if (o instanceof ProcessEditPart) {
 						ProcessEditPart part = (ProcessEditPart) o;
 						XYLayoutCommand command = new XYLayoutCommand();
-						command.setProcessNode((ProcessNode) part.getModel());
+						command.setProcessNode(part.getModel());
 
-						Rectangle bounds = ((ProcessNode) part.getModel())
-								.getFigure().getBounds().getCopy();
-						((ProcessNode) part.getModel()).getFigure()
-								.translateToAbsolute(bounds);
+						Rectangle bounds = (part.getModel()).getFigure()
+								.getBounds().getCopy();
+						part.getModel().getFigure().translateToAbsolute(bounds);
 						Rectangle moveResize = new Rectangle(
 								req.getMoveDelta(), req.getSizeDelta());
 						bounds.resize(moveResize.getSize());
 						bounds.translate(moveResize.getLocation());
-						((ProcessNode) part.getModel()).getFigure()
-								.translateToRelative(bounds);
+						part.getModel().getFigure().translateToRelative(bounds);
 						command.setConstraint(bounds);
 						if (commandChain == null) {
 							commandChain = command;
@@ -126,7 +129,7 @@ public class ProcessEditPart extends AbstractGraphicalEditPart implements
 
 	@Override
 	public List<Node> getModelChildren() {
-		return ((ProcessNode) getModel()).getChildrenArray();
+		return getModel().getChildrenArray();
 	}
 
 	@Override
@@ -176,7 +179,7 @@ public class ProcessEditPart extends AbstractGraphicalEditPart implements
 		if (!(linkObj instanceof ConnectionLink))
 			return;
 		ConnectionLink link = (ConnectionLink) linkObj;
-		ProcessDescriptor thisProcess = ((ProcessNode) getModel()).getProcess();
+		ProcessDescriptor thisProcess = getModel().getProcess();
 
 		ProcessDescriptor provider = cache.get(ProcessDescriptor.class, link
 				.getProcessLink().getProviderId());

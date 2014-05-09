@@ -9,6 +9,10 @@ import org.eclipse.gef.ui.parts.SelectionSynchronizer;
 import org.eclipse.gef.ui.parts.TreeViewer;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
@@ -81,8 +85,31 @@ public class OutlinePage extends ContentOutlinePage {
 		getViewer().setEditPartFactory(new AppTreeEditPartFactory(model));
 		getViewer().setContents(model.getProductSystem());
 		getViewer().setContextMenu(createContextMenu());
+		getViewer().addSelectionChangedListener(
+				new ISelectionChangedListener() {
+
+					@Override
+					public void selectionChanged(SelectionChangedEvent event) {
+						outlineSelectionChanged(event.getSelection());
+					}
+				});
 		selectionSynchronizer.addViewer(getViewer());
 		searchText.addModifyListener(new SearchModifyListener());
+	}
+
+	private void outlineSelectionChanged(ISelection selection) {
+		if (selection.isEmpty())
+			return;
+		if (!(selection instanceof IStructuredSelection))
+			return;
+		IStructuredSelection structured = (IStructuredSelection) selection;
+		if (structured.size() > 1)
+			return;
+		if (!(structured.getFirstElement() instanceof ProcessTreeEditPart))
+			return;
+		ProcessTreeEditPart element = (ProcessTreeEditPart) structured
+				.getFirstElement();
+		model.reveal(element.getModel());
 	}
 
 	@Override
