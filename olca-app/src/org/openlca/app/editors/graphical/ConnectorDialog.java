@@ -387,11 +387,11 @@ public class ConnectorDialog extends Dialog {
 			case 3:
 				if (process.isAlreadyExisting())
 					return ImageType.ACCEPT_ICON.get();
-				return ImageType.DENY_ICON.get();
+				return null; // just show a - (getColumnText)
 			case 4:
 				if (process.isAlreadyConnectedToExchange())
 					return ImageType.ACCEPT_ICON.get();
-				return ImageType.DENY_ICON.get();
+				return null; // just show a - (getColumnText)
 			default:
 				return null;
 			}
@@ -401,11 +401,20 @@ public class ConnectorDialog extends Dialog {
 		public String getColumnText(Object element, int columnIndex) {
 			if (!(element instanceof ConnectableProcess))
 				return null;
-			if (columnIndex != 0)
-				return null;
-
 			ConnectableProcess process = (ConnectableProcess) element;
-			return Labels.getDisplayName(process.getProcess());
+			switch (columnIndex) {
+			case 0:
+				return Labels.getDisplayName(process.getProcess());
+			case 3:
+				if (!process.isAlreadyExisting())
+					return "-";
+				return null; // show checkmark icon (getColumnImage)
+			case 4:
+				if (!process.isAlreadyConnectedToExchange())
+					return "-";
+				return null; // show checkmark icon (getColumnImage)
+			}
+			return null;
 		}
 
 		@Override
