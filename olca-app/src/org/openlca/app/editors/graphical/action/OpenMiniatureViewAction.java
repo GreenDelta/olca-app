@@ -105,7 +105,7 @@ class OpenMiniatureViewAction extends EditorAction {
 			final Scale scale = new Scale(composite, SWT.NONE);
 			scale.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 			final double[] values = GraphicalViewerConfigurator.ZOOM_LEVELS;
-			final int increment = 100 / values.length - 1;
+			final int increment = 100 / (values.length - 1);
 			scale.setIncrement(increment);
 			scale.setMinimum(0);
 			scale.setMaximum(100);
