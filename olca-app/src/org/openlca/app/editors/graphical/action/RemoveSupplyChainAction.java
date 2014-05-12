@@ -13,7 +13,7 @@ import org.openlca.app.Messages;
 import org.openlca.app.editors.graphical.model.ConnectionLink;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
-import org.openlca.core.matrix.ProcessLinkSearchMap;
+import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
 
@@ -41,7 +41,8 @@ class RemoveSupplyChainAction extends EditorAction {
 		ProductSystemNode systemNode = getEditor().getModel();
 		ProductSystem system = systemNode.getProductSystem();
 		ProcessNode node = systemNode.getProcessNode(processId);
-		ProcessLinkSearchMap linkSearch = systemNode.getLinkSearch();
+		MutableProcessLinkSearchMap linkSearch = new MutableProcessLinkSearchMap(
+				system.getProcessLinks());
 		List<ProcessLink> incomingLinks = linkSearch
 				.getIncomingLinks(processId);
 		for (ProcessLink link : incomingLinks) {
@@ -51,6 +52,7 @@ class RemoveSupplyChainAction extends EditorAction {
 					links.add(l);
 			}
 			system.getProcessLinks().remove(link);
+			linkSearch.remove(link);
 			if (linkSearch.getOutgoingLinks(link.getProviderId()).size() == 0) {
 				removeSupplyChain(link.getProviderId(), links, nodes);
 				system.getProcesses().remove(link.getProviderId());
