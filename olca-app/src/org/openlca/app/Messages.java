@@ -414,6 +414,8 @@ public class Messages extends NLS {
 	public static String RemoveProductSystemText;
 	public static String RemoveSourceText;
 	public static String RemoveUnitText;
+	public static String Report;
+	public static String ReportParameters;
 	public static String Reserve;
 	public static String Reserved;
 	public static String Reset;
@@ -589,6 +591,7 @@ public class Messages extends NLS {
 	public static String Usage;
 	public static String UsageOf;
 	public static String UsedInProcesses;
+	public static String UserFriendlyName;
 	public static String Username;
 	public static String Value;
 	public static String Version;

@@ -3,6 +3,7 @@ package org.openlca.app.editors.reports;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
@@ -11,6 +12,7 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
@@ -32,6 +34,9 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
+import org.openlca.app.viewers.table.modify.ModifySupport;
+import org.openlca.app.viewers.table.modify.TextCellModifier;
+import org.openlca.core.model.ParameterRedef;
 
 class ReportInfoPage extends FormPage {
 
@@ -129,14 +134,99 @@ class ReportInfoPage extends FormPage {
 		});
 	}
 
+	private void createReportParameters() {
+		for (ParameterRedef redef : report.getProject().getVariants().get(0)
+				.getParameterRedefs()) {
+			ReportParameter parameter = new ReportParameter();
+			parameter.setRedef(redef);
+			parameter.setValue(redef.getValue());
+			report.getParameters().add(parameter);
+		}
+	}
+
 	private void createParameternamesSection(Composite body) {
-		Section section = UI.section(body, toolkit, "Parameter mapping");
+		Section section = UI.section(body, toolkit, Messages.ReportParameters);
 		Composite composite = UI.sectionClient(section, toolkit);
 		UI.gridLayout(composite, 1);
-		String[] properties = {Messages.Parameter, Messages.Name};
+		String[] properties = { Messages.Parameter, Messages.Context,
+				Messages.UserFriendlyName, Messages.Value, Messages.Description };
 		TableViewer viewer = Tables.createViewer(composite, properties);
-		Tables.bindColumnWidths(viewer, 0.5, 0.5);
+		viewer.setLabelProvider(new ParametersTableLabel());
+		Tables.bindColumnWidths(viewer, 0.20, 0.20, 0.20, 0.20, 0.20);
 		UI.gridData(viewer.getTable(), true, true).minimumHeight = 150;
+		createReportParameters();
+		viewer.setInput(report.getParameters());
+		ModifySupport<ReportParameter> modifySupport = new ModifySupport<>(
+				viewer);
+		modifySupport.bind(Messages.UserFriendlyName, new NameModifier());
+		modifySupport.bind(Messages.Description, new DescriptionModifier());
+	}
+
+	private class ParametersTableLabel extends LabelProvider implements
+			ITableLabelProvider {
+
+		@Override
+		public Image getColumnImage(Object element, int columnIndex) {
+			if (columnIndex == 0)
+				return ImageType.PRODUCT_SYSTEM_ICON.get();
+			else
+				return null;
+		}
+
+		@Override
+		public String getColumnText(Object element, int col) {
+			if (!(element instanceof ReportParameter))
+				return null;
+			ReportParameter parameter = (ReportParameter) element;
+			switch (col) {
+			case 0:
+				return parameter.getRedef().getName();
+			case 1:
+				if (parameter.getRedef().getContextType() == null)
+					return "";
+				return parameter.getRedef().getContextType().name();
+			case 2:
+				return parameter.getUserFriendlyName();
+			case 3:
+				return Double.toString(parameter.getValue());
+			case 4:
+				return parameter.getDescription();
+			default:
+				return null;
+			}
+		}
+	}
+
+	private class NameModifier extends TextCellModifier<ReportParameter> {
+
+		@Override
+		protected String getText(ReportParameter parameter) {
+			return parameter.getUserFriendlyName();
+		}
+
+		@Override
+		protected void setText(ReportParameter parameter, String text) {
+			if (!text.equals(parameter.getUserFriendlyName())) {
+				parameter.setUserFriendlyName(text);
+				editor.setDirty(true);
+			}
+		}
+	}
+
+	private class DescriptionModifier extends TextCellModifier<ReportParameter> {
+
+		@Override
+		protected String getText(ReportParameter parameter) {
+			return parameter.getDescription();
+		}
+
+		@Override
+		protected void setText(ReportParameter parameter, String text) {
+			if (!text.equals(parameter.getDescription())) {
+				parameter.setDescription(text);
+				editor.setDirty(true);
+			}
+		}
 	}
 
 	private class ComponentLabel extends LabelProvider {
@@ -151,18 +241,18 @@ class ReportInfoPage extends FormPage {
 
 		private String getLabel(ReportComponent component) {
 			switch (component) {
-				case NONE:
-					return "None";
-				case PARAMETER_TABLE:
-					return "Parameter table";
-				case RESULT_CHART:
-					return "Result chart";
-				case RESULT_TABLE:
-					return "Result table";
-				case VARIANT_TABLE:
-					return "Project variant table";
-				default:
-					return "unknown";
+			case NONE:
+				return "None";
+			case PARAMETER_TABLE:
+				return "Parameter table";
+			case RESULT_CHART:
+				return "Result chart";
+			case RESULT_TABLE:
+				return "Result table";
+			case VARIANT_TABLE:
+				return "Project variant table";
+			default:
+				return "unknown";
 			}
 		}
 	}
