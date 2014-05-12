@@ -27,11 +27,11 @@ public class DeleteLinkCommand extends Command {
 	public void execute() {
 		ProductSystemNode systemNode = link.getSourceNode().getParent();
 		linkWasVisible = link.isVisible();
-		this.link.unlink();
 		systemNode.getProductSystem().getProcessLinks()
 				.remove(link.getProcessLink());
-		systemNode.getEditor().setDirty(true);
 		systemNode.reindexLinks();
+		this.link.unlink();
+		systemNode.getEditor().setDirty(true);
 	}
 
 	@Override
