@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Dimension;
+import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
@@ -56,8 +57,9 @@ public class ProcessNode extends Node {
 	@Override
 	protected void setFigure(IFigure figure) {
 		Dimension prefSize = figure.getPreferredSize(-1, -1);
-		xyLayoutConstraints = new Rectangle(0, 0, prefSize.width,
-				prefSize.height);
+		if (xyLayoutConstraints == null)
+			xyLayoutConstraints = new Rectangle(0, 0, prefSize.width,
+					prefSize.height);
 		super.setFigure(figure);
 	}
 
@@ -192,8 +194,11 @@ public class ProcessNode extends Node {
 	}
 
 	public void refresh() {
-		xyLayoutConstraints = new Rectangle(getProcessFigure().getLocation(),
-				getFigure().getPreferredSize());
+		Point location = getProcessFigure().getLocation();
+		if (xyLayoutConstraints != null)
+			location = xyLayoutConstraints.getLocation();
+		xyLayoutConstraints = new Rectangle(location, getFigure()
+				.getPreferredSize());
 		getProcessFigure().refresh();
 	}
 
