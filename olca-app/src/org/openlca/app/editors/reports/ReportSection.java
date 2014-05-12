@@ -5,6 +5,7 @@ public class ReportSection {
 	private int index;
 	private String title;
 	private String text;
+	private String componentId;
 
 	@Override
 	protected ReportSection clone() {
@@ -37,5 +38,13 @@ public class ReportSection {
 
 	public void setText(String text) {
 		this.text = text;
+	}
+
+	public String getComponentId() {
+		return componentId;
+	}
+
+	public void setComponentId(String componentId) {
+		this.componentId = componentId;
 	}
 }

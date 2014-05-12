@@ -1,5 +1,10 @@
 package org.openlca.app.editors.reports;
 
+import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -26,16 +31,19 @@ import org.openlca.app.util.Colors;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
+import org.openlca.app.util.Viewers;
 
 class ReportInfoPage extends FormPage {
 
 	private Report report;
+	private ReportEditor editor;
 	private DataBinding binding;
 
 	private FormToolkit toolkit;
 
 	public ReportInfoPage(ReportEditor editor, Report report) {
 		super(editor, "ReportInfoPage", "Report");
+		this.editor = editor;
 		this.report = report;
 		this.binding = new DataBinding(editor);
 	}
@@ -97,16 +105,65 @@ class ReportInfoPage extends FormPage {
 		});
 		Text descriptionText = UI.formMultiText(composite, toolkit, "Text");
 		binding.on(reportSection, "text", TextBindType.STRING, descriptionText);
+		createComponentViewer(reportSection, composite);
+	}
+
+	private void createComponentViewer(final ReportSection reportSection,
+			Composite composite) {
+		UI.formLabel(composite, toolkit, "Component");
+		ComboViewer viewer = new ComboViewer(composite);
+		UI.gridData(viewer.getControl(), false, false).widthHint = 250;
+		viewer.setContentProvider(ArrayContentProvider.getInstance());
+		viewer.setLabelProvider(new ComponentLabel());
+		viewer.setInput(ReportComponent.values());
+		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			@Override
+			public void selectionChanged(SelectionChangedEvent evt) {
+				ReportComponent component = Viewers.getFirst(evt.getSelection());
+				if (component == null || component == ReportComponent.NONE)
+					reportSection.setComponentId(null);
+				else
+					reportSection.setComponentId(component.getId());
+				editor.setDirty(true);
+			}
+		});
 	}
 
 	private void createParameternamesSection(Composite body) {
 		Section section = UI.section(body, toolkit, "Parameter mapping");
 		Composite composite = UI.sectionClient(section, toolkit);
 		UI.gridLayout(composite, 1);
-		String[] properties = { Messages.Parameter, Messages.Name };
+		String[] properties = {Messages.Parameter, Messages.Name};
 		TableViewer viewer = Tables.createViewer(composite, properties);
 		Tables.bindColumnWidths(viewer, 0.5, 0.5);
 		UI.gridData(viewer.getTable(), true, true).minimumHeight = 150;
 	}
 
+	private class ComponentLabel extends LabelProvider {
+
+		@Override
+		public String getText(Object element) {
+			if (!(element instanceof ReportComponent))
+				return null;
+			ReportComponent component = (ReportComponent) element;
+			return getLabel(component);
+		}
+
+		private String getLabel(ReportComponent component) {
+			switch (component) {
+				case NONE:
+					return "None";
+				case PARAMETER_TABLE:
+					return "Parameter table";
+				case RESULT_CHART:
+					return "Result chart";
+				case RESULT_TABLE:
+					return "Result table";
+				case VARIANT_TABLE:
+					return "Project variant table";
+				default:
+					return "unknown";
+			}
+		}
+	}
 }
