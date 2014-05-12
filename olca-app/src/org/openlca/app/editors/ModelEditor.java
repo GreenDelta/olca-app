@@ -106,6 +106,12 @@ public abstract class ModelEditor<T extends CategorizedEntity> extends
 		return (ModelEditorInput) super.getEditorInput();
 	}
 
+	public T reloadModel() {
+		model = dao.getForId(model.getId());
+		setDirty(false);
+		return model;
+	}
+
 	@Override
 	public void setDirty(boolean b) {
 		if (dirty != b) {

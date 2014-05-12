@@ -1,5 +1,6 @@
 package org.openlca.app.editors.graphical;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -10,6 +11,8 @@ import org.eclipse.gef.commands.CommandStack;
 import org.eclipse.gef.editparts.ScalableRootEditPart;
 import org.eclipse.gef.editparts.ZoomManager;
 import org.eclipse.gef.ui.parts.GraphicalEditor;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -25,6 +28,8 @@ import org.openlca.app.editors.graphical.model.TreeConnectionRouter;
 import org.openlca.app.editors.graphical.outline.OutlinePage;
 import org.openlca.app.editors.systems.ProductSystemEditor;
 import org.openlca.app.util.Labels;
+import org.openlca.app.util.Question;
+import org.openlca.app.util.UI;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
@@ -71,6 +76,26 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 				setPartName(Labels.getDisplayName(modelInput.getDescriptor()));
 		}
 		super.init(site, input);
+	}
+
+	public boolean promptSaveIfNecessary() throws Exception {
+		if (!isDirty())
+			return true;
+		String question = "In order to perform the requested task the product system must be safed. Do you want to proceed?";
+		if (Question.ask("Save", question)) {
+			new ProgressMonitorDialog(UI.shell()).run(false, false,
+					new IRunnableWithProgress() {
+
+						@Override
+						public void run(IProgressMonitor monitor)
+								throws InvocationTargetException,
+								InterruptedException {
+							systemEditor.doSave(monitor);
+						}
+					});
+			return true;
+		}
+		return false;
 	}
 
 	private ProductSystemNode createModel() {
@@ -125,6 +150,11 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 	@Override
 	public GraphicalViewer getGraphicalViewer() {
 		return super.getGraphicalViewer();
+	}
+
+	public void reload() {
+		system = systemEditor.reloadModel();
+		collapse();
 	}
 
 	@Override
