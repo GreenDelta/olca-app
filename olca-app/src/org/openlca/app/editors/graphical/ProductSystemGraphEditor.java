@@ -21,15 +21,19 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.openlca.app.db.Cache;
 import org.openlca.app.editors.graphical.layout.GraphLayoutType;
+import org.openlca.app.editors.graphical.layout.constraints.NodeLayoutStore;
 import org.openlca.app.editors.graphical.model.ConnectionLink;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.app.editors.graphical.model.TreeConnectionRouter;
 import org.openlca.app.editors.graphical.outline.OutlinePage;
 import org.openlca.app.editors.systems.ProductSystemEditor;
+import org.openlca.app.events.EventHandler;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
+import org.openlca.core.matrix.ProcessLinkSearchMap;
+import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
@@ -51,6 +55,13 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 			ProductSystemEditor editor) {
 		this.system = system;
 		this.systemEditor = editor;
+		editor.onSaved(new EventHandler() {
+
+			@Override
+			public void handleEvent() {
+				NodeLayoutStore.saveLayout(getModel());
+			}
+		});
 	}
 
 	public void setDirty(boolean value) {
@@ -114,11 +125,32 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 		return productSystemNode;
 	}
 
-	private ProcessNode createProcessNode(long id) {
+	public ProcessNode createProcessNode(long id) {
 		ProcessDescriptor descriptor = Cache.getEntityCache().get(
 				ProcessDescriptor.class, id);
 		ProcessNode processNode = new ProcessNode(descriptor);
 		return processNode;
+	}
+
+	public void createNecessaryLinks(ProcessNode node) {
+		ProcessLinkSearchMap linkSearch = node.getParent().getLinkSearch();
+		long id = node.getProcess().getId();
+		for (ProcessLink link : linkSearch.getLinks(id)) {
+			long processId = link.getRecipientId() == id ? link.getProviderId()
+					: link.getRecipientId();
+			ProcessNode newNode = model.getProcessNode(processId);
+			if (newNode != null) {
+				ProcessNode sourceNode = link.getRecipientId() == id ? newNode
+						: node;
+				ProcessNode targetNode = link.getRecipientId() == id ? node
+						: newNode;
+				ConnectionLink connectionLink = new ConnectionLink();
+				connectionLink.setSourceNode(sourceNode);
+				connectionLink.setTargetNode(targetNode);
+				connectionLink.setProcessLink(link);
+				connectionLink.link();
+			}
+		}
 	}
 
 	private GraphicalViewerConfigurator createGraphicalViewerConfigurator() {

@@ -48,6 +48,7 @@ public class ExpansionCommand extends Command {
 				node.collapseRight();
 		}
 		node.layout();
+		node.getParent().getEditor().setDirty(true);
 	}
 
 	@Override

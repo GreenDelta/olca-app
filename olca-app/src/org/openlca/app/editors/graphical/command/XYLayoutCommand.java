@@ -52,6 +52,7 @@ public class XYLayoutCommand extends Command {
 	public void execute() {
 		previousLayout = node.getXyLayoutConstraints();
 		node.setXyLayoutConstraints(newContraints());
+		node.getParent().getEditor().setDirty(true);
 	}
 
 	private Rectangle newContraints() {
@@ -79,6 +80,7 @@ public class XYLayoutCommand extends Command {
 	@Override
 	public void undo() {
 		node.setXyLayoutConstraints(previousLayout);
+		node.getParent().getEditor().setDirty(true);
 	}
 
 	void setLayout(Rectangle layout) {

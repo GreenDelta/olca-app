@@ -69,11 +69,15 @@ public class ConnectionLink {
 	public void link() {
 		sourceNode.add(this);
 		targetNode.add(this);
+		sourceNode.refresh();
+		targetNode.refresh();
 	}
 
 	public void unlink() {
 		sourceNode.remove(this);
 		targetNode.remove(this);
+		sourceNode.refresh();
+		targetNode.refresh();
 	}
 
 	@Override

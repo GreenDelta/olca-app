@@ -9,6 +9,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.layout.GraphLayoutManager;
+import org.openlca.app.editors.graphical.layout.constraints.NodeLayoutInfo;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.matrix.ProcessLinkSearchMap;
 import org.openlca.core.model.Exchange;
@@ -58,6 +59,20 @@ public class ProcessNode extends Node {
 		xyLayoutConstraints = new Rectangle(0, 0, prefSize.width,
 				prefSize.height);
 		super.setFigure(figure);
+	}
+
+	public void apply(NodeLayoutInfo layout) {
+		minimized = layout.isMinimized();
+		if (!minimized)
+			if (getChildren().isEmpty())
+				initializeExchangeNodes();
+		Dimension prefSize = getFigure().getPreferredSize(-1, -1);
+		xyLayoutConstraints = new Rectangle(layout.getLocation(), prefSize);
+		getProcessFigure().getLeftExpander().setExpanded(
+				layout.isExpandedLeft());
+		getProcessFigure().getRightExpander().setExpanded(
+				layout.isExpandedRight());
+		getProcessFigure().refresh();
 	}
 
 	public void add(ConnectionLink link) {

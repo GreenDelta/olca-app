@@ -49,10 +49,10 @@ public class CreateLinkCommand extends Command {
 		ProductSystem system = systemNode.getProductSystem();
 		processLink = getProcessLink();
 		system.getProcessLinks().add(processLink);
+		systemNode.reindexLinks();
 		link = getLink();
 		link.link();
 		systemNode.getEditor().setDirty(true);
-		systemNode.reindexLinks();
 	}
 
 	private ProcessLink getProcessLink() {

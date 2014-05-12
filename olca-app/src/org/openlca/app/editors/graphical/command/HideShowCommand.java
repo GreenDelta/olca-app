@@ -5,8 +5,6 @@ import org.openlca.app.Messages;
 import org.openlca.app.editors.graphical.model.ConnectionLink;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
-import org.openlca.core.matrix.ProcessLinkSearchMap;
-import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 public class HideShowCommand extends Command {
@@ -28,15 +26,16 @@ public class HideShowCommand extends Command {
 		if (type == SHOW && node == null) {
 			node = new ProcessNode(process);
 			model.add(node);
-			createNecessaryLinks(node);
+			model.getEditor().createNecessaryLinks(node);
 		}
 		if (type == HIDE)
 			for (ConnectionLink link : node.getLinks())
 				link.setVisible(false);
 		node.setVisible(type == SHOW);
 		if (type == SHOW)
-			showLinks(node);
+			node.showLinks();
 		node.layout();
+		node.getParent().getEditor().setDirty(true);
 	}
 
 	@Override
@@ -72,44 +71,6 @@ public class HideShowCommand extends Command {
 		switchType();
 		execute();
 		switchType();
-	}
-
-	private void createNecessaryLinks(ProcessNode node) {
-		ProcessLinkSearchMap linkSearch = node.getParent().getLinkSearch();
-		for (ProcessLink link : linkSearch.getLinks(process.getId())) {
-			long processId = link.getRecipientId() == process.getId() ? link
-					.getProviderId() : link.getRecipientId();
-			ProcessNode newNode = model.getProcessNode(processId);
-			if (newNode != null) {
-				ProcessNode sourceNode = link.getRecipientId() == process
-						.getId() ? newNode : node;
-				ProcessNode targetNode = link.getRecipientId() == process
-						.getId() ? node : newNode;
-				ConnectionLink connectionLink = new ConnectionLink();
-				connectionLink.setSourceNode(sourceNode);
-				connectionLink.setTargetNode(targetNode);
-				connectionLink.setProcessLink(link);
-				connectionLink.link();
-			}
-		}
-	}
-
-	private void showLinks(ProcessNode node) {
-		for (ConnectionLink link : node.getLinks()) {
-			ProcessNode otherNode = null;
-			boolean isSource = false;
-			if (link.getSourceNode().equals(node)) {
-				otherNode = link.getTargetNode();
-				isSource = true;
-			} else if (link.getTargetNode().equals(node))
-				otherNode = link.getSourceNode();
-
-			if (otherNode.isVisible())
-				if (isSource && otherNode.isExpandedLeft())
-					link.setVisible(true);
-				else if (!isSource && otherNode.isExpandedRight())
-					link.setVisible(true);
-		}
 	}
 
 	private void switchType() {

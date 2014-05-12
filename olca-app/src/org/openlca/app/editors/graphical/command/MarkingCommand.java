@@ -30,6 +30,7 @@ public class MarkingCommand extends Command {
 			node.unmark();
 		else
 			node.mark();
+		node.getParent().getEditor().setDirty(true);
 	}
 
 	@Override

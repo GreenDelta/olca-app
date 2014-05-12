@@ -46,6 +46,7 @@ public class LayoutCommand extends Command {
 				oldConstraints.put(node.getFigure(), node.getFigure()
 						.getBounds().getCopy());
 		layoutManager.layout(model.getFigure(), type);
+		model.getEditor().setDirty(true);
 	}
 
 	@Override
@@ -57,6 +58,7 @@ public class LayoutCommand extends Command {
 	@Override
 	public void redo() {
 		layoutManager.layout(model.getFigure(), type);
+		model.getEditor().setDirty(true);
 	}
 
 	@Override
@@ -64,6 +66,7 @@ public class LayoutCommand extends Command {
 		for (ProcessNode node : model.getChildren())
 			if (oldConstraints.get(node.getFigure()) != null)
 				node.setXyLayoutConstraints(oldConstraints.get(node.getFigure()));
+		model.getEditor().setDirty(true);
 	}
 
 	void setModel(ProductSystemNode model) {
