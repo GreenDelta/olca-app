@@ -41,6 +41,25 @@ class ProcessExpander extends ImageFigure {
 		return false;
 	}
 
+	boolean shouldBeExpanded() {
+		ProductSystemNode systemNode = node.getParent();
+		ProcessLinkSearchMap linkSearch = systemNode.getLinkSearch();
+		long processId = node.getProcess().getId();
+		List<ProcessLink> links = linkSearch.getLinks(processId);
+		if (links.size() == 0)
+			return false;
+		for (ProcessLink link : links) {
+			ProcessNode otherNode = null;
+			if (side == Side.LEFT && link.getRecipientId() == processId)
+				otherNode = systemNode.getProcessNode(link.getProviderId());
+			else if (side == Side.RIGHT && link.getProviderId() == processId)
+				otherNode = systemNode.getProcessNode(link.getRecipientId());
+			if (otherNode == null || !otherNode.isVisible())
+				return false;
+		}
+		return true;
+	}
+
 	void expand() {
 		createNecessaryNodes();
 		showLinksAndNodes();
@@ -88,12 +107,11 @@ class ProcessExpander extends ImageFigure {
 	private Map<Long, ProcessDescriptor> getLinkedProcesses(
 			List<ProcessLink> links) {
 		HashSet<Long> processIds = new HashSet<>();
-		for (ProcessLink link : links) {
+		for (ProcessLink link : links)
 			if (side == Side.LEFT)
 				processIds.add(link.getProviderId());
 			else
 				processIds.add(link.getRecipientId());
-		}
 		return Cache.getEntityCache().getAll(ProcessDescriptor.class,
 				processIds);
 	}
@@ -106,17 +124,19 @@ class ProcessExpander extends ImageFigure {
 					: link.getSourceNode();
 			ProcessNode otherNode = side == Side.LEFT ? link.getSourceNode()
 					: link.getTargetNode();
-			if (thisNode.equals(node)) {
-				link.unlink();
-				boolean hasOtherConnections = side == Side.LEFT ? otherNode
-						.hasOutgoingConnections() : otherNode
-						.hasIncomingConnections();
-				if (!hasOtherConnections) {
-					otherNode.collapseLeft();
-					otherNode.collapseRight();
-					node.getParent().remove(otherNode);
-				}
-			}
+			if (!thisNode.equals(node))
+				continue;
+			boolean canCollapseNext = false;
+			if (side == Side.LEFT)
+				canCollapseNext = otherNode.countOutgoingConnections() == 1;
+			else
+				canCollapseNext = otherNode.countIncomingConnections() == 1;
+			if (!canCollapseNext)
+				continue;
+			link.unlink();
+			otherNode.collapseLeft();
+			otherNode.collapseRight();
+			node.getParent().remove(otherNode);
 		}
 		expanded = false;
 		setImage(ImageType.PLUS_ICON.get());
@@ -156,10 +176,19 @@ class ProcessExpander extends ImageFigure {
 
 	void refresh() {
 		setVisible(shouldBeVisible());
+		expanded = shouldBeExpanded();
+		if (expanded)
+			setImage(ImageType.MINUS_ICON.get());
+		else
+			setImage(ImageType.PLUS_ICON.get());
 	}
 
 	boolean isExpanded() {
 		return expanded;
+	}
+
+	void setExpanded(boolean value) {
+		expanded = value;
 	}
 
 	enum Side {

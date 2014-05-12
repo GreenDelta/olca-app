@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
@@ -53,8 +54,9 @@ public class ProcessNode extends Node {
 
 	@Override
 	protected void setFigure(IFigure figure) {
-		xyLayoutConstraints = new Rectangle(0, 0, figure.getPreferredSize(-1,
-				-1).width, figure.getPreferredSize(-1, -1).height);
+		Dimension prefSize = figure.getPreferredSize(-1, -1);
+		xyLayoutConstraints = new Rectangle(0, 0, prefSize.width,
+				prefSize.height);
 		super.setFigure(figure);
 	}
 
@@ -96,6 +98,23 @@ public class ProcessNode extends Node {
 			if (!link.getSourceNode().getFigure().isVisible()
 					|| !link.getTargetNode().getFigure().isVisible())
 				link.unlink();
+	}
+
+	public void showLinks() {
+		for (ConnectionLink link : getLinks()) {
+			ProcessNode otherNode = null;
+			boolean isSource = false;
+			if (link.getSourceNode().equals(this)) {
+				otherNode = link.getTargetNode();
+				isSource = true;
+			} else if (link.getTargetNode().equals(this))
+				otherNode = link.getSourceNode();
+			if (otherNode.isVisible())
+				if (isSource && otherNode.isExpandedLeft())
+					link.setVisible(true);
+				else if (!isSource && otherNode.isExpandedRight())
+					link.setVisible(true);
+		}
 	}
 
 	@Override
@@ -157,7 +176,7 @@ public class ProcessNode extends Node {
 		add(new InputOutputNode(technologyArray));
 	}
 
-	private void refresh() {
+	public void refresh() {
 		xyLayoutConstraints = new Rectangle(getProcessFigure().getLocation(),
 				getFigure().getPreferredSize());
 		getProcessFigure().refresh();
@@ -239,18 +258,20 @@ public class ProcessNode extends Node {
 		return false;
 	}
 
-	public boolean hasOutgoingConnections() {
+	public int countOutgoingConnections() {
+		int count = 0;
 		for (ConnectionLink link : links)
 			if (link.getSourceNode().equals(this))
-				return true;
-		return false;
+				count++;
+		return count;
 	}
 
-	public boolean hasIncomingConnections() {
+	public int countIncomingConnections() {
+		int count = 0;
 		for (ConnectionLink link : links)
 			if (link.getTargetNode().equals(this))
-				return true;
-		return false;
+				count++;
+		return count;
 	}
 
 	public void collapseLeft() {
