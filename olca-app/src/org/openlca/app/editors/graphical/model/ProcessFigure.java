@@ -45,7 +45,7 @@ class ProcessFigure extends Figure {
 	static final int MINIMUM_WIDTH = 175;
 	static final int MARGIN_HEIGHT = 2;
 	static final int MARGIN_WIDTH = 4;
-	private static final int TEXT_HEIGHT = 21;
+	private static final int TEXT_HEIGHT = 16;
 	private static final Color LINE_COLOR = ColorConstants.gray;
 	private static final Color TEXT_COLOR = ColorConstants.black;
 
