@@ -39,6 +39,8 @@ import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.ParameterRedef;
+import org.openlca.core.model.ProductSystem;
+import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -69,6 +71,7 @@ class ReportInfoPage extends FormPage {
 		for (ReportSection reportSection : report.getSections())
 			createSection(reportSection, body);
 		createParameternamesSection(body);
+		createVariantsSection(body);
 		form.reflow(true);
 	}
 
@@ -164,8 +167,66 @@ class ReportInfoPage extends FormPage {
 		viewer.setInput(report.getParameters());
 		ModifySupport<ReportParameter> modifySupport = new ModifySupport<>(
 				viewer);
-		modifySupport.bind(Messages.UserFriendlyName, new NameModifier());
-		modifySupport.bind(Messages.Description, new DescriptionModifier());
+		modifySupport.bind(Messages.UserFriendlyName,
+				new ParameterNameModifier());
+		modifySupport.bind(Messages.Description,
+				new ParameterDescriptionModifier());
+	}
+
+	private void createReportVariants() {
+		for (ProjectVariant projectVariant : report.getProject().getVariants()) {
+			ReportVariant variant = new ReportVariant();
+			variant.setVariant(projectVariant);
+			report.getVariants().add(variant);
+		}
+	}
+
+	private void createVariantsSection(Composite body) {
+		Section section = UI.section(body, toolkit, "Variants");
+		Composite composite = UI.sectionClient(section, toolkit);
+		UI.gridLayout(composite, 1);
+		String[] properties = { Messages.Name, Messages.UserFriendlyName,
+				Messages.Description };
+		TableViewer viewer;
+		viewer = Tables.createViewer(composite, properties);
+		viewer.setLabelProvider(new VariantLabelProvider());
+		Tables.bindColumnWidths(viewer, 0.30, 0.30, 0.40);
+		UI.gridData(viewer.getTable(), true, true).minimumHeight = 150;
+		createReportVariants();
+		viewer.setInput(report.getVariants());
+		ModifySupport<ReportVariant> modifySupport = new ModifySupport<>(viewer);
+		modifySupport
+				.bind(Messages.UserFriendlyName, new VariantNameModifier());
+		modifySupport.bind(Messages.Description,
+				new VariantDescriptionModifier());
+	}
+
+	private class ComponentLabel extends LabelProvider {
+
+		@Override
+		public String getText(Object element) {
+			if (!(element instanceof ReportComponent))
+				return null;
+			ReportComponent component = (ReportComponent) element;
+			return getLabel(component);
+		}
+
+		private String getLabel(ReportComponent component) {
+			switch (component) {
+			case NONE:
+				return "None";
+			case PARAMETER_TABLE:
+				return "Parameter table";
+			case RESULT_CHART:
+				return "Result chart";
+			case RESULT_TABLE:
+				return "Result table";
+			case VARIANT_TABLE:
+				return "Project variant table";
+			default:
+				return "unknown";
+			}
+		}
 	}
 
 	private class ParametersTableLabel extends LabelProvider implements
@@ -224,7 +285,8 @@ class ReportInfoPage extends FormPage {
 
 	}
 
-	private class NameModifier extends TextCellModifier<ReportParameter> {
+	private class ParameterNameModifier extends
+			TextCellModifier<ReportParameter> {
 
 		@Override
 		protected String getText(ReportParameter parameter) {
@@ -242,7 +304,8 @@ class ReportInfoPage extends FormPage {
 		}
 	}
 
-	private class DescriptionModifier extends TextCellModifier<ReportParameter> {
+	private class ParameterDescriptionModifier extends
+			TextCellModifier<ReportParameter> {
 
 		@Override
 		protected String getText(ReportParameter parameter) {
@@ -260,31 +323,71 @@ class ReportInfoPage extends FormPage {
 		}
 	}
 
-	private class ComponentLabel extends LabelProvider {
+	private class VariantLabelProvider extends LabelProvider implements
+			ITableLabelProvider {
 
 		@Override
-		public String getText(Object element) {
-			if (!(element instanceof ReportComponent))
-				return null;
-			ReportComponent component = (ReportComponent) element;
-			return getLabel(component);
+		public Image getColumnImage(Object element, int columnIndex) {
+			return null;
 		}
 
-		private String getLabel(ReportComponent component) {
-			switch (component) {
-			case NONE:
-				return "None";
-			case PARAMETER_TABLE:
-				return "Parameter table";
-			case RESULT_CHART:
-				return "Result chart";
-			case RESULT_TABLE:
-				return "Result table";
-			case VARIANT_TABLE:
-				return "Project variant table";
+		@Override
+		public String getColumnText(Object element, int columnIndex) {
+			if (!(element instanceof ReportVariant))
+				return null;
+			ReportVariant variant = (ReportVariant) element;
+			ProductSystem system = variant.getVariant().getProductSystem();
+			if (system == null)
+				return null;
+			switch (columnIndex) {
+			case 0:
+				return variant.getVariant().getName();
+			case 1:
+				return variant.getUserFriendlyName();
+			case 2:
+				return variant.getDescription();
 			default:
-				return "unknown";
+				return null;
+			}
+		}
+
+	}
+
+	private class VariantNameModifier extends TextCellModifier<ReportVariant> {
+
+		@Override
+		protected String getText(ReportVariant variant) {
+			return variant.getUserFriendlyName();
+		}
+
+		@Override
+		protected void setText(ReportVariant variant, String text) {
+			if (text == null)
+				return;
+			if (!text.equals(variant.getUserFriendlyName())) {
+				variant.setUserFriendlyName(text);
+				editor.setDirty(true);
 			}
 		}
 	}
+
+	private class VariantDescriptionModifier extends
+			TextCellModifier<ReportVariant> {
+
+		@Override
+		protected String getText(ReportVariant variant) {
+			return variant.getDescription();
+		}
+
+		@Override
+		protected void setText(ReportVariant variant, String text) {
+			if (text == null)
+				return;
+			if (!text.equals(variant.getDescription())) {
+				variant.setDescription(text);
+				editor.setDirty(true);
+			}
+		}
+	}
+
 }
