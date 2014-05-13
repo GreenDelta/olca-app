@@ -103,6 +103,14 @@ public class ReportViewer extends FormEditor {
 			composite.setLayout(new FillLayout());
 			browser = UI.createBrowser(composite, this);
 
+			new BrowserFunction(browser, "saveReport") {
+				public Object function(Object[] arguments) {
+					Report report = new Gson().fromJson((String) arguments[0],
+							Report.class);
+					return super.function(arguments);
+				}
+			};
+
 			new BrowserFunction(browser, "calculate") {
 				@Override
 				public Object function(Object[] arguments) {

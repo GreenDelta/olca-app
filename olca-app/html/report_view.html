@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html data-ng-app="ReportPreviewPage">
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
@@ -74,7 +73,6 @@
 			<div class="row">
 				<h1 class="col-sm-12 box-row1">{{report.title}}</h1>
 			</div>
-		
 			<div class="row">
 				<div data-ng-repeat="section in report.sections" class="col-sm-12 box-row1">
 					<h3>{{section.title}}</h3>
@@ -82,6 +80,11 @@
 						{{section.text}}
 					</p>
 					<div class="include-navbar" data-ng-if="section.componentId == 'parameter_table'" data-ng-include src="'parameters-table.html'"></div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-12 box-row1">
+					<button class="pull-right btn btn-primary" data-ng-click="save(report)">Save</button>
 				</div>
 			</div>
 		</div>
@@ -133,7 +136,11 @@
 
 	    var Controller = function ($scope) {        	
         	$scope.report = {};
-        };
+            $scope.save = function (report) {
+            	alert();
+                saveReport(angular.toJson(report));        
+            }
+	    };
         app.controller('Controller', Controller);
         
         function setData(report) {
@@ -143,9 +150,7 @@
                 scope.report = report;
             });
         }
+        
     </script>
-
 </body>
-
-
 </html>
