@@ -26,6 +26,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
 import org.openlca.app.Messages;
+import org.openlca.app.db.Cache;
 import org.openlca.app.editors.DataBinding;
 import org.openlca.app.editors.DataBinding.TextBindType;
 import org.openlca.app.resources.ImageType;
@@ -36,13 +37,18 @@ import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
+import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.ParameterRedef;
+import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
+import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 class ReportInfoPage extends FormPage {
 
 	private Report report;
 	private ReportEditor editor;
 	private DataBinding binding;
+	private EntityCache cache = Cache.getEntityCache();
 
 	private FormToolkit toolkit;
 
@@ -182,9 +188,9 @@ class ReportInfoPage extends FormPage {
 			case 0:
 				return parameter.getRedef().getName();
 			case 1:
-				if (parameter.getRedef().getContextType() == null)
+				if (parameter.getRedef() == null)
 					return "";
-				return parameter.getRedef().getContextType().name();
+				return getModelColumnText(parameter.getRedef());
 			case 2:
 				return parameter.getUserFriendlyName();
 			case 3:
@@ -195,6 +201,27 @@ class ReportInfoPage extends FormPage {
 				return null;
 			}
 		}
+
+		private String getModelColumnText(ParameterRedef redef) {
+			BaseDescriptor model = getModel(redef);
+			if (model == null)
+				return "global";
+			else
+				return Labels.getDisplayName(model);
+		}
+
+		private BaseDescriptor getModel(ParameterRedef redef) {
+			if (redef == null || redef.getContextId() == null)
+				return null;
+			long modelId = redef.getContextId();
+			BaseDescriptor model = cache.get(ImpactMethodDescriptor.class,
+					modelId);
+			if (model != null)
+				return model;
+			else
+				return cache.get(ProcessDescriptor.class, modelId);
+		}
+
 	}
 
 	private class NameModifier extends TextCellModifier<ReportParameter> {
@@ -206,6 +233,8 @@ class ReportInfoPage extends FormPage {
 
 		@Override
 		protected void setText(ReportParameter parameter, String text) {
+			if (text == null)
+				return;
 			if (!text.equals(parameter.getUserFriendlyName())) {
 				parameter.setUserFriendlyName(text);
 				editor.setDirty(true);
@@ -222,6 +251,8 @@ class ReportInfoPage extends FormPage {
 
 		@Override
 		protected void setText(ReportParameter parameter, String text) {
+			if (text == null)
+				return;
 			if (!text.equals(parameter.getDescription())) {
 				parameter.setDescription(text);
 				editor.setDirty(true);

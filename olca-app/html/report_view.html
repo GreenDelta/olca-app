@@ -28,6 +28,9 @@
         .popover {
         	min-width: 200px;
         	text-align: center;
+        }        
+        .popOverControl:hover {
+        	cursor: pointer;
         }
     </style>
 </head>
@@ -67,7 +70,7 @@
 						<popover>
 						<div class="input-group">
 							<input type="text" class="form-control" placeholder="Enter value" data-ng-model="parameter.redef.name" readonly>
-							<span class="input-group-addon popoverControl" data-toggle="popover" data-content="{{parameter.description}}"><span class="glyphicon glyphicon-comment"></span></span>
+							<span class="input-group-addon"><span class="popoverControl glyphicon glyphicon-comment" data-toggle="popover" data-content="{{parameter.description}}"></span></span>
 						</div>
 					</td>
 					<td><input type="text" class="form-control" placeholder="Enter value" data-ng-model="parameter.value"></td>

@@ -5,9 +5,9 @@ import org.openlca.core.model.ParameterRedef;
 public class ReportParameter {
 
 	private ParameterRedef redef;
-	private String userFriendlyName;
+	private String userFriendlyName = "";
 	private double value;
-	private String description;
+	private String description = "";
 
 	public ParameterRedef getRedef() {
 		return redef;
