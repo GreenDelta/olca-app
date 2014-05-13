@@ -29,9 +29,42 @@
         	min-width: 200px;
         	text-align: center;
         }        
-        .popOverControl:hover {
+        .popoverControl:hover {
+        	color: #AAA;
         	cursor: pointer;
+        	cursor: hand;
         }
+		.table tr {
+          border: none !important;
+		  vertical-align: middle !important;
+		}
+		.table th {
+			font-weight: normal;
+			font-size: 18px;
+		}
+		.table td {
+          border: none !important;
+		  vertical-align: middle !important;
+		}
+		.table-hover {
+		  background: #FFF;
+		  color: #0D0A52;
+		  margin-top: 20px;
+		  border-radius: 8px !important; 
+		  border-collapse: collapse !important;
+		}
+		.table-hover tr > th {
+		  border-radius: 10px 10px 0 0!important;
+		}
+		.table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+		  background-color: #F3F6FC;
+		}
+		.table-hover tbody tr:last-child:hover td:first-child {
+		  border-radius: 0 0 0 8px;
+		}
+		.table-hover tbody tr:last-child:hover td:last-child {
+		  border-radius: 0 0 8px 0;
+		}
     </style>
 </head>
 
@@ -69,7 +102,7 @@
 					<td>
 						<popover>
 						<div class="input-group">
-							<input type="text" class="form-control" placeholder="Enter value" data-ng-model="parameter.redef.name" readonly>
+							<input type="text" class="form-control" placeholder="Enter value" data-ng-model="parameter.userFriendlyName" readonly>
 							<span class="input-group-addon"><span class="popoverControl glyphicon glyphicon-comment" data-toggle="popover" data-content="{{parameter.description}}"></span></span>
 						</div>
 					</td>
@@ -78,7 +111,7 @@
                 </tbody>
 			</table>
 		</div>
-		<button class="pull-right btn btn-primary">Calculate</button>
+		<button class="pull-right btn btn-primary" onclick="calculate()">Calculate</button>
 	</script>
 
     <script type="text/javascript">

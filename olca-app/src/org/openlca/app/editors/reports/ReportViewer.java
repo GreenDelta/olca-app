@@ -103,9 +103,10 @@ public class ReportViewer extends FormEditor {
 			composite.setLayout(new FillLayout());
 			browser = UI.createBrowser(composite, this);
 
-			new BrowserFunction(browser, "saveReport") {
+			new BrowserFunction(browser, "calculate") {
 				@Override
 				public Object function(Object[] arguments) {
+					Calculation.run(report.getProject());
 					return super.function(arguments);
 				}
 			};
