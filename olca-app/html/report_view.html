@@ -132,10 +132,9 @@
 				<tr data-ng-repeat="variant in report.variants | orderBy:'section.name':true">
 					<td>
 						<popover>
-						<div class="input-group">
-							<input type="text" class="form-control" placeholder="Enter value" data-ng-model="variants.userFriendlyName" readonly>
-							<span class="input-group-addon"><span class="popoverControl glyphicon glyphicon-comment" data-toggle="popover" data-content="{{variants.description}}"></span></span>
-						</div>
+						<popover>
+						<button class="popoverButton btn btn-default" data-toggle="popover" data-content="{{variant.description}}"><span class="glyphicon glyphicon-comment"></span></button>
+						{{variant.userFriendlyName}}
 					</td>
 					<!-- <td><input type="text" class="form-control" placeholder="Enter value" data-ng-model="variants.userFriendlyName"></td> -->
 				</tr>

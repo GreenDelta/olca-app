@@ -39,7 +39,6 @@ import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.ParameterRedef;
-import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
@@ -179,7 +178,7 @@ class ReportInfoPage extends FormPage {
 		report.getVariants().clear();
 		for (ProjectVariant projectVariant : report.getProject().getVariants()) {
 			ReportVariant variant = new ReportVariant();
-			variant.setVariant(projectVariant);
+			variant.setName(projectVariant.getName());
 			report.getVariants().add(variant);
 		}
 	}
@@ -339,12 +338,9 @@ class ReportInfoPage extends FormPage {
 			if (!(element instanceof ReportVariant))
 				return null;
 			ReportVariant variant = (ReportVariant) element;
-			ProductSystem system = variant.getVariant().getProductSystem();
-			if (system == null)
-				return null;
 			switch (columnIndex) {
 			case 0:
-				return variant.getVariant().getName();
+				return variant.getName();
 			case 1:
 				return variant.getUserFriendlyName();
 			case 2:

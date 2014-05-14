@@ -1,19 +1,18 @@
 package org.openlca.app.editors.reports;
 
-import org.openlca.core.model.ProjectVariant;
 
 public class ReportVariant {
 
-	private ProjectVariant variant;
+	private String name;
 	private String userFriendlyName = "";
 	private String description = "";
 
-	public ProjectVariant getVariant() {
-		return variant;
+	public String getName() {
+		return name;
 	}
 
-	public void setVariant(ProjectVariant variant) {
-		this.variant = variant;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public String getUserFriendlyName() {
