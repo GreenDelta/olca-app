@@ -144,11 +144,13 @@ class ReportInfoPage extends FormPage {
 	}
 
 	private void createReportParameters() {
+		report.getParameters().clear();
 		for (ParameterRedef redef : report.getProject().getVariants().get(0)
 				.getParameterRedefs()) {
 			ReportParameter parameter = new ReportParameter();
 			parameter.setRedef(redef);
 			parameter.setValue(redef.getValue());
+			parameter.setDefaultValue(redef.getValue());
 			report.getParameters().add(parameter);
 		}
 	}
@@ -174,6 +176,7 @@ class ReportInfoPage extends FormPage {
 	}
 
 	private void createReportVariants() {
+		report.getVariants().clear();
 		for (ProjectVariant projectVariant : report.getProject().getVariants()) {
 			ReportVariant variant = new ReportVariant();
 			variant.setVariant(projectVariant);

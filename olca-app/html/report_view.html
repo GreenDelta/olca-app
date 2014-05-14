@@ -64,6 +64,9 @@
 		.table-hover tbody tr:last-child:hover td:last-child {
 		  border-radius: 0 0 8px 0;
 		}
+		#restoreDefaultParametersButton {
+			margin-right: 25px;
+		}
     </style>
 </head>
 
@@ -80,6 +83,7 @@
 						{{section.text}}
 					</p>
 					<div class="include-navbar" data-ng-if="section.componentId == 'parameter_table'" data-ng-include src="'parameters-table.html'"></div>
+					<div class="include-navbar" data-ng-if="section.componentId == 'variant_table'" data-ng-include src="'variants-table.html'"></div>
 				</div>
 			</div>
 			<div class="row">
@@ -115,6 +119,28 @@
 			</table>
 		</div>
 		<button class="pull-right btn btn-primary" onclick="calculate()">Calculate</button>
+		<button id="restoreDefaultParametersButton" class="pull-right btn btn-primary" data-ng-click="restoreReportParameters(report)">Restore Defaults</button>
+	</script>
+
+
+	<script type="text/ng-template" id="variants-table.html">
+		<div class="table-responsive">
+			<table class="table table-hover">
+				<thead><tr><th>Variant</th></tr></thead>
+				<tbody>
+				<tr data-ng-repeat="variant in report.variants | orderBy:'section.name':true">
+					<td>
+						<popover>
+						<div class="input-group">
+							<input type="text" class="form-control" placeholder="Enter value" data-ng-model="variants.userFriendlyName" readonly>
+							<span class="input-group-addon"><span class="popoverControl glyphicon glyphicon-comment" data-toggle="popover" data-content="{{variants.description}}"></span></span>
+						</div>
+					</td>
+					<!-- <td><input type="text" class="form-control" placeholder="Enter value" data-ng-model="variants.userFriendlyName"></td> -->
+				</tr>
+                </tbody>
+			</table>
+		</div>
 	</script>
 
     <script type="text/javascript">
@@ -137,8 +163,15 @@
 	    var Controller = function ($scope) {        	
         	$scope.report = {};
             $scope.save = function (report) {
-            	alert();
                 saveReport(angular.toJson(report));        
+            }
+            $scope.restoreReportParameters = function (report) {
+            	angular.forEach(report.parameters, function(parameter, key){
+            		angular.forEach(parameter, function(value, key){
+            			if (key == 'value')
+            				parameter.value = parameter.defaultValue;
+            		    });
+           	     });      	
             }
 	    };
         app.controller('Controller', Controller);

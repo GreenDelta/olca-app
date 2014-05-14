@@ -5,9 +5,10 @@ import org.openlca.core.model.ParameterRedef;
 public class ReportParameter {
 
 	private ParameterRedef redef;
-	private String userFriendlyName = "";
+	private String userFriendlyName;
 	private double value;
-	private String description = "";
+	private double defaultValue;
+	private String description;
 
 	public ParameterRedef getRedef() {
 		return redef;
@@ -31,6 +32,14 @@ public class ReportParameter {
 
 	public void setValue(double value) {
 		this.value = value;
+	}
+
+	public double getDefaultValue() {
+		return defaultValue;
+	}
+
+	public void setDefaultValue(double defaultValue) {
+		this.defaultValue = defaultValue;
 	}
 
 	public String getDescription() {
