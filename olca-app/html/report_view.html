@@ -27,9 +27,11 @@
         .popover {
         	min-width: 200px;
         	text-align: center;
-        }        
-        .popoverControl:hover {
-        	color: #AAA;
+        }
+        .popoverButton {
+           	margin-right: 10px;
+        }
+        .popoverButton:hover {
         	cursor: pointer;
         	cursor: hand;
         }
@@ -84,6 +86,7 @@
 					</p>
 					<div class="include-navbar" data-ng-if="section.componentId == 'parameter_table'" data-ng-include src="'parameters-table.html'"></div>
 					<div class="include-navbar" data-ng-if="section.componentId == 'variant_table'" data-ng-include src="'variants-table.html'"></div>
+					<div class="include-navbar" data-ng-if="section.componentId == 'parameter_table'" data-ng-include src="'result-charts.html'"></div>
 				</div>
 			</div>
 			<div class="row">
@@ -98,6 +101,7 @@
     <script src="../libs/angular.min.js"></script>
     <script src="../libs/ui-bootstrap-tpls-0.11.0.min.js"></script>
     <script src="../libs/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../libs/d3.v3.min.js"></script>
     <script src="../libs/olca.utils.js"></script>
 
 	<script type="text/ng-template" id="parameters-table.html">
@@ -108,12 +112,10 @@
 				<tr data-ng-repeat="parameter in report.parameters | orderBy:'section.name':true">
 					<td>
 						<popover>
-						<div class="input-group">
-							<input type="text" class="form-control" placeholder="Enter value" data-ng-model="parameter.userFriendlyName" readonly>
-							<span class="input-group-addon"><span class="popoverControl glyphicon glyphicon-comment" data-toggle="popover" data-content="{{parameter.description}}"></span></span>
-						</div>
+						<button class="popoverButton btn btn-default" data-toggle="popover" data-content="{{parameter.description}}"><span class="glyphicon glyphicon-comment"></span></button>
+						{{parameter.userFriendlyName}}
 					</td>
-					<td><input type="text" class="form-control" placeholder="Enter value" data-ng-model="parameter.value"></td>
+					<td><input type="number" class="form-control" placeholder="Enter value" data-ng-model="parameter.value"></td>
 				</tr>
                 </tbody>
 			</table>
@@ -121,7 +123,6 @@
 		<button class="pull-right btn btn-primary" onclick="calculate()">Calculate</button>
 		<button id="restoreDefaultParametersButton" class="pull-right btn btn-primary" data-ng-click="restoreReportParameters(report)">Restore Defaults</button>
 	</script>
-
 
 	<script type="text/ng-template" id="variants-table.html">
 		<div class="table-responsive">
@@ -143,14 +144,150 @@
 		</div>
 	</script>
 
+	<script type="text/ng-template" id="result-charts.html">
+	</script>
+
+    <script type="text/javascript">
+        var w = 200,
+            h = 500,
+            p = [20, 50, 30, 20],
+            x = d3.scale.ordinal().rangeRoundBands([0, w - p[1] - p[3]]),
+            y = d3.scale.linear().range([0, h - p[0] - p[2]]),
+            z = d3.scale.ordinal().range(["#90BDFE", "#81AEED", "#739FDD", "#6590CD", "#5681BC", "#4873AC", "#3A649C", "#2B558B", "#1D467B", "#0F376B", "#01295B"]),
+            format = d3.time.format("%b");
+        
+        var barNumber = 0;
+        
+
+        d3.json("project_result.json", function(error, data) {
+
+        var maximumY = calculateMaximumY(data);
+        for (var variant = 0; variant < data.variants.length; variant++) {
+            var svg = d3.select("body").append("svg:svg")
+            .attr("width", w)
+            .attr("height", h)
+            .append("svg:g")
+            .attr("transform", "translate(" + p[3] + "," + (h - p[2]) + ")");
+
+            processNumber = data.variants[variant].contributionItems.length;
+            currentNumber = 0;
+            var dataEntity = data.variants[0];
+            var variantNames = getProcessNames(data.variants[variant]);
+                  var processes = (d3.layout.stack()(data.variants[variant].contributionItems.map(function(process) {
+                      return [ { x: 0, y: +process.value } ];
+                  })));
+            
+              // Compute the x-domain (by date) and y-domain (by top).
+              x.domain(processes.map(function(d) { return d.x; }));
+              y.domain([0, maximumY]);
+                  // Add a group for each process.
+              var process = svg.selectAll("g.process")
+                      .data(processes)
+                    .enter().append("svg:g")
+                      .attr("class", "process")
+                      .style("fill", function(d, i) { return z(i); })
+                      .style("stroke", function(d, i) { return d3.rgb(z(i)).darker(); });
+
+                  // Add a rect for each date.
+              var rect = process.selectAll("rect")
+                  .data(Object)
+                .enter().append("svg:rect")
+                  .attr("x", function(d) { return x(d.x); })
+                  .attr("y", function(d) { return -y(d.y0) - y(d.y); })
+                  .attr("height", function(d) { return y(d.y); })
+                  .attr("width", x.rangeBand())
+                    .on("mouseover", function() { $("#tooltip").show(); })
+                    .on("mouseout", function() { $("#tooltip").hide(); })
+                    .on("mousemove", function(d) {
+                        $tooltip
+                    });
+            
+              // Add a label per date.
+              var label = svg.selectAll("text")
+                  .data(x.domain())
+                .enter().append("svg:text")
+                  .attr("x", function(d) { return x(d) + x.rangeBand() / 2; })
+                  .attr("y", 6)
+                  .attr("text-anchor", "middle")
+                  .attr("dy", ".71em")
+                  .text(data.variants[variant].label);
+              // Add y-axis rules.
+              var rule = svg.selectAll("g.rule")
+                  .data(y.ticks(5))
+                .enter().append("svg:g")
+                  .attr("class", "rule")
+                  .attr("transform", function(d) { return "translate(0," + -y(d) + ")"; });
+
+              /*rule.append("svg:line")
+                  .attr("x2", w - p[1] - p[3])
+                  .style("stroke", function(d) { return d ? "#fff" : "#000"; })
+                 .style("stroke-opacity", function(d) { return d ? .7 : null; }); */
+
+              rule.append("svg:text")
+                  .attr("x", w - p[1] - p[3] + 6)
+                  .attr("dy", ".35em")
+                  .text(d3.format(",d"));
+            
+            // Prep the tooltip bits, initial display is hidden
+                var tooltip = d3.select("body").append("g")
+                .attr("class", "tooltip")
+                .style("display", "none");
+                tooltip.append("rect")
+                .attr("width", 30)
+                .attr("height", 20)
+                .attr("fill", "orange")
+                .style("opacity", 0.5);
+
+                tooltip.append("text")
+                .attr("x", 15)
+                .attr("dy", "1.2em")
+                .style("text-anchor", "middle")
+                .attr("font-size", "12px")
+                .attr("font-weight", "bold");
+            }
+        });
+                
+        function getVariantLabel(index, data) {
+            return data[index].label;
+        }
+        
+        function getProcessNames(data) {
+            processNames = new Array();
+                for (var i = 0; i < data.contributionItems.length; i++) {
+                    processNames.push(data.contributionItems[i].label);
+                }
+            return (processNames);
+        }
+        
+        function calculateMaximumY(data) {
+            console.log(data);
+            maximumY = 0;
+            for (var variant = 0; variant < data.variants.length; variant++) {
+                console.log(data.variants[variant].contributionItems);
+                processNumber = data.variants[variant].contributionItems.length;
+                currentNumber = 0;
+
+                var variantNames = getProcessNames(data.variants[variant]);
+                      var processes = (d3.layout.stack()(data.variants[variant].contributionItems.map(function(process) {
+                          return [ { x: 0, y: +process.value } ];
+                      })));
+                var yValue = d3.max(processes[processes.length - 1], function(d) { return d.y0 + d.y; });
+                if (yValue > maximumY)
+                    maximumY = yValue;
+            }
+            return maximumY;
+        }
+        
+    </script>
+    
     <script type="text/javascript">
         var app = angular.module('ReportPreviewPage', ['ui.bootstrap']);
 	    app.directive('popover', function() {
 	        var fn;
 	        fn = function(scope, element, attrs) {
 	    	    	$(document).ready(function () {
-	    	    	    $(".popoverControl").popover({
-	    	    	        placement : 'top',
+	    	    	    $(".popoverButton").popover({
+	    	    	        placement : 'right',
 	    	    	    });
 	    	    	});
 	         	};
