@@ -69,6 +69,15 @@
 		#restoreDefaultParametersButton {
 			margin-right: 25px;
 		}
+		.legend {
+			float: right;
+		}
+		.legend .title {
+			display: block;
+			padding: 5px;
+			margin-bottom: 5px;
+			border-radius: 5px;
+		}
     </style>
 </head>
 
@@ -76,6 +85,8 @@
 	<div id="contentDiv" data-ng-controller="Controller">
 		<div class="container-fluid" style="margin:20px">
 			<div class="row">
+				<canvas id="variants-pie-chart-sample" width="400" height="400"></canvas>
+			
 				<h1 class="col-sm-12 box-row1">{{report.title}}</h1>
 			</div>
 			<div class="row">
@@ -86,22 +97,23 @@
 					</p>
 					<div class="include-navbar" data-ng-if="section.componentId == 'parameter_table'" data-ng-include src="'parameters-table.html'"></div>
 					<div class="include-navbar" data-ng-if="section.componentId == 'variant_table'" data-ng-include src="'variants-table.html'"></div>
-					<div class="include-navbar" data-ng-if="section.componentId == 'result_chart'" data-ng-include src="'result-charts.html'"></div>
+					<div class="include-navbar" data-ng-if="section.componentId == 'result_chart'" data-ng-include src="'result-charts.html'" onload="onResultChartsIncluded()"></div>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col-sm-12 box-row1">
 					<button class="pull-right btn btn-primary" data-ng-click="save(report)">Save</button>
-				</div>
+				</div>	
 			</div>
 		</div>
 	</div>
 
+    <script src="../libs/jquery.min_1.9.0.js"></script>
     <script src="../libs/angular.min.js"></script>
     <script src="../libs/bootstrap/js/bootstrap.min.js"></script>
     <script src="../libs/Chart.min.js"></script>
     <script src="../libs/d3.v3.min.js"></script>
-    <script src="../libs/jquery.min_1.9.0.js"></script>
+    <script src="../libs/legend.js"></script>
     <script src="../libs/olca.utils.js"></script>
     <script src="../libs/ui-bootstrap-tpls-0.11.0.min.js"></script>
 
@@ -133,7 +145,6 @@
 				<tr data-ng-repeat="variant in report.variants | orderBy:'section.name':true">
 					<td>
 						<popover>
-						<popover>
 						<button class="popoverButton btn btn-default" data-toggle="popover" data-content="{{variant.description}}"><span class="glyphicon glyphicon-comment"></span></button>
 						{{variant.userFriendlyName}}
 					</td>
@@ -145,8 +156,15 @@
 	</script>
 
 	<script type="text/ng-template" id="result-charts.html">
-		<result-pie-chart>
-		<canvas id="result-pie-chart" width="400" height="400"></canvas>
+		<div data-ng-repeat="indicator in indicators">
+			<div data-ng-repeat="variant in indicator.variants" class="row">
+				<result-charts variant="variant">
+  					<div class="col-sm-8">
+							<canvas class="result-canvas" width="400" height="400"></canvas>
+   				 	</div>
+				</result-charts>
+			</div>
+		</div>
 	</script>
 
     <script type="text/javascript">
@@ -162,41 +180,33 @@
 	         	};
 	        return {
 	            restrict: 'E',
-	            link: fn,
+	            link: { post : fn },
 	        };
 	    });
 
-	    app.directive('resultPieChart', function() {
+	    app.directive("resultCharts", function () {
 	        var fn;
 	        fn = function(scope, element, attrs) {
 	    	    	$(document).ready(function () {
-	    	    		var ctx = $("#result-pie-chart").get(0).getContext("2d");
-	    	    		alert(ctx);
-	    	    	    var myNewChart = new Chart(ctx);
-	    	    	    var data = [
-	    	    	            	{
-	    	    	            		value: 30,
-	    	    	            		color:"#F38630"
-	    	    	            	},
-	    	    	            	{
-	    	    	            		value : 50,
-	    	    	            		color : "#E0E4CC"
-	    	    	            	},
-	    	    	            	{
-	    	    	            		value : 100,
-	    	    	            		color : "#69D2E7"
-	    	    	            	}
-	    	    	            ]	    	    	    
-	    	    	    new Chart(ctx).Pie(data);
+	    	    		var canvasElement = element.first().find(".result-canvas");
+   	    	    		var ctxVariantsPieChart = canvasElement.get(0).getContext("2d");
+   	    	    	    var variantsPieChart = new Chart(ctxVariantsPieChart);
+   	    	    	    var dataVariantsPieChart = scope.variant.contributionItems;	    	    	    
+   	    	    	    new Chart(ctxVariantsPieChart).Pie(dataVariantsPieChart, { animateRotate : true, animateScale: true, animationEasing : "easeOutQuart", animationSteps : 50 });
+   	    	    	    element.append('<div class="col-sm-4"><div id="result-legend-' + scope.variant.id.toString() + '">Legend</div></div>');
+   	    	    	    legend(document.getElementById('result-legend-' + scope.variant.id.toString()), dataVariantsPieChart);
 	    	    	});
 	         	};
-	        return {
-	            restrict: 'E',
-	            link: fn,
-	        };
-	    });
+	    	  return {
+	    		    restrict: "EA",
+	    		    priority: 100,
+	    		    scope: { variant: "=variant" },
+	    			link: fn
+    		  }
+   		});
 
-	    var Controller = function ($scope) {        	
+	    var Controller = function ($scope) { 
+	    	var renderedcount = 0;
         	$scope.report = {};
             $scope.save = function (report) {
                 saveReport(angular.toJson(report));        
@@ -209,6 +219,109 @@
             		    });
            	     });      	
             }
+            
+            $scope.indicators = [{
+            		"id" : 1,
+            	    "indicator" : "Indicator Label",
+            	    "unit" : "kg",
+            	    "variants" : [   {
+						"id" : 1,
+            	        "label" : "Variant 1",
+            	        "contributionItems" : [
+            	            {
+            	                "title" : "Process 1",
+  	    	            		"color" : "#E7E7E7",
+            	                "value" : 10,
+            	                "isRest" : false
+            	            },
+            	            {
+            	                "title" : "Process 2",
+   	    	            		"color" : "#E4F3F7",
+            	                "value" : 20,
+            	                "isRest" : false
+            	            },
+            	            {
+            	                "title" : "Process 3",
+   	    	            		"color" : "#69D2E7",
+            	                "value" : 30,
+            	                "isRest" : false
+            	            },
+            	            {
+            	                "title" : "Process 4",
+   	    	            		"color" : "#00B4FF",
+            	                "value" : 40,
+            	                "isRest" : false
+            	            },
+            	            {
+            	                "title" : "Process 5",
+   	    	            		"color" : "#025D8C",
+            	                "value" : 50,
+            	                "isRest" : false
+            	            }
+            	        ]
+            	    },
+            	    {
+						"id" : 2,
+            	        "label" : "Variant 2",
+            	        "contributionItems" : [
+            	            {
+            	                "title" : "Process 1",
+  	    	            		"color" : "#E0E4CC",
+            	                "value" : 20,
+            	                "isRest" : false
+            	            },
+            	            {
+            	                "title" : "Process 2",
+   	    	            		"color" : "#E4F3F7",
+            	                "value" : 20,
+            	                "isRest" : false
+            	            },
+            	            {
+            	                "title" : "Process 3",
+   	    	            		"color" : "#69D2E7",
+	           	                "value" : 20,
+            	                "isRest" : false
+            	            },
+            	            {
+            	                "title" : "Process 4",
+   	    	            		"color" : "#00B4FF",
+            	                "value" : 20,
+            	                "isRest" : false
+            	            },
+            	            {
+            	                "title" : "Process 5",
+   	    	            		"color" : "#025D8C",
+            	                "value" : 20,
+            	                "isRest" : false
+            	            }
+            	        ]
+            	    },
+            	    {
+						"id" : 3,
+            	        "label" : "Variant 3",
+            	        "contributionItems" : [
+            	            {
+            	                "title" : "Process 1",
+  	    	            		"color" : "#E0E4CC",
+	           	                "value" : 20,
+            	                "isRest" : false
+            	            },
+            	            {
+            	                "title" : "Process 2",
+   	    	            		"color" : "#E4F3F7",
+            	                "value" : 20,
+            	                "isRest" : false
+            	            },
+            	            {
+            	                "title" : "Process 3",
+   	    	            		"color" : "#69D2E7",
+            	                "value" : 50,
+            	                "isRest" : false
+            	            }
+            	        ]
+            	    }
+            	    ]
+            	}];
 	    };
         app.controller('Controller', Controller);
         
