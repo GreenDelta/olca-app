@@ -21,6 +21,8 @@ class ProcessExpander extends ImageFigure {
 	private ProcessNode node;
 	private Side side;
 	private boolean expanded;
+	// isCollapsing is used to prevent endless recursion in collapse()
+	private boolean isCollapsing;
 
 	ProcessExpander(ProcessNode node, Side side) {
 		this.node = node;
@@ -39,25 +41,6 @@ class ProcessExpander extends ImageFigure {
 			else if (side == Side.RIGHT && link.getProviderId() == processId)
 				return true;
 		return false;
-	}
-
-	boolean shouldBeExpanded() {
-		ProductSystemNode systemNode = node.getParent();
-		ProcessLinkSearchMap linkSearch = systemNode.getLinkSearch();
-		long processId = node.getProcess().getId();
-		List<ProcessLink> links = linkSearch.getLinks(processId);
-		if (links.size() == 0)
-			return false;
-		for (ProcessLink link : links) {
-			ProcessNode otherNode = null;
-			if (side == Side.LEFT && link.getRecipientId() == processId)
-				otherNode = systemNode.getProcessNode(link.getProviderId());
-			else if (side == Side.RIGHT && link.getProviderId() == processId)
-				otherNode = systemNode.getProcessNode(link.getRecipientId());
-			if (otherNode == null || !otherNode.isVisible())
-				return false;
-		}
-		return true;
 	}
 
 	void expand() {
@@ -116,7 +99,10 @@ class ProcessExpander extends ImageFigure {
 				processIds);
 	}
 
-	void collapse() {
+	void collapse(ProcessNode initialNode) {
+		if (isCollapsing)
+			return;
+		isCollapsing = true;
 		ConnectionLink[] links = node.getLinks().toArray(
 				new ConnectionLink[node.getLinks().size()]);
 		for (ConnectionLink link : links) {
@@ -126,20 +112,18 @@ class ProcessExpander extends ImageFigure {
 					: link.getTargetNode();
 			if (!thisNode.equals(node))
 				continue;
-			boolean canCollapseNext = false;
-			if (side == Side.LEFT)
-				canCollapseNext = otherNode.countOutgoingConnections() == 1;
-			else
-				canCollapseNext = otherNode.countIncomingConnections() == 1;
-			if (!canCollapseNext)
-				continue;
 			link.unlink();
-			otherNode.collapseLeft();
-			otherNode.collapseRight();
+			otherNode.collapseLeft(initialNode);
+			otherNode.collapseRight(initialNode);
+			if (otherNode.equals(initialNode))
+				continue;
+			if (!otherNode.getLinks().isEmpty())
+				continue;
 			node.getParent().remove(otherNode);
 		}
 		expanded = false;
 		setImage(ImageType.PLUS_ICON.get());
+		isCollapsing = false;
 	}
 
 	private ProcessNode getMatchingNode(ConnectionLink link) {
@@ -176,7 +160,6 @@ class ProcessExpander extends ImageFigure {
 
 	void refresh() {
 		setVisible(shouldBeVisible());
-		expanded = shouldBeExpanded();
 		if (expanded)
 			setImage(ImageType.MINUS_ICON.get());
 		else

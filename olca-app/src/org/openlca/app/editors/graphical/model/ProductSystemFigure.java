@@ -36,14 +36,19 @@ class ProductSystemFigure extends Figure {
 	@Override
 	public void paint(Graphics graphics) {
 		super.paint(graphics);
-		if (firstTime) {
-			long refId = node.getProductSystem().getReferenceProcess().getId();
-			if (!NodeLayoutStore.loadLayout(node)) {
-				node.getProcessNode(refId).expandLeft();
-				getLayoutManager().layout(this, GraphLayoutType.TREE_LAYOUT);
-			}
-			firstTime = false;
+		if (!firstTime)
+			return;
+		firstTime = false;
+		long refId = node.getProductSystem().getReferenceProcess().getId();
+		boolean layoutLoaded = false;
+		if (!node.getEditor().isInitialized()) {
+			layoutLoaded = !NodeLayoutStore.loadLayout(node);
+			node.getEditor().setInitialized(true);
 		}
+		if (layoutLoaded)
+			return;
+		node.getProcessNode(refId).expandLeft();
+		getLayoutManager().layout(this, GraphLayoutType.TREE_LAYOUT);
 	}
 
 }

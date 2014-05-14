@@ -50,6 +50,7 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 	private GraphicalViewerConfigurator configurator;
 	private ISelection selection;
 	private List<String> actionIds;
+	private boolean initialized = false;
 
 	public ProductSystemGraphEditor(ProductSystem system,
 			ProductSystemEditor editor) {
@@ -75,6 +76,14 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 
 	public ISelection getSelection() {
 		return selection;
+	}
+
+	public void setInitialized(boolean initialized) {
+		this.initialized = initialized;
+	}
+
+	public boolean isInitialized() {
+		return initialized;
 	}
 
 	@Override
@@ -138,18 +147,20 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 		for (ProcessLink link : linkSearch.getLinks(id)) {
 			long processId = link.getRecipientId() == id ? link.getProviderId()
 					: link.getRecipientId();
-			ProcessNode newNode = model.getProcessNode(processId);
-			if (newNode != null) {
-				ProcessNode sourceNode = link.getRecipientId() == id ? newNode
-						: node;
-				ProcessNode targetNode = link.getRecipientId() == id ? node
-						: newNode;
-				ConnectionLink connectionLink = new ConnectionLink();
-				connectionLink.setSourceNode(sourceNode);
-				connectionLink.setTargetNode(targetNode);
-				connectionLink.setProcessLink(link);
-				connectionLink.link();
-			}
+			ProcessNode otherNode = model.getProcessNode(processId);
+			if (otherNode == null)
+				continue;
+			ProcessNode sourceNode = link.getRecipientId() == id ? otherNode
+					: node;
+			ProcessNode targetNode = link.getRecipientId() == id ? node
+					: otherNode;
+			if (!sourceNode.isExpandedRight() && !targetNode.isExpandedLeft())
+				continue;
+			ConnectionLink connectionLink = new ConnectionLink();
+			connectionLink.setSourceNode(sourceNode);
+			connectionLink.setTargetNode(targetNode);
+			connectionLink.setProcessLink(link);
+			connectionLink.link();
 		}
 	}
 

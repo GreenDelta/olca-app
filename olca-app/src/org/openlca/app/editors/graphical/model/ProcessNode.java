@@ -295,11 +295,35 @@ public class ProcessNode extends Node {
 	}
 
 	public void collapseLeft() {
-		getProcessFigure().getLeftExpander().collapse();
+		if (!isExpandedLeft())
+			return;
+		getProcessFigure().getLeftExpander().collapse(this);
 	}
 
 	public void collapseRight() {
-		getProcessFigure().getRightExpander().collapse();
+		if (!isExpandedRight())
+			return;
+		getProcessFigure().getRightExpander().collapse(this);
+	}
+
+	/**
+	 * Used to avoid removing the initial node while collapsing, should only be
+	 * called from within ProcessExpander.collapse
+	 */
+	void collapseLeft(ProcessNode initialNode) {
+		if (!isExpandedLeft())
+			return;
+		getProcessFigure().getLeftExpander().collapse(initialNode);
+	}
+
+	/**
+	 * Used to avoid removing the initial node while collapsing, should only be
+	 * called from within ProcessExpander.collapse
+	 */
+	void collapseRight(ProcessNode initialNode) {
+		if (!isExpandedRight())
+			return;
+		getProcessFigure().getRightExpander().collapse(initialNode);
 	}
 
 	public void expandLeft() {

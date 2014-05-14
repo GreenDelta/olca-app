@@ -122,7 +122,9 @@ class ProcessFigure extends Figure {
 		int height = p.height;
 		if (getSize().width > width)
 			width = getSize().width;
-		getParent().setConstraint(ProcessFigure.this,
+		if (getParent() == null)
+			return;
+		getParent().setConstraint(this,
 				new Rectangle(x - 1, y - 1, width, height));
 		for (ConnectionLink link : node.getLinks())
 			if (node.equals(link.getTargetNode()))

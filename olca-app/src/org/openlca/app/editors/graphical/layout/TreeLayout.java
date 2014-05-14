@@ -98,13 +98,13 @@ public class TreeLayout {
 
 	private void prepare(ProductSystemNode productSystemNode) {
 		for (ProcessNode processNode : productSystemNode.getChildren()) {
+			if (processNode.isVisible())
+				continue;
 			long id = processNode.getProcess().getId();
-			if (!processNode.isVisible()) {
-				Dimension size = processNode.getSize();
-				containing.put(id, 1);
-				processNode.setXyLayoutConstraints(new Rectangle(0, 0,
-						size.width, size.height));
-			}
+			Dimension size = processNode.getSize();
+			containing.put(id, 1);
+			processNode.setXyLayoutConstraints(new Rectangle(0, 0, size.width,
+					size.height));
 		}
 		for (long processId : productSystemNode.getProductSystem()
 				.getProcesses())
@@ -128,13 +128,13 @@ public class TreeLayout {
 		mainNode.sort();
 		nodes.add(mainNode);
 		for (ProcessNode processNode : productSystemNode.getChildren()) {
-			if (containing.get(processNode.getProcess().getId()) == null) {
-				Node node = new Node();
-				node.processId = processNode.getProcess().getId();
-				build(productSystemNode.getProductSystem(), new Node[] { node });
-				node.sort();
-				nodes.add(node);
-			}
+			if (containing.get(processNode.getProcess().getId()) != null)
+				continue;
+			Node node = new Node();
+			node.processId = processNode.getProcess().getId();
+			build(productSystemNode.getProductSystem(), new Node[] { node });
+			node.sort();
+			nodes.add(node);
 		}
 		int additionalHeight = 0;
 		for (Node node : nodes) {
@@ -166,22 +166,32 @@ public class TreeLayout {
 				widths.put(x, 0);
 				for (int y = minimumY; y <= maximumY; y++) {
 					Long processId = locations.get(new Point(x, y));
-					if (processId != null) {
-						int width = Math.max(widths.get(x),
-								processNodes.get(processId).getSize().width);
-						widths.put(x, width);
-					}
+					if (processId == null)
+						continue;
+					ProcessNode pn = processNodes.get(processId);
+					if (pn == null)
+						continue;
+					Dimension size = pn.getSize();
+					if (size == null)
+						continue;
+					int width = Math.max(widths.get(x), size.width);
+					widths.put(x, width);
 				}
 			}
 			for (int y = minimumY; y <= maximumY; y++) {
 				heights.put(y, 0);
 				for (int x = minimumX; x <= maximumX; x++) {
 					Long processId = locations.get(new Point(x, y));
-					if (processId != null) {
-						int height = Math.max(heights.get(y),
-								processNodes.get(processId).getSize().height);
-						heights.put(y, height);
-					}
+					if (processId == null)
+						continue;
+					ProcessNode pn = processNodes.get(processId);
+					if (pn == null)
+						continue;
+					Dimension size = pn.getSize();
+					if (size == null)
+						continue;
+					int height = Math.max(heights.get(y), size.height);
+					heights.put(y, height);
 				}
 			}
 			int xPosition = GraphLayoutManager.HORIZONTAL_SPACING;
@@ -197,15 +207,19 @@ public class TreeLayout {
 						if (heights.get(y - 1) > 0)
 							yPosition += heights.get(y - 1)
 									+ GraphLayoutManager.VERTICAL_SPACING;
-					if (processId != null) {
-						ProcessNode processNode = processNodes.get(processId);
-						Dimension size = processNode.getSize();
-						processNode.setXyLayoutConstraints(new Rectangle(
-								xPosition, yPosition + additionalHeight,
-								size.width, size.height));
-						newAdditionalHeight = Math.max(newAdditionalHeight,
-								yPosition + additionalHeight + size.height);
-					}
+					if (processId == null)
+						continue;
+					ProcessNode processNode = processNodes.get(processId);
+					if (processNode == null)
+						continue;
+					Dimension size = processNode.getSize();
+					if (size == null)
+						continue;
+					processNode.setXyLayoutConstraints(new Rectangle(xPosition,
+							yPosition + additionalHeight, size.width,
+							size.height));
+					newAdditionalHeight = Math.max(newAdditionalHeight,
+							yPosition + additionalHeight + size.height);
 				}
 			}
 			additionalHeight = newAdditionalHeight
@@ -224,28 +238,25 @@ public class TreeLayout {
 		List<Node> rightChildren = new ArrayList<>();
 
 		int getLeftDepth() {
-			int depth = 0;
-			if (leftChildren.size() > 0) {
-				depth = 1;
-				int depthAdd = 0;
-				for (int i = 0; i < leftChildren.size(); i++)
-					depthAdd = Math.max(depthAdd, leftChildren.get(i)
-							.getLeftDepth());
-				depth += depthAdd;
-			}
+			if (leftChildren.size() == 0)
+				return 0;
+			int depth = 1;
+			int depthAdd = 0;
+			for (int i = 0; i < leftChildren.size(); i++)
+				depthAdd = Math.max(depthAdd, leftChildren.get(i)
+						.getLeftDepth());
+			depth += depthAdd;
 			return depth;
 		}
 
 		int getSize() {
-			int size = 0;
 			if (rightChildren.size() == 0 && leftChildren.size() == 0)
-				size = 1;
-			else {
-				for (int i = 0; i < rightChildren.size(); i++)
-					size += rightChildren.get(i).getSize();
-				for (int i = 0; i < leftChildren.size(); i++)
-					size += leftChildren.get(i).getSize();
-			}
+				return 1;
+			int size = 0;
+			for (int i = 0; i < rightChildren.size(); i++)
+				size += rightChildren.get(i).getSize();
+			for (int i = 0; i < leftChildren.size(); i++)
+				size += leftChildren.get(i).getSize();
 			return size;
 		}
 

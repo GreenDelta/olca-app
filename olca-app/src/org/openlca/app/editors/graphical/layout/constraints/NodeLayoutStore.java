@@ -96,9 +96,9 @@ public final class NodeLayoutStore {
 					ProcessDescriptor.class, layout.getId());
 			node = new ProcessNode(descriptor);
 			model.add(node);
+			node.apply(layout);
 			model.getEditor().createNecessaryLinks(node);
 		}
-		node.apply(layout);
 	}
 
 	private static List<NodeLayoutInfo> parseJson(File fromFile)
