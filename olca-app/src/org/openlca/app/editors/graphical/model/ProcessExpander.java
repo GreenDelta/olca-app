@@ -11,8 +11,8 @@ import org.eclipse.draw2d.MouseListener;
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.db.Cache;
 import org.openlca.app.editors.graphical.command.CommandFactory;
+import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
 import org.openlca.app.resources.ImageType;
-import org.openlca.core.matrix.ProcessLinkSearchMap;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
@@ -33,7 +33,8 @@ class ProcessExpander extends ImageFigure {
 	}
 
 	boolean shouldBeVisible() {
-		ProcessLinkSearchMap linkSearch = node.getParent().getLinkSearch();
+		MutableProcessLinkSearchMap linkSearch = node.getParent()
+				.getLinkSearch();
 		long processId = node.getProcess().getId();
 		for (ProcessLink link : linkSearch.getLinks(processId))
 			if (side == Side.LEFT && link.getRecipientId() == processId)
@@ -62,7 +63,7 @@ class ProcessExpander extends ImageFigure {
 
 	private void createNecessaryNodes() {
 		ProductSystemNode systemNode = node.getParent();
-		ProcessLinkSearchMap linkSearch = systemNode.getLinkSearch();
+		MutableProcessLinkSearchMap linkSearch = systemNode.getLinkSearch();
 		long processId = node.getProcess().getId();
 		List<ProcessLink> links = side == Side.LEFT ? linkSearch
 				.getIncomingLinks(processId) : linkSearch

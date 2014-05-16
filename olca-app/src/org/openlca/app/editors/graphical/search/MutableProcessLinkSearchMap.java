@@ -16,9 +16,17 @@ public class MutableProcessLinkSearchMap extends ProcessLinkSearchMap {
 	public void put(ProcessLink link) {
 		int index = remove(link);
 		if (index == -1)
-			index = data.size();
+			index = getAvailableIndex();
+		data.set(index, link);
 		index(link.getProviderId(), index, providerIndex);
 		index(link.getRecipientId(), index, recipientIndex);
+	}
+
+	private int getAvailableIndex() {
+		for (int index = 0; index < data.size(); index++)
+			if (data.get(index) == null) // previously removed link
+				return index;
+		return data.size();
 	}
 
 	public int remove(ProcessLink link) {

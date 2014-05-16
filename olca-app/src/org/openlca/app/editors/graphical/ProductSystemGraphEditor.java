@@ -27,12 +27,12 @@ import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.app.editors.graphical.model.TreeConnectionRouter;
 import org.openlca.app.editors.graphical.outline.OutlinePage;
+import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
 import org.openlca.app.editors.systems.ProductSystemEditor;
 import org.openlca.app.events.EventHandler;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
-import org.openlca.core.matrix.ProcessLinkSearchMap;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -142,7 +142,8 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 	}
 
 	public void createNecessaryLinks(ProcessNode node) {
-		ProcessLinkSearchMap linkSearch = node.getParent().getLinkSearch();
+		MutableProcessLinkSearchMap linkSearch = node.getParent()
+				.getLinkSearch();
 		long id = node.getProcess().getId();
 		for (ProcessLink link : linkSearch.getLinks(id)) {
 			long processId = link.getRecipientId() == id ? link.getProviderId()

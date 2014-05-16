@@ -39,14 +39,14 @@ class ProductSystemFigure extends Figure {
 		if (!firstTime)
 			return;
 		firstTime = false;
-		long refId = node.getProductSystem().getReferenceProcess().getId();
 		boolean layoutLoaded = false;
 		if (!node.getEditor().isInitialized()) {
-			layoutLoaded = !NodeLayoutStore.loadLayout(node);
 			node.getEditor().setInitialized(true);
+			layoutLoaded = NodeLayoutStore.loadLayout(node);
 		}
 		if (layoutLoaded)
 			return;
+		long refId = node.getProductSystem().getReferenceProcess().getId();
 		node.getProcessNode(refId).expandLeft();
 		getLayoutManager().layout(this, GraphLayoutType.TREE_LAYOUT);
 	}

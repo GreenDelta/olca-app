@@ -12,7 +12,7 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
-import org.openlca.core.matrix.ProcessLinkSearchMap;
+import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
 
@@ -22,7 +22,7 @@ public class TreeLayout {
 	private Map<Integer, Integer> heights = new HashMap<>();
 	private Map<Integer, Integer> widths = new HashMap<>();
 	private Map<Point, Long> locations = new HashMap<>();
-	private ProcessLinkSearchMap linkSearch;
+	private MutableProcessLinkSearchMap linkSearch;
 
 	private void applyLayout(Node node, int addition, int actualDepth) {
 		int x = actualDepth;

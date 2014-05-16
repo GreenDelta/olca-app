@@ -2,32 +2,26 @@ package org.openlca.app.editors.graphical.model;
 
 import java.util.List;
 
-import org.eclipse.gef.EditPart;
 import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
-import org.openlca.core.matrix.ProcessLinkSearchMap;
+import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 public class ProductSystemNode extends Node {
 
 	private ProductSystemGraphEditor editor;
 	private ProductSystem productSystem;
-	private ProcessLinkSearchMap linkSearch;
+	private MutableProcessLinkSearchMap linkSearch;
 
 	public ProductSystemNode(ProductSystem productSystem,
 			ProductSystemGraphEditor editor) {
 		this.productSystem = productSystem;
-		this.linkSearch = new ProcessLinkSearchMap(
+		this.linkSearch = new MutableProcessLinkSearchMap(
 				productSystem.getProcessLinks());
 		this.editor = editor;
 	}
 
-	public ProcessLinkSearchMap getLinkSearch() {
+	public MutableProcessLinkSearchMap getLinkSearch() {
 		return linkSearch;
-	}
-
-	public void reindexLinks() {
-		linkSearch = new ProcessLinkSearchMap(productSystem.getProcessLinks());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -94,25 +88,6 @@ public class ProductSystemNode extends Node {
 
 	public void refreshChildren() {
 		((ProductSystemPart) getEditPart()).refreshChildren();
-	}
-
-	public void reveal(ProcessDescriptor descriptor) {
-		EditPart editorEditPart = findEditPartInEditor(descriptor);
-		if (editorEditPart != null)
-			getEditor().getGraphicalViewer().reveal(editorEditPart);
-	}
-
-	private EditPart findEditPartInEditor(ProcessDescriptor descriptor) {
-		if (descriptor == null)
-			return null;
-		for (Object childPart : getEditPart().getChildren()) {
-			if (!(childPart instanceof ProcessPart))
-				continue;
-			ProcessPart processPart = (ProcessPart) childPart;
-			if (descriptor.equals(processPart.getModel().getProcess()))
-				return processPart;
-		}
-		return null;
 	}
 
 }
