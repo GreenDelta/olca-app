@@ -69,14 +69,30 @@
 		#restoreDefaultParametersButton {
 			margin-right: 25px;
 		}
-		.legend {
+		.result-charts-variant-container {
+			width: 400px;
+			margin-bottom: 25px;
+		}
+		.result-charts-variant-container .variant-label {
+			width: 80%;
+			text-align: center;
+		}
+		.legend-container {
 			float: right;
+			width: 150px;
+			margin-right: 25px;
 		}
 		.legend .title {
 			display: block;
-			padding: 5px;
 			margin-bottom: 5px;
 			border-radius: 5px;
+		}
+		.legend .glyphicon {
+			margin-right: 10px;
+		}
+		#indicatorSelection {
+			max-width: 400px;
+			margin-bottom: 25px;
 		}
     </style>
 </head>
@@ -85,8 +101,6 @@
 	<div id="contentDiv" data-ng-controller="Controller">
 		<div class="container-fluid" style="margin:20px">
 			<div class="row">
-				<canvas id="variants-pie-chart-sample" width="400" height="400"></canvas>
-			
 				<h1 class="col-sm-12 box-row1">{{report.title}}</h1>
 			</div>
 			<div class="row">
@@ -102,6 +116,16 @@
 			</div>
 			<div class="row">
 				<div class="col-sm-12 box-row1">
+		<select id="indicatorSelection" class="form-control" data-ng-options="indicator as indicator.label for indicator in indicators" data-ng-model="selectedIndicator"></select>
+		<div data-ng-repeat="variant in selectedIndicator.variants" class="result-charts-container col-xs-12 col-sm-6 col-md-6 col-lg-4">
+			<result-charts variant="variant">
+				<div class="result-charts-variant-container">
+					<div class="variant-label alert alert-info">{{variant.label}}</div>
+					<canvas class="result-canvas" width="200" height="200"></canvas>
+					<div class="legend-container"></div>
+				</div>
+			</result-charts>
+		</div>
 					<button class="pull-right btn btn-primary" data-ng-click="save(report)">Save</button>
 				</div>	
 			</div>
@@ -113,7 +137,6 @@
     <script src="../libs/bootstrap/js/bootstrap.min.js"></script>
     <script src="../libs/Chart.min.js"></script>
     <script src="../libs/d3.v3.min.js"></script>
-    <script src="../libs/legend.js"></script>
     <script src="../libs/olca.utils.js"></script>
     <script src="../libs/ui-bootstrap-tpls-0.11.0.min.js"></script>
 
@@ -156,14 +179,15 @@
 	</script>
 
 	<script type="text/ng-template" id="result-charts.html">
-		<div data-ng-repeat="indicator in indicators">
-			<div data-ng-repeat="variant in indicator.variants" class="row">
-				<result-charts variant="variant">
-  					<div class="col-sm-8">
-							<canvas class="result-canvas" width="400" height="400"></canvas>
-   				 	</div>
-				</result-charts>
-			</div>
+		<select id="indicatorSelection" class="form-control" data-ng-options="indicator as indicator.label for indicator in indicators" data-ng-model="selectedIndicator"></select>
+		<div data-ng-repeat="variant in selectedIndicator.variants" class="result-charts-container col-xs-12 col-sm-6 col-md-6 col-lg-4">
+			<result-charts variant="variant">
+				<div class="result-charts-variant-container">
+					<div class="variant-label alert alert-info">{{variant.label}}</div>
+					<canvas class="result-canvas" width="200" height="200"></canvas>
+					<div class="legend-container"></div>
+				</div>
+			</result-charts>
 		</div>
 	</script>
 
@@ -192,8 +216,13 @@
    	    	    		var ctxVariantsPieChart = canvasElement.get(0).getContext("2d");
    	    	    	    var variantsPieChart = new Chart(ctxVariantsPieChart);
    	    	    	    var dataVariantsPieChart = scope.variant.contributionItems;	    	    	    
-   	    	    	    new Chart(ctxVariantsPieChart).Pie(dataVariantsPieChart, { animateRotate : true, animateScale: true, animationEasing : "easeOutQuart", animationSteps : 50 });
-   	    	    	    element.append('<div class="col-sm-4"><div id="result-legend-' + scope.variant.id.toString() + '">Legend</div></div>');
+   	    	    	    new Chart(ctxVariantsPieChart).Pie(dataVariantsPieChart, {
+   	    	    	    	animateRotate : true,
+   	    	    	    	animateScale: true,
+   	    	    	    	animationEasing : "easeOutQuart",
+   	    	    	    	animationSteps : 50,
+  	    	    	    });
+   	    	    	    element.first().find('.legend-container').append('<div id="result-legend-' + scope.variant.id.toString() + '">Legend</div>');
    	    	    	    legend(document.getElementById('result-legend-' + scope.variant.id.toString()), dataVariantsPieChart);
 	    	    	});
 	         	};
@@ -208,6 +237,7 @@
 	    var Controller = function ($scope) { 
 	    	var renderedcount = 0;
         	$scope.report = {};
+        	$scope.selectedIndicator = {};
             $scope.save = function (report) {
                 saveReport(angular.toJson(report));        
             }
@@ -222,7 +252,7 @@
             
             $scope.indicators = [{
             		"id" : 1,
-            	    "indicator" : "Indicator Label",
+            	    "label" : "Indicator 1",
             	    "unit" : "kg",
             	    "variants" : [   {
 						"id" : 1,
@@ -230,33 +260,28 @@
             	        "contributionItems" : [
             	            {
             	                "title" : "Process 1",
-  	    	            		"color" : "#E7E7E7",
             	                "value" : 10,
             	                "isRest" : false
             	            },
             	            {
             	                "title" : "Process 2",
-   	    	            		"color" : "#E4F3F7",
             	                "value" : 20,
             	                "isRest" : false
             	            },
             	            {
             	                "title" : "Process 3",
-   	    	            		"color" : "#69D2E7",
             	                "value" : 30,
             	                "isRest" : false
             	            },
             	            {
             	                "title" : "Process 4",
-   	    	            		"color" : "#00B4FF",
             	                "value" : 40,
             	                "isRest" : false
             	            },
             	            {
             	                "title" : "Process 5",
-   	    	            		"color" : "#025D8C",
             	                "value" : 50,
-            	                "isRest" : false
+            	                "isRest" : true
             	            }
             	        ]
             	    },
@@ -266,33 +291,28 @@
             	        "contributionItems" : [
             	            {
             	                "title" : "Process 1",
-  	    	            		"color" : "#E0E4CC",
             	                "value" : 20,
             	                "isRest" : false
             	            },
             	            {
             	                "title" : "Process 2",
-   	    	            		"color" : "#E4F3F7",
             	                "value" : 20,
             	                "isRest" : false
             	            },
             	            {
             	                "title" : "Process 3",
-   	    	            		"color" : "#69D2E7",
 	           	                "value" : 20,
             	                "isRest" : false
             	            },
             	            {
             	                "title" : "Process 4",
-   	    	            		"color" : "#00B4FF",
             	                "value" : 20,
             	                "isRest" : false
             	            },
             	            {
             	                "title" : "Process 5",
-   	    	            		"color" : "#025D8C",
             	                "value" : 20,
-            	                "isRest" : false
+            	                "isRest" : true
             	            }
             	        ]
             	    },
@@ -302,29 +322,239 @@
             	        "contributionItems" : [
             	            {
             	                "title" : "Process 1",
-  	    	            		"color" : "#E0E4CC",
 	           	                "value" : 20,
             	                "isRest" : false
             	            },
             	            {
             	                "title" : "Process 2",
-   	    	            		"color" : "#E4F3F7",
             	                "value" : 20,
             	                "isRest" : false
             	            },
             	            {
             	                "title" : "Process 3",
-   	    	            		"color" : "#69D2E7",
             	                "value" : 50,
+            	                "isRest" : true
+            	            }
+            	        ]
+            	    },
+            	    {
+						"id" : 4,
+            	        "label" : "Variant 4",
+            	        "contributionItems" : [
+            	            {
+            	                "title" : "Process 1",
+	           	                "value" : 20,
             	                "isRest" : false
+            	            },
+            	            {
+            	                "title" : "Process 2",
+            	                "value" : 20,
+            	                "isRest" : false
+            	            },
+            	            {
+            	                "title" : "Process 3",
+            	                "value" : 50,
+            	                "isRest" : true
+            	            }
+            	        ]
+            	    },
+            	    {
+						"id" : 5,
+            	        "label" : "Variant 5",
+            	        "contributionItems" : [
+            	            {
+            	                "title" : "Process 1",
+	           	                "value" : 20,
+            	                "isRest" : false
+            	            },
+            	            {
+            	                "title" : "Process 2",
+            	                "value" : 20,
+            	                "isRest" : false
+            	            },
+            	            {
+            	                "title" : "Process 3",
+            	                "value" : 50,
+            	                "isRest" : true
+            	            }
+            	        ]
+            	    }
+            	    ]
+            	},
+            	{
+            		"id" : 2,
+            	    "label" : "Indicator 2",
+            	    "unit" : "kg",
+            	    "variants" : [   {
+						"id" : 1,
+            	        "label" : "Variant 1",
+            	        "contributionItems" : [
+            	            {
+            	                "title" : "Process 2.1",
+            	                "value" : 10,
+            	                "isRest" : false
+            	            },
+            	            {
+            	                "title" : "Process 2.2",
+            	                "value" : 20,
+            	                "isRest" : false
+            	            },
+            	            {
+            	                "title" : "Process 2.3",
+            	                "value" : 30,
+            	                "isRest" : false
+            	            },
+            	            {
+            	                "title" : "Process 2.4",
+            	                "value" : 40,
+            	                "isRest" : false
+            	            },
+            	            {
+            	                "title" : "Process 2.5",
+            	                "value" : 50,
+            	                "isRest" : true
+            	            }
+            	        ]
+            	    },
+            	    {
+						"id" : 2,
+            	        "label" : "Variant 2",
+            	        "contributionItems" : [
+            	            {
+            	                "title" : "Process 1",
+            	                "value" : 20,
+            	                "isRest" : false
+            	            },
+            	            {
+            	                "title" : "Process 2",
+            	                "value" : 20,
+            	                "isRest" : false
+            	            },
+            	            {
+            	                "title" : "Process 3",
+	           	                "value" : 20,
+            	                "isRest" : false
+            	            },
+            	            {
+            	                "title" : "Process 4",
+            	                "value" : 20,
+            	                "isRest" : false
+            	            },
+            	            {
+            	                "title" : "Process 5",
+            	                "value" : 20,
+            	                "isRest" : true
+            	            }
+            	        ]
+            	    },
+            	    {
+						"id" : 3,
+            	        "label" : "Variant 3",
+            	        "contributionItems" : [
+            	            {
+            	                "title" : "Process 1",
+	           	                "value" : 20,
+            	                "isRest" : false
+            	            },
+            	            {
+            	                "title" : "Process 2",
+            	                "value" : 20,
+            	                "isRest" : false
+            	            },
+            	            {
+            	                "title" : "Process 3",
+            	                "value" : 50,
+            	                "isRest" : true
+            	            }
+            	        ]
+            	    },
+            	    {
+						"id" : 4,
+            	        "label" : "Variant 4",
+            	        "contributionItems" : [
+            	            {
+            	                "title" : "Process 1",
+	           	                "value" : 20,
+            	                "isRest" : false
+            	            },
+            	            {
+            	                "title" : "Process 2",
+            	                "value" : 20,
+            	                "isRest" : false
+            	            },
+            	            {
+            	                "title" : "Process 3",
+            	                "value" : 50,
+            	                "isRest" : true
+            	            }
+            	        ]
+            	    },
+            	    {
+						"id" : 5,
+            	        "label" : "Variant 5",
+            	        "contributionItems" : [
+            	            {
+            	                "title" : "Process 1",
+	           	                "value" : 20,
+            	                "isRest" : false
+            	            },
+            	            {
+            	                "title" : "Process 2",
+            	                "value" : 20,
+            	                "isRest" : false
+            	            },
+            	            {
+            	                "title" : "Process 3",
+            	                "value" : 50,
+            	                "isRest" : true
             	            }
             	        ]
             	    }
             	    ]
             	}];
-	    };
+    	    
+    	    function applyResultChartAttributes(indicators) {
+    	    	var colors = [ "#E53039", "#296FC4", "#FFC923", "#52A84D", "#844CAD", "#7FB7E5", "#FF8900", "#359B58", "#319444", "#FCFF64" ];
+            	angular.forEach(indicators, function(indicator, key) {
+            		angular.forEach(indicator.variants, function(variant, key) {
+            			var index = 0;
+                		angular.forEach(variant.contributionItems, function(item, key){
+                			if (!item.isRest)
+                				item.color = colors[index];
+                			else
+                				item.color = "#AAA";
+                			index++;
+                		});
+           		    });
+           	     });      	
+    	   	}
+    	   	applyResultChartAttributes($scope.indicators);
+		};
+
         app.controller('Controller', Controller);
         
+		function legend(parent, data) {
+            parent.className = 'legend';
+            var datas = data.hasOwnProperty('datasets') ? data.datasets : data;
+
+            while(parent.hasChildNodes()) {
+                parent.removeChild(parent.lastChild);
+            }
+
+            datas.forEach(function(d) {
+                var title = document.createElement('div');
+                var bullet = document.createElement('span');
+                bullet.className = 'glyphicon glyphicon-minus'; 
+                bullet.style.color = d.hasOwnProperty('strokeColor') ? d.strokeColor : d.color;
+                title.className = 'title';
+                title.appendChild(bullet);
+                parent.appendChild(title);
+
+                var text = document.createTextNode(d.title);
+                title.appendChild(text);
+            });
+        }
+
         function setData(report) {
             var element = document.getElementById("contentDiv");
             var scope = angular.element(element).scope();
@@ -332,7 +562,7 @@
                 scope.report = report;
             });
         }
-        
+
     </script>
 </body>
 </html>
