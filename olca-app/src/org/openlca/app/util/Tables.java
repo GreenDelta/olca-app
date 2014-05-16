@@ -3,6 +3,7 @@ package org.openlca.app.util;
 import java.util.List;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
@@ -103,6 +104,16 @@ public class Tables {
 				}
 			}
 		});
+	}
+
+	public static <T> void makeSortable(Class<T> contentType,
+			TableViewer viewer, ITableLabelProvider labelProvider, int... cols) {
+		TableColumnSorter<?>[] sorters = new TableColumnSorter<?>[cols.length];
+		for (int i = 0; i < cols.length; i++) {
+			sorters[i] = new TableColumnSorter<>(contentType, cols[i],
+					labelProvider);
+		}
+		registerSorters(viewer, sorters);
 	}
 
 	public static void registerSorters(final TableViewer viewer,
