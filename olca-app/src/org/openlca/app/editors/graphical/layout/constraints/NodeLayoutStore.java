@@ -98,6 +98,8 @@ public final class NodeLayoutStore {
 			model.add(node);
 			node.apply(layout);
 			model.getEditor().createNecessaryLinks(node);
+		} else {
+			node.apply(layout);			
 		}
 	}
 
