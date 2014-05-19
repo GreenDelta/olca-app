@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.Text;
 import org.openlca.app.ApplicationProperties;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
+import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.UI;
@@ -91,9 +92,7 @@ class CalculationWizardPage extends WizardPage {
 	}
 
 	private void createRadios(Composite parent) {
-		CalculationType[] types = { CalculationType.QUICK,
-				CalculationType.ANALYSIS, CalculationType.REGIONALIZED,
-				CalculationType.MONTE_CARLO };
+		CalculationType[] types = getCalculationTypes();
 		for (CalculationType type : types) {
 			Button radio = new Button(parent, SWT.RADIO);
 			radio.setSelection(type == this.type);
@@ -101,6 +100,16 @@ class CalculationWizardPage extends WizardPage {
 			UI.gridData(radio, false, false).horizontalSpan = 2;
 			radio.addSelectionListener(new CalculationTypeChange(type));
 		}
+	}
+
+	private CalculationType[] getCalculationTypes() {
+		if (FeatureFlag.LOCALISED_LCIA.isEnabled())
+			return new CalculationType[] { CalculationType.QUICK,
+					CalculationType.ANALYSIS, CalculationType.REGIONALIZED,
+					CalculationType.MONTE_CARLO };
+		else
+			return new CalculationType[] { CalculationType.QUICK,
+					CalculationType.ANALYSIS, CalculationType.MONTE_CARLO };
 	}
 
 	private String getLabel(CalculationType type) {
