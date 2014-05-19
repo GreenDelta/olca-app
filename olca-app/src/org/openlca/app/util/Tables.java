@@ -37,7 +37,8 @@ public class Tables {
 	 * <li>grid data with horizontal and vertical fill
 	 * 
 	 */
-	public static TableViewer createViewer(Composite parent, String[] properties) {
+	public static TableViewer createViewer(Composite parent,
+			String... properties) {
 		TableViewer viewer = new TableViewer(parent, SWT.BORDER
 				| SWT.FULL_SELECTION | SWT.VIRTUAL);
 		viewer.setContentProvider(new ArrayContentProvider());
