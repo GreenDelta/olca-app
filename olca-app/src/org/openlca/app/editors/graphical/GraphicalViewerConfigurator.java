@@ -34,30 +34,29 @@ import org.openlca.app.editors.graphical.action.ActionIds;
 import org.openlca.app.editors.graphical.model.AppEditPartFactory;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 
-class GraphicalViewerConfigurator {
+public class GraphicalViewerConfigurator {
 
-	private static final double[] ZOOM_LEVELS = new double[] { 0.005, 0.01,
-			0.02, 0.0375, 0.075, 0.125, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 2.5,
-			3.0, 4.0, 5.0, 10.0, 20.0, 40.0, 80.0, 150.0, 300.0, 500.0, 1000.0 };
+	public static final double[] ZOOM_LEVELS = new double[] { 0.01, 0.1, 0.25,
+			0.5, 0.75, 1.0, 1.5, 2.0, 3.0, 5.0, 10.0 };
 
 	private GraphicalViewer viewer;
 	private ActionRegistry actionRegistry;
 	private CommandStack commandStack;
 	private ProductSystemNode model;
 
-	public GraphicalViewerConfigurator(GraphicalViewer viewer) {
+	GraphicalViewerConfigurator(GraphicalViewer viewer) {
 		this.viewer = viewer;
 	}
 
-	public void setActionRegistry(ActionRegistry actionRegistry) {
+	void setActionRegistry(ActionRegistry actionRegistry) {
 		this.actionRegistry = actionRegistry;
 	}
 
-	public void setCommandStack(CommandStack commandStack) {
+	void setCommandStack(CommandStack commandStack) {
 		this.commandStack = commandStack;
 	}
 
-	public void setModel(ProductSystemNode model) {
+	void setModel(ProductSystemNode model) {
 		this.model = model;
 	}
 
@@ -143,6 +142,7 @@ class GraphicalViewerConfigurator {
 		actionRegistry.registerAction(ActionFactory.createOpenAction(editor));
 		actionRegistry.registerAction(ActionFactory
 				.createOpenMiniatureViewAction(editor));
+		actionRegistry.registerAction(ActionFactory.createShowOutlineAction());
 		actionRegistry.registerAction(new ZoomInAction(getZoomManager()));
 		actionRegistry.registerAction(new ZoomOutAction(getZoomManager()));
 
@@ -158,11 +158,7 @@ class GraphicalViewerConfigurator {
 
 	void configureZoomManager() {
 		getZoomManager().setZoomLevels(ZOOM_LEVELS);
-		ArrayList<String> zoomContributions = new ArrayList<>();
-		zoomContributions.add(ZoomManager.FIT_ALL);
-		zoomContributions.add(ZoomManager.FIT_HEIGHT);
-		zoomContributions.add(ZoomManager.FIT_WIDTH);
-		getZoomManager().setZoomLevelContributions(zoomContributions);
+		getZoomManager().setZoomAnimationStyle(ZoomManager.ANIMATE_ZOOM_IN_OUT);
 		viewer.setProperty(MouseWheelHandler.KeyGenerator.getKey(SWT.NONE),
 				MouseWheelZoomHandler.SINGLETON);
 	}
@@ -181,8 +177,7 @@ class GraphicalViewerConfigurator {
 	}
 
 	void configureContextMenu() {
-		ContextMenuProvider provider = new MenuProvider(viewer,
-				actionRegistry);
+		ContextMenuProvider provider = new MenuProvider(viewer, actionRegistry);
 		viewer.setContextMenu(provider);
 	}
 

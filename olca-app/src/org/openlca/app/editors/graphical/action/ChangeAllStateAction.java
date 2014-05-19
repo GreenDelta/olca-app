@@ -9,7 +9,7 @@ import org.openlca.app.editors.graphical.command.CommandFactory;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.resources.ImageType;
 
-public class ChangeAllStateAction extends Action {
+class ChangeAllStateAction extends Action {
 
 	static final int MINIMIZE = 1;
 	static final int MAXIMIZE = 2;

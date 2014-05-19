@@ -78,6 +78,12 @@ class ParameterRedefTable {
 		viewer.setInput(redefinitions);
 	}
 
+	public void setInput(List<ParameterRedef> redefinitions) {
+		this.redefinitions = redefinitions;
+		Collections.sort(redefinitions, new ParameterComparator());
+		viewer.setInput(redefinitions);
+	}
+
 	public void bindActions(Section section) {
 		Action addAction = Actions.onAdd(new Runnable() {
 			public void run() {

@@ -3,29 +3,25 @@ package org.openlca.app.editors.graphical.model;
 import java.util.List;
 
 import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
-import org.openlca.core.matrix.ProcessLinkSearchMap;
+import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
 import org.openlca.core.model.ProductSystem;
 
 public class ProductSystemNode extends Node {
 
 	private ProductSystemGraphEditor editor;
 	private ProductSystem productSystem;
-	private ProcessLinkSearchMap linkSearch;
+	private MutableProcessLinkSearchMap linkSearch;
 
 	public ProductSystemNode(ProductSystem productSystem,
 			ProductSystemGraphEditor editor) {
 		this.productSystem = productSystem;
-		this.linkSearch = new ProcessLinkSearchMap(
+		this.linkSearch = new MutableProcessLinkSearchMap(
 				productSystem.getProcessLinks());
 		this.editor = editor;
 	}
 
-	public ProcessLinkSearchMap getLinkSearch() {
+	public MutableProcessLinkSearchMap getLinkSearch() {
 		return linkSearch;
-	}
-
-	public void reindexLinks() {
-		linkSearch = new ProcessLinkSearchMap(productSystem.getProcessLinks());
 	}
 
 	@SuppressWarnings("unchecked")

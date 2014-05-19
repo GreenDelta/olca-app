@@ -1,7 +1,5 @@
 package org.openlca.app.editors.systems;
 
-import java.util.List;
-
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -10,35 +8,36 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.util.UI;
-import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.ProductSystem;
 
 public class ProductSystemParameterPage extends ModelPage<ProductSystem> {
 
 	private ProductSystemEditor editor;
-	private ProductSystem system;
-	private List<ParameterRedef> redefinitions;
+	private ParameterRedefTable table;
 
 	public ProductSystemParameterPage(ProductSystemEditor editor) {
 		super(editor, "ProductSystemParameterPage", Messages.Parameters);
-		this.system = editor.getModel();
-		this.redefinitions = this.system.getParameterRedefs();
 		this.editor = editor;
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
 		ScrolledForm form = UI.formHeader(managedForm, Messages.ProductSystem
-				+ ": " + system.getName());
+				+ ": " + editor.getModel().getName());
 		FormToolkit toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		Section section = UI.section(body, toolkit, Messages.Parameters);
 		UI.gridData(section, true, true);
 		Composite composite = UI.sectionClient(section, toolkit);
-		ParameterRedefTable table = new ParameterRedefTable(editor,
-				redefinitions);
+		table = new ParameterRedefTable(editor, editor.getModel()
+				.getParameterRedefs());
 		table.create(toolkit, composite);
 		table.bindActions(section);
+	}
+
+	void refreshBindings() {
+		if (table != null)
+			table.setInput(editor.getModel().getParameterRedefs());
 	}
 
 }

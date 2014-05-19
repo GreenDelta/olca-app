@@ -8,6 +8,7 @@ import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.LineBorder;
 import org.openlca.app.editors.graphical.layout.GraphLayoutManager;
 import org.openlca.app.editors.graphical.layout.GraphLayoutType;
+import org.openlca.app.editors.graphical.layout.constraints.NodeLayoutStore;
 
 class ProductSystemFigure extends Figure {
 
@@ -35,12 +36,19 @@ class ProductSystemFigure extends Figure {
 	@Override
 	public void paint(Graphics graphics) {
 		super.paint(graphics);
-		if (firstTime) {
-			long refId = node.getProductSystem().getReferenceProcess().getId();
-			node.getProcessNode(refId).expandLeft();
-			getLayoutManager().layout(this, GraphLayoutType.TREE_LAYOUT);
-			firstTime = false;
+		if (!firstTime)
+			return;
+		firstTime = false;
+		boolean layoutLoaded = false;
+		if (!node.getEditor().isInitialized()) {
+			node.getEditor().setInitialized(true);
+			layoutLoaded = NodeLayoutStore.loadLayout(node);
 		}
+		if (layoutLoaded)
+			return;
+		long refId = node.getProductSystem().getReferenceProcess().getId();
+		node.getProcessNode(refId).expandLeft();
+		getLayoutManager().layout(this, GraphLayoutType.TREE_LAYOUT);
 	}
 
 }

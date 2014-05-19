@@ -23,7 +23,7 @@ import org.openlca.app.editors.graphical.model.ExchangeNode;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
-public class SearchConnectorsAction extends EditorAction {
+class SearchConnectorsAction extends EditorAction {
 
 	static final int PROVIDER = 1;
 	static final int RECIPIENTS = 2;

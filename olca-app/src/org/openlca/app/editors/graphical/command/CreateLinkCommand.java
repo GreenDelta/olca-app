@@ -49,10 +49,10 @@ public class CreateLinkCommand extends Command {
 		ProductSystem system = systemNode.getProductSystem();
 		processLink = getProcessLink();
 		system.getProcessLinks().add(processLink);
+		systemNode.getLinkSearch().put(processLink);
 		link = getLink();
 		link.link();
 		systemNode.getEditor().setDirty(true);
-		systemNode.reindexLinks();
 	}
 
 	private ProcessLink getProcessLink() {
@@ -74,21 +74,21 @@ public class CreateLinkCommand extends Command {
 	@Override
 	public void redo() {
 		ProductSystemNode systemNode = sourceNode.getParent();
-		link.link();
 		ProductSystem system = systemNode.getProductSystem();
 		system.getProcessLinks().add(processLink);
+		systemNode.getLinkSearch().put(processLink);
+		link.link();
 		systemNode.getEditor().setDirty(true);
-		systemNode.reindexLinks();
 	}
 
 	@Override
 	public void undo() {
 		ProductSystemNode systemNode = sourceNode.getParent();
 		ProductSystem system = systemNode.getProductSystem();
-		system.getProcessLinks().remove(processLink);
 		link.unlink();
+		system.getProcessLinks().remove(processLink);
+		systemNode.getLinkSearch().remove(processLink);
 		systemNode.getEditor().setDirty(true);
-		systemNode.reindexLinks();
 	}
 
 	public void setSourceNode(ProcessNode sourceNode) {

@@ -33,12 +33,12 @@ import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.model.ExchangeNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
+import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.ProcessDao;
-import org.openlca.core.matrix.ProcessLinkSearchMap;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
@@ -58,7 +58,7 @@ public class ConnectorDialog extends Dialog {
 	private Exchange exchange;
 	private ProcessDescriptor parentProcess;
 	private ProductSystem productSystem;
-	private ProcessLinkSearchMap linkSearch;
+	private MutableProcessLinkSearchMap linkSearch;
 	private TableViewer viewer;
 	private boolean selectProvider;
 	private List<ConnectableProcess> connectableProcesses = new ArrayList<>();
@@ -387,11 +387,11 @@ public class ConnectorDialog extends Dialog {
 			case 3:
 				if (process.isAlreadyExisting())
 					return ImageType.ACCEPT_ICON.get();
-				return ImageType.DENY_ICON.get();
+				return null; // just show a - (getColumnText)
 			case 4:
 				if (process.isAlreadyConnectedToExchange())
 					return ImageType.ACCEPT_ICON.get();
-				return ImageType.DENY_ICON.get();
+				return null; // just show a - (getColumnText)
 			default:
 				return null;
 			}
@@ -401,11 +401,20 @@ public class ConnectorDialog extends Dialog {
 		public String getColumnText(Object element, int columnIndex) {
 			if (!(element instanceof ConnectableProcess))
 				return null;
-			if (columnIndex != 0)
-				return null;
-
 			ConnectableProcess process = (ConnectableProcess) element;
-			return Labels.getDisplayName(process.getProcess());
+			switch (columnIndex) {
+			case 0:
+				return Labels.getDisplayName(process.getProcess());
+			case 3:
+				if (!process.isAlreadyExisting())
+					return "-";
+				return null; // show checkmark icon (getColumnImage)
+			case 4:
+				if (!process.isAlreadyConnectedToExchange())
+					return "-";
+				return null; // show checkmark icon (getColumnImage)
+			}
+			return null;
 		}
 
 		@Override

@@ -7,7 +7,7 @@ import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.util.Editors;
 
-public class OpenAction extends EditorAction {
+class OpenAction extends EditorAction {
 
 	private ProcessNode node;
 

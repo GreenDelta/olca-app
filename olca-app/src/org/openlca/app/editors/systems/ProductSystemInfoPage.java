@@ -5,6 +5,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
@@ -28,6 +29,10 @@ import org.openlca.core.model.UnitGroup;
 class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 
 	private FormToolkit toolkit;
+	private ExchangeViewer productViewer;
+	private FlowPropertyFactorViewer propertyViewer;
+	private UnitViewer unitViewer;
+	private Text targetAmountText;
 
 	ProductSystemInfoPage(ProductSystemEditor editor) {
 		super(editor, "ProductSystemInfoPage", Messages.GeneralInformation);
@@ -47,6 +52,14 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 		form.reflow(true);
 	}
 
+	void refreshBindings() {
+		getBinding().on(getModel(), "referenceExchange", productViewer);
+		getBinding().on(getModel(), "targetFlowPropertyFactor", propertyViewer);
+		getBinding().on(getModel(), "targetUnit", unitViewer);
+		getBinding().on(getModel(), "targetAmount", TextBindType.DOUBLE,
+				targetAmountText);
+	}
+
 	private void createAdditionalInfo(Composite body) {
 		Composite composite = UI.formSection(body, toolkit,
 				Messages.Systems_ProductSystemInfoSectionLabel);
@@ -54,15 +67,14 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 		createLink(Messages.Process, "referenceProcess", composite);
 
 		toolkit.createLabel(composite, Messages.Product);
-		ExchangeViewer productViewer = new ExchangeViewer(composite,
-				ExchangeViewer.OUTPUTS, ExchangeViewer.PRODUCTS);
+		productViewer = new ExchangeViewer(composite, ExchangeViewer.OUTPUTS,
+				ExchangeViewer.PRODUCTS);
 
 		toolkit.createLabel(composite, Messages.FlowProperty);
-		FlowPropertyFactorViewer propertyViewer = new FlowPropertyFactorViewer(
-				composite);
+		propertyViewer = new FlowPropertyFactorViewer(composite);
 
 		toolkit.createLabel(composite, Messages.Unit);
-		UnitViewer unitViewer = new UnitViewer(composite);
+		unitViewer = new UnitViewer(composite);
 
 		productViewer.addSelectionChangedListener(new ProductChangedListener(
 				propertyViewer));
@@ -75,8 +87,8 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 		getBinding().on(getModel(), "targetFlowPropertyFactor", propertyViewer);
 		getBinding().on(getModel(), "targetUnit", unitViewer);
 
-		createText(Messages.TargetAmount, "targetAmount", TextBindType.DOUBLE,
-				composite);
+		targetAmountText = createText(Messages.TargetAmount, "targetAmount",
+				TextBindType.DOUBLE, composite);
 	}
 
 	private void addCalculationButton(Composite composite) {

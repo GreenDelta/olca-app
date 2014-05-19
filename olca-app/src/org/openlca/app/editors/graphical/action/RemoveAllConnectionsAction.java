@@ -10,11 +10,10 @@ import org.openlca.app.editors.graphical.command.CommandFactory;
 import org.openlca.app.editors.graphical.model.ConnectionLink;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
-import org.openlca.core.matrix.ProcessLinkSearchMap;
+import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
 import org.openlca.core.model.ProcessLink;
-import org.openlca.core.model.ProductSystem;
 
-public class RemoveAllConnectionsAction extends EditorAction {
+class RemoveAllConnectionsAction extends EditorAction {
 
 	private List<ProcessNode> processNodes = new ArrayList<>();
 
@@ -44,15 +43,17 @@ public class RemoveAllConnectionsAction extends EditorAction {
 		if (processNodes.size() == 0)
 			return;
 		Command chainCommand = null;
-		ProductSystemNode systemNode = processNodes.get(0).getParent();
-		ProductSystem system = systemNode.getProductSystem();
-		ProcessLinkSearchMap linkSearch = systemNode.getLinkSearch();
+		ProductSystemNode systemNode = getEditor().getModel();
 		List<ConnectionLink> links = new ArrayList<>();
+		// create new link search to avoid problems with missing entries before
+		// ConnectionLink.unlink is called
+		MutableProcessLinkSearchMap linkSearch = new MutableProcessLinkSearchMap(
+				systemNode.getProductSystem().getProcessLinks());
 		for (ProcessNode processNode : processNodes) {
 			List<ProcessLink> processLinks = linkSearch.getLinks(processNode
 					.getProcess().getId());
 			for (ProcessLink link : processLinks)
-				system.getProcessLinks().remove(link);
+				linkSearch.remove(link);
 			Command cmd = getDeleteCommand(processNode, links);
 			if (cmd != null)
 				if (chainCommand == null)
@@ -60,14 +61,17 @@ public class RemoveAllConnectionsAction extends EditorAction {
 				else
 					chainCommand = chainCommand.chain(cmd);
 		}
-		systemNode.reindexLinks(); // remove deleted links from the search index
-		processNodes.get(0).getParent().getEditor().getCommandStack()
-				.execute(chainCommand);
+		getEditor().getCommandStack().execute(chainCommand);
 	}
 
 	@Override
 	protected boolean accept(ISelection selection) {
 		processNodes = getMultiSelectionOfType(selection, ProcessNode.class);
-		return processNodes.size() > 0;
+		if (processNodes.size() == 0)
+			return false;
+		for (ProcessNode node : processNodes)
+			if (node.getLinks().size() > 0)
+				return true;
+		return false;
 	}
 }

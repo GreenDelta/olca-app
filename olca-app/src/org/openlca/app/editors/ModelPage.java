@@ -51,7 +51,8 @@ public abstract class ModelPage<T extends CategorizedEntity> extends FormPage {
 		return binding;
 	}
 
-	protected void createLink(String label, String property, Composite parent) {
+	protected ImageHyperlink createLink(String label, String property,
+			Composite parent) {
 		try {
 			Object value = Bean.getValue(getModel(), property);
 			if (!(value instanceof CategorizedEntity))
@@ -65,12 +66,14 @@ public abstract class ModelPage<T extends CategorizedEntity> extends FormPage {
 			link.setImage(Images.getIcon(entity));
 			link.addHyperlinkListener(new ModelLinkClickedListener(entity));
 			link.setForeground(Colors.getLinkBlue());
+			return link;
 		} catch (Exception e) {
 			log.error("Could not get value of bean", e);
+			return null;
 		}
 	}
 
-	protected void createReadOnly(String label, String property,
+	protected Label createReadOnly(String label, String property,
 			Composite parent) {
 		UI.formLabel(parent, label);
 		Label labelWidget = new Label(parent, SWT.NONE);
@@ -78,9 +81,10 @@ public abstract class ModelPage<T extends CategorizedEntity> extends FormPage {
 		gridData.verticalAlignment = SWT.TOP;
 		gridData.verticalIndent = 2;
 		binding.readOnly(getModel(), property, labelWidget);
+		return labelWidget;
 	}
 
-	protected void createReadOnly(String label, Image image, String property,
+	protected CLabel createReadOnly(String label, Image image, String property,
 			Composite parent) {
 		UI.formLabel(parent, label);
 		CLabel labelWidget = new CLabel(parent, SWT.NONE);
@@ -89,21 +93,25 @@ public abstract class ModelPage<T extends CategorizedEntity> extends FormPage {
 		gridData.verticalIndent = 2;
 		labelWidget.setImage(image);
 		binding.readOnly(getModel(), property, labelWidget);
+		return labelWidget;
 	}
 
-	protected void createText(String label, String property, Composite parent) {
+	protected Text createText(String label, String property, Composite parent) {
 		Text text = UI.formText(parent, getManagedForm().getToolkit(), label);
 		binding.on(getModel(), property, TextBindType.STRING, text);
+		return text;
 	}
 
-	protected void createMultiText(String label, String property,
+	protected Text createMultiText(String label, String property,
 			Composite parent) {
 		Text text = UI.formMultiText(parent, getManagedForm().getToolkit(),
 				label);
 		binding.on(getModel(), property, TextBindType.STRING, text);
+		return text;
 	}
 
-	protected void createDate(String label, String property, Composite parent) {
+	protected DateTime createDate(String label, String property,
+			Composite parent) {
 		getManagedForm().getToolkit().createLabel(parent, label, SWT.NONE);
 		DateTime dateTime = new DateTime(parent, SWT.DATE | SWT.DROP_DOWN);
 		GridData data = new GridData();
@@ -111,26 +119,30 @@ public abstract class ModelPage<T extends CategorizedEntity> extends FormPage {
 		dateTime.setLayoutData(data);
 
 		binding.on(getModel(), property, dateTime);
+		return dateTime;
 	}
 
-	protected void createText(String label, String property, TextBindType type,
+	protected Text createText(String label, String property, TextBindType type,
 			Composite parent) {
 		Text text = UI.formText(parent, getManagedForm().getToolkit(), label);
 		binding.on(getModel(), property, type, text);
+		return text;
 	}
 
-	protected void createCheckBox(String label, String property,
+	protected Button createCheckBox(String label, String property,
 			Composite parent) {
 		Button button = UI.formCheckBox(parent, getManagedForm().getToolkit(),
 				label);
 		binding.on(getModel(), property, button);
+		return button;
 	}
 
-	protected void createDropComponent(String label, String property,
-			ModelType modelType, Composite parent) {
+	protected TextDropComponent createDropComponent(String label,
+			String property, ModelType modelType, Composite parent) {
 		TextDropComponent text = UIFactory.createDropComponent(parent, label,
 				getManagedForm().getToolkit(), modelType);
 		binding.on(getModel(), property, text);
+		return text;
 	}
 
 	public class ModelLinkClickedListener extends HyperlinkAdapter {

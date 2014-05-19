@@ -38,18 +38,17 @@ class LayoutMenuAction extends Action {
 	private class MenuCreator implements IMenuCreator {
 
 		private Menu createMenu(Menu menu) {
-			MenuItem minimalItem = new MenuItem(menu, SWT.NONE);
+			MenuItem treeItem = new MenuItem(menu, SWT.RADIO);
+			treeItem.setText(treeLayoutAction.getText());
+			treeItem.addSelectionListener(new LayoutListener(treeLayoutAction));
+			treeItem.setSelection(true);
+
+			MenuItem minimalItem = new MenuItem(menu, SWT.RADIO);
 			minimalItem.setText(minimalLayoutAction.getText());
-			minimalItem.setImage(minimalLayoutAction.getImageDescriptor()
-					.createImage());
 			minimalItem.addSelectionListener(new LayoutListener(
 					minimalLayoutAction));
 
-			MenuItem treeItem = new MenuItem(menu, SWT.NONE);
-			treeItem.setText(treeLayoutAction.getText());
-			treeItem.setImage(treeLayoutAction.getImageDescriptor()
-					.createImage());
-			treeItem.addSelectionListener(new LayoutListener(treeLayoutAction));
+			new MenuItem(menu, SWT.SEPARATOR);
 
 			final MenuItem routedCheck = new MenuItem(menu, SWT.CHECK);
 			routedCheck.setText(Messages.Systems_Route);

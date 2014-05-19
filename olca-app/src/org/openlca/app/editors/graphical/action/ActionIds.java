@@ -22,5 +22,6 @@ public interface ActionIds {
 	String SEARCH_PROVIDERS = "graphical.actions.SearchConnectorsAction.PROVIDERS";
 	String SEARCH_RECIPIENTS = "graphical.actions.SearchConnectorsAction.RECIPIENTS";
 	String OPEN = "graphical.actions.OpenAction";
-	
+	String SHOW_OUTLINE = "graphical.actions.ShowOutlineAction";
+
 }

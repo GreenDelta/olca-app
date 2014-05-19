@@ -168,8 +168,6 @@ public enum ImageType {
 
 	MINI_VIEW_ICON("miniview.gif"),
 
-	MINIMAL_TREE_LAYOUT_ICON("layout.gif"),
-
 	MINIMIZE_ICON("minAll.gif"),
 
 	MINUS_ICON("del_stat.gif"),
@@ -205,6 +203,8 @@ public enum ImageType {
 	NUMBER_ICON("number_16.png"),
 
 	OK_CHECK_ICON("ok_check_16.png"),
+
+	OUTLINE_ICON("outline_co.gif"),
 
 	OUTPUT_ICON("output_16.png"),
 
@@ -269,8 +269,6 @@ public enum ImageType {
 	TEXT_SIZE_MEDIUM("text_allcaps_20.png"),
 
 	TEXT_SIZE_SMALL("text_allcaps_16.png"),
-
-	TREE_LAYOUT_ICON("layout_treelayout.gif"),
 
 	UPDATE_MAJOR_16("update_major_16.png"),
 

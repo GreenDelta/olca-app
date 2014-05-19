@@ -13,13 +13,18 @@ import org.openlca.app.Messages;
 import org.openlca.app.editors.graphical.model.ConnectionLink;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
-import org.openlca.core.matrix.ProcessLinkSearchMap;
+import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
 
-public class RemoveSupplyChainAction extends EditorAction {
+class RemoveSupplyChainAction extends EditorAction {
 
 	private ProcessNode node;
+	private Set<ConnectionLink> connections = new HashSet<>();
+	private Set<ProcessNode> nodes = new HashSet<>();
+	private Set<ProcessLink> links = new HashSet<>();
+	private Set<Long> processIds = new HashSet<>();
+	private MutableProcessLinkSearchMap linkSearch; // only used in collectSupplyChain
 
 	RemoveSupplyChainAction() {
 		setId(ActionIds.REMOVE_SUPPLY_CHAIN);
@@ -28,39 +33,49 @@ public class RemoveSupplyChainAction extends EditorAction {
 
 	@Override
 	public void run() {
-		Set<ConnectionLink> links = new HashSet<>();
-		Set<ProcessNode> nodes = new HashSet<>();
-		removeSupplyChain(node.getProcess().getId(), links, nodes);
-		if (links.size() > 0 || nodes.size() > 0)
-			getEditor().getCommandStack().execute(
-					new RemoveCommand(nodes, links));
+		ProductSystem system = getEditor().getModel().getProductSystem();
+		long refId = system.getReferenceProcess().getId();
+		if (refId == node.getProcess().getId()) {
+			for (ProcessNode node : getEditor().getModel().getChildren())
+				if (refId != node.getProcess().getId()) {
+					nodes.add(node);
+					connections.addAll(node.getLinks());
+				}
+		} else {
+			linkSearch = new MutableProcessLinkSearchMap(
+					system.getProcessLinks());
+			collectSupplyChain(node.getProcess().getId());
+		}
+		if (connections.size() > 0 || nodes.size() > 0 || links.size() > 0
+				|| processIds.size() > 0)
+			getEditor().getCommandStack().execute(new RemoveCommand());
 	}
 
-	private void removeSupplyChain(long processId, Set<ConnectionLink> links,
-			Set<ProcessNode> nodes) {
+	private void collectSupplyChain(long processId) {
 		ProductSystemNode systemNode = getEditor().getModel();
-		ProductSystem system = systemNode.getProductSystem();
 		ProcessNode node = systemNode.getProcessNode(processId);
-		ProcessLinkSearchMap linkSearch = systemNode.getLinkSearch();
 		List<ProcessLink> incomingLinks = linkSearch
 				.getIncomingLinks(processId);
 		for (ProcessLink link : incomingLinks) {
 			if (node != null) {
 				ConnectionLink l = node.getLink(link);
 				if (l != null)
-					links.add(l);
-			}
-			system.getProcessLinks().remove(link);
+					connections.add(l);
+				else
+					links.add(link);
+			} else
+				links.add(link);
+			linkSearch.remove(link);
 			if (linkSearch.getOutgoingLinks(link.getProviderId()).size() == 0) {
-				removeSupplyChain(link.getProviderId(), links, nodes);
-				system.getProcesses().remove(link.getProviderId());
+				collectSupplyChain(link.getProviderId());
 				ProcessNode providerNode = getEditor().getModel()
 						.getProcessNode(link.getProviderId());
 				if (providerNode != null)
 					nodes.add(providerNode);
+				else
+					processIds.add(link.getProviderId());
 			}
 		}
-		systemNode.reindexLinks();
 	}
 
 	@Override
@@ -71,15 +86,8 @@ public class RemoveSupplyChainAction extends EditorAction {
 
 	private class RemoveCommand extends Command {
 
-		private Set<ProcessNode> nodes;
-		private Set<ConnectionLink> links;
 		private Map<Long, Rectangle> layouts = new HashMap<>();
 		private Map<String, Boolean> visibility = new HashMap<>();
-
-		private RemoveCommand(Set<ProcessNode> nodes, Set<ConnectionLink> links) {
-			this.nodes = nodes;
-			this.links = links;
-		}
 
 		@Override
 		public boolean canExecute() {
@@ -95,10 +103,15 @@ public class RemoveSupplyChainAction extends EditorAction {
 		public void execute() {
 			ProductSystemNode systemNode = node.getParent();
 			ProductSystem system = systemNode.getProductSystem();
-			for (ConnectionLink link : links) {
+			for (ConnectionLink link : connections) {
 				visibility.put(getKey(link.getProcessLink()), link.isVisible());
 				link.unlink();
 				system.getProcessLinks().remove(link.getProcessLink());
+				systemNode.getLinkSearch().remove(link.getProcessLink());
+			}
+			for (ProcessLink link : links) {
+				system.getProcessLinks().remove(link);
+				systemNode.getLinkSearch().remove(link);
 			}
 			for (ProcessNode processNode : nodes) {
 				layouts.put(processNode.getProcess().getId(),
@@ -106,7 +119,9 @@ public class RemoveSupplyChainAction extends EditorAction {
 				system.getProcesses().remove(processNode.getProcess().getId());
 				systemNode.remove(processNode);
 			}
-			refresh(systemNode);
+			for (long processId : processIds)
+				system.getProcesses().remove(processId);
+			refresh();
 		}
 
 		@Override
@@ -117,6 +132,8 @@ public class RemoveSupplyChainAction extends EditorAction {
 		@Override
 		public void undo() {
 			ProductSystemNode systemNode = node.getParent();
+			for (Long processId : processIds)
+				systemNode.getProductSystem().getProcesses().add(processId);
 			for (ProcessNode node : nodes) {
 				systemNode.add(node);
 				node.setXyLayoutConstraints(layouts.remove(node.getProcess()
@@ -126,19 +143,25 @@ public class RemoveSupplyChainAction extends EditorAction {
 				if (node.getParent().getEditor().getOutline() != null)
 					node.getParent().getEditor().getOutline().refresh();
 			}
-			for (ConnectionLink link : links) {
+			for (ProcessLink link : links) {
+				systemNode.getProductSystem().getProcessLinks().add(link);
+				systemNode.getLinkSearch().put(link);
+			}
+			for (ConnectionLink link : connections) {
 				systemNode.getProductSystem().getProcessLinks()
 						.add(link.getProcessLink());
+				systemNode.getLinkSearch().put(link.getProcessLink());
 				link.link();
 				link.setVisible(visibility.remove(getKey(link.getProcessLink())));
 			}
-			refresh(systemNode);
+			refresh();
 		}
 
-		private void refresh(ProductSystemNode systemNode) {
-			systemNode.reindexLinks();
-			if (systemNode.getEditor().getOutline() != null)
-				systemNode.getEditor().getOutline().refresh();
+		private void refresh() {
+			node.refresh();
+			getEditor().setDirty(true);
+			if (getEditor().getOutline() != null)
+				getEditor().getOutline().refresh();
 		}
 
 		@Override

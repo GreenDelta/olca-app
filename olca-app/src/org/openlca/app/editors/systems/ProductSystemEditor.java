@@ -16,6 +16,8 @@ public class ProductSystemEditor extends ModelEditor<ProductSystem> implements
 
 	public static String ID = "editors.productsystem";
 	private Logger log = LoggerFactory.getLogger(getClass());
+	private ProductSystemInfoPage infoPage;
+	private ProductSystemParameterPage parameterPage;
 
 	public ProductSystemEditor() {
 		super(ProductSystem.class);
@@ -24,8 +26,10 @@ public class ProductSystemEditor extends ModelEditor<ProductSystem> implements
 	@Override
 	protected void addPages() {
 		try {
-			addPage(new ProductSystemInfoPage(this));
-			addPage(new ProductSystemParameterPage(this));
+			infoPage = new ProductSystemInfoPage(this);
+			parameterPage = new ProductSystemParameterPage(this);
+			addPage(infoPage);
+			addPage(parameterPage);
 			BaseDescriptor descriptor = getEditorInput().getDescriptor();
 			GraphicalEditorInput gInput = new GraphicalEditorInput(descriptor);
 			int gIdx = addPage(new ProductSystemGraphEditor(getModel(), this),
@@ -37,4 +41,14 @@ public class ProductSystemEditor extends ModelEditor<ProductSystem> implements
 			log.error("failed to add page", e);
 		}
 	}
+
+	@Override
+	public ProductSystem reloadModel() {
+		super.reloadModel();
+		infoPage.refreshBindings();
+		parameterPage.refreshBindings();
+		setDirty(false);
+		return getModel();
+	}
+
 }

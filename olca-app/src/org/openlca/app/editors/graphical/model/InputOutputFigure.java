@@ -11,7 +11,7 @@ class InputOutputFigure extends Figure {
 		GridLayout layout = new GridLayout(2, true);
 		layout.horizontalSpacing = 4;
 		layout.verticalSpacing = 0;
-		layout.marginHeight = 0;
+		layout.marginHeight = 4;
 		layout.marginWidth = 0;
 		setLayoutManager(layout);
 	}
