@@ -1,13 +1,26 @@
 <!DOCTYPE html>
-<html data-ng-app="ReportPreviewPage">
+<html ng-app="ReportPreviewPage" id="ng-app">
 <head>
     <meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-
 
     <title>Report Preview</title>
     <link href="../libs/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+	<!-- <script type="text/javascript" src="../libs/excanvas.compiled.js"></script> -->
+	<!--[if IE]><script type="text/javascript" src="../libs/excanvas.js"></script><![endif]-->
+      <!--[if lte IE 8]>
+        <script>
+          document.createElement('ng-include');
+          document.createElement('ng-pluralize');
+          document.createElement('ng-view');
 
+          // Optionally these for CSS
+          document.createElement('ng:include');
+          document.createElement('ng:pluralize');
+          document.createElement('ng:view');
+        </script>
+      <![endif]-->
     <style type="text/css">
         .well {            
             background-color: #ffffff;
@@ -70,7 +83,7 @@
 			margin-right: 25px;
 		}
 		.result-charts-variant-container {
-			width: 400px;
+			width: 450px;
 			margin-bottom: 25px;
 		}
 		.result-charts-variant-container .variant-label {
@@ -78,7 +91,7 @@
 			text-align: center;
 		}
 		.legend-container {
-			float: right;
+			float: left;
 			width: 150px;
 			margin-right: 25px;
 		}
@@ -109,23 +122,13 @@
 					<p>
 						{{section.text}}
 					</p>
-					<div class="include-navbar" data-ng-if="section.componentId == 'parameter_table'" data-ng-include src="'parameters-table.html'"></div>
-					<div class="include-navbar" data-ng-if="section.componentId == 'variant_table'" data-ng-include src="'variants-table.html'"></div>
-					<div class="include-navbar" data-ng-if="section.componentId == 'result_chart'" data-ng-include src="'result-charts.html'" onload="onResultChartsIncluded()"></div>
+					<div data-ng-if="section.componentId == 'parameter_table'" data-ng-include src="'parameters-table.html'"></div>
+					<div data-ng-if="section.componentId == 'variant_table'" data-ng-include src="'variants-table.html'"></div>
+					<div id="result-charts-include-container" data-ng-if="section.componentId == 'result_chart'" data-ng-include src="'result-charts.html'" onload="onResultChartsIncluded()"></div>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col-sm-12 box-row1">
-		<select id="indicatorSelection" class="form-control" data-ng-options="indicator as indicator.label for indicator in indicators" data-ng-model="selectedIndicator"></select>
-		<div data-ng-repeat="variant in selectedIndicator.variants" class="result-charts-container col-xs-12 col-sm-6 col-md-6 col-lg-4">
-			<result-charts variant="variant">
-				<div class="result-charts-variant-container">
-					<div class="variant-label alert alert-info">{{variant.label}}</div>
-					<canvas class="result-canvas" width="200" height="200"></canvas>
-					<div class="legend-container"></div>
-				</div>
-			</result-charts>
-		</div>
 					<button class="pull-right btn btn-primary" data-ng-click="save(report)">Save</button>
 				</div>	
 			</div>
@@ -136,7 +139,6 @@
     <script src="../libs/angular.min.js"></script>
     <script src="../libs/bootstrap/js/bootstrap.min.js"></script>
     <script src="../libs/Chart.min.js"></script>
-    <script src="../libs/d3.v3.min.js"></script>
     <script src="../libs/olca.utils.js"></script>
     <script src="../libs/ui-bootstrap-tpls-0.11.0.min.js"></script>
 
@@ -179,16 +181,16 @@
 	</script>
 
 	<script type="text/ng-template" id="result-charts.html">
-		<select id="indicatorSelection" class="form-control" data-ng-options="indicator as indicator.label for indicator in indicators" data-ng-model="selectedIndicator"></select>
-		<div data-ng-repeat="variant in selectedIndicator.variants" class="result-charts-container col-xs-12 col-sm-6 col-md-6 col-lg-4">
-			<result-charts variant="variant">
-				<div class="result-charts-variant-container">
-					<div class="variant-label alert alert-info">{{variant.label}}</div>
-					<canvas class="result-canvas" width="200" height="200"></canvas>
-					<div class="legend-container"></div>
+				<select id="indicatorSelection" class="form-control" data-ng-options="indicator as indicator.label for indicator in indicators" data-ng-model="selectedIndicator"></select>
+				<div data-ng-repeat="variant in selectedIndicator.variants" class="result-charts-container col-xs-12 col-sm-6 col-md-6 col-lg-4">
+					<div result-charts="exp" variant="variant">
+						<div class="result-charts-variant-container">
+							<div class="variant-label alert alert-info">{{variant.label}}</div>
+								<div class="legend-container"></div>
+							<div class="result-canvas-container"></div>
+						</div>
+					</div>
 				</div>
-			</result-charts>
-		</div>
 	</script>
 
     <script type="text/javascript">
@@ -198,32 +200,71 @@
 	        fn = function(scope, element, attrs) {
 	    	    	$(document).ready(function () {
 	    	    	    $(".popoverButton").popover({
-	    	    	        placement : 'right',
+	    	    	        placement : 'right'
 	    	    	    });
 	    	    	});
 	         	};
 	        return {
 	            restrict: 'E',
-	            link: { post : fn },
+	            link: { post : fn }
 	        };
 	    });
 
+	    /* var ctx = $("#result-total-canvas").get(0).getContext("2d");
+		var myNewChart = new Chart(ctx);
+	    var dataTotalBarChart = {
+	    		labels : ["January","February","March","April","May","June","July"],
+	    		datasets : [
+	    			{
+	    				fillColor : "rgba(220,220,220,0.5)",
+	    				strokeColor : "rgba(220,220,220,1)",
+	    				data : [65,59,90,81,56,55,40]
+	    			},
+	    			{
+	    				fillColor : "rgba(151,187,205,0.5)",
+	    				strokeColor : "rgba(151,187,205,1)",
+	    				data : [28,48,40,19,96,27,100]
+	    			}
+	    		]
+	    	}
+	    new Chart(ctx).Bar(dataTotalBarChart); */
+	    
 	    app.directive("resultCharts", function () {
 	        var fn;
 	        fn = function(scope, element, attrs) {
 	    	    	$(document).ready(function () {
-	    	    		var canvasElement = element.first().find(".result-canvas");
-   	    	    		var ctxVariantsPieChart = canvasElement.get(0).getContext("2d");
-   	    	    	    var variantsPieChart = new Chart(ctxVariantsPieChart);
-   	    	    	    var dataVariantsPieChart = scope.variant.contributionItems;	    	    	    
-   	    	    	    new Chart(ctxVariantsPieChart).Pie(dataVariantsPieChart, {
-   	    	    	    	animateRotate : true,
-   	    	    	    	animateScale: true,
-   	    	    	    	animationEasing : "easeOutQuart",
-   	    	    	    	animationSteps : 50,
+						var containerId = 'variant-chart-container-' + scope.variant.id.toString();
+						canvasElement = document.createElement('canvas');
+						canvasElement.setAttribute("width", 200);
+						canvasElement.setAttribute("border", "1px solid white");
+						canvasElement.setAttribute("height", 200);
+						canvasElement.setAttribute("class", "mapping");
+						var canvasContainer = element.first().find('.result-canvas-container');
+						canvasContainer.attr('id', containerId);
+						document.getElementById(containerId).appendChild(canvasElement);
+						if (isIE(8,'lte')) {
+							canvasElement = G_vmlCanvasManager.initElement(canvasElement);
+						}
+						var ctxVariantsPieChart = canvasElement.getContext("2d");
+						var variantsPieChart = new Chart(ctxVariantsPieChart);
+						var dataVariantsPieChart = scope.variant.contributionItems;	 
+								if (dataVariantsPieChart instanceof jQuery) {
+									alert('jQuery');
+								}
+						new Chart(ctxVariantsPieChart).Pie(dataVariantsPieChart, {
+							animateRotate : true,
+							animateScale: true,
+							animationEasing : "easeOutQuart",
+							animationSteps : 50
   	    	    	    });
-   	    	    	    element.first().find('.legend-container').append('<div id="result-legend-' + scope.variant.id.toString() + '">Legend</div>');
-   	    	    	    legend(document.getElementById('result-legend-' + scope.variant.id.toString()), dataVariantsPieChart);
+   	    	    	    var legendContainer = element.first().find('.legend-container');
+						var legendContainerId = 'legend-container-' + scope.variant.id.toString();
+						legendContainer.attr('id', legendContainerId);
+						var resultLegend = document.createElement('div');
+						var resultLegendId = 'result-legend-' + scope.variant.id.toString();
+						resultLegend.id = resultLegendId;
+						document.getElementById(legendContainerId).appendChild(resultLegend);
+   	    	    	    legend(document.getElementById(resultLegendId), dataVariantsPieChart);
 	    	    	});
 	         	};
 	    	  return {
@@ -536,23 +577,31 @@
 		function legend(parent, data) {
             parent.className = 'legend';
             var datas = data.hasOwnProperty('datasets') ? data.datasets : data;
-
             while(parent.hasChildNodes()) {
                 parent.removeChild(parent.lastChild);
             }
 
-            datas.forEach(function(d) {
-                var title = document.createElement('div');
-                var bullet = document.createElement('span');
-                bullet.className = 'glyphicon glyphicon-minus'; 
-                bullet.style.color = d.hasOwnProperty('strokeColor') ? d.strokeColor : d.color;
-                title.className = 'title';
-                title.appendChild(bullet);
-                parent.appendChild(title);
-
-                var text = document.createTextNode(d.title);
-                title.appendChild(text);
-            });
+			var color = '';
+			angular.forEach(datas, function(process, key){
+				angular.forEach(process, function(value, key){
+					if (key == 'color') {
+						color = value;
+					}
+				});
+				angular.forEach(process, function(value, key){
+					if (key == 'title') {
+						var bullet = document.createElement('span');
+						bullet.className = 'glyphicon glyphicon-minus'; 
+						bullet.style.color = color;
+						var title = document.createElement('div');
+						title.className = 'title';
+						var text = document.createTextNode(value);
+						title.appendChild(bullet);
+						title.appendChild(text);
+						parent.appendChild(title);
+					}
+				});
+			});
         }
 
         function setData(report) {
@@ -562,6 +611,24 @@
                 scope.report = report;
             });
         }
+
+		function isIE(version, comparison) {
+			var cc = 'IE',
+			b = document.createElement('B'),
+			docElem = document.documentElement,
+			isIE;
+			if(version){
+				cc += ' ' + version;
+					if(comparison){
+						cc = comparison + ' ' + cc;
+					}
+			}
+			b.innerHTML = '<!--[if '+ cc +']><b id="iecctest"></b><![endif]-->';
+			docElem.appendChild(b);
+			isIE = !!document.getElementById('iecctest');
+			docElem.removeChild(b);
+			return isIE;
+		}
 
     </script>
 </body>
