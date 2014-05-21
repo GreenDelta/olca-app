@@ -70,7 +70,8 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		HelpAction helpAction = new HelpAction();
 		helpMenu.add(helpAction);
 		helpMenu.add(new Separator());
-		helpMenu.add(new PluginAction());
+		// Plugin manager can be shown if version check is implemented correctly
+		// helpMenu.add(new PluginAction());
 		helpMenu.add(aboutAction);
 		menuBar.add(helpMenu);
 	}

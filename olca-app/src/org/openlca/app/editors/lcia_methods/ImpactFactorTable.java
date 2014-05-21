@@ -192,7 +192,7 @@ class ImpactFactorTable implements ParameterPageListener {
 				return factor.getFlowPropertyFactor().getFlowProperty()
 						.getName();
 			case 3:
-				return factor.getUnit().getName();
+				return getFactorUnit(factor);
 			case 4:
 				if (factor.getFormula() == null || !showFormulas)
 					return Double.toString(factor.getValue());
@@ -203,6 +203,16 @@ class ImpactFactorTable implements ParameterPageListener {
 			default:
 				return null;
 			}
+		}
+
+		private String getFactorUnit(ImpactFactor factor) {
+			if (factor.getUnit() == null)
+				return null;
+			String impactUnit = category.getReferenceUnit();
+			if (Strings.notEmpty(impactUnit))
+				return impactUnit + "/" + factor.getUnit().getName();
+			else
+				return "1/" + factor.getUnit().getName();
 		}
 
 	}

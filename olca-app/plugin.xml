@@ -618,6 +618,13 @@
             id="wizard.export.ilcd.productsystem"
             name="%wizard.name.7">
       </wizard>
+       <wizard
+            category="export.category.ilcd"
+            class="org.openlca.app.wizards.io.ILCDExportMethodWizard"
+            icon="icons/ilcd16.png"
+            id="wizard.export.ilcd.method"
+            name="%wizard.name.8">
+      </wizard>
       <wizard
             category="export.category.ilcd"
             class="org.openlca.app.wizards.io.ILCDExportProcessWizard"
