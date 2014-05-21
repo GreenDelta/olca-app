@@ -139,6 +139,7 @@
 				</div>
 				<div total-chart="exp" result="totalResult">
 					<div id="result-total-canvas"></div>
+					<div id="result-total-legend-container" class="legend-container"></div>
 				</div>
 					<button class="pull-right btn btn-primary" data-ng-click="save(report)">Save</button>
 				</div>	
@@ -249,6 +250,11 @@
 							barDatasetSpacing : 1,
 							barValueSpacing : 20
 	    	      	    });
+						var resultLegend = document.createElement('div');
+						var resultLegendId = 'result-total-legend';
+						resultLegend.id = resultLegendId;
+						document.getElementById('result-total-legend-container').appendChild(resultLegend);
+   	    	    	    legend(document.getElementById(resultLegendId), dataTotalBarChart, 'variant');
 	    	    	});
 	         	};
 	    	  return {
@@ -290,7 +296,7 @@
 						var resultLegendId = 'result-legend-' + scope.variant.id.toString();
 						resultLegend.id = resultLegendId;
 						document.getElementById(legendContainerId).appendChild(resultLegend);
-   	    	    	    legend(document.getElementById(resultLegendId), dataVariantsPieChart);
+   	    	    	    legend(document.getElementById(resultLegendId), dataVariantsPieChart, 'process');
 	    	    	});
 	         	};
 	    	  return {
@@ -664,7 +670,7 @@
 							totalResult.datasets[index].data = [];
 						var relativeValue = variant.value / (indicator.maximum / 100);
             			totalResult.datasets[index].data.push(relativeValue);
-						console.log("color: " + variant.color);
+            			totalResult.datasets[index].title = variant.title;
 						totalResult.datasets[index].fillColor = variant.color;
 						totalResult.datasets[index].strokeColor = variant.color;	
         				index++;
@@ -697,7 +703,7 @@
 			});      	
 		}
 
-		function legend(parent, data) {
+		function legend(parent, data, type) {
             parent.className = 'legend';
             var datas = data.hasOwnProperty('datasets') ? data.datasets : data;
             while(parent.hasChildNodes()) {
@@ -707,8 +713,13 @@
 			var color = '';
 			angular.forEach(datas, function(process, key){
 				angular.forEach(process, function(value, key){
-					if (key == 'color') {
-						color = value;
+					if (type == 'process') {
+							if (key == 'color') {
+								color = value;
+								console.log('color: ' + color);
+							}
+					} else if (type == 'variant') {
+						color = process.fillColor;
 					}
 				});
 				angular.forEach(process, function(value, key){
