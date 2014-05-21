@@ -224,20 +224,20 @@ public class ConnectorDialog extends Dialog {
 		return true;
 	}
 
-	public ProcessDescriptor[] getProcessesToCreate() {
+	public List<ProcessDescriptor> getProcessesToCreate() {
 		List<ProcessDescriptor> processes = new ArrayList<>();
 		for (ConnectableProcess process : connectableProcesses)
 			if (process.doCreate())
 				processes.add(process.getProcess());
-		return processes.toArray(new ProcessDescriptor[processes.size()]);
+		return processes;
 	}
 
-	public ProcessDescriptor[] getProcessesToConnect() {
+	public List<ProcessDescriptor> getProcessesToConnect() {
 		List<ProcessDescriptor> processes = new ArrayList<>();
 		for (ConnectableProcess process : connectableProcesses)
 			if (process.doConnect())
 				processes.add(process.getProcess());
-		return processes.toArray(new ProcessDescriptor[processes.size()]);
+		return processes;
 	}
 
 	private class ConnectableProcess {

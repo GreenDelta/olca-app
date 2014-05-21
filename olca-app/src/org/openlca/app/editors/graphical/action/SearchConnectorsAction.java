@@ -16,12 +16,9 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.openlca.app.Messages;
 import org.openlca.app.editors.graphical.ConnectorDialog;
-import org.openlca.app.editors.graphical.command.CommandFactory;
-import org.openlca.app.editors.graphical.command.CreateLinkCommand;
-import org.openlca.app.editors.graphical.command.CreateProcessCommand;
+import org.openlca.app.editors.graphical.command.CommandUtil;
 import org.openlca.app.editors.graphical.model.ExchangeNode;
 import org.openlca.app.editors.graphical.model.ProcessNode;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 class SearchConnectorsAction extends EditorAction {
 
@@ -54,38 +51,18 @@ class SearchConnectorsAction extends EditorAction {
 	private void executeRequest(ExchangeNode exchangeNode) {
 		ConnectorDialog dialog = new ConnectorDialog(exchangeNode);
 		if (dialog.open() == IDialogConstants.OK_ID) {
-			Command command = null;
-			for (ProcessDescriptor process : dialog.getProcessesToCreate()) {
-				CreateProcessCommand newCommand = CommandFactory
-						.createCreateProcessCommand(node.getParent(), process);
-				if (command == null)
-					command = newCommand;
+			Command command = CommandUtil.buildCreateProcessesCommand(
+					dialog.getProcessesToCreate(), node.getParent());
+			CommandUtil.executeCommand(command, getEditor());
+			if (!dialog.getProcessesToConnect().isEmpty()) {
+				if (type == PROVIDER)
+					command = CommandUtil.buildConnectProvidersCommand(dialog
+							.getProcessesToConnect().get(0), exchangeNode);
 				else
-					command = command.chain(newCommand);
+					command = CommandUtil.buildConnectRecipientsCommand(
+							dialog.getProcessesToConnect(), exchangeNode);
+				CommandUtil.executeCommand(command, getEditor());
 			}
-			if (command != null)
-				node.getParent().getEditor().getCommandStack().execute(command);
-			command = null;
-			for (ProcessDescriptor process : dialog.getProcessesToConnect()) {
-				CreateLinkCommand newCommand = CommandFactory
-						.createCreateLinkCommand(exchangeNode.getExchange()
-								.getFlow().getId());
-				if (type == PROVIDER) {
-					newCommand.setSourceNode(node.getParent().getProcessNode(
-							process.getId()));
-					newCommand.setTargetNode(node);
-				} else {
-					newCommand.setSourceNode(node);
-					newCommand.setTargetNode(node.getParent().getProcessNode(
-							process.getId()));
-				}
-				if (command == null)
-					command = newCommand;
-				else
-					command = command.chain(newCommand);
-			}
-			if (command != null)
-				node.getParent().getEditor().getCommandStack().execute(command);
 		}
 	}
 
