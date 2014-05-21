@@ -13,6 +13,7 @@ import org.openlca.app.results.FlowImpactPage;
 import org.openlca.app.results.GroupPage;
 import org.openlca.app.results.LocationContributionPage;
 import org.openlca.app.results.NwResultPage;
+import org.openlca.app.results.ResultEditorInput;
 import org.openlca.app.results.TotalFlowResultPage;
 import org.openlca.app.results.TotalImpactResultPage;
 import org.openlca.app.results.analysis.sankey.SankeyDiagram;
@@ -52,7 +53,7 @@ public class AnalyzeEditor extends FormEditor {
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
 		super.init(site, input);
-		AnalyzeEditorInput editorInput = (AnalyzeEditorInput) input;
+		ResultEditorInput editorInput = (ResultEditorInput) input;
 		String resultKey = editorInput.getResultKey();
 		String setupKey = editorInput.getSetupKey();
 		FullResult result = Cache.getAppCache().remove(resultKey,

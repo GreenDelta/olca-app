@@ -12,6 +12,7 @@ import org.openlca.app.results.FlowImpactPage;
 import org.openlca.app.results.GroupPage;
 import org.openlca.app.results.LocationContributionPage;
 import org.openlca.app.results.NwResultPage;
+import org.openlca.app.results.ResultEditorInput;
 import org.openlca.app.results.TotalFlowResultPage;
 import org.openlca.app.results.TotalImpactResultPage;
 import org.openlca.app.results.viz.ContributionBubblePage;
@@ -35,7 +36,7 @@ public class QuickResultEditor extends FormEditor {
 			throws PartInitException {
 		super.init(site, editorInput);
 		try {
-			QuickResultInput input = (QuickResultInput) editorInput;
+			ResultEditorInput input = (ResultEditorInput) editorInput;
 			setup = Cache.getAppCache().get(input.getSetupKey(),
 					CalculationSetup.class);
 			ContributionResult result = Cache.getAppCache().get(

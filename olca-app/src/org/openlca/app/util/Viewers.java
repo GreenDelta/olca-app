@@ -35,7 +35,7 @@ public class Viewers {
 			return null;
 		IStructuredSelection structSelection = (IStructuredSelection) selection;
 		try {
-			// caller has to assign to right class
+			// caller has to assign the right class
 			@SuppressWarnings("unchecked")
 			T obj = (T) structSelection.getFirstElement();
 			return obj;

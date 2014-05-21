@@ -73,7 +73,7 @@ public class ImpactMethodEditor extends ModelEditor<ImpactMethod> implements
 			addPage(new ParameterPage(parameterSupport));
 			if (FeatureFlag.LOCALISED_LCIA.isEnabled()) {
 				addPage(new ShapeFilePage(this));
-				addPage(new ImpactLocalisationPage(this));
+				// addPage(new ImpactLocalisationPage(this));
 			}
 		} catch (Exception e) {
 			log.error("failed to add page", e);
