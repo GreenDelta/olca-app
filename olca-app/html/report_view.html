@@ -124,11 +124,22 @@
 					</p>
 					<div data-ng-if="section.componentId == 'parameter_table'" data-ng-include src="'parameters-table.html'"></div>
 					<div data-ng-if="section.componentId == 'variant_table'" data-ng-include src="'variants-table.html'"></div>
-					<div id="result-charts-include-container" data-ng-if="section.componentId == 'result_chart'" data-ng-include src="'result-charts.html'" onload="onResultChartsIncluded()"></div>
+					<div id="result-charts-include-container" data-ng-if="section.componentId == 'result_chart'" data-ng-include src="'result-charts.html'"></div>
 				</div>
 			</div>
-			<div class="row">
-				<div class="col-sm-12 box-row1">
+				<select id="indicatorSelection" class="form-control" data-ng-options="indicator as indicator.label for indicator in indicators" data-ng-model="selectedIndicator"></select>
+				<div data-ng-repeat="variant in selectedIndicator.variants" class="result-charts-container col-xs-12 col-sm-6 col-md-6 col-lg-4">
+					<div variants-charts="exp" variant="variant">
+						<div class="result-charts-variant-container">
+							<div class="variant-label alert alert-info">{{variant.label}}</div>
+								<div class="legend-container"></div>
+							<div class="result-canvas-container"></div>
+						</div>
+					</div>
+				</div>
+				<div total-chart="exp" result="totalResult">
+					<div id="result-total-canvas"></div>
+				</div>
 					<button class="pull-right btn btn-primary" data-ng-click="save(report)">Save</button>
 				</div>	
 			</div>
@@ -183,13 +194,16 @@
 	<script type="text/ng-template" id="result-charts.html">
 				<select id="indicatorSelection" class="form-control" data-ng-options="indicator as indicator.label for indicator in indicators" data-ng-model="selectedIndicator"></select>
 				<div data-ng-repeat="variant in selectedIndicator.variants" class="result-charts-container col-xs-12 col-sm-6 col-md-6 col-lg-4">
-					<div result-charts="exp" variant="variant">
+					<div variants-charts="exp" variant="variant">
 						<div class="result-charts-variant-container">
 							<div class="variant-label alert alert-info">{{variant.label}}</div>
 								<div class="legend-container"></div>
 							<div class="result-canvas-container"></div>
 						</div>
 					</div>
+				</div>
+				<div total-chart="exp" result="totalResult">
+					<div id="result-total-canvas"></div>
 				</div>
 	</script>
 
@@ -210,31 +224,46 @@
 	        };
 	    });
 
-	    /* var ctx = $("#result-total-canvas").get(0).getContext("2d");
-		var myNewChart = new Chart(ctx);
-	    var dataTotalBarChart = {
-	    		labels : ["January","February","March","April","May","June","July"],
-	    		datasets : [
-	    			{
-	    				fillColor : "rgba(220,220,220,0.5)",
-	    				strokeColor : "rgba(220,220,220,1)",
-	    				data : [65,59,90,81,56,55,40]
-	    			},
-	    			{
-	    				fillColor : "rgba(151,187,205,0.5)",
-	    				strokeColor : "rgba(151,187,205,1)",
-	    				data : [28,48,40,19,96,27,100]
-	    			}
-	    		]
-	    	}
-	    new Chart(ctx).Bar(dataTotalBarChart); */
-	    
-	    app.directive("resultCharts", function () {
+	    app.directive("totalChart", function () {
+	        var fn;
+	        fn = function(scope, element, attrs) {
+	    	    	$(document).ready(function () {
+	    	    		var containerId = 'result-total-canvas-container';
+	    	    		var canvasElement = document.createElement('canvas');
+	    	    		canvasElement.setAttribute("width", 800);
+	    	    		canvasElement.setAttribute("border", "1px solid white");
+	    	    		canvasElement.setAttribute("height", 300);
+	    	    		canvasElement.setAttribute("class", "mapping");
+	    	    		var canvasContainer = element.first().find('#result-total-canvas');
+	    	    		canvasContainer.attr('id', containerId);
+	    	    		document.getElementById(containerId).appendChild(canvasElement);
+	    	    		if (isIE(8,'lte')) {
+	    	    			canvasElement = G_vmlCanvasManager.initElement(canvasElement);
+	    	    		}
+	    	    		var ctxTotalBarChart = canvasElement.getContext("2d");
+	    	    		var totalBarChart = new Chart(ctxTotalBarChart);
+	    	    	    var dataTotalBarChart = scope.result;
+	    	    		new Chart(ctxTotalBarChart).Bar(dataTotalBarChart, {
+	    	    			animationEasing : "easeOutQuart",
+	    	    			animationSteps : 50,
+							barDatasetSpacing : 1,
+							barValueSpacing : 20
+	    	      	    });
+	    	    	});
+	         	};
+	    	  return {
+	    		    restrict: "EA",
+	    		    scope: { result: "=result" },
+	    			link: fn
+    		  }
+   		});
+
+	    app.directive("variantsCharts", function () {
 	        var fn;
 	        fn = function(scope, element, attrs) {
 	    	    	$(document).ready(function () {
 						var containerId = 'variant-chart-container-' + scope.variant.id.toString();
-						canvasElement = document.createElement('canvas');
+						var canvasElement = document.createElement('canvas');
 						canvasElement.setAttribute("width", 200);
 						canvasElement.setAttribute("border", "1px solid white");
 						canvasElement.setAttribute("height", 200);
@@ -248,9 +277,6 @@
 						var ctxVariantsPieChart = canvasElement.getContext("2d");
 						var variantsPieChart = new Chart(ctxVariantsPieChart);
 						var dataVariantsPieChart = scope.variant.contributionItems;	 
-								if (dataVariantsPieChart instanceof jQuery) {
-									alert('jQuery');
-								}
 						new Chart(ctxVariantsPieChart).Pie(dataVariantsPieChart, {
 							animateRotate : true,
 							animateScale: true,
@@ -269,7 +295,6 @@
 	         	};
 	    	  return {
 	    		    restrict: "EA",
-	    		    priority: 100,
 	    		    scope: { variant: "=variant" },
 	    			link: fn
     		  }
@@ -278,7 +303,6 @@
 	    var Controller = function ($scope) { 
 	    	var renderedcount = 0;
         	$scope.report = {};
-        	$scope.selectedIndicator = {};
             $scope.save = function (report) {
                 saveReport(angular.toJson(report));        
             }
@@ -290,11 +314,33 @@
             		    });
            	     });      	
             }
-            
+
             $scope.indicators = [{
             		"id" : 1,
-            	    "label" : "Indicator 1",
+            	    "label" : "Ozone Layer Depletion",
             	    "unit" : "kg",
+            	    "totals" : [
+            	    	{
+            	    		"title" : "Variant 1",
+            	    		"value" : 10
+            	    	},
+            	    	{
+            	    		"title" : "Variant 2",
+            	    		"value" : 20
+            	    	},
+            	    	{
+            	    		"title" : "Variant 3",
+            	    		"value" : 30
+            	    	},
+            	    	{
+            	    		"title" : "Variant 4",
+            	    		"value" : 40
+            	    	},
+            	    	{
+            	    		"title" : "Variant 5",
+            	    		"value" : 50
+            	    	}
+            	    ],
             	    "variants" : [   {
 						"id" : 1,
             	        "label" : "Variant 1",
@@ -323,8 +369,8 @@
             	                "title" : "Process 5",
             	                "value" : 50,
             	                "isRest" : true
-            	            }
-            	        ]
+            	            }],
+                	        "total" : 10
             	    },
             	    {
 						"id" : 2,
@@ -354,8 +400,8 @@
             	                "title" : "Process 5",
             	                "value" : 20,
             	                "isRest" : true
-            	            }
-            	        ]
+            	            }],
+                	        "total" : 300
             	    },
             	    {
 						"id" : 3,
@@ -375,8 +421,8 @@
             	                "title" : "Process 3",
             	                "value" : 50,
             	                "isRest" : true
-            	            }
-            	        ]
+            	            }],
+                	        "total" : 100
             	    },
             	    {
 						"id" : 4,
@@ -396,8 +442,8 @@
             	                "title" : "Process 3",
             	                "value" : 50,
             	                "isRest" : true
-            	            }
-            	        ]
+            	            }],
+                	        "total" : 50
             	    },
             	    {
 						"id" : 5,
@@ -417,16 +463,37 @@
             	                "title" : "Process 3",
             	                "value" : 50,
             	                "isRest" : true
-            	            }
-            	        ]
-            	    }
-            	    ]
+            	            }],
+                	        "total" : 25
+            	    }]
             	},
             	{
-            		"id" : 2,
-            	    "label" : "Indicator 2",
+            		"id" : 1,
+            	    "label" : "Abiotic Resource Depletion",
             	    "unit" : "kg",
-            	    "variants" : [   {
+            	    "totals" : [
+            	    	{
+            	    		"title" : "Variant 1",
+            	    		"value" : 345
+            	    	},
+            	    	{
+            	    		"title" : "Variant 2",
+            	    		"value" : 45
+            	    	},
+            	    	{
+            	    		"title" : "Variant 3",
+            	    		"value" : 12
+            	    	},
+            	    	{
+            	    		"title" : "Variant 4",
+            	    		"value" : 679
+            	    	},
+            	    	{
+            	    		"title" : "Variant 5",
+            	    		"value" : 45
+            	    	}
+            	    ],
+            	    "variants" : [{
 						"id" : 1,
             	        "label" : "Variant 1",
             	        "contributionItems" : [
@@ -454,8 +521,8 @@
             	                "title" : "Process 2.5",
             	                "value" : 50,
             	                "isRest" : true
-            	            }
-            	        ]
+            	            }],
+                	        "total" : 25
             	    },
             	    {
 						"id" : 2,
@@ -485,8 +552,8 @@
             	                "title" : "Process 5",
             	                "value" : 20,
             	                "isRest" : true
-            	            }
-            	        ]
+            	            }],
+                	        "total" : 25
             	    },
             	    {
 						"id" : 3,
@@ -506,8 +573,8 @@
             	                "title" : "Process 3",
             	                "value" : 50,
             	                "isRest" : true
-            	            }
-            	        ]
+            	            }],
+                	        "total" : 10
             	    },
             	    {
 						"id" : 4,
@@ -527,8 +594,8 @@
             	                "title" : "Process 3",
             	                "value" : 50,
             	                "isRest" : true
-            	            }
-            	        ]
+            	            }],
+                	        "total" : 10
             	    },
             	    {
 						"id" : 5,
@@ -548,32 +615,88 @@
             	                "title" : "Process 3",
             	                "value" : 50,
             	                "isRest" : true
-            	            }
-            	        ]
-            	    }
-            	    ]
+            	            }],
+                	        "total" : 10
+            	    }]
             	}];
-    	    
-    	    function applyResultChartAttributes(indicators) {
-    	    	var colors = [ "#E53039", "#296FC4", "#FFC923", "#52A84D", "#844CAD", "#7FB7E5", "#FF8900", "#359B58", "#319444", "#FCFF64" ];
-            	angular.forEach(indicators, function(indicator, key) {
-            		angular.forEach(indicator.variants, function(variant, key) {
-            			var index = 0;
-                		angular.forEach(variant.contributionItems, function(item, key){
-                			if (!item.isRest)
-                				item.color = colors[index];
-                			else
-                				item.color = "#AAA";
-                			index++;
-                		});
-           		    });
-           	     });      	
-    	   	}
+
+        	$scope.selectedIndicator = $scope.indicators[0];
+
     	   	applyResultChartAttributes($scope.indicators);
+			calculateRelativeResult($scope.indicators);
+            $scope.totalResult = getTotalResult($scope.indicators);
+
 		};
 
         app.controller('Controller', Controller);
         
+       function setData(report) {
+            var element = document.getElementById("contentDiv");
+            var scope = angular.element(element).scope();
+            scope.$apply(function () {
+                scope.report = report;
+            });
+        }
+
+		function calculateRelativeResult(indicators) {
+        	angular.forEach(indicators, function(indicator, key){
+				var maximum = 0;
+            		angular.forEach(indicator.totals, function(variant, key){
+						if (variant.value > maximum)
+							maximum = variant.value;
+        		    });
+					indicator.maximum = maximum;
+       	     });
+		}
+		
+        function getTotalResult(indicators) {
+        	var totalResult = {};
+        	totalResult.labels = [];
+        	totalResult.datasets = [];
+			for (variant in indicators[0].variants) {
+				totalResult.datasets.push({});
+			}
+        	angular.forEach(indicators, function(indicator, key){
+        			totalResult.labels.push(indicator.label);
+					var index = 0;
+            		angular.forEach(indicator.totals, function(variant, key){
+						if (!totalResult.datasets[index].data)
+							totalResult.datasets[index].data = [];
+						var relativeValue = variant.value / (indicator.maximum / 100);
+            			totalResult.datasets[index].data.push(relativeValue);
+						console.log("color: " + variant.color);
+						totalResult.datasets[index].fillColor = variant.color;
+						totalResult.datasets[index].strokeColor = variant.color;	
+        				index++;
+        		    });
+       	     });
+        	return totalResult;
+        }
+
+		function applyResultChartAttributes(indicators) {
+			var colors = [ "#E53039", "#296FC4", "#FFC923", "#52A84D", "#844CAD", "#7FB7E5", "#FF8900", "#359B58", "#319444", "#FCFF64" ];
+			angular.forEach(indicators, function(indicator, key) {
+				angular.forEach(indicator.variants, function(variant, key) {
+					var index = 0;
+					angular.forEach(variant.contributionItems, function(item, key){
+						if (!item.isRest)
+							item.color = colors[index];
+						else
+							item.color = "#AAA";
+						index++;
+					});
+				});
+				
+				var index = 0;
+				angular.forEach(indicator.totals, function(variant, key) {
+					var rgb = hexToRgb(colors[index]);
+					var color = 'rgba(' + rgb.r.toString() + ',' + rgb.g.toString() + ',' + rgb.b.toString() + ',' + '0.5)';
+					variant.color = color.toString();
+					index++;
+				});
+			});      	
+		}
+
 		function legend(parent, data) {
             parent.className = 'legend';
             var datas = data.hasOwnProperty('datasets') ? data.datasets : data;
@@ -604,13 +727,14 @@
 			});
         }
 
-        function setData(report) {
-            var element = document.getElementById("contentDiv");
-            var scope = angular.element(element).scope();
-            scope.$apply(function () {
-                scope.report = report;
-            });
-        }
+		function hexToRgb(hex) {
+			var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+			return result ? {
+				r: parseInt(result[1], 16),
+				g: parseInt(result[2], 16),
+				b: parseInt(result[3], 16)
+			} : null;
+		}
 
 		function isIE(version, comparison) {
 			var cc = 'IE',
