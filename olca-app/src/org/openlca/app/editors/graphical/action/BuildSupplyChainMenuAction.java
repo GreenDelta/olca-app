@@ -16,9 +16,13 @@ import org.openlca.core.model.ProcessType;
 class BuildSupplyChainMenuAction extends EditorAction {
 
 	private ProcessNode node;
-	private BuildSupplyChainAction systemBuild = new BuildSupplyChainAction(
+	private BuildSupplyChainAction systemSupplyChainAction = new BuildSupplyChainAction(
 			ProcessType.LCI_RESULT);
-	private BuildSupplyChainAction unitBuild = new BuildSupplyChainAction(
+	private BuildSupplyChainAction unitSupplyChainAction = new BuildSupplyChainAction(
+			ProcessType.UNIT_PROCESS);
+	private BuildNextTierAction systemNextTierAction = new BuildNextTierAction(
+			ProcessType.LCI_RESULT);
+	private BuildNextTierAction unitNextTierAction = new BuildNextTierAction(
 			ProcessType.UNIT_PROCESS);
 
 	BuildSupplyChainMenuAction() {
@@ -31,16 +35,27 @@ class BuildSupplyChainMenuAction extends EditorAction {
 	private class MenuCreator implements IMenuCreator {
 
 		private Menu createMenu(Menu menu) {
-			systemBuild.setNode(node);
-			MenuItem systemItem = new MenuItem(menu, SWT.NONE);
-			systemItem.setText(systemBuild.getText());
-			systemItem.addSelectionListener(new RunBuildListener(systemBuild));
-
-			unitBuild.setNode(node);
-			MenuItem unitItem = new MenuItem(menu, SWT.NONE);
-			unitItem.setText(unitBuild.getText());
-			unitItem.addSelectionListener(new RunBuildListener(unitBuild));
+			MenuItem completeItem = new MenuItem(menu, SWT.CASCADE);
+			completeItem.setText("Complete");
+			Menu completeMenu = new Menu(completeItem);
+			createItem(completeMenu, systemSupplyChainAction);
+			createItem(completeMenu, unitSupplyChainAction);
+			completeItem.setMenu(completeMenu);
+			
+			MenuItem nextTierItem = new MenuItem(menu, SWT.CASCADE);
+			nextTierItem.setText("Next tier");
+			Menu nextTierMenu = new Menu(nextTierItem);
+			createItem(nextTierMenu, systemNextTierAction);
+			createItem(nextTierMenu, unitNextTierAction);
+			nextTierItem.setMenu(nextTierMenu);
 			return menu;
+		}
+
+		private void createItem(Menu menu, IBuildAction action) {
+			action.setProcessNode(node);
+			MenuItem unitItem = new MenuItem(menu, SWT.NONE);
+			unitItem.setText(action.getText());
+			unitItem.addSelectionListener(new RunBuildListener(action));
 		}
 
 		@Override
@@ -67,15 +82,15 @@ class BuildSupplyChainMenuAction extends EditorAction {
 
 	private class RunBuildListener extends SelectionAdapter {
 
-		private BuildSupplyChainAction action;
+		private IBuildAction action;
 
-		private RunBuildListener(BuildSupplyChainAction action) {
+		private RunBuildListener(IBuildAction action) {
 			this.action = action;
 		}
 
 		@Override
 		public void widgetSelected(SelectionEvent e) {
-			action.setNode(node);
+			action.setProcessNode(node);
 			action.run();
 		}
 

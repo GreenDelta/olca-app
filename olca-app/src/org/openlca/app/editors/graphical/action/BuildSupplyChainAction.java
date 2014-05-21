@@ -19,7 +19,7 @@ import org.openlca.core.model.ProductSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class BuildSupplyChainAction extends Action {
+class BuildSupplyChainAction extends Action implements IBuildAction {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -33,7 +33,8 @@ class BuildSupplyChainAction extends Action {
 		this.preferredType = preferredType;
 	}
 
-	void setNode(ProcessNode node) {
+	@Override
+	public void setProcessNode(ProcessNode node) {
 		this.node = node;
 	}
 
