@@ -68,6 +68,7 @@ public class ProcessNode extends Node {
 				initializeExchangeNodes();
 		Dimension prefSize = getFigure().getPreferredSize(-1, -1);
 		xyLayoutConstraints = new Rectangle(layout.getLocation(), prefSize);
+		getFigure().setBounds(getXyLayoutConstraints());
 		getProcessFigure().getLeftExpander().setExpanded(
 				layout.isExpandedLeft());
 		getProcessFigure().getRightExpander().setExpanded(
