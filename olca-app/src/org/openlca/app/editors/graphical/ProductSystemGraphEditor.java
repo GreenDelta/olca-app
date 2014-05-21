@@ -27,12 +27,12 @@ import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.app.editors.graphical.model.TreeConnectionRouter;
 import org.openlca.app.editors.graphical.outline.OutlinePage;
+import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
 import org.openlca.app.editors.systems.ProductSystemEditor;
 import org.openlca.app.events.EventHandler;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
-import org.openlca.core.matrix.ProcessLinkSearchMap;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -50,6 +50,7 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 	private GraphicalViewerConfigurator configurator;
 	private ISelection selection;
 	private List<String> actionIds;
+	private boolean initialized = false;
 
 	public ProductSystemGraphEditor(ProductSystem system,
 			ProductSystemEditor editor) {
@@ -75,6 +76,14 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 
 	public ISelection getSelection() {
 		return selection;
+	}
+
+	public void setInitialized(boolean initialized) {
+		this.initialized = initialized;
+	}
+
+	public boolean isInitialized() {
+		return initialized;
 	}
 
 	@Override
@@ -133,23 +142,26 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 	}
 
 	public void createNecessaryLinks(ProcessNode node) {
-		ProcessLinkSearchMap linkSearch = node.getParent().getLinkSearch();
+		MutableProcessLinkSearchMap linkSearch = node.getParent()
+				.getLinkSearch();
 		long id = node.getProcess().getId();
 		for (ProcessLink link : linkSearch.getLinks(id)) {
 			long processId = link.getRecipientId() == id ? link.getProviderId()
 					: link.getRecipientId();
-			ProcessNode newNode = model.getProcessNode(processId);
-			if (newNode != null) {
-				ProcessNode sourceNode = link.getRecipientId() == id ? newNode
-						: node;
-				ProcessNode targetNode = link.getRecipientId() == id ? node
-						: newNode;
-				ConnectionLink connectionLink = new ConnectionLink();
-				connectionLink.setSourceNode(sourceNode);
-				connectionLink.setTargetNode(targetNode);
-				connectionLink.setProcessLink(link);
-				connectionLink.link();
-			}
+			ProcessNode otherNode = model.getProcessNode(processId);
+			if (otherNode == null)
+				continue;
+			ProcessNode sourceNode = link.getRecipientId() == id ? otherNode
+					: node;
+			ProcessNode targetNode = link.getRecipientId() == id ? node
+					: otherNode;
+			if (!sourceNode.isExpandedRight() && !targetNode.isExpandedLeft())
+				continue;
+			ConnectionLink connectionLink = new ConnectionLink();
+			connectionLink.setSourceNode(sourceNode);
+			connectionLink.setTargetNode(targetNode);
+			connectionLink.setProcessLink(link);
+			connectionLink.link();
 		}
 	}
 

@@ -2,6 +2,7 @@ package org.openlca.app.editors.lcia_methods;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -87,6 +88,7 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 	private void onAdd() {
 		ImpactMethod method = editor.getModel();
 		ImpactCategory category = new ImpactCategory();
+		category.setRefId(UUID.randomUUID().toString());
 		category.setName("New impact category");
 		method.getImpactCategories().add(category);
 		viewer.setInput(method.getImpactCategories());

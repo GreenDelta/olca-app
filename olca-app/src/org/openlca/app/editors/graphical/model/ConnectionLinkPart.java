@@ -129,11 +129,13 @@ class ConnectionLinkPart extends AbstractConnectionEditPart {
 
 	@Override
 	public void refreshSourceAnchor() {
+		// make public
 		super.refreshSourceAnchor();
 	}
 
 	@Override
 	public void refreshTargetAnchor() {
+		// make public
 		super.refreshTargetAnchor();
 	}
 

@@ -8,10 +8,10 @@ import org.eclipse.jface.wizard.Wizard;
 import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
+import org.openlca.app.results.ResultEditorInput;
 import org.openlca.app.results.analysis.AnalyzeEditor;
-import org.openlca.app.results.analysis.AnalyzeEditorInput;
 import org.openlca.app.results.quick.QuickResultEditor;
-import org.openlca.app.results.quick.QuickResultInput;
+import org.openlca.app.results.regionalized.RegionalizedResultEditor;
 import org.openlca.app.results.simulation.SimulationInit;
 import org.openlca.app.util.Editors;
 import org.openlca.core.math.CalculationSetup;
@@ -19,6 +19,8 @@ import org.openlca.core.math.SystemCalculator;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.results.ContributionResult;
 import org.openlca.core.results.FullResult;
+import org.openlca.geo.RegionalizedCalculator;
+import org.openlca.geo.RegionalizedResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,8 +50,9 @@ class CalculationWizard extends Wizard {
 	@Override
 	public boolean performFinish() {
 		CalculationSetup setup = calculationPage.getSetup();
+		CalculationType type = calculationPage.getCalculationType();
 		try {
-			getContainer().run(true, true, new Calculation(setup));
+			getContainer().run(true, true, new Calculation(setup, type));
 			return true;
 		} catch (Exception e) {
 			log.error("Calculation failed", e);
@@ -60,9 +63,11 @@ class CalculationWizard extends Wizard {
 	private class Calculation implements IRunnableWithProgress {
 
 		private CalculationSetup setup;
+		private CalculationType type;
 
-		public Calculation(CalculationSetup settings) {
-			this.setup = settings;
+		public Calculation(CalculationSetup setup, CalculationType type) {
+			this.setup = setup;
+			this.type = type;
 		}
 
 		@Override
@@ -71,12 +76,22 @@ class CalculationWizard extends Wizard {
 			monitor.beginTask("Run calculation", IProgressMonitor.UNKNOWN);
 			int size = productSystem.getProcesses().size();
 			log.trace("calculate a {} x {} system", size, size);
-			if (setup.hasType(CalculationSetup.QUICK_RESULT))
-				solve();
-			else if (setup.hasType(CalculationSetup.ANALYSIS))
+			switch (type) {
+			case ANALYSIS:
 				analyse();
-			else if (setup.hasType(CalculationSetup.MONTE_CARLO_SIMULATION))
+				break;
+			case MONTE_CARLO:
 				simulate();
+				break;
+			case QUICK:
+				solve();
+				break;
+			case REGIONALIZED:
+				calcRegionalized();
+				break;
+			default:
+				break;
+			}
 			monitor.done();
 		}
 
@@ -84,12 +99,9 @@ class CalculationWizard extends Wizard {
 			log.trace("run analysis");
 			SystemCalculator calculator = new SystemCalculator(
 					Cache.getMatrixCache(), App.getSolver());
-			FullResult analysisResult = calculator.calculateFull(setup);
+			FullResult result = calculator.calculateFull(setup);
 			log.trace("calculation done, open editor");
-			String resultKey = Cache.getAppCache().put(analysisResult);
-			String setupKey = Cache.getAppCache().put(setup);
-			AnalyzeEditorInput input = new AnalyzeEditorInput(setupKey,
-					resultKey);
+			ResultEditorInput input = getEditorInput(result);
 			Editors.open(input, AnalyzeEditor.ID);
 		}
 
@@ -97,14 +109,21 @@ class CalculationWizard extends Wizard {
 			log.trace("run quick calculation");
 			SystemCalculator calculator = new SystemCalculator(
 					Cache.getMatrixCache(), App.getSolver());
-			ContributionResult inventoryResult = calculator
+			ContributionResult result = calculator
 					.calculateContributions(setup);
 			log.trace("calculation done, open editor");
-			String resultKey = Cache.getAppCache().put(inventoryResult);
-			String setupKey = Cache.getAppCache().put(setup);
-			QuickResultInput input = new QuickResultInput(setup
-					.getProductSystem().getId(), resultKey, setupKey);
+			ResultEditorInput input = getEditorInput(result);
 			Editors.open(input, QuickResultEditor.ID);
+		}
+
+		private void calcRegionalized() {
+			log.trace("calculate regionalized result");
+			RegionalizedCalculator calculator = new RegionalizedCalculator(
+					Cache.getMatrixCache(), App.getSolver());
+			RegionalizedResult result = calculator.calculate(setup,
+					Cache.getEntityCache());
+			ResultEditorInput input = getEditorInput(result);
+			Editors.open(input, RegionalizedResultEditor.ID);
 		}
 
 		private void simulate() {
@@ -113,5 +132,13 @@ class CalculationWizard extends Wizard {
 					Cache.getMatrixCache());
 			init.run();
 		}
+
+		private ResultEditorInput getEditorInput(Object result) {
+			String resultKey = Cache.getAppCache().put(result);
+			String setupKey = Cache.getAppCache().put(setup);
+			return new ResultEditorInput(setup.getProductSystem().getId(),
+					resultKey, setupKey);
+		}
+
 	}
 }

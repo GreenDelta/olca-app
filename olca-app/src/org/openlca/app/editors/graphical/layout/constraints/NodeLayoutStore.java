@@ -75,7 +75,7 @@ public final class NodeLayoutStore {
 	public static boolean loadLayout(ProductSystemNode model) {
 		if (model == null)
 			return false;
-		File layoutFile = getLayoutFile(model);
+		File layoutFile = getLayoutFile(model.getProductSystem().getId());
 		if (!layoutFile.exists())
 			return false;
 		try {
@@ -96,9 +96,11 @@ public final class NodeLayoutStore {
 					ProcessDescriptor.class, layout.getId());
 			node = new ProcessNode(descriptor);
 			model.add(node);
+			node.apply(layout);
 			model.getEditor().createNecessaryLinks(node);
+		} else {
+			node.apply(layout);			
 		}
-		node.apply(layout);
 	}
 
 	private static List<NodeLayoutInfo> parseJson(File fromFile)
@@ -140,16 +142,15 @@ public final class NodeLayoutStore {
 
 	private static File createLayoutFile(ProductSystemNode model)
 			throws IOException {
-		File file = getLayoutFile(model);
+		File file = getLayoutFile(model.getProductSystem().getId());
 		if (file.exists())
 			file.delete();
 		file.createNewFile();
 		return file;
 	}
 
-	private static File getLayoutFile(ProductSystemNode model) {
+	private static File getLayoutFile(long id) {
 		File layoutStore = getLayoutStore();
-		long id = model.getProductSystem().getId();
 		File layoutFile = new File(layoutStore, id + ".json");
 		return layoutFile;
 	}
@@ -162,4 +163,11 @@ public final class NodeLayoutStore {
 		return layoutStore;
 	}
 
+	public static void deleteLayout(long productSystemId) {
+		File layoutFile = getLayoutFile(productSystemId);
+		if (!layoutFile.exists())
+			return;
+		if (!layoutFile.delete())
+			layoutFile.deleteOnExit();
+	}
 }

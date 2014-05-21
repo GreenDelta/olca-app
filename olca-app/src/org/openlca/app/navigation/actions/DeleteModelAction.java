@@ -18,6 +18,7 @@ import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Question;
+import org.openlca.app.util.Resources;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.usage.IUseSearch;
@@ -108,8 +109,8 @@ public class DeleteModelAction extends Action implements INavigationAction {
 			T instance = dao.getForId(descriptor.getId());
 			dao.delete(instance);
 			Cache.evict(descriptor);
+			Resources.cleanup(descriptor);
 			log.trace("element deleted");
-
 		} catch (Exception e) {
 			log.error("failed to delete element " + descriptor, e);
 		}

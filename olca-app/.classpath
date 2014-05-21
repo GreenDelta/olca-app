@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="libs/common-2.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/commons-jxpath-1.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/ecore-2.6.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/gt-graph-10.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/gt-xsd-core-10.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/gt-xsd-kml-10.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-geo-0.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/picocontainer-1.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/xsd-2.6.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/super-csv-2.1.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/bonecp-0.8.0.RELEASE.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/gt-swt-10.3.jar"/>
@@ -61,7 +70,7 @@
 	<classpathentry exported="true" kind="lib" path="libs/olca-ecospold-2-1.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-eigen-0.3.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-formula-1.0.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-ilcd-1.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-ilcd-1.0.0.jar" sourcepath="/olca-ilcd"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-io-1.0.0.jar" sourcepath="/olca-io"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-simapro-csv-1.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.antlr-3.2.0.v201206041011.jar"/>

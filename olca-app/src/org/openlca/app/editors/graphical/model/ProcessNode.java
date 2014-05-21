@@ -5,13 +5,14 @@ import java.util.List;
 
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Dimension;
+import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.layout.GraphLayoutManager;
 import org.openlca.app.editors.graphical.layout.constraints.NodeLayoutInfo;
+import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
 import org.openlca.core.database.ProcessDao;
-import org.openlca.core.matrix.ProcessLinkSearchMap;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Location;
@@ -56,8 +57,9 @@ public class ProcessNode extends Node {
 	@Override
 	protected void setFigure(IFigure figure) {
 		Dimension prefSize = figure.getPreferredSize(-1, -1);
-		xyLayoutConstraints = new Rectangle(0, 0, prefSize.width,
-				prefSize.height);
+		if (xyLayoutConstraints == null)
+			xyLayoutConstraints = new Rectangle(0, 0, prefSize.width,
+					prefSize.height);
 		super.setFigure(figure);
 	}
 
@@ -83,7 +85,6 @@ public class ProcessNode extends Node {
 				getEditPart().refreshSourceConnections();
 			if (equals(link.getTargetNode()))
 				getEditPart().refreshTargetConnections();
-			getProcessFigure().refresh();
 		}
 	}
 
@@ -94,7 +95,6 @@ public class ProcessNode extends Node {
 				getEditPart().refreshSourceConnections();
 			if (equals(link.getTargetNode()))
 				getEditPart().refreshTargetConnections();
-			getProcessFigure().refresh();
 		}
 	}
 
@@ -193,8 +193,11 @@ public class ProcessNode extends Node {
 	}
 
 	public void refresh() {
-		xyLayoutConstraints = new Rectangle(getProcessFigure().getLocation(),
-				getFigure().getPreferredSize());
+		Point location = getProcessFigure().getLocation();
+		if (xyLayoutConstraints != null)
+			location = xyLayoutConstraints.getLocation();
+		xyLayoutConstraints = new Rectangle(location, getFigure()
+				.getPreferredSize());
 		getProcessFigure().refresh();
 	}
 
@@ -242,7 +245,7 @@ public class ProcessNode extends Node {
 	}
 
 	public boolean hasIncomingConnection(long flowId) {
-		ProcessLinkSearchMap linkSearch = getParent().getLinkSearch();
+		MutableProcessLinkSearchMap linkSearch = getParent().getLinkSearch();
 		for (ProcessLink link : linkSearch.getIncomingLinks(getProcess()
 				.getId()))
 			if (link.getFlowId() == flowId)
@@ -258,14 +261,6 @@ public class ProcessNode extends Node {
 
 	public int getMinimumWidth() {
 		return ProcessFigure.MINIMUM_WIDTH;
-	}
-
-	public void setLinksHighlighted(boolean value) {
-		for (ConnectionLink link : links)
-			if (value)
-				link.setSelected(1);
-			else
-				link.setSelected(0);
 	}
 
 	public boolean hasConnections() {
@@ -291,11 +286,35 @@ public class ProcessNode extends Node {
 	}
 
 	public void collapseLeft() {
-		getProcessFigure().getLeftExpander().collapse();
+		if (!isExpandedLeft())
+			return;
+		getProcessFigure().getLeftExpander().collapse(this);
 	}
 
 	public void collapseRight() {
-		getProcessFigure().getRightExpander().collapse();
+		if (!isExpandedRight())
+			return;
+		getProcessFigure().getRightExpander().collapse(this);
+	}
+
+	/**
+	 * Used to avoid removing the initial node while collapsing, should only be
+	 * called from within ProcessExpander.collapse
+	 */
+	void collapseLeft(ProcessNode initialNode) {
+		if (!isExpandedLeft())
+			return;
+		getProcessFigure().getLeftExpander().collapse(initialNode);
+	}
+
+	/**
+	 * Used to avoid removing the initial node while collapsing, should only be
+	 * called from within ProcessExpander.collapse
+	 */
+	void collapseRight(ProcessNode initialNode) {
+		if (!isExpandedRight())
+			return;
+		getProcessFigure().getRightExpander().collapse(initialNode);
 	}
 
 	public void expandLeft() {
@@ -321,8 +340,12 @@ public class ProcessNode extends Node {
 				.getLayoutType());
 	}
 
-	public void setSelected(int value) {
-		getEditPart().setSelected(value);
+	public void select() {
+		getParent().getEditor().getGraphicalViewer().select(getEditPart());
+	}
+
+	public void reveal() {
+		getParent().getEditor().getGraphicalViewer().reveal(getEditPart());
 	}
 
 	@Override

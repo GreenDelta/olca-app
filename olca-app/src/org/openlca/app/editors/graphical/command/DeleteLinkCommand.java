@@ -27,11 +27,12 @@ public class DeleteLinkCommand extends Command {
 	public void execute() {
 		ProductSystemNode systemNode = link.getSourceNode().getParent();
 		linkWasVisible = link.isVisible();
-		this.link.unlink();
+		link.unlink();
 		systemNode.getProductSystem().getProcessLinks()
 				.remove(link.getProcessLink());
+		systemNode.getLinkSearch().remove(link.getProcessLink());
+		systemNode.refresh();
 		systemNode.getEditor().setDirty(true);
-		systemNode.reindexLinks();
 	}
 
 	@Override
@@ -41,12 +42,12 @@ public class DeleteLinkCommand extends Command {
 
 	@Override
 	public void redo() {
+		link.unlink();
 		ProductSystemNode systemNode = link.getSourceNode().getParent();
 		systemNode.getProductSystem().getProcessLinks()
 				.remove(link.getProcessLink());
-		this.link.unlink();
+		systemNode.getLinkSearch().remove(link.getProcessLink());
 		systemNode.getEditor().setDirty(true);
-		systemNode.reindexLinks();
 	}
 
 	@Override
@@ -54,10 +55,10 @@ public class DeleteLinkCommand extends Command {
 		ProductSystemNode systemNode = link.getSourceNode().getParent();
 		systemNode.getProductSystem().getProcessLinks()
 				.add(link.getProcessLink());
+		systemNode.getLinkSearch().put(link.getProcessLink());
 		link.link();
 		link.setVisible(linkWasVisible);
 		systemNode.getEditor().setDirty(true);
-		systemNode.reindexLinks();
 	}
 
 	void setLink(ConnectionLink link) {

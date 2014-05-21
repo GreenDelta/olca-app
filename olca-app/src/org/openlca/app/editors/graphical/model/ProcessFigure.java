@@ -114,23 +114,24 @@ class ProcessFigure extends Figure {
 	}
 
 	void refresh() {
+		leftExpander.refresh();
+		rightExpander.refresh();
 		int x = getLocation().x;
 		int y = getLocation().y;
-
 		Dimension p = calculateSize();
 		int width = p.width;
 		int height = p.height;
 		if (getSize().width > width)
 			width = getSize().width;
-		getParent().setConstraint(ProcessFigure.this,
+		if (getParent() == null)
+			return;
+		getParent().setConstraint(this,
 				new Rectangle(x - 1, y - 1, width, height));
 		for (ConnectionLink link : node.getLinks())
 			if (node.equals(link.getTargetNode()))
 				link.refreshTargetAnchor();
 			else
 				link.refreshSourceAnchor();
-		leftExpander.refresh();
-		rightExpander.refresh();
 	}
 
 	@Override
@@ -191,9 +192,9 @@ class ProcessFigure extends Figure {
 		graphics.drawLine(new Point(x + margin, y + MINIMUM_HEIGHT
 				+ TEXT_HEIGHT + MARGIN_HEIGHT), new Point(x + width - margin, y
 				+ MINIMUM_HEIGHT + TEXT_HEIGHT + MARGIN_HEIGHT));
-		graphics.drawLine(
-				new Point(x + width / 2, y + MINIMUM_HEIGHT + margin),
-				new Point(x + width / 2, y + height - margin));
+		if (height - margin > MINIMUM_HEIGHT + margin)
+			graphics.drawLine(new Point(x + width / 2, y + MINIMUM_HEIGHT
+					+ margin), new Point(x + width / 2, y + height - margin));
 
 		graphics.setForegroundColor(TEXT_COLOR);
 		graphics.drawText(Messages.Inputs, new Point(x + width / 6, y

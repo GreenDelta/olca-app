@@ -21,7 +21,26 @@ import org.openlca.app.resources.ImageType;
  */
 public class Actions {
 
-	public static final Action onAdd(final Runnable runnable) {
+	private Actions() {
+	}
+
+	public static Action create(final String title,
+			final ImageDescriptor image, final Runnable runnable) {
+		return new Action() {
+			{
+				setText(title);
+				setToolTipText(title);
+				setImageDescriptor(image);
+			}
+
+			@Override
+			public void run() {
+				runnable.run();
+			}
+		};
+	}
+
+	public static Action onAdd(final Runnable runnable) {
 		return new Action() {
 			{
 				setText(Messages.AddAction_Text);
@@ -38,7 +57,7 @@ public class Actions {
 		};
 	}
 
-	public static final Action onCalculate(final Runnable runnable) {
+	public static Action onCalculate(final Runnable runnable) {
 		return new Action() {
 			{
 				setText(Messages.Systems_CalculateButtonText);
@@ -52,7 +71,7 @@ public class Actions {
 		};
 	}
 
-	public static final Action onRemove(final Runnable runnable) {
+	public static Action onRemove(final Runnable runnable) {
 		return new Action() {
 			{
 				setText(Messages.RemoveAction_Text);
@@ -69,17 +88,18 @@ public class Actions {
 		};
 	}
 
-	public static final Action onSave(final Runnable runnable) {
+	public static Action onSave(final Runnable runnable) {
 		return new Action() {
 			{
 				setText(Messages.Save);
 				setToolTipText(Messages.Save);
-				ISharedImages images = PlatformUI.getWorkbench().getSharedImages();
-				ImageDescriptor image = images.getImageDescriptor(
-						ISharedImages.IMG_ETOOL_SAVE_EDIT);
+				ISharedImages images = PlatformUI.getWorkbench()
+						.getSharedImages();
+				ImageDescriptor image = images
+						.getImageDescriptor(ISharedImages.IMG_ETOOL_SAVE_EDIT);
 				setImageDescriptor(image);
-				ImageDescriptor imageDis = images.getImageDescriptor(
-						ISharedImages.IMG_ETOOL_SAVE_EDIT_DISABLED);
+				ImageDescriptor imageDis = images
+						.getImageDescriptor(ISharedImages.IMG_ETOOL_SAVE_EDIT_DISABLED);
 				setDisabledImageDescriptor(imageDis);
 			}
 

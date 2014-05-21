@@ -3,6 +3,7 @@ package org.openlca.app.util;
 import java.util.List;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
@@ -36,7 +37,8 @@ public class Tables {
 	 * <li>grid data with horizontal and vertical fill
 	 * 
 	 */
-	public static TableViewer createViewer(Composite parent, String[] properties) {
+	public static TableViewer createViewer(Composite parent,
+			String... properties) {
 		TableViewer viewer = new TableViewer(parent, SWT.BORDER
 				| SWT.FULL_SELECTION | SWT.VIRTUAL);
 		viewer.setContentProvider(new ArrayContentProvider());
@@ -105,6 +107,16 @@ public class Tables {
 		});
 	}
 
+	public static <T> void makeSortable(Class<T> contentType,
+			TableViewer viewer, ITableLabelProvider labelProvider, int... cols) {
+		TableColumnSorter<?>[] sorters = new TableColumnSorter<?>[cols.length];
+		for (int i = 0; i < cols.length; i++) {
+			sorters[i] = new TableColumnSorter<>(contentType, cols[i],
+					labelProvider);
+		}
+		registerSorters(viewer, sorters);
+	}
+
 	public static void registerSorters(final TableViewer viewer,
 			TableColumnSorter<?>... sorters) {
 		if (viewer == null || sorters == null)
@@ -114,8 +126,6 @@ public class Tables {
 		for (final TableColumnSorter<?> sorter : sorters) {
 			if (sorter.getColumn() >= count)
 				continue;
-			if (sorter.getColumn() == 0)
-				viewer.setSorter(sorter);
 			final TableColumn column = table.getColumn(sorter.getColumn());
 			column.addSelectionListener(new SelectionAdapter() {
 				@Override

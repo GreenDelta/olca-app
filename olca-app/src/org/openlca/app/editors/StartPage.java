@@ -152,6 +152,16 @@ public class StartPage extends FormEditor {
 			return "Welcome";
 		}
 
+		@Override
+		public boolean equals(Object obj) {
+			if (obj == this)
+				return true;
+			if (obj == null)
+				return false;
+			if (obj instanceof StartPageInput)
+				return true;
+			else
+				return false;
+		}
 	}
-
 }

@@ -19,6 +19,7 @@ import org.eclipse.ui.application.IActionBarConfigurer;
 import org.openlca.app.Config;
 import org.openlca.app.Messages;
 import org.openlca.app.db.sql.SqlEditor;
+import org.openlca.app.editors.StartPage;
 import org.openlca.app.rcp.plugins.PluginManagerDialog;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Desktop;
@@ -40,7 +41,6 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	private IWorkbenchAction saveAllAction;
 	private IWorkbenchAction saveAsAction;
 	private IContributionItem showViews;
-	private IWorkbenchAction introAction;
 
 	public RcpActionBarAdvisor(IActionBarConfigurer configurer) {
 		super(configurer);
@@ -48,17 +48,12 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 
 	@Override
 	protected void fillCoolBar(ICoolBarManager coolBar) {
-		IToolBarManager saveToolbar = new ToolBarManager(SWT.FLAT | SWT.RIGHT);
-		saveToolbar.add(saveAction);
-		saveToolbar.add(saveAsAction);
-		saveToolbar.add(saveAllAction);
-		coolBar.add(saveToolbar);
-		if (introAction != null) {
-			IToolBarManager welcomeToolbar = new ToolBarManager(SWT.FLAT
-					| SWT.RIGHT);
-			welcomeToolbar.add(introAction);
-			coolBar.add(welcomeToolbar);
-		}
+		IToolBarManager toolbar = new ToolBarManager(SWT.FLAT | SWT.RIGHT);
+		toolbar.add(new HomeAction());
+		toolbar.add(saveAction);
+		toolbar.add(saveAsAction);
+		toolbar.add(saveAllAction);
+		coolBar.add(toolbar);
 	}
 
 	@Override
@@ -72,12 +67,11 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	private void fillHelpMenu(IMenuManager menuBar) {
 		MenuManager helpMenu = new MenuManager(Messages.Menu_Help,
 				IWorkbenchActionConstants.M_HELP);
-		if (introAction != null)
-			helpMenu.add(introAction);
 		HelpAction helpAction = new HelpAction();
 		helpMenu.add(helpAction);
 		helpMenu.add(new Separator());
-		helpMenu.add(new PluginAction());
+		// Plugin manager can be shown if version check is implemented correctly
+		// helpMenu.add(new PluginAction());
 		helpMenu.add(aboutAction);
 		menuBar.add(helpMenu);
 	}
@@ -117,7 +111,6 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 
 	@Override
 	protected void makeActions(final IWorkbenchWindow window) {
-
 		saveAction = ActionFactory.SAVE.create(window);
 		saveAsAction = ActionFactory.SAVE_AS.create(window);
 		saveAllAction = ActionFactory.SAVE_ALL.create(window);
@@ -131,7 +124,6 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		newEditorAction = ActionFactory.NEW_EDITOR.create(window);
 		showViews = ContributionItemFactory.VIEWS_SHORTLIST.create(window);
 		aboutAction = ActionFactory.ABOUT.create(window);
-
 	}
 
 	private class HelpAction extends Action {
@@ -172,6 +164,19 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		@Override
 		public void run() {
 			SqlEditor.open();
+		}
+	}
+
+	private class HomeAction extends Action {
+		public HomeAction() {
+			setImageDescriptor(ImageType.HOME_ICON.getDescriptor());
+			setText("Home");
+			setToolTipText("Open welcome page");
+		}
+
+		@Override
+		public void run() {
+			StartPage.open();
 		}
 	}
 }

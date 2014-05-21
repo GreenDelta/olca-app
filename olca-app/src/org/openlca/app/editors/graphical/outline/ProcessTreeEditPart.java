@@ -29,7 +29,8 @@ public class ProcessTreeEditPart extends AbstractTreeEditPart {
 		super.setSelected(value);
 		for (ProcessNode node : this.node.getChildren()) {
 			if (node.getProcess().getId() == getModel().getId()) {
-				node.setSelected(value);
+				node.select();
+				node.reveal();
 				break;
 			}
 		}
