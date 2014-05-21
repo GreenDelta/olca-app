@@ -73,6 +73,7 @@ public class Messages extends NLS {
 	public static String Code;
 	public static String Comment;
 	public static String CompareProductSystemsForMethod;
+	public static String Complete;
 	public static String CompleteRefData;
 	public static String Connect;
 	public static String Connecting;
@@ -304,6 +305,7 @@ public class Messages extends NLS {
 	public static String Rename;
 	public static String NavigationView_YesAllButton;
 	public static String NavigationView_YesButton;
+	public static String NextTier;
 	public static String Never;
 	public static String NewCategoryDialogDefault;
 	public static String NewCategoryDialogText;

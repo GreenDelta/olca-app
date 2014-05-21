@@ -36,14 +36,14 @@ class BuildSupplyChainMenuAction extends EditorAction {
 
 		private Menu createMenu(Menu menu) {
 			MenuItem completeItem = new MenuItem(menu, SWT.CASCADE);
-			completeItem.setText("Complete");
+			completeItem.setText(Messages.Complete);
 			Menu completeMenu = new Menu(completeItem);
 			createItem(completeMenu, systemSupplyChainAction);
 			createItem(completeMenu, unitSupplyChainAction);
 			completeItem.setMenu(completeMenu);
 			
 			MenuItem nextTierItem = new MenuItem(menu, SWT.CASCADE);
-			nextTierItem.setText("Next tier");
+			nextTierItem.setText(Messages.NextTier);
 			Menu nextTierMenu = new Menu(nextTierItem);
 			createItem(nextTierMenu, systemNextTierAction);
 			createItem(nextTierMenu, unitNextTierAction);
