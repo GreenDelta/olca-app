@@ -10,7 +10,11 @@ enum Resource {
 
 	USAGE_VIEW_JS("js" + File.separator + "usage_view.js"),
 
-	OLCA_CHARTS_JS("js" + File.separator + "olca.charts.js");
+	OLCA_CHARTS_JS("js" + File.separator + "olca.charts.js"),
+
+	ANGULAR_UI("js" + File.separator + "angularui.min.js"),
+
+	EXPLORER_CANVAS("js" + File.separator + "excanvas.js");
 
 	private IHtmlResource resource;
 	private Resource[] dependencies;
