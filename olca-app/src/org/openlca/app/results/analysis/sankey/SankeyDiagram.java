@@ -228,7 +228,7 @@ public class SankeyDiagram extends GraphicalEditor implements
 
 	// TODO: avoid double calculation here
 	private void initContent() {
-		Object defaultSelection = getDefaultSelection(result);
+		Object defaultSelection = getDefaultSelection();
 		if (defaultSelection == null) {
 			getGraphicalViewer().setContents(
 					new ProductSystemNode(productSystem, this, null, 0.1));
@@ -239,7 +239,7 @@ public class SankeyDiagram extends GraphicalEditor implements
 		update(defaultSelection, cutoff);
 	}
 
-	private Object getDefaultSelection(FullResultProvider result) {
+	public Object getDefaultSelection() {
 		if (result == null)
 			return null;
 		if (result.hasImpactResults()) {
