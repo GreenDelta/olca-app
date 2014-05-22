@@ -25,7 +25,7 @@
 	<classpathentry exported="true" kind="lib" path="libs/commons-pool-1.5.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/derby-10.10.1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/dom4j-1.6.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/gson-2.2.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/gson-2.2.2.jar" sourcepath="C:/Users/Martin Pluta/.m2/repository/com/google/code/gson/gson/2.2.2/gson-2.2.2-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/gt-api-10.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/gt-coverage-10.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/gt-cql-10.3.jar"/>

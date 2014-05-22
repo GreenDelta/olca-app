@@ -12,6 +12,8 @@ public class Report extends RootEntity {
 	private String title;
 	private transient Project project;
 	private List<ReportSection> sections = new ArrayList<>();
+	private List<ReportParameter> parameters = new ArrayList<>();
+	private List<ReportVariant> variants = new ArrayList<>();
 
 	@Override
 	public Report clone() {
@@ -44,5 +46,13 @@ public class Report extends RootEntity {
 
 	public List<ReportSection> getSections() {
 		return sections;
+	}
+
+	public List<ReportParameter> getParameters() {
+		return parameters;
+	}
+
+	public List<ReportVariant> getVariants() {
+		return variants;
 	}
 }
