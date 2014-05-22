@@ -103,6 +103,9 @@
 		.legend .glyphicon {
 			margin-right: 10px;
 		}
+		#result-total-container {
+			margin-bottom: 25px;		
+		}
 		#indicatorSelection {
 			max-width: 400px;
 			margin-bottom: 25px;
@@ -125,22 +128,11 @@
 					<div data-ng-if="section.componentId == 'parameter_table'" data-ng-include src="'parameters-table.html'"></div>
 					<div data-ng-if="section.componentId == 'variant_table'" data-ng-include src="'variants-table.html'"></div>
 					<div id="result-charts-include-container" data-ng-if="section.componentId == 'result_chart'" data-ng-include src="'result-charts.html'"></div>
+					<div data-ng-if="section.componentId == 'result_table'" data-ng-include src="'result-table.html'"></div>
 				</div>
 			</div>
-				<select id="indicatorSelection" class="form-control" data-ng-options="indicator as indicator.label for indicator in indicators" data-ng-model="selectedIndicator"></select>
-				<div data-ng-repeat="variant in selectedIndicator.variants" class="result-charts-container col-xs-12 col-sm-6 col-md-6 col-lg-4">
-					<div variants-charts="exp" variant="variant">
-						<div class="result-charts-variant-container">
-							<div class="variant-label alert alert-info">{{variant.label}}</div>
-								<div class="legend-container"></div>
-							<div class="result-canvas-container"></div>
-						</div>
-					</div>
-				</div>
-				<div total-chart="exp" result="totalResult">
-					<div id="result-total-canvas"></div>
-					<div id="result-total-legend-container" class="legend-container"></div>
-				</div>
+			<div class="row">
+				<div class="col-sm-12 box-row1">
 					<button class="pull-right btn btn-primary" data-ng-click="save(report)">Save</button>
 				</div>	
 			</div>
@@ -177,15 +169,35 @@
 	<script type="text/ng-template" id="variants-table.html">
 		<div class="table-responsive">
 			<table class="table table-hover">
-				<thead><tr><th>Variant</th></tr></thead>
+				<thead><tr><th>Variant</th><th>Description</th></tr></thead>
 				<tbody>
 				<tr data-ng-repeat="variant in report.variants | orderBy:'section.name':true">
 					<td>
-						<popover>
-						<button class="popoverButton btn btn-default" data-toggle="popover" data-content="{{variant.description}}"><span class="glyphicon glyphicon-comment"></span></button>
 						{{variant.userFriendlyName}}
 					</td>
-					<!-- <td><input type="text" class="form-control" placeholder="Enter value" data-ng-model="variants.userFriendlyName"></td> -->
+					<td>
+						{{variant.description}}
+					</td>
+				</tr>
+                </tbody>
+			</table>
+		</div>
+	</script>
+
+	<script type="text/ng-template" id="result-table.html">
+		<div class="table-responsive">
+			<table class="table table-hover">
+				<thead><tr><th>Variant</th>
+							<th data-ng-repeat="label in totalResult.labels">{{label}}</th>
+						</tr></thead>
+				<tbody>
+				<tr data-ng-repeat="variant in totalResult.datasets">
+					<td>
+						{{variant.title}}
+					</td>
+					<td data-ng-repeat="value in variant.values">
+						{{value}}
+					</td>
 				</tr>
                 </tbody>
 			</table>
@@ -193,6 +205,12 @@
 	</script>
 
 	<script type="text/ng-template" id="result-charts.html">
+				<div id="result-total-container" class="col-xs-12">
+					<div total-chart="exp" result="totalResult">
+						<div id="result-total-legend-container" class="legend-container"></div>
+						<div id="result-total-canvas"></div>
+					</div>
+				</div>
 				<select id="indicatorSelection" class="form-control" data-ng-options="indicator as indicator.label for indicator in indicators" data-ng-model="selectedIndicator"></select>
 				<div data-ng-repeat="variant in selectedIndicator.variants" class="result-charts-container col-xs-12 col-sm-6 col-md-6 col-lg-4">
 					<div variants-charts="exp" variant="variant">
@@ -202,9 +220,6 @@
 							<div class="result-canvas-container"></div>
 						</div>
 					</div>
-				</div>
-				<div total-chart="exp" result="totalResult">
-					<div id="result-total-canvas"></div>
 				</div>
 	</script>
 
@@ -668,6 +683,9 @@
             		angular.forEach(indicator.totals, function(variant, key){
 						if (!totalResult.datasets[index].data)
 							totalResult.datasets[index].data = [];
+						if (!totalResult.datasets[index].values)
+							totalResult.datasets[index].values = [];
+            			totalResult.datasets[index].values.push(variant.value);
 						var relativeValue = variant.value / (indicator.maximum / 100);
             			totalResult.datasets[index].data.push(relativeValue);
             			totalResult.datasets[index].title = variant.title;
