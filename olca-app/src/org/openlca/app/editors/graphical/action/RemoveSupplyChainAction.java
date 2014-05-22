@@ -24,7 +24,8 @@ class RemoveSupplyChainAction extends EditorAction {
 	private Set<ProcessNode> nodes = new HashSet<>();
 	private Set<ProcessLink> links = new HashSet<>();
 	private Set<Long> processIds = new HashSet<>();
-	private MutableProcessLinkSearchMap linkSearch; // only used in collectSupplyChain
+	private MutableProcessLinkSearchMap linkSearch; // only used in
+													// collectSupplyChain
 
 	RemoveSupplyChainAction() {
 		setId(ActionIds.REMOVE_SUPPLY_CHAIN);
@@ -33,6 +34,7 @@ class RemoveSupplyChainAction extends EditorAction {
 
 	@Override
 	public void run() {
+		clear();
 		ProductSystem system = getEditor().getModel().getProductSystem();
 		long refId = system.getReferenceProcess().getId();
 		if (refId == node.getProcess().getId()) {
@@ -41,6 +43,9 @@ class RemoveSupplyChainAction extends EditorAction {
 					nodes.add(node);
 					connections.addAll(node.getLinks());
 				}
+			processIds.addAll(system.getProcesses());
+			processIds.remove(refId);
+			links.addAll(system.getProcessLinks());
 		} else {
 			linkSearch = new MutableProcessLinkSearchMap(
 					system.getProcessLinks());
@@ -49,6 +54,13 @@ class RemoveSupplyChainAction extends EditorAction {
 		if (connections.size() > 0 || nodes.size() > 0 || links.size() > 0
 				|| processIds.size() > 0)
 			getEditor().getCommandStack().execute(new RemoveCommand());
+	}
+
+	private void clear() {
+		processIds.clear();
+		links.clear();
+		nodes.clear();
+		connections.clear();
 	}
 
 	private void collectSupplyChain(long processId) {
@@ -106,21 +118,17 @@ class RemoveSupplyChainAction extends EditorAction {
 			for (ConnectionLink link : connections) {
 				visibility.put(getKey(link.getProcessLink()), link.isVisible());
 				link.unlink();
-				system.getProcessLinks().remove(link.getProcessLink());
-				systemNode.getLinkSearch().remove(link.getProcessLink());
+				links.add(link.getProcessLink());
 			}
-			for (ProcessLink link : links) {
-				system.getProcessLinks().remove(link);
-				systemNode.getLinkSearch().remove(link);
-			}
+			system.getProcessLinks().removeAll(links);
+			systemNode.getLinkSearch().removeAll(links);
 			for (ProcessNode processNode : nodes) {
 				layouts.put(processNode.getProcess().getId(),
 						processNode.getXyLayoutConstraints());
-				system.getProcesses().remove(processNode.getProcess().getId());
 				systemNode.remove(processNode);
+				processIds.add(processNode.getProcess().getId());
 			}
-			for (long processId : processIds)
-				system.getProcesses().remove(processId);
+			system.getProcesses().removeAll(processIds);
 			refresh();
 		}
 

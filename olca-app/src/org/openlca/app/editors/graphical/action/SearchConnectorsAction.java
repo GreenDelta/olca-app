@@ -16,9 +16,13 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.openlca.app.Messages;
 import org.openlca.app.editors.graphical.ConnectorDialog;
+import org.openlca.app.editors.graphical.command.CommandFactory;
 import org.openlca.app.editors.graphical.command.CommandUtil;
+import org.openlca.app.editors.graphical.command.ConnectionInput;
 import org.openlca.app.editors.graphical.model.ExchangeNode;
 import org.openlca.app.editors.graphical.model.ProcessNode;
+import org.openlca.app.editors.graphical.model.ProductSystemNode;
+import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 class SearchConnectorsAction extends EditorAction {
 
@@ -49,20 +53,28 @@ class SearchConnectorsAction extends EditorAction {
 	}
 
 	private void executeRequest(ExchangeNode exchangeNode) {
+		ProductSystemNode model = node.getParent();
+		long flowId = exchangeNode.getExchange().getFlow().getId();
+		long nodeId = node.getProcess().getId();
 		ConnectorDialog dialog = new ConnectorDialog(exchangeNode);
 		if (dialog.open() == IDialogConstants.OK_ID) {
-			Command command = CommandUtil.buildCreateProcessesCommand(
-					dialog.getProcessesToCreate(), node.getParent());
-			CommandUtil.executeCommand(command, getEditor());
-			if (!dialog.getProcessesToConnect().isEmpty()) {
+			List<ProcessDescriptor> toCreate = dialog.getProcessesToCreate();
+			List<ConnectionInput> toConnect = new ArrayList<>();
+			for (ProcessDescriptor process : dialog.getProcessesToConnect())
 				if (type == PROVIDER)
-					command = CommandUtil.buildConnectProvidersCommand(dialog
-							.getProcessesToConnect().get(0), exchangeNode);
-				else
-					command = CommandUtil.buildConnectRecipientsCommand(
-							dialog.getProcessesToConnect(), exchangeNode);
-				CommandUtil.executeCommand(command, getEditor());
-			}
+					toConnect.add(new ConnectionInput(process.getId(), nodeId,
+							flowId));
+				else if (type == RECIPIENTS)
+					toConnect.add(new ConnectionInput(nodeId, process.getId(),
+							flowId));
+			Command command = null;
+			if (type == PROVIDER)
+				command = CommandFactory.createConnectProvidersCommand(
+						toCreate, toConnect, model);
+			else if (type == RECIPIENTS)
+				command = CommandFactory.createConnectRecipientsCommand(
+						toCreate, toConnect, model);
+			CommandUtil.executeCommand(command, model.getEditor());
 		}
 	}
 

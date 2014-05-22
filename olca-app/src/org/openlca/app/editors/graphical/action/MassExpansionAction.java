@@ -4,6 +4,7 @@ import org.eclipse.jface.action.Action;
 import org.openlca.app.Messages;
 import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
 import org.openlca.app.resources.ImageType;
+import org.openlca.app.util.Question;
 
 class MassExpansionAction extends Action {
 
@@ -28,10 +29,21 @@ class MassExpansionAction extends Action {
 
 	@Override
 	public void run() {
-		if (type == EXPAND)
-			editor.expand();
-		else if (type == COLLAPSE)
+		if (type == EXPAND) {
+			if (areYouSure())
+				editor.expand();
+		} else if (type == COLLAPSE)
 			editor.collapse();
+	}
+
+	private boolean areYouSure() {
+		int amount = editor.getModel().getProductSystem().getProcesses().size();
+		if (amount < 500)
+			return true;
+		String title = Messages.Systems_ExpandAllQuestion_Title;
+		String text = Messages.bind(Messages.Systems_ExpandAllQuestion_Text,
+				amount);
+		return Question.ask(title, text);
 	}
 
 	void setEditor(ProductSystemGraphEditor editor) {

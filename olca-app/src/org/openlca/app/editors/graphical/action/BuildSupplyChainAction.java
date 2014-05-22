@@ -6,11 +6,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.osgi.util.NLS;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
 import org.openlca.app.editors.graphical.model.ProcessNode;
-import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.IProductSystemBuilder;
 import org.openlca.core.matrix.LongPair;
@@ -24,18 +22,20 @@ class BuildSupplyChainAction extends Action implements IBuildAction {
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	private ProcessNode node;
-	private ProcessType preferredType;
+	private ProcessType preferredType = ProcessType.UNIT_PROCESS;
 
-	BuildSupplyChainAction(ProcessType preferredType) {
+	BuildSupplyChainAction() {
 		setId(ActionIds.BUILD_SUPPLY_CHAIN);
-		String processType = Labels.processType(preferredType);
-		setText(NLS.bind(Messages.Systems_Prefer, processType));
-		this.preferredType = preferredType;
+		setText(Messages.Complete);
 	}
 
 	@Override
 	public void setProcessNode(ProcessNode node) {
 		this.node = node;
+	}
+
+	void setPreferredType(ProcessType preferredType) {
+		this.preferredType = preferredType;
 	}
 
 	@Override

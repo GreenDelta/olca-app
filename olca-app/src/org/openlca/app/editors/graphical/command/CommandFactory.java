@@ -9,7 +9,10 @@ import static org.openlca.app.editors.graphical.command.HideShowCommand.SHOW;
 import static org.openlca.app.editors.graphical.command.XYLayoutCommand.MOVE;
 import static org.openlca.app.editors.graphical.command.XYLayoutCommand.RESIZE;
 
+import java.util.List;
+
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.openlca.app.Messages;
 import org.openlca.app.editors.graphical.layout.GraphLayoutManager;
 import org.openlca.app.editors.graphical.layout.GraphLayoutType;
 import org.openlca.app.editors.graphical.model.ConnectionLink;
@@ -117,6 +120,39 @@ public class CommandFactory {
 		return command;
 	}
 
+	public static MassCreationCommand createBuildNextTierCommand(
+			List<ProcessDescriptor> processesToCreate,
+			List<ConnectionInput> newConnections, ProductSystemNode model) {
+		return createMassCreationCommand(processesToCreate, newConnections,
+				model, Messages.BuildNextTier);
+	}
+
+	public static MassCreationCommand createConnectProvidersCommand(
+			List<ProcessDescriptor> processesToCreate,
+			List<ConnectionInput> newConnections, ProductSystemNode model) {
+		return createMassCreationCommand(processesToCreate, newConnections,
+				model, Messages.ConnectProviders);
+	}
+
+	public static MassCreationCommand createConnectRecipientsCommand(
+			List<ProcessDescriptor> processesToCreate,
+			List<ConnectionInput> newConnections, ProductSystemNode model) {
+		return createMassCreationCommand(processesToCreate, newConnections,
+				model, Messages.ConnectRecipients);
+	}
+
+	private static MassCreationCommand createMassCreationCommand(
+			List<ProcessDescriptor> processesToCreate,
+			List<ConnectionInput> newConnections, ProductSystemNode model,
+			String label) {
+		MassCreationCommand command = new MassCreationCommand();
+		command.setProcessesToCreate(processesToCreate);
+		command.setNewConnections(newConnections);
+		command.setModel(model);
+		command.setLabel(label);
+		return command;
+	}
+
 	public static LayoutCommand createLayoutCommand(ProductSystemNode model,
 			GraphLayoutManager layoutManager, GraphLayoutType layoutType) {
 		LayoutCommand command = new LayoutCommand();
@@ -125,11 +161,11 @@ public class CommandFactory {
 		command.setLayoutType(layoutType);
 		return command;
 	}
-	
+
 	public static MarkingCommand createMarkingCommand(ProcessNode node) {
 		MarkingCommand command = new MarkingCommand();
 		command.setNode(node);
 		return command;
 	}
-	
+
 }

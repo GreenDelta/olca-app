@@ -35,6 +35,7 @@ public class Messages extends NLS {
 	public static String Author;
 	public static String AvoidedProduct;
 	public static String AvoidedProducts;
+	public static String BuildNextTier;
 	public static String Button_No;
 	public static String Button_Yes;
 	public static String Calculate;
@@ -75,6 +76,8 @@ public class Messages extends NLS {
 	public static String CompareProductSystemsForMethod;
 	public static String Complete;
 	public static String CompleteRefData;
+	public static String ConnectProviders;
+	public static String ConnectRecipients;
 	public static String Connect;
 	public static String Connecting;
 	public static String ConsumedBy;
@@ -501,6 +504,8 @@ public class Messages extends NLS {
 	public static String Systems_CreatingProductSystem;
 	public static String Systems_DoubleError;
 	public static String Systems_EmptyReferenceProcessError;
+	public static String Systems_ExpandAllQuestion_Title;
+	public static String Systems_ExpandAllQuestion_Text;
 	public static String Systems_ExpandAllAction_Text;
 	public static String Systems_ExpansionCommand_ExpandText;
 	public static String Systems_ExpansionCommand_CollapseText;

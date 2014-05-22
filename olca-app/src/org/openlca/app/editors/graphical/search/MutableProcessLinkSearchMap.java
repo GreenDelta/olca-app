@@ -32,6 +32,11 @@ public class MutableProcessLinkSearchMap extends ProcessLinkSearchMap {
 		return data.size();
 	}
 
+	public void removeAll(Collection<ProcessLink> links) {
+		for (ProcessLink link : links)
+			remove(link);
+	}
+
 	public int remove(ProcessLink link) {
 		int index = data.indexOf(link);
 		if (index < 0)

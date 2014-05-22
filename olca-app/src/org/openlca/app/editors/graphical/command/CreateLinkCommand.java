@@ -73,12 +73,18 @@ public class CreateLinkCommand extends Command {
 
 	@Override
 	public void redo() {
+		// maybe nodes where deleted before and added again, therefore the
+		// (maybe) new instances need to be fetched
+		refreshNodes();
+		execute();
+	}
+
+	private void refreshNodes() {
 		ProductSystemNode systemNode = sourceNode.getParent();
-		ProductSystem system = systemNode.getProductSystem();
-		system.getProcessLinks().add(processLink);
-		systemNode.getLinkSearch().put(processLink);
-		link.link();
-		systemNode.getEditor().setDirty(true);
+		sourceNode = systemNode.getProcessNode(link.getSourceNode()
+				.getProcess().getId());
+		targetNode = systemNode.getProcessNode(link.getTargetNode()
+				.getProcess().getId());
 	}
 
 	@Override

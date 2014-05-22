@@ -1,20 +1,18 @@
 package org.openlca.app.editors.graphical.action;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.action.Action;
-import org.eclipse.osgi.util.NLS;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
+import org.openlca.app.editors.graphical.command.CommandFactory;
 import org.openlca.app.editors.graphical.command.CommandUtil;
+import org.openlca.app.editors.graphical.command.ConnectionInput;
 import org.openlca.app.editors.graphical.model.ExchangeNode;
 import org.openlca.app.editors.graphical.model.ProcessNode;
-import org.openlca.app.util.Labels;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.ProcessDao;
@@ -25,19 +23,17 @@ import org.openlca.core.model.descriptors.ProcessDescriptor;
 class BuildNextTierAction extends Action implements IBuildAction {
 
 	private ProcessNode node;
-	private ProcessType preferredType;
+	private ProcessType preferredType = ProcessType.UNIT_PROCESS;
 	private FlowDao flowDao;
 	private ProcessDao processDao;
 	private BaseDao<Exchange> exchangeDao;
 
-	BuildNextTierAction(ProcessType preferredType) {
+	BuildNextTierAction() {
 		setId(ActionIds.BUILD_NEXT_TIER);
-		String processType = Labels.processType(preferredType);
-		setText(NLS.bind(Messages.Systems_Prefer, processType));
+		setText(Messages.BuildNextTier);
 		flowDao = new FlowDao(Database.get());
 		processDao = new ProcessDao(Database.get());
 		exchangeDao = new BaseDao<>(Exchange.class, Database.get());
-		this.preferredType = preferredType;
 	}
 
 	@Override
@@ -45,28 +41,27 @@ class BuildNextTierAction extends Action implements IBuildAction {
 		this.node = node;
 	}
 
+	void setPreferredType(ProcessType preferredType) {
+		this.preferredType = preferredType;
+	}
+
 	@Override
 	public void run() {
+		long targetId = node.getProcess().getId();
 		List<ExchangeNode> exchanges = loadExchangeNodes();
 		List<ProcessDescriptor> providers = new ArrayList<>();
-		Map<Long, ExchangeNode> exchangeMap = new HashMap<>();
+		List<ConnectionInput> newConnections = new ArrayList<>();
 		for (ExchangeNode exchange : exchanges) {
 			ProcessDescriptor provider = findProvider(exchange.getExchange());
 			if (provider != null) {
 				providers.add(provider);
-				exchangeMap.put(provider.getId(), exchange);
+				newConnections.add(new ConnectionInput(provider.getId(),
+						targetId, exchange.getExchange().getFlow().getId()));
 			}
 		}
-		Command createCommand = CommandUtil.buildCreateProcessesCommand(
-				providers, node.getParent());
-		CommandUtil.executeCommand(createCommand, node.getParent().getEditor());
-		Command connectCommand = null;
-		for (ProcessDescriptor descriptor : providers)
-			connectCommand = chainConnectCommand(connectCommand, descriptor,
-					exchangeMap.get(descriptor.getId()));
-		CommandUtil
-				.executeCommand(connectCommand, node.getParent().getEditor());
-		node.layout();
+		Command command = CommandFactory.createBuildNextTierCommand(providers,
+				newConnections, node.getParent());
+		CommandUtil.executeCommand(command, node.getParent().getEditor());
 	}
 
 	private List<ExchangeNode> loadExchangeNodes() {
@@ -141,15 +136,6 @@ class BuildNextTierAction extends Action implements IBuildAction {
 		Set<Long> providerIds = flowDao
 				.getProviders(exchange.getFlow().getId());
 		return processDao.getDescriptors(providerIds);
-	}
-
-	private Command chainConnectCommand(Command command,
-			ProcessDescriptor provider, ExchangeNode exchange) {
-		Command connectCommand = CommandUtil.buildConnectProvidersCommand(
-				provider, exchange);
-		if (command == null)
-			return connectCommand;
-		return command.chain(connectCommand);
 	}
 
 }
