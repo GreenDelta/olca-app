@@ -16,14 +16,10 @@ import org.openlca.core.model.ProcessType;
 class BuildSupplyChainMenuAction extends EditorAction {
 
 	private ProcessNode node;
-	private BuildSupplyChainAction systemSupplyChainAction = new BuildSupplyChainAction(
-			ProcessType.LCI_RESULT);
-	private BuildSupplyChainAction unitSupplyChainAction = new BuildSupplyChainAction(
-			ProcessType.UNIT_PROCESS);
-	private BuildNextTierAction systemNextTierAction = new BuildNextTierAction(
-			ProcessType.LCI_RESULT);
-	private BuildNextTierAction unitNextTierAction = new BuildNextTierAction(
-			ProcessType.UNIT_PROCESS);
+	private BuildSupplyChainAction supplyChainAction = ActionFactory
+			.createBuildSupplyChainAction();
+	private BuildNextTierAction nextTierAction = ActionFactory
+			.createBuildNextTierAction();
 
 	BuildSupplyChainMenuAction() {
 		setId(ActionIds.BUILD_SUPPLY_CHAIN_MENU);
@@ -35,20 +31,36 @@ class BuildSupplyChainMenuAction extends EditorAction {
 	private class MenuCreator implements IMenuCreator {
 
 		private Menu createMenu(Menu menu) {
-			MenuItem completeItem = new MenuItem(menu, SWT.CASCADE);
-			completeItem.setText(Messages.Complete);
-			Menu completeMenu = new Menu(completeItem);
-			createItem(completeMenu, systemSupplyChainAction);
-			createItem(completeMenu, unitSupplyChainAction);
-			completeItem.setMenu(completeMenu);
-			
-			MenuItem nextTierItem = new MenuItem(menu, SWT.CASCADE);
-			nextTierItem.setText(Messages.NextTier);
-			Menu nextTierMenu = new Menu(nextTierItem);
-			createItem(nextTierMenu, systemNextTierAction);
-			createItem(nextTierMenu, unitNextTierAction);
-			nextTierItem.setMenu(nextTierMenu);
+			createItem(menu, supplyChainAction);
+			createItem(menu, nextTierAction);
+			new MenuItem(menu, SWT.SEPARATOR);
+			createSelectTypeItem(menu, ProcessType.UNIT_PROCESS);
+			createSelectTypeItem(menu, ProcessType.LCI_RESULT);
 			return menu;
+		}
+
+		private void createSelectTypeItem(Menu menu, final ProcessType type) {
+			MenuItem treeItem = new MenuItem(menu, SWT.RADIO);
+			treeItem.setText(Messages.bind(Messages.Systems_Prefer,
+					getDisplayName(type)));
+			treeItem.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					supplyChainAction.setPreferredType(type);
+					nextTierAction.setPreferredType(type);
+				}
+			});
+			treeItem.setSelection(type == ProcessType.UNIT_PROCESS);
+		}
+
+		private String getDisplayName(ProcessType type) {
+			switch (type) {
+			case UNIT_PROCESS:
+				return Messages.UnitProcess;
+			case LCI_RESULT:
+				return Messages.SystemProcess;
+			}
+			return "";
 		}
 
 		private void createItem(Menu menu, IBuildAction action) {

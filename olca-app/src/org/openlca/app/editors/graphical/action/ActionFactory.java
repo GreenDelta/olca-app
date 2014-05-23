@@ -13,13 +13,15 @@ import static org.openlca.app.editors.graphical.action.SearchConnectorsAction.RE
 
 import org.eclipse.gef.ui.parts.TreeViewer;
 import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
-import org.openlca.core.model.ProcessType;
 
 public class ActionFactory {
 
-	public static BuildSupplyChainAction createBuildSupplyChainAction(
-			ProcessType preferredType) {
-		return new BuildSupplyChainAction(preferredType);
+	public static BuildSupplyChainAction createBuildSupplyChainAction() {
+		return new BuildSupplyChainAction();
+	}
+
+	public static BuildNextTierAction createBuildNextTierAction() {
+		return new BuildNextTierAction();
 	}
 
 	public static BuildSupplyChainMenuAction createBuildSupplyChainMenuAction(

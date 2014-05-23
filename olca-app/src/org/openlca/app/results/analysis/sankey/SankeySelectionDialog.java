@@ -45,15 +45,15 @@ public class SankeySelectionDialog extends FormDialog implements EventHandler {
 		Composite composite = UI.formComposite(body, toolkit);
 		toolkit.createLabel(composite, Messages.Sankey_Cutoff);
 		final Spinner cutoffSpinner = new Spinner(composite, SWT.BORDER);
-		cutoffSpinner.setIncrement(10);
+		cutoffSpinner.setIncrement(100);
 		cutoffSpinner.setMinimum(0);
-		cutoffSpinner.setMaximum(10000);
-		cutoffSpinner.setDigits(2);
-		cutoffSpinner.setSelection((int) (cutoff * 10000));
+		cutoffSpinner.setMaximum(100000);
+		cutoffSpinner.setDigits(3);
+		cutoffSpinner.setSelection((int) (cutoff * 100000));
 		cutoffSpinner.addModifyListener(new ModifyListener() {
 			@Override
 			public void modifyText(final ModifyEvent e) {
-				cutoff = cutoffSpinner.getSelection() / 10000d;
+				cutoff = cutoffSpinner.getSelection() / 100000d;
 			}
 		});
 		toolkit.adapt(cutoffSpinner);

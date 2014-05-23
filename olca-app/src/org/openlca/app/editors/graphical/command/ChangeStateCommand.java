@@ -31,6 +31,7 @@ public class ChangeStateCommand extends Command {
 			node.maximize();
 		else
 			node.minimize();
+		node.getParent().getEditor().setDirty(true);
 	}
 
 	@Override
