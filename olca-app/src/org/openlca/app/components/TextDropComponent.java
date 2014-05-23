@@ -60,7 +60,8 @@ public final class TextDropComponent extends Composite {
 		if (content == null) {
 			text.setText("");
 		} else {
-			text.setText(Labels.getDisplayName(content));
+			String label = Labels.getDisplayName(content);
+			text.setText(label == null ? "" : label);
 		}
 		removeButton.setEnabled(content != null);
 	}
