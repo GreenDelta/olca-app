@@ -1,6 +1,7 @@
 package org.openlca.app.viewers;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.jface.viewers.IBaseLabelProvider;
@@ -16,7 +17,6 @@ public abstract class AbstractViewer<T, V extends StructuredViewer> implements
 
 	private List<ISelectionChangedListener<T>> listener = new ArrayList<>();
 	private V viewer;
-	private T[] input;
 	private boolean nullable;
 	private String nullText;
 
@@ -59,10 +59,6 @@ public abstract class AbstractViewer<T, V extends StructuredViewer> implements
 		return listener.toArray(new ISelectionChangedListener[listener.size()]);
 	}
 
-	protected T[] getInput() {
-		return this.input;
-	}
-
 	/**
 	 * Adds an empty/null value as first element in the viewer, you can specify
 	 * the text of this null element via #setNullText
@@ -70,8 +66,8 @@ public abstract class AbstractViewer<T, V extends StructuredViewer> implements
 	public void setNullable(boolean nullable) {
 		boolean changed = this.nullable != nullable;
 		this.nullable = nullable;
-		if (changed && getInput() != null)
-			setInput(getInput());
+		if (changed && viewer.getInput() != null)
+			setInternalInput((Object[]) viewer.getInput());
 	}
 
 	public boolean isNullable() {
@@ -86,8 +82,21 @@ public abstract class AbstractViewer<T, V extends StructuredViewer> implements
 		return (Object[]) viewer.getInput();
 	}
 
+	public void setInput(Collection<T> collection) {
+		if (collection == null)
+			setInternalInput(new Object[0]);
+		else
+			setInternalInput(collection.toArray());
+	}
+
 	public void setInput(T[] input) {
-		this.input = input;
+		if (input == null)
+			setInternalInput(new Object[0]);
+		else
+			setInternalInput(input);
+	}
+
+	private void setInternalInput(Object[] input) {
 		Object[] internalInput = new Object[nullable ? input.length + 1
 				: input.length];
 		if (nullable)
@@ -117,11 +126,12 @@ public abstract class AbstractViewer<T, V extends StructuredViewer> implements
 	}
 
 	public void selectFirst() {
-		if (getInput() == null)
+		Object[] input = getInternalInput();
+		if (input == null)
 			return;
-		if (getInput().length == 0)
+		if (input.length == 0)
 			return;
-		internalSelect(getInternalInput()[0]);
+		internalSelect(input[0]);
 	}
 
 	@Override

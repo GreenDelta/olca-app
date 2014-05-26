@@ -1,4 +1,4 @@
-package org.openlca.app.viewers.table;
+package org.openlca.app.editors.units;
 
 import java.util.Objects;
 
@@ -13,13 +13,14 @@ import org.openlca.app.Messages;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
+import org.openlca.app.viewers.table.AbstractTableViewer;
 import org.openlca.app.viewers.table.modify.CheckBoxCellModifier;
 import org.openlca.app.viewers.table.modify.IModelChangedListener.ModelChangeType;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
 
-public class UnitViewer extends AbstractTableViewer<Unit> {
+class UnitViewer extends AbstractTableViewer<Unit> {
 
 	private interface LABEL {
 
@@ -36,10 +37,11 @@ public class UnitViewer extends AbstractTableViewer<Unit> {
 			LABEL.DESCRIPTION, LABEL.SYNONYMS, LABEL.CONVERSION_FACTOR,
 			LABEL.FORMULA, LABEL.IS_REFERENCE };
 
-	private UnitGroup unitGroup;
+	private final UnitGroupEditor editor;
 
-	public UnitViewer(Composite parent) {
+	public UnitViewer(Composite parent, UnitGroupEditor editor) {
 		super(parent);
+		this.editor = editor;
 		getCellModifySupport().bind(LABEL.NAME, new NameModifier());
 		getCellModifySupport().bind(LABEL.DESCRIPTION,
 				new DescriptionModifier());
@@ -48,16 +50,7 @@ public class UnitViewer extends AbstractTableViewer<Unit> {
 				new ConversionFactorModifier());
 		getCellModifySupport()
 				.bind(LABEL.IS_REFERENCE, new ReferenceModifier());
-		getViewer().refresh(true);
-	}
-
-	public void setInput(UnitGroup unitGroup) {
-		this.unitGroup = unitGroup;
-		if (unitGroup == null)
-			setInput(new Unit[0]);
-		else
-			setInput(unitGroup.getUnits().toArray(
-					new Unit[unitGroup.getUnits().size()]));
+		setInput(editor.getModel().getUnits());
 		getViewer().refresh(true);
 	}
 
@@ -73,19 +66,27 @@ public class UnitViewer extends AbstractTableViewer<Unit> {
 
 	@OnAdd
 	protected void onCreate() {
+		UnitGroup group = editor.getModel();
 		Unit unit = new Unit();
 		unit.setName("newUnit");
 		unit.setConversionFactor(1d);
+		group.getUnits().add(unit);
+		setInput(group.getUnits());
+		editor.setDirty(true);
 		fireModelChanged(ModelChangeType.CREATE, unit);
-		setInput(unitGroup);
 	}
 
 	@OnRemove
 	protected void onRemove() {
-		for (Unit unit : getAllSelected())
-			if (!Objects.equals(unitGroup.getReferenceUnit(), unit))
+		UnitGroup group = editor.getModel();
+		for (Unit unit : getAllSelected()) {
+			if (!Objects.equals(group.getReferenceUnit(), unit)) {
+				group.getUnits().remove(unit);
 				fireModelChanged(ModelChangeType.REMOVE, unit);
-		setInput(unitGroup);
+			}
+		}
+		setInput(group.getUnits());
+		editor.setDirty(true);
 	}
 
 	private class UnitLabelProvider extends LabelProvider implements
@@ -105,8 +106,8 @@ public class UnitViewer extends AbstractTableViewer<Unit> {
 				return ImageType.UNIT_GROUP_ICON.get();
 			if (column != 5)
 				return null;
-			Unit refUnit = unitGroup != null ? unitGroup.getReferenceUnit()
-					: null;
+			UnitGroup group = editor.getModel();
+			Unit refUnit = group != null ? group.getReferenceUnit() : null;
 			if (refUnit != null && refUnit.equals(element))
 				return ImageType.CHECK_TRUE.get();
 			return ImageType.CHECK_FALSE.get();
@@ -134,8 +135,8 @@ public class UnitViewer extends AbstractTableViewer<Unit> {
 		}
 
 		private String getFormulaText(Unit unit) {
-			Unit refUnit = unitGroup != null ? unitGroup.getReferenceUnit()
-					: null;
+			UnitGroup group = editor.getModel();
+			Unit refUnit = group != null ? group.getReferenceUnit() : null;
 			if (refUnit == null)
 				return null;
 			String amount = "1.0 " + unit.getName();
@@ -146,8 +147,8 @@ public class UnitViewer extends AbstractTableViewer<Unit> {
 
 		@Override
 		public Font getFont(Object element, int columnIndex) {
-			Unit refUnit = unitGroup != null ? unitGroup.getReferenceUnit()
-					: null;
+			UnitGroup group = editor.getModel();
+			Unit refUnit = group != null ? group.getReferenceUnit() : null;
 			if (refUnit != null && refUnit.equals(element)) {
 				if (boldFont == null)
 					boldFont = UI.boldFont(getViewer().getTable());
@@ -169,6 +170,7 @@ public class UnitViewer extends AbstractTableViewer<Unit> {
 		protected void setText(Unit element, String text) {
 			if (!Objects.equals(text, element.getName())) {
 				element.setName(text);
+				editor.setDirty(true);
 				fireModelChanged(ModelChangeType.CHANGE, element);
 			}
 		}
@@ -186,6 +188,7 @@ public class UnitViewer extends AbstractTableViewer<Unit> {
 		protected void setText(Unit element, String text) {
 			if (!Objects.equals(text, element.getDescription())) {
 				element.setDescription(text);
+				editor.setDirty(true);
 				fireModelChanged(ModelChangeType.CHANGE, element);
 			}
 		}
@@ -202,6 +205,7 @@ public class UnitViewer extends AbstractTableViewer<Unit> {
 		protected void setText(Unit element, String text) {
 			if (!Objects.equals(text, element.getSynonyms())) {
 				element.setSynonyms(text);
+				editor.setDirty(true);
 				fireModelChanged(ModelChangeType.CHANGE, element);
 			}
 		}
@@ -221,6 +225,7 @@ public class UnitViewer extends AbstractTableViewer<Unit> {
 				double value = Double.parseDouble(text);
 				if (value != element.getConversionFactor()) {
 					element.setConversionFactor(Double.parseDouble(text));
+					editor.setDirty(true);
 					fireModelChanged(ModelChangeType.CHANGE, element);
 				}
 			} catch (NumberFormatException e) {
@@ -233,20 +238,22 @@ public class UnitViewer extends AbstractTableViewer<Unit> {
 
 		@Override
 		protected boolean isChecked(Unit element) {
-			return unitGroup != null
-					&& Objects.equals(unitGroup.getReferenceUnit(), element);
+			UnitGroup group = editor.getModel();
+			return group != null
+					&& Objects.equals(group.getReferenceUnit(), element);
 		}
 
 		@Override
 		protected void setChecked(Unit element, boolean value) {
+			UnitGroup group = editor.getModel();
 			if (value) {
-				if (!Objects.equals(element, unitGroup.getReferenceUnit())) {
-					unitGroup.setReferenceUnit(element);
+				if (!Objects.equals(element, group.getReferenceUnit())) {
+					group.setReferenceUnit(element);
+					editor.setDirty(true);
 					fireModelChanged(ModelChangeType.CHANGE, element);
 				}
 			}
 		}
-
 	}
 
 }

@@ -116,8 +116,7 @@ public abstract class ModelPage<T extends CategorizedEntity> extends FormPage {
 		GridData data = new GridData();
 		data.widthHint = 150;
 		dateTime.setLayoutData(data);
-
-		binding.on(getModel(), property, dateTime);
+		binding.onDate(() -> getModel(), property, dateTime);
 		return dateTime;
 	}
 

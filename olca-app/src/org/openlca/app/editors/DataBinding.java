@@ -1,11 +1,9 @@
 package org.openlca.app.editors;
 
-import java.lang.reflect.Method;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.List;
 import java.util.function.Supplier;
 
 import org.eclipse.swt.custom.CLabel;
@@ -58,56 +56,6 @@ public class DataBinding {
 			viewer.removeModelChangedListener(listener);
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T> void onList(final Supplier<?> supplier, final String property,
-			AbstractTableViewer<T> viewer) {
-		Object bean = supplier.get();
-		List<T> modelList = null;
-		try {
-			modelList = (List<T>) Bean.getValue(bean, property);
-		} catch (Exception e) {
-			log.error("Cannot find property " + property
-					+ ", is not a list or generic type does not match");
-			return;
-		}
-		try {
-			Method setInput = viewer.getClass().getDeclaredMethod("setInput",
-					bean.getClass());
-			setInput.setAccessible(true);
-			setInput.invoke(viewer, bean);
-		} catch (Exception e) {
-			log.error(
-					"Cannot set viewer input for type " + bean.getClass()
-							+ " on viewer " + viewer.getClass()
-							+ ". Note that there must be" + "a setInput<"
-							+ bean.getClass() + "> method in the viewer.", e);
-			return;
-		}
-
-		viewer.addModelChangedListener(new BoundModelChangedListener<T>(
-				modelList));
-	}
-
-	private class BoundModelChangedListener<T> implements
-			IModelChangedListener<T> {
-
-		private List<T> list;
-
-		private BoundModelChangedListener(List<T> list) {
-			this.list = list;
-		}
-
-		@Override
-		public void modelChanged(ModelChangeType type, T element) {
-			if (type == ModelChangeType.CREATE)
-				list.add(element);
-			if (type == ModelChangeType.REMOVE)
-				list.remove(element);
-			editorChange();
-		}
-
-	}
-
 	public <T> void on(final Object bean, final String property,
 			final AbstractComboViewer<T> viewer) {
 		log.trace("Register data binding - base descriptor - {} - {}", bean,
@@ -156,12 +104,12 @@ public class DataBinding {
 		});
 	}
 
-	public void on(final Object bean, final String property,
+	public void onDate(final Supplier<?> supplier, final String property,
 			final DateTime dateTime) {
-		log.trace("Register data binding - string - {} - {}", bean, property);
-		if (bean == null || property == null || dateTime == null)
+		log.trace("Register data binding - date - {}", property);
+		if (supplier == null || property == null || dateTime == null)
 			return;
-		initValue(bean, property, dateTime);
+		initValue(supplier.get(), property, dateTime);
 		dateTime.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
@@ -170,7 +118,7 @@ public class DataBinding {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				setDateValue(bean, property, dateTime);
+				setDateValue(supplier.get(), property, dateTime);
 				editorChange();
 			}
 		});

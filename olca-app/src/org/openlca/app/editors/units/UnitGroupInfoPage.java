@@ -9,16 +9,17 @@ import org.openlca.app.Messages;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.table.UnitViewer;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.UnitGroup;
 
 class UnitGroupInfoPage extends ModelPage<UnitGroup> {
 
 	private FormToolkit toolkit;
+	private UnitGroupEditor editor;
 
 	UnitGroupInfoPage(UnitGroupEditor editor) {
 		super(editor, "UnitGroupInfoPage", Messages.GeneralInformation);
+		this.editor = editor;
 	}
 
 	@Override
@@ -42,9 +43,8 @@ class UnitGroupInfoPage extends ModelPage<UnitGroup> {
 				Messages.UnitGroupInfoSectionLabel);
 		UI.gridData(section, true, true);
 		Composite client = UI.sectionClient(section, toolkit);
-		UnitViewer unitViewer = new UnitViewer(client);
-		getBinding().onList(() -> getModel(), "units", unitViewer);
+		UnitViewer unitViewer = new UnitViewer(client, editor);
 		unitViewer.bindTo(section);
+		editor.onSaved(() -> unitViewer.setInput(getModel().getUnits()));
 	}
-
 }

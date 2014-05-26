@@ -1,5 +1,6 @@
 package org.openlca.app.viewers.table.modify;
 
+@FunctionalInterface
 public interface IModelChangedListener<T> {
 
 	public enum ModelChangeType {
