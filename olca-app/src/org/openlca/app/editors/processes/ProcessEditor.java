@@ -21,7 +21,7 @@ public class ProcessEditor extends ModelEditor<Process> implements IEditor {
 	 * An event message that indicates the removal or addition of one or more
 	 * exchanges exchange.
 	 */
-	final String EXCHANGES_CHANGED = "EXCHANGE_REMOVED";
+	final String EXCHANGES_CHANGED = "EXCHANGE_CHANGED";
 
 	public static String ID = "editors.process";
 	private Logger log = LoggerFactory.getLogger(getClass());

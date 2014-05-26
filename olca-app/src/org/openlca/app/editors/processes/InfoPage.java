@@ -13,6 +13,7 @@ import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.openlca.app.Event;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.InfoSection;
@@ -29,14 +30,27 @@ import org.openlca.app.viewers.combo.LocationViewer;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.Process;
 
+import com.google.common.eventbus.Subscribe;
+
 class InfoPage extends ModelPage<Process> {
 
+	private ProcessEditor editor;
 	private FormToolkit toolkit;
 	private ImageHyperlink kmlLink;
 	private ScrolledForm form;
+	private ExchangeViewer quanRefViewer;
 
 	InfoPage(ProcessEditor editor) {
 		super(editor, "ProcessInfoPage", Messages.GeneralInformation);
+		this.editor = editor;
+		editor.getEventBus().register(this);
+	}
+
+	@Subscribe
+	public void handleExchangesChange(Event event) {
+		if (!event.match(editor.EXCHANGES_CHANGED))
+			return;
+		quanRefViewer.setInput(getModel());
 	}
 
 	@Override
@@ -50,7 +64,7 @@ class InfoPage extends ModelPage<Process> {
 		createCheckBox(Messages.InfrastructureProcess, "infrastructureProcess",
 				infoSection.getContainer());
 		createSystemButton(infoSection.getContainer());
-		createQuantitativeReferenceSection(body);
+		createQuanRefSection(body);
 		createTimeSection(body);
 		createGeographySection(body);
 		createTechnologySection(body);
@@ -71,14 +85,14 @@ class InfoPage extends ModelPage<Process> {
 		});
 	}
 
-	private void createQuantitativeReferenceSection(Composite body) {
+	private void createQuanRefSection(Composite body) {
 		Composite composite = UI.formSection(body, toolkit,
 				Messages.QuantitativeReference);
 		UI.formLabel(composite, toolkit, Messages.QuantitativeReference);
-		ExchangeViewer referenceViewer = new ExchangeViewer(composite,
-				ExchangeViewer.OUTPUTS, ExchangeViewer.PRODUCTS);
-		referenceViewer.setInput(getModel());
-		getBinding().on(getModel(), "quantitativeReference", referenceViewer);
+		quanRefViewer = new ExchangeViewer(composite, ExchangeViewer.OUTPUTS,
+				ExchangeViewer.PRODUCTS);
+		quanRefViewer.setInput(getModel());
+		getBinding().on(getModel(), "quantitativeReference", quanRefViewer);
 	}
 
 	private void createTechnologySection(Composite body) {
