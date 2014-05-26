@@ -17,7 +17,7 @@ public class Resources {
 	}
 
 	private static void cleanup(ProductSystemDescriptor descriptor) {
-		NodeLayoutStore.deleteLayout(descriptor.getId());
+		NodeLayoutStore.deleteLayout(descriptor.getRefId());
 	}
 
 }

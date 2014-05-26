@@ -20,7 +20,6 @@ import com.google.gson.stream.JsonWriter;
 public final class NodeLayoutStore {
 
 	private NodeLayoutStore() {
-		// hide constructor
 	}
 
 	public static void saveLayout(ProductSystemNode model) {
@@ -75,7 +74,7 @@ public final class NodeLayoutStore {
 	public static boolean loadLayout(ProductSystemNode model) {
 		if (model == null)
 			return false;
-		File layoutFile = getLayoutFile(model.getProductSystem().getId());
+		File layoutFile = getLayoutFile(model.getProductSystem().getRefId());
 		if (!layoutFile.exists())
 			return false;
 		try {
@@ -99,7 +98,7 @@ public final class NodeLayoutStore {
 			node.apply(layout);
 			model.getEditor().createNecessaryLinks(node);
 		} else {
-			node.apply(layout);			
+			node.apply(layout);
 		}
 	}
 
@@ -142,16 +141,16 @@ public final class NodeLayoutStore {
 
 	private static File createLayoutFile(ProductSystemNode model)
 			throws IOException {
-		File file = getLayoutFile(model.getProductSystem().getId());
+		File file = getLayoutFile(model.getProductSystem().getRefId());
 		if (file.exists())
 			file.delete();
 		file.createNewFile();
 		return file;
 	}
 
-	private static File getLayoutFile(long id) {
+	private static File getLayoutFile(String refId) {
 		File layoutStore = getLayoutStore();
-		File layoutFile = new File(layoutStore, id + ".json");
+		File layoutFile = new File(layoutStore, refId + ".json");
 		return layoutFile;
 	}
 
@@ -163,8 +162,8 @@ public final class NodeLayoutStore {
 		return layoutStore;
 	}
 
-	public static void deleteLayout(long productSystemId) {
-		File layoutFile = getLayoutFile(productSystemId);
+	public static void deleteLayout(String refId) {
+		File layoutFile = getLayoutFile(refId);
 		if (!layoutFile.exists())
 			return;
 		if (!layoutFile.delete())
