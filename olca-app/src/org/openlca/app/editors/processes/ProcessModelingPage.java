@@ -87,7 +87,7 @@ class ProcessModelingPage extends ModelPage<Process> {
 		section.setClient(composite);
 
 		SourceViewer sourceViewer = new SourceViewer(composite, Database.get());
-		getBinding().onList(this::getModel, "documentation.sources",
+		getBinding().onList(() -> getModel(), "documentation.sources",
 				sourceViewer);
 		sourceViewer.bindTo(section);
 	}

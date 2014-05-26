@@ -15,7 +15,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.openlca.app.components.ISingleModelDrop;
 import org.openlca.app.components.TextDropComponent;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.Bean;
@@ -125,31 +124,28 @@ public class DataBinding {
 		});
 	}
 
-	public void on(final Object bean, final String property,
+	public void onModel(final Supplier<?> supplier, final String property,
 			final TextDropComponent text) {
-		log.trace("Register data binding - base descriptor - {} - {}", bean,
-				property);
-		if (bean == null || property == null || text == null)
+		log.trace("Register data binding - base descriptor - {} ", property);
+		if (supplier == null || property == null || text == null)
 			return;
-		initValue(bean, property, text);
-		text.setHandler(new ISingleModelDrop() {
-			@Override
-			public void handle(BaseDescriptor descriptor) {
-				setModel(bean, property, text);
-				editorChange();
-			}
+		initValue(supplier.get(), property, text);
+		text.setHandler((descriptor) -> {
+			setModel(supplier.get(), property, text);
+			editorChange();
 		});
 	}
 
-	public void on(final Object bean, final String property, final Button button) {
-		log.trace("Register data binding - string - {} - {}", bean, property);
-		if (bean == null || property == null || button == null)
+	public void onBoolean(final Supplier<?> supplier, final String property,
+			final Button button) {
+		log.trace("Register data binding - boolean - {}", property);
+		if (supplier == null || property == null || button == null)
 			return;
-		initValue(bean, property, button);
+		initValue(supplier.get(), property, button);
 		button.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				setBooleanValue(bean, property, button);
+				setBooleanValue(supplier.get(), property, button);
 				editorChange();
 			}
 

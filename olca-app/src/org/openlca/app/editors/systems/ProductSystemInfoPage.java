@@ -55,7 +55,8 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 		getBinding().on(getModel(), "referenceExchange", productViewer);
 		getBinding().on(getModel(), "targetFlowPropertyFactor", propertyViewer);
 		getBinding().on(getModel(), "targetUnit", unitViewer);
-		getBinding().onDouble(this::getModel, "targetAmount", targetAmountText);
+		getBinding().onDouble(() -> getModel(), "targetAmount",
+				targetAmountText);
 	}
 
 	private void createAdditionalInfo(Composite body) {
@@ -87,7 +88,8 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 
 		targetAmountText = UI.formText(composite,
 				getManagedForm().getToolkit(), Messages.TargetAmount);
-		getBinding().onDouble(this::getModel, "targetAmount", targetAmountText);
+		getBinding().onDouble(() -> getModel(), "targetAmount",
+				targetAmountText);
 	}
 
 	private void addCalculationButton(Composite composite) {

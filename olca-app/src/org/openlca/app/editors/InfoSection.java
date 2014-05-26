@@ -48,10 +48,11 @@ public class InfoSection {
 	public void render(Composite body, FormToolkit toolkit) {
 		container = UI.formSection(body, toolkit, Messages.GeneralInformation);
 		Text nameText = UI.formText(container, toolkit, Messages.Name);
-		binding.onString(editor::getModel, "name", nameText);
+		binding.onString(() -> editor.getModel(), "name", nameText);
 		Text descriptionText = UI.formMultiText(container, toolkit,
 				Messages.Description);
-		binding.onString(editor::getModel, "description", descriptionText);
+		binding.onString(() -> editor.getModel(), "description",
+				descriptionText);
 		if (entity.getCategory() != null) {
 			new Label(container, SWT.NONE).setText(Messages.Category);
 			createBreadcrumb(container);

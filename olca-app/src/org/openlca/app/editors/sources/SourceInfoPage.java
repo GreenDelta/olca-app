@@ -66,7 +66,7 @@ class SourceInfoPage extends ModelPage<Source> {
 		createText(Messages.TextReference, "textReference", composite);
 		Text text = UI.formText(composite, getManagedForm().getToolkit(),
 				Messages.Year);
-		getBinding().onShort(this::getModel, "year", text);
+		getBinding().onShort(() -> getModel(), "year", text);
 		createFileSection(composite);
 	}
 

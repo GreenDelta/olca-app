@@ -43,7 +43,6 @@ public abstract class ModelPage<T extends CategorizedEntity> extends FormPage {
 	}
 
 	protected T getModel() {
-		System.out.println("call get model");
 		return getEditor().getModel();
 	}
 
@@ -126,7 +125,7 @@ public abstract class ModelPage<T extends CategorizedEntity> extends FormPage {
 			Composite parent) {
 		Button button = UI.formCheckBox(parent, getManagedForm().getToolkit(),
 				label);
-		binding.on(getModel(), property, button);
+		binding.onBoolean(() -> getModel(), property, button);
 		return button;
 	}
 
@@ -134,7 +133,7 @@ public abstract class ModelPage<T extends CategorizedEntity> extends FormPage {
 			String property, ModelType modelType, Composite parent) {
 		TextDropComponent text = UIFactory.createDropComponent(parent, label,
 				getManagedForm().getToolkit(), modelType);
-		binding.on(getModel(), property, text);
+		binding.onModel(() -> getModel(), property, text);
 		return text;
 	}
 
