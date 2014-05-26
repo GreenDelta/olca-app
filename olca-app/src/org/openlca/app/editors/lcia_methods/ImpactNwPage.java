@@ -50,7 +50,7 @@ class ImpactNwPage extends ModelPage<ImpactMethod> {
 		setViewer.bindTo(section);
 		setViewer
 				.addSelectionChangedListener(new SetSelectionChangedListener());
-		getBinding().on(getModel(), "nwSets", setViewer);
+		getBinding().onList(() -> getModel(), "nwSets", setViewer);
 
 		factorViewer = new NwFactorViewer(sashForm, getModel());
 
@@ -71,7 +71,7 @@ class ImpactNwPage extends ModelPage<ImpactMethod> {
 			if (selection == null)
 				factorViewer.setInput((NwSet) null);
 			else {
-				getBinding().on(selection, "factors", factorViewer);
+				getBinding().onList(() -> selection, "factors", factorViewer);
 			}
 		}
 	}

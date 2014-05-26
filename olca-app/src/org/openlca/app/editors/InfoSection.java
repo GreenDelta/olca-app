@@ -1,5 +1,9 @@
 package org.openlca.app.editors;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Stack;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridLayout;
@@ -12,7 +16,6 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.openlca.app.Messages;
-import org.openlca.app.editors.DataBinding.TextBindType;
 import org.openlca.app.events.EventHandler;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.resources.ImageType;
@@ -22,10 +25,6 @@ import org.openlca.app.util.UI;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Version;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Stack;
 
 /**
  * This is the general info section that each editor has: name, description,
@@ -49,10 +48,10 @@ public class InfoSection {
 	public void render(Composite body, FormToolkit toolkit) {
 		container = UI.formSection(body, toolkit, Messages.GeneralInformation);
 		Text nameText = UI.formText(container, toolkit, Messages.Name);
-		binding.on(entity, "name", TextBindType.STRING, nameText);
+		binding.onString(editor::getModel, "name", nameText);
 		Text descriptionText = UI.formMultiText(container, toolkit,
 				Messages.Description);
-		binding.on(entity, "description", TextBindType.STRING, descriptionText);
+		binding.onString(editor::getModel, "description", descriptionText);
 		if (entity.getCategory() != null) {
 			new Label(container, SWT.NONE).setText(Messages.Category);
 			createBreadcrumb(container);

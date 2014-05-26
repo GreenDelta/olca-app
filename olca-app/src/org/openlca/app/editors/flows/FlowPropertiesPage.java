@@ -32,7 +32,8 @@ class FlowPropertiesPage extends ModelPage<Flow> {
 		Composite client = UI.sectionClient(section, toolkit);
 		FlowPropertyFactorViewer factorViewer = new FlowPropertyFactorViewer(
 				client, Cache.getEntityCache());
-		getBinding().on(getModel(), "flowPropertyFactors", factorViewer);
+		getBinding().onList(() -> getModel(), "flowPropertyFactors",
+				factorViewer);
 		factorViewer.bindTo(section);
 		body.setFocus();
 		form.reflow(true);

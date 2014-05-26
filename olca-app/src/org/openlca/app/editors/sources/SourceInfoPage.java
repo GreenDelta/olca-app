@@ -10,6 +10,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
@@ -20,7 +21,6 @@ import org.openlca.app.Messages;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseFolder;
-import org.openlca.app.editors.DataBinding.TextBindType;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.resources.ImageType;
@@ -64,7 +64,9 @@ class SourceInfoPage extends ModelPage<Source> {
 				Messages.SourceInfoSectionLabel);
 		createText(Messages.Doi, "doi", composite);
 		createText(Messages.TextReference, "textReference", composite);
-		createText(Messages.Year, "year", TextBindType.SHORT, composite);
+		Text text = UI.formText(composite, getManagedForm().getToolkit(),
+				Messages.Year);
+		getBinding().onShort(this::getModel, "year", text);
 		createFileSection(composite);
 	}
 

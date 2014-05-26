@@ -6,17 +6,14 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.function.Supplier;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 import org.openlca.app.components.ISingleModelDrop;
 import org.openlca.app.components.TextDropComponent;
@@ -37,12 +34,6 @@ import org.slf4j.LoggerFactory;
 
 public class DataBinding {
 
-	public enum TextBindType {
-
-		STRING, DOUBLE, INT, SHORT;
-
-	}
-
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 	private IEditor editor;
 
@@ -51,56 +42,6 @@ public class DataBinding {
 
 	public DataBinding(IEditor editor) {
 		this.editor = editor;
-	}
-
-	/** Removes *all* modify listeners from the given text. */
-	public void release(Text text) {
-		Listener[] listeners = text.getListeners(SWT.Modify);
-		log.trace("release {} listeners from text", listeners.length);
-		for (Listener listener : listeners) {
-			if (!(listener instanceof ModifyListener))
-				continue;
-			ModifyListener mod = (ModifyListener) listener;
-			text.removeModifyListener(mod);
-		}
-	}
-
-	/** Removes *all* selection listeners from the given date time. */
-	public void release(DateTime dateTime) {
-		Listener[] listeners = dateTime.getListeners(SWT.Selection);
-		log.trace("release {} listeners from date time", listeners.length);
-		for (Listener listener : listeners) {
-			if (!(listener instanceof SelectionListener))
-				continue;
-			SelectionListener sel = (SelectionListener) listener;
-			dateTime.removeSelectionListener(sel);
-		}
-	}
-
-	/** Removes *all* selection listeners from the given button. */
-	public void release(Button button) {
-		Listener[] listeners = button.getListeners(SWT.Selection);
-		log.trace("release {} listeners from button", listeners.length);
-		for (Listener listener : listeners) {
-			if (!(listener instanceof SelectionListener))
-				continue;
-			SelectionListener sel = (SelectionListener) listener;
-			button.removeSelectionListener(sel);
-		}
-	}
-
-	/** Unsets the handler of the given text drop component. */
-	public void release(TextDropComponent component) {
-		component.setHandler(null);
-	}
-
-	/** Removes *all* selection changed listeners from the given viewer. */
-	public <T> void release(AbstractComboViewer<T> viewer) {
-		ISelectionChangedListener<T>[] listeners = viewer
-				.getSelectionChangedListeners();
-		log.trace("release {} listeners from viewer", listeners.length);
-		for (ISelectionChangedListener<T> listener : listeners)
-			viewer.removeSelectionChangedListener(listener);
 	}
 
 	/** Removes *all* selection changed listeners from the given viewer. */
@@ -119,8 +60,9 @@ public class DataBinding {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> void on(final Object bean, final String property,
+	public <T> void onList(final Supplier<?> supplier, final String property,
 			AbstractTableViewer<T> viewer) {
+		Object bean = supplier.get();
 		List<T> modelList = null;
 		try {
 			modelList = (List<T>) Bean.getValue(bean, property);
@@ -238,26 +180,6 @@ public class DataBinding {
 		});
 	}
 
-	public void on(final Object bean, final String property, TextBindType type,
-			final Text text) {
-		switch (type) {
-		case STRING:
-			onString(bean, property, text);
-			break;
-		case DOUBLE:
-			onDouble(bean, property, text);
-			break;
-		case INT:
-			onInt(bean, property, text);
-			break;
-		case SHORT:
-			onShort(bean, property, text);
-			break;
-		default:
-			break;
-		}
-	}
-
 	public void readOnly(final Object bean, final String property,
 			final Label label) {
 		log.trace("Register data binding - string - {} - {}", bean, property);
@@ -274,62 +196,51 @@ public class DataBinding {
 		initValue(bean, property, label);
 	}
 
-	private void onString(final Object bean, final String property,
+	public void onString(final Supplier<?> supplier, final String property,
 			final Text text) {
-		log.trace("Register data binding - string - {} - {}", bean, property);
-		if (bean == null || property == null || text == null)
+		log.trace("Register data binding - string - {}", property);
+		if (supplier == null || property == null || text == null)
 			return;
-		initValue(bean, property, text);
-		text.addModifyListener(new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
-				setStringValue(bean, property, text);
-				editorChange();
-			}
+		initValue(supplier.get(), property, text);
+		text.addModifyListener((e) -> {
+			setStringValue(supplier.get(), property, text);
+			editorChange();
 		});
 	}
 
-	private void onShort(final Object bean, final String property,
+	public void onShort(final Supplier<?> supplier, final String property,
 			final Text text) {
-		log.trace("Register data binding - short - {} - {}", bean, property);
-		if (bean == null || property == null || text == null)
+		log.trace("Register data binding - short - {}", property);
+		if (supplier == null || property == null || text == null)
 			return;
-		initValue(bean, property, text);
-		text.addModifyListener(new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
-				setShortValue(bean, property, text);
-				editorChange();
-			}
+		initValue(supplier.get(), property, text);
+		text.addModifyListener((e) -> {
+			setShortValue(supplier.get(), property, text);
+			editorChange();
 		});
 	}
 
-	private void onInt(final Object bean, final String property, final Text text) {
-		log.trace("Register data binding - int - {} - {}", bean, property);
-		if (bean == null || property == null || text == null)
+	public void onInt(final Supplier<?> supplier, final String property,
+			final Text text) {
+		log.trace("Register data binding - int - {}", property);
+		if (supplier == null || property == null || text == null)
 			return;
-		initValue(bean, property, text);
-		text.addModifyListener(new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
-				setIntValue(bean, property, text);
-				editorChange();
-			}
+		initValue(supplier.get(), property, text);
+		text.addModifyListener((e) -> {
+			setIntValue(supplier.get(), property, text);
+			editorChange();
 		});
 	}
 
-	private void onDouble(final Object bean, final String property,
+	public void onDouble(final Supplier<?> supplier, final String property,
 			final Text text) {
-		log.trace("Register data binding - double - {} - {}", bean, property);
-		if (bean == null || property == null || text == null)
+		log.trace("Register data binding - double -  {}", property);
+		if (supplier == null || property == null || text == null)
 			return;
-		initValue(bean, property, text);
-		text.addModifyListener(new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
-				setDoubleValue(bean, property, text);
-				editorChange();
-			}
+		initValue(supplier.get(), property, text);
+		text.addModifyListener((e) -> {
+			setDoubleValue(supplier.get(), property, text);
+			editorChange();
 		});
 	}
 
@@ -355,6 +266,8 @@ public class DataBinding {
 	}
 
 	private void initValue(Object bean, String property, Text text) {
+		if (bean == null)
+			return;
 		try {
 			Object val = Bean.getValue(bean, property);
 			String value = getValueAsString(val);

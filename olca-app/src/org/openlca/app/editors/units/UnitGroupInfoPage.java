@@ -43,7 +43,7 @@ class UnitGroupInfoPage extends ModelPage<UnitGroup> {
 		UI.gridData(section, true, true);
 		Composite client = UI.sectionClient(section, toolkit);
 		UnitViewer unitViewer = new UnitViewer(client);
-		getBinding().on(getModel(), "units", unitViewer);
+		getBinding().onList(this::getModel, "units", unitViewer);
 		unitViewer.bindTo(section);
 	}
 

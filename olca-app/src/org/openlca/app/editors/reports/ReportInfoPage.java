@@ -25,7 +25,6 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.editors.DataBinding;
-import org.openlca.app.editors.DataBinding.TextBindType;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Labels;
@@ -65,7 +64,7 @@ class ReportInfoPage extends FormPage {
 		Composite composite = UI.formSection(body, toolkit,
 				Messages.GeneralInformation);
 		Text titleText = UI.formText(composite, toolkit, "Title");
-		binding.on(report, "title", DataBinding.TextBindType.STRING, titleText);
+		binding.onString(() -> report, "title", titleText);
 		UI.formLabel(composite, toolkit, Messages.Project);
 		ImageHyperlink link = toolkit.createImageHyperlink(composite, SWT.TOP);
 		link.setText(Labels.getDisplayName(report.getProject()));
@@ -96,7 +95,7 @@ class ReportInfoPage extends FormPage {
 				reportSection.getTitle());
 		Composite composite = UI.sectionClient(section, toolkit);
 		final Text titleText = UI.formText(composite, toolkit, "Section");
-		binding.on(reportSection, "title", TextBindType.STRING, titleText);
+		binding.onString(() -> reportSection, "title", titleText);
 		titleText.addModifyListener(new ModifyListener() {
 			@Override
 			public void modifyText(ModifyEvent e) {
@@ -104,7 +103,7 @@ class ReportInfoPage extends FormPage {
 			}
 		});
 		Text descriptionText = UI.formMultiText(composite, toolkit, "Text");
-		binding.on(reportSection, "text", TextBindType.STRING, descriptionText);
+		binding.onString(() -> reportSection, "text", descriptionText);
 		createComponentViewer(reportSection, composite);
 	}
 
@@ -133,7 +132,7 @@ class ReportInfoPage extends FormPage {
 		Section section = UI.section(body, toolkit, "Parameter mapping");
 		Composite composite = UI.sectionClient(section, toolkit);
 		UI.gridLayout(composite, 1);
-		String[] properties = {Messages.Parameter, Messages.Name};
+		String[] properties = { Messages.Parameter, Messages.Name };
 		TableViewer viewer = Tables.createViewer(composite, properties);
 		Tables.bindColumnWidths(viewer, 0.5, 0.5);
 		UI.gridData(viewer.getTable(), true, true).minimumHeight = 150;
@@ -151,18 +150,18 @@ class ReportInfoPage extends FormPage {
 
 		private String getLabel(ReportComponent component) {
 			switch (component) {
-				case NONE:
-					return "None";
-				case PARAMETER_TABLE:
-					return "Parameter table";
-				case RESULT_CHART:
-					return "Result chart";
-				case RESULT_TABLE:
-					return "Result table";
-				case VARIANT_TABLE:
-					return "Project variant table";
-				default:
-					return "unknown";
+			case NONE:
+				return "None";
+			case PARAMETER_TABLE:
+				return "Parameter table";
+			case RESULT_CHART:
+				return "Result chart";
+			case RESULT_TABLE:
+				return "Result table";
+			case VARIANT_TABLE:
+				return "Project variant table";
+			default:
+				return "unknown";
 			}
 		}
 	}

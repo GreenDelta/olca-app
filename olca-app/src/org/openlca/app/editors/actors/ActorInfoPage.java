@@ -40,7 +40,7 @@ class ActorInfoPage extends ModelPage<Actor> {
 		createText(Messages.EMail, "email", composite);
 		createText(Messages.Telefax, "telefax", composite);
 		createText(Messages.Telephone, "telephone", composite);
-		createText(Messages.WebSite, "webSite", composite);
+		createText(Messages.WebSite, "website", composite);
 		createText(Messages.ZipCode, "zipCode", composite);
 	}
 

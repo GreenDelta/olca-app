@@ -15,7 +15,6 @@ import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.openlca.app.App;
 import org.openlca.app.components.TextDropComponent;
-import org.openlca.app.editors.DataBinding.TextBindType;
 import org.openlca.app.util.Bean;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Images;
@@ -44,6 +43,7 @@ public abstract class ModelPage<T extends CategorizedEntity> extends FormPage {
 	}
 
 	protected T getModel() {
+		System.out.println("call get model");
 		return getEditor().getModel();
 	}
 
@@ -98,7 +98,7 @@ public abstract class ModelPage<T extends CategorizedEntity> extends FormPage {
 
 	protected Text createText(String label, String property, Composite parent) {
 		Text text = UI.formText(parent, getManagedForm().getToolkit(), label);
-		binding.on(getModel(), property, TextBindType.STRING, text);
+		binding.onString(() -> getModel(), property, text);
 		return text;
 	}
 
@@ -106,7 +106,7 @@ public abstract class ModelPage<T extends CategorizedEntity> extends FormPage {
 			Composite parent) {
 		Text text = UI.formMultiText(parent, getManagedForm().getToolkit(),
 				label);
-		binding.on(getModel(), property, TextBindType.STRING, text);
+		binding.onString(() -> getModel(), property, text);
 		return text;
 	}
 
@@ -120,13 +120,6 @@ public abstract class ModelPage<T extends CategorizedEntity> extends FormPage {
 
 		binding.on(getModel(), property, dateTime);
 		return dateTime;
-	}
-
-	protected Text createText(String label, String property, TextBindType type,
-			Composite parent) {
-		Text text = UI.formText(parent, getManagedForm().getToolkit(), label);
-		binding.on(getModel(), property, type, text);
-		return text;
 	}
 
 	protected Button createCheckBox(String label, String property,
