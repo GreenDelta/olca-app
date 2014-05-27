@@ -2,6 +2,7 @@ package org.openlca.app.editors;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import org.openlca.app.db.Database;
 import org.openlca.app.util.Error;
@@ -30,11 +31,11 @@ public class ParameterPageSupport {
 
 	private final FormulaInterpreter interpreter;
 	private final ModelEditor<?> editor;
-	private final List<Parameter> parameters;
+	private final Supplier<List<Parameter>> parameters;
 	private final ParameterScope scope;
 
 	public ParameterPageSupport(ModelEditor<?> editor,
-			List<Parameter> parameters, ParameterScope scope) {
+			Supplier<List<Parameter>> parameters, ParameterScope scope) {
 		this.editor = editor;
 		this.parameters = parameters;
 		this.scope = scope;
@@ -47,7 +48,7 @@ public class ParameterPageSupport {
 	}
 
 	public List<Parameter> getParameters() {
-		return parameters;
+		return parameters.get();
 	}
 
 	public FormulaInterpreter getInterpreter() {
@@ -68,7 +69,7 @@ public class ParameterPageSupport {
 		refreshInterpreter();
 		try {
 			log.trace("evaluate all parameter formulas");
-			for (Parameter parameter : parameters) {
+			for (Parameter parameter : parameters.get()) {
 				if (parameter.isInputParameter())
 					continue;
 				double val = eval(parameter.getFormula());
@@ -93,7 +94,7 @@ public class ParameterPageSupport {
 					Double.toString(globalParam.getValue()));
 		}
 		Scope scope = interpreter.createScope(model.getId());
-		for (Parameter param : parameters) {
+		for (Parameter param : parameters.get()) {
 			if (param.isInputParameter())
 				scope.bind(param.getName(), Double.toString(param.getValue()));
 			else

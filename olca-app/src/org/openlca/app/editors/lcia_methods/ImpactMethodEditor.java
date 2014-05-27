@@ -1,5 +1,8 @@
 package org.openlca.app.editors.lcia_methods;
 
+import java.util.List;
+import java.util.function.Supplier;
+
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
@@ -12,6 +15,7 @@ import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ImpactFactor;
 import org.openlca.core.model.ImpactMethod;
+import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,8 +50,9 @@ public class ImpactMethodEditor extends ModelEditor<ImpactMethod> implements
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
 		super.init(site, input);
-		parameterSupport = new ParameterPageSupport(this, getModel()
-				.getParameters(), ParameterScope.IMPACT_METHOD);
+		Supplier<List<Parameter>> supplier = () -> getModel().getParameters();
+		parameterSupport = new ParameterPageSupport(this, supplier,
+				ParameterScope.IMPACT_METHOD);
 		// it is important that this listener is added before the listener
 		// in the LCIA factor page, otherwise the factor table will be
 		// refreshed with old values

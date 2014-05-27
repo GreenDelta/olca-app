@@ -65,11 +65,11 @@ public class ParameterSection implements ParameterPageListener {
 
 	private ParameterSection(ParameterPageSupport support, Composite body,
 			boolean forInputParams) {
-		this.forInputParameters = forInputParams;
-		this.editor = support.getEditor();
+		forInputParameters = forInputParams;
+		editor = support.getEditor();
 		this.support = support;
 		support.addListener(this);
-		this.parameters = support.getParameters();
+		parameters = support.getParameters();
 		String[] props = {};
 		if (forInputParams)
 			props = new String[] { NAME, VALUE, UNCERTAINTY, DESCRIPTION };
@@ -79,6 +79,10 @@ public class ParameterSection implements ParameterPageListener {
 		createCellModifiers();
 		fillInitialInput();
 		support.getEditor().getEventBus().register(this);
+		support.getEditor().onSaved(() -> {
+			parameters = support.getParameters(); // reloads it from the model
+				setInput();
+			});
 	}
 
 	@Override

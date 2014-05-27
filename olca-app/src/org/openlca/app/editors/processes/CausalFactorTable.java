@@ -38,18 +38,20 @@ import org.openlca.util.Strings;
 class CausalFactorTable {
 
 	private ProcessEditor editor;
-	private Process process;
 	private Column[] columns;
 	private TableViewer viewer;
 
 	public CausalFactorTable(ProcessEditor editor) {
 		this.editor = editor;
-		this.process = editor.getModel();
 		initColumns();
 	}
 
+	private Process process() {
+		return editor.getModel();
+	}
+
 	public void refresh() {
-		List<Exchange> products = Processes.getOutputProducts(process);
+		List<Exchange> products = Processes.getOutputProducts(process());
 		List<Exchange> newProducts = new ArrayList<>(products);
 		List<Integer> removalIndices = new ArrayList<>();
 		for (int i = 0; i < columns.length; i++) {
@@ -63,7 +65,7 @@ class CausalFactorTable {
 			removeColumn(col);
 		for (Exchange product : newProducts)
 			addColumn(product);
-		viewer.setInput(Processes.getNonOutputProducts(process));
+		viewer.setInput(Processes.getNonOutputProducts(process()));
 		createModifySupport();
 	}
 
@@ -91,7 +93,7 @@ class CausalFactorTable {
 	}
 
 	private void initColumns() {
-		List<Exchange> products = Processes.getOutputProducts(process);
+		List<Exchange> products = Processes.getOutputProducts(process());
 		columns = new Column[products.size()];
 		for (int i = 0; i < columns.length; i++)
 			columns[i] = new Column(products.get(i));
@@ -117,7 +119,7 @@ class CausalFactorTable {
 	}
 
 	void setInitialInput() {
-		viewer.setInput(Processes.getNonOutputProducts(process));
+		viewer.setInput(Processes.getNonOutputProducts(process()));
 	}
 
 	private void createModifySupport() {
@@ -144,7 +146,7 @@ class CausalFactorTable {
 
 	private AllocationFactor getFactor(Exchange product, Exchange exchange) {
 		AllocationFactor factor = null;
-		for (AllocationFactor f : process.getAllocationFactors()) {
+		for (AllocationFactor f : process().getAllocationFactors()) {
 			if (f.getAllocationType() != AllocationMethod.CAUSAL)
 				continue;
 			if (product.getFlow().getId() == f.getProductId()
@@ -264,7 +266,7 @@ class CausalFactorTable {
 				factor.setAllocationType(AllocationMethod.CAUSAL);
 				factor.setExchange(exchange);
 				factor.setProductId(product.getFlow().getId());
-				process.getAllocationFactors().add(factor);
+				process().getAllocationFactors().add(factor);
 			}
 			factor.setValue(val);
 			editor.setDirty(true);

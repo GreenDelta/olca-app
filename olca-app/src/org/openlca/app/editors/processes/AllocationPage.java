@@ -22,7 +22,6 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.AllocationMethodViewer;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
@@ -38,7 +37,6 @@ import com.google.common.eventbus.Subscribe;
 class AllocationPage extends FormPage {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
-	private Process process;
 	private ProcessEditor editor;
 	private FormToolkit toolkit;
 	private TableViewer factorViewer;
@@ -46,9 +44,9 @@ class AllocationPage extends FormPage {
 
 	public AllocationPage(ProcessEditor editor) {
 		super(editor, "process.AllocationPage", "Allocation");
-		this.process = editor.getModel();
 		this.editor = editor;
 		editor.getEventBus().register(this);
+		editor.onSaved(() -> setTableInputs());
 	}
 
 	static Double parseFactor(String text) {
@@ -68,12 +66,16 @@ class AllocationPage extends FormPage {
 
 	@Subscribe
 	public void handleExchangesChange(Event event) {
-		if (!event.match(editor.EXCHANGES_CHANGED) || process == null)
+		if (!event.match(editor.EXCHANGES_CHANGED))
 			return;
 		log.trace("update allocation page");
-		AllocationSync.updateFactors(process);
+		AllocationSync.updateFactors(process());
+		setTableInputs();
+	}
+
+	private void setTableInputs() {
 		if (factorViewer != null)
-			factorViewer.setInput(Processes.getOutputProducts(process));
+			factorViewer.setInput(Processes.getOutputProducts(process()));
 		if (causalFactorTable != null)
 			causalFactorTable.refresh();
 	}
@@ -99,16 +101,13 @@ class AllocationPage extends FormPage {
 				AllocationMethod.PHYSICAL, };
 		AllocationMethodViewer viewer = new AllocationMethodViewer(composite,
 				methods);
-		AllocationMethod selected = process.getDefaultAllocationMethod();
+		AllocationMethod selected = process().getDefaultAllocationMethod();
 		if (selected == null)
 			selected = AllocationMethod.NONE;
 		viewer.select(selected);
-		viewer.addSelectionChangedListener(new ISelectionChangedListener<AllocationMethod>() {
-			@Override
-			public void selectionChanged(AllocationMethod selection) {
-				process.setDefaultAllocationMethod(selection);
-				editor.setDirty(true);
-			}
+		viewer.addSelectionChangedListener((selection) -> {
+			process().setDefaultAllocationMethod(selection);
+			editor.setDirty(true);
 		});
 	}
 
@@ -120,7 +119,7 @@ class AllocationPage extends FormPage {
 		button.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				AllocationSync.calculateDefaults(process);
+				AllocationSync.calculateDefaults(process());
 				factorViewer.refresh();
 				causalFactorTable.refresh();
 				editor.setDirty(true);
@@ -138,7 +137,7 @@ class AllocationPage extends FormPage {
 		factorViewer = Tables.createViewer(composite, colNames);
 		Tables.bindColumnWidths(factorViewer, 0.3, 0.3, 0.3);
 		factorViewer.setLabelProvider(new FactorLabel());
-		factorViewer.setInput(Processes.getOutputProducts(process));
+		factorViewer.setInput(Processes.getOutputProducts(process()));
 		ModifySupport<Exchange> modifySupport = new ModifySupport<>(
 				factorViewer);
 		modifySupport.bind(Messages.Physical, new ValueModifier(
@@ -161,12 +160,16 @@ class AllocationPage extends FormPage {
 		return text;
 	}
 
+	private Process process() {
+		return editor.getModel();
+	}
+
 	private AllocationFactor getFactor(Exchange exchange,
 			AllocationMethod method) {
 		if (exchange == null || method == null)
 			return null;
 		AllocationFactor factor = null;
-		for (AllocationFactor f : process.getAllocationFactors()) {
+		for (AllocationFactor f : process().getAllocationFactors()) {
 			if (f.getAllocationType() == method
 					&& f.getProductId() == exchange.getFlow().getId()) {
 				factor = f;
@@ -235,7 +238,7 @@ class AllocationPage extends FormPage {
 				factor = new AllocationFactor();
 				factor.setAllocationType(method);
 				factor.setProductId(exchange.getFlow().getId());
-				process.getAllocationFactors().add(factor);
+				process().getAllocationFactors().add(factor);
 			}
 			factor.setValue(val);
 			editor.setDirty(true);
@@ -243,7 +246,7 @@ class AllocationPage extends FormPage {
 
 		@Override
 		public boolean canModify(Exchange element) {
-			return Processes.getOutputProducts(process).size() > 1;
+			return Processes.getOutputProducts(process()).size() > 1;
 		}
 
 	}
