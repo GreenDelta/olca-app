@@ -2,8 +2,6 @@ package org.openlca.app.editors.processes;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -22,7 +20,6 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
 import org.openlca.app.Messages;
-import org.openlca.app.components.IModelDropHandler;
 import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.components.UncertaintyCellEditor;
 import org.openlca.app.db.Cache;
@@ -54,7 +51,6 @@ import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.io.CategoryPath;
-import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,7 +67,6 @@ class ExchangeTable implements ParameterPageListener {
 	private final boolean forInputs;
 	private boolean showFormulas = true;
 	private final ProcessEditor editor;
-	private Process process;
 	private IDatabase database = Database.get();
 	private EntityCache cache = Cache.getEntityCache();
 
@@ -104,7 +99,6 @@ class ExchangeTable implements ParameterPageListener {
 	private ExchangeTable(boolean forInputs, ProcessEditor editor) {
 		this.forInputs = forInputs;
 		this.editor = editor;
-		this.process = editor.getModel();
 		editor.getParameterSupport().addListener(this);
 	}
 
@@ -121,12 +115,7 @@ class ExchangeTable implements ParameterPageListener {
 		ExchangeLabelProvider labelProvider = new ExchangeLabelProvider();
 		viewer.setLabelProvider(labelProvider);
 		bindModifiers();
-		Tables.addDropSupport(viewer, new IModelDropHandler() {
-			@Override
-			public void handleDrop(List<BaseDescriptor> droppedModels) {
-				add(droppedModels);
-			}
-		});
+		Tables.addDropSupport(viewer, (droppedModels) -> add(droppedModels));
 		viewer.addFilter(new Filter());
 		bindActions(section, viewer);
 		bindDoubleClick(viewer);
@@ -134,21 +123,7 @@ class ExchangeTable implements ParameterPageListener {
 		ExchangeTableSorters.register(viewer, labelProvider);
 	}
 
-	void setInitialInput() {
-		Collections.sort(process.getExchanges(), new Comparator<Exchange>() {
-			@Override
-			public int compare(Exchange o1, Exchange o2) {
-				if (o1.getFlow() == null || o2.getFlow() == null)
-					return 0;
-				int c = Strings.compare(o1.getFlow().getName(), o2.getFlow()
-						.getName());
-				if (c != 0)
-					return c;
-				String c1 = CategoryPath.getShort(o1.getFlow().getCategory());
-				String c2 = CategoryPath.getShort(o2.getFlow().getCategory());
-				return Strings.compare(c1, c2);
-			}
-		});
+	void setInput(Process process) {
 		viewer.setInput(process.getExchanges());
 	}
 
@@ -167,16 +142,8 @@ class ExchangeTable implements ParameterPageListener {
 	}
 
 	private void bindActions(Section section, final TableViewer viewer) {
-		Action add = Actions.onAdd(new Runnable() {
-			public void run() {
-				onAdd();
-			}
-		});
-		Action remove = Actions.onRemove(new Runnable() {
-			public void run() {
-				onRemove();
-			}
-		});
+		Action add = Actions.onAdd(() -> onAdd());
+		Action remove = Actions.onRemove(() -> onRemove());
 		Action formulaSwitch = new Action() {
 			{
 				setImageDescriptor(ImageType.NUMBER_ICON.getDescriptor());
@@ -229,14 +196,14 @@ class ExchangeTable implements ParameterPageListener {
 	}
 
 	private void onRemove() {
+		Process process = editor.getModel();
 		List<Exchange> selection = Viewers.getAllSelected(viewer);
 		if (selection.contains(process.getQuantitativeReference())) {
 			Error.showBox("Cannot delete reference flow",
 					"You cannot delete the reference flow of a process");
 			return;
 		}
-		for (Exchange exchange : selection)
-			process.getExchanges().remove(exchange);
+		selection.forEach((e) -> process.getExchanges().remove(e));
 		viewer.setInput(process.getExchanges());
 		fireChange();
 		editor.postEvent(editor.EXCHANGES_CHANGED, this);
@@ -245,6 +212,7 @@ class ExchangeTable implements ParameterPageListener {
 	private void add(List<BaseDescriptor> descriptors) {
 		if (descriptors.isEmpty())
 			return;
+		Process process = editor.getModel();
 		for (BaseDescriptor descriptor : descriptors) {
 			if (!(descriptor instanceof FlowDescriptor))
 				continue;
@@ -288,6 +256,7 @@ class ExchangeTable implements ParameterPageListener {
 				return null;
 			if (exchange.getFlow().getFlowType() != FlowType.PRODUCT_FLOW)
 				return null;
+			Process process = editor.getModel();
 			if (Objects.equals(process.getQuantitativeReference(), exchange))
 				return null;
 			else
@@ -499,6 +468,7 @@ class ExchangeTable implements ParameterPageListener {
 	private class AvoidedProductModifier extends CheckBoxCellModifier<Exchange> {
 		@Override
 		public boolean canModify(Exchange e) {
+			Process process = editor.getModel();
 			if (Objects.equals(process.getQuantitativeReference(), e))
 				return false;
 			if (e.getFlow() == null)
