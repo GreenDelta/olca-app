@@ -1,6 +1,7 @@
 package org.openlca.app.viewers.combo;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.nebula.jface.tablecomboviewer.TableComboViewer;
 import org.eclipse.nebula.widgets.tablecombo.TableCombo;
 import org.eclipse.swt.SWT;
@@ -8,8 +9,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.PlatformUI;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.AbstractViewer;
+import org.openlca.app.viewers.BaseNameSorter;
 
-public abstract class AbstractComboViewer<T> extends AbstractViewer<T, TableComboViewer> {
+public abstract class AbstractComboViewer<T> extends
+		AbstractViewer<T, TableComboViewer> {
 
 	protected AbstractComboViewer(Composite parent) {
 		super(parent);
@@ -35,6 +38,10 @@ public abstract class AbstractComboViewer<T> extends AbstractViewer<T, TableComb
 		viewer.setLabelProvider(getLabelProvider());
 		viewer.setSorter(getSorter());
 		return viewer;
+	}
+
+	protected ViewerSorter getSorter() {
+		return new BaseNameSorter();
 	}
 
 	private int[] getColumnBounds() {

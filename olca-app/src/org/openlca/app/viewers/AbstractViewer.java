@@ -8,7 +8,6 @@ import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.StructuredViewer;
-import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.util.Viewers;
 
@@ -28,10 +27,6 @@ public abstract class AbstractViewer<T, V extends StructuredViewer> implements
 
 	protected IBaseLabelProvider getLabelProvider() {
 		return new BaseLabelProvider();
-	}
-
-	protected ViewerSorter getSorter() {
-		return new BaseNameSorter();
 	}
 
 	protected V getViewer() {

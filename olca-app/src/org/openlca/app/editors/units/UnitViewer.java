@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.Messages;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Numbers;
+import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.table.AbstractTableViewer;
 import org.openlca.app.viewers.table.modify.CheckBoxCellModifier;
@@ -22,36 +23,26 @@ import org.openlca.core.model.UnitGroup;
 
 class UnitViewer extends AbstractTableViewer<Unit> {
 
-	private interface LABEL {
-
-		String CONVERSION_FACTOR = Messages.ConversionFactor;
-		String DESCRIPTION = Messages.Description;
-		String FORMULA = Messages.Formula;
-		String IS_REFERENCE = Messages.IsReference;
-		String NAME = Messages.Name;
-		String SYNONYMS = Messages.Synonyms;
-
-	}
-
-	private static final String[] COLUMN_HEADERS = { LABEL.NAME,
-			LABEL.DESCRIPTION, LABEL.SYNONYMS, LABEL.CONVERSION_FACTOR,
-			LABEL.FORMULA, LABEL.IS_REFERENCE };
+	private static final String CONVERSION_FACTOR = Messages.ConversionFactor;
+	private static final String DESCRIPTION = Messages.Description;
+	private static final String FORMULA = Messages.Formula;
+	private static final String IS_REFERENCE = Messages.IsReference;
+	private static final String NAME = Messages.Name;
+	private static final String SYNONYMS = Messages.Synonyms;
 
 	private final UnitGroupEditor editor;
 
 	public UnitViewer(Composite parent, UnitGroupEditor editor) {
 		super(parent);
 		this.editor = editor;
-		getCellModifySupport().bind(LABEL.NAME, new NameModifier());
-		getCellModifySupport().bind(LABEL.DESCRIPTION,
-				new DescriptionModifier());
-		getCellModifySupport().bind(LABEL.SYNONYMS, new SynonymsModifier());
-		getCellModifySupport().bind(LABEL.CONVERSION_FACTOR,
+		getCellModifySupport().bind(NAME, new NameModifier());
+		getCellModifySupport().bind(DESCRIPTION, new DescriptionModifier());
+		getCellModifySupport().bind(SYNONYMS, new SynonymsModifier());
+		getCellModifySupport().bind(CONVERSION_FACTOR,
 				new ConversionFactorModifier());
-		getCellModifySupport()
-				.bind(LABEL.IS_REFERENCE, new ReferenceModifier());
-		setInput(editor.getModel().getUnits());
+		getCellModifySupport().bind(IS_REFERENCE, new ReferenceModifier());
 		getViewer().refresh(true);
+		Tables.bindColumnWidths(getViewer(), 0.25, 0.15, 0.15, 0.15, 0.15, 0.15);
 	}
 
 	@Override
@@ -61,7 +52,8 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 
 	@Override
 	protected String[] getColumnHeaders() {
-		return COLUMN_HEADERS;
+		return new String[] { NAME, DESCRIPTION, SYNONYMS, CONVERSION_FACTOR,
+				FORMULA, IS_REFERENCE };
 	}
 
 	@OnAdd

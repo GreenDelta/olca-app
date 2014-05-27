@@ -61,7 +61,6 @@ public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 
 		viewer.setContentProvider(ArrayContentProvider.getInstance());
 		viewer.setLabelProvider(getLabelProvider());
-		viewer.setSorter(getSorter());
 
 		Table table = viewer.getTable();
 		String[] columnHeaders = getColumnHeaders();
