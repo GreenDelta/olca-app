@@ -397,7 +397,5 @@ class ProjectParameterTable {
 			return Strings.compare(this.variant.getName(),
 					other.variant.getName());
 		}
-
 	}
-
 }
