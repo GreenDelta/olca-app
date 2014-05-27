@@ -1,5 +1,6 @@
 package org.openlca.app.editors.lcia_methods;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -25,6 +26,7 @@ import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ImpactMethod;
+import org.openlca.util.Strings;
 
 class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 
@@ -61,26 +63,29 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 		String[] properties = { NAME, DESCRIPTION, REFERENCE_UNIT };
 		viewer = Tables.createViewer(client, properties);
 		viewer.setLabelProvider(new CategoryLabelProvider());
-		viewer.setInput(editor.getModel().getImpactCategories());
+		viewer.setInput(getCategories(true));
 		Tables.bindColumnWidths(viewer, 0.5, 0.25, 0.25);
 		ModifySupport<ImpactCategory> support = new ModifySupport<>(viewer);
 		support.bind(NAME, new NameModifier());
 		support.bind(DESCRIPTION, new DescriptionModifier());
 		support.bind(REFERENCE_UNIT, new ReferenceUnitModifier());
 		bindActions(viewer, section);
+		editor.onSaved(() -> viewer.setInput(getCategories(false)));
+	}
+
+	private List<ImpactCategory> getCategories(boolean sorted) {
+		ImpactMethod method = editor.getModel();
+		List<ImpactCategory> categories = method.getImpactCategories();
+		if (!sorted)
+			return categories;
+		Collections.sort(categories,
+				(c1, c2) -> Strings.compare(c1.getName(), c2.getName()));
+		return categories;
 	}
 
 	private void bindActions(TableViewer viewer, Section section) {
-		Action add = Actions.onAdd(new Runnable() {
-			public void run() {
-				onAdd();
-			}
-		});
-		Action remove = Actions.onRemove(new Runnable() {
-			public void run() {
-				onRemove();
-			}
-		});
+		Action add = Actions.onAdd(() -> onAdd());
+		Action remove = Actions.onRemove(() -> onRemove());
 		Actions.bind(viewer, add, remove);
 		Actions.bind(section, add, remove);
 	}
