@@ -51,6 +51,7 @@ public abstract class AbstractWizard<T extends CategorizedEntity> extends
 		log.trace("create {}", model);
 		try {
 			model.setCategory(category);
+			model.setLastChange(System.currentTimeMillis());
 			createDao().insert(model);
 			Cache.registerNew(Descriptors.toDescriptor(model));
 			App.openEditor(model);

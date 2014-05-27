@@ -45,7 +45,6 @@ public class ProductSystemEditor extends ModelEditor<ProductSystem> implements
 	@Override
 	public ProductSystem reloadModel() {
 		super.reloadModel();
-		infoPage.refreshBindings();
 		parameterPage.refreshBindings();
 		setDirty(false);
 		return getModel();

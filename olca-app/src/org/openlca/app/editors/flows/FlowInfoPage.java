@@ -57,6 +57,6 @@ class FlowInfoPage extends ModelPage<Flow> {
 		LocationViewer viewer = new LocationViewer(composite);
 		viewer.setNullable(true);
 		viewer.setInput(Database.get());
-		getBinding().on(getModel(), "location", viewer);
+		getBinding().onModel(() -> getModel(), "location", viewer);
 	}
 }

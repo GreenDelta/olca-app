@@ -27,8 +27,8 @@ class NwFactorViewer extends AbstractTableViewer<Wrapper> {
 	public NwFactorViewer(Composite parent, ImpactMethodEditor editor) {
 		super(parent);
 		this.editor = editor;
-		getCellModifySupport().bind(NORMALIZATION, new NormalizationModifier());
-		getCellModifySupport().bind(WEIGHTING, new WeightingModifier());
+		getModifySupport().bind(NORMALIZATION, new NormalizationModifier());
+		getModifySupport().bind(WEIGHTING, new WeightingModifier());
 	}
 
 	public void setInput(NwSet set) {

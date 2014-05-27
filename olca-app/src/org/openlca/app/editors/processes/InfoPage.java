@@ -24,10 +24,8 @@ import org.openlca.app.editors.processes.kml.MapEditor;
 import org.openlca.app.editors.processes.kml.TextEditor;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.ExchangeViewer;
 import org.openlca.app.viewers.combo.LocationViewer;
-import org.openlca.core.model.Location;
 import org.openlca.core.model.Process;
 
 import com.google.common.eventbus.Subscribe;
@@ -92,7 +90,8 @@ class InfoPage extends ModelPage<Process> {
 		quanRefViewer = new ExchangeViewer(composite, ExchangeViewer.OUTPUTS,
 				ExchangeViewer.PRODUCTS);
 		quanRefViewer.setInput(getModel());
-		getBinding().on(getModel(), "quantitativeReference", quanRefViewer);
+		getBinding().onModel(() -> getModel(), "quantitativeReference",
+				quanRefViewer);
 	}
 
 	private void createTechnologySection(Composite body) {
@@ -114,17 +113,12 @@ class InfoPage extends ModelPage<Process> {
 		Composite composite = UI.formSection(body, toolkit,
 				Messages.GeographyInfoSectionLabel);
 		toolkit.createLabel(composite, Messages.Location);
-		LocationViewer locationViewer = new LocationViewer(composite);
-		locationViewer.setNullable(true);
-		locationViewer.setInput(Database.get());
-		getBinding().on(getModel(), "location", locationViewer);
-		locationViewer
-				.addSelectionChangedListener(new ISelectionChangedListener<Location>() {
-					@Override
-					public void selectionChanged(Location selection) {
-						kmlLink.setText(getKmlDisplayText());
-					}
-				});
+		LocationViewer viewer = new LocationViewer(composite);
+		viewer.setNullable(true);
+		viewer.setInput(Database.get());
+		getBinding().onModel(() -> getModel(), "location", viewer);
+		viewer.addSelectionChangedListener((s) -> kmlLink
+				.setText(getKmlDisplayText()));
 		createKmlSection(composite);
 		createMultiText(Messages.Description, "documentation.geography",
 				composite);

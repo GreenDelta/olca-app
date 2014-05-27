@@ -13,6 +13,7 @@ import org.openlca.app.Messages;
 import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Numbers;
+import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.table.AbstractTableViewer;
 import org.openlca.app.viewers.table.modify.CheckBoxCellModifier;
@@ -27,39 +28,31 @@ import org.openlca.core.model.descriptors.FlowPropertyDescriptor;
 
 class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 
-	private interface LABEL {
-		String NAME = Messages.Name;
-		String CONVERSION_FACTOR = Messages.ConversionFactor;
-		String REFERENCE_UNIT = Messages.ReferenceUnit;
-		String FORMULA = Messages.Formula;
-		String IS_REFERENCE = Messages.IsReference;
-	}
+	private static final String NAME = Messages.Name;
+	private static final String CONVERSION_FACTOR = Messages.ConversionFactor;
+	private static final String REFERENCE_UNIT = Messages.ReferenceUnit;
+	private static final String FORMULA = Messages.Formula;
+	private static final String IS_REFERENCE = Messages.IsReference;
 
-	private static final String[] COLUMN_HEADERS = { LABEL.NAME,
-			LABEL.CONVERSION_FACTOR, LABEL.REFERENCE_UNIT, LABEL.FORMULA,
-			LABEL.IS_REFERENCE };
-
-	private EntityCache cache;
-	private FlowEditor editor;
+	private final EntityCache cache;
+	private final FlowEditor editor;
 
 	public FlowPropertyFactorViewer(Composite parent, EntityCache cache,
 			FlowEditor editor) {
 		super(parent);
-		getCellModifySupport().bind(LABEL.CONVERSION_FACTOR,
+		getModifySupport().bind(CONVERSION_FACTOR,
 				new ConversionFactorModifier());
-		getCellModifySupport()
-				.bind(LABEL.IS_REFERENCE, new ReferenceModifier());
+		getModifySupport().bind(IS_REFERENCE, new ReferenceModifier());
 		this.cache = cache;
+		this.editor = editor;
+		Tables.bindColumnWidths(getViewer(), 0.2, 0.2, 0.2, 0.2, 0.2);
 	}
 
 	public void setInput(Flow flow) {
 		if (flow == null)
 			setInput(new FlowPropertyFactor[0]);
 		else
-			setInput(flow.getFlowPropertyFactors()
-					.toArray(
-							new FlowPropertyFactor[flow
-									.getFlowPropertyFactors().size()]));
+			setInput(flow.getFlowPropertyFactors());
 	}
 
 	@Override
@@ -69,7 +62,8 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 
 	@Override
 	protected String[] getColumnHeaders() {
-		return COLUMN_HEADERS;
+		return new String[] { NAME, CONVERSION_FACTOR, REFERENCE_UNIT, FORMULA,
+				IS_REFERENCE };
 	}
 
 	@OnAdd

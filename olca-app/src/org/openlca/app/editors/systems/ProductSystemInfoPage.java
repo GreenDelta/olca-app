@@ -51,14 +51,6 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 		form.reflow(true);
 	}
 
-	void refreshBindings() {
-		getBinding().on(getModel(), "referenceExchange", productViewer);
-		getBinding().on(getModel(), "targetFlowPropertyFactor", propertyViewer);
-		getBinding().on(getModel(), "targetUnit", unitViewer);
-		getBinding().onDouble(() -> getModel(), "targetAmount",
-				targetAmountText);
-	}
-
 	private void createAdditionalInfo(Composite body) {
 		Composite composite = UI.formSection(body, toolkit,
 				Messages.Systems_ProductSystemInfoSectionLabel);
@@ -82,9 +74,11 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 
 		productViewer.setInput(getModel().getReferenceProcess());
 
-		getBinding().on(getModel(), "referenceExchange", productViewer);
-		getBinding().on(getModel(), "targetFlowPropertyFactor", propertyViewer);
-		getBinding().on(getModel(), "targetUnit", unitViewer);
+		getBinding().onModel(() -> getModel(), "referenceExchange",
+				productViewer);
+		getBinding().onModel(() -> getModel(), "targetFlowPropertyFactor",
+				propertyViewer);
+		getBinding().onModel(() -> getModel(), "targetUnit", unitViewer);
 
 		targetAmountText = UI.formText(composite,
 				getManagedForm().getToolkit(), Messages.TargetAmount);

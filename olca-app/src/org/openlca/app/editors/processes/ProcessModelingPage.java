@@ -44,7 +44,7 @@ class ProcessModelingPage extends ModelPage<Process> {
 		getManagedForm().getToolkit().createLabel(composite,
 				Messages.ProcessType);
 		ProcessTypeViewer typeViewer = new ProcessTypeViewer(composite);
-		getBinding().on(getModel(), "processType", typeViewer);
+		getBinding().onModel(() -> getModel(), "processType", typeViewer);
 		createMultiText(Messages.LCIMethod, "documentation.inventoryMethod",
 				composite);
 		createMultiText(Messages.ModelingConstants,

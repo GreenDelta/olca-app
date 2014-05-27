@@ -135,7 +135,7 @@ public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 		});
 	}
 
-	protected ModifySupport<T> getCellModifySupport() {
+	protected ModifySupport<T> getModifySupport() {
 		return cellModifySupport;
 	}
 

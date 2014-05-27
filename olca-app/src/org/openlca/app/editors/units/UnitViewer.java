@@ -35,12 +35,12 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 	public UnitViewer(Composite parent, UnitGroupEditor editor) {
 		super(parent);
 		this.editor = editor;
-		getCellModifySupport().bind(NAME, new NameModifier());
-		getCellModifySupport().bind(DESCRIPTION, new DescriptionModifier());
-		getCellModifySupport().bind(SYNONYMS, new SynonymsModifier());
-		getCellModifySupport().bind(CONVERSION_FACTOR,
+		getModifySupport().bind(NAME, new NameModifier());
+		getModifySupport().bind(DESCRIPTION, new DescriptionModifier());
+		getModifySupport().bind(SYNONYMS, new SynonymsModifier());
+		getModifySupport().bind(CONVERSION_FACTOR,
 				new ConversionFactorModifier());
-		getCellModifySupport().bind(IS_REFERENCE, new ReferenceModifier());
+		getModifySupport().bind(IS_REFERENCE, new ReferenceModifier());
 		getViewer().refresh(true);
 		Tables.bindColumnWidths(getViewer(), 0.25, 0.15, 0.15, 0.15, 0.15, 0.15);
 	}

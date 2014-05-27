@@ -23,8 +23,8 @@ class NwSetViewer extends AbstractTableViewer<NwSet> {
 
 	public NwSetViewer(Composite parent, ImpactMethodEditor editor) {
 		super(parent);
-		getCellModifySupport().bind(NAME, new NameModifier());
-		getCellModifySupport().bind(UNIT, new UnitModifier());
+		getModifySupport().bind(NAME, new NameModifier());
+		getModifySupport().bind(UNIT, new UnitModifier());
 	}
 
 	public void setInput(ImpactMethod method) {

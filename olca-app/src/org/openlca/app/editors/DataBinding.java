@@ -18,7 +18,6 @@ import org.openlca.app.db.Database;
 import org.openlca.app.util.Bean;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Labels;
-import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.model.RootEntity;
@@ -39,19 +38,15 @@ public class DataBinding {
 		this.editor = editor;
 	}
 
-	public <T> void on(final Object bean, final String property,
+	public <T> void onModel(final Supplier<?> supplier, final String property,
 			final AbstractComboViewer<T> viewer) {
-		log.trace("Register data binding - base descriptor - {} - {}", bean,
-				property);
-		if (bean == null || property == null || viewer == null)
+		log.trace("Register data binding - base descriptor - {}", property);
+		if (supplier == null || property == null || viewer == null)
 			return;
-		initValue(bean, property, viewer);
-		viewer.addSelectionChangedListener(new ISelectionChangedListener<T>() {
-			@Override
-			public void selectionChanged(T selection) {
-				setModel(bean, property, viewer);
-				editorChange();
-			}
+		initValue(supplier.get(), property, viewer);
+		viewer.addSelectionChangedListener((selection) -> {
+			setModel(supplier.get(), property, viewer);
+			editorChange();
 		});
 	}
 
