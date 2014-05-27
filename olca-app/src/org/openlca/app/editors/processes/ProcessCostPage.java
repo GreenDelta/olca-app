@@ -12,16 +12,13 @@ import org.openlca.app.util.UI;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowType;
-import org.openlca.core.model.Process;
 
 public class ProcessCostPage extends FormPage {
 
-	private Process process;
 	private ProcessEditor editor;
 
 	public ProcessCostPage(ProcessEditor editor) {
 		super(editor, "process.CostPage", "Costs");
-		process = editor.getModel();
 		this.editor = editor;
 	}
 
@@ -39,7 +36,7 @@ public class ProcessCostPage extends FormPage {
 
 	private List<Exchange> getOutputProducts() {
 		List<Exchange> list = new ArrayList<>();
-		for (Exchange e : process.getExchanges()) {
+		for (Exchange e : editor.getModel().getExchanges()) {
 			if (e.isInput())
 				continue;
 			Flow f = e.getFlow();
