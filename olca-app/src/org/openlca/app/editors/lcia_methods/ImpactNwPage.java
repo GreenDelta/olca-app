@@ -45,6 +45,7 @@ class ImpactNwPage extends ModelPage<ImpactMethod> {
 		SashForm sashForm = createSash(client);
 		setViewer = createNwSetViewer(section, sashForm);
 		factorViewer = new NwFactorViewer(sashForm, editor);
+		sashForm.setWeights(new int[] { 25, 75 });
 		setViewer.selectFirst();
 		body.setFocus();
 		form.reflow(true);
@@ -57,7 +58,6 @@ class ImpactNwPage extends ModelPage<ImpactMethod> {
 		sashGD.widthHint = 400;
 		sash.setLayoutData(sashGD);
 		sash.setLayout(new GridLayout(2, false));
-		sash.setWeights(new int[] { 25, 75 });
 		return sash;
 	}
 
@@ -83,7 +83,7 @@ class ImpactNwPage extends ModelPage<ImpactMethod> {
 		if (oldNwSet == null)
 			return null;
 		for (NwSet newNwSet : getModel().getNwSets()) {
-			if (Objects.equals(oldNwSet, newNwSet))
+			if (Objects.equals(oldNwSet.getRefId(), newNwSet.getRefId()))
 				return newNwSet;
 		}
 		return null;

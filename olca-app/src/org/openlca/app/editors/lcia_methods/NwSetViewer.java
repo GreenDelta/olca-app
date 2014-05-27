@@ -16,13 +16,14 @@ import org.openlca.core.model.NwSet;
 
 class NwSetViewer extends AbstractTableViewer<NwSet> {
 
-	private final String NAME = Messages.NormalizationWeightingSet;
-	private final String UNIT = Messages.ReferenceUnit;
+	private static final String NAME = Messages.NormalizationWeightingSet;
+	private static final String UNIT = Messages.ReferenceUnit;
 
-	private ImpactMethodEditor editor;
+	private final ImpactMethodEditor editor;
 
 	public NwSetViewer(Composite parent, ImpactMethodEditor editor) {
 		super(parent);
+		this.editor = editor;
 		getModifySupport().bind(NAME, new NameModifier());
 		getModifySupport().bind(UNIT, new UnitModifier());
 	}

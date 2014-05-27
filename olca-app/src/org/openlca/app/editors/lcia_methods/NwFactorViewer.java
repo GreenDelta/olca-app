@@ -17,12 +17,12 @@ import org.openlca.core.model.NwSet;
 
 class NwFactorViewer extends AbstractTableViewer<Wrapper> {
 
-	private final String IMPACT_CATEGORY = Messages.ImpactCategory;
-	private final String NORMALIZATION = Messages.NormalizationFactor;
-	private final String WEIGHTING = Messages.WeightingFactor;
+	private static final String IMPACT_CATEGORY = Messages.ImpactCategory;
+	private static final String NORMALIZATION = Messages.NormalizationFactor;
+	private static final String WEIGHTING = Messages.WeightingFactor;
 
 	private NwSet set;
-	private ImpactMethodEditor editor;
+	private final ImpactMethodEditor editor;
 
 	public NwFactorViewer(Composite parent, ImpactMethodEditor editor) {
 		super(parent);
