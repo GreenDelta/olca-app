@@ -1,5 +1,7 @@
 package org.openlca.app.editors.lcia_methods;
 
+import java.util.List;
+
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -8,33 +10,25 @@ import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.Messages;
 import org.openlca.app.editors.lcia_methods.NwFactorViewer.Wrapper;
 import org.openlca.app.viewers.table.AbstractTableViewer;
-import org.openlca.app.viewers.table.modify.IModelChangedListener.ModelChangeType;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.model.ImpactCategory;
-import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.NwFactor;
 import org.openlca.core.model.NwSet;
 
 class NwFactorViewer extends AbstractTableViewer<Wrapper> {
 
-	private interface LABEL {
-		String IMPACT_CATEGORY = Messages.ImpactCategory;
-		String NORMALIZATION = Messages.NormalizationFactor;
-		String WEIGHTING = Messages.WeightingFactor;
-	}
+	private final String IMPACT_CATEGORY = Messages.ImpactCategory;
+	private final String NORMALIZATION = Messages.NormalizationFactor;
+	private final String WEIGHTING = Messages.WeightingFactor;
 
-	private static final String[] COLUMN_HEADERS = { LABEL.IMPACT_CATEGORY,
-			LABEL.NORMALIZATION, LABEL.WEIGHTING };
-
-	private final ImpactMethod method;
 	private NwSet set;
+	private ImpactMethodEditor editor;
 
-	public NwFactorViewer(Composite parent, ImpactMethod impactMethod) {
+	public NwFactorViewer(Composite parent, ImpactMethodEditor editor) {
 		super(parent);
-		this.method = impactMethod;
-		getCellModifySupport().bind(LABEL.NORMALIZATION,
-				new NormalizationModifier());
-		getCellModifySupport().bind(LABEL.WEIGHTING, new WeightingModifier());
+		this.editor = editor;
+		getCellModifySupport().bind(NORMALIZATION, new NormalizationModifier());
+		getCellModifySupport().bind(WEIGHTING, new WeightingModifier());
 	}
 
 	public void setInput(NwSet set) {
@@ -42,14 +36,16 @@ class NwFactorViewer extends AbstractTableViewer<Wrapper> {
 		if (set == null)
 			setInput(new Wrapper[0]);
 		else {
-			Wrapper[] wrapper = new Wrapper[method.getImpactCategories().size()];
-			for (int i = 0; i < wrapper.length; i++) {
-				ImpactCategory category = method.getImpactCategories().get(i);
-				wrapper[i] = new Wrapper(category);
+			List<ImpactCategory> categories = editor.getModel()
+					.getImpactCategories();
+			Wrapper[] wrappers = new Wrapper[categories.size()];
+			for (int i = 0; i < wrappers.length; i++) {
+				ImpactCategory category = categories.get(i);
+				wrappers[i] = new Wrapper(category);
 				NwFactor f = set.getFactor(category);
-				wrapper[i].factor = f;
+				wrappers[i].factor = f;
 			}
-			setInput(wrapper);
+			setInput(wrappers);
 		}
 	}
 
@@ -60,7 +56,7 @@ class NwFactorViewer extends AbstractTableViewer<Wrapper> {
 
 	@Override
 	protected String[] getColumnHeaders() {
-		return COLUMN_HEADERS;
+		return new String[] { IMPACT_CATEGORY, NORMALIZATION, WEIGHTING };
 	}
 
 	public class Wrapper {
@@ -131,7 +127,7 @@ class NwFactorViewer extends AbstractTableViewer<Wrapper> {
 				if (element.factor.getNormalisationFactor() == null
 						|| element.factor.getNormalisationFactor() != factor) {
 					element.factor.setNormalisationFactor(factor);
-					fireModelChanged(ModelChangeType.CHANGE, element);
+					editor.setDirty(true);
 				}
 			} catch (NumberFormatException e) {
 
@@ -162,7 +158,7 @@ class NwFactorViewer extends AbstractTableViewer<Wrapper> {
 				if (element.factor.getWeightingFactor() == null
 						|| element.factor.getWeightingFactor() != factor) {
 					element.factor.setWeightingFactor(factor);
-					fireModelChanged(ModelChangeType.CHANGE, element);
+					editor.setDirty(true);
 				}
 			} catch (NumberFormatException e) {
 

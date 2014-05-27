@@ -10,17 +10,18 @@ import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.ProcessTypeViewer;
-import org.openlca.app.viewers.table.SourceViewer;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 
 class ProcessModelingPage extends ModelPage<Process> {
 
 	private FormToolkit toolkit;
+	private ProcessEditor editor;
 
 	ProcessModelingPage(ProcessEditor editor) {
 		super(editor, "ProcessInfoPage",
 				Messages.ModelingAndValidationPageLabel);
+		this.editor = editor;
 	}
 
 	@Override
@@ -29,12 +30,10 @@ class ProcessModelingPage extends ModelPage<Process> {
 				+ getModel().getName());
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
-
 		createModelingSection(body);
 		createDataSourceSection(body);
 		createEvaluationSection(body);
 		createSourcesSection(body);
-
 		body.setFocus();
 		form.reflow(true);
 	}
@@ -42,7 +41,6 @@ class ProcessModelingPage extends ModelPage<Process> {
 	private void createModelingSection(Composite parent) {
 		Composite composite = UI.formSection(parent, toolkit,
 				Messages.ModelingAndValidationPageLabel);
-
 		getManagedForm().getToolkit().createLabel(composite,
 				Messages.ProcessType);
 		ProcessTypeViewer typeViewer = new ProcessTypeViewer(composite);
@@ -62,7 +60,6 @@ class ProcessModelingPage extends ModelPage<Process> {
 	private void createDataSourceSection(Composite parent) {
 		Composite composite = UI.formSection(parent, toolkit,
 				Messages.DataSourceInfoSectionLabel);
-
 		createMultiText(Messages.Sampling, "documentation.sampling", composite);
 		createMultiText(Messages.DataCollectionPeriod,
 				"documentation.dataCollectionPeriod", composite);
@@ -71,7 +68,6 @@ class ProcessModelingPage extends ModelPage<Process> {
 	private void createEvaluationSection(Composite parent) {
 		Composite composite = UI.formSection(parent, toolkit,
 				Messages.EvaluationSectionLabel);
-
 		createDropComponent(Messages.Reviewer, "documentation.reviewer",
 				ModelType.ACTOR, composite);
 		createMultiText(Messages.DatasetOtherEvaluation,
@@ -85,10 +81,10 @@ class ProcessModelingPage extends ModelPage<Process> {
 		UI.gridLayout(composite, 1);
 		UI.gridData(composite, true, true);
 		section.setClient(composite);
-
-		SourceViewer sourceViewer = new SourceViewer(composite, Database.get());
-		getBinding().onList(() -> getModel(), "documentation.sources",
-				sourceViewer);
-		sourceViewer.bindTo(section);
+		SourceViewer viewer = new SourceViewer(composite, Database.get(),
+				editor);
+		viewer.setInput(getModel());
+		viewer.bindTo(section);
+		editor.onSaved(() -> viewer.setInput(getModel()));
 	}
 }

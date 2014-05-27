@@ -11,7 +11,6 @@ import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
@@ -31,8 +30,6 @@ import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
 import org.openlca.app.viewers.AbstractViewer;
-import org.openlca.app.viewers.table.modify.IModelChangedListener;
-import org.openlca.app.viewers.table.modify.IModelChangedListener.ModelChangeType;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * Abstract implementation of AbstractViewer for SWT table viewer.
  * 
  * There are three extensions that can be implemented by annotating the methods
- * of impelementing classes. To enable creation and removal actions use
+ * of implementing classes. To enable creation and removal actions use
  * annotations {@link OnAdd} and {@link OnRemove}. The run methods of each
  * action will call all annotated methods. Implementations are responsible to
  * update the input. To enable drop feature use {@link OnDrop} and specify the
@@ -50,7 +47,6 @@ import org.slf4j.LoggerFactory;
 public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
-	private List<IModelChangedListener<T>> changeListener = new ArrayList<>();
 	private List<Action> actions;
 	private ModifySupport<T> cellModifySupport;
 
@@ -175,35 +171,6 @@ public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 		return result;
 	}
 
-	public void addDoubleClickListener(IDoubleClickListener listener) {
-		getViewer().addDoubleClickListener(listener);
-	}
-
-	public void removeDoubleClickListener(IDoubleClickListener listener) {
-		getViewer().removeDoubleClickListener(listener);
-	}
-
-	public void addModelChangedListener(IModelChangedListener<T> listener) {
-		if (!changeListener.contains(listener))
-			changeListener.add(listener);
-	}
-
-	@SuppressWarnings("unchecked")
-	public IModelChangedListener<T>[] getModelChangedListeners() {
-		return changeListener.toArray(new IModelChangedListener[changeListener
-				.size()]);
-	}
-
-	public void removeModelChangedListener(IModelChangedListener<T> listener) {
-		if (changeListener.contains(listener))
-			changeListener.remove(listener);
-	}
-
-	protected void fireModelChanged(ModelChangeType type, T element) {
-		for (IModelChangedListener<T> listener : changeListener)
-			listener.modelChanged(type, element);
-	}
-
 	private boolean supports(Class<? extends Annotation> clazz) {
 		for (Method method : this.getClass().getDeclaredMethods())
 			if (method.isAnnotationPresent(clazz))
@@ -258,7 +225,6 @@ public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 		public void run() {
 			call(OnAdd.class);
 		}
-
 	}
 
 	private class RemoveAction extends Action {
@@ -275,7 +241,6 @@ public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 		public void run() {
 			call(OnRemove.class);
 		}
-
 	}
 
 }

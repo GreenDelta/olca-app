@@ -1,6 +1,7 @@
 package org.openlca.app.editors.units;
 
 import java.util.Objects;
+import java.util.UUID;
 
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ITableFontProvider;
@@ -15,7 +16,6 @@ import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.table.AbstractTableViewer;
 import org.openlca.app.viewers.table.modify.CheckBoxCellModifier;
-import org.openlca.app.viewers.table.modify.IModelChangedListener.ModelChangeType;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
@@ -66,24 +66,23 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 
 	@OnAdd
 	protected void onCreate() {
-		UnitGroup group = editor.getModel();
 		Unit unit = new Unit();
-		unit.setName("newUnit");
+		unit.setName("new unit");
+		unit.setRefId(UUID.randomUUID().toString());
 		unit.setConversionFactor(1d);
+		UnitGroup group = editor.getModel();
 		group.getUnits().add(unit);
 		setInput(group.getUnits());
 		editor.setDirty(true);
-		fireModelChanged(ModelChangeType.CREATE, unit);
 	}
 
 	@OnRemove
 	protected void onRemove() {
 		UnitGroup group = editor.getModel();
 		for (Unit unit : getAllSelected()) {
-			if (!Objects.equals(group.getReferenceUnit(), unit)) {
-				group.getUnits().remove(unit);
-				fireModelChanged(ModelChangeType.REMOVE, unit);
-			}
+			if (Objects.equals(group.getReferenceUnit(), unit))
+				continue;
+			group.getUnits().remove(unit);
 		}
 		setInput(group.getUnits());
 		editor.setDirty(true);
@@ -171,7 +170,6 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 			if (!Objects.equals(text, element.getName())) {
 				element.setName(text);
 				editor.setDirty(true);
-				fireModelChanged(ModelChangeType.CHANGE, element);
 			}
 		}
 
@@ -189,7 +187,6 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 			if (!Objects.equals(text, element.getDescription())) {
 				element.setDescription(text);
 				editor.setDirty(true);
-				fireModelChanged(ModelChangeType.CHANGE, element);
 			}
 		}
 	}
@@ -206,10 +203,8 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 			if (!Objects.equals(text, element.getSynonyms())) {
 				element.setSynonyms(text);
 				editor.setDirty(true);
-				fireModelChanged(ModelChangeType.CHANGE, element);
 			}
 		}
-
 	}
 
 	private class ConversionFactorModifier extends TextCellModifier<Unit> {
@@ -226,10 +221,8 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 				if (value != element.getConversionFactor()) {
 					element.setConversionFactor(Double.parseDouble(text));
 					editor.setDirty(true);
-					fireModelChanged(ModelChangeType.CHANGE, element);
 				}
 			} catch (NumberFormatException e) {
-
 			}
 		}
 	}
@@ -250,10 +243,8 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 				if (!Objects.equals(element, group.getReferenceUnit())) {
 					group.setReferenceUnit(element);
 					editor.setDirty(true);
-					fireModelChanged(ModelChangeType.CHANGE, element);
 				}
 			}
 		}
 	}
-
 }

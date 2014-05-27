@@ -20,8 +20,6 @@ import org.openlca.app.util.Colors;
 import org.openlca.app.util.Labels;
 import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
-import org.openlca.app.viewers.table.AbstractTableViewer;
-import org.openlca.app.viewers.table.modify.IModelChangedListener;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.BaseDescriptor;
@@ -39,21 +37,6 @@ public class DataBinding {
 
 	public DataBinding(IEditor editor) {
 		this.editor = editor;
-	}
-
-	/** Removes *all* selection changed listeners from the given viewer. */
-	public <T> void release(AbstractTableViewer<T> viewer) {
-		ISelectionChangedListener<T>[] listeners = viewer
-				.getSelectionChangedListeners();
-		log.trace("release {} listeners from viewer", listeners.length);
-		for (ISelectionChangedListener<T> listener : listeners)
-			viewer.removeSelectionChangedListener(listener);
-
-		IModelChangedListener<T>[] modelListeners = viewer
-				.getModelChangedListeners();
-		log.trace("release {} listeners from viewer", listeners.length);
-		for (IModelChangedListener<T> listener : modelListeners)
-			viewer.removeModelChangedListener(listener);
 	}
 
 	public <T> void on(final Object bean, final String property,

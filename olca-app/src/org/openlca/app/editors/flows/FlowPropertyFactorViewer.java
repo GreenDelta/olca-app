@@ -1,4 +1,4 @@
-package org.openlca.app.viewers.table;
+package org.openlca.app.editors.flows;
 
 import java.util.Objects;
 
@@ -14,8 +14,8 @@ import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
+import org.openlca.app.viewers.table.AbstractTableViewer;
 import org.openlca.app.viewers.table.modify.CheckBoxCellModifier;
-import org.openlca.app.viewers.table.modify.IModelChangedListener.ModelChangeType;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.Flow;
@@ -25,8 +25,7 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.FlowPropertyDescriptor;
 
-public class FlowPropertyFactorViewer extends
-		AbstractTableViewer<FlowPropertyFactor> {
+class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 
 	private interface LABEL {
 		String NAME = Messages.Name;
@@ -40,10 +39,11 @@ public class FlowPropertyFactorViewer extends
 			LABEL.CONVERSION_FACTOR, LABEL.REFERENCE_UNIT, LABEL.FORMULA,
 			LABEL.IS_REFERENCE };
 
-	private Flow flow;
 	private EntityCache cache;
+	private FlowEditor editor;
 
-	public FlowPropertyFactorViewer(Composite parent, EntityCache cache) {
+	public FlowPropertyFactorViewer(Composite parent, EntityCache cache,
+			FlowEditor editor) {
 		super(parent);
 		getCellModifySupport().bind(LABEL.CONVERSION_FACTOR,
 				new ConversionFactorModifier());
@@ -53,7 +53,6 @@ public class FlowPropertyFactorViewer extends
 	}
 
 	public void setInput(Flow flow) {
-		this.flow = flow;
 		if (flow == null)
 			setInput(new FlowPropertyFactor[0]);
 		else
@@ -77,9 +76,13 @@ public class FlowPropertyFactorViewer extends
 	protected void onCreate() {
 		BaseDescriptor[] descriptors = ModelSelectionDialog
 				.multiSelect(ModelType.FLOW_PROPERTY);
-		if (descriptors != null)
-			for (BaseDescriptor descriptor : descriptors)
-				add((FlowPropertyDescriptor) descriptor);
+		if (descriptors == null)
+			return;
+		for (BaseDescriptor descriptor : descriptors) {
+			if (!(descriptor instanceof FlowPropertyDescriptor))
+				continue;
+			add((FlowPropertyDescriptor) descriptor);
+		}
 	}
 
 	private void add(FlowPropertyDescriptor descriptor) {
@@ -87,15 +90,24 @@ public class FlowPropertyFactorViewer extends
 		FlowProperty property = cache.get(FlowProperty.class,
 				descriptor.getId());
 		factor.setFlowProperty(property);
-		fireModelChanged(ModelChangeType.CREATE, factor);
-		setInput(flow);
+		factor.setConversionFactor(1);
+		Flow flow = editor.getModel();
+		flow.getFlowPropertyFactors().add(factor);
+		setInput(flow.getFlowPropertyFactors());
+		editor.setDirty(true);
 	}
 
 	@OnRemove
 	protected void onRemove() {
-		for (FlowPropertyFactor factor : getAllSelected())
-			fireModelChanged(ModelChangeType.REMOVE, factor);
-		setInput(flow);
+		Flow flow = editor.getModel();
+		for (FlowPropertyFactor factor : getAllSelected()) {
+			if (Objects.equals(factor.getFlowProperty(),
+					flow.getReferenceFlowProperty()))
+				continue;
+			flow.getFlowPropertyFactors().remove(factor);
+		}
+		setInput(flow.getFlowPropertyFactors());
+		editor.setDirty(true);
 	}
 
 	@OnDrop
@@ -121,6 +133,7 @@ public class FlowPropertyFactorViewer extends
 				return ImageType.FLOW_PROPERTY_ICON.get();
 			if (column != 4)
 				return null;
+			Flow flow = editor.getModel();
 			FlowPropertyFactor refFactor = flow != null ? flow
 					.getReferenceFactor() : null;
 			if (refFactor != null && refFactor.equals(element))
@@ -149,6 +162,7 @@ public class FlowPropertyFactorViewer extends
 		}
 
 		private String getFormula(FlowPropertyFactor factor) {
+			Flow flow = editor.getModel();
 			FlowPropertyFactor refFactor = flow.getReferenceFactor();
 			String refUnit = refFactor.getFlowProperty().getUnitGroup()
 					.getReferenceUnit().getName();
@@ -161,6 +175,7 @@ public class FlowPropertyFactorViewer extends
 
 		@Override
 		public Font getFont(Object element, int columnIndex) {
+			Flow flow = editor.getModel();
 			FlowPropertyFactor refFactor = flow != null ? flow
 					.getReferenceFactor() : null;
 			if (refFactor != null && refFactor.equals(element)) {
@@ -186,7 +201,7 @@ public class FlowPropertyFactorViewer extends
 				double value = Double.parseDouble(text);
 				if (value != element.getConversionFactor()) {
 					element.setConversionFactor(value);
-					fireModelChanged(ModelChangeType.CHANGE, element);
+					editor.setDirty(true);
 				}
 			} catch (NumberFormatException e) {
 
@@ -199,17 +214,19 @@ public class FlowPropertyFactorViewer extends
 
 		@Override
 		protected boolean isChecked(FlowPropertyFactor element) {
+			Flow flow = editor.getModel();
 			return flow != null
 					&& Objects.equals(flow.getReferenceFactor(), element);
 		}
 
 		@Override
 		protected void setChecked(FlowPropertyFactor element, boolean value) {
+			Flow flow = editor.getModel();
 			if (value) {
 				if (!Objects.equals(flow.getReferenceFlowProperty(),
 						element.getFlowProperty())) {
 					flow.setReferenceFlowProperty(element.getFlowProperty());
-					fireModelChanged(ModelChangeType.CHANGE, element);
+					editor.setDirty(true);
 				}
 			}
 		}
