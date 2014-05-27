@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 import org.eclipse.swt.custom.CLabel;
@@ -46,8 +47,28 @@ public class DataBinding {
 		initValue(supplier.get(), property, viewer);
 		viewer.addSelectionChangedListener((selection) -> {
 			setModel(supplier.get(), property, viewer);
-			editorChange();
 		});
+	}
+
+	private void setModel(Object bean, String property,
+			AbstractComboViewer<?> viewer) {
+		log.trace("Change value {} @ {}", property, bean);
+		try {
+			Object newValue = viewer.getSelected();
+			if (newValue instanceof BaseDescriptor) {
+				BaseDescriptor descriptor = (BaseDescriptor) newValue;
+				Class<?> modelClass = descriptor.getModelType().getModelClass();
+				newValue = new BaseDao<>(modelClass, Database.get())
+						.getForId(descriptor.getId());
+			}
+			Object oldValue = Bean.getValue(bean, property);
+			if (Objects.equals(newValue, oldValue))
+				return;
+			Bean.setValue(bean, property, newValue);
+			editorChange();
+		} catch (Exception e) {
+			error("Cannot set bean value", e);
+		}
 	}
 
 	public void onModel(final Supplier<?> supplier, final String property,
@@ -58,8 +79,27 @@ public class DataBinding {
 		initValue(supplier.get(), property, text);
 		text.setHandler((descriptor) -> {
 			setModel(supplier.get(), property, text);
-			editorChange();
 		});
+	}
+
+	private void setModel(Object bean, String property, TextDropComponent text) {
+		log.trace("Change value {} @ {}", property, bean);
+		try {
+			BaseDescriptor descriptor = text.getContent();
+			Object newValue = null;
+			if (descriptor != null) {
+				BaseDao<?> dao = new BaseDao<>(descriptor.getModelType()
+						.getModelClass(), Database.get());
+				newValue = dao.getForId(descriptor.getId());
+			}
+			Object oldValue = Bean.getValue(bean, property);
+			if (Objects.equals(newValue, oldValue))
+				return;
+			Bean.setValue(bean, property, newValue);
+			editorChange();
+		} catch (Exception e) {
+			error("Cannot set bean value", e);
+		}
 	}
 
 	public void onBoolean(final Supplier<?> supplier, final String property,
@@ -361,42 +401,6 @@ public class DataBinding {
 		} catch (NumberFormatException e) {
 			text.setToolTipText("" + stringVal + " is not a valid number");
 			text.setBackground(Colors.getErrorColor());
-		} catch (Exception e) {
-			error("Cannot set bean value", e);
-		}
-	}
-
-	private <T> void setModel(Object bean, String property,
-			AbstractComboViewer<T> viewer) {
-		log.trace("Change value {} @ {}", property, bean);
-		try {
-			T value = viewer.getSelected();
-			Object model = null;
-			if (value != null)
-				if (value instanceof BaseDescriptor) {
-					BaseDescriptor descriptor = (BaseDescriptor) value;
-					Class<?> modelClass = descriptor.getModelType()
-							.getModelClass();
-					model = new BaseDao<>(modelClass, Database.get())
-							.getForId(descriptor.getId());
-				} else
-					model = value;
-			Bean.setValue(bean, property, model);
-		} catch (Exception e) {
-			error("Cannot set bean value", e);
-		}
-	}
-
-	private void setModel(Object bean, String property, TextDropComponent text) {
-		log.trace("Change value {} @ {}", property, bean);
-		try {
-			BaseDescriptor descriptor = text.getContent();
-			Object model = null;
-			if (descriptor != null)
-				model = new BaseDao<>(
-						descriptor.getModelType().getModelClass(),
-						Database.get()).getForId(descriptor.getId());
-			Bean.setValue(bean, property, model);
 		} catch (Exception e) {
 			error("Cannot set bean value", e);
 		}

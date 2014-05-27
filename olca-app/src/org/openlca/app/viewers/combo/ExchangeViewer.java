@@ -38,8 +38,7 @@ public class ExchangeViewer extends AbstractComboViewer<Exchange> {
 	}
 
 	public void setInput(Process process) {
-		super.setInput(process.getExchanges().toArray(
-				new Exchange[process.getExchanges().size()]));
+		super.setInput(process.getExchanges());
 	}
 
 	private class ExchangeFilter extends ViewerFilter {

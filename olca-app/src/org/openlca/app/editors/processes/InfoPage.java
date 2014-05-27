@@ -92,6 +92,10 @@ class InfoPage extends ModelPage<Process> {
 		quanRefViewer.setInput(getModel());
 		getBinding().onModel(() -> getModel(), "quantitativeReference",
 				quanRefViewer);
+		editor.onSaved(() -> {
+			quanRefViewer.setInput(getModel());
+			quanRefViewer.select(getModel().getQuantitativeReference());
+		});
 	}
 
 	private void createTechnologySection(Composite body) {
