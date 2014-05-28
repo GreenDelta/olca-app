@@ -44,6 +44,12 @@ folders are configured in the respective `build<platform>.properties` files):
 
 For Mac OS X the user has to install a JRE (currently even a JDK 8).
 
+In order to build openLCA with a newer JRE you may have to remove the entry
+
+	Bundle-RequiredExecutionEnvironment: ...
+	
+from the bundle manifest.
+
 Packaging a XulRunner
 ---------------------
 For some platforms we can package a XulRunner runtime together with openLCA that

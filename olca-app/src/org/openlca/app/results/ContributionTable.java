@@ -52,8 +52,9 @@ class ContributionTable extends TableViewer {
 	}
 
 	public void setInput(List<ContributionItem<?>> items, String unit) {
+		this.unit = unit; // do this before setting the input; otherwise the
+							// labels will show the old unit
 		setInput(items);
-		this.unit = unit;
 	}
 
 	private void createColumns() {
