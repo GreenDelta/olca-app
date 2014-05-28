@@ -3,7 +3,6 @@ package org.openlca.app.editors.projects;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -58,6 +57,19 @@ class ProjectParameterTable {
 		Project project = editor.getModel();
 		initColumns(project);
 		initParameterRedefs(project);
+		editor.onSaved(() -> updateOnSave(editor));
+	}
+
+	private void updateOnSave(ProjectEditor editor) {
+		Project newProject = editor.getModel();
+		for (ProjectVariant newVar : newProject.getVariants()) {
+			for (Column col : columns) {
+				if (equal(col.variant, newVar)) {
+					col.variant = newVar;
+					break;
+				}
+			}
+		}
 	}
 
 	private void initColumns(Project project) {
@@ -78,12 +90,8 @@ class ProjectParameterTable {
 					redefs.add(redef);
 			}
 		}
-		Collections.sort(redefs, new Comparator<ParameterRedef>() {
-			@Override
-			public int compare(ParameterRedef o1, ParameterRedef o2) {
-				return Strings.compare(o1.getName(), o2.getName());
-			}
-		});
+		Collections.sort(redefs,
+				(o1, o2) -> Strings.compare(o1.getName(), o2.getName()));
 	}
 
 	/**
@@ -109,7 +117,10 @@ class ProjectParameterTable {
 		UI.gridData(viewer.getTable(), true, true).minimumHeight = 150;
 		viewer.setInput(redefs);
 		createModifySupport();
-		bindActions(section);
+		Action add = Actions.onAdd(() -> onAdd());
+		Action remove = Actions.onRemove(() -> onRemove());
+		Actions.bind(section, add, remove);
+		Actions.bind(viewer, add, remove);
 	}
 
 	private String[] getColumnTitles() {
@@ -133,21 +144,6 @@ class ProjectParameterTable {
 				viewer);
 		for (int i = 2; i < keys.length; i++)
 			modifySupport.bind(keys[i], new ValueModifier(keys[i]));
-	}
-
-	private void bindActions(Section section) {
-		Action add = Actions.onAdd(new Runnable() {
-			public void run() {
-				onAdd();
-			}
-		});
-		Action remove = Actions.onRemove(new Runnable() {
-			public void run() {
-				onRemove();
-			}
-		});
-		Actions.bind(section, add, remove);
-		Actions.bind(viewer, add, remove);
 	}
 
 	private void onAdd() {
@@ -256,12 +252,26 @@ class ProjectParameterTable {
 		return null;
 	}
 
-	public int getIndex(ProjectVariant variant) {
+	private int getIndex(ProjectVariant variant) {
 		for (int i = 0; i < columns.length; i++) {
-			if (Objects.equals(variant, columns[i].getVariant()))
+			if (equal(variant, columns[i].getVariant()))
 				return i;
 		}
 		return -1;
+	}
+
+	private boolean equal(ProjectVariant var1, ProjectVariant var2) {
+		// saving the project changes the ID of an unsaved variant and thus the
+		// equal function of the ProjectVariant class will fail -> thus, we
+		// check the name in this case.
+		if (var1 == var2)
+			return true;
+		if (var1 == null || var2 == null)
+			return false;
+		if (var1.getId() != 0 && var2.getId() != 0)
+			return var1.getId() == var2.getId();
+		else
+			return Objects.equals(var1.getName(), var2.getName());
 	}
 
 	private class LabelProvider extends org.eclipse.jface.viewers.LabelProvider

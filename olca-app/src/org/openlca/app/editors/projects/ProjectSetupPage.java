@@ -67,7 +67,6 @@ class ProjectSetupPage extends ModelPage<Project> {
 
 	private Project project;
 	private TableViewer variantViewer;
-	private ScrolledForm form;
 	private ProjectParameterTable parameterTable;
 
 	ProjectSetupPage(ProjectEditor editor) {
@@ -199,16 +198,8 @@ class ProjectSetupPage extends ModelPage<Project> {
 	}
 
 	private void addVariantActions(TableViewer viewer, Section section) {
-		Action add = Actions.onAdd(new Runnable() {
-			public void run() {
-				addVariant();
-			}
-		});
-		Action remove = Actions.onRemove(new Runnable() {
-			public void run() {
-				removeVariant();
-			}
-		});
+		Action add = Actions.onAdd(() -> addVariant());
+		Action remove = Actions.onRemove(() -> removeVariant());
 		Actions.bind(section, add, remove);
 		Actions.bind(viewer, add, remove);
 	}
@@ -231,7 +222,6 @@ class ProjectSetupPage extends ModelPage<Project> {
 		variantViewer.setInput(variants);
 		editor.setDirty(true);
 		parameterTable.addVariant(variant);
-		form.reflow(true);
 	}
 
 	private ProjectVariant createVariant(ProductSystem system, int i) {
@@ -259,7 +249,6 @@ class ProjectSetupPage extends ModelPage<Project> {
 		}
 		variantViewer.setInput(variants);
 		editor.setDirty(true);
-		form.reflow(true);
 	}
 
 	private class VariantNameEditor extends TextCellModifier<ProjectVariant> {
