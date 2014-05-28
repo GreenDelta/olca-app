@@ -9,7 +9,6 @@ import org.eclipse.ui.PartInitException;
 import org.openlca.app.editors.IEditor;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.ParameterPage;
-import org.openlca.app.editors.ParameterPageListener;
 import org.openlca.app.editors.ParameterPageSupport;
 import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.core.model.ImpactCategory;
@@ -56,14 +55,11 @@ public class ImpactMethodEditor extends ModelEditor<ImpactMethod> implements
 		// it is important that this listener is added before the listener
 		// in the LCIA factor page, otherwise the factor table will be
 		// refreshed with old values
-		parameterSupport.addListener(new ParameterPageListener() {
-			@Override
-			public void parameterChanged() {
-				log.trace("evaluate LCIA factor formulas");
-				for (ImpactCategory category : getModel().getImpactCategories()) {
-					for (ImpactFactor factor : category.getImpactFactors()) {
-						parameterSupport.equals(factor);
-					}
+		parameterSupport.addListener(() -> {
+			log.trace("evaluate LCIA factor formulas");
+			for (ImpactCategory category : getModel().getImpactCategories()) {
+				for (ImpactFactor factor : category.getImpactFactors()) {
+					parameterSupport.eval(factor);
 				}
 			}
 		});
