@@ -34,13 +34,6 @@ public class NwSetComboViewer extends AbstractComboViewer<NwSetDescriptor> {
 		}
 	}
 
-	public NwSetDescriptor find(long id) {
-		for (NwSetDescriptor nwSet : getInput())
-			if (nwSet.getId() == id)
-				return nwSet;
-		return null;
-	}
-
 	@Override
 	public Class<NwSetDescriptor> getType() {
 		return NwSetDescriptor.class;

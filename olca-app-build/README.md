@@ -42,7 +42,13 @@ folders are configured in the respective `build<platform>.properties` files):
   result is a tar), copy the tar into the folder `runtime/jre/linux32|64`,
   and adopt the path to this package in the `buildlinux32|64bit.properties`
 
-For Mac OS X the user has to install a JRE (currently even a JDK 7).
+For Mac OS X the user has to install a JRE (currently even a JDK 8).
+
+In order to build openLCA with a newer JRE you may have to remove the entry
+
+	Bundle-RequiredExecutionEnvironment: ...
+	
+from the bundle manifest.
 
 Packaging a XulRunner
 ---------------------

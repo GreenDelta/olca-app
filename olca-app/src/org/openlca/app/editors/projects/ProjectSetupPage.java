@@ -36,7 +36,6 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
-import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.ImpactMethodViewer;
 import org.openlca.app.viewers.table.modify.ComboBoxCellModifier;
 import org.openlca.app.viewers.table.modify.ModifySupport;
@@ -67,16 +66,18 @@ class ProjectSetupPage extends ModelPage<Project> {
 	private IDatabase database = Database.get();
 
 	private Project project;
-	private List<ProjectVariant> variants;
 	private TableViewer variantViewer;
-	private ScrolledForm form;
 	private ProjectParameterTable parameterTable;
 
 	ProjectSetupPage(ProjectEditor editor) {
 		super(editor, "ProjectSetupPage", "Project setup");
 		this.editor = editor;
 		project = editor.getModel();
-		variants = project.getVariants();
+		editor.onSaved(() -> {
+			project = editor.getModel();
+			if (variantViewer != null)
+				variantViewer.setInput(project.getVariants());
+		});
 	}
 
 	@Override
@@ -91,39 +92,28 @@ class ProjectSetupPage extends ModelPage<Project> {
 		createVariantsSection(body);
 		createParameterSection(body);
 		initialInput();
-
 		body.setFocus();
 		form.reflow(true);
 	}
 
 	private void initialInput() {
-		Collections.sort(variants, new Comparator<ProjectVariant>() {
-			@Override
-			public int compare(ProjectVariant v1, ProjectVariant v2) {
-				return Strings.compare(v1.getName(), v2.getName());
-			}
-		});
+		List<ProjectVariant> variants = project.getVariants();
+		Collections.sort(variants,
+				(v1, v2) -> Strings.compare(v1.getName(), v2.getName()));
 		variantViewer.setInput(variants);
 	}
 
 	private void createSettingsSection(Composite composite) {
 		UI.formLabel(composite, toolkit, "LCIA Method");
-		ImpactMethodViewer impactMethodViewer = new ImpactMethodViewer(
-				composite);
-		impactMethodViewer.setNullable(true);
-		impactMethodViewer
-				.addSelectionChangedListener(new ISelectionChangedListener<ImpactMethodDescriptor>() {
-					@Override
-					public void selectionChanged(
-							ImpactMethodDescriptor selection) {
-						handleMethodChange(selection);
-					}
-				});
-		impactMethodViewer.setInput(database);
+		ImpactMethodViewer methodViewer = new ImpactMethodViewer(composite);
+		methodViewer.setNullable(true);
+		methodViewer
+				.addSelectionChangedListener((selection) -> handleMethodChange(selection));
+		methodViewer.setInput(database);
 		if (project.getImpactMethodId() != null) {
 			ImpactMethodDescriptor d = Cache.getEntityCache().get(
 					ImpactMethodDescriptor.class, project.getImpactMethodId());
-			impactMethodViewer.select(d);
+			methodViewer.select(d);
 		}
 		// TODO: add nw-sets
 		// UI.formLabel(client, toolkit, "Normalisation and Weighting");
@@ -208,16 +198,8 @@ class ProjectSetupPage extends ModelPage<Project> {
 	}
 
 	private void addVariantActions(TableViewer viewer, Section section) {
-		Action add = Actions.onAdd(new Runnable() {
-			public void run() {
-				addVariant();
-			}
-		});
-		Action remove = Actions.onRemove(new Runnable() {
-			public void run() {
-				removeVariant();
-			}
-		});
+		Action add = Actions.onAdd(() -> addVariant());
+		Action remove = Actions.onRemove(() -> removeVariant());
 		Actions.bind(section, add, remove);
 		Actions.bind(viewer, add, remove);
 	}
@@ -234,18 +216,18 @@ class ProjectSetupPage extends ModelPage<Project> {
 			log.error("failed to load product system");
 			return;
 		}
-		ProjectVariant variant = createVariant(system);
+		List<ProjectVariant> variants = project.getVariants();
+		ProjectVariant variant = createVariant(system, variants.size() + 1);
 		variants.add(variant);
 		variantViewer.setInput(variants);
 		editor.setDirty(true);
 		parameterTable.addVariant(variant);
-		form.reflow(true);
 	}
 
-	private ProjectVariant createVariant(ProductSystem system) {
+	private ProjectVariant createVariant(ProductSystem system, int i) {
 		ProjectVariant variant = new ProjectVariant();
 		variant.setProductSystem(system);
-		variant.setName("Variant " + (variants.size() + 1));
+		variant.setName("Variant " + i);
 		variant.setAllocationMethod(AllocationMethod.NONE);
 		variant.setAmount(system.getTargetAmount());
 		variant.setFlowPropertyFactor(system.getTargetFlowPropertyFactor());
@@ -260,13 +242,13 @@ class ProjectSetupPage extends ModelPage<Project> {
 		List<ProjectVariant> selection = Viewers.getAllSelected(variantViewer);
 		if (selection == null || selection.isEmpty())
 			return;
+		List<ProjectVariant> variants = project.getVariants();
 		for (ProjectVariant var : selection) {
 			variants.remove(var);
 			parameterTable.removeVariant(var);
 		}
 		variantViewer.setInput(variants);
 		editor.setDirty(true);
-		form.reflow(true);
 	}
 
 	private class VariantNameEditor extends TextCellModifier<ProjectVariant> {

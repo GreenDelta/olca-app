@@ -44,7 +44,7 @@ public class FileChooser {
 
 	private static String openDirectoryDialog(Shell shell, int swtFlag) {
 		DirectoryDialog dialog = new DirectoryDialog(shell, swtFlag);
-		dialog.setText(Messages.Import);
+		dialog.setText("Select a directory");
 		return dialog.open();
 	}
 
@@ -64,8 +64,7 @@ public class FileChooser {
 		if (!file.exists() || file.isDirectory())
 			return file;
 		boolean write = MessageDialog.openQuestion(UI.shell(),
-				Messages.FileAlreadyExists,
-				Messages.OverwriteFileQuestion);
+				Messages.FileAlreadyExists, Messages.OverwriteFileQuestion);
 		if (write)
 			return file;
 		return null;

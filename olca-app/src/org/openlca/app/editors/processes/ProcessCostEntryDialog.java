@@ -25,7 +25,6 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.DataBinding;
-import org.openlca.app.editors.DataBinding.TextBindType;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.UI;
@@ -172,8 +171,7 @@ class ProcessCostEntryDialog extends Dialog {
 		fix.setEnabled(false);
 		fix.setSelection(combo.getItemCount() > 0 ? comboItems[0].isFix()
 				: false);
-		new DataBinding().on(newEntry, "amount", TextBindType.DOUBLE,
-				amountText);
+		new DataBinding().onDouble(() -> newEntry, "amount", amountText);
 	}
 
 	private Combo createCombo(Composite stack) {

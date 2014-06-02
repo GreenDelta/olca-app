@@ -64,7 +64,8 @@
             default="false"
             icon="icons/proc_obj.gif"
             id="editors.process"
-            name="%editors.name.7">
+            name="%editors.name.7"
+            contributorClass="org.openlca.app.editors.processes.ProcessToolbar">
       </editor>
       <editor
             class="org.openlca.app.editors.projects.ProjectEditor"

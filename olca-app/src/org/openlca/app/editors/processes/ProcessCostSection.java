@@ -21,12 +21,8 @@ import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessCostEntry;
 import org.openlca.util.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class ProcessCostSection {
-
-	private Logger log = LoggerFactory.getLogger(getClass());
 
 	private ProcessEditor editor;
 	private Process process;
@@ -35,10 +31,25 @@ class ProcessCostSection {
 	private TableViewer viewer;
 
 	public ProcessCostSection(Exchange product, ProcessEditor editor) {
-		this.process = editor.getModel();
 		this.product = product;
-		this.entries = loadEntries(product);
 		this.editor = editor;
+		process = editor.getModel();
+		entries = loadEntries(product);
+		editor.onSaved(() -> {
+			process = editor.getModel();
+			Exchange newProduct = findNewProduct();
+			ProcessCostSection.this.product = newProduct;
+			entries = loadEntries(product);
+			viewer.setInput(entries);
+		});
+	}
+
+	private Exchange findNewProduct() {
+		for (Exchange exchange : editor.getModel().getExchanges()) {
+			if (Objects.equals(exchange, product))
+				return exchange;
+		}
+		return null;
 	}
 
 	private List<ProcessCostEntry> loadEntries(Exchange product) {

@@ -13,6 +13,7 @@ import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.openlca.app.Event;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.InfoSection;
@@ -23,20 +24,31 @@ import org.openlca.app.editors.processes.kml.MapEditor;
 import org.openlca.app.editors.processes.kml.TextEditor;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.ExchangeViewer;
 import org.openlca.app.viewers.combo.LocationViewer;
-import org.openlca.core.model.Location;
 import org.openlca.core.model.Process;
+
+import com.google.common.eventbus.Subscribe;
 
 class InfoPage extends ModelPage<Process> {
 
+	private ProcessEditor editor;
 	private FormToolkit toolkit;
 	private ImageHyperlink kmlLink;
 	private ScrolledForm form;
+	private ExchangeViewer quanRefViewer;
 
 	InfoPage(ProcessEditor editor) {
 		super(editor, "ProcessInfoPage", Messages.GeneralInformation);
+		this.editor = editor;
+		editor.getEventBus().register(this);
+	}
+
+	@Subscribe
+	public void handleExchangesChange(Event event) {
+		if (!event.match(editor.EXCHANGES_CHANGED))
+			return;
+		quanRefViewer.setInput(getModel());
 	}
 
 	@Override
@@ -50,7 +62,7 @@ class InfoPage extends ModelPage<Process> {
 		createCheckBox(Messages.InfrastructureProcess, "infrastructureProcess",
 				infoSection.getContainer());
 		createSystemButton(infoSection.getContainer());
-		createQuantitativeReferenceSection(body);
+		createQuanRefSection(body);
 		createTimeSection(body);
 		createGeographySection(body);
 		createTechnologySection(body);
@@ -71,14 +83,19 @@ class InfoPage extends ModelPage<Process> {
 		});
 	}
 
-	private void createQuantitativeReferenceSection(Composite body) {
+	private void createQuanRefSection(Composite body) {
 		Composite composite = UI.formSection(body, toolkit,
 				Messages.QuantitativeReference);
 		UI.formLabel(composite, toolkit, Messages.QuantitativeReference);
-		ExchangeViewer referenceViewer = new ExchangeViewer(composite,
-				ExchangeViewer.OUTPUTS, ExchangeViewer.PRODUCTS);
-		referenceViewer.setInput(getModel());
-		getBinding().on(getModel(), "quantitativeReference", referenceViewer);
+		quanRefViewer = new ExchangeViewer(composite, ExchangeViewer.OUTPUTS,
+				ExchangeViewer.PRODUCTS);
+		quanRefViewer.setInput(getModel());
+		getBinding().onModel(() -> getModel(), "quantitativeReference",
+				quanRefViewer);
+		editor.onSaved(() -> {
+			quanRefViewer.setInput(getModel());
+			quanRefViewer.select(getModel().getQuantitativeReference());
+		});
 	}
 
 	private void createTechnologySection(Composite body) {
@@ -100,17 +117,12 @@ class InfoPage extends ModelPage<Process> {
 		Composite composite = UI.formSection(body, toolkit,
 				Messages.GeographyInfoSectionLabel);
 		toolkit.createLabel(composite, Messages.Location);
-		LocationViewer locationViewer = new LocationViewer(composite);
-		locationViewer.setNullable(true);
-		locationViewer.setInput(Database.get());
-		getBinding().on(getModel(), "location", locationViewer);
-		locationViewer
-				.addSelectionChangedListener(new ISelectionChangedListener<Location>() {
-					@Override
-					public void selectionChanged(Location selection) {
-						kmlLink.setText(getKmlDisplayText());
-					}
-				});
+		LocationViewer viewer = new LocationViewer(composite);
+		viewer.setNullable(true);
+		viewer.setInput(Database.get());
+		getBinding().onModel(() -> getModel(), "location", viewer);
+		viewer.addSelectionChangedListener((s) -> kmlLink
+				.setText(getKmlDisplayText()));
 		createKmlSection(composite);
 		createMultiText(Messages.Description, "documentation.geography",
 				composite);

@@ -1,33 +1,25 @@
 package org.openlca.app.editors;
 
-import java.lang.reflect.Method;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.List;
+import java.util.Objects;
+import java.util.function.Supplier;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
-import org.openlca.app.components.ISingleModelDrop;
 import org.openlca.app.components.TextDropComponent;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.Bean;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Labels;
-import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
-import org.openlca.app.viewers.table.AbstractTableViewer;
-import org.openlca.app.viewers.table.modify.IModelChangedListener;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.BaseDescriptor;
@@ -36,12 +28,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DataBinding {
-
-	public enum TextBindType {
-
-		STRING, DOUBLE, INT, SHORT;
-
-	}
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 	private IEditor editor;
@@ -53,161 +39,79 @@ public class DataBinding {
 		this.editor = editor;
 	}
 
-	/** Removes *all* modify listeners from the given text. */
-	public void release(Text text) {
-		Listener[] listeners = text.getListeners(SWT.Modify);
-		log.trace("release {} listeners from text", listeners.length);
-		for (Listener listener : listeners) {
-			if (!(listener instanceof ModifyListener))
-				continue;
-			ModifyListener mod = (ModifyListener) listener;
-			text.removeModifyListener(mod);
-		}
-	}
-
-	/** Removes *all* selection listeners from the given date time. */
-	public void release(DateTime dateTime) {
-		Listener[] listeners = dateTime.getListeners(SWT.Selection);
-		log.trace("release {} listeners from date time", listeners.length);
-		for (Listener listener : listeners) {
-			if (!(listener instanceof SelectionListener))
-				continue;
-			SelectionListener sel = (SelectionListener) listener;
-			dateTime.removeSelectionListener(sel);
-		}
-	}
-
-	/** Removes *all* selection listeners from the given button. */
-	public void release(Button button) {
-		Listener[] listeners = button.getListeners(SWT.Selection);
-		log.trace("release {} listeners from button", listeners.length);
-		for (Listener listener : listeners) {
-			if (!(listener instanceof SelectionListener))
-				continue;
-			SelectionListener sel = (SelectionListener) listener;
-			button.removeSelectionListener(sel);
-		}
-	}
-
-	/** Unsets the handler of the given text drop component. */
-	public void release(TextDropComponent component) {
-		component.setHandler(null);
-	}
-
-	/** Removes *all* selection changed listeners from the given viewer. */
-	public <T> void release(AbstractComboViewer<T> viewer) {
-		ISelectionChangedListener<T>[] listeners = viewer
-				.getSelectionChangedListeners();
-		log.trace("release {} listeners from viewer", listeners.length);
-		for (ISelectionChangedListener<T> listener : listeners)
-			viewer.removeSelectionChangedListener(listener);
-	}
-
-	/** Removes *all* selection changed listeners from the given viewer. */
-	public <T> void release(AbstractTableViewer<T> viewer) {
-		ISelectionChangedListener<T>[] listeners = viewer
-				.getSelectionChangedListeners();
-		log.trace("release {} listeners from viewer", listeners.length);
-		for (ISelectionChangedListener<T> listener : listeners)
-			viewer.removeSelectionChangedListener(listener);
-
-		IModelChangedListener<T>[] modelListeners = viewer
-				.getModelChangedListeners();
-		log.trace("release {} listeners from viewer", listeners.length);
-		for (IModelChangedListener<T> listener : modelListeners)
-			viewer.removeModelChangedListener(listener);
-	}
-
-	@SuppressWarnings("unchecked")
-	public <T> void on(final Object bean, final String property,
-			AbstractTableViewer<T> viewer) {
-		List<T> modelList = null;
-		try {
-			modelList = (List<T>) Bean.getValue(bean, property);
-		} catch (Exception e) {
-			log.error("Cannot find property " + property
-					+ ", is not a list or generic type does not match");
-			return;
-		}
-		try {
-			Method setInput = viewer.getClass().getDeclaredMethod("setInput",
-					bean.getClass());
-			setInput.setAccessible(true);
-			setInput.invoke(viewer, bean);
-		} catch (Exception e) {
-			log.error(
-					"Cannot set viewer input for type " + bean.getClass()
-							+ " on viewer " + viewer.getClass()
-							+ ". Note that there must be" + "a setInput<"
-							+ bean.getClass() + "> method in the viewer.", e);
-			return;
-		}
-
-		viewer.addModelChangedListener(new BoundModelChangedListener<T>(
-				modelList));
-	}
-
-	private class BoundModelChangedListener<T> implements
-			IModelChangedListener<T> {
-
-		private List<T> list;
-
-		private BoundModelChangedListener(List<T> list) {
-			this.list = list;
-		}
-
-		@Override
-		public void modelChanged(ModelChangeType type, T element) {
-			if (type == ModelChangeType.CREATE)
-				list.add(element);
-			if (type == ModelChangeType.REMOVE)
-				list.remove(element);
-			editorChange();
-		}
-
-	}
-
-	public <T> void on(final Object bean, final String property,
+	public <T> void onModel(final Supplier<?> supplier, final String property,
 			final AbstractComboViewer<T> viewer) {
-		log.trace("Register data binding - base descriptor - {} - {}", bean,
-				property);
-		if (bean == null || property == null || viewer == null)
+		log.trace("Register data binding - base descriptor - {}", property);
+		if (supplier == null || property == null || viewer == null)
 			return;
-		initValue(bean, property, viewer);
-		viewer.addSelectionChangedListener(new ISelectionChangedListener<T>() {
-			@Override
-			public void selectionChanged(T selection) {
-				setModel(bean, property, viewer);
-				editorChange();
-			}
+		initValue(supplier.get(), property, viewer);
+		viewer.addSelectionChangedListener((selection) -> {
+			setModel(supplier.get(), property, viewer);
 		});
 	}
 
-	public void on(final Object bean, final String property,
+	private void setModel(Object bean, String property,
+			AbstractComboViewer<?> viewer) {
+		log.trace("Change value {} @ {}", property, bean);
+		try {
+			Object newValue = viewer.getSelected();
+			if (newValue instanceof BaseDescriptor) {
+				BaseDescriptor descriptor = (BaseDescriptor) newValue;
+				Class<?> modelClass = descriptor.getModelType().getModelClass();
+				newValue = new BaseDao<>(modelClass, Database.get())
+						.getForId(descriptor.getId());
+			}
+			Object oldValue = Bean.getValue(bean, property);
+			if (Objects.equals(newValue, oldValue))
+				return;
+			Bean.setValue(bean, property, newValue);
+			editorChange();
+		} catch (Exception e) {
+			error("Cannot set bean value", e);
+		}
+	}
+
+	public void onModel(final Supplier<?> supplier, final String property,
 			final TextDropComponent text) {
-		log.trace("Register data binding - base descriptor - {} - {}", bean,
-				property);
-		if (bean == null || property == null || text == null)
+		log.trace("Register data binding - base descriptor - {} ", property);
+		if (supplier == null || property == null || text == null)
 			return;
-		initValue(bean, property, text);
-		text.setHandler(new ISingleModelDrop() {
-			@Override
-			public void handle(BaseDescriptor descriptor) {
-				setModel(bean, property, text);
-				editorChange();
-			}
+		initValue(supplier.get(), property, text);
+		text.setHandler((descriptor) -> {
+			setModel(supplier.get(), property, text);
 		});
 	}
 
-	public void on(final Object bean, final String property, final Button button) {
-		log.trace("Register data binding - string - {} - {}", bean, property);
-		if (bean == null || property == null || button == null)
+	private void setModel(Object bean, String property, TextDropComponent text) {
+		log.trace("Change value {} @ {}", property, bean);
+		try {
+			BaseDescriptor descriptor = text.getContent();
+			Object newValue = null;
+			if (descriptor != null) {
+				BaseDao<?> dao = new BaseDao<>(descriptor.getModelType()
+						.getModelClass(), Database.get());
+				newValue = dao.getForId(descriptor.getId());
+			}
+			Object oldValue = Bean.getValue(bean, property);
+			if (Objects.equals(newValue, oldValue))
+				return;
+			Bean.setValue(bean, property, newValue);
+			editorChange();
+		} catch (Exception e) {
+			error("Cannot set bean value", e);
+		}
+	}
+
+	public void onBoolean(final Supplier<?> supplier, final String property,
+			final Button button) {
+		log.trace("Register data binding - boolean - {}", property);
+		if (supplier == null || property == null || button == null)
 			return;
-		initValue(bean, property, button);
+		initValue(supplier.get(), property, button);
 		button.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				setBooleanValue(bean, property, button);
+				setBooleanValue(supplier.get(), property, button);
 				editorChange();
 			}
 
@@ -218,12 +122,12 @@ public class DataBinding {
 		});
 	}
 
-	public void on(final Object bean, final String property,
+	public void onDate(final Supplier<?> supplier, final String property,
 			final DateTime dateTime) {
-		log.trace("Register data binding - string - {} - {}", bean, property);
-		if (bean == null || property == null || dateTime == null)
+		log.trace("Register data binding - date - {}", property);
+		if (supplier == null || property == null || dateTime == null)
 			return;
-		initValue(bean, property, dateTime);
+		initValue(supplier.get(), property, dateTime);
 		dateTime.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
@@ -232,30 +136,10 @@ public class DataBinding {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				setDateValue(bean, property, dateTime);
+				setDateValue(supplier.get(), property, dateTime);
 				editorChange();
 			}
 		});
-	}
-
-	public void on(final Object bean, final String property, TextBindType type,
-			final Text text) {
-		switch (type) {
-		case STRING:
-			onString(bean, property, text);
-			break;
-		case DOUBLE:
-			onDouble(bean, property, text);
-			break;
-		case INT:
-			onInt(bean, property, text);
-			break;
-		case SHORT:
-			onShort(bean, property, text);
-			break;
-		default:
-			break;
-		}
 	}
 
 	public void readOnly(final Object bean, final String property,
@@ -274,62 +158,51 @@ public class DataBinding {
 		initValue(bean, property, label);
 	}
 
-	private void onString(final Object bean, final String property,
+	public void onString(final Supplier<?> supplier, final String property,
 			final Text text) {
-		log.trace("Register data binding - string - {} - {}", bean, property);
-		if (bean == null || property == null || text == null)
+		log.trace("Register data binding - string - {}", property);
+		if (supplier == null || property == null || text == null)
 			return;
-		initValue(bean, property, text);
-		text.addModifyListener(new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
-				setStringValue(bean, property, text);
-				editorChange();
-			}
+		initValue(supplier.get(), property, text);
+		text.addModifyListener((e) -> {
+			setStringValue(supplier.get(), property, text);
+			editorChange();
 		});
 	}
 
-	private void onShort(final Object bean, final String property,
+	public void onShort(final Supplier<?> supplier, final String property,
 			final Text text) {
-		log.trace("Register data binding - short - {} - {}", bean, property);
-		if (bean == null || property == null || text == null)
+		log.trace("Register data binding - short - {}", property);
+		if (supplier == null || property == null || text == null)
 			return;
-		initValue(bean, property, text);
-		text.addModifyListener(new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
-				setShortValue(bean, property, text);
-				editorChange();
-			}
+		initValue(supplier.get(), property, text);
+		text.addModifyListener((e) -> {
+			setShortValue(supplier.get(), property, text);
+			editorChange();
 		});
 	}
 
-	private void onInt(final Object bean, final String property, final Text text) {
-		log.trace("Register data binding - int - {} - {}", bean, property);
-		if (bean == null || property == null || text == null)
+	public void onInt(final Supplier<?> supplier, final String property,
+			final Text text) {
+		log.trace("Register data binding - int - {}", property);
+		if (supplier == null || property == null || text == null)
 			return;
-		initValue(bean, property, text);
-		text.addModifyListener(new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
-				setIntValue(bean, property, text);
-				editorChange();
-			}
+		initValue(supplier.get(), property, text);
+		text.addModifyListener((e) -> {
+			setIntValue(supplier.get(), property, text);
+			editorChange();
 		});
 	}
 
-	private void onDouble(final Object bean, final String property,
+	public void onDouble(final Supplier<?> supplier, final String property,
 			final Text text) {
-		log.trace("Register data binding - double - {} - {}", bean, property);
-		if (bean == null || property == null || text == null)
+		log.trace("Register data binding - double -  {}", property);
+		if (supplier == null || property == null || text == null)
 			return;
-		initValue(bean, property, text);
-		text.addModifyListener(new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
-				setDoubleValue(bean, property, text);
-				editorChange();
-			}
+		initValue(supplier.get(), property, text);
+		text.addModifyListener((e) -> {
+			setDoubleValue(supplier.get(), property, text);
+			editorChange();
 		});
 	}
 
@@ -355,6 +228,8 @@ public class DataBinding {
 	}
 
 	private void initValue(Object bean, String property, Text text) {
+		if (bean == null)
+			return;
 		try {
 			Object val = Bean.getValue(bean, property);
 			String value = getValueAsString(val);
@@ -526,42 +401,6 @@ public class DataBinding {
 		} catch (NumberFormatException e) {
 			text.setToolTipText("" + stringVal + " is not a valid number");
 			text.setBackground(Colors.getErrorColor());
-		} catch (Exception e) {
-			error("Cannot set bean value", e);
-		}
-	}
-
-	private <T> void setModel(Object bean, String property,
-			AbstractComboViewer<T> viewer) {
-		log.trace("Change value {} @ {}", property, bean);
-		try {
-			T value = viewer.getSelected();
-			Object model = null;
-			if (value != null)
-				if (value instanceof BaseDescriptor) {
-					BaseDescriptor descriptor = (BaseDescriptor) value;
-					Class<?> modelClass = descriptor.getModelType()
-							.getModelClass();
-					model = new BaseDao<>(modelClass, Database.get())
-							.getForId(descriptor.getId());
-				} else
-					model = value;
-			Bean.setValue(bean, property, model);
-		} catch (Exception e) {
-			error("Cannot set bean value", e);
-		}
-	}
-
-	private void setModel(Object bean, String property, TextDropComponent text) {
-		log.trace("Change value {} @ {}", property, bean);
-		try {
-			BaseDescriptor descriptor = text.getContent();
-			Object model = null;
-			if (descriptor != null)
-				model = new BaseDao<>(
-						descriptor.getModelType().getModelClass(),
-						Database.get()).getForId(descriptor.getId());
-			Bean.setValue(bean, property, model);
 		} catch (Exception e) {
 			error("Cannot set bean value", e);
 		}

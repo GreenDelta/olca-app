@@ -15,7 +15,6 @@ import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.openlca.app.App;
 import org.openlca.app.components.TextDropComponent;
-import org.openlca.app.editors.DataBinding.TextBindType;
 import org.openlca.app.util.Bean;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Images;
@@ -98,7 +97,7 @@ public abstract class ModelPage<T extends CategorizedEntity> extends FormPage {
 
 	protected Text createText(String label, String property, Composite parent) {
 		Text text = UI.formText(parent, getManagedForm().getToolkit(), label);
-		binding.on(getModel(), property, TextBindType.STRING, text);
+		binding.onString(() -> getModel(), property, text);
 		return text;
 	}
 
@@ -106,7 +105,7 @@ public abstract class ModelPage<T extends CategorizedEntity> extends FormPage {
 			Composite parent) {
 		Text text = UI.formMultiText(parent, getManagedForm().getToolkit(),
 				label);
-		binding.on(getModel(), property, TextBindType.STRING, text);
+		binding.onString(() -> getModel(), property, text);
 		return text;
 	}
 
@@ -117,23 +116,15 @@ public abstract class ModelPage<T extends CategorizedEntity> extends FormPage {
 		GridData data = new GridData();
 		data.widthHint = 150;
 		dateTime.setLayoutData(data);
-
-		binding.on(getModel(), property, dateTime);
+		binding.onDate(() -> getModel(), property, dateTime);
 		return dateTime;
-	}
-
-	protected Text createText(String label, String property, TextBindType type,
-			Composite parent) {
-		Text text = UI.formText(parent, getManagedForm().getToolkit(), label);
-		binding.on(getModel(), property, type, text);
-		return text;
 	}
 
 	protected Button createCheckBox(String label, String property,
 			Composite parent) {
 		Button button = UI.formCheckBox(parent, getManagedForm().getToolkit(),
 				label);
-		binding.on(getModel(), property, button);
+		binding.onBoolean(() -> getModel(), property, button);
 		return button;
 	}
 
@@ -141,7 +132,7 @@ public abstract class ModelPage<T extends CategorizedEntity> extends FormPage {
 			String property, ModelType modelType, Composite parent) {
 		TextDropComponent text = UIFactory.createDropComponent(parent, label,
 				getManagedForm().getToolkit(), modelType);
-		binding.on(getModel(), property, text);
+		binding.onModel(() -> getModel(), property, text);
 		return text;
 	}
 

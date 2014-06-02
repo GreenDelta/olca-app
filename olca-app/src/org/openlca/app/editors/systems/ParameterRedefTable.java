@@ -44,7 +44,6 @@ class ParameterRedefTable {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 
-	private List<ParameterRedef> redefinitions;
 	private ProductSystemEditor editor;
 
 	private final String PARAMETER = Messages.Parameter;
@@ -54,14 +53,8 @@ class ParameterRedefTable {
 
 	private TableViewer viewer;
 
-	public ParameterRedefTable(ProductSystemEditor editor,
-			List<ParameterRedef> redefinitions) {
+	public ParameterRedefTable(ProductSystemEditor editor) {
 		this.editor = editor;
-		this.redefinitions = redefinitions;
-	}
-
-	public TableViewer getViewer() {
-		return viewer;
 	}
 
 	public void create(FormToolkit toolkit, Composite composite) {
@@ -74,49 +67,42 @@ class ParameterRedefTable {
 		modifySupport.bind(UNCERTAINTY,
 				new UncertaintyCellEditor(viewer.getTable(), editor));
 		Tables.bindColumnWidths(viewer, 0.3, 0.3, 0.2, 0.2);
-		Collections.sort(redefinitions, new ParameterComparator());
-		viewer.setInput(redefinitions);
+		List<ParameterRedef> redefs = editor.getModel().getParameterRedefs();
+		Collections.sort(redefs, new ParameterComparator());
+		viewer.setInput(redefs);
 	}
 
 	public void setInput(List<ParameterRedef> redefinitions) {
-		this.redefinitions = redefinitions;
 		Collections.sort(redefinitions, new ParameterComparator());
 		viewer.setInput(redefinitions);
 	}
 
 	public void bindActions(Section section) {
-		Action addAction = Actions.onAdd(new Runnable() {
-			public void run() {
-				add();
-			}
-		});
-		Action removeAction = Actions.onRemove(new Runnable() {
-			public void run() {
-				remove();
-			}
-		});
+		Action addAction = Actions.onAdd(() -> add());
+		Action removeAction = Actions.onRemove(() -> remove());
 		Actions.bind(section, addAction, removeAction);
 		Actions.bind(viewer, addAction, removeAction);
 	}
 
 	private void add() {
 		ProductSystem system = editor.getModel();
+		List<ParameterRedef> systemRedefs = system.getParameterRedefs();
 		List<ParameterRedef> redefs = ParameterRedefDialog.select(system
 				.getProcesses());
 		if (redefs.isEmpty())
 			return;
 		log.trace("add new parameter redef");
 		for (ParameterRedef redef : redefs) {
-			if (!contains(redef)) {
-				redefinitions.add(redef.clone());
+			if (!contains(redef, systemRedefs)) {
+				systemRedefs.add(redef.clone());
 			}
 		}
-		viewer.setInput(redefinitions);
+		viewer.setInput(systemRedefs);
 		editor.setDirty(true);
 	}
 
-	private boolean contains(ParameterRedef redef) {
-		for (ParameterRedef contained : redefinitions) {
+	private boolean contains(ParameterRedef redef, List<ParameterRedef> redefs) {
+		for (ParameterRedef contained : redefs) {
 			if (Strings.nullOrEqual(contained.getName(), redef.getName())
 					&& Objects.equals(contained.getContextId(),
 							redef.getContextId()))
@@ -127,10 +113,12 @@ class ParameterRedefTable {
 
 	private void remove() {
 		log.trace("remove parameter redef");
+		ProductSystem system = editor.getModel();
+		List<ParameterRedef> systemRedefs = system.getParameterRedefs();
 		List<ParameterRedef> redefs = Viewers.getAllSelected(viewer);
 		for (ParameterRedef redef : redefs)
-			redefinitions.remove(redef);
-		viewer.setInput(redefinitions);
+			systemRedefs.remove(redef);
+		viewer.setInput(systemRedefs);
 		editor.setDirty(true);
 	}
 

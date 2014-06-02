@@ -1,17 +1,20 @@
 package org.openlca.app.editors.lcia_methods;
 
+import java.util.List;
+import java.util.function.Supplier;
+
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.openlca.app.editors.IEditor;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.ParameterPage;
-import org.openlca.app.editors.ParameterPageListener;
 import org.openlca.app.editors.ParameterPageSupport;
 import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ImpactFactor;
 import org.openlca.core.model.ImpactMethod;
+import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,19 +49,17 @@ public class ImpactMethodEditor extends ModelEditor<ImpactMethod> implements
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
 		super.init(site, input);
-		parameterSupport = new ParameterPageSupport(this, getModel()
-				.getParameters(), ParameterScope.IMPACT_METHOD);
+		Supplier<List<Parameter>> supplier = () -> getModel().getParameters();
+		parameterSupport = new ParameterPageSupport(this, supplier,
+				ParameterScope.IMPACT_METHOD);
 		// it is important that this listener is added before the listener
 		// in the LCIA factor page, otherwise the factor table will be
 		// refreshed with old values
-		parameterSupport.addListener(new ParameterPageListener() {
-			@Override
-			public void parameterChanged() {
-				log.trace("evaluate LCIA factor formulas");
-				for (ImpactCategory category : getModel().getImpactCategories()) {
-					for (ImpactFactor factor : category.getImpactFactors()) {
-						parameterSupport.equals(factor);
-					}
+		parameterSupport.addListener(() -> {
+			log.trace("evaluate LCIA factor formulas");
+			for (ImpactCategory category : getModel().getImpactCategories()) {
+				for (ImpactFactor factor : category.getImpactFactors()) {
+					parameterSupport.eval(factor);
 				}
 			}
 		});

@@ -2,8 +2,8 @@ package org.openlca.app.editors.lcia_methods;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -36,6 +36,7 @@ class ImpactFactorPage extends ModelPage<ImpactMethod> {
 	ImpactFactorPage(ImpactMethodEditor editor) {
 		super(editor, "ImpactFactorsPage", Messages.ImpactFactors);
 		this.editor = editor;
+		editor.onSaved(() -> onSaved());
 	}
 
 	@Override
@@ -56,6 +57,20 @@ class ImpactFactorPage extends ModelPage<ImpactMethod> {
 		form.reflow(true);
 	}
 
+	private void onSaved() {
+		if (categoryViewer == null || factorTable == null)
+			return;
+		ImpactCategoryDescriptor descriptor = categoryViewer.getSelected();
+		if (descriptor == null)
+			return;
+		for (ImpactCategory cat : editor.getModel().getImpactCategories()) {
+			if (descriptor.getId() == cat.getId()) {
+				factorTable.setImpactCategory(cat, false);
+				break;
+			}
+		}
+	}
+
 	private void createCategoryViewer(Composite client) {
 		Composite container = toolkit.createComposite(client);
 		UI.gridLayout(container, 2, 10, 0);
@@ -72,13 +87,8 @@ class ImpactFactorPage extends ModelPage<ImpactMethod> {
 		List<ImpactCategoryDescriptor> list = new ArrayList<>();
 		for (ImpactCategory category : getModel().getImpactCategories())
 			list.add(Descriptors.toDescriptor(category));
-		Collections.sort(list, new Comparator<ImpactCategoryDescriptor>() {
-			@Override
-			public int compare(ImpactCategoryDescriptor o1,
-					ImpactCategoryDescriptor o2) {
-				return Strings.compare(o1.getName(), o2.getName());
-			}
-		});
+		Collections.sort(list,
+				(o1, o2) -> Strings.compare(o1.getName(), o2.getName()));
 		return list;
 	}
 
@@ -87,14 +97,15 @@ class ImpactFactorPage extends ModelPage<ImpactMethod> {
 
 		@Override
 		public void selectionChanged(ImpactCategoryDescriptor selection) {
-			if (selection == null)
-				factorTable.setImpactCategory(null);
-			else {
-				for (ImpactCategory cat : getModel().getImpactCategories())
-					if (cat.getId() == selection.getId()) {
-						factorTable.setImpactCategory(cat);
-						break;
-					}
+			if (selection == null) {
+				factorTable.setImpactCategory(null, false);
+				return;
+			}
+			for (ImpactCategory cat : getModel().getImpactCategories()) {
+				if (Objects.equals(cat.getRefId(), selection.getRefId())) {
+					factorTable.setImpactCategory(cat, true);
+					break;
+				}
 			}
 		}
 
@@ -103,7 +114,7 @@ class ImpactFactorPage extends ModelPage<ImpactMethod> {
 			if (!event.match(editor.IMPACT_CATEGORY_CHANGE))
 				return;
 			categoryViewer.setInput(getDescriptorList());
-			factorTable.setImpactCategory((ImpactCategory) null);
+			factorTable.setImpactCategory((ImpactCategory) null, false);
 		}
 	}
 

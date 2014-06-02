@@ -2,7 +2,6 @@ package org.openlca.app.editors;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -65,11 +64,11 @@ public class ParameterSection implements ParameterPageListener {
 
 	private ParameterSection(ParameterPageSupport support, Composite body,
 			boolean forInputParams) {
-		this.forInputParameters = forInputParams;
-		this.editor = support.getEditor();
+		forInputParameters = forInputParams;
+		editor = support.getEditor();
 		this.support = support;
 		support.addListener(this);
-		this.parameters = support.getParameters();
+		parameters = support.getParameters();
 		String[] props = {};
 		if (forInputParams)
 			props = new String[] { NAME, VALUE, UNCERTAINTY, DESCRIPTION };
@@ -79,6 +78,10 @@ public class ParameterSection implements ParameterPageListener {
 		createCellModifiers();
 		fillInitialInput();
 		support.getEditor().getEventBus().register(this);
+		support.getEditor().onSaved(() -> {
+			parameters = support.getParameters(); // reloads it from the model
+				setInput();
+			});
 	}
 
 	@Override
@@ -103,16 +106,8 @@ public class ParameterSection implements ParameterPageListener {
 	}
 
 	private void bindActions(Section section) {
-		Action addAction = Actions.onAdd(new Runnable() {
-			public void run() {
-				addParameter();
-			}
-		});
-		Action removeAction = Actions.onRemove(new Runnable() {
-			public void run() {
-				removeParameter();
-			}
-		});
+		Action addAction = Actions.onAdd(() -> addParameter());
+		Action removeAction = Actions.onRemove(() -> removeParameter());
 		Actions.bind(section, addAction, removeAction);
 		Actions.bind(viewer, addAction, removeAction);
 	}
@@ -131,12 +126,8 @@ public class ParameterSection implements ParameterPageListener {
 
 	private void fillInitialInput() {
 		// when the viewer is created, we first sort the parameters by name
-		Collections.sort(parameters, new Comparator<Parameter>() {
-			@Override
-			public int compare(Parameter o1, Parameter o2) {
-				return Strings.compare(o1.getName(), o2.getName());
-			}
-		});
+		Collections.sort(parameters,
+				(o1, o2) -> Strings.compare(o1.getName(), o2.getName()));
 		setInput();
 	}
 

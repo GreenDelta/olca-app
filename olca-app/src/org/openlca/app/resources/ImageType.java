@@ -178,11 +178,11 @@ public enum ImageType {
 
 	NEW_WIZ_ACTOR("new_wiz_actor.png"),
 
-	NEW_WIZ_DATABASE("new_wiz_database.png"),
+	NEW_WIZ_DATABASE("new_wiz_database.gif"),
 
 	NEW_WIZ_FLOW("new_wiz_flow.png"),
 
-	NEW_WIZ_METHOD("new_wiz_method.png"),
+	NEW_WIZ_METHOD("new_wiz_method.gif"),
 
 	NEW_WIZ_PROCESS("new_wiz_process.png"),
 
@@ -192,7 +192,7 @@ public enum ImageType {
 
 	NEW_WIZ_PROPERTY("new_wiz_property.png"),
 
-	NEW_WIZ_SOURCE("new_wiz_source.png"),
+	NEW_WIZ_SOURCE("new_wiz_source.gif"),
 
 	NEW_WIZ_UNIT("new_wiz_unit.png"),
 

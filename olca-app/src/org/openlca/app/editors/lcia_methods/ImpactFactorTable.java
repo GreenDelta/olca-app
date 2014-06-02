@@ -3,7 +3,6 @@ package org.openlca.app.editors.lcia_methods;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -80,27 +79,29 @@ class ImpactFactorTable implements ParameterPageListener {
 		bindActions(viewer, section);
 	}
 
-	public void setImpactCategory(ImpactCategory impactCategory) {
+	void setImpactCategory(ImpactCategory impactCategory, boolean sort) {
 		this.category = impactCategory;
 		if (category == null) {
-			viewer.setInput(Collections.emptyList());
+			viewer.setInput(null);
 			return;
 		}
 		List<ImpactFactor> factors = impactCategory.getImpactFactors();
-		Collections.sort(factors, new Comparator<ImpactFactor>() {
-			@Override
-			public int compare(ImpactFactor o1, ImpactFactor o2) {
-				Flow f1 = o1.getFlow();
-				Flow f2 = o2.getFlow();
-				int c = Strings.compare(f1.getName(), f2.getName());
-				if (c != 0)
-					return c;
-				String cat1 = CategoryPath.getShort(f1.getCategory());
-				String cat2 = CategoryPath.getShort(f2.getCategory());
-				return Strings.compare(cat1, cat2);
-			}
-		});
+		if (sort)
+			sortFactors(factors);
 		viewer.setInput(factors);
+	}
+
+	private void sortFactors(List<ImpactFactor> factors) {
+		Collections.sort(factors, (o1, o2) -> {
+			Flow f1 = o1.getFlow();
+			Flow f2 = o2.getFlow();
+			int c = Strings.compare(f1.getName(), f2.getName());
+			if (c != 0)
+				return c;
+			String cat1 = CategoryPath.getShort(f1.getCategory());
+			String cat2 = CategoryPath.getShort(f2.getCategory());
+			return Strings.compare(cat1, cat2);
+		});
 	}
 
 	private void bindActions(TableViewer viewer, Section section) {

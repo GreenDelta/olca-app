@@ -13,7 +13,6 @@ import org.openlca.core.results.FullResultProvider;
  */
 public class SankeySelectionAction extends Action {
 
-	private double cutoff = 0.1;
 	private Object lastSelection;
 	private SankeyDiagram sankeyDiagram;
 
@@ -30,7 +29,7 @@ public class SankeySelectionAction extends Action {
 	public void setSankeyDiagram(SankeyDiagram sankeyDiagram) {
 		if (this.sankeyDiagram != sankeyDiagram) {
 			this.sankeyDiagram = sankeyDiagram;
-			lastSelection = null;
+			lastSelection = sankeyDiagram.getDefaultSelection();
 		}
 	}
 
@@ -46,14 +45,13 @@ public class SankeySelectionAction extends Action {
 
 	private void openAndUpdate(FullResultProvider result) {
 		SankeySelectionDialog dialog = new SankeySelectionDialog(result);
-		dialog.setCutoff(cutoff);
+		dialog.setCutoff(sankeyDiagram.getModel().getCutoff());
 		dialog.setSelection(lastSelection);
 		if (dialog.open() == Window.OK) {
 			lastSelection = dialog.getSelection();
 			if (lastSelection == null)
 				return;
-			cutoff = dialog.getCutoff();
-			sankeyDiagram.update(lastSelection, cutoff);
+			sankeyDiagram.update(lastSelection, dialog.getCutoff());
 		}
 	}
 }

@@ -1,5 +1,7 @@
 package org.openlca.app.editors.lcia_methods;
 
+import java.util.Objects;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.layout.GridData;
@@ -12,7 +14,6 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.NwSet;
 
@@ -20,10 +21,13 @@ class ImpactNwPage extends ModelPage<ImpactMethod> {
 
 	private FormToolkit toolkit;
 	private NwFactorViewer factorViewer;
+	private ImpactMethodEditor editor;
+	private NwSetViewer setViewer;
 
 	ImpactNwPage(ImpactMethodEditor editor) {
 		super(editor, "ImpactNormalizationWeightingPage",
 				Messages.NormalizationWeightingPageLabel);
+		this.editor = editor;
 	}
 
 	@Override
@@ -32,48 +36,56 @@ class ImpactNwPage extends ModelPage<ImpactMethod> {
 				+ ": " + getModel().getName());
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
-
 		Section section = UI.section(body, toolkit,
 				Messages.NormalizationWeightingSets);
 		UI.gridData(section, true, true);
 		Composite client = toolkit.createComposite(section);
 		section.setClient(client);
 		UI.gridLayout(client, 1);
-
-		final SashForm sashForm = new SashForm(client, SWT.NONE);
-		final GridData sashGD = new GridData(SWT.FILL, SWT.FILL, true, true);
-		sashGD.widthHint = 400;
-		sashForm.setLayoutData(sashGD);
-		sashForm.setLayout(new GridLayout(2, false));
-
-		NwSetViewer setViewer = new NwSetViewer(sashForm);
-		setViewer.bindTo(section);
-		setViewer
-				.addSelectionChangedListener(new SetSelectionChangedListener());
-		getBinding().on(getModel(), "nwSets", setViewer);
-
-		factorViewer = new NwFactorViewer(sashForm, getModel());
-
+		SashForm sashForm = createSash(client);
+		setViewer = createNwSetViewer(section, sashForm);
+		factorViewer = new NwFactorViewer(sashForm, editor);
 		sashForm.setWeights(new int[] { 25, 75 });
-		body.setFocus();
-
 		setViewer.selectFirst();
-
+		body.setFocus();
 		form.reflow(true);
+		editor.onSaved(() -> updateInput());
 	}
 
-	private class SetSelectionChangedListener implements
-			ISelectionChangedListener<NwSet> {
+	private SashForm createSash(Composite client) {
+		SashForm sash = new SashForm(client, SWT.NONE);
+		GridData sashGD = new GridData(SWT.FILL, SWT.FILL, true, true);
+		sashGD.widthHint = 400;
+		sash.setLayoutData(sashGD);
+		sash.setLayout(new GridLayout(2, false));
+		return sash;
+	}
 
-		@Override
-		public void selectionChanged(NwSet selection) {
-			getBinding().release(factorViewer);
-			if (selection == null)
-				factorViewer.setInput((NwSet) null);
-			else {
-				getBinding().on(selection, "factors", factorViewer);
-			}
+	private NwSetViewer createNwSetViewer(Section section, SashForm sashForm) {
+		NwSetViewer viewer = new NwSetViewer(sashForm, editor);
+		viewer.bindTo(section);
+		viewer.addSelectionChangedListener((selection) -> {
+			factorViewer.setInput(selection);
+		});
+		viewer.setInput(getModel());
+		return viewer;
+	}
+
+	private void updateInput() {
+		setViewer.setInput(getModel());
+		NwSet newNwSet = findNewNwSet();
+		setViewer.select(newNwSet);
+		factorViewer.setInput(newNwSet);
+	}
+
+	private NwSet findNewNwSet() {
+		NwSet oldNwSet = setViewer.getSelected();
+		if (oldNwSet == null)
+			return null;
+		for (NwSet newNwSet : getModel().getNwSets()) {
+			if (Objects.equals(oldNwSet.getRefId(), newNwSet.getRefId()))
+				return newNwSet;
 		}
+		return null;
 	}
-
 }

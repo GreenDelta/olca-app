@@ -10,35 +10,29 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.Messages;
 import org.openlca.app.viewers.table.AbstractTableViewer;
-import org.openlca.app.viewers.table.modify.IModelChangedListener.ModelChangeType;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.NwSet;
 
 class NwSetViewer extends AbstractTableViewer<NwSet> {
 
-	public NwSetViewer(Composite parent) {
+	private static final String NAME = Messages.NormalizationWeightingSet;
+	private static final String UNIT = Messages.ReferenceUnit;
+
+	private final ImpactMethodEditor editor;
+
+	public NwSetViewer(Composite parent, ImpactMethodEditor editor) {
 		super(parent);
-		getCellModifySupport().bind(LABEL.NAME, new NameModifier());
-		getCellModifySupport().bind(LABEL.UNIT, new UnitModifier());
+		this.editor = editor;
+		getModifySupport().bind(NAME, new NameModifier());
+		getModifySupport().bind(UNIT, new UnitModifier());
 	}
 
-	private interface LABEL {
-		String NAME = Messages.NormalizationWeightingSet;
-		String UNIT = Messages.ReferenceUnit;
-	}
-
-	private static final String[] COLUMN_HEADERS = { LABEL.NAME, LABEL.UNIT };
-
-	private ImpactMethod method;
-
-	public void setInput(ImpactMethod impactMethod) {
-		this.method = impactMethod;
+	public void setInput(ImpactMethod method) {
 		if (method == null)
 			setInput(new NwSet[0]);
 		else
-			setInput(impactMethod.getNwSets().toArray(
-					new NwSet[impactMethod.getNwSets().size()]));
+			setInput(method.getNwSets());
 	}
 
 	@Override
@@ -48,7 +42,7 @@ class NwSetViewer extends AbstractTableViewer<NwSet> {
 
 	@Override
 	protected String[] getColumnHeaders() {
-		return COLUMN_HEADERS;
+		return new String[] { NAME, UNIT };
 	}
 
 	@OnAdd
@@ -56,15 +50,19 @@ class NwSetViewer extends AbstractTableViewer<NwSet> {
 		NwSet set = new NwSet();
 		set.setName("newSet");
 		set.setRefId(UUID.randomUUID().toString());
-		fireModelChanged(ModelChangeType.CREATE, set);
-		setInput(method);
+		ImpactMethod method = editor.getModel();
+		method.getNwSets().add(set);
+		setInput(method.getNwSets());
+		editor.setDirty(true);
 	}
 
 	@OnRemove
 	protected void onRemove() {
+		ImpactMethod method = editor.getModel();
 		for (NwSet set : getAllSelected())
-			fireModelChanged(ModelChangeType.REMOVE, set);
-		setInput(method);
+			method.getNwSets().remove(set);
+		setInput(method.getNwSets());
+		editor.setDirty(true);
 	}
 
 	private class SetLabelProvider extends LabelProvider implements
@@ -103,7 +101,7 @@ class NwSetViewer extends AbstractTableViewer<NwSet> {
 		protected void setText(NwSet element, String text) {
 			if (!Objects.equals(text, element.getName())) {
 				element.setName(text);
-				fireModelChanged(ModelChangeType.CHANGE, element);
+				editor.setDirty(true);
 			}
 		}
 	}
@@ -119,10 +117,8 @@ class NwSetViewer extends AbstractTableViewer<NwSet> {
 		protected void setText(NwSet element, String text) {
 			if (!Objects.equals(text, element.getWeightedScoreUnit())) {
 				element.setWeightedScoreUnit(text);
-				fireModelChanged(ModelChangeType.CHANGE, element);
+				editor.setDirty(true);
 			}
 		}
-
 	}
-
 }

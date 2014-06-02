@@ -1,5 +1,8 @@
 package org.openlca.app.editors.processes;
 
+import java.util.List;
+import java.util.function.Supplier;
+
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
@@ -9,6 +12,7 @@ import org.openlca.app.editors.ParameterPage;
 import org.openlca.app.editors.ParameterPageListener;
 import org.openlca.app.editors.ParameterPageSupport;
 import org.openlca.core.model.Exchange;
+import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterScope;
 import org.openlca.core.model.Process;
 import org.openlca.expressions.FormulaInterpreter;
@@ -21,7 +25,7 @@ public class ProcessEditor extends ModelEditor<Process> implements IEditor {
 	 * An event message that indicates the removal or addition of one or more
 	 * exchanges exchange.
 	 */
-	final String EXCHANGES_CHANGED = "EXCHANGE_REMOVED";
+	final String EXCHANGES_CHANGED = "EXCHANGE_CHANGED";
 
 	public static String ID = "editors.process";
 	private Logger log = LoggerFactory.getLogger(getClass());
@@ -35,8 +39,9 @@ public class ProcessEditor extends ModelEditor<Process> implements IEditor {
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
 		super.init(site, input);
-		parameterSupport = new ParameterPageSupport(this, getModel()
-				.getParameters(), ParameterScope.PROCESS);
+		Supplier<List<Parameter>> supplier = () -> getModel().getParameters();
+		parameterSupport = new ParameterPageSupport(this, supplier,
+				ParameterScope.PROCESS);
 		// it is important that this listener is added before the listener
 		// in the exchange page, otherwise the exchange tables will be refreshed
 		// with old values
