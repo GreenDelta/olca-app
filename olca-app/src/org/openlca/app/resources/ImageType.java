@@ -188,7 +188,7 @@ public enum ImageType {
 
 	NEW_WIZ_PRODUCT_SYSTEM("new_wiz_product_system.png"),
 
-	NEW_WIZ_PROJECT("new_wiz_project.gif"),
+	NEW_WIZ_PROJECT("new_wiz_project.png"),
 
 	NEW_WIZ_PROPERTY("new_wiz_property.png"),
 
