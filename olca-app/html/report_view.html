@@ -131,6 +131,22 @@
 				</div>
 			</div>
 			<div class="row">
+                <div id="result-total-container" class="col-xs-12">
+					<div total-chart="exp" result="totalResult">
+						<div id="result-total-legend-container" class="legend-container"></div>
+						<div id="result-total-canvas"></div>
+					</div>
+				</div>
+				<select id="indicatorSelection" class="form-control" data-ng-options="indicator as indicator.label for indicator in report.indicators" data-ng-model="selectedIndicator"></select>
+				<div data-ng-repeat="variant in selectedIndicator.variants" class="result-charts-container col-xs-12 col-sm-6 col-md-6 col-lg-4">
+					<div variants-charts="exp" variant="variant">
+						<div class="result-charts-variant-container">
+							<div class="variant-label alert alert-info">{{variant.label}}</div>
+								<div class="legend-container"></div>
+							<div class="result-canvas-container"></div>
+						</div>
+					</div>
+				</div>
 				<div class="col-sm-12 box-row1">
 					<button class="pull-right btn btn-primary" data-ng-click="save(report)">Save</button>
 				</div>	
@@ -141,7 +157,7 @@
     <script src="../libs/jquery.min_1.9.0.js"></script>
     <script src="../libs/angular.min.js"></script>
     <script src="../libs/angularui.min.js"></script>
-    <script src="../libs/Chart.min.js"></script>
+    <script src="../libs/Chart.js"></script>
     <script src="../libs/olca.utils.js"></script>
     <script src="../libs/ui-bootstrap-tpls-0.11.0.min.js"></script>
 
@@ -187,10 +203,10 @@
 		<div class="table-responsive">
 			<table class="table table-hover">
 				<thead><tr><th>Variant</th>
-							<th data-ng-repeat="label in totalResult.labels">{{label}}</th>
+							<th data-ng-repeat="label in report.totalResult.labels">{{label}}</th>
 						</tr></thead>
 				<tbody>
-				<tr data-ng-repeat="variant in totalResult.datasets">
+				<tr data-ng-repeat="variant in report.totalResult.datasets">
 					<td>
 						{{variant.title}}
 					</td>
@@ -205,12 +221,12 @@
 
 	<script type="text/ng-template" id="result-charts.html">
 				<div id="result-total-container" class="col-xs-12">
-					<div total-chart="exp" result="totalResult">
+					<div total-chart="exp" result="report.totalResult">
 						<div id="result-total-legend-container" class="legend-container"></div>
 						<div id="result-total-canvas"></div>
 					</div>
 				</div>
-				<select id="indicatorSelection" class="form-control" data-ng-options="indicator as indicator.label for indicator in indicators" data-ng-model="selectedIndicator"></select>
+				<select id="indicatorSelection" class="form-control" data-ng-options="indicator as indicator.label for indicator in report.indicators" data-ng-model="selectedIndicator"></select>
 				<div data-ng-repeat="variant in selectedIndicator.variants" class="result-charts-container col-xs-12 col-sm-6 col-md-6 col-lg-4">
 					<div variants-charts="exp" variant="variant">
 						<div class="result-charts-variant-container">
@@ -224,6 +240,27 @@
 
     <script type="text/javascript">
         var app = angular.module('ReportPreviewPage', ['ui.bootstrap']);
+
+	    var Controller = function ($scope) {
+        	$scope.report = {};
+            $.getJSON("report_view.json", function(json) {
+            	setData(json);
+            });
+            $scope.save = function (report) {
+                saveReport(angular.toJson(report));        
+            }
+            $scope.restoreReportParameters = function (report) {
+            	angular.forEach(report.parameters, function(parameter, key){
+            		angular.forEach(parameter, function(value, key){
+            			if (key == 'value')
+            				parameter.value = parameter.defaultValue;
+            		    });
+           	     });      	
+            }
+		};
+
+        app.controller('Controller', Controller);
+
 	    app.directive('popover', function() {
 	        var fn;
 	        fn = function(scope, element, attrs) {
@@ -243,32 +280,36 @@
 	        var fn;
 	        fn = function(scope, element, attrs) {
 	    	    	$(document).ready(function () {
-	    	    		var containerId = 'result-total-canvas-container';
-	    	    		var canvasElement = document.createElement('canvas');
-	    	    		canvasElement.setAttribute("width", 800);
-	    	    		canvasElement.setAttribute("border", "1px solid white");
-	    	    		canvasElement.setAttribute("height", 300);
-	    	    		canvasElement.setAttribute("class", "mapping");
-	    	    		var canvasContainer = element.first().find('#result-total-canvas');
-	    	    		canvasContainer.attr('id', containerId);
-	    	    		document.getElementById(containerId).appendChild(canvasElement);
-	    	    		if (isIE(8,'lte')) {
-	    	    			canvasElement = G_vmlCanvasManager.initElement(canvasElement);
-	    	    		}
-	    	    		var ctxTotalBarChart = canvasElement.getContext("2d");
-	    	    		var totalBarChart = new Chart(ctxTotalBarChart);
-	    	    	    var dataTotalBarChart = scope.result;
-	    	    		new Chart(ctxTotalBarChart).Bar(dataTotalBarChart, {
-	    	    			animationEasing : "easeOutQuart",
-	    	    			animationSteps : 50,
-							barDatasetSpacing : 1,
-							barValueSpacing : 20
-	    	      	    });
-						var resultLegend = document.createElement('div');
-						var resultLegendId = 'result-total-legend';
-						resultLegend.id = resultLegendId;
-						document.getElementById('result-total-legend-container').appendChild(resultLegend);
-   	    	    	    legend(document.getElementById(resultLegendId), dataTotalBarChart, 'variant');
+                        scope.$watch('result', function() {
+                            if(typeof scope.result !== 'undefined'){
+                                var containerId = 'result-total-canvas-container';
+                                var canvasElement = document.createElement('canvas');
+                                canvasElement.setAttribute("width", 800);
+                                canvasElement.setAttribute("border", "1px solid white");
+                                canvasElement.setAttribute("height", 300);
+                                canvasElement.setAttribute("class", "mapping");
+                                var canvasContainer = element.first().find('#result-total-canvas');
+                                canvasContainer.attr('id', containerId);
+                                document.getElementById(containerId).appendChild(canvasElement);
+                                if (isIE(8,'lte')) {
+                                    canvasElement = G_vmlCanvasManager.initElement(canvasElement);
+                                }
+                                var ctxTotalBarChart = canvasElement.getContext("2d");
+                                var totalBarChart = new Chart(ctxTotalBarChart);
+                                var dataTotalBarChart = scope.result;
+                                new Chart(ctxTotalBarChart).Bar(dataTotalBarChart, {
+                                    animationEasing : "easeOutQuart",
+                                    animationSteps : 50,
+                                    barDatasetSpacing : 1,
+                                    barValueSpacing : 20
+                                });
+                                var resultLegend = document.createElement('div');
+                                var resultLegendId = 'result-total-legend';
+                                resultLegend.id = resultLegendId;
+                                document.getElementById('result-total-legend-container').appendChild(resultLegend);
+                                legend(document.getElementById(resultLegendId), dataTotalBarChart, 'variant');
+                            };
+                        });
 	    	    	});
 	         	};
 	    	  return {
@@ -320,341 +361,17 @@
     		  }
    		});
 
-	    var Controller = function ($scope) { 
-	    	var renderedcount = 0;
-        	$scope.report = {};
-            $scope.save = function (report) {
-                saveReport(angular.toJson(report));        
-            }
-            $scope.restoreReportParameters = function (report) {
-            	angular.forEach(report.parameters, function(parameter, key){
-            		angular.forEach(parameter, function(value, key){
-            			if (key == 'value')
-            				parameter.value = parameter.defaultValue;
-            		    });
-           	     });      	
-            }
-
-            $scope.indicators = [{
-            		"id" : 1,
-            	    "label" : "Ozone Layer Depletion",
-            	    "unit" : "kg",
-            	    "totals" : [
-            	    	{
-            	    		"title" : "Variant 1",
-            	    		"value" : 10
-            	    	},
-            	    	{
-            	    		"title" : "Variant 2",
-            	    		"value" : 20
-            	    	},
-            	    	{
-            	    		"title" : "Variant 3",
-            	    		"value" : 30
-            	    	},
-            	    	{
-            	    		"title" : "Variant 4",
-            	    		"value" : 40
-            	    	},
-            	    	{
-            	    		"title" : "Variant 5",
-            	    		"value" : 50
-            	    	}
-            	    ],
-            	    "variants" : [   {
-						"id" : 1,
-            	        "label" : "Variant 1",
-            	        "contributionItems" : [
-            	            {
-            	                "title" : "Process 1",
-            	                "value" : 10,
-            	                "isRest" : false
-            	            },
-            	            {
-            	                "title" : "Process 2",
-            	                "value" : 20,
-            	                "isRest" : false
-            	            },
-            	            {
-            	                "title" : "Process 3",
-            	                "value" : 30,
-            	                "isRest" : false
-            	            },
-            	            {
-            	                "title" : "Process 4",
-            	                "value" : 40,
-            	                "isRest" : false
-            	            },
-            	            {
-            	                "title" : "Process 5",
-            	                "value" : 50,
-            	                "isRest" : true
-            	            }],
-                	        "total" : 10
-            	    },
-            	    {
-						"id" : 2,
-            	        "label" : "Variant 2",
-            	        "contributionItems" : [
-            	            {
-            	                "title" : "Process 1",
-            	                "value" : 20,
-            	                "isRest" : false
-            	            },
-            	            {
-            	                "title" : "Process 2",
-            	                "value" : 20,
-            	                "isRest" : false
-            	            },
-            	            {
-            	                "title" : "Process 3",
-	           	                "value" : 20,
-            	                "isRest" : false
-            	            },
-            	            {
-            	                "title" : "Process 4",
-            	                "value" : 20,
-            	                "isRest" : false
-            	            },
-            	            {
-            	                "title" : "Process 5",
-            	                "value" : 20,
-            	                "isRest" : true
-            	            }],
-                	        "total" : 300
-            	    },
-            	    {
-						"id" : 3,
-            	        "label" : "Variant 3",
-            	        "contributionItems" : [
-            	            {
-            	                "title" : "Process 1",
-	           	                "value" : 20,
-            	                "isRest" : false
-            	            },
-            	            {
-            	                "title" : "Process 2",
-            	                "value" : 20,
-            	                "isRest" : false
-            	            },
-            	            {
-            	                "title" : "Process 3",
-            	                "value" : 50,
-            	                "isRest" : true
-            	            }],
-                	        "total" : 100
-            	    },
-            	    {
-						"id" : 4,
-            	        "label" : "Variant 4",
-            	        "contributionItems" : [
-            	            {
-            	                "title" : "Process 1",
-	           	                "value" : 20,
-            	                "isRest" : false
-            	            },
-            	            {
-            	                "title" : "Process 2",
-            	                "value" : 20,
-            	                "isRest" : false
-            	            },
-            	            {
-            	                "title" : "Process 3",
-            	                "value" : 50,
-            	                "isRest" : true
-            	            }],
-                	        "total" : 50
-            	    },
-            	    {
-						"id" : 5,
-            	        "label" : "Variant 5",
-            	        "contributionItems" : [
-            	            {
-            	                "title" : "Process 1",
-	           	                "value" : 20,
-            	                "isRest" : false
-            	            },
-            	            {
-            	                "title" : "Process 2",
-            	                "value" : 20,
-            	                "isRest" : false
-            	            },
-            	            {
-            	                "title" : "Process 3",
-            	                "value" : 50,
-            	                "isRest" : true
-            	            }],
-                	        "total" : 25
-            	    }]
-            	},
-            	{
-            		"id" : 1,
-            	    "label" : "Abiotic Resource Depletion",
-            	    "unit" : "kg",
-            	    "totals" : [
-            	    	{
-            	    		"title" : "Variant 1",
-            	    		"value" : 345
-            	    	},
-            	    	{
-            	    		"title" : "Variant 2",
-            	    		"value" : 45
-            	    	},
-            	    	{
-            	    		"title" : "Variant 3",
-            	    		"value" : 12
-            	    	},
-            	    	{
-            	    		"title" : "Variant 4",
-            	    		"value" : 679
-            	    	},
-            	    	{
-            	    		"title" : "Variant 5",
-            	    		"value" : 45
-            	    	}
-            	    ],
-            	    "variants" : [{
-						"id" : 1,
-            	        "label" : "Variant 1",
-            	        "contributionItems" : [
-            	            {
-            	                "title" : "Process 2.1",
-            	                "value" : 10,
-            	                "isRest" : false
-            	            },
-            	            {
-            	                "title" : "Process 2.2",
-            	                "value" : 20,
-            	                "isRest" : false
-            	            },
-            	            {
-            	                "title" : "Process 2.3",
-            	                "value" : 30,
-            	                "isRest" : false
-            	            },
-            	            {
-            	                "title" : "Process 2.4",
-            	                "value" : 40,
-            	                "isRest" : false
-            	            },
-            	            {
-            	                "title" : "Process 2.5",
-            	                "value" : 50,
-            	                "isRest" : true
-            	            }],
-                	        "total" : 25
-            	    },
-            	    {
-						"id" : 2,
-            	        "label" : "Variant 2",
-            	        "contributionItems" : [
-            	            {
-            	                "title" : "Process 1",
-            	                "value" : 20,
-            	                "isRest" : false
-            	            },
-            	            {
-            	                "title" : "Process 2",
-            	                "value" : 20,
-            	                "isRest" : false
-            	            },
-            	            {
-            	                "title" : "Process 3",
-	           	                "value" : 20,
-            	                "isRest" : false
-            	            },
-            	            {
-            	                "title" : "Process 4",
-            	                "value" : 20,
-            	                "isRest" : false
-            	            },
-            	            {
-            	                "title" : "Process 5",
-            	                "value" : 20,
-            	                "isRest" : true
-            	            }],
-                	        "total" : 25
-            	    },
-            	    {
-						"id" : 3,
-            	        "label" : "Variant 3",
-            	        "contributionItems" : [
-            	            {
-            	                "title" : "Process 1",
-	           	                "value" : 20,
-            	                "isRest" : false
-            	            },
-            	            {
-            	                "title" : "Process 2",
-            	                "value" : 20,
-            	                "isRest" : false
-            	            },
-            	            {
-            	                "title" : "Process 3",
-            	                "value" : 50,
-            	                "isRest" : true
-            	            }],
-                	        "total" : 10
-            	    },
-            	    {
-						"id" : 4,
-            	        "label" : "Variant 4",
-            	        "contributionItems" : [
-            	            {
-            	                "title" : "Process 1",
-	           	                "value" : 20,
-            	                "isRest" : false
-            	            },
-            	            {
-            	                "title" : "Process 2",
-            	                "value" : 20,
-            	                "isRest" : false
-            	            },
-            	            {
-            	                "title" : "Process 3",
-            	                "value" : 50,
-            	                "isRest" : true
-            	            }],
-                	        "total" : 10
-            	    },
-            	    {
-						"id" : 5,
-            	        "label" : "Variant 5",
-            	        "contributionItems" : [
-            	            {
-            	                "title" : "Process 1",
-	           	                "value" : 20,
-            	                "isRest" : false
-            	            },
-            	            {
-            	                "title" : "Process 2",
-            	                "value" : 20,
-            	                "isRest" : false
-            	            },
-            	            {
-            	                "title" : "Process 3",
-            	                "value" : 50,
-            	                "isRest" : true
-            	            }],
-                	        "total" : 10
-            	    }]
-            	}];
-
-        	$scope.selectedIndicator = $scope.indicators[0];
-
-    	   	applyResultChartAttributes($scope.indicators);
-			calculateRelativeResult($scope.indicators);
-            $scope.totalResult = getTotalResult($scope.indicators);
-
-		};
-
-        app.controller('Controller', Controller);
         
        function setData(report) {
             var element = document.getElementById("contentDiv");
             var scope = angular.element(element).scope();
             scope.$apply(function () {
                 scope.report = report;
+                applyResultChartAttributes(scope.report.indicators);
+                calculateRelativeResult(scope.report.indicators);
+                scope.totalResult = {};
+                scope.totalResult = getTotalResult(scope.report.indicators);
+            	scope.selectedIndicator = scope.report.indicators[0];
             });
         }
 
@@ -733,7 +450,6 @@
 					if (type == 'process') {
 							if (key == 'color') {
 								color = value;
-								console.log('color: ' + color);
 							}
 					} else if (type == 'variant') {
 						color = process.fillColor;
