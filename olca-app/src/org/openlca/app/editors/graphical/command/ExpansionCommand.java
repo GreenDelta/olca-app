@@ -31,7 +31,7 @@ public class ExpansionCommand extends Command {
 
 	@Override
 	public boolean canUndo() {
-		return true;
+		return false;
 	}
 
 	@Override
@@ -62,27 +62,8 @@ public class ExpansionCommand extends Command {
 		return null;
 	}
 
-	@Override
-	public void redo() {
-		execute();
-	}
-
-	@Override
-	public void undo() {
-		switchType();
-		execute();
-		switchType();
-	}
-
 	void setNode(ProcessNode node) {
 		this.node = node;
-	}
-
-	private void switchType() {
-		if (type == EXPAND)
-			type = COLLAPSE;
-		else if (type == COLLAPSE)
-			type = EXPAND;
 	}
 
 }
