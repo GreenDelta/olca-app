@@ -9,14 +9,11 @@ import org.openlca.core.model.ProductSystem;
 public class ProductSystemNode extends Node {
 
 	private ProductSystemGraphEditor editor;
-	private ProductSystem productSystem;
 	private MutableProcessLinkSearchMap linkSearch;
 
-	public ProductSystemNode(ProductSystem productSystem,
-			ProductSystemGraphEditor editor) {
-		this.productSystem = productSystem;
-		this.linkSearch = new MutableProcessLinkSearchMap(
-				productSystem.getProcessLinks());
+	public ProductSystemNode(ProductSystemGraphEditor editor) {
+		this.linkSearch = new MutableProcessLinkSearchMap(editor
+				.getSystemEditor().getModel().getProcessLinks());
 		this.editor = editor;
 	}
 
@@ -35,7 +32,7 @@ public class ProductSystemNode extends Node {
 	}
 
 	public ProductSystem getProductSystem() {
-		return productSystem;
+		return editor.getSystemEditor().getModel();
 	}
 
 	public ProcessNode getProcessNode(long id) {
@@ -47,7 +44,7 @@ public class ProductSystemNode extends Node {
 
 	@Override
 	public String getName() {
-		return productSystem.getName();
+		return getProductSystem().getName();
 	}
 
 	public void highlightMatchingExchanges(ExchangeNode toMatch) {
@@ -80,10 +77,6 @@ public class ProductSystemNode extends Node {
 				for (ExchangeNode exchangeNode : node.getChildren().get(0)
 						.getChildren())
 					exchangeNode.setHighlighted(false);
-	}
-
-	public void refresh() {
-		getEditPart().refresh();
 	}
 
 	public void refreshChildren() {

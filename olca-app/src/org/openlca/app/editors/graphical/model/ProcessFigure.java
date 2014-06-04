@@ -130,7 +130,7 @@ class ProcessFigure extends Figure {
 		for (ConnectionLink link : node.getLinks())
 			if (node.equals(link.getTargetNode()))
 				link.refreshTargetAnchor();
-			else
+			else if (node.equals(link.getSourceNode()))
 				link.refreshSourceAnchor();
 	}
 

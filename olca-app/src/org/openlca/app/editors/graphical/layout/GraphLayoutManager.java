@@ -51,7 +51,8 @@ public class GraphLayoutManager extends AbstractLayout {
 
 	private void layoutXY() {
 		for (ProcessNode child : node.getChildren())
-			child.getFigure().setBounds(child.getXyLayoutConstraints());
+			if (child.getFigure() != null)
+				child.getFigure().setBounds(child.getXyLayoutConstraints());
 	}
 
 	@SuppressWarnings("unchecked")

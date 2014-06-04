@@ -9,7 +9,7 @@ import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.editparts.AbstractConnectionEditPart;
-import org.eclipse.gef.editpolicies.ComponentEditPolicy;
+import org.eclipse.gef.editpolicies.ConnectionEditPolicy;
 import org.eclipse.gef.editpolicies.ConnectionEndpointEditPolicy;
 import org.eclipse.gef.requests.GroupRequest;
 import org.eclipse.gef.requests.ReconnectRequest;
@@ -39,8 +39,15 @@ class ConnectionLinkPart extends AbstractConnectionEditPart {
 	protected void createEditPolicies() {
 		installEditPolicy(EditPolicy.CONNECTION_ENDPOINTS_ROLE,
 				new ConnectionEndpointEditPolicy());
-		installEditPolicy(EditPolicy.COMPONENT_ROLE, new ComponentEditPolicy() {
-		});
+		installEditPolicy(EditPolicy.CONNECTION_ROLE,
+				new ConnectionEditPolicy() {
+
+					@Override
+					protected Command getDeleteCommand(GroupRequest arg0) {
+						return CommandFactory
+								.createDeleteLinkCommand(getModel());
+					}
+				});
 	}
 
 	@Override
@@ -98,13 +105,6 @@ class ConnectionLinkPart extends AbstractConnectionEditPart {
 			productSystemNode.removeHighlighting();
 		}
 		super.eraseSourceFeedback(req);
-	}
-
-	@Override
-	public Command getCommand(Request request) {
-		if (request instanceof GroupRequest && request.getType() == REQ_DELETE)
-			return CommandFactory.createDeleteLinkCommand(getModel());
-		return super.getCommand(request);
 	}
 
 	@Override

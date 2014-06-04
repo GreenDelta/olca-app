@@ -39,9 +39,7 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.ProcessDao;
-import org.openlca.core.model.Exchange;
 import org.openlca.core.model.ProcessLink;
-import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 public class ConnectorDialog extends Dialog {
@@ -55,25 +53,29 @@ public class ConnectorDialog extends Dialog {
 		String[] ALL = new String[] { NAME, CREATE, CONNECT, EXISTS, CONNECTED };
 	}
 
-	private Exchange exchange;
-	private ProcessDescriptor parentProcess;
-	private ProductSystem productSystem;
+	private long flowId;
+	private long processId;
+	private Set<Long> existingProcesses;
 	private MutableProcessLinkSearchMap linkSearch;
 	private TableViewer viewer;
 	private boolean selectProvider;
+	private boolean isConnected;
 	private List<ConnectableProcess> connectableProcesses = new ArrayList<>();
 
 	public ConnectorDialog(ExchangeNode exchangeNode) {
 		super(UI.shell());
 		setShellStyle(SWT.BORDER | SWT.TITLE);
 		setBlockOnOpen(true);
-		exchange = exchangeNode.getExchange();
-		parentProcess = exchangeNode.getParent().getParent().getProcess();
+		flowId = exchangeNode.getExchange().getFlow().getId();
+		processId = exchangeNode.getParent().getParent().getProcess().getId();
 		ProductSystemNode systemNode = exchangeNode.getParent().getParent()
 				.getParent();
-		productSystem = systemNode.getProductSystem();
+		existingProcesses = systemNode.getProductSystem().getProcesses();
 		linkSearch = systemNode.getLinkSearch();
-		selectProvider = exchange.isInput();
+		selectProvider = exchangeNode.getExchange().isInput();
+		for (ProcessLink link : linkSearch.getIncomingLinks(processId))
+			if (link.getFlowId() == flowId)
+				isConnected = true;
 	}
 
 	@Override
@@ -96,11 +98,9 @@ public class ConnectorDialog extends Dialog {
 	private List<ProcessDescriptor> loadPossibleConnectors() {
 		Set<Long> connectorIds = null;
 		if (selectProvider)
-			connectorIds = new FlowDao(Database.get()).getProviders(exchange
-					.getFlow().getId());
+			connectorIds = new FlowDao(Database.get()).getProviders(flowId);
 		else
-			connectorIds = new FlowDao(Database.get()).getRecipients(exchange
-					.getFlow().getId());
+			connectorIds = new FlowDao(Database.get()).getRecipients(flowId);
 		return new ProcessDao(Database.get()).getDescriptors(connectorIds);
 	}
 
@@ -168,35 +168,43 @@ public class ConnectorDialog extends Dialog {
 	private void createInternalModel(List<ProcessDescriptor> processes) {
 		connectableProcesses.clear();
 		for (ProcessDescriptor process : processes) {
-			boolean alreadyExisting = productSystem.getProcesses().contains(
-					process.getId());
+			boolean alreadyExisting = existingProcesses.contains(process
+					.getId());
 			boolean alreadyConnected = false;
-			if (alreadyExisting) {
-				if (selectProvider) {
-					for (ProcessLink link : linkSearch.getOutgoingLinks(process
-							.getId())) {
-						if (link.getRecipientId() == parentProcess.getId()
-								&& link.getFlowId() == exchange.getFlow()
-										.getId()) {
-							alreadyConnected = true;
-							break;
-						}
-					}
-				} else {
-					for (ProcessLink link : linkSearch.getIncomingLinks(process
-							.getId())) {
-						if (link.getProviderId() == parentProcess.getId()
-								&& link.getFlowId() == exchange.getFlow()
-										.getId()) {
-							alreadyConnected = true;
-							break;
-						}
-					}
-				}
-			}
+			if (alreadyExisting)
+				alreadyConnected = isAlreadyConnected(process);
 			connectableProcesses.add(new ConnectableProcess(process,
 					alreadyExisting, alreadyConnected));
 		}
+	}
+
+	private boolean isAlreadyConnected(ProcessDescriptor process) {
+		if (selectProvider)
+			return isAlreadyProvider(process);
+		else
+			return isAlreadyReceiver(process);
+	}
+
+	private boolean isAlreadyProvider(ProcessDescriptor process) {
+		for (ProcessLink link : linkSearch.getOutgoingLinks(process.getId())) {
+			if (link.getRecipientId() != processId)
+				continue;
+			if (link.getFlowId() != flowId)
+				continue;
+			return true;
+		}
+		return false;
+	}
+
+	private boolean isAlreadyReceiver(ProcessDescriptor process) {
+		for (ProcessLink link : linkSearch.getIncomingLinks(process.getId())) {
+			if (link.getProviderId() != processId)
+				continue;
+			if (link.getFlowId() != flowId)
+				continue;
+			return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -205,23 +213,32 @@ public class ConnectorDialog extends Dialog {
 	}
 
 	private boolean canBeConnected(ConnectableProcess process) {
+		if (isConnected)
+			return false;
 		if (process.isAlreadyConnectedToExchange())
 			return false;
-
-		// check if recipient already has a provider
-		if (!selectProvider)
-			for (ProcessLink link : linkSearch.getIncomingLinks(process
-					.getProcess().getId()))
-				if (link.getFlowId() == exchange.getFlow().getId())
-					return false;
-
-		// check if the user already selected a provider
-		if (selectProvider)
-			for (ConnectableProcess connectable : connectableProcesses)
-				if (connectable.isAlreadyConnectedToExchange()
-						|| connectable.doConnect())
-					return false;
+		if (selectProvider) {
+			if (userHasSelectedProvider())
+				return false;
+		} else if (hasProvider(process))
+			return false;
 		return true;
+	}
+
+	private boolean hasProvider(ConnectableProcess process) {
+		for (ProcessLink link : linkSearch.getIncomingLinks(process
+				.getProcess().getId()))
+			if (link.getFlowId() == flowId)
+				return true;
+		return false;
+	}
+
+	private boolean userHasSelectedProvider() {
+		for (ConnectableProcess connectable : connectableProcesses)
+			if (connectable.isAlreadyConnectedToExchange()
+					|| connectable.doConnect())
+				return true;
+		return false;
 	}
 
 	public List<ProcessDescriptor> getProcessesToCreate() {
