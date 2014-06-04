@@ -13,7 +13,6 @@ import org.eclipse.gef.editpolicies.ComponentEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.GroupRequest;
 import org.openlca.app.editors.graphical.command.CommandFactory;
-import org.openlca.app.editors.graphical.command.DeleteProcessCommand;
 import org.openlca.app.editors.graphical.policy.LayoutPolicy;
 
 class ProcessPart extends AbstractNodeEditPart<ProcessNode> {
@@ -36,6 +35,10 @@ class ProcessPart extends AbstractNodeEditPart<ProcessNode> {
 	protected void createEditPolicies() {
 		installEditPolicy(EditPolicy.LAYOUT_ROLE, new LayoutPolicy());
 		installEditPolicy(EditPolicy.COMPONENT_ROLE, new ComponentEditPolicy() {
+			@Override
+			protected Command createDeleteCommand(GroupRequest deleteRequest) {
+				return CommandFactory.createDeleteProcessCommand(getModel());
+			}
 		});
 	}
 
@@ -51,44 +54,37 @@ class ProcessPart extends AbstractNodeEditPart<ProcessNode> {
 	}
 
 	@Override
-	public Command getCommand(Request request) {
-		if (request instanceof GroupRequest && request.getType() == REQ_DELETE) {
-			DeleteProcessCommand command = CommandFactory
-					.createDeleteProcessCommand(getModel());
-			return command;
-		} else if (request instanceof ChangeBoundsRequest) {
-			ChangeBoundsRequest req = (ChangeBoundsRequest) request;
-			Command commandChain = null;
-			for (Object o : req.getEditParts()) {
-				if (o instanceof ProcessPart) {
-					ProcessPart part = (ProcessPart) o;
-
-					Rectangle bounds = part.getModel().getFigure().getBounds()
-							.getCopy();
-					part.getModel().getFigure().translateToAbsolute(bounds);
-					Rectangle moveResize = new Rectangle(req.getMoveDelta(),
-							req.getSizeDelta());
-					bounds.resize(moveResize.getSize());
-					bounds.translate(moveResize.getLocation());
-					part.getModel().getFigure().translateToRelative(bounds);
-					Command command = null;
-					if (req.getSizeDelta().height != 0
-							|| req.getSizeDelta().width != 0)
-						command = CommandFactory.createResizeCommand(
-								part.getModel(), bounds);
-					if (req.getMoveDelta().x != 0 || req.getMoveDelta().y != 0)
-						command = CommandFactory.createMoveCommand(
-								part.getModel(), bounds);
-
-					if (commandChain == null)
-						commandChain = command;
-					else
-						commandChain = commandChain.chain(command);
-				}
-			}
-			return commandChain;
+	public Command getCommand(Request req) {
+		if (!(req instanceof ChangeBoundsRequest))
+			return super.getCommand(req);
+		ChangeBoundsRequest request = (ChangeBoundsRequest) req;
+		Command commandChain = null;
+		for (Object o : request.getEditParts()) {
+			if (!(o instanceof ProcessPart))
+				continue;
+			ProcessPart part = (ProcessPart) o;
+			Rectangle bounds = part.getModel().getFigure().getBounds()
+					.getCopy();
+			part.getModel().getFigure().translateToAbsolute(bounds);
+			Rectangle moveResize = new Rectangle(request.getMoveDelta(),
+					request.getSizeDelta());
+			bounds.resize(moveResize.getSize());
+			bounds.translate(moveResize.getLocation());
+			part.getModel().getFigure().translateToRelative(bounds);
+			Command command = null;
+			if (request.getSizeDelta().height != 0
+					|| request.getSizeDelta().width != 0)
+				command = CommandFactory.createResizeCommand(part.getModel(),
+						bounds);
+			if (request.getMoveDelta().x != 0 || request.getMoveDelta().y != 0)
+				command = CommandFactory.createMoveCommand(part.getModel(),
+						bounds);
+			if (commandChain == null)
+				commandChain = command;
+			else
+				commandChain = commandChain.chain(command);
 		}
-		return super.getCommand(request);
+		return commandChain;
 	}
 
 	@Override
