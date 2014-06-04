@@ -3,8 +3,8 @@
 The openLCA project makes available all content in this package 
 ("Content"). Unless otherwise indicated below, the Content is provided 
 to you under the terms and conditions of the Mozilla Public License 
-Version 1.1 ("MPL"). A copy of the MPL is available at 
-http://www.mozilla.org/MPL/1.1/index.txt.
+Version 2.0 ("MPL"). A copy of the MPL is available at 
+http://www.mozilla.org/MPL/2.0/.
 
 The openLCA project is maintained and coordinated by GreenDelta, 
 www.greendelta.com. If you did not receive this Content directly 
@@ -15,7 +15,7 @@ Redistributor's license that was provided with the Content. If no such
 license exists, contact the Redistributor. Unless otherwise indicated 
 below, the terms and conditions of the MPL still apply to any source 
 code in the Content and such source code may be obtained at 
-http://sourceforge.net/projects/openlca.
+https://github.com/GreenDelta/olca-app.
 
 A copy of the full license text and also copies of the licenses of the 
 third party content can be found in the installation directory 
@@ -29,18 +29,6 @@ and JavaFX
 (http://www.oracle.com/technetwork/java/javase/terms/license/index.html).
 A current version of the JRE is freely available for multiple operating
 systems from http://www.oracle.com/technetwork/java/javase/downloads/index.html.
-
-== MySQL Server ==
-
-In order to work with openLCA you need a MySQL Server 
-(http://dev.mysql.com/). The MySQL Server is licensed under the 
-General Public License v2 (GPL, 
-http://www.gnu.org/licenses/old-licenses/gpl-2.0.html). As the GPL is 
-not compatible with other open source software components in the 
-Content, the MySQL server is NOT included or distributed with the 
-Content. However, you can download und install the MySQL Server with 
-the help of the openLCA installer or retrieve it directly from the 
-MySQL website.
 
 == Third Party Content ==
 
@@ -91,16 +79,6 @@ source code are available from the GNU Trove website
 Google Gson is licensed under the Apache 2 license. Original binaries and 
 source code are available from the Google Gson project website 
 (http://code.google.com/p/google-gson/).
-
-= Groovy = 
-Groovy is licensed under the Apache 2 license 
-(http://groovy.codehaus.org/License+Information). Original source code and 
-binaries are available from the Grooy website (http://groovy.codehaus.org/).
-
-= jBlas = 
-jBlas is licensed under the revised BSD license. Original binaries and 
-source code are available from the jBlas website and Git repository (
-http://jblas.org/ and https://github.com/mikiobraun/jblas).
 
 = JDOM =
 JDOM is licensed under the JDOM License (BSD style). The license,  

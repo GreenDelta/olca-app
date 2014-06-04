@@ -265,7 +265,12 @@ class ExchangeTable implements ParameterPageListener {
 		}
 
 		private Image getFlowTypeIcon(Exchange exchange) {
-			switch (exchange.getFlow().getFlowType()) {
+			if (exchange == null)
+				return null;
+			Flow flow = exchange.getFlow();
+			if (flow == null || flow.getFlowType() == null)
+				return null;
+			switch (flow.getFlowType()) {
 			case ELEMENTARY_FLOW:
 				return ImageType.FLOW_SUBSTANCE.get();
 			case PRODUCT_FLOW:

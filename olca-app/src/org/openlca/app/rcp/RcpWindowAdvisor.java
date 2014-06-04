@@ -1,14 +1,11 @@
 package org.openlca.app.rcp;
 
-import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 import org.openlca.app.Config;
-import org.openlca.app.db.Database;
 import org.openlca.app.editors.StartPage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,21 +38,6 @@ public class RcpWindowAdvisor extends WorkbenchWindowAdvisor {
 	@Override
 	public void postWindowOpen() {
 		StartPage.open();
-	}
-
-	@Override
-	public boolean preWindowShellClose() {
-		BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
-			public void run() {
-				try {
-					log.info("close database");
-					Database.close();
-				} catch (Exception e) {
-					log.error("Failed to close database", e);
-				}
-			}
-		});
-		return super.preWindowShellClose();
 	}
 
 }

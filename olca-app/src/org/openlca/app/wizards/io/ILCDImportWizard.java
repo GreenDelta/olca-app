@@ -9,6 +9,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
+import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
@@ -71,6 +72,8 @@ public class ILCDImportWizard extends Wizard implements IImportWizard {
 				monitor.beginTask("Import: ", IProgressMonitor.UNKNOWN);
 				ImportHandler handler = new ImportHandler(monitor);
 				ILCDImport iImport = new ILCDImport(zip, Database.get());
+				if (App.runsInDevMode())
+					iImport.setImportFlows(true);
 				handler.run(iImport);
 			}
 		});

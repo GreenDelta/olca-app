@@ -11,6 +11,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.openlca.app.Preferences;
 import org.openlca.app.Workspace;
+import org.openlca.app.db.Database;
 import org.openlca.app.logging.Console;
 import org.openlca.app.logging.LoggerConfig;
 import org.openlca.eigen.NativeLibrary;
@@ -72,6 +73,12 @@ public class RcpActivator extends AbstractUIPlugin {
 	public void stop(final BundleContext context) throws Exception {
 		log.trace("Stop bundle {}", PLUGIN_ID);
 		Console.dispose();
+		try {
+			log.info("close database");
+			Database.close();
+		} catch (Exception e) {
+			log.error("Failed to close database", e);
+		}
 		plugin = null;
 		super.stop(context);
 	}
