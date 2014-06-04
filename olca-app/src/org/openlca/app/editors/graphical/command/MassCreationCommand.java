@@ -57,6 +57,8 @@ class MassCreationCommand extends Command {
 	}
 
 	private void addNode(ProcessDescriptor process) {
+		if (model.getProcessNode(process.getId()) != null)
+			return;
 		ProcessNode node = new ProcessNode(process);
 		model.getProductSystem().getProcesses().add(process.getId());
 		model.add(node);
