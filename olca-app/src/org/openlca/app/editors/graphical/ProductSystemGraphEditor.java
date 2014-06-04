@@ -34,14 +34,12 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ProcessLink;
-import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 public class ProductSystemGraphEditor extends GraphicalEditor {
 
 	public static final String ID = "editors.productsystem.graphical";
 
-	private ProductSystem system;
 	private ProductSystemEditor systemEditor;
 	private ProductSystemNode model;
 	private GraphLayoutType layoutType = GraphLayoutType.TREE_LAYOUT;
@@ -52,9 +50,7 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 	private List<String> actionIds;
 	private boolean initialized = false;
 
-	public ProductSystemGraphEditor(ProductSystem system,
-			ProductSystemEditor editor) {
-		this.system = system;
+	public ProductSystemGraphEditor(ProductSystemEditor editor) {
 		this.systemEditor = editor;
 		editor.onSaved(new EventHandler() {
 
@@ -63,6 +59,10 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 				NodeLayoutStore.saveLayout(getModel());
 			}
 		});
+	}
+
+	public ProductSystemEditor getSystemEditor() {
+		return systemEditor;
 	}
 
 	public void setDirty(boolean value) {
@@ -119,17 +119,16 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 	}
 
 	private ProductSystemNode createModel() {
-		long referenceId = system.getReferenceProcess().getId();
-		ProductSystemNode productSystemNode = new ProductSystemNode(system,
-				this);
+		long referenceId = getSystemEditor().getModel().getReferenceProcess()
+				.getId();
+		ProductSystemNode productSystemNode = new ProductSystemNode(this);
 		productSystemNode.add(createProcessNode(referenceId));
 		return productSystemNode;
 	}
 
 	private ProductSystemNode expandModel() {
-		ProductSystemNode productSystemNode = new ProductSystemNode(system,
-				this);
-		for (Long id : system.getProcesses())
+		ProductSystemNode productSystemNode = new ProductSystemNode(this);
+		for (Long id : getSystemEditor().getModel().getProcesses())
 			productSystemNode.add(createProcessNode(id));
 		return productSystemNode;
 	}
@@ -196,14 +195,9 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 		return super.getGraphicalViewer();
 	}
 
-	public void reload() {
-		system = systemEditor.reloadModel();
-		collapse();
-	}
-
 	@Override
 	public void doSave(final IProgressMonitor monitor) {
-		// do nothing as this editor is embedded in a system editor
+		systemEditor.doSave(monitor);
 	}
 
 	@Override
