@@ -1,5 +1,7 @@
 package org.openlca.app.editors.graphical.action;
 
+import java.util.List;
+
 import org.eclipse.jface.action.IMenuCreator;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
@@ -15,7 +17,7 @@ import org.openlca.core.model.ProcessType;
 
 class BuildSupplyChainMenuAction extends EditorAction {
 
-	private ProcessNode node;
+	private List<ProcessNode> nodes;
 	private BuildSupplyChainAction supplyChainAction = ActionFactory
 			.createBuildSupplyChainAction();
 	private BuildNextTierAction nextTierAction = ActionFactory
@@ -64,7 +66,6 @@ class BuildSupplyChainMenuAction extends EditorAction {
 		}
 
 		private void createItem(Menu menu, IBuildAction action) {
-			action.setProcessNode(node);
 			MenuItem unitItem = new MenuItem(menu, SWT.NONE);
 			unitItem.setText(action.getText());
 			unitItem.addSelectionListener(new RunBuildListener(action));
@@ -102,7 +103,7 @@ class BuildSupplyChainMenuAction extends EditorAction {
 
 		@Override
 		public void widgetSelected(SelectionEvent e) {
-			action.setProcessNode(node);
+			action.setProcessNodes(nodes);
 			action.run();
 		}
 
@@ -110,7 +111,7 @@ class BuildSupplyChainMenuAction extends EditorAction {
 
 	@Override
 	protected boolean accept(ISelection selection) {
-		node = getSingleSelectionOfType(selection, ProcessNode.class);
-		return node != null;
+		nodes = getMultiSelectionOfType(selection, ProcessNode.class);
+		return nodes != null && !nodes.isEmpty();
 	}
 }

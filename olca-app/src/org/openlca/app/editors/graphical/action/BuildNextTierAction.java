@@ -13,16 +13,20 @@ import org.openlca.app.editors.graphical.command.CommandUtil;
 import org.openlca.app.editors.graphical.command.ConnectionInput;
 import org.openlca.app.editors.graphical.model.ExchangeNode;
 import org.openlca.app.editors.graphical.model.ProcessNode;
+import org.openlca.app.editors.graphical.model.ProductSystemNode;
+import org.openlca.app.editors.graphical.search.ProcessLinkSearchMap;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.Exchange;
+import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 class BuildNextTierAction extends Action implements IBuildAction {
 
-	private ProcessNode node;
+	private List<ProcessNode> nodes;
+	private ProductSystemNode systemNode;
 	private ProcessType preferredType = ProcessType.UNIT_PROCESS;
 	private FlowDao flowDao;
 	private ProcessDao processDao;
@@ -37,8 +41,11 @@ class BuildNextTierAction extends Action implements IBuildAction {
 	}
 
 	@Override
-	public void setProcessNode(ProcessNode node) {
-		this.node = node;
+	public void setProcessNodes(List<ProcessNode> nodes) {
+		this.nodes = nodes;
+		if (nodes == null || nodes.isEmpty())
+			return;
+		this.systemNode = nodes.get(0).getParent();
 	}
 
 	void setPreferredType(ProcessType preferredType) {
@@ -47,32 +54,67 @@ class BuildNextTierAction extends Action implements IBuildAction {
 
 	@Override
 	public void run() {
-		long targetId = node.getProcess().getId();
-		List<ExchangeNode> exchanges = loadExchangeNodes();
+		if (nodes == null || nodes.isEmpty())
+			return;
+		ProductSystemNode systemNode = nodes.get(0).getParent();
 		List<ProcessDescriptor> providers = new ArrayList<>();
 		List<ConnectionInput> newConnections = new ArrayList<>();
-		for (ExchangeNode exchange : exchanges) {
-			ProcessDescriptor provider = findProvider(exchange.getExchange());
-			if (provider != null) {
-				providers.add(provider);
-				newConnections.add(new ConnectionInput(provider.getId(),
-						targetId, exchange.getExchange().getFlow().getId()));
-			}
-		}
+		for (ProcessNode node : nodes)
+			collectFor(node, providers, newConnections);
 		Command command = CommandFactory.createBuildNextTierCommand(providers,
-				newConnections, node.getParent());
-		CommandUtil.executeCommand(command, node.getParent().getEditor());
+				newConnections, systemNode);
+		if (command == null)
+			return;
+		for (ProcessNode node : nodes)
+			command = command.chain(CommandFactory
+					.createExpandLeftCommand(node));
+		CommandUtil.executeCommand(command, systemNode.getEditor());
 	}
 
-	private List<ExchangeNode> loadExchangeNodes() {
+	private void collectFor(ProcessNode node,
+			List<ProcessDescriptor> providers,
+			List<ConnectionInput> newConnections) {
+		long targetId = node.getProcess().getId();
+		List<ExchangeNode> toConnect = loadExchangeNodes(node);
+		for (ExchangeNode exchange : toConnect) {
+			ProcessDescriptor provider = findProvider(exchange.getExchange());
+			if (provider != null) {
+				if (!providers.contains(provider))
+					providers.add(provider);
+				ConnectionInput connectionInput = new ConnectionInput(
+						provider.getId(), targetId, exchange.getExchange()
+								.getFlow().getId());
+				if (!newConnections.contains(connectionInput))
+					newConnections.add(connectionInput);
+			}
+		}
+	}
+
+	private List<ExchangeNode> loadExchangeNodes(ProcessNode node) {
 		List<ExchangeNode> nodes = new ArrayList<>();
 		for (ExchangeNode exchangeNode : node.loadExchangeNodes()) {
 			if (exchangeNode.isDummy())
+				continue;
+			if (isAlreadyConnected(exchangeNode))
 				continue;
 			if (exchangeNode.getExchange().isInput())
 				nodes.add(exchangeNode);
 		}
 		return nodes;
+	}
+
+	private boolean isAlreadyConnected(ExchangeNode exchangeNode) {
+		ProcessNode processNode = exchangeNode.getParent().getParent();
+		long processId = processNode.getProcess().getId();
+		long flowId = exchangeNode.getExchange().getFlow().getId();
+		ProcessLinkSearchMap linkSearch = processNode.getParent()
+				.getLinkSearch();
+		List<ProcessLink> incomingLinks = linkSearch
+				.getIncomingLinks(processId);
+		for (ProcessLink link : incomingLinks)
+			if (link.getFlowId() == flowId)
+				return true;
+		return false;
 	}
 
 	private ProcessDescriptor findProvider(Exchange exchange) {
@@ -112,7 +154,7 @@ class BuildNextTierAction extends Action implements IBuildAction {
 	}
 
 	private ProcessDescriptor findExisting(List<ProcessDescriptor> providers) {
-		Set<Long> existing = node.getParent().getProductSystem().getProcesses();
+		Set<Long> existing = systemNode.getProductSystem().getProcesses();
 		for (ProcessDescriptor descriptor : providers)
 			if (existing.contains(descriptor.getId()))
 				return descriptor;
