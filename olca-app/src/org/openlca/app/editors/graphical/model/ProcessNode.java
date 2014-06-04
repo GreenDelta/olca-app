@@ -85,6 +85,7 @@ public class ProcessNode extends Node {
 				getEditPart().refreshSourceConnections();
 			if (equals(link.getTargetNode()))
 				getEditPart().refreshTargetConnections();
+			getEditPart().refresh();
 		}
 	}
 
@@ -95,6 +96,7 @@ public class ProcessNode extends Node {
 				getEditPart().refreshSourceConnections();
 			if (equals(link.getTargetNode()))
 				getEditPart().refreshTargetConnections();
+			getEditPart().refresh();
 		}
 	}
 
@@ -107,13 +109,6 @@ public class ProcessNode extends Node {
 			if (l.getProcessLink().equals(link))
 				return l;
 		return null;
-	}
-
-	public void removeAllLinks() {
-		for (ConnectionLink link : links)
-			if (!link.getSourceNode().getFigure().isVisible()
-					|| !link.getTargetNode().getFigure().isVisible())
-				link.unlink();
 	}
 
 	public void showLinks() {

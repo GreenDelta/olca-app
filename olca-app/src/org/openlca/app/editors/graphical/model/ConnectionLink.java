@@ -76,6 +76,8 @@ public class ConnectionLink {
 	public void unlink() {
 		sourceNode.remove(this);
 		targetNode.remove(this);
+		sourceNode.getEditPart().refreshSourceConnections();
+		targetNode.getEditPart().refreshTargetConnections();
 		sourceNode.refresh();
 		targetNode.refresh();
 	}

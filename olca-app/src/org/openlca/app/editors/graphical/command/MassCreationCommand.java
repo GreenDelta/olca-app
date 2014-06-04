@@ -54,9 +54,13 @@ class MassCreationCommand extends Command {
 		((GraphLayoutManager) model.getFigure().getLayoutManager()).layout(
 				model.getFigure(), model.getEditor().getLayoutType());
 		model.getEditor().setDirty(true);
+		if (model.getEditor().getOutline() != null)
+			model.getEditor().getOutline().refresh();
 	}
 
 	private void addNode(ProcessDescriptor process) {
+		if (model.getProcessNode(process.getId()) != null)
+			return;
 		ProcessNode node = new ProcessNode(process);
 		model.getProductSystem().getProcesses().add(process.getId());
 		model.add(node);
@@ -110,6 +114,8 @@ class MassCreationCommand extends Command {
 		createdLinks.clear();
 		createdNodes.clear();
 		oldConstraints.clear();
+		if (model.getEditor().getOutline() != null)
+			model.getEditor().getOutline().refresh();
 		model.getEditor().setDirty(true);
 	}
 

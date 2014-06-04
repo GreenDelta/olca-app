@@ -9,6 +9,7 @@ import static org.openlca.app.editors.graphical.command.HideShowCommand.SHOW;
 import static org.openlca.app.editors.graphical.command.XYLayoutCommand.MOVE;
 import static org.openlca.app.editors.graphical.command.XYLayoutCommand.RESIZE;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -84,7 +85,14 @@ public class CommandFactory {
 
 	public static DeleteLinkCommand createDeleteLinkCommand(ConnectionLink link) {
 		DeleteLinkCommand command = new DeleteLinkCommand();
-		command.setLink(link);
+		command.setLinks(Collections.singletonList(link));
+		return command;
+	}
+
+	public static DeleteLinkCommand createDeleteLinkCommand(
+			List<ConnectionLink> links) {
+		DeleteLinkCommand command = new DeleteLinkCommand();
+		command.setLinks(links);
 		return command;
 	}
 

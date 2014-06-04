@@ -25,18 +25,13 @@ class MenuProvider extends ContextMenuProvider {
 		addEditActions(menu);
 		addSupplyChainActions(menu);
 		menu.add(new Separator());
-		menu.add(registry.getAction(ActionIds.SAVE_IMAGE));
-		menu.add(registry.getAction(ActionIds.OPEN));
-		menu.add(registry.getAction(ActionIds.MARK));
-		menu.add(registry.getAction(ActionIds.UNMARK));
+		addSearchActions(menu);
 		menu.add(new Separator());
-		menu.add(registry.getAction(ActionIds.SEARCH_PROVIDERS));
-		menu.add(registry.getAction(ActionIds.SEARCH_RECIPIENTS));
+		addSpecialActions(menu);
 		menu.add(new Separator());
 		addLayoutActions(menu);
 		menu.add(new Separator());
-		menu.add(registry.getAction(ActionIds.SHOW_OUTLINE));
-		menu.add(registry.getAction(ActionIds.OPEN_MINIATURE_VIEW));
+		addShowViewActions(menu);
 	}
 
 	/** Undo, Redo, and Delete */
@@ -57,11 +52,28 @@ class MenuProvider extends ContextMenuProvider {
 		menu.add(registry.getAction(ActionIds.REMOVE_ALL_CONNECTIONS));
 	}
 
+	private void addSearchActions(final IMenuManager menu) {
+		menu.add(registry.getAction(ActionIds.SEARCH_PROVIDERS));
+		menu.add(registry.getAction(ActionIds.SEARCH_RECIPIENTS));
+	}
+
+	private void addSpecialActions(final IMenuManager menu) {
+		menu.add(registry.getAction(ActionIds.SAVE_IMAGE));
+		menu.add(registry.getAction(ActionIds.OPEN));
+		menu.add(registry.getAction(ActionIds.MARK));
+		menu.add(registry.getAction(ActionIds.UNMARK));
+	}
+
 	private void addLayoutActions(final IMenuManager menu) {
 		menu.add(registry.getAction(ActionIds.EXPAND_ALL));
 		menu.add(registry.getAction(ActionIds.COLLAPSE_ALL));
 		menu.add(registry.getAction(ActionIds.MAXIMIZE_ALL));
 		menu.add(registry.getAction(ActionIds.MINIMIZE_ALL));
 		menu.add(registry.getAction(ActionIds.LAYOUT_MENU));
+	}
+
+	private void addShowViewActions(final IMenuManager menu) {
+		menu.add(registry.getAction(ActionIds.SHOW_OUTLINE));
+		menu.add(registry.getAction(ActionIds.OPEN_MINIATURE_VIEW));
 	}
 }

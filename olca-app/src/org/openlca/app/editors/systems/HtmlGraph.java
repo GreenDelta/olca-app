@@ -1,6 +1,9 @@
 package org.openlca.app.editors.systems;
 
-import com.google.gson.Gson;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -23,9 +26,7 @@ import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import com.google.gson.Gson;
 
 class HtmlGraph extends FormPage implements HtmlPage {
 
@@ -80,7 +81,8 @@ class HtmlGraph extends FormPage implements HtmlPage {
 			Link link = new Link();
 			link.source = nodeIndex.getIndex(processLink.getProviderId());
 			link.target = nodeIndex.getIndex(processLink.getRecipientId());
-			graph.links.add(link);
+			if (link.source >= 0 && link.target >= 0)
+				graph.links.add(link);
 		}
 		return graph;
 	}
@@ -106,7 +108,6 @@ class HtmlGraph extends FormPage implements HtmlPage {
 		int group;
 	}
 
-	@SuppressWarnings("unused")
 	private class Link {
 		int source;
 		int target;

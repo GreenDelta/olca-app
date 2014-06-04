@@ -32,22 +32,13 @@ public class ProductSystemEditor extends ModelEditor<ProductSystem> implements
 			addPage(parameterPage);
 			BaseDescriptor descriptor = getEditorInput().getDescriptor();
 			GraphicalEditorInput gInput = new GraphicalEditorInput(descriptor);
-			int gIdx = addPage(new ProductSystemGraphEditor(getModel(), this),
-					gInput);
+			int gIdx = addPage(new ProductSystemGraphEditor(this), gInput);
 			setPageText(gIdx, Messages.ModelGraph);
 			if (FeatureFlag.EXPERIMENTAL_VISUALISATIONS.isEnabled())
 				addPage(new HtmlGraph(this, getModel()));
 		} catch (Exception e) {
 			log.error("failed to add page", e);
 		}
-	}
-
-	@Override
-	public ProductSystem reloadModel() {
-		super.reloadModel();
-		parameterPage.refreshBindings();
-		setDirty(false);
-		return getModel();
 	}
 
 }
