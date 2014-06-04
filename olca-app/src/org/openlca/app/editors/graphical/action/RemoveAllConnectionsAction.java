@@ -22,27 +22,10 @@ class RemoveAllConnectionsAction extends EditorAction {
 		setText(Messages.Systems_RemoveAllConnectionsAction_Text);
 	}
 
-	private Command getDeleteCommand(ProcessNode node,
-			List<ConnectionLink> links) {
-		Command chainCommand = null;
-		for (ConnectionLink link : node.getLinks()) {
-			if (!links.contains(link)) {
-				if (chainCommand == null)
-					chainCommand = CommandFactory.createDeleteLinkCommand(link);
-				else
-					chainCommand = chainCommand.chain(CommandFactory
-							.createDeleteLinkCommand(link));
-				links.add(link);
-			}
-		}
-		return chainCommand;
-	}
-
 	@Override
 	public void run() {
 		if (processNodes.size() == 0)
 			return;
-		Command chainCommand = null;
 		ProductSystemNode systemNode = getEditor().getModel();
 		List<ConnectionLink> links = new ArrayList<>();
 		// create new link search to avoid problems with missing entries before
@@ -54,14 +37,12 @@ class RemoveAllConnectionsAction extends EditorAction {
 					.getProcess().getId());
 			for (ProcessLink link : processLinks)
 				linkSearch.remove(link);
-			Command cmd = getDeleteCommand(processNode, links);
-			if (cmd != null)
-				if (chainCommand == null)
-					chainCommand = cmd;
-				else
-					chainCommand = chainCommand.chain(cmd);
+			for (ConnectionLink link : processNode.getLinks())
+				if (!links.contains(link))
+					links.add(link);
 		}
-		getEditor().getCommandStack().execute(chainCommand);
+		Command command = CommandFactory.createDeleteLinkCommand(links);
+		getEditor().getCommandStack().execute(command);
 	}
 
 	@Override
