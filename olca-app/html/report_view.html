@@ -126,7 +126,8 @@
 					</p>
 					<div data-ng-if="section.componentId == 'parameter_table'" data-ng-include src="'parameters-table.html'"></div>
 					<div data-ng-if="section.componentId == 'variant_table'" data-ng-include src="'variants-table.html'"></div>
-					<div id="result-charts-include-container" data-ng-if="section.componentId == 'result_chart'" data-ng-include src="'result-charts.html'"></div>
+					<div id="result-charts-include-container" data-ng-if="section.componentId == 'total_result_chart'" data-ng-include src="'total-result-charts.html'"></div>
+					<div data-ng-if="section.componentId == 'variants_result_charts'" data-ng-include src="'variants-result-charts.html'"></div>
 					<div data-ng-if="section.componentId == 'result_table'" data-ng-include src="'result-table.html'"></div>
 				</div>
 			</div>
@@ -148,13 +149,14 @@
 	<script type="text/ng-template" id="parameters-table.html">
 		<div class="table-responsive">
 			<table class="table table-hover">
-				<thead><tr><th>Parameter</th><th>Value</th></tr></thead>
+				<thead><tr><th>Parameter</th><th>Description</th><th>Value</th></tr></thead>
 				<tbody>
-				<tr data-ng-repeat="parameter in report.parameters | orderBy:'section.name':true">
+				<tr data-ng-repeat="parameter in report.parameters">
 					<td>
-						<popover>
-						<button class="popoverButton btn btn-default" data-toggle="popover" data-content="{{parameter.description}}"><span class="glyphicon glyphicon-comment"></span></button>
 						{{parameter.userFriendlyName}}
+					</td>
+					<td>
+						{{parameter.description}}
 					</td>
 					<td><input type="number" class="form-control" placeholder="Enter value" data-ng-model="parameter.value"></td>
 				</tr>
@@ -170,7 +172,7 @@
 			<table class="table table-hover">
 				<thead><tr><th>Variant</th><th>Description</th></tr></thead>
 				<tbody>
-				<tr data-ng-repeat="variant in report.variantResults | orderBy:'section.name':true">
+				<tr data-ng-repeat="variant in report.variants">
 					<td>
 						{{variant.userFriendlyName}}
 					</td>
@@ -186,16 +188,16 @@
 	<script type="text/ng-template" id="result-table.html">
 		<div class="table-responsive">
 			<table class="table table-hover">
-				<thead><tr><th>Variant</th>
-							<th data-ng-repeat="label in report.totalResult.labels">{{label}}</th>
+				<thead><tr><th>Indicator</th>
+							<th data-ng-repeat="dataset in totalResult.datasets">{{dataset.title}}</th>
 						</tr></thead>
 				<tbody>
-				<tr data-ng-repeat="variant in report.totalResult.datasets">
+				<tr data-ng-repeat="label in totalResult.labels">
 					<td>
-						{{variant.title}}
+						{{label}}
 					</td>
-					<td data-ng-repeat="value in variant.values">
-						{{value}}
+					<td data-ng-repeat="dataset in totalResult.datasets">
+						{{dataset.data[$parent.$index]}}
 					</td>
 				</tr>
                 </tbody>
@@ -203,13 +205,16 @@
 		</div>
 	</script>
 
-	<script type="text/ng-template" id="result-charts.html">
+	<script type="text/ng-template" id="total-result-charts.html">
         <div id="result-total-container" class="col-xs-12">
             <div total-chart="exp" result="totalResult">
                 <div id="result-total-legend-container" class="legend-container"></div>
                 <div id="result-total-canvas"></div>
             </div>
         </div>
+	</script>
+
+	<script type="text/ng-template" id="variants-result-charts.html">
         <select id="indicatorSelection" class="form-control" data-ng-options="result as result.indicator for result in report.results" data-ng-model="selectedIndicator"></select>
         <div data-ng-repeat="variantResult in selectedIndicator.variantResults" class="result-charts-container col-xs-12 col-sm-6 col-md-6 col-lg-4">
             <div variants-charts="exp" variant="variantResult">
@@ -250,9 +255,9 @@
 	        var fn;
 	        fn = function(scope, element, attrs) {
 	    	    	$(document).ready(function () {
-	    	    	    $(".popoverButton").popover({
+	    	    	    /* $(".popoverButton").popover({
 	    	    	        placement : 'right'
-	    	    	    });
+	    	    	    }); */
 	    	    	});
 	         	};
 	        return {
@@ -271,7 +276,7 @@
                                 var canvasElement = document.createElement('canvas');
                                 canvasElement.setAttribute("width", 800);
                                 canvasElement.setAttribute("border", "1px solid white");
-                                canvasElement.setAttribute("height", 300);
+                                canvasElement.setAttribute("height", 1600);
                                 canvasElement.setAttribute("class", "mapping");
                                 var canvasContainer = element.first().find('#result-total-canvas');
                                 canvasContainer.attr('id', containerId);
@@ -282,13 +287,13 @@
                                 var ctxTotalBarChart = canvasElement.getContext("2d");
                                 var totalBarChart = new Chart(ctxTotalBarChart);
                                 var dataTotalBarChart = scope.result;
-                                new Chart(ctxTotalBarChart).Bar(dataTotalBarChart, {
+                                new Chart(ctxTotalBarChart).HorizontalBar(dataTotalBarChart, {
                                     scaleOverride: true,
-                                    scaleSteps: 20,
-                                    scaleStepWidth: 5,
+                                    scaleSteps: 10,
+                                    scaleStepWidth: 10,
                                     scaleStartValue: 0,
-                                    barDatasetSpacing : 1,
-                                    barValueSpacing : 20,
+                                    barDatasetSpacing : 0.5,
+                                    barValueSpacing : 5,
                                     animationEasing : "easeOutQuart",
                                     animationSteps : 50
                                 });
@@ -421,6 +426,7 @@
         				index++;
         		    });
        	     });
+            console.log(totalResult);
         	return totalResult;
         }
 
