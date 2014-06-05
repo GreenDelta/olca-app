@@ -131,22 +131,6 @@
 				</div>
 			</div>
 			<div class="row">
-                <div id="result-total-container" class="col-xs-12">
-					<div total-chart="exp" result="totalResult">
-						<div id="result-total-legend-container" class="legend-container"></div>
-						<div id="result-total-canvas"></div>
-					</div>
-				</div>
-				<select id="indicatorSelection" class="form-control" data-ng-options="indicator as indicator.label for indicator in report.indicators" data-ng-model="selectedIndicator"></select>
-				<div data-ng-repeat="variant in selectedIndicator.variants" class="result-charts-container col-xs-12 col-sm-6 col-md-6 col-lg-4">
-					<div variants-charts="exp" variant="variant">
-						<div class="result-charts-variant-container">
-							<div class="variant-label alert alert-info">{{variant.label}}</div>
-								<div class="legend-container"></div>
-							<div class="result-canvas-container"></div>
-						</div>
-					</div>
-				</div>
 				<div class="col-sm-12 box-row1">
 					<button class="pull-right btn btn-primary" data-ng-click="save(report)">Save</button>
 				</div>	
@@ -186,7 +170,7 @@
 			<table class="table table-hover">
 				<thead><tr><th>Variant</th><th>Description</th></tr></thead>
 				<tbody>
-				<tr data-ng-repeat="variant in report.variants | orderBy:'section.name':true">
+				<tr data-ng-repeat="variant in report.variantResults | orderBy:'section.name':true">
 					<td>
 						{{variant.userFriendlyName}}
 					</td>
@@ -220,25 +204,26 @@
 	</script>
 
 	<script type="text/ng-template" id="result-charts.html">
-				<div id="result-total-container" class="col-xs-12">
-					<div total-chart="exp" result="report.totalResult">
-						<div id="result-total-legend-container" class="legend-container"></div>
-						<div id="result-total-canvas"></div>
-					</div>
-				</div>
-				<select id="indicatorSelection" class="form-control" data-ng-options="indicator as indicator.label for indicator in report.indicators" data-ng-model="selectedIndicator"></select>
-				<div data-ng-repeat="variant in selectedIndicator.variants" class="result-charts-container col-xs-12 col-sm-6 col-md-6 col-lg-4">
-					<div variants-charts="exp" variant="variant">
-						<div class="result-charts-variant-container">
-							<div class="variant-label alert alert-info">{{variant.label}}</div>
-								<div class="legend-container"></div>
-							<div class="result-canvas-container"></div>
-						</div>
-					</div>
-				</div>
+        <div id="result-total-container" class="col-xs-12">
+            <div total-chart="exp" result="totalResult">
+                <div id="result-total-legend-container" class="legend-container"></div>
+                <div id="result-total-canvas"></div>
+            </div>
+        </div>
+        <select id="indicatorSelection" class="form-control" data-ng-options="result as result.indicator for result in report.results" data-ng-model="selectedIndicator"></select>
+        <div data-ng-repeat="variantResult in selectedIndicator.variantResults" class="result-charts-container col-xs-12 col-sm-6 col-md-6 col-lg-4">
+            <div variants-charts="exp" variant="variantResult">
+                <div class="result-charts-variant-container">
+                    <div class="variant-label alert alert-info">{{variantResult.variant}}</div>
+                        <div class="legend-container"></div>
+                    <div class="result-canvas-container"></div>
+                </div>
+            </div>
+        </div>
 	</script>
 
     <script type="text/javascript">
+        var variantsIndex = 0;
         var app = angular.module('ReportPreviewPage', ['ui.bootstrap']);
 
 	    var Controller = function ($scope) {
@@ -298,10 +283,14 @@
                                 var totalBarChart = new Chart(ctxTotalBarChart);
                                 var dataTotalBarChart = scope.result;
                                 new Chart(ctxTotalBarChart).Bar(dataTotalBarChart, {
-                                    animationEasing : "easeOutQuart",
-                                    animationSteps : 50,
+                                    scaleOverride: true,
+                                    scaleSteps: 20,
+                                    scaleStepWidth: 5,
+                                    scaleStartValue: 0,
                                     barDatasetSpacing : 1,
-                                    barValueSpacing : 20
+                                    barValueSpacing : 20,
+                                    animationEasing : "easeOutQuart",
+                                    animationSteps : 50
                                 });
                                 var resultLegend = document.createElement('div');
                                 var resultLegendId = 'result-total-legend';
@@ -323,7 +312,7 @@
 	        var fn;
 	        fn = function(scope, element, attrs) {
 	    	    	$(document).ready(function () {
-						var containerId = 'variant-chart-container-' + scope.variant.id.toString();
+						var containerId = 'variant-chart-container-' + variantsIndex.toString();
 						var canvasElement = document.createElement('canvas');
 						canvasElement.setAttribute("width", 200);
 						canvasElement.setAttribute("border", "1px solid white");
@@ -337,7 +326,7 @@
 						}
 						var ctxVariantsPieChart = canvasElement.getContext("2d");
 						var variantsPieChart = new Chart(ctxVariantsPieChart);
-						var dataVariantsPieChart = scope.variant.contributionItems;	 
+						var dataVariantsPieChart = scope.variant.contributions;
 						new Chart(ctxVariantsPieChart).Pie(dataVariantsPieChart, {
 							animateRotate : true,
 							animateScale: true,
@@ -345,13 +334,14 @@
 							animationSteps : 50
   	    	    	    });
    	    	    	    var legendContainer = element.first().find('.legend-container');
-						var legendContainerId = 'legend-container-' + scope.variant.id.toString();
+						var legendContainerId = 'legend-container-' + variantsIndex.toString();
 						legendContainer.attr('id', legendContainerId);
 						var resultLegend = document.createElement('div');
-						var resultLegendId = 'result-legend-' + scope.variant.id.toString();
+						var resultLegendId = 'result-legend-' + variantsIndex.toString();
 						resultLegend.id = resultLegendId;
 						document.getElementById(legendContainerId).appendChild(resultLegend);
    	    	    	    legend(document.getElementById(resultLegendId), dataVariantsPieChart, 'process');
+                        variantsIndex++;
 	    	    	});
 	         	};
 	    	  return {
@@ -367,20 +357,40 @@
             var scope = angular.element(element).scope();
             scope.$apply(function () {
                 scope.report = report;
-                applyResultChartAttributes(scope.report.indicators);
-                calculateRelativeResult(scope.report.indicators);
+                applyResultChartAttributes(scope.report.results);
+                calculateRelativeResult(scope.report.results);
+                scope.report.results = prepareVariantsData(scope.report.results);
                 scope.totalResult = {};
-                scope.totalResult = getTotalResult(scope.report.indicators);
-            	scope.selectedIndicator = scope.report.indicators[0];
+                scope.totalResult = getTotalResult(scope.report.results);
+            	scope.selectedIndicator = scope.report.results[0];
             });
         }
 
+        function prepareVariantsData(results) {
+			var colors = [ "#E53039", "#296FC4", "#FFC923", "#52A84D", "#844CAD", "#7FB7E5", "#FF8900", "#359B58", "#319444", "#FCFF64" ];
+        	angular.forEach(results, function(indicator, key) {
+                angular.forEach(indicator.variantResults, function(variantResult, key) {
+					var index = 0;
+                        angular.forEach(variantResult.contributions, function(contribution, key) {
+                            contribution.label = contribution.process;
+                            contribution.value = contribution.amount;
+                            if (!contribution.isRest)
+                                contribution.color = colors[index];
+                            else
+                                contribution.color = "#AAA";
+                            index++;
+                       });
+                });
+            });
+            return results;
+        }
+        
 		function calculateRelativeResult(indicators) {
         	angular.forEach(indicators, function(indicator, key){
 				var maximum = 0;
-            		angular.forEach(indicator.totals, function(variant, key){
-						if (variant.value > maximum)
-							maximum = variant.value;
+            		angular.forEach(indicator.variantResults, function(variant, key){
+						if (variant.totalAmount > maximum)
+							maximum = variant.totalAmount;
         		    });
 					indicator.maximum = maximum;
        	     });
@@ -390,21 +400,22 @@
         	var totalResult = {};
         	totalResult.labels = [];
         	totalResult.datasets = [];
-			for (variant in indicators[0].variants) {
+        	angular.forEach(indicators[0].variantResults, function(variant, key){
 				totalResult.datasets.push({});
-			}
+			});
+            
         	angular.forEach(indicators, function(indicator, key){
-        			totalResult.labels.push(indicator.label);
+        			totalResult.labels.push(indicator.indicator);
 					var index = 0;
-            		angular.forEach(indicator.totals, function(variant, key){
+            		angular.forEach(indicator.variantResults, function(variant, key){
 						if (!totalResult.datasets[index].data)
 							totalResult.datasets[index].data = [];
 						if (!totalResult.datasets[index].values)
 							totalResult.datasets[index].values = [];
-            			totalResult.datasets[index].values.push(variant.value);
-						var relativeValue = variant.value / (indicator.maximum / 100);
+            			totalResult.datasets[index].values.push(variant.totalAmount);
+						var relativeValue = variant.totalAmount / (indicator.maximum / 100);
             			totalResult.datasets[index].data.push(relativeValue);
-            			totalResult.datasets[index].title = variant.title;
+            			totalResult.datasets[index].title = variant.variant;
 						totalResult.datasets[index].fillColor = variant.color;
 						totalResult.datasets[index].strokeColor = variant.color;	
         				index++;
@@ -416,24 +427,21 @@
 		function applyResultChartAttributes(indicators) {
 			var colors = [ "#E53039", "#296FC4", "#FFC923", "#52A84D", "#844CAD", "#7FB7E5", "#FF8900", "#359B58", "#319444", "#FCFF64" ];
 			angular.forEach(indicators, function(indicator, key) {
-				angular.forEach(indicator.variants, function(variant, key) {
+                var colorIndex = 0;
+				angular.forEach(indicator.variantResults, function(variant, key) {
 					var index = 0;
-					angular.forEach(variant.contributionItems, function(item, key){
+                    var rgb = hexToRgb(colors[colorIndex]);
+                    var color = 'rgba(' + rgb.r.toString() + ',' + rgb.g.toString() + ',' + rgb.b.toString() + ',' + '0.5)';
+                    variant.color = color.toString();
+					angular.forEach(variant.contrbutions, function(item, key){
 						if (!item.isRest)
 							item.color = colors[index];
 						else
 							item.color = "#AAA";
 						index++;
 					});
-				});
-				
-				var index = 0;
-				angular.forEach(indicator.totals, function(variant, key) {
-					var rgb = hexToRgb(colors[index]);
-					var color = 'rgba(' + rgb.r.toString() + ',' + rgb.g.toString() + ',' + rgb.b.toString() + ',' + '0.5)';
-					variant.color = color.toString();
-					index++;
-				});
+                    colorIndex++;
+				});				
 			});      	
 		}
 
@@ -456,7 +464,7 @@
 					}
 				});
 				angular.forEach(process, function(value, key){
-					if (key == 'title') {
+					if (key == 'process') {
 						var bullet = document.createElement('span');
 						bullet.className = 'glyphicon glyphicon-minus'; 
 						bullet.style.color = color;
