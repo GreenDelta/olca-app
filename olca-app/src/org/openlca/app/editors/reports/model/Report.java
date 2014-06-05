@@ -1,32 +1,18 @@
-package org.openlca.app.editors.reports;
+package org.openlca.app.editors.reports.model;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import org.openlca.core.model.Project;
-import org.openlca.core.model.RootEntity;
 
-public class Report extends RootEntity {
+public class Report {
 
 	private String title;
 	private transient Project project;
 	private List<ReportSection> sections = new ArrayList<>();
 	private List<ReportParameter> parameters = new ArrayList<>();
 	private List<ReportVariant> variants = new ArrayList<>();
-
-	@Override
-	public Report clone() {
-		Report clone = new Report();
-		clone.setTitle(getTitle());
-		clone.setDescription(getDescription());
-		clone.setName(getName());
-		clone.setRefId(UUID.randomUUID().toString());
-		clone.setProject(getProject());
-		for (ReportSection section : getSections())
-			clone.getSections().add(section.clone());
-		return clone;
-	}
+	private List<ReportResult> results = new ArrayList<>();
 
 	public String getTitle() {
 		return title;
@@ -54,5 +40,9 @@ public class Report extends RootEntity {
 
 	public List<ReportVariant> getVariants() {
 		return variants;
+	}
+
+	public List<ReportResult> getResults() {
+		return results;
 	}
 }

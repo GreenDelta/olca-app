@@ -1,11 +1,10 @@
-package org.openlca.app.editors.reports;
-
+package org.openlca.app.editors.reports.model;
 
 public class ReportVariant {
 
 	private String name;
-	private String userFriendlyName = "";
-	private String description = "";
+	private String userFriendlyName;
+	private String description;
 
 	public String getName() {
 		return name;

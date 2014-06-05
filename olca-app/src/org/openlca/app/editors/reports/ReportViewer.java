@@ -12,6 +12,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.openlca.app.editors.reports.model.Report;
 import org.openlca.app.html.HtmlPage;
 import org.openlca.app.html.HtmlResource;
 import org.openlca.app.html.IHtmlResource;
@@ -114,8 +115,8 @@ public class ReportViewer extends FormEditor {
 			new BrowserFunction(browser, "calculate") {
 				@Override
 				public Object function(Object[] arguments) {
-					Calculation.run(report.getProject());
-					return super.function(arguments);
+					// TODO: recalculate the report results
+					return null;
 				}
 			};
 

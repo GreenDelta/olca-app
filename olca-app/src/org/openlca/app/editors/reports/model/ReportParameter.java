@@ -1,4 +1,4 @@
-package org.openlca.app.editors.reports;
+package org.openlca.app.editors.reports.model;
 
 import org.openlca.core.model.ParameterRedef;
 

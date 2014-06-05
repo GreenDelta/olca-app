@@ -1,6 +1,6 @@
-package org.openlca.app.editors.reports;
+package org.openlca.app.editors.reports.model;
 
-enum ReportComponent {
+public enum ReportComponent {
 
 	NONE("none"),
 

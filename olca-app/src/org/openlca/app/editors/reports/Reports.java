@@ -1,5 +1,9 @@
 package org.openlca.app.editors.reports;
 
+import org.openlca.app.App;
+import org.openlca.app.editors.reports.model.Report;
+import org.openlca.app.editors.reports.model.ReportCalculator;
+import org.openlca.app.editors.reports.model.ReportSection;
 import org.openlca.core.model.Project;
 
 public final class Reports {
@@ -7,16 +11,19 @@ public final class Reports {
 	private Reports() {
 	}
 
-	public static Report create(Project project) {
-		Report report = new Report();
+	public static void createAndOpen(Project project) {
+		final Report report = new Report();
+		createDefaultSections(report);
 		if (project == null) {
 			report.setTitle("No project");
-			return report;
+			ReportEditor.open(report);
+			return;
 		}
 		report.setProject(project);
 		report.setTitle(project.getName());
-		createDefaultSections(report);
-		return report;
+		App.run("Calculate results",
+				new ReportCalculator(project, report),
+				() -> ReportEditor.open(report));
 	}
 
 	private static void createDefaultSections(Report report) {
