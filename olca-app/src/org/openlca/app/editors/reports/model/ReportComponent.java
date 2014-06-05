@@ -10,7 +10,9 @@ public enum ReportComponent {
 
 	RESULT_TABLE("result_table"),
 
-	RESULT_CHART("result_chart");
+	RESULT_CHART("result_chart"),
+
+	CONTRIBUTION_CHARTS("contribution_charts");
 
 	private final String id;
 
