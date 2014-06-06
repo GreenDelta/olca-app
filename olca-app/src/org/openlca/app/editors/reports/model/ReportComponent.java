@@ -1,5 +1,7 @@
 package org.openlca.app.editors.reports.model;
 
+import java.util.Objects;
+
 public enum ReportComponent {
 
 	NONE("none"),
@@ -22,6 +24,16 @@ public enum ReportComponent {
 
 	public String getId() {
 		return id;
+	}
+
+	public static ReportComponent getForId(String id) {
+		if (id == null)
+			return NONE;
+		for (ReportComponent c : values()) {
+			if (Objects.equals(id, c.getId()))
+				return c;
+		}
+		return NONE;
 	}
 
 }

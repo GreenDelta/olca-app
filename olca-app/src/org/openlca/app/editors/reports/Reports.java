@@ -44,9 +44,10 @@ public final class Reports {
 		String[] headers = { "Introduction", "Functional Unit",
 				"System boundaries", "Impact assessment method", "Results",
 				"Assumptions and uncertainties", "Discussion and conclusions" };
-		for (String header : headers) {
+		for (int i = 0; i < headers.length; i++) {
 			ReportSection section = new ReportSection();
-			section.setTitle(header);
+			section.setIndex(i);
+			section.setTitle(headers[i]);
 			section.setText("TODO: add some text here");
 			report.getSections().add(section);
 		}

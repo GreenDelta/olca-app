@@ -1,7 +1,5 @@
 package org.openlca.app.editors.reports;
 
-import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -25,16 +23,13 @@ import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
 import org.openlca.app.editors.DataBinding;
 import org.openlca.app.editors.reports.model.Report;
-import org.openlca.app.editors.reports.model.ReportComponent;
 import org.openlca.app.editors.reports.model.ReportParameter;
-import org.openlca.app.editors.reports.model.ReportSection;
 import org.openlca.app.editors.reports.model.ReportVariant;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
-import org.openlca.app.util.Viewers;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.database.EntityCache;
@@ -51,6 +46,7 @@ class ReportEditorPage extends FormPage {
 	private EntityCache cache = Cache.getEntityCache();
 
 	private FormToolkit toolkit;
+	private SectionList sectionList;
 
 	public ReportEditorPage(ReportEditor editor, Report report) {
 		super(editor, "ReportInfoPage", "Report");
@@ -67,8 +63,7 @@ class ReportEditorPage extends FormPage {
 		Composite body = UI.formBody(form, toolkit);
 		createInfoSection(body);
 		createVariantsSection(body);
-		for (ReportSection reportSection : report.getSections())
-			createSection(reportSection, body);
+		sectionList = new SectionList(editor, body, form, toolkit);
 		createParameternamesSection(body);
 		form.reflow(true);
 	}
@@ -118,38 +113,6 @@ class ReportEditorPage extends FormPage {
 		viewer.setInput(report.getVariants());
 	}
 
-	private void createSection(ReportSection reportSection, Composite body) {
-		final Section section = UI.section(body, toolkit,
-				reportSection.getTitle());
-		Composite composite = UI.sectionClient(section, toolkit);
-		final Text titleText = UI.formText(composite, toolkit, "Section");
-		binding.onString(() -> reportSection, "title", titleText);
-		titleText.addModifyListener((e) -> {
-			section.setText(titleText.getText());
-		});
-		Text descriptionText = UI.formMultiText(composite, toolkit, "Text");
-		binding.onString(() -> reportSection, "text", descriptionText);
-		createComponentViewer(reportSection, composite);
-	}
-
-	private void createComponentViewer(final ReportSection reportSection,
-			Composite composite) {
-		UI.formLabel(composite, toolkit, "Component");
-		ComboViewer viewer = new ComboViewer(composite);
-		UI.gridData(viewer.getControl(), false, false).widthHint = 250;
-		viewer.setContentProvider(ArrayContentProvider.getInstance());
-		viewer.setLabelProvider(new ComponentLabel());
-		viewer.setInput(ReportComponent.values());
-		viewer.addSelectionChangedListener((evt) -> {
-			ReportComponent component = Viewers.getFirst(evt.getSelection());
-			if (component == null || component == ReportComponent.NONE)
-				reportSection.setComponentId(null);
-				else
-					reportSection.setComponentId(component.getId());
-				editor.setDirty(true);
-			});
-	}
-
 	private void createReportParameters() {
 		report.getParameters().clear();
 		for (ParameterRedef redef : report.getProject().getVariants().get(0)
@@ -180,36 +143,6 @@ class ReportEditorPage extends FormPage {
 				new ParameterNameModifier());
 		modifySupport.bind(Messages.Description,
 				new ParameterDescriptionModifier());
-	}
-
-	private class ComponentLabel extends LabelProvider {
-
-		@Override
-		public String getText(Object element) {
-			if (!(element instanceof ReportComponent))
-				return null;
-			ReportComponent component = (ReportComponent) element;
-			return getLabel(component);
-		}
-
-		private String getLabel(ReportComponent component) {
-			switch (component) {
-			case NONE:
-				return "None";
-			case PARAMETER_TABLE:
-				return "Parameter table";
-			case RESULT_CHART:
-				return "Result chart";
-			case RESULT_TABLE:
-				return "Result table";
-			case VARIANT_TABLE:
-				return "Project variant table";
-			case CONTRIBUTION_CHARTS:
-				return "Contribution charts";
-			default:
-				return "unknown";
-			}
-		}
 	}
 
 	private class ParameterLabel extends LabelProvider implements
