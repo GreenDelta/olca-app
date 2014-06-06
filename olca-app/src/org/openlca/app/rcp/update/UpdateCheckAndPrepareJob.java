@@ -112,33 +112,33 @@ public class UpdateCheckAndPrepareJob extends Job {
 		boolean retval = false;
 		try {
 			File installRoot = PlatformUtils.getInstallRoot();
-			if (installRoot != null) {
-				if (PlatformUtils.isWindows()
-						&& !(new File(installRoot, "singleuserinstall.mrk")
-								.exists())) {
-					// windows multi-user install not self-updating
-					retval = false;
-				} else {
-					try {
-						File accessRightsTestFile = File.createTempFile(
-								"testaccessrights", "tmp", installRoot);
-						try (FileOutputStream fileOutputStream = new FileOutputStream(
-								accessRightsTestFile)) {
-							fileOutputStream.write(5);
-							retval = true;
-						} finally {
-							try {
-								accessRightsTestFile.delete();
-							} catch (Exception e) {
-								// ignore
-							}
+			if (installRoot == null)
+				return false;
+			if (PlatformUtils.isWindows()
+					&& !(new File(installRoot, "singleuserinstall.mrk")
+							.exists())) {
+				// windows multi-user install not self-updating
+				retval = false;
+			} else {
+				try {
+					File accessRightsTestFile = File.createTempFile(
+							"testaccessrights", "tmp", installRoot);
+					try (FileOutputStream fileOutputStream = new FileOutputStream(
+							accessRightsTestFile)) {
+						fileOutputStream.write(5);
+						retval = true;
+					} finally {
+						try {
+							accessRightsTestFile.delete();
+						} catch (Exception e) {
+							// ignore
 						}
-					} catch (Exception e) {
-						log.info("Not a self-updating installation: "
-								+ "No write access to install root {}: {}",
-								installRoot, e.getMessage());
-
 					}
+				} catch (Exception e) {
+					log.info("Not a self-updating installation: "
+							+ "No write access to install root {}: {}",
+							installRoot, e.getMessage());
+
 				}
 			}
 		} catch (Exception e) {

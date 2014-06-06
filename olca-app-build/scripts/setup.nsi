@@ -231,5 +231,5 @@ FunctionEnd
 
 LangString ^UninstallLink ${LANG_ENGLISH} "Uninstall $(^Name)"
 LangString ^UninstallLink ${LANG_GERMAN} "Uninstall $(^Name)"
-LangString CurrentUserButtonLabel ${LANG_ENGLISH} "Current user (recommended, allows auto-updates)"
-LangString CurrentUserButtonLabel ${LANG_GERMAN} "Aktueller Benutzer (empfohlen, erlaubt automatische Updates)"
+LangString CurrentUserButtonLabel ${LANG_ENGLISH} "Current user (recommended)"
+LangString CurrentUserButtonLabel ${LANG_GERMAN} "Aktueller Benutzer (empfohlen)"
