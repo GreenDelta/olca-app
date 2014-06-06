@@ -188,16 +188,24 @@
 	<script type="text/ng-template" id="result-table.html">
 		<div class="table-responsive">
 			<table class="table table-hover">
-				<thead><tr><th>Indicator</th>
-							<th data-ng-repeat="result in report.results[0].variantResults">{{result.variant}}</th>
-						</tr></thead>
+				<thead>
+					<tr>
+						<th>Indicator</th>
+						<th data-ng-repeat="result in report.results[0].variantResults">{{result.variant}}</th>
+						<th>Unit</th>
+					</tr>
+				</thead>
 				<tbody>
-				<tr data-ng-repeat="indicator in report.results">
+				<tr data-ng-repeat="result in report.results">
 					<td>
-						{{indicator.indicator}}
+						{{result.indicator}}
 					</td>
-					<td data-ng-repeat="result in indicator.variantResults">
-						{{result.totalAmount | scientific}}
+					<!-- TODO: this assumes that the order of the variants is the same for every result -->
+					<td data-ng-repeat="variantResult in result.variantResults">
+						{{variantResult.totalAmount | scientific}}
+					</td>
+					<td>
+						{{result.unit}}
 					</td>
 				</tr>
                 </tbody>
@@ -238,10 +246,7 @@
         });
 
 	    var Controller = function ($scope) {
-        	$scope.report = {};
-            $.getJSON("report_view.json", function(json) {
-            	setData(json);
-            });
+        	$scope.report = {};           
             $scope.save = function (report) {
                 saveReport(angular.toJson(report));        
             }

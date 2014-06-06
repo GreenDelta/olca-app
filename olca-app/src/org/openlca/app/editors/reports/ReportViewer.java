@@ -90,6 +90,7 @@ public class ReportViewer extends FormEditor {
 			Gson gson = new Gson();
 			String json = gson.toJson(report);
 			String command = "setData(" + json + ")";
+			System.out.println(json);
 			try {
 				browser.evaluate(command);
 			} catch (Exception e) {

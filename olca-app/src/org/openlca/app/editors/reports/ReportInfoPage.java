@@ -2,10 +2,8 @@ package org.openlca.app.editors.reports;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -128,17 +126,14 @@ class ReportInfoPage extends FormPage {
 		viewer.setContentProvider(ArrayContentProvider.getInstance());
 		viewer.setLabelProvider(new ComponentLabel());
 		viewer.setInput(ReportComponent.values());
-		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
-			@Override
-			public void selectionChanged(SelectionChangedEvent evt) {
-				ReportComponent component = Viewers.getFirst(evt.getSelection());
-				if (component == null || component == ReportComponent.NONE)
-					reportSection.setComponentId(null);
+		viewer.addSelectionChangedListener((evt) -> {
+			ReportComponent component = Viewers.getFirst(evt.getSelection());
+			if (component == null || component == ReportComponent.NONE)
+				reportSection.setComponentId(null);
 				else
 					reportSection.setComponentId(component.getId());
 				editor.setDirty(true);
-			}
-		});
+			});
 	}
 
 	private void createReportParameters() {
@@ -224,6 +219,8 @@ class ReportInfoPage extends FormPage {
 				return "Result table";
 			case VARIANT_TABLE:
 				return "Project variant table";
+			case CONTRIBUTION_CHARTS:
+				return "Contribution charts";
 			default:
 				return "unknown";
 			}
