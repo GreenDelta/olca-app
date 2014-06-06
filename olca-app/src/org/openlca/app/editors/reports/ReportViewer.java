@@ -14,9 +14,8 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.editors.reports.model.Report;
 import org.openlca.app.html.HtmlPage;
-import org.openlca.app.html.HtmlResource;
+import org.openlca.app.html.HtmlView;
 import org.openlca.app.html.IHtmlResource;
-import org.openlca.app.rcp.RcpActivator;
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.UI;
 import org.slf4j.Logger;
@@ -31,6 +30,8 @@ public class ReportViewer extends FormEditor {
 	private Report report;
 
 	public static void open(Report report) {
+		if (report == null)
+			return;
 		Editors.open(new ReportEditorInput(report), ID);
 	}
 
@@ -75,14 +76,12 @@ public class ReportViewer extends FormEditor {
 		private Browser browser;
 
 		public Page() {
-			super(ReportViewer.this, "olca.ReportPreview.Page",
-					"Report Preview");
+			super(ReportViewer.this, "olca.ReportPreview.Page", "Report view");
 		}
 
 		@Override
 		public IHtmlResource getResource() {
-			return new HtmlResource(RcpActivator.getDefault().getBundle(),
-					"html/report_view.html", "report_view.html");
+			return HtmlView.REPORT_VIEW.getResource();
 		}
 
 		@Override

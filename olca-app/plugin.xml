@@ -124,7 +124,8 @@
             id="ReportEditor"
             class="org.openlca.app.editors.reports.ReportEditor"
             icon="icons/project_obj.png"
-            name="Report Editor">
+            name="Report Editor"
+            contributorClass="org.openlca.app.editors.reports.ReportToolbar">
       </editor>  
        <editor
             id="ReportViewer"

@@ -24,12 +24,16 @@ public class ReportEditor extends FormEditor implements IEditor {
 		Editors.open(new ReportEditorInput(report), ID);
 	}
 
+	public Report getReport() {
+		return report;
+	}
+
 	@Override
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
 		super.init(site, input);
 		try {
-			ReportEditorInput editorInput = (ReportEditorInput)input;
+			ReportEditorInput editorInput = (ReportEditorInput) input;
 			this.report = editorInput.getReport();
 		} catch (Exception e) {
 			String message = "failed to init report editor";
@@ -41,7 +45,7 @@ public class ReportEditor extends FormEditor implements IEditor {
 	@Override
 	protected void addPages() {
 		try {
-			addPage(new ReportInfoPage(this, report));
+			addPage(new ReportEditorPage(this, report));
 		} catch (Exception e) {
 			log.error("failed to add page", e);
 		}
@@ -59,7 +63,6 @@ public class ReportEditor extends FormEditor implements IEditor {
 	public boolean isDirty() {
 		return dirty;
 	}
-
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {

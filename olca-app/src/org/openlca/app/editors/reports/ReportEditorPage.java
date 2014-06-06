@@ -39,12 +39,11 @@ import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.ParameterRedef;
-import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
-class ReportInfoPage extends FormPage {
+class ReportEditorPage extends FormPage {
 
 	private Report report;
 	private ReportEditor editor;
@@ -53,7 +52,7 @@ class ReportInfoPage extends FormPage {
 
 	private FormToolkit toolkit;
 
-	public ReportInfoPage(ReportEditor editor, Report report) {
+	public ReportEditorPage(ReportEditor editor, Report report) {
 		super(editor, "ReportInfoPage", "Report");
 		this.editor = editor;
 		this.report = report;
@@ -67,10 +66,10 @@ class ReportInfoPage extends FormPage {
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		createInfoSection(body);
+		createVariantsSection(body);
 		for (ReportSection reportSection : report.getSections())
 			createSection(reportSection, body);
 		createParameternamesSection(body);
-		createVariantsSection(body);
 		form.reflow(true);
 	}
 
@@ -102,6 +101,21 @@ class ReportInfoPage extends FormPage {
 				ReportViewer.open(report);
 			}
 		});
+	}
+
+	private void createVariantsSection(Composite body) {
+		Section section = UI.section(body, toolkit, "Variants");
+		Composite composite = UI.sectionClient(section, toolkit);
+		UI.gridLayout(composite, 1);
+		TableViewer viewer = Tables.createViewer(composite, Messages.Name,
+				Messages.UserFriendlyName, Messages.Description);
+		viewer.setLabelProvider(new VariantLabel());
+		Tables.bindColumnWidths(viewer, 0.30, 0.30, 0.40);
+		UI.gridData(viewer.getTable(), true, true).minimumHeight = 150;
+		ModifySupport<ReportVariant> modifier = new ModifySupport<>(viewer);
+		modifier.bind(Messages.UserFriendlyName, new VariantNameModifier());
+		modifier.bind(Messages.Description, new VariantDescriptionModifier());
+		viewer.setInput(report.getVariants());
 	}
 
 	private void createSection(ReportSection reportSection, Composite body) {
@@ -155,7 +169,7 @@ class ReportInfoPage extends FormPage {
 		String[] properties = { Messages.Parameter, Messages.Context,
 				Messages.UserFriendlyName, Messages.Value, Messages.Description };
 		TableViewer viewer = Tables.createViewer(composite, properties);
-		viewer.setLabelProvider(new ParametersTableLabel());
+		viewer.setLabelProvider(new ParameterLabel());
 		Tables.bindColumnWidths(viewer, 0.20, 0.20, 0.20, 0.20, 0.20);
 		UI.gridData(viewer.getTable(), true, true).minimumHeight = 150;
 		createReportParameters();
@@ -166,35 +180,6 @@ class ReportInfoPage extends FormPage {
 				new ParameterNameModifier());
 		modifySupport.bind(Messages.Description,
 				new ParameterDescriptionModifier());
-	}
-
-	private void createReportVariants() {
-		report.getVariants().clear();
-		for (ProjectVariant projectVariant : report.getProject().getVariants()) {
-			ReportVariant variant = new ReportVariant();
-			variant.setName(projectVariant.getName());
-			report.getVariants().add(variant);
-		}
-	}
-
-	private void createVariantsSection(Composite body) {
-		Section section = UI.section(body, toolkit, "Variants");
-		Composite composite = UI.sectionClient(section, toolkit);
-		UI.gridLayout(composite, 1);
-		String[] properties = { Messages.Name, Messages.UserFriendlyName,
-				Messages.Description };
-		TableViewer viewer;
-		viewer = Tables.createViewer(composite, properties);
-		viewer.setLabelProvider(new VariantLabelProvider());
-		Tables.bindColumnWidths(viewer, 0.30, 0.30, 0.40);
-		UI.gridData(viewer.getTable(), true, true).minimumHeight = 150;
-		createReportVariants();
-		viewer.setInput(report.getVariants());
-		ModifySupport<ReportVariant> modifySupport = new ModifySupport<>(viewer);
-		modifySupport
-				.bind(Messages.UserFriendlyName, new VariantNameModifier());
-		modifySupport.bind(Messages.Description,
-				new VariantDescriptionModifier());
 	}
 
 	private class ComponentLabel extends LabelProvider {
@@ -227,15 +212,12 @@ class ReportInfoPage extends FormPage {
 		}
 	}
 
-	private class ParametersTableLabel extends LabelProvider implements
+	private class ParameterLabel extends LabelProvider implements
 			ITableLabelProvider {
 
 		@Override
-		public Image getColumnImage(Object element, int columnIndex) {
-			if (columnIndex == 0)
-				return ImageType.PRODUCT_SYSTEM_ICON.get();
-			else
-				return null;
+		public Image getColumnImage(Object element, int col) {
+			return null;
 		}
 
 		@Override
@@ -321,20 +303,20 @@ class ReportInfoPage extends FormPage {
 		}
 	}
 
-	private class VariantLabelProvider extends LabelProvider implements
+	private class VariantLabel extends LabelProvider implements
 			ITableLabelProvider {
 
 		@Override
-		public Image getColumnImage(Object element, int columnIndex) {
+		public Image getColumnImage(Object element, int col) {
 			return null;
 		}
 
 		@Override
-		public String getColumnText(Object element, int columnIndex) {
+		public String getColumnText(Object element, int col) {
 			if (!(element instanceof ReportVariant))
 				return null;
 			ReportVariant variant = (ReportVariant) element;
-			switch (columnIndex) {
+			switch (col) {
 			case 0:
 				return variant.getName();
 			case 1:

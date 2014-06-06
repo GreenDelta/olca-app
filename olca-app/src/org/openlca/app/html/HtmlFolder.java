@@ -29,10 +29,8 @@ import org.slf4j.LoggerFactory;
 public class HtmlFolder {
 
 	private static final Logger log = LoggerFactory.getLogger(HtmlFolder.class);
-	private static final File htmlDirectory = new File(App.getWorkspace(),
-			"html");
-	private static final File versionFile = new File(htmlDirectory,
-			"version.info");
+	private static final File root = new File(App.getWorkspace(), "html");
+	private static final File versionFile = new File(root, "version.info");
 
 	private static Set<String> baseFiles;
 
@@ -44,19 +42,23 @@ public class HtmlFolder {
 		}
 	}
 
+	public static File getRoot() {
+		return root;
+	}
+
 	private static void initializeBaseFiles() throws IOException {
 		boolean upToDate = readVersionInformation();
 		if (!upToDate || !allBaseFilesExist()) {
 			if (!upToDate)
 				tryDeleteBaseDir();
-			if (!htmlDirectory.exists())
-				htmlDirectory.mkdirs();
-			File zipFile = new File(htmlDirectory, "@temp.zip");
+			if (!root.exists())
+				root.mkdirs();
+			File zipFile = new File(root, "@temp.zip");
 			try (FileOutputStream out = new FileOutputStream(zipFile)) {
 				IOUtils.copy(
 						HtmlFolder.class.getResourceAsStream("html_base.zip"),
 						out);
-				unzip(zipFile, htmlDirectory, !upToDate);
+				unzip(zipFile, root, !upToDate);
 				if (!zipFile.delete())
 					zipFile.deleteOnExit();
 				if (!upToDate)
@@ -69,8 +71,8 @@ public class HtmlFolder {
 		if (baseFiles != null)
 			return true;
 		baseFiles = new HashSet<>();
-		if (!htmlDirectory.exists())
-			htmlDirectory.mkdirs();
+		if (!root.exists())
+			root.mkdirs();
 		if (!versionFile.exists())
 			return false;
 		try (BufferedReader reader = new BufferedReader(new FileReader(
@@ -91,16 +93,16 @@ public class HtmlFolder {
 	private static void tryDeleteBaseDir() {
 		try {
 			// this can fail, e.g. when the html folder is open
-			log.trace("try to delete html directory {}", htmlDirectory);
-			FileUtils.deleteDirectory(htmlDirectory);
+			log.trace("try to delete html directory {}", root);
+			FileUtils.deleteDirectory(root);
 		} catch (Exception e) {
-			log.warn("failed to delete html directory {}", htmlDirectory);
+			log.warn("failed to delete html directory {}", root);
 		}
 	}
 
 	private static boolean allBaseFilesExist() {
 		for (String file : baseFiles)
-			if (!new File(htmlDirectory, file).exists())
+			if (!new File(root, file).exists())
 				return false;
 		return true;
 	}
@@ -143,16 +145,21 @@ public class HtmlFolder {
 	}
 
 	public static String getUrl(IHtmlResource resource) throws IOException {
-		initializeBaseFiles();
-		register(resource);
-		log.trace("get html resource {}", resource.getTargetFilePath());
-		File file = new File(htmlDirectory, resource.getBundleName() + "_"
-				+ resource.getBundleVersion() + File.separator
-				+ resource.getTargetFilePath());
+		File file = getFile(resource);
 		URL url = file.toURI().toURL();
 		String s = url.toString();
 		log.trace("resolved it to {}", s);
 		return s;
+	}
+
+	public static File getFile(IHtmlResource resource) throws IOException {
+		initializeBaseFiles();
+		register(resource);
+		log.trace("get html resource {}", resource.getTargetFilePath());
+		File file = new File(root, resource.getBundleName() + "_"
+				+ resource.getBundleVersion() + File.separator
+				+ resource.getTargetFilePath());
+		return file;
 	}
 
 	public static void register(IHtmlResource resource) throws IOException {
@@ -176,7 +183,7 @@ public class HtmlFolder {
 	private static File getResourceFile(IHtmlResource resource) {
 		String dirName = resource.getBundleName() + "_"
 				+ resource.getBundleVersion();
-		File dir = new File(htmlDirectory, dirName);
+		File dir = new File(root, dirName);
 		File file = new File(dir, resource.getTargetFilePath());
 		return file;
 	}

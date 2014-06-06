@@ -10,25 +10,27 @@ import org.slf4j.LoggerFactory;
 
 public enum HtmlView {
 
-	USAGES_VIEW("usages_view.html", USAGE_VIEW_JS),
+	BUBBLE_CHART("bubble_chart.html"),
 
 	GMAP_HEATMAP("gmap_heatmap.html"),
 
+	GRAPH_VIEW("graph_view.html"),
+
 	IMPACT_LOCALISATION_PAGE("impact_localisation_page.html"),
-
-	RESULT_LOCALISED_LCIA("result_localised_lcia.html", Resource.OLCA_CHARTS_JS),
-
-	SUNBURST_CHART("sunburst_chart.html"),
-
-	BUBBLE_CHART("bubble_chart.html"),
-
-	TREEMAP("treemap.html"),
 
 	KML_EDITOR("kml_editor.html"),
 
 	KML_RESULT_VIEW("kml_result_view.html"),
 
-	GRAPH_VIEW("graph_view.html");
+	REPORT_VIEW("report_view.html"),
+
+	RESULT_LOCALISED_LCIA("result_localised_lcia.html", Resource.OLCA_CHARTS_JS),
+
+	SUNBURST_CHART("sunburst_chart.html"),
+
+	TREEMAP("treemap.html"),
+
+	USAGES_VIEW("usages_view.html", USAGE_VIEW_JS);
 
 	private IHtmlResource resource;
 	private Resource[] dependencies;
