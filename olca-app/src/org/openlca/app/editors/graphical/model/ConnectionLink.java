@@ -74,6 +74,7 @@ public class ConnectionLink {
 	}
 
 	public void unlink() {
+		editPart.setSelected(0);
 		sourceNode.remove(this);
 		targetNode.remove(this);
 		sourceNode.getEditPart().refreshSourceConnections();
