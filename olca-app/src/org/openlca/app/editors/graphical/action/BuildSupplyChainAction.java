@@ -10,6 +10,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
 import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
+import org.openlca.app.editors.graphical.layout.constraints.NodeLayoutStore;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.IProductSystemBuilder;
@@ -50,6 +51,10 @@ class BuildSupplyChainAction extends Action implements IBuildAction {
 			if (editor.promptSaveIfNecessary())
 				new ProgressMonitorDialog(UI.shell()).run(true, false,
 						new Runner(system));
+			editor.collapse();
+			NodeLayoutStore.loadLayout(editor.getModel());
+			if (editor.getOutline() != null)
+				editor.getOutline().refresh();
 		} catch (final Exception e) {
 			log.error("Failed to complete product system. ", e);
 		}
@@ -78,9 +83,7 @@ class BuildSupplyChainAction extends Action implements IBuildAction {
 			}
 			ProductSystemGraphEditor editor = nodes.get(0).getParent()
 					.getEditor();
-			editor.doSave(monitor);
-			if (editor.getOutline() != null)
-				editor.getOutline().refresh();
+			editor.updateModel(monitor);
 		}
 	}
 

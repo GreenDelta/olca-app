@@ -200,6 +200,12 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 		systemEditor.doSave(monitor);
 	}
 
+	public void updateModel(final IProgressMonitor monitor) {
+		monitor.beginTask("Upating product system", IProgressMonitor.UNKNOWN);
+		systemEditor.updateModel();
+		monitor.done();
+	}
+
 	@Override
 	@SuppressWarnings("rawtypes")
 	public Object getAdapter(final Class type) {

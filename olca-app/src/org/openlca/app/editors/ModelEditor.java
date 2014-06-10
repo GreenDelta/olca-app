@@ -88,6 +88,14 @@ public abstract class ModelEditor<T extends CategorizedEntity> extends
 		}
 	}
 
+	public void updateModel() {
+		if (model == null)
+			return;
+		if (model.getId() == 0)
+			return;
+		model = dao.getForId(model.getId());
+	}
+
 	private void doAfterUpdate() {
 		setDirty(false);
 		BaseDescriptor descriptor = getEditorInput().getDescriptor();
