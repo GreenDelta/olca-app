@@ -68,6 +68,7 @@ class SectionList {
 		sections.add(section);
 		form.reflow(true);
 		section.ui.setFocus();
+		editor.setDirty(true);
 	}
 
 	private class Sec {

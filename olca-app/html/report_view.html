@@ -121,7 +121,7 @@
 			<div class="row">
 				<div data-ng-repeat="section in report.sections" class="col-sm-12 box-row1">
 					<h3>{{section.title}}</h3>
-					<p>{{section.text}}</p>
+					<p data-ng-bind-html="section.text"></p>
 					<div data-ng-if="section.componentId == 'parameter_table'" data-ng-include src="'parameters-table.html'"></div>
 					<div data-ng-if="section.componentId == 'variant_table'" data-ng-include src="'variants-table.html'"></div>
 					<div id="result-charts-include-container" data-ng-if="section.componentId == 'total_result_chart'" data-ng-include src="'total-result-charts.html'"></div>
@@ -139,6 +139,7 @@
 
     <script src="../libs/jquery.min_1.9.0.js"></script>
     <script src="../libs/angular.min.js"></script>
+	<script src="../libs/angular-sanitize.min.js"></script>
     <script src="../libs/angularui.min.js"></script>
     <script src="../libs/ChartHorizontalBar.js"></script>
     <script src="../libs/olca.utils.js"></script>
@@ -235,7 +236,7 @@
 
     <script type="text/javascript">
         var variantsIndex = 0;
-        var app = angular.module('ReportPreviewPage', ['ui.bootstrap']);
+        var app = angular.module('ReportPreviewPage', ['ui.bootstrap', 'ngSanitize']);
 
         app.filter('scientific', function () {
             return function (text) {
