@@ -13,14 +13,14 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.html.HtmlPage;
-import org.openlca.app.html.HtmlResource;
+import org.openlca.app.html.HtmlView;
 import org.openlca.app.html.IHtmlResource;
 import org.openlca.app.navigation.actions.DatabaseImportAction;
-import org.openlca.app.rcp.RcpActivator;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Desktop;
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.UI;
+import org.openlca.util.OS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,15 +65,17 @@ public class StartPage extends FormEditor {
 
 		@Override
 		public IHtmlResource getResource() {
-			return new HtmlResource(RcpActivator.getDefault().getBundle(),
-					"html/start_page.html", "start_page.html");
+			return HtmlView.START_PAGE.getResource();
 		}
 
 		@Override
 		public void onLoaded() {
 			new ImportDatabaseCallback(browser);
 			new OpenUrlCallback(browser);
-
+			// TODO: set translation + version text
+			// System.out.println(Messages.asJson());
+			// System.out.println("Version " + Config.VERSION + " for "
+			// + getSystemInfo());
 		}
 
 		@Override
@@ -82,6 +84,11 @@ public class StartPage extends FormEditor {
 			Composite composite = form.getBody();
 			composite.setLayout(new FillLayout());
 			browser = UI.createBrowser(composite, this);
+		}
+
+		private String getSystemInfo() {
+			return OS.getCurrent()
+					+ " (" + System.getProperty("os.arch") + ")";
 		}
 
 	}

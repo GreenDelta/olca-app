@@ -1,17 +1,16 @@
 <!DOCTYPE html>
 <html>
-
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-
-
+  <head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <title>Welcome to openLCA</title>
     <link href="../libs/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
-
     <style type="text/css">
+        body {
+            min-width: 800px;
+        }
         .well {            
-            background-color: #ffffff;
+            background-color: #FFF;
         }
         .box-row1 {
             padding-bottom: 0px;
@@ -25,91 +24,194 @@
         .btn-primary {
             width:225px;
         }
+		h1 {
+			margin-bottom: 40px;
+		}
+        h3 {
+        	color: #00B0F0;
+        }
+		h3 > img {
+			margin-right: 15px !important;
+		}
+        .description {
+        	color: #888;
+			font-size: 16px;
+        }
+        .btn {
+            vertical-align: inherit;
+        }
+		a.btn-default {
+			color: #00B0F0;
+            background-color: transparent;
+			border: none;
+			padding: 5px;
+		}
+		tr {
+		  width: 100%;
+		}
+		#navigation-section td {
+			min-width: 50% !important;
+			padding-right: 25px;
+			vertical-align: top;
+		}
+		.page-header {
+            margin: 0 !important;
+            padding: 20px 20px 0 20px;
+            background-color: #F0F0F0;
+            border-bottom: 1px solid #D4D4D4;
+            box-shadow: 0px -1px 0px rgba(0, 0, 0, 0.1) inset, 0px 1px 10px rgba(0, 0, 0, 0.1);
+		}
+        .page-header td {
+            width: 200px !important;
+            background-color: "#F7F7F7";
+        }
+        #logo {
+            float: left;
+            margin-right: 20px;
+        }
+        #logo-cell {
+            width: 200px;
+            vertical-align: bottom;
+        }
+        #gd-logo {
+            float: right;
+            width: 170px;
+            height: 24px;
+            margin-left: 20px;
+            background: url('../images/gd_transparent_inactive.png');
+        }
+        #gd-logo:hover {
+            cursor: pointer;
+            background: url('../images/gd_transparent.png');
+        }
     </style>
-</head>
+  </head>
+  <body style="color: black; background-color: white;" alink="#000099" link="#000099"
+    vlink="#990099">
+    <div class="page-header">
+      <table style="width: 100%;" border="0">
+        <tbody>
+          <tr>
+            <td>
+                <h1><span style="color: rgb(0, 0, 0);"><img id="logo" src="../images/logo.png" />Welcome
+                  to openLCA!</span><span class="description"><br/></span><small>Version 1.4 for Windows 64
+                  bit.</small></h1>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <p class="description">openLCA is a high performance Life Cycle
+                Assessment (LCA) and sustainability assessment software.</p>
+              <p class="description">Truly open source. Simply free, as in “free
+                beer”. Created and maintained since 2006 by GreenDelta, Berlin,
+                www.greendelta.com. </p>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div id="gd-logo"></div>
+              <p class="description">openLCA is licensed under the Mozilla Public License, 1.1 (<a href="http://www.openlca.org/performance"
+                    target="blank" class="btn btn-default">what does this mean#?</a>).</p></td>                  
+            </td>
+          </tr>
+        </tbody>
+      </table></div>
+    <div id="navigation-section" class="container-fluid" style="margin: 20px;">
+      <table style="background-color: rgb(255, 255, 255);">
+        <tbody>
+          <tr>
+            <td>
+              <h3><img src="../images/news.gif"
+                  alt="">What's new</h3>
+              <p>For the 1.4 version, we completely redesigned and “renovated”
+                openLCA. Results are</p>
+              <ul>
+                <li>a <b>drastically improved performance</b> of about 400% (<a
+                    href="http://www.openlca.org/performance" target="blank" class="btn btn-default">Performance
+                    Test</a>)</li>
+                <li><b>numerous usability improvements</b> a more comprehensive
+                  list is available,<a href="http://www.openlca.org/performance"
+                    target="blank" class="btn btn-default">here</a></li>
+                <li><b>many new features</b> a more comprehensive list is
+                  provided here,<a href="http://www.openlca.org/performance" target="blank"
+                    class="btn btn-default">here</a></li>
+              </ul>
+            </td>
+            <td>
+              <h3><img src="../images/getting-started.gif"
+                  alt="">Getting started</h3>
+              <p>When you start openLCA the first time, it does not contain any
+                data. With the new version of openLCA, it is really easy to get
+                started. You can just import a database from an existing
+                zolca-file and open it from the navigation on the left side.
+                Then open the database with a simple double click.</p>
+              <p>This is explained in a video,<a href="http://www.openlca.org/performance"
+                  target="blank" class="btn btn-default">here</a></p>
+              <p>And in the wiki,<a href="http://www.openlca.org/performance" target="blank"
+                  class="btn btn-default">here</a></p>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <h3><img style="width: 61px; height: 54px;" src="../images/search.gif"
+                  alt="">Searching and downloading data</h3>
+              <p>A broad range of LCA databases are available in openLCA nexus,
+                where you can search for single data sets and also for complete
+                databases, and download them into openLCA. The databases are all
+                fit for openLCA, several databases can be combined.</p>
+              <p>This is also explained in a<a href="http://www.openlca.org/performance"
+                  target="blank" class="btn btn-default">video</a><br>
+                And in the<a href="http://www.openlca.org/performance" target="blank"
+                  class="btn btn-default">wiki</a><br>
+                Go to <a href="http://www.openlca.org/performance" target="blank"
+                  class="btn btn-default">openLCA nexus</a><br>
+                LCIA method packs are available from the openLCA<a href="http://www.openlca.org/performance"
+                  target="blank" class="btn btn-default">download page</a></p>
+            </td>
+            <td>
+              <h3><img src="../images/documentation.gif"
+                  alt="">Documentation</h3>
+              <p>The online wiki for openLCA provides details about almost all
+                features of openLCA; it is changing over time so check back from
+                time to time.</p>
+              <p>We have also written more comprehensive documents, a short
+                introductory text, and a more extensive document. Both are
+                available online,<a href="http://www.openlca.org/performance" target="blank"
+                  class="btn btn-default">here</a></p>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <h3><img src="../images/examples.gif"
+                  alt="">Examples</h3>
+              <p>Here are cases that demonstrate how to use openLCA:</p>
+              <p><a href="http://www.openlca.org/performance" target="blank" class="btn btn-default">Cases
+                  for the 1.3.4 version</a></p>
+              <p><a href="http://www.openlca.org/performance" target="blank" class="btn btn-default">Cases for the 1.4 version:</a> Combining GaBi and ecoinvent databases in a case for
+                  lamps</p>
+            </td>
+            <td>
+              <h3><img src="../images/community.gif"
+                  alt="">Community</h3>
+              <p>An increasing number of people are using openLCA. Register (on
+                the download page or in the forum) and participate in the forum,<a
+                  href="http://www.openlca.org/performance" target="blank" class="btn btn-default">here</a>,
+                to share your thoughts, ask questions, read answers...</p>
+            </td>
+          </tr>
 
-<body>
-
-    <div class="page-header" style="margin:20px">
-        <h1>
-            <img src="../images/logo.png" style="margin-right:20px">Welcome to openLCA
-            <small>v1.4</small>
-        </h1>
-    </div>
-
-    <div class="container-fluid" style="margin:20px">
-
-        <div class="row">
-
-            <div class="col-sm-6 box-row1">
-                <div class="well">
-                    <h3>
-                        <img src="../images/tools_48.png" style="margin:5px">Getting started</h3>
-                    <p>With the new version of openLCA it is really easy to get started. You can just import a database from an existing zolca-file and open it from the navigation on the left side. Then open the database with a simple double click.</p>
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-sm-6 col-sm-offset-1">
-                                <button class="btn btn-primary" onclick="callImportDatabase()">Import a database</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-sm-6 box-row1">
-                <div class="well">
-                    <h3>
-                        <img src="../images/import_data_48.png" style="margin:5px">Download data</h3>
-                    <p>You can get professional LCA databases ready to use in openLCA from openLCA Nexus. There you can find professional LCI databases like ecoinvent or GaBi but also free databases and other resources like LCIA methods.</p>
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-sm-6 col-sm-offset-1">
-                                <button class="btn btn-primary" onclick="callOpenUrl('https://nexus.openlca.org')">Visit openLCA Nexus</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-
-            <div class="col-sm-6 box-row2">
-                <div class="well">
-                    <h3>
-                        <img src="../images/documentation_48.png" style="margin:5px">Read the documentation</h3>
-                    <p>There is an openLCA Wiki and a forum available where you can learn more about openLCA and ask questions. Additional documentation is also available on our website.</p>
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-sm-6 col-sm-offset-1">
-                                <button class="btn btn-primary" onclick="callOpenUrl('http://www.openlca.org/documentation')">Visit the openLCA Wiki</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-sm-6 box-row2">
-                <div class="well">
-                    <h3>
-                        <img src="../images/java_48.png" style="margin:5px">It is open source</h3>
-                    <p>openLCA is an open source Java application licensed under the Mozilla Public License and developed by GreenDelta and contributors. The source code is hosted on Github.</p>
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-sm-6 col-sm-offset-1">
-                                <button class="btn btn-primary" onclick="callOpenUrl('https://github.com/GreenDelta/olca-app')">Visit the openLCA Github page</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <script src="../libs/jquery.min_1.9.0.js"></script>
 
     <script type="text/javascript">
+        $(document).ready(function() {
+            $('#gd-logo').on('click', function() {
+                window.open('http://www.greendelta.com', '_blank');
+            });
+        });
+
         // the functions openUrl and importDatabase should be registered by the 
         // host editor in openLCA
-        
+
         function callOpenUrl(url) {
             if(typeof(openUrl) == "function") {
                 openUrl(url);
@@ -126,9 +228,8 @@
             }
         }
     </script>
-
-
-</body>
-
-
+        </tbody>
+      </table>
+    </div>
+  </body>
 </html>
