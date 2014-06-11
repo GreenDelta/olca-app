@@ -55,6 +55,19 @@ class SectionList {
 		sec2.setModel(model1);
 		model1.setIndex(j);
 		model2.setIndex(i);
+		report.getSections().sort((s1, s2) -> s1.getIndex() - s2.getIndex());
+	}
+
+	void addNew() {
+		ReportSection model = new ReportSection();
+		model.setIndex(report.getSections().size());
+		report.getSections().add(model);
+		model.setTitle("New section");
+		model.setText("TODO: add text");
+		Sec section = new Sec(model);
+		sections.add(section);
+		form.reflow(true);
+		section.ui.setFocus();
 	}
 
 	private class Sec {

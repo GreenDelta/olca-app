@@ -63,9 +63,25 @@ class ReportEditorPage extends FormPage {
 		Composite body = UI.formBody(form, toolkit);
 		createInfoSection(body);
 		createVariantsSection(body);
+		// TODO: do we need parameters here?
+		// createParameternamesSection(body);
+		createAddButton(body);
 		sectionList = new SectionList(editor, body, form, toolkit);
-		createParameternamesSection(body);
 		form.reflow(true);
+	}
+
+	private void createAddButton(Composite body) {
+		Composite composite = UI.formComposite(body, toolkit);
+		UI.formLabel(composite, "");
+		Button addButton = toolkit.createButton(composite, "Add section",
+				SWT.NONE);
+		addButton.setImage(ImageType.ADD_ICON.get());
+		addButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				sectionList.addNew();
+			}
+		});
 	}
 
 	private void createInfoSection(Composite body) {
@@ -113,18 +129,6 @@ class ReportEditorPage extends FormPage {
 		viewer.setInput(report.getVariants());
 	}
 
-	private void createReportParameters() {
-		report.getParameters().clear();
-		for (ParameterRedef redef : report.getProject().getVariants().get(0)
-				.getParameterRedefs()) {
-			ReportParameter parameter = new ReportParameter();
-			parameter.setRedef(redef);
-			parameter.setValue(redef.getValue());
-			parameter.setDefaultValue(redef.getValue());
-			report.getParameters().add(parameter);
-		}
-	}
-
 	private void createParameternamesSection(Composite body) {
 		Section section = UI.section(body, toolkit, Messages.ReportParameters);
 		Composite composite = UI.sectionClient(section, toolkit);
@@ -135,7 +139,6 @@ class ReportEditorPage extends FormPage {
 		viewer.setLabelProvider(new ParameterLabel());
 		Tables.bindColumnWidths(viewer, 0.20, 0.20, 0.20, 0.20, 0.20);
 		UI.gridData(viewer.getTable(), true, true).minimumHeight = 150;
-		createReportParameters();
 		viewer.setInput(report.getParameters());
 		ModifySupport<ReportParameter> modifySupport = new ModifySupport<>(
 				viewer);

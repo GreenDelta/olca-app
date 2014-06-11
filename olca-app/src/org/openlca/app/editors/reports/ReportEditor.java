@@ -66,6 +66,8 @@ public class ReportEditor extends FormEditor implements IEditor {
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
+		Reports.save(report);
+		setDirty(false);
 	}
 
 	@Override
