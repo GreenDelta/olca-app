@@ -224,10 +224,13 @@ public class CopyPaste {
 		if (newParent != null)
 			newParent.getChildCategories().add(content);
 		content.setParentCategory(newParent);
+		CategoryDao dao = new CategoryDao(Database.get());
 		if (oldParent != null)
-			new CategoryDao(Database.get()).update(oldParent);
+			dao.update(oldParent);
 		if (newParent != null)
-			new CategoryDao(Database.get()).update(newParent);
+			dao.update(newParent);
+		else
+			dao.update(content);
 	}
 
 	private static void move(ModelElement element,
