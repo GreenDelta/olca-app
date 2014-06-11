@@ -1,5 +1,8 @@
 package org.openlca.app.editors.reports;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
@@ -19,9 +22,6 @@ import org.openlca.app.util.Actions;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
-
-import java.util.ArrayList;
-import java.util.List;
 
 class SectionList {
 
@@ -90,7 +90,7 @@ class SectionList {
 			titleText.addModifyListener((e) -> {
 				ui.setText(titleText.getText());
 			});
-			Text descriptionText = UI.formMultiText(composite, toolkit, "Text");
+			descriptionText = UI.formMultiText(composite, toolkit, "Text");
 			binding.onString(() -> model, "text", descriptionText);
 			createComponentViewer(composite);
 			createActions();
@@ -121,12 +121,19 @@ class SectionList {
 		}
 
 		private void createActions() {
+			Action up = Actions.create(
+					"Move up",
+					ImageType.UP_16.getDescriptor(),
+					() -> moveUp());
+			Action down = Actions.create(
+					"Move down",
+					ImageType.DOWN_16.getDescriptor(),
+					() -> moveDown());
 			Action delete = Actions.create(
 					"Delete section",
 					ImageType.DELETE_ICON.getDescriptor(),
 					() -> delete());
-			// TODO: move up and down actions
-			Actions.bind(ui, delete);
+			Actions.bind(ui, up, down, delete);
 		}
 
 		private void delete() {
@@ -172,20 +179,20 @@ class SectionList {
 
 		private String getLabel(ReportComponent component) {
 			switch (component) {
-				case NONE:
-					return "None";
-				case PARAMETER_TABLE:
-					return "Parameter table";
-				case RESULT_CHART:
-					return "Result chart";
-				case RESULT_TABLE:
-					return "Result table";
-				case VARIANT_TABLE:
-					return "Project variant table";
-				case CONTRIBUTION_CHARTS:
-					return "Contribution charts";
-				default:
-					return "unknown";
+			case NONE:
+				return "None";
+			case PARAMETER_TABLE:
+				return "Parameter table";
+			case RESULT_CHART:
+				return "Result chart";
+			case RESULT_TABLE:
+				return "Result table";
+			case VARIANT_TABLE:
+				return "Project variant table";
+			case CONTRIBUTION_CHARTS:
+				return "Contribution charts";
+			default:
+				return "unknown";
 			}
 		}
 	}
