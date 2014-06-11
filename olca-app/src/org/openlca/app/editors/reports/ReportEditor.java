@@ -6,6 +6,7 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.openlca.app.editors.IEditor;
+import org.openlca.app.editors.reports.model.Report;
 import org.openlca.app.util.Editors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,12 +24,16 @@ public class ReportEditor extends FormEditor implements IEditor {
 		Editors.open(new ReportEditorInput(report), ID);
 	}
 
+	public Report getReport() {
+		return report;
+	}
+
 	@Override
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
 		super.init(site, input);
 		try {
-			ReportEditorInput editorInput = (ReportEditorInput)input;
+			ReportEditorInput editorInput = (ReportEditorInput) input;
 			this.report = editorInput.getReport();
 		} catch (Exception e) {
 			String message = "failed to init report editor";
@@ -40,7 +45,7 @@ public class ReportEditor extends FormEditor implements IEditor {
 	@Override
 	protected void addPages() {
 		try {
-			addPage(new ReportInfoPage(this, report));
+			addPage(new ReportEditorPage(this, report));
 		} catch (Exception e) {
 			log.error("failed to add page", e);
 		}
@@ -59,9 +64,10 @@ public class ReportEditor extends FormEditor implements IEditor {
 		return dirty;
 	}
 
-
 	@Override
 	public void doSave(IProgressMonitor monitor) {
+		Reports.save(report);
+		setDirty(false);
 	}
 
 	@Override

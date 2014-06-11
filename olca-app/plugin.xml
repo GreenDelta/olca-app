@@ -8,7 +8,8 @@
 			class="org.openlca.app.editors.StartPage"
 			default="false"
 			id="olca.StartPage"
-			name="Welcome">      
+			name="Welcome"
+			icon="icons/home_16.gif">      
       </editor>
       <editor
       		class="org.openlca.app.db.sql.SqlEditor"
@@ -124,7 +125,8 @@
             id="ReportEditor"
             class="org.openlca.app.editors.reports.ReportEditor"
             icon="icons/project_obj.png"
-            name="Report Editor">
+            name="Report Editor"
+            contributorClass="org.openlca.app.editors.reports.ReportToolbar">
       </editor>  
        <editor
             id="ReportViewer"

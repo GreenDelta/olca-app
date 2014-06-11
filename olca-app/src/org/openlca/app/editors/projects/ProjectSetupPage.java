@@ -26,7 +26,6 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
-import org.openlca.app.editors.reports.ReportEditor;
 import org.openlca.app.editors.reports.Reports;
 import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.resources.ImageType;
@@ -151,7 +150,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 		button.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				ReportEditor.open(Reports.create(project));
+				Reports.createOrOpen(project);
 			}
 		});
 	}

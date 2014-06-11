@@ -29,31 +29,28 @@ class Calculation {
 	private void doIt() {
 		if (project == null)
 			return;
-		final ProjectCalculator calculator = new ProjectCalculator(
+		ProjectCalculator calculator = new ProjectCalculator(
 				Cache.getMatrixCache(), App.getSolver());
-		App.run("Calculate project", new Runnable() {
-			public void run() {
-				result = tryCalculate(calculator, project);
-			}
-		}, new Runnable() {
-			public void run() {
-				if (result == null)
-					return;
-				String key = Cache.getAppCache().put(result);
-				Editors.open(new ProjectResultInput(project.getId(), key),
-						ProjectResultEditor.ID);
-				result = null;
-			}
-		});
+		App.run("Calculate project",
+				() -> tryCalculate(calculator, project),
+				() -> openResult());
 	}
 
-	private ProjectResultProvider tryCalculate(ProjectCalculator calculator,
-			Project project) {
+	private void openResult() {
+		if (result == null)
+			return;
+		String key = Cache.getAppCache().put(result);
+		Editors.open(new ProjectResultInput(project.getId(), key),
+				ProjectResultEditor.ID);
+		result = null;
+	}
+
+	private void tryCalculate(ProjectCalculator calculator, Project project) {
 		try {
-			return calculator.solve(project, Cache.getEntityCache());
+			result = calculator.solve(project, Cache.getEntityCache());
 		} catch (Exception e) {
 			log.error("Calculation of project failed");
-			return null;
+			result = null;
 		}
 	}
 

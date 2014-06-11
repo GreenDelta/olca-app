@@ -3,6 +3,7 @@ package org.openlca.app.editors.reports;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
+import org.openlca.app.editors.reports.model.Report;
 import org.openlca.app.resources.ImageType;
 import org.openlca.util.Strings;
 

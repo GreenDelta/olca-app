@@ -60,6 +60,10 @@ public enum ImageType {
 
 	DISCONNECT_ICON("disconnect.png"),
 
+	DOWN_16("down_16.png"),
+
+	DOWN_DIS_16("down_dis_16.png"),
+
 	ERROR_ICON("error.gif"),
 
 	EXCHANGE_BG_LEFT("left.jpg"),
@@ -270,13 +274,13 @@ public enum ImageType {
 
 	TEXT_SIZE_SMALL("text_allcaps_16.png"),
 
-	UPDATE_MAJOR_16("update_major_16.png"),
+	UP_16("up_16.png"),
 
-	UPDATE_MAJOR_DIS_16("update_major_dis_16.png"),
+	UP_DIS_16("up_dis_16.png"),
 
-	UPDATE_MINOR_16("update_minor_16.png"),
+	UP_DOUBLE_16("up_double_16.png"),
 
-	UPDATE_MINOR_DIS_16("update_minor_dis_16.png"),
+	UP_DOUBLE_DIS_16("up_double_dis_16.png"),
 
 	UNIT_GROUP_CATEGORY_ICON("folder_unit.png"),
 
