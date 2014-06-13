@@ -12,6 +12,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.openlca.app.Config;
 import org.openlca.app.html.HtmlPage;
 import org.openlca.app.html.HtmlView;
 import org.openlca.app.html.IHtmlResource;
@@ -72,10 +73,17 @@ public class StartPage extends FormEditor {
 		public void onLoaded() {
 			new ImportDatabaseCallback(browser);
 			new OpenUrlCallback(browser);
+			String version = "Version " + Config.VERSION + " for "
+					+ getSystemInfo();
+			String json = "{'version' : '" + version + "' }";
+			String command = "setData(" + json + ")";
+			try {
+				browser.evaluate(command);
+			} catch (Exception e) {
+				log.error("failed to set report data to browser", e);
+			}
 			// TODO: set translation + version text
 			// System.out.println(Messages.asJson());
-			// System.out.println("Version " + Config.VERSION + " for "
-			// + getSystemInfo());
 		}
 
 		@Override
@@ -87,8 +95,7 @@ public class StartPage extends FormEditor {
 		}
 
 		private String getSystemInfo() {
-			return OS.getCurrent()
-					+ " (" + System.getProperty("os.arch") + ")";
+			return OS.getCurrent() + " (" + System.getProperty("os.arch") + ")";
 		}
 
 	}

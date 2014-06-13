@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="StartPage" id="ng-app">
   <head>
     <meta content="text/html; charset=utf-8" http-equiv="content-type">
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
@@ -7,7 +7,7 @@
     <link href="../libs/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
     <style type="text/css">
         body {
-            min-width: 800px;
+            min-width: 850px;
         }
         .well {            
             background-color: #FFF;
@@ -25,7 +25,12 @@
             width:225px;
         }
 		h1 {
-			margin-bottom: 40px;
+			padding-bottom: 0;
+			margin-bottom: 0;
+		}
+		.subtitle {
+        	color: #888;
+			font-size: 20px;
 		}
         h3 {
         	color: #00B0F0;
@@ -36,6 +41,8 @@
         .description {
         	color: #888;
 			font-size: 16px;
+            margin: 0;
+            padding: 0;
         }
         .btn {
             vertical-align: inherit;
@@ -44,10 +51,28 @@
 			color: #00B0F0;
             background-color: transparent;
 			border: none;
-			padding: 5px;
+			padding: 5px 0px 5px 0px;
+            margin: 0;
 		}
+        a.btn-default:hover {
+			color: #00B0F0;
+		}
+		.page-header a.btn-default {
+            padding: 0;
+		}
+		.page-header a.btn-default:hover {
+			color: #00B0F0;
+            background: transparent;
+		}
+        .page-header a.subtle-link {
+            cursor: pointer;
+            color: #888;
+            text-decoration: none;
+        }
 		tr {
-		  width: 100%;
+			width: 100%;
+			padding: 0;
+			margin: 0;
 		}
 		#navigation-section td {
 			min-width: 50% !important;
@@ -56,7 +81,7 @@
 		}
 		.page-header {
             margin: 0 !important;
-            padding: 20px 20px 0 20px;
+            padding: 20px 20px 10px 20px;
             background-color: #F0F0F0;
             border-bottom: 1px solid #D4D4D4;
             box-shadow: 0px -1px 0px rgba(0, 0, 0, 0.1) inset, 0px 1px 10px rgba(0, 0, 0, 0.1);
@@ -67,17 +92,22 @@
         }
         #logo {
             float: left;
-            margin-right: 20px;
+            margin: 0 20px 0 0;
         }
         #logo-cell {
             width: 200px;
-            vertical-align: bottom;
+            vertical-align: middle;
+            padding: 0 0 20px 0;
+        }
+        #logo-cell img {
+        	float: left;
+        	cursor: pointer;
         }
         #gd-logo {
             float: right;
             width: 170px;
             height: 24px;
-            margin-left: 20px;
+            margin: 10px 10px 0 20px;
             background: url('../images/gd_transparent_inactive.png');
         }
         #gd-logo:hover {
@@ -86,150 +116,140 @@
         }
     </style>
   </head>
-  <body style="color: black; background-color: white;" alink="#000099" link="#000099"
-    vlink="#990099">
-    <div class="page-header">
-      <table style="width: 100%;" border="0">
-        <tbody>
-          <tr>
-            <td>
-                <h1><span style="color: rgb(0, 0, 0);"><img id="logo" src="../images/logo.png" />Welcome
-                  to openLCA!</span><span class="description"><br/></span><small>Version 1.4 for Windows 64
-                  bit.</small></h1>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <p class="description">openLCA is a high performance Life Cycle
-                Assessment (LCA) and sustainability assessment software.</p>
-              <p class="description">Truly open source. Simply free, as in “free
-                beer”. Created and maintained since 2006 by GreenDelta, Berlin,
-                www.greendelta.com. </p>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <div id="gd-logo"></div>
-              <p class="description">openLCA is licensed under the Mozilla Public License, 1.1 (<a href="http://www.openlca.org/performance"
-                    target="blank" class="btn btn-default">what does this mean#?</a>).</p></td>                  
-            </td>
-          </tr>
-        </tbody>
-      </table></div>
-    <div id="navigation-section" class="container-fluid" style="margin: 20px;">
-      <table style="background-color: rgb(255, 255, 255);">
-        <tbody>
-          <tr>
-            <td>
-              <h3><img src="../images/news.gif"
-                  alt="">What's new</h3>
-              <p>For the 1.4 version, we completely redesigned and “renovated”
-                openLCA. Results are</p>
-              <ul>
-                <li>a <b>drastically improved performance</b> of about 400% (<a
-                    href="http://www.openlca.org/performance" target="blank" class="btn btn-default">Performance
-                    Test</a>)</li>
-                <li><b>numerous usability improvements</b> a more comprehensive
-                  list is available,<a href="http://www.openlca.org/performance"
-                    target="blank" class="btn btn-default">here</a></li>
-                <li><b>many new features</b> a more comprehensive list is
-                  provided here,<a href="http://www.openlca.org/performance" target="blank"
-                    class="btn btn-default">here</a></li>
-              </ul>
-            </td>
-            <td>
-              <h3><img src="../images/getting-started.gif"
-                  alt="">Getting started</h3>
-              <p>When you start openLCA the first time, it does not contain any
-                data. With the new version of openLCA, it is really easy to get
-                started. You can just import a database from an existing
-                zolca-file and open it from the navigation on the left side.
-                Then open the database with a simple double click.</p>
-              <p>This is explained in a video,<a href="http://www.openlca.org/performance"
-                  target="blank" class="btn btn-default">here</a></p>
-              <p>And in the wiki,<a href="http://www.openlca.org/performance" target="blank"
-                  class="btn btn-default">here</a></p>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <h3><img style="width: 61px; height: 54px;" src="../images/search.gif"
-                  alt="">Searching and downloading data</h3>
-              <p>A broad range of LCA databases are available in openLCA nexus,
-                where you can search for single data sets and also for complete
-                databases, and download them into openLCA. The databases are all
-                fit for openLCA, several databases can be combined.</p>
-              <p>This is also explained in a<a href="http://www.openlca.org/performance"
-                  target="blank" class="btn btn-default">video</a><br>
-                And in the<a href="http://www.openlca.org/performance" target="blank"
-                  class="btn btn-default">wiki</a><br>
-                Go to <a href="http://www.openlca.org/performance" target="blank"
-                  class="btn btn-default">openLCA nexus</a><br>
-                LCIA method packs are available from the openLCA<a href="http://www.openlca.org/performance"
-                  target="blank" class="btn btn-default">download page</a></p>
-            </td>
-            <td>
-              <h3><img src="../images/documentation.gif"
-                  alt="">Documentation</h3>
-              <p>The online wiki for openLCA provides details about almost all
-                features of openLCA; it is changing over time so check back from
-                time to time.</p>
-              <p>We have also written more comprehensive documents, a short
-                introductory text, and a more extensive document. Both are
-                available online,<a href="http://www.openlca.org/performance" target="blank"
-                  class="btn btn-default">here</a></p>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <h3><img src="../images/examples.gif"
-                  alt="">Examples</h3>
-              <p>Here are cases that demonstrate how to use openLCA:</p>
-              <p><a href="http://www.openlca.org/performance" target="blank" class="btn btn-default">Cases
-                  for the 1.3.4 version</a></p>
-              <p><a href="http://www.openlca.org/performance" target="blank" class="btn btn-default">Cases for the 1.4 version:</a> Combining GaBi and ecoinvent databases in a case for
-                  lamps</p>
-            </td>
-            <td>
-              <h3><img src="../images/community.gif"
-                  alt="">Community</h3>
-              <p>An increasing number of people are using openLCA. Register (on
-                the download page or in the forum) and participate in the forum,<a
-                  href="http://www.openlca.org/performance" target="blank" class="btn btn-default">here</a>,
-                to share your thoughts, ask questions, read answers...</p>
-            </td>
-          </tr>
+  <body>
+	<div id="contentDiv" data-ng-controller="Controller">
+	    <div class="page-header">
+	      <table style="width: 100%;" border="0">
+	        <tbody>
+	          <tr>
+	            <td id="logo-cell">
+	                <img id="logo" src="../images/logo.png" onclick="callOpenUrl('http://www.openlca.org')" />
+	                <h1>Welcome to openLCA!</h1>
+	                <span class="subtitle">{{data.version}}</span>
+	            </td>
+	          </tr>
+	          <tr>
+	            <td>
+	              <p class="description">High performance Life Cycle Assessment (LCA) and sustainability assessment software. Truly open source.</p>
+	              <p class="description">Available for free. Created and maintained since 2006 by GreenDelta, Berlin. <a onclick="callOpenUrl('www.openlca.org/open-source')" class="subtle-link" target="blank" class="btn btn-default">www.greendelta.com</a></p>
+	            </td>
+	          </tr>
+	          <tr>
+	            <td>
+	              <div id="gd-logo"></div>
+	              <p class="description">Licensed under the Mozilla Public License (<a onclick="callOpenUrl('www.openlca.org/open-source')" target="blank" class="btn btn-default">what does this mean?</a>).</p></td>                  
+	            </td>
+	          </tr>
+	        </tbody>
+	      </table>
+	    </div>
+	    <div id="navigation-section" class="container-fluid" style="margin: 20px;">
+	      <table style="background-color: rgb(255, 255, 255);">
+	        <tbody>
+	          <tr>
+	            <td>
+	              <h3><img src="../images/news.gif"
+	                  alt="">What's new</h3>
+	              <p>For the 1.4 version, we completely redesigned and “renovated”
+	                openLCA. Results are</p>
+	              <ul>
+	                <li><b>drastically</b> <a onclick="callOpenUrl('http://www.openlca.org/performance')" target="blank" class="btn btn-default"><b>improved performance</b></a> of about 400%</li>
+	                <li><b>numerous</b> <a onclick="callOpenUrl('http://www.openlca.org/performance')" href="http://www.openlca.org/features#usability" target="blank" class="btn btn-default"><b>usability improvements</b></a></li>
+	                <li><b>many</b> <a onclick="callOpenUrl('http://www.openlca.org/performance')" href="http://www.openlca.org/features#overview1.4" target="blank" class="btn btn-default"><b>new features</b></a></li>
+	              </ul>
+	            </td>
+	            <td>
+	              <h3><img src="../images/getting-started.gif"
+	                  alt="">Getting started</h3>
+	              <p>When you start openLCA the first time, it does not contain any
+	                data. With the new version of openLCA, it is really easy to get
+	                started. You can just import a database from an existing
+	                zolca-file and open it from the navigation on the left side.
+	                Then open the database with a simple double click.</p>
+	              <p>This is explained in a video, <a onclick="callOpenUrl('http://www.openlca.org/videos#start')"
+	                  target="blank" class="btn btn-default">here</a></p>
+	            </td>
+	          </tr>
+	          <tr>
+	            <td>
+	              <h3><img style="width: 61px; height: 54px;" src="../images/search.gif"
+	                  alt="">Searching for and downloading data</h3>
+	              <p>A broad range of LCA databases are available in <a onclick="callOpenUrl('https://nexus.openlca.org/). ')" target="blank"
+	                  class="btn btn-default">openLCA nexus</a>,
+	                where you can search for single data sets and also for complete
+	                databases, and download them into openLCA. The databases are all
+	                fit for openLCA, several databases can be combined.</p>
+	              <p>This is also explained in a <a onclick="callOpenUrl('http://www.openlca.org/videos#data')"
+	                  target="blank" class="btn btn-default">video</a><br>
+	                LCIA method packs are available from the openLCA <a onclick="callOpenUrl('http://www.openlca.org/downloads')"
+	                  target="blank" class="btn btn-default">download page</a></p>
+	            </td>
+	            <td>
+	              <h3><img src="../images/documentation.gif"
+	                  alt="">User Manuals</h3>
+	              <p>The online wiki for openLCA provides details about almost all
+	                features of openLCA. It is changing over time so check back from
+	                time to time.</p>
+	              <p>New introductory and comprehensive <a onclick="callOpenUrl('http://www.openlca.org/manuals')" target="blank"
+	                  class="btn btn-default">manuals</a> are also available online.</p>
+	            </td>
+	          </tr>
+	          <tr>
+	            <td>
+	              <h3><img src="../images/examples.gif"
+	                  alt="">Examples</h3>
+	              <p>Here are cases that demonstrate how to use openLCA:</p>
+	              <p><a onclick="callOpenUrl('http://www.openlca.org/case_studies#1_3')" target="blank" class="btn btn-default">Cases
+	                  for the 1.3 version</a></p>
+	              <p><a onclick="callOpenUrl('http://www.openlca.org/case_studies#1_4')" target="blank" class="btn btn-default">Cases for the 1.4 version</a></p>
+	            </td>
+	            <td>
+	              <h3><img src="../images/community.gif"
+	                  alt="">Community</h3>
+	              <p>An increasing number of people are using openLCA. Register in the <a
+	                  onclick="callOpenUrl('http://www.openlca.org/forum')" target="blank" class="btn btn-default">forum</a> to share your thoughts, ask questions, read answers and participate in the community.</p>
+	            </td>
+	          </tr>
+		        </tbody>
+		      </table>
+		    </div>
+		</div>
 
-    <script src="../libs/jquery.min_1.9.0.js"></script>
-
-    <script type="text/javascript">
-        $(document).ready(function() {
-            $('#gd-logo').on('click', function() {
-                window.open('http://www.greendelta.com', '_blank');
+        <script src="../libs/jquery.min_1.9.0.js"></script>
+        <script src="../libs/angular.min.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $('#gd-logo').on('click', function() {
+                    window.open('http://www.greendelta.com', '_blank');
+                });
             });
-        });
 
-        // the functions openUrl and importDatabase should be registered by the 
-        // host editor in openLCA
+            var app = angular.module('StartPage', []);
 
-        function callOpenUrl(url) {
-            if(typeof(openUrl) == "function") {
-                openUrl(url);
-            } else if (typeof(console) != "undefined") {
-                console.log("could not open " + url + "; openUrl is not a function");
+            var Controller = function ($scope) {
+                $scope.data = {};
+            	//setData({'version' : '1.4' });
+            };
+	        app.controller('Controller', Controller);
+
+           function setData(data) {
+                var element = document.getElementById("contentDiv");
+                var scope = angular.element(element).scope();
+                scope.$apply(function () {
+                    scope.data = data;
+                });
             }
-        }
-        
-        function callImportDatabase() {
-            if(typeof(importDatabase) == "function") {
-                importDatabase();
-            } else if (typeof(console) != "undefined") {
-                console.log("importDatabase is not a function");
+
+            // the functions openUrl and importDatabase should be registered by the 
+            // host editor in openLCA
+
+            function callOpenUrl(url) {
+                if(typeof(openUrl) == "function") {
+                    openUrl(url);
+                } else if (typeof(console) != "undefined") {
+                    console.log("could not open " + url + "; openUrl is not a function");
+                }
             }
-        }
-    </script>
-        </tbody>
-      </table>
-    </div>
+       </script>
   </body>
 </html>
