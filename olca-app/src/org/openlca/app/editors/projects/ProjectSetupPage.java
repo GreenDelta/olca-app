@@ -150,7 +150,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 		button.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				Reports.createAndOpen(project);
+				Reports.createOrOpen(project);
 			}
 		});
 	}

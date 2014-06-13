@@ -1,6 +1,16 @@
 package org.openlca.app;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
 import org.eclipse.osgi.util.NLS;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
 
 public class Messages extends NLS {
 
@@ -616,10 +626,44 @@ public class Messages extends NLS {
 	public static String Year;
 	public static String ZipCode;
 
+	private static Map<String, String> map;
+
 	static {
 		NLS.initializeMessages("org.openlca.app.messages", Messages.class);
 	}
 
 	private Messages() {
+	}
+
+	public static Map<String, String> getMap() {
+		if (map == null)
+			map = new HashMap<>();
+		try {
+			for (Field field : Messages.class.getDeclaredFields()) {
+				if (!Objects.equals(field.getType(), String.class))
+					continue;
+				if (!Modifier.isStatic(field.getModifiers()))
+					continue;
+				if (!Modifier.isPublic(field.getModifiers()))
+					continue;
+				String val = (String) field.get(null);
+				map.put(field.getName(), val);
+			}
+		} catch (Exception e) {
+			Logger log = LoggerFactory.getLogger(Messages.class);
+			log.error("failed to get messages as map", e);
+		}
+		return map;
+	}
+
+	public static String asJson() {
+		try {
+			Gson gson = new Gson();
+			return gson.toJson(getMap());
+		} catch (Exception e) {
+			Logger log = LoggerFactory.getLogger(Messages.class);
+			log.error("failed to get messages as JSON string", e);
+			return "{}";
+		}
 	}
 }

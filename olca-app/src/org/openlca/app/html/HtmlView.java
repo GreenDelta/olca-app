@@ -26,6 +26,8 @@ public enum HtmlView {
 
 	RESULT_LOCALISED_LCIA("result_localised_lcia.html", Resource.OLCA_CHARTS_JS),
 
+	START_PAGE("start_page.html"),
+
 	SUNBURST_CHART("sunburst_chart.html"),
 
 	TREEMAP("treemap.html"),

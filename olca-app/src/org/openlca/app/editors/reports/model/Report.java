@@ -3,12 +3,12 @@ package org.openlca.app.editors.reports.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openlca.core.model.Project;
+import org.openlca.core.model.descriptors.ProjectDescriptor;
 
 public class Report {
 
 	private String title;
-	private transient Project project;
+	private ProjectDescriptor project;
 	private List<ReportSection> sections = new ArrayList<>();
 	private List<ReportParameter> parameters = new ArrayList<>();
 	private List<ReportVariant> variants = new ArrayList<>();
@@ -22,12 +22,12 @@ public class Report {
 		this.title = title;
 	}
 
-	public void setProject(Project project) {
-		this.project = project;
+	public ProjectDescriptor getProject() {
+		return project;
 	}
 
-	public Project getProject() {
-		return project;
+	public void setProject(ProjectDescriptor project) {
+		this.project = project;
 	}
 
 	public List<ReportSection> getSections() {
