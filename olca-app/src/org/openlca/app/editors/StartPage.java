@@ -74,7 +74,7 @@ public class StartPage extends FormEditor {
 			new ImportDatabaseCallback(browser);
 			new OpenUrlCallback(browser);
 			String version = "Version " + Config.VERSION + " for "
-					+ getSystemInfo();
+					+ OS.getCurrent() + " (" + getArch() + ")";
 			String json = "{'version' : '" + version + "' }";
 			String command = "setData(" + json + ")";
 			try {
@@ -94,8 +94,20 @@ public class StartPage extends FormEditor {
 			browser = UI.createBrowser(composite, this);
 		}
 
-		private String getSystemInfo() {
-			return OS.getCurrent() + " (" + System.getProperty("os.arch") + ")";
+		private String getArch() {
+			String osarch = System.getProperty("os.arch");
+			if (osarch == null)
+				return "";
+			switch (osarch) {
+			case "amd64":
+				return "64 bit";
+			case "x86":
+				return "32 bit";
+			case "i386":
+				return "32 bit";
+			default:
+				return osarch;
+			}
 		}
 
 	}
