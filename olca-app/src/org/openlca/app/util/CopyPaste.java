@@ -51,7 +51,7 @@ public class CopyPaste {
 
 	public static void copy(INavigationElement<?>[] elements) {
 		if (!isSupported(elements))
-			throw new IllegalArgumentException("Elements not supported");
+			return;
 		initialize(Action.COPY, elements);
 	}
 
@@ -63,11 +63,15 @@ public class CopyPaste {
 		cut(elements.toArray(new INavigationElement<?>[elements.size()]));
 	}
 
-	public static void cut(INavigationElement<?>[] elements) {
+	private static void cut(INavigationElement<?>[] elements) {
 		if (!isSupported(elements))
-			throw new IllegalArgumentException("Elements not supported");
+			return;
 		initialize(Action.CUT, elements);
-		cut();
+		for (INavigationElement<?> element : cache) {
+			element.getParent().getChildren().remove(element);
+			Navigator.getInstance().getCommonViewer()
+					.refresh(element.getParent());
+		}
 	}
 
 	public static boolean isSupported(INavigationElement<?> element) {
@@ -89,7 +93,6 @@ public class CopyPaste {
 		for (INavigationElement<?> element : elements) {
 			if (!isSupported(element))
 				return false;
-
 			ModelType currentModelType = getModelType(element);
 			if (modelType == null)
 				modelType = currentModelType;
@@ -111,18 +114,28 @@ public class CopyPaste {
 
 	private static void initialize(Action action,
 			INavigationElement<?>[] elements) {
+		if (action == Action.CUT && currentAction == Action.CUT) {
+			extendCache(elements);
+			return;
+		}
 		if (currentAction == Action.CUT)
 			restore();
 		cache = elements;
 		currentAction = action;
 	}
 
-	private static void cut() {
-		for (INavigationElement<?> element : cache) {
-			element.getParent().getChildren().remove(element);
-			Navigator.getInstance().getCommonViewer()
-					.refresh(element.getParent());
+	private static void extendCache(INavigationElement<?>[] elements) {
+		if (elements == null || elements.length == 0)
+			return;
+		if (cacheIsEmpty()) {
+			cache = elements;
+			return;
 		}
+		INavigationElement<?>[] newCache = new INavigationElement<?>[cache.length
+				+ elements.length];
+		System.arraycopy(cache, 0, newCache, 0, cache.length);
+		System.arraycopy(elements, 0, newCache, cache.length, elements.length);
+		cache = newCache;
 	}
 
 	private static void restore() {
