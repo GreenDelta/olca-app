@@ -12,7 +12,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.Messages;
 import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.resources.ImageType;
-import org.openlca.app.util.Numbers;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.table.AbstractTableViewer;
@@ -144,7 +143,7 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 			case 0:
 				return factor.getFlowProperty().getName();
 			case 1:
-				return Numbers.format(factor.getConversionFactor());
+				return Double.toString(factor.getConversionFactor());
 			case 2:
 				return factor.getFlowProperty().getUnitGroup()
 						.getReferenceUnit().getName();
@@ -162,9 +161,9 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 					.getReferenceUnit().getName();
 			String unit = factor.getFlowProperty().getUnitGroup()
 					.getReferenceUnit().getName();
-			return "1.0 " + unit + " = "
-					+ Numbers.format(factor.getConversionFactor()) + " "
-					+ refUnit;
+			return "1.0 " + refUnit + " = "
+					+ Double.toString(factor.getConversionFactor()) + " "
+					+ unit;
 		}
 
 		@Override
