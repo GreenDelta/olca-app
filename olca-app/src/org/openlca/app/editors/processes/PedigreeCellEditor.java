@@ -10,7 +10,6 @@ import org.openlca.core.model.Exchange;
 class PedigreeCellEditor extends DialogCellEditor {
 
 	private ProcessEditor editor;
-	private TableViewer viewer;
 	private Exchange exchange;
 	private String oldEntryVal;
 	private Double oldBaseVal;
@@ -35,15 +34,15 @@ class PedigreeCellEditor extends DialogCellEditor {
 	}
 
 	@Override
-	protected Object openDialogBox(Control cellEditorWindow) {
-		PedigreeShell shell = new PedigreeShell(cellEditorWindow.getShell(),
-				exchange);
+	protected Object openDialogBox(Control control) {
+		PedigreeShell shell = new PedigreeShell(control.getShell(), exchange);
+		shell.addDisposeListener((e) -> {
+			if (valuesChanged()) {
+				updateContents(exchange.getPedigreeUncertainty());
+				editor.setDirty(true);
+			}
+		});
 		shell.open();
-		if (valuesChanged()) {
-			updateContents(exchange.getPedigreeUncertainty());
-			editor.setDirty(true);
-			return exchange;
-		}
 		return null;
 	}
 
