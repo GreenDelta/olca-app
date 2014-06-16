@@ -87,14 +87,14 @@ public class FlowImpactSelection {
 	}
 
 	private void render(Composite parent, FormToolkit toolkit) {
-		if (flows != null && !flows.isEmpty())
-			initFlowCheckViewer(toolkit, parent);
-		if (impacts != null && !impacts.isEmpty())
-			initImpactCheckViewer(toolkit, parent);
 		if (initialSelection instanceof ImpactCategoryDescriptor)
 			resultType = IMPACT;
 		else
 			resultType = FLOW;
+		if (flows != null && !flows.isEmpty())
+			initFlowCheckViewer(toolkit, parent);
+		if (impacts != null && !impacts.isEmpty())
+			initImpactCheckViewer(toolkit, parent);
 	}
 
 	private void initFlowCheckViewer(FormToolkit toolkit, Composite section) {
@@ -156,7 +156,7 @@ public class FlowImpactSelection {
 		private int type;
 
 		public ResultTypeCheck(AbstractComboViewer<?> viewer, Button check,
-		                       int type) {
+				int type) {
 			this.viewer = viewer;
 			this.check = check;
 			this.type = type;
