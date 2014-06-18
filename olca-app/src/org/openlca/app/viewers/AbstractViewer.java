@@ -32,6 +32,10 @@ public abstract class AbstractViewer<T, V extends StructuredViewer> implements
 	protected V getViewer() {
 		return viewer;
 	}
+	
+	public void refresh() {
+		viewer.refresh();
+	}
 
 	public void addSelectionChangedListener(
 			ISelectionChangedListener<T> listener) {
