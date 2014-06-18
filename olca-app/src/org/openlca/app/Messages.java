@@ -270,6 +270,9 @@ public class Messages extends NLS {
 	public static String Location;
 	public static String LocationInfoSectionLabel;
 	public static String Locations;
+	public static String LocationTypeGlobal;
+	public static String LocationTypeProcess;
+	public static String LocationTypeReference;
 	public static String LogNormalDistribution;
 	public static String Longitude;
 	public static String Map;

@@ -11,6 +11,7 @@ import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyType;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Location;
+import org.openlca.core.model.LocationType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.RootEntity;
@@ -228,4 +229,24 @@ public class Labels {
 		}
 	}
 
+	public static String locationType(Location location) {
+		if (location == null)
+			return null;
+		return locationType(location.getType());
+	}
+
+	public static String locationType(LocationType type) {
+		if (type == null)
+			return null;
+		switch (type) {
+		case GLOBAL:
+			return Messages.LocationTypeGlobal;
+		case PROCESS_SPECIFIC:
+			return Messages.LocationTypeProcess;
+		case REFERENCE_DATA:
+			return Messages.LocationTypeReference;
+		default:
+			return null;
+		}
+	}
 }
