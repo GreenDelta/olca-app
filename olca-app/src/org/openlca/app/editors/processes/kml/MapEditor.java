@@ -19,15 +19,17 @@ public class MapEditor implements HtmlPage {
 
 	private final Shell shell;
 	private final Browser browser;
+	private String name;
 	private String kml;
 	private EditorHandler handler;
 
-	public static void open(String kml, EditorHandler handler) {
-		MapEditor editor = new MapEditor(kml, handler);
+	public static void open(String name, String kml, EditorHandler handler) {
+		MapEditor editor = new MapEditor(name, kml, handler);
 		editor.openShell();
 	}
 
-	private MapEditor(String kml, EditorHandler handler) {
+	private MapEditor(String name, String kml, EditorHandler handler) {
+		this.name = name;
 		this.kml = kml;
 		this.handler = handler;
 		Shell parent = UI.shell();
@@ -54,9 +56,11 @@ public class MapEditor implements HtmlPage {
 		registerSaveFunction();
 		if (kml == null)
 			return;
-		String call = "setKML('" + kml + "')";
+		String setKml = "setKML('" + kml + "')";
+		String setName = "setName('" + name + "')";
 		try {
-			browser.evaluate(call);
+			browser.evaluate(setKml);
+			browser.evaluate(setName);
 		} catch (Exception e) {
 			log.error("failed to set KML data", e);
 		}
@@ -66,14 +70,24 @@ public class MapEditor implements HtmlPage {
 		new BrowserFunction(browser, "doSave") {
 			@Override
 			public Object function(Object[] args) {
-				if (args == null || args.length == 0 || args[0] == null) {
+				String name = getArg(args, 0);
+				String kml = getArg(args, 1);
+				Boolean overwrite = getArg(args, 2);
+				if (name == null || kml == null || overwrite == null) {
 					kml = null;
 					return null;
 				}
 				if (handler != null)
-					handler.contentSaved(args[0].toString());
+					handler.contentSaved(name, kml, overwrite);
 				return null;
 			}
 		};
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T> T getArg(Object[] args, int index) {
+		if (args.length <= index)
+			return null;
+		return (T) args[index];
 	}
 }

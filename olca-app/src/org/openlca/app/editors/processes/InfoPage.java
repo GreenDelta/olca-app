@@ -26,6 +26,8 @@ import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.ExchangeViewer;
 import org.openlca.app.viewers.combo.LocationViewer;
+import org.openlca.core.database.LocationDao;
+import org.openlca.core.model.Location;
 import org.openlca.core.model.Process;
 
 import com.google.common.eventbus.Subscribe;
@@ -37,6 +39,7 @@ class InfoPage extends ModelPage<Process> {
 	private ImageHyperlink kmlLink;
 	private ScrolledForm form;
 	private ExchangeViewer quanRefViewer;
+	private LocationViewer locationViewer;
 
 	InfoPage(ProcessEditor editor) {
 		super(editor, "ProcessInfoPage", Messages.GeneralInformation);
@@ -117,11 +120,11 @@ class InfoPage extends ModelPage<Process> {
 		Composite composite = UI.formSection(body, toolkit,
 				Messages.GeographyInfoSectionLabel);
 		toolkit.createLabel(composite, Messages.Location);
-		LocationViewer viewer = new LocationViewer(composite);
-		viewer.setNullable(true);
-		viewer.setInput(Database.get());
-		getBinding().onModel(() -> getModel(), "location", viewer);
-		viewer.addSelectionChangedListener((s) -> kmlLink
+		locationViewer = new LocationViewer(composite);
+		locationViewer.setNullable(true);
+		locationViewer.setInput(Database.get());
+		getBinding().onModel(() -> getModel(), "location", locationViewer);
+		locationViewer.addSelectionChangedListener((s) -> kmlLink
 				.setText(getKmlDisplayText()));
 		createKmlSection(composite);
 		createMultiText(Messages.Description, "documentation.geography",
@@ -157,32 +160,38 @@ class InfoPage extends ModelPage<Process> {
 	private String getKmlDisplayText() {
 		Process process = getModel();
 		if (process.getLocation() != null)
-			return KmlUtil.getDisplayText(process.getLocation().getKmz())
-					+ " (location)";
-		else
-			return "none";
+			if (process.getLocation().getKmz() != null)
+				return KmlUtil.getDisplayText(process.getLocation().getKmz());
+		return "none";
 	}
 
 	private void openMap(EditorHandler handler) {
+		String name = getName();
 		String kml = getKml();
-		if (kml != null) {
+		if (kml != null)
 			// prepare the KML for the map so that no syntax errors are thrown
 			kml = kml.trim().replace("\n", "").replace("\r", "");
-		}
-		MapEditor.open(kml, handler);
-
+		MapEditor.open(name, kml, handler);
 	}
 
 	private String getKml() {
 		Process process = getModel();
 		if (process.getLocation() != null)
-			return KmlUtil.toKml(process.getLocation().getKmz());
-		else
-			return null;
+			if (process.getLocation().getKmz() != null)
+				return KmlUtil.toKml(process.getLocation().getKmz());
+		return null;
+	}
+
+	private String getName() {
+		if (getModel().getLocation() == null)
+			return "";
+		return getModel().getLocation().getName();
 	}
 
 	private class MapEditorDispatch extends HyperlinkAdapter implements
 			SelectionListener, EditorHandler {
+
+		private LocationDao locationDao = new LocationDao(Database.get());
 
 		public void widgetDefaultSelected(SelectionEvent e) {
 			openMap(this);
@@ -199,12 +208,42 @@ class InfoPage extends ModelPage<Process> {
 		}
 
 		@Override
-		public void contentSaved(String kml) {
+		public void contentSaved(String name, String kml, boolean overwrite) {
 			Process process = getModel();
-			// TODO create new location and set in process
+			Location location = null;
+			if (overwrite)
+				location = updateLocation(process.getLocation(), name, kml);
+			else
+				location = createLocation(name, kml);
+			locationViewer.setInput(Database.get());
+			locationViewer.select(location);
 			getEditor().setDirty(true);
 			kmlLink.setText(getKmlDisplayText());
 		}
+
+		private Location updateLocation(Location location, String name,
+				String kml) {
+			if (location == null)
+				return null;
+			location.setName(name);
+			if (kml != null)
+				location.setKmz(KmlUtil.toKmz(kml));
+			else
+				location.setKmz(null);
+			locationDao.update(location);
+			return location;
+		}
+
+		private Location createLocation(String name, String kml) {
+			Location location = new Location();
+			location.setName(name);
+			if (kml != null)
+				location.setKmz(KmlUtil.toKmz(kml));
+			else
+				location.setKmz(null);
+			return locationDao.insert(location);
+		}
+
 	}
 
 }
