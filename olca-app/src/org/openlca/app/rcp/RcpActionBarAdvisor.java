@@ -18,11 +18,16 @@ import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 import org.openlca.app.Config;
 import org.openlca.app.Messages;
+import org.openlca.app.db.Database;
 import org.openlca.app.db.sql.SqlEditor;
 import org.openlca.app.editors.StartPage;
+import org.openlca.app.editors.locations.LocationsEditor;
 import org.openlca.app.rcp.plugins.PluginManagerDialog;
 import org.openlca.app.resources.ImageType;
+import org.openlca.app.util.DefaultInput;
 import org.openlca.app.util.Desktop;
+import org.openlca.app.util.Editors;
+import org.openlca.app.util.Error;
 import org.openlca.app.util.UI;
 
 public class RcpActionBarAdvisor extends ActionBarAdvisor {
@@ -32,7 +37,6 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	private IWorkbenchAction closeAllAction;
 	private IWorkbenchAction exitAction;
 	private IWorkbenchAction exportAction;
-
 	private IWorkbenchAction importAction;
 	private IWorkbenchAction newEditorAction;
 	private IWorkbenchAction newWindowAction;
@@ -86,6 +90,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		fileMenu.add(closeAction);
 		fileMenu.add(closeAllAction);
 		fileMenu.add(new Separator());
+		fileMenu.add(new EditLocationsAction());
 		fileMenu.add(preferencesAction);
 		fileMenu.add(new Separator());
 		fileMenu.add(importAction);
@@ -177,6 +182,23 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		@Override
 		public void run() {
 			StartPage.open();
+		}
+	}
+
+	private class EditLocationsAction extends Action {
+		public EditLocationsAction() {
+			setText("Edit locations");
+			setToolTipText("Opens the locations editor");
+		}
+
+		@Override
+		public void run() {
+			if (Database.get() == null) {
+				Error.showBox("You need to activate a database first");
+				return;
+			}
+			Editors.open(new DefaultInput(LocationsEditor.ID),
+					LocationsEditor.ID);
 		}
 	}
 }

@@ -161,6 +161,12 @@
             icon="icons/search_obj.png"
             default="false"
             name="Search result view">
+      </editor>
+      <editor
+            class="org.openlca.app.editors.locations.LocationsEditor"
+            default="false"
+            id="editors.locations"
+            name="Locations editor">
       </editor>    
    </extension>
    
@@ -253,11 +259,6 @@
    
    <extension
          point="org.eclipse.ui.preferencePages">
-	  <page
-            class="org.openlca.app.preferencepages.LocationPreferencePage"
-            id="preferencepages.location"
-            name="%page.name.2">
-      </page>
       <page
             class="org.openlca.app.preferencepages.DatabaseParameterPage"
             id="preferencepages.parameters"

@@ -19,18 +19,28 @@ public class MapEditor implements HtmlPage {
 
 	private final Shell shell;
 	private final Browser browser;
-	private String name;
 	private String kml;
 	private EditorHandler handler;
+	private boolean editOnly;
 
 	public static void open(String name, String kml, EditorHandler handler) {
-		MapEditor editor = new MapEditor(name, kml, handler);
+		MapEditor editor = new MapEditor(name, kml, false, handler);
 		editor.openShell();
 	}
 
-	private MapEditor(String name, String kml, EditorHandler handler) {
-		this.name = name;
+	/**
+	 * Opens the map editor. Only the update button is available. 'Save as'
+	 * button and name input are not shown
+	 */
+	public static void openForEditingOnly(String kml, EditorHandler handler) {
+		MapEditor editor = new MapEditor(null, kml, true, handler);
+		editor.openShell();
+	}
+
+	private MapEditor(String name, String kml, boolean editOnly,
+			EditorHandler handler) {
 		this.kml = kml;
+		this.editOnly = editOnly;
 		this.handler = handler;
 		Shell parent = UI.shell();
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
@@ -45,6 +55,10 @@ public class MapEditor implements HtmlPage {
 	private void openShell() {
 		shell.open();
 	}
+	
+	public void close() {
+		shell.close();
+	}
 
 	@Override
 	public IHtmlResource getResource() {
@@ -54,13 +68,13 @@ public class MapEditor implements HtmlPage {
 	@Override
 	public void onLoaded() {
 		registerSaveFunction();
+		registerPrettifyFunction();
 		if (kml == null)
-			return;
-		String setKml = "setKML('" + kml + "')";
-		String setName = "setName('" + name + "')";
+			kml = "";
 		try {
-			browser.evaluate(setKml);
-			browser.evaluate(setName);
+			browser.evaluate("setKML('" + kml + "')");
+			if (editOnly)
+				browser.evaluate("setEditOnly()");
 		} catch (Exception e) {
 			log.error("failed to set KML data", e);
 		}
@@ -70,16 +84,26 @@ public class MapEditor implements HtmlPage {
 		new BrowserFunction(browser, "doSave") {
 			@Override
 			public Object function(Object[] args) {
-				String name = getArg(args, 0);
-				String kml = getArg(args, 1);
-				Boolean overwrite = getArg(args, 2);
-				if (name == null || kml == null || overwrite == null) {
-					kml = null;
+				if (handler == null)
 					return null;
-				}
-				if (handler != null)
-					handler.contentSaved(name, kml, overwrite);
+				String kml = getArg(args, 0);
+				Boolean overwrite = getArg(args, 1);
+				if (overwrite == null)
+					return null;
+				handler.contentSaved(MapEditor.this, kml, overwrite);
 				return null;
+			}
+		};
+	}
+
+	private void registerPrettifyFunction() {
+		new BrowserFunction(browser, "prettifyKML") {
+			@Override
+			public Object function(Object[] arguments) {
+				String kml = getArg(arguments, 0);
+				if (kml == null || kml.isEmpty())
+					return null;
+				return KmlUtil.prettyFormat(kml);
 			}
 		};
 	}

@@ -1,12 +1,20 @@
 package org.openlca.app.editors.processes;
 
+import java.util.UUID;
+
+import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
@@ -21,7 +29,6 @@ import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.processes.kml.EditorHandler;
 import org.openlca.app.editors.processes.kml.KmlUtil;
 import org.openlca.app.editors.processes.kml.MapEditor;
-import org.openlca.app.editors.processes.kml.TextEditor;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.ExchangeViewer;
@@ -146,15 +153,6 @@ class InfoPage extends ModelPage<Process> {
 				SWT.NONE);
 		mapButton.addSelectionListener(new MapEditorDispatch());
 		mapButton.setImage(ImageType.LCIA_ICON.get());
-		Button textButton = toolkit.createButton(composite, "Text editor",
-				SWT.NONE);
-		textButton.setImage(ImageType.FILE_MARKUP_SMALL.get());
-		textButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				TextEditor.open(getKml(), new MapEditorDispatch());
-			}
-		});
 	}
 
 	private String getKmlDisplayText() {
@@ -208,24 +206,28 @@ class InfoPage extends ModelPage<Process> {
 		}
 
 		@Override
-		public void contentSaved(String name, String kml, boolean overwrite) {
+		public void contentSaved(MapEditor mapEditor, String kml,
+				boolean overwrite) {
 			Process process = getModel();
 			Location location = null;
 			if (overwrite)
-				location = updateLocation(process.getLocation(), name, kml);
-			else
-				location = createLocation(name, kml);
+				location = updateLocation(process.getLocation(), kml);
+			else {
+				location = createLocation(kml);
+				if (location == null) // user aborted
+					return;
+			}
 			locationViewer.setInput(Database.get());
 			locationViewer.select(location);
-			getEditor().setDirty(true);
+			if (!overwrite)
+				getEditor().setDirty(true);
 			kmlLink.setText(getKmlDisplayText());
+			mapEditor.close();
 		}
 
-		private Location updateLocation(Location location, String name,
-				String kml) {
+		private Location updateLocation(Location location, String kml) {
 			if (location == null)
 				return null;
-			location.setName(name);
 			if (kml != null)
 				location.setKmz(KmlUtil.toKmz(kml));
 			else
@@ -234,14 +236,82 @@ class InfoPage extends ModelPage<Process> {
 			return location;
 		}
 
-		private Location createLocation(String name, String kml) {
+		private Location createLocation(String kml) {
 			Location location = new Location();
-			location.setName(name);
+			String[] nameAndCode = promptForNameAndCode();
+			if (nameAndCode == null) // user aborted dialog
+				return null;
+			location.setName(nameAndCode[0]);
+			location.setCode(nameAndCode[1]);
+			location.setRefId(UUID.randomUUID().toString());
 			if (kml != null)
 				location.setKmz(KmlUtil.toKmz(kml));
 			else
 				location.setKmz(null);
 			return locationDao.insert(location);
+		}
+
+		private String[] promptForNameAndCode() {
+			NameAndCodeDialog dialog = new NameAndCodeDialog();
+			if (dialog.open() == Dialog.CANCEL)
+				return null;
+			return new String[] { dialog.name, dialog.code };
+		}
+
+		private class NameAndCodeDialog extends Dialog {
+
+			private String name;
+			private String code;
+
+			private NameAndCodeDialog() {
+				super(UI.shell());
+			}
+
+			@Override
+			protected Control createDialogArea(Composite parent) {
+				Composite body = new Composite(parent, SWT.NONE);
+				UI.gridLayout(body, 1);
+				UI.gridData(body, true, true);
+				UI.formLabel(body,
+						"Please enter a name and the code of the new location");
+				Composite container = UI.formComposite(body);
+				UI.gridData(container, true, true);
+				final Text nameText = UI.formText(container, "Name");
+				nameText.addModifyListener(new ModifyListener() {
+
+					@Override
+					public void modifyText(ModifyEvent e) {
+						name = nameText.getText();
+						updateButtons();
+					}
+				});
+				final Text codeText = UI.formText(container, "Code");
+				codeText.addModifyListener(new ModifyListener() {
+
+					@Override
+					public void modifyText(ModifyEvent e) {
+						code = codeText.getText();
+						updateButtons();
+					}
+				});
+				return body;
+			}
+
+			private void updateButtons() {
+				getButton(IDialogConstants.OK_ID).setEnabled(isPageComplete());
+			}
+
+			private boolean isPageComplete() {
+				return name != null && !name.isEmpty();
+			}
+
+			@Override
+			protected Control createButtonBar(Composite parent) {
+				Control buttonBar = super.createButtonBar(parent);
+				updateButtons();
+				return buttonBar;
+			}
+
 		}
 
 	}

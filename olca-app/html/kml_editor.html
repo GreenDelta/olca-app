@@ -12,29 +12,44 @@
               margin: 0;
           }
           
-          #mapDiv {
+          #mapDiv, #textDiv {
             width: 100%;
-            height: 90%;
+            height: 80%;
             margin: 0;
           }
-          
+
+          #textDiv textarea {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+          }
+
           #nameText {
-            display: inline-block!important;
+            display: inline-block;
             width: auto!important;
           }
     </style>
 </head>
 
 <body>
-    <div id="mapDiv"></div>
-
+    <ul class="nav nav-tabs">
+      <li class="active">
+        <a href="#mapDiv" data-toggle="tab">Map</a>
+      </li>
+      <li>
+        <a href="#textDiv" data-toggle="tab">Text</a>
+      </li>
+    </ul>
+    <div class="tab-pane active" id="mapDiv"></div>
+    <div class="tab-pane" id="textDiv" style="display:none">
+      <textarea></textarea>
+    </div>      
     <div class="container-fluid" style="margin: 20px">
         <div class="row pull-right">
-          <input type="text" id="nameText" class="form-control" placeholder="Please enter a location name" size="40"></input>
-            <button class="btn btn-primary btn-save" onclick="onSave(false)">
+            <button id="saveAsButton" class="btn btn-primary btn-save" onclick="onSave(false)">
                 Save as new location
             </button>
-            <button class="btn btn-default btn-save" onclick="onSave(true)">
+            <button id="updateButton" class="btn btn-default btn-save" onclick="onSave(true)">
                 Update location <span id="locationName"></span>
             </button>
             <button class="btn btn-default" onclick="onDestroyFeatures()">
@@ -60,12 +75,22 @@
         
           $(document).ready(init());
           
+            function showTabContent(tab) {
+                var id = $(tab).attr("href");
+                $(".tab-pane").hide();
+                $(id).show();
+                if (id == "#textDiv") {
+                    $("#textDiv textarea").val(prettifyKML(getKML()));
+                } else if (id == "#mapDiv") {
+                    onDestroyFeatures()
+                    setKML($("#textDiv textarea").val())               
+                }
+            }
+
             function init() {
-              $('#nameText').on("change", function(e) {
-                  if ($(this).val())
-                    $('.btn-save').removeAttr('disabled')
-                  else
-                    $('.btn-save').attr('disabled', 'disabled')
+              $('.nav-tabs a').click(function (e) {
+                e.preventDefault()
+                showTabContent(this);
               });
               var mapLayer = new OpenLayers.Layer.OSM();
               editLayer = new OpenLayers.Layer.Vector( "Editable", {
@@ -134,20 +159,15 @@
                 showError("There are more than one features on the map but only one is allowed");
                 return;
               }
-              var name = getName();
               var kml = getKML();
                 if(typeof(doSave) == "function") {
-                    doSave(name, kml, overwrite);
+                    doSave(kml, overwrite);
                 } else {
                   showError("Save function not bound. KML test is: " + kml);
                   if (typeof(console) != "undefined") {
                       console.log(kml);
                   }
                 }
-            }
-            
-            function getName() {
-            return $('#nameText').val();    
             }
                           
             function getKML() {
@@ -161,29 +181,28 @@
             });
               return format.write(editLayer.features);
             }
-            
-            function setName(name) {
-              $('#nameText').val(name);           
-              if (name) {
-                $('#locationName').html("'"+name+"'");
-              } else {
-                $('.btn-save').attr('disabled', 'disabled')
-              }
-            }
+                        
+            function setEditOnly() {
+              $('#saveAsButton').hide();
+              $('#updateButton').addClass('btn-primary');
+            }            
             
             function setKML(kml) {
               var format = new OpenLayers.Format.KML({
                 'maxDepth':10,
                 'internalProjection': map.baseLayer.projection,
                 'externalProjection': new OpenLayers.Projection("EPSG:4326")
-            });
-            var features = format.read(kml);
-            editLayer.addFeatures(features);
-            editLayer.refresh({force:true});
-            map.zoomToExtent(editLayer.getDataExtent());            
+              });
+              if (kml) {
+                var features = format.read(kml);
+                editLayer.addFeatures(features);
+                editLayer.refresh({force:true});
+                map.zoomToExtent(editLayer.getDataExtent());            
+              }
             }
             
             
     </script>
+
 </body>
 </html>
