@@ -238,5 +238,11 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 				}
 			}
 		}
+
+		@Override
+		public boolean affectsOtherElements() {
+			return true;
+		}
+
 	}
 }

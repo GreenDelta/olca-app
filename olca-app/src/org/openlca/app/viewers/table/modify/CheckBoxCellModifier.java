@@ -1,6 +1,5 @@
 package org.openlca.app.viewers.table.modify;
 
-
 public abstract class CheckBoxCellModifier<T> implements ICellModifier<T> {
 
 	@Override
@@ -32,6 +31,11 @@ public abstract class CheckBoxCellModifier<T> implements ICellModifier<T> {
 	public void modify(T element, Object value) {
 		if (value instanceof Boolean)
 			setChecked(element, (Boolean) value);
+	}
+
+	@Override
+	public boolean affectsOtherElements() {
+		return false;
 	}
 
 	protected abstract boolean isChecked(T element);

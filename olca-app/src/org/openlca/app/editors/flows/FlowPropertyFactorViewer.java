@@ -223,6 +223,12 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 				}
 			}
 		}
+		
+		@Override
+		public boolean affectsOtherElements() {
+			return true;
+		}
+		
 	}
 
 }

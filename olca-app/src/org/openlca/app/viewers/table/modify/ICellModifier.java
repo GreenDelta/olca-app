@@ -17,5 +17,7 @@ public interface ICellModifier<T> {
 	String[] getStringValues(T element);
 
 	CellEditingType getCellEditingType();
+	
+	boolean affectsOtherElements();
 
 }

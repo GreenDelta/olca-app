@@ -176,7 +176,10 @@ public class ModifySupport<T> {
 				T elem = setModifierValue(element, value, modifier);
 				refresh(elem);
 			}
-			viewer.refresh(true);
+			if (modifier.affectsOtherElements())
+				viewer.refresh(true);
+			else
+				viewer.refresh(element, true);
 		}
 
 		@SuppressWarnings("unchecked")

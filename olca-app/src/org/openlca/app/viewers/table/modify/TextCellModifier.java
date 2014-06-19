@@ -34,6 +34,11 @@ public abstract class TextCellModifier<T> implements ICellModifier<T> {
 						: null : null);
 	}
 
+	@Override
+	public boolean affectsOtherElements() {
+		return false;
+	}
+	
 	protected abstract String getText(T element);
 
 	protected abstract void setText(T element, String text);

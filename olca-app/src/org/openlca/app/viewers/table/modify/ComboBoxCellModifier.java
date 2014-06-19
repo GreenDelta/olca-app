@@ -47,6 +47,11 @@ public abstract class ComboBoxCellModifier<R, C> implements ICellModifier<R> {
 		setItem(element, (C) value);
 	}
 
+	@Override
+	public boolean affectsOtherElements() {
+		return false;
+	}
+
 	protected abstract C[] getItems(R element);
 
 	protected abstract C getItem(R element);
