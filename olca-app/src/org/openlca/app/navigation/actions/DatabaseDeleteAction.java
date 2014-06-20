@@ -9,6 +9,7 @@ import org.apache.commons.io.FileUtils;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.osgi.util.NLS;
+import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseFolder;
@@ -73,6 +74,22 @@ public class DatabaseDeleteAction extends Action implements INavigationAction {
 			return;
 		if (createMessageDialog().open() != MessageDialog.OK)
 			return;
+		checkCloseEditors();
+		App.run(Messages.DeleteDatabase,
+				() -> doDelete(),
+				() -> Navigator.refresh());
+	}
+
+	private void checkCloseEditors() {
+		for (IDatabaseConfiguration config : this.configs) {
+			if (Database.isActive(config)) {
+				Editors.closeAll();
+				break;
+			}
+		}
+	}
+
+	private void doDelete() {
 		for (IDatabaseConfiguration config : this.configs) {
 			try {
 				tryDelete(config);
@@ -80,14 +97,11 @@ public class DatabaseDeleteAction extends Action implements INavigationAction {
 				log.error("failed to delete database", e);
 			}
 		}
-		Navigator.refresh();
 	}
 
 	private void tryDelete(IDatabaseConfiguration config) throws Exception {
-		if (Database.isActive(config)) {
-			Editors.closeAll();
+		if (Database.isActive(config))
 			Database.close();
-		}
 		File dbFolder = DatabaseFolder.getRootFolder(config.getName());
 		if (dbFolder.isDirectory())
 			FileUtils.deleteDirectory(dbFolder);

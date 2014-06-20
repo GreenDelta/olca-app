@@ -1,6 +1,7 @@
 package org.openlca.app.navigation.actions;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
@@ -13,7 +14,6 @@ import org.openlca.app.db.DerbyConfiguration;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.resources.ImageType;
-import org.openlca.util.Strings;
 import org.zeroturnaround.zip.ZipUtil;
 
 public class DatabaseImportAction extends Action implements INavigationAction {
@@ -38,46 +38,41 @@ public class DatabaseImportAction extends Action implements INavigationAction {
 		File file = FileChooser.forImport("*.zolca");
 		if (file == null || !file.exists())
 			return;
-		String dbName = file.getName().replace(".zolca", "")
-				.replaceAll(" ", "_").toLowerCase();
 		File dbFolder = new File(App.getWorkspace(),
 				Config.DATABASE_FOLDER_NAME);
 		if (!dbFolder.exists())
 			dbFolder.mkdirs();
-		int number = numberOfSameNames(dbName, dbFolder);
-		if (number > 0)
-			dbName = dbName + "_" + number;
+		String dbName = getDatabaseName(file, dbFolder);
 		realImport(dbFolder, dbName, file);
 	}
 
-	private int numberOfSameNames(String dbName, File dbFolder) {
+	private String getDatabaseName(File file, File dbFolder) {
+		String proposal = file.getName()
+				.replace(".zolca", "")
+				.replaceAll("\\W+", "_")
+				.toLowerCase();
+		List<String> names = new ArrayList<>();
+		for (String existing : dbFolder.list())
+			names.add(existing);
+		String name = proposal;
 		int count = 0;
-		for (String other : dbFolder.list()) {
-			if (other == null)
-				continue;
-			if (Strings.nullOrEqual(dbName, other))
-				count++;
-			else if (other.startsWith(dbName + "_"))
-				count++;
+		while (names.contains(name)) {
+			count++;
+			name = proposal + "_" + count;
 		}
-		return count;
+		return name;
 	}
 
-	private void realImport(final File dbFolder, final String dbName,
-			final File zip) {
-		App.run(Messages.ImportDatabase, new Runnable() {
-			public void run() {
-				File folder = new File(dbFolder, dbName);
-				folder.mkdirs();
-				ZipUtil.unpack(zip, folder);
-			}
-		}, new Runnable() {
-			public void run() {
-				DerbyConfiguration conf = new DerbyConfiguration();
-				conf.setName(dbName);
-				Database.register(conf);
-				Navigator.refresh();
-			}
+	private void realImport(File dbFolder, String dbName, File zip) {
+		App.run(Messages.ImportDatabase, () -> {
+			File folder = new File(dbFolder, dbName);
+			folder.mkdirs();
+			ZipUtil.unpack(zip, folder);
+		}, () -> {
+			DerbyConfiguration conf = new DerbyConfiguration();
+			conf.setName(dbName);
+			Database.register(conf);
+			Navigator.refresh();
 		});
 	}
 }

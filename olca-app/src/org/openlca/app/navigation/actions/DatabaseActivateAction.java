@@ -2,11 +2,13 @@ package org.openlca.app.navigation.actions;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.ui.PlatformUI;
+import org.openlca.app.App;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.navigation.DatabaseElement;
@@ -144,13 +146,24 @@ public class DatabaseActivateAction extends Action implements INavigationAction 
 				closeDatabase();
 				return;
 			}
+			AtomicBoolean failed = new AtomicBoolean(false);
+			App.run("Update database",
+					() -> runUpdate(db, failed),
+					() -> {
+						if (failed.get())
+							closeDatabase();
+						else
+							Navigator.refresh();
+					});
+		}
+
+		private void runUpdate(IDatabase db, AtomicBoolean failed) {
 			try {
 				Upgrades.runUpgrades(db);
 				db.getEntityFactory().getCache().evictAll();
-				Navigator.refresh();
 			} catch (Exception e) {
+				failed.set(true);
 				log.error("Failed to update database", e);
-				closeDatabase();
 			}
 		}
 
