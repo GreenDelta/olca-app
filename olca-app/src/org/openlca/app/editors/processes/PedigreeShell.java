@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
@@ -141,29 +139,33 @@ class PedigreeShell extends Shell {
 
 	private void createFooter(Composite root) {
 		Composite composite = toolkit.createComposite(root);
-		UI.gridLayout(composite, 6);
+		UI.gridLayout(composite, 7);
 		UI.gridData(composite, true, false);
 		toolkit.paintBordersFor(composite);
 		toolkit.createLabel(composite, "Base uncertainty: ");
 		baseUncertaintyText = toolkit.createText(composite, "1.0");
 		UI.gridData(baseUncertaintyText, false, false).widthHint = 80;
-		baseUncertaintyText.addModifyListener(new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
-				calculateSigmaG();
-			}
-		});
+		baseUncertaintyText.addModifyListener((e) -> calculateSigmaG());
 		toolkit.createLabel(composite, "\u03c3g: ");
 		valueLabel = toolkit.createLabel(composite, "");
 		UI.gridData(valueLabel, true, false);
-		Button okButton = toolkit.createButton(composite, "OK", SWT.NONE);
-		UI.gridData(okButton, false, false).widthHint = 60;
-		okButton.addSelectionListener(new PedigreeShellFinishHandler(this,
-				exchange));
-		Button cancelButton = toolkit.createButton(composite, "Cancel",
-				SWT.NONE);
-		cancelButton.addSelectionListener(new PedigreeShellFinishHandler(this));
-		UI.gridData(cancelButton, false, false).widthHint = 60;
+		createButtons(composite);
+	}
+
+	private void createButtons(Composite composite) {
+		Button okBtn = toolkit.createButton(composite, "OK", SWT.NONE);
+		UI.gridData(okBtn, false, false).widthHint = 60;
+		okBtn.addSelectionListener(PedigreeFinishHandler.forOk(this, exchange));
+		if (exchange.getPedigreeUncertainty() != null) {
+			Button deleteBtn = toolkit.createButton(composite, "Delete",
+					SWT.NONE);
+			UI.gridData(deleteBtn, false, false).widthHint = 60;
+			deleteBtn.addSelectionListener(PedigreeFinishHandler.forDelete(
+					this, exchange));
+		}
+		Button cancelBtn = toolkit.createButton(composite, "Cancel", SWT.NONE);
+		cancelBtn.addSelectionListener(PedigreeFinishHandler.forCancel(this));
+		UI.gridData(cancelBtn, false, false).widthHint = 60;
 	}
 
 	void calculateSigmaG() {

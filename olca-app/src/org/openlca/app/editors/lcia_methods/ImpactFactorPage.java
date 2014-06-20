@@ -64,7 +64,7 @@ class ImpactFactorPage extends ModelPage<ImpactMethod> {
 		if (descriptor == null)
 			return;
 		for (ImpactCategory cat : editor.getModel().getImpactCategories()) {
-			if (descriptor.getId() == cat.getId()) {
+			if (equal(descriptor, cat)) {
 				factorTable.setImpactCategory(cat, false);
 				break;
 			}
@@ -92,6 +92,24 @@ class ImpactFactorPage extends ModelPage<ImpactMethod> {
 		return list;
 	}
 
+	private boolean equal(ImpactCategoryDescriptor descriptor,
+			ImpactCategory category) {
+		if (descriptor == null && category == null)
+			return true;
+		if (descriptor == null || category == null)
+			return false;
+		if (category.getId() != 0L)
+			return descriptor.getId() == category.getId();
+		// new impact categories have an ID of 0. Thus, we take also other
+		// attributes to check equality
+		if (category.getRefId() != null)
+			return Objects.equals(category.getRefId(), descriptor.getRefId());
+		else
+			return Objects.equals(category.getName(), descriptor.getName())
+					&& Objects.equals(category.getReferenceUnit(),
+							descriptor.getReferenceUnit());
+	}
+
 	private class CategoryChange implements
 			ISelectionChangedListener<ImpactCategoryDescriptor> {
 
@@ -102,7 +120,7 @@ class ImpactFactorPage extends ModelPage<ImpactMethod> {
 				return;
 			}
 			for (ImpactCategory cat : getModel().getImpactCategories()) {
-				if (Objects.equals(cat.getRefId(), selection.getRefId())) {
+				if (equal(selection, cat)) {
 					factorTable.setImpactCategory(cat, true);
 					break;
 				}

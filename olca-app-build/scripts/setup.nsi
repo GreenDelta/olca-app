@@ -58,37 +58,11 @@ Var StartMenuGroup
 !insertmacro MUI_UNPAGE_CONFIRM
 !insertmacro MUI_UNPAGE_INSTFILES
 
-# Helper functions
-Function WriteToFile
-Exch $0 ;file to write to
-Exch
-Exch $1 ;text to write
- 
-  FileOpen $0 $0 a #open file
-  FileSeek $0 0 END #go to end
-  FileWrite $0 $1 #write to file
-  FileClose $0
- 
-Pop $1
-Pop $0
-FunctionEnd
- 
-!macro WriteToFile NewLine File String
-  !if `${NewLine}` == true
-  Push `${String}$\r$\n`
-  !else
-  Push `${String}`
-  !endif
-  Push `${File}`
-  Call WriteToFile
-!macroend
-!define WriteToFile `!insertmacro WriteToFile false`
-!define WriteLineToFile `!insertmacro WriteToFile true`
-
 # Installer languages
 !insertmacro MUI_LANGUAGE English
 !insertmacro MUI_LANGUAGE German
 
+!include ..\..\scripts\WriteToFile.nsh
 
 # Installer attributes
 OutFile setup.exe
@@ -105,7 +79,7 @@ VIAddVersionKey /LANG=${LANG_ENGLISH} CompanyWebsite "${URL}"
 VIAddVersionKey /LANG=${LANG_ENGLISH} FileVersion "${VERSION}"
 VIAddVersionKey /LANG=${LANG_ENGLISH} FileDescription ""
 VIAddVersionKey /LANG=${LANG_ENGLISH} LegalCopyright ""
-# moved InstallDirRegKey functionality to onInit 
+
 ShowUninstDetails hide
 
 # Installer sections

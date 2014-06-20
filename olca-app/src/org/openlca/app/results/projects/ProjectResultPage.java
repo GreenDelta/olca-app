@@ -9,12 +9,10 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.openlca.app.components.ContributionImage;
 import org.openlca.app.components.FlowImpactSelection;
 import org.openlca.app.components.FlowImpactSelection.EventHandler;
 import org.openlca.app.db.Cache;
@@ -108,21 +106,9 @@ public class ProjectResultPage extends FormPage {
 	private class TableLabel extends LabelProvider implements
 			ITableLabelProvider {
 
-		private ContributionImage image = new ContributionImage(
-				Display.getCurrent());
-
-		@Override
-		public void dispose() {
-			image.dispose();
-			super.dispose();
-		}
-
 		@Override
 		public Image getColumnImage(Object element, int columnIndex) {
-			if (!(element instanceof ContributionItem) || columnIndex > 0)
-				return null;
-			ContributionItem<?> contribution = (ContributionItem<?>) element;
-			return image.getForTable(contribution.getShare());
+			return null;
 		}
 
 		@Override
@@ -136,7 +122,7 @@ public class ProjectResultPage extends FormPage {
 				return contribution.getItem().getName();
 			case 1:
 				return Numbers.format(contribution.getAmount());
-			case 3:
+			case 2:
 				return getUnit();
 			default:
 				return null;
