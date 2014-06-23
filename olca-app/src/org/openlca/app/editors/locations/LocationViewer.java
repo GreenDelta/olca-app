@@ -3,7 +3,6 @@ package org.openlca.app.editors.locations;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ITableColorProvider;
@@ -36,6 +35,7 @@ import org.openlca.core.model.LocationType;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.Descriptors;
+import org.openlca.io.KeyGen;
 
 class LocationViewer extends AbstractTableViewer<Location> {
 
@@ -68,6 +68,10 @@ class LocationViewer extends AbstractTableViewer<Location> {
 		editor.onSaved(() -> setInput(editor.getLocations()));
 	}
 
+	void reload() {
+		setInput(editor.getLocations());
+	}
+
 	@Override
 	protected String[] getColumnHeaders() {
 		return COLUMNS;
@@ -82,7 +86,6 @@ class LocationViewer extends AbstractTableViewer<Location> {
 	void onAdd() {
 		Location location = new Location();
 		location.setName("New location");
-		location.setRefId(UUID.randomUUID().toString());
 		location.setType(LocationType.GLOBAL);
 		editor.locationAdded(location);
 		setInput(editor.getLocations());
@@ -199,6 +202,7 @@ class LocationViewer extends AbstractTableViewer<Location> {
 			if (text == null || text.isEmpty())
 				return;
 			element.setCode(text);
+			element.setRefId(KeyGen.get(text));
 			editor.locationChanged(element);
 		}
 
@@ -289,7 +293,8 @@ class LocationViewer extends AbstractTableViewer<Location> {
 		}
 
 		@Override
-		public void contentSaved(MapEditor mapEditor, String kml, boolean overwrite) {
+		public void contentSaved(MapEditor mapEditor, String kml,
+				boolean overwrite) {
 			// ignore overwrite, always true in this case
 			location.setKmz(KmlUtil.toKmz(kml));
 			editor.locationChanged(location);

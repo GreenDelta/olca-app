@@ -24,6 +24,8 @@ public class KmlUtil {
 	public static byte[] toKmz(String kml) {
 		if (kml == null)
 			return null;
+		if (kml.isEmpty())
+			return null;
 		try {
 			return BinUtils.zip(kml.getBytes("utf-8"));
 		} catch (Exception e) {

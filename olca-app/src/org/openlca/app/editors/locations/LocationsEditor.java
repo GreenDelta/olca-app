@@ -78,6 +78,10 @@ public class LocationsEditor extends FormEditor implements IEditor {
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
+		doSave();
+	}
+
+	public void doSave() {
 		for (Location added : added)
 			dao.insert(added);
 		added.clear();
@@ -119,6 +123,14 @@ public class LocationsEditor extends FormEditor implements IEditor {
 
 	List<Location> getLocations() {
 		return locations;
+	}
+
+	void updateModel() {
+		added.clear();
+		removed.clear();
+		changed.clear();
+		locations = dao.getAll();
+		Collections.sort(locations, new LocationComparator());
 	}
 
 	private class LocationComparator implements Comparator<Location> {

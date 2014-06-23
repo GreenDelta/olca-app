@@ -536,6 +536,11 @@
 		   name="SimaPro CSV">
 		   <description>Import SimaPro CSV files.</description>
 	   </wizard>
+     <wizard
+           class="org.openlca.app.editors.locations.KmzImportWizard"
+           id="wizard.import.kml"
+           name="KML Import">
+     </wizard>
    </extension>
    
    <!-- export wizards -->

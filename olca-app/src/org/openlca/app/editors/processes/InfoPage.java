@@ -1,7 +1,5 @@
 package org.openlca.app.editors.processes;
 
-import java.util.UUID;
-
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
@@ -36,6 +34,7 @@ import org.openlca.app.viewers.combo.LocationViewer;
 import org.openlca.core.database.LocationDao;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.Process;
+import org.openlca.io.KeyGen;
 
 import com.google.common.eventbus.Subscribe;
 
@@ -243,7 +242,7 @@ class InfoPage extends ModelPage<Process> {
 				return null;
 			location.setName(nameAndCode[0]);
 			location.setCode(nameAndCode[1]);
-			location.setRefId(UUID.randomUUID().toString());
+			location.setRefId(KeyGen.get(nameAndCode[1]));
 			if (kml != null)
 				location.setKmz(KmlUtil.toKmz(kml));
 			else
