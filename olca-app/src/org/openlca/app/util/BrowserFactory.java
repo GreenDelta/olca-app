@@ -5,6 +5,7 @@ import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.App;
 import org.openlca.app.preferencepages.FeatureFlag;
+import org.openlca.util.OS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,8 +33,9 @@ class BrowserFactory {
 
 	private static void initialize() {
 		log.trace("initialize browser factory");
-		if (!FeatureFlag.USE_MOZILLA_BROWSER.isEnabled()) {
+		if (!shouldUseXulRunner()) {
 			useXulRunner = false;
+			initialized = true;
 			return;
 		}
 		try {
@@ -53,6 +55,13 @@ class BrowserFactory {
 		} finally {
 			initialized = true;
 		}
+	}
+
+	private static boolean shouldUseXulRunner() {
+		if (OS.getCurrent() == OS.Linux)
+			return true;
+		else
+			return FeatureFlag.USE_MOZILLA_BROWSER.isEnabled();
 	}
 
 	private static Browser createMozilla(Composite parent) {
