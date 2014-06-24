@@ -247,7 +247,7 @@
             class="org.openlca.app.navigation.Navigator"
             icon="icons/categories.gif"
             id="views.navigation"
-            name="%view.name">
+            name="%Navigation">
       </view>  
    </extension>
    
