@@ -8,10 +8,7 @@
 		#contentDiv {
 			margin:20px;
 		}
-		.table td:first-child {
-			width: 4%;
-			white-space: nowrap;
-		}
+		
 		
 	</style>
 	
@@ -64,65 +61,43 @@
 		<table class="table table-hover">
 			<thead>
 			<tr>
-				<td width="400px"></td>
-				<td></td>
+				<td width="100px"></td>
+				<td><h4>Number of input links</h4></td>
+				<td><h4>Process</h4></td>
 			<tr>
 			</thead>		
-			<tbody>
-			<tr>
+			<tbody>			
+			<tr data-ng-repeat="degreeVal in statistics.topInDegrees">
 				<td>
 					<svg xmlns="http://www.w3.org/2000/svg" height="40px">
-						<circle cx="25" cy="25" r="15" fill="#428bca" />
+						<circle ng-indegree={{degreeVal.degree}} cx="25" cy="25" r="15" fill="#428bca" />
 					</svg>			
 				</td>
-				<td class="text-left"><h4><a href="#">Compost plant, open</a></h4></td>				
-			</tr>	
-			<tr>
-				<td>
-					<svg xmlns="http://www.w3.org/2000/svg" height="40px">
-						<circle cx="25" cy="25" r="10" fill="#428bca" />
-					</svg>			
-				</td>
-				<td><h4><a href="#">Compost plant, open</a></h4></td>				
-			</tr>	
-			<tr>
-				<td>
-					<svg xmlns="http://www.w3.org/2000/svg" height="40px">
-						<circle cx="25" cy="25" r="8" fill="#428bca" />
-					</svg>			
-				</td>
-				<td><h4><a href="#">Compost plant, open</a></h4></td>				
-			</tr>	
+				<td><h4>{{degreeVal.degree}}</h4></td>
+				<td class="text-left"><h4><a href="#">{{degreeVal.process.name}}</a></h4></td>				
+			</tr>			
 			</tbody>
 		</table>
 		
 		<h3>Processes with highest out-degree (linked outputs)</h3>
 		<table class="table table-hover">
-			<tbody>
+			<thead>
 			<tr>
+				<td width="100px"></td>
+				<td><h4>Number of output links</h4></td>
+				<td><h4>Process</h4></td>
+			<tr>
+			</thead>		
+			<tbody>			
+			<tr data-ng-repeat="degreeVal in statistics.topOutDegrees">
 				<td>
 					<svg xmlns="http://www.w3.org/2000/svg" height="40px">
-						<circle cx="25" cy="25" r="15" fill="#428bca" />
+						<circle ng-outdegree={{degreeVal.degree}} cx="25" cy="25" r="15" fill="#428bca" />
 					</svg>			
 				</td>
-				<td><h4><a href="#">Compost plant, open</a></h4></td>				
-			</tr>	
-			<tr>
-				<td>
-					<svg xmlns="http://www.w3.org/2000/svg" height="40px">
-						<circle cx="25" cy="25" r="10" fill="#428bca" />
-					</svg>			
-				</td>
-				<td><h4><a href="#">Compost plant, open</a></h4></td>				
-			</tr>	
-			<tr>
-				<td>
-					<svg xmlns="http://www.w3.org/2000/svg" height="40px">
-						<circle cx="25" cy="25" r="8" fill="#428bca" />
-					</svg>			
-				</td>
-				<td><h4><a href="#">Compost plant, open</a></h4></td>				
-			</tr>	
+				<td><h4>{{degreeVal.degree}}</h4></td>
+				<td class="text-left"><h4><a href="#">{{degreeVal.process.name}}</a></h4></td>				
+			</tr>			
 			</tbody>
 		</table>
 		
@@ -141,6 +116,28 @@
 			$scope.statistics = {};
 		}
 		app.controller('Controller', controller);
+		
+		app.directive("ngIndegree", function() {
+			return function(scope, element, attrs) {
+				scope.$watch(attrs.ngIndegree, function(value) {
+					var maxDegree = scope.statistics.topInDegrees[0].degree;
+					var share = Math.sqrt(value) / Math.sqrt(maxDegree);
+					var r = share * 15;					
+					element.attr("r", r);
+				});
+			};
+		});
+		
+		app.directive("ngOutdegree", function() {
+			return function(scope, element, attrs) {
+				scope.$watch(attrs.ngOutdegree, function(value) {
+					var maxDegree = scope.statistics.topOutDegrees[0].degree;
+					var share = Math.sqrt(value) / Math.sqrt(maxDegree);
+					var r = share * 15;
+					element.attr("r", r);
+				});
+			};
+		});
 		
 		function setData(statistics) {
 			var element = document.getElementById("contentDiv");

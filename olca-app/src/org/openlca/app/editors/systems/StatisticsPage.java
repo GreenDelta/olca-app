@@ -65,8 +65,8 @@ public class StatisticsPage extends FormPage implements HtmlPage {
 		try {
 			String json = statistics.toJson();
 			System.out.println(json);
-			// String command = "setData(" + json + ")";
-			// browser.evaluate(command);
+			String command = "setData(" + json + ")";
+			browser.evaluate(command);
 		} catch (Exception e) {
 			log.error("failed to set browser data", e);
 		}
