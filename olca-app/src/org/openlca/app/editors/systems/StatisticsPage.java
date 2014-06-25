@@ -1,6 +1,7 @@
 package org.openlca.app.editors.systems;
 
 import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
@@ -13,8 +14,11 @@ import org.openlca.app.html.HtmlView;
 import org.openlca.app.html.IHtmlResource;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ProductSystem;
+import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
 
 public class StatisticsPage extends FormPage implements HtmlPage {
 
@@ -46,7 +50,36 @@ public class StatisticsPage extends FormPage implements HtmlPage {
 
 	@Override
 	public void onLoaded() {
+		new BrowserFunction(browser, "openProcess") {
+			@Override
+			public Object function(Object[] args) {
+				openProcess(args);
+				return null;
+			}
+		};
+		new BrowserFunction(browser, "recalculate") {
+			@Override
+			public Object function(Object[] args) {
+				calculate();
+				return null;
+			}
+		};
 		calculate();
+	}
+
+	private void openProcess(Object[] args) {
+		if (args == null || args.length == 0)
+			return;
+		if (!(args[0] instanceof String))
+			return;
+		try {
+			String json = (String) args[0];
+			ProcessDescriptor descriptor = new Gson().fromJson(json,
+					ProcessDescriptor.class);
+			App.openEditor(descriptor);
+		} catch (Exception e) {
+			log.error("failed to open process " + args[0], e);
+		}
 	}
 
 	private void calculate() {
