@@ -22,6 +22,8 @@ public enum HtmlView {
 
 	KML_RESULT_VIEW("kml_result_view.html"),
 
+	PRODUCT_SYSTEM_STATISTICS("product_system_statistics.html"),
+
 	REPORT_VIEW("report_view.html"),
 
 	RESULT_LOCALISED_LCIA("result_localised_lcia.html", Resource.OLCA_CHARTS_JS),
