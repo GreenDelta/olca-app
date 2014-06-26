@@ -48,12 +48,12 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 
 	@Override
 	protected void fillCoolBar(ICoolBarManager coolBar) {
-		IToolBarManager toolbar = new ToolBarManager(SWT.FLAT | SWT.RIGHT);
+		IToolBarManager toolbar = new ToolBarManager(SWT.FLAT | SWT.LEFT);
+		coolBar.add(toolbar);
 		toolbar.add(new HomeAction());
 		toolbar.add(saveAction);
 		toolbar.add(saveAsAction);
 		toolbar.add(saveAllAction);
-		coolBar.add(toolbar);
 	}
 
 	@Override

@@ -1,5 +1,9 @@
 package org.openlca.app.editors.processes;
 
+import java.io.File;
+import java.util.Arrays;
+import java.util.List;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.ui.part.EditorActionBarContributor;
@@ -17,10 +21,6 @@ import org.openlca.io.xls.process.output.ExcelExport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.util.Arrays;
-import java.util.List;
-
 public class ProcessToolbar extends EditorActionBarContributor {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
@@ -33,7 +33,7 @@ public class ProcessToolbar extends EditorActionBarContributor {
 
 	private Process getProcess() {
 		ProcessEditor editor = Editors.getActive();
-		if(editor == null) {
+		if (editor == null) {
 			log.error("unexpected error: process editor is not active");
 			return null;
 		}
@@ -43,14 +43,15 @@ public class ProcessToolbar extends EditorActionBarContributor {
 	private class MakeSystemAction extends Action {
 
 		public MakeSystemAction() {
-			setImageDescriptor(ImageType.PRODUCT_SYSTEM_ICON_NEW.getDescriptor());
+			setImageDescriptor(ImageType.PRODUCT_SYSTEM_ICON_NEW
+					.getDescriptor());
 			setToolTipText(Messages.CreateProductSystem);
 		}
 
 		@Override
 		public void run() {
 			Process process = getProcess();
-			if(process == null)
+			if (process == null)
 				return;
 			SystemCreation.run(process);
 		}
@@ -66,10 +67,10 @@ public class ProcessToolbar extends EditorActionBarContributor {
 		@Override
 		public void run() {
 			File dir = FileChooser.forExport(FileChooser.DIRECTORY_DIALOG);
-			if(dir == null)
+			if (dir == null)
 				return;
 			Process process = getProcess();
-			if(process == null)
+			if (process == null)
 				return;
 			List<ProcessDescriptor> list = Arrays.asList(
 					Descriptors.toDescriptor(process));
@@ -79,5 +80,5 @@ public class ProcessToolbar extends EditorActionBarContributor {
 			});
 		}
 	}
-	
+
 }
