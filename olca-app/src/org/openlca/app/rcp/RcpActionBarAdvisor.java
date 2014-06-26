@@ -7,6 +7,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.action.ToolBarContributionItem;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.ui.IWorkbenchActionConstants;
@@ -49,7 +50,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	@Override
 	protected void fillCoolBar(ICoolBarManager coolBar) {
 		IToolBarManager toolbar = new ToolBarManager(SWT.FLAT | SWT.LEFT);
-		coolBar.add(toolbar);
+		coolBar.add(new ToolBarContributionItem(toolbar, "main"));
 		toolbar.add(new HomeAction());
 		toolbar.add(saveAction);
 		toolbar.add(saveAsAction);
