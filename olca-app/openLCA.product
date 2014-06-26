@@ -143,9 +143,11 @@ http://dev.mysql.com.
       <plugin id="org.apache.batik.util"/>
       <plugin id="org.apache.batik.util.gui"/>
       <plugin id="org.apache.commons.codec"/>
+      <plugin id="org.eclipse.birt.chart"/>
       <plugin id="org.eclipse.birt.chart.device.extension"/>
       <plugin id="org.eclipse.birt.chart.device.swt"/>
       <plugin id="org.eclipse.birt.chart.engine"/>
+      <plugin id="org.eclipse.birt.chart.engine.extension"/>
       <plugin id="org.eclipse.birt.chart.ui"/>
       <plugin id="org.eclipse.birt.chart.ui.extension"/>
       <plugin id="org.eclipse.birt.core"/>
@@ -297,21 +299,7 @@ http://dev.mysql.com.
       <plugin id="org.eclipse.equinox.app"/>
       <plugin id="org.eclipse.equinox.common"/>
       <plugin id="org.eclipse.equinox.ds"/>
-      <plugin id="org.eclipse.equinox.frameworkadmin"/>
-      <plugin id="org.eclipse.equinox.frameworkadmin.equinox"/>
-      <plugin id="org.eclipse.equinox.frameworkadmin.equinox.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.equinox.frameworkadmin.equinox.nl_es" fragment="true"/>
-      <plugin id="org.eclipse.equinox.frameworkadmin.equinox.nl_fr" fragment="true"/>
-      <plugin id="org.eclipse.equinox.frameworkadmin.equinox.nl_it" fragment="true"/>
-      <plugin id="org.eclipse.equinox.frameworkadmin.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.equinox.frameworkadmin.nl_es" fragment="true"/>
-      <plugin id="org.eclipse.equinox.frameworkadmin.nl_fr" fragment="true"/>
-      <plugin id="org.eclipse.equinox.frameworkadmin.nl_it" fragment="true"/>
-      <plugin id="org.eclipse.equinox.p2.artifact.repository"/>
-      <plugin id="org.eclipse.equinox.p2.artifact.repository.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.equinox.p2.artifact.repository.nl_es" fragment="true"/>
-      <plugin id="org.eclipse.equinox.p2.artifact.repository.nl_fr" fragment="true"/>
-      <plugin id="org.eclipse.equinox.p2.artifact.repository.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.equinox.event"/>
       <plugin id="org.eclipse.equinox.p2.core"/>
       <plugin id="org.eclipse.equinox.p2.core.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.core.nl_es" fragment="true"/>
@@ -322,31 +310,11 @@ http://dev.mysql.com.
       <plugin id="org.eclipse.equinox.p2.director.nl_es" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.director.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.director.nl_it" fragment="true"/>
-      <plugin id="org.eclipse.equinox.p2.directorywatcher"/>
-      <plugin id="org.eclipse.equinox.p2.directorywatcher.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.equinox.p2.directorywatcher.nl_es" fragment="true"/>
-      <plugin id="org.eclipse.equinox.p2.directorywatcher.nl_fr" fragment="true"/>
-      <plugin id="org.eclipse.equinox.p2.directorywatcher.nl_it" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.engine"/>
       <plugin id="org.eclipse.equinox.p2.engine.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.engine.nl_es" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.engine.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.engine.nl_it" fragment="true"/>
-      <plugin id="org.eclipse.equinox.p2.extensionlocation"/>
-      <plugin id="org.eclipse.equinox.p2.extensionlocation.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.equinox.p2.extensionlocation.nl_es" fragment="true"/>
-      <plugin id="org.eclipse.equinox.p2.extensionlocation.nl_fr" fragment="true"/>
-      <plugin id="org.eclipse.equinox.p2.extensionlocation.nl_it" fragment="true"/>
-      <plugin id="org.eclipse.equinox.p2.garbagecollector"/>
-      <plugin id="org.eclipse.equinox.p2.garbagecollector.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.equinox.p2.garbagecollector.nl_es" fragment="true"/>
-      <plugin id="org.eclipse.equinox.p2.garbagecollector.nl_fr" fragment="true"/>
-      <plugin id="org.eclipse.equinox.p2.garbagecollector.nl_it" fragment="true"/>
-      <plugin id="org.eclipse.equinox.p2.jarprocessor"/>
-      <plugin id="org.eclipse.equinox.p2.jarprocessor.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.equinox.p2.jarprocessor.nl_es" fragment="true"/>
-      <plugin id="org.eclipse.equinox.p2.jarprocessor.nl_fr" fragment="true"/>
-      <plugin id="org.eclipse.equinox.p2.jarprocessor.nl_it" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.metadata"/>
       <plugin id="org.eclipse.equinox.p2.metadata.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.metadata.nl_es" fragment="true"/>
@@ -357,31 +325,11 @@ http://dev.mysql.com.
       <plugin id="org.eclipse.equinox.p2.metadata.repository.nl_es" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.metadata.repository.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.metadata.repository.nl_it" fragment="true"/>
-      <plugin id="org.eclipse.equinox.p2.publisher"/>
-      <plugin id="org.eclipse.equinox.p2.publisher.eclipse"/>
-      <plugin id="org.eclipse.equinox.p2.publisher.eclipse.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.equinox.p2.publisher.eclipse.nl_es" fragment="true"/>
-      <plugin id="org.eclipse.equinox.p2.publisher.eclipse.nl_fr" fragment="true"/>
-      <plugin id="org.eclipse.equinox.p2.publisher.eclipse.nl_it" fragment="true"/>
-      <plugin id="org.eclipse.equinox.p2.publisher.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.equinox.p2.publisher.nl_es" fragment="true"/>
-      <plugin id="org.eclipse.equinox.p2.publisher.nl_fr" fragment="true"/>
-      <plugin id="org.eclipse.equinox.p2.publisher.nl_it" fragment="true"/>
-      <plugin id="org.eclipse.equinox.p2.reconciler.dropins"/>
-      <plugin id="org.eclipse.equinox.p2.reconciler.dropins.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.equinox.p2.reconciler.dropins.nl_es" fragment="true"/>
-      <plugin id="org.eclipse.equinox.p2.reconciler.dropins.nl_fr" fragment="true"/>
-      <plugin id="org.eclipse.equinox.p2.reconciler.dropins.nl_it" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.repository"/>
       <plugin id="org.eclipse.equinox.p2.repository.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.repository.nl_es" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.repository.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.repository.nl_it" fragment="true"/>
-      <plugin id="org.eclipse.equinox.p2.touchpoint.eclipse"/>
-      <plugin id="org.eclipse.equinox.p2.touchpoint.eclipse.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.equinox.p2.touchpoint.eclipse.nl_es" fragment="true"/>
-      <plugin id="org.eclipse.equinox.p2.touchpoint.eclipse.nl_fr" fragment="true"/>
-      <plugin id="org.eclipse.equinox.p2.touchpoint.eclipse.nl_it" fragment="true"/>
       <plugin id="org.eclipse.equinox.preferences"/>
       <plugin id="org.eclipse.equinox.registry"/>
       <plugin id="org.eclipse.equinox.security"/>
@@ -389,11 +337,6 @@ http://dev.mysql.com.
       <plugin id="org.eclipse.equinox.security.win32.x86" fragment="true"/>
       <plugin id="org.eclipse.equinox.security.win32.x86_64" fragment="true"/>
       <plugin id="org.eclipse.equinox.simpleconfigurator"/>
-      <plugin id="org.eclipse.equinox.simpleconfigurator.manipulator"/>
-      <plugin id="org.eclipse.equinox.simpleconfigurator.manipulator.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.equinox.simpleconfigurator.manipulator.nl_es" fragment="true"/>
-      <plugin id="org.eclipse.equinox.simpleconfigurator.manipulator.nl_fr" fragment="true"/>
-      <plugin id="org.eclipse.equinox.simpleconfigurator.manipulator.nl_it" fragment="true"/>
       <plugin id="org.eclipse.equinox.simpleconfigurator.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.simpleconfigurator.nl_es" fragment="true"/>
       <plugin id="org.eclipse.equinox.simpleconfigurator.nl_fr" fragment="true"/>
@@ -435,6 +378,11 @@ http://dev.mysql.com.
       <plugin id="org.eclipse.osgi.services.nl_es" fragment="true"/>
       <plugin id="org.eclipse.osgi.services.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.osgi.services.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.platform"/>
+      <plugin id="org.eclipse.platform.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.platform.nl_es" fragment="true"/>
+      <plugin id="org.eclipse.platform.nl_fr" fragment="true"/>
+      <plugin id="org.eclipse.platform.nl_it" fragment="true"/>
       <plugin id="org.eclipse.swt"/>
       <plugin id="org.eclipse.swt.carbon.macosx.nl_de" fragment="true"/>
       <plugin id="org.eclipse.swt.carbon.macosx.nl_es" fragment="true"/>
@@ -456,29 +404,9 @@ http://dev.mysql.com.
       <plugin id="org.eclipse.swt.gtk.aix.ppc.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.swt.gtk.aix.ppc.nl_it" fragment="true"/>
       <plugin id="org.eclipse.swt.gtk.aix.ppc64" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.aix.ppc64.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.aix.ppc64.nl_es" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.aix.ppc64.nl_fr" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.aix.ppc64.nl_it" fragment="true"/>
       <plugin id="org.eclipse.swt.gtk.hpux.ia64" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.hpux.ia64.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.hpux.ia64.nl_es" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.hpux.ia64.nl_fr" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.hpux.ia64.nl_it" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.hpux.ia64_32.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.hpux.ia64_32.nl_es" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.hpux.ia64_32.nl_fr" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.hpux.ia64_32.nl_it" fragment="true"/>
       <plugin id="org.eclipse.swt.gtk.linux.ppc" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.linux.ppc.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.linux.ppc.nl_es" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.linux.ppc.nl_fr" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.linux.ppc.nl_it" fragment="true"/>
       <plugin id="org.eclipse.swt.gtk.linux.ppc64" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.linux.ppc64.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.linux.ppc64.nl_es" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.linux.ppc64.nl_fr" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.linux.ppc64.nl_it" fragment="true"/>
       <plugin id="org.eclipse.swt.gtk.linux.s390" fragment="true"/>
       <plugin id="org.eclipse.swt.gtk.linux.s390.nl_de" fragment="true"/>
       <plugin id="org.eclipse.swt.gtk.linux.s390.nl_es" fragment="true"/>
@@ -530,6 +458,10 @@ http://dev.mysql.com.
       <plugin id="org.eclipse.text.nl_it" fragment="true"/>
       <plugin id="org.eclipse.ui"/>
       <plugin id="org.eclipse.ui.cocoa" fragment="true"/>
+      <plugin id="org.eclipse.ui.cocoa.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.ui.cocoa.nl_es" fragment="true"/>
+      <plugin id="org.eclipse.ui.cocoa.nl_fr" fragment="true"/>
+      <plugin id="org.eclipse.ui.cocoa.nl_it" fragment="true"/>
       <plugin id="org.eclipse.ui.console"/>
       <plugin id="org.eclipse.ui.console.nl_de" fragment="true"/>
       <plugin id="org.eclipse.ui.console.nl_es" fragment="true"/>
