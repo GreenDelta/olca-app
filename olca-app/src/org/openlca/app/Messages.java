@@ -626,6 +626,17 @@ public class Messages extends NLS {
 	public static String Year;
 	public static String ZipCode;
 
+	public static String Unknown;
+	public static String CreateNewLCIAMethod;
+	public static String CreateNewActor;
+	public static String CreateNewFlow;
+	public static String CreateNewFlowProperty;
+	public static String CreateNewProcess;
+	public static String CreateNewProductSystem;
+	public static String CreateNewProject;
+	public static String CreateNewSource;
+	public static String CreateNewUnitGroup;
+
 	private static Map<String, String> map;
 
 	static {

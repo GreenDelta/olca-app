@@ -133,6 +133,8 @@ public class ContributionChartSection {
 			unit = impact.getReferenceUnit();
 			contributionSet = provider.getProcessContributions(impact);
 		}
+		if (contributionSet == null)
+			return;
 		List<ContributionItem<ProcessDescriptor>> items = Contributions
 				.topWithRest(contributionSet.getContributions(), maxItems);
 		List<ContributionItem<?>> chartData = new ArrayList<>();

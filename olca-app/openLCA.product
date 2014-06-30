@@ -6,9 +6,9 @@
    <aboutInfo>
       <image path="/olca-app/icons/about.png"/>
       <text>
-         openLCA 1.4.0
+         openLCA 1.4
 
-Copyright (c) 2007 - 2013 GreenDelta. All rights reserved.
+Copyright (c) 2007 - 2014 GreenDelta. All rights reserved.
 Visit http://openlca.org and http://greendelta.com
 
 This product includes software developed in the openLCA 
@@ -22,9 +22,12 @@ project and other open source software.
    <launcherArgs>
       <programArgs>-nl
 en
--data @noDefault</programArgs>
-      <vmArgs>-Xmx1024M</vmArgs>
-      <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
+-data @noDefault
+      </programArgs>
+      <vmArgs>-Xmx1024M
+      </vmArgs>
+      <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
+      </vmArgsMac>
    </launcherArgs>
 
    <windowImages i16="/olca-app/icons/logo_16_32bit.png" i32="/olca-app/icons/logo_32_32bit.png" i48="/olca-app/icons/logo_48_32bit.png" i64="/olca-app/icons/logo_64.png" i128="/olca-app/icons/logo_128.png"/>
@@ -51,87 +54,6 @@ en
       <windows include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8</windows>
    </vm>
 
-   <license>
-        <url>http://www.openlca.org</url>
-        <text>
-   == License ==
-
-The openLCA project makes available all content in this plug-in 
-(&quot;Content&quot;). Unless otherwise indicated below, the Content is provided 
-to you under the terms and conditions of the Mozilla Public License 
-Version 1.1 (&quot;MPL&quot;). A copy of the MPL is available at 
-http://openlca.org/uploads/media/MPL-1.1.html.
-
-The openLCA project is maintained and coordinated by GreenDelta, 
-www.greendelta.com. If you did not receive this Content directly 
-from the openLCA project, the Content is being redistributed by 
-another party (&quot;Redistributor&quot;) and different terms and conditions may 
-apply to your use of any object code in the Content. Check the 
-Redistributor&apos;s license that was provided with the Content. If no such 
-license exists, contact the Redistributor. Unless otherwise indicated 
-below, the terms and conditions of the MPL still apply to any source 
-code in the Content and such source code may be obtained at 
-http://sourceforge.net/projects/openlca.
-
-A copy of the full license text and also copies of the licenses of the 
-third party content can be found in the installation directory 
-(/licenses).
-
-
-== MySQL Server ==
-
-In order to work with openLCA you need a MySQL Server 
-(http://dev.mysql.com/). The MySQL Server is licensed under the 
-General Public License v2 (GPL, 
-http://www.gnu.org/licenses/old-licenses/gpl-2.0.html). As the GPL is 
-not compatible with other open source software components in the 
-Content, the MySQL server is NOT included or distributed with the 
-Content. However, you can download und install the MySQL Server with 
-the help of the openLCA installer or retrieve it directly from the 
-MySQL website.
-
-
-== Third Party Content ==
-
-= Apache Projects =
-The Content includes software developed by the Apache Software 
-Foundation (http://www.apache.org). This software is licensed under 
-the Apache License v2.0 which can be found at 
-http://www.apache.org/licenses/LICENSE-2.0.txt. Original binaries and 
-source code are available from the respective project web-sites of the 
-Apache Software Foundation.    
-
-= Eclipse Rich Client Platform =
-The openLCA application is built on top of the Eclipse Rich Client 
-Platform and, therefore, includes plug-ins that are made available by 
-the Eclipse Foundation and are licensed under the Eclipse Public 
-License Version 1.0 (&quot;EPL&quot;). A copy of the EPL is available at 
-http://www.eclipse.org/legal/epl-v10.html. These plug-ins can again 
-contain third party content which is indicated in the legal 
-information of the respective plug-ins (see the plug-in details in the 
-application). Original binaries and source code are available from the 
-Eclipse website (http://eclipse.org).
-
-= JDOM =
-JDOM is licensed under the JDOM License (BSD style). The license and 
-original binaries and source are available from the JDOM website 
-http://www.jdom.org.
-
-= Silk Icons =
-The Silk icon set is licensed under the Creative Commons Attribution 
-2.5 License (http://creativecommons.org/licenses/by/2.5/legalcode) and 
-is available from the following website: 
-http://www.famfamfam.com/lab/icons/silk. 
-
-= MySQL Connector/J =
-The MySQL Connector/J is licensed under the General Public License v2 
-(GPL v2) with a FOSS Exception. The GPL v2 is available at 
-http://www.gnu.org/licenses/old-licenses/gpl-2.0.html and the FOSS 
-exception at http://www.mysql.com/about/legal/licensing/foss-exception.
-Original binaries and source are available from the MySQL website 
-http://dev.mysql.com.
-         </text>
-   </license>
 
    <plugins>
       <plugin id="com.ibm.icu"/>
