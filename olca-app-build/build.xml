@@ -6,13 +6,10 @@
 	<property name="product" value="/olca-app/openLCA.product" />
 
 	<!-- 
-		We assume that the workspace is located next to the eclipse installation
-		and that the target platform is located in this workspace. If this is
-		not the case, set these parameters here.		
+		We assume that the runtime project is located next to this build project.
+		If this is not the case, adopt the platform_path varaible.		
 	 -->
-	<property name="workspace" value="${eclipse.home}/../workspace">
-	</property>
-	<property name="platform_path" value="${workspace}/openlca.runtime/platform" />
+	<property name="platform_path" value="${basedir}/../olca-app-runtime/platform" />
 
 	<!-- Provides for example a version in openlca_version -->
 	<property file="build.properties" />
