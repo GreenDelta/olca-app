@@ -76,7 +76,7 @@ class ProcessModelingPage extends ModelPage<Process> {
 
 	private void createSourcesSection(Composite parent) {
 		Section section = UI.section(parent, toolkit,
-				Messages.SourcesInfoSectionLabel);
+				Messages.Sources);
 		Composite composite = toolkit.createComposite(section);
 		UI.gridLayout(composite, 1);
 		UI.gridData(composite, true, true);

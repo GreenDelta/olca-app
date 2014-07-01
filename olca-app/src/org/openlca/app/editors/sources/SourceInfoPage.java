@@ -61,7 +61,7 @@ class SourceInfoPage extends ModelPage<Source> {
 
 	protected void createAdditionalInfo(Composite body) {
 		Composite composite = UI.formSection(body, toolkit,
-				Messages.SourceInfoSectionLabel);
+				Messages.AdditionalInfo);
 		createText(Messages.Doi, "doi", composite);
 		createText(Messages.TextReference, "textReference", composite);
 		Text text = UI.formText(composite, getManagedForm().getToolkit(),
@@ -122,9 +122,10 @@ class SourceInfoPage extends ModelPage<Source> {
 		File dir = DatabaseFolder.getExternalDocLocation(Database.get());
 		File dbFile = new File(dir, fileName);
 		if (dbFile.exists()) {
-			boolean doIt = Question.ask("Overwrite database file?",
-					"A file with the given name already exists in this database. "
-							+ "Do you want to overwrite it?");
+			boolean doIt = Question
+					.ask("Overwrite database file?",
+							"A file with the given name already exists in this database. "
+									+ "Do you want to overwrite it?");
 			if (!doIt)
 				return;
 		}

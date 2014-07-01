@@ -31,7 +31,7 @@ public class DeleteWizard<T extends BaseDescriptor> extends ProblemWizard {
 		this.search = search;
 		initializeProblems();
 		setNeedsProgressMonitor(true);
-		setWindowTitle(Messages.DeleteWizard_WindowTitle);
+		setWindowTitle(Messages.Delete);
 	}
 
 	private void initializeProblems() {

@@ -163,7 +163,7 @@ public class Labels {
 		case ELEMENTARY_FLOW:
 			return Messages.ElementaryFlow;
 		case PRODUCT_FLOW:
-			return Messages.ProductFlow;
+			return Messages.Product;
 		case WASTE_FLOW:
 			return Messages.WasteFlow;
 		default:

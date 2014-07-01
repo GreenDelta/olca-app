@@ -22,7 +22,7 @@ class FlowPropertiesPage extends ModelPage<Flow> {
 	private FlowEditor editor;
 
 	FlowPropertiesPage(FlowEditor editor) {
-		super(editor, "FlowPropertiesPage", Messages.FlowPropertiesPageLabel);
+		super(editor, "FlowPropertiesPage", Messages.FlowProperties);
 		this.editor = editor;
 	}
 
@@ -32,8 +32,7 @@ class FlowPropertiesPage extends ModelPage<Flow> {
 				+ getModel().getName());
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
-		Section section = UI.section(body, toolkit,
-				Messages.FlowPropertiesPageLabel);
+		Section section = UI.section(body, toolkit, Messages.FlowProperties);
 		UI.gridData(section, true, true);
 		Composite client = UI.sectionClient(section, toolkit);
 		FlowPropertyFactorViewer viewer = new FlowPropertyFactorViewer(client,

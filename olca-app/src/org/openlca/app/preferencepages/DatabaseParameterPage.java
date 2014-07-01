@@ -109,7 +109,7 @@ public class DatabaseParameterPage extends PreferencePage implements
 
 	@Override
 	public String getTitle() {
-		return Messages.GlobalParametersPreferencePage_Title;
+		return Messages.GlobalParameters;
 	}
 
 	@Override
