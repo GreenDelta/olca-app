@@ -23,49 +23,49 @@
             default="false"
             icon="icons/actor_obj.png"
             id="editors.actor"
-            name="%editors.name">
+            name="%ActorEditor">
       </editor>
       <editor
             class="org.openlca.app.editors.sources.SourceEditor"
             default="false"
             icon="icons/source_obj.png"
             id="editors.source"
-            name="%editors.name.5">
+            name="%SourceEditor">
       </editor>
       <editor
             class="org.openlca.app.editors.units.UnitGroupEditor"
             default="false"
             icon="icons/unitgroup_obj.gif"
             id="editors.unitgroup"
-            name="%editors.name.6">
+            name="%UnitGroupEditor">
       </editor>
       <editor
             class="org.openlca.app.editors.flow_properties.FlowPropertyEditor"
             default="false"
             icon="icons/flowprop_obj.gif"
             id="editors.flowproperty"
-            name="%editors.name.1">
+            name="%FlowPropertyEditor">
       </editor>
       <editor
             class="org.openlca.app.editors.flows.FlowEditor"
             default="false"
             icon="icons/flow_obj.gif"
             id="editors.flow"
-            name="%editors.name.0">
+            name="%FlowEditor">
       </editor>
       <editor
             class="org.openlca.app.editors.lcia_methods.ImpactMethodEditor"
             default="false"
             icon="icons/LCIA_obj.gif"
             id="editors.impactmethod"
-            name="%editors.name.2">
+            name="%ImpactMethodEditor">
       </editor>
       <editor
             class="org.openlca.app.editors.processes.ProcessEditor"
             default="false"
             icon="icons/proc_obj.gif"
             id="editors.process"
-            name="%editors.name.7"
+            name="%ProcessEditor"
             contributorClass="org.openlca.app.editors.processes.ProcessToolbar">
       </editor>
       <editor
@@ -73,7 +73,7 @@
             default="false"
             icon="icons/project_obj.png"
             id="editors.project"
-            name="%editors.name.4"
+            name="%ProjectEditor"
             contributorClass="org.openlca.app.editors.projects.ProjectEditorActions">
       </editor>
       <editor
@@ -81,7 +81,7 @@
             default="false"
             icon="icons/model.gif"
             id="editors.productsystem"
-            name="%editors.name.3" 
+            name="%ProductSystemEditor" 
             contributorClass="org.openlca.app.editors.systems.ProductSystemActions">
       </editor>
       <editor
@@ -146,7 +146,7 @@
             default="false"
             icon="icons/16x16_link_blue.png"
             id="editors.usage"
-            name="%usage">
+            name="%Usage">
       </editor>
       <editor
             class="org.openlca.app.editors.graphical.ProductSystemGraphEditor"
@@ -170,55 +170,55 @@
             class="org.openlca.app.wizards.ActorWizard"
             icon="icons/actor_obj_new.png"
             id="wizards.new.actor"
-            name="%wizard.name">
+            name="%Actors">
       </wizard>
       <wizard
             class="org.openlca.app.wizards.SourceWizard"
             icon="icons/source_obj_new.png"
             id="wizards.new.source"
-            name="%wizard.name.0">
+            name="%Sources">
       </wizard>
       <wizard
             class="org.openlca.app.wizards.UnitGroupWizard"
             icon="icons/unitgroup_obj_new.gif"
             id="wizards.new.unitgroup"
-            name="%wizard.name.1">
+            name="%UnitGroups">
       </wizard>
       <wizard
             class="org.openlca.app.wizards.FlowPropertyWizard"
             icon="icons/flowprop_obj_new.gif"
             id="wizards.new.flowproperty"
-            name="%wizard.name.2">
+            name="%FlowProperties">
       </wizard>
       <wizard
             class="org.openlca.app.wizards.FlowWizard"
             icon="icons/flow_obj_new.gif"
             id="wizards.new.flow"
-            name="%wizard.name.4">
+            name="%Flows">
       </wizard>
       <wizard
             class="org.openlca.app.editors.lcia_methods.ImpactMethodWizard"
             icon="icons/LCIA_obj_new.gif"
             id="wizards.new.impactmethod"
-            name="%wizard.name.1">
+            name="%LCIAMethods">
       </wizard>
       <wizard
             class="org.openlca.app.wizards.ProcessWizard"
             icon="icons/proc_obj_new.gif"
             id="wizards.new.process"
-            name="%wizard.name.3">
+            name="%Processes">
       </wizard>
       <wizard
             class="org.openlca.app.wizards.ProjectWizard"
             icon="icons/project_obj_new.png"
             id="wizards.new.project"
-            name="%wizard.name.5">
+            name="%Projects">
       </wizard>
       <wizard
             class="org.openlca.app.wizards.ProductSystemWizard"
             icon="icons/chart_organisation_new.png"
             id="wizards.new.productsystem"
-            name="%wizard.name.6">
+            name="%ProductSystems">
       </wizard>
    </extension>   
    
@@ -261,22 +261,22 @@
       <page
             class="org.openlca.app.preferencepages.DatabaseParameterPage"
             id="preferencepages.parameters"
-            name="%page.name.1">
+            name="%GlobalParameters">
       </page>
       <page
             class="org.openlca.app.logging.LoggerConfigPage"
             id="preferencepages.logging"
-            name="%logger.config.page.name">
+            name="%Logging">
       </page>
       <page
       		class="org.openlca.app.preferencepages.NumberFormatPage"
       		id="preferencepages.numberformat"
-      		name="%number.format.page.name">
+      		name="%NumberFormat">
       </page>
       <page
             class="org.openlca.app.rcp.update.UpdatePreferencePage"
             id="preferencepages.update"
-            name="%update.preference.page.name">
+            name="%Updates">
       </page>
       <page
             class="org.openlca.app.preferencepages.FeatureFlagPage"
@@ -287,7 +287,7 @@
       <page
             class="org.openlca.app.ilcd_network.PreferencePage"
             id="preferencepages.ilcdnetwork"
-            name="%ilcd.net.preference.page.name">
+            name="%ILCDNetwork">
       </page>
    </extension>
    <extension
@@ -338,9 +338,6 @@
          <property
                name="introBrandingImageText"
                value="openLCA" />
-         <property
-               name="introTitle"
-               value="%introTitle" />
       </product>
    </extension>
    <extension
@@ -389,7 +386,7 @@
             contentProvider="org.openlca.app.navigation.NavigationContentProvider"
             id="navigatorcontent.context"
             labelProvider="org.openlca.app.navigation.NavigationLabelProvider"
-            name="%navigatorContent.name"
+            name="%DataProvider"
             priority="normal">
          <triggerPoints>
             <instanceof
@@ -424,25 +421,25 @@
             activeByDefault="false"
             class="org.openlca.app.navigation.filters.EmptyCategoryFilter"
             id="viewer.filter.emptycategory"
-            name="%commonFilter.name">
+            name="%EmptyCategories">
       </commonFilter>
       <commonFilter
             activeByDefault="false"
             class="org.openlca.app.navigation.filters.ProductFlowFilter"
             id="viewer.filter.productflow"
-            name="%commonFilter.name.0">
+            name="%ProductFlows">
       </commonFilter>
       <commonFilter
             activeByDefault="false"
             class="org.openlca.app.navigation.filters.ElementaryFlowFilter"
             id="viewer.filter.elementaryflow"
-            name="%commonFilter.name.1">
+            name="%ElementaryFlows">
       </commonFilter>
       <commonFilter
             activeByDefault="false"
             class="org.openlca.app.navigation.filters.WasteFlowFilter"
             id="viewer.filter.wasteflow"
-            name="%commonFilter.name.2">
+            name="%WasteFlows">
       </commonFilter>
    </extension>
    <extension
@@ -470,16 +467,16 @@
       </category>
        <category
                id="import.category.ilcdnetwork"
-               name="%ilcd.net.import.category.name">
+               name="%ILCDNetworkImport">
        </category>
       <wizard
             category="import.category.file"
             class="org.openlca.app.wizards.io.EcoSpold01ImportWizard"
             icon="icons/xml.png"
             id="wizard.import.ecospold1"
-            name="%wizard.name">
+            name="%EcoSpold">
          <description>
-            %wizard.description
+            
          </description>
       </wizard>
       <wizard
@@ -499,7 +496,7 @@
             id="wizard.import.ilcd"
             name="ILCD">
          <description>
-            %ilcd.import.description
+            
          </description>
       </wizard>
        <wizard
@@ -514,9 +511,9 @@
             class="org.openlca.app.ilcd_network.ImportWizard"
             icon="icons/network16.png"
             id="wizard.import.ilcdnetwork"
-            name="%ilcd.net.import.wizard.name">
+            name="%ILCDNetworkImport">
          <description>
-            %ilcd.net.import.wizard.description
+            
          </description>
       </wizard>
       <wizard
@@ -553,16 +550,16 @@
       </category>
       <category
             id="export.category.ilcdnetwork"
-            name="%ilcd.net.export.category.name">
+            name="%ILCDNetworkExport">
       </category>
       <wizard
             category="export.category.ecospold"
             class="org.openlca.app.wizards.io.EcoSpold01ExportProcessWizard"
             icon="icons/xml.png"
             id="wizard.export.ecospold.process"
-            name="%wizard.name.0">
+            name="%Processes">
          <description>
-            %wizard.description.0
+            
          </description>
        </wizard>
        <wizard
@@ -570,7 +567,7 @@
             class="org.openlca.app.wizards.io.ExcelExportWizard"
             icon="icons/file_excel_16.png"
             id="wizard.export.excel.process"
-            name="%wizard.name.0">
+            name="%Processes">
        </wizard>
        <wizard
             category="export.category.ecospold"
@@ -587,9 +584,9 @@
             class="org.openlca.app.wizards.io.EcoSpold01ExportMethodWizard"
             icon="icons/xml.png"
             id="wizard.export.ecospold.impactmethod"
-            name="%wizard.name.1">
+            name="%ImpactMethods">
          <description>
-            %wizard.description.1
+            
          </description>
       </wizard>
       <wizard
@@ -597,42 +594,42 @@
             class="org.openlca.app.wizards.io.ILCDExportSystemWizard"
             icon="icons/ilcd16.png"
             id="wizard.export.ilcd.productsystem"
-            name="%wizard.name.7">
+            name="%ProductSystems">
       </wizard>
        <wizard
             category="export.category.ilcd"
             class="org.openlca.app.wizards.io.ILCDExportMethodWizard"
             icon="icons/ilcd16.png"
             id="wizard.export.ilcd.method"
-            name="%wizard.name.8">
+            name="%LCIAMethods">
       </wizard>
       <wizard
             category="export.category.ilcd"
             class="org.openlca.app.wizards.io.ILCDExportProcessWizard"
             icon="icons/ilcd16.png"
             id="wizard.export.ilcd.process"
-            name="%wizard.name.3">
+            name="%Processes">
       </wizard>
       <wizard
             category="export.category.ilcd"
             class="org.openlca.app.wizards.io.ILCDExportFlowWizard"
             icon="icons/ilcd16.png"
             id="wizard.export.ilcd.flow"
-            name="%wizard.name.4">
+            name="%Flows">
       </wizard>
       <wizard
             category="export.category.ilcd"
             class="org.openlca.app.wizards.io.ILCDExportFlowPropertyWizard"
             icon="icons/ilcd16.png"
             id="wizard.export.ilcd.flowproperty"
-            name="%wizard.name.5">
+            name="%FlowProperties">
       </wizard>
       <wizard
             category="export.category.ilcd"
             class="org.openlca.app.wizards.io.ILCDExportUnitGroupWizard"
             icon="icons/ilcd16.png"
             id="wizard.export.ilcd.unitgroup"
-            name="%wizard.name.6">
+            name="%UnitGroups">
       </wizard>
       <wizard
             category="export.category.ilcd"
@@ -653,7 +650,7 @@
             class="org.openlca.app.ilcd_network.ExportWizard"
             icon="icons/network16.png"
             id="org.openlca.ilcd.network.ExportWizard"
-            name="%ilcd.net.export.wizard.name">
+            name="%ILCDNetworkExport">
       </wizard>
    </extension>
 </plugin>
