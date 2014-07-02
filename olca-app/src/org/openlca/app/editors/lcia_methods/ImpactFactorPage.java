@@ -41,7 +41,7 @@ class ImpactFactorPage extends ModelPage<ImpactMethod> {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, Messages.ImpactMethod
+		ScrolledForm form = UI.formHeader(managedForm, Messages.ImpactAssessmentMethod
 				+ ": " + getModel().getName());
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);

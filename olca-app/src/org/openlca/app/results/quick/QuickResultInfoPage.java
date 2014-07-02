@@ -74,7 +74,8 @@ public class QuickResultInfoPage extends FormPage {
 		createText(composite, Messages.TargetAmount, targetText);
 		ImpactMethodDescriptor method = setup.getImpactMethod();
 		if (method != null)
-			createText(composite, Messages.ImpactMethodTitle, method.getName());
+			createText(composite, Messages.ImpactAssessmentMethod,
+					method.getName());
 		NwSetDescriptor nwSet = setup.getNwSet();
 		if (nwSet != null)
 			createText(composite, Messages.NormalizationWeightingSet,

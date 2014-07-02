@@ -113,7 +113,7 @@ public final class FancyToolTip extends DefaultToolTip {
 			twd_textField.grabVertical = true;
 			twd_textField.grabHorizontal = true;
 			textField.setLayoutData(twd_textField);
-			final String nullText = Messages.FancyToolTip_NoDescription;
+			final String nullText = Messages.NoDescription;
 			textField.setText(descriptor.getDescription() != null ? descriptor
 					.getDescription() : nullText);
 		}

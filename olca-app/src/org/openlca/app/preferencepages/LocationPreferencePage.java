@@ -254,7 +254,7 @@ public class LocationPreferencePage extends PreferencePage implements
 
 		public AddLocationAction() {
 			setId("LocationPreferencePage.AddParameterAction");
-			setText(NLS.bind(Messages.AddAction_Text, Messages.Location));
+			setText(NLS.bind(Messages.CreateNew, Messages.Location));
 			setImageDescriptor(ImageType.ADD_ICON.getDescriptor());
 			setDisabledImageDescriptor(ImageType.ADD_ICON_DISABLED
 					.getDescriptor());

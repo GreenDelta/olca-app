@@ -11,8 +11,8 @@ class ActorWizardPage extends AbstractWizardPage<Actor> {
 
 	public ActorWizardPage() {
 		super("ActorWizardPage");
-		setTitle(Messages.Actors_WizardTitle);
-		setMessage(Messages.Actors_WizardMessage);
+		setTitle(Messages.NewActor);
+		setMessage(Messages.CreatesANewActor);
 		setImageDescriptor(ImageType.NEW_WIZ_ACTOR.getDescriptor());
 		setPageComplete(false);
 	}

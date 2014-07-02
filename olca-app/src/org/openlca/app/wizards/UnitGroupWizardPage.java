@@ -62,7 +62,7 @@ class UnitGroupWizardPage extends AbstractWizardPage<UnitGroup> {
 	private void checkUnit() {
 		String refUnitName = referenceUnitText.getText().trim();
 		if (refUnitName.length() == 0)
-			failCheck(Messages.EmptyReferenceUnitError);
+			failCheck(Messages.ReferenceUnitIsEmptyOrInvalid);
 		else {
 			UnitGroup unitGroup = findGroupWithUnit(refUnitName);
 			if (unitGroup != null)

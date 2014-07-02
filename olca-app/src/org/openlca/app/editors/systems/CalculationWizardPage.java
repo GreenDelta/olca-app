@@ -44,7 +44,7 @@ class CalculationWizardPage extends WizardPage {
 	public CalculationWizardPage(ProductSystem system) {
 		super(CalculationWizardPage.class.getCanonicalName());
 		this.productSystem = system;
-		setTitle(Messages.CalculationWizardTitle);
+		setTitle(Messages.CalculationProperties);
 		setDescription(Messages.CalculationWizardDescription);
 		setImageDescriptor(ImageType.WIZ_CALCULATION.getDescriptor());
 		setPageComplete(true);
@@ -57,11 +57,11 @@ class CalculationWizardPage extends WizardPage {
 		UI.gridLayout(body, 2).verticalSpacing = 12;
 		createAllocationViewer(body);
 		createMethodComboViewer(body);
-		UI.formLabel(body, Messages.NWSet);
+		UI.formLabel(body, Messages.NormalizationweightingSet);
 		nwViewer = new NwSetComboViewer(body);
 		nwViewer.setDatabase(Database.get());
 
-		UI.formLabel(body, Messages.CalculationWizardPage_CalculationType);
+		UI.formLabel(body, Messages.CalculationType);
 		Composite typePanel = new Composite(body, SWT.NONE);
 		UI.gridLayout(typePanel, 2).horizontalSpacing = 15;
 		createRadios(typePanel);
@@ -71,7 +71,7 @@ class CalculationWizardPage extends WizardPage {
 
 	private void createIterationText(Composite typePanel) {
 		Label label = UI.formLabel(typePanel,
-				Messages.CalculationWizardPage_NumberOfIterations);
+				Messages.NumberOfIterations);
 		UI.gridData(label, false, false).horizontalIndent = 16;
 		iterationText = new Text(typePanel, SWT.BORDER);
 		UI.gridData(iterationText, false, false).widthHint = 80;
@@ -115,11 +115,11 @@ class CalculationWizardPage extends WizardPage {
 	private String getLabel(CalculationType type) {
 		switch (type) {
 		case ANALYSIS:
-			return Messages.CalculationWizardPage_Analysis;
+			return Messages.Analysis;
 		case MONTE_CARLO:
 			return Messages.MonteCarloSimulation;
 		case QUICK:
-			return Messages.CalculationWizardPage_QuickResults;
+			return Messages.QuickResults;
 		case REGIONALIZED:
 			return "Regionalized LCIA";
 		default:
@@ -167,7 +167,7 @@ class CalculationWizardPage extends WizardPage {
 	}
 
 	private void createMethodComboViewer(Composite parent) {
-		UI.formLabel(parent, Messages.ImpactMethod);
+		UI.formLabel(parent, Messages.ImpactAssessmentMethod);
 		methodViewer = new ImpactMethodViewer(parent);
 		methodViewer.setInput(Database.get());
 		methodViewer

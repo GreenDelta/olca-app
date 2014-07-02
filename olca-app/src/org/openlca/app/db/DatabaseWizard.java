@@ -76,7 +76,7 @@ public class DatabaseWizard extends Wizard {
 		@Override
 		public void run(IProgressMonitor monitor)
 				throws InvocationTargetException, InterruptedException {
-			monitor.beginTask(Messages.NewDatabase_Create,
+			monitor.beginTask(Messages.CreateDatabase,
 					IProgressMonitor.UNKNOWN);
 			try {
 				Database.close();

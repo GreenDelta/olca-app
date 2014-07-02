@@ -27,15 +27,12 @@ import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.NwSetDescriptor;
 import org.openlca.core.results.FullResultProvider;
 import org.openlca.io.xls.results.AnalysisResultExport;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Overall information page of the analysis editor.
  */
 public class AnalyzeInfoPage extends FormPage {
 
-	private Logger log = LoggerFactory.getLogger(getClass());
 	private CalculationSetup setup;
 	private FullResultProvider result;
 	private FormToolkit toolkit;
@@ -73,7 +70,8 @@ public class AnalyzeInfoPage extends FormPage {
 		createText(composite, Messages.TargetAmount, targetText);
 		ImpactMethodDescriptor method = setup.getImpactMethod();
 		if (method != null)
-			createText(composite, Messages.ImpactMethodTitle, method.getName());
+			createText(composite, Messages.ImpactAssessmentMethod,
+					method.getName());
 		NwSetDescriptor nwSet = setup.getNwSet();
 		if (nwSet != null)
 			createText(composite, Messages.NormalizationWeightingSet,

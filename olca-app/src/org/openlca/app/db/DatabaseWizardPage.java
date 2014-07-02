@@ -38,7 +38,7 @@ class DatabaseWizardPage extends WizardPage {
 	public DatabaseWizardPage() {
 		super("database-wizard-page", Messages.NewDatabase,
 				ImageType.NEW_WIZ_DATABASE.getDescriptor());
-		setDescription(Messages.NewDatabase_Description);
+		setDescription(Messages.CreateANewDatabase);
 		setPageComplete(false);
 	}
 
@@ -52,7 +52,7 @@ class DatabaseWizardPage extends WizardPage {
 				false));
 		setControl(headerComposite);
 		UI.gridLayout(headerComposite, 2);
-		nameText = UI.formText(headerComposite, Messages.NewDatabase_Name);
+		nameText = UI.formText(headerComposite, Messages.DatabaseName);
 		nameText.addModifyListener(new TextListener());
 
 		UI.formLabel(headerComposite, "Database type");
@@ -90,7 +90,7 @@ class DatabaseWizardPage extends WizardPage {
 		localComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
 				false));
 		UI.gridLayout(localComposite, 2);
-		UI.formLabel(localComposite, Messages.NewDatabase_RefData);
+		UI.formLabel(localComposite, Messages.DatabaseContent);
 		createContentRadios(localComposite);
 	}
 
@@ -126,7 +126,7 @@ class DatabaseWizardPage extends WizardPage {
 		case UNITS:
 			return Messages.UnitsAndFlowProps;
 		case ALL_REF_DATA:
-			return Messages.CompleteRefData;
+			return Messages.CompleteReferenceData;
 		default:
 			return null;
 		}

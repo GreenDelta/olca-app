@@ -115,7 +115,7 @@ class InfoPage extends ModelPage<Process> {
 
 	private void createGeographySection(Composite body) {
 		Composite composite = UI.formSection(body, toolkit,
-				Messages.GeographyInfoSectionLabel);
+				Messages.Geography);
 		toolkit.createLabel(composite, Messages.Location);
 		LocationViewer viewer = new LocationViewer(composite);
 		viewer.setNullable(true);

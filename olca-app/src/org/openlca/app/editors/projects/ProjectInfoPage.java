@@ -31,7 +31,7 @@ class ProjectInfoPage extends ModelPage<Project> {
 
 	private void createGoalAndScopeSection(Composite parent) {
 		Composite composite = UI.formSection(parent, toolkit,
-				Messages.GoalAndScopeInfoSectionLabel);
+				Messages.GoalAndScope);
 
 		createMultiText(Messages.Goal, "goal", composite);
 		createMultiText(Messages.FunctionalUnit, "functionalUnit", composite);

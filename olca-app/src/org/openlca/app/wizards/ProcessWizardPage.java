@@ -58,7 +58,7 @@ class ProcessWizardPage extends AbstractWizardPage<Process> {
 	protected void checkInput() {
 		super.checkInput();
 		boolean createFlow = createRefFlowCheck.getSelection();
-		String err = Messages.EmptyQuantitativeReferenceError;
+		String err = Messages.NoQuantitativeReferenceSelected;
 		if (createFlow) {
 			if (flowPropertyViewer.getSelected() == null)
 				setErrorMessage(err);
@@ -89,7 +89,7 @@ class ProcessWizardPage extends AbstractWizardPage<Process> {
 
 	private void createRefFlowCheck(Composite container) {
 		createRefFlowCheck = new Button(container, SWT.CHECK);
-		createRefFlowCheck.setText(Messages.CreateProductFlow);
+		createRefFlowCheck.setText(Messages.CreateANewProductFlowForTheProcess);
 		createRefFlowCheck.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {

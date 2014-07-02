@@ -26,8 +26,8 @@ class FlowWizardPage extends AbstractWizardPage<Flow> {
 
 	public FlowWizardPage() {
 		super("FlowWizardPage");
-		setTitle(Messages.Flows_WizardTitle);
-		setMessage(Messages.Flows_WizardMessage);
+		setTitle(Messages.NewFlow);
+		setMessage(Messages.CreatesANewFlow);
 		setImageDescriptor(ImageType.NEW_WIZ_FLOW.getDescriptor());
 		setPageComplete(false);
 	}
@@ -37,7 +37,7 @@ class FlowWizardPage extends AbstractWizardPage<Flow> {
 		super.checkInput();
 		if (getErrorMessage() == null) {
 			if (referenceFlowPropertyViewer.getSelected() == null) {
-				setErrorMessage(Messages.EmptyReferenceFlowPropertyError);
+				setErrorMessage(Messages.NoReferenceFlowPropertySelected);
 			}
 		}
 		setPageComplete(getErrorMessage() == null);
@@ -82,7 +82,8 @@ class FlowWizardPage extends AbstractWizardPage<Flow> {
 	private void addFlowProperty(Flow flow) {
 		try {
 			long id = referenceFlowPropertyViewer.getSelected().getId();
-			FlowProperty flowProp = Cache.getEntityCache().get(FlowProperty.class,
+			FlowProperty flowProp = Cache.getEntityCache().get(
+					FlowProperty.class,
 					id);
 			flow.setReferenceFlowProperty(flowProp);
 			FlowPropertyFactor factor = new FlowPropertyFactor();

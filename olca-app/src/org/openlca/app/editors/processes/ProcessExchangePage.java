@@ -21,7 +21,7 @@ class ProcessExchangePage extends ModelPage<Process> {
 	private FormToolkit toolkit;
 
 	ProcessExchangePage(ProcessEditor editor) {
-		super(editor, "ProcessExchangePage", Messages.InputOutputPageLabel);
+		super(editor, "ProcessExchangePage", Messages.InputsOutputs);
 		this.editor = editor;
 	}
 

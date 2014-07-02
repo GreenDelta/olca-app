@@ -33,7 +33,7 @@ public class DeleteCategoryAction extends Action implements INavigationAction {
 	private CategoryElement categoryElement;
 
 	public DeleteCategoryAction() {
-		setText(Messages.NavigationView_RemoveCategoryText);
+		setText(Messages.Remove);
 		setImageDescriptor(ImageType.DELETE_ICON.getDescriptor());
 	}
 

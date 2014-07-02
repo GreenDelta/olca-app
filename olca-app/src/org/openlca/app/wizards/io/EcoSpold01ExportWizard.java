@@ -45,7 +45,7 @@ public class EcoSpold01ExportWizard extends Wizard implements IExportWizard {
 	@Override
 	public void init(final IWorkbench workbench,
 			final IStructuredSelection selection) {
-		setWindowTitle(Messages.EcoSpoldExportWizard_WindowTitle);
+		setWindowTitle(Messages.ExportEcoSpold);
 	}
 
 	@Override
@@ -60,9 +60,9 @@ public class EcoSpold01ExportWizard extends Wizard implements IExportWizard {
 						throws InvocationTargetException, InterruptedException {
 					// set up
 					int objectAmount = models.size();
-					monitor.beginTask(Messages.EcoSpoldExporting,
+					monitor.beginTask(Messages.ExportingProcesses,
 							objectAmount + 1);
-					monitor.subTask(Messages.EcoSpoldCreatingFolder);
+					monitor.subTask(Messages.CreatingEcoSpoldFolder);
 					EcoSpold01Outputter outputter = new EcoSpold01Outputter(
 							page.getExportDestination());
 					monitor.worked(1);

@@ -114,7 +114,7 @@ class AllocationPage extends FormPage {
 	private void createCalcButton(Composite composite) {
 		UI.formLabel(composite, toolkit, "");
 		Button button = toolkit.createButton(composite,
-				Messages.CalculateDefaults, SWT.NONE);
+				Messages.CalculateDefaultValues, SWT.NONE);
 		button.setImage(ImageType.CALCULATE_ICON.get());
 		button.addSelectionListener(new SelectionAdapter() {
 			@Override

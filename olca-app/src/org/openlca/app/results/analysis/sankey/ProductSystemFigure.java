@@ -71,7 +71,7 @@ public class ProductSystemFigure extends Figure {
 
 		Object selection = productSystemNode.getSelection();
 		double cutoffValue = productSystemNode.getCutoff() * 100;
-		String cutoffText = Messages.CutOff + ": "
+		String cutoffText = Messages.Cutoff + ": "
 				+ Numbers.format(cutoffValue, 3) + "%";
 		if (selection != null) {
 			String label = selectionLabel(selection);

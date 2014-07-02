@@ -36,7 +36,7 @@ public class ILCDImportWizard extends Wizard implements IImportWizard {
 
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		setWindowTitle(Messages.ILCDImportWizard_WindowTitle);
+		setWindowTitle(Messages.ImportILCD);
 		setDefaultPageImageDescriptor(ImageType.IMPORT_ZIP_WIZARD
 				.getDescriptor());
 	}

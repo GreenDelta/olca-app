@@ -95,23 +95,23 @@ public class CreateModelAction extends Action implements INavigationAction {
 			return Messages.Unknown + "?";
 		switch (type) {
 		case ACTOR:
-			return Messages.CreateNewActor;
+			return Messages.NewActor;
 		case FLOW:
-			return Messages.CreateNewFlow;
+			return Messages.NewFlow;
 		case FLOW_PROPERTY:
-			return Messages.CreateNewFlowProperty;
+			return Messages.NewFlowProperty;
 		case IMPACT_METHOD:
-			return Messages.CreateNewLCIAMethod;
+			return Messages.NewLCIAMethod;
 		case PROCESS:
-			return Messages.CreateNewProcess;
+			return Messages.NewProcess;
 		case PRODUCT_SYSTEM:
-			return Messages.CreateNewProductSystem;
+			return Messages.NewProductSystem;
 		case PROJECT:
-			return Messages.CreateNewProject;
+			return Messages.NewProject;
 		case SOURCE:
-			return Messages.CreateNewSource;
+			return Messages.NewSource;
 		case UNIT_GROUP:
-			return Messages.CreateNewUnitGroup;
+			return Messages.NewUnitGroup;
 		default:
 			return Messages.Unknown + "?";
 		}

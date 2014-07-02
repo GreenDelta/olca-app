@@ -61,7 +61,7 @@ class SourceInfoPage extends ModelPage<Source> {
 
 	protected void createAdditionalInfo(Composite body) {
 		Composite composite = UI.formSection(body, toolkit,
-				Messages.AdditionalInfo);
+				Messages.AdditionalInformation);
 		createText(Messages.Doi, "doi", composite);
 		createText(Messages.TextReference, "textReference", composite);
 		Text text = UI.formText(composite, getManagedForm().getToolkit(),

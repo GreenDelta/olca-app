@@ -213,7 +213,7 @@ public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 	private class CreateAction extends Action {
 
 		private CreateAction() {
-			setText(Messages.AddAction_Text);
+			setText(Messages.CreateNew);
 			setImageDescriptor(ImageManager
 					.getImageDescriptor(ImageType.ADD_ICON));
 			setDisabledImageDescriptor(ImageManager

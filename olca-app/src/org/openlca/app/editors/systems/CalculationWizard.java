@@ -38,7 +38,7 @@ class CalculationWizard extends Wizard {
 	public CalculationWizard(ProductSystem productSystem) {
 		this.productSystem = productSystem;
 		setNeedsProgressMonitor(true);
-		setWindowTitle(Messages.CalculationWizardTitle);
+		setWindowTitle(Messages.CalculationProperties);
 	}
 
 	@Override

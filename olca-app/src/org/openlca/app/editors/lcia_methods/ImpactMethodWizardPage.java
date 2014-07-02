@@ -12,8 +12,8 @@ class ImpactMethodWizardPage extends AbstractWizardPage<ImpactMethod> {
 
 	public ImpactMethodWizardPage() {
 		super("LCIAMethodWizardPage");
-		setTitle(Messages.Methods_WizardTitle);
-		setMessage(Messages.Methods_WizardMessage);
+		setTitle(Messages.NewImpactMethod);
+		setMessage(Messages.CreatesANewImpactMethod);
 		setImageDescriptor(ImageType.NEW_WIZ_METHOD.getDescriptor());
 		setPageComplete(false);
 	}

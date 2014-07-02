@@ -47,7 +47,7 @@ public class FileImportPage extends WizardPage {
 
 	public FileImportPage(String[] fileExtensions, boolean multi) {
 		super("FileImportPage");
-		setTitle(Messages.FileImportPage_Title);
+		setTitle(Messages.SelectImportFiles);
 		setDescription(Messages.FileImportPage_Description);
 		if (fileExtensions != null) {
 			for (String extension : fileExtensions)
@@ -93,14 +93,14 @@ public class FileImportPage extends WizardPage {
 				true, false));
 
 		new Label(chooseDirectoryComposite, SWT.NONE)
-				.setText(Messages.FileImportPage_ChooseDirectoryLabel);
+				.setText(Messages.FromDirectory);
 
 		createDirectoryText(chooseDirectoryComposite);
 
 		// create button to open directory dialog
 		final Button chooseDirectoryButton = new Button(
 				chooseDirectoryComposite, SWT.NONE);
-		chooseDirectoryButton.setText(Messages.ChooseDirectoryButton);
+		chooseDirectoryButton.setText(Messages.ChooseDirectory);
 		chooseDirectoryButton.addSelectionListener(new DirectorySelection());
 
 		new Label(body, SWT.SEPARATOR | SWT.HORIZONTAL)

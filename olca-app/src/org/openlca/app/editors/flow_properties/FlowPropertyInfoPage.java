@@ -36,7 +36,7 @@ class FlowPropertyInfoPage extends ModelPage<FlowProperty> {
 
 	private void createAdditionalInfo(InfoSection infoSection) {
 		createLink(Messages.UnitGroup, "unitGroup", infoSection.getContainer());
-		createReadOnly(Messages.FlowProps_FlowPropertyType, "flowPropertyType",
+		createReadOnly(Messages.FlowPropertyType, "flowPropertyType",
 				infoSection.getContainer());
 	}
 }

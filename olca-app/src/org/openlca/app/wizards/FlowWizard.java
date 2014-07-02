@@ -19,7 +19,7 @@ public class FlowWizard extends AbstractWizard<Flow> {
 
 	@Override
 	protected String getTitle() {
-		return Messages.Flows_WizardTitle;
+		return Messages.NewFlow;
 	}
 
 }

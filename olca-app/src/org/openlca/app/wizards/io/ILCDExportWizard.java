@@ -41,7 +41,7 @@ public class ILCDExportWizard extends Wizard implements IExportWizard {
 	@Override
 	public void init(final IWorkbench workbench,
 			final IStructuredSelection selection) {
-		setWindowTitle(Messages.ILCDExportWizard_WindowTitle);
+		setWindowTitle(Messages.ExportILCD);
 	}
 
 	@Override

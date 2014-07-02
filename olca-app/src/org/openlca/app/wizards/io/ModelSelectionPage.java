@@ -59,7 +59,7 @@ class ModelSelectionPage extends WizardPage {
 		case PROCESS:
 			return Messages.Processes;
 		case IMPACT_METHOD:
-			return Messages.ImpactMethods;
+			return Messages.ImpactAssessmentMethods;
 		case FLOW:
 			return Messages.Flows;
 		case FLOW_PROPERTY:
@@ -97,7 +97,7 @@ class ModelSelectionPage extends WizardPage {
 				true, false));
 
 		new Label(chooseDirectoryComposite, SWT.NONE)
-				.setText(Messages.ChooseDirectoryLabel);
+				.setText(Messages.ToDirectory);
 
 		// create text for selecting a category
 		final Text directoryText = new Text(chooseDirectoryComposite,
@@ -118,7 +118,7 @@ class ModelSelectionPage extends WizardPage {
 		// create button to open directory dialog
 		final Button chooseDirectoryButton = new Button(
 				chooseDirectoryComposite, SWT.NONE);
-		chooseDirectoryButton.setText(Messages.ChooseDirectoryButton);
+		chooseDirectoryButton.setText(Messages.ChooseDirectory);
 		chooseDirectoryButton.addSelectionListener(new SelectionListener() {
 
 			@Override

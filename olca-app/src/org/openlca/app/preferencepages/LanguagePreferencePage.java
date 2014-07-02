@@ -1,12 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.app.preferencepages;
 
 import org.eclipse.jface.preference.PreferencePage;
@@ -79,7 +70,7 @@ public class LanguagePreferencePage extends PreferencePage implements
 		composite.setLayout(layout);
 
 		final Label message = new Label(composite, SWT.NONE);
-		message.setText(Messages.LanguagePreferencePage_SelectLanguageLabel);
+		message.setText(Messages.SelectAUserInterfaceLanguage);
 
 		// create language selection combo
 		combo = new Combo(composite, SWT.READ_ONLY);
@@ -104,7 +95,7 @@ public class LanguagePreferencePage extends PreferencePage implements
 		final Composite composite2 = new Composite(body, SWT.NONE);
 		composite2.setLayout(new GridLayout(1, true));
 		createNoteComposite(composite2.getFont(), composite2, Messages.Note
-				+ ":", Messages.LanguagePreferencePage_SelectLanguageNoteText);
+				+ ":", Messages.SelectLanguageNoteMessage);
 
 		initListeners();
 		return body;
@@ -136,7 +127,7 @@ public class LanguagePreferencePage extends PreferencePage implements
 
 	@Override
 	public String getTitle() {
-		return Messages.LanguagePreferencePage_Title;
+		return Messages.Language;
 	}
 
 	@Override

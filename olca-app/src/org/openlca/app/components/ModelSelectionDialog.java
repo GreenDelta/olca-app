@@ -116,8 +116,8 @@ public class ModelSelectionDialog extends FormDialog {
 			return multiSelection ? Messages.FlowProperties
 					: Messages.FlowProperty;
 		case IMPACT_METHOD:
-			return multiSelection ? Messages.ImpactMethods
-					: Messages.ImpactMethod;
+			return multiSelection ? Messages.ImpactAssessmentMethods
+					: Messages.ImpactAssessmentMethod;
 		case PROCESS:
 			return multiSelection ? Messages.Processes : Messages.Process;
 		case PRODUCT_SYSTEM:

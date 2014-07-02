@@ -116,7 +116,7 @@ public class NavigationLabelProvider extends ColumnLabelProvider implements
 		case FLOW_PROPERTY:
 			return Messages.FlowProperties;
 		case IMPACT_METHOD:
-			return Messages.ImpactMethods;
+			return Messages.ImpactAssessmentMethods;
 		case PROCESS:
 			return Messages.Processes;
 		case PRODUCT_SYSTEM:

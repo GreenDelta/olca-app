@@ -43,7 +43,7 @@ public class Actions {
 	public static Action onAdd(final Runnable runnable) {
 		return new Action() {
 			{
-				setText(Messages.AddAction_Text);
+				setText(Messages.CreateNew);
 				setImageDescriptor(ImageManager
 						.getImageDescriptor(ImageType.ADD_ICON));
 				setDisabledImageDescriptor(ImageManager

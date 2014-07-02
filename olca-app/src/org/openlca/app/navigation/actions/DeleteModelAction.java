@@ -120,7 +120,7 @@ public class DeleteModelAction extends Action implements INavigationAction {
 		if (descriptor == null)
 			return false;
 		String name = Labels.getDisplayName(descriptor);
-		String message = NLS.bind(Messages.NavigationView_DeleteQuestion, name);
+		String message = NLS.bind(Messages.DoYouReallyWantToDelete, name);
 		return Question.ask(Messages.Delete, message);
 	}
 }

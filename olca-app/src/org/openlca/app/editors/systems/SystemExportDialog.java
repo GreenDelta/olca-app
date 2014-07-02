@@ -68,7 +68,7 @@ public class SystemExportDialog extends WizardDialog {
 				UI.formLabel(methodGroup, Messages.AllocationMethod);
 				allocationMethodViewer = new AllocationMethodViewer(
 						methodGroup, AllocationMethod.values());
-				UI.formLabel(methodGroup, Messages.ImpactMethod);
+				UI.formLabel(methodGroup, Messages.ImpactAssessmentMethod);
 				impactMethodViewer = new ImpactMethodViewer(methodGroup);
 				impactMethodViewer.setInput(database);
 

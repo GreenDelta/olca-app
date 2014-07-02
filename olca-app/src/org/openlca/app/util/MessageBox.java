@@ -32,7 +32,7 @@ class MessageBox {
 			title = Messages.Warning;
 			break;
 		case INFO:
-			title = Messages.INFO;
+			title = Messages.Information;
 			break;
 		default:
 			break;

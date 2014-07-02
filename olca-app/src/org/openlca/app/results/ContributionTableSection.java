@@ -121,7 +121,7 @@ public class ContributionTableSection {
 
 	private void createSpinner(FormToolkit toolkit, Composite header,
 			ComboSelectionChange selectionChange) {
-		toolkit.createLabel(header, Messages.CutOff);
+		toolkit.createLabel(header, Messages.Cutoff);
 		spinner = new Spinner(header, SWT.BORDER);
 		spinner.setValues(2, 0, 100, 0, 1, 10);
 		toolkit.adapt(spinner);

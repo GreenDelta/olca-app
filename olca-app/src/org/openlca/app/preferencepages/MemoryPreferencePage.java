@@ -61,7 +61,7 @@ public class MemoryPreferencePage extends PreferencePage implements
 		final Composite composite2 = new Composite(body, SWT.NONE);
 		composite2.setLayout(new GridLayout(1, true));
 		createNoteComposite(composite2.getFont(), composite2, Messages.Note
-				+ ":", Messages.LanguagePreferencePage_SelectLanguageNoteText);
+				+ ":", Messages.SelectLanguageNoteMessage);
 
 		// initialize the listeners
 		initListeners();

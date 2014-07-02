@@ -32,7 +32,7 @@ public class CreateCategoryAction extends Action implements INavigationAction {
 	private ModelType modelType;
 
 	public CreateCategoryAction() {
-		setText(Messages.NavigationView_AddCategoryText);
+		setText(Messages.AddNewChildCategory);
 		setImageDescriptor(ImageType.ADD_ICON.getDescriptor());
 	}
 
@@ -103,9 +103,9 @@ public class CreateCategoryAction extends Action implements INavigationAction {
 
 	private String getDialogValue() {
 		InputDialog dialog = new InputDialog(UI.shell(),
-				Messages.NavigationView_NewCategoryDialogTitle,
-				Messages.NavigationView_NewCategoryDialogText,
-				Messages.NavigationView_NewCategoryDialogDefault, null);
+				Messages.NewCategory,
+				Messages.PleaseEnterTheNameOfTheNewCategory,
+				Messages.NewCategory, null);
 		int rc = dialog.open();
 		if (rc == Window.OK)
 			return dialog.getValue();
