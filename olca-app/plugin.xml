@@ -235,7 +235,7 @@
    <extension
          point="org.eclipse.ui.perspectives">
       <perspective
-            name="%perspective.name"
+            name="%Perspective"
             class="org.openlca.app.rcp.RcpPerspective"
             id="perspectives.standard">
       </perspective>
@@ -256,7 +256,7 @@
 	  <page
             class="org.openlca.app.preferencepages.LocationPreferencePage"
             id="preferencepages.location"
-            name="%page.name.2">
+            name="%Locations">
       </page>
       <page
             class="org.openlca.app.preferencepages.DatabaseParameterPage"
