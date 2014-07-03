@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
+import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.Error;
 import org.openlca.core.database.IDatabase;
@@ -79,7 +80,7 @@ public class ParameterPageSupport {
 			for (ParameterPageListener listener : listeners)
 				listener.parameterChanged();
 		} catch (Exception e) {
-			Error.showBox("Formula evaluation failed", e.getMessage());
+			Error.showBox(Messages.FormulaEvaluationFailed, e.getMessage());
 		}
 	}
 
@@ -108,7 +109,7 @@ public class ParameterPageSupport {
 				e.setAmountValue(eval(e.getAmountFormula()));
 			eval(e.getUncertainty());
 		} catch (Exception ex) {
-			Error.showBox("Formula evaluation failed", ex.getMessage());
+			Error.showBox(Messages.FormulaEvaluationFailed, ex.getMessage());
 		}
 	}
 
@@ -118,7 +119,7 @@ public class ParameterPageSupport {
 				f.setValue(eval(f.getFormula()));
 			eval(f.getUncertainty());
 		} catch (Exception e) {
-			Error.showBox("Formula evaluation failed", e.getMessage());
+			Error.showBox(Messages.FormulaEvaluationFailed, e.getMessage());
 		}
 	}
 

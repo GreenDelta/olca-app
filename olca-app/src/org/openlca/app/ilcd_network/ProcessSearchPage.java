@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
+import org.openlca.app.Messages;
 import org.openlca.app.util.Dialog;
 import org.openlca.app.util.UI;
 import org.openlca.ilcd.descriptors.DescriptorList;
@@ -40,9 +41,9 @@ public class ProcessSearchPage extends WizardPage {
 	private TableViewer viewer;
 
 	public ProcessSearchPage() {
-		super("ILCD-ProcessSearchPage"); 
-		setTitle(Messages.NetworkSearch);
-		setDescription(Messages.SearchPageDescription);
+		super("ILCD-ProcessSearchPage");
+		setTitle(Messages.Search);
+		setDescription(Messages.ILCD_SearchPageDescription);
 		setPageComplete(false);
 	}
 
@@ -99,7 +100,7 @@ public class ProcessSearchPage extends WizardPage {
 			}
 		} catch (Exception e) {
 			Dialog.showError(getShell(),
-					Messages.SearchFailedMessage + e.getMessage());
+					Messages.ILCD_SearchFailedMessage + e.getMessage());
 		}
 	}
 

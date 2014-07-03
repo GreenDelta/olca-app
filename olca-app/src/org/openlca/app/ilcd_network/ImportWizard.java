@@ -1,8 +1,5 @@
 package org.openlca.app.ilcd_network;
 
-import static org.openlca.app.ilcd_network.Messages.NetworkImport;
-import static org.openlca.app.ilcd_network.Messages.RunImport;
-
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
@@ -12,6 +9,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
+import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.RcpActivator;
@@ -64,7 +62,8 @@ public class ImportWizard extends Wizard implements IImportWizard {
 			@Override
 			public void run(IProgressMonitor monitor)
 					throws InvocationTargetException, InterruptedException {
-				monitor.beginTask(RunImport, IProgressMonitor.UNKNOWN);
+				monitor.beginTask(Messages.ILCD_RunImport,
+						IProgressMonitor.UNKNOWN);
 				try {
 					importProcesses(processes, client, database);
 				} catch (Exception e) {
@@ -96,7 +95,7 @@ public class ImportWizard extends Wizard implements IImportWizard {
 
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		setWindowTitle(NetworkImport);
+		setWindowTitle(Messages.ILCD_NetworkImport);
 		setDefaultPageImageDescriptor(RcpActivator.imageDescriptorFromPlugin(
 				RcpActivator.PLUGIN_ID, "/icons/network_wiz.png"));
 		setNeedsProgressMonitor(true);

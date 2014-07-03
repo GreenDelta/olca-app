@@ -94,7 +94,7 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 		ImpactMethod method = editor.getModel();
 		ImpactCategory category = new ImpactCategory();
 		category.setRefId(UUID.randomUUID().toString());
-		category.setName("New impact category");
+		category.setName(Messages.NewImpactCategory);
 		method.getImpactCategories().add(category);
 		viewer.setInput(method.getImpactCategories());
 		fireCategoryChange();

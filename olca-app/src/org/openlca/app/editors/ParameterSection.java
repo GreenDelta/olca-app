@@ -90,8 +90,8 @@ public class ParameterSection implements ParameterPageListener {
 	}
 
 	private void createComponents(Composite body, String[] properties) {
-		String label = forInputParameters ? "Input parameters"
-				: "Dependent parameters";
+		String label = forInputParameters ? Messages.InputParameters
+				: Messages.DependentParameters;
 		Section section = UI.section(body, editor.getToolkit(), label);
 		UI.gridData(section, true, true);
 		Composite parent = UI.sectionClient(section, editor.getToolkit());
@@ -217,8 +217,8 @@ public class ParameterSection implements ParameterPageListener {
 				return;
 			String name = text.trim();
 			if (!Parameter.isValidName(name)) {
-				Error.showBox("Invalid parameter name", name
-						+ " is not a valid parameter name");
+				Error.showBox(Messages.InvalidParameterName, name
+						+ Messages.IsNotValidParameterName);
 				return;
 			}
 			param.setName(name);
@@ -240,7 +240,7 @@ public class ParameterSection implements ParameterPageListener {
 				support.fireParameterChange();
 			} catch (Exception e) {
 				Dialog.showError(viewer.getTable().getShell(), text
-						+ " is not a valid number. ");
+						+ " " + Messages.IsNotValidNumber);
 			}
 		}
 	}
@@ -261,7 +261,7 @@ public class ParameterSection implements ParameterPageListener {
 				param.setValue(val);
 				support.fireParameterChange();
 			} catch (Exception e) {
-				Error.showBox("Invalid formula",
+				Error.showBox(Messages.InvalidFormula,
 						Strings.cut(e.getMessage(), 75));
 			}
 		}

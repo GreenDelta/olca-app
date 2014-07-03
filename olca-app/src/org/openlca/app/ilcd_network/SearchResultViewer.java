@@ -1,15 +1,11 @@
 package org.openlca.app.ilcd_network;
 
-import static org.openlca.app.ilcd_network.Messages.Location;
-import static org.openlca.app.ilcd_network.Messages.Name;
-import static org.openlca.app.ilcd_network.Messages.Time;
-import static org.openlca.app.ilcd_network.Messages.Type;
-
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Table;
+import org.openlca.app.Messages;
 
 /**
  * The table viewer for search results.
@@ -24,7 +20,8 @@ class SearchResultViewer extends TableViewer {
 	static final int TIME_COLUMN = 2;
 	static final int TYPE_COLUMN = 3;
 
-	private String[] columnLabel = { Name, Location, Time, Type };
+	private String[] columnLabel = { Messages.Name, Messages.Location,
+			Messages.Time, Messages.Type };
 	private int[] columnWidth = { 200, 80, 80, 80 };
 
 	/**

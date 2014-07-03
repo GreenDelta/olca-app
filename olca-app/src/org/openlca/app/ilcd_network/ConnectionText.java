@@ -7,6 +7,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.openlca.app.Messages;
 import org.openlca.app.util.UI;
 
 /**
@@ -22,10 +23,10 @@ public class ConnectionText implements SelectionListener {
 	}
 
 	private void init(Composite parent) {
-		new Label(parent, SWT.NONE).setText(Messages.CONNECTION);
+		new Label(parent, SWT.NONE).setText(Messages.Connection);
 		text = new Text(parent, SWT.BORDER | SWT.READ_ONLY);
 		UI.gridData(text, true, false);
-		createButton(parent, Messages.CHANGE, this);
+		createButton(parent, Messages.Change, this);
 		initConnectionText();
 	}
 

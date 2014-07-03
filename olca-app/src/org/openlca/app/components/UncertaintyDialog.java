@@ -355,7 +355,7 @@ public class UncertaintyDialog extends Dialog {
 				return true;
 			} catch (Exception e) {
 				if (interpreterScope == null)
-					Error.showBox(s + " " + Messages.IsNotAValidNumber);
+					Error.showBox(s + " " + Messages.IsNotValidNumber);
 				return false;
 			}
 		}

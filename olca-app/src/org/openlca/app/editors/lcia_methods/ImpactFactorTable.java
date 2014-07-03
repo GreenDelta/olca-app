@@ -307,8 +307,8 @@ class ImpactFactorTable implements ParameterPageListener {
 					factor.setFormula(text);
 					fireChange();
 				} catch (Exception ex) {
-					Error.showBox("Invalid formula", text
-							+ " is an invalid formula");
+					Error.showBox(Messages.InvalidFormula, text
+							+ " " + Messages.IsInvalidFormula);
 				}
 			}
 		}

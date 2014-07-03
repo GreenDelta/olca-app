@@ -161,11 +161,11 @@ public class InfoSection {
 
 		private void configureLink() {
 			if (type == MAJOR) {
-				tooltip = "Update major version";
+				tooltip = Messages.UpdateMajorVersion;
 				hoverIcon = ImageType.UP_16.get();
 				icon = ImageType.UP_DIS_16.get();
 			} else {
-				tooltip = "Update minor version";
+				tooltip = Messages.UpdateMinorVersion;
 				hoverIcon = ImageType.UP_DOUBLE_16.get();
 				icon = ImageType.UP_DOUBLE_DIS_16.get();
 			}
