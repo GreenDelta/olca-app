@@ -51,6 +51,7 @@ public class Messages extends NLS {
 	public static String CalculationWizardDescription;
 	public static String Category;
 	public static String Causal;
+	public static String Change;
 	public static String CheckForUpdates;
 	public static String ChooseDirectory;
 	public static String City;
@@ -64,6 +65,7 @@ public class Messages extends NLS {
 	public static String ConnectProviders;
 	public static String ConnectRecipients;
 	public static String ConnectWithSystemProcessesIfPossible;
+	public static String Connection;
 	public static String ConsumedBy;
 	public static String Content;
 	public static String Context;
@@ -180,6 +182,14 @@ public class Messages extends NLS {
 	public static String Host;
 	public static String Hourly;
 
+	public static String ILCD_AUTHENTICATION_FAILED_MSG;
+	public static String ILCD_CONNECTION_FAILED_MSG;
+	public static String ILCD_CONNECTION_WORKS_MSG;
+	public static String ILCD_NO_READ_OR_WRITE_ACCESS_MSG;
+	public static String ILCD_NetworkImport;
+	public static String ILCD_RunImport;
+	public static String ILCD_SearchFailedMessage;
+	public static String ILCD_SearchPageDescription;
 	public static String ImpactAssessmentMethod;
 	public static String ImpactAssessmentMethods;
 	public static String ImpactCategories;
@@ -403,6 +413,7 @@ public class Messages extends NLS {
 	public static String TriangleDistribution;
 	public static String Type;
 
+	public static String URL;
 	public static String Uncertainty;
 	public static String UncertaintyDistribution;
 	public static String UniformDistribution;
@@ -442,21 +453,6 @@ public class Messages extends NLS {
 	public static String Yes;
 
 	public static String ZipCode;
-
-	public static String URL;
-	public static String Connection;
-	public static String Change;
-
-	public static String ILCD_SearchErrorMessage;
-	public static String ILCD_SearchFailedMessage;
-	public static String ILCD_SearchPageDescription;
-	public static String ILCD_NetworkExport;
-	public static String ILCD_NetworkImport;
-	public static String ILCD_RunImport;
-	public static String ILCD_CONNECTION_FAILED_MSG;
-	public static String ILCD_AUTHENTICATION_FAILED_MSG;
-	public static String ILCD_NO_READ_OR_WRITE_ACCESS_MSG;
-	public static String ILCD_CONNECTION_WORKS_MSG;
 
 	private static Map<String, String> map;
 
