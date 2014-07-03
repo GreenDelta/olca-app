@@ -9,7 +9,7 @@ public class UnitGroupWizard extends AbstractWizard<UnitGroup> {
 
 	@Override
 	protected String getTitle() {
-		return Messages.Units_WizardTitle;
+		return Messages.NewUnitGroup;
 	}
 
 	@Override

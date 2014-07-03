@@ -25,7 +25,7 @@ class BuildSupplyChainMenuAction extends EditorAction {
 
 	BuildSupplyChainMenuAction() {
 		setId(ActionIds.BUILD_SUPPLY_CHAIN_MENU);
-		setText(Messages.Systems_BuildSupplyChainAction_Text);
+		setText(Messages.BuildSupplyChain);
 		setImageDescriptor(ImageType.BUILD_SUPPLY_CHAIN_ICON.getDescriptor());
 		setMenuCreator(new MenuCreator());
 	}
@@ -43,7 +43,7 @@ class BuildSupplyChainMenuAction extends EditorAction {
 
 		private void createSelectTypeItem(Menu menu, final ProcessType type) {
 			MenuItem treeItem = new MenuItem(menu, SWT.RADIO);
-			treeItem.setText(Messages.bind(Messages.Systems_Prefer,
+			treeItem.setText(Messages.bind(Messages.Prefer,
 					getDisplayName(type)));
 			treeItem.addSelectionListener(new SelectionAdapter() {
 				@Override

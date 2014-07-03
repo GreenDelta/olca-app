@@ -100,14 +100,14 @@ class InfoPage extends ModelPage<Process> {
 
 	private void createTechnologySection(Composite body) {
 		Composite composite = UI.formSection(body, toolkit,
-				Messages.TechnologyInfoSectionLabel);
+				Messages.Technology);
 		createMultiText(Messages.Description, "documentation.technology",
 				composite);
 	}
 
 	private void createTimeSection(Composite body) {
 		Composite composite = UI.formSection(body, toolkit,
-				Messages.TimeInfoSectionLabel);
+				Messages.Time);
 		createDate(Messages.StartDate, "documentation.validFrom", composite);
 		createDate(Messages.EndDate, "documentation.validUntil", composite);
 		createMultiText(Messages.Description, "documentation.time", composite);

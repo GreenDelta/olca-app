@@ -53,7 +53,7 @@ public class MemoryPreferencePage extends PreferencePage implements
 				UIFactory.createGridLayout(2, false, 5));
 
 		// create the text to enter a new memory amount
-		memoryText = UIFactory.createTextWithLabel(body, Messages.Reserve
+		memoryText = UIFactory.createTextWithLabel(body, Messages.ReserveMemoryMessage
 				+ " (MB):", false);
 		memoryText.setText(Integer.toString(amount));
 

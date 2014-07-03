@@ -15,7 +15,7 @@ public class EditAction extends Action {
 
 	public EditAction() {
 		setImageDescriptor(ImageType.PRODUCT_SYSTEM_ICON.getDescriptor());
-		setText(Messages.OpenEditorAction_Text);
+		setText(Messages.OpenInEditor);
 	}
 
 	@Override

@@ -20,7 +20,6 @@ public class LayoutCommand extends Command {
 	private Map<IFigure, Rectangle> oldConstraints = new HashMap<>();
 
 	LayoutCommand() {
-
 	}
 
 	@Override
@@ -51,8 +50,7 @@ public class LayoutCommand extends Command {
 
 	@Override
 	public String getLabel() {
-		return Messages.Systems_LayoutCommand_LayoutText
-				+ type.getDisplayName();
+		return Messages.Layout + ": " + type.getDisplayName();
 	}
 
 	@Override

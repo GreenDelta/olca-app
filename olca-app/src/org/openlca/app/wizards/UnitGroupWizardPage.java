@@ -26,8 +26,8 @@ class UnitGroupWizardPage extends AbstractWizardPage<UnitGroup> {
 
 	public UnitGroupWizardPage() {
 		super("UnitGroupWizardPage");
-		setTitle(Messages.Units_WizardTitle);
-		setMessage(Messages.Units_WizardMessage);
+		setTitle(Messages.NewUnitGroup);
+		setMessage(Messages.CreatesANewUnitGroup);
 		setImageDescriptor(ImageType.NEW_WIZ_UNIT.getDescriptor());
 		setPageComplete(false);
 	}
@@ -66,7 +66,7 @@ class UnitGroupWizardPage extends AbstractWizardPage<UnitGroup> {
 		else {
 			UnitGroup unitGroup = findGroupWithUnit(refUnitName);
 			if (unitGroup != null)
-				failCheck(NLS.bind(Messages.UnitExistsError,
+				failCheck(NLS.bind(Messages.UnitAlreadyExistsInUnitGroup,
 						unitGroup.getName()));
 			else
 				setPageComplete(true);

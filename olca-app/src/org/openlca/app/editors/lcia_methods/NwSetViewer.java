@@ -16,7 +16,7 @@ import org.openlca.core.model.NwSet;
 
 class NwSetViewer extends AbstractTableViewer<NwSet> {
 
-	private static final String NAME = Messages.NormalizationWeightingSet;
+	private static final String NAME = Messages.NormalizationAndWeightingSet;
 	private static final String UNIT = Messages.ReferenceUnit;
 
 	private final ImpactMethodEditor editor;

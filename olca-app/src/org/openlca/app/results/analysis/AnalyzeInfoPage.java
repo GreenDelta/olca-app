@@ -50,7 +50,7 @@ public class AnalyzeInfoPage extends FormPage {
 		toolkit = managedForm.getToolkit();
 		toolkit.getHyperlinkGroup().setHyperlinkUnderlineMode(
 				HyperlinkSettings.UNDERLINE_HOVER);
-		form.setText(Messages.ResultOf + " "
+		form.setText(Messages.AnalysisResultOf + " "
 				+ Labels.getDisplayName(setup.getProductSystem()));
 		toolkit.decorateFormHeading(form.getForm());
 		Composite body = UI.formBody(form, toolkit);
@@ -74,7 +74,7 @@ public class AnalyzeInfoPage extends FormPage {
 					method.getName());
 		NwSetDescriptor nwSet = setup.getNwSet();
 		if (nwSet != null)
-			createText(composite, Messages.NormalizationWeightingSet,
+			createText(composite, Messages.NormalizationAndWeightingSet,
 					nwSet.getName());
 		createExportButton(composite);
 	}

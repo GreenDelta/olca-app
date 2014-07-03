@@ -82,7 +82,7 @@ public class ProductSystemFigure extends Figure {
 			graphics.drawText(cutoffText, new Point(5, 60));
 
 		} else {
-			graphics.drawText(Messages.Sankey_NoOptions, new Point(5, 5));
+			graphics.drawText(Messages.NoAnalysisOptionsSet, new Point(5, 5));
 			graphics.drawText("Click here to change the display", new Point(5,
 					30));
 		}
@@ -111,7 +111,7 @@ public class ProductSystemFigure extends Figure {
 			ImpactCategoryDescriptor category = (ImpactCategoryDescriptor) selection;
 			return Messages.ImpactCategory + ": " + category.getName();
 		}
-		return Messages.Sankey_NoOptions;
+		return Messages.NoAnalysisOptionsSet;
 	}
 
 	private void drawColorScale(Graphics graphics) {

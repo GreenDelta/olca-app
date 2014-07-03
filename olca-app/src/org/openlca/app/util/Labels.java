@@ -165,7 +165,7 @@ public class Labels {
 		case PRODUCT_FLOW:
 			return Messages.Product;
 		case WASTE_FLOW:
-			return Messages.WasteFlow;
+			return Messages.Waste;
 		default:
 			return null;
 		}

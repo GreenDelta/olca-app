@@ -60,7 +60,7 @@ public class RenameCategoryAction extends Action implements INavigationAction {
 	public void run() {
 		InputDialog dialog = new InputDialog(UI.shell(),
 				Messages.Rename,
-				Messages.PleaseEnterNewName,
+				Messages.PleaseEnterANewName,
 				category.getName(), null);
 		if (dialog.open() != Window.OK)
 			return;

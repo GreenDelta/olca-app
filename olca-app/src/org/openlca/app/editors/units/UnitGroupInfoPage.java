@@ -44,7 +44,7 @@ class UnitGroupInfoPage extends ModelPage<UnitGroup> {
 				"defaultFlowProperty", ModelType.FLOW_PROPERTY,
 				infoSection.getContainer());
 		Section section = UI.section(body, toolkit,
-				Messages.UnitGroupInfoSectionLabel);
+				Messages.Units);
 		UI.gridData(section, true, true);
 		Composite client = UI.sectionClient(section, toolkit);
 		UnitViewer unitViewer = new UnitViewer(client, editor);

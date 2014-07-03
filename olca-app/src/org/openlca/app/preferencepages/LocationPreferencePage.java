@@ -373,7 +373,7 @@ public class LocationPreferencePage extends PreferencePage implements
 
 		public RemoveLocationAction() {
 			setId("LocationPreferencePage.RemoveParameterAction");
-			setText(NLS.bind(Messages.RemoveAction_Text, Messages.Location));
+			setText(NLS.bind(Messages.RemoveSelected, Messages.Location));
 			setImageDescriptor(ImageType.DELETE_ICON.getDescriptor());
 			setDisabledImageDescriptor(ImageType.DELETE_ICON_DISABLED
 					.getDescriptor());

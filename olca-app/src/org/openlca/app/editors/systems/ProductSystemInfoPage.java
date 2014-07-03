@@ -53,7 +53,7 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 
 	private void createAdditionalInfo(Composite body) {
 		Composite composite = UI.formSection(body, toolkit,
-				Messages.Systems_ProductSystemInfoSectionLabel);
+				Messages.Reference);
 
 		createLink(Messages.Process, "referenceProcess", composite);
 

@@ -90,7 +90,7 @@ class LocationContributionTable {
 					.cast(element);
 			switch (col) {
 			case LOCATION_COL:
-				return contribution.getItem() == null ? Messages.Rest
+				return contribution.getItem() == null ? Messages.Other
 						: contribution.getItem().getName();
 			case AMOUNT_COL:
 				return Numbers.format(contribution.getAmount());

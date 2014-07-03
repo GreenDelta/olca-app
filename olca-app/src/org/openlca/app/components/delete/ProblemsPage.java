@@ -49,7 +49,7 @@ public class ProblemsPage extends WizardPage {
 		super(ID);
 		this.problems = problems;
 		setTitle(Messages.Delete);
-		setDescription(Messages.ProblemsPage_FoundProblems + " "
+		setDescription(Messages.FoundProblems + " "
 				+ problems.length);
 		setPageComplete(!hasErrors());
 	}

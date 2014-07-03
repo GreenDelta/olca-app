@@ -229,7 +229,7 @@ public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 	private class RemoveAction extends Action {
 
 		private RemoveAction() {
-			setText(Messages.RemoveAction_Text);
+			setText(Messages.RemoveSelected);
 			setImageDescriptor(ImageManager
 					.getImageDescriptor(ImageType.DELETE_ICON));
 			setDisabledImageDescriptor(ImageManager

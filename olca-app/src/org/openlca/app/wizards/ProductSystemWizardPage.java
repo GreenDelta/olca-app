@@ -41,7 +41,7 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
-	private final String EMPTY_REFERENCEPROCESS_ERROR = Messages.Systems_EmptyReferenceProcessError;
+	private final String EMPTY_REFERENCEPROCESS_ERROR = Messages.NoReferenceProcessSelected;
 
 	private Button addSupplyChainButton;
 	private TreeViewer processViewer;
@@ -52,8 +52,8 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 
 	public ProductSystemWizardPage() {
 		super("ProductSystemWizardPage");
-		setTitle(Messages.Systems_WizardTitle);
-		setMessage(Messages.Systems_WizardMessage);
+		setTitle(Messages.NewProductSystem);
+		setMessage(Messages.CreatesANewProductSystem);
 		setImageDescriptor(ImageType.NEW_WIZ_PRODUCT_SYSTEM.getDescriptor());
 		setPageComplete(false);
 	}
@@ -132,10 +132,10 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 
 	private void createOptions(final Composite container) {
 		addSupplyChainButton = UIFactory.createButton(container,
-				Messages.Systems_AddSupplyChain);
+				Messages.AddConnectedProcesses);
 		addSupplyChainButton.setSelection(true);
 		useSystemProcesses = UIFactory.createButton(container,
-				Messages.Systems_UseSystemProcesses);
+				Messages.ConnectWithSystemProcessesIfPossible);
 		useSystemProcesses.setSelection(true);
 		if (FeatureFlag.PRODUCT_SYSTEM_CUTOFF.isEnabled()) {
 			createCutoffText(container);

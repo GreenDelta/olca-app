@@ -24,7 +24,7 @@ class LayoutMenuAction extends Action {
 
 	LayoutMenuAction() {
 		setId(ActionIds.LAYOUT_MENU);
-		setText(Messages.Systems_AppActionBarContributorClass_LayoutActionText);
+		setText(Messages.Layout);
 		setImageDescriptor(ImageType.LAYOUT_ICON.getDescriptor());
 		setMenuCreator(new MenuCreator());
 	}
@@ -51,7 +51,7 @@ class LayoutMenuAction extends Action {
 			new MenuItem(menu, SWT.SEPARATOR);
 
 			final MenuItem routedCheck = new MenuItem(menu, SWT.CHECK);
-			routedCheck.setText(Messages.Systems_Route);
+			routedCheck.setText(Messages.Route);
 			routedCheck.setSelection(editor.isRouted());
 			routedCheck.addSelectionListener(new SelectionListener() {
 

@@ -67,7 +67,7 @@ public abstract class UnitMappingPage extends WizardPage {
 
 	public UnitMappingPage() {
 		super("UnitMappingPage");
-		setTitle(Messages.UnitMappingPage_Title);
+		setTitle(Messages.AssignUnits);
 		setDescription(Messages.UnitMappingPage_Description);
 		setPageComplete(false);
 	}
@@ -99,7 +99,7 @@ public abstract class UnitMappingPage extends WizardPage {
 								throws InvocationTargetException,
 								InterruptedException {
 							monitor.beginTask(
-									Messages.UnitMappingPage_CheckingUnits,
+									Messages.SearchingForUnits,
 									IProgressMonitor.UNKNOWN);
 							String[] names = checkFiles(files);
 							for (String s : names)

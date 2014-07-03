@@ -18,7 +18,7 @@ public class SankeySelectionAction extends Action {
 
 	@Override
 	public String getText() {
-		return Messages.Sankey_ActionText;
+		return Messages.SetSankeyDiagramOptions;
 	}
 
 	@Override

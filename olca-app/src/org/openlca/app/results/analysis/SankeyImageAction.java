@@ -56,7 +56,7 @@ class SankeyImageAction extends Action {
 		if (image == null)
 			return;
 		ImageWriter writer = new ImageWriter(file, image);
-		App.run(Messages.Sankey_SavingAsImage, writer);
+		App.run(Messages.SavingDiagramAsImageIn, writer);
 	}
 
 	private Image createImage() {

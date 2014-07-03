@@ -126,7 +126,7 @@ public final class TextDropComponent extends Composite {
 		removeButton.setLayoutData(new TableWrapData());
 		removeButton.setImage(ImageType.DELETE_ICON.get());
 		removeButton
-				.setToolTipText(Messages.TextDropComponent_RemoveButtonText);
+				.setToolTipText(Messages.RemoveObject);
 		if (content == null)
 			removeButton.setEnabled(false);
 		removeButton.addMouseListener(new MouseAdapter() {

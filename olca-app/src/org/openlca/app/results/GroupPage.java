@@ -76,7 +76,7 @@ public class GroupPage extends FormPage {
 	private void initGroups(ContributionResultProvider<?> result) {
 		groups = new ArrayList<>();
 		ProcessGrouping restGroup = new ProcessGrouping();
-		restGroup.setName(Messages.Rest);
+		restGroup.setName(Messages.Other);
 		restGroup.setRest(true);
 		for (ProcessDescriptor p : result.getProcessDescriptors())
 			restGroup.getProcesses().add(p);
@@ -91,7 +91,7 @@ public class GroupPage extends FormPage {
 		for (ProcessDescriptor p : result.getProcessDescriptors())
 			processes.add(p);
 		List<ProcessGrouping> newGroups = ProcessGrouping.applyOn(processes,
-				groupSet, Messages.Rest);
+				groupSet, Messages.Other);
 		groups.clear();
 		groups.addAll(newGroups);
 		updateViewers();
@@ -190,7 +190,7 @@ public class GroupPage extends FormPage {
 
 		@Override
 		public void run() {
-			String m = Messages.PleaseEnterName;
+			String m = Messages.PleaseEnterAName;
 			InputDialog dialog = new InputDialog(getSite().getShell(), m, m,
 					"", null);
 			int code = dialog.open();
@@ -413,7 +413,7 @@ public class GroupPage extends FormPage {
 		private ProcessGroupSet createGroupSet() throws Exception {
 			Shell shell = page.getEditorSite().getShell();
 			InputDialog dialog = new InputDialog(shell, Messages.SaveAs,
-					Messages.PleaseEnterName, "", null);
+					Messages.PleaseEnterAName, "", null);
 			int code = dialog.open();
 			if (code == Window.CANCEL)
 				return null;

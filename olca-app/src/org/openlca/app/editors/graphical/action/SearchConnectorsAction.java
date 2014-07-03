@@ -33,8 +33,8 @@ class SearchConnectorsAction extends EditorAction {
 	private Menu menu;
 
 	public SearchConnectorsAction(int type) {
-		super(type == PROVIDER ? Messages.Systems_GetLinksAction_ProviderText
-				: Messages.Systems_GetLinksAction_RecipientText,
+		super(type == PROVIDER ? Messages.SearchProvidersFor
+				: Messages.SearchRecipientsFor,
 				IAction.AS_DROP_DOWN_MENU);
 		if (type == PROVIDER)
 			setId(ActionIds.SEARCH_PROVIDERS);

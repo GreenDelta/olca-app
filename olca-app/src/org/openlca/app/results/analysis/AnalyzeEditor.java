@@ -60,7 +60,7 @@ public class AnalyzeEditor extends FormEditor {
 				FullResult.class);
 		setup = Cache.getAppCache().remove(setupKey, CalculationSetup.class);
 		ProductSystem system = setup.getProductSystem();
-		String name = Messages.ResultOf + " " + system.getName();
+		String name = Messages.AnalysisResultOf + " " + system.getName();
 		setPartName(name);
 		this.result = new FullResultProvider(result, Cache.getEntityCache());
 	}

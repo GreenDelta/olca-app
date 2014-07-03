@@ -73,7 +73,7 @@ public class OutlinePage extends ContentOutlinePage {
 	public void createControl(Composite parent) {
 		sash = new SashForm(parent, SWT.VERTICAL);
 		new Label(sash, SWT.BORDER_SOLID)
-				.setText(Messages.Systems_ProductSystemGraphEditor_FilterLabel);
+				.setText(Messages.FilterByName);
 		searchText = new Text(sash, SWT.BORDER_SOLID);
 		searchText.addPaintListener(new SearchPaintListener());
 		getViewer().createControl(sash);

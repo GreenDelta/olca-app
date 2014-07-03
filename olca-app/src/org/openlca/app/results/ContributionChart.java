@@ -119,7 +119,7 @@ public class ContributionChart {
 		else if (content instanceof ProcessGrouping)
 			text = ((ProcessGrouping) content).getName();
 		else if (item.isRest())
-			text = Messages.Rest;
+			text = Messages.Other;
 		return number + ": " + text;
 	}
 

@@ -5,9 +5,9 @@ import org.openlca.app.Messages;
 
 public enum GraphLayoutType {
 
-	MINIMAL_TREE_LAYOUT(Messages.Systems_GraphLayoutType_MinimalTree),
+	MINIMAL_TREE_LAYOUT(Messages.MinimalTree),
 
-	TREE_LAYOUT(Messages.Systems_GraphLayoutType_Tree);
+	TREE_LAYOUT(Messages.Tree);
 
 	private String displayName;
 

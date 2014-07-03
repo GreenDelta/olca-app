@@ -36,9 +36,9 @@ class ExchangeFigure extends Label {
 	private String getPrefix() {
 		if (node.getExchange().isAvoidedProduct())
 			if (node.getExchange().getFlow().getFlowType() == FlowType.PRODUCT_FLOW)
-				return Messages.Systems_AvoidedProductFlow;
+				return Messages.AvoidedProductFlow;
 			else
-				return Messages.Systems_AvoidedWasteFlow;
+				return Messages.AvoidedWasteFlow;
 		else
 			return Labels.flowType(node.getExchange().getFlow());
 	}

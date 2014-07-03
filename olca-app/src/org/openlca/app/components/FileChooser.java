@@ -24,7 +24,7 @@ public class FileChooser {
 		case SWT.OPEN:
 			return Messages.Import;
 		case SWT.SAVE:
-			return Messages.SelectExportFile;
+			return Messages.SelectTheExportFile;
 		default:
 			return "";
 		}

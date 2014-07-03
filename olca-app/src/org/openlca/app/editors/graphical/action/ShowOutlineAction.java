@@ -11,7 +11,7 @@ class ShowOutlineAction extends EditorAction {
 
 	ShowOutlineAction() {
 		setId(ActionIds.SHOW_OUTLINE);
-		setText(Messages.Systems_ShowOutlineAction_Text);
+		setText(Messages.ShowOutline);
 		setImageDescriptor(ImageType.OUTLINE_ICON.getDescriptor());
 	}
 

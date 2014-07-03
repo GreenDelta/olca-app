@@ -39,7 +39,7 @@ class ProjectInfoPage extends ModelPage<Project> {
 
 	private void createTimeInfoSection(Composite parent) {
 		Composite composite = UI.formSection(parent, toolkit,
-				Messages.ProjectInfoSectionLabel);
+				Messages.TimeAndAuthor);
 
 		createReadOnly(Messages.CreationDate, "creationDate", composite);
 		createReadOnly(Messages.LastModificationDate, "lastModificationDate",

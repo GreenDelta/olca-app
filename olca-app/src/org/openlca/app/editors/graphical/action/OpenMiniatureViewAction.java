@@ -43,7 +43,7 @@ class OpenMiniatureViewAction extends EditorAction {
 
 	OpenMiniatureViewAction() {
 		setId(ActionIds.OPEN_MINIATURE_VIEW);
-		setText(Messages.Systems_OpenMiniatureViewAction_Text);
+		setText(Messages.OpenMiniatureView);
 		setImageDescriptor(ImageType.MINI_VIEW_ICON.getDescriptor());
 	}
 

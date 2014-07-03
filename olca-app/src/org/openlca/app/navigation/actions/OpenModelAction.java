@@ -36,7 +36,7 @@ public class OpenModelAction extends Action implements INavigationAction {
 
 	@Override
 	public String getText() {
-		return Messages.OpenEditorAction_Text;
+		return Messages.OpenInEditor;
 	}
 
 	@Override

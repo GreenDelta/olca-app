@@ -60,7 +60,7 @@ class ProcessModelingPage extends ModelPage<Process> {
 	private void createDataSourceSection(Composite parent) {
 		Composite composite = UI.formSection(parent, toolkit,
 				Messages.DataSourceInformation);
-		createMultiText(Messages.Sampling, "documentation.sampling", composite);
+		createMultiText(Messages.SamplingProcedure, "documentation.sampling", composite);
 		createMultiText(Messages.DataCollectionPeriod,
 				"documentation.dataCollectionPeriod", composite);
 	}

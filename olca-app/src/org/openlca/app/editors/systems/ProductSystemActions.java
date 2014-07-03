@@ -61,7 +61,7 @@ public class ProductSystemActions extends EditorActionBarContributor {
 	private class CsvExportAction extends Action {
 		public CsvExportAction() {
 			setImageDescriptor(ImageType.MATRIX_ICON.getDescriptor());
-			setText(Messages.Systems_MatrixExportAction_Text);
+			setText(Messages.ExportAsMatrix);
 		}
 
 		@Override
@@ -75,7 +75,7 @@ public class ProductSystemActions extends EditorActionBarContributor {
 	private class ExcelExportAction extends Action {
 		public ExcelExportAction() {
 			setImageDescriptor(ImageType.FILE_EXCEL_SMALL.getDescriptor());
-			setText(Messages.Systems_MatrixExportAction_Text);
+			setText(Messages.ExportAsMatrix);
 		}
 
 		@Override

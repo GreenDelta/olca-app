@@ -57,7 +57,7 @@ public class DatabaseRenameAction extends Action implements INavigationAction {
 			return;
 		InputDialog dialog = new InputDialog(UI.shell(),
 				Messages.Rename,
-				Messages.PleaseEnterNewName,
+				Messages.PleaseEnterANewName,
 				config.getName(), null);
 		if (dialog.open() != Window.OK)
 			return;

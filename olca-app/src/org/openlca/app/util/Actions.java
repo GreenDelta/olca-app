@@ -60,7 +60,7 @@ public class Actions {
 	public static Action onCalculate(final Runnable runnable) {
 		return new Action() {
 			{
-				setText(Messages.Systems_CalculateButtonText);
+				setText(Messages.CalculateResults);
 				setImageDescriptor(ImageType.CALCULATE_ICON.getDescriptor());
 			}
 
@@ -74,7 +74,7 @@ public class Actions {
 	public static Action onRemove(final Runnable runnable) {
 		return new Action() {
 			{
-				setText(Messages.RemoveAction_Text);
+				setText(Messages.RemoveSelected);
 				setImageDescriptor(ImageManager
 						.getImageDescriptor(ImageType.DELETE_ICON));
 				setDisabledImageDescriptor(ImageManager

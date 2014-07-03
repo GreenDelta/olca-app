@@ -55,9 +55,9 @@ public class HideShowCommand extends Command {
 	@Override
 	public String getLabel() {
 		if (type == SHOW)
-			return Messages.Systems_HideShowCommand_ShowText;
-		else if (type == SHOW)
-			return Messages.Systems_HideShowCommand_HideText;
+			return Messages.Show;
+		else if (type == HIDE)
+			return Messages.Hide;
 		return null;
 	}
 

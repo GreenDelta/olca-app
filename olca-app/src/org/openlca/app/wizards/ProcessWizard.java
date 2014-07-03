@@ -9,7 +9,7 @@ public class ProcessWizard extends AbstractWizard<Process> {
 
 	@Override
 	protected String getTitle() {
-		return Messages.Processes_WizardTitle;
+		return Messages.NewProcess;
 	}
 
 	@Override

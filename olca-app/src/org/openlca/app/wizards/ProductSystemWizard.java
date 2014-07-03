@@ -88,7 +88,7 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 		public void run(IProgressMonitor monitor)
 				throws InvocationTargetException, InterruptedException {
 			try {
-				monitor.beginTask(Messages.Systems_CreatingProductSystem,
+				monitor.beginTask(Messages.CreatingProductSystem,
 						IProgressMonitor.UNKNOWN);
 				IProductSystemBuilder builder = null;
 				if (cutoff == null)
@@ -107,7 +107,7 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 
 	@Override
 	protected String getTitle() {
-		return Messages.Systems_WizardTitle;
+		return Messages.NewProductSystem;
 	}
 
 	@Override

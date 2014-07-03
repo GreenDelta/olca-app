@@ -71,9 +71,9 @@ public class XYLayoutCommand extends Command {
 	@Override
 	public String getLabel() {
 		if (type == MOVE)
-			return Messages.Systems_XYLayoutCommand_MoveText;
+			return Messages.Move;
 		else if (type == RESIZE)
-			return Messages.Systems_XYLayoutCommand_ResizeText;
+			return Messages.Resize;
 		return null;
 	}
 

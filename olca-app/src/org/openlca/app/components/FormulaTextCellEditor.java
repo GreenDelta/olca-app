@@ -17,7 +17,7 @@ public class FormulaTextCellEditor extends AutoCompleteTextCellEditor {
 
 	public FormulaTextCellEditor(TableViewer viewer, int column,
 			List<Parameter> parameters) {
-		super(viewer, column, Messages.SelectParameter);
+		super(viewer, column, Messages.SelectTheParameterYouWantToReferTo);
 		this.parameters = parameters;
 	}
 

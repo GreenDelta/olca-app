@@ -74,7 +74,7 @@ public class ReportCalculator implements Runnable {
 		varResult.getContributions().add(contribution);
 		contribution.setAmount(item.getAmount());
 		if (item.isRest()) {
-			contribution.setProcess(Messages.Rest);
+			contribution.setProcess(Messages.Other);
 			contribution.setRest(true);
 		} else {
 			String name = Labels.getDisplayName(item.getItem());

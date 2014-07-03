@@ -47,7 +47,7 @@ class ModelSelectionPage extends WizardPage {
 
 	private void createTexts() {
 		String typeName = getTypeName(type);
-		String title = Messages.bind(Messages.SelectObjectPage_Title, typeName);
+		String title = Messages.bind(Messages.Select, typeName);
 		setTitle(title);
 		String descr = Messages.SelectObjectPage_Description;
 		descr = Messages.bind(descr, typeName);

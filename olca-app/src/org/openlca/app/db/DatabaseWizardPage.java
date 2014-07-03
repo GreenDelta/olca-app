@@ -124,7 +124,7 @@ class DatabaseWizardPage extends WizardPage {
 		case EMPTY:
 			return Messages.EmptyDatabase;
 		case UNITS:
-			return Messages.UnitsAndFlowProps;
+			return Messages.UnitsAndFlowProperties;
 		case ALL_REF_DATA:
 			return Messages.CompleteReferenceData;
 		default:

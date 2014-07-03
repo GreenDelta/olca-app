@@ -33,7 +33,7 @@ public class SankeySelectionDialog extends FormDialog implements EventHandler {
 	protected void createFormContent(final IManagedForm mform) {
 		FormToolkit toolkit = mform.getToolkit();
 		ScrolledForm form = UI.formHeader(mform,
-				Messages.Sankey_DialogDescription);
+				Messages.SettingsForTheSankeyDiagram);
 		Composite body = UI.formBody(form, toolkit);
 		FlowImpactSelection.on(result, Cache.getEntityCache())
 				.withEventHandler(this).withSelection(selection)
@@ -43,7 +43,7 @@ public class SankeySelectionDialog extends FormDialog implements EventHandler {
 
 	private void createCutoffSpinner(FormToolkit toolkit, Composite body) {
 		Composite composite = UI.formComposite(body, toolkit);
-		toolkit.createLabel(composite, Messages.Sankey_Cutoff);
+		toolkit.createLabel(composite, Messages.CutOffForFirstLayerIn);
 		final Spinner cutoffSpinner = new Spinner(composite, SWT.BORDER);
 		cutoffSpinner.setIncrement(100);
 		cutoffSpinner.setMinimum(0);

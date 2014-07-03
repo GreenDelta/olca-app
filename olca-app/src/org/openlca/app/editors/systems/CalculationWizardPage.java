@@ -57,7 +57,7 @@ class CalculationWizardPage extends WizardPage {
 		UI.gridLayout(body, 2).verticalSpacing = 12;
 		createAllocationViewer(body);
 		createMethodComboViewer(body);
-		UI.formLabel(body, Messages.NormalizationweightingSet);
+		UI.formLabel(body, Messages.NormalizationAndWeightingSet);
 		nwViewer = new NwSetComboViewer(body);
 		nwViewer.setDatabase(Database.get());
 

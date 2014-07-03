@@ -12,8 +12,8 @@ class ProjectWizardPage extends AbstractWizardPage<Project> {
 
 	public ProjectWizardPage() {
 		super("ProjectWizardPage");
-		setTitle(Messages.Projects_WizardTitle);
-		setMessage(Messages.Projects_WizardMessage);
+		setTitle(Messages.NewProject);
+		setMessage(Messages.CreatesANewProject);
 		setImageDescriptor(ImageType.NEW_WIZ_PROJECT.getDescriptor());
 		setPageComplete(false);
 	}

@@ -9,7 +9,7 @@ public class ProjectWizard extends AbstractWizard<Project> {
 
 	@Override
 	protected String getTitle() {
-		return Messages.Projects_WizardTitle;
+		return Messages.NewProject;
 	}
 
 	@Override

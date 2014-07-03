@@ -49,7 +49,7 @@ public class DeleteLinkCommand extends Command {
 
 	@Override
 	public String getLabel() {
-		return Messages.Systems_ProcessLinkDeleteCommand_Text;
+		return Messages.DeleteProcesslink;
 	}
 
 	@Override

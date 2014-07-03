@@ -49,7 +49,7 @@ class CalculationWizardDialog extends WizardDialog {
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
 		// create save button
-		saveButton = createButton(parent, -1, Messages.SaveDefaults, false);
+		saveButton = createButton(parent, -1, Messages.SaveAsDefault, false);
 		saveButton.setEnabled(false);
 		saveButton.addSelectionListener(new SelectionListener() {
 

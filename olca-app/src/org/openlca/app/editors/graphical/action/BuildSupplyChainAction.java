@@ -71,7 +71,7 @@ class BuildSupplyChainAction extends Action implements IBuildAction {
 		@Override
 		public void run(IProgressMonitor monitor)
 				throws InvocationTargetException, InterruptedException {
-			monitor.beginTask(Messages.Systems_CreatingProductSystem,
+			monitor.beginTask(Messages.CreatingProductSystem,
 					IProgressMonitor.UNKNOWN);
 			IProductSystemBuilder builder = IProductSystemBuilder.Factory
 					.create(Cache.getMatrixCache(),

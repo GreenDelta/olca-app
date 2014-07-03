@@ -80,7 +80,7 @@ public class SimulationPage extends FormPage {
 		Text qRefText = UI.formText(settings, toolkit,
 				Messages.QuantitativeReference);
 		Text simCountText = UI.formText(settings, toolkit,
-				Messages.Simulation_NumberOfSimulations);
+				Messages.NumberOfSimulations);
 		if (editor.getSetup() != null) {
 			CalculationSetup setup = editor.getSetup();
 			systemText.setText(setup.getProductSystem().getName());

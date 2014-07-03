@@ -42,7 +42,7 @@ public class CreateProcessCommand extends Command {
 
 	@Override
 	public String getLabel() {
-		return Messages.Systems_ProcessCreateCommand_Text;
+		return Messages.CreateProcess;
 	}
 
 	@Override

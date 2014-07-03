@@ -78,7 +78,7 @@ public class QuickResultInfoPage extends FormPage {
 					method.getName());
 		NwSetDescriptor nwSet = setup.getNwSet();
 		if (nwSet != null)
-			createText(composite, Messages.NormalizationWeightingSet,
+			createText(composite, Messages.NormalizationAndWeightingSet,
 					nwSet.getName());
 		createExportButton(composite);
 	}

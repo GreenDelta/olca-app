@@ -47,7 +47,7 @@ public class NumberFormatPage extends PreferencePage implements
 		description.setText(Messages.NumberFormatPage_Description);
 		UI.gridData(description, false, false).horizontalSpan = 2;
 		numberText = UI.formText(parent,
-				Messages.NumberFormatPage_NumberOfPlaces);
+				Messages.NumberOfDecimalPlaces);
 		UI.gridData(numberText, false, false).widthHint = 80;
 		new DataBinding().onInt(() -> this, "accuracy", numberText);
 		createExample(parent);
@@ -56,7 +56,7 @@ public class NumberFormatPage extends PreferencePage implements
 
 	private void createExample(Composite parent) {
 		Label exampleLabel = new Label(parent, SWT.NONE);
-		exampleLabel.setText(Messages.NumberFormatPage_Example);
+		exampleLabel.setText(Messages.Example);
 		UI.gridData(exampleLabel, false, false).horizontalSpan = 2;
 		new Label(parent, SWT.NONE).setText(Double.toString(sampleVal) + " ->");
 		sampleLabel = new Label(parent, SWT.NONE);
