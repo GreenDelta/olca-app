@@ -44,7 +44,7 @@ public class FileChooser {
 
 	private static String openDirectoryDialog(Shell shell, int swtFlag) {
 		DirectoryDialog dialog = new DirectoryDialog(shell, swtFlag);
-		dialog.setText("Select a directory");
+		dialog.setText(Messages.SelectADirectory);
 		return dialog.open();
 	}
 

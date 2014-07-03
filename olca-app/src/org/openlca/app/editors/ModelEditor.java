@@ -1,12 +1,15 @@
 package org.openlca.app.editors;
 
-import com.google.common.eventbus.EventBus;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.openlca.app.Event;
+import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.events.EventHandler;
@@ -20,8 +23,7 @@ import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.google.common.eventbus.EventBus;
 
 public abstract class ModelEditor<T extends CategorizedEntity> extends
 		FormEditor implements IEditor {
@@ -74,8 +76,8 @@ public abstract class ModelEditor<T extends CategorizedEntity> extends
 	@Override
 	public void doSave(IProgressMonitor monitor) {
 		try {
-			monitor.beginTask("Save " + modelClass.getSimpleName() + "...",
-					IProgressMonitor.UNKNOWN);
+			monitor.beginTask(Messages.Save + " " + modelClass.getSimpleName()
+					+ "...", IProgressMonitor.UNKNOWN);
 			model.setLastChange(System.currentTimeMillis());
 			Version version = new Version(model.getVersion());
 			version.incUpdate();

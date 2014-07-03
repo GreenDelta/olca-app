@@ -19,6 +19,7 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
+import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
 import org.openlca.app.editors.graphical.layout.GraphLayoutType;
 import org.openlca.app.editors.graphical.layout.constraints.NodeLayoutStore;
@@ -101,8 +102,9 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 	public boolean promptSaveIfNecessary() throws Exception {
 		if (!isDirty())
 			return true;
-		String question = "In order to perform the requested task the product system must be safed. Do you want to proceed?";
-		if (Question.ask("Save", question)) {
+		String question = "In order to perform the requested task the product "
+				+ "system must be saved. Do you want to proceed?";
+		if (Question.ask(Messages.Save + "?", question)) {
 			new ProgressMonitorDialog(UI.shell()).run(false, false,
 					new IRunnableWithProgress() {
 

@@ -12,6 +12,7 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.Messages;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.TableColumnSorter;
 import org.openlca.app.util.Tables;
@@ -23,9 +24,9 @@ import com.google.common.primitives.Doubles;
 
 public class TotalImpactResultPage extends FormPage {
 
-	private final String IMPACT_CATEGORY = "Impact category";
+	private final String IMPACT_CATEGORY = Messages.ImpactCategory;
 	private final String RESULT = "Result";
-	private final String REFERENCE_UNIT = "Reference unit";
+	private final String REFERENCE_UNIT = Messages.ReferenceUnit;
 
 	private FormToolkit toolkit;
 	private SimpleResultProvider<?> result;

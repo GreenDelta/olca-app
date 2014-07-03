@@ -1,27 +1,3 @@
-/*
- * DISCLAIMER
- * 
- * Code is provided on an "as is" basis, without warranty of any kind, 
- * either expressed or implied, including, without limitation, warranties 
- * that the covered code is free of defects, merchantable, fit for a 
- * particular purpose or non-infringing. The entire risk as to the quality 
- * and performance of the covered code is with you. Should any covered 
- * code prove defective in any respect, you (not the initial developer or 
- * any other contributor) assume the cost of any necessary servicing, 
- * repair or correction. No use of any covered code is authorized hereunder 
- * except under this disclaimer.
- * 
- * The initial developer of the original code is GreenDeltaTC GmbH, 
- * http://www.greendeltatc.com.
- * 
- * Portions created by the initial developer are copyright 
- * (c) 2010 GreenDeltaTC GmbH and Evea Evaluation et accompagnement, 
- * http://www.evea-conseil.com. All rights reserved.
- * 
- * Contributor(s):
- * Michael Srocka <srocka@greendeltatc.com> (original author)
- */
-
 package org.openlca.app.components.charts;
 
 import org.eclipse.birt.chart.model.attribute.ColorDefinition;

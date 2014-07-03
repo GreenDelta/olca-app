@@ -1,11 +1,14 @@
 package org.openlca.app.components;
 
+import java.util.Collection;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.Messages;
 import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.app.viewers.combo.FlowViewer;
@@ -14,8 +17,6 @@ import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.IResultProvider;
-
-import java.util.Collection;
 
 /**
  * Two combo boxes showing flows and impact categories. The impact categories
@@ -99,7 +100,8 @@ public class FlowImpactSelection {
 
 	private void initFlowCheckViewer(FormToolkit toolkit, Composite section) {
 		boolean typeFlows = !(initialSelection instanceof ImpactCategoryDescriptor);
-		Button flowsCheck = toolkit.createButton(section, "Flows", SWT.RADIO);
+		Button flowsCheck = toolkit.createButton(section, Messages.Flows,
+				SWT.RADIO);
 		flowsCheck.setSelection(typeFlows);
 		flowViewer = new FlowViewer(section, cache);
 		flowViewer.setEnabled(typeFlows);
@@ -117,8 +119,8 @@ public class FlowImpactSelection {
 
 	private void initImpactCheckViewer(FormToolkit toolkit, Composite section) {
 		boolean typeImpact = initialSelection instanceof ImpactCategoryDescriptor;
-		Button impactCheck = toolkit.createButton(section, "Impact categories",
-				SWT.RADIO);
+		Button impactCheck = toolkit.createButton(section,
+				Messages.ImpactCategories, SWT.RADIO);
 		impactCheck.setSelection(typeImpact);
 		impactViewer = new ImpactCategoryViewer(section);
 		impactViewer.setEnabled(typeImpact);

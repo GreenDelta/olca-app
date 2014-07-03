@@ -143,7 +143,7 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 	}
 
 	private void createCutoffText(final Composite container) {
-		final Text cutoffText = UI.formText(container, "Cut-off");
+		final Text cutoffText = UI.formText(container, Messages.Cutoff);
 		cutoffText.setText("0.0");
 		cutoffText.addModifyListener(new ModifyListener() {
 			@Override

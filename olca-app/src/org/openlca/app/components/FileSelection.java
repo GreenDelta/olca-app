@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.Messages;
 import org.openlca.app.util.UI;
 
 public class FileSelection implements SelectionListener {
@@ -90,10 +91,10 @@ public class FileSelection implements SelectionListener {
 		UI.gridData(text, true, false);
 		Button button = null;
 		if (toolkit != null)
-			button = toolkit.createButton(composite, "Browse", SWT.NONE);
+			button = toolkit.createButton(composite, Messages.Browse, SWT.NONE);
 		else {
 			button = new Button(composite, SWT.NONE);
-			button.setText("Browse");
+			button.setText(Messages.Browse);
 		}
 		button.addSelectionListener(this);
 	}

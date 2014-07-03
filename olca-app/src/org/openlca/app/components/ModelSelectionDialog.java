@@ -96,7 +96,7 @@ public class ModelSelectionDialog extends FormDialog {
 		boldLabelFont = UI.boldFont(filterLabel);
 		filterLabel.setFont(boldLabelFont);
 		filterText = UI.formText(body, SWT.SEARCH);
-		Section section = UI.section(body, toolkit, "Content");
+		Section section = UI.section(body, toolkit, Messages.Content);
 		addSectionActions(section);
 		UI.gridData(section, true, true);
 		Composite composite = UI.sectionClient(section, toolkit);

@@ -37,6 +37,7 @@ public class Messages extends NLS {
 	public static String AvoidedProductFlow;
 	public static String AvoidedWasteFlow;
 
+	public static String Browse;
 	public static String BuildNextTier;
 	public static String BuildSupplyChain;
 
@@ -63,6 +64,7 @@ public class Messages extends NLS {
 	public static String ConnectRecipients;
 	public static String ConnectWithSystemProcessesIfPossible;
 	public static String ConsumedBy;
+	public static String Content;
 	public static String Context;
 	public static String Contribution;
 	public static String ConversionFactor;
@@ -151,6 +153,7 @@ public class Messages extends NLS {
 	public static String FlowType;
 	public static String Flows;
 	public static String Formula;
+	public static String FormulaEvaluationFailed;
 	public static String FoundProblems;
 	public static String FromDirectory;
 	public static String FunctionalUnit;
@@ -170,6 +173,7 @@ public class Messages extends NLS {
 
 	public static String Help;
 	public static String Hide;
+	public static String Host;
 	public static String Hourly;
 
 	public static String ImpactAssessmentMethod;
@@ -188,6 +192,7 @@ public class Messages extends NLS {
 	public static String Inputs;
 	public static String InputsOutputs;
 	public static String IntendedApplication;
+	public static String IsNotAValidNumber;
 	public static String IsReference;
 
 	public static String LCIMethod;
@@ -301,6 +306,7 @@ public class Messages extends NLS {
 	public static String ReferenceUnit;
 	public static String ReferenceUnitIsEmptyOrInvalid;
 	public static String Reload;
+	public static String RemoteDatabase;
 	public static String Remove;
 	public static String RemoveConnections;
 	public static String RemoveObject;
@@ -328,11 +334,13 @@ public class Messages extends NLS {
 	public static String SaveChangesQuestion;
 	public static String SavingDiagramAsImageIn;
 	public static String Search;
+	public static String SearchParameters;
 	public static String SearchProvidersFor;
 	public static String SearchRecipientsFor;
 	public static String Searching;
 	public static String SearchingForUnits;
 	public static String Select;
+	public static String SelectADirectory;
 	public static String SelectAUserInterfaceLanguage;
 	public static String SelectImportFiles;
 	public static String SelectLanguageNoteMessage;
@@ -364,6 +372,8 @@ public class Messages extends NLS {
 	public static String Technology;
 	public static String Telefax;
 	public static String Telephone;
+	public static String Test;
+	public static String TestDistribution;
 	public static String TextDropComponent_ToolTipText;
 	public static String TextReference;
 	public static String Time;
@@ -372,6 +382,7 @@ public class Messages extends NLS {
 	public static String TotalAmount;
 	public static String Tree;
 	public static String TriangleDistribution;
+	public static String Type;
 
 	public static String Uncertainty;
 	public static String UncertaintyDistribution;

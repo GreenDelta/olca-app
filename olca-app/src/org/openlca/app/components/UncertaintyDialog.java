@@ -68,7 +68,7 @@ public class UncertaintyDialog extends Dialog {
 		toolkit.adapt(parent);
 		createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL,
 				true);
-		createButton(parent, IDialogConstants.HELP_ID, "Test", false);
+		createButton(parent, IDialogConstants.HELP_ID, Messages.Test, false);
 		createButton(parent, IDialogConstants.CANCEL_ID,
 				IDialogConstants.CANCEL_LABEL, false);
 		getShell().pack();
@@ -92,7 +92,7 @@ public class UncertaintyDialog extends Dialog {
 			return;
 		try {
 			final NumberGenerator generator = makeGenerator();
-			App.run("test", new Runnable() {
+			App.run(Messages.Test, new Runnable() {
 				public void run() {
 					UncertaintyShell.show(generator);
 				}
@@ -355,7 +355,7 @@ public class UncertaintyDialog extends Dialog {
 				return true;
 			} catch (Exception e) {
 				if (interpreterScope == null)
-					Error.showBox(s + " is not a valid number");
+					Error.showBox(s + " " + Messages.IsNotAValidNumber);
 				return false;
 			}
 		}
@@ -367,7 +367,7 @@ public class UncertaintyDialog extends Dialog {
 				interpreterScope.eval(s);
 				return true;
 			} catch (Exception e) {
-				Error.showBox("Formula evaluation of " + s + " failed");
+				Error.showBox(Messages.FormulaEvaluationFailed + ": " + s);
 				return false;
 			}
 		}

@@ -83,7 +83,7 @@ public class SearchText extends WorkbenchWindowControlContribution {
 
 	private class SearchAction extends Action {
 		public SearchAction() {
-			setText("Search");
+			setText(Messages.Search);
 			setImageDescriptor(ImageType.SEARCH_ICON.getDescriptor());
 		}
 
@@ -103,7 +103,7 @@ public class SearchText extends WorkbenchWindowControlContribution {
 		private ModelType selectedType;
 
 		public DropDownAction() {
-			setText("Search");
+			setText(Messages.Search);
 			setImageDescriptor(ImageType.SEARCH_ICON.getDescriptor());
 			setMenuCreator(this);
 		}
