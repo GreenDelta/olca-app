@@ -102,8 +102,7 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 	public boolean promptSaveIfNecessary() throws Exception {
 		if (!isDirty())
 			return true;
-		String question = "In order to perform the requested task the product "
-				+ "system must be saved. Do you want to proceed?";
+		String question = Messages.SystemSaveProceedQuestion;
 		if (Question.ask(Messages.Save + "?", question)) {
 			new ProgressMonitorDialog(UI.shell()).run(false, false,
 					new IRunnableWithProgress() {
@@ -203,7 +202,8 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 	}
 
 	public void updateModel(final IProgressMonitor monitor) {
-		monitor.beginTask("Upating product system", IProgressMonitor.UNKNOWN);
+		monitor.beginTask(Messages.UpdatingProductSystem,
+				IProgressMonitor.UNKNOWN);
 		systemEditor.updateModel();
 		monitor.done();
 	}

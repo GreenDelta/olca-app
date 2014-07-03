@@ -55,17 +55,17 @@ class DatabaseWizardPage extends WizardPage {
 		nameText = UI.formText(headerComposite, Messages.DatabaseName);
 		nameText.addModifyListener(new TextListener());
 
-		UI.formLabel(headerComposite, "Database type");
+		UI.formLabel(headerComposite, Messages.DatabaseType);
 		Composite radioGroup = new Composite(headerComposite, SWT.NONE);
 		radioGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		UI.gridLayout(radioGroup, 2, 10, 0);
 
 		buttonLocal = new Button(radioGroup, SWT.RADIO);
-		buttonLocal.setText("Local");
+		buttonLocal.setText(Messages.Local);
 		buttonLocal.setSelection(true);
 		buttonLocal.addSelectionListener(new RadioGroupListener());
 		buttonRemote = new Button(radioGroup, SWT.RADIO);
-		buttonRemote.setText("Remote");
+		buttonRemote.setText(Messages.Remote);
 		buttonRemote.addSelectionListener(new RadioGroupListener());
 
 		createStackComposite(rootComposite);
@@ -97,13 +97,13 @@ class DatabaseWizardPage extends WizardPage {
 	private void createRemoteComposite(Composite stackComposite) {
 		remoteComposite = new Composite(stackComposite, SWT.NONE);
 		UI.gridLayout(remoteComposite, 2);
-		hostText = UI.formText(remoteComposite, "Host");
+		hostText = UI.formText(remoteComposite, Messages.Host);
 		hostText.addModifyListener(new TextListener());
-		portText = UI.formText(remoteComposite, "Port");
+		portText = UI.formText(remoteComposite, Messages.Port);
 		portText.addModifyListener(new TextListener());
-		userText = UI.formText(remoteComposite, "User");
+		userText = UI.formText(remoteComposite, Messages.User);
 		userText.addModifyListener(new TextListener());
-		passwordText = UI.formText(remoteComposite, "Password");
+		passwordText = UI.formText(remoteComposite, Messages.Password);
 	}
 
 	private void createContentRadios(Composite composite) {
@@ -137,10 +137,10 @@ class DatabaseWizardPage extends WizardPage {
 		if (valid)
 			if (buttonRemote.getSelection())
 				if (hostText.getText().isEmpty()) {
-					error("Please specify a host");
+					error(Messages.PleaseSpecifyHost);
 					valid = false;
 				} else if (userText.getText().isEmpty()) {
-					error("Please specify a user");
+					error(Messages.PleaseSpecifyUser);
 					valid = false;
 				} else
 					valid = validatePort(portText.getText());
@@ -152,13 +152,13 @@ class DatabaseWizardPage extends WizardPage {
 
 	private boolean validatePort(String port) {
 		if (port.isEmpty())
-			error("Please specify a port number");
+			error(Messages.PleaseSpecifyPortNumber);
 		else
 			try {
 				Integer.parseInt(port);
 				return true;
 			} catch (NumberFormatException e) {
-				error("Please specify a valid port number");
+				error(Messages.PleaseSpecifyPortNumber);
 			}
 		return false;
 	}
