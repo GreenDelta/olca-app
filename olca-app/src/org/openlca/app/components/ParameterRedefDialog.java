@@ -31,6 +31,7 @@ import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.resources.ImageType;
@@ -191,7 +192,7 @@ public class ParameterRedefDialog extends FormDialog {
 		UI.formHeader(mform, "Search parameters");
 		Composite body = UI.formBody(mform.getForm(), mform.getToolkit());
 		UI.gridLayout(body, 1);
-		Label filterLabel = UI.formLabel(body, toolkit, "Filter");
+		Label filterLabel = UI.formLabel(body, toolkit, Messages.Filter);
 		boldLabelFont = UI.boldFont(filterLabel);
 		filterLabel.setFont(boldLabelFont);
 
@@ -203,7 +204,7 @@ public class ParameterRedefDialog extends FormDialog {
 			}
 		});
 
-		Section section = UI.section(body, toolkit, "Processes and parameters");
+		Section section = UI.section(body, toolkit, Messages.Parameters);
 		UI.gridData(section, true, true);
 		Composite composite = UI.sectionClient(section, toolkit);
 		UI.gridLayout(composite, 1);

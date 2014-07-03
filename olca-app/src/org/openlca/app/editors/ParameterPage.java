@@ -56,7 +56,7 @@ public class ParameterPage extends FormPage {
 	}
 
 	private void createGlobalParamterSection(Composite body) {
-		Section section = UI.section(body, toolkit, "Global parameters");
+		Section section = UI.section(body, toolkit, Messages.GlobalParameters);
 		Composite client = UI.sectionClient(section, toolkit);
 		UI.gridLayout(client, 1);
 		String[] columns = { Messages.Name, Messages.Value,

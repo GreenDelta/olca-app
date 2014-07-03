@@ -52,7 +52,7 @@ public class SimulationPage extends FormPage {
 	private ImpactCategoryViewer impactViewer;
 
 	public SimulationPage(SimulationEditor editor) {
-		super(editor, "SimulationPage", "Simulation");
+		super(editor, "SimulationPage", Messages.MonteCarloSimulation);
 		this.editor = editor;
 		SimulationResult result = editor.getSimulator().getResult();
 		this.result = new SimulationResultProvider<>(result,
