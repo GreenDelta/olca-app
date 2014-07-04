@@ -370,8 +370,8 @@ class ProjectParameterTable {
 				variantRedef.setValue(d);
 				editor.setDirty(true);
 			} catch (Exception e) {
-				org.openlca.app.util.Error.showBox("Invalid number", text
-						+ " is not a valid number.");
+				org.openlca.app.util.Error.showBox(Messages.InvalidNumber, text
+						+ " " + Messages.IsNotValidNumber);
 			}
 		}
 	}

@@ -75,8 +75,8 @@ public class ProcessToolbar extends EditorActionBarContributor {
 			List<ProcessDescriptor> list = Arrays.asList(
 					Descriptors.toDescriptor(process));
 			ExcelExport export = new ExcelExport(dir, Database.get(), list);
-			App.run("Export process ...", export, () -> {
-				InformationPopup.show("Export done");
+			App.run(Messages.ExportProcess, export, () -> {
+				InformationPopup.show(Messages.ExportDone);
 			});
 		}
 	}

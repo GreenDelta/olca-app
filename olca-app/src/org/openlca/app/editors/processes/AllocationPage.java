@@ -43,7 +43,7 @@ class AllocationPage extends FormPage {
 	private CausalFactorTable causalFactorTable;
 
 	public AllocationPage(ProcessEditor editor) {
-		super(editor, "process.AllocationPage", "Allocation");
+		super(editor, "process.AllocationPage", Messages.Allocation);
 		this.editor = editor;
 		editor.getEventBus().register(this);
 		editor.onSaved(() -> setTableInputs());
@@ -53,13 +53,14 @@ class AllocationPage extends FormPage {
 		try {
 			double val = Double.parseDouble(text);
 			if (val < -0.0001 || val > 1.0001) {
-				Error.showBox("Invalid factor",
-						"An allocation factor should have a value between 0 and 1.");
+				Error.showBox(Messages.InvalidAllocationFactor,
+						Messages.InvalidAllocationFactorMessage);
 				return null;
 			}
 			return val;
 		} catch (Exception e) {
-			Error.showBox("Invalid number", text + " is not a valid number");
+			Error.showBox(Messages.InvalidNumber, text + " "
+					+ Messages.IsNotValidNumber);
 			return null;
 		}
 	}
@@ -82,7 +83,7 @@ class AllocationPage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, "Allocation");
+		ScrolledForm form = UI.formHeader(managedForm, Messages.Allocation);
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		Composite composite = UI.formComposite(body, toolkit);
@@ -129,7 +130,7 @@ class AllocationPage extends FormPage {
 
 	private void createPhysicalEconomicSection(Composite body) {
 		Section section = UI.section(body, toolkit,
-				"Physical & economic allocation");
+				Messages.PhysicalAndEconomicAllocation);
 		Composite composite = UI.sectionClient(section, toolkit);
 		UI.gridLayout(composite, 1);
 		String[] colNames = { Messages.Product, Messages.Physical,
@@ -147,7 +148,7 @@ class AllocationPage extends FormPage {
 	}
 
 	private void createCausalSection(Composite body) {
-		Section section = UI.section(body, toolkit, "Causal allocation");
+		Section section = UI.section(body, toolkit, Messages.CausalAllocation);
 		UI.gridData(section, true, true);
 		causalFactorTable = new CausalFactorTable(editor);
 		causalFactorTable.render(section, toolkit);

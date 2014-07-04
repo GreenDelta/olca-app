@@ -1,6 +1,7 @@
 package org.openlca.app.editors.projects;
 
 import org.openlca.app.App;
+import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
 import org.openlca.app.results.projects.ProjectResultEditor;
 import org.openlca.app.results.projects.ProjectResultInput;
@@ -31,7 +32,7 @@ class Calculation {
 			return;
 		ProjectCalculator calculator = new ProjectCalculator(
 				Cache.getMatrixCache(), App.getSolver());
-		App.run("Calculate project",
+		App.run(Messages.CalculateResults,
 				() -> tryCalculate(calculator, project),
 				() -> openResult());
 	}

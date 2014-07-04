@@ -6,6 +6,7 @@ import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Shell;
+import org.openlca.app.Messages;
 import org.openlca.app.html.HtmlPage;
 import org.openlca.app.html.HtmlView;
 import org.openlca.app.html.IHtmlResource;
@@ -33,7 +34,7 @@ public class MapEditor implements HtmlPage {
 		Shell parent = UI.shell();
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
 		shell.setLayout(new FillLayout());
-		shell.setText("KML Editor");
+		shell.setText(Messages.KmlEditor);
 		browser = UI.createBrowser(shell, this);
 		Point parentSize = parent.getSize();
 		shell.setSize((int) (parentSize.x * 0.85), (int) (parentSize.y * 0.85));

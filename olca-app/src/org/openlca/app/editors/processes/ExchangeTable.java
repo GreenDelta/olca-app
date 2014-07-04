@@ -199,8 +199,8 @@ class ExchangeTable implements ParameterPageListener {
 		Process process = editor.getModel();
 		List<Exchange> selection = Viewers.getAllSelected(viewer);
 		if (selection.contains(process.getQuantitativeReference())) {
-			Error.showBox("Cannot delete reference flow",
-					"You cannot delete the reference flow of a process");
+			Error.showBox(Messages.CannotDeleteRefFlow,
+					Messages.CannotDeleteRefFlowMessage);
 			return;
 		}
 		selection.forEach((e) -> process.getExchanges().remove(e));
@@ -411,8 +411,8 @@ class ExchangeTable implements ParameterPageListener {
 					exchange.setAmountValue(val);
 					fireChange();
 				} catch (Exception ex) {
-					Error.showBox("Invalid formula", text
-							+ " is an invalid formula");
+					Error.showBox(Messages.InvalidFormula, text + " "
+							+ Messages.IsInvalidFormula);
 				}
 			}
 		}
@@ -456,7 +456,7 @@ class ExchangeTable implements ParameterPageListener {
 		@Override
 		protected String getText(ProcessDescriptor value) {
 			if (value == null)
-				return "-none-";
+				return Messages.None;
 			return Labels.getDisplayName(value);
 		}
 

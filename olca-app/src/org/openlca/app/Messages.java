@@ -23,6 +23,7 @@ public class Messages extends NLS {
 	public static String AdditionalInformation;
 	public static String Address;
 	public static String AdministrativeInformation;
+	public static String Allocation;
 	public static String AllocationMethod;
 	public static String AlreadyConnected;
 	public static String AlreadyPresent;
@@ -49,8 +50,11 @@ public class Messages extends NLS {
 	public static String CalculationProperties;
 	public static String CalculationType;
 	public static String CalculationWizardDescription;
+	public static String CannotDeleteRefFlow;
+	public static String CannotDeleteRefFlowMessage;
 	public static String Category;
 	public static String Causal;
+	public static String CausalAllocation;
 	public static String Change;
 	public static String CheckForUpdates;
 	public static String ChooseDirectory;
@@ -139,10 +143,12 @@ public class Messages extends NLS {
 	public static String Export;
 	public static String ExportAsMatrix;
 	public static String ExportDatabase;
+	public static String ExportDone;
 	public static String ExportEcoSpold;
 	public static String ExportILCD;
 	public static String ExportToExcel;
 	public static String ExportingProcesses;
+	public static String ExportProcess;
 
 	public static String Factor;
 	public static String File;
@@ -204,15 +210,20 @@ public class Messages extends NLS {
 	public static String InfrastructureFlow;
 	public static String InfrastructureProcess;
 	public static String InputParameters;
+	public static String Input;
 	public static String Inputs;
 	public static String InputsOutputs;
 	public static String IntendedApplication;
+	public static String InvalidAllocationFactor;
+	public static String InvalidAllocationFactorMessage;
 	public static String InvalidFormula;
+	public static String InvalidNumber;
 	public static String InvalidParameterName;
 	public static String IsInvalidFormula;
 	public static String IsNotValidNumber;
 	public static String IsNotValidParameterName;
 	public static String IsReference;
+	public static String KmlEditor;
 
 	public static String LCIMethod;
 	public static String Language;
@@ -291,6 +302,7 @@ public class Messages extends NLS {
 	public static String OpenLCAUpdateCheck;
 	public static String OpenMiniatureView;
 	public static String Other;
+	public static String Output;
 	public static String Outputs;
 	public static String OverwriteFileQuestion;
 
@@ -300,6 +312,7 @@ public class Messages extends NLS {
 	public static String Paste;
 	public static String PedigreeUncertainty;
 	public static String Physical;
+	public static String PhysicalAndEconomicAllocation;
 	public static String PleaseEnterAName;
 	public static String PleaseEnterANewName;
 	public static String PleaseEnterTheNameOfTheNewCategory;
@@ -446,6 +459,7 @@ public class Messages extends NLS {
 	public static String Weekly;
 	public static String Weighting;
 	public static String WeightingFactor;
+	public static String Welcome;
 	public static String Window;
 	public static String WithPassword;
 

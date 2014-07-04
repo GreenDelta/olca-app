@@ -184,7 +184,7 @@ class CausalFactorTable {
 			case 0:
 				return Labels.getDisplayName(exchange.getFlow());
 			case 1:
-				return exchange.isInput() ? "Input" : "Output";
+				return exchange.isInput() ? Messages.Input : Messages.Output;
 			case 2:
 				return CategoryPath.getShort(exchange.getFlow().getCategory());
 			case 3:

@@ -217,7 +217,7 @@ public class ParameterSection implements ParameterPageListener {
 				return;
 			String name = text.trim();
 			if (!Parameter.isValidName(name)) {
-				Error.showBox(Messages.InvalidParameterName, name
+				Error.showBox(Messages.InvalidParameterName, name + " "
 						+ Messages.IsNotValidParameterName);
 				return;
 			}
