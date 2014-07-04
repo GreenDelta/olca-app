@@ -1,5 +1,8 @@
 package org.openlca.app.db.sql;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
@@ -69,9 +72,41 @@ public class SqlEditorPage extends FormPage {
 
 		@Override
 		public void run() {
+			List<String> statements = getStatements();
+			List<String> results = new ArrayList<>();
+			for (String st : statements) {
+				String result = new SqlCommand().exec(st, Database.get());
+				results.add(result);
+			}
+			if (results.size() == 1)
+				resultText.setText(results.get(0));
+			else {
+				String text = "Executed " + results.size() + " statements:\n";
+				int i = 1;
+				for (String result : results) {
+					text += "\n" + i + ". result: \n";
+					text += org.openlca.util.Strings.cut(result, 1500);
+					text += "\n";
+					i++;
+				}
+				resultText.setText(text);
+			}
+		}
+
+		private List<String> getStatements() {
 			String statement = queryText.getText();
-			String result = new SqlCommand().exec(statement, Database.get());
-			resultText.setText(result);
+			List<String> statements = new ArrayList<>();
+			if (!statement.contains(";"))
+				statements.add(statement);
+			else {
+				String[] parts = statement.split(";");
+				for (String part : parts) {
+					if (part.trim().isEmpty())
+						continue;
+					statements.add(part);
+				}
+			}
+			return statements;
 		}
 	}
 
