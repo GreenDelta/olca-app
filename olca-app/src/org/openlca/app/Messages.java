@@ -38,6 +38,7 @@ public class Messages extends NLS {
 	public static String AvoidedProductFlow;
 	public static String AvoidedWasteFlow;
 
+	public static String BaseUncertainty;
 	public static String Browse;
 	public static String BuildNextTier;
 	public static String BuildSupplyChain;
@@ -50,6 +51,7 @@ public class Messages extends NLS {
 	public static String CalculationProperties;
 	public static String CalculationType;
 	public static String CalculationWizardDescription;
+	public static String Cancel;
 	public static String CannotDeleteRefFlow;
 	public static String CannotDeleteRefFlowMessage;
 	public static String Category;
@@ -60,6 +62,7 @@ public class Messages extends NLS {
 	public static String ChooseDirectory;
 	public static String City;
 	public static String ClickHereToChangeDisplay;
+	public static String CloseDatabase;
 	public static String Code;
 	public static String Collapse;
 	public static String CollapseAll;
@@ -77,6 +80,8 @@ public class Messages extends NLS {
 	public static String ConversionFactor;
 	public static String Copy;
 	public static String Copyright;
+	public static String CostCategory;
+	public static String CouldNotOpenDatabase;
 	public static String Country;
 	public static String CreateANewDatabase;
 	public static String CreateANewProductFlowForTheProcess;
@@ -115,7 +120,9 @@ public class Messages extends NLS {
 	public static String DatabaseImport;
 	public static String DatabaseImportDescription;
 	public static String DatabaseName;
+	public static String DatabaseNeedsUpdate;
 	public static String DatabaseType;
+	public static String DatabaseVersionCheckFailed;
 	public static String DefaultFlowProperty;
 	public static String DefaultMethod;
 	public static String DefaultProvider;
@@ -149,6 +156,7 @@ public class Messages extends NLS {
 	public static String ExportToExcel;
 	public static String ExportingProcesses;
 	public static String ExportProcess;
+	public static String ILCDNetworkExportDescription;
 
 	public static String Factor;
 	public static String File;
@@ -156,6 +164,7 @@ public class Messages extends NLS {
 	public static String FileImportPage_Description;
 	public static String Filter;
 	public static String FilterByName;
+	public static String FixedCosts;
 	public static String Flow;
 	public static String FlowContributions;
 	public static String FlowProperties;
@@ -196,6 +205,8 @@ public class Messages extends NLS {
 	public static String ILCD_RunImport;
 	public static String ILCD_SearchFailedMessage;
 	public static String ILCD_SearchPageDescription;
+	public static String ILCDNetworkExport;
+	public static String ImageExport;
 	public static String ImpactAssessmentMethod;
 	public static String ImpactAssessmentMethods;
 	public static String ImpactCategories;
@@ -206,6 +217,7 @@ public class Messages extends NLS {
 	public static String ImportDatabase;
 	public static String ImportEcoSpold;
 	public static String ImportILCD;
+	public static String IndicatorScore;
 	public static String Information;
 	public static String InfrastructureFlow;
 	public static String InfrastructureProcess;
@@ -219,6 +231,7 @@ public class Messages extends NLS {
 	public static String InvalidFormula;
 	public static String InvalidNumber;
 	public static String InvalidParameterName;
+	public static String InvalidValue;
 	public static String IsInvalidFormula;
 	public static String IsNotValidNumber;
 	public static String IsNotValidParameterName;
@@ -258,9 +271,11 @@ public class Messages extends NLS {
 	public static String Move;
 
 	public static String Name;
+	public static String NameEmptyOrAlreadyExists;
 	public static String Never;
 	public static String NewActor;
 	public static String NewCategory;
+	public static String NewCostEntry;
 	public static String NewDatabase;
 	public static String NewDatabase_AlreadyExists;
 	public static String NewDatabase_InvalidName;
@@ -277,6 +292,7 @@ public class Messages extends NLS {
 	public static String NewUnitGroup;
 	public static String No;
 	public static String NoAnalysisOptionsSet;
+	public static String NoCostCategorySelected;
 	public static String NoDescription;
 	public static String NoDistribution;
 	public static String NoQuantitativeReferenceSelected;
@@ -284,6 +300,7 @@ public class Messages extends NLS {
 	public static String NoReferenceProcessSelected;
 	public static String NoUnitGroupSelected;
 	public static String None;
+	public static String NoProjectVaraintsAreDefined;
 	public static String NormalDistribution;
 	public static String Normalization;
 	public static String NormalizationAndWeightingSet;
@@ -296,8 +313,10 @@ public class Messages extends NLS {
 	public static String NumberOfIterations;
 	public static String NumberOfSimulations;
 
+	public static String OK;
 	public static String OnlineHelp;
 	public static String Open;
+	public static String OpenDatabase;
 	public static String OpenInEditor;
 	public static String OpenLCAUpdateCheck;
 	public static String OpenMiniatureView;
@@ -310,6 +329,8 @@ public class Messages extends NLS {
 	public static String Parameters;
 	public static String Password;
 	public static String Paste;
+	public static String PedigreeMatrix;
+	public static String PedigreeMatrixMessage;
 	public static String PedigreeUncertainty;
 	public static String Physical;
 	public static String PhysicalAndEconomicAllocation;
@@ -323,6 +344,7 @@ public class Messages extends NLS {
 	public static String Prefer;
 	public static String Process;
 	public static String ProcessContributions;
+	public static String ProcessCosts;
 	public static String ProcessEvaluationAndValidation;
 	public static String ProcessType;
 	public static String Processes;
@@ -440,6 +462,8 @@ public class Messages extends NLS {
 	public static String UnitsAndFlowProperties;
 	public static String Unknown;
 	public static String Unmark;
+	public static String UpdateDatabase;
+	public static String UpdateDatabaseQuestion;
 	public static String UpdateMajorVersion;
 	public static String UpdateMinorVersion;
 	public static String UpdatePreferences;

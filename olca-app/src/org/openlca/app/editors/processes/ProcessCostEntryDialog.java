@@ -23,6 +23,7 @@ import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
+import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.DataBinding;
 import org.openlca.app.resources.ImageType;
@@ -66,7 +67,7 @@ class ProcessCostEntryDialog extends Dialog {
 		if (!createNew) {
 			int i = combo.getSelectionIndex();
 			if (i < 0 || i >= comboItems.length)
-				Error.showBox("No cost category selected");
+				Error.showBox(Messages.NoCostCategorySelected);
 			else {
 				newEntry.setCostCategory(comboItems[i]);
 				super.okPressed();
@@ -74,7 +75,7 @@ class ProcessCostEntryDialog extends Dialog {
 		} else {
 			String newName = text.getText().trim();
 			if (!newNameOk(newName))
-				Error.showBox("The name is empty or already exists");
+				Error.showBox(Messages.NameEmptyOrAlreadyExists);
 			else {
 				createCostCategory(newName);
 				super.okPressed();
@@ -141,7 +142,7 @@ class ProcessCostEntryDialog extends Dialog {
 
 	@Override
 	protected Control createDialogArea(Composite root) {
-		getShell().setText("New cost entry");
+		getShell().setText(Messages.NewCostEntry);
 		toolkit.adapt(root);
 		Composite area = (Composite) super.createDialogArea(root);
 		toolkit.adapt(area);
@@ -155,7 +156,7 @@ class ProcessCostEntryDialog extends Dialog {
 
 	private void fillContainer(Composite container) {
 		UI.gridLayout(container, 3);
-		label = UI.formLabel(container, toolkit, "Cost category");
+		label = UI.formLabel(container, toolkit, Messages.CostCategory);
 		Composite stack = toolkit.createComposite(container);
 		UI.gridData(stack, true, false).widthHint = 250;
 		StackLayout stackLayout = new StackLayout();
@@ -164,9 +165,9 @@ class ProcessCostEntryDialog extends Dialog {
 		stackLayout.topControl = combo;
 		text = toolkit.createText(stack, "");
 		createLink(container, stackLayout);
-		Text amountText = UI.formText(container, toolkit, "Amount");
+		Text amountText = UI.formText(container, toolkit, Messages.Amount);
 		UI.formLabel(container, toolkit, ""); // placeholder
-		UI.formLabel(container, toolkit, "Fixed costs");
+		UI.formLabel(container, toolkit, Messages.FixedCosts);
 		fix = toolkit.createButton(container, null, SWT.CHECK);
 		fix.setEnabled(false);
 		fix.setSelection(combo.getItemCount() > 0 ? comboItems[0].isFix()
@@ -200,12 +201,12 @@ class ProcessCostEntryDialog extends Dialog {
 				if (createNew) {
 					stackLayout.topControl = text;
 					link.setImage(ImageType.DELETE_ICON.get());
-					label.setText("New category");
+					label.setText(Messages.NewCategory);
 					fix.setEnabled(true);
 				} else {
 					stackLayout.topControl = combo;
 					link.setImage(ImageType.ADD_ICON.get());
-					label.setText("Cost category");
+					label.setText(Messages.CostCategory);
 					fix.setEnabled(false);
 				}
 				getShell().layout(true, true);

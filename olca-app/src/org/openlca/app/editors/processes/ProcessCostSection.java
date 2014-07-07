@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.Messages;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
@@ -86,7 +87,7 @@ class ProcessCostSection {
 	private class AddAction extends Action {
 
 		public AddAction() {
-			setToolTipText("Add");
+			setToolTipText(Messages.Add);
 			setImageDescriptor(ImageType.ADD_ICON.getDescriptor());
 		}
 
@@ -110,7 +111,7 @@ class ProcessCostSection {
 	private class RemoveAction extends Action {
 
 		public RemoveAction() {
-			setToolTipText("Remove");
+			setToolTipText(Messages.Remove);
 			setImageDescriptor(ImageType.DELETE_ICON.getDescriptor());
 		}
 

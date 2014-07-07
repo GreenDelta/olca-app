@@ -8,6 +8,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.openlca.app.Messages;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
@@ -18,13 +19,13 @@ public class ProcessCostPage extends FormPage {
 	private ProcessEditor editor;
 
 	public ProcessCostPage(ProcessEditor editor) {
-		super(editor, "process.CostPage", "Costs");
+		super(editor, "process.CostPage", Messages.ProcessCosts);
 		this.editor = editor;
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, "Process costs");
+		ScrolledForm form = UI.formHeader(managedForm, Messages.ProcessCosts);
 		FormToolkit toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		for (Exchange e : getOutputProducts()) {

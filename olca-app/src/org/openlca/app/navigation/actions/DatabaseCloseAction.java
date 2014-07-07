@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.openlca.app.App;
+import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.navigation.DatabaseElement;
@@ -20,7 +21,7 @@ public class DatabaseCloseAction extends Action implements INavigationAction {
 	private Logger log = LoggerFactory.getLogger(getClass());
 
 	public DatabaseCloseAction() {
-		setText("Close");
+		setText(Messages.CloseDatabase);
 		setImageDescriptor(ImageType.DISCONNECT_ICON.getDescriptor());
 	}
 
@@ -41,7 +42,7 @@ public class DatabaseCloseAction extends Action implements INavigationAction {
 	@Override
 	public void run() {
 		Editors.closeAll();
-		App.run("Closing database", new Runnable() {
+		App.run(Messages.CloseDatabase, new Runnable() {
 			public void run() {
 				try {
 					Database.close();

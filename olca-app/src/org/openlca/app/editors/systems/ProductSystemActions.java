@@ -97,7 +97,7 @@ public class ProductSystemActions extends EditorActionBarContributor {
 			final File file = FileChooser.forExport("*.png", "matrix.png");
 			if (system == null || file == null)
 				return;
-			App.run("Image export", new Runnable() {
+			App.run(Messages.ImageExport, new Runnable() {
 				public void run() {
 					try {
 						Inventory inventory = DataStructures.createInventory(

@@ -36,7 +36,7 @@ public class PreferencePage extends FieldEditorPreferencePage implements
 	@Override
 	public void createControl(Composite parent) {
 		super.createControl(parent);
-		getApplyButton().setText("Test");
+		getApplyButton().setText(Messages.Test);
 		setImageDescriptor(RcpActivator.imageDescriptorFromPlugin(
 				RcpActivator.PLUGIN_ID, "icons/network16.png"));
 	}

@@ -136,7 +136,7 @@ class ParameterRedefTable {
 				editor.setDirty(true);
 			} catch (Exception e) {
 				Dialog.showError(viewer.getTable().getShell(), text
-						+ " is not a valid number");
+						+ " " + Messages.IsNotValidNumber);
 			}
 		}
 	}
