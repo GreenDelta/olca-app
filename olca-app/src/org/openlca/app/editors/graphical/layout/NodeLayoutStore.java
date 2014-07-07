@@ -1,4 +1,4 @@
-package org.openlca.app.editors.graphical.layout.constraints;
+package org.openlca.app.editors.graphical.layout;
 
 import java.io.File;
 import java.io.FileReader;

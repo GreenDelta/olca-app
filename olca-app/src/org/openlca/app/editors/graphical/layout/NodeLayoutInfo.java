@@ -1,4 +1,4 @@
-package org.openlca.app.editors.graphical.layout.constraints;
+package org.openlca.app.editors.graphical.layout;
 
 import org.eclipse.draw2d.geometry.Point;
 import org.openlca.app.editors.graphical.model.ProcessNode;

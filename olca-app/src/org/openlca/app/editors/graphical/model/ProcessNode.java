@@ -10,7 +10,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.layout.GraphLayoutManager;
-import org.openlca.app.editors.graphical.layout.constraints.NodeLayoutInfo;
+import org.openlca.app.editors.graphical.layout.NodeLayoutInfo;
 import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.Exchange;

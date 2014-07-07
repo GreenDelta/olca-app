@@ -8,7 +8,7 @@ import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.LineBorder;
 import org.openlca.app.editors.graphical.layout.GraphLayoutManager;
 import org.openlca.app.editors.graphical.layout.GraphLayoutType;
-import org.openlca.app.editors.graphical.layout.constraints.NodeLayoutStore;
+import org.openlca.app.editors.graphical.layout.NodeLayoutStore;
 
 class ProductSystemFigure extends Figure {
 
