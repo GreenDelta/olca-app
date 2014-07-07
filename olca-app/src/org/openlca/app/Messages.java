@@ -44,6 +44,7 @@ public class Messages extends NLS {
 	public static String BuildSupplyChain;
 
 	public static String CASNumber;
+	public static String CSVFormat;
 	public static String Calculate;
 	public static String CalculateCosts;
 	public static String CalculateDefaultValues;
@@ -109,11 +110,14 @@ public class Messages extends NLS {
 	public static String CreatingEcoSpoldFolder;
 	public static String CreatingProductSystem;
 	public static String CreationDate;
-	public static String CSVFormat;
 	public static String Cut;
 	public static String CutOffForFirstLayerIn;
 	public static String Cutoff;
 
+	public static String DBImportNoTarget;
+	public static String DBImportNoTargetConnectionFailedMessage;
+	public static String DBImportUpdateDatabaseQuestion;
+	public static String DBImportVersionNewerMessage;
 	public static String Daily;
 	public static String DataCollectionPeriod;
 	public static String DataCompleteness;
@@ -134,10 +138,6 @@ public class Messages extends NLS {
 	public static String DatabaseType;
 	public static String DatabaseVersionCheckFailed;
 	public static String DatabaseWasExportedToFile;
-	public static String DBImportNoTarget;
-	public static String DBImportNoTargetConnectionFailedMessage;
-	public static String DBImportUpdateDatabaseQuestion;
-	public static String DBImportVersionNewerMessage;
 	public static String DecimalSeparator;
 	public static String DefaultFlowProperty;
 	public static String DefaultMethod;
@@ -159,8 +159,8 @@ public class Messages extends NLS {
 	public static String Doi;
 	public static String Dot;
 
-	public static String Economic;
 	public static String EcoSpold2Export;
+	public static String Economic;
 	public static String Edit;
 	public static String ElementaryFlow;
 	public static String Email;
@@ -181,13 +181,12 @@ public class Messages extends NLS {
 	public static String ExportDone;
 	public static String ExportEcoSpold;
 	public static String ExportILCD;
-	public static String ExportToExcel;
-	public static String ExportingProcesses;
 	public static String ExportMatrix;
 	public static String ExportProcess;
 	public static String ExportResults;
 	public static String ExportResultsToExcel;
-	public static String ILCDNetworkExportDescription;
+	public static String ExportToExcel;
+	public static String ExportingProcesses;
 
 	public static String Factor;
 	public static String FailedToLoadFlowProperty;
@@ -232,6 +231,8 @@ public class Messages extends NLS {
 	public static String Host;
 	public static String Hourly;
 
+	public static String ILCDNetworkExport;
+	public static String ILCDNetworkExportDescription;
 	public static String ILCD_AUTHENTICATION_FAILED_MSG;
 	public static String ILCD_CONNECTION_FAILED_MSG;
 	public static String ILCD_CONNECTION_WORKS_MSG;
@@ -240,7 +241,6 @@ public class Messages extends NLS {
 	public static String ILCD_RunImport;
 	public static String ILCD_SearchFailedMessage;
 	public static String ILCD_SearchPageDescription;
-	public static String ILCDNetworkExport;
 	public static String ImageExport;
 	public static String ImpactAssessmentMethod;
 	public static String ImpactAssessmentMethods;
@@ -261,8 +261,8 @@ public class Messages extends NLS {
 	public static String InfrastructureFlow;
 	public static String InfrastructureProcess;
 	public static String InitializeSimulation;
-	public static String InputParameters;
 	public static String Input;
+	public static String InputParameters;
 	public static String Inputs;
 	public static String InputsOutputs;
 	public static String IntendedApplication;
@@ -278,6 +278,7 @@ public class Messages extends NLS {
 	public static String IsNotValidNumber;
 	public static String IsNotValidParameterName;
 	public static String IsReference;
+
 	public static String KmlEditor;
 
 	public static String LCIAMethod;
@@ -345,12 +346,12 @@ public class Messages extends NLS {
 	public static String NoDescription;
 	public static String NoDistribution;
 	public static String NoExportFilesSelected;
+	public static String NoProjectVaraintsAreDefined;
 	public static String NoQuantitativeReferenceSelected;
 	public static String NoReferenceFlowPropertySelected;
 	public static String NoReferenceProcessSelected;
 	public static String NoUnitGroupSelected;
 	public static String None;
-	public static String NoProjectVaraintsAreDefined;
 	public static String NormalDistribution;
 	public static String Normalization;
 	public static String NormalizationAndWeightingSet;
@@ -400,9 +401,9 @@ public class Messages extends NLS {
 	public static String ProcessCosts;
 	public static String ProcessEvaluationAndValidation;
 	public static String ProcessExcelImportDescription;
+	public static String ProcessResults;
 	public static String ProcessType;
 	public static String Processes;
-	public static String ProcessResults;
 	public static String ProducedBy;
 	public static String Product;
 	public static String ProductSystem;
@@ -412,8 +413,8 @@ public class Messages extends NLS {
 	public static String Progress;
 	public static String Project;
 	public static String ProjectResults;
-	public static String Projects;
 	public static String ProjectSetup;
+	public static String Projects;
 	public static String Properties;
 	public static String Publication;
 
@@ -441,8 +442,8 @@ public class Messages extends NLS {
 	public static String ReserveMemoryMessage;
 	public static String Reset;
 	public static String Resize;
-	public static String ResultContributions;
 	public static String Result;
+	public static String ResultContributions;
 	public static String Results;
 	public static String ResultsOf;
 	public static String Reviewer;
@@ -450,8 +451,8 @@ public class Messages extends NLS {
 	public static String RunCalculation;
 
 	public static String SamplingProcedure;
-	public static String Sankey_ScaleDescription;
 	public static String SankeyDiagram;
+	public static String Sankey_ScaleDescription;
 	public static String Save;
 	public static String SaveAs;
 	public static String SaveAsDefault;
@@ -464,9 +465,9 @@ public class Messages extends NLS {
 	public static String SearchProvidersFor;
 	public static String SearchRecipientsFor;
 	public static String SearchResults;
+	public static String SearchTextOpenDatabaseMessage;
 	public static String Searching;
 	public static String SearchingForUnits;
-	public static String SearchTextOpenDatabaseMessage;
 	public static String Select;
 	public static String SelectADirectory;
 	public static String SelectAUserInterfaceLanguage;
