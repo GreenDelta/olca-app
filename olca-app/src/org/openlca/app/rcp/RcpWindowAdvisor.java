@@ -7,6 +7,7 @@ import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 import org.openlca.app.Config;
 import org.openlca.app.editors.StartPage;
+import org.openlca.app.util.Editors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +39,13 @@ public class RcpWindowAdvisor extends WorkbenchWindowAdvisor {
 	@Override
 	public void postWindowOpen() {
 		StartPage.open();
+	}
+
+	@Override
+	public boolean preWindowShellClose() {
+		log.trace("close all editors");
+		Editors.closeAll();
+		return super.preWindowShellClose();
 	}
 
 }
