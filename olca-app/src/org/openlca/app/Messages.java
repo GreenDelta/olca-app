@@ -69,6 +69,8 @@ public class Messages extends NLS {
 	public static String Code;
 	public static String Collapse;
 	public static String CollapseAll;
+	public static String ColumnSeparator;
+	public static String Comma;
 	public static String Complete;
 	public static String CompleteReferenceData;
 	public static String Connect;
@@ -107,6 +109,7 @@ public class Messages extends NLS {
 	public static String CreatingEcoSpoldFolder;
 	public static String CreatingProductSystem;
 	public static String CreationDate;
+	public static String CSVFormat;
 	public static String Cut;
 	public static String CutOffForFirstLayerIn;
 	public static String Cutoff;
@@ -135,6 +138,7 @@ public class Messages extends NLS {
 	public static String DBImportNoTargetConnectionFailedMessage;
 	public static String DBImportUpdateDatabaseQuestion;
 	public static String DBImportVersionNewerMessage;
+	public static String DecimalSeparator;
 	public static String DefaultFlowProperty;
 	public static String DefaultMethod;
 	public static String DefaultProvider;
@@ -152,6 +156,7 @@ public class Messages extends NLS {
 	public static String Direction;
 	public static String DoYouReallyWantToDelete;
 	public static String Doi;
+	public static String Dot;
 
 	public static String Economic;
 	public static String EcoSpold2Export;
@@ -177,8 +182,10 @@ public class Messages extends NLS {
 	public static String ExportILCD;
 	public static String ExportToExcel;
 	public static String ExportingProcesses;
+	public static String ExportMatrix;
 	public static String ExportProcess;
 	public static String ExportResults;
+	public static String ExportResultsToExcel;
 	public static String ILCDNetworkExportDescription;
 
 	public static String Factor;
@@ -257,6 +264,7 @@ public class Messages extends NLS {
 	public static String Inputs;
 	public static String InputsOutputs;
 	public static String IntendedApplication;
+	public static String InterventionMatrix;
 	public static String InvalidAllocationFactor;
 	public static String InvalidAllocationFactorMessage;
 	public static String InvalidFormula;
@@ -288,6 +296,8 @@ public class Messages extends NLS {
 
 	public static String Map;
 	public static String Mark;
+	public static String MatrixExport;
+	public static String MatrixFiles;
 	public static String Maximize;
 	public static String MaximizeAll;
 	public static String Maximum;
@@ -332,6 +342,7 @@ public class Messages extends NLS {
 	public static String NoDatabaseOpened;
 	public static String NoDescription;
 	public static String NoDistribution;
+	public static String NoExportFilesSelected;
 	public static String NoQuantitativeReferenceSelected;
 	public static String NoReferenceFlowPropertySelected;
 	public static String NoReferenceProcessSelected;
@@ -449,6 +460,7 @@ public class Messages extends NLS {
 	public static String SearchParameters;
 	public static String SearchProvidersFor;
 	public static String SearchRecipientsFor;
+	public static String SearchResults;
 	public static String Searching;
 	public static String SearchingForUnits;
 	public static String SearchTextOpenDatabaseMessage;
@@ -462,6 +474,7 @@ public class Messages extends NLS {
 	public static String SelectRecipients;
 	public static String SelectTheExportFile;
 	public static String SelectTheParameterYouWantToReferTo;
+	public static String Semicolon;
 	public static String SetSankeyDiagramOptions;
 	public static String Settings;
 	public static String SettingsForTheSankeyDiagram;
@@ -484,12 +497,14 @@ public class Messages extends NLS {
 	public static String SystemProcess;
 	public static String SystemSaveProceedQuestion;
 
+	public static String Tab;
 	public static String TargetAmount;
 	public static String Technology;
 	public static String Telefax;
 	public static String Telephone;
 	public static String Test;
 	public static String TestDistribution;
+	public static String TexchnologyMatrix;
 	public static String TextDropComponent_ToolTipText;
 	public static String TextReference;
 	public static String Time;
