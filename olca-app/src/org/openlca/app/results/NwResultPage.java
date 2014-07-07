@@ -45,7 +45,7 @@ public class NwResultPage extends FormPage {
 
 	public NwResultPage(FormEditor editor, SimpleResultProvider<?> result,
 			CalculationSetup setup) {
-		super(editor, "NwResultPage", "Normalisation and weighting");
+		super(editor, "NwResultPage", Messages.NormalizationWeighting);
 		this.result = result;
 		this.setup = setup;
 	}
@@ -53,7 +53,7 @@ public class NwResultPage extends FormPage {
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
 		ScrolledForm form = UI.formHeader(managedForm,
-				"Normalisation and weighting");
+				Messages.NormalizationWeighting);
 		toolkit = managedForm.getToolkit();
 		body = UI.formBody(form, toolkit);
 		nwSetTable = loadNwSetTable();
@@ -71,19 +71,19 @@ public class NwResultPage extends FormPage {
 	private void createNormalisationSection() {
 		List<ImpactResult> results = nwSetTable.applyNormalisation(result
 				.getTotalImpactResults());
-		createTable("Normalisation", results, false);
+		createTable(Messages.Normalization, results, false);
 	}
 
 	private void createWeightingSection() {
 		List<ImpactResult> results = nwSetTable.applyWeighting(result
 				.getTotalImpactResults());
-		createTable("Weighting", results, true);
+		createTable(Messages.Weighting, results, true);
 	}
 
 	private void createSingleScoreSection() {
 		List<ImpactResult> results = nwSetTable.applyBoth(result
 				.getTotalImpactResults());
-		createTable("Normalisation & Weighting (Single score)", results, true);
+		createTable(Messages.SingleScore, results, true);
 	}
 
 	private void createTable(String title, List<ImpactResult> results,

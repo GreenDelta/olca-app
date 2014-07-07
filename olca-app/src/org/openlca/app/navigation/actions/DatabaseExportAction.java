@@ -65,15 +65,15 @@ public class DatabaseExportAction extends Action implements INavigationAction {
 			log.trace("delete existing file {}", zip);
 			boolean deleted = zip.delete();
 			if (!deleted) {
-				org.openlca.app.util.Error.showBox("Could not overwrite " +
-						zip.getName());
+				org.openlca.app.util.Error.showBox(Messages.CouldNotOverwriteFile
+						+ ": " + zip.getName());
 				return;
 			}
 		}
 		if (active)
 			Editors.closeAll();
 		log.trace("run database export to file {}", zip);
-		App.run("Export database",
+		App.run(Messages.ExportDatabase,
 				() -> realExport(config, zip, active),
 				() -> updateUI(zip, active));
 	}
@@ -99,7 +99,7 @@ public class DatabaseExportAction extends Action implements INavigationAction {
 	private void updateUI(final File zip, final boolean active) {
 		if (active)
 			Navigator.refresh();
-		InformationPopup.show("Export done", "Database was exported to file "
-				+ zip.getName());
+		InformationPopup.show(Messages.ExportDone, Messages.DatabaseWasExportedToFile
+				+ ": " + zip.getName());
 	}
 }

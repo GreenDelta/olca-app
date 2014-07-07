@@ -50,7 +50,7 @@ public class FlowImpactPage extends FormPage {
 
 	public FlowImpactPage(FormEditor editor,
 			ContributionResultProvider<?> result) {
-		super(editor, "FlowImpactPage", "Flow contributions");
+		super(editor, "FlowImpactPage", Messages.FlowContributions);
 		this.result = result;
 	}
 
@@ -58,7 +58,7 @@ public class FlowImpactPage extends FormPage {
 	protected void createFormContent(IManagedForm managedForm) {
 		FormToolkit toolkit = managedForm.getToolkit();
 
-		ScrolledForm form = UI.formHeader(managedForm, "Flow contributions");
+		ScrolledForm form = UI.formHeader(managedForm, Messages.FlowContributions);
 		Composite body = UI.formBody(form, toolkit);
 
 		Composite composite = toolkit.createComposite(body);
@@ -68,7 +68,7 @@ public class FlowImpactPage extends FormPage {
 		Composite selectionContainer = toolkit.createComposite(composite);
 		UI.gridData(selectionContainer, true, false);
 		UI.gridLayout(selectionContainer, 5);
-		UI.formLabel(selectionContainer, toolkit, "Impact category");
+		UI.formLabel(selectionContainer, toolkit, Messages.ImpactCategory);
 		impactCombo = new ImpactCategoryViewer(selectionContainer);
 		impactCombo.setInput(result.getImpactDescriptors());
 		impactCombo
@@ -83,7 +83,7 @@ public class FlowImpactPage extends FormPage {
 						flowViewer.setInput(items);
 					}
 				});
-		UI.formLabel(selectionContainer, toolkit, "Cut-Off");
+		UI.formLabel(selectionContainer, toolkit, Messages.Cutoff);
 		spinner = new Spinner(selectionContainer, SWT.BORDER);
 		spinner.setValues(1, 0, 10000, 2, 1, 100);
 		toolkit.adapt(spinner);

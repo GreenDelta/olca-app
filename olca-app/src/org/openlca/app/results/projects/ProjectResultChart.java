@@ -97,7 +97,7 @@ public class ProjectResultChart extends Composite {
 	}
 
 	private Axis yAxis(ChartWithAxes chart, Axis xAxis, BaseDescriptor reference) {
-		String title = "Results";
+		String title = Messages.Results;
 		String unit = null;
 		if (reference instanceof FlowDescriptor) {
 			FlowDescriptor flow = (FlowDescriptor) reference;

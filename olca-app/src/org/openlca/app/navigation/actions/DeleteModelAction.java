@@ -91,10 +91,7 @@ public class DeleteModelAction extends Action implements INavigationAction {
 		List<BaseDescriptor> descriptors = search.findUses(descriptor);
 		if (descriptors.isEmpty())
 			return false;
-		String name = Labels.getDisplayName(descriptor);
-		Error.showBox("Cannot delete", name
-				+ " cannot be deleted because it is used in other data "
-				+ "sets. See the usage view to see where it is used.");
+		Error.showBox(Messages.CannotDelete, Messages.CannotDeleteMessage);
 		return true;
 	}
 

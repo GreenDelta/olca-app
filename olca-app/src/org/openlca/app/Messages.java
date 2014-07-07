@@ -52,9 +52,12 @@ public class Messages extends NLS {
 	public static String CalculationType;
 	public static String CalculationWizardDescription;
 	public static String Cancel;
+	public static String CannotDelete;
+	public static String CannotDeleteMessage;
 	public static String CannotDeleteRefFlow;
 	public static String CannotDeleteRefFlowMessage;
 	public static String Category;
+	public static String CategoryNotEmpty;
 	public static String Causal;
 	public static String CausalAllocation;
 	public static String Change;
@@ -73,15 +76,18 @@ public class Messages extends NLS {
 	public static String ConnectRecipients;
 	public static String ConnectWithSystemProcessesIfPossible;
 	public static String Connection;
+	public static String ConnectionFailed;
 	public static String ConsumedBy;
 	public static String Content;
 	public static String Context;
 	public static String Contribution;
+	public static String ContributionTree;
 	public static String ConversionFactor;
 	public static String Copy;
 	public static String Copyright;
 	public static String CostCategory;
 	public static String CouldNotOpenDatabase;
+	public static String CouldNotOverwriteFile;
 	public static String Country;
 	public static String CreateANewDatabase;
 	public static String CreateANewProductFlowForTheProcess;
@@ -121,17 +127,26 @@ public class Messages extends NLS {
 	public static String DatabaseImportDescription;
 	public static String DatabaseName;
 	public static String DatabaseNeedsUpdate;
+	public static String DatabaseRenameError;
 	public static String DatabaseType;
 	public static String DatabaseVersionCheckFailed;
+	public static String DatabaseWasExportedToFile;
+	public static String DBImportNoTarget;
+	public static String DBImportNoTargetConnectionFailedMessage;
+	public static String DBImportUpdateDatabaseQuestion;
+	public static String DBImportVersionNewerMessage;
 	public static String DefaultFlowProperty;
 	public static String DefaultMethod;
 	public static String DefaultProvider;
 	public static String Delete;
+	public static String DeleteCategoryQuestion;
 	public static String DeleteDatabase;
 	public static String DeleteProcess;
 	public static String DeleteProcesslink;
 	public static String DependentParameters;
 	public static String Description;
+	public static String DirectContribution;
+	public static String DirectImpact;
 	public static String Direction;
 	public static String DoYouReallyWantToDelete;
 	public static String Doi;
@@ -144,6 +159,8 @@ public class Messages extends NLS {
 	public static String EndDate;
 	public static String English;
 	public static String Error;
+	public static String ErrorPopupMessage;
+	public static String ErrorPopupTitle;
 	public static String Example;
 	public static String Expand;
 	public static String ExpandAll;
@@ -156,6 +173,7 @@ public class Messages extends NLS {
 	public static String ExportToExcel;
 	public static String ExportingProcesses;
 	public static String ExportProcess;
+	public static String ExportResults;
 	public static String ILCDNetworkExportDescription;
 
 	public static String Factor;
@@ -170,6 +188,7 @@ public class Messages extends NLS {
 	public static String FlowProperties;
 	public static String FlowProperty;
 	public static String FlowPropertyType;
+	public static String FlowResults;
 	public static String FlowType;
 	public static String Flows;
 	public static String Folder;
@@ -209,11 +228,13 @@ public class Messages extends NLS {
 	public static String ImageExport;
 	public static String ImpactAssessmentMethod;
 	public static String ImpactAssessmentMethods;
+	public static String ImpactAssessmentResults;
 	public static String ImpactCategories;
 	public static String ImpactCategory;
 	public static String ImpactContributions;
 	public static String ImpactFactors;
 	public static String Import;
+	public static String ImportData;
 	public static String ImportDatabase;
 	public static String ImportEcoSpold;
 	public static String ImportILCD;
@@ -271,6 +292,7 @@ public class Messages extends NLS {
 	public static String Move;
 
 	public static String Name;
+	public static String NameCannotBeEmpty;
 	public static String NameEmptyOrAlreadyExists;
 	public static String Never;
 	public static String NewActor;
@@ -293,6 +315,7 @@ public class Messages extends NLS {
 	public static String No;
 	public static String NoAnalysisOptionsSet;
 	public static String NoCostCategorySelected;
+	public static String NoDatabaseOpened;
 	public static String NoDescription;
 	public static String NoDistribution;
 	public static String NoQuantitativeReferenceSelected;
@@ -348,6 +371,7 @@ public class Messages extends NLS {
 	public static String ProcessEvaluationAndValidation;
 	public static String ProcessType;
 	public static String Processes;
+	public static String ProcessResults;
 	public static String ProducedBy;
 	public static String Product;
 	public static String ProductSystem;
@@ -421,6 +445,7 @@ public class Messages extends NLS {
 	public static String ShowValues;
 	public static String Showviews;
 	public static String SingleAmount;
+	public static String SingleScore;
 	public static String SolvingProblems;
 	public static String Source;
 	public static String Sources;
@@ -468,6 +493,7 @@ public class Messages extends NLS {
 	public static String UpdateMinorVersion;
 	public static String UpdatePreferences;
 	public static String UpdatingProductSystem;
+	public static String UpstreamTotal;
 	public static String Usage;
 	public static String UsageOf;
 	public static String UsedInProcesses;
@@ -476,6 +502,7 @@ public class Messages extends NLS {
 
 	public static String Value;
 	public static String Version;
+	public static String VersionNewer;
 
 	public static String Warning;
 	public static String Waste;

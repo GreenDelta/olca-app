@@ -25,6 +25,7 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.Messages;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.db.Cache;
 import org.openlca.app.util.Labels;
@@ -64,13 +65,13 @@ class ProcessResultPage extends FormPage {
 	private double flowCutOff = 0.01;
 	private double impactCutOff = 0.01;
 
-	private final static String[] EXCHANGE_COLUMN_LABELS = { "Contribution",
-			"Flow", "Upstream total", "Direct contribution", "Unit" };
-	private final static String[] IMPACT_COLUMN_LABELS = { "Contribution",
-			"Impact category", "Upstream total", "Direct impact", "Unit" };
+	private final static String[] EXCHANGE_COLUMN_LABELS = { Messages.Contribution,
+			Messages.Flow, Messages.UpstreamTotal, Messages.DirectContribution, Messages.Unit };
+	private final static String[] IMPACT_COLUMN_LABELS = { Messages.Contribution,
+			Messages.ImpactCategory, Messages.UpstreamTotal, Messages.DirectImpact, Messages.Unit };
 
 	public ProcessResultPage(AnalyzeEditor editor, FullResultProvider result) {
-		super(editor, ProcessResultPage.class.getName(), "Process results");
+		super(editor, ProcessResultPage.class.getName(), Messages.ProcessResults);
 		this.editor = editor;
 		this.result = result;
 		this.flowResultProvider = new ResultProvider(result);
@@ -86,7 +87,7 @@ class ProcessResultPage extends FormPage {
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
 		toolkit = managedForm.getToolkit();
-		ScrolledForm form = UI.formHeader(managedForm, "Process results");
+		ScrolledForm form = UI.formHeader(managedForm, Messages.ProcessResults);
 		Composite body = UI.formBody(form, toolkit);
 		createFlowSection(body);
 		if (result.hasImpactResults())
@@ -118,7 +119,7 @@ class ProcessResultPage extends FormPage {
 	}
 
 	private void createFlowSection(Composite parent) {
-		Section section = UI.section(parent, toolkit, "Flow results");
+		Section section = UI.section(parent, toolkit, Messages.FlowResults);
 		UI.gridData(section, true, true);
 		Composite composite = toolkit.createComposite(section);
 		section.setClient(composite);
@@ -127,7 +128,7 @@ class ProcessResultPage extends FormPage {
 		Composite container = new Composite(composite, SWT.NONE);
 		UI.gridData(container, true, false);
 		UI.gridLayout(container, 5);
-		UI.formLabel(container, toolkit, "Process");
+		UI.formLabel(container, toolkit, Messages.Process);
 		flowProcessViewer = new ProcessViewer(container, cache);
 		flowProcessViewer.setInput(editor.getSetup().getProductSystem());
 		flowProcessViewer
@@ -139,7 +140,7 @@ class ProcessResultPage extends FormPage {
 						outputViewer.refresh();
 					}
 				});
-		UI.formLabel(container, toolkit, "Cut-Off");
+		UI.formLabel(container, toolkit, Messages.Cutoff);
 		flowSpinner = new Spinner(container, SWT.BORDER);
 		flowSpinner.setValues(1, 0, 10000, 2, 1, 100);
 		toolkit.adapt(flowSpinner);
@@ -150,8 +151,8 @@ class ProcessResultPage extends FormPage {
 		resultContainer.setLayout(new GridLayout(2, true));
 		UI.gridData(resultContainer, true, true);
 
-		UI.formLabel(resultContainer, "Inputs");
-		UI.formLabel(resultContainer, "Outputs");
+		UI.formLabel(resultContainer, Messages.Inputs);
+		UI.formLabel(resultContainer, Messages.Outputs);
 
 		inputViewer = new TableViewer(resultContainer);
 		inputViewer.setLabelProvider(new FlowLabel());
@@ -165,7 +166,7 @@ class ProcessResultPage extends FormPage {
 
 	private void createImpactSection(Composite parent) {
 		Section section = UI.section(parent, toolkit,
-				"Impact assessment results");
+				Messages.ImpactAssessmentResults);
 		UI.gridData(section, true, true);
 		Composite composite = toolkit.createComposite(section);
 		section.setClient(composite);
@@ -174,7 +175,7 @@ class ProcessResultPage extends FormPage {
 		Composite container = new Composite(composite, SWT.NONE);
 		UI.gridLayout(container, 5);
 		UI.gridData(container, true, false);
-		UI.formLabel(container, toolkit, "Process");
+		UI.formLabel(container, toolkit, Messages.Process);
 		impactProcessViewer = new ProcessViewer(container, cache);
 		impactProcessViewer.setInput(editor.getSetup().getProductSystem());
 		impactProcessViewer
@@ -185,7 +186,7 @@ class ProcessResultPage extends FormPage {
 						impactViewer.refresh();
 					}
 				});
-		UI.formLabel(container, toolkit, "Cut-Off");
+		UI.formLabel(container, toolkit, Messages.Cutoff);
 		impactSpinner = new Spinner(container, SWT.BORDER);
 		impactSpinner.setValues(1, 0, 10000, 2, 1, 100);
 		toolkit.adapt(impactSpinner);

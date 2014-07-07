@@ -99,11 +99,11 @@ public class AnalyzeInfoPage extends FormPage {
 			return;
 		final AnalysisResultExport export = new AnalysisResultExport(
 				setup.getProductSystem(), exportFile, result);
-		App.run("Export...", export, new Runnable() {
+		App.run(Messages.Export, export, new Runnable() {
 			@Override
 			public void run() {
 				if (export.doneWithSuccess()) {
-					InformationPopup.show("Export done");
+					InformationPopup.show(Messages.ExportDone);
 				}
 			}
 		});
