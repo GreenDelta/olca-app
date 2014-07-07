@@ -80,7 +80,7 @@ class SourceInfoPage extends ModelPage<Source> {
 		layout.numColumns = 3;
 		composite.setLayout(layout);
 		composite.addMouseTrackListener(new DeleteFileVisibility());
-		Button browseButton = toolkit.createButton(composite, "Browse",
+		Button browseButton = toolkit.createButton(composite, Messages.Browse,
 				SWT.NONE);
 		browseButton.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -123,9 +123,8 @@ class SourceInfoPage extends ModelPage<Source> {
 		File dbFile = new File(dir, fileName);
 		if (dbFile.exists()) {
 			boolean doIt = Question
-					.ask("Overwrite database file?",
-							"A file with the given name already exists in this database. "
-									+ "Do you want to overwrite it?");
+					.ask(Messages.OverwriteFile,
+							Messages.SourceFileOverwriteFileQuestion);
 			if (!doIt)
 				return;
 		}
@@ -181,9 +180,7 @@ class SourceInfoPage extends ModelPage<Source> {
 				log.trace("open file {}", file);
 				Desktop.browse(file.toURI().toString());
 			} else {
-				Info.showBox("File does not exist",
-						"The file " + file.getName()
-								+ " does not exist in the database folder");
+				Info.showBox(Messages.FileDoesNotExist);
 			}
 		}
 	}
@@ -194,9 +191,8 @@ class SourceInfoPage extends ModelPage<Source> {
 			if (getModel().getExternalFile() == null)
 				return;
 			File file = getDatabaseFile();
-			boolean doIt = Question.ask("Delete file?",
-					"Do you really want to delete the file " + file.getName()
-							+ "?");
+			boolean doIt = Question.ask(Messages.DeleteFile,
+					Messages.SourceFileDeleteQuestion);
 			if (!doIt)
 				return;
 			try {

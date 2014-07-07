@@ -146,6 +146,7 @@ public class Messages extends NLS {
 	public static String DeleteCategoryQuestion;
 	public static String DeleteDatabase;
 	public static String DeleteDatabaseParameterQuestion;
+	public static String DeleteFile;
 	public static String DeleteParameter;
 	public static String DeleteProcess;
 	public static String DeleteProcesslink;
@@ -192,6 +193,7 @@ public class Messages extends NLS {
 	public static String FailedToLoadFlowProperty;
 	public static String File;
 	public static String FileAlreadyExists;
+	public static String FileDoesNotExist;
 	public static String FileImportPage_Description;
 	public static String Filter;
 	public static String FilterByName;
@@ -373,6 +375,7 @@ public class Messages extends NLS {
 	public static String Other;
 	public static String Output;
 	public static String Outputs;
+	public static String OverwriteFile;
 	public static String OverwriteFileQuestion;
 
 	public static String Parameter;
@@ -488,6 +491,8 @@ public class Messages extends NLS {
 	public static String SingleScore;
 	public static String SolvingProblems;
 	public static String Source;
+	public static String SourceFileDeleteQuestion;
+	public static String SourceFileOverwriteFileQuestion;
 	public static String Sources;
 	public static String StandardDeviation;
 	public static String Start;
