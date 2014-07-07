@@ -118,8 +118,8 @@ class DatabaseParameterTable {
 			if (Parameter.isValidName(name))
 				param.setName(name);
 			else {
-				Error.showBox("Invalid parameter name", "'" + name
-						+ "' is not a valid parameter name");
+				Error.showBox(Messages.InvalidParameterName, "'" + name
+						+ "' " + Messages.IsNotValidParameterName);
 			}
 		}
 	}
@@ -137,8 +137,8 @@ class DatabaseParameterTable {
 				double val = Double.parseDouble(text);
 				param.setValue(val);
 			} catch (Exception e) {
-				Error.showBox("Invalid parameter amount", "'" + text
-						+ "' is not a valid number");
+				Error.showBox(Messages.InvalidNumber, "'" + text
+						+ "' " + Messages.IsNotValidNumber);
 			}
 		}
 	}

@@ -69,7 +69,7 @@ public class ILCDImportWizard extends Wizard implements IImportWizard {
 			@Override
 			public void run(IProgressMonitor monitor)
 					throws InvocationTargetException, InterruptedException {
-				monitor.beginTask("Import: ", IProgressMonitor.UNKNOWN);
+				monitor.beginTask(Messages.Import, IProgressMonitor.UNKNOWN);
 				ImportHandler handler = new ImportHandler(monitor);
 				ILCDImport iImport = new ILCDImport(zip, Database.get());
 				if (App.runsInDevMode())

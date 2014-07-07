@@ -154,6 +154,7 @@ public class Messages extends NLS {
 	public static String Doi;
 
 	public static String Economic;
+	public static String EcoSpold2Export;
 	public static String Edit;
 	public static String ElementaryFlow;
 	public static String Email;
@@ -164,6 +165,7 @@ public class Messages extends NLS {
 	public static String ErrorPopupMessage;
 	public static String ErrorPopupTitle;
 	public static String Example;
+	public static String ExcelExport;
 	public static String Expand;
 	public static String ExpandAll;
 	public static String Export;
@@ -217,6 +219,7 @@ public class Messages extends NLS {
 
 	public static String Help;
 	public static String Hide;
+	public static String Home;
 	public static String Host;
 	public static String Hourly;
 
@@ -242,6 +245,7 @@ public class Messages extends NLS {
 	public static String ImportDatabase;
 	public static String ImportEcoSpold;
 	public static String ImportEcoSpold01DataSets;
+	public static String ImportEcoSpold02DataSets;
 	public static String ImportILCD;
 	public static String IndicatorScore;
 	public static String Information;
@@ -266,6 +270,8 @@ public class Messages extends NLS {
 	public static String IsReference;
 	public static String KmlEditor;
 
+	public static String LCIAMethod;
+	public static String LCIAResult;
 	public static String LCIMethod;
 	public static String Language;
 	public static String LastChange;
@@ -379,6 +385,7 @@ public class Messages extends NLS {
 	public static String ProcessContributions;
 	public static String ProcessCosts;
 	public static String ProcessEvaluationAndValidation;
+	public static String ProcessExcelImportDescription;
 	public static String ProcessType;
 	public static String Processes;
 	public static String ProcessResults;
@@ -392,6 +399,7 @@ public class Messages extends NLS {
 	public static String Project;
 	public static String ProjectResults;
 	public static String Projects;
+	public static String ProjectSetup;
 	public static String Properties;
 	public static String Publication;
 
@@ -404,6 +412,7 @@ public class Messages extends NLS {
 	public static String ReferenceProcess;
 	public static String ReferenceUnit;
 	public static String ReferenceUnitIsEmptyOrInvalid;
+	public static String RegionalizedLCIA;
 	public static String Reload;
 	public static String Remote;
 	public static String RemoteDatabase;
@@ -419,13 +428,16 @@ public class Messages extends NLS {
 	public static String Reset;
 	public static String Resize;
 	public static String ResultContributions;
+	public static String Result;
 	public static String Results;
 	public static String ResultsOf;
 	public static String Reviewer;
 	public static String Route;
+	public static String RunCalculation;
 
 	public static String SamplingProcedure;
 	public static String Sankey_ScaleDescription;
+	public static String SankeyDiagram;
 	public static String Save;
 	public static String SaveAs;
 	public static String SaveAsDefault;
@@ -439,6 +451,7 @@ public class Messages extends NLS {
 	public static String SearchRecipientsFor;
 	public static String Searching;
 	public static String SearchingForUnits;
+	public static String SearchTextOpenDatabaseMessage;
 	public static String Select;
 	public static String SelectADirectory;
 	public static String SelectAUserInterfaceLanguage;
@@ -457,6 +470,7 @@ public class Messages extends NLS {
 	public static String ShowOutline;
 	public static String ShowValues;
 	public static String Showviews;
+	public static String SimaProCSVImport;
 	public static String SingleAmount;
 	public static String SingleScore;
 	public static String SolvingProblems;
@@ -515,6 +529,7 @@ public class Messages extends NLS {
 
 	public static String Value;
 	public static String Variant;
+	public static String Variants;
 	public static String Version;
 	public static String VersionNewer;
 

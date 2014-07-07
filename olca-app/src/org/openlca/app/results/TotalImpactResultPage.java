@@ -25,7 +25,7 @@ import com.google.common.primitives.Doubles;
 public class TotalImpactResultPage extends FormPage {
 
 	private final String IMPACT_CATEGORY = Messages.ImpactCategory;
-	private final String RESULT = "Result";
+	private final String RESULT = Messages.Result;
 	private final String REFERENCE_UNIT = Messages.ReferenceUnit;
 
 	private FormToolkit toolkit;
@@ -33,7 +33,7 @@ public class TotalImpactResultPage extends FormPage {
 
 	public TotalImpactResultPage(FormEditor editor,
 			SimpleResultProvider<?> result) {
-		super(editor, "ImpactResultPage", "LCIA Result");
+		super(editor, "ImpactResultPage", Messages.LCIAResult);
 		this.result = result;
 	}
 
@@ -43,7 +43,7 @@ public class TotalImpactResultPage extends FormPage {
 		toolkit = managedForm.getToolkit();
 		toolkit.getHyperlinkGroup().setHyperlinkUnderlineMode(
 				HyperlinkSettings.UNDERLINE_HOVER);
-		form.setText("LCIA - Total");
+		form.setText(Messages.LCIAResult);
 		toolkit.decorateFormHeading(form.getForm());
 		Composite body = UI.formBody(form, toolkit);
 		TableViewer impactViewer = createSectionAndViewer(body);
@@ -52,7 +52,7 @@ public class TotalImpactResultPage extends FormPage {
 	}
 
 	private TableViewer createSectionAndViewer(Composite parent) {
-		Section section = UI.section(parent, toolkit, "Impact results");
+		Section section = UI.section(parent, toolkit, Messages.LCIAResult);
 		UI.gridData(section, true, true);
 		Composite composite = toolkit.createComposite(section);
 		section.setClient(composite);

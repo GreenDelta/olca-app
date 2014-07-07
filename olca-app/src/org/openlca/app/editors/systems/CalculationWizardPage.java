@@ -84,8 +84,8 @@ class CalculationWizardPage extends WizardPage {
 				try {
 					iterationCount = Integer.parseInt(text);
 				} catch (Exception e2) {
-					Error.showBox("Invalid number", text
-							+ " is not a valid number");
+					Error.showBox(Messages.InvalidNumber, text + " "
+							+ Messages.IsNotValidNumber);
 				}
 			}
 		});
@@ -121,7 +121,7 @@ class CalculationWizardPage extends WizardPage {
 		case QUICK:
 			return Messages.QuickResults;
 		case REGIONALIZED:
-			return "Regionalized LCIA";
+			return Messages.RegionalizedLCIA;
 		default:
 			return "unknown";
 		}

@@ -69,7 +69,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 	private ProjectParameterTable parameterTable;
 
 	ProjectSetupPage(ProjectEditor editor) {
-		super(editor, "ProjectSetupPage", "Project setup");
+		super(editor, "ProjectSetupPage", Messages.ProjectSetup);
 		this.editor = editor;
 		project = editor.getModel();
 		editor.onSaved(() -> {
@@ -103,7 +103,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 	}
 
 	private void createSettingsSection(Composite composite) {
-		UI.formLabel(composite, toolkit, "LCIA Method");
+		UI.formLabel(composite, toolkit, Messages.LCIAMethod);
 		ImpactMethodViewer methodViewer = new ImpactMethodViewer(composite);
 		methodViewer.setNullable(true);
 		methodViewer
@@ -144,7 +144,8 @@ class ProjectSetupPage extends ModelPage<Project> {
 	}
 
 	private void createReportButton(Composite composite) {
-		Button button = toolkit.createButton(composite, "Report", SWT.NONE);
+		Button button = toolkit.createButton(composite, Messages.Report,
+				SWT.NONE);
 		UI.gridData(button, false, false).widthHint = 100;
 		button.setImage(ImageType.PROJECT_ICON.get());
 		button.addSelectionListener(new SelectionAdapter() {
@@ -171,7 +172,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 	}
 
 	private void createVariantsSection(Composite body) {
-		Section section = UI.section(body, toolkit, "Variants");
+		Section section = UI.section(body, toolkit, Messages.Variants);
 		Composite composite = UI.sectionClient(section, toolkit);
 		UI.gridLayout(composite, 1);
 		String[] properties = { Messages.Name, Messages.ProductSystem,
@@ -191,7 +192,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 	}
 
 	private void createParameterSection(Composite body) {
-		Section section = UI.section(body, toolkit, "Parameters");
+		Section section = UI.section(body, toolkit, Messages.Parameters);
 		parameterTable = new ProjectParameterTable(editor);
 		parameterTable.render(section, toolkit);
 	}
@@ -226,7 +227,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 	private ProjectVariant createVariant(ProductSystem system, int i) {
 		ProjectVariant variant = new ProjectVariant();
 		variant.setProductSystem(system);
-		variant.setName("Variant " + i);
+		variant.setName(Messages.Variant + i);
 		variant.setAllocationMethod(AllocationMethod.NONE);
 		variant.setAmount(system.getTargetAmount());
 		variant.setFlowPropertyFactor(system.getTargetFlowPropertyFactor());
@@ -279,7 +280,8 @@ class ProjectSetupPage extends ModelPage<Project> {
 				variant.setAmount(val);
 				editor.setDirty(true);
 			} catch (Exception e) {
-				Error.showBox("Invalid number", text + " is not a valid number");
+				Error.showBox(Messages.InvalidNumber, text + " "
+						+ Messages.IsNotValidNumber);
 			}
 		}
 	}

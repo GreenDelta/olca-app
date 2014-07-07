@@ -91,7 +91,7 @@ public class AnalyzeEditor extends FormEditor {
 				addPage(new LocalisedImpactPage(this, result));
 			diagram = new SankeyDiagram(setup, result);
 			diagramIndex = addPage(diagram, getEditorInput());
-			setPageText(diagramIndex, "Sankey diagram");
+			setPageText(diagramIndex, Messages.SankeyDiagram);
 		} catch (final PartInitException e) {
 			log.error("Add pages failed", e);
 		}

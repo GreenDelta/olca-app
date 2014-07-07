@@ -69,7 +69,7 @@ public class SearchText extends WorkbenchWindowControlContribution {
 
 	private void doSearch() {
 		if (Database.get() == null) {
-			InformationPopup.show("You first need to activate a database");
+			InformationPopup.show(Messages.SearchTextOpenDatabaseMessage);
 			return;
 		}
 		final String term = text.getText();

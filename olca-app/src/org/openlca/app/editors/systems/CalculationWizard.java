@@ -73,7 +73,7 @@ class CalculationWizard extends Wizard {
 		@Override
 		public void run(IProgressMonitor monitor)
 				throws InvocationTargetException, InterruptedException {
-			monitor.beginTask("Run calculation", IProgressMonitor.UNKNOWN);
+			monitor.beginTask(Messages.RunCalculation, IProgressMonitor.UNKNOWN);
 			int size = productSystem.getProcesses().size();
 			log.trace("calculate a {} x {} system", size, size);
 			switch (type) {

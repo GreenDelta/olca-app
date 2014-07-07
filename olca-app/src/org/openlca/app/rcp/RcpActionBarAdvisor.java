@@ -143,7 +143,6 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	private class PluginAction extends Action {
 		public PluginAction() {
 			setText("Plugins");
-			setToolTipText("Open the plugin manager");
 			setImageDescriptor(ImageType.LOGO_16_32.getDescriptor());
 		}
 
@@ -158,8 +157,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 
 	private class SqlEditorAction extends Action {
 		public SqlEditorAction() {
-			setText("SQL Query Browser");
-			setToolTipText("Open the SQL Query Browser");
+			setText("SQL query browser");
 		}
 
 		@Override
@@ -171,8 +169,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	private class HomeAction extends Action {
 		public HomeAction() {
 			setImageDescriptor(ImageType.HOME_ICON.getDescriptor());
-			setText("Home");
-			setToolTipText("Open welcome page");
+			setText(Messages.Home);
 		}
 
 		@Override
