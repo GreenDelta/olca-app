@@ -8,6 +8,7 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.UIJob;
+import org.openlca.app.Messages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,7 +68,7 @@ public class Editors {
 		private String editorId;
 
 		public OpenInUIJob(IEditorInput input, String editorId) {
-			super("Open editor");
+			super(Messages.OpenEditor);
 			this.input = input;
 			this.editorId = editorId;
 		}

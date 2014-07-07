@@ -48,13 +48,13 @@ public class TotalFlowResultPage extends FormPage {
 
 	public TotalFlowResultPage(FormEditor editor,
 			SimpleResultProvider<?> resultProvider) {
-		super(editor, "InventoryResultPage", "Inventory results");
+		super(editor, "InventoryResultPage", Messages.InventoryResults);
 		this.resultProvider = resultProvider;
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, "Inventory results");
+		ScrolledForm form = UI.formHeader(managedForm, Messages.InventoryResults);
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		TableViewer inputViewer = createSectionAndViewer(body, true);

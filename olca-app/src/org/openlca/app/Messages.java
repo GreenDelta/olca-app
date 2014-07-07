@@ -141,6 +141,8 @@ public class Messages extends NLS {
 	public static String Delete;
 	public static String DeleteCategoryQuestion;
 	public static String DeleteDatabase;
+	public static String DeleteDatabaseParameterQuestion;
+	public static String DeleteParameter;
 	public static String DeleteProcess;
 	public static String DeleteProcesslink;
 	public static String DependentParameters;
@@ -167,6 +169,7 @@ public class Messages extends NLS {
 	public static String Export;
 	public static String ExportAsMatrix;
 	public static String ExportDatabase;
+	public static String ExportDirectory;
 	public static String ExportDone;
 	public static String ExportEcoSpold;
 	public static String ExportILCD;
@@ -177,6 +180,7 @@ public class Messages extends NLS {
 	public static String ILCDNetworkExportDescription;
 
 	public static String Factor;
+	public static String FailedToLoadFlowProperty;
 	public static String File;
 	public static String FileAlreadyExists;
 	public static String FileImportPage_Description;
@@ -237,11 +241,13 @@ public class Messages extends NLS {
 	public static String ImportData;
 	public static String ImportDatabase;
 	public static String ImportEcoSpold;
+	public static String ImportEcoSpold01DataSets;
 	public static String ImportILCD;
 	public static String IndicatorScore;
 	public static String Information;
 	public static String InfrastructureFlow;
 	public static String InfrastructureProcess;
+	public static String InitializeSimulation;
 	public static String InputParameters;
 	public static String Input;
 	public static String Inputs;
@@ -253,6 +259,7 @@ public class Messages extends NLS {
 	public static String InvalidNumber;
 	public static String InvalidParameterName;
 	public static String InvalidValue;
+	public static String InventoryResults;
 	public static String IsInvalidFormula;
 	public static String IsNotValidNumber;
 	public static String IsNotValidParameterName;
@@ -279,6 +286,7 @@ public class Messages extends NLS {
 	public static String MaximizeAll;
 	public static String Maximum;
 	public static String Mean;
+	public static String Methods;
 	public static String MinimalTree;
 	public static String Minimize;
 	public static String MinimizeAll;
@@ -331,6 +339,7 @@ public class Messages extends NLS {
 	public static String NormalizationWeighting;
 	public static String NormalizationWeightingSets;
 	public static String Note;
+	public static String Notification;
 	public static String NumberFormatPage_Description;
 	public static String NumberOfDecimalPlaces;
 	public static String NumberOfIterations;
@@ -340,6 +349,7 @@ public class Messages extends NLS {
 	public static String OnlineHelp;
 	public static String Open;
 	public static String OpenDatabase;
+	public static String OpenEditor;
 	public static String OpenInEditor;
 	public static String OpenLCAUpdateCheck;
 	public static String OpenMiniatureView;
@@ -375,9 +385,12 @@ public class Messages extends NLS {
 	public static String ProducedBy;
 	public static String Product;
 	public static String ProductSystem;
+	public static String ProductSystemExcelExport;
+	public static String ProductSystemExcelExportMessage;
 	public static String ProductSystems;
 	public static String Progress;
 	public static String Project;
+	public static String ProjectResults;
 	public static String Projects;
 	public static String Properties;
 	public static String Publication;
@@ -501,6 +514,7 @@ public class Messages extends NLS {
 	public static String UserFriendlyName;
 
 	public static String Value;
+	public static String Variant;
 	public static String Version;
 	public static String VersionNewer;
 

@@ -91,7 +91,7 @@ class FlowWizardPage extends AbstractWizardPage<Flow> {
 			factor.setFlowProperty(flowProp);
 			flow.getFlowPropertyFactors().add(factor);
 		} catch (Exception e) {
-			setErrorMessage("Failed to load flow property");
+			setErrorMessage(Messages.FailedToLoadFlowProperty);
 			Logger log = LoggerFactory.getLogger(getClass());
 			log.error("Failed to load flow property", e);
 		}

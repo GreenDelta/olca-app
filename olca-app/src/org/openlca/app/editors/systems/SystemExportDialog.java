@@ -46,8 +46,8 @@ public class SystemExportDialog extends WizardDialog {
 			protected SystemExportWizardPage() {
 				super("SystemExportWizardPage");
 				setImageDescriptor(ImageType.FILE_EXCEL_SMALL.getDescriptor());
-				setTitle("Product System Excel Export");
-				setDescription("Please select a directory to export the product system to. \nA new one, where all created files are placed, will be created under the selected directory.");
+				setTitle(Messages.ProductSystemExcelExport);
+				setDescription(Messages.ProductSystemExcelExportMessage);
 				setPageComplete(false);
 			}
 
@@ -64,7 +64,7 @@ public class SystemExportDialog extends WizardDialog {
 				Composite composite = new Composite(parent, SWT.NONE);
 				UI.gridLayout(composite, 1);
 
-				Group methodGroup = createGroup("Methods", composite, 1);
+				Group methodGroup = createGroup(Messages.Methods, composite, 1);
 				UI.formLabel(methodGroup, Messages.AllocationMethod);
 				allocationMethodViewer = new AllocationMethodViewer(
 						methodGroup, AllocationMethod.values());
@@ -72,7 +72,7 @@ public class SystemExportDialog extends WizardDialog {
 				impactMethodViewer = new ImpactMethodViewer(methodGroup);
 				impactMethodViewer.setInput(database);
 
-				Group fileGroup = createGroup("Export directory", composite, 1);
+				Group fileGroup = createGroup(Messages.ExportDirectory, composite, 1);
 				directorySelection = new FileSelection(fileGroup);
 				directorySelection.setSelectDirectory(true);
 				directorySelection
@@ -134,7 +134,7 @@ public class SystemExportDialog extends WizardDialog {
 					public void run(IProgressMonitor monitor)
 							throws InvocationTargetException,
 							InterruptedException {
-						monitor.beginTask("Exporting...",
+						monitor.beginTask(Messages.Export,
 								IProgressMonitor.UNKNOWN);
 						SystemExportConfig conf = new SystemExportConfig(
 								productSystem, database, App.getSolver()

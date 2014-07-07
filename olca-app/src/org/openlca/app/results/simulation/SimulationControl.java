@@ -5,6 +5,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
+import org.openlca.app.Messages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +37,7 @@ class SimulationControl implements SelectionListener {
 	@Override
 	public void widgetDefaultSelected(SelectionEvent e) {
 		if (!monitor.isRunning()) {
-			button.setText("Cancel");
+			button.setText(Messages.Cancel);
 			startProgress();
 		} else {
 			monitor.setCanceled(true);

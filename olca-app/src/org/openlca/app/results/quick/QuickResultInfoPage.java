@@ -108,7 +108,7 @@ public class QuickResultInfoPage extends FormPage {
 			@Override
 			public void run() {
 				if (export.doneWithSuccess()) {
-					InformationPopup.show("Export done");
+					InformationPopup.show(Messages.ExportDone);
 				}
 			}
 		});

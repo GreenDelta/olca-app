@@ -105,7 +105,7 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 
 	private void parse(IProgressMonitor monitor, File[] files,
 	                   UnitMapping unitMapping) {
-		monitor.beginTask("Import EcoSpold 01 data sets",
+		monitor.beginTask(Messages.ImportEcoSpold01DataSets,
 				IProgressMonitor.UNKNOWN);
 		EcoSpold01Import importer = new EcoSpold01Import(Database.get(),
 				unitMapping);
