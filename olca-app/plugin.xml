@@ -8,14 +8,14 @@
 			class="org.openlca.app.editors.StartPage"
 			default="false"
 			id="olca.StartPage"
-			name="Welcome"
+			name="%Welcome"
 			icon="icons/home_16.gif">      
       </editor>
       <editor
       		class="org.openlca.app.db.sql.SqlEditor"
       		default="false"
       		id="SqlEditor"
-      		name="SQL Query Browser"
+      		name="SQL Editor"
       		icon="icons/sql_16.png">
       </editor>
       <editor
