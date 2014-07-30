@@ -1,12 +1,10 @@
 package org.openlca.app.editors.projects;
 
-import java.util.List;
-import java.util.Objects;
-
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
+import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.ImpactMethodViewer;
 import org.openlca.app.viewers.combo.NwSetComboViewer;
@@ -17,11 +15,15 @@ import org.openlca.core.model.Project;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.NwSetDescriptor;
 
+import java.util.List;
+import java.util.Objects;
+
 class ImpactSection {
 
 	private ProjectEditor editor;
 	private ImpactMethodViewer methodViewer;
 	private NwSetComboViewer nwViewer;
+	private IndicatorTable indicatorTable;
 
 	public ImpactSection(ProjectEditor editor) {
 		this.editor = editor;
@@ -30,8 +32,15 @@ class ImpactSection {
 	public void render(Composite body, FormToolkit toolkit) {
 		Composite composite = UI
 				.formSection(body, toolkit, Messages.LCIAMethod);
-		createMethodViewer(toolkit, composite);
-		createNwSetViewer(toolkit, composite);
+		UI.gridLayout(composite, 1);
+		Composite form = UI.formComposite(composite, toolkit);
+		UI.gridData(form, true, false);
+		createMethodViewer(toolkit, form);
+		createNwSetViewer(toolkit, form);
+		if (FeatureFlag.REPORTS.isEnabled()) {
+			indicatorTable = new IndicatorTable(editor);
+			indicatorTable.render(composite);
+		}
 		setInitialSelection();
 	}
 
@@ -76,6 +85,8 @@ class ImpactSection {
 		project.setNwSetId(null);
 		nwViewer.select(null);
 		nwViewer.setInput(selection);
+		if(indicatorTable != null)
+			indicatorTable.methodChanged(selection);
 		editor.setDirty(true);
 	}
 
