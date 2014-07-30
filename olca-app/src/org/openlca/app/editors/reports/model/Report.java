@@ -13,6 +13,7 @@ public class Report {
 	private List<ReportParameter> parameters = new ArrayList<>();
 	private List<ReportVariant> variants = new ArrayList<>();
 	private List<ReportResult> results = new ArrayList<>();
+	private List<ReportIndicator> indicators = new ArrayList<>();
 
 	public String getTitle() {
 		return title;
@@ -44,5 +45,9 @@ public class Report {
 
 	public List<ReportResult> getResults() {
 		return results;
+	}
+
+	public List<ReportIndicator> getIndicators() {
+		return indicators;
 	}
 }

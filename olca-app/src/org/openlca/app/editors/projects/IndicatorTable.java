@@ -11,10 +11,12 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
+import org.openlca.app.editors.reports.model.Report;
 import org.openlca.app.editors.reports.model.ReportIndicator;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Tables;
+import org.openlca.app.util.UI;
 import org.openlca.app.viewers.table.modify.CheckBoxCellModifier;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
@@ -37,6 +39,7 @@ class IndicatorTable {
 				"Display",
 				Messages.UserFriendlyName, Messages.Description);
 		Tables.bindColumnWidths(viewer, 0.3, 0.1, 0.2, 0.4);
+		UI.gridData(viewer.getTable(), true, false).heightHint = 150;
 		Label label = new Label();
 		viewer.setLabelProvider(label);
 		ModifySupport<ReportIndicator> modifySupport = new ModifySupport<>(
@@ -44,16 +47,22 @@ class IndicatorTable {
 		modifySupport.bind("Display", new DisplayModifier());
 		modifySupport.bind(Messages.UserFriendlyName, new NameModifier());
 		modifySupport.bind(Messages.Description, new DescriptionModifier());
+		if (editor.getReport() != null)
+			viewer.setInput(editor.getReport().getIndicators());
 	}
 
 	public void methodChanged(ImpactMethodDescriptor method) {
+		Report report = editor.getReport();
+		if (report == null)
+			return;
+		report.getIndicators().clear();
 		if (method == null) {
-			// TODO: clear indicators in report
 			viewer.setInput(null);
 			return;
 		}
 		List<ReportIndicator> indicators = createReportIndicators(method);
-		viewer.setInput(indicators);
+		report.getIndicators().addAll(indicators);
+		viewer.setInput(report.getIndicators());
 	}
 
 	private List<ReportIndicator> createReportIndicators(
