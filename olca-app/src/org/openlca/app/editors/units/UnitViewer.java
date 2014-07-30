@@ -231,12 +231,17 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 		@Override
 		protected void setChecked(Unit element, boolean value) {
 			UnitGroup group = editor.getModel();
-			if (value) {
-				if (!Objects.equals(element, group.getReferenceUnit())) {
-					group.setReferenceUnit(element);
-					editor.setDirty(true);
-				}
+			if (!value)
+				return;
+			if (Objects.equals(element, group.getReferenceUnit()))
+				return;
+			group.setReferenceUnit(element);
+			double f = element.getConversionFactor();
+			for (Unit unit : group.getUnits()) {
+				double factor = unit.getConversionFactor() / f;
+				unit.setConversionFactor(factor);
 			}
+			editor.setDirty(true);
 		}
 	}
 }
