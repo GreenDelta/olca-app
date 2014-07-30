@@ -122,17 +122,11 @@
             name="Regionalized LCIA result">
       </editor>   
       <editor
-            id="ReportEditor"
-            class="org.openlca.app.editors.reports.ReportEditor"
-            icon="icons/project_obj.png"
-            name="Report Editor"
-            contributorClass="org.openlca.app.editors.reports.ReportToolbar">
-      </editor>  
-       <editor
             id="ReportViewer"
             class="org.openlca.app.editors.reports.ReportViewer"
             icon="icons/project_obj.png"
-            name="Report Viewer">
+            name="Report Viewer"
+            contributorClass="org.openlca.app.editors.reports.ReportToolbar">
       </editor>  
       <editor
             class="org.openlca.core.editors.result.CostResultEditor"

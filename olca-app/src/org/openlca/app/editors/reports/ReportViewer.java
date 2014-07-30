@@ -1,12 +1,14 @@
 package org.openlca.app.editors.reports;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
+import org.eclipse.ui.IPersistableElement;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
@@ -16,8 +18,10 @@ import org.openlca.app.editors.reports.model.Report;
 import org.openlca.app.html.HtmlPage;
 import org.openlca.app.html.HtmlView;
 import org.openlca.app.html.IHtmlResource;
+import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.UI;
+import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +36,11 @@ public class ReportViewer extends FormEditor {
 	public static void open(Report report) {
 		if (report == null)
 			return;
-		Editors.open(new ReportEditorInput(report), ID);
+		Editors.open(new EditorInput(report), ID);
+	}
+
+	public Report getReport() {
+		return report;
 	}
 
 	@Override
@@ -40,7 +48,7 @@ public class ReportViewer extends FormEditor {
 			throws PartInitException {
 		super.init(site, input);
 		try {
-			ReportEditorInput editorInput = (ReportEditorInput) input;
+			EditorInput editorInput = (EditorInput) input;
 			this.report = editorInput.getReport();
 		} catch (Exception e) {
 			String message = "failed to init report viewer";
@@ -69,6 +77,51 @@ public class ReportViewer extends FormEditor {
 	@Override
 	public boolean isSaveAsAllowed() {
 		return false;
+	}
+
+	private static class EditorInput implements IEditorInput {
+		private final Report report;
+
+		public EditorInput(Report report) {
+			this.report = report;
+		}
+
+		public Report getReport() {
+			return report;
+		}
+
+		@Override
+		@SuppressWarnings("rawtypes")
+		public Object getAdapter(Class adapter) {
+			return null;
+		}
+
+		@Override
+		public boolean exists() {
+			return report != null;
+		}
+
+		@Override
+		public ImageDescriptor getImageDescriptor() {
+			return ImageType.PROJECT_ICON.getDescriptor();
+		}
+
+		@Override
+		public String getName() {
+			String name = report.getTitle() != null ? report.getTitle()
+					: "Report";
+			return Strings.cut(name, 75);
+		}
+
+		@Override
+		public IPersistableElement getPersistable() {
+			return null;
+		}
+
+		@Override
+		public String getToolTipText() {
+			return report.getTitle() != null ? report.getTitle() : "Report";
+		}
 	}
 
 	private class Page extends FormPage implements HtmlPage {

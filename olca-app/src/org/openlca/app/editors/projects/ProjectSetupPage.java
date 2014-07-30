@@ -20,13 +20,15 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
-import org.openlca.app.editors.reports.Reports;
+import org.openlca.app.editors.reports.ReportViewer;
+import org.openlca.app.editors.reports.model.ReportCalculator;
 import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Actions;
@@ -125,9 +127,10 @@ class ProjectSetupPage extends ModelPage<Project> {
 		toolkit.createLabel(composite, "");
 		Composite buttonContainer = toolkit.createComposite(composite);
 		UI.gridLayout(buttonContainer, 2).marginHeight = 5;
-		createCalculationButton(buttonContainer);
 		if (FeatureFlag.REPORTS.isEnabled())
 			createReportButton(buttonContainer);
+		else
+			createCalculationButton(buttonContainer);
 	}
 
 	private void createCalculationButton(Composite composite) {
@@ -151,7 +154,9 @@ class ProjectSetupPage extends ModelPage<Project> {
 		button.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				Reports.createOrOpen(project);
+				App.run(Messages.Calculate,
+						new ReportCalculator(getModel(), editor.getReport()),
+						() -> ReportViewer.open(editor.getReport()));
 			}
 		});
 	}

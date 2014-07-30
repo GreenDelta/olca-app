@@ -16,7 +16,6 @@ import org.openlca.app.editors.reports.model.Report;
 import org.openlca.app.html.HtmlFolder;
 import org.openlca.app.html.HtmlView;
 import org.openlca.app.resources.ImageType;
-import org.openlca.app.util.Actions;
 import org.openlca.app.util.Editors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,20 +28,12 @@ public class ReportToolbar extends EditorActionBarContributor {
 
 	@Override
 	public void contributeToToolBar(IToolBarManager manager) {
-		Action previewAction = Actions.create(
-				"Preview",
-				ImageType.SEARCH_ICON.getDescriptor(), () -> {
-					Report report = getReport();
-					if (report != null)
-						ReportViewer.open(getReport());
-				});
-		manager.add(previewAction);
 		manager.add(new ExportAction());
 	}
 
 	private Report getReport() {
 		try {
-			ReportEditor editor = Editors.getActive();
+			ReportViewer editor = Editors.getActive();
 			if (editor == null) {
 				log.error("unexpected error: report editor is not active");
 				return null;

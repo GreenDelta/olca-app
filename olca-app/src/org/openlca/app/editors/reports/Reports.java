@@ -7,11 +7,9 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 
 import org.apache.commons.io.IOUtils;
-import org.openlca.app.App;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseFolder;
 import org.openlca.app.editors.reports.model.Report;
-import org.openlca.app.editors.reports.model.ReportCalculator;
 import org.openlca.app.editors.reports.model.ReportSection;
 import org.openlca.app.editors.reports.model.ReportVariant;
 import org.openlca.core.model.Project;
@@ -27,28 +25,22 @@ public final class Reports {
 	private Reports() {
 	}
 
-	public static void createOrOpen(Project project) {
+	public static Report createOrOpen(Project project) {
 		Report report = openReport(project);
-		if (report != null)
-			ReportEditor.open(report);
-		else
-			createNew(project);
+		return report != null ? report : createNew(project);
 	}
 
-	private static void createNew(Project project) {
+	private static Report createNew(Project project) {
 		Report report = new Report();
 		createDefaultSections(report);
 		if (project == null) {
 			report.setTitle("No project");
-			ReportEditor.open(report);
-			return;
+			return report;
 		}
 		report.setProject(Descriptors.toDescriptor(project));
 		report.setTitle(project.getName());
 		createVariants(project, report);
-		App.run("Calculate results",
-				new ReportCalculator(project, report),
-				() -> ReportEditor.open(report));
+		return report;
 	}
 
 	private static Report openReport(Project project) {

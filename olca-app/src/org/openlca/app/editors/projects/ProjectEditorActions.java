@@ -17,11 +17,9 @@ public class ProjectEditorActions extends EditorActionBarContributor {
 
 	@Override
 	public void contributeToToolBar(IToolBarManager toolBarManager) {
-		toolBarManager.add(Actions.onCalculate(new Runnable() {
-			public void run() {
-				Project project = getProject();
-				Calculation.run(project);
-			}
+		toolBarManager.add(Actions.onCalculate(() -> {
+			Project project = getProject();
+			Calculation.run(project);
 		}));
 	}
 

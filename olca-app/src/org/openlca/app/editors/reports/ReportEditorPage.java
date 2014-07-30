@@ -22,6 +22,7 @@ import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
 import org.openlca.app.editors.DataBinding;
+import org.openlca.app.editors.projects.ProjectEditor;
 import org.openlca.app.editors.reports.model.Report;
 import org.openlca.app.editors.reports.model.ReportParameter;
 import org.openlca.app.editors.reports.model.ReportVariant;
@@ -38,17 +39,17 @@ import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
-class ReportEditorPage extends FormPage {
+public class ReportEditorPage extends FormPage {
 
 	private Report report;
-	private ReportEditor editor;
+	private ProjectEditor editor;
 	private DataBinding binding;
 	private EntityCache cache = Cache.getEntityCache();
 
 	private FormToolkit toolkit;
 	private SectionList sectionList;
 
-	public ReportEditorPage(ReportEditor editor, Report report) {
+	public ReportEditorPage(ProjectEditor editor, Report report) {
 		super(editor, "ReportInfoPage", "Report");
 		this.editor = editor;
 		this.report = report;
@@ -57,8 +58,7 @@ class ReportEditorPage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, "Report for project: "
-				+ Labels.getDisplayName(report.getProject()));
+		ScrolledForm form = UI.formHeader(managedForm, "#Report sections");
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		createInfoSection(body);

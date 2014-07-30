@@ -14,6 +14,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.editors.DataBinding;
+import org.openlca.app.editors.projects.ProjectEditor;
 import org.openlca.app.editors.reports.model.Report;
 import org.openlca.app.editors.reports.model.ReportComponent;
 import org.openlca.app.editors.reports.model.ReportSection;
@@ -26,7 +27,7 @@ import org.openlca.app.util.Viewers;
 class SectionList {
 
 	private Report report;
-	private ReportEditor editor;
+	private ProjectEditor editor;
 	private DataBinding binding;
 	private Composite parent;
 	private FormToolkit toolkit;
@@ -34,7 +35,7 @@ class SectionList {
 
 	private List<Sec> sections = new ArrayList<>();
 
-	SectionList(ReportEditor editor, Composite parent, ScrolledForm form,
+	SectionList(ProjectEditor editor, Composite parent, ScrolledForm form,
 			FormToolkit toolkit) {
 		this.editor = editor;
 		this.binding = new DataBinding(editor);
