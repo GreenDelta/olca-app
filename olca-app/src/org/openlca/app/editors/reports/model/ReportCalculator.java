@@ -48,10 +48,10 @@ public class ReportCalculator implements Runnable {
 
 	private void appendResults(ProjectResultProvider result) {
 		for (ImpactCategoryDescriptor impact : result.getImpactDescriptors()) {
-			ReportResult repResult = new ReportResult();
+			ReportResult repResult = initReportResult(impact);
+			if (repResult == null)
+				continue; // should not add this indicator
 			report.getResults().add(repResult);
-			repResult.setIndicator(impact.getName());
-			repResult.setUnit(impact.getReferenceUnit());
 			for (ProjectVariant variant : result.getVariants()) {
 				VariantResult varResult = new VariantResult();
 				repResult.getVariantResults().add(varResult);
@@ -66,6 +66,16 @@ public class ReportCalculator implements Runnable {
 						.forEach((item) -> addContribution(item, varResult));
 			}
 		}
+	}
+
+	private ReportResult initReportResult(ImpactCategoryDescriptor impact) {
+		for (ReportIndicator indicator : report.getIndicators()) {
+			if (!indicator.isDisplayed())
+				continue;
+			if (Objects.equals(impact, indicator.getDescriptor()))
+				return new ReportResult(indicator.getId());
+		}
+		return null;
 	}
 
 	private void addContribution(ContributionItem<ProcessDescriptor> item,

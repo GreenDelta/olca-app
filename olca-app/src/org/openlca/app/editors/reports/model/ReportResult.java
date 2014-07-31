@@ -5,24 +5,15 @@ import java.util.List;
 
 class ReportResult {
 
-	private String indicator;
-	private String unit;
+	private final int indicatorId;
 	private List<VariantResult> variantResults = new ArrayList<>();
 
-	public String getIndicator() {
-		return indicator;
+	public ReportResult(int indicatorId) {
+		this.indicatorId = indicatorId;
 	}
 
-	public void setIndicator(String indicator) {
-		this.indicator = indicator;
-	}
-
-	public String getUnit() {
-		return unit;
-	}
-
-	public void setUnit(String unit) {
-		this.unit = unit;
+	public int getIndicatorId() {
+		return indicatorId;
 	}
 
 	public List<VariantResult> getVariantResults() {

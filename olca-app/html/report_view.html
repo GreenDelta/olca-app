@@ -129,11 +129,6 @@
 					<div data-ng-if="section.componentId == 'result_table'" data-ng-include src="'result-table.html'"></div>
 				</div>
 			</div>
-			<div class="row">
-				<div class="col-sm-12 box-row1">
-					<button class="pull-right btn btn-primary" data-ng-click="save(report)">Save</button>
-				</div>	
-			</div>
 		</div>
 	</div>
 
@@ -197,14 +192,14 @@
 				<tbody>
 				<tr data-ng-repeat="result in report.results">
 					<td>
-						{{result.indicator}}
+						{{getIndicatorName(result.indicatorId)}}
 					</td>
 					<!-- TODO: this assumes that the order of the variants is the same for every result -->
 					<td data-ng-repeat="variantResult in result.variantResults">
 						{{variantResult.totalAmount | scientific}}
 					</td>
 					<td>
-						{{result.unit}}
+						{{getIndicatorUnit(result.indicatorId)}}
 					</td>
 				</tr>
                 </tbody>
@@ -246,9 +241,7 @@
 
 	    var Controller = function ($scope) {
         	$scope.report = {};           
-            $scope.save = function (report) {
-                saveReport(angular.toJson(report));        
-            }
+
             $scope.restoreReportParameters = function (report) {
             	angular.forEach(report.parameters, function(parameter, key){
             		angular.forEach(parameter, function(value, key){
@@ -256,7 +249,31 @@
             				parameter.value = parameter.defaultValue;
             		    });
            	     });      	
-            }
+            };
+
+            $scope.getIndicatorName = function(indicatorId) {
+                var indicators = $scope.report.indicators;
+                for(var i = 0; i < indicators.length; i++) {
+                    var indicator = indicators[i];
+                    if(indicator.id === indicatorId) {
+                        return indicator.reportName;
+                    }
+                }
+                return "";
+            };
+
+            $scope.getIndicatorUnit = function(indicatorId) {
+                var indicators = $scope.report.indicators;
+                for(var i = 0; i < indicators.length; i++) {
+                    var indicator = indicators[i];
+                    if(indicator.id === indicatorId) {
+                        return indicator.descriptor.referenceUnit;
+                    }
+                }
+                return "";
+            };
+
+
 		};
 
         app.controller('Controller', Controller);

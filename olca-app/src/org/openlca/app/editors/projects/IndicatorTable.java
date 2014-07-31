@@ -71,8 +71,9 @@ class IndicatorTable {
 		List<ImpactCategoryDescriptor> descriptors = dao
 				.getCategoryDescriptors(method.getId());
 		List<ReportIndicator> indicators = new ArrayList<>();
+		int id = 0;
 		for (ImpactCategoryDescriptor descriptor : descriptors) {
-			ReportIndicator reportIndicator = new ReportIndicator();
+			ReportIndicator reportIndicator = new ReportIndicator(id++);
 			indicators.add(reportIndicator);
 			reportIndicator.setDescriptor(descriptor);
 			reportIndicator.setReportName(descriptor.getName());

@@ -50,7 +50,7 @@ public class ReportEditorPage extends FormPage {
 	private SectionList sectionList;
 
 	public ReportEditorPage(ProjectEditor editor, Report report) {
-		super(editor, "ReportInfoPage", "Report");
+		super(editor, "ReportInfoPage", "Report sections");
 		this.editor = editor;
 		this.report = report;
 		this.binding = new DataBinding(editor);
@@ -58,13 +58,11 @@ public class ReportEditorPage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, "#Report sections");
+		ScrolledForm form = UI.formHeader(managedForm, "Report sections");
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		createInfoSection(body);
 		createVariantsSection(body);
-		// TODO: do we need parameters here?
-		// createParameternamesSection(body);
 		createAddButton(body);
 		sectionList = new SectionList(editor, body, form, toolkit);
 		form.reflow(true);

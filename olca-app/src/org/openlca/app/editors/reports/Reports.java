@@ -1,15 +1,11 @@
 package org.openlca.app.editors.reports;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-
+import com.google.gson.Gson;
 import org.apache.commons.io.IOUtils;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseFolder;
 import org.openlca.app.editors.reports.model.Report;
+import org.openlca.app.editors.reports.model.ReportComponent;
 import org.openlca.app.editors.reports.model.ReportSection;
 import org.openlca.app.editors.reports.model.ReportVariant;
 import org.openlca.core.model.Project;
@@ -18,7 +14,11 @@ import org.openlca.core.model.descriptors.Descriptors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 
 public final class Reports {
 
@@ -105,16 +105,40 @@ public final class Reports {
 	}
 
 	private static void createDefaultSections(Report report) {
-		String[] headers = { "Introduction", "Functional Unit",
-				"System boundaries", "Impact assessment method", "Results",
-				"Assumptions and uncertainties", "Discussion and conclusions" };
-		for (int i = 0; i < headers.length; i++) {
-			ReportSection section = new ReportSection();
-			section.setIndex(i);
-			section.setTitle(headers[i]);
-			section.setText("TODO: add some text here");
-			report.getSections().add(section);
-		}
+		report.getSections().add(createIntroSection());
+		report.getSections().add(createVariantsSection());
+	}
+
+	private static ReportSection createIntroSection() {
+		ReportSection section = new ReportSection();
+		section.setIndex(0);
+		section.setTitle("Introduction");
+		String text = "In the following the results of the project 'new' are shown. "
+				+ "This is a default template for the report of the project results. "
+				+ "You can configure template this via the project editor by \n"
+				+ "\n"
+				+ "<p><ul>\n"
+				+ "<li>changing the text of the sections, \n"
+				+ "<li>adding or removing sections, \n"
+				+ "<li>and selecting visual components that should be shown. \n"
+				+ "</ul></p>\n"
+				+ "\n"
+				+ "Note that you can also use HTML elements to format the section texts. "
+				+ "Additionally, you can export this report as an HTML page using "
+				+ "the export button in the toolbar of the report view.";
+		section.setText(text);
+		return section;
+	}
+
+	private static ReportSection createVariantsSection() {
+		ReportSection section = new ReportSection();
+		section.setIndex(1);
+		section.setTitle("Project variants");
+		String text = "The following table shows the name and description of " +
+				"the different variants from the project setup.";
+		section.setText(text);
+		section.setComponentId(ReportComponent.VARIANT_TABLE.getId());
+		return section;
 	}
 
 }

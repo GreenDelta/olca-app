@@ -7,10 +7,19 @@ import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
  */
 public class ReportIndicator {
 
+	private final int id;
 	private ImpactCategoryDescriptor descriptor;
 	private String reportName;
 	private String reportDescription;
 	private boolean displayed;
+
+	public ReportIndicator(int id) {
+		this.id = id;
+	}
+
+	public int getId() {
+		return id;
+	}
 
 	public ImpactCategoryDescriptor getDescriptor() {
 		return descriptor;
