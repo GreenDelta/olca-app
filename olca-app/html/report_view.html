@@ -208,12 +208,13 @@
         </div>
     </script>
 
+    <!-- result table template -->
 	<script type="text/ng-template" id="result-table.html">
 		<div class="table-responsive">
 			<table class="table table-hover">
 				<thead>
 					<tr>
-						<th>Indicator</th>
+						<th>LCIA category</th>
 						<th data-ng-repeat="result in report.results[0].variantResults">{{result.variant}}</th>
 						<th>Unit</th>
 					</tr>
@@ -246,7 +247,7 @@
 	</script>
 
 	<script type="text/ng-template" id="variants-result-charts.html">
-        <select id="indicatorSelection" class="form-control" data-ng-options="result as result.indicator for result in report.results" data-ng-model="selectedIndicator"></select>
+        <select id="indicatorSelection" class="form-control" data-ng-options="result as getIndicatorName(result.indicatorId) for result in report.results" data-ng-model="selectedIndicator"></select>
         <div data-ng-repeat="variantResult in selectedIndicator.variantResults" class="result-charts-container col-xs-12 col-sm-6 col-md-6 col-lg-4">
             <div variants-charts="exp" variant="variantResult">
                 <div class="result-charts-variant-container">

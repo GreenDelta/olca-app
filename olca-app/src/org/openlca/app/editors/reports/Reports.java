@@ -1,11 +1,6 @@
 package org.openlca.app.editors.reports;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-
+import com.google.gson.Gson;
 import org.apache.commons.io.IOUtils;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseFolder;
@@ -19,7 +14,11 @@ import org.openlca.core.model.descriptors.Descriptors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 
 public final class Reports {
 
