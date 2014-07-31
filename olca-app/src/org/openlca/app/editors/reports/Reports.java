@@ -1,6 +1,11 @@
 package org.openlca.app.editors.reports;
 
-import com.google.gson.Gson;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+
 import org.apache.commons.io.IOUtils;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseFolder;
@@ -14,11 +19,7 @@ import org.openlca.core.model.descriptors.Descriptors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import com.google.gson.Gson;
 
 public final class Reports {
 
@@ -38,7 +39,7 @@ public final class Reports {
 			return report;
 		}
 		report.setProject(Descriptors.toDescriptor(project));
-		report.setTitle(project.getName());
+		report.setTitle("Results of project '" + project.getName() + "'");
 		createVariants(project, report);
 		return report;
 	}
@@ -107,6 +108,7 @@ public final class Reports {
 	private static void createDefaultSections(Report report) {
 		report.getSections().add(createIntroSection());
 		report.getSections().add(createVariantsSection());
+		report.getSections().add(createMethodSection());
 	}
 
 	private static ReportSection createIntroSection() {
@@ -138,6 +140,19 @@ public final class Reports {
 				"the different variants from the project setup.";
 		section.setText(text);
 		section.setComponentId(ReportComponent.VARIANT_TABLE.getId());
+		return section;
+	}
+
+	private static ReportSection createMethodSection() {
+		ReportSection section = new ReportSection();
+		section.setIndex(2);
+		section.setTitle("LCIA method");
+		String text = "The table below shows the LCIA categories of the selected"
+				+ " LCIA method for the project. Only the LCIA categories that are"
+				+ " selected to be displayed are shown in the report. Additionally, "
+				+ "a user friendly name and a description for the report can be provided.";
+		section.setText(text);
+		section.setComponentId(ReportComponent.INDICATOR_TABLE.getId());
 		return section;
 	}
 

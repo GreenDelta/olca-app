@@ -6,9 +6,11 @@ public enum ReportComponent {
 
 	NONE("none"),
 
-	PARAMETER_TABLE("parameter_table"),
-
 	VARIANT_TABLE("variant_table"),
+
+	INDICATOR_TABLE("indicator_table"),
+
+	PARAMETER_TABLE("parameter_table"),
 
 	RESULT_TABLE("result_table"),
 

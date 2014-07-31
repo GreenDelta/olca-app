@@ -122,8 +122,9 @@
 				<div data-ng-repeat="section in report.sections" class="col-sm-12 box-row1">
 					<h3>{{section.title}}</h3>
 					<p data-ng-bind-html="section.text"></p>
-					<div data-ng-if="section.componentId == 'parameter_table'" data-ng-include src="'parameters-table.html'"></div>
-					<div data-ng-if="section.componentId == 'variant_table'" data-ng-include src="'variants-table.html'"></div>
+                    <div data-ng-if="section.componentId == 'variant_table'" data-ng-include src="'variants-table.html'"></div>
+                    <div data-ng-if="section.componentId == 'indicator_table'" data-ng-include src="'indicator_table.html'"></div>
+                    <div data-ng-if="section.componentId == 'parameter_table'" data-ng-include src="'parameters-table.html'"></div>
 					<div id="result-charts-include-container" data-ng-if="section.componentId == 'total_result_chart'" data-ng-include src="'total-result-charts.html'"></div>
 					<div data-ng-if="section.componentId == 'variants_result_charts'" data-ng-include src="'variants-result-charts.html'"></div>
 					<div data-ng-if="section.componentId == 'result_table'" data-ng-include src="'result-table.html'"></div>
@@ -178,6 +179,34 @@
 			</table>
 		</div>
 	</script>
+
+    <!-- indicator table template -->
+    <script type="text/ng-template" id="indicator_table.html">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>LCIA category</th>
+                        <th>Unit</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr data-ng-repeat="indicator in report.indicators | filter: {displayed:true}">
+                        <td>
+                            {{indicator.reportName}}
+                        </td>
+                        <td>
+                            {{indicator.descriptor.referenceUnit}}
+                        </td>
+                        <td>
+                            {{indicator.reportDescription}}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </script>
 
 	<script type="text/ng-template" id="result-table.html">
 		<div class="table-responsive">

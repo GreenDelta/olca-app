@@ -196,6 +196,8 @@ class SectionList {
 			switch (component) {
 			case NONE:
 				return "None";
+			case INDICATOR_TABLE:
+				return "LCIA category table";
 			case PARAMETER_TABLE:
 				return "Parameter table";
 			case RESULT_CHART:
