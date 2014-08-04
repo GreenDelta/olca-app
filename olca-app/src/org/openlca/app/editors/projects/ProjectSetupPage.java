@@ -65,13 +65,13 @@ class ProjectSetupPage extends ModelPage<Project> {
 	private Project project;
 	private TableViewer variantViewer;
 	private ProjectParameterTable parameterTable;
-	private VariantSync variantSync;
+	private ReportVariantSync variantSync;
 
 	ProjectSetupPage(ProjectEditor editor) {
 		super(editor, "ProjectSetupPage", Messages.ProjectSetup);
 		this.editor = editor;
 		project = editor.getModel();
-		variantSync = new VariantSync(editor);
+		variantSync = new ReportVariantSync(editor);
 		editor.onSaved(() -> {
 			project = editor.getModel();
 			if (variantViewer != null)

@@ -1,22 +1,23 @@
 package org.openlca.app.editors.projects;
 
+import org.openlca.app.editors.reports.model.Report;
+import org.openlca.app.editors.reports.model.ReportParameter;
+import org.openlca.app.editors.reports.model.ReportVariant;
+import org.openlca.core.model.ProjectVariant;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.TreeSet;
-
-import org.openlca.app.editors.reports.model.Report;
-import org.openlca.app.editors.reports.model.ReportVariant;
-import org.openlca.core.model.ProjectVariant;
 
 /**
  * Synchronizes the variant information that are shared between project and
  * report variants.
  */
-class VariantSync {
+class ReportVariantSync {
 
 	private final ProjectEditor editor;
 
-	public VariantSync(ProjectEditor editor) {
+	public ReportVariantSync(ProjectEditor editor) {
 		this.editor = editor;
 	}
 
@@ -33,6 +34,16 @@ class VariantSync {
 		ReportVariant var = new ReportVariant(newId);
 		var.setName(variant.getName());
 		report.getVariants().add(var);
+		addParameterValues(newId, report);
+	}
+
+	private void addParameterValues(int newId, Report report) {
+		for (ReportParameter parameter : report.getParameters()) {
+			if (parameter.getRedef() == null)
+				parameter.putValue(newId, 0);
+			else
+				parameter.putValue(newId, parameter.getRedef().getValue());
+		}
 	}
 
 	public void variantsRemoved(List<ProjectVariant> variants) {
@@ -41,8 +52,11 @@ class VariantSync {
 			return;
 		for (ProjectVariant variant : variants) {
 			ReportVariant var = findReportVariant(variant);
-			if (var != null)
-				report.getVariants().remove(var);
+			if (var == null)
+				continue;
+			report.getVariants().remove(var);
+			for (ReportParameter parameter : report.getParameters())
+				parameter.removeValue(var.getId());
 		}
 	}
 

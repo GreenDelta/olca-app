@@ -5,14 +5,19 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.io.IOUtils;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseFolder;
 import org.openlca.app.editors.reports.model.Report;
 import org.openlca.app.editors.reports.model.ReportComponent;
+import org.openlca.app.editors.reports.model.ReportParameter;
 import org.openlca.app.editors.reports.model.ReportSection;
 import org.openlca.app.editors.reports.model.ReportVariant;
+import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.Project;
 import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.descriptors.Descriptors;
@@ -39,6 +44,7 @@ public final class Reports {
 			return report;
 		}
 		createReportVariants(project, report);
+		createReportParameters(project, report);
 		report.setProject(Descriptors.toDescriptor(project));
 		report.setTitle("Results of project '" + project.getName() + "'");
 		return report;
@@ -53,6 +59,35 @@ public final class Reports {
 			reportVar.setName(projectVar.getName());
 			report.getVariants().add(reportVar);
 		}
+	}
+
+	private static void createReportParameters(Project project, Report report) {
+		if (project == null || report == null)
+			return;
+		List<ParameterRedef> redefs = new ArrayList<>();
+		for (ProjectVariant var : project.getVariants()) {
+			for (ParameterRedef redef : var.getParameterRedefs()) {
+				if (!contains(redef, redefs))
+					redefs.add(redef);
+			}
+		}
+		for (ParameterRedef redef : redefs) {
+			ReportParameter parameter = new ReportParameter();
+			report.getParameters().add(parameter);
+			parameter.setName(redef.getName());
+			parameter.setRedef(redef);
+		}
+	}
+
+	private static boolean contains(ParameterRedef redef,
+			List<ParameterRedef> redefs) {
+		for (ParameterRedef inList : redefs) {
+			if (Objects.equals(redef.getName(), inList.getName())
+					&& Objects.equals(redef.getContextId(),
+							inList.getContextId()))
+				return true;
+		}
+		return false;
 	}
 
 	private static Report openReport(Project project) {

@@ -1,14 +1,5 @@
 package org.openlca.app.editors.projects;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -40,10 +31,22 @@ import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.util.Strings;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
+
 class ProjectParameterTable {
 
+	private final int LABEL_COLS = 4;
 	private final String PARAMETER = Messages.Parameter;
 	private final String CONTEXT = Messages.Context;
+	private final String NAME = Messages.Name;
+	private final String DESCRIPTION = Messages.Description;
 
 	private ProjectEditor editor;
 	private EntityCache cache = Cache.getEntityCache();
@@ -113,36 +116,40 @@ class ProjectParameterTable {
 		UI.gridLayout(composite, 1);
 		viewer = Tables.createViewer(composite, getColumnTitles());
 		viewer.setLabelProvider(new LabelProvider());
-		Tables.bindColumnWidths(viewer, 0.15, 0.2);
+		Tables.bindColumnWidths(viewer, 0.15, 0.15, 0.15, 0.15);
 		UI.gridData(viewer.getTable(), true, true).minimumHeight = 150;
 		viewer.setInput(redefs);
 		createModifySupport();
-		Action add = Actions.onAdd(() -> onAdd());
-		Action remove = Actions.onRemove(() -> onRemove());
+		Action add = Actions.onAdd(this::onAdd);
+		Action remove = Actions.onRemove(this::onRemove);
 		Actions.bind(section, add, remove);
 		Actions.bind(viewer, add, remove);
 	}
 
 	private String[] getColumnTitles() {
-		String[] titles = new String[columns.length + 2];
+		String[] titles = new String[LABEL_COLS + columns.length];
 		titles[0] = PARAMETER;
 		titles[1] = CONTEXT;
+		titles[2] = NAME;
+		titles[3] = DESCRIPTION;
 		for (int i = 0; i < columns.length; i++)
-			titles[i + 2] = columns[i].getTitle();
+			titles[i + LABEL_COLS] = columns[i].getTitle();
 		return titles;
 	}
 
 	private void createModifySupport() {
 		// we use unique key to map the columns / editors to project variants
-		String[] keys = new String[columns.length + 2];
+		String[] keys = new String[LABEL_COLS + columns.length];
 		keys[0] = PARAMETER;
 		keys[1] = CONTEXT;
+		keys[2] = NAME;
+		keys[3] = DESCRIPTION;
 		for (int i = 0; i < columns.length; i++)
-			keys[i + 2] = columns[i].getKey();
+			keys[i + LABEL_COLS] = columns[i].getKey();
 		viewer.setColumnProperties(keys);
 		ModifySupport<ParameterRedef> modifySupport = new ModifySupport<>(
 				viewer);
-		for (int i = 2; i < keys.length; i++)
+		for (int i = LABEL_COLS; i < keys.length; i++)
 			modifySupport.bind(keys[i], new ValueModifier(keys[i]));
 	}
 
@@ -164,7 +171,7 @@ class ProjectParameterTable {
 
 	private Set<Long> getParameterContexts() {
 		Project project = editor.getModel();
-		HashSet<Long> contexts = new HashSet<Long>();
+		HashSet<Long> contexts = new HashSet<>();
 		if (project.getImpactMethodId() != null)
 			contexts.add(project.getImpactMethodId());
 		for (ProjectVariant variant : project.getVariants()) {
@@ -215,7 +222,7 @@ class ProjectParameterTable {
 					newColumns.length - idx);
 		columns = newColumns;
 		Table table = viewer.getTable();
-		table.getColumn(idx + 2).dispose();
+		table.getColumn(idx + LABEL_COLS).dispose();
 		createModifySupport();
 		viewer.refresh();
 	}
@@ -227,7 +234,7 @@ class ProjectParameterTable {
 		Column column = columns[idx];
 		Table table = viewer.getTable();
 		String title = column.getTitle() == null ? "" : column.getTitle();
-		table.getColumn(idx + 2).setText(title);
+		table.getColumn(idx + LABEL_COLS).setText(title);
 		viewer.refresh();
 	}
 
@@ -305,7 +312,7 @@ class ProjectParameterTable {
 		}
 
 		private String getVariantValue(int col, ParameterRedef redef) {
-			int idx = col - 2;
+			int idx = col - LABEL_COLS;
 			if (idx < 0 || idx >= columns.length)
 				return null;
 			ProjectVariant variant = columns[idx].getVariant();
