@@ -2,7 +2,6 @@ package org.openlca.app.editors.projects;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -66,11 +65,13 @@ class ProjectSetupPage extends ModelPage<Project> {
 	private Project project;
 	private TableViewer variantViewer;
 	private ProjectParameterTable parameterTable;
+	private VariantSync variantSync;
 
 	ProjectSetupPage(ProjectEditor editor) {
 		super(editor, "ProjectSetupPage", Messages.ProjectSetup);
 		this.editor = editor;
 		project = editor.getModel();
+		variantSync = new VariantSync(editor);
 		editor.onSaved(() -> {
 			project = editor.getModel();
 			if (variantViewer != null)
@@ -146,16 +147,18 @@ class ProjectSetupPage extends ModelPage<Project> {
 		UI.gridLayout(composite, 1);
 		String[] properties = { Messages.Name, Messages.ProductSystem,
 				Messages.AllocationMethod, Messages.Flow, Messages.Amount,
-				Messages.Unit };
+				Messages.Unit, Messages.Description };
 		variantViewer = Tables.createViewer(composite, properties);
 		variantViewer.setLabelProvider(new VariantLabelProvider());
-		Tables.bindColumnWidths(variantViewer, 0.2, 0.2, 0.2, 0.2, 0.1, 0.1);
+		Tables.bindColumnWidths(variantViewer,
+				0.15, 0.15, 0.15, 0.15, 0.125, 0.125, 0.15);
 		ModifySupport<ProjectVariant> support = new ModifySupport<>(
 				variantViewer);
 		support.bind(Messages.Name, new VariantNameEditor());
 		support.bind(Messages.AllocationMethod, new VariantAllocationEditor());
 		support.bind(Messages.Amount, new VariantAmountEditor());
 		support.bind(Messages.Unit, new VariantUnitEditor());
+		support.bind(Messages.Description, new VariantDescriptionEditor());
 		addVariantActions(variantViewer, section);
 		UI.gridData(variantViewer.getTable(), true, true).minimumHeight = 150;
 	}
@@ -189,8 +192,9 @@ class ProjectSetupPage extends ModelPage<Project> {
 		ProjectVariant variant = createVariant(system, variants.size() + 1);
 		variants.add(variant);
 		variantViewer.setInput(variants);
-		editor.setDirty(true);
 		parameterTable.addVariant(variant);
+		variantSync.variantAdded(variant);
+		editor.setDirty(true);
 	}
 
 	private ProjectVariant createVariant(ProductSystem system, int i) {
@@ -217,6 +221,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 			parameterTable.removeVariant(var);
 		}
 		variantViewer.setInput(variants);
+		variantSync.variantsRemoved(selection);
 		editor.setDirty(true);
 	}
 
@@ -230,8 +235,26 @@ class ProjectSetupPage extends ModelPage<Project> {
 		protected void setText(ProjectVariant variant, String text) {
 			if (Objects.equals(text, variant.getName()))
 				return;
+			variantSync.updateName(variant, text);
 			variant.setName(text);
 			parameterTable.updateVariant(variant);
+			editor.setDirty(true);
+		}
+	}
+
+	private class VariantDescriptionEditor extends
+			TextCellModifier<ProjectVariant> {
+		@Override
+		protected String getText(ProjectVariant variant) {
+			return variantSync.getDescription(variant);
+		}
+
+		@Override
+		protected void setText(ProjectVariant variant, String text) {
+			String oldText = variantSync.getDescription(variant);
+			if (Objects.equals(text, oldText))
+				return;
+			variantSync.updateDescription(variant, text);
 			editor.setDirty(true);
 		}
 	}
@@ -296,13 +319,10 @@ class ProjectSetupPage extends ModelPage<Project> {
 			UnitGroup unitGroup = fac.getFlowProperty().getUnitGroup();
 			Unit[] units = unitGroup.getUnits().toArray(
 					new Unit[unitGroup.getUnits().size()]);
-			Arrays.sort(units, new Comparator<Unit>() {
-				@Override
-				public int compare(Unit u1, Unit u2) {
-					if (u1 == null || u2 == null)
-						return 0;
-					return Strings.compare(u1.getName(), u2.getName());
-				}
+			Arrays.sort(units, (u1, u2) -> {
+				if (u1 == null || u2 == null)
+					return 0;
+				return Strings.compare(u1.getName(), u2.getName());
 			});
 			return units;
 		}
@@ -351,6 +371,8 @@ class ProjectSetupPage extends ModelPage<Project> {
 			case 5:
 				Unit unit = variant.getUnit();
 				return unit == null ? null : unit.getName();
+			case 6:
+				return variantSync.getDescription(variant);
 			default:
 				return null;
 			}

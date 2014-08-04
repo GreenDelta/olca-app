@@ -1,6 +1,11 @@
 package org.openlca.app.editors.reports;
 
-import com.google.gson.Gson;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+
 import org.apache.commons.io.IOUtils;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseFolder;
@@ -14,11 +19,7 @@ import org.openlca.core.model.descriptors.Descriptors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import com.google.gson.Gson;
 
 public final class Reports {
 
@@ -37,10 +38,21 @@ public final class Reports {
 			report.setTitle("No project");
 			return report;
 		}
+		createReportVariants(project, report);
 		report.setProject(Descriptors.toDescriptor(project));
 		report.setTitle("Results of project '" + project.getName() + "'");
-		createVariants(project, report);
 		return report;
+	}
+
+	private static void createReportVariants(Project project, Report report) {
+		if (project == null || report == null)
+			return;
+		int id = 0;
+		for (ProjectVariant projectVar : project.getVariants()) {
+			ReportVariant reportVar = new ReportVariant(id++);
+			reportVar.setName(projectVar.getName());
+			report.getVariants().add(reportVar);
+		}
 	}
 
 	private static Report openReport(Project project) {
@@ -79,7 +91,6 @@ public final class Reports {
 		} catch (Exception e) {
 			log.error("failed to write report file", e);
 		}
-
 	}
 
 	private static File getReportFile(String projectId) {
@@ -91,17 +102,6 @@ public final class Reports {
 		dir = new File(dir, "projects");
 		dir = new File(dir, projectId);
 		return new File(dir, "report.json");
-	}
-
-	private static void createVariants(Project project, Report report) {
-		if (project == null)
-			return;
-		for (ProjectVariant variant : project.getVariants()) {
-			ReportVariant reportVariant = new ReportVariant();
-			reportVariant.setName(variant.getName());
-			reportVariant.setUserFriendlyName(variant.getName());
-			report.getVariants().add(reportVariant);
-		}
 	}
 
 	private static void createDefaultSections(Report report) {

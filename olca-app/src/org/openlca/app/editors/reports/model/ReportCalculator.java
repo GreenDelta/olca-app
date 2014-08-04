@@ -55,7 +55,7 @@ public class ReportCalculator implements Runnable {
 			for (ProjectVariant variant : result.getVariants()) {
 				VariantResult varResult = new VariantResult();
 				repResult.getVariantResults().add(varResult);
-				varResult.setVariant(findUserName(variant));
+				varResult.setVariant(variant.getName());
 				ImpactResult impactResult = result.getTotalImpactResult(
 						variant, impact);
 				varResult.setTotalAmount(impactResult.getValue());
@@ -91,18 +91,6 @@ public class ReportCalculator implements Runnable {
 			contribution.setProcess(name);
 			contribution.setRest(false);
 		}
-	}
-
-	private String findUserName(ProjectVariant variant) {
-		if (variant == null || variant.getName() == null)
-			return "none";
-		for (ReportVariant reportVariant : report.getVariants()) {
-			if (Objects.equals(variant.getName(), reportVariant.getName())) {
-				String name = reportVariant.getUserFriendlyName();
-				return name != null ? name : variant.getName();
-			}
-		}
-		return "none";
 	}
 
 	private ProjectResultProvider calcProject(Project project) {

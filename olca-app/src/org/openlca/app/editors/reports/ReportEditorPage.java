@@ -25,7 +25,6 @@ import org.openlca.app.editors.DataBinding;
 import org.openlca.app.editors.projects.ProjectEditor;
 import org.openlca.app.editors.reports.model.Report;
 import org.openlca.app.editors.reports.model.ReportParameter;
-import org.openlca.app.editors.reports.model.ReportVariant;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Labels;
@@ -62,7 +61,6 @@ public class ReportEditorPage extends FormPage {
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		createInfoSection(body);
-		createVariantsSection(body);
 		createAddButton(body);
 		sectionList = new SectionList(editor, body, form, toolkit);
 		form.reflow(true);
@@ -110,21 +108,6 @@ public class ReportEditorPage extends FormPage {
 				ReportViewer.open(report);
 			}
 		});
-	}
-
-	private void createVariantsSection(Composite body) {
-		Section section = UI.section(body, toolkit, "Variants");
-		Composite composite = UI.sectionClient(section, toolkit);
-		UI.gridLayout(composite, 1);
-		TableViewer viewer = Tables.createViewer(composite, Messages.Name,
-				Messages.UserFriendlyName, Messages.Description);
-		viewer.setLabelProvider(new VariantLabel());
-		Tables.bindColumnWidths(viewer, 0.30, 0.30, 0.40);
-		UI.gridData(viewer.getTable(), true, true).minimumHeight = 150;
-		ModifySupport<ReportVariant> modifier = new ModifySupport<>(viewer);
-		modifier.bind(Messages.UserFriendlyName, new VariantNameModifier());
-		modifier.bind(Messages.Description, new VariantDescriptionModifier());
-		viewer.setInput(report.getVariants());
 	}
 
 	private void createParameternamesSection(Composite body) {
@@ -232,70 +215,6 @@ public class ReportEditorPage extends FormPage {
 				return;
 			if (!text.equals(parameter.getDescription())) {
 				parameter.setDescription(text);
-				editor.setDirty(true);
-			}
-		}
-	}
-
-	private class VariantLabel extends LabelProvider implements
-			ITableLabelProvider {
-
-		@Override
-		public Image getColumnImage(Object element, int col) {
-			return null;
-		}
-
-		@Override
-		public String getColumnText(Object element, int col) {
-			if (!(element instanceof ReportVariant))
-				return null;
-			ReportVariant variant = (ReportVariant) element;
-			switch (col) {
-			case 0:
-				return variant.getName();
-			case 1:
-				return variant.getUserFriendlyName();
-			case 2:
-				return variant.getDescription();
-			default:
-				return null;
-			}
-		}
-
-	}
-
-	private class VariantNameModifier extends TextCellModifier<ReportVariant> {
-
-		@Override
-		protected String getText(ReportVariant variant) {
-			return variant.getUserFriendlyName();
-		}
-
-		@Override
-		protected void setText(ReportVariant variant, String text) {
-			if (text == null)
-				return;
-			if (!text.equals(variant.getUserFriendlyName())) {
-				variant.setUserFriendlyName(text);
-				editor.setDirty(true);
-			}
-		}
-	}
-
-	private class VariantDescriptionModifier extends
-			TextCellModifier<ReportVariant> {
-
-		@Override
-		protected String getText(ReportVariant variant) {
-			return variant.getDescription();
-		}
-
-		@Override
-		protected void setText(ReportVariant variant, String text) {
-			if (text == null)
-				return;
-			if (!text.equals(variant.getDescription())) {
-				variant.setDescription(text);
 				editor.setDirty(true);
 			}
 		}
