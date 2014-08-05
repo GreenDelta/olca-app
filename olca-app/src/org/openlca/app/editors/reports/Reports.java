@@ -5,20 +5,24 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.List;
 import java.util.Objects;
 
 import org.apache.commons.io.IOUtils;
-import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseFolder;
 import org.openlca.app.editors.reports.model.Report;
 import org.openlca.app.editors.reports.model.ReportComponent;
+import org.openlca.app.editors.reports.model.ReportIndicator;
 import org.openlca.app.editors.reports.model.ReportParameter;
 import org.openlca.app.editors.reports.model.ReportSection;
 import org.openlca.app.editors.reports.model.ReportVariant;
+import org.openlca.core.database.IDatabase;
+import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.Project;
 import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.descriptors.Descriptors;
+import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,12 +33,12 @@ public final class Reports {
 	private Reports() {
 	}
 
-	public static Report createOrOpen(Project project) {
-		Report report = openReport(project);
-		return report != null ? report : createNew(project);
+	public static Report createOrOpen(Project project, IDatabase database) {
+		Report report = openReport(project, database);
+		return report != null ? report : createNew(project, database);
 	}
 
-	private static Report createNew(Project project) {
+	private static Report createNew(Project project, IDatabase database) {
 		Report report = new Report();
 		createDefaultSections(report);
 		if (project == null) {
@@ -42,6 +46,7 @@ public final class Reports {
 			return report;
 		}
 		createReportVariants(project, report);
+		createReportIndicators(project, report, database);
 		report.setProject(Descriptors.toDescriptor(project));
 		report.setTitle("Results of project '" + project.getName() + "'");
 		return report;
@@ -80,10 +85,27 @@ public final class Reports {
 		return parameter;
 	}
 
-	private static Report openReport(Project project) {
+	private static void createReportIndicators(Project project, Report report,
+			IDatabase database) {
+		if (project.getImpactMethodId() == null)
+			return;
+		ImpactMethodDao dao = new ImpactMethodDao(database);
+		List<ImpactCategoryDescriptor> descriptors = dao
+				.getCategoryDescriptors(project.getImpactMethodId());
+		int id = 0;
+		for (ImpactCategoryDescriptor descriptor : descriptors) {
+			ReportIndicator indicator = new ReportIndicator(id++);
+			report.getIndicators().add(indicator);
+			indicator.setDescriptor(descriptor);
+			indicator.setReportName(descriptor.getName());
+			indicator.setDisplayed(true);
+		}
+	}
+
+	private static Report openReport(Project project, IDatabase database) {
 		if (project == null)
 			return null;
-		File file = getReportFile(project.getRefId());
+		File file = getReportFile(project.getRefId(), database);
 		if (file == null || !file.exists())
 			return null;
 		try (FileInputStream fis = new FileInputStream(file);
@@ -97,11 +119,11 @@ public final class Reports {
 		}
 	}
 
-	public static void save(Report report) {
+	public static void save(Report report, IDatabase database) {
 		if (report == null || report.getProject() == null)
 			return;
 		Logger log = LoggerFactory.getLogger(Reports.class);
-		File file = getReportFile(report.getProject().getRefId());
+		File file = getReportFile(report.getProject().getRefId(), database);
 		if (file == null) {
 			log.error("failed to get report file {} for {}" + file, report);
 			return;
@@ -118,10 +140,10 @@ public final class Reports {
 		}
 	}
 
-	private static File getReportFile(String projectId) {
+	private static File getReportFile(String projectId, IDatabase database) {
 		if (projectId == null)
 			return null;
-		File dir = DatabaseFolder.getFileStorageLocation(Database.get());
+		File dir = DatabaseFolder.getFileStorageLocation(database);
 		if (dir == null)
 			return null;
 		dir = new File(dir, "projects");

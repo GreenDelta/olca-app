@@ -4,6 +4,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
+import org.openlca.app.db.Database;
 import org.openlca.app.editors.IEditor;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.reports.ReportEditorPage;
@@ -36,7 +37,7 @@ public class ProjectEditor extends ModelEditor<Project> implements IEditor {
 			throws PartInitException {
 		super.init(site, input);
 		if (FeatureFlag.REPORTS.isEnabled())
-			report = Reports.createOrOpen(getModel());
+			report = Reports.createOrOpen(getModel(), Database.get());
 	}
 
 	@Override
@@ -57,7 +58,7 @@ public class ProjectEditor extends ModelEditor<Project> implements IEditor {
 	public void doSave(IProgressMonitor monitor) {
 		getModel().setLastModificationDate(Calendar.getInstance().getTime());
 		if (FeatureFlag.REPORTS.isEnabled())
-			Reports.save(report);
+			Reports.save(report, Database.get());
 		super.doSave(monitor);
 	}
 
