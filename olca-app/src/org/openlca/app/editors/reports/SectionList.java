@@ -196,18 +196,20 @@ class SectionList {
 			switch (component) {
 			case NONE:
 				return "None";
-			case INDICATOR_TABLE:
-				return "LCIA category table";
-			case PARAMETER_TABLE:
-				return "Parameter table";
+			case VARIANT_DESCRIPTION_TABLE:
+				return "Variant description table";
+			case INDICATOR_DESCRIPTION_TABLE:
+				return "LCIA category description table";
+			case PARAMETER_DESCRIPTION_TABLE:
+				return "Parameter description table";
+			case PARAMETER_VALUE_TABLE:
+				return "Parameter value table";
+			case IMPACT_RESULT_TABLE:
+				return "LCIA result table";
+			case PROCESS_CONTRIBUTION_CHARTS:
+				return "Process contribution charts";
 			case RESULT_CHART:
 				return "Result chart";
-			case RESULT_TABLE:
-				return "Result table";
-			case VARIANT_TABLE:
-				return "Project variant table";
-			case CONTRIBUTION_CHARTS:
-				return "Contribution charts";
 			default:
 				return "unknown";
 			}

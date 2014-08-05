@@ -6,17 +6,25 @@ public enum ReportComponent {
 
 	NONE("none"),
 
-	VARIANT_TABLE("variant_table"),
+	/** Name and description of the project variants */
+	VARIANT_DESCRIPTION_TABLE("variant_description_table"),
 
-	INDICATOR_TABLE("indicator_table"),
+	/** Name and description of the LCIA categories of the projects' method. */
+	INDICATOR_DESCRIPTION_TABLE("indicator_description_table"),
 
-	PARAMETER_TABLE("parameter_table"),
+	/** Name and description of the project parameters. */
+	PARAMETER_DESCRIPTION_TABLE("parameter_description_table"),
 
-	RESULT_TABLE("result_table"),
+	/** Parameter values for all project variants in the report. */
+	PARAMETER_VALUE_TABLE("parameter_value_table"),
 
-	RESULT_CHART("total_result_chart"),
+	/** LCIA category results for all variants in the project. */
+	IMPACT_RESULT_TABLE("impact_result_table"),
 
-	CONTRIBUTION_CHARTS("variants_result_charts");
+	/** Contributions of the processes in the variants to the LCIA results. */
+	PROCESS_CONTRIBUTION_CHARTS("process_contribution_charts"),
+
+	RESULT_CHART("total_result_chart");
 
 	private final String id;
 

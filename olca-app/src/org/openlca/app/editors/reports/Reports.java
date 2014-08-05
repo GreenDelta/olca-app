@@ -140,14 +140,16 @@ public final class Reports {
 	}
 
 	private static void createDefaultSections(Report report) {
-		report.getSections().add(createIntroSection());
-		report.getSections().add(createVariantsSection());
-		report.getSections().add(createMethodSection());
+		report.getSections().add(createIntroSection(0));
+		report.getSections().add(createVariantsSection(1));
+		report.getSections().add(createMethodSection(2));
+		report.getSections().add(createResultTableSection(3));
+		report.getSections().add(createProcessContributionSection(4));
 	}
 
-	private static ReportSection createIntroSection() {
+	private static ReportSection createIntroSection(int idx) {
 		ReportSection section = new ReportSection();
-		section.setIndex(0);
+		section.setIndex(idx);
 		section.setTitle("Introduction");
 		String text = "In the following the results of the project 'new' are shown. "
 				+ "This is a default template for the report of the project results. "
@@ -166,27 +168,51 @@ public final class Reports {
 		return section;
 	}
 
-	private static ReportSection createVariantsSection() {
+	private static ReportSection createVariantsSection(int idx) {
 		ReportSection section = new ReportSection();
-		section.setIndex(1);
+		section.setIndex(idx);
 		section.setTitle("Project variants");
 		String text = "The following table shows the name and description of " +
 				"the different variants from the project setup.";
 		section.setText(text);
-		section.setComponentId(ReportComponent.VARIANT_TABLE.getId());
+		section.setComponentId(
+				ReportComponent.VARIANT_DESCRIPTION_TABLE.getId());
 		return section;
 	}
 
-	private static ReportSection createMethodSection() {
+	private static ReportSection createMethodSection(int idx) {
 		ReportSection section = new ReportSection();
-		section.setIndex(2);
+		section.setIndex(idx);
 		section.setTitle("LCIA method");
 		String text = "The table below shows the LCIA categories of the selected"
 				+ " LCIA method for the project. Only the LCIA categories that are"
 				+ " selected to be displayed are shown in the report. Additionally, "
 				+ "a user friendly name and a description for the report can be provided.";
 		section.setText(text);
-		section.setComponentId(ReportComponent.INDICATOR_TABLE.getId());
+		section.setComponentId(
+				ReportComponent.INDICATOR_DESCRIPTION_TABLE.getId());
+		return section;
+	}
+
+	private static ReportSection createResultTableSection(int idx) {
+		ReportSection section = new ReportSection();
+		section.setIndex(idx);
+		section.setTitle("LCIA Results");
+		String text = "The following table shows the LCIA results of the project.";
+		section.setText(text);
+		section.setComponentId(ReportComponent.IMPACT_RESULT_TABLE.getId());
+		return section;
+	}
+
+	private static ReportSection createProcessContributionSection(int idx) {
+		ReportSection section = new ReportSection();
+		section.setIndex(idx);
+		section.setTitle("Process contributions");
+		String text = "The chart below shows the top process contributions of "
+				+ "the project variants to the selected LCIA category";
+		section.setText(text);
+		section.setComponentId(
+				ReportComponent.PROCESS_CONTRIBUTION_CHARTS.getId());
 		return section;
 	}
 

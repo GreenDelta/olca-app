@@ -122,12 +122,12 @@
 				<div data-ng-repeat="section in report.sections" class="col-sm-12 box-row1">
 					<h3>{{section.title}}</h3>
 					<p data-ng-bind-html="section.text"></p>
-                    <div data-ng-if="section.componentId == 'variant_table'" data-ng-include src="'variants-table.html'"></div>
-                    <div data-ng-if="section.componentId == 'indicator_table'" data-ng-include src="'indicator_table.html'"></div>
+                    <div data-ng-if="section.componentId == 'variant_description_table'" data-ng-include src="'variant_description_table.html'"></div>
+                    <div data-ng-if="section.componentId == 'indicator_description_table'" data-ng-include src="'indicator_description_table.html'"></div>
                     <div data-ng-if="section.componentId == 'parameter_table'" data-ng-include src="'parameters-table.html'"></div>
 					<div id="result-charts-include-container" data-ng-if="section.componentId == 'total_result_chart'" data-ng-include src="'total-result-charts.html'"></div>
-					<div data-ng-if="section.componentId == 'variants_result_charts'" data-ng-include src="'variants-result-charts.html'"></div>
-					<div data-ng-if="section.componentId == 'result_table'" data-ng-include src="'result-table.html'"></div>
+					<div data-ng-if="section.componentId == 'process_contribution_charts'" data-ng-include src="'process_contribution_charts.html'"></div>
+					<div data-ng-if="section.componentId == 'impact_result_table'" data-ng-include src="'impact_result_table.html'"></div>
 				</div>
 			</div>
 		</div>
@@ -162,7 +162,7 @@
 		<button id="restoreDefaultParametersButton" class="pull-right btn btn-primary" data-ng-click="restoreReportParameters(report)">Restore Defaults</button>
 	</script>
 
-	<script type="text/ng-template" id="variants-table.html">
+	<script type="text/ng-template" id="variant_description_table.html">
 		<div class="table-responsive">
 			<table class="table table-hover">
 				<thead><tr><th>Variant</th><th>Description</th></tr></thead>
@@ -180,8 +180,7 @@
 		</div>
 	</script>
 
-    <!-- indicator table template -->
-    <script type="text/ng-template" id="indicator_table.html">
+    <script type="text/ng-template" id="indicator_description_table.html">
         <div class="table-responsive">
             <table class="table table-hover">
                 <thead>
@@ -208,8 +207,7 @@
         </div>
     </script>
 
-    <!-- result table template -->
-	<script type="text/ng-template" id="result-table.html">
+	<script type="text/ng-template" id="impact_result_table.html">
 		<div class="table-responsive">
 			<table class="table table-hover">
 				<thead>
@@ -246,7 +244,7 @@
         </div>
 	</script>
 
-	<script type="text/ng-template" id="variants-result-charts.html">
+	<script type="text/ng-template" id="process_contribution_charts.html">
         <select id="indicatorSelection" class="form-control" data-ng-options="result as getIndicatorName(result.indicatorId) for result in report.results" data-ng-model="selectedIndicator"></select>
         <div data-ng-repeat="variantResult in selectedIndicator.variantResults" class="result-charts-container col-xs-12 col-sm-6 col-md-6 col-lg-4">
             <div variants-charts="exp" variant="variantResult">
