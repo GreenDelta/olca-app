@@ -5,8 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 import org.apache.commons.io.IOUtils;
@@ -44,7 +42,6 @@ public final class Reports {
 			return report;
 		}
 		createReportVariants(project, report);
-		createReportParameters(project, report);
 		report.setProject(Descriptors.toDescriptor(project));
 		report.setTitle("Results of project '" + project.getName() + "'");
 		return report;
@@ -58,36 +55,29 @@ public final class Reports {
 			ReportVariant reportVar = new ReportVariant(id++);
 			reportVar.setName(projectVar.getName());
 			report.getVariants().add(reportVar);
-		}
-	}
-
-	private static void createReportParameters(Project project, Report report) {
-		if (project == null || report == null)
-			return;
-		List<ParameterRedef> redefs = new ArrayList<>();
-		for (ProjectVariant var : project.getVariants()) {
-			for (ParameterRedef redef : var.getParameterRedefs()) {
-				if (!contains(redef, redefs))
-					redefs.add(redef);
+			for (ParameterRedef redef : projectVar.getParameterRedefs()) {
+				ReportParameter param = findOrCreateParameter(redef, report);
+				param.putValue(reportVar.getId(), redef.getValue());
 			}
 		}
-		for (ParameterRedef redef : redefs) {
-			ReportParameter parameter = new ReportParameter();
-			report.getParameters().add(parameter);
-			parameter.setName(redef.getName());
-			parameter.setRedef(redef);
-		}
 	}
 
-	private static boolean contains(ParameterRedef redef,
-			List<ParameterRedef> redefs) {
-		for (ParameterRedef inList : redefs) {
-			if (Objects.equals(redef.getName(), inList.getName())
+	private static ReportParameter findOrCreateParameter(ParameterRedef redef,
+			Report report) {
+		for (ReportParameter parameter : report.getParameters()) {
+			ParameterRedef reportRedef = parameter.getRedef();
+			if (reportRedef == null)
+				continue;
+			if (Objects.equals(redef.getName(), reportRedef.getName())
 					&& Objects.equals(redef.getContextId(),
-							inList.getContextId()))
-				return true;
+							reportRedef.getContextId()))
+				return parameter;
 		}
-		return false;
+		ReportParameter parameter = new ReportParameter();
+		report.getParameters().add(parameter);
+		parameter.setName(redef.getName());
+		parameter.setRedef(redef);
+		return parameter;
 	}
 
 	private static Report openReport(Project project) {

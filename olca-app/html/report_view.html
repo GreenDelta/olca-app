@@ -124,7 +124,8 @@
 					<p data-ng-bind-html="section.text"></p>
                     <div data-ng-if="section.componentId == 'variant_description_table'" data-ng-include src="'variant_description_table.html'"></div>
                     <div data-ng-if="section.componentId == 'indicator_description_table'" data-ng-include src="'indicator_description_table.html'"></div>
-                    <div data-ng-if="section.componentId == 'parameter_table'" data-ng-include src="'parameters-table.html'"></div>
+                    <div data-ng-if="section.componentId == 'parameter_description_table'" data-ng-include src="'parameter_description_table.html'"></div>
+                    <div data-ng-if="section.componentId == 'parameter_value_table'" data-ng-include src="'parameter_value_table.html'"></div>
 					<div id="result-charts-include-container" data-ng-if="section.componentId == 'total_result_chart'" data-ng-include src="'total-result-charts.html'"></div>
 					<div data-ng-if="section.componentId == 'process_contribution_charts'" data-ng-include src="'process_contribution_charts.html'"></div>
 					<div data-ng-if="section.componentId == 'impact_result_table'" data-ng-include src="'impact_result_table.html'"></div>
@@ -141,39 +142,14 @@
     <script src="../libs/olca.utils.js"></script>
     <script src="../libs/ui-bootstrap-tpls-0.11.0.min.js"></script>
 
-	<script type="text/ng-template" id="parameters-table.html">
-		<div class="table-responsive">
-			<table class="table table-hover">
-				<thead><tr><th>Parameter</th><th>Description</th><th>Value</th></tr></thead>
-				<tbody>
-				<tr data-ng-repeat="parameter in report.parameters">
-					<td>
-						{{parameter.userFriendlyName}}
-					</td>
-					<td>
-						{{parameter.description}}
-					</td>
-					<td><input type="number" class="form-control" placeholder="Enter value" data-ng-model="parameter.value"></td>
-				</tr>
-                </tbody>
-			</table>
-		</div>
-		<button class="pull-right btn btn-primary" onclick="calculate()">Calculate</button>
-		<button id="restoreDefaultParametersButton" class="pull-right btn btn-primary" data-ng-click="restoreReportParameters(report)">Restore Defaults</button>
-	</script>
-
 	<script type="text/ng-template" id="variant_description_table.html">
 		<div class="table-responsive">
 			<table class="table table-hover">
 				<thead><tr><th>Variant</th><th>Description</th></tr></thead>
 				<tbody>
 				<tr data-ng-repeat="variant in report.variants">
-					<td>
-						{{variant.name}}
-					</td>
-					<td>
-						{{variant.description}}
-					</td>
+					<td>{{variant.name}}</td>
+					<td>{{variant.description}}</td>
 				</tr>
                 </tbody>
 			</table>
@@ -192,16 +168,48 @@
                 </thead>
                 <tbody>
                     <tr data-ng-repeat="indicator in report.indicators | filter: {displayed:true}">
-                        <td>
-                            {{indicator.reportName}}
-                        </td>
-                        <td>
-                            {{indicator.descriptor.referenceUnit}}
-                        </td>
-                        <td>
-                            {{indicator.reportDescription}}
-                        </td>
+                        <td>{{indicator.reportName}}</td>
+                        <td>{{indicator.descriptor.referenceUnit}}</td>
+                        <td>{{indicator.reportDescription}}</td>
                     </tr>
+                </tbody>
+            </table>
+        </div>
+    </script>
+
+    <script type="text/ng-template" id="parameter_description_table.html">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr data-ng-repeat="parameter in report.parameters">
+                    <td>{{parameter.name}}</td>
+                    <td>{{parameter.description}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </script>
+
+    <script type="text/ng-template" id="parameter_value_table.html">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>Parameter</th>
+                    <th data-ng-repeat="variant in report.variants">{{variant.name}}</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr data-ng-repeat="parameter in report.parameters">
+                    <td>{{parameter.name}}</td>
+                    <td data-ng-repeat="variant in report.variants">{{parameter.variantValues[variant.id]}}</td>
+                </tr>
                 </tbody>
             </table>
         </div>
@@ -270,15 +278,6 @@
 	    var Controller = function ($scope) {
         	$scope.report = {};           
 
-            $scope.restoreReportParameters = function (report) {
-            	angular.forEach(report.parameters, function(parameter, key){
-            		angular.forEach(parameter, function(value, key){
-            			if (key == 'value')
-            				parameter.value = parameter.defaultValue;
-            		    });
-           	     });      	
-            };
-
             $scope.getIndicatorName = function(indicatorId) {
                 var indicators = $scope.report.indicators;
                 for(var i = 0; i < indicators.length; i++) {
@@ -300,7 +299,6 @@
                 }
                 return "";
             };
-
 
 		};
 
