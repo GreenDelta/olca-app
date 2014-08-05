@@ -1,5 +1,8 @@
 package org.openlca.app.editors.projects;
 
+import java.util.List;
+import java.util.Objects;
+
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.Messages;
@@ -14,9 +17,6 @@ import org.openlca.core.database.NwSetDao;
 import org.openlca.core.model.Project;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.NwSetDescriptor;
-
-import java.util.List;
-import java.util.Objects;
 
 class ImpactSection {
 
@@ -35,29 +35,30 @@ class ImpactSection {
 		UI.gridLayout(composite, 1);
 		Composite form = UI.formComposite(composite, toolkit);
 		UI.gridData(form, true, false);
-		createMethodViewer(toolkit, form);
-		createNwSetViewer(toolkit, form);
+		createViewers(toolkit, form);
 		if (FeatureFlag.REPORTS.isEnabled()) {
 			indicatorTable = new IndicatorTable(editor);
 			indicatorTable.render(composite);
 		}
 		setInitialSelection();
+		addListeners(); // do this after the initial selection to not set the
+						// editor dirty
 	}
 
-	private void createMethodViewer(FormToolkit toolkit, Composite composite) {
+	private void createViewers(FormToolkit toolkit, Composite composite) {
 		UI.formLabel(composite, toolkit, Messages.LCIAMethod);
 		methodViewer = new ImpactMethodViewer(composite);
 		methodViewer.setNullable(true);
-		methodViewer.addSelectionChangedListener(
-				(selection) -> handleMethodChange(selection));
 		methodViewer.setInput(Database.get());
-	}
-
-	private void createNwSetViewer(FormToolkit toolkit, Composite composite) {
 		UI.formLabel(composite, toolkit, Messages.NormalizationAndWeightingSet);
 		nwViewer = new NwSetComboViewer(composite);
 		nwViewer.setNullable(true);
 		nwViewer.setDatabase(Database.get());
+	}
+
+	private void addListeners() {
+		methodViewer.addSelectionChangedListener(
+				(selection) -> handleMethodChange(selection));
 		nwViewer.addSelectionChangedListener((selection) -> {
 			Project project = editor.getModel();
 			if (selection == null) {
@@ -85,7 +86,7 @@ class ImpactSection {
 		project.setNwSetId(null);
 		nwViewer.select(null);
 		nwViewer.setInput(selection);
-		if(indicatorTable != null)
+		if (indicatorTable != null)
 			indicatorTable.methodChanged(selection);
 		editor.setDirty(true);
 	}
