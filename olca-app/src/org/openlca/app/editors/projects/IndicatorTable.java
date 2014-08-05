@@ -36,8 +36,7 @@ class IndicatorTable {
 
 	public void render(Composite parent) {
 		viewer = Tables.createViewer(parent, Messages.ImpactCategory,
-				"Display",
-				Messages.UserFriendlyName, Messages.Description);
+				"Display", "Report name", Messages.Description);
 		Tables.bindColumnWidths(viewer, 0.3, 0.1, 0.2, 0.4);
 		UI.gridData(viewer.getTable(), true, false).heightHint = 150;
 		Label label = new Label();

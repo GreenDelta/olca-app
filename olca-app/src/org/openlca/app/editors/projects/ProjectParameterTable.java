@@ -49,6 +49,7 @@ class ProjectParameterTable {
 	private final String DESCRIPTION = Messages.Description;
 
 	private ProjectEditor editor;
+	private ReportParameterSync reportSync;
 	private EntityCache cache = Cache.getEntityCache();
 
 	private List<ParameterRedef> redefs = new ArrayList<>();
@@ -57,6 +58,7 @@ class ProjectParameterTable {
 
 	public ProjectParameterTable(ProjectEditor editor) {
 		this.editor = editor;
+		this.reportSync = new ReportParameterSync(editor);
 		Project project = editor.getModel();
 		initColumns(project);
 		initParameterRedefs(project);
@@ -105,7 +107,7 @@ class ProjectParameterTable {
 		for (ParameterRedef contained : redefs) {
 			if (Objects.equals(redef.getName(), contained.getName())
 					&& Objects.equals(redef.getContextId(),
-							contained.getContextId()))
+					contained.getContextId()))
 				return true;
 		}
 		return false;
@@ -149,6 +151,8 @@ class ProjectParameterTable {
 		viewer.setColumnProperties(keys);
 		ModifySupport<ParameterRedef> modifySupport = new ModifySupport<>(
 				viewer);
+		modifySupport.bind(NAME, new NameModifier());
+		modifySupport.bind(DESCRIPTION, new DescriptionModifier());
 		for (int i = LABEL_COLS; i < keys.length; i++)
 			modifySupport.bind(keys[i], new ValueModifier(keys[i]));
 	}
@@ -160,6 +164,7 @@ class ProjectParameterTable {
 			if (contains(redef))
 				continue;
 			this.redefs.add(redef);
+			reportSync.parameterAdded(redef);
 			for (Column column : columns) {
 				if (findVariantRedef(column.variant, redef) == null)
 					column.variant.getParameterRedefs().add(redef.clone());
@@ -186,6 +191,7 @@ class ProjectParameterTable {
 		List<ParameterRedef> selection = Viewers.getAllSelected(viewer);
 		for (ParameterRedef selected : selection) {
 			this.redefs.remove(selected);
+			reportSync.parameterRemoved(selected);
 			for (Column column : columns) {
 				ProjectVariant variant = column.variant;
 				ParameterRedef redef = findVariantRedef(variant, selected);
@@ -245,7 +251,7 @@ class ProjectParameterTable {
 		for (ParameterRedef variantRedef : variant.getParameterRedefs()) {
 			if (Objects.equals(variantRedef.getName(), redef.getName())
 					&& Objects.equals(variantRedef.getContextId(),
-							redef.getContextId()))
+					redef.getContextId()))
 				return variantRedef;
 		}
 		return null;
@@ -307,6 +313,10 @@ class ProjectParameterTable {
 				return redef.getName();
 			if (col == 1)
 				return getModelColumnText(redef);
+			if (col == 2)
+				return reportSync.getName(redef);
+			if (col == 3)
+				return reportSync.getDescription(redef);
 			else
 				return getVariantValue(col, redef);
 		}
@@ -375,11 +385,44 @@ class ProjectParameterTable {
 			try {
 				double d = Double.parseDouble(text);
 				variantRedef.setValue(d);
+				reportSync.valueChanged(redef, variant, d);
 				editor.setDirty(true);
 			} catch (Exception e) {
 				org.openlca.app.util.Error.showBox(Messages.InvalidNumber, text
 						+ " " + Messages.IsNotValidNumber);
 			}
+		}
+	}
+
+	private class NameModifier extends TextCellModifier<ParameterRedef> {
+		@Override
+		protected String getText(ParameterRedef redef) {
+			return reportSync.getName(redef);
+		}
+
+		@Override
+		protected void setText(ParameterRedef redef, String text) {
+			String oldName = reportSync.getName(redef);
+			if(Objects.equals(oldName, text))
+				return;
+			reportSync.setName(text, redef);
+			editor.setDirty(true);
+		}
+	}
+
+	private class DescriptionModifier extends TextCellModifier<ParameterRedef> {
+		@Override
+		protected String getText(ParameterRedef redef) {
+			return reportSync.getDescription(redef);
+		}
+
+		@Override
+		protected void setText(ParameterRedef redef, String text) {
+			String oldText = reportSync.getDescription(redef);
+			if(Objects.equals(oldText, text))
+				return;
+			reportSync.setDescription(text, redef);
+			editor.setDirty(true);
 		}
 	}
 
