@@ -12,6 +12,8 @@ public class ReportIndicator {
 	private String reportName;
 	private String reportDescription;
 	private boolean displayed;
+	private Double normalisationFactor;
+	private Double weightingFactor;
 
 	public ReportIndicator(int id) {
 		this.id = id;
@@ -51,6 +53,22 @@ public class ReportIndicator {
 
 	public void setDisplayed(boolean displayed) {
 		this.displayed = displayed;
+	}
+
+	public void setNormalisationFactor(Double normalisationFactor) {
+		this.normalisationFactor = normalisationFactor;
+	}
+
+	public Double getNormalisationFactor() {
+		return normalisationFactor;
+	}
+
+	public void setWeightingFactor(Double weightingFactor) {
+		this.weightingFactor = weightingFactor;
+	}
+
+	public Double getWeightingFactor() {
+		return weightingFactor;
 	}
 
 }

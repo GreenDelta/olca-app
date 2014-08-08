@@ -26,6 +26,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.reports.ReportViewer;
+import org.openlca.app.editors.reports.Reports;
 import org.openlca.app.editors.reports.model.ReportCalculator;
 import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.resources.ImageType;
@@ -136,7 +137,10 @@ class ProjectSetupPage extends ModelPage<Project> {
 			public void widgetSelected(SelectionEvent e) {
 				App.run(Messages.Calculate,
 						new ReportCalculator(getModel(), editor.getReport()),
-						() -> ReportViewer.open(editor.getReport()));
+						() -> {
+							Reports.save(editor.getReport(), database);
+							ReportViewer.open(editor.getReport());
+						});
 			}
 		});
 	}

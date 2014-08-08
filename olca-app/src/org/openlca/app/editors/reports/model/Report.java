@@ -9,6 +9,8 @@ public class Report {
 
 	private String title;
 	private ProjectDescriptor project;
+	private boolean withNormalisation;
+	private boolean withWeighting;
 	private List<ReportSection> sections = new ArrayList<>();
 	private List<ReportParameter> parameters = new ArrayList<>();
 	private List<ReportVariant> variants = new ArrayList<>();
@@ -50,4 +52,21 @@ public class Report {
 	public List<ReportIndicator> getIndicators() {
 		return indicators;
 	}
+
+	public void setWithNormalisation(boolean withNormalisation) {
+		this.withNormalisation = withNormalisation;
+	}
+
+	public boolean isWithWeighting() {
+		return withWeighting;
+	}
+
+	public void setWithWeighting(boolean withWeighting) {
+		this.withWeighting = withWeighting;
+	}
+
+	public boolean isWithNormalisation() {
+		return withNormalisation;
+	}
+
 }

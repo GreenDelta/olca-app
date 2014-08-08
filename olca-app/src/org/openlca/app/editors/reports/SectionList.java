@@ -210,6 +210,10 @@ class SectionList {
 				return "Process contribution charts";
 			case RESULT_CHART:
 				return "Result chart";
+			case NORMALISATION_RESULT_TABLE:
+				return "Normalisation result table";
+			case SINGLE_SCORE_TABLE:
+				return "Single score table";
 			default:
 				return "unknown";
 			}

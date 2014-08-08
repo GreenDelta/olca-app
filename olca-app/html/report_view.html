@@ -129,6 +129,8 @@
 					<div id="result-charts-include-container" data-ng-if="section.componentId == 'total_result_chart'" data-ng-include src="'total-result-charts.html'"></div>
 					<div data-ng-if="section.componentId == 'process_contribution_charts'" data-ng-include src="'process_contribution_charts.html'"></div>
 					<div data-ng-if="section.componentId == 'impact_result_table'" data-ng-include src="'impact_result_table.html'"></div>
+                    <div data-ng-if="section.componentId == 'normalisation_result_table' && report.withNormalisation" data-ng-include="'normalisation_result_table.html'"></div>
+                    <div data-ng-if="section.componentId == 'single_score_table' && report.withWeighting" data-ng-include="'single_score_table.html'"></div>
 				</div>
 			</div>
 		</div>
@@ -221,27 +223,78 @@
 				<thead>
 					<tr>
 						<th>LCIA category</th>
-						<th data-ng-repeat="result in report.results[0].variantResults">{{result.variant}}</th>
+						<th data-ng-repeat="variant in report.variants">{{variant.name}}</th>
 						<th>Unit</th>
 					</tr>
 				</thead>
 				<tbody>
-				<tr data-ng-repeat="result in report.results">
+				<tr data-ng-repeat="indicator in report.indicators | filter: {displayed:true}">
 					<td>
-						{{getIndicatorName(result.indicatorId)}}
+						{{indicator.reportName}}
 					</td>
-					<!-- TODO: this assumes that the order of the variants is the same for every result -->
-					<td data-ng-repeat="variantResult in result.variantResults">
-						{{variantResult.totalAmount | scientific}}
+					<td data-ng-repeat="variant in report.variants">
+						{{getVariantResult(variant, indicator) | scientific}}
 					</td>
 					<td>
-						{{getIndicatorUnit(result.indicatorId)}}
+						{{indicator.descriptor.referenceUnit}}
 					</td>
 				</tr>
                 </tbody>
 			</table>
 		</div>
 	</script>
+
+    <script type="text/ng-template" id="normalisation_result_table.html">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>LCIA category</th>
+                    <th data-ng-repeat="variant in report.variants">{{variant.name}}</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr data-ng-repeat="indicator in report.indicators | filter: {displayed:true}">
+                    <td>
+                        {{indicator.reportName}}
+                    </td>
+                    <td data-ng-repeat="variant in report.variants">
+                        {{getVariantResult(variant, indicator) / indicator.normalisationFactor | scientific}}
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </script>
+
+    <script type="text/ng-template" id="single_score_table.html">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>LCIA category</th>
+                    <th data-ng-repeat="variant in report.variants">{{variant.name}}</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr data-ng-repeat="indicator in report.indicators | filter: {displayed:true}">
+                    <td>
+                        {{indicator.reportName}}
+                    </td>
+                    <td data-ng-repeat="variant in report.variants">
+                        {{(indicator.weightingFactor * getVariantResult(variant, indicator)) / indicator.normalisationFactor | scientific}}
+                    </td>
+                </tr>
+                <tr>
+                    <td><b>Total</b></td>
+                    <td data-ng-repeat="variant in report.variants">
+                        <b>{{getSingleScore(variant) | scientific}}</b>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </script>
 
 	<script type="text/ng-template" id="total-result-charts.html">
         <div id="result-total-container" class="col-xs-12">
@@ -289,17 +342,43 @@
                 return "";
             };
 
-            $scope.getIndicatorUnit = function(indicatorId) {
-                var indicators = $scope.report.indicators;
-                for(var i = 0; i < indicators.length; i++) {
-                    var indicator = indicators[i];
-                    if(indicator.id === indicatorId) {
-                        return indicator.descriptor.referenceUnit;
+            $scope.getVariantResult = function(variant, indicator) {
+                var results = $scope.report.results;
+                for(var i = 0; i < results.length; i++) {
+                    var result = results[i];
+                    if(result.indicatorId !== indicator.id)
+                        continue;
+                    for(var j = 0; j < result.variantResults.length; j++) {
+                        var variantResult = result.variantResults[j];
+                        if(variantResult.variant == variant.name)
+                            return variantResult.totalAmount;
                     }
                 }
-                return "";
+                return 0;
             };
 
+            $scope.getSingleScore = function(variant) {
+                var score = 0;
+                for(var i = 0; i < $scope.report.indicators.length; i++) {
+                    var indicator = $scope.report.indicators[i];
+                    if(!indicator.displayed)
+                        continue;
+                    var nFactor = indicator.normalisationFactor;
+                    var wFactor = indicator.weightingFactor;
+                    for(var j = 0; j < $scope.report.results.length; j++) {
+                        var result = $scope.report.results[j];
+                        if(result.indicatorId !== indicator.id)
+                            continue;
+                        for(var k = 0; k < result.variantResults.length; k++) {
+                            var vr = result.variantResults[k];
+                            if(vr.variant !== variant.name)
+                                continue;
+                            score = score + (vr.totalAmount * wFactor) / nFactor;
+                        }
+                    }
+                }
+                return score;
+            }
 		};
 
         app.controller('Controller', Controller);
@@ -413,6 +492,7 @@
        function setData(report) {
             var element = document.getElementById("contentDiv");
             var scope = angular.element(element).scope();
+            sortLists(report);
             scope.$apply(function () {
                 scope.report = report;
                 applyResultChartAttributes(scope.report.results);
@@ -422,6 +502,19 @@
                 scope.totalResult = getTotalResult(scope.report.results);
             	scope.selectedIndicator = scope.report.results[0];
             });
+        }
+
+        function sortLists(report) {
+           report.variants.sort(function(v1, v2) {
+                if(!v1.name || !v2.name)
+                    return 0;
+                return v1.name.localeCompare(v2.name);
+            });
+            report.indicators.sort(function(i1, i2) {
+                if(!i1.reportName || !i2.reportName)
+                    return 0;
+                return i1.reportName.localeCompare(i2.reportName);
+            })
         }
 
         function prepareVariantsData(results) {

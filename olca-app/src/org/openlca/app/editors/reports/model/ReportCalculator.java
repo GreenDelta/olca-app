@@ -5,10 +5,12 @@ import java.util.Objects;
 import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
+import org.openlca.app.db.Database;
 import org.openlca.app.editors.reports.model.ReportResult.Contribution;
 import org.openlca.app.editors.reports.model.ReportResult.VariantResult;
 import org.openlca.app.util.Labels;
 import org.openlca.core.math.ProjectCalculator;
+import org.openlca.core.matrix.NwSetTable;
 import org.openlca.core.model.Project;
 import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
@@ -44,6 +46,8 @@ public class ReportCalculator implements Runnable {
 		if (projectResult == null)
 			return;
 		appendResults(projectResult);
+		if (project.getNwSetId() != null)
+			appendNwFactors();
 	}
 
 	private void appendResults(ProjectResultProvider result) {
@@ -99,8 +103,33 @@ public class ReportCalculator implements Runnable {
 					Cache.getMatrixCache(), App.getSolver());
 			return calculator.solve(project, Cache.getEntityCache());
 		} catch (Exception e) {
-			log.error("Calculation of project failed");
+			log.error("Calculation of project failed", e);
 			return null;
 		}
+	}
+
+	private void appendNwFactors() {
+		try {
+			NwSetTable table = NwSetTable.build(Database.get(),
+					project.getNwSetId());
+			report.setWithNormalisation(table.hasNormalisationFactors());
+			report.setWithWeighting(table.hasWeightingFactors());
+			for (ReportIndicator indicator : report.getIndicators()) {
+				if (indicator.getDescriptor() == null)
+					continue;
+				long categoryId = indicator.getDescriptor().getId();
+				if (table.hasNormalisationFactors()) {
+					double nf = table.getNormalisationFactor(categoryId);
+					indicator.setNormalisationFactor(nf);
+				}
+				if (table.hasWeightingFactors()) {
+					double wf = table.getWeightingFactor(categoryId);
+					indicator.setWeightingFactor(wf);
+				}
+			}
+		} catch (Exception e) {
+			log.error("failed to load normalisation/weighting factors", e);
+		}
+
 	}
 }

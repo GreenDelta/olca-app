@@ -21,6 +21,12 @@ public enum ReportComponent {
 	/** LCIA category results for all variants in the project. */
 	IMPACT_RESULT_TABLE("impact_result_table"),
 
+	/** Normalized LCIA category results for all variants in the project. */
+	NORMALISATION_RESULT_TABLE("normalisation_result_table"),
+
+	/** Table with the single score results. */
+	SINGLE_SCORE_TABLE("single_score_table"),
+
 	/** Contributions of the processes in the variants to the LCIA results. */
 	PROCESS_CONTRIBUTION_CHARTS("process_contribution_charts"),
 
