@@ -300,6 +300,7 @@ class LocationViewer extends AbstractTableViewer<Location> {
 			editor.locationChanged(location);
 			editor.setDirty(true);
 			mapEditor.close();
+			getViewer().refresh(location, true);
 		}
 
 	}
