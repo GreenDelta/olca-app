@@ -11,15 +11,15 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
 
-abstract class EditorAction extends Action implements UpdateAction {
+public abstract class EditorAction extends Action implements UpdateAction {
 
 	private ProductSystemGraphEditor editor;
 
-	EditorAction() {
+	protected EditorAction() {
 
 	}
 
-	EditorAction(String text, int style) {
+	protected EditorAction(String text, int style) {
 		super(text, style);
 	}
 
@@ -28,7 +28,7 @@ abstract class EditorAction extends Action implements UpdateAction {
 		setEnabled(accept(editor.getSelection()));
 	}
 
-	void setEditor(ProductSystemGraphEditor editor) {
+	public void setEditor(ProductSystemGraphEditor editor) {
 		this.editor = editor;
 	}
 
@@ -39,7 +39,7 @@ abstract class EditorAction extends Action implements UpdateAction {
 	protected abstract boolean accept(ISelection selection);
 
 	@SuppressWarnings("unchecked")
-	<T> T getSingleSelectionOfType(ISelection selection, Class<T> type) {
+	protected <T> T getSingleSelectionOfType(ISelection selection, Class<T> type) {
 		if (selection == null)
 			return null;
 		if (selection.isEmpty())
@@ -59,7 +59,7 @@ abstract class EditorAction extends Action implements UpdateAction {
 	}
 
 	@SuppressWarnings("unchecked")
-	<T> List<T> getMultiSelectionOfType(ISelection selection, Class<T> type) {
+	protected <T> List<T> getMultiSelectionOfType(ISelection selection, Class<T> type) {
 		List<T> models = new ArrayList<>();
 		if (selection == null)
 			return Collections.emptyList();

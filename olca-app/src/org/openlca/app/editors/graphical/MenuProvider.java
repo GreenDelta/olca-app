@@ -1,5 +1,7 @@
 package org.openlca.app.editors.graphical;
 
+import java.util.Collection;
+
 import org.eclipse.gef.ContextMenuProvider;
 import org.eclipse.gef.EditPartViewer;
 import org.eclipse.gef.ui.actions.ActionRegistry;
@@ -14,6 +16,7 @@ import org.openlca.app.editors.graphical.action.ActionIds;
 class MenuProvider extends ContextMenuProvider {
 
 	private ActionRegistry registry;
+	private Collection<String> actionIds;
 
 	public MenuProvider(EditPartViewer viewer, ActionRegistry actionRegistry) {
 		super(viewer);
@@ -31,7 +34,13 @@ class MenuProvider extends ContextMenuProvider {
 		menu.add(new Separator());
 		addLayoutActions(menu);
 		menu.add(new Separator());
+		addActionExtensions(menu);
+		menu.add(new Separator());
 		addShowViewActions(menu);
+	}
+
+	public void setActionExtensions(Collection<String> actionIds) {
+		this.actionIds = actionIds;
 	}
 
 	/** Undo, Redo, and Delete */
@@ -70,6 +79,12 @@ class MenuProvider extends ContextMenuProvider {
 		menu.add(registry.getAction(ActionIds.MAXIMIZE_ALL));
 		menu.add(registry.getAction(ActionIds.MINIMIZE_ALL));
 		menu.add(registry.getAction(ActionIds.LAYOUT_MENU));
+	}
+
+	private void addActionExtensions(final IMenuManager menu) {
+		if (actionIds != null)
+			for (String actionId : actionIds)
+				menu.add(registry.getAction(actionId));
 	}
 
 	private void addShowViewActions(final IMenuManager menu) {

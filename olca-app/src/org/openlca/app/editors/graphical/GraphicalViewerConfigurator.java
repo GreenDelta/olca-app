@@ -1,14 +1,20 @@
 package org.openlca.app.editors.graphical;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.draw2d.ConnectionLayer;
 import org.eclipse.draw2d.Layer;
 import org.eclipse.draw2d.LayeredPane;
 import org.eclipse.draw2d.StackLayout;
 import org.eclipse.draw2d.geometry.Dimension;
-import org.eclipse.gef.ContextMenuProvider;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.KeyHandler;
 import org.eclipse.gef.KeyStroke;
@@ -20,8 +26,10 @@ import org.eclipse.gef.editparts.ZoomManager;
 import org.eclipse.gef.ui.actions.ActionRegistry;
 import org.eclipse.gef.ui.actions.DeleteAction;
 import org.eclipse.gef.ui.actions.GEFActionConstants;
+import org.eclipse.gef.ui.actions.UpdateAction;
 import org.eclipse.gef.ui.actions.ZoomInAction;
 import org.eclipse.gef.ui.actions.ZoomOutAction;
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
@@ -31,8 +39,10 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.openlca.app.components.ModelTransfer;
 import org.openlca.app.editors.graphical.action.ActionFactory;
 import org.openlca.app.editors.graphical.action.ActionIds;
+import org.openlca.app.editors.graphical.action.EditorAction;
 import org.openlca.app.editors.graphical.model.AppEditPartFactory;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
+import org.openlca.app.rcp.RcpActivator;
 
 public class GraphicalViewerConfigurator {
 
@@ -43,6 +53,7 @@ public class GraphicalViewerConfigurator {
 	private ActionRegistry actionRegistry;
 	private CommandStack commandStack;
 	private ProductSystemNode model;
+	private Collection<String> actionExtensionIds = new HashSet<>();
 
 	GraphicalViewerConfigurator(GraphicalViewer viewer) {
 		this.viewer = viewer;
@@ -110,6 +121,27 @@ public class GraphicalViewerConfigurator {
 		updateableActions.add(ActionIds.SEARCH_PROVIDERS);
 		updateableActions.add(ActionIds.SEARCH_RECIPIENTS);
 		updateableActions.add(ActionIds.OPEN_MINIATURE_VIEW);
+		List<String> updateableActionExtensions = configureActionExtensions();
+		updateableActions.addAll(updateableActionExtensions);
+		return updateableActions;
+	}
+
+	/**
+	 * Get the action extension points and register them as actions in the
+	 * graphical viewer
+	 */
+	private List<String> configureActionExtensions() {
+		List<String> updateableActions = new ArrayList<>();
+		final ProductSystemGraphEditor editor = model.getEditor();
+		List<Action> actions = loadActionExtensions();
+		for (Action action : actions) {
+			if (action instanceof EditorAction)
+				((EditorAction) action).setEditor(editor);
+			actionRegistry.registerAction(action);
+			if (action instanceof UpdateAction)
+				updateableActions.add(action.getId());
+			actionExtensionIds.add(action.getId());
+		}
 		return updateableActions;
 	}
 
@@ -177,7 +209,8 @@ public class GraphicalViewerConfigurator {
 	}
 
 	void configureContextMenu() {
-		ContextMenuProvider provider = new MenuProvider(viewer, actionRegistry);
+		MenuProvider provider = new MenuProvider(viewer, actionRegistry);
+		provider.setActionExtensions(actionExtensionIds);
 		viewer.setContextMenu(provider);
 	}
 
@@ -187,6 +220,33 @@ public class GraphicalViewerConfigurator {
 
 	private ScalableRootEditPart getRootEditPart() {
 		return (ScalableRootEditPart) viewer.getRootEditPart();
+	}
+
+	private List<Action> loadActionExtensions() {
+		List<Action> adapters = new ArrayList<>();
+		IConfigurationElement[] elements = Platform.getExtensionRegistry()
+				.getConfigurationElementsFor(
+						"org.openlca.app.editors.graphical.actions");
+		for (IConfigurationElement element : elements) {
+			Action action = loadAction(element);
+			if (action != null)
+				adapters.add(action);
+		}
+		return adapters;
+	}
+
+	private Action loadAction(IConfigurationElement element) {
+		try {
+			return (Action) element.createExecutableExtension("class");
+		} catch (ClassCastException | CoreException e) {
+			IStatus status = new Status(
+					IStatus.ERROR,
+					RcpActivator.PLUGIN_ID,
+					"Error while loading action extensions for graphical editor",
+					e);
+			RcpActivator.getDefault().getLog().log(status);
+			return null;
+		}
 	}
 
 }
