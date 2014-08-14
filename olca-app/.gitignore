@@ -1,6 +1,7 @@
 # compiled files and libraries
 bin
 libs
+platform
 
 # database templates
 db_templates
