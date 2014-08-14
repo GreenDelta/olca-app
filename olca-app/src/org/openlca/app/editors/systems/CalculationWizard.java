@@ -14,6 +14,7 @@ import org.openlca.app.results.quick.QuickResultEditor;
 import org.openlca.app.results.regionalized.RegionalizedResultEditor;
 import org.openlca.app.results.simulation.SimulationInit;
 import org.openlca.app.util.Editors;
+import org.openlca.app.util.Info;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.SystemCalculator;
 import org.openlca.core.model.ProductSystem;
@@ -52,8 +53,9 @@ class CalculationWizard extends Wizard {
 		CalculationSetup setup = calculationPage.getSetup();
 		CalculationType type = calculationPage.getCalculationType();
 		try {
-			getContainer().run(true, true, new Calculation(setup, type));
-			return true;
+			Calculation calculation = new Calculation(setup, type);
+			getContainer().run(true, true, calculation);
+			return calculation.done;
 		} catch (Exception e) {
 			log.error("Calculation failed", e);
 			return false;
@@ -64,6 +66,7 @@ class CalculationWizard extends Wizard {
 
 		private CalculationSetup setup;
 		private CalculationType type;
+		private boolean done;
 
 		public Calculation(CalculationSetup setup, CalculationType type) {
 			this.setup = setup;
@@ -103,6 +106,7 @@ class CalculationWizard extends Wizard {
 			log.trace("calculation done, open editor");
 			ResultEditorInput input = getEditorInput(result);
 			Editors.open(input, AnalyzeEditor.ID);
+			done = true;
 		}
 
 		private void solve() {
@@ -114,6 +118,7 @@ class CalculationWizard extends Wizard {
 			log.trace("calculation done, open editor");
 			ResultEditorInput input = getEditorInput(result);
 			Editors.open(input, QuickResultEditor.ID);
+			done = true;
 		}
 
 		private void calcRegionalized() {
@@ -122,8 +127,13 @@ class CalculationWizard extends Wizard {
 					Cache.getMatrixCache(), App.getSolver());
 			RegionalizedResult result = calculator.calculate(setup,
 					Cache.getEntityCache());
+			if (result == null) {
+				Info.showBox("No regionalized information available for this system");
+				return;
+			}
 			ResultEditorInput input = getEditorInput(result);
 			Editors.open(input, RegionalizedResultEditor.ID);
+			done = true;
 		}
 
 		private void simulate() {
@@ -131,6 +141,7 @@ class CalculationWizard extends Wizard {
 			SimulationInit init = new SimulationInit(setup,
 					Cache.getMatrixCache());
 			init.run();
+			done = true;
 		}
 
 		private ResultEditorInput getEditorInput(Object result) {
