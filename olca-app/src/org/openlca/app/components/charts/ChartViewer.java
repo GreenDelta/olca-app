@@ -163,7 +163,7 @@ public class ChartViewer extends Composite implements PaintListener,
 
 	@Override
 	public void processAction(org.eclipse.birt.chart.model.data.Action action,
-			StructureSource source) {
+			StructureSource source, RunTimeContext arg2) {
 		if (ActionType.SHOW_TOOLTIP_LITERAL.equals(action.getType())) {
 			final TooltipValue tv = (TooltipValue) action.getValue();
 			if (StructureType.SERIES_DATA_POINT.equals(source.getType())) {

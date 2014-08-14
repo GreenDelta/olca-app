@@ -28,37 +28,37 @@
 		-->
 
 		<!-- Eclipse Babel language packs -->
-		<get dest="${download_dir}/babel_de_4.2.0.zip" verbose="true" skipexisting="true">
-			<url url="http://www.eclipse.org/downloads/download.php?file=/technology/babel/babel_language_packs/R0.12.0/juno/BabelLanguagePack-eclipse-de_4.2.0.v20140623050659.zip&amp;r=1" />
+		<get dest="${download_dir}/babel_de_4.4.0.zip" verbose="true" skipexisting="true">
+			<url url="http://www.eclipse.org/downloads/download.php?file=/technology/babel/babel_language_packs/R0.12.0/luna/BabelLanguagePack-eclipse-de_4.4.0.v20140623020002.zip&amp;r=1" />
 		</get>
-		<get dest="${download_dir}/babel_es_4.2.0.zip" verbose="true" skipexisting="true">
-			<url url="http://www.eclipse.org/downloads/download.php?file=/technology/babel/babel_language_packs/R0.12.0/juno/BabelLanguagePack-eclipse-es_4.2.0.v20140623050659.zip&amp;r=1" />
+		<get dest="${download_dir}/babel_es_4.4.0.zip" verbose="true" skipexisting="true">
+			<url url="http://www.eclipse.org/downloads/download.php?file=/technology/babel/babel_language_packs/R0.12.0/luna/BabelLanguagePack-eclipse-es_4.4.0.v20140623020002.zip&amp;r=1" />
 		</get>
-		<get dest="${download_dir}/babel_fr_4.2.0.zip" verbose="true" skipexisting="true">
-			<url url="http://www.eclipse.org/downloads/download.php?file=/technology/babel/babel_language_packs/R0.12.0/juno/BabelLanguagePack-eclipse-fr_4.2.0.v20140623050659.zip&amp;r=1" />
+		<get dest="${download_dir}/babel_fr_4.4.0.zip" verbose="true" skipexisting="true">
+			<url url="http://www.eclipse.org/downloads/download.php?file=/technology/babel/babel_language_packs/R0.12.0/luna/BabelLanguagePack-eclipse-fr_4.4.0.v20140623020002.zip&amp;r=1" />
 		</get>
-		<get dest="${download_dir}/babel_it_4.2.0.zip" verbose="true" skipexisting="true">
-			<url url="http://www.eclipse.org/downloads/download.php?file=/technology/babel/babel_language_packs/R0.12.0/juno/BabelLanguagePack-eclipse-it_4.2.0.v20140623050659.zip&amp;r=1" />
+		<get dest="${download_dir}/babel_it_4.4.0.zip" verbose="true" skipexisting="true">
+			<url url="http://www.eclipse.org/downloads/download.php?file=/technology/babel/babel_language_packs/R0.12.0/luna/BabelLanguagePack-eclipse-it_4.4.0.v20140623020002.zip&amp;r=1" />
 		</get>
 
 		<!-- Eclipse Birt Chart SDK -->
-		<get dest="${download_dir}/birt_charts_4.2.2.zip" verbose="true" skipexisting="true">
-			<url url="http://www.eclipse.org/downloads/download.php?file=/birt/downloads/drops/R-R1-4_2_2-201302161152/birt-charts-4_2_2.zip&amp;r=1" />
+		<get dest="${download_dir}/birt_charts_4.4.0.zip" verbose="true" skipexisting="true">
+			<url url="http://www.eclipse.org/downloads/download.php?file=/birt/downloads/drops/R-R1-4_4_0-201406111043/birt-charts-4_4_0-20140611.zip&amp;r=1" />
 		</get>
 
 		<!-- Eclipse Delta Pack -->
-		<get dest="${download_dir}/delta_pack_3.8.2.zip" verbose="true" skipexisting="true">
-			<url url="http://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops/R-3.8.2-201301310800/eclipse-3.8.2-delta-pack.zip" />
+		<get dest="${download_dir}/delta_pack_4.4.zip" verbose="true" skipexisting="true">
+			<url url="http://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.4-201406061215/eclipse-4.4-delta-pack.zip&amp;r=1" />
 		</get>
 
 		<!-- Eclipse GEF and Draw2d -->
-		<get dest="${download_dir}/gef_3.8.2.zip" verbose="true" skipexisting="true">
-			<url url="http://www.eclipse.org/modeling/download.php?file=/tools/gef/downloads/drops/3.8.2/R201301141834/GEF-runtime-3.8.2.zip" />
+		<get dest="${download_dir}/gef_3.9.zip" verbose="true" skipexisting="true">
+			<url url="http://www.eclipse.org/downloads/download.php?file=/tools/gef/downloads/drops/3.9.100/R201405261516/GEF-runtime-3.9.100.zip&amp;r=1" />
 		</get>
 
 		<!-- Eclipse Mylyn -->
-		<get dest="${download_dir}/mylyn_3.8.2.zip" verbose="true" skipexisting="true">
-			<url url="http://www.eclipse.org/downloads/download.php?file=/mylyn/drops/3.8.2/v20120916-1200/mylyn-3.8.2.v20120916-1200.zip&amp;r=1" />
+		<get dest="${download_dir}/mylyn_3.12.zip" verbose="true" skipexisting="true">
+			<url url="http://www.eclipse.org/downloads/download.php?file=/mylyn/drops/3.12.0/v20140609-1648/mylyn-3.12.0.v20140609-1648.zip&amp;r=1" />
 		</get>
 
 		<!-- Eclipse Nebula -->
@@ -67,8 +67,8 @@
 		</get>
 
 		<!-- Eclipse SDK -->
-		<get dest="${download_dir}/sdk_3.8.2.zip" verbose="true" skipexisting="true">
-			<url url="http://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops/R-3.8.2-201301310800/eclipse-SDK-3.8.2-win32-x86_64.zip" />
+		<get dest="${download_dir}/sdk_4.4.zip" verbose="true" skipexisting="true">
+			<url url="http://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.4-201406061215/eclipse-SDK-4.4-win32-x86_64.zip&amp;r=1" />
 		</get>
 
 		<!-- SWT Charts -->
@@ -81,19 +81,19 @@
 
 		<!-- Eclipse Babel language packs -->
 		<copy todir="${platform_dir}" overwrite="false">
-			<zipfileset src="${download_dir}/babel_de_4.2.0.zip">
+			<zipfileset src="${download_dir}/babel_de_4.4.0.zip">
 				<include name="eclipse/features/**" />
 				<include name="eclipse/plugins/**" />
 			</zipfileset>
-			<zipfileset src="${download_dir}/babel_es_4.2.0.zip">
+			<zipfileset src="${download_dir}/babel_es_4.4.0.zip">
 				<include name="eclipse/features/**" />
 				<include name="eclipse/plugins/**" />
 			</zipfileset>
-			<zipfileset src="${download_dir}/babel_fr_4.2.0.zip">
+			<zipfileset src="${download_dir}/babel_fr_4.4.0.zip">
 				<include name="eclipse/features/**" />
 				<include name="eclipse/plugins/**" />
 			</zipfileset>
-			<zipfileset src="${download_dir}/babel_it_4.2.0.zip">
+			<zipfileset src="${download_dir}/babel_it_4.4.0.zip">
 				<include name="eclipse/features/**" />
 				<include name="eclipse/plugins/**" />
 			</zipfileset>
@@ -102,7 +102,7 @@
 
 		<!-- Eclipse Birt Chart SDK -->
 		<copy todir="${platform_dir}" overwrite="false">
-			<zipfileset src="${download_dir}/birt_charts_4.2.2.zip">
+			<zipfileset src="${download_dir}/birt_charts_4.4.0.zip">
 				<include name="ChartRuntime/eclipse/features/**" />
 				<include name="ChartRuntime/eclipse/plugins/**" />
 			</zipfileset>
@@ -111,7 +111,7 @@
 
 		<!-- Eclipse Delta Pack -->
 		<copy todir="${platform_dir}" overwrite="false">
-			<zipfileset src="${download_dir}/delta_pack_3.8.2.zip">
+			<zipfileset src="${download_dir}/delta_pack_4.4.zip">
 				<include name="eclipse/features/**" />
 				<include name="eclipse/plugins/**" />
 			</zipfileset>
@@ -120,7 +120,7 @@
 
 		<!-- Eclipse GEF and Draw2d -->
 		<copy todir="${platform_dir}" overwrite="false">
-			<zipfileset src="${download_dir}/gef_3.8.2.zip">
+			<zipfileset src="${download_dir}/gef_3.9.zip">
 				<include name="eclipse/features/**" />
 				<include name="eclipse/plugins/**" />
 			</zipfileset>
@@ -129,7 +129,7 @@
 
 		<!-- Eclipse Mylyn -->
 		<copy todir="${platform_dir}" overwrite="false">
-			<zipfileset src="${download_dir}/mylyn_3.8.2.zip">
+			<zipfileset src="${download_dir}/mylyn_3.12.zip">
 				<include name="features/**" />
 				<include name="plugins/**" />
 			</zipfileset>
@@ -145,7 +145,7 @@
 
 		<!-- Eclipse SDK -->
 		<copy todir="${platform_dir}" overwrite="false">
-			<zipfileset src="${download_dir}/sdk_3.8.2.zip">
+			<zipfileset src="${download_dir}/sdk_4.4.zip">
 				<include name="eclipse/features/**" />
 				<include name="eclipse/plugins/**" />
 			</zipfileset>

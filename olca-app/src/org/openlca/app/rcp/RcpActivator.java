@@ -61,6 +61,7 @@ public class RcpActivator extends AbstractUIPlugin {
 		File workspace = Workspace.init();
 		log.trace("Workspace initialised at {}", workspace);
 		LoggerConfig.setUp();
+		WorkbenchLayout.initialize(workspace);
 		log.trace("Start application. Workspace: {}.", Platform.getLocation());
 		log.trace("Bundle {} started", PLUGIN_ID);
 		log.trace("Try init olca-eigen");
