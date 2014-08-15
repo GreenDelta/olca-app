@@ -1,8 +1,13 @@
 package org.openlca.app.rcp.browser;
 
+import java.io.File;
+import java.io.InputStream;
+import java.nio.file.Files;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.widgets.Composite;
+import org.openlca.util.OS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +50,7 @@ public class BrowserFactory {
 						xulRunnerPath);
 				System.setProperty("org.eclipse.swt.browser.XULRunnerPath",
 						xulRunnerPath);
+				initMozillaPrefs();
 				useXulRunner = true;
 			}
 		} catch (Exception e) {
@@ -67,11 +73,38 @@ public class BrowserFactory {
 	}
 
 	private static void initMozillaPrefs() {
+		if (OS.getCurrent() != OS.Windows)
+			return;
 		try {
-
+			File profileDir = getMozillaProfileDir();
+			if (profileDir == null)
+				return;
+			if (!profileDir.exists())
+				profileDir.mkdirs();
+			File userPrefs = new File(profileDir, "user.js");
+			if (userPrefs.exists())
+				return;
+			log.trace("Copy browser preferences to {}", userPrefs);
+			InputStream is = BrowserFactory.class
+					.getResourceAsStream("user.js");
+			Files.copy(is, userPrefs.toPath());
 		} catch (Exception e) {
-
+			log.error("failed to intitialise preferences", e);
 		}
+	}
+
+	private static File getMozillaProfileDir() {
+		String appDirPath = System.getenv("AppData");
+		if (appDirPath == null) {
+			log.info("could not find system directory %AppData%");
+			return null;
+		}
+		File appDir = new File(appDirPath);
+		if (!appDir.exists()) {
+			log.info("directory %AppData% {} does not exist", appDir);
+			return null;
+		}
+		return new File(appDir, "Mozilla/eclipse");
 	}
 
 }
