@@ -1,129 +1,31 @@
 package org.openlca.app.preferencepages;
 
+import java.util.Objects;
+
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
-import org.openlca.app.ApplicationProperties;
 import org.openlca.app.Messages;
 import org.openlca.app.util.Question;
+import org.openlca.app.util.UI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LanguagePreferencePage extends PreferencePage implements
 		IWorkbenchPreferencePage {
 
-	private Combo combo;
-	private int defaultLanguage;
+	private Logger log = LoggerFactory.getLogger(getClass());
+
 	private boolean isDirty = false;
-	private Language language;
-
-	/**
-	 * Default constructor
-	 */
-	public LanguagePreferencePage() {
-	}
-
-	/**
-	 * Initializes the listeners
-	 */
-	private void initListeners() {
-		combo.addSelectionListener(new SelectionListener() {
-
-			@Override
-			public void widgetDefaultSelected(final SelectionEvent e) {
-				// no default selection action
-			}
-
-			@Override
-			public void widgetSelected(final SelectionEvent e) {
-				// actual language
-				final Language old = language;
-				// get selection
-				language = Language.values()[combo.getSelectionIndex()];
-				if (old != language) {
-					// selection changed
-					getApplyButton().setEnabled(true);
-					isDirty = true;
-				}
-			}
-
-		});
-	}
-
-	@Override
-	protected Control createContents(final Composite parent) {
-		// create body
-		final Composite body = new Composite(parent, SWT.NONE);
-		body.setLayout(new GridLayout());
-		body.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-
-		// create composite for selection a language
-		final Composite composite = new Composite(body, SWT.NONE);
-		final GridLayout layout = new GridLayout(2, false);
-		composite.setLayout(layout);
-
-		final Label message = new Label(composite, SWT.NONE);
-		message.setText(Messages.SelectAUserInterfaceLanguage);
-
-		// create language selection combo
-		combo = new Combo(composite, SWT.READ_ONLY);
-		final String[] languages = new String[Language.values().length];
-		int selected = 0;
-		// collect display names and initial selection
-		for (int i = 0; i < Language.values().length; i++) {
-			languages[i] = Language.values()[i].getDisplayName();
-			if (Language.values()[i] == language) {
-				selected = i;
-			}
-			if (Language.values()[i] == Language
-					.getLanguage(ApplicationProperties.PROP_NATIONAL_LANGUAGE
-							.getDefaultValue())) {
-				defaultLanguage = i;
-			}
-		}
-		combo.setItems(languages);
-		combo.select(selected);
-
-		// create composite for displaying the note
-		final Composite composite2 = new Composite(body, SWT.NONE);
-		composite2.setLayout(new GridLayout(1, true));
-		createNoteComposite(composite2.getFont(), composite2, Messages.Note
-				+ ":", Messages.SelectLanguageNoteMessage);
-
-		initListeners();
-		return body;
-	}
-
-	@Override
-	protected void performApply() {
-		ApplicationProperties.PROP_NATIONAL_LANGUAGE.setValue(language
-				.getCode());
-		getApplyButton().setEnabled(false);
-		isDirty = false;
-	}
-
-	@Override
-	protected void performDefaults() {
-		combo.select(defaultLanguage);
-		language = Language
-				.getLanguage(ApplicationProperties.PROP_NATIONAL_LANGUAGE
-						.getDefaultValue());
-		super.performDefaults();
-		performApply();
-	}
-
-	@Override
-	public void createControl(final Composite parent) {
-		super.createControl(parent);
-		getApplyButton().setEnabled(false);
-	}
+	private Combo combo;
+	private IniFile iniFile;
 
 	@Override
 	public String getTitle() {
@@ -131,22 +33,113 @@ public class LanguagePreferencePage extends PreferencePage implements
 	}
 
 	@Override
-	public void init(final IWorkbench workbench) {
-		// get actual national language
-		language = Language
-				.getLanguage(ApplicationProperties.PROP_NATIONAL_LANGUAGE
-						.getValue());
+	public void init(IWorkbench workbench) {
+		try {
+			iniFile = IniFile.read();
+		} catch (Exception e) {
+			log.error("failed to read openLCA.ini", e);
+			iniFile = new IniFile();
+		}
+	}
+
+	@Override
+	protected Control createContents(final Composite parent) {
+		Composite body = new Composite(parent, SWT.NONE);
+		UI.gridLayout(body, 1);
+		UI.gridData(body, true, true);
+		Composite composite = UI.formComposite(body);
+		UI.gridLayout(composite, 2);
+		UI.gridData(composite, true, false);
+		Label message = new Label(composite, SWT.NONE);
+		message.setText(Messages.Language);
+		combo = new Combo(composite, SWT.READ_ONLY);
+		UI.gridData(combo, true, false);
+		initComboValues();
+		new Label(composite, SWT.NONE);
+		createNoteComposite(composite.getFont(), composite, Messages.Note
+				+ ": ", Messages.SelectLanguageNoteMessage);
+		initListener();
+		return body;
+	}
+
+	private void initComboValues() {
+		Language[] languages = Language.values();
+		String[] items = new String[languages.length];
+		int selectedItem = -1;
+		for (int i = 0; i < languages.length; i++) {
+			items[i] = languages[i].getDisplayName();
+			if (Objects.equals(languages[i], iniFile.getLanguage()))
+				selectedItem = i;
+		}
+		combo.setItems(items);
+		if (selectedItem != -1)
+			combo.select(selectedItem);
+	}
+
+	private void initListener() {
+		combo.addSelectionListener(new SelectionListener() {
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				widgetSelected(e);
+			}
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				int idx = combo.getSelectionIndex();
+				if (idx < 0)
+					return;
+				Language language = Language.values()[idx];
+				if (!Objects.equals(language, iniFile.getLanguage())) {
+					getApplyButton().setEnabled(true);
+					iniFile.setLanguage(language);
+					isDirty = true;
+				}
+			}
+		});
+	}
+
+	@Override
+	protected void performApply() {
+		iniFile.write();
+		getApplyButton().setEnabled(false);
+		isDirty = false;
+	}
+
+	@Override
+	protected void performDefaults() {
+		Language defaultLang = Language.ENGLISH;
+		if (Objects.equals(iniFile.getLanguage(), defaultLang))
+			return;
+		String[] items = combo.getItems();
+		int item = -1;
+		for (int i = 0; i < items.length; i++) {
+			if (Objects.equals(defaultLang.getDisplayName(), items[i])) {
+				item = i;
+				break;
+			}
+		}
+		if (item == -1)
+			return;
+		combo.select(item);
+		iniFile.setLanguage(defaultLang);
+		super.performDefaults();
+		performApply();
+	}
+
+	@Override
+	public void createControl(Composite parent) {
+		super.createControl(parent);
+		getApplyButton().setEnabled(false);
 	}
 
 	@Override
 	public boolean performOk() {
-		if (isDirty) {
-			if (Question.ask(Messages.SaveChangesQuestion,
-					Messages.SaveChangesQuestion)) {
-				performApply();
-			}
+		if (!isDirty)
+			return true;
+		if (Question.ask(Messages.SaveChangesQuestion,
+				Messages.SaveChangesQuestion)) {
+			performApply();
 		}
 		return true;
 	}
-
 }

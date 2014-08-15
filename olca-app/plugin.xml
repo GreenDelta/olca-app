@@ -277,11 +277,15 @@
             id="preferencepages.featureflag"
             name="Experimental features">
       </page>
-      
       <page
             class="org.openlca.app.ilcd_network.PreferencePage"
             id="preferencepages.ilcdnetwork"
             name="%ILCDNetwork">
+      </page>
+      <page
+            id="preferencepages.language"
+            class="org.openlca.app.preferencepages.LanguagePreferencePage"
+            name="Language">
       </page>
    </extension>
    <extension
