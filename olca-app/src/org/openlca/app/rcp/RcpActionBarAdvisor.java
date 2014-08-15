@@ -21,8 +21,10 @@ import org.openlca.app.Config;
 import org.openlca.app.Messages;
 import org.openlca.app.db.sql.SqlEditor;
 import org.openlca.app.editors.StartPage;
+import org.openlca.app.rcp.browser.MozillaConfigView;
 import org.openlca.app.rcp.plugins.PluginManagerDialog;
 import org.openlca.app.resources.ImageType;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Desktop;
 import org.openlca.app.util.UI;
 
@@ -107,6 +109,11 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		windowMenu.add(new Separator());
 		windowMenu.add(new SqlEditorAction());
 		windowMenu.add(new FormulaConsoleAction());
+		if (MozillaConfigView.canShow()) {
+			windowMenu.add(Actions.create("Browser configuration",
+					ImageType.FIREFOX_ICON.getDescriptor(),
+					MozillaConfigView::open));
+		}
 		menuBar.add(windowMenu);
 	}
 
@@ -177,4 +184,5 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 			StartPage.open();
 		}
 	}
+
 }

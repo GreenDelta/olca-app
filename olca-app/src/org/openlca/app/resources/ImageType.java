@@ -96,6 +96,8 @@ public enum ImageType {
 
 	FILE_WORD_SMALL("file_word_16.png"),
 
+	FIREFOX_ICON("firefox_16.png"),
+
 	FLOW_CATEGORY_ICON("folder_flow.png"),
 
 	FLOW_ICON("flow_obj.gif"),

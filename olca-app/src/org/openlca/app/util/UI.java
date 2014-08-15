@@ -26,6 +26,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.html.HtmlFolder;
 import org.openlca.app.html.HtmlPage;
+import org.openlca.app.rcp.browser.BrowserFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -129,11 +129,11 @@
             contributorClass="org.openlca.app.editors.reports.ReportToolbar">
       </editor>  
       <editor
-            class="org.openlca.core.editors.result.CostResultEditor"
+            class="org.openlca.app.rcp.browser.MozillaConfigView"
             default="false"
-            icon="icons/simulate_16.png"
-            id="editors.costresult"
-            name="Cost results">
+            icon="icons/firefox_16.png"
+            id="olca.MozillaConfigView"
+            name="Browser configuration">
       </editor>
       <editor
             class="org.openlca.app.editors.UsageView"

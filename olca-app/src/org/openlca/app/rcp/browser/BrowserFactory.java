@@ -1,15 +1,12 @@
-package org.openlca.app.util;
+package org.openlca.app.rcp.browser;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.widgets.Composite;
-import org.openlca.app.App;
-import org.openlca.app.preferencepages.FeatureFlag;
-import org.openlca.util.OS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class BrowserFactory {
+public class BrowserFactory {
 
 	private static Logger log = LoggerFactory.getLogger(BrowserFactory.class);
 
@@ -33,13 +30,13 @@ class BrowserFactory {
 
 	private static void initialize() {
 		log.trace("initialize browser factory");
-		if (!shouldUseXulRunner()) {
+		if (!Config.useMozilla()) {
 			useXulRunner = false;
 			initialized = true;
 			return;
 		}
 		try {
-			String xulRunnerPath = App.getXulRunnerPath();
+			String xulRunnerPath = Config.getXulRunnerPath();
 			if (xulRunnerPath == null) {
 				log.trace("No XUL runner found, use system browser");
 				useXulRunner = false;
@@ -57,13 +54,6 @@ class BrowserFactory {
 		}
 	}
 
-	private static boolean shouldUseXulRunner() {
-		if (OS.getCurrent() == OS.Linux)
-			return true;
-		else
-			return FeatureFlag.USE_MOZILLA_BROWSER.isEnabled();
-	}
-
 	private static Browser createMozilla(Composite parent) {
 		try {
 			return new Browser(parent, SWT.MOZILLA);
@@ -73,6 +63,14 @@ class BrowserFactory {
 					e);
 			useXulRunner = false;
 			return new Browser(parent, SWT.NONE);
+		}
+	}
+
+	private static void initMozillaPrefs() {
+		try {
+
+		} catch (Exception e) {
+
 		}
 	}
 
