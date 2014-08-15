@@ -18,7 +18,7 @@ public enum HtmlView {
 
 	IMPACT_LOCALISATION_PAGE("impact_localisation_page.html"),
 
-	KML_EDITOR("kml_editor.html"),
+	KML_EDITOR("kml_editor.html", Resource.CODEMIRROR_JS, Resource.CODEMIRROR_XML_JS, Resource.CODEMIRROR_CSS, Resource.CODEMIRROR_THEME),
 
 	KML_RESULT_VIEW("kml_result_view.html"),
 

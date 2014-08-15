@@ -114,4 +114,5 @@ public class MapEditor implements HtmlPage {
 			return null;
 		return (T) args[index];
 	}
+	
 }

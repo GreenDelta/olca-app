@@ -14,7 +14,15 @@ enum Resource {
 
 	ANGULAR_UI("js" + File.separator + "angularui.min.js"),
 
-	EXPLORER_CANVAS("js" + File.separator + "excanvas.js");
+	EXPLORER_CANVAS("js" + File.separator + "excanvas.js"),
+
+	CODEMIRROR_JS("js" + File.separator + "codemirror.js"),
+
+	CODEMIRROR_XML_JS("js" + File.separator + "codemirror-xml.js"),
+
+	CODEMIRROR_CSS("css" + File.separator + "codemirror.css"),
+
+	CODEMIRROR_THEME("css" + File.separator + "codemirror-solarized.css");
 
 	private IHtmlResource resource;
 	private Resource[] dependencies;
