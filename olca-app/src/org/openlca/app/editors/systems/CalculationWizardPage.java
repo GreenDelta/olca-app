@@ -130,8 +130,7 @@ class CalculationWizardPage extends WizardPage {
 	}
 
 	public CalculationSetup getSetup() {
-		CalculationSetup setUp = new CalculationSetup(productSystem,
-				getSetupType());
+		CalculationSetup setUp = new CalculationSetup(productSystem);
 		setUp.setAllocationMethod(allocationViewer.getSelected());
 		setUp.setImpactMethod(methodViewer.getSelected());
 		NwSetDescriptor set = nwViewer.getSelected();
@@ -143,21 +142,6 @@ class CalculationWizardPage extends WizardPage {
 
 	public CalculationType getCalculationType() {
 		return type;
-	}
-
-	private int getSetupType() {
-		if (type == null)
-			return CalculationSetup.QUICK_RESULT;
-		switch (type) {
-		case ANALYSIS:
-			return CalculationSetup.ANALYSIS;
-		case MONTE_CARLO:
-			return CalculationSetup.MONTE_CARLO_SIMULATION;
-		case QUICK:
-			return CalculationSetup.QUICK_RESULT;
-		default:
-			return CalculationSetup.QUICK_RESULT;
-		}
 	}
 
 	private void createMethodComboViewer(Composite parent) {
