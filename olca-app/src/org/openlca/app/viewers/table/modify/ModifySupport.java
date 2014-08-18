@@ -176,7 +176,7 @@ public class ModifySupport<T> {
 				T elem = setModifierValue(element, value, modifier);
 				refresh(elem);
 			}
-			if (modifier.affectsOtherElements())
+			if (modifier != null && modifier.affectsOtherElements())
 				viewer.refresh(true);
 			else
 				viewer.refresh(element, true);
