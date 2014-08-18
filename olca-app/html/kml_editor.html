@@ -108,7 +108,7 @@
                     textEditor.setValue(prettifyKML(getKML()));
                 } else if (id == "#mapDiv") {
                     onDestroyFeatures()
-                    setKML($("#textDiv textarea").val())               
+                    setKML(textEditor.getValue())               
                 }
             }
 
