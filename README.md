@@ -1,7 +1,5 @@
 olca-app
 ========
-**Note that this is not a stable version yet.**
-
 This is the openLCA RCP application which is build on top of the 
 [olca-modules](https://github.com/GreenDelta/olca-modules) project.
 
