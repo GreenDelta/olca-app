@@ -10,6 +10,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.TableItem;
 import org.openlca.app.Messages;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Numbers;
@@ -43,6 +44,11 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 		getModifySupport().bind(IS_REFERENCE, new ReferenceModifier());
 		getViewer().refresh(true);
 		Tables.bindColumnWidths(getViewer(), 0.25, 0.15, 0.15, 0.15, 0.15, 0.15);
+		Tables.onDoubleClick(getViewer(), (event) -> {
+			TableItem item = Tables.getItem(getViewer(), event);
+			if (item == null)
+				onCreate();
+		});
 	}
 
 	@Override

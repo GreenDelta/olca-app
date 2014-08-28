@@ -12,10 +12,9 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
@@ -168,14 +167,15 @@ class ExchangeTable implements ParameterPageListener {
 	}
 
 	private void bindDoubleClick(final TableViewer viewer) {
-		viewer.getTable().addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseDoubleClick(MouseEvent e) {
-				Exchange exchange = Viewers.getFirstSelected(viewer);
-				if (exchange == null || exchange.getFlow() == null)
-					return;
-				App.openEditor(exchange.getFlow());
+		Tables.onDoubleClick(viewer, (e) -> {
+			TableItem item = Tables.getItem(viewer, e);
+			if (item == null) {
+				onAdd();
+				return;
 			}
+			Exchange exchange = Viewers.getFirstSelected(viewer);
+			if (exchange != null && exchange.getFlow() != null)
+				App.openEditor(exchange.getFlow());
 		});
 	}
 

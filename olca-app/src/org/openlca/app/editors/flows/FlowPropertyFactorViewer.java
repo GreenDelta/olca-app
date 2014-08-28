@@ -9,6 +9,8 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.TableItem;
+import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.resources.ImageType;
@@ -45,6 +47,20 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 		this.cache = cache;
 		this.editor = editor;
 		Tables.bindColumnWidths(getViewer(), 0.2, 0.2, 0.2, 0.2, 0.2);
+		addDoubleClickHandler();
+	}
+
+	private void addDoubleClickHandler() {
+		Tables.onDoubleClick(getViewer(), (event) -> {
+			TableItem item = Tables.getItem(getViewer(), event);
+			if (item == null) {
+				onCreate();
+				return;
+			}
+			FlowPropertyFactor factor = getSelected();
+			if (factor != null)
+				App.openEditor(factor.getFlowProperty());
+		});
 	}
 
 	public void setInput(Flow flow) {

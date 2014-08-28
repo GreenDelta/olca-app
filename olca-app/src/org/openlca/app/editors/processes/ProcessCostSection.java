@@ -11,11 +11,11 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.Messages;
-import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
 import org.openlca.core.model.Exchange;
@@ -76,55 +76,43 @@ class ProcessCostSection {
 		Section section = UI.section(parent, toolkit, product.getFlow()
 				.getName());
 		UI.gridData(section, true, true);
-		Actions.bind(section, new AddAction(), new RemoveAction());
+		Action add = Actions.onAdd(this::onAdd);
+		Action remove = Actions.onRemove(this::onRemove);
+		Actions.bind(section, add, remove);
 		Composite client = UI.sectionClient(section, toolkit);
 		ProcessCostViewer costViewer = new ProcessCostViewer(editor);
 		costViewer.render(toolkit, client);
 		viewer = costViewer.getTableViewer();
 		viewer.setInput(entries);
+		Tables.onDoubleClick(viewer, (event) -> {
+			TableItem item = Tables.getItem(viewer, event);
+			if (item == null)
+				onAdd();
+		});
 	}
 
-	private class AddAction extends Action {
-
-		public AddAction() {
-			setToolTipText(Messages.Add);
-			setImageDescriptor(ImageType.ADD_ICON.getDescriptor());
-		}
-
-		@Override
-		public void run() {
-			Shell shell = viewer.getTable().getShell();
-			ProcessCostEntryDialog dialog = new ProcessCostEntryDialog(shell,
-					entries);
-			int code = dialog.open();
-			if (code == Window.OK) {
-				ProcessCostEntry newEntry = dialog.getCostEntry();
-				newEntry.setExchange(product);
-				process.getCostEntries().add(newEntry);
-				entries.add(newEntry);
-				editor.setDirty(true);
-				viewer.setInput(entries);
-			}
+	private void onAdd() {
+		Shell shell = viewer.getTable().getShell();
+		ProcessCostEntryDialog dialog = new ProcessCostEntryDialog(shell,
+				entries);
+		int code = dialog.open();
+		if (code == Window.OK) {
+			ProcessCostEntry newEntry = dialog.getCostEntry();
+			newEntry.setExchange(product);
+			process.getCostEntries().add(newEntry);
+			entries.add(newEntry);
+			editor.setDirty(true);
+			viewer.setInput(entries);
 		}
 	}
 
-	private class RemoveAction extends Action {
-
-		public RemoveAction() {
-			setToolTipText(Messages.Remove);
-			setImageDescriptor(ImageType.DELETE_ICON.getDescriptor());
-		}
-
-		@Override
-		public void run() {
-			ProcessCostEntry e = Viewers.getFirstSelected(viewer);
-			if (e != null) {
-				entries.remove(e);
-				process.getCostEntries().remove(e);
-				editor.setDirty(true);
-				viewer.setInput(entries);
-			}
+	private void onRemove() {
+		ProcessCostEntry e = Viewers.getFirstSelected(viewer);
+		if (e != null) {
+			entries.remove(e);
+			process.getCostEntries().remove(e);
+			editor.setDirty(true);
+			viewer.setInput(entries);
 		}
 	}
-
 }

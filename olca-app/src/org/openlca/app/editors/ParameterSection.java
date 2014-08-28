@@ -12,6 +12,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.components.UncertaintyCellEditor;
@@ -82,6 +83,15 @@ public class ParameterSection implements ParameterPageListener {
 			parameters = support.getParameters(); // reloads it from the model
 				setInput();
 			});
+		addDoubleClickHandler();
+	}
+
+	private void addDoubleClickHandler() {
+		Tables.onDoubleClick(viewer, (event) -> {
+			TableItem item = Tables.getItem(viewer, event);
+			if (item == null)
+				addParameter();
+		});
 	}
 
 	@Override
