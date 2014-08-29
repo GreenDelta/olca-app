@@ -1,9 +1,5 @@
 package org.openlca.app.viewers.table.modify;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
@@ -14,6 +10,10 @@ import org.openlca.app.components.DialogCellEditor;
 import org.openlca.app.viewers.table.modify.ICellModifier.CellEditingType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Provides an easy and type safe way to add cell editors to a table viewer. It
@@ -57,6 +57,33 @@ public class ModifySupport<T> {
 	}
 
 	/**
+	 * Binds the given getter and setter to the given table property. Null values
+	 * for the getter are allowed. The setter is only called if text was changed.
+	 */
+	public void bind(String property, Getter<T> getter, Setter<T> setter) {
+		TextCellModifier<T> modifier = new TextCellModifier<T>() {
+			@Override
+			protected String getText(T element) {
+				if(getter == null)
+					return "";
+				String val = getter.getText(element);
+				return val == null ? "" : val;
+			}
+
+			@Override
+			protected void setText(T element, String text) {
+				if(getter == null || setter == null)
+					return;
+				String oldVal = getter.getText(element);
+				if(Objects.equals(oldVal, text))
+					return;
+				setter.setText(element, text);
+			}
+		};
+		bind(property, modifier);
+	}
+
+	/**
 	 * Binds the given modifier to the given property of the viewer.
 	 */
 	public void bind(String property, ICellModifier<T> modifier) {
@@ -82,18 +109,18 @@ public class ModifySupport<T> {
 
 	private void setEditor(ICellModifier<T> modifier, int index) {
 		switch (modifier.getCellEditingType()) {
-		case TEXTBOX:
-			editors[index] = new TextCellEditor(viewer.getTable());
-			break;
-		case COMBOBOX:
-			editors[index] = new ComboBoxCellEditor(viewer.getTable(),
-					new String[0]);
-			break;
-		case CHECKBOX:
-			editors[index] = new CheckboxCellEditor(viewer.getTable());
-			break;
-		default:
-			break;
+			case TEXTBOX:
+				editors[index] = new TextCellEditor(viewer.getTable());
+				break;
+			case COMBOBOX:
+				editors[index] = new ComboBoxCellEditor(viewer.getTable(),
+						new String[0]);
+				break;
+			case CHECKBOX:
+				editors[index] = new CheckboxCellEditor(viewer.getTable());
+				break;
+			default:
+				break;
 		}
 	}
 
@@ -147,23 +174,23 @@ public class ModifySupport<T> {
 			T elem = (T) element;
 			Object value = modifier.getValue(elem);
 			switch (modifier.getCellEditingType()) {
-			case TEXTBOX:
-				return value != null ? value.toString() : "";
-			case COMBOBOX:
-				refresh(elem);
-				Object[] values = modifier.getValues(elem);
-				if (values != null)
-					for (int i = 0; i < values.length; i++)
-						if (Objects.equals(values[i], value))
-							return i;
-				return -1;
-			case CHECKBOX:
-				if (value instanceof Boolean)
-					return value;
-				else
-					return false;
-			default:
-				return element;
+				case TEXTBOX:
+					return value != null ? value.toString() : "";
+				case COMBOBOX:
+					refresh(elem);
+					Object[] values = modifier.getValues(elem);
+					if (values != null)
+						for (int i = 0; i < values.length; i++)
+							if (Objects.equals(values[i], value))
+								return i;
+					return -1;
+				case CHECKBOX:
+					if (value instanceof Boolean)
+						return value;
+					else
+						return false;
+				default:
+					return element;
 			}
 		}
 
@@ -184,24 +211,24 @@ public class ModifySupport<T> {
 				ICellModifier<T> modifier) {
 			T elem = (T) element;
 			switch (modifier.getCellEditingType()) {
-			case TEXTBOX:
-				modifier.modify(elem, value.toString());
-				break;
-			case COMBOBOX:
-				if (value instanceof Integer) {
-					int index = (int) value;
-					if (index != -1)
-						modifier.modify(elem,
-								modifier.getValues(elem)[(Integer) value]);
-					else
-						modifier.modify(elem, null);
-				}
-				break;
-			case CHECKBOX:
-				modifier.modify(elem, value);
-				break;
-			default:
-				break;
+				case TEXTBOX:
+					modifier.modify(elem, value.toString());
+					break;
+				case COMBOBOX:
+					if (value instanceof Integer) {
+						int index = (int) value;
+						if (index != -1)
+							modifier.modify(elem,
+									modifier.getValues(elem)[(Integer) value]);
+						else
+							modifier.modify(elem, null);
+					}
+					break;
+				case CHECKBOX:
+					modifier.modify(elem, value);
+					break;
+				default:
+					break;
 			}
 			return elem;
 		}

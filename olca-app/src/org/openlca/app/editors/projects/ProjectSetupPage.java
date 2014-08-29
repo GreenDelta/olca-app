@@ -94,6 +94,8 @@ class ProjectSetupPage extends ModelPage<Project> {
 		createVariantsSection(body);
 		createParameterSection(body);
 		initialInput();
+		if (FeatureFlag.REPORTS.isEnabled())
+			new ProcessContributionSection(editor).create(body, toolkit);
 		body.setFocus();
 		form.reflow(true);
 	}

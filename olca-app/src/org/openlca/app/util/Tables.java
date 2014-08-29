@@ -1,8 +1,5 @@
 package org.openlca.app.util;
 
-import java.util.List;
-import java.util.function.Consumer;
-
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -27,6 +24,9 @@ import org.openlca.app.components.IModelDropHandler;
 import org.openlca.app.components.ModelTransfer;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 
+import java.util.List;
+import java.util.function.Consumer;
+
 /**
  * A helper class for creating tables, table viewers and related resources.
  */
@@ -45,7 +45,7 @@ public class Tables {
 	public static TableViewer createViewer(Composite parent,
 			String... properties) {
 		TableViewer viewer = new TableViewer(parent, SWT.BORDER
-				| SWT.FULL_SELECTION | SWT.VIRTUAL);
+				| SWT.FULL_SELECTION | SWT.VIRTUAL | SWT.MULTI);
 		viewer.setContentProvider(new ArrayContentProvider());
 		viewer.setColumnProperties(properties);
 		Table table = viewer.getTable();

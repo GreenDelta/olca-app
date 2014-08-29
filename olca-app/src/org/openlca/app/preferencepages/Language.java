@@ -7,6 +7,10 @@ import java.util.Objects;
  */
 public enum Language {
 
+	// TODO: Bulgarian start page not ready
+	// + Eclipse language pack for Bulgarian
+	// BULGARIAN("Bulgarian", "bg"),
+
 	CHINESE("Chinese", "zh"),
 
 	ENGLISH("English", "en"),

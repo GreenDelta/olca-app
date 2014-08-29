@@ -1,9 +1,9 @@
 package org.openlca.app.editors.reports.model;
 
+import org.openlca.core.model.descriptors.ProjectDescriptor;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.openlca.core.model.descriptors.ProjectDescriptor;
 
 public class Report {
 
@@ -16,6 +16,7 @@ public class Report {
 	private List<ReportVariant> variants = new ArrayList<>();
 	private List<ReportResult> results = new ArrayList<>();
 	private List<ReportIndicator> indicators = new ArrayList<>();
+	private List<ReportProcess> processes = new ArrayList<>();
 
 	public String getTitle() {
 		return title;
@@ -51,6 +52,10 @@ public class Report {
 
 	public List<ReportIndicator> getIndicators() {
 		return indicators;
+	}
+
+	public List<ReportProcess> getProcesses() {
+		return processes;
 	}
 
 	public void setWithNormalisation(boolean withNormalisation) {
