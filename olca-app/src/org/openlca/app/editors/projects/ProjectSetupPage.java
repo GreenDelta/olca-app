@@ -15,6 +15,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
@@ -174,10 +175,20 @@ class ProjectSetupPage extends ModelPage<Project> {
 	}
 
 	private void addVariantActions(TableViewer viewer, Section section) {
-		Action add = Actions.onAdd(() -> addVariant());
-		Action remove = Actions.onRemove(() -> removeVariant());
+		Action add = Actions.onAdd(this::addVariant);
+		Action remove = Actions.onRemove(this::removeVariant);
 		Actions.bind(section, add, remove);
 		Actions.bind(viewer, add, remove);
+		Tables.onDoubleClick(viewer, (event) -> {
+			TableItem item = Tables.getItem(viewer, event);
+			if (item == null) {
+				addVariant();
+				return;
+			}
+			ProjectVariant variant = Viewers.getFirstSelected(viewer);
+			if (variant != null)
+				App.openEditor(variant.getProductSystem());
+		});
 	}
 
 	private void addVariant() {

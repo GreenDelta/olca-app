@@ -11,6 +11,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
@@ -45,8 +46,9 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, Messages.ImpactAssessmentMethod
-				+ ": " + getModel().getName());
+		ScrolledForm form = UI.formHeader(managedForm,
+				Messages.ImpactAssessmentMethod
+						+ ": " + getModel().getName());
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		InfoSection infoSection = new InfoSection(getEditor());
@@ -88,6 +90,12 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 		Action remove = Actions.onRemove(() -> onRemove());
 		Actions.bind(viewer, add, remove);
 		Actions.bind(section, add, remove);
+		Tables.onDoubleClick(viewer, (event) -> {
+			TableItem item = Tables.getItem(viewer, event);
+			if (item == null) {
+				onAdd();
+			}
+		});
 	}
 
 	private void onAdd() {

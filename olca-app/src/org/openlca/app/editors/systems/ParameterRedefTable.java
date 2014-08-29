@@ -10,6 +10,7 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
@@ -78,10 +79,15 @@ class ParameterRedefTable {
 	}
 
 	public void bindActions(Section section) {
-		Action addAction = Actions.onAdd(() -> add());
-		Action removeAction = Actions.onRemove(() -> remove());
+		Action addAction = Actions.onAdd(this::add);
+		Action removeAction = Actions.onRemove(this::remove);
 		Actions.bind(section, addAction, removeAction);
 		Actions.bind(viewer, addAction, removeAction);
+		Tables.onDoubleClick(viewer, (event) -> {
+			TableItem item = Tables.getItem(viewer, event);
+			if (item == null)
+				add();
+		});
 	}
 
 	private void add() {

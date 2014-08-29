@@ -12,9 +12,9 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
-import org.openlca.app.components.IModelDropHandler;
 import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.components.UncertaintyCellEditor;
 import org.openlca.app.db.Database;
@@ -105,21 +105,14 @@ class ImpactFactorTable implements ParameterPageListener {
 	}
 
 	private void bindActions(TableViewer viewer, Section section) {
-		Action add = Actions.onAdd(new Runnable() {
-			public void run() {
+		Action add = Actions.onAdd(this::onAdd);
+		Action remove = Actions.onRemove(this::onRemove);
+		Tables.addDropSupport(viewer,
+				(descriptors) -> createFactors(descriptors));
+		Tables.onDoubleClick(viewer, (event) -> {
+			TableItem item = Tables.getItem(viewer, event);
+			if (item == null)
 				onAdd();
-			}
-		});
-		Action remove = Actions.onRemove(new Runnable() {
-			public void run() {
-				onRemove();
-			}
-		});
-		Tables.addDropSupport(viewer, new IModelDropHandler() {
-			@Override
-			public void handleDrop(List<BaseDescriptor> descriptors) {
-				createFactors(descriptors);
-			}
 		});
 		Action formulaSwitch = new FormulaSwitchAction();
 		Actions.bind(section, add, remove, formulaSwitch);

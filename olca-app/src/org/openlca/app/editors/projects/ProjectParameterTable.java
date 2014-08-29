@@ -1,5 +1,14 @@
 package org.openlca.app.editors.projects;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -8,6 +17,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
@@ -30,15 +40,6 @@ import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.util.Strings;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
 
 class ProjectParameterTable {
 
@@ -107,7 +108,7 @@ class ProjectParameterTable {
 		for (ParameterRedef contained : redefs) {
 			if (Objects.equals(redef.getName(), contained.getName())
 					&& Objects.equals(redef.getContextId(),
-					contained.getContextId()))
+							contained.getContextId()))
 				return true;
 		}
 		return false;
@@ -126,6 +127,11 @@ class ProjectParameterTable {
 		Action remove = Actions.onRemove(this::onRemove);
 		Actions.bind(section, add, remove);
 		Actions.bind(viewer, add, remove);
+		Tables.onDoubleClick(viewer, (event) -> {
+			TableItem item = Tables.getItem(viewer, event);
+			if (item == null)
+				onAdd();
+		});
 	}
 
 	private String[] getColumnTitles() {
@@ -251,7 +257,7 @@ class ProjectParameterTable {
 		for (ParameterRedef variantRedef : variant.getParameterRedefs()) {
 			if (Objects.equals(variantRedef.getName(), redef.getName())
 					&& Objects.equals(variantRedef.getContextId(),
-					redef.getContextId()))
+							redef.getContextId()))
 				return variantRedef;
 		}
 		return null;
@@ -403,7 +409,7 @@ class ProjectParameterTable {
 		@Override
 		protected void setText(ParameterRedef redef, String text) {
 			String oldName = reportSync.getName(redef);
-			if(Objects.equals(oldName, text))
+			if (Objects.equals(oldName, text))
 				return;
 			reportSync.setName(text, redef);
 			editor.setDirty(true);
@@ -419,7 +425,7 @@ class ProjectParameterTable {
 		@Override
 		protected void setText(ParameterRedef redef, String text) {
 			String oldText = reportSync.getDescription(redef);
-			if(Objects.equals(oldText, text))
+			if (Objects.equals(oldText, text))
 				return;
 			reportSync.setDescription(text, redef);
 			editor.setDirty(true);
