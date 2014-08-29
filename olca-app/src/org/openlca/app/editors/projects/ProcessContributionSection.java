@@ -1,5 +1,6 @@
 package org.openlca.app.editors.projects;
 
+import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.BaseLabelProvider;
@@ -13,10 +14,12 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.editors.reports.model.Report;
 import org.openlca.app.editors.reports.model.ReportProcess;
+import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Tables;
@@ -27,8 +30,6 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.util.Strings;
-
-import java.util.List;
 
 class ProcessContributionSection {
 
@@ -43,8 +44,8 @@ class ProcessContributionSection {
 		Section section = UI.section(body, toolkit, "Process contributions");
 		Composite composite = UI.sectionClient(section, toolkit);
 		UI.gridLayout(composite, 1);
-		String[] properties = {Messages.Process, "Report name",
-				Messages.Description};
+		String[] properties = { Messages.Process, "Report name",
+				Messages.Description };
 		viewer = Tables.createViewer(composite, properties);
 		viewer.setLabelProvider(new Label());
 		Tables.bindColumnWidths(viewer, 0.3, 0.3, 0.4);
@@ -85,7 +86,12 @@ class ProcessContributionSection {
 			TableItem item = Tables.getItem(viewer, event);
 			if (item == null)
 				onAdd();
-		});
+				else {
+					ReportProcess process = Viewers.getFirstSelected(viewer);
+					if (process != null)
+						App.openEditor(process.getDescriptor());
+				}
+			});
 		viewer.getTable().addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -121,11 +127,15 @@ class ProcessContributionSection {
 		editor.setDirty(true);
 	}
 
-	private class Label extends BaseLabelProvider implements ITableLabelProvider {
+	private class Label extends BaseLabelProvider implements
+			ITableLabelProvider {
 
 		@Override
-		public Image getColumnImage(Object element, int columnIndex) {
-			return null;
+		public Image getColumnImage(Object element, int col) {
+			if (col == 0)
+				return ImageType.PROCESS_ICON.get();
+			else
+				return null;
 		}
 
 		@Override
@@ -134,14 +144,14 @@ class ProcessContributionSection {
 				return null;
 			ReportProcess process = (ReportProcess) element;
 			switch (col) {
-				case 0:
-					return Labels.getDisplayName(process.getDescriptor());
-				case 1:
-					return process.getReportName();
-				case 2:
-					return process.getReportDescription();
-				default:
-					return null;
+			case 0:
+				return Labels.getDisplayName(process.getDescriptor());
+			case 1:
+				return process.getReportName();
+			case 2:
+				return process.getReportDescription();
+			default:
+				return null;
 			}
 		}
 	}

@@ -1,14 +1,14 @@
 package org.openlca.app.editors.reports.model;
 
 import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.openlca.app.App;
-import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.reports.model.ReportResult.Contribution;
 import org.openlca.app.editors.reports.model.ReportResult.VariantResult;
-import org.openlca.app.util.Labels;
 import org.openlca.core.math.ProjectCalculator;
 import org.openlca.core.matrix.NwSetTable;
 import org.openlca.core.model.Project;
@@ -17,7 +17,6 @@ import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.ContributionItem;
 import org.openlca.core.results.ContributionSet;
-import org.openlca.core.results.Contributions;
 import org.openlca.core.results.ImpactResult;
 import org.openlca.core.results.ProjectResultProvider;
 import org.slf4j.Logger;
@@ -66,8 +65,7 @@ public class ReportCalculator implements Runnable {
 				ContributionSet<ProcessDescriptor> set = result
 						.getResult(variant)
 						.getProcessContributions(impact);
-				Contributions.topWithRest(set.getContributions(), 5)
-						.forEach((item) -> addContribution(item, varResult));
+				appendProcessContributions(set, varResult);
 			}
 		}
 	}
@@ -82,19 +80,37 @@ public class ReportCalculator implements Runnable {
 		return null;
 	}
 
-	private void addContribution(ContributionItem<ProcessDescriptor> item,
-			VariantResult varResult) {
-		Contribution contribution = new Contribution();
-		varResult.getContributions().add(contribution);
-		contribution.setAmount(item.getAmount());
-		if (item.isRest()) {
-			contribution.setProcess(Messages.Other);
-			contribution.setRest(true);
-		} else {
-			String name = Labels.getDisplayName(item.getItem());
-			contribution.setProcess(name);
-			contribution.setRest(false);
+	private void appendProcessContributions(
+			ContributionSet<ProcessDescriptor> set, VariantResult varResult) {
+		Contribution rest = new Contribution();
+		varResult.getContributions().add(rest);
+		rest.setRest(true);
+		rest.setProcessId(-1);
+		rest.setAmount(0);
+		Set<Long> ids = getContributionProcessIds();
+		for (ContributionItem<ProcessDescriptor> item : set.getContributions()) {
+			if (item.getItem() == null)
+				continue;
+			if (!ids.contains(item.getItem().getId()))
+				rest.setAmount(rest.getAmount() + item.getAmount());
+			else {
+				Contribution con = new Contribution();
+				varResult.getContributions().add(con);
+				con.setAmount(item.getAmount());
+				con.setRest(false);
+				con.setProcessId(item.getItem().getId());
+			}
 		}
+	}
+
+	private Set<Long> getContributionProcessIds() {
+		Set<Long> ids = new TreeSet<>();
+		for (ReportProcess process : report.getProcesses()) {
+			if (process.getDescriptor() == null)
+				continue;
+			ids.add(process.getDescriptor().getId());
+		}
+		return ids;
 	}
 
 	private ProjectResultProvider calcProject(Project project) {

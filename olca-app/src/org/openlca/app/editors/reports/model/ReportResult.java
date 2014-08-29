@@ -49,16 +49,16 @@ class ReportResult {
 
 	static class Contribution {
 
-		private String process;
+		private long processId;
 		private double amount;
 		private boolean rest;
 
-		public String getProcess() {
-			return process;
+		public long getProcessId() {
+			return processId;
 		}
 
-		public void setProcess(String process) {
-			this.process = process;
+		public void setProcessId(long processId) {
+			this.processId = processId;
 		}
 
 		public double getAmount() {
