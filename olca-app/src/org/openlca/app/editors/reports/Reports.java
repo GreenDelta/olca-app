@@ -156,7 +156,6 @@ public final class Reports {
 		report.getSections().add(createVariantsSection(1));
 		report.getSections().add(createMethodSection(2));
 		report.getSections().add(createResultTableSection(3));
-		report.getSections().add(createProcessContributionSection(4));
 	}
 
 	private static ReportSection createIntroSection(int idx) {
@@ -213,18 +212,6 @@ public final class Reports {
 		String text = "The following table shows the LCIA results of the project.";
 		section.setText(text);
 		section.setComponentId(ReportComponent.IMPACT_RESULT_TABLE.getId());
-		return section;
-	}
-
-	private static ReportSection createProcessContributionSection(int idx) {
-		ReportSection section = new ReportSection();
-		section.setIndex(idx);
-		section.setTitle("Process contributions");
-		String text = "The chart below shows the top process contributions of "
-				+ "the project variants to the selected LCIA category";
-		section.setText(text);
-		section.setComponentId(
-				ReportComponent.PROCESS_CONTRIBUTION_CHARTS.getId());
 		return section;
 	}
 

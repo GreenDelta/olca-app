@@ -206,14 +206,24 @@ class SectionList {
 				return "Parameter value table";
 			case IMPACT_RESULT_TABLE:
 				return "LCIA result table";
-			case PROCESS_CONTRIBUTION_CHARTS:
-				return "Process contribution charts";
-			case RESULT_CHART:
-				return "Result chart";
+			case PROCESS_CONTRIBUTION_CHART:
+				return "Process contribution chart";
 			case NORMALISATION_RESULT_TABLE:
 				return "Normalisation result table";
 			case SINGLE_SCORE_TABLE:
 				return "Single score table";
+			case INDICATOR_BAR_CHART:
+				return "Indicator bar chart";
+			case NORMALISATION_BAR_CHART:
+				return "Normalisation - bar chart";
+			case NORMALISATION_RADAR_CHART:
+				return "Normalisation - radar chart";
+			case RELATIVE_INDICATOR_BAR_CHART:
+				return "Relative LCIA results - bar chart";
+			case RELATIVE_INDICATOR_RADAR_CHART:
+				return "Relative LCIA results - radar chart";
+			case SINGLE_SCORE_BAR_CHART:
+				return "Single score bar chart";
 			default:
 				return "unknown";
 			}

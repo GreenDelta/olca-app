@@ -27,10 +27,20 @@ public enum ReportComponent {
 	/** Table with the single score results. */
 	SINGLE_SCORE_TABLE("single_score_table"),
 
-	/** Contributions of the processes in the variants to the LCIA results. */
-	PROCESS_CONTRIBUTION_CHARTS("process_contribution_charts"),
+	INDICATOR_BAR_CHART("indicator_bar_chart"),
 
-	RESULT_CHART("total_result_chart");
+	RELATIVE_INDICATOR_BAR_CHART("relative_indicator_bar_chart"),
+
+	NORMALISATION_BAR_CHART("normalisation_bar_chart"),
+
+	RELATIVE_INDICATOR_RADAR_CHART("relative_indicator_radar_chart"),
+
+	NORMALISATION_RADAR_CHART("normalisation_radar_chart"),
+
+	SINGLE_SCORE_BAR_CHART("single_score_bar_chart"),
+
+	/** Contributions of the processes in the variants to the LCIA results. */
+	PROCESS_CONTRIBUTION_CHART("process_contribution_chart");
 
 	private final String id;
 
