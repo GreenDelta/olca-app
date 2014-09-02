@@ -3,14 +3,14 @@
 
 	<property name="platform_dir" value="${basedir}/platform" />
 	<property name="download_dir" value="${basedir}/downloads" />
-	
+
 	<target name="main">
 
-		<mkdir dir="${download_dir}"/>
-		<mkdir dir="${platform_dir}"/>
+		<mkdir dir="${download_dir}" />
+		<mkdir dir="${platform_dir}" />
 		<mkdir dir="${platform_dir}/features" />
 		<mkdir dir="${platform_dir}/plugins" />
-		
+
 		<antcall target="clean" />
 		<antcall target="download" />
 		<antcall target="extract" />
@@ -28,6 +28,9 @@
 		-->
 
 		<!-- Eclipse Babel language packs -->
+		<get dest="${download_dir}/babel_bg_4.4.0.zip" verbose="true" skipexisting="true">
+			<url url="http://www.eclipse.org/downloads/download.php?file=/technology/babel/babel_language_packs/R0.12.0/luna/BabelLanguagePack-eclipse-bg_4.4.0.v20140623020002.zip&amp;r=1" />
+		</get>
 		<get dest="${download_dir}/babel_de_4.4.0.zip" verbose="true" skipexisting="true">
 			<url url="http://www.eclipse.org/downloads/download.php?file=/technology/babel/babel_language_packs/R0.12.0/luna/BabelLanguagePack-eclipse-de_4.4.0.v20140623020002.zip&amp;r=1" />
 		</get>
@@ -39,6 +42,9 @@
 		</get>
 		<get dest="${download_dir}/babel_it_4.4.0.zip" verbose="true" skipexisting="true">
 			<url url="http://www.eclipse.org/downloads/download.php?file=/technology/babel/babel_language_packs/R0.12.0/luna/BabelLanguagePack-eclipse-it_4.4.0.v20140623020002.zip&amp;r=1" />
+		</get>
+		<get dest="${download_dir}/babel_zh_4.4.0.zip" verbose="true" skipexisting="true">
+			<url url="http://www.eclipse.org/downloads/download.php?file=/technology/babel/babel_language_packs/R0.12.0/luna/BabelLanguagePack-eclipse-zh_4.4.0.v20140623020002.zip&amp;r=1" />
 		</get>
 
 		<!-- Eclipse Birt Chart SDK -->
@@ -81,6 +87,10 @@
 
 		<!-- Eclipse Babel language packs -->
 		<copy todir="${platform_dir}" overwrite="false">
+			<zipfileset src="${download_dir}/babel_bg_4.4.0.zip">
+				<include name="eclipse/features/**" />
+				<include name="eclipse/plugins/**" />
+			</zipfileset>
 			<zipfileset src="${download_dir}/babel_de_4.4.0.zip">
 				<include name="eclipse/features/**" />
 				<include name="eclipse/plugins/**" />
@@ -94,6 +104,10 @@
 				<include name="eclipse/plugins/**" />
 			</zipfileset>
 			<zipfileset src="${download_dir}/babel_it_4.4.0.zip">
+				<include name="eclipse/features/**" />
+				<include name="eclipse/plugins/**" />
+			</zipfileset>
+			<zipfileset src="${download_dir}/babel_zh_4.4.0.zip">
 				<include name="eclipse/features/**" />
 				<include name="eclipse/plugins/**" />
 			</zipfileset>
