@@ -17,9 +17,8 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
 import org.openlca.app.Messages;
-import org.openlca.app.html.HtmlPage;
-import org.openlca.app.html.HtmlView;
-import org.openlca.app.html.IHtmlResource;
+import org.openlca.app.rcp.html.HtmlPage;
+import org.openlca.app.rcp.html.HtmlView;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.IDatabase;
@@ -92,8 +91,8 @@ public class UsageView extends FormEditor {
 		}
 
 		@Override
-		public IHtmlResource getResource() {
-			return HtmlView.USAGES_VIEW.getResource();
+		public String getUrl() {
+			return HtmlView.USAGES_VIEW.getUrl();
 		}
 
 		@Override

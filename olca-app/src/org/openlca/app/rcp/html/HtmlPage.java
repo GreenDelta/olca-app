@@ -1,5 +1,4 @@
-package org.openlca.app.html;
-
+package org.openlca.app.rcp.html;
 
 /**
  * Interface for an HTML page used in the SWT browser widget.
@@ -7,9 +6,9 @@ package org.openlca.app.html;
 public interface HtmlPage {
 
 	/**
-	 * Get the html-resource.
+	 * Get the URL to the HTML page.
 	 */
-	IHtmlResource getResource();
+	String getUrl();
 
 	/**
 	 * Is executed when the page is ready in the browser.

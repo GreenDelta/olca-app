@@ -7,6 +7,7 @@ import org.eclipse.ui.PartInitException;
 import org.openlca.app.editors.ModelEditorInput;
 import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.rcp.RcpActivator;
+import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.Editors;
 import org.openlca.core.math.IMatrixSolver;
 import org.openlca.core.math.JavaSolver;

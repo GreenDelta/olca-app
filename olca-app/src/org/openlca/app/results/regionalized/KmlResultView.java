@@ -16,9 +16,8 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.components.FlowImpactSelection;
 import org.openlca.app.components.FlowImpactSelection.EventHandler;
 import org.openlca.app.db.Cache;
-import org.openlca.app.html.HtmlPage;
-import org.openlca.app.html.HtmlView;
-import org.openlca.app.html.IHtmlResource;
+import org.openlca.app.rcp.html.HtmlPage;
+import org.openlca.app.rcp.html.HtmlView;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.matrix.LongPair;
@@ -47,8 +46,8 @@ class KmlResultView extends FormPage implements HtmlPage {
 	}
 
 	@Override
-	public IHtmlResource getResource() {
-		return HtmlView.KML_RESULT_VIEW.getResource();
+	public String getUrl() {
+		return HtmlView.KML_RESULT_VIEW.getUrl();
 	}
 
 	@Override

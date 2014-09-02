@@ -9,9 +9,8 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
 import org.openlca.app.db.Cache;
-import org.openlca.app.html.HtmlPage;
-import org.openlca.app.html.HtmlView;
-import org.openlca.app.html.IHtmlResource;
+import org.openlca.app.rcp.html.HtmlPage;
+import org.openlca.app.rcp.html.HtmlView;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -44,8 +43,8 @@ public class StatisticsPage extends FormPage implements HtmlPage {
 	}
 
 	@Override
-	public IHtmlResource getResource() {
-		return HtmlView.PRODUCT_SYSTEM_STATISTICS.getResource();
+	public String getUrl() {
+		return HtmlView.PRODUCT_SYSTEM_STATISTICS.getUrl();
 	}
 
 	@Override

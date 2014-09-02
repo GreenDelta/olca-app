@@ -1,4 +1,4 @@
-package org.openlca.app.html;
+package org.openlca.app.rcp.html;
 
 import java.util.ArrayList;
 import java.util.List;

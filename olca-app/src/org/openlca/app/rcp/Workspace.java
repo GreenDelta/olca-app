@@ -1,9 +1,11 @@
-package org.openlca.app;
+package org.openlca.app.rcp;
 
 import java.io.File;
 import java.net.URL;
 
 import org.eclipse.core.runtime.Platform;
+import org.openlca.app.CommandArgument;
+import org.openlca.app.Config;
 
 /**
  * The workspace configuration of openLCA. The workspace is located in the
@@ -28,7 +30,7 @@ public class Workspace {
 	 * Initializes the workspace of the application. Should be called only once
 	 * when the application bundle starts.
 	 */
-	public static File init() {
+	static File init() {
 		try {
 			Platform.getInstanceLocation().release();
 			File dir = getDirFromCommandLine();

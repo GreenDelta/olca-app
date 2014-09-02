@@ -1,7 +1,5 @@
 package org.openlca.app.results.analysis;
 
-import com.google.gson.Gson;
-
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
@@ -12,9 +10,8 @@ import org.openlca.app.App;
 import org.openlca.app.components.FlowImpactSelection;
 import org.openlca.app.components.FlowImpactSelection.EventHandler;
 import org.openlca.app.db.Cache;
-import org.openlca.app.html.HtmlPage;
-import org.openlca.app.html.HtmlView;
-import org.openlca.app.html.IHtmlResource;
+import org.openlca.app.rcp.html.HtmlPage;
+import org.openlca.app.rcp.html.HtmlView;
 import org.openlca.app.util.UI;
 import org.openlca.core.matrix.FlowIndex;
 import org.openlca.core.model.descriptors.FlowDescriptor;
@@ -23,6 +20,8 @@ import org.openlca.core.results.FullResultProvider;
 import org.openlca.core.results.UpstreamTree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
 
 public class SunBurstView extends FormPage implements HtmlPage {
 
@@ -38,31 +37,31 @@ public class SunBurstView extends FormPage implements HtmlPage {
 	}
 
 	@Override
-	public IHtmlResource getResource() {
-		return HtmlView.SUNBURST_CHART.getResource();
+	public String getUrl() {
+		return HtmlView.SUNBURST_CHART.getUrl();
 	}
 
 	@Override
 	public void onLoaded() {
 		App.run("Calculate result", new Runnable() {
-					@Override
-					public void run() {
-						FlowDescriptor first = firstFlow();
-						if (first == null)
-							return;
-						log.trace("initialize the tree");
-						result.getTree(first);
-					}
-				}, new Runnable() {
-					@Override
-					public void run() {
-						FlowDescriptor first = firstFlow();
-						if (first == null)
-							return;
-						flowImpactSelection.selectWithEvent(first);
-					}
-				}
-		);
+			@Override
+			public void run() {
+				FlowDescriptor first = firstFlow();
+				if (first == null)
+					return;
+				log.trace("initialize the tree");
+				result.getTree(first);
+			}
+		}, new Runnable() {
+			@Override
+			public void run() {
+				FlowDescriptor first = firstFlow();
+				if (first == null)
+					return;
+				flowImpactSelection.selectWithEvent(first);
+			}
+		}
+				);
 	}
 
 	private FlowDescriptor firstFlow() {
@@ -108,7 +107,8 @@ public class SunBurstView extends FormPage implements HtmlPage {
 
 		private void setResultData(UpstreamTree tree) {
 			Gson gson = new Gson();
-			SunBurstTree model = SunBurstTree.create(tree, Cache.getEntityCache());
+			SunBurstTree model = SunBurstTree.create(tree,
+					Cache.getEntityCache());
 			String json = gson.toJson(model);
 			String command = "setData(" + json + ")";
 			try {

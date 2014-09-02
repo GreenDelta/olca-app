@@ -10,10 +10,10 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.openlca.app.Preferences;
-import org.openlca.app.Workspace;
 import org.openlca.app.db.Database;
 import org.openlca.app.logging.Console;
 import org.openlca.app.logging.LoggerConfig;
+import org.openlca.app.rcp.html.HtmlFolder;
 import org.openlca.eigen.NativeLibrary;
 import org.osgi.framework.BundleContext;
 
@@ -67,6 +67,9 @@ public class RcpActivator extends AbstractUIPlugin {
 		log.trace("Try init olca-eigen");
 		NativeLibrary.loadFromDir(workspace);
 		log.trace("olca-eigen loaded: {}", NativeLibrary.isLoaded());
+		log.trace("initialize HTML folder");
+		HtmlFolder.initialize(RcpActivator.getDefault().getBundle(),
+				"html/base_html.zip");
 		Preferences.init();
 	}
 

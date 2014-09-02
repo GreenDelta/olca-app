@@ -1,9 +1,5 @@
 package org.openlca.app.editors.reports.model;
 
-import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
-
 import org.openlca.app.App;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
@@ -21,6 +17,10 @@ import org.openlca.core.results.ImpactResult;
 import org.openlca.core.results.ProjectResultProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class ReportCalculator implements Runnable {
 

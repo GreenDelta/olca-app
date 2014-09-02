@@ -14,12 +14,11 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.Config;
 import org.openlca.app.Messages;
-import org.openlca.app.html.HtmlPage;
-import org.openlca.app.html.HtmlResource;
-import org.openlca.app.html.HtmlView;
-import org.openlca.app.html.IHtmlResource;
 import org.openlca.app.navigation.actions.DatabaseImportAction;
 import org.openlca.app.rcp.RcpActivator;
+import org.openlca.app.rcp.html.HtmlFolder;
+import org.openlca.app.rcp.html.HtmlPage;
+import org.openlca.app.rcp.html.HtmlView;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Desktop;
 import org.openlca.app.util.EclipseCommandLine;
@@ -69,19 +68,20 @@ public class StartPage extends FormEditor {
 		}
 
 		@Override
-		public IHtmlResource getResource() {
+		public String getUrl() {
 			String langCode = EclipseCommandLine.getArg("nl");
 			if (langCode == null
 					|| "en".equalsIgnoreCase(langCode)
 					|| langCode.startsWith("en_"))
-				return HtmlView.START_PAGE.getResource();
+				return HtmlView.START_PAGE.getUrl();
 			String pageName = "start_page_" + langCode + ".html";
 			try {
-				return new HtmlResource(RcpActivator.getDefault().getBundle(),
-						"html/"+ pageName, pageName);
+				return HtmlFolder.getUrl(
+						RcpActivator.getDefault().getBundle(), pageName);
 			} catch (Exception e) {
-				log.error("failed to get start page for language " + langCode, e);
-				return HtmlView.START_PAGE.getResource();
+				log.error("failed to get start page for language "
+						+ langCode, e);
+				return HtmlView.START_PAGE.getUrl();
 			}
 		}
 
@@ -115,14 +115,14 @@ public class StartPage extends FormEditor {
 			if (osarch == null)
 				return "";
 			switch (osarch) {
-				case "amd64":
-					return "64 bit";
-				case "x86":
-					return "32 bit";
-				case "i386":
-					return "32 bit";
-				default:
-					return osarch;
+			case "amd64":
+				return "64 bit";
+			case "x86":
+				return "32 bit";
+			case "i386":
+				return "32 bit";
+			default:
+				return osarch;
 			}
 		}
 
