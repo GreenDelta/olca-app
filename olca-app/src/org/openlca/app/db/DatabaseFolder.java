@@ -9,7 +9,7 @@ import java.io.File;
  * Contains helper methods for database folders. The folder of a database is
  * located under <workspace>/databases/<database_name>. Even remote databases
  * can have such folders for storing additional files.
- * <p/>
+ * <p>
  * Note that the getter methods in this class do not create the file directories
  * in the getter methods.
  */
@@ -39,8 +39,7 @@ public class DatabaseFolder {
 	 * Shapefiles are stored per LCIA method under the folder
 	 * database/shapefiles/method_uuid.
 	 */
-	public static File getShapeFileLocation(IDatabase database,
-	                                        String methodUuid) {
+	public static File getShapeFileLocation(IDatabase database, String methodUuid) {
 		File fileStore = getFileStorageLocation(database);
 		File shapeDir = new File(fileStore, "shapefiles");
 		return new File(shapeDir, methodUuid);

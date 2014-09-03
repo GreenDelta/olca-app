@@ -1,12 +1,7 @@
 package org.openlca.app.editors.graphical.layout;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseFolder;
@@ -14,8 +9,12 @@ import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class NodeLayoutStore {
 
@@ -148,7 +147,7 @@ public final class NodeLayoutStore {
 		return file;
 	}
 
-	private static File getLayoutFile(String refId) {
+	public static File getLayoutFile(String refId) {
 		File layoutStore = getLayoutStore();
 		File layoutFile = new File(layoutStore, refId + ".json");
 		return layoutFile;

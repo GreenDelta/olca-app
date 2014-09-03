@@ -1,4 +1,4 @@
-package org.openlca.app.util;
+package org.openlca.app.navigation;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -8,27 +8,16 @@ import java.util.Objects;
 import java.util.Queue;
 
 import org.openlca.app.db.Database;
-import org.openlca.app.navigation.CategoryElement;
-import org.openlca.app.navigation.INavigationElement;
-import org.openlca.app.navigation.ModelElement;
-import org.openlca.app.navigation.ModelTypeElement;
-import org.openlca.app.navigation.Navigator;
+import org.openlca.app.db.Resources;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.CategorizedEntityDao;
 import org.openlca.core.database.CategoryDao;
-import org.openlca.core.model.Actor;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Category;
-import org.openlca.core.model.Flow;
-import org.openlca.core.model.FlowProperty;
-import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.Process;
-import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.Project;
-import org.openlca.core.model.Source;
-import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Optional;
 
@@ -41,10 +30,6 @@ public class CopyPaste {
 	private static INavigationElement<?>[] cache = null;
 	private static Action currentAction = Action.NONE;
 
-	public static void copy(INavigationElement<?> element) {
-		copy(new INavigationElement<?>[] { element });
-	}
-
 	public static void copy(Collection<INavigationElement<?>> elements) {
 		copy(elements.toArray(new INavigationElement<?>[elements.size()]));
 	}
@@ -53,10 +38,6 @@ public class CopyPaste {
 		if (!isSupported(elements))
 			return;
 		initialize(Action.COPY, elements);
-	}
-
-	public static void cut(INavigationElement<?> element) {
-		cut(new INavigationElement<?>[] { element });
 	}
 
 	public static void cut(Collection<INavigationElement<?>> elements) {
@@ -164,11 +145,6 @@ public class CopyPaste {
 			cache = null;
 			currentAction = Action.NONE;
 		}
-	}
-
-	public static boolean canMove(INavigationElement<?> element,
-			INavigationElement<?> target) {
-		return canMove(new INavigationElement<?>[] { element }, target);
 	}
 
 	public static boolean canMove(Collection<INavigationElement<?>> elements,
@@ -302,25 +278,15 @@ public class CopyPaste {
 	}
 
 	private static CategorizedEntity cloneIt(CategorizedEntity entity) {
-		if (entity instanceof Actor)
-			return ((Actor) entity).clone();
-		else if (entity instanceof Source)
-			return ((Source) entity).clone();
-		else if (entity instanceof UnitGroup)
-			return ((UnitGroup) entity).clone();
-		else if (entity instanceof FlowProperty)
-			return ((FlowProperty) entity).clone();
-		else if (entity instanceof Flow)
-			return ((Flow) entity).clone();
-		else if (entity instanceof Process)
-			return ((Process) entity).clone();
-		else if (entity instanceof ProductSystem)
-			return ((ProductSystem) entity).clone();
-		else if (entity instanceof ImpactMethod)
-			return ((ImpactMethod) entity).clone();
-		else if (entity instanceof Project)
-			return ((Project) entity).clone();
-		return null;
+		try {
+			CategorizedEntity clone = (CategorizedEntity) entity.clone();
+			Resources.copy(entity, clone);
+			return clone;
+		} catch (Exception e) {
+			Logger log = LoggerFactory.getLogger(CopyPaste.class);
+			log.error("failed to clone " + entity, e);
+			return null;
+		}
 	}
 
 	@SuppressWarnings("unchecked")
