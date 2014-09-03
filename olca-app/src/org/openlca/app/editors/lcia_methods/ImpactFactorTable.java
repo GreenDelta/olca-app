@@ -80,11 +80,12 @@ class ImpactFactorTable implements ParameterPageListener {
 	}
 
 	void setImpactCategory(ImpactCategory impactCategory, boolean sort) {
-		this.category = impactCategory;
-		if (category == null) {
-			viewer.setInput(null);
+		if (impactCategory == null) {
+			viewer.setInput(Collections.emptyList());
+			this.category = null;
 			return;
 		}
+		this.category = impactCategory;
 		List<ImpactFactor> factors = impactCategory.getImpactFactors();
 		if (sort)
 			sortFactors(factors);
@@ -200,7 +201,7 @@ class ImpactFactorTable implements ParameterPageListener {
 		}
 
 		private String getFactorUnit(ImpactFactor factor) {
-			if (factor.getUnit() == null)
+			if (factor.getUnit() == null || category == null)
 				return null;
 			String impactUnit = category.getReferenceUnit();
 			if (Strings.notEmpty(impactUnit))

@@ -2,7 +2,6 @@ package org.openlca.app.editors.lcia_methods;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 import org.eclipse.jface.action.Action;
@@ -24,7 +23,6 @@ import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
 import org.openlca.app.viewers.table.modify.ModifySupport;
-import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.util.Strings;
@@ -67,12 +65,28 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 		viewer.setLabelProvider(new CategoryLabelProvider());
 		viewer.setInput(getCategories(true));
 		Tables.bindColumnWidths(viewer, 0.5, 0.25, 0.25);
-		ModifySupport<ImpactCategory> support = new ModifySupport<>(viewer);
-		support.bind(NAME, new NameModifier());
-		support.bind(DESCRIPTION, new DescriptionModifier());
-		support.bind(REFERENCE_UNIT, new ReferenceUnitModifier());
+		bindModifySupport();
 		bindActions(viewer, section);
 		editor.onSaved(() -> viewer.setInput(getCategories(false)));
+	}
+
+	private void bindModifySupport() {
+		ModifySupport<ImpactCategory> support = new ModifySupport<>(viewer);
+		support.bind(NAME, ImpactCategory::getName,
+				(category, text) -> {
+					category.setName(text);
+					fireCategoryChange();
+				});
+		support.bind(DESCRIPTION, ImpactCategory::getDescription,
+				(category, text) -> {
+					category.setDescription(text);
+					fireCategoryChange();
+				});
+		support.bind(REFERENCE_UNIT, ImpactCategory::getReferenceUnit,
+				(category, text) -> {
+					category.setReferenceUnit(text);
+					fireCategoryChange();
+				});
 	}
 
 	private List<ImpactCategory> getCategories(boolean sorted) {
@@ -148,54 +162,4 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 			}
 		}
 	}
-
-	private class NameModifier extends TextCellModifier<ImpactCategory> {
-
-		@Override
-		protected String getText(ImpactCategory element) {
-			return element.getName();
-		}
-
-		@Override
-		protected void setText(ImpactCategory element, String text) {
-			if (!Objects.equals(text, element.getName())) {
-				element.setName(text);
-				fireCategoryChange();
-			}
-		}
-	}
-
-	private class DescriptionModifier extends TextCellModifier<ImpactCategory> {
-
-		@Override
-		protected String getText(ImpactCategory element) {
-			return element.getDescription();
-		}
-
-		@Override
-		protected void setText(ImpactCategory element, String text) {
-			if (!Objects.equals(text, element.getDescription())) {
-				element.setDescription(text);
-				fireCategoryChange();
-			}
-		}
-	}
-
-	private class ReferenceUnitModifier extends
-			TextCellModifier<ImpactCategory> {
-
-		@Override
-		protected String getText(ImpactCategory element) {
-			return element.getReferenceUnit();
-		}
-
-		@Override
-		protected void setText(ImpactCategory element, String text) {
-			if (!Objects.equals(text, element.getReferenceUnit())) {
-				element.setReferenceUnit(text);
-				fireCategoryChange();
-			}
-		}
-	}
-
 }
