@@ -36,28 +36,48 @@ public class BrowserFactory {
 	private static void initialize() {
 		log.trace("initialize browser factory");
 		if (!Config.useMozilla()) {
-			useXulRunner = false;
-			initialized = true;
+			noXulRunner();
 			return;
 		}
+		String xulRunnerPath = Config.getXulRunnerPath();
+		if (xulRunnerPath == null) {
+			log.trace("No XUL runner found, use system browser");
+			noXulRunner();
+			return;
+		}
+		if (OS.getCurrent() != OS.Windows
+				|| "x86".equals(System.getProperty("os.arch"))) {
+			initializeXulRunner(xulRunnerPath);
+			return;
+		}
+		VsCpp10Check check = new VsCpp10Check();
+		check.run();
+		if (check.installationFound())
+			initializeXulRunner(xulRunnerPath);
+		else {
+			VsCpp10Message.checkAndShow();
+			noXulRunner();
+		}
+	}
+
+	private static void initializeXulRunner(String xulRunnerPath) {
 		try {
-			String xulRunnerPath = Config.getXulRunnerPath();
-			if (xulRunnerPath == null) {
-				log.trace("No XUL runner found, use system browser");
-				useXulRunner = false;
-			} else {
-				log.trace("Use Mozilla browser, XUL runner found at {}",
-						xulRunnerPath);
-				System.setProperty("org.eclipse.swt.browser.XULRunnerPath",
-						xulRunnerPath);
-				initMozillaPrefs();
-				useXulRunner = true;
-			}
+			log.trace("Use Mozilla browser, XUL runner found at {}",
+					xulRunnerPath);
+			System.setProperty("org.eclipse.swt.browser.XULRunnerPath",
+					xulRunnerPath);
+			initMozillaPrefs();
+			useXulRunner = true;
 		} catch (Exception e) {
 			log.error("Failed to initialize browser factory");
 		} finally {
 			initialized = true;
 		}
+	}
+
+	private static void noXulRunner() {
+		useXulRunner = false;
+		initialized = true;
 	}
 
 	private static Browser createMozilla(Composite parent) {

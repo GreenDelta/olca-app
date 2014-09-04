@@ -96,10 +96,8 @@ public class StartPage extends FormEditor {
 			try {
 				browser.evaluate(command);
 			} catch (Exception e) {
-				log.error("failed to set report data to browser", e);
+				log.warn("failed to set report data to browser", e);
 			}
-			// TODO: set translation + version text
-			// System.out.println(Messages.asJson());
 		}
 
 		@Override
