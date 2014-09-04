@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html ng-app="StartPage" id="ng-app">
+  <head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <title>Добре дошли в openLCA!</title>
+    <link href="libs/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <style type="text/css">
+        body {
+            min-width: 850px;
+        }
+        .well {            
+            background-color: #FFF;
+        }
+        .box-row1 {
+            padding-bottom: 0px;
+            padding-left: 20px;
+            padding-right: 20px;
+            padding-top: 20px;
+        }
+        .box-row2 {
+            padding: 20px;
+        }
+        .btn-primary {
+            width:225px;
+        }
+		h1 {
+			padding-bottom: 0;
+			margin-bottom: 0;
+		}
+		.subtitle {
+        	color: #888;
+			font-size: 20px;
+		}
+        h3 {
+        	color: #00B0F0;
+        }
+		h3 > img {
+			margin-right: 15px !important;
+		}
+        .description {
+        	color: #888;
+			font-size: 16px;
+            margin: 0;
+            padding: 0;
+        }
+        .btn {
+            vertical-align: inherit;
+        }
+		a.btn-default {
+			color: #00B0F0;
+            background-color: transparent;
+			border: none;
+			padding: 5px 0px 5px 0px;
+            margin: 0;
+		}
+        a.btn-default:hover {
+			color: #00B0F0;
+		}
+		.page-header a.btn-default {
+            padding: 0;
+		}
+		.page-header a.btn-default:hover {
+			color: #00B0F0;
+            background: transparent;
+		}
+        .page-header a.subtle-link {
+            cursor: pointer;
+            color: #888;
+            text-decoration: none;
+        }
+		tr {
+			width: 100%;
+			padding: 0;
+			margin: 0;
+		}
+		#navigation-section td {
+			min-width: 50% !important;
+			padding-right: 25px;
+			vertical-align: top;
+		}
+		.page-header {
+            margin: 0 !important;
+            padding: 20px 20px 10px 20px;
+            background: rgba(255,255,255,1);
+            background: -moz-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 71%, rgba(237,237,237,1) 100%);
+            background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(255,255,255,1)), color-stop(71%, rgba(246,246,246,1)), color-stop(100%, rgba(237,237,237,1)));
+            background: -webkit-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 71%, rgba(237,237,237,1) 100%);
+            background: -o-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 71%, rgba(237,237,237,1) 100%);
+            background: -ms-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 71%, rgba(237,237,237,1) 100%);
+            background: linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 71%, rgba(237,237,237,1) 100%);
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ededed', GradientType=0 );
+            border-bottom: 1px solid #D4D4D4;
+            box-shadow: 0px -1px 0px rgba(0, 0, 0, 0.1) inset, 0px 1px 10px rgba(0, 0, 0, 0.1);
+		}
+        .page-header td {
+            width: 200px !important;
+        }
+        #logo {
+            float: left;
+            margin: 0 20px 0 0;
+        }
+        #logo-cell {
+            width: 200px;
+            vertical-align: middle;
+            padding: 0 0 20px 0;
+        }
+        #logo-cell img {
+        	float: left;
+        	cursor: pointer;
+        }
+        #gd-logo {
+            float: right;
+            width: 170px;
+            height: 24px;
+            margin: 10px 10px 0 20px;
+            background: url('images/gd_transparent_inactive.png');
+        }
+        #gd-logo:hover {
+            cursor: pointer;
+            background: url('images/gd_transparent.png');
+        }
+    </style>
+  </head>
+  <body>
+	<div id="contentDiv" data-ng-controller="Controller">
+	    <div class="page-header">
+	      <table style="width: 100%;" border="0">
+	        <tbody>
+	          <tr>
+	            <td id="logo-cell">
+	                <img id="logo" src="images/logo.png" onclick="callOpenUrl('http://www.openlca.org')" />
+	                <h1>Добре дошли в openLCA!</h1>
+	                <span class="subtitle">{{data.version}}</span>
+	            </td>
+	          </tr>
+	          <tr>
+	            <td>
+	              <p class="description">Софтуерът с висока производителност за оценка на жизнения цикъл (LCA) и оценка за устойчивост. Наистина в отворен код.</p>
+	              <p class="description">Напълно безплатен. Създаден и поддържан от 2006 г. насам от GreenDelta, Берлин. <a onclick="callOpenUrl('http://www.greendelta.com')" target="blank" class="subtle-link">www.greendelta.com</a></p>
+	            </td>
+	          </tr>
+	          <tr>
+	            <td>
+	              <div id="gd-logo"></div>
+	              <p class="description">Лицензиран от Mozilla Public License  (<a onclick="callOpenUrl('http://www.openlca.org/open-source')" target="blank" class="btn btn-default">какво означава това?</a>).</p>                  
+	            </td>
+	          </tr>
+	        </tbody>
+	      </table>
+	    </div>
+	    <div id="navigation-section" class="container-fluid" style="margin: 20px;">
+	      <table style="background-color: rgb(255, 255, 255);">
+	        <tbody>
+	          <tr>
+	            <td>
+	              <h3><img src="images/news.gif"
+	                  alt="">Какво е новото във версия 1.4</h3>
+	              <p>Във версия 1.4 ние напълно преработихме и "преструктурирахме"
+	                openLCA. Резултатите се състоят в:</p>
+	              <ul>
+	                <li><b>драстично</b> <a onclick="callOpenUrl('http://www.openlca.org/performance')" class="btn btn-default"><b>подобряване на производителността </b></a> с приблизително 400%</li>
+	                <li><b>множество</b> <a onclick="callOpenUrl('http://www.openlca.org/features#usability')" class="btn btn-default"><b>подобрения по отношение на използваемостта</b></a></li>
+	                <li><b>много</b> <a onclick="callOpenUrl('http://www.openlca.org/features#overview1.4')"  class="btn btn-default"><b>нови функции.</b></a></li>
+	              </ul>
+	            </td>
+	            <td>
+	              <h3><img src="images/getting-started.gif"
+	                  alt="">За да започнете</h3>
+	              <p>При първото стартиране на openLCA програмата не съдържа 
+				    никакви данни.
+	                Въпреки това, с новата версия на openLCA е много лесно 
+	                да се започне работа. Вие просто трябва да импортирате   
+	                база данни от съществуващ файл-формат .zolca и да я отворите  
+					в прозореца за навигация в лявата страна на графичния интерфейс.
+	                След това, отваряте базата данни чрез двойно кликване.</p>
+	              <p>Това е обяснено във видеото на <a onclick="callOpenUrl('http://www.openlca.org/videos')"
+	                  target="blank" class="btn btn-default">този адрес.</a></p>
+	            </td>
+	          </tr>
+	          <tr>
+	            <td>
+	              <h3><img style="width: 61px; height: 54px;" src="images/search.gif"
+	                  alt="">Търсене и изтегляне на данни</h3>
+	              <p>Широка гама от бази данни е на разположение на портала <a onclick="callOpenUrl('http://nexus.openlca.org')" target="blank"
+	                  class="btn btn-default">openLCA Nexus</a>,
+	                където можете да търсите индивидуални комплекти данни, 
+					пълни бази данни, а също и да ги изтеглите и импортирате в openLCA. 
+					Базите данни са готови за използване, а няколко могат да се комбинират.</p>
+	              <p>Това също е обяснено с <a onclick="callOpenUrl('http://www.openlca.org/videos')"
+	                  target="blank" class="btn btn-default">видео.</a><br>
+	                Пакетите с методи LCIA са на разположение за изтегляне от <a onclick="callOpenUrl('http://www.openlca.org/downloads')"
+	                  target="blank" class="btn btn-default">download страницата на openLCA.</a></p>
+	            </td>
+	            <td>
+	              <h3><img src="images/documentation.gif"
+	                  alt="">Наръчници за потребителя</h3>
+	              <p>Онлайн wiki порталът за openLCA предоставя необходимите подробности
+	                за почти всички функции на софтуера. Порталът се актуализира редовно, 
+	                така че посещавайте го от време на време, за да сте в течение на новостите.</p>
+	              <p>Нови въвеждащи документи и изчерпателни наръчници също са на разположение <a onclick="callOpenUrl('http://www.openlca.org/manuals')" target="blank"
+	                  class="btn btn-default">онлайн.</a></p>
+	            </td>
+	          </tr>
+	          <tr>
+	            <td>
+	              <h3><img src="images/examples.gif"
+	                  alt="">Примери</h3>
+	              <p>Следващите примерни казуси показват как да се използва openLCA:</p>
+	              <p><a onclick="callOpenUrl('http://www.openlca.org/case_studies#1_3')" target="blank" class="btn btn-default">
+	                  Казуси за версия 1.3</a></p>
+	              <p><a onclick="callOpenUrl('http://www.openlca.org/case_studies#1_4')" target="blank" class="btn btn-default">Казуси за версия 1.4</a></p>
+	            </td>
+	            <td>
+	              <h3><img src="images/community.gif"
+	                  alt="">Общност</h3>
+	              <p>Все повече и повече хора използват openLCA. Регистрирайте се във  <a
+	                  onclick="callOpenUrl('http://www.openlca.org/forum')" target="blank" class="btn btn-default">форума</a> , за да споделите мисли и идеи, да зададете въпроси и прочетете отговорите, да се присъедините към общността.</p>
+	            </td>
+	          </tr>
+		        </tbody>
+		      </table>
+		    </div>
+		</div>
+
+        <script src="libs/jquery.min.js"></script>
+        <script src="libs/angular.min.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $('#gd-logo').on('click', function() {
+                    callOpenUrl('http://www.greendelta.com');
+                });
+            });
+
+            var app = angular.module('StartPage', []);
+
+            var Controller = function ($scope) {
+                $scope.data = {};
+            	//setData({'version' : '1.4' });
+            };
+	        app.controller('Controller', Controller);
+
+           function setData(data) {
+                var element = document.getElementById("contentDiv");
+                var scope = angular.element(element).scope();
+                scope.$apply(function () {
+                    scope.data = data;
+                });
+            }
+
+            // the functions openUrl and importDatabase should be registered by the 
+            // host editor in openLCA
+
+            function callOpenUrl(url) {
+                if(typeof(openUrl) === "function") {
+                    openUrl(url);
+                } else if (typeof(console) !== "undefined") {
+                    console.log("could not open " + url + "; openUrl is not a function");
+                }
+            }
+       </script>
+  </body>
+</html>

@@ -1,0 +1,24 @@
+<div style="margin: 20px">
+	<select 
+		class="form-control indicator-selection-combo" 
+		data-ng-options="indicator.reportName for indicator in getDisplayedIndicators()" 
+		data-ng-model="selectedContributionIndicator">
+	</select>
+</div>
+<div style="width: 650px; margin: auto;">	
+	<canvas 
+		data-contribution-chart 
+		width="650" 
+		height="400">		
+	</canvas>
+	<div style="padding-left: 20px; padding-right: 20px; text-align: center">
+		<span
+			data-ng-repeat="process in report.processes"
+			style="padding: 10px">
+			<span class="glyphicon glyphicon-stop" 
+				  style="color: {{getColorString($index)}}; padding: 3px">
+			</span>	
+			{{process.reportName}}
+		</span>
+	</div>
+</div>

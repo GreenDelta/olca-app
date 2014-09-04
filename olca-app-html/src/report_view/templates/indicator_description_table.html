@@ -1,0 +1,18 @@
+<div class="table-responsive">
+	<table class="table table-hover reportTable">
+		<thead>
+			<tr>
+				<th>LCIA category</th>
+				<th>Unit</th>
+				<th>Description</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr data-ng-repeat="indicator in report.indicators| filter: {displayed:true}">
+				<td>{{indicator.reportName}}</td>
+				<td>{{indicator.descriptor.referenceUnit}}</td>
+				<td>{{indicator.reportDescription}}</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
