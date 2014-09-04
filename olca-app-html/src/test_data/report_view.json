@@ -1,0 +1,15 @@
+{
+	"title":"Project report xyz",
+	"sections":[
+		{
+			"index":0,
+			"title":"Introduction",
+			"text":"This is the intro text"
+		},
+		{
+			"index":1,
+			"title":"Results",
+			"text":"Description of results"
+		}		
+	]
+}
