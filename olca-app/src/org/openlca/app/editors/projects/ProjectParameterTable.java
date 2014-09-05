@@ -46,7 +46,7 @@ class ProjectParameterTable {
 	private final int LABEL_COLS = 4;
 	private final String PARAMETER = Messages.Parameter;
 	private final String CONTEXT = Messages.Context;
-	private final String NAME = Messages.Name;
+	private final String NAME = "Report name";
 	private final String DESCRIPTION = Messages.Description;
 
 	private ProjectEditor editor;

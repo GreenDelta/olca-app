@@ -8,19 +8,13 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
-import org.eclipse.ui.forms.events.HyperlinkAdapter;
-import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.editors.DataBinding;
 import org.openlca.app.editors.projects.ProjectEditor;
 import org.openlca.app.editors.reports.model.Report;
 import org.openlca.app.resources.ImageType;
-import org.openlca.app.util.Colors;
-import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 
 public class ReportEditorPage extends FormPage {
@@ -69,17 +63,7 @@ public class ReportEditorPage extends FormPage {
 				Messages.GeneralInformation);
 		Text titleText = UI.formText(composite, toolkit, "Title");
 		binding.onString(() -> report, "title", titleText);
-		UI.formLabel(composite, toolkit, Messages.Project);
-		ImageHyperlink link = toolkit.createImageHyperlink(composite, SWT.TOP);
-		link.setText(Labels.getDisplayName(report.getProject()));
-		link.setForeground(Colors.getLinkBlue());
-		link.addHyperlinkListener(new HyperlinkAdapter() {
-			@Override
-			public void linkActivated(HyperlinkEvent e) {
-				App.openEditor(report.getProject());
-			}
-		});
-		createPreviewButton(composite);
+		// createPreviewButton(composite);
 	}
 
 	private void createPreviewButton(Composite composite) {

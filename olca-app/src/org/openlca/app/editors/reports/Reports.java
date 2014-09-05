@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.List;
 import java.util.Objects;
+import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
 import org.openlca.app.db.DatabaseFolder;
@@ -153,22 +154,40 @@ public final class Reports {
 
 	private static void createDefaultSections(Report report) {
 		report.getSections().add(createIntroSection(0));
-		report.getSections().add(createVariantsSection(1));
-		report.getSections().add(createMethodSection(2));
-		report.getSections().add(createResultTableSection(3));
+		ReportComponent[] components = {
+				ReportComponent.VARIANT_DESCRIPTION_TABLE,
+				ReportComponent.INDICATOR_DESCRIPTION_TABLE,
+				ReportComponent.IMPACT_RESULT_TABLE,
+				ReportComponent.INDICATOR_BAR_CHART,
+				ReportComponent.PROCESS_CONTRIBUTION_CHART
+		};
+		try {
+			Properties props = new Properties();
+			props.load(Reports.class
+					.getResourceAsStream("default_sections.properties"));
+			int idx = 1;
+			for (ReportComponent component : components) {
+				report.getSections().add(createSection(idx, props, component));
+				idx++;
+			}
+		} catch (Exception e) {
+			Logger log = LoggerFactory.getLogger(Reports.class);
+			log.error("failed to create default report sections", e);
+		}
 	}
 
 	private static ReportSection createIntroSection(int idx) {
 		ReportSection section = new ReportSection();
 		section.setIndex(idx);
 		section.setTitle("Introduction");
-		String text = "In the following the results of the project 'new' are shown. "
+		String text = "In the following the results of the project are shown. "
 				+ "This is a default template for the report of the project results. "
-				+ "You can configure template this via the project editor by \n"
+				+ "You can configure this template via the project editor by \n"
 				+ "\n"
 				+ "<p><ul>\n"
 				+ "<li>changing the text of the sections, \n"
 				+ "<li>adding or removing sections, \n"
+				+ "<li>moving sections around, \n"
 				+ "<li>and selecting visual components that should be shown. \n"
 				+ "</ul></p>\n"
 				+ "\n"
@@ -179,40 +198,13 @@ public final class Reports {
 		return section;
 	}
 
-	private static ReportSection createVariantsSection(int idx) {
+	private static ReportSection createSection(int idx, Properties props,
+			ReportComponent component) {
 		ReportSection section = new ReportSection();
 		section.setIndex(idx);
-		section.setTitle("Project variants");
-		String text = "The following table shows the name and description of " +
-				"the different variants from the project setup.";
-		section.setText(text);
-		section.setComponentId(
-				ReportComponent.VARIANT_DESCRIPTION_TABLE.getId());
+		section.setTitle(props.getProperty(component.name() + ".title"));
+		section.setText(props.getProperty(component.name() + ".text"));
+		section.setComponentId(component.getId());
 		return section;
 	}
-
-	private static ReportSection createMethodSection(int idx) {
-		ReportSection section = new ReportSection();
-		section.setIndex(idx);
-		section.setTitle("LCIA method");
-		String text = "The table below shows the LCIA categories of the selected"
-				+ " LCIA method for the project. Only the LCIA categories that are"
-				+ " selected to be displayed are shown in the report. Additionally, "
-				+ "a user friendly name and a description for the report can be provided.";
-		section.setText(text);
-		section.setComponentId(
-				ReportComponent.INDICATOR_DESCRIPTION_TABLE.getId());
-		return section;
-	}
-
-	private static ReportSection createResultTableSection(int idx) {
-		ReportSection section = new ReportSection();
-		section.setIndex(idx);
-		section.setTitle("LCIA Results");
-		String text = "The following table shows the LCIA results of the project.";
-		section.setText(text);
-		section.setComponentId(ReportComponent.IMPACT_RESULT_TABLE.getId());
-		return section;
-	}
-
 }
