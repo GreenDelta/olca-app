@@ -38,4 +38,23 @@ public final class Config {
 	 * Link to the openLCA online help.
 	 */
 	public static final String HELP_URL = "http://www.openlca.org/documentation";
+
+	private static Boolean browserEnabled;
+
+	public static boolean isBrowserEnabled() {
+		if (browserEnabled != null)
+			return browserEnabled;
+		boolean disabled = Preferences.getStore().getBoolean(
+				"olca.disable.modern.browser");
+		browserEnabled = !disabled;
+		return browserEnabled;
+	}
+
+	public static void setBrowserEnabled(boolean enabled) {
+		browserEnabled = enabled;
+		boolean disabled = !enabled;
+		Preferences.getStore()
+				.setValue("olca.disable.modern.browser", disabled);
+	}
+
 }
