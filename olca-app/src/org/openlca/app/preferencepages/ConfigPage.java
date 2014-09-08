@@ -26,7 +26,7 @@ public class ConfigPage extends PreferencePage implements
 	private boolean isDirty = false;
 	private Combo languageCombo;
 	private Text memoryText;
-	private IniFile iniFile;
+	private ConfigIniFile iniFile;
 
 	@Override
 	public String getTitle() {
@@ -36,10 +36,10 @@ public class ConfigPage extends PreferencePage implements
 	@Override
 	public void init(IWorkbench workbench) {
 		try {
-			iniFile = IniFile.read();
+			iniFile = ConfigIniFile.read();
 		} catch (Exception e) {
 			log.error("failed to read openLCA.ini", e);
-			iniFile = new IniFile();
+			iniFile = new ConfigIniFile();
 		}
 	}
 
@@ -54,7 +54,7 @@ public class ConfigPage extends PreferencePage implements
 		createLanguageCombo(composite);
 		memoryText = UI.formText(composite, "@Maximum memory usage in MB");
 		memoryText.setText(Integer.toString(iniFile.getMaxMemory()));
-		memoryText.addModifyListener((e) -> isDirty = true);
+		memoryText.addModifyListener((e) -> setDirty());
 		UI.formCheckBox(composite, "@Use browser features");
 		new Label(composite, SWT.NONE);
 		createNoteComposite(composite.getFont(), composite, Messages.Note
@@ -82,15 +82,11 @@ public class ConfigPage extends PreferencePage implements
 	private void initComboValues() {
 		Language[] languages = Language.values();
 		String[] items = new String[languages.length];
-		int selectedItem = -1;
 		for (int i = 0; i < languages.length; i++) {
 			items[i] = languages[i].getDisplayName();
-			if (Objects.equals(languages[i], iniFile.getLanguage()))
-				selectedItem = i;
 		}
 		languageCombo.setItems(items);
-		if (selectedItem != -1)
-			languageCombo.select(selectedItem);
+		selectLanguage(iniFile.getLanguage());
 	}
 
 	private void setDirty() {
@@ -100,6 +96,10 @@ public class ConfigPage extends PreferencePage implements
 
 	@Override
 	protected void performApply() {
+		int memVal = ConfigMemCheck.parseAndCheck(memoryText.getText());
+		if (memVal < 0)
+			return;
+		iniFile.setMaxMemory(memVal);
 		iniFile.write();
 		getApplyButton().setEnabled(false);
 		isDirty = false;
@@ -108,22 +108,28 @@ public class ConfigPage extends PreferencePage implements
 	@Override
 	protected void performDefaults() {
 		Language defaultLang = Language.ENGLISH;
-		if (Objects.equals(iniFile.getLanguage(), defaultLang))
+		int maxMem = ConfigMemCheck.getDefault();
+		selectLanguage(defaultLang);
+		memoryText.setText(Integer.toString(maxMem));
+		iniFile.setLanguage(defaultLang);
+		iniFile.setMaxMemory(maxMem);
+		super.performDefaults();
+		performApply();
+	}
+
+	private void selectLanguage(Language language) {
+		if (language == null)
 			return;
 		String[] items = languageCombo.getItems();
 		int item = -1;
 		for (int i = 0; i < items.length; i++) {
-			if (Objects.equals(defaultLang.getDisplayName(), items[i])) {
+			if (Objects.equals(language.getDisplayName(), items[i])) {
 				item = i;
 				break;
 			}
 		}
-		if (item == -1)
-			return;
-		languageCombo.select(item);
-		iniFile.setLanguage(defaultLang);
-		super.performDefaults();
-		performApply();
+		if (item != -1)
+			languageCombo.select(item);
 	}
 
 	@Override
