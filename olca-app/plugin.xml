@@ -19,6 +19,13 @@
       		icon="icons/sql_16.png">
       </editor>
       <editor
+      		class="org.openlca.app.js.JavaScriptEditor"
+      		default="false"
+      		id="JavaScriptEditor"
+      		name="JavaScript Editor"
+      		contributorClass="org.openlca.app.js.Toolbar">
+      </editor>
+      <editor
             class="org.openlca.app.editors.actors.ActorEditor"
             default="false"
             icon="icons/actor_obj.png"

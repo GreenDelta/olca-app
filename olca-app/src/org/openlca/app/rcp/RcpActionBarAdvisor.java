@@ -21,6 +21,7 @@ import org.openlca.app.Config;
 import org.openlca.app.Messages;
 import org.openlca.app.db.sql.SqlEditor;
 import org.openlca.app.editors.StartPage;
+import org.openlca.app.js.JavaScriptEditor;
 import org.openlca.app.rcp.browser.MozillaConfigView;
 import org.openlca.app.rcp.plugins.PluginManagerDialog;
 import org.openlca.app.resources.ImageType;
@@ -108,6 +109,9 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		windowMenu.add(viewMenu);
 		windowMenu.add(new Separator());
 		windowMenu.add(new SqlEditorAction());
+		windowMenu.add(Actions.create("JavaScript", null, () -> {
+			JavaScriptEditor.open();
+		}));
 		windowMenu.add(new FormulaConsoleAction());
 		if (MozillaConfigView.canShow()) {
 			windowMenu.add(Actions.create("Browser configuration",
