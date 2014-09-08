@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="libs/jython-standalone-2.7-b3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/common-2.6.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-jxpath-1.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/ecore-2.6.1.jar"/>
@@ -96,6 +97,6 @@
 	<classpathentry exported="true" kind="lib" path="libs/zt-zip-1.6.jar"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jre8"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -1,20 +1,14 @@
 package org.openlca.app.js;
 
-import javax.script.Bindings;
-import javax.script.ScriptContext;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.SimpleBindings;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
 import org.eclipse.ui.forms.editor.FormEditor;
+import org.openlca.app.App;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.Editors;
-import org.openlca.core.database.ProcessDao;
-import org.openlca.core.model.Process;
+import org.python.util.PythonInterpreter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,15 +34,33 @@ public class JavaScriptEditor extends FormEditor {
 
 	public void evalContent() {
 		try {
-			Bindings bindings = new SimpleBindings();
-			bindings.put("log", LoggerFactory.getLogger(getClass()));
-			bindings.put("db", Database.get());
-			bindings.put("ProcessDao", ProcessDao.class);
-			bindings.put("Process", Process.class);
-			ScriptEngine engine = new ScriptEngineManager()
-					.getEngineByName("nashorn");
-			engine.setBindings(bindings, ScriptContext.GLOBAL_SCOPE);
-			engine.eval(page.getScript());
+			// Bindings bindings = new SimpleBindings();
+			// bindings.put("log", LoggerFactory.getLogger(getClass()));
+			// bindings.put("db", Database.get());
+			// bindings.put("ProcessDao", ProcessDao.class);
+			// bindings.put("Process", Process.class);
+			// PyScriptEngineFactory factory = new PyScriptEngineFactory();
+			System.setProperty("python.path",
+					"C:\\Users\\Besitzer\\Downloads\\xpy\\Lib");
+			System.setProperty("python.home",
+					"C:\\Users\\Besitzer\\Downloads\\xpy\\Lib");
+
+			PythonInterpreter interpreter = new PythonInterpreter();
+			interpreter.set("log", LoggerFactory.getLogger(getClass()));
+			if (Database.get() != null)
+				interpreter.set("db", Database.get());
+			interpreter.set("app", App.class);
+
+			// interpreter.exec("import sys");
+
+			interpreter.exec(page.getScript());
+
+			interpreter.close();
+			// ScriptEngine engine = factory.getScriptEngine();
+			// // engine.setBindings(new ScriptEngineManager().getBindings(),
+			// // ScriptContext.GLOBAL_SCOPE);
+			// engine.setBindings(bindings, ScriptContext.GLOBAL_SCOPE);
+			// engine.eval(page.getScript());
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(getClass());
 			log.error("failed to evaluate script", e);

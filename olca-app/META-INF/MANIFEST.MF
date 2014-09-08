@@ -119,7 +119,8 @@ Bundle-ClassPath: .,
  libs/gt-xsd-kml-10.3.jar,
  libs/olca-geo-0.0.1.jar,
  libs/picocontainer-1.2.jar,
- libs/xsd-2.6.0.jar
+ libs/xsd-2.6.0.jar,
+ libs/jython-standalone-2.7-b3.jar
 Export-Package: com.google.gson,
  org.apache.commons.io,
  org.apache.commons.io.comparator,

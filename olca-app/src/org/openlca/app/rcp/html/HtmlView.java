@@ -18,6 +18,8 @@ public enum HtmlView {
 
 	PRODUCT_SYSTEM_STATISTICS("product_system_statistics.html"),
 
+	PYTHON_EDITOR("python_editor.html"),
+
 	REPORT_VIEW("report_view.html"),
 
 	RESULT_LOCALISED_LCIA("result_localised_lcia.html"),
