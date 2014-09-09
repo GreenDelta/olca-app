@@ -5,8 +5,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -16,6 +14,7 @@ import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.progress.UIJob;
 import org.openlca.app.Preferences;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.Desktop;
 import org.openlca.app.util.UI;
 
@@ -64,7 +63,10 @@ class VsCpp10Message {
 			createLink(mform, body);
 			Button check = mform.getToolkit().createButton(body,
 					"Do not show this message again", SWT.CHECK);
-			ShowMessageCheck.register(check);
+			Controls.onSelect(check, (e) -> {
+				Preferences.getStore()
+						.setValue("hide.vscpp10message", check.getSelection());
+			});
 		}
 
 		private void createLink(IManagedForm mform, Composite body) {
@@ -73,18 +75,7 @@ class VsCpp10Message {
 			String message = getMessage();
 			link.setText(message);
 			UI.gridData(link, true, false);
-			link.addSelectionListener(new SelectionListener() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					System.out.println(e.text);
-					Desktop.browse(e.text);
-				}
-
-				@Override
-				public void widgetDefaultSelected(SelectionEvent e) {
-					widgetSelected(e);
-				}
-			});
+			Controls.onSelect(link, (e) -> Desktop.browse(e.text));
 		}
 
 		private String getMessage() {
@@ -102,31 +93,6 @@ class VsCpp10Message {
 		protected void createButtonsForButtonBar(Composite parent) {
 			createButton(parent, IDialogConstants.OK_ID,
 					IDialogConstants.OK_LABEL, true);
-		}
-	}
-
-	private static class ShowMessageCheck implements SelectionListener {
-
-		private final Button button;
-
-		static void register(Button button) {
-			new ShowMessageCheck(button);
-		}
-
-		private ShowMessageCheck(Button button) {
-			this.button = button;
-			button.addSelectionListener(this);
-		}
-
-		@Override
-		public void widgetDefaultSelected(SelectionEvent e) {
-			this.widgetSelected(e);
-		}
-
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			Preferences.getStore().setValue("hide.vscpp10message",
-					button.getSelection());
 		}
 	}
 }

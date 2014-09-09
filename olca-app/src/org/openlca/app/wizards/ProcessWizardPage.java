@@ -5,8 +5,6 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -22,6 +20,7 @@ import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.filters.EmptyCategoryFilter;
 import org.openlca.app.navigation.filters.FlowTypeFilter;
 import org.openlca.app.resources.ImageType;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
 import org.openlca.app.viewers.combo.FlowPropertyViewer;
@@ -90,26 +89,23 @@ class ProcessWizardPage extends AbstractWizardPage<Process> {
 	private void createRefFlowCheck(Composite container) {
 		createRefFlowCheck = new Button(container, SWT.CHECK);
 		createRefFlowCheck.setText(Messages.CreateANewProductFlowForTheProcess);
-		createRefFlowCheck.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				boolean createFlow = createRefFlowCheck.getSelection();
-				StackLayout labelLayout = (StackLayout) labelStack.getLayout();
-				StackLayout contentLayout = (StackLayout) contentStack
-						.getLayout();
-				if (createFlow) {
-					labelLayout.topControl = selectFlowPropertyLabel;
-					contentLayout.topControl = flowPropertyViewerContainer;
-					filterText.setEnabled(false);
-				} else {
-					labelLayout.topControl = selectFlowLabel;
-					contentLayout.topControl = productViewerContainer;
-					filterText.setEnabled(true);
-				}
-				labelStack.layout();
-				contentStack.layout();
-				checkInput();
+		Controls.onSelect(createRefFlowCheck, (e) -> {
+			boolean createFlow = createRefFlowCheck.getSelection();
+			StackLayout labelLayout = (StackLayout) labelStack.getLayout();
+			StackLayout contentLayout = (StackLayout) contentStack
+					.getLayout();
+			if (createFlow) {
+				labelLayout.topControl = selectFlowPropertyLabel;
+				contentLayout.topControl = flowPropertyViewerContainer;
+				filterText.setEnabled(false);
+			} else {
+				labelLayout.topControl = selectFlowLabel;
+				contentLayout.topControl = productViewerContainer;
+				filterText.setEnabled(true);
 			}
+			labelStack.layout();
+			contentStack.layout();
+			checkInput();
 		});
 	}
 

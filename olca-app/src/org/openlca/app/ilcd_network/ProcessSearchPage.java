@@ -31,9 +31,6 @@ import org.openlca.ilcd.processes.Process;
 
 /**
  * The wizard page for searching processes in the ILCD network.
- * 
- * @author Michael Srocka
- * 
  */
 public class ProcessSearchPage extends WizardPage {
 

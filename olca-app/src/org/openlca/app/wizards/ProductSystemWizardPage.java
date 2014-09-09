@@ -2,16 +2,12 @@ package org.openlca.app.wizards;
 
 import java.util.UUID;
 
-import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -26,6 +22,7 @@ import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.filters.EmptyCategoryFilter;
 import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.resources.ImageType;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.UIFactory;
 import org.openlca.core.model.Exchange;
@@ -163,38 +160,27 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 	protected void initModifyListeners() {
 		super.initModifyListeners();
 
-		addSupplyChainButton.addSelectionListener(new SelectionListener() {
-			@Override
-			public void widgetDefaultSelected(final SelectionEvent e) {
-			}
-
-			@Override
-			public void widgetSelected(final SelectionEvent e) {
-				useSystemProcesses.setEnabled(addSupplyChainButton
-						.getSelection());
-			}
+		Controls.onSelect(addSupplyChainButton, (e) -> {
+			useSystemProcesses.setEnabled(addSupplyChainButton
+					.getSelection());
 		});
 
 		processViewer
-				.addSelectionChangedListener(new ISelectionChangedListener() {
-
-					@Override
-					public void selectionChanged(SelectionChangedEvent event) {
-						IStructuredSelection selection = (IStructuredSelection) event
-								.getSelection();
-						if (selection.getFirstElement() instanceof ModelElement) {
-							ModelElement elem = (ModelElement) ((IStructuredSelection) processViewer
-									.getSelection()).getFirstElement();
-							try {
-								refProcess = Database.load(elem.getContent());
-								checkInput();
-							} catch (Exception e) {
-								log.error("failed to load process", e);
-							}
-						} else {
-							refProcess = null;
+				.addSelectionChangedListener((event) -> {
+					IStructuredSelection selection = (IStructuredSelection) event
+							.getSelection();
+					if (selection.getFirstElement() instanceof ModelElement) {
+						ModelElement elem = (ModelElement) ((IStructuredSelection) processViewer
+								.getSelection()).getFirstElement();
+						try {
+							refProcess = Database.load(elem.getContent());
 							checkInput();
+						} catch (Exception e) {
+							log.error("failed to load process", e);
 						}
+					} else {
+						refProcess = null;
+						checkInput();
 					}
 				});
 	}
