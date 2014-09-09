@@ -19,7 +19,7 @@ import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 import org.openlca.app.Config;
 import org.openlca.app.Messages;
-import org.openlca.app.devtools.JavaScriptEditor;
+import org.openlca.app.devtools.js.JavaScriptEditor;
 import org.openlca.app.devtools.sql.SqlEditor;
 import org.openlca.app.editors.StartPage;
 import org.openlca.app.rcp.browser.MozillaConfigView;

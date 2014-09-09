@@ -1,35 +1,34 @@
-package org.openlca.app.devtools.sql;
+package org.openlca.app.devtools.js;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.forms.editor.FormEditor;
-import org.openlca.app.db.Database;
 import org.openlca.app.devtools.ScriptEditorInput;
 import org.openlca.app.util.Editors;
-import org.openlca.app.util.Info;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SqlEditor extends FormEditor {
+public class JavaScriptEditor extends FormEditor {
 
-	public static String ID = "SqlEditor";
+	public static String ID = "JavaScriptEditor";
+	private JavaScriptEditorPage page;
 
 	public static void open() {
-		if (Database.get() == null) {
-			Info.showBox("@No database connection",
-					"@You first need to activate a database.");
-			return;
-		}
-		Editors.open(new ScriptEditorInput("@SQL Editor"), ID);
+		Editors.open(new ScriptEditorInput("JavaScript"), ID);
 	}
 
 	@Override
 	protected void addPages() {
 		try {
-			addPage(new SqlEditorPage(this));
+			page = new JavaScriptEditorPage(this);
+			addPage(page);
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(getClass());
 			log.error("failed to open Sql Editor page", e);
 		}
+	}
+
+	public void evalContent() {
+		JavaScript.eval(page.getScript());
 	}
 
 	@Override
