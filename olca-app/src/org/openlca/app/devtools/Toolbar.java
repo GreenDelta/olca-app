@@ -1,4 +1,4 @@
-package org.openlca.app.js;
+package org.openlca.app.devtools;
 
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.ui.part.EditorActionBarContributor;

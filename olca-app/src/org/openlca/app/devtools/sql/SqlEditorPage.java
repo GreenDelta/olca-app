@@ -1,4 +1,4 @@
-package org.openlca.app.db.sql;
+package org.openlca.app.devtools.sql;
 
 import java.util.ArrayList;
 import java.util.List;

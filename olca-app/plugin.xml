@@ -12,18 +12,18 @@
 			icon="icons/home_16.gif">      
       </editor>
       <editor
-      		class="org.openlca.app.db.sql.SqlEditor"
+      		class="org.openlca.app.devtools.sql.SqlEditor"
       		default="false"
       		id="SqlEditor"
       		name="SQL Editor"
       		icon="icons/sql_16.png">
       </editor>
       <editor
-      		class="org.openlca.app.js.JavaScriptEditor"
+      		class="org.openlca.app.devtools.JavaScriptEditor"
       		default="false"
       		id="JavaScriptEditor"
       		name="JavaScript Editor"
-      		contributorClass="org.openlca.app.js.Toolbar">
+      		contributorClass="org.openlca.app.devtools.Toolbar">
       </editor>
       <editor
             class="org.openlca.app.editors.actors.ActorEditor"

@@ -1,4 +1,4 @@
-package org.openlca.app.db.sql;
+package org.openlca.app.devtools.sql;
 
 import org.openlca.core.database.IDatabase;
 import org.slf4j.Logger;

@@ -1,4 +1,4 @@
-package org.openlca.app.js;
+package org.openlca.app.devtools;
 
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.layout.FillLayout;

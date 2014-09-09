@@ -1,4 +1,4 @@
-package org.openlca.app.js;
+package org.openlca.app.devtools;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.resource.ImageDescriptor;
