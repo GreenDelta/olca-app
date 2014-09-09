@@ -38,7 +38,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.components.delete.DeleteWizard;
 import org.openlca.app.db.Database;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;

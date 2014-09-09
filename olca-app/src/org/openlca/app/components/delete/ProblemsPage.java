@@ -20,7 +20,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.Messages;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.UIFactory;
 
 /**

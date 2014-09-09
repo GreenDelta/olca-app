@@ -10,7 +10,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.Messages;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.ISelectionChangedListener;

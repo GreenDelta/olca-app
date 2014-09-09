@@ -13,7 +13,7 @@ import org.openlca.app.navigation.CategoryElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelTypeElement;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.UI;
 import org.openlca.app.wizards.INewModelWizard;
 import org.openlca.core.model.Category;

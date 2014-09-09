@@ -21,7 +21,7 @@ import org.openlca.app.navigation.NavigationTree;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.filters.EmptyCategoryFilter;
 import org.openlca.app.preferencepages.FeatureFlag;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.UIFactory;

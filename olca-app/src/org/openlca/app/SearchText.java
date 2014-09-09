@@ -18,7 +18,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.ui.menus.WorkbenchWindowControlContribution;
 import org.openlca.app.db.Database;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Images;
 import org.openlca.app.util.InformationPopup;

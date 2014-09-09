@@ -11,8 +11,8 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
-import org.openlca.app.resources.ImageManager;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageManager;
+import org.openlca.app.rcp.ImageType;
 
 /**
  * Factory methods for some standard actions, ready for Java 8, e.g.:

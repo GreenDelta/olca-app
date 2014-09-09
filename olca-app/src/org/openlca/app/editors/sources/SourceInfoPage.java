@@ -21,7 +21,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseFolder;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Desktop;

@@ -23,7 +23,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.editors.ParameterPage;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;

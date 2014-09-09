@@ -9,7 +9,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.openlca.app.Messages;
 import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
 import org.openlca.app.editors.graphical.layout.GraphLayoutType;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Controls;
 
 class LayoutMenuAction extends Action {

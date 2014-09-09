@@ -11,7 +11,7 @@ import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.preferencepages.FeatureFlag;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.UI;

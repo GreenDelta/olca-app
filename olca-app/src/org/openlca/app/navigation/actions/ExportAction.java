@@ -13,7 +13,7 @@ import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.ModelTypeElement;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

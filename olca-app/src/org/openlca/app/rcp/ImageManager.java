@@ -1,9 +1,8 @@
-package org.openlca.app.resources;
+package org.openlca.app.rcp;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
-import org.openlca.app.rcp.RcpActivator;
 
 /**
  * Manager for the application images and icons.

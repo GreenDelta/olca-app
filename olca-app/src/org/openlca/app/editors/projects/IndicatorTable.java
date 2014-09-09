@@ -13,7 +13,7 @@ import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.reports.model.Report;
 import org.openlca.app.editors.reports.model.ReportIndicator;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;

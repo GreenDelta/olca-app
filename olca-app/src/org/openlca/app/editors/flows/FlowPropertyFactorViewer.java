@@ -13,7 +13,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.components.ModelSelectionDialog;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.table.AbstractTableViewer;

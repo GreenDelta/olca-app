@@ -12,7 +12,7 @@ import org.eclipse.gef.commands.Command;
 import org.openlca.app.db.Cache;
 import org.openlca.app.editors.graphical.command.CommandFactory;
 import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 

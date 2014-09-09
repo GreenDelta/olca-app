@@ -2,7 +2,7 @@ package org.openlca.app.editors.systems;
 
 import org.eclipse.jface.action.Action;
 import org.openlca.app.Messages;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 
 public class CalculateCostsAction extends Action {
 

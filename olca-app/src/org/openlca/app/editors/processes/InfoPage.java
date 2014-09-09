@@ -21,7 +21,7 @@ import org.openlca.app.editors.processes.kml.EditorHandler;
 import org.openlca.app.editors.processes.kml.KmlUtil;
 import org.openlca.app.editors.processes.kml.MapEditor;
 import org.openlca.app.editors.processes.kml.TextEditor;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.ExchangeViewer;

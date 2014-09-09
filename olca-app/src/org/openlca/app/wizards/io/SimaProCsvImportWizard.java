@@ -12,7 +12,7 @@ import org.eclipse.ui.IWorkbench;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.core.database.IDatabase;
 import org.openlca.io.simapro.csv.input.SimaProCsvImport;
 import org.slf4j.Logger;

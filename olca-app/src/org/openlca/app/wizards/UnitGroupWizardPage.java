@@ -11,7 +11,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.UIFactory;
 import org.openlca.core.database.Query;
 import org.openlca.core.model.Unit;

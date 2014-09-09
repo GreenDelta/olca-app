@@ -1,7 +1,7 @@
 package org.openlca.app.util;
 
 import org.openlca.app.Messages;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 
 /**
  * A pop-up for information messages.

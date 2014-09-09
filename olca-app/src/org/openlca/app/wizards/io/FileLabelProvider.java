@@ -6,7 +6,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 
 /**
  * Label provider for files.

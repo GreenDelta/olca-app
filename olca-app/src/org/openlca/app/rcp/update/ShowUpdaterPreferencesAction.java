@@ -5,7 +5,7 @@ import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.openlca.app.Messages;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.UI;
 
 public class ShowUpdaterPreferencesAction extends Action {

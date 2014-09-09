@@ -18,7 +18,7 @@ import org.openlca.app.editors.projects.ProjectEditor;
 import org.openlca.app.editors.reports.model.Report;
 import org.openlca.app.editors.reports.model.ReportComponent;
 import org.openlca.app.editors.reports.model.ReportSection;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;

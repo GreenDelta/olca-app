@@ -7,7 +7,7 @@ import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
 import org.openlca.app.editors.graphical.command.ChangeStateCommand;
 import org.openlca.app.editors.graphical.command.CommandFactory;
 import org.openlca.app.editors.graphical.model.ProcessNode;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 
 class ChangeAllStateAction extends Action {
 

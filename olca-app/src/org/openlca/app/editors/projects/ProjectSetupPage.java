@@ -28,7 +28,7 @@ import org.openlca.app.editors.reports.ReportViewer;
 import org.openlca.app.editors.reports.Reports;
 import org.openlca.app.editors.reports.model.ReportCalculator;
 import org.openlca.app.preferencepages.FeatureFlag;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Error;

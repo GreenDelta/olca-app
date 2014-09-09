@@ -16,7 +16,7 @@ import org.openlca.app.db.MySQLDatabaseExport;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.InformationPopup;
 import org.slf4j.Logger;

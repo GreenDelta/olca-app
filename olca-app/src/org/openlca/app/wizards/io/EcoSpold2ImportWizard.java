@@ -14,7 +14,7 @@ import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.core.database.IDatabase;
 import org.openlca.io.ecospold2.input.EcoSpold2Import;
 import org.openlca.io.ecospold2.input.ImportConfig;

@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.Messages;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.wizards.AbstractWizardPage;
 import org.openlca.core.model.ImpactMethod;
 

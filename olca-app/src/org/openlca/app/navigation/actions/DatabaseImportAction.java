@@ -13,7 +13,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.db.DerbyConfiguration;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.zeroturnaround.zip.ZipUtil;
 
 public class DatabaseImportAction extends Action implements INavigationAction {

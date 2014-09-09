@@ -15,7 +15,7 @@ import org.openlca.app.db.Resources;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Question;

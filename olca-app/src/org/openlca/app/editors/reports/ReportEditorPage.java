@@ -12,7 +12,7 @@ import org.openlca.app.Messages;
 import org.openlca.app.editors.DataBinding;
 import org.openlca.app.editors.projects.ProjectEditor;
 import org.openlca.app.editors.reports.model.Report;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 

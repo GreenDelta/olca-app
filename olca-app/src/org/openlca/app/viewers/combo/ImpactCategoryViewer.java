@@ -10,7 +10,7 @@ import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.Messages;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.util.Strings;

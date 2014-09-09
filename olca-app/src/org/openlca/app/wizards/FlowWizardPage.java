@@ -6,7 +6,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.FlowPropertyViewer;

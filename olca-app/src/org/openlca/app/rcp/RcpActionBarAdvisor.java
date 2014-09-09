@@ -24,7 +24,6 @@ import org.openlca.app.editors.StartPage;
 import org.openlca.app.js.JavaScriptEditor;
 import org.openlca.app.rcp.browser.MozillaConfigView;
 import org.openlca.app.rcp.plugins.PluginManagerDialog;
-import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Desktop;
 import org.openlca.app.util.UI;

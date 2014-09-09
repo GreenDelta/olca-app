@@ -24,7 +24,7 @@ import org.openlca.app.components.UncertaintyCellEditor;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.ParameterPageListener;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Labels;

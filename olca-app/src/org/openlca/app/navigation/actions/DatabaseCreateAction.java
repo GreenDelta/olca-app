@@ -6,7 +6,7 @@ import org.eclipse.jface.action.Action;
 import org.openlca.app.Messages;
 import org.openlca.app.db.DatabaseWizard;
 import org.openlca.app.navigation.INavigationElement;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 
 /**
  * Opens the wizard for creating a new database.

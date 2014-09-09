@@ -10,7 +10,7 @@ import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.core.model.Category;
 import org.openlca.io.EcoSpoldUnitFetch;
 import org.openlca.io.UnitMapping;

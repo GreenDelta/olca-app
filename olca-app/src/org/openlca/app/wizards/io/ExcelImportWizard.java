@@ -13,7 +13,7 @@ import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.io.xls.process.input.ExcelImport;
 
 public class ExcelImportWizard extends Wizard implements IImportWizard {

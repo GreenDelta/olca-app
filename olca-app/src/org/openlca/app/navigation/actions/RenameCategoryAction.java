@@ -10,7 +10,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.navigation.CategoryElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.Category;

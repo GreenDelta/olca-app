@@ -8,7 +8,7 @@ import org.openlca.app.db.DatabasePropertiesDialog;
 import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 
 /**
  * Shows the database properties in a window.
