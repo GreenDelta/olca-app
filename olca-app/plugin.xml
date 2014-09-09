@@ -4,6 +4,7 @@
 
 	<extension
          point="org.eclipse.ui.editors">
+         
       <editor 
 			class="org.openlca.app.editors.StartPage"
 			default="false"
@@ -11,20 +12,31 @@
 			name="%Welcome"
 			icon="icons/home_16.gif">      
       </editor>
+      
+      <!-- developer tools -->
       <editor
       		class="org.openlca.app.devtools.sql.SqlEditor"
       		default="false"
       		id="SqlEditor"
-      		name="SQL Editor"
+      		name="SQL"
       		icon="icons/sql_16.png">
       </editor>
       <editor
       		class="org.openlca.app.devtools.js.JavaScriptEditor"
       		default="false"
       		id="JavaScriptEditor"
-      		name="JavaScript Editor"
+      		name="JavaScript"
       		contributorClass="org.openlca.app.devtools.Toolbar">
       </editor>
+       <editor
+      		class="org.openlca.app.devtools.python.PythonEditor"
+      		default="false"
+      		id="PythonEditor"
+      		name="Python"
+      		contributorClass="org.openlca.app.devtools.Toolbar">
+      </editor>      
+      
+      <!-- model editors -->
       <editor
             class="org.openlca.app.editors.actors.ActorEditor"
             default="false"
@@ -91,6 +103,8 @@
             name="%ProductSystemEditor" 
             contributorClass="org.openlca.app.editors.systems.ProductSystemActions">
       </editor>
+      
+      <!-- result views -->
       <editor
             class="org.openlca.app.results.quick.QuickResultEditor"
             default="false"
@@ -134,7 +148,9 @@
             icon="icons/project_obj.png"
             name="Report Viewer"
             contributorClass="org.openlca.app.editors.reports.ReportToolbar">
-      </editor>  
+      </editor> 
+      
+      <!-- other --> 
       <editor
             class="org.openlca.app.rcp.browser.MozillaConfigView"
             default="false"

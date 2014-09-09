@@ -20,6 +20,7 @@
     "jquery": "~2.1.1",
     "d3": "~3.4.11",
     "angulerjs": "~1.2.23",
-    "angular-sanitize": "~1.2.23"
+    "angular-sanitize": "~1.2.23",
+    "codemirror": "~4.5.0"
   }
 }
