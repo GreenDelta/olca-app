@@ -9,8 +9,6 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
@@ -27,6 +25,7 @@ import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.DataBinding;
 import org.openlca.app.resources.ImageType;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.IDatabase;
@@ -185,7 +184,12 @@ class ProcessCostEntryDialog extends Dialog {
 		combo.setItems(itemLabels);
 		if (itemLabels.length > 0)
 			combo.select(0);
-		combo.addSelectionListener(new ComboSelectionListener());
+		Controls.onSelect(combo, (e) -> {
+			int idx = combo.getSelectionIndex();
+			if (idx < 0)
+				return;
+			fix.setSelection(comboItems[idx].isFix());
+		});
 		return combo;
 	}
 
@@ -246,19 +250,4 @@ class ProcessCostEntryDialog extends Dialog {
 			return Strings.compare(first.getName(), second.getName());
 		}
 	}
-
-	private class ComboSelectionListener implements SelectionListener {
-
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			fix.setSelection(comboItems[combo.getSelectionIndex()].isFix());
-		}
-
-		@Override
-		public void widgetDefaultSelected(SelectionEvent e) {
-			fix.setSelection(comboItems[combo.getSelectionIndex()].isFix());
-		}
-
-	}
-
 }

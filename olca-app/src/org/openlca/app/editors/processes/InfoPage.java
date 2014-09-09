@@ -1,7 +1,6 @@
 package org.openlca.app.editors.processes;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridLayout;
@@ -23,6 +22,7 @@ import org.openlca.app.editors.processes.kml.KmlUtil;
 import org.openlca.app.editors.processes.kml.MapEditor;
 import org.openlca.app.editors.processes.kml.TextEditor;
 import org.openlca.app.resources.ImageType;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.ExchangeViewer;
 import org.openlca.app.viewers.combo.LocationViewer;
@@ -75,11 +75,8 @@ class InfoPage extends ModelPage<Process> {
 		Button button = toolkit.createButton(container,
 				Messages.CreateProductSystem, SWT.NONE);
 		button.setImage(ImageType.PRODUCT_SYSTEM_ICON_NEW.get());
-		button.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				SystemCreation.run(getModel());
-			}
+		Controls.onSelect(button, (e) -> {
+			SystemCreation.run(getModel());
 		});
 	}
 
@@ -146,11 +143,8 @@ class InfoPage extends ModelPage<Process> {
 		Button textButton = toolkit.createButton(composite, "Text editor",
 				SWT.NONE);
 		textButton.setImage(ImageType.FILE_MARKUP_SMALL.get());
-		textButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				TextEditor.open(getKml(), new MapEditorDispatch());
-			}
+		Controls.onSelect(textButton, (e) -> {
+			TextEditor.open(getKml(), new MapEditorDispatch());
 		});
 	}
 

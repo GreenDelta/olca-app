@@ -5,8 +5,6 @@ import java.io.File;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseTrackAdapter;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -25,6 +23,7 @@ import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Colors;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.Desktop;
 import org.openlca.app.util.Info;
 import org.openlca.app.util.Question;
@@ -82,12 +81,7 @@ class SourceInfoPage extends ModelPage<Source> {
 		composite.addMouseTrackListener(new DeleteFileVisibility());
 		Button browseButton = toolkit.createButton(composite, Messages.Browse,
 				SWT.NONE);
-		browseButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				selectFile();
-			}
-		});
+		Controls.onSelect(browseButton, (e) -> selectFile());
 		createFileLink(composite);
 		createDeleteLink(composite);
 	}

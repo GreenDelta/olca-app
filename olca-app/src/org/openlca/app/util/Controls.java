@@ -6,6 +6,8 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.Scale;
 
 public class Controls {
 
@@ -18,6 +20,14 @@ public class Controls {
 
 	public static void onSelect(Button button, Consumer<SelectionEvent> consumer) {
 		button.addSelectionListener(createSelectionListener(consumer));
+	}
+
+	public static void onSelect(MenuItem item, Consumer<SelectionEvent> consumer) {
+		item.addSelectionListener(createSelectionListener(consumer));
+	}
+
+	public static void onSelect(Scale scale, Consumer<SelectionEvent> consumer) {
+		scale.addSelectionListener(createSelectionListener(consumer));
 	}
 
 	private static SelectionListener createSelectionListener(
