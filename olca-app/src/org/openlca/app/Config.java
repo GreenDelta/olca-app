@@ -45,7 +45,7 @@ public final class Config {
 		if (browserEnabled != null)
 			return browserEnabled;
 		boolean disabled = Preferences.getStore().getBoolean(
-				"olca.disable.modern.browser");
+				"olca.disable.browser");
 		browserEnabled = !disabled;
 		return browserEnabled;
 	}
@@ -54,7 +54,7 @@ public final class Config {
 		browserEnabled = enabled;
 		boolean disabled = !enabled;
 		Preferences.getStore()
-				.setValue("olca.disable.modern.browser", disabled);
+				.setValue("olca.disable.browser", disabled);
 	}
 
 }

@@ -4,6 +4,7 @@ import java.util.Objects;
 
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -11,6 +12,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.openlca.app.Config;
 import org.openlca.app.Messages;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Question;
@@ -27,6 +29,9 @@ public class ConfigPage extends PreferencePage implements
 	private Combo languageCombo;
 	private Text memoryText;
 	private ConfigIniFile iniFile;
+	private boolean browserEnabled;
+
+	private Button browserCheck;
 
 	@Override
 	public String getTitle() {
@@ -37,6 +42,7 @@ public class ConfigPage extends PreferencePage implements
 	public void init(IWorkbench workbench) {
 		try {
 			iniFile = ConfigIniFile.read();
+			browserEnabled = Config.isBrowserEnabled();
 		} catch (Exception e) {
 			log.error("failed to read openLCA.ini", e);
 			iniFile = new ConfigIniFile();
@@ -55,7 +61,12 @@ public class ConfigPage extends PreferencePage implements
 		memoryText = UI.formText(composite, "@Maximum memory usage in MB");
 		memoryText.setText(Integer.toString(iniFile.getMaxMemory()));
 		memoryText.addModifyListener((e) -> setDirty());
-		UI.formCheckBox(composite, "@Use browser features");
+		browserCheck = UI.formCheckBox(composite, "@Use browser features");
+		browserCheck.setSelection(browserEnabled);
+		Controls.onSelect(browserCheck, (e) -> {
+			browserEnabled = browserCheck.getSelection();
+			setDirty();
+		});
 		new Label(composite, SWT.NONE);
 		createNoteComposite(composite.getFont(), composite, Messages.Note
 				+ ": ", Messages.SelectLanguageNoteMessage);
@@ -101,6 +112,8 @@ public class ConfigPage extends PreferencePage implements
 			return;
 		iniFile.setMaxMemory(memVal);
 		iniFile.write();
+		if (browserEnabled != Config.isBrowserEnabled())
+			Config.setBrowserEnabled(browserEnabled);
 		getApplyButton().setEnabled(false);
 		isDirty = false;
 	}
@@ -109,10 +122,13 @@ public class ConfigPage extends PreferencePage implements
 	protected void performDefaults() {
 		Language defaultLang = Language.ENGLISH;
 		int maxMem = ConfigMemCheck.getDefault();
+		browserEnabled = true;
 		selectLanguage(defaultLang);
 		memoryText.setText(Integer.toString(maxMem));
+		browserCheck.setSelection(browserEnabled);
 		iniFile.setLanguage(defaultLang);
 		iniFile.setMaxMemory(maxMem);
+		Config.setBrowserEnabled(browserEnabled);
 		super.performDefaults();
 		performApply();
 	}
