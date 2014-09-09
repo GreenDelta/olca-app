@@ -1,8 +1,6 @@
 package org.openlca.app.editors.reports;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
@@ -15,6 +13,7 @@ import org.openlca.app.editors.DataBinding;
 import org.openlca.app.editors.projects.ProjectEditor;
 import org.openlca.app.editors.reports.model.Report;
 import org.openlca.app.resources.ImageType;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 
 public class ReportEditorPage extends FormPage {
@@ -50,11 +49,8 @@ public class ReportEditorPage extends FormPage {
 		Button addButton = toolkit.createButton(composite, "Add section",
 				SWT.NONE);
 		addButton.setImage(ImageType.ADD_ICON.get());
-		addButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				sectionList.addNew();
-			}
+		Controls.onSelect(addButton, (e) -> {
+			sectionList.addNew();
 		});
 	}
 
@@ -70,12 +66,8 @@ public class ReportEditorPage extends FormPage {
 		toolkit.createLabel(composite, "");
 		Button button = toolkit.createButton(composite, "Preview", SWT.NONE);
 		button.setImage(ImageType.SEARCH_ICON.get());
-		button.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				ReportViewer.open(report);
-			}
+		Controls.onSelect(button, (e) -> {
+			ReportViewer.open(report);
 		});
 	}
-
 }

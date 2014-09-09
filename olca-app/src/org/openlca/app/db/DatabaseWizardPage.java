@@ -4,10 +4,6 @@ import org.eclipse.jface.dialogs.DialogPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
@@ -16,6 +12,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.openlca.app.Messages;
 import org.openlca.app.resources.ImageType;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.DatabaseContent;
 import org.openlca.core.database.DbUtils;
@@ -44,31 +41,41 @@ class DatabaseWizardPage extends WizardPage {
 
 	@Override
 	public void createControl(Composite parent) {
-		Composite rootComposite = new Composite(parent, SWT.NONE);
-		UI.gridLayout(rootComposite, 1);
+		Composite root = new Composite(parent, SWT.NONE);
+		UI.gridLayout(root, 1);
+		Composite header = new Composite(root, SWT.NONE);
+		header.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		setControl(header);
+		UI.gridLayout(header, 2);
+		nameText = UI.formText(header, Messages.DatabaseName);
+		nameText.addModifyListener((e) -> validateInput());
+		createTypeRadios(header);
+		createStackComposite(root);
+	}
 
-		Composite headerComposite = new Composite(rootComposite, SWT.NONE);
-		headerComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
-				false));
-		setControl(headerComposite);
-		UI.gridLayout(headerComposite, 2);
-		nameText = UI.formText(headerComposite, Messages.DatabaseName);
-		nameText.addModifyListener(new TextListener());
-
+	private void createTypeRadios(Composite headerComposite) {
 		UI.formLabel(headerComposite, Messages.DatabaseType);
 		Composite radioGroup = new Composite(headerComposite, SWT.NONE);
 		radioGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		UI.gridLayout(radioGroup, 2, 10, 0);
-
 		buttonLocal = new Button(radioGroup, SWT.RADIO);
 		buttonLocal.setText(Messages.Local);
 		buttonLocal.setSelection(true);
-		buttonLocal.addSelectionListener(new RadioGroupListener());
+		Controls.onSelect(buttonLocal, (e) -> typeChanged());
 		buttonRemote = new Button(radioGroup, SWT.RADIO);
 		buttonRemote.setText(Messages.Remote);
-		buttonRemote.addSelectionListener(new RadioGroupListener());
+		Controls.onSelect(buttonRemote, (e) -> typeChanged());
+	}
 
-		createStackComposite(rootComposite);
+	private void typeChanged() {
+		if (buttonLocal.getSelection()) {
+			stackLayout.topControl = localComposite;
+			stackComposite.layout();
+		} else if (buttonRemote.getSelection()) {
+			stackLayout.topControl = remoteComposite;
+			stackComposite.layout();
+		}
+		validateInput();
 	}
 
 	private void createStackComposite(Composite rootComposite) {
@@ -98,11 +105,11 @@ class DatabaseWizardPage extends WizardPage {
 		remoteComposite = new Composite(stackComposite, SWT.NONE);
 		UI.gridLayout(remoteComposite, 2);
 		hostText = UI.formText(remoteComposite, Messages.Host);
-		hostText.addModifyListener(new TextListener());
+		hostText.addModifyListener((e) -> validateInput());
 		portText = UI.formText(remoteComposite, Messages.Port);
-		portText.addModifyListener(new TextListener());
+		portText.addModifyListener((e) -> validateInput());
 		userText = UI.formText(remoteComposite, Messages.User);
-		userText.addModifyListener(new TextListener());
+		userText.addModifyListener((e) -> validateInput());
 		passwordText = UI.formText(remoteComposite, Messages.Password);
 	}
 
@@ -134,20 +141,26 @@ class DatabaseWizardPage extends WizardPage {
 
 	private void validateInput() {
 		boolean valid = validateName(nameText.getText());
-		if (valid)
-			if (buttonRemote.getSelection())
-				if (hostText.getText().isEmpty()) {
-					error(Messages.PleaseSpecifyHost);
-					valid = false;
-				} else if (userText.getText().isEmpty()) {
-					error(Messages.PleaseSpecifyUser);
-					valid = false;
-				} else
-					valid = validatePort(portText.getText());
-		if (valid) {
+		if (!valid)
+			return;
+		if (buttonLocal.getSelection()) {
 			setMessage(null);
 			setPageComplete(true);
+			return;
 		}
+		if (hostText.getText().isEmpty()) {
+			error(Messages.PleaseSpecifyHost);
+			return;
+		}
+		if (userText.getText().isEmpty()) {
+			error(Messages.PleaseSpecifyUser);
+			return;
+		}
+		valid = validatePort(portText.getText());
+		if (!valid)
+			return;
+		setMessage(null);
+		setPageComplete(true);
 	}
 
 	private boolean validatePort(String port) {
@@ -207,32 +220,6 @@ class DatabaseWizardPage extends WizardPage {
 
 	private String getText(Text text) {
 		return text.getText().trim();
-	}
-
-	private class RadioGroupListener implements SelectionListener {
-
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			if (buttonLocal.getSelection()) {
-				stackLayout.topControl = localComposite;
-				stackComposite.layout();
-			} else if (buttonRemote.getSelection()) {
-				stackLayout.topControl = remoteComposite;
-				stackComposite.layout();
-			}
-			validateInput();
-		}
-
-		@Override
-		public void widgetDefaultSelected(SelectionEvent e) {
-		}
-	}
-
-	private class TextListener implements ModifyListener {
-		@Override
-		public void modifyText(ModifyEvent e) {
-			validateInput();
-		}
 	}
 
 }

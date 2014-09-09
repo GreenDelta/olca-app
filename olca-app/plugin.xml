@@ -290,9 +290,9 @@
             name="%ILCDNetwork">
       </page>
       <page
-            id="preferencepages.language"
-            class="org.openlca.app.preferencepages.LanguagePreferencePage"
-            name="Language">
+            id="preferencepages.config"
+            class="org.openlca.app.preferencepages.ConfigPage"
+            name="@Configuration">
       </page>
    </extension>
    <extension

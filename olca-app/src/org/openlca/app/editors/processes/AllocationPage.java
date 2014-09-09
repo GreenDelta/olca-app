@@ -4,8 +4,6 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -17,6 +15,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Event;
 import org.openlca.app.Messages;
 import org.openlca.app.resources.ImageType;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
@@ -117,14 +116,11 @@ class AllocationPage extends FormPage {
 		Button button = toolkit.createButton(composite,
 				Messages.CalculateDefaultValues, SWT.NONE);
 		button.setImage(ImageType.CALCULATE_ICON.get());
-		button.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				AllocationSync.calculateDefaults(process());
-				factorViewer.refresh();
-				causalFactorTable.refresh();
-				editor.setDirty(true);
-			}
+		Controls.onSelect(button, (e) -> {
+			AllocationSync.calculateDefaults(process());
+			factorViewer.refresh();
+			causalFactorTable.refresh();
+			editor.setDirty(true);
 		});
 	}
 

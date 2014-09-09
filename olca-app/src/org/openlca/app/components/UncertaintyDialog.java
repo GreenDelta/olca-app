@@ -3,8 +3,6 @@ package org.openlca.app.components;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.custom.StackLayout;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -16,6 +14,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.util.Colors;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
@@ -159,12 +158,7 @@ public class UncertaintyDialog extends Dialog {
 		}
 		combo.setItems(items);
 		combo.select(idx);
-		combo.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				initComposite();
-			}
-		});
+		Controls.onSelect(combo, (e) -> initComposite());
 	}
 
 	private void initComposite() {

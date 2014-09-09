@@ -2,8 +2,6 @@ package org.openlca.app.editors.systems;
 
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -13,6 +11,7 @@ import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.resources.ImageType;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AllocationMethodViewer;
@@ -92,7 +91,10 @@ class CalculationWizardPage extends WizardPage {
 			radio.setSelection(type == this.type);
 			radio.setText(getLabel(type));
 			UI.gridData(radio, false, false).horizontalSpan = 2;
-			radio.addSelectionListener(new CalculationTypeChange(type));
+			Controls.onSelect(radio, (e) -> {
+				CalculationWizardPage.this.type = type;
+				iterationText.setEnabled(type == CalculationType.MONTE_CARLO);
+			});
 		}
 	}
 
@@ -176,25 +178,4 @@ class CalculationWizardPage extends WizardPage {
 		}
 		setDefaultData();
 	}
-
-	private class CalculationTypeChange implements SelectionListener {
-
-		private CalculationType type;
-
-		public CalculationTypeChange(CalculationType type) {
-			this.type = type;
-		}
-
-		@Override
-		public void widgetDefaultSelected(SelectionEvent e) {
-			widgetSelected(e);
-		}
-
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			CalculationWizardPage.this.type = type;
-			iterationText.setEnabled(type == CalculationType.MONTE_CARLO);
-		}
-	}
-
 }

@@ -8,8 +8,6 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -21,6 +19,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.Messages;
 import org.openlca.app.components.ContributionImage;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.Tables;
@@ -58,7 +57,8 @@ public class FlowImpactPage extends FormPage {
 	protected void createFormContent(IManagedForm managedForm) {
 		FormToolkit toolkit = managedForm.getToolkit();
 
-		ScrolledForm form = UI.formHeader(managedForm, Messages.FlowContributions);
+		ScrolledForm form = UI.formHeader(managedForm,
+				Messages.FlowContributions);
 		Composite body = UI.formBody(form, toolkit);
 
 		Composite composite = toolkit.createComposite(body);
@@ -88,7 +88,10 @@ public class FlowImpactPage extends FormPage {
 		spinner.setValues(1, 0, 10000, 2, 1, 100);
 		toolkit.adapt(spinner);
 		toolkit.createLabel(selectionContainer, "%");
-		spinner.addSelectionListener(new CutOffChange());
+		Controls.onSelect(spinner, (e) -> {
+			cutOff = spinner.getSelection();
+			flowViewer.refresh();
+		});
 
 		createFlowViewer(composite);
 
@@ -103,20 +106,6 @@ public class FlowImpactPage extends FormPage {
 		flowViewer.setFilters(new ViewerFilter[] { new CutOffFilter() });
 		Tables.bindColumnWidths(flowViewer.getTable(), new double[] { 0.1, 0.4,
 				0.3, 0.2 });
-	}
-
-	private class CutOffChange implements SelectionListener {
-
-		@Override
-		public void widgetDefaultSelected(SelectionEvent e) {
-			widgetSelected(e);
-		}
-
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			cutOff = spinner.getSelection();
-			flowViewer.refresh();
-		}
 	}
 
 	private class FlowImpactLabelProvider extends BaseLabelProvider implements

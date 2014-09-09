@@ -3,8 +3,6 @@ package org.openlca.app.results.quick;
 import java.io.File;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
@@ -18,6 +16,7 @@ import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Cache;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.results.ContributionChartSection;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.InformationPopup;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
@@ -88,12 +87,7 @@ public class QuickResultInfoPage extends FormPage {
 		Button button = toolkit.createButton(composite, Messages.ExportToExcel,
 				SWT.NONE);
 		button.setImage(ImageType.FILE_EXCEL_SMALL.get());
-		button.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				tryExport();
-			}
-		});
+		Controls.onSelect(button, (e) -> tryExport());
 	}
 
 	private void tryExport() {

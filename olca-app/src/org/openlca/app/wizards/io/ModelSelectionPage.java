@@ -8,8 +8,6 @@ import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -25,6 +23,7 @@ import org.openlca.app.navigation.NavigationLabelProvider;
 import org.openlca.app.navigation.NavigationSorter;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.Colors;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.UIFactory;
 import org.openlca.core.model.ModelType;
@@ -119,30 +118,20 @@ class ModelSelectionPage extends WizardPage {
 		final Button chooseDirectoryButton = new Button(
 				chooseDirectoryComposite, SWT.NONE);
 		chooseDirectoryButton.setText(Messages.ChooseDirectory);
-		chooseDirectoryButton.addSelectionListener(new SelectionListener() {
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				widgetSelected(e);
+		Controls.onSelect(chooseDirectoryButton, (e) -> {
+			DirectoryDialog dialog = new DirectoryDialog(UI.shell());
+			String dir = ApplicationProperties.PROP_EXPORT_DIRECTORY
+					.getValue();
+			dialog.setFilterPath(dir != null && new File(dir).exists() ? dir
+					: "");
+			String directoryPath = dialog.open();
+			if (directoryPath != null) {
+				directoryText.setText(directoryPath);
+				ApplicationProperties.PROP_EXPORT_DIRECTORY
+						.setValue(directoryPath);
+				exportDestination = new File(directoryPath);
+				checkCompletion();
 			}
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				DirectoryDialog dialog = new DirectoryDialog(UI.shell());
-				String dir = ApplicationProperties.PROP_EXPORT_DIRECTORY
-						.getValue();
-				dialog.setFilterPath(dir != null && new File(dir).exists() ? dir
-						: "");
-				String directoryPath = dialog.open();
-				if (directoryPath != null) {
-					directoryText.setText(directoryPath);
-					ApplicationProperties.PROP_EXPORT_DIRECTORY
-							.setValue(directoryPath);
-					exportDestination = new File(directoryPath);
-					checkCompletion();
-				}
-			}
-
 		});
 	}
 

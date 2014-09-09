@@ -10,8 +10,6 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -32,6 +30,7 @@ import org.openlca.app.editors.reports.model.ReportCalculator;
 import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Tables;
@@ -122,11 +121,8 @@ class ProjectSetupPage extends ModelPage<Project> {
 				SWT.NONE);
 		UI.gridData(button, false, false).widthHint = 100;
 		button.setImage(ImageType.CALCULATE_ICON.get());
-		button.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				Calculation.run(getModel());
-			}
+		Controls.onSelect(button, (e) -> {
+			Calculation.run(getModel());
 		});
 	}
 
@@ -135,16 +131,13 @@ class ProjectSetupPage extends ModelPage<Project> {
 				SWT.NONE);
 		UI.gridData(button, false, false).widthHint = 100;
 		button.setImage(ImageType.PROJECT_ICON.get());
-		button.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				App.run(Messages.Calculate,
-						new ReportCalculator(getModel(), editor.getReport()),
-						() -> {
-							Reports.save(editor.getReport(), database);
-							ReportViewer.open(editor.getReport());
-						});
-			}
+		Controls.onSelect(button, (e) -> {
+			App.run(Messages.Calculate,
+					new ReportCalculator(getModel(), editor.getReport()),
+					() -> {
+						Reports.save(editor.getReport(), database);
+						ReportViewer.open(editor.getReport());
+					});
 		});
 	}
 
@@ -401,7 +394,5 @@ class ProjectSetupPage extends ModelPage<Project> {
 			Exchange refExchange = system.getReferenceExchange();
 			return Labels.getDisplayName(refExchange.getFlow());
 		}
-
 	}
-
 }

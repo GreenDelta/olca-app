@@ -38,7 +38,8 @@ public class RcpWindowAdvisor extends WorkbenchWindowAdvisor {
 
 	@Override
 	public void postWindowOpen() {
-		StartPage.open();
+		if (Config.isBrowserEnabled())
+			StartPage.open();
 	}
 
 	@Override

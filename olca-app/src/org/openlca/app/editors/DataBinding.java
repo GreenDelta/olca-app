@@ -18,6 +18,7 @@ import org.openlca.app.components.TextDropComponent;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.Bean;
 import org.openlca.app.util.Colors;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.core.database.BaseDao;
@@ -108,17 +109,9 @@ public class DataBinding {
 		if (supplier == null || property == null || button == null)
 			return;
 		initValue(supplier.get(), property, button);
-		button.addSelectionListener(new SelectionListener() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				setBooleanValue(supplier.get(), property, button);
-				editorChange();
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				widgetSelected(e);
-			}
+		Controls.onSelect(button, (e) -> {
+			setBooleanValue(supplier.get(), property, button);
+			editorChange();
 		});
 	}
 

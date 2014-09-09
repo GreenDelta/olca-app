@@ -3,9 +3,6 @@ bin
 libs
 platform
 
-# database templates
-db_templates
-
 # IDE settings
 /.idea
 *.iml
