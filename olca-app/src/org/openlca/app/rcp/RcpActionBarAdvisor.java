@@ -20,6 +20,7 @@ import org.eclipse.ui.application.IActionBarConfigurer;
 import org.openlca.app.Config;
 import org.openlca.app.Messages;
 import org.openlca.app.devtools.js.JavaScriptEditor;
+import org.openlca.app.devtools.python.PythonEditor;
 import org.openlca.app.devtools.sql.SqlEditor;
 import org.openlca.app.editors.StartPage;
 import org.openlca.app.rcp.browser.MozillaConfigView;
@@ -37,7 +38,6 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	private IWorkbenchAction exportAction;
 
 	private IWorkbenchAction importAction;
-	private IWorkbenchAction newEditorAction;
 	private IWorkbenchAction newWindowAction;
 	private IWorkbenchAction preferencesAction;
 	private IWorkbenchAction saveAction;
@@ -102,15 +102,10 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		MenuManager windowMenu = new MenuManager(Messages.Window,
 				IWorkbenchActionConstants.M_WINDOW);
 		windowMenu.add(newWindowAction);
-		windowMenu.add(newEditorAction);
 		MenuManager viewMenu = new MenuManager(Messages.Showviews);
 		viewMenu.add(showViews);
 		windowMenu.add(viewMenu);
-		windowMenu.add(new Separator());
-		windowMenu.add(new SqlEditorAction());
-		windowMenu.add(Actions.create("JavaScript", null, () -> {
-			JavaScriptEditor.open();
-		}));
+		createDeveloperMenu(windowMenu);
 		windowMenu.add(new FormulaConsoleAction());
 		if (MozillaConfigView.canShow()) {
 			windowMenu.add(Actions.create("Browser configuration",
@@ -118,6 +113,16 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 					MozillaConfigView::open));
 		}
 		menuBar.add(windowMenu);
+	}
+
+	private void createDeveloperMenu(MenuManager windowMenu) {
+		windowMenu.add(new Separator());
+		MenuManager devMenu = new MenuManager("@Developer tools");
+		windowMenu.add(devMenu);
+		devMenu.add(Actions.create("SQL", null, SqlEditor::open));
+		devMenu.add(Actions.create("JavaScript", null, JavaScriptEditor::open));
+		devMenu.add(Actions.create("Python", null, PythonEditor::open));
+		windowMenu.add(new Separator());
 	}
 
 	@Override
@@ -132,7 +137,6 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		exportAction = ActionFactory.EXPORT.create(window);
 		exitAction = ActionFactory.QUIT.create(window);
 		newWindowAction = ActionFactory.OPEN_NEW_WINDOW.create(window);
-		newEditorAction = ActionFactory.NEW_EDITOR.create(window);
 		showViews = ContributionItemFactory.VIEWS_SHORTLIST.create(window);
 		aboutAction = ActionFactory.ABOUT.create(window);
 	}
@@ -162,17 +166,6 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 			dialog.create();
 			dialog.getShell().setSize(500, 600);
 			dialog.open();
-		}
-	}
-
-	private class SqlEditorAction extends Action {
-		public SqlEditorAction() {
-			setText("SQL query browser");
-		}
-
-		@Override
-		public void run() {
-			SqlEditor.open();
 		}
 	}
 

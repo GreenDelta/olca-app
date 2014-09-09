@@ -11,7 +11,7 @@ class JavaScriptEditorPage extends ScriptEditorPage {
 
 	@Override
 	public String getUrl() {
-		return HtmlView.PYTHON_EDITOR.getUrl();
+		return HtmlView.JAVASCRIPT_EDITOR.getUrl();
 	}
 
 }

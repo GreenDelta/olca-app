@@ -2,12 +2,13 @@ package org.openlca.app.devtools.js;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.forms.editor.FormEditor;
+import org.openlca.app.devtools.IScriptEditor;
 import org.openlca.app.devtools.ScriptEditorInput;
 import org.openlca.app.util.Editors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class JavaScriptEditor extends FormEditor {
+public class JavaScriptEditor extends FormEditor implements IScriptEditor {
 
 	public static String ID = "JavaScriptEditor";
 	private JavaScriptEditorPage page;
