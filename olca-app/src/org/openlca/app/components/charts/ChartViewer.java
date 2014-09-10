@@ -37,8 +37,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
 import org.openlca.app.Messages;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.UI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -205,8 +205,8 @@ public class ChartViewer extends Composite implements PaintListener,
 
 		@Override
 		public ImageDescriptor getImageDescriptor() {
-			return PlatformUI.getWorkbench().getSharedImages()
-					.getImageDescriptor(ISharedImages.IMG_ETOOL_SAVE_EDIT);
+			return ImageType
+					.getPlatformDescriptor(ISharedImages.IMG_ETOOL_SAVE_EDIT);
 		}
 
 		@Override

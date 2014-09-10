@@ -8,7 +8,6 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.rcp.ImageManager;
@@ -93,13 +92,11 @@ public class Actions {
 			{
 				setText(Messages.Save);
 				setToolTipText(Messages.Save);
-				ISharedImages images = PlatformUI.getWorkbench()
-						.getSharedImages();
-				ImageDescriptor image = images
-						.getImageDescriptor(ISharedImages.IMG_ETOOL_SAVE_EDIT);
+				ImageDescriptor image = ImageType
+						.getPlatformDescriptor(ISharedImages.IMG_ETOOL_SAVE_EDIT);
 				setImageDescriptor(image);
-				ImageDescriptor imageDis = images
-						.getImageDescriptor(ISharedImages.IMG_ETOOL_SAVE_EDIT_DISABLED);
+				ImageDescriptor imageDis = ImageType
+						.getPlatformDescriptor(ISharedImages.IMG_ETOOL_SAVE_EDIT_DISABLED);
 				setDisabledImageDescriptor(imageDis);
 			}
 

@@ -28,7 +28,6 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
@@ -382,8 +381,8 @@ public class GroupPage extends FormPage {
 		public SaveGroupSetAction(GroupPage page) {
 			this.page = page;
 			setToolTipText(Messages.Save);
-			ImageDescriptor image = PlatformUI.getWorkbench().getSharedImages()
-					.getImageDescriptor(ISharedImages.IMG_ETOOL_SAVE_EDIT);
+			ImageDescriptor image = ImageType
+					.getPlatformDescriptor(ISharedImages.IMG_ETOOL_SAVE_EDIT);
 			setImageDescriptor(image);
 		}
 

@@ -1,11 +1,11 @@
 package org.openlca.app.rcp;
 
-import java.io.File;
-
+import com.google.common.io.Files;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.ui.PlatformUI;
 
-import com.google.common.io.Files;
+import java.io.File;
 
 public enum ImageType {
 
@@ -358,4 +358,21 @@ public enum ImageType {
 		}
 	}
 
+	/**
+	 * Returns the shared image descriptor with the given name from the Eclipse
+	 * platform. See ISharedImages for the image names.
+	 */
+	public static ImageDescriptor getPlatformDescriptor(String name) {
+		return PlatformUI.getWorkbench()
+				.getSharedImages().getImageDescriptor(name);
+	}
+
+	/**
+	 * Returns the shared image with the given name from the Eclipse platform.
+	 * See ISharedImages for the image names.
+	 */
+	public static Image getPlatformImage(String name) {
+		return PlatformUI.getWorkbench()
+				.getSharedImages().getImage(name);
+	}
 }
