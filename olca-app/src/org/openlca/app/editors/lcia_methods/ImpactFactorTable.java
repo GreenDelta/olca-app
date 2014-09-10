@@ -22,6 +22,7 @@ import org.openlca.app.editors.ParameterPageListener;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Error;
+import org.openlca.app.util.TableClipboard;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UncertaintyLabel;
 import org.openlca.app.util.Viewers;
@@ -108,6 +109,11 @@ class ImpactFactorTable implements ParameterPageListener {
 	private void bindActions(TableViewer viewer, Section section) {
 		Action add = Actions.onAdd(this::onAdd);
 		Action remove = Actions.onRemove(this::onRemove);
+		Action formulaSwitch = new FormulaSwitchAction();
+		Action copy = TableClipboard.onCopy(viewer);
+		Actions.bind(section, add, remove, formulaSwitch);
+		Actions.bind(viewer, add, remove, copy);
+		Tables.onDeletePressed(viewer, (e) -> onRemove());
 		Tables.addDropSupport(viewer,
 				(descriptors) -> createFactors(descriptors));
 		Tables.onDoubleClick(viewer, (event) -> {
@@ -115,9 +121,6 @@ class ImpactFactorTable implements ParameterPageListener {
 			if (item == null)
 				onAdd();
 		});
-		Action formulaSwitch = new FormulaSwitchAction();
-		Actions.bind(section, add, remove, formulaSwitch);
-		Actions.bind(viewer, add, remove, formulaSwitch);
 	}
 
 	private void onAdd() {

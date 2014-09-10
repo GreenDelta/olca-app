@@ -19,6 +19,7 @@ import org.openlca.app.Messages;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.TableClipboard;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
@@ -102,8 +103,10 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 	private void bindActions(TableViewer viewer, Section section) {
 		Action add = Actions.onAdd(() -> onAdd());
 		Action remove = Actions.onRemove(() -> onRemove());
-		Actions.bind(viewer, add, remove);
+		Action copy = TableClipboard.onCopy(viewer);
+		Actions.bind(viewer, add, remove, copy);
 		Actions.bind(section, add, remove);
+		Tables.onDeletePressed(viewer, (event) -> onRemove());
 		Tables.onDoubleClick(viewer, (event) -> {
 			TableItem item = Tables.getItem(viewer, event);
 			if (item == null) {
