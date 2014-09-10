@@ -1,9 +1,9 @@
 package org.openlca.app.editors;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -16,6 +16,8 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
+import org.openlca.app.util.Actions;
+import org.openlca.app.util.TableClipboard;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.UncertaintyLabel;
@@ -63,18 +65,21 @@ public class ParameterPage extends FormPage {
 				Messages.Uncertainty, Messages.Description };
 		TableViewer table = Tables.createViewer(client, columns);
 		table.setLabelProvider(new ParameterLabel());
+		Tables.bindColumnWidths(table.getTable(), 0.4, 0.3);
+		section.setExpanded(false);
+		Action copy = TableClipboard.onCopy(table);
+		Actions.bind(table, copy);
+		setGlobalTableInput(table);
+	}
+
+	private void setGlobalTableInput(TableViewer table) {
 		IDatabase database = Database.get();
 		ParameterDao dao = new ParameterDao(database);
 		List<Parameter> params = dao.getGlobalParameters();
-		Collections.sort(params, new Comparator<Parameter>() {
-			@Override
-			public int compare(Parameter o1, Parameter o2) {
-				return Strings.compare(o1.getName(), o2.getName());
-			}
+		Collections.sort(params, (p1, p2) -> {
+			return Strings.compare(p1.getName(), p2.getName());
 		});
 		table.setInput(params);
-		Tables.bindColumnWidths(table.getTable(), 0.4, 0.3);
-		section.setExpanded(false);
 	}
 
 	private class ParameterLabel extends LabelProvider implements

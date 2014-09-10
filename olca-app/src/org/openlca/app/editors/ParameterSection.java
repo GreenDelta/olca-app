@@ -20,6 +20,7 @@ import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Dialog;
 import org.openlca.app.util.Error;
+import org.openlca.app.util.TableClipboard;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.UncertaintyLabel;
@@ -90,7 +91,7 @@ public class ParameterSection implements ParameterPageListener {
 		Tables.onDoubleClick(viewer, (event) -> {
 			TableItem item = Tables.getItem(viewer, event);
 			if (item == null)
-				addParameter();
+				onAdd();
 		});
 	}
 
@@ -116,10 +117,12 @@ public class ParameterSection implements ParameterPageListener {
 	}
 
 	private void bindActions(Section section) {
-		Action addAction = Actions.onAdd(() -> addParameter());
-		Action removeAction = Actions.onRemove(() -> removeParameter());
+		Action addAction = Actions.onAdd(() -> onAdd());
+		Action removeAction = Actions.onRemove(() -> onRemove());
+		Action clipboard = TableClipboard.onCopy(viewer);
 		Actions.bind(section, addAction, removeAction);
-		Actions.bind(viewer, addAction, removeAction);
+		Actions.bind(viewer, addAction, removeAction, clipboard);
+		Tables.onDeletePressed(viewer, (e) -> onRemove());
 	}
 
 	private void createCellModifiers() {
@@ -150,7 +153,7 @@ public class ParameterSection implements ParameterPageListener {
 		viewer.setInput(input);
 	}
 
-	private void addParameter() {
+	private void onAdd() {
 		Parameter parameter = new Parameter();
 		parameter.setName("p_" + parameters.size());
 		parameter.setScope(support.getScope());
@@ -164,7 +167,7 @@ public class ParameterSection implements ParameterPageListener {
 		support.fireParameterChange();
 	}
 
-	private void removeParameter() {
+	private void onRemove() {
 		List<Parameter> selection = Viewers.getAllSelected(viewer);
 		for (Parameter parameter : selection) {
 			parameters.remove(parameter);

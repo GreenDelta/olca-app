@@ -13,12 +13,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.Messages;
 import org.openlca.app.components.ModelTransfer;
-import org.openlca.app.rcp.ImageManager;
-import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.TableClipboard;
+import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
 import org.openlca.app.viewers.AbstractViewer;
@@ -92,9 +90,11 @@ public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 	private void createActions(TableViewer viewer) {
 		actions = new ArrayList<>();
 		if (supports(OnAdd.class))
-			actions.add(new CreateAction());
-		if (supports(OnRemove.class))
-			actions.add(new RemoveAction());
+			actions.add(Actions.onAdd(() -> call(OnAdd.class)));
+		if (supports(OnRemove.class)) {
+			actions.add(Actions.onRemove(() -> call(OnRemove.class)));
+			Tables.onDeletePressed(viewer, (e) -> call(OnRemove.class));
+		}
 		// we have to create this array, because we do not want to have the copy
 		// action in the section menu
 		Action[] tableActions = new Action[actions.size() +1];
@@ -218,38 +218,6 @@ public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.METHOD)
 	public @interface OnDrop {
-	}
-
-	private class CreateAction extends Action {
-
-		private CreateAction() {
-			setText(Messages.CreateNew);
-			setImageDescriptor(ImageManager
-					.getImageDescriptor(ImageType.ADD_ICON));
-			setDisabledImageDescriptor(ImageManager
-					.getImageDescriptor(ImageType.ADD_ICON_DISABLED));
-		}
-
-		@Override
-		public void run() {
-			call(OnAdd.class);
-		}
-	}
-
-	private class RemoveAction extends Action {
-
-		private RemoveAction() {
-			setText(Messages.RemoveSelected);
-			setImageDescriptor(ImageManager
-					.getImageDescriptor(ImageType.DELETE_ICON));
-			setDisabledImageDescriptor(ImageManager
-					.getImageDescriptor(ImageType.DELETE_ICON_DISABLED));
-		}
-
-		@Override
-		public void run() {
-			call(OnRemove.class);
-		}
 	}
 
 }

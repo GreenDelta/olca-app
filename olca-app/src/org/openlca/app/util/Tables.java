@@ -17,6 +17,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
@@ -174,5 +175,15 @@ public class Tables {
 		if (table == null)
 			return null;
 		return table.getItem(new Point(event.x, event.y));
+	}
+
+	public static void onDeletePressed(TableViewer viewer, Consumer<Event> handler) {
+		if (viewer == null || viewer.getTable() == null || handler == null)
+			return;
+		viewer.getTable().addListener(SWT.KeyUp, (event) -> {
+			if (event.keyCode == SWT.DEL) {
+				handler.accept(event);
+			}
+		});
 	}
 }

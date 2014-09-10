@@ -1,5 +1,6 @@
 package org.openlca.app.editors.processes;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -15,10 +16,12 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Event;
 import org.openlca.app.Messages;
 import org.openlca.app.rcp.ImageType;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
+import org.openlca.app.util.TableClipboard;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AllocationMethodViewer;
@@ -141,6 +144,8 @@ class AllocationPage extends FormPage {
 				AllocationMethod.PHYSICAL));
 		modifySupport.bind(Messages.Economic, new ValueModifier(
 				AllocationMethod.ECONOMIC));
+		Action copy = TableClipboard.onCopy(factorViewer);
+		Actions.bind(factorViewer, copy);
 	}
 
 	private void createCausalSection(Composite body) {

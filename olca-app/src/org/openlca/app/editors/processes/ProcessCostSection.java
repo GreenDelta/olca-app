@@ -15,6 +15,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.TableClipboard;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
@@ -76,14 +77,21 @@ class ProcessCostSection {
 		Section section = UI.section(parent, toolkit, product.getFlow()
 				.getName());
 		UI.gridData(section, true, true);
-		Action add = Actions.onAdd(this::onAdd);
-		Action remove = Actions.onRemove(this::onRemove);
-		Actions.bind(section, add, remove);
 		Composite client = UI.sectionClient(section, toolkit);
 		ProcessCostViewer costViewer = new ProcessCostViewer(editor);
 		costViewer.render(toolkit, client);
 		viewer = costViewer.getTableViewer();
 		viewer.setInput(entries);
+		bindActions(section, viewer);
+	}
+
+	private void bindActions(Section section, TableViewer viewer) {
+		Action add = Actions.onAdd(this::onAdd);
+		Action remove = Actions.onRemove(this::onRemove);
+		Action copy = TableClipboard.onCopy(viewer);
+		Actions.bind(section, add, remove);
+		Actions.bind(viewer, add, remove, copy);
+		Tables.onDeletePressed(viewer, (event) -> onRemove());
 		Tables.onDoubleClick(viewer, (event) -> {
 			TableItem item = Tables.getItem(viewer, event);
 			if (item == null)
@@ -107,12 +115,14 @@ class ProcessCostSection {
 	}
 
 	private void onRemove() {
-		ProcessCostEntry e = Viewers.getFirstSelected(viewer);
-		if (e != null) {
+		List<ProcessCostEntry> selected = Viewers.getAllSelected(viewer);
+		if (selected == null)
+			return;
+		for (ProcessCostEntry e : selected) {
 			entries.remove(e);
 			process.getCostEntries().remove(e);
-			editor.setDirty(true);
-			viewer.setInput(entries);
 		}
+		editor.setDirty(true);
+		viewer.setInput(entries);
 	}
 }

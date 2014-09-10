@@ -28,6 +28,7 @@ import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Labels;
+import org.openlca.app.util.TableClipboard;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.UncertaintyLabel;
@@ -143,27 +144,11 @@ class ExchangeTable implements ParameterPageListener {
 	private void bindActions(Section section, final TableViewer viewer) {
 		Action add = Actions.onAdd(() -> onAdd());
 		Action remove = Actions.onRemove(() -> onRemove());
-		Action formulaSwitch = new Action() {
-			{
-				setImageDescriptor(ImageType.NUMBER_ICON.getDescriptor());
-				setText(Messages.ShowValues);
-			}
-
-			@Override
-			public void run() {
-				showFormulas = !showFormulas;
-				if (showFormulas) {
-					setImageDescriptor(ImageType.NUMBER_ICON.getDescriptor());
-					setText(Messages.ShowValues);
-				} else {
-					setImageDescriptor(ImageType.FORMULA_ICON.getDescriptor());
-					setText(Messages.ShowFormulas);
-				}
-				viewer.refresh();
-			}
-		};
+		Action formulaSwitch = new FormulaSwitchAction();
+		Action clipboard = TableClipboard.onCopy(viewer);
 		Actions.bind(section, add, remove, formulaSwitch);
-		Actions.bind(viewer, add, remove);
+		Actions.bind(viewer, add, remove, clipboard);
+		Tables.onDeletePressed(viewer, (e) -> onRemove());
 	}
 
 	private void bindDoubleClick(final TableViewer viewer) {
@@ -509,6 +494,27 @@ class ExchangeTable implements ParameterPageListener {
 				return !forInputs;
 			else
 				return exchange.isInput() == forInputs;
+		}
+	}
+
+	private class FormulaSwitchAction extends Action {
+
+		public FormulaSwitchAction() {
+			setImageDescriptor(ImageType.NUMBER_ICON.getDescriptor());
+			setText(Messages.ShowValues);
+		}
+
+		@Override
+		public void run() {
+			showFormulas = !showFormulas;
+			if (showFormulas) {
+				setImageDescriptor(ImageType.NUMBER_ICON.getDescriptor());
+				setText(Messages.ShowValues);
+			} else {
+				setImageDescriptor(ImageType.FORMULA_ICON.getDescriptor());
+				setText(Messages.ShowFormulas);
+			}
+			viewer.refresh();
 		}
 	}
 
