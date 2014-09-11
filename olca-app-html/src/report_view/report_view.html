@@ -22,53 +22,62 @@
 				<div data-ng-repeat="section in report.sections" class="col-sm-12 box-row1">
 					<h3 style="text-align: center">{{section.title}}</h3>
 					<p style="text-align: justify" data-ng-bind-html="section.text"></p>
-                    <div 
-						data-ng-if="section.componentId === 'variant_description_table'" 
-						data-ng-include src="'variant_description_table.html'">
+					
+                    <div data-ng-if="section.componentId === 'variant_description_table'">
+						//@include('./templates/variant_description_table.html')
 					</div>
-					<div 
-						data-ng-if="section.componentId === 'indicator_description_table'" 
-						data-ng-include src="'indicator_description_table.html'"></div>
-                    <div 
-						data-ng-if="section.componentId === 'parameter_description_table'" 
-						data-ng-include src="'parameter_description_table.html'"></div>
-                    <div 
-						data-ng-if="section.componentId === 'parameter_value_table'" 
-						data-ng-include src="'parameter_value_table.html'"></div>
-					<div 
-						id="result-charts-include-container" 
-						data-ng-if="section.componentId === 'total_result_chart'" 
-						data-ng-include src="'total-result-charts.html'"></div>
-					<div 
-						data-ng-if="section.componentId === 'process_contribution_chart'" 
-						data-ng-include src="'process_contribution_chart.html'"></div>
-					<div 
-						data-ng-if="section.componentId === 'impact_result_table'" 
-						data-ng-include src="'impact_result_table.html'"></div>
-                    <div 
-						data-ng-if="section.componentId === 'normalisation_result_table' && report.withNormalisation" 
-						data-ng-include="'normalisation_result_table.html'"></div>
-                    <div 
-						data-ng-if="section.componentId === 'single_score_table' && report.withWeighting" 
-						data-ng-include="'single_score_table.html'"></div>
-					<div
-						data-ng-if="section.componentId === 'indicator_bar_chart'"
-						data-ng-include="'indicator_bar_chart.html'"></div>
-					<div
-						data-ng-if="section.componentId === 'relative_indicator_bar_chart'"
-						data-ng-include="'relative_indicator_bar_chart.html'"></div>
-					<div
-						data-ng-if="section.componentId === 'normalisation_bar_chart'"
-						data-ng-include="'normalisation_bar_chart.html'"></div>
-					<div
-						data-ng-if="section.componentId === 'relative_indicator_radar_chart'"
-						data-ng-include="'relative_indicator_radar_chart.html'"></div>
-					<div
-						data-ng-if="section.componentId === 'normalisation_radar_chart'"
-						data-ng-include="'normalisation_radar_chart.html'"></div>
-					<div
-						data-ng-if="section.componentId === 'single_score_bar_chart'"
-						data-ng-include="'single_score_bar_chart.html'"></div>
+					
+					<div data-ng-if="section.componentId === 'indicator_description_table'">
+						//@include('./templates/indicator_description_table.html')
+					</div>
+					
+                    <div data-ng-if="section.componentId === 'parameter_description_table'">
+						//@include('./templates/parameter_description_table.html')
+					</div>
+					
+                    <div data-ng-if="section.componentId === 'parameter_value_table'">
+						//@include('./templates/parameter_value_table.html')
+					</div>
+					
+					<div data-ng-if="section.componentId === 'process_contribution_chart'">
+						//@include('./templates/process_contribution_chart.html')	
+					</div>
+					
+					<div data-ng-if="section.componentId === 'impact_result_table'">
+						//@include('./templates/impact_result_table.html')	
+					</div>
+					
+                    <div data-ng-if="section.componentId === 'normalisation_result_table' && report.withNormalisation">
+						//@include('./templates/normalisation_result_table.html')	
+					</div>
+					
+                    <div data-ng-if="section.componentId === 'single_score_table' && report.withWeighting">
+						//@include('./templates/single_score_table.html')
+					</div>
+					
+					<div data-ng-if="section.componentId === 'indicator_bar_chart'">
+						//@include('./templates/indicator_bar_chart.html')	
+					</div>
+					
+					<div data-ng-if="section.componentId === 'relative_indicator_bar_chart'">
+						//@include('./templates/relative_indicator_bar_chart.html')
+					</div>
+					
+					<div data-ng-if="section.componentId === 'normalisation_bar_chart'">
+						//@include('./templates/normalisation_bar_chart.html')	
+					</div>
+					
+					<div data-ng-if="section.componentId === 'relative_indicator_radar_chart'">
+						//@include('./templates/relative_indicator_radar_chart.html')
+					</div>
+					
+					<div data-ng-if="section.componentId === 'normalisation_radar_chart'">
+						//@include('./templates/normalisation_radar_chart.html')
+					</div>
+					
+					<div data-ng-if="section.componentId === 'single_score_bar_chart'">
+						//@include('./templates/single_score_bar_chart.html')
+					</div>
 				</div>
 			</div>
 		</div>
@@ -79,63 +88,7 @@
 	<script src="libs/angular-sanitize.min.js"></script>
     <script src="libs/Chart.min.js"></script>
 	<script src="libs/Chart.StackedBar.js"></script>
- 
-	<script type="text/ng-template" id="variant_description_table.html">
-		//@include('./templates/variant_description_table.html')
-	</script>
-
-    <script type="text/ng-template" id="indicator_description_table.html">
-		//@include('./templates/indicator_description_table.html')
-    </script>
-
-    <script type="text/ng-template" id="parameter_description_table.html">
-		//@include('./templates/parameter_description_table.html')
-    </script>
-
-    <script type="text/ng-template" id="parameter_value_table.html">
-        //@include('./templates/parameter_value_table.html')
-    </script>
-
-	<script type="text/ng-template" id="impact_result_table.html">
-		//@include('./templates/impact_result_table.html')
-	</script>
-
-    <script type="text/ng-template" id="normalisation_result_table.html">
-        //@include('./templates/normalisation_result_table.html')
-    </script>
-
-    <script type="text/ng-template" id="single_score_table.html">
-		//@include('./templates/single_score_table.html')
-    </script>
-
-	<script type="text/ng-template" id="indicator_bar_chart.html">
-		//@include('./templates/indicator_bar_chart.html')
-	</script>
 	
-	<script type="text/ng-template" id="relative_indicator_bar_chart.html">
-		//@include('./templates/relative_indicator_bar_chart.html')
-	</script>
-	
-	<script type="text/ng-template" id="normalisation_bar_chart.html">
-		//@include('./templates/normalisation_bar_chart.html')
-	</script>
-	
-	<script type="text/ng-template" id="relative_indicator_radar_chart.html">
-		//@include('./templates/relative_indicator_radar_chart.html')
-	</script>
-	
-	<script type="text/ng-template" id="normalisation_radar_chart.html">
-		//@include('./templates/normalisation_radar_chart.html')
-	</script>
-	
-	<script type="text/ng-template" id="single_score_bar_chart.html">
-		//@include('./templates/single_score_bar_chart.html')
-	</script>
-	
-	<script type="text/ng-template" id="process_contribution_chart.html">
-		//@include('./templates/process_contribution_chart.html')
-	</script>
-
     <script type="text/javascript">
 		
 		//@include('../js/Colors.js')
@@ -168,7 +121,7 @@
 		app.directive("contributionChart", ContributionChart);
 		
 		function setData(report) {
-			//@include('./js/Initializer.js');
+			//@include('./js/Initializer.js')
 			Initializer(report);
         }
 
