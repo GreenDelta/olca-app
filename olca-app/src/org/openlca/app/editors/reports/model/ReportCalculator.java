@@ -1,5 +1,9 @@
 package org.openlca.app.editors.reports.model;
 
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
+
 import org.openlca.app.App;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
@@ -17,10 +21,6 @@ import org.openlca.core.results.ImpactResult;
 import org.openlca.core.results.ProjectResultProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
 
 public class ReportCalculator implements Runnable {
 
@@ -47,6 +47,41 @@ public class ReportCalculator implements Runnable {
 		appendResults(projectResult);
 		if (project.getNwSetId() != null)
 			appendNwFactors();
+	}
+
+	private ProjectResultProvider calcProject(Project project) {
+		try {
+			ProjectCalculator calculator = new ProjectCalculator(
+					Cache.getMatrixCache(), App.getSolver());
+			return calculator.solve(project, Cache.getEntityCache());
+		} catch (Exception e) {
+			log.error("Calculation of project failed", e);
+			return null;
+		}
+	}
+
+	private void appendNwFactors() {
+		try {
+			NwSetTable table = NwSetTable.build(Database.get(),
+					project.getNwSetId());
+			report.setWithNormalisation(table.hasNormalisationFactors());
+			report.setWithWeighting(table.hasWeightingFactors());
+			for (ReportIndicator indicator : report.getIndicators()) {
+				if (indicator.getDescriptor() == null)
+					continue;
+				long categoryId = indicator.getDescriptor().getId();
+				if (table.hasNormalisationFactors()) {
+					double nf = table.getNormalisationFactor(categoryId);
+					indicator.setNormalisationFactor(nf);
+				}
+				if (table.hasWeightingFactors()) {
+					double wf = table.getWeightingFactor(categoryId);
+					indicator.setWeightingFactor(wf);
+				}
+			}
+		} catch (Exception e) {
+			log.error("failed to load normalisation/weighting factors", e);
+		}
 	}
 
 	private void appendResults(ProjectResultProvider result) {
@@ -88,19 +123,27 @@ public class ReportCalculator implements Runnable {
 		rest.setProcessId(-1);
 		rest.setAmount(0);
 		Set<Long> ids = getContributionProcessIds();
+		Set<Long> foundIds = new TreeSet<>();
 		for (ContributionItem<ProcessDescriptor> item : set.getContributions()) {
 			if (item.getItem() == null)
 				continue;
 			if (!ids.contains(item.getItem().getId()))
 				rest.setAmount(rest.getAmount() + item.getAmount());
 			else {
-				Contribution con = new Contribution();
-				varResult.getContributions().add(con);
-				con.setAmount(item.getAmount());
-				con.setRest(false);
-				con.setProcessId(item.getItem().getId());
+				foundIds.add(item.getItem().getId());
+				addContribution(varResult, item);
 			}
 		}
+		addDefaultContributions(ids, foundIds, varResult);
+	}
+
+	private void addContribution(VariantResult varResult,
+			ContributionItem<ProcessDescriptor> item) {
+		Contribution con = new Contribution();
+		varResult.getContributions().add(con);
+		con.setAmount(item.getAmount());
+		con.setRest(false);
+		con.setProcessId(item.getItem().getId());
 	}
 
 	private Set<Long> getContributionProcessIds() {
@@ -113,39 +156,20 @@ public class ReportCalculator implements Runnable {
 		return ids;
 	}
 
-	private ProjectResultProvider calcProject(Project project) {
-		try {
-			ProjectCalculator calculator = new ProjectCalculator(
-					Cache.getMatrixCache(), App.getSolver());
-			return calculator.solve(project, Cache.getEntityCache());
-		} catch (Exception e) {
-			log.error("Calculation of project failed", e);
-			return null;
+	/**
+	 * Add zero-contributions for processes that were not found in a variant
+	 * result.
+	 */
+	private void addDefaultContributions(Set<Long> ids, Set<Long> foundIds,
+			VariantResult varResult) {
+		TreeSet<Long> notFound = new TreeSet<>(ids);
+		notFound.removeAll(foundIds);
+		for (long id : notFound) {
+			Contribution con = new Contribution();
+			varResult.getContributions().add(con);
+			con.setAmount(0);
+			con.setRest(false);
+			con.setProcessId(id);
 		}
-	}
-
-	private void appendNwFactors() {
-		try {
-			NwSetTable table = NwSetTable.build(Database.get(),
-					project.getNwSetId());
-			report.setWithNormalisation(table.hasNormalisationFactors());
-			report.setWithWeighting(table.hasWeightingFactors());
-			for (ReportIndicator indicator : report.getIndicators()) {
-				if (indicator.getDescriptor() == null)
-					continue;
-				long categoryId = indicator.getDescriptor().getId();
-				if (table.hasNormalisationFactors()) {
-					double nf = table.getNormalisationFactor(categoryId);
-					indicator.setNormalisationFactor(nf);
-				}
-				if (table.hasWeightingFactors()) {
-					double wf = table.getWeightingFactor(categoryId);
-					indicator.setWeightingFactor(wf);
-				}
-			}
-		} catch (Exception e) {
-			log.error("failed to load normalisation/weighting factors", e);
-		}
-
 	}
 }
