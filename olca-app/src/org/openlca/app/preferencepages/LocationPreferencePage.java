@@ -40,6 +40,7 @@ import org.openlca.app.components.delete.DeleteWizard;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Question;
+import org.openlca.app.util.TableClipboard;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
 import org.openlca.app.viewers.BaseNameSorter;
@@ -133,19 +134,8 @@ public class LocationPreferencePage extends PreferencePage implements
 				c.pack();
 		}
 
-		// create table's tool bar
-		final ToolBarManager locationBar = new ToolBarManager();
-		addLocationAction = new AddLocationAction();
-		removeLocationAction = new RemoveLocationAction();
-		locationBar.add(addLocationAction);
-		locationBar.add(removeLocationAction);
-
-		// create table's popup menu
-		final MenuManager locationMenu = new MenuManager();
-		section.setTextClient(locationBar.createControl(section));
-		locationMenu.add(addLocationAction);
-		locationMenu.add(removeLocationAction);
-		table.setMenu(locationMenu.createContextMenu(table));
+		createToolbar(section);
+		createMenu(table);
 
 		addLocationAction.setEnabled(false);
 		removeLocationAction.setEnabled(false);
@@ -167,6 +157,24 @@ public class LocationPreferencePage extends PreferencePage implements
 		initListeners();
 		initData();
 		return body;
+	}
+
+	private void createMenu(final Table table) {
+		MenuManager menu = new MenuManager();
+		menu.add(addLocationAction);
+		menu.add(removeLocationAction);
+		Action copy = TableClipboard.onCopy(table);
+		menu.add(copy);
+		table.setMenu(menu.createContextMenu(table));
+	}
+
+	private void createToolbar(final Section section) {
+		ToolBarManager toolBar = new ToolBarManager();
+		section.setTextClient(toolBar.createControl(section));
+		addLocationAction = new AddLocationAction();
+		removeLocationAction = new RemoveLocationAction();
+		toolBar.add(addLocationAction);
+		toolBar.add(removeLocationAction);
 	}
 
 	@Override

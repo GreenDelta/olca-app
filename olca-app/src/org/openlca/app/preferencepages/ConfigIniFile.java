@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.osgi.service.datalocation.Location;
+import org.openlca.util.OS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,8 +70,10 @@ class ConfigIniFile {
 		Location location = Platform.getInstallLocation();
 		URL url = location.getURL();
 		File installDir = new File(url.getFile());
-		File iniFile = new File(installDir, "openLCA.ini");
-		return iniFile;
+		if (OS.getCurrent() != OS.Mac)
+			return new File(installDir, "openLCA.ini");
+		else
+			return new File(installDir, "Contents/MacOS/openLCA.ini");
 	}
 
 	private static ConfigIniFile parseFile(File iniFile) throws Exception {

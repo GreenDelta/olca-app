@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.Table;
 import org.openlca.app.Messages;
 import org.openlca.app.components.UncertaintyCellEditor;
 import org.openlca.app.util.Error;
+import org.openlca.app.util.TableClipboard;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UncertaintyLabel;
 import org.openlca.app.util.Viewers;
@@ -66,6 +67,8 @@ class DatabaseParameterTable {
 		MenuManager menu = new MenuManager();
 		for (Action action : actions)
 			menu.add(action);
+		Action copy = TableClipboard.onCopy(table);
+		menu.add(copy);
 		table.setMenu(menu.createContextMenu(table));
 	}
 
