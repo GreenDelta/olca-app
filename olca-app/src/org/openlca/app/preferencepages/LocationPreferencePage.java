@@ -10,10 +10,8 @@ import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.viewers.Viewer;
@@ -61,6 +59,8 @@ public class LocationPreferencePage extends PreferencePage implements
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
 	private AddLocationAction addLocationAction;
+	private RemoveLocationAction removeLocationAction;
+
 	private IDatabase database;
 	private final List<Location> locations = new ArrayList<>();
 	private TableViewer locationViewer;
@@ -74,8 +74,6 @@ public class LocationPreferencePage extends PreferencePage implements
 
 	private final String[] PROPERTIES = new String[] { NAME, DESCRIPTION, CODE,
 			LATITUDE, LONGITUDE };
-
-	private RemoveLocationAction removeLocationAction;
 
 	@Override
 	public void init(final IWorkbench workbench) {
@@ -107,7 +105,7 @@ public class LocationPreferencePage extends PreferencePage implements
 		section.setClient(composite);
 
 		// create table viewer for displaying locations
-		locationViewer = new TableViewer(composite, SWT.BORDER
+		locationViewer = new TableViewer(composite, SWT.BORDER | SWT.MULTI
 				| SWT.FULL_SELECTION | SWT.NO_REDRAW_RESIZE | SWT.V_SCROLL);
 		locationViewer.setContentProvider(new ArrayContentProvider());
 		locationViewer.setSorter(new BaseNameSorter());
@@ -134,11 +132,12 @@ public class LocationPreferencePage extends PreferencePage implements
 				c.pack();
 		}
 
-		createToolbar(section);
-		createMenu(table);
-
+		addLocationAction = new AddLocationAction();
+		removeLocationAction = new RemoveLocationAction();
 		addLocationAction.setEnabled(false);
 		removeLocationAction.setEnabled(false);
+
+		createActionBars(section, table);
 
 		// create cell editors
 		final CellEditor[] editors = new CellEditor[PROPERTIES.length];
@@ -159,22 +158,16 @@ public class LocationPreferencePage extends PreferencePage implements
 		return body;
 	}
 
-	private void createMenu(final Table table) {
-		MenuManager menu = new MenuManager();
-		menu.add(addLocationAction);
-		menu.add(removeLocationAction);
-		Action copy = TableClipboard.onCopy(table);
-		menu.add(copy);
-		table.setMenu(menu.createContextMenu(table));
-	}
-
-	private void createToolbar(final Section section) {
-		ToolBarManager toolBar = new ToolBarManager();
-		section.setTextClient(toolBar.createControl(section));
-		addLocationAction = new AddLocationAction();
-		removeLocationAction = new RemoveLocationAction();
-		toolBar.add(addLocationAction);
-		toolBar.add(removeLocationAction);
+	private void createActionBars(final Section section, final Table table) {
+		ToolBarManager locationBar = new ToolBarManager();
+		locationBar.add(addLocationAction);
+		locationBar.add(removeLocationAction);
+		MenuManager locationMenu = new MenuManager();
+		section.setTextClient(locationBar.createControl(section));
+		locationMenu.add(addLocationAction);
+		locationMenu.add(removeLocationAction);
+		locationMenu.add(TableClipboard.onCopy(table));
+		table.setMenu(locationMenu.createContextMenu(table));
 	}
 
 	@Override
@@ -189,19 +182,13 @@ public class LocationPreferencePage extends PreferencePage implements
 	}
 
 	private void initListeners() {
-		locationViewer
-				.addSelectionChangedListener(new ISelectionChangedListener() {
-
-					@Override
-					public void selectionChanged(
-							final SelectionChangedEvent event) {
-						if (event.getSelection().isEmpty()) {
-							removeLocationAction.setEnabled(false);
-						} else {
-							removeLocationAction.setEnabled(true);
-						}
-					}
-				});
+		locationViewer.addSelectionChangedListener((event) -> {
+			if (event.getSelection().isEmpty()) {
+				removeLocationAction.setEnabled(false);
+			} else {
+				removeLocationAction.setEnabled(true);
+			}
+		});
 	}
 
 	private void initData() {
