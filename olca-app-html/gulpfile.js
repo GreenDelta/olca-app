@@ -13,7 +13,12 @@ gulp.task('pages', function() {
 				basepath: '@file'
 			}))
 			.pipe(gulp.dest('build'));
-	gulp.src('src/start_page/*').pipe(gulp.dest('build'));
+	gulp.src('src/start_page/*.html')
+			.pipe(fileinclude({
+				prefix: '//@',
+				basepath: '@file'
+			}))
+			.pipe(gulp.dest('build'));	
 	gulp.src('src/bubble_chart/bubble_chart.html').pipe(gulp.dest('build'));
 	gulp.src('src/*.html').pipe(gulp.dest('build'));
 	gulp.src('src/devtools/*').pipe(gulp.dest('build'));
