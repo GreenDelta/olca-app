@@ -17,7 +17,12 @@ ContributionChart = function() {
 				var dist = 400 / (2 * scope.report.variants.length);
 				if (dist < 5)
 					dist = 5;
-				chart = new Chart(canvas.getContext("2d")).StackedBar(data, {barDatasetSpacing: dist, barValueSpacing: dist});
+				chart = new Chart(canvas.getContext("2d")).StackedBar(data, {
+					barDatasetSpacing: dist, 
+					barValueSpacing: dist,
+					tooltipTemplate: "<%if (label){%><%=label%>: <%}%><%= value.toExponential(2) %>",
+					multiTooltipTemplate: "<%= value.toExponential(2) %>"
+				});
 			}
 
 		});

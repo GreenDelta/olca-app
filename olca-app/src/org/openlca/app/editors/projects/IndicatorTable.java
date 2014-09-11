@@ -44,7 +44,7 @@ class IndicatorTable {
 		ModifySupport<ReportIndicator> modifySupport = new ModifySupport<>(
 				viewer);
 		modifySupport.bind("Display", new DisplayModifier());
-		modifySupport.bind(Messages.UserFriendlyName, new NameModifier());
+		modifySupport.bind("Report name", new NameModifier());
 		modifySupport.bind(Messages.Description, new DescriptionModifier());
 		if (editor.getReport() != null)
 			viewer.setInput(editor.getReport().getIndicators());
