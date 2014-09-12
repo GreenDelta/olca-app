@@ -8,14 +8,12 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.FlowPropertyViewer;
 import org.openlca.app.viewers.combo.FlowTypeViewer;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.FlowType;
-import org.openlca.core.model.descriptors.FlowPropertyDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,14 +56,7 @@ class FlowWizardPage extends AbstractWizardPage<Flow> {
 	protected void initModifyListeners() {
 		super.initModifyListeners();
 		referenceFlowPropertyViewer
-				.addSelectionChangedListener(new ISelectionChangedListener<FlowPropertyDescriptor>() {
-
-					@Override
-					public void selectionChanged(FlowPropertyDescriptor selected) {
-						checkInput();
-					}
-
-				});
+				.addSelectionChangedListener((s) -> checkInput());
 	}
 
 	@Override

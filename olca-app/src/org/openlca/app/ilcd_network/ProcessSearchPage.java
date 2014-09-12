@@ -5,9 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -84,7 +82,14 @@ public class ProcessSearchPage extends WizardPage {
 		table.setHeaderVisible(true);
 		table.setLinesVisible(false);
 		viewer = new SearchResultViewer(table);
-		viewer.addSelectionChangedListener(new SelectionChange());
+		viewer.addSelectionChangedListener((event) -> {
+			ISelection selection = event.getSelection();
+			if (selection == null || selection.isEmpty()) {
+				setPageComplete(false);
+			} else {
+				setPageComplete(true);
+			}
+		});
 	}
 
 	private void runSearch(String term) {
@@ -119,18 +124,6 @@ public class ProcessSearchPage extends WizardPage {
 				runSearch(text.getText());
 		}
 
-	}
-
-	private class SelectionChange implements ISelectionChangedListener {
-		@Override
-		public void selectionChanged(SelectionChangedEvent event) {
-			ISelection selection = event.getSelection();
-			if (selection == null || selection.isEmpty()) {
-				setPageComplete(false);
-			} else {
-				setPageComplete(true);
-			}
-		}
 	}
 
 	public List<ProcessDescriptor> getSelectedProcesses() {

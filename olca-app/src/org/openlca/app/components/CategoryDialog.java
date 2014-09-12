@@ -1,8 +1,6 @@
 package org.openlca.app.components;
 
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
@@ -50,7 +48,14 @@ public class CategoryDialog extends Dialog {
 				modelType);
 		viewer.setFilters(new ViewerFilter[] { new Filter() });
 		UI.gridData(viewer.getTree(), true, true);
-		viewer.addSelectionChangedListener(new SelectionListener());
+		viewer.addSelectionChangedListener((e) -> {
+			INavigationElement<?> element = Viewers.getFirst(e.getSelection());
+			if (element instanceof CategoryElement) {
+				category = (Category) element.getContent();
+			} else {
+				category = null;
+			}
+		});
 	}
 
 	@Override
@@ -68,19 +73,6 @@ public class CategoryDialog extends Dialog {
 				Object element) {
 			return element instanceof CategoryElement
 					|| element instanceof ModelTypeElement;
-		}
-	}
-
-	private class SelectionListener implements ISelectionChangedListener {
-
-		@Override
-		public void selectionChanged(final SelectionChangedEvent event) {
-			INavigationElement<?> element = Viewers.getFirst(event
-					.getSelection());
-			if (element instanceof CategoryElement)
-				category = (Category) element.getContent();
-			else
-				category = null;
 		}
 	}
 }

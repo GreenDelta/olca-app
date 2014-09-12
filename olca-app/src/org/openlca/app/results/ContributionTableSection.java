@@ -14,7 +14,6 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.app.viewers.combo.FlowViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
@@ -93,12 +92,7 @@ public class ContributionTableSection {
 		Set<FlowDescriptor> set = provider.getFlowDescriptors();
 		FlowDescriptor[] flows = set.toArray(new FlowDescriptor[set.size()]);
 		viewer.setInput(flows);
-		viewer.addSelectionChangedListener(new ISelectionChangedListener<FlowDescriptor>() {
-			@Override
-			public void selectionChanged(FlowDescriptor selection) {
-				refreshValues();
-			}
-		});
+		viewer.addSelectionChangedListener((selection) -> refreshValues());
 		this.itemViewer = viewer;
 	}
 
@@ -108,12 +102,7 @@ public class ContributionTableSection {
 		ImpactCategoryDescriptor[] impacts = set
 				.toArray(new ImpactCategoryDescriptor[set.size()]);
 		viewer.setInput(impacts);
-		viewer.addSelectionChangedListener(new ISelectionChangedListener<ImpactCategoryDescriptor>() {
-			@Override
-			public void selectionChanged(ImpactCategoryDescriptor selection) {
-				refreshValues();
-			}
-		});
+		viewer.addSelectionChangedListener((selection) -> refreshValues());
 		this.itemViewer = viewer;
 	}
 

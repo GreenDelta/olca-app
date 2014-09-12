@@ -9,7 +9,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.Messages;
-import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.app.viewers.combo.FlowViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
@@ -109,8 +108,7 @@ public class FlowImpactSelection {
 				.toArray(new FlowDescriptor[flows.size()]);
 		flowViewer.setInput(input);
 		flowViewer.selectFirst();
-		flowViewer
-				.addSelectionChangedListener(new SelectionChange<FlowDescriptor>());
+		flowViewer.addSelectionChangedListener((val) -> fireSelection());
 		if (initialSelection instanceof FlowDescriptor)
 			flowViewer.select((FlowDescriptor) initialSelection);
 
@@ -126,8 +124,7 @@ public class FlowImpactSelection {
 		impactViewer.setEnabled(typeImpact);
 		impactViewer.setInput(impacts);
 		impactViewer.selectFirst();
-		impactViewer
-				.addSelectionChangedListener(new SelectionChange<ImpactCategoryDescriptor>());
+		impactViewer.addSelectionChangedListener((val) -> fireSelection());
 		if (initialSelection instanceof ImpactCategoryDescriptor)
 			impactViewer.select((ImpactCategoryDescriptor) initialSelection);
 
@@ -141,13 +138,6 @@ public class FlowImpactSelection {
 			eventHandler.flowSelected(flowViewer.getSelected());
 		else {
 			eventHandler.impactCategorySelected(impactViewer.getSelected());
-		}
-	}
-
-	private class SelectionChange<T> implements ISelectionChangedListener<T> {
-		@Override
-		public void selectionChanged(T value) {
-			fireSelection();
 		}
 	}
 

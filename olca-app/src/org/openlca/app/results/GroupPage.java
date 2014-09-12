@@ -9,9 +9,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
@@ -152,16 +150,11 @@ public class GroupPage extends FormPage {
 		configureViewer(groupViewer);
 		groupViewer.setInput(groups);
 		Actions.bind(groupViewer, new DeleteGroupAction());
-		groupViewer
-				.addSelectionChangedListener(new ISelectionChangedListener() {
-					@Override
-					public void selectionChanged(SelectionChangedEvent event) {
-						ProcessGrouping g = Viewers.getFirst(event
-								.getSelection());
-						if (g != null)
-							processViewer.setInput(g.getProcesses());
-					}
-				});
+		groupViewer.addSelectionChangedListener((e) -> {
+			ProcessGrouping g = Viewers.getFirst(e.getSelection());
+			if (g != null)
+				processViewer.setInput(g.getProcesses());
+		});
 	}
 
 	private void configureViewer(TableViewer viewer) {

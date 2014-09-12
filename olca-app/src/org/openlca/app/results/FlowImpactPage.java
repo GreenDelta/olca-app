@@ -24,10 +24,8 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
 import org.openlca.core.model.descriptors.FlowDescriptor;
-import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.ContributionItem;
 import org.openlca.core.results.ContributionResultProvider;
 import org.openlca.core.results.ContributionSet;
@@ -71,18 +69,14 @@ public class FlowImpactPage extends FormPage {
 		UI.formLabel(selectionContainer, toolkit, Messages.ImpactCategory);
 		impactCombo = new ImpactCategoryViewer(selectionContainer);
 		impactCombo.setInput(result.getImpactDescriptors());
-		impactCombo
-				.addSelectionChangedListener(new ISelectionChangedListener<ImpactCategoryDescriptor>() {
-					@Override
-					public void selectionChanged(ImpactCategoryDescriptor impact) {
-						ContributionSet<FlowDescriptor> contributions = result
-								.getFlowContributions(impact);
-						List<ContributionItem<FlowDescriptor>> items = contributions
-								.getContributions();
-						Contributions.sortDescending(items);
-						flowViewer.setInput(items);
-					}
-				});
+		impactCombo.addSelectionChangedListener((impact) -> {
+			ContributionSet<FlowDescriptor> contributions = result
+					.getFlowContributions(impact);
+			List<ContributionItem<FlowDescriptor>> items = contributions
+					.getContributions();
+			Contributions.sortDescending(items);
+			flowViewer.setInput(items);
+		});
 		UI.formLabel(selectionContainer, toolkit, Messages.Cutoff);
 		spinner = new Spinner(selectionContainer, SWT.BORDER);
 		spinner.setValues(1, 0, 10000, 2, 1, 100);

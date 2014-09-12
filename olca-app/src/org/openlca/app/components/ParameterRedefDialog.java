@@ -9,10 +9,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
@@ -230,11 +228,8 @@ public class ParameterRedefDialog extends FormDialog {
 				return compareNodes(e1, e2);
 			}
 		});
-		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
-			@Override
-			public void selectionChanged(SelectionChangedEvent event) {
-				selection = (IStructuredSelection) event.getSelection();
-			}
+		viewer.addSelectionChangedListener((event) -> {
+			selection = (IStructuredSelection) event.getSelection();
 		});
 	}
 

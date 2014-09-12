@@ -31,7 +31,6 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.ProcessViewer;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.matrix.FlowIndex;
@@ -135,15 +134,11 @@ class ProcessResultPage extends FormPage {
 		UI.formLabel(container, toolkit, Messages.Process);
 		flowProcessViewer = new ProcessViewer(container, cache);
 		flowProcessViewer.setInput(editor.getSetup().getProductSystem());
-		flowProcessViewer
-				.addSelectionChangedListener(new ISelectionChangedListener<ProcessDescriptor>() {
-					@Override
-					public void selectionChanged(ProcessDescriptor selection) {
-						flowResultProvider.setProcess(selection);
-						inputViewer.refresh();
-						outputViewer.refresh();
-					}
-				});
+		flowProcessViewer.addSelectionChangedListener((selection) -> {
+			flowResultProvider.setProcess(selection);
+			inputViewer.refresh();
+			outputViewer.refresh();
+		});
 
 		UI.formLabel(container, toolkit, Messages.Cutoff);
 		flowSpinner = new Spinner(container, SWT.BORDER);
@@ -187,14 +182,10 @@ class ProcessResultPage extends FormPage {
 		UI.formLabel(container, toolkit, Messages.Process);
 		impactProcessViewer = new ProcessViewer(container, cache);
 		impactProcessViewer.setInput(editor.getSetup().getProductSystem());
-		impactProcessViewer
-				.addSelectionChangedListener(new ISelectionChangedListener<ProcessDescriptor>() {
-					@Override
-					public void selectionChanged(ProcessDescriptor selection) {
-						impactResultProvider.setProcess(selection);
-						impactViewer.refresh();
-					}
-				});
+		impactProcessViewer.addSelectionChangedListener((selection) -> {
+			impactResultProvider.setProcess(selection);
+			impactViewer.refresh();
+		});
 		UI.formLabel(container, toolkit, Messages.Cutoff);
 		impactSpinner = new Spinner(container, SWT.BORDER);
 		impactSpinner.setValues(1, 0, 10000, 2, 1, 100);

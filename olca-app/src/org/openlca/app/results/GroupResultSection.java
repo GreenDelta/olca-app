@@ -16,7 +16,6 @@ import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.app.viewers.combo.FlowViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
@@ -120,8 +119,7 @@ class GroupResultSection {
 		flowViewer = new FlowViewer(parent, cache);
 		Set<FlowDescriptor> flows = result.getFlowDescriptors();
 		flowViewer.setInput(flows.toArray(new FlowDescriptor[flows.size()]));
-		flowViewer
-				.addSelectionChangedListener(new SelectionChange<FlowDescriptor>());
+		flowViewer.addSelectionChangedListener((e) -> update());
 		if (flows.size() > 0)
 			flowViewer.select(flows.iterator().next());
 		new ResultTypeCheck(flowViewer, flowsCheck, FLOW);
@@ -134,19 +132,10 @@ class GroupResultSection {
 		impactViewer.setEnabled(false);
 		Set<ImpactCategoryDescriptor> impacts = result.getImpactDescriptors();
 		impactViewer.setInput(impacts);
-		impactViewer
-				.addSelectionChangedListener(new SelectionChange<ImpactCategoryDescriptor>());
+		impactViewer.addSelectionChangedListener((e) -> update());
 		if (impacts.size() > 0)
 			impactViewer.select(impacts.iterator().next());
 		new ResultTypeCheck(impactViewer, impactCheck, IMPACT);
-	}
-
-	private class SelectionChange<T> implements ISelectionChangedListener<T> {
-
-		@Override
-		public void selectionChanged(T value) {
-			update();
-		}
 	}
 
 	private class ResultTypeCheck implements SelectionListener {

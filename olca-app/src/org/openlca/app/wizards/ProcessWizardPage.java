@@ -1,7 +1,5 @@
 package org.openlca.app.wizards;
 
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
@@ -139,13 +137,7 @@ class ProcessWizardPage extends AbstractWizardPage<Process> {
 				FlowType.WASTE_FLOW));
 		productViewer.addFilter(new EmptyCategoryFilter());
 		productViewer.addFilter(new ModelTextFilter(filterText, productViewer));
-		productViewer
-				.addSelectionChangedListener(new ISelectionChangedListener() {
-					@Override
-					public void selectionChanged(SelectionChangedEvent event) {
-						checkInput();
-					}
-				});
+		productViewer.addSelectionChangedListener((s) -> checkInput());
 		productViewer.setInput(Navigator.findElement(ModelType.FLOW));
 	}
 

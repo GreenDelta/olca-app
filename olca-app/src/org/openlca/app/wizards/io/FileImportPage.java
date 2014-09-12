@@ -5,11 +5,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
@@ -127,20 +125,13 @@ public class FileImportPage extends WizardPage {
 		directoryViewer.getTree().setLayoutData(gddv);
 		directoryViewer.setContentProvider(new DirectoryContentProvider());
 		directoryViewer.setLabelProvider(new FileLabelProvider());
-
-		directoryViewer
-				.addSelectionChangedListener(new ISelectionChangedListener() {
-
-					@Override
-					public void selectionChanged(SelectionChangedEvent event) {
-						if (!event.getSelection().isEmpty()) {
-							IStructuredSelection selection = (IStructuredSelection) event
-									.getSelection();
-							fileViewer.setInput(selection.getFirstElement());
-						}
-					}
-
-				});
+		directoryViewer.addSelectionChangedListener((e) -> {
+			if (!e.getSelection().isEmpty()) {
+				IStructuredSelection selection = (IStructuredSelection) e
+						.getSelection();
+				fileViewer.setInput(selection.getFirstElement());
+			}
+		});
 
 		// create table viewer to select a file from a selected sub directory
 		fileViewer = new TableViewer(chooseFileComposite, SWT.BORDER
@@ -151,23 +142,19 @@ public class FileImportPage extends WizardPage {
 		fileViewer.setContentProvider(new FileContentProvider());
 		fileViewer.setLabelProvider(new FileLabelProvider());
 
-		fileViewer.addSelectionChangedListener(new ISelectionChangedListener() {
-
-			@Override
-			public void selectionChanged(SelectionChangedEvent event) {
-				ISelection selection = event.getSelection();
-				if (!(selection instanceof IStructuredSelection)
-						|| selection.isEmpty()) {
-					setPageComplete(false);
-					return;
-				}
-				Object[] files = ((IStructuredSelection) selection).toArray();
-				selectedFiles = new File[files.length];
-				for (int i = 0; i < files.length; i++) {
-					selectedFiles[i] = (File) files[i];
-				}
-				setPageComplete(true);
+		fileViewer.addSelectionChangedListener((event) -> {
+			ISelection selection = event.getSelection();
+			if (!(selection instanceof IStructuredSelection)
+					|| selection.isEmpty()) {
+				setPageComplete(false);
+				return;
 			}
+			Object[] files = ((IStructuredSelection) selection).toArray();
+			selectedFiles = new File[files.length];
+			for (int i = 0; i < files.length; i++) {
+				selectedFiles[i] = (File) files[i];
+			}
+			setPageComplete(true);
 		});
 
 		setViewerInput();
