@@ -8,7 +8,12 @@ SingleScoreBarChart = function() {
 		if (dist < 5)
 			dist = 5;
 		var data = createChartData(scope);
-		new Chart(canvas.getContext("2d")).StackedBar(data, {barDatasetSpacing: dist, barValueSpacing: dist});
+		new Chart(canvas.getContext("2d")).StackedBar(data, {
+			barDatasetSpacing: dist, 
+			barValueSpacing: dist,
+			tooltipTemplate: "<%if (label){%><%=label%>: <%}%><%= value.toExponential(2) %>",
+			multiTooltipTemplate: "<%= value.toExponential(2) %>"
+		});
 	};
 
 	function createChartData(scope) {

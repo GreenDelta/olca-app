@@ -16,12 +16,19 @@ NormalisedIndicatorChart = function() {
 		}
 		var data = calculateDatasets(report, type);
 		if (type === 'relative_radar' || type === 'normalisation_radar') {
-			new Chart(canvas.getContext("2d")).Radar(data);
+			new Chart(canvas.getContext("2d")).Radar(data, {
+				tooltipTemplate: "<%if (label){%><%=label%>: <%}%><%= value.toExponential(2) %>",
+				multiTooltipTemplate: "<%= value.toExponential(2) %>"
+			});
 		} else if (type === 'relative_bar' || type === 'normalisation_bar') {
 			var dist = 400 / (2 * report.variants.length * scope.getDisplayedIndicators().length);
 			if (dist < 5)
 				dist = 5;
-			new Chart(canvas.getContext("2d")).Bar(data, {barValueSpacing: dist});
+			new Chart(canvas.getContext("2d")).Bar(data, {
+				barValueSpacing: dist,
+				tooltipTemplate: "<%if (label){%><%=label%>: <%}%><%= value.toExponential(2) %>",
+				multiTooltipTemplate: "<%= value.toExponential(2) %>"
+			});
 		}
 	};
 

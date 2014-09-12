@@ -18,7 +18,10 @@ IndicatorBarChart = function() {
 				if (dist < 10)
 					dist = 5;
 				chart = new Chart(canvas.getContext("2d")).Bar(data, {
-					barValueSpacing: dist});
+					barValueSpacing: dist,
+					tooltipTemplate: "<%if (label){%><%=label%>: <%}%><%= value.toExponential(2) %>",
+					multiTooltipTemplate: "<%= value.toExponential(2) %>"
+				});
 			}
 		});
 
