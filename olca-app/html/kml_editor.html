@@ -105,7 +105,7 @@
                 $(".tab-pane").hide();
                 $(id).show();
                 if (id == "#textDiv") {
-                    textEditor.setValue(prettifyKML(getKML()));
+                    textEditor.setValue(transformKML(prettifyKML(getKML())));
                 } else if (id == "#mapDiv") {
                     onDestroyFeatures()
                     setKML(textEditor.getValue())               
@@ -181,11 +181,8 @@
             }
             
             function onSave(overwrite) {              
-              if(editLayer.features && editLayer.features.length > 1) {
-                showError("There are more than one features on the map but only one is allowed");
-                return;
-              }
               var kml = getKML();
+              kml = transformKML(prettifyKML(kml));
                 if(typeof(doSave) == "function") {
                     doSave(kml, overwrite);
                 } else {

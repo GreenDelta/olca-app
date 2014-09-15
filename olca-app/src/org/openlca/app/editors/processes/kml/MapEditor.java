@@ -55,7 +55,7 @@ public class MapEditor implements HtmlPage {
 	private void openShell() {
 		shell.open();
 	}
-	
+
 	public void close() {
 		shell.close();
 	}
@@ -69,6 +69,7 @@ public class MapEditor implements HtmlPage {
 	public void onLoaded() {
 		registerSaveFunction();
 		registerPrettifyFunction();
+		registerTransformFunction();
 		if (kml == null)
 			kml = "";
 		try {
@@ -108,11 +109,23 @@ public class MapEditor implements HtmlPage {
 		};
 	}
 
+	private void registerTransformFunction() {
+		new BrowserFunction(browser, "transformKML") {
+			@Override
+			public Object function(Object[] arguments) {
+				String kml = getArg(arguments, 0);
+				if (kml == null || kml.isEmpty())
+					return null;
+				return KmlUtil.transformMultiPlacemarks(kml);
+			}
+		};
+	}
+
 	@SuppressWarnings("unchecked")
 	private <T> T getArg(Object[] args, int index) {
 		if (args.length <= index)
 			return null;
 		return (T) args[index];
 	}
-	
+
 }
