@@ -1,21 +1,23 @@
 package org.openlca.app.devtools.js;
 
-import org.openlca.app.App;
-import org.openlca.app.db.Database;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.IOException;
+import java.util.Properties;
 
 import javax.script.Bindings;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.SimpleBindings;
-import java.io.IOException;
-import java.util.Properties;
 
-public class JavaScript {
+import org.openlca.app.App;
+import org.openlca.app.db.Database;
+import org.openlca.app.devtools.ScriptApi;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-	public static void eval(String script) {
+class JavaScript {
+
+	static void eval(String script) {
 		try {
 			String fullScript = prependTypeDeclarations(script);
 			Bindings bindings = createBindings();
@@ -35,10 +37,13 @@ public class JavaScript {
 		bindings.put("app", App.class);
 		if (Database.get() != null)
 			bindings.put("db", Database.get());
+		ScriptApi scriptApi = new ScriptApi(Database.get());
+		bindings.put("olca", scriptApi);
 		return bindings;
 	}
 
-	private static String prependTypeDeclarations(String script) throws IOException {
+	private static String prependTypeDeclarations(String script)
+			throws IOException {
 		StringBuilder builder = new StringBuilder();
 		Properties properties = new Properties();
 		properties.load(JavaScript.class
