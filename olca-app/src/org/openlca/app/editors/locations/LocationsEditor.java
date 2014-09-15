@@ -42,6 +42,7 @@ public class LocationsEditor extends FormEditor implements IEditor {
 	void locationAdded(Location location) {
 		added.add(location);
 		locations.add(0, location);
+		setDirty(true);
 	}
 
 	void locationRemoved(Location location) {
@@ -50,12 +51,18 @@ public class LocationsEditor extends FormEditor implements IEditor {
 		else
 			removed.add(location);
 		locations.remove(location);
+		setDirty(true);
 	}
 
 	void locationChanged(Location location) {
 		if (added.contains(location))
 			return;
+		// since we did not load kmz from the beginning we need to do now,
+		// otherwise kmz would be overwritten with null on save
+		if (location.getKmz() == null)
+			location.setKmz(dao.getKmz(location.getId()));
 		changed.add(location);
+		setDirty(true);
 	}
 
 	@Override
@@ -72,7 +79,7 @@ public class LocationsEditor extends FormEditor implements IEditor {
 			throws PartInitException {
 		super.init(site, input);
 		dao = new LocationDao(Database.get());
-		locations = dao.getAll();
+		locations = dao.getAllWithoutKmz();
 		Collections.sort(locations, new LocationComparator());
 	}
 
@@ -129,7 +136,7 @@ public class LocationsEditor extends FormEditor implements IEditor {
 		added.clear();
 		removed.clear();
 		changed.clear();
-		locations = dao.getAll();
+		locations = dao.getAllWithoutKmz();
 		Collections.sort(locations, new LocationComparator());
 	}
 

@@ -24,14 +24,13 @@ import org.openlca.app.editors.processes.kml.EditorHandler;
 import org.openlca.app.editors.processes.kml.KmlUtil;
 import org.openlca.app.editors.processes.kml.MapEditor;
 import org.openlca.app.util.Error;
-import org.openlca.app.util.Labels;
 import org.openlca.app.util.Tables;
 import org.openlca.app.viewers.BaseLabelProvider;
 import org.openlca.app.viewers.table.AbstractTableViewer;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
+import org.openlca.core.database.LocationDao;
 import org.openlca.core.database.usage.IUseSearch;
 import org.openlca.core.model.Location;
-import org.openlca.core.model.LocationType;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.Descriptors;
@@ -45,16 +44,16 @@ class LocationViewer extends AbstractTableViewer<Location> {
 	private static final String COLUMN_LONGITUDE = "Longitude";
 	private static final String COLUMN_REF_ID = "Reference Id";
 	private static final String COLUMN_KML = "KML";
-	private static final String COLUMN_TYPE = "Type";
 	private static final String[] COLUMNS = { COLUMN_NAME, COLUMN_CODE,
-			COLUMN_LATITUDE, COLUMN_LONGITUDE, COLUMN_REF_ID, COLUMN_KML,
-			COLUMN_TYPE };
+			COLUMN_LATITUDE, COLUMN_LONGITUDE, COLUMN_REF_ID, COLUMN_KML };
 	private static final int KML_COLUMN = 5;
 	private LocationsEditor editor;
+	private LocationDao dao;
 
 	protected LocationViewer(LocationsEditor editor, Composite parent,
 			int heightHint) {
 		super(parent);
+		dao = new LocationDao(Database.get());
 		GridData layoutData = (GridData) getViewer().getTable().getLayoutData();
 		layoutData.heightHint = heightHint;
 		this.editor = editor;
@@ -86,7 +85,6 @@ class LocationViewer extends AbstractTableViewer<Location> {
 	void onAdd() {
 		Location location = new Location();
 		location.setName("New location");
-		location.setType(LocationType.GLOBAL);
 		editor.locationAdded(location);
 		setInput(editor.getLocations());
 		editor.setDirty(true);
@@ -144,12 +142,7 @@ class LocationViewer extends AbstractTableViewer<Location> {
 			case COLUMN_REF_ID:
 				return location.getRefId();
 			case COLUMN_KML:
-				if (location.getKmz() != null)
-					return KmlUtil.getDisplayText(location.getKmz())
-							+ " (edit)";
 				return "(edit)";
-			case COLUMN_TYPE:
-				return Labels.locationType(location);
 			}
 			return null;
 		}
@@ -278,9 +271,13 @@ class LocationViewer extends AbstractTableViewer<Location> {
 		private String getKml(Location location) {
 			if (location == null)
 				return null;
-			if (location.getKmz() == null)
+			if (location.getKmz() != null)
+				return KmlUtil.toKml(location.getKmz());
+			// load kml, it might not be loaded before / lazy kml loading
+			byte[] kmz = dao.getKmz(location.getId());
+			if (kmz == null)
 				return null;
-			return KmlUtil.toKml(location.getKmz());
+			return KmlUtil.toKml(kmz);
 		}
 	}
 
@@ -298,7 +295,6 @@ class LocationViewer extends AbstractTableViewer<Location> {
 			// ignore overwrite, always true in this case
 			location.setKmz(KmlUtil.toKmz(kml));
 			editor.locationChanged(location);
-			editor.setDirty(true);
 			mapEditor.close();
 			getViewer().refresh(location, true);
 		}
