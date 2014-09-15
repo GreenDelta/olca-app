@@ -1,18 +1,19 @@
 package org.openlca.app.devtools.python;
 
+import java.io.File;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.util.Objects;
+
 import org.apache.commons.io.FileUtils;
 import org.openlca.app.App;
 import org.openlca.app.db.Database;
+import org.openlca.app.devtools.ScriptApi;
 import org.openlca.app.rcp.RcpActivator;
 import org.python.util.PythonInterpreter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeroturnaround.zip.ZipUtil;
-
-import java.io.File;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.util.Objects;
 
 class Python {
 
@@ -36,6 +37,8 @@ class Python {
 			interpreter.set("log", LoggerFactory.getLogger(Python.class));
 			if (Database.get() != null)
 				interpreter.set("db", Database.get());
+			ScriptApi api = new ScriptApi(Database.get());
+			interpreter.set("olca", api);
 			interpreter.set("app", App.class);
 			interpreter.exec(script);
 		}
