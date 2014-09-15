@@ -5,14 +5,13 @@ import java.util.List;
 import org.eclipse.jface.action.IMenuCreator;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.openlca.app.Messages;
 import org.openlca.app.editors.graphical.model.ProcessNode;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
+import org.openlca.app.util.Controls;
 import org.openlca.core.model.ProcessType;
 
 class BuildSupplyChainMenuAction extends EditorAction {
@@ -25,7 +24,7 @@ class BuildSupplyChainMenuAction extends EditorAction {
 
 	BuildSupplyChainMenuAction() {
 		setId(ActionIds.BUILD_SUPPLY_CHAIN_MENU);
-		setText(Messages.Systems_BuildSupplyChainAction_Text);
+		setText(Messages.BuildSupplyChain);
 		setImageDescriptor(ImageType.BUILD_SUPPLY_CHAIN_ICON.getDescriptor());
 		setMenuCreator(new MenuCreator());
 	}
@@ -43,14 +42,11 @@ class BuildSupplyChainMenuAction extends EditorAction {
 
 		private void createSelectTypeItem(Menu menu, final ProcessType type) {
 			MenuItem treeItem = new MenuItem(menu, SWT.RADIO);
-			treeItem.setText(Messages.bind(Messages.Systems_Prefer,
+			treeItem.setText(Messages.bind(Messages.Prefer,
 					getDisplayName(type)));
-			treeItem.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					supplyChainAction.setPreferredType(type);
-					nextTierAction.setPreferredType(type);
-				}
+			Controls.onSelect(treeItem, (e) -> {
+				supplyChainAction.setPreferredType(type);
+				nextTierAction.setPreferredType(type);
 			});
 			treeItem.setSelection(type == ProcessType.UNIT_PROCESS);
 		}
@@ -66,14 +62,15 @@ class BuildSupplyChainMenuAction extends EditorAction {
 		}
 
 		private void createItem(Menu menu, IBuildAction action) {
-			MenuItem unitItem = new MenuItem(menu, SWT.NONE);
-			unitItem.setText(action.getText());
-			unitItem.addSelectionListener(new RunBuildListener(action));
+			MenuItem item = new MenuItem(menu, SWT.NONE);
+			item.setText(action.getText());
+			Controls.onSelect(item, (e) -> {
+				action.setProcessNodes(nodes);
+				action.run();
+			});
 		}
 
-		@Override
 		public void dispose() {
-			// nothing to dispose
 		}
 
 		@Override
@@ -89,22 +86,6 @@ class BuildSupplyChainMenuAction extends EditorAction {
 			Menu menu = new Menu(parent);
 			createMenu(menu);
 			return menu;
-		}
-
-	}
-
-	private class RunBuildListener extends SelectionAdapter {
-
-		private IBuildAction action;
-
-		private RunBuildListener(IBuildAction action) {
-			this.action = action;
-		}
-
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			action.setProcessNodes(nodes);
-			action.run();
 		}
 
 	}

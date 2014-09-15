@@ -15,7 +15,7 @@ class AdminInfoPage extends ModelPage<Process> {
 	private FormToolkit toolkit;
 
 	AdminInfoPage(ProcessEditor editor) {
-		super(editor, "ProcessInfoPage", Messages.AdminInfoPageLabel);
+		super(editor, "ProcessInfoPage", Messages.AdministrativeInformation);
 	}
 
 	@Override
@@ -31,7 +31,7 @@ class AdminInfoPage extends ModelPage<Process> {
 
 	private void createAdminInfoSection(Composite parent) {
 		Composite composite = UI.formSection(parent, toolkit,
-				Messages.AdminInfoPageLabel);
+				Messages.AdministrativeInformation);
 		createMultiText(Messages.IntendedApplication,
 				"documentation.intendedApplication", composite);
 		createDropComponent(Messages.DataSetOwner,

@@ -1,11 +1,17 @@
 package org.openlca.app.wizards.io;
 
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IExportWizard;
 import org.eclipse.ui.IWorkbench;
+import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
@@ -14,11 +20,6 @@ import org.openlca.io.xls.process.output.ExcelExport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
-
 public class ExcelExportWizard extends Wizard implements IExportWizard {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
@@ -26,7 +27,7 @@ public class ExcelExportWizard extends Wizard implements IExportWizard {
 
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		setWindowTitle("Excel Export");
+		setWindowTitle(Messages.ExcelExport);
 		setNeedsProgressMonitor(true);
 	}
 
@@ -55,7 +56,7 @@ public class ExcelExportWizard extends Wizard implements IExportWizard {
 				@Override
 				public void run(IProgressMonitor monitor)
 						throws InvocationTargetException, InterruptedException {
-					monitor.beginTask("Exporting processes",
+					monitor.beginTask(Messages.Export,
 							IProgressMonitor.UNKNOWN);
 					export.run();
 					monitor.done();

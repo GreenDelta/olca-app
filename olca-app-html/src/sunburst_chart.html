@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link href="libs/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+</head>
+
+<body>
+
+    <div class="container-fluid" style="padding:20px">
+        <div>
+            <p id="contributionText" class="lead" data-toggle="collapse" data-target="#vizInfo" style="cursor: pointer;">No data available</p>
+            <p id="vizInfo" class="collapse out">This visualization shows the upstream-contributions of processes in the supply chain to a flow or LCIA result. The overall result of the reference process in the product system is represented by the inner circle of the chart. Each outer circle represents the upstream contributions of the next tier in the product system where the sizes of the segments are scaled by the amount of the contribution.</p>
+        </div>
+        <div id="chartDiv"></div>
+    </div>
+
+    <script type="text/javascript" src="libs/jquery.min.js"></script>
+    <script type="text/javascript" src="libs/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="libs/d3.min.js"></script>
+    <script type="text/javascript">
+        function setData(tree) {
+            d3.select("#contributionText")
+              .text("Select a chart segment to see the contributions");
+            renderChart(tree);
+        }
+        
+        function renderChart(tree) {
+        
+            // remove old content
+            d3.select("#chartDiv").select("svg").remove();
+        	
+            var width = 800,
+                height = 600,
+        		radius = Math.min(width, height) / 2,
+        		color = d3.scale.category20c();
+        
+            var svg = d3.select("#chartDiv")
+        				.append("svg")
+        				.attr("width", width)
+        				.attr("height", height)
+        				.append("g")
+        				.attr("transform", "translate(" + width / 2 + "," + height * .52 + ")");
+        
+            var partition = d3.layout
+                              .partition()
+                              .sort(null)
+                              .size([ 2 * Math.PI, radius * radius ])
+                              .value(function(processResult) { return processResult.amount;	});
+        
+            var arc = d3.svg.arc()
+                        .startAngle(function(d) { return d.x; })
+                        .endAngle(function(d) { return d.x + d.dx; })
+        			    .innerRadius(function(d) { return Math.sqrt(d.y); })
+                        .outerRadius(function(d) { return Math.sqrt(d.y + d.dy); });
+        
+        	var path = svg.datum(tree)
+                          .selectAll("path")
+                          .data(partition.nodes).enter()
+                          .append("path")
+                          .attr("display", function(d) { return d.depth ? null : "none"; })
+                          .attr("d", arc)
+                          .style("stroke", "#fff")
+                          .style("fill", function(processResult) { return color(processResult.processId); })
+                          .style("fill-rule", "evenodd")
+                          .on("mouseover", mouseover)
+        				  .on("mouseout", mouseout)
+                          .on("mousedown", mousedown)
+                          .each(stash);
+        
+            // Stash the old values for transition.
+            function stash(d) {
+                d.x0 = d.x;
+                d.dx0 = d.dx;
+            }
+
+            // Interpolate the arcs in data space.
+            function arcTween(a) {
+                var i = d3.interpolate({
+                    x : a.x0,
+                    dx : a.dx0
+                }, a);
+                return function(t) {
+                    var b = i(t);
+                    a.x0 = b.x;
+                    a.dx0 = b.dx;
+                    return arc(b);
+                };
+            }
+
+            var selection = null;
+
+            function mousedown(d, i) {
+                if (selection) {
+                    applyDefaultStyle(selection.datum, selection.segment);
+                    selection = null;
+                } else {
+                    var segment = findSegment(i);
+                    selection = {
+                        datum : d,
+                        segment : segment
+                    };
+                    applySelection(d, segment);
+                }
+            }
+
+            function mouseover(d, i) {
+                if (selection)
+                    return;
+                var segment = findSegment(i);
+                applySelection(d, segment);
+            }
+
+            function mouseout(d, i) {
+                if (selection)
+                    return;
+                var segment = findSegment(i);
+                applyDefaultStyle(d, segment);
+            }
+
+            function applySelection(processResult, segment) {
+                var color = "#ff6801";
+                d3.select(segment)
+                  .style("stroke", color)
+                  .style("fill", color);
+                d3.select("#contributionText")
+                  .text(processResult.processName + ": " + processResult.amount.toFixed(5) + " " + tree.unit);
+            }
+
+            function findSegment(index) {
+                var paths = d3.selectAll("path")[0];
+                return paths[index];
+            }
+
+            function applyDefaultStyle(processResult, segment) {
+                var fill = color(processResult.processId);
+                d3.select(segment)
+                  .style("stroke", "#fff")
+                  .style("fill", fill)
+                  .style("fill-rule", "evenodd");
+            }
+        }
+    </script>
+</body>
+
+</html>

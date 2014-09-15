@@ -52,7 +52,8 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 
 	@Override
 	protected void fillCoolBar(ICoolBarManager coolBar) {
-		IToolBarManager toolbar = new ToolBarManager(SWT.FLAT | SWT.RIGHT);
+		IToolBarManager toolbar = new ToolBarManager(SWT.FLAT | SWT.LEFT);
+		coolBar.add(new ToolBarContributionItem(toolbar, "main"));
 		toolbar.add(new HomeAction());
 		toolbar.add(saveAction);
 		toolbar.add(saveAsAction);
@@ -69,7 +70,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	}
 
 	private void fillHelpMenu(IMenuManager menuBar) {
-		MenuManager helpMenu = new MenuManager(Messages.Menu_Help,
+		MenuManager helpMenu = new MenuManager(Messages.Help,
 				IWorkbenchActionConstants.M_HELP);
 		HelpAction helpAction = new HelpAction();
 		helpMenu.add(helpAction);
@@ -81,7 +82,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	}
 
 	private void fillFileMenu(IMenuManager menuBar) {
-		MenuManager fileMenu = new MenuManager(Messages.Menu_File,
+		MenuManager fileMenu = new MenuManager(Messages.File,
 				IWorkbenchActionConstants.M_FILE);
 		fileMenu.add(saveAction);
 		fileMenu.add(saveAsAction);
@@ -101,17 +102,31 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	}
 
 	private void fillWindowMenu(IMenuManager menuBar) {
-		MenuManager windowMenu = new MenuManager(Messages.Menu_Window,
+		MenuManager windowMenu = new MenuManager(Messages.Window,
 				IWorkbenchActionConstants.M_WINDOW);
 		windowMenu.add(newWindowAction);
 		windowMenu.add(newEditorAction);
-		MenuManager viewMenu = new MenuManager(Messages.Menu_ShowViews);
+		MenuManager viewMenu = new MenuManager(Messages.Showviews);
 		viewMenu.add(showViews);
 		windowMenu.add(viewMenu);
-		windowMenu.add(new Separator());
-		windowMenu.add(new SqlEditorAction());
+		createDeveloperMenu(windowMenu);
 		windowMenu.add(new FormulaConsoleAction());
+		if (MozillaConfigView.canShow()) {
+			windowMenu.add(Actions.create("Browser configuration",
+					ImageType.FIREFOX_ICON.getDescriptor(),
+					MozillaConfigView::open));
+		}
 		menuBar.add(windowMenu);
+	}
+
+	private void createDeveloperMenu(MenuManager windowMenu) {
+		windowMenu.add(new Separator());
+		MenuManager devMenu = new MenuManager("@Developer tools");
+		windowMenu.add(devMenu);
+		devMenu.add(Actions.create("SQL", null, SqlEditor::open));
+		devMenu.add(Actions.create("JavaScript", null, JavaScriptEditor::open));
+		devMenu.add(Actions.create("Python", null, PythonEditor::open));
+		windowMenu.add(new Separator());
 	}
 
 	@Override
@@ -147,7 +162,6 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	private class PluginAction extends Action {
 		public PluginAction() {
 			setText("Plugins");
-			setToolTipText("Open the plugin manager");
 			setImageDescriptor(ImageType.LOGO_16_32.getDescriptor());
 		}
 
@@ -160,23 +174,10 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		}
 	}
 
-	private class SqlEditorAction extends Action {
-		public SqlEditorAction() {
-			setText("SQL Query Browser");
-			setToolTipText("Open the SQL Query Browser");
-		}
-
-		@Override
-		public void run() {
-			SqlEditor.open();
-		}
-	}
-
 	private class HomeAction extends Action {
 		public HomeAction() {
 			setImageDescriptor(ImageType.HOME_ICON.getDescriptor());
-			setText("Home");
-			setToolTipText("Open welcome page");
+			setText(Messages.Home);
 		}
 
 		@Override

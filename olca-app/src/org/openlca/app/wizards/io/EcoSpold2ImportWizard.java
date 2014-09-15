@@ -10,10 +10,11 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
 import org.openlca.app.App;
+import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.core.database.IDatabase;
 import org.openlca.io.ecospold2.input.EcoSpold2Import;
 import org.openlca.io.ecospold2.input.ImportConfig;
@@ -34,7 +35,7 @@ public class EcoSpold2ImportWizard extends Wizard implements IImportWizard {
 
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		setWindowTitle("Import EcoSpold 02 data sets");
+		setWindowTitle(Messages.ImportEcoSpold02DataSets);
 		setDefaultPageImageDescriptor(ImageType.IMPORT_ZIP_WIZARD
 				.getDescriptor());
 	}
@@ -49,7 +50,7 @@ public class EcoSpold2ImportWizard extends Wizard implements IImportWizard {
 				@Override
 				public void run(final IProgressMonitor monitor)
 						throws InvocationTargetException, InterruptedException {
-					monitor.beginTask("Import", IProgressMonitor.UNKNOWN);
+					monitor.beginTask(Messages.Import, IProgressMonitor.UNKNOWN);
 					ImportHandler handler = new ImportHandler(monitor);
 					handler.run(pi);
 				}

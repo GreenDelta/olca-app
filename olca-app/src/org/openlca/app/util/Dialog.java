@@ -21,7 +21,7 @@ public final class Dialog {
 	}
 
 	public static void showInfo(Shell shell, String information) {
-		MessageDialog.openInformation(shell, Messages.INFO, information);
+		MessageDialog.openInformation(shell, Messages.Information, information);
 	}
 
 }

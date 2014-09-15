@@ -8,11 +8,12 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ui.IWorkbenchWizard;
 import org.eclipse.ui.PlatformUI;
+import org.openlca.app.Messages;
 import org.openlca.app.navigation.CategoryElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelTypeElement;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.UI;
 import org.openlca.app.wizards.INewModelWizard;
 import org.openlca.core.model.Category;
@@ -90,30 +91,29 @@ public class CreateModelAction extends Action implements INavigationAction {
 
 	@Override
 	public String getText() {
-		String prefix = "Create new ";
 		if (type == null)
-			return "Unknown?";
+			return Messages.Unknown + "?";
 		switch (type) {
 		case ACTOR:
-			return prefix + "actor";
+			return Messages.NewActor;
 		case FLOW:
-			return prefix + "flow";
+			return Messages.NewFlow;
 		case FLOW_PROPERTY:
-			return prefix + "flow property";
+			return Messages.NewFlowProperty;
 		case IMPACT_METHOD:
-			return prefix + "impact method";
+			return Messages.NewLCIAMethod;
 		case PROCESS:
-			return prefix + "process";
+			return Messages.NewProcess;
 		case PRODUCT_SYSTEM:
-			return prefix + "product system";
+			return Messages.NewProductSystem;
 		case PROJECT:
-			return prefix + "project";
+			return Messages.NewProject;
 		case SOURCE:
-			return prefix + "source";
+			return Messages.NewSource;
 		case UNIT_GROUP:
-			return prefix + "unit group";
+			return Messages.NewUnitGroup;
 		default:
-			return "Unknown?";
+			return Messages.Unknown + "?";
 		}
 	}
 

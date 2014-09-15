@@ -5,9 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -21,6 +19,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
+import org.openlca.app.Messages;
 import org.openlca.app.util.Dialog;
 import org.openlca.app.util.UI;
 import org.openlca.ilcd.descriptors.DescriptorList;
@@ -30,9 +29,6 @@ import org.openlca.ilcd.processes.Process;
 
 /**
  * The wizard page for searching processes in the ILCD network.
- * 
- * @author Michael Srocka
- * 
  */
 public class ProcessSearchPage extends WizardPage {
 
@@ -40,9 +36,9 @@ public class ProcessSearchPage extends WizardPage {
 	private TableViewer viewer;
 
 	public ProcessSearchPage() {
-		super("ILCD-ProcessSearchPage"); 
-		setTitle(Messages.NetworkSearch);
-		setDescription(Messages.SearchPageDescription);
+		super("ILCD-ProcessSearchPage");
+		setTitle(Messages.Search);
+		setDescription(Messages.ILCD_SearchPageDescription);
 		setPageComplete(false);
 	}
 
@@ -86,7 +82,14 @@ public class ProcessSearchPage extends WizardPage {
 		table.setHeaderVisible(true);
 		table.setLinesVisible(false);
 		viewer = new SearchResultViewer(table);
-		viewer.addSelectionChangedListener(new SelectionChange());
+		viewer.addSelectionChangedListener((event) -> {
+			ISelection selection = event.getSelection();
+			if (selection == null || selection.isEmpty()) {
+				setPageComplete(false);
+			} else {
+				setPageComplete(true);
+			}
+		});
 	}
 
 	private void runSearch(String term) {
@@ -99,7 +102,7 @@ public class ProcessSearchPage extends WizardPage {
 			}
 		} catch (Exception e) {
 			Dialog.showError(getShell(),
-					Messages.SearchFailedMessage + e.getMessage());
+					Messages.ILCD_SearchFailedMessage + e.getMessage());
 		}
 	}
 
@@ -121,18 +124,6 @@ public class ProcessSearchPage extends WizardPage {
 				runSearch(text.getText());
 		}
 
-	}
-
-	private class SelectionChange implements ISelectionChangedListener {
-		@Override
-		public void selectionChanged(SelectionChangedEvent event) {
-			ISelection selection = event.getSelection();
-			if (selection == null || selection.isEmpty()) {
-				setPageComplete(false);
-			} else {
-				setPageComplete(true);
-			}
-		}
 	}
 
 	public List<ProcessDescriptor> getSelectedProcesses() {

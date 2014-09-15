@@ -29,7 +29,7 @@ class RemoveSupplyChainAction extends EditorAction {
 
 	RemoveSupplyChainAction() {
 		setId(ActionIds.REMOVE_SUPPLY_CHAIN);
-		setText(Messages.Systems_RemoveSupplyChainAction_Text);
+		setText(Messages.RemoveSupplyChain);
 	}
 
 	@Override
@@ -108,7 +108,7 @@ class RemoveSupplyChainAction extends EditorAction {
 
 		@Override
 		public String getLabel() {
-			return Messages.Systems_RemoveSupplyChainAction_Text;
+			return Messages.RemoveSupplyChain;
 		}
 
 		@Override

@@ -9,9 +9,10 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
+import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.core.database.IDatabase;
 import org.openlca.io.simapro.csv.input.SimaProCsvImport;
 import org.slf4j.Logger;
@@ -28,7 +29,7 @@ public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
 
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		setWindowTitle("SimaPro CSV Import");
+		setWindowTitle(Messages.SimaProCSVImport);
 		setDefaultPageImageDescriptor(ImageType.IMPORT_ZIP_WIZARD
 				.getDescriptor());
 	}
@@ -46,7 +47,7 @@ public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
 				@Override
 				public void run(final IProgressMonitor monitor)
 						throws InvocationTargetException, InterruptedException {
-					monitor.beginTask("Import", IProgressMonitor.UNKNOWN);
+					monitor.beginTask(Messages.Import, IProgressMonitor.UNKNOWN);
 					ImportHandler handler = new ImportHandler(monitor);
 					handler.run(importer);
 				}

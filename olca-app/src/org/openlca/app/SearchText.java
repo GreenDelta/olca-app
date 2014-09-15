@@ -5,8 +5,6 @@ import org.eclipse.jface.action.IMenuCreator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Image;
@@ -20,7 +18,8 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.ui.menus.WorkbenchWindowControlContribution;
 import org.openlca.app.db.Database;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.Images;
 import org.openlca.app.util.InformationPopup;
 import org.openlca.app.util.UI;
@@ -69,7 +68,7 @@ public class SearchText extends WorkbenchWindowControlContribution {
 
 	private void doSearch() {
 		if (Database.get() == null) {
-			InformationPopup.show("You first need to activate a database");
+			InformationPopup.show(Messages.SearchTextOpenDatabaseMessage);
 			return;
 		}
 		final String term = text.getText();
@@ -83,7 +82,7 @@ public class SearchText extends WorkbenchWindowControlContribution {
 
 	private class SearchAction extends Action {
 		public SearchAction() {
-			setText("Search");
+			setText(Messages.Search);
 			setImageDescriptor(ImageType.SEARCH_ICON.getDescriptor());
 		}
 
@@ -103,7 +102,7 @@ public class SearchText extends WorkbenchWindowControlContribution {
 		private ModelType selectedType;
 
 		public DropDownAction() {
-			setText("Search");
+			setText(Messages.Search);
 			setImageDescriptor(ImageType.SEARCH_ICON.getDescriptor());
 			setMenuCreator(this);
 		}
@@ -168,17 +167,7 @@ public class SearchText extends WorkbenchWindowControlContribution {
 			MenuItem item = new MenuItem(menu, SWT.NONE);
 			item.setText(text);
 			item.setImage(image);
-			item.addSelectionListener(new SelectionListener() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					updateSelection(text, type);
-				}
-
-				@Override
-				public void widgetDefaultSelected(SelectionEvent e) {
-					widgetSelected(e);
-				}
-			});
+			Controls.onSelect(item, (e) -> updateSelection(text, type));
 		}
 
 		private void updateSelection(String text, ModelType type) {

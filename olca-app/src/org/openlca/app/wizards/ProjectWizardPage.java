@@ -5,15 +5,15 @@ import java.util.UUID;
 
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.Messages;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.core.model.Project;
 
 class ProjectWizardPage extends AbstractWizardPage<Project> {
 
 	public ProjectWizardPage() {
 		super("ProjectWizardPage");
-		setTitle(Messages.Projects_WizardTitle);
-		setMessage(Messages.Projects_WizardMessage);
+		setTitle(Messages.NewProject);
+		setMessage(Messages.CreatesANewProject);
 		setImageDescriptor(ImageType.NEW_WIZ_PROJECT.getDescriptor());
 		setPageComplete(false);
 	}

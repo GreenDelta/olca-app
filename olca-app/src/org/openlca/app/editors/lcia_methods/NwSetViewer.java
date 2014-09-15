@@ -8,7 +8,9 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.TableItem;
 import org.openlca.app.Messages;
+import org.openlca.app.util.Tables;
 import org.openlca.app.viewers.table.AbstractTableViewer;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.model.ImpactMethod;
@@ -16,7 +18,7 @@ import org.openlca.core.model.NwSet;
 
 class NwSetViewer extends AbstractTableViewer<NwSet> {
 
-	private static final String NAME = Messages.NormalizationWeightingSet;
+	private static final String NAME = Messages.NormalizationAndWeightingSet;
 	private static final String UNIT = Messages.ReferenceUnit;
 
 	private final ImpactMethodEditor editor;
@@ -26,6 +28,11 @@ class NwSetViewer extends AbstractTableViewer<NwSet> {
 		this.editor = editor;
 		getModifySupport().bind(NAME, new NameModifier());
 		getModifySupport().bind(UNIT, new UnitModifier());
+		Tables.onDoubleClick(getViewer(), (event) -> {
+			TableItem item = Tables.getItem(getViewer(), event);
+			if (item == null)
+				onCreate();
+		});
 	}
 
 	public void setInput(ImpactMethod method) {

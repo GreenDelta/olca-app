@@ -12,8 +12,6 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -25,13 +23,14 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.Messages;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.db.Cache;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.ProcessViewer;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.matrix.FlowIndex;
@@ -64,13 +63,18 @@ class ProcessResultPage extends FormPage {
 	private double flowCutOff = 0.01;
 	private double impactCutOff = 0.01;
 
-	private final static String[] EXCHANGE_COLUMN_LABELS = { "Contribution",
-			"Flow", "Upstream total", "Direct contribution", "Unit" };
-	private final static String[] IMPACT_COLUMN_LABELS = { "Contribution",
-			"Impact category", "Upstream total", "Direct impact", "Unit" };
+	private final static String[] EXCHANGE_COLUMN_LABELS = {
+			Messages.Contribution,
+			Messages.Flow, Messages.UpstreamTotal, Messages.DirectContribution,
+			Messages.Unit };
+	private final static String[] IMPACT_COLUMN_LABELS = {
+			Messages.Contribution,
+			Messages.ImpactCategory, Messages.UpstreamTotal,
+			Messages.DirectImpact, Messages.Unit };
 
 	public ProcessResultPage(AnalyzeEditor editor, FullResultProvider result) {
-		super(editor, ProcessResultPage.class.getName(), "Process results");
+		super(editor, ProcessResultPage.class.getName(),
+				Messages.ProcessResults);
 		this.editor = editor;
 		this.result = result;
 		this.flowResultProvider = new ResultProvider(result);
@@ -86,7 +90,7 @@ class ProcessResultPage extends FormPage {
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
 		toolkit = managedForm.getToolkit();
-		ScrolledForm form = UI.formHeader(managedForm, "Process results");
+		ScrolledForm form = UI.formHeader(managedForm, Messages.ProcessResults);
 		Composite body = UI.formBody(form, toolkit);
 		createFlowSection(body);
 		if (result.hasImpactResults())
@@ -118,7 +122,7 @@ class ProcessResultPage extends FormPage {
 	}
 
 	private void createFlowSection(Composite parent) {
-		Section section = UI.section(parent, toolkit, "Flow results");
+		Section section = UI.section(parent, toolkit, Messages.FlowResults);
 		UI.gridData(section, true, true);
 		Composite composite = toolkit.createComposite(section);
 		section.setClient(composite);
@@ -127,31 +131,32 @@ class ProcessResultPage extends FormPage {
 		Composite container = new Composite(composite, SWT.NONE);
 		UI.gridData(container, true, false);
 		UI.gridLayout(container, 5);
-		UI.formLabel(container, toolkit, "Process");
+		UI.formLabel(container, toolkit, Messages.Process);
 		flowProcessViewer = new ProcessViewer(container, cache);
 		flowProcessViewer.setInput(editor.getSetup().getProductSystem());
-		flowProcessViewer
-				.addSelectionChangedListener(new ISelectionChangedListener<ProcessDescriptor>() {
-					@Override
-					public void selectionChanged(ProcessDescriptor selection) {
-						flowResultProvider.setProcess(selection);
-						inputViewer.refresh();
-						outputViewer.refresh();
-					}
-				});
-		UI.formLabel(container, toolkit, "Cut-Off");
+		flowProcessViewer.addSelectionChangedListener((selection) -> {
+			flowResultProvider.setProcess(selection);
+			inputViewer.refresh();
+			outputViewer.refresh();
+		});
+
+		UI.formLabel(container, toolkit, Messages.Cutoff);
 		flowSpinner = new Spinner(container, SWT.BORDER);
 		flowSpinner.setValues(1, 0, 10000, 2, 1, 100);
 		toolkit.adapt(flowSpinner);
 		toolkit.createLabel(container, "%");
-		flowSpinner.addSelectionListener(new FlowCutOffChange());
+		Controls.onSelect(flowSpinner, (e) -> {
+			flowCutOff = flowSpinner.getSelection();
+			inputViewer.refresh();
+			outputViewer.refresh();
+		});
 
 		Composite resultContainer = new Composite(composite, SWT.NONE);
 		resultContainer.setLayout(new GridLayout(2, true));
 		UI.gridData(resultContainer, true, true);
 
-		UI.formLabel(resultContainer, "Inputs");
-		UI.formLabel(resultContainer, "Outputs");
+		UI.formLabel(resultContainer, Messages.Inputs);
+		UI.formLabel(resultContainer, Messages.Outputs);
 
 		inputViewer = new TableViewer(resultContainer);
 		inputViewer.setLabelProvider(new FlowLabel());
@@ -165,7 +170,7 @@ class ProcessResultPage extends FormPage {
 
 	private void createImpactSection(Composite parent) {
 		Section section = UI.section(parent, toolkit,
-				"Impact assessment results");
+				Messages.ImpactAssessmentResults);
 		UI.gridData(section, true, true);
 		Composite composite = toolkit.createComposite(section);
 		section.setClient(composite);
@@ -174,23 +179,22 @@ class ProcessResultPage extends FormPage {
 		Composite container = new Composite(composite, SWT.NONE);
 		UI.gridLayout(container, 5);
 		UI.gridData(container, true, false);
-		UI.formLabel(container, toolkit, "Process");
+		UI.formLabel(container, toolkit, Messages.Process);
 		impactProcessViewer = new ProcessViewer(container, cache);
 		impactProcessViewer.setInput(editor.getSetup().getProductSystem());
-		impactProcessViewer
-				.addSelectionChangedListener(new ISelectionChangedListener<ProcessDescriptor>() {
-					@Override
-					public void selectionChanged(ProcessDescriptor selection) {
-						impactResultProvider.setProcess(selection);
-						impactViewer.refresh();
-					}
-				});
-		UI.formLabel(container, toolkit, "Cut-Off");
+		impactProcessViewer.addSelectionChangedListener((selection) -> {
+			impactResultProvider.setProcess(selection);
+			impactViewer.refresh();
+		});
+		UI.formLabel(container, toolkit, Messages.Cutoff);
 		impactSpinner = new Spinner(container, SWT.BORDER);
 		impactSpinner.setValues(1, 0, 10000, 2, 1, 100);
 		toolkit.adapt(impactSpinner);
 		toolkit.createLabel(container, "%");
-		impactSpinner.addSelectionListener(new ImpactCutOffChange());
+		Controls.onSelect(impactSpinner, (e) -> {
+			impactCutOff = impactSpinner.getSelection();
+			impactViewer.refresh();
+		});
 
 		impactViewer = new TableViewer(composite);
 		impactViewer.setLabelProvider(new ImpactLabel());
@@ -212,35 +216,6 @@ class ProcessResultPage extends FormPage {
 		UI.gridData(viewer.getTable(), true, true);
 		Tables.bindColumnWidths(viewer.getTable(), new double[] { 0.20, 0.30,
 				0.20, 0.20, 0.10 });
-	}
-
-	private class FlowCutOffChange implements SelectionListener {
-
-		@Override
-		public void widgetDefaultSelected(SelectionEvent e) {
-			widgetSelected(e);
-		}
-
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			flowCutOff = flowSpinner.getSelection();
-			inputViewer.refresh();
-			outputViewer.refresh();
-		}
-	}
-
-	private class ImpactCutOffChange implements SelectionListener {
-
-		@Override
-		public void widgetDefaultSelected(SelectionEvent e) {
-			widgetSelected(e);
-		}
-
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			impactCutOff = impactSpinner.getSelection();
-			impactViewer.refresh();
-		}
 	}
 
 	private class FlowLabel extends BaseLabelProvider implements

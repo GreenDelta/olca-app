@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.Table;
 import org.openlca.app.Messages;
 import org.openlca.app.components.UncertaintyCellEditor;
 import org.openlca.app.util.Error;
+import org.openlca.app.util.TableClipboard;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UncertaintyLabel;
 import org.openlca.app.util.Viewers;
@@ -66,6 +67,8 @@ class DatabaseParameterTable {
 		MenuManager menu = new MenuManager();
 		for (Action action : actions)
 			menu.add(action);
+		Action copy = TableClipboard.onCopy(table);
+		menu.add(copy);
 		table.setMenu(menu.createContextMenu(table));
 	}
 
@@ -118,8 +121,8 @@ class DatabaseParameterTable {
 			if (Parameter.isValidName(name))
 				param.setName(name);
 			else {
-				Error.showBox("Invalid parameter name", "'" + name
-						+ "' is not a valid parameter name");
+				Error.showBox(Messages.InvalidParameterName, "'" + name
+						+ "' " + Messages.IsNotValidParameterName);
 			}
 		}
 	}
@@ -137,8 +140,8 @@ class DatabaseParameterTable {
 				double val = Double.parseDouble(text);
 				param.setValue(val);
 			} catch (Exception e) {
-				Error.showBox("Invalid parameter amount", "'" + text
-						+ "' is not a valid number");
+				Error.showBox(Messages.InvalidNumber, "'" + text
+						+ "' " + Messages.IsNotValidNumber);
 			}
 		}
 	}

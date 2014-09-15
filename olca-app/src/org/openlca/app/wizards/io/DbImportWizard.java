@@ -1,5 +1,9 @@
 package org.openlca.app.wizards.io;
 
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.util.UUID;
+
 import org.apache.commons.io.FileUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
@@ -12,7 +16,7 @@ import org.eclipse.ui.PlatformUI;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Question;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.derby.DerbyDatabase;
@@ -22,10 +26,6 @@ import org.openlca.io.olca.DatabaseImport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeroturnaround.zip.ZipUtil;
-
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.util.UUID;
 
 /**
  * Wizards for the import of data from an openLCA database to another openLCA
@@ -38,7 +38,7 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 
 	@Override
 	public void init(IWorkbench iWorkbench,
-	                 IStructuredSelection iStructuredSelection) {
+			IStructuredSelection iStructuredSelection) {
 		setWindowTitle(Messages.DatabaseImport);
 		setDefaultPageImageDescriptor(ImageType.IMPORT_ZIP_WIZARD
 				.getDescriptor());
@@ -48,8 +48,8 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 	@Override
 	public boolean performFinish() {
 		if (Database.get() == null) {
-			org.openlca.app.util.Error.showBox("No database activated",
-					"You need to activate a target database of the import.");
+			org.openlca.app.util.Error.showBox(Messages.NoDatabaseOpened,
+					Messages.DBImportNoTarget);
 			return true;
 		}
 		try {
@@ -60,7 +60,8 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 				connectionDispatch.close();
 				return false;
 			}
-			ImportDispatch importDispatch = new ImportDispatch(connectionDispatch);
+			ImportDispatch importDispatch = new ImportDispatch(
+					connectionDispatch);
 			getContainer().run(true, true, importDispatch);
 			Navigator.refresh();
 			return true;
@@ -71,25 +72,27 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 	}
 
 	private boolean canRun(DbImportPage.ImportConfig config,
-	                       ConnectionDispatch connectionDispatch) {
+			ConnectionDispatch connectionDispatch) {
 		VersionState state = connectionDispatch.getSourceState();
 		if (state == VersionState.CURRENT)
 			return true;
 		if (state == null || state == VersionState.ERROR) {
-			org.openlca.app.util.Error.showBox("Connection failed", "Could not "
-					+ "get the version from the source database.");
+			org.openlca.app.util.Error.showBox(Messages.ConnectionFailed,
+					Messages.DBImportNoTargetConnectionFailedMessage);
 			return false;
 		}
 		if (state == VersionState.NEWER) {
-			org.openlca.app.util.Error.showBox("Version newer", "The version of "
-					+ "the source database is newer than this version of openLCA.");
+			org.openlca.app.util.Error
+					.showBox(
+							Messages.VersionNewer,
+							Messages.DBImportVersionNewerMessage);
 			return false;
 		}
 		if (config.getMode() == config.FILE_MODE)
 			return true;
-		return Question.ask("Update source database?", "In order to run the " +
-				"import you need to update the source database. Do you want to" +
-				" do this?");
+		return Question
+				.ask(Messages.UpdateDatabase,
+						Messages.DBImportUpdateDatabaseQuestion);
 	}
 
 	private ConnectionDispatch createConnection(DbImportPage.ImportConfig config)
@@ -122,17 +125,18 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 		public void run(IProgressMonitor monitor)
 				throws InvocationTargetException, OperationCanceledException {
 			try {
-				monitor.beginTask("Import database", IProgressMonitor.UNKNOWN);
+				monitor.beginTask(Messages.ImportDatabase,
+						IProgressMonitor.UNKNOWN);
 				if (sourceState == VersionState.OLDER) {
-					monitor.subTask("Update source database");
+					monitor.subTask(Messages.UpdateDatabase);
 					Upgrades.runUpgrades(sourceDatabase);
 				}
-				monitor.subTask("Import data...");
+				monitor.subTask(Messages.ImportData + "...");
 				DatabaseImport dbImport = new DatabaseImport(sourceDatabase,
 						Database.get());
 				log.trace("run data import");
 				dbImport.run();
-				monitor.subTask("Close source database...");
+				monitor.subTask(Messages.CloseDatabase);
 				connectionDispatch.close();
 				monitor.done();
 			} catch (Exception e) {
@@ -187,7 +191,6 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 			ZipUtil.unpack(zipFile, tempDbFolder);
 			return new DerbyDatabase(tempDbFolder);
 		}
-
 
 		void close() throws Exception {
 			log.trace("close source database");

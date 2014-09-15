@@ -2,17 +2,20 @@ package org.openlca.app.navigation.actions;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.ui.PlatformUI;
+import org.openlca.app.App;
+import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.Question;
 import org.openlca.core.database.IDatabase;
@@ -30,7 +33,7 @@ public class DatabaseActivateAction extends Action implements INavigationAction 
 	private IDatabaseConfiguration config;
 
 	public DatabaseActivateAction() {
-		setText("Activate");
+		setText(Messages.OpenDatabase);
 		setImageDescriptor(ImageType.CONNECT_ICON.getDescriptor());
 	}
 
@@ -81,7 +84,7 @@ public class DatabaseActivateAction extends Action implements INavigationAction 
 		public void run(IProgressMonitor monitor)
 				throws InvocationTargetException, InterruptedException {
 			try {
-				monitor.beginTask("Activate database", IProgressMonitor.UNKNOWN);
+				monitor.beginTask(Messages.OpenDatabase, IProgressMonitor.UNKNOWN);
 				Database.close();
 				IDatabase database = Database.activate(config);
 				versionState = Upgrades.checkVersion(database);
@@ -106,8 +109,7 @@ public class DatabaseActivateAction extends Action implements INavigationAction 
 				return;
 			VersionState state = activation.versionState;
 			if (state == null || state == VersionState.ERROR) {
-				error("Could not get the version from the database. Is this an "
-						+ "openLCA database?");
+				error(Messages.DatabaseVersionCheckFailed);
 				return;
 			}
 			handleVersionState(state);
@@ -116,7 +118,7 @@ public class DatabaseActivateAction extends Action implements INavigationAction 
 		private void handleVersionState(VersionState state) {
 			switch (state) {
 			case NEWER:
-				error("The given database is newer than this openLCA version.");
+				error(Messages.DatabaseNeedsUpdate);
 				break;
 			case OLDER:
 				askRunUpdates();
@@ -130,27 +132,38 @@ public class DatabaseActivateAction extends Action implements INavigationAction 
 		}
 
 		private void error(String message) {
-			org.openlca.app.util.Error.showBox("Could not open database",
+			org.openlca.app.util.Error.showBox(Messages.CouldNotOpenDatabase,
 					message);
 			closeDatabase();
 		}
 
 		private void askRunUpdates() {
 			IDatabase db = Database.get();
-			boolean doIt = Question.ask("Run update?",
-					"The database " + db.getName()
-							+ " needs an update. Do you want to run it?");
+			boolean doIt = Question
+					.ask(Messages.UpdateDatabase,
+							Messages.UpdateDatabaseQuestion);
 			if (!doIt) {
 				closeDatabase();
 				return;
 			}
+			AtomicBoolean failed = new AtomicBoolean(false);
+			App.run(Messages.UpdateDatabase,
+					() -> runUpdate(db, failed),
+					() -> {
+						if (failed.get())
+							closeDatabase();
+						else
+							Navigator.refresh();
+					});
+		}
+
+		private void runUpdate(IDatabase db, AtomicBoolean failed) {
 			try {
 				Upgrades.runUpgrades(db);
 				db.getEntityFactory().getCache().evictAll();
-				Navigator.refresh();
 			} catch (Exception e) {
+				failed.set(true);
 				log.error("Failed to update database", e);
-				closeDatabase();
 			}
 		}
 

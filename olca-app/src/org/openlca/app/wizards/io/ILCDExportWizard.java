@@ -41,7 +41,7 @@ public class ILCDExportWizard extends Wizard implements IExportWizard {
 	@Override
 	public void init(final IWorkbench workbench,
 			final IStructuredSelection selection) {
-		setWindowTitle(Messages.ILCDExportWizard_WindowTitle);
+		setWindowTitle(Messages.ExportILCD);
 	}
 
 	@Override
@@ -63,7 +63,7 @@ public class ILCDExportWizard extends Wizard implements IExportWizard {
 				@Override
 				public void run(final IProgressMonitor monitor)
 						throws InvocationTargetException, InterruptedException {
-					monitor.beginTask("ILCD Export", components.size());
+					monitor.beginTask(Messages.Export, components.size());
 					int worked = 0;
 					ILCDExport export = new ILCDExport(targetDir);
 					for (BaseDescriptor descriptor : components) {

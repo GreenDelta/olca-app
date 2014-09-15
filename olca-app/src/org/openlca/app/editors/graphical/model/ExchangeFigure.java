@@ -8,7 +8,7 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.swt.graphics.Color;
 import org.openlca.app.Messages;
 import org.openlca.app.editors.graphical.layout.GraphAnimation;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
@@ -36,9 +36,9 @@ class ExchangeFigure extends Label {
 	private String getPrefix() {
 		if (node.getExchange().isAvoidedProduct())
 			if (node.getExchange().getFlow().getFlowType() == FlowType.PRODUCT_FLOW)
-				return Messages.Systems_AvoidedProductFlow;
+				return Messages.AvoidedProductFlow;
 			else
-				return Messages.Systems_AvoidedWasteFlow;
+				return Messages.AvoidedWasteFlow;
 		else
 			return Labels.flowType(node.getExchange().getFlow());
 	}

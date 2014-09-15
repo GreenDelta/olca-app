@@ -1,9 +1,7 @@
 # compiled files and libraries
 bin
 libs
-
-# database templates
-db_templates
+platform
 
 # IDE settings
 /.idea

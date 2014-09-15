@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html ng-app="StartPage" id="ng-app">
+  <head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <title>欢迎到 openLCA</title>
+    <link href="libs/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <style type="text/css">
+        //@include('./style.css')
+    </style>
+  </head>
+  <body>
+	<div id="contentDiv" data-ng-controller="Controller">
+	    <div class="page-header">
+	      <table style="width: 100%;" border="0">
+	        <tbody>
+	          <tr>
+	            <td id="logo-cell">
+	                <img id="logo" src="images/logo.png" onclick="callOpenUrl('http://www.openlca.org')" />
+	                <h1>欢迎到 openLCA!</h1>
+	                <span class="subtitle">{{data.version}}</span>
+	            </td>
+	          </tr>
+	          <tr>
+	            <td>
+	              <p class="description">高性能生命周期评价和可持续性评价软件. 真的是开源.</p>
+	              <p class="description">可用免费. 自从 2006, 由 GreenDelta 创造的和维护的. <a onclick="callOpenUrl('http://www.greendelta.com')" target="blank" class="subtle-link">www.greendelta.com</a></p>
+	            </td>
+	          </tr>
+	          <tr>
+	            <td>
+	              <div id="gd-logo"></div>
+	              <p class="description">许可证: Mozilla Public License (<a onclick="callOpenUrl('www.openlca.org/open-source')" target="blank" class="btn btn-default">是什么意思吗?</a>).</p>                  
+	            </td>
+	          </tr>
+	        </tbody>
+	      </table>
+	    </div>
+	    <div id="navigation-section" class="container-fluid" style="margin: 20px;">
+	      <table style="background-color: rgb(255, 255, 255);">
+	        <tbody>
+	          <tr>
+	            <td>
+	              <h3><img src="images/news.gif"
+	                  alt="">有什么新鲜事</h3>
+	              <p>为版本 1.4, 完全重新设计:</p>
+	              <ul>
+	                <li><b>彻底地</b> <a onclick="callOpenUrl('http://www.openlca.org/performance')" class="btn btn-default"><b>改良性能</b></a> 约 400%</li>
+	                <li><b>许多</b> <a onclick="callOpenUrl('http://www.openlca.org/features#usability')" class="btn btn-default"><b>可用性改进</b></a></li>
+	                <li><b>许多</b> <a onclick="callOpenUrl('http://www.openlca.org/features#overview1.4')"  class="btn btn-default"><b>新特点</b></a></li>
+	              </ul>
+	            </td>
+	            <td>
+	              <h3><img src="images/getting-started.gif"
+	                  alt="">入门指南</h3>
+	              <p>当第一次启动 openLCA, 没有数据. 在新版本, 是真的很容易就可以开始. 你可以简单地从现存的数据库输入 zolca 文件, 然后打开从导航</p>
+	              <p>这是一段 <a onclick="callOpenUrl('http://www.openlca.org/videos')"
+	                  target="blank" class="btn btn-default">视频</a> 中解释</p>
+	            </td>
+	          </tr>
+	          <tr>
+	            <td>
+	              <h3><img style="width: 61px; height: 54px;" src="images/search.gif"
+	                  alt="">搜索和下载数据</h3>
+	              <p>许多数据库是可用的在 <a onclick="callOpenUrl('http://nexus.openlca.org')" target="blank"
+	                  class="btn btn-default">openLCA Nexus</a>,
+	                那里你可以搜索的完整数据库，单个数据集 和 下载他们入 openLCA. 数据库均适合 openLCA, 而且可以结合几个数据库.</p>
+	              <p>这也是一段 <a onclick="callOpenUrl('http://www.openlca.org/videos')"
+	                  target="blank" class="btn btn-default">视频</a> 中解释<br>
+	                生命周期影响评价方法包可以从 <a onclick="callOpenUrl('http://www.openlca.org/downloads')"
+	                  target="blank" class="btn btn-default">openLCA 下载网站</a> 下载</p>
+	            </td>
+	            <td>
+	              <h3><img src="images/documentation.gif"
+	                  alt="">用户手册</h3>
+	              <p>在线 wiki 为 openLCA 提供细节信息. 随着时间改变所以请检查偶尔地.</p>
+	              <p>新的介绍性和全面的 <a onclick="callOpenUrl('http://www.openlca.org/manuals')" target="blank"
+	                  class="btn btn-default">手册</a> 网上也有.</p>
+	            </td>
+	          </tr>
+	          <tr>
+	            <td>
+	              <h3><img src="images/examples.gif"
+	                  alt="">例子</h3>
+	              <p>这里有范例分析，说明了如何使用 openLCA:</p>
+	              <p><a onclick="callOpenUrl('http://www.openlca.org/case_studies#1_3')" target="blank" class="btn btn-default">版本1.3的范例分析</a></p>
+	              <p><a onclick="callOpenUrl('http://www.openlca.org/case_studies#1_4')" target="blank" class="btn btn-default">版本1.4的范例分析</a></p>
+	            </td>
+	            <td>
+	              <h3><img src="images/community.gif"
+	                  alt="">公众</h3>
+	              <p>越来越多的人正在使用 openLCA. 在 <a
+	                  onclick="callOpenUrl('http://www.openlca.org/forum')" target="blank" class="btn btn-default">论坛</a> 中注册上分享想法，问问题, 阅读答案并参与.</p>
+	            </td>
+	          </tr>
+		        </tbody>
+		      </table>
+		    </div>
+		</div>
+
+        <script src="libs/jquery.min.js"></script>
+        <script src="libs/angular.min.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $('#gd-logo').on('click', function() {
+                    callOpenUrl('http://www.greendelta.com');
+                });
+            });
+
+            var app = angular.module('StartPage', []);
+
+            var Controller = function ($scope) {
+                $scope.data = {};
+            	//setData({'version' : '1.4' });
+            };
+	        app.controller('Controller', Controller);
+
+           function setData(data) {
+                var element = document.getElementById("contentDiv");
+                var scope = angular.element(element).scope();
+                scope.$apply(function () {
+                    scope.data = data;
+                });
+            }
+
+            // the functions openUrl and importDatabase should be registered by the 
+            // host editor in openLCA
+
+            function callOpenUrl(url) {
+                if(typeof(openUrl) === "function") {
+                    openUrl(url);
+                } else if (typeof(console) !== "undefined") {
+                    console.log("could not open " + url + "; openUrl is not a function");
+                }
+            }
+       </script>
+  </body>
+</html>

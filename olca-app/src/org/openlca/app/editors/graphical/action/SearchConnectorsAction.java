@@ -9,8 +9,6 @@ import org.eclipse.jface.action.IMenuCreator;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
@@ -22,6 +20,7 @@ import org.openlca.app.editors.graphical.command.ConnectionInput;
 import org.openlca.app.editors.graphical.model.ExchangeNode;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
+import org.openlca.app.util.Controls;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 class SearchConnectorsAction extends EditorAction {
@@ -33,8 +32,8 @@ class SearchConnectorsAction extends EditorAction {
 	private Menu menu;
 
 	public SearchConnectorsAction(int type) {
-		super(type == PROVIDER ? Messages.Systems_GetLinksAction_ProviderText
-				: Messages.Systems_GetLinksAction_RecipientText,
+		super(type == PROVIDER ? Messages.SearchProvidersFor
+				: Messages.SearchRecipientsFor,
 				IAction.AS_DROP_DOWN_MENU);
 		if (type == PROVIDER)
 			setId(ActionIds.SEARCH_PROVIDERS);
@@ -102,12 +101,7 @@ class SearchConnectorsAction extends EditorAction {
 				for (final ExchangeNode exchangeNode : exchangeNodes) {
 					MenuItem item = new MenuItem(menu, SWT.NONE);
 					item.setText(exchangeNode.getName());
-					item.addSelectionListener(new SelectionAdapter() {
-						@Override
-						public void widgetSelected(final SelectionEvent e) {
-							executeRequest(exchangeNode);
-						}
-					});
+					Controls.onSelect(item, (e) -> executeRequest(exchangeNode));
 				}
 			}
 		}

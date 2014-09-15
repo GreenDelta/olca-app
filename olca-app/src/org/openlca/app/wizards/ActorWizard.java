@@ -14,7 +14,7 @@ public class ActorWizard extends AbstractWizard<Actor> {
 
 	@Override
 	protected String getTitle() {
-		return Messages.Actors_WizardTitle;
+		return Messages.NewActor;
 	}
 
 	@Override

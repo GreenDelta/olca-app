@@ -4,15 +4,15 @@ import java.util.UUID;
 
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.Messages;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.core.model.Actor;
 
 class ActorWizardPage extends AbstractWizardPage<Actor> {
 
 	public ActorWizardPage() {
 		super("ActorWizardPage");
-		setTitle(Messages.Actors_WizardTitle);
-		setMessage(Messages.Actors_WizardMessage);
+		setTitle(Messages.NewActor);
+		setMessage(Messages.CreatesANewActor);
 		setImageDescriptor(ImageType.NEW_WIZ_ACTOR.getDescriptor());
 		setPageComplete(false);
 	}

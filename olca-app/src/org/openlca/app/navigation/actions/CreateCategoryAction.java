@@ -12,7 +12,7 @@ import org.openlca.app.navigation.CategoryElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelTypeElement;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.model.Category;
@@ -32,7 +32,7 @@ public class CreateCategoryAction extends Action implements INavigationAction {
 	private ModelType modelType;
 
 	public CreateCategoryAction() {
-		setText(Messages.NavigationView_AddCategoryText);
+		setText(Messages.AddNewChildCategory);
 		setImageDescriptor(ImageType.ADD_ICON.getDescriptor());
 	}
 
@@ -103,9 +103,9 @@ public class CreateCategoryAction extends Action implements INavigationAction {
 
 	private String getDialogValue() {
 		InputDialog dialog = new InputDialog(UI.shell(),
-				Messages.NavigationView_NewCategoryDialogTitle,
-				Messages.NavigationView_NewCategoryDialogText,
-				Messages.NavigationView_NewCategoryDialogDefault, null);
+				Messages.NewCategory,
+				Messages.PleaseEnterTheNameOfTheNewCategory,
+				Messages.NewCategory, null);
 		int rc = dialog.open();
 		if (rc == Window.OK)
 			return dialog.getValue();

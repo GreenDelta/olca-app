@@ -88,8 +88,17 @@ public class ParameterSection implements ParameterPageListener {
 			parameters = support.getParameters(); // reloads it from the model
 				setInput();
 			});
+		addDoubleClickHandler();
 	}
-
+	
+	private void addDoubleClickHandler() {
+		Tables.onDoubleClick(viewer, (event) -> {
+			TableItem item = Tables.getItem(viewer, event);
+			if (item == null)
+				onAdd();
+		});
+	}
+	
 	public void setExternalSources(List<ExternalSource> externalSources) {
 		if (externalSources == null)
 			this.externalSources = new ArrayList<>();
@@ -103,8 +112,8 @@ public class ParameterSection implements ParameterPageListener {
 	}
 
 	private void createComponents(Composite body, String[] properties) {
-		String label = forInputParameters ? "Input parameters"
-				: "Dependent parameters";
+		String label = forInputParameters ? Messages.InputParameters
+				: Messages.DependentParameters;
 		Section section = UI.section(body, editor.getToolkit(), label);
 		UI.gridData(section, true, true);
 		Composite parent = UI.sectionClient(section, editor.getToolkit());
@@ -119,10 +128,12 @@ public class ParameterSection implements ParameterPageListener {
 	}
 
 	private void bindActions(Section section) {
-		Action addAction = Actions.onAdd(() -> addParameter());
-		Action removeAction = Actions.onRemove(() -> removeParameter());
+		Action addAction = Actions.onAdd(() -> onAdd());
+		Action removeAction = Actions.onRemove(() -> onRemove());
+		Action clipboard = TableClipboard.onCopy(viewer);
 		Actions.bind(section, addAction, removeAction);
-		Actions.bind(viewer, addAction, removeAction);
+		Actions.bind(viewer, addAction, removeAction, clipboard);
+		Tables.onDeletePressed(viewer, (e) -> onRemove());
 	}
 
 	private void createCellModifiers() {
@@ -154,7 +165,7 @@ public class ParameterSection implements ParameterPageListener {
 		viewer.setInput(input);
 	}
 
-	private void addParameter() {
+	private void onAdd() {
 		Parameter parameter = new Parameter();
 		parameter.setName("p_" + parameters.size());
 		parameter.setScope(support.getScope());
@@ -168,7 +179,7 @@ public class ParameterSection implements ParameterPageListener {
 		support.fireParameterChange();
 	}
 
-	private void removeParameter() {
+	private void onRemove() {
 		List<Parameter> selection = Viewers.getAllSelected(viewer);
 		for (Parameter parameter : selection) {
 			parameters.remove(parameter);
@@ -234,8 +245,8 @@ public class ParameterSection implements ParameterPageListener {
 				return;
 			String name = text.trim();
 			if (!Parameter.isValidName(name)) {
-				Error.showBox("Invalid parameter name", name
-						+ " is not a valid parameter name");
+				Error.showBox(Messages.InvalidParameterName, name + " "
+						+ Messages.IsNotValidParameterName);
 				return;
 			}
 			param.setName(name);
@@ -257,7 +268,7 @@ public class ParameterSection implements ParameterPageListener {
 				support.fireParameterChange();
 			} catch (Exception e) {
 				Dialog.showError(viewer.getTable().getShell(), text
-						+ " is not a valid number. ");
+						+ " " + Messages.IsNotValidNumber);
 			}
 		}
 	}
@@ -278,7 +289,7 @@ public class ParameterSection implements ParameterPageListener {
 				param.setValue(val);
 				support.fireParameterChange();
 			} catch (Exception e) {
-				Error.showBox("Invalid formula",
+				Error.showBox(Messages.InvalidFormula,
 						Strings.cut(e.getMessage(), 75));
 			}
 		}

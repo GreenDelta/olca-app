@@ -13,6 +13,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.openlca.app.Messages;
 import org.openlca.app.components.FlowImpactSelection;
 import org.openlca.app.components.FlowImpactSelection.EventHandler;
 import org.openlca.app.db.Cache;
@@ -37,13 +38,13 @@ public class ProjectResultPage extends FormPage {
 	private TableViewer tableViewer;
 
 	public ProjectResultPage(ProjectResultEditor editor) {
-		super(editor, "ProjectResultPage", "Project results");
+		super(editor, "ProjectResultPage", Messages.ProjectResults);
 		this.result = editor.getResult();
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, "Project results");
+		ScrolledForm form = UI.formHeader(managedForm, Messages.ProjectResults);
 		FormToolkit toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		Composite composite = toolkit.createComposite(body);
@@ -59,10 +60,10 @@ public class ProjectResultPage extends FormPage {
 	}
 
 	private void createTable(Composite body, FormToolkit toolkit) {
-		Composite composite = UI.formSection(body, toolkit, "Results");
+		Composite composite = UI.formSection(body, toolkit, Messages.Results);
 		UI.gridLayout(composite, 1);
-		tableViewer = Tables.createViewer(composite, new String[] { "Variant",
-				"Amount", "Unit" });
+		tableViewer = Tables.createViewer(composite, new String[] { Messages.Variant,
+				Messages.Amount, Messages.Unit });
 		tableViewer.setLabelProvider(new TableLabel());
 		Tables.bindColumnWidths(tableViewer, 0.4, 0.3, 0.3);
 		UI.gridData(tableViewer.getTable(), true, true).minimumHeight = 150;

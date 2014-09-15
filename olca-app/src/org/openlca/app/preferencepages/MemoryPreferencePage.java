@@ -53,7 +53,7 @@ public class MemoryPreferencePage extends PreferencePage implements
 				UIFactory.createGridLayout(2, false, 5));
 
 		// create the text to enter a new memory amount
-		memoryText = UIFactory.createTextWithLabel(body, Messages.Reserve
+		memoryText = UIFactory.createTextWithLabel(body, Messages.ReserveMemoryMessage
 				+ " (MB):", false);
 		memoryText.setText(Integer.toString(amount));
 
@@ -61,7 +61,7 @@ public class MemoryPreferencePage extends PreferencePage implements
 		final Composite composite2 = new Composite(body, SWT.NONE);
 		composite2.setLayout(new GridLayout(1, true));
 		createNoteComposite(composite2.getFont(), composite2, Messages.Note
-				+ ":", Messages.LanguagePreferencePage_SelectLanguageNoteText);
+				+ ":", Messages.SelectLanguageNoteMessage);
 
 		// initialize the listeners
 		initListeners();

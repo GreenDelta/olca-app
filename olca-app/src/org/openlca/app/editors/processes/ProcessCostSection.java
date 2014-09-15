@@ -11,10 +11,12 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.TableClipboard;
+import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
 import org.openlca.core.model.Exchange;
@@ -75,55 +77,52 @@ class ProcessCostSection {
 		Section section = UI.section(parent, toolkit, product.getFlow()
 				.getName());
 		UI.gridData(section, true, true);
-		Actions.bind(section, new AddAction(), new RemoveAction());
 		Composite client = UI.sectionClient(section, toolkit);
 		ProcessCostViewer costViewer = new ProcessCostViewer(editor);
 		costViewer.render(toolkit, client);
 		viewer = costViewer.getTableViewer();
 		viewer.setInput(entries);
+		bindActions(section, viewer);
 	}
 
-	private class AddAction extends Action {
-
-		public AddAction() {
-			setToolTipText("Add");
-			setImageDescriptor(ImageType.ADD_ICON.getDescriptor());
-		}
-
-		@Override
-		public void run() {
-			Shell shell = viewer.getTable().getShell();
-			ProcessCostEntryDialog dialog = new ProcessCostEntryDialog(shell,
-					entries);
-			int code = dialog.open();
-			if (code == Window.OK) {
-				ProcessCostEntry newEntry = dialog.getCostEntry();
-				newEntry.setExchange(product);
-				process.getCostEntries().add(newEntry);
-				entries.add(newEntry);
-				editor.setDirty(true);
-				viewer.setInput(entries);
-			}
-		}
+	private void bindActions(Section section, TableViewer viewer) {
+		Action add = Actions.onAdd(this::onAdd);
+		Action remove = Actions.onRemove(this::onRemove);
+		Action copy = TableClipboard.onCopy(viewer);
+		Actions.bind(section, add, remove);
+		Actions.bind(viewer, add, remove, copy);
+		Tables.onDeletePressed(viewer, (event) -> onRemove());
+		Tables.onDoubleClick(viewer, (event) -> {
+			TableItem item = Tables.getItem(viewer, event);
+			if (item == null)
+				onAdd();
+		});
 	}
 
-	private class RemoveAction extends Action {
-
-		public RemoveAction() {
-			setToolTipText("Remove");
-			setImageDescriptor(ImageType.DELETE_ICON.getDescriptor());
-		}
-
-		@Override
-		public void run() {
-			ProcessCostEntry e = Viewers.getFirstSelected(viewer);
-			if (e != null) {
-				entries.remove(e);
-				process.getCostEntries().remove(e);
-				editor.setDirty(true);
-				viewer.setInput(entries);
-			}
+	private void onAdd() {
+		Shell shell = viewer.getTable().getShell();
+		ProcessCostEntryDialog dialog = new ProcessCostEntryDialog(shell,
+				entries);
+		int code = dialog.open();
+		if (code == Window.OK) {
+			ProcessCostEntry newEntry = dialog.getCostEntry();
+			newEntry.setExchange(product);
+			process.getCostEntries().add(newEntry);
+			entries.add(newEntry);
+			editor.setDirty(true);
+			viewer.setInput(entries);
 		}
 	}
 
+	private void onRemove() {
+		List<ProcessCostEntry> selected = Viewers.getAllSelected(viewer);
+		if (selected == null)
+			return;
+		for (ProcessCostEntry e : selected) {
+			entries.remove(e);
+			process.getCostEntries().remove(e);
+		}
+		editor.setDirty(true);
+		viewer.setInput(entries);
+	}
 }

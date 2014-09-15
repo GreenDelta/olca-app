@@ -29,7 +29,7 @@ import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.ModelTextFilter;
 import org.openlca.app.navigation.NavigationTree;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ModelType;
@@ -96,7 +96,7 @@ public class ModelSelectionDialog extends FormDialog {
 		boldLabelFont = UI.boldFont(filterLabel);
 		filterLabel.setFont(boldLabelFont);
 		filterText = UI.formText(body, SWT.SEARCH);
-		Section section = UI.section(body, toolkit, "Content");
+		Section section = UI.section(body, toolkit, Messages.Content);
 		addSectionActions(section);
 		UI.gridData(section, true, true);
 		Composite composite = UI.sectionClient(section, toolkit);
@@ -116,8 +116,8 @@ public class ModelSelectionDialog extends FormDialog {
 			return multiSelection ? Messages.FlowProperties
 					: Messages.FlowProperty;
 		case IMPACT_METHOD:
-			return multiSelection ? Messages.ImpactMethods
-					: Messages.ImpactMethod;
+			return multiSelection ? Messages.ImpactAssessmentMethods
+					: Messages.ImpactAssessmentMethod;
 		case PROCESS:
 			return multiSelection ? Messages.Processes : Messages.Process;
 		case PRODUCT_SYSTEM:

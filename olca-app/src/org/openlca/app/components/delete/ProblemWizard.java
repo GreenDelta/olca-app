@@ -111,7 +111,7 @@ public class ProblemWizard extends Wizard {
 					public void run(final IProgressMonitor monitor)
 							throws InvocationTargetException,
 							InterruptedException {
-						monitor.beginTask(Messages.DeleteWizard_Solving,
+						monitor.beginTask(Messages.SolvingProblems,
 								problems.length);
 						// for each problem
 						for (final Problem problem : problems) {

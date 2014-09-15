@@ -1,12 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.app;
 
 import java.io.BufferedWriter;
@@ -17,7 +8,6 @@ import java.io.OutputStreamWriter;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.preference.PreferenceStore;
-import org.openlca.app.preferencepages.Language;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,11 +53,6 @@ public enum ApplicationProperties {
 	 * Memory usage
 	 */
 	PROP_MEMORY("Xmx"),
-
-	/**
-	 * Platform language
-	 */
-	PROP_NATIONAL_LANGUAGE("nl"),
 
 	/**
 	 * Show outline
@@ -126,10 +111,7 @@ public enum ApplicationProperties {
 	 */
 	private static String getDefaultValue(final String property) {
 		String defaultValue = null;
-		if (property.equals(PROP_NATIONAL_LANGUAGE.key)) {
-			// english
-			defaultValue = Language.ENGLISH.getCode();
-		} else if (property.equals(PROP_DEFAULT_CALCULATION_METHOD.key)) {
+		if (property.equals(PROP_DEFAULT_CALCULATION_METHOD.key)) {
 			// Matrix solver as default calculation method
 			defaultValue = "org.openlca.core.calculation.matrix.solver.MatrixSolver";
 		} else if (property.equals(PROP_MEMORY.key)) {
@@ -161,14 +143,6 @@ public enum ApplicationProperties {
 			if (!iniFile.exists()) {
 				iniFile.createNewFile();
 			}
-			// write to file
-
-			// write national language
-			writer.write("-nl");
-			writer.newLine();
-			writer.write(PROP_NATIONAL_LANGUAGE.getValue());
-			writer.newLine();
-
 			// write maximum memory usage
 			writer.write("-vmargs");
 			writer.newLine();
@@ -196,8 +170,7 @@ public enum ApplicationProperties {
 		} catch (final IOException e) {
 			log.error("Save property failed", e);
 		}
-		if (property.equals(PROP_NATIONAL_LANGUAGE.key)
-				|| property.equals(PROP_MEMORY.key)) {
+		if (property.equals(PROP_MEMORY.key)) {
 			saveSystemPropertyValues();
 		}
 	}

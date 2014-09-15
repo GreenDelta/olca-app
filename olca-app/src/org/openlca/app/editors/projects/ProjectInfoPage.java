@@ -31,7 +31,7 @@ class ProjectInfoPage extends ModelPage<Project> {
 
 	private void createGoalAndScopeSection(Composite parent) {
 		Composite composite = UI.formSection(parent, toolkit,
-				Messages.GoalAndScopeInfoSectionLabel);
+				Messages.GoalAndScope);
 
 		createMultiText(Messages.Goal, "goal", composite);
 		createMultiText(Messages.FunctionalUnit, "functionalUnit", composite);
@@ -39,7 +39,7 @@ class ProjectInfoPage extends ModelPage<Project> {
 
 	private void createTimeInfoSection(Composite parent) {
 		Composite composite = UI.formSection(parent, toolkit,
-				Messages.ProjectInfoSectionLabel);
+				Messages.TimeAndAuthor);
 
 		createReadOnly(Messages.CreationDate, "creationDate", composite);
 		createReadOnly(Messages.LastModificationDate, "lastModificationDate",

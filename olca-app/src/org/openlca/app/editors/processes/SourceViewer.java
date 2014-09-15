@@ -3,7 +3,10 @@ package org.openlca.app.editors.processes;
 import java.util.List;
 
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.TableItem;
+import org.openlca.app.App;
 import org.openlca.app.components.ModelSelectionDialog;
+import org.openlca.app.util.Tables;
 import org.openlca.app.viewers.table.AbstractTableViewer;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.SourceDao;
@@ -24,6 +27,20 @@ class SourceViewer extends AbstractTableViewer<Source> {
 		super(parent);
 		this.sourceDao = new SourceDao(database);
 		this.editor = editor;
+		addDoubleClickHandler();
+	}
+
+	private void addDoubleClickHandler() {
+		Tables.onDoubleClick(getViewer(), (event) -> {
+			TableItem item = Tables.getItem(getViewer(), event);
+			if (item == null) {
+				onCreate();
+				return;
+			}
+			Source source = getSelected();
+			if (source != null)
+				App.openEditor(source);
+		});
 	}
 
 	public void setInput(Process process) {

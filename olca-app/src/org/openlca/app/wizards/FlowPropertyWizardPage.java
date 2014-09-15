@@ -6,15 +6,13 @@ import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.FlowPropertyTypeViewer;
 import org.openlca.app.viewers.combo.UnitGroupViewer;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyType;
 import org.openlca.core.model.UnitGroup;
-import org.openlca.core.model.descriptors.UnitGroupDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,8 +24,8 @@ class FlowPropertyWizardPage extends AbstractWizardPage<FlowProperty> {
 
 	public FlowPropertyWizardPage() {
 		super("FlowPropertyWizardPage");
-		setTitle(Messages.FlowProps_WizardTitle);
-		setMessage(Messages.FlowProps_WizardMessage);
+		setTitle(Messages.NewFlowProperty);
+		setMessage(Messages.CreatesANewFlowProperty);
 		setImageDescriptor(ImageType.NEW_WIZ_PROPERTY.getDescriptor());
 		setPageComplete(false);
 	}
@@ -37,7 +35,7 @@ class FlowPropertyWizardPage extends AbstractWizardPage<FlowProperty> {
 		super.checkInput();
 		if (getErrorMessage() == null) {
 			if (unitGroupComboViewer.getSelected() == null) {
-				setErrorMessage(Messages.FlowProps_EmptyUnitGroupError);
+				setErrorMessage(Messages.NoUnitGroupSelected);
 			}
 		}
 		setPageComplete(getErrorMessage() == null);
@@ -45,7 +43,7 @@ class FlowPropertyWizardPage extends AbstractWizardPage<FlowProperty> {
 
 	@Override
 	protected void createContents(final Composite container) {
-		UI.formLabel(container, Messages.FlowProps_FlowPropertyType);
+		UI.formLabel(container, Messages.FlowPropertyType);
 		flowPropertyTypeViewer = new FlowPropertyTypeViewer(container);
 		flowPropertyTypeViewer.select(FlowPropertyType.PHYSICAL);
 		UI.formLabel(container, Messages.UnitGroup);
@@ -56,13 +54,7 @@ class FlowPropertyWizardPage extends AbstractWizardPage<FlowProperty> {
 	@Override
 	protected void initModifyListeners() {
 		super.initModifyListeners();
-		unitGroupComboViewer
-				.addSelectionChangedListener(new ISelectionChangedListener<UnitGroupDescriptor>() {
-					@Override
-					public void selectionChanged(UnitGroupDescriptor selection) {
-						checkInput();
-					}
-				});
+		unitGroupComboViewer.addSelectionChangedListener((s) -> checkInput());
 	}
 
 	@Override

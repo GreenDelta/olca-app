@@ -1,0 +1,555 @@
+{
+    "title": "Results of project \u0027electricity mix DE ENTSO-E vs EI 2\u0027",
+    "project": {
+        "refId": "f5ef78c1-879e-48c5-acc6-9a81d59f9178",
+        "id": 610683,
+        "name": "electricity mix DE ENTSO-E vs EI 2",
+        "description": "",
+        "type": "PROJECT"
+    },
+    "withNormalisation": true,
+    "withWeighting": true,
+    "sections": [{
+            "index": 0,
+            "title": "Introduction",
+            "text": "In the following the results of the project \u0027new\u0027 are shown. This is a default template for the report of the project results. You can configure template this via the project editor by \n\n\u003cp\u003e\u003cul\u003e\n\u003cli\u003echanging the text of the sections, \n\u003cli\u003eadding or removing sections, \n\u003cli\u003eand selecting visual components that should be shown. \n\u003c/ul\u003e\u003c/p\u003e\n\nNote that you can also use HTML elements to format the section texts. Additionally, you can export this report as an HTML page using the export button in the toolbar of the report view."
+        }, {
+            "index": 1,
+            "title": "Project variants",
+            "text": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.  ",
+            "componentId": "variant_description_table"
+        }, {
+            "index": 2,
+            "title": "LCIA method",
+            "text": "The table below shows the LCIA categories of the selected LCIA method for the project. Only the LCIA categories that are selected to be displayed are shown in the report. Additionally, a user friendly name and a description for the report can be provided.",
+            "componentId": "indicator_description_table"
+        }, {
+            "index": 3,
+            "title": "LCIA Results",
+            "text": "The following table shows the LCIA results of the project.",
+            "componentId": "impact_result_table"
+        }, {
+            "index": 4,
+            "title": "Normalisation",
+            "text": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.   ",
+            "componentId": "normalisation_result_table"
+        }, {
+            "index": 5,
+            "title": "Weighting / Single score",
+            "text": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.   ",
+            "componentId": "single_score_table"
+        }, {
+            "index": 6,
+            "title": "Process contributions",
+            "text": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.   ",
+            "componentId": "process_contribution_chart"
+        }, {
+            "index": 7,
+            "title": "Indicator bar chart",
+            "text": "An example for the indicator bar chart",
+            "componentId": "indicator_bar_chart"
+        }, {
+            "index": 8,
+            "title": "Relative indicator bar chart",
+            "text": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.   ",
+            "componentId": "relative_indicator_bar_chart"
+        }, {
+            "index": 9,
+            "title": "Normalisation bar chart",
+            "text": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.   ",
+            "componentId": "normalisation_bar_chart"
+        }, {
+            "index": 10,
+            "title": "Relative indicator radar chart",
+            "text": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.   ",
+            "componentId": "relative_indicator_radar_chart"
+        }, {
+            "index": 11,
+            "title": "Normalisation radar chart",
+            "text": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.   ",
+            "componentId": "normalisation_radar_chart"
+        }
+        , {
+            "index": 12,
+            "title": "Single score bar chart",
+            "text": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.   ",
+            "componentId": "single_score_bar_chart"
+        }],
+    "parameters": [],
+    "variants": [{
+            "id": 0,
+            "name": "ecoinvent 2.2, 2004"
+        }, {
+            "id": 1,
+            "name": "ENTSO-E, 2013"
+        }],
+    "results": [{
+            "indicatorId": 0,
+            "variantResults": [{
+                    "variant": "ENTSO-E, 2013",
+                    "totalAmount": 0.025117188358952977,
+                    "contributions": [{
+                            "processId": -1,
+                            "amount": 0.025117188358952963,
+                            "rest": true
+                        }, {
+                            "processId": 502278,
+                            "amount": 0.0,
+                            "rest": false
+                        }, {
+                            "processId": 499215,
+                            "amount": 0.0,
+                            "rest": false
+                        }, {
+                            "processId": 569307,
+                            "amount": 0.0,
+                            "rest": false
+                        }
+                    ]
+                }, {
+                    "variant": "ecoinvent 2.2, 2004",
+                    "totalAmount": 0.02825726272868669,
+                    "contributions": [{
+                            "processId": -1,
+                            "amount": 0.028257262728686686,
+                            "rest": true
+                        }, {
+                            "processId": 502278,
+                            "amount": 0.0,
+                            "rest": false
+                        }, {
+                            "processId": 499215,
+                            "amount": 0.0,
+                            "rest": false
+                        }, {
+                            "processId": 569307,
+                            "amount": 0.0,
+                            "rest": false
+                        }
+                    ]
+                }
+            ]
+        }, {
+            "indicatorId": 8,
+            "variantResults": [{
+                    "variant": "ENTSO-E, 2013",
+                    "totalAmount": 2.175362479595967E-6,
+                    "contributions": [{
+                            "processId": -1,
+                            "amount": 1.6368541222111479E-7,
+                            "rest": true
+                        }, {
+                            "processId": 502278,
+                            "amount": 1.3665559793986203E-6,
+                            "rest": false
+                        }, {
+                            "processId": 499215,
+                            "amount": 5.520625220689396E-7,
+                            "rest": false
+                        }, {
+                            "processId": 569307,
+                            "amount": 9.305856590729452E-8,
+                            "rest": false
+                        }
+                    ]
+                }, {
+                    "variant": "ecoinvent 2.2, 2004",
+                    "totalAmount": 2.402366975605424E-6,
+                    "contributions": [{
+                            "processId": -1,
+                            "amount": 3.2035256131816136E-7,
+                            "rest": true
+                        }, {
+                            "processId": 502278,
+                            "amount": 1.1089526071682777E-6,
+                            "rest": false
+                        }, {
+                            "processId": 499215,
+                            "amount": 8.025142340786514E-7,
+                            "rest": false
+                        }, {
+                            "processId": 569307,
+                            "amount": 1.7054757304033273E-7,
+                            "rest": false
+                        }
+                    ]
+                }
+            ]
+        }, {
+            "indicatorId": 11,
+            "variantResults": [{
+                    "variant": "ENTSO-E, 2013",
+                    "totalAmount": 1.3513273729730236E-8,
+                    "contributions": [{
+                            "processId": -1,
+                            "amount": 3.279354749347292E-9,
+                            "rest": true
+                        }, {
+                            "processId": 502278,
+                            "amount": 6.991279842074404E-9,
+                            "rest": false
+                        }, {
+                            "processId": 499215,
+                            "amount": 2.7517810982793135E-9,
+                            "rest": false
+                        }, {
+                            "processId": 569307,
+                            "amount": 4.908580400292314E-10,
+                            "rest": false
+                        }
+                    ]
+                }, {
+                    "variant": "ecoinvent 2.2, 2004",
+                    "totalAmount": 1.4945112846484975E-8,
+                    "contributions": [{
+                            "processId": -1,
+                            "amount": 4.371967787444066E-9,
+                            "rest": true
+                        }, {
+                            "processId": 502278,
+                            "amount": 5.673384863255505E-9,
+                            "rest": false
+                        }, {
+                            "processId": 499215,
+                            "amount": 4.000169205766087E-9,
+                            "rest": false
+                        }, {
+                            "processId": 569307,
+                            "amount": 8.995909900193058E-10,
+                            "rest": false
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "indicators": [{
+            "id": 12,
+            "descriptor": {
+                "referenceUnit": "species.yr",
+                "refId": "9f22371e-04b1-4142-9f4f-b01d730be496",
+                "id": 38529,
+                "name": "Ecosystems - Agricultural land occupation",
+                "description": "ALOPInf",
+                "type": "IMPACT_CATEGORY"
+            },
+            "reportName": "Ecosystems - Agricultural land occupation",
+            "displayed": false,
+            "normalisationFactor": 0.0,
+            "weightingFactor": 0.0
+        }, {
+            "id": 15,
+            "descriptor": {
+                "referenceUnit": "species.yr",
+                "refId": "b6c99c92-42e1-4705-adc8-1eb9aabc10b4",
+                "id": 38549,
+                "name": "Ecosystems - Climate Change",
+                "description": "GWP500",
+                "type": "IMPACT_CATEGORY"
+            },
+            "reportName": "Ecosystems - Climate Change",
+            "displayed": false,
+            "normalisationFactor": 0.0,
+            "weightingFactor": 0.0
+        }, {
+            "id": 17,
+            "descriptor": {
+                "referenceUnit": "species.yr",
+                "refId": "d576f0ad-9870-41b5-b942-8595953799c0",
+                "id": 38592,
+                "name": "Ecosystems - Freshwater ecotoxicity",
+                "description": "FETP",
+                "type": "IMPACT_CATEGORY"
+            },
+            "reportName": "Ecosystems - Freshwater ecotoxicity",
+            "displayed": false,
+            "normalisationFactor": 0.0,
+            "weightingFactor": 0.0
+        }, {
+            "id": 5,
+            "descriptor": {
+                "referenceUnit": "species.yr",
+                "refId": "2c1e14bb-62cc-42eb-b4ec-21906c4521f2",
+                "id": 38403,
+                "name": "Ecosystems - Freshwater eutrophication",
+                "description": "FEPInf",
+                "type": "IMPACT_CATEGORY"
+            },
+            "reportName": "Ecosystems - Freshwater eutrophication",
+            "displayed": false,
+            "normalisationFactor": 0.0,
+            "weightingFactor": 0.0
+        }, {
+            "id": 16,
+            "descriptor": {
+                "referenceUnit": "species.yr",
+                "refId": "d2ce3085-88a9-46d9-ab95-80c49037e749",
+                "id": 38586,
+                "name": "Ecosystems - Marine ecotoxicity",
+                "description": "METP",
+                "type": "IMPACT_CATEGORY"
+            },
+            "reportName": "Ecosystems - Marine ecotoxicity",
+            "displayed": false,
+            "normalisationFactor": 0.0,
+            "weightingFactor": 0.0
+        }, {
+            "id": 10,
+            "descriptor": {
+                "referenceUnit": "species.yr",
+                "refId": "6688f0d3-6e6b-4ae0-8c5f-4d8810682765",
+                "id": 38467,
+                "name": "Ecosystems - Natural land transformation",
+                "description": "LTPInf",
+                "type": "IMPACT_CATEGORY"
+            },
+            "reportName": "Ecosystems - Natural land transformation",
+            "displayed": false,
+            "normalisationFactor": 0.0,
+            "weightingFactor": 0.0
+        }, {
+            "id": 18,
+            "descriptor": {
+                "referenceUnit": "species.yr",
+                "refId": "f0a18fcc-e70c-4fbe-a885-1cf778b086d8",
+                "id": 38627,
+                "name": "Ecosystems - Terrestrial acidification",
+                "description": "TAP500",
+                "type": "IMPACT_CATEGORY"
+            },
+            "reportName": "Ecosystems - Terrestrial acidification",
+            "displayed": false,
+            "normalisationFactor": 0.0,
+            "weightingFactor": 0.0
+        }, {
+            "id": 13,
+            "descriptor": {
+                "referenceUnit": "species.yr",
+                "refId": "a2035aa8-46ba-4d18-b1d2-8ac48f79362d",
+                "id": 38533,
+                "name": "Ecosystems - Terrestrial ecotoxicity",
+                "description": "TETP",
+                "type": "IMPACT_CATEGORY"
+            },
+            "reportName": "Ecosystems - Terrestrial ecotoxicity",
+            "displayed": false,
+            "normalisationFactor": 0.0,
+            "weightingFactor": 0.0
+        }, {
+            "id": 2,
+            "descriptor": {
+                "referenceUnit": "species.yr",
+                "refId": "130d7433-700f-45d8-b544-4bc99f64609a",
+                "id": 38375,
+                "name": "Ecosystems - Urban land occupation",
+                "description": "ULOPInf",
+                "type": "IMPACT_CATEGORY"
+            },
+            "reportName": "Ecosystems - Urban land occupation",
+            "displayed": false,
+            "normalisationFactor": 0.0,
+            "weightingFactor": 0.0
+        }, {
+            "id": 11,
+            "descriptor": {
+                "referenceUnit": "species.yr",
+                "refId": "82af9b15-1dc0-4ff6-b8ac-f95a6987c85a",
+                "id": 38495,
+                "name": "Ecosystems-total",
+                "description": "damage to ecosystem diversity",
+                "type": "IMPACT_CATEGORY"
+            },
+            "reportName": "Ecosystems-total",
+            "displayed": true,
+            "normalisationFactor": 15184.470146,
+            "weightingFactor": 500.0
+        }, {
+            "id": 9,
+            "descriptor": {
+                "referenceUnit": "DALY",
+                "refId": "5052a187-1ad7-40f8-83a2-0f25c147c428",
+                "id": 38444,
+                "name": "Human Health - Climate Change",
+                "description": "GWP500",
+                "type": "IMPACT_CATEGORY"
+            },
+            "reportName": "Human Health - Climate Change",
+            "displayed": false,
+            "normalisationFactor": 0.0,
+            "weightingFactor": 0.0
+        }, {
+            "id": 1,
+            "descriptor": {
+                "referenceUnit": "DALY",
+                "refId": "04b4d7aa-c936-45ff-9933-9f0d912a8ad0",
+                "id": 38357,
+                "name": "Human Health - Human toxicity",
+                "description": "HTP",
+                "type": "IMPACT_CATEGORY"
+            },
+            "reportName": "Human Health - Human toxicity",
+            "displayed": false,
+            "normalisationFactor": 0.0,
+            "weightingFactor": 0.0
+        }, {
+            "id": 6,
+            "descriptor": {
+                "referenceUnit": "DALY",
+                "refId": "33d888d2-de56-44aa-a7d7-780c109c9898",
+                "id": 38413,
+                "name": "Human Health - Ionising radiation",
+                "description": "IRPInf",
+                "type": "IMPACT_CATEGORY"
+            },
+            "reportName": "Human Health - Ionising radiation",
+            "displayed": false,
+            "normalisationFactor": 0.0,
+            "weightingFactor": 0.0
+        }, {
+            "id": 7,
+            "descriptor": {
+                "referenceUnit": "DALY",
+                "refId": "405aaa61-5fea-4d6f-8d67-2f2b4ea32e11",
+                "id": 38425,
+                "name": "Human Health - Ozone depletion",
+                "description": "ODPInf",
+                "type": "IMPACT_CATEGORY"
+            },
+            "reportName": "Human Health - Ozone depletion",
+            "displayed": false,
+            "normalisationFactor": 0.0,
+            "weightingFactor": 0.0
+        }, {
+            "id": 4,
+            "descriptor": {
+                "referenceUnit": "DALY",
+                "refId": "1841407e-1a5a-402d-b313-18567e9c0aee",
+                "id": 38384,
+                "name": "Human Health - Particulate matter formation",
+                "description": "PMFPInf",
+                "type": "IMPACT_CATEGORY"
+            },
+            "reportName": "Human Health - Particulate matter formation",
+            "displayed": false,
+            "normalisationFactor": 0.0,
+            "weightingFactor": 0.0
+        }, {
+            "id": 14,
+            "descriptor": {
+                "referenceUnit": "DALY",
+                "refId": "a9ca456a-28c4-4011-9bc7-1d8b39d95311",
+                "id": 38537,
+                "name": "Human Health - Photochemical oxidant formation",
+                "description": "POFPInf",
+                "type": "IMPACT_CATEGORY"
+            },
+            "reportName": "Human Health - Photochemical oxidant formation",
+            "displayed": false,
+            "normalisationFactor": 0.0,
+            "weightingFactor": 0.0
+        }, {
+            "id": 8,
+            "descriptor": {
+                "referenceUnit": "DALY",
+                "refId": "44141cc2-aa20-4c03-9d81-f053fecf8254",
+                "id": 38430,
+                "name": "Human Health-total",
+                "description": "damage to human health",
+                "type": "IMPACT_CATEGORY"
+            },
+            "reportName": "Human Health-total",
+            "displayed": true,
+            "normalisationFactor": 146334.20826,
+            "weightingFactor": 300.0
+        }, {
+            "id": 19,
+            "descriptor": {
+                "referenceUnit": "$",
+                "refId": "f2d443ae-9840-4d7a-81c3-de32bde3c494",
+                "id": 38633,
+                "name": "Resources - Fossil depletion",
+                "description": "FDPInf",
+                "type": "IMPACT_CATEGORY"
+            },
+            "reportName": "Resources - Fossil depletion",
+            "displayed": false,
+            "normalisationFactor": 0.0,
+            "weightingFactor": 0.0
+        }, {
+            "id": 3,
+            "descriptor": {
+                "referenceUnit": "$",
+                "refId": "17404c12-b803-48b4-9deb-4456b2af0815",
+                "id": 38382,
+                "name": "Resources - Metal depletion",
+                "description": "MDPInf",
+                "type": "IMPACT_CATEGORY"
+            },
+            "reportName": "Resources - Metal depletion",
+            "displayed": false,
+            "normalisationFactor": 0.0,
+            "weightingFactor": 0.0
+        }, {
+            "id": 0,
+            "descriptor": {
+                "referenceUnit": "$",
+                "refId": "03f098e3-f546-43aa-927e-c30af420ae96",
+                "id": 38354,
+                "name": "Resources-total",
+                "description": "damage to resource availability",
+                "type": "IMPACT_CATEGORY"
+            },
+            "reportName": "Resources-total",
+            "displayed": true,
+            "normalisationFactor": 1.5000787039E9,
+            "weightingFactor": 200.0
+        }],
+    "processes": [{
+            "id": 499215,
+            "descriptor": {
+                "processType": "UNIT_PROCESS",
+                "infrastructureProcess": false,
+                "location": 468595,
+                "quantitativeReference": 499217,
+                "category": 498560,
+                "refId": "348f61d2-912c-3e1b-a9a8-3261c455d2b6",
+                "id": 499215,
+                "name": "hard coal, burned in power plant",
+                "description": "The module describes the operation of an average plant in the country. The plant is used for middle load with 4000 hours of operation at full capacity per year. The plant is assumed to operate 150000 hours during its lifetime. For the assessment of main characteristics (LHV, sulphur and ash content of coal, efficiency of the plant) and criteria emissions (SOx, NOx, particles, and CO2) a bottom-up approach has been used. It consists on the collection of information about single plants. Base data on all major UCTE power plants in 1993 have been integrated, to the extent possible, with updated information for year 2000. The size distribution of particles has been derived from German data. Halogene emissions have been estimated on the basis of the content of the species in the country-specific coal input mix, assuming average retention rates. For CO and VOC-emissions average values for UCTE are included. Two average values for N2O emissions from UCTE plants are considered for the two cases with or without DeNOx; the country specific emission depend therefore on the share of DeNOx. Emissions of trace elements were calculated by means of a formula (CORINAIR) using the ash content in the country-specific coal input mix and average transfer coefficients for coal power plants, taking into account the share of DeSOx installed. Emission of uranium and thorium radioactive isotopes were assumed proportional to the corresponding element emitted with particles; the other non-gaseous radioactive isotopes of the uranium and thorium decay chain were assumed proportional to the emitted U-238 or Th-232. The emission of gaseous radon and K-40 are taken from the literature. The waste heat releases to air and water have been allocated on the basis of the assumed share of river cooled power plants and assumptions on the direct losses to air. The share of the recycled ash is country-specific. For the disposal of the remaining ash, typical country-specific compositions are taken into account in appropriate disposal modules.",
+                "type": "PROCESS"
+            },
+            "reportName": "hard coal, burned in power plant",
+            "reportDescription": "The module describes the operation of an average plant in the country. The plant is used for middle load with 4000 hours of operation at full capacity per year. The plant is assumed to operate 150000 hours during its lifetime. For the assessment of main characteristics (LHV, sulphur and ash content of coal, efficiency of the plant) and criteria emissions (SOx, NOx, particles, and CO2) a bottom-up approach has been used. It consists on the collection of information about single plants. Base data on all major UCTE power plants in 1993 have been integrated, to the extent possible, with updated information for year 2000. The size distribution of particles has been derived from German data. Halogene emissions have been estimated on the basis of the content of the species in the country-specific coal input mix, assuming average retention rates. For CO and VOC-emissions average values for UCTE are included. Two average values for N2O emissions from UCTE plants are considered for the two cases with or without DeNOx; the country specific emission depend therefore on the share of DeNOx. Emissions of trace elements were calculated by means of a formula (CORINAIR) using the ash content in the country-specific coal input mix and average transfer coefficients for coal power plants, taking into account the share of DeSOx installed. Emission of uranium and thorium radioactive isotopes were assumed proportional to the corresponding element emitted with particles; the other non-gaseous radioactive isotopes of the uranium and thorium decay chain were assumed proportional to the emitted U-238 or Th-232. The emission of gaseous radon and K-40 are taken from the literature. The waste heat releases to air and water have been allocated on the basis of the assumed share of river cooled power plants and assumptions on the direct losses to air. The share of the recycled ash is country-specific. For the disposal of the remaining ash, typical country-specific compositions are taken into account in appropriate disposal modules."
+        }, {
+            "id": 502278,
+            "descriptor": {
+                "processType": "UNIT_PROCESS",
+                "infrastructureProcess": false,
+                "location": 468595,
+                "quantitativeReference": 502280,
+                "category": 502077,
+                "refId": "7701670e-11a3-3570-bc16-07c479e41dfc",
+                "id": 502278,
+                "name": "lignite, burned in power plant",
+                "description": "The module describes the average for the country. The plant is used for middle load with 6000 hours of operation at full capacity per year. The plant is assumed to operate 200000 hours during its lifetime. For the assessment of main characteristics (LHV, sulphur and ash content of coal, efficiency of the plant) and criteria emissions (SOx, NOx, particles, and CO2) a bottom-up approach has been used. It consists on the collection of information about single plants. Base data on all major UCTE power plants in 1993 have been integrated, to the extent possible, with updated information for year 2000. The size distribution of particles has been derived from German data. Halogene emissions have been estimated on the basis of the content of the species in the country-specific coal input mix, assuming average retention rates. For CO and VOC-emissions average values for UCTE are included. Two average values for N2O emissions from UCTE plants are considered for the two cases with or without DeNOx; the country specific emission depend therefore on the share of DeNOx. Emissions of trace elements were calculated by means of a formula (CORINAIR) using the ash content in the country-specific coal input mix and average transfer coefficients for coal power plants, taking into account the share of DeSOx installed. Emission of uranium and thorium radioactive isotopes were assumed proportional to the corresponding element emitted with particles; the other non-gaseous radioactive isotopes of the uranium and thorium decay chain were assumed proportional to the emitted U-238 or Th-232. The emission of gaseous radon and K-40 are taken from the literature. The waste heat releases to air and water have been allocated on the basis of the assumed share of river cooled power plants and assumptions on the direct losses to air. The share of the recycled ash is country-specific. For the disposal of the remaining ash, typical country-specific compositions are taken into account in appropriate disposal modules.",
+                "type": "PROCESS"
+            },
+            "reportName": "lignite, burned in power plant",
+            "reportDescription": "The module describes the average for the country. The plant is used for middle load with 6000 hours of operation at full capacity per year. The plant is assumed to operate 200000 hours during its lifetime. For the assessment of main characteristics (LHV, sulphur and ash content of coal, efficiency of the plant) and criteria emissions (SOx, NOx, particles, and CO2) a bottom-up approach has been used. It consists on the collection of information about single plants. Base data on all major UCTE power plants in 1993 have been integrated, to the extent possible, with updated information for year 2000. The size distribution of particles has been derived from German data. Halogene emissions have been estimated on the basis of the content of the species in the country-specific coal input mix, assuming average retention rates. For CO and VOC-emissions average values for UCTE are included. Two average values for N2O emissions from UCTE plants are considered for the two cases with or without DeNOx; the country specific emission depend therefore on the share of DeNOx. Emissions of trace elements were calculated by means of a formula (CORINAIR) using the ash content in the country-specific coal input mix and average transfer coefficients for coal power plants, taking into account the share of DeSOx installed. Emission of uranium and thorium radioactive isotopes were assumed proportional to the corresponding element emitted with particles; the other non-gaseous radioactive isotopes of the uranium and thorium decay chain were assumed proportional to the emitted U-238 or Th-232. The emission of gaseous radon and K-40 are taken from the literature. The waste heat releases to air and water have been allocated on the basis of the assumed share of river cooled power plants and assumptions on the direct losses to air. The share of the recycled ash is country-specific. For the disposal of the remaining ash, typical country-specific compositions are taken into account in appropriate disposal modules."
+        }, {
+            "id": 569307,
+            "descriptor": {
+                "processType": "UNIT_PROCESS",
+                "infrastructureProcess": false,
+                "location": 468595,
+                "quantitativeReference": 569309,
+                "category": 510682,
+                "refId": "1f835a7b-6f6c-3f66-970b-1b669cf8f52b",
+                "id": 569307,
+                "name": "natural gas, burned in power plant",
+                "type": "PROCESS"
+            },
+            "reportName": "natural gas, burned in power plant"
+        }
+    ]
+}

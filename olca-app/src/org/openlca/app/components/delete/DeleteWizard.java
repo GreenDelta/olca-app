@@ -31,7 +31,7 @@ public class DeleteWizard<T extends BaseDescriptor> extends ProblemWizard {
 		this.search = search;
 		initializeProblems();
 		setNeedsProgressMonitor(true);
-		setWindowTitle(Messages.DeleteWizard_WindowTitle);
+		setWindowTitle(Messages.Delete);
 	}
 
 	private void initializeProblems() {
@@ -50,7 +50,7 @@ public class DeleteWizard<T extends BaseDescriptor> extends ProblemWizard {
 		@Override
 		public void run(IProgressMonitor monitor)
 				throws InvocationTargetException, InterruptedException {
-			monitor.beginTask(Messages.DeleteWizard_Analyzing,
+			monitor.beginTask(Messages.AnalyzingForProblems,
 					IProgressMonitor.UNKNOWN);
 			List<Problem> problems = new ArrayList<>();
 			for (BaseDescriptor descriptor : search.findUses(model))

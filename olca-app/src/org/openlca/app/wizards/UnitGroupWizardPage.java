@@ -11,7 +11,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.UIFactory;
 import org.openlca.core.database.Query;
 import org.openlca.core.model.Unit;
@@ -26,8 +26,8 @@ class UnitGroupWizardPage extends AbstractWizardPage<UnitGroup> {
 
 	public UnitGroupWizardPage() {
 		super("UnitGroupWizardPage");
-		setTitle(Messages.Units_WizardTitle);
-		setMessage(Messages.Units_WizardMessage);
+		setTitle(Messages.NewUnitGroup);
+		setMessage(Messages.CreatesANewUnitGroup);
 		setImageDescriptor(ImageType.NEW_WIZ_UNIT.getDescriptor());
 		setPageComplete(false);
 	}
@@ -62,11 +62,11 @@ class UnitGroupWizardPage extends AbstractWizardPage<UnitGroup> {
 	private void checkUnit() {
 		String refUnitName = referenceUnitText.getText().trim();
 		if (refUnitName.length() == 0)
-			failCheck(Messages.EmptyReferenceUnitError);
+			failCheck(Messages.ReferenceUnitIsEmptyOrInvalid);
 		else {
 			UnitGroup unitGroup = findGroupWithUnit(refUnitName);
 			if (unitGroup != null)
-				failCheck(NLS.bind(Messages.UnitExistsError,
+				failCheck(NLS.bind(Messages.UnitAlreadyExistsInUnitGroup,
 						unitGroup.getName()));
 			else
 				setPageComplete(true);

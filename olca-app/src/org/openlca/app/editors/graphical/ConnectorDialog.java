@@ -34,7 +34,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.model.ExchangeNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.FlowDao;
@@ -46,10 +46,10 @@ public class ConnectorDialog extends Dialog {
 
 	private interface LABELS {
 		String NAME = Messages.Name;
-		String CREATE = Messages.Systems_SelectPossibleProcessesDialog_Create;
-		String CONNECT = Messages.Systems_SelectPossibleProcessesDialog_Connect;
-		String EXISTS = Messages.Systems_SelectPossibleProcessesDialog_Exists;
-		String CONNECTED = Messages.Systems_SelectPossibleProcessesDialog_IsConnected;
+		String CREATE = Messages.Add;
+		String CONNECT = Messages.Connect;
+		String EXISTS = Messages.AlreadyPresent;
+		String CONNECTED = Messages.AlreadyConnected;
 		String[] ALL = new String[] { NAME, CREATE, CONNECT, EXISTS, CONNECTED };
 	}
 
@@ -116,8 +116,8 @@ public class ConnectorDialog extends Dialog {
 				.createSection(container, ExpandableComposite.TITLE_BAR
 						| ExpandableComposite.FOCUS_TITLE);
 		selectObjectSection
-				.setText(selectProvider ? Messages.Systems_SelectPossibleProcessesDialog_SelectProviders
-						: Messages.Systems_SelectPossibleProcessesDialog_SelectRecipients);
+				.setText(selectProvider ? Messages.SelectProviders
+						: Messages.SelectRecipients);
 		Composite composite = toolkit.createComposite(selectObjectSection,
 				SWT.NONE);
 		GridLayout gridLayout = new GridLayout();

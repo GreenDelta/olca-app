@@ -9,10 +9,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
@@ -31,9 +29,10 @@ import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
@@ -188,10 +187,10 @@ public class ParameterRedefDialog extends FormDialog {
 	@Override
 	protected void createFormContent(IManagedForm mform) {
 		FormToolkit toolkit = mform.getToolkit();
-		UI.formHeader(mform, "Search parameters");
+		UI.formHeader(mform, Messages.SearchParameters);
 		Composite body = UI.formBody(mform.getForm(), mform.getToolkit());
 		UI.gridLayout(body, 1);
-		Label filterLabel = UI.formLabel(body, toolkit, "Filter");
+		Label filterLabel = UI.formLabel(body, toolkit, Messages.Filter);
 		boldLabelFont = UI.boldFont(filterLabel);
 		filterLabel.setFont(boldLabelFont);
 
@@ -203,7 +202,7 @@ public class ParameterRedefDialog extends FormDialog {
 			}
 		});
 
-		Section section = UI.section(body, toolkit, "Processes and parameters");
+		Section section = UI.section(body, toolkit, Messages.Parameters);
 		UI.gridData(section, true, true);
 		Composite composite = UI.sectionClient(section, toolkit);
 		UI.gridLayout(composite, 1);
@@ -229,11 +228,8 @@ public class ParameterRedefDialog extends FormDialog {
 				return compareNodes(e1, e2);
 			}
 		});
-		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
-			@Override
-			public void selectionChanged(SelectionChangedEvent event) {
-				selection = (IStructuredSelection) event.getSelection();
-			}
+		viewer.addSelectionChangedListener((event) -> {
+			selection = (IStructuredSelection) event.getSelection();
 		});
 	}
 

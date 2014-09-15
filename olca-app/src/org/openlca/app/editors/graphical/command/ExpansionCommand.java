@@ -56,9 +56,9 @@ public class ExpansionCommand extends Command {
 	@Override
 	public String getLabel() {
 		if (type == EXPAND)
-			return Messages.Systems_ExpansionCommand_ExpandText;
+			return Messages.Expand;
 		else if (type == COLLAPSE)
-			return Messages.Systems_ExpansionCommand_CollapseText;
+			return Messages.Collapse;
 		return null;
 	}
 

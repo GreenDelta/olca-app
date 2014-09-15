@@ -36,9 +36,9 @@ public class MarkingCommand extends Command {
 	@Override
 	public String getLabel() {
 		if (node.isMarked())
-			return Messages.Systems_UnmarkProcess;
+			return Messages.Unmark;
 		else
-			return Messages.Systems_MarkProcess;
+			return Messages.Mark;
 	}
 
 	@Override

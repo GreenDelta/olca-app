@@ -10,7 +10,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
 import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
-import org.openlca.app.editors.graphical.layout.constraints.NodeLayoutStore;
+import org.openlca.app.editors.graphical.layout.NodeLayoutStore;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.IProductSystemBuilder;
@@ -71,7 +71,7 @@ class BuildSupplyChainAction extends Action implements IBuildAction {
 		@Override
 		public void run(IProgressMonitor monitor)
 				throws InvocationTargetException, InterruptedException {
-			monitor.beginTask(Messages.Systems_CreatingProductSystem,
+			monitor.beginTask(Messages.CreatingProductSystem,
 					IProgressMonitor.UNKNOWN);
 			IProductSystemBuilder builder = IProductSystemBuilder.Factory
 					.create(Cache.getMatrixCache(),

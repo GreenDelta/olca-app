@@ -1,0 +1,26 @@
+{
+  "name": "olca-app-html",
+  "version": "1.0.0",
+  "authors": [
+    "msrocka"
+  ],
+  "description": "HTML pages for the openLCA desktop application",
+  "license": "MPL 2.0",
+  "homepage": "openlca.org",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.2.0",
+    "jquery": "~2.1.1",
+    "d3": "~3.4.11",
+    "angulerjs": "~1.2.23",
+    "angular-sanitize": "~1.2.23",
+    "codemirror": "~4.5.0"
+  }
+}

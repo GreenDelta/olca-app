@@ -68,7 +68,7 @@ public class CreateLinkCommand extends Command {
 
 	@Override
 	public String getLabel() {
-		return Messages.Systems_ProcessLinkCreateCommand_Text;
+		return Messages.CreateProcesslink;
 	}
 
 	@Override

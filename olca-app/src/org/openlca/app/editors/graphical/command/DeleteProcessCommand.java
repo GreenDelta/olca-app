@@ -37,7 +37,7 @@ public class DeleteProcessCommand extends Command {
 
 	@Override
 	public String getLabel() {
-		return Messages.Systems_ProcessDeleteCommand_Text;
+		return Messages.DeleteProcess;
 	}
 
 	@Override

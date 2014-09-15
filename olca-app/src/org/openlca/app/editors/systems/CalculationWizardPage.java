@@ -2,10 +2,6 @@ package org.openlca.app.editors.systems;
 
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -14,10 +10,10 @@ import org.openlca.app.ApplicationProperties;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.preferencepages.FeatureFlag;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.AllocationMethodViewer;
 import org.openlca.app.viewers.combo.ImpactMethodViewer;
 import org.openlca.app.viewers.combo.NwSetComboViewer;
@@ -44,7 +40,7 @@ class CalculationWizardPage extends WizardPage {
 	public CalculationWizardPage(ProductSystem system) {
 		super(CalculationWizardPage.class.getCanonicalName());
 		this.productSystem = system;
-		setTitle(Messages.CalculationWizardTitle);
+		setTitle(Messages.CalculationProperties);
 		setDescription(Messages.CalculationWizardDescription);
 		setImageDescriptor(ImageType.WIZ_CALCULATION.getDescriptor());
 		setPageComplete(true);
@@ -57,11 +53,11 @@ class CalculationWizardPage extends WizardPage {
 		UI.gridLayout(body, 2).verticalSpacing = 12;
 		createAllocationViewer(body);
 		createMethodComboViewer(body);
-		UI.formLabel(body, Messages.NWSet);
+		UI.formLabel(body, Messages.NormalizationAndWeightingSet);
 		nwViewer = new NwSetComboViewer(body);
 		nwViewer.setDatabase(Database.get());
 
-		UI.formLabel(body, Messages.CalculationWizardPage_CalculationType);
+		UI.formLabel(body, Messages.CalculationType);
 		Composite typePanel = new Composite(body, SWT.NONE);
 		UI.gridLayout(typePanel, 2).horizontalSpacing = 15;
 		createRadios(typePanel);
@@ -71,22 +67,19 @@ class CalculationWizardPage extends WizardPage {
 
 	private void createIterationText(Composite typePanel) {
 		Label label = UI.formLabel(typePanel,
-				Messages.CalculationWizardPage_NumberOfIterations);
+				Messages.NumberOfIterations);
 		UI.gridData(label, false, false).horizontalIndent = 16;
 		iterationText = new Text(typePanel, SWT.BORDER);
 		UI.gridData(iterationText, false, false).widthHint = 80;
 		iterationText.setEnabled(false);
 		iterationText.setText(Integer.toString(iterationCount));
-		iterationText.addModifyListener(new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
-				String text = iterationText.getText();
-				try {
-					iterationCount = Integer.parseInt(text);
-				} catch (Exception e2) {
-					Error.showBox("Invalid number", text
-							+ " is not a valid number");
-				}
+		iterationText.addModifyListener((e) -> {
+			String text = iterationText.getText();
+			try {
+				iterationCount = Integer.parseInt(text);
+			} catch (Exception e2) {
+				Error.showBox(Messages.InvalidNumber, text + " "
+						+ Messages.IsNotValidNumber);
 			}
 		});
 	}
@@ -98,7 +91,10 @@ class CalculationWizardPage extends WizardPage {
 			radio.setSelection(type == this.type);
 			radio.setText(getLabel(type));
 			UI.gridData(radio, false, false).horizontalSpan = 2;
-			radio.addSelectionListener(new CalculationTypeChange(type));
+			Controls.onSelect(radio, (e) -> {
+				CalculationWizardPage.this.type = type;
+				iterationText.setEnabled(type == CalculationType.MONTE_CARLO);
+			});
 		}
 	}
 
@@ -115,13 +111,13 @@ class CalculationWizardPage extends WizardPage {
 	private String getLabel(CalculationType type) {
 		switch (type) {
 		case ANALYSIS:
-			return Messages.CalculationWizardPage_Analysis;
+			return Messages.Analysis;
 		case MONTE_CARLO:
 			return Messages.MonteCarloSimulation;
 		case QUICK:
-			return Messages.CalculationWizardPage_QuickResults;
+			return Messages.QuickResults;
 		case REGIONALIZED:
-			return "Regionalized LCIA";
+			return Messages.RegionalizedLCIA;
 		default:
 			return "unknown";
 		}
@@ -136,8 +132,7 @@ class CalculationWizardPage extends WizardPage {
 	}
 
 	public CalculationSetup getSetup() {
-		CalculationSetup setUp = new CalculationSetup(productSystem,
-				getSetupType());
+		CalculationSetup setUp = new CalculationSetup(productSystem);
 		setUp.setAllocationMethod(allocationViewer.getSelected());
 		setUp.setImpactMethod(methodViewer.getSelected());
 		NwSetDescriptor set = nwViewer.getSelected();
@@ -151,34 +146,12 @@ class CalculationWizardPage extends WizardPage {
 		return type;
 	}
 
-	private int getSetupType() {
-		if (type == null)
-			return CalculationSetup.QUICK_RESULT;
-		switch (type) {
-		case ANALYSIS:
-			return CalculationSetup.ANALYSIS;
-		case MONTE_CARLO:
-			return CalculationSetup.MONTE_CARLO_SIMULATION;
-		case QUICK:
-			return CalculationSetup.QUICK_RESULT;
-		default:
-			return CalculationSetup.QUICK_RESULT;
-		}
-	}
-
 	private void createMethodComboViewer(Composite parent) {
-		UI.formLabel(parent, Messages.ImpactMethod);
+		UI.formLabel(parent, Messages.ImpactAssessmentMethod);
 		methodViewer = new ImpactMethodViewer(parent);
 		methodViewer.setInput(Database.get());
-		methodViewer
-				.addSelectionChangedListener(new ISelectionChangedListener<ImpactMethodDescriptor>() {
-
-					@Override
-					public void selectionChanged(
-							ImpactMethodDescriptor selection) {
-						nwViewer.setInput(methodViewer.getSelected());
-					}
-				});
+		methodViewer.addSelectionChangedListener(
+				(selection) -> nwViewer.setInput(methodViewer.getSelected()));
 	}
 
 	private void setDefaultData() {
@@ -205,25 +178,4 @@ class CalculationWizardPage extends WizardPage {
 		}
 		setDefaultData();
 	}
-
-	private class CalculationTypeChange implements SelectionListener {
-
-		private CalculationType type;
-
-		public CalculationTypeChange(CalculationType type) {
-			this.type = type;
-		}
-
-		@Override
-		public void widgetDefaultSelected(SelectionEvent e) {
-			widgetSelected(e);
-		}
-
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			CalculationWizardPage.this.type = type;
-			iterationText.setEnabled(type == CalculationType.MONTE_CARLO);
-		}
-	}
-
 }

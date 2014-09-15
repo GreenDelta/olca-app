@@ -2,7 +2,6 @@ package org.openlca.app.editors.projects;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -11,31 +10,32 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.components.ModelSelectionDialog;
-import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
+import org.openlca.app.editors.reports.ReportViewer;
 import org.openlca.app.editors.reports.Reports;
+import org.openlca.app.editors.reports.model.ReportCalculator;
 import org.openlca.app.preferencepages.FeatureFlag;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
-import org.openlca.app.viewers.combo.ImpactMethodViewer;
 import org.openlca.app.viewers.table.modify.ComboBoxCellModifier;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
@@ -52,7 +52,6 @@ import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.descriptors.BaseDescriptor;
-import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,11 +66,13 @@ class ProjectSetupPage extends ModelPage<Project> {
 	private Project project;
 	private TableViewer variantViewer;
 	private ProjectParameterTable parameterTable;
+	private ReportVariantSync variantSync;
 
 	ProjectSetupPage(ProjectEditor editor) {
-		super(editor, "ProjectSetupPage", "Project setup");
+		super(editor, "ProjectSetupPage", Messages.ProjectSetup);
 		this.editor = editor;
 		project = editor.getModel();
+		variantSync = new ReportVariantSync(editor);
 		editor.onSaved(() -> {
 			project = editor.getModel();
 			if (variantViewer != null)
@@ -87,10 +88,13 @@ class ProjectSetupPage extends ModelPage<Project> {
 		Composite body = UI.formBody(form, toolkit);
 		InfoSection infoSection = new InfoSection(getEditor());
 		infoSection.render(body, toolkit);
-		createSettingsSection(infoSection.getContainer());
+		createButtons(infoSection.getContainer());
+		new ImpactSection(editor).render(body, toolkit);
 		createVariantsSection(body);
 		createParameterSection(body);
 		initialInput();
+		if (FeatureFlag.REPORTS.isEnabled())
+			new ProcessContributionSection(editor).create(body, toolkit);
 		body.setFocus();
 		form.reflow(true);
 	}
@@ -102,32 +106,14 @@ class ProjectSetupPage extends ModelPage<Project> {
 		variantViewer.setInput(variants);
 	}
 
-	private void createSettingsSection(Composite composite) {
-		UI.formLabel(composite, toolkit, "LCIA Method");
-		ImpactMethodViewer methodViewer = new ImpactMethodViewer(composite);
-		methodViewer.setNullable(true);
-		methodViewer
-				.addSelectionChangedListener((selection) -> handleMethodChange(selection));
-		methodViewer.setInput(database);
-		if (project.getImpactMethodId() != null) {
-			ImpactMethodDescriptor d = Cache.getEntityCache().get(
-					ImpactMethodDescriptor.class, project.getImpactMethodId());
-			methodViewer.select(d);
-		}
-		// TODO: add nw-sets
-		// UI.formLabel(client, toolkit, "Normalisation and Weighting");
-		// new NormalizationWeightingSetViewer(client);
-
-		createButtons(composite);
-	}
-
 	private void createButtons(Composite composite) {
 		toolkit.createLabel(composite, "");
 		Composite buttonContainer = toolkit.createComposite(composite);
 		UI.gridLayout(buttonContainer, 2).marginHeight = 5;
-		createCalculationButton(buttonContainer);
 		if (FeatureFlag.REPORTS.isEnabled())
 			createReportButton(buttonContainer);
+		else
+			createCalculationButton(buttonContainer);
 	}
 
 	private void createCalculationButton(Composite composite) {
@@ -135,72 +121,69 @@ class ProjectSetupPage extends ModelPage<Project> {
 				SWT.NONE);
 		UI.gridData(button, false, false).widthHint = 100;
 		button.setImage(ImageType.CALCULATE_ICON.get());
-		button.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				Calculation.run(getModel());
-			}
+		Controls.onSelect(button, (e) -> {
+			Calculation.run(getModel());
 		});
 	}
 
 	private void createReportButton(Composite composite) {
-		Button button = toolkit.createButton(composite, "Report", SWT.NONE);
+		Button button = toolkit.createButton(composite, Messages.Report,
+				SWT.NONE);
 		UI.gridData(button, false, false).widthHint = 100;
 		button.setImage(ImageType.PROJECT_ICON.get());
-		button.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				Reports.createOrOpen(project);
-			}
+		Controls.onSelect(button, (e) -> {
+			App.run(Messages.Calculate,
+					new ReportCalculator(getModel(), editor.getReport()),
+					() -> {
+						Reports.save(editor.getReport(), database);
+						ReportViewer.open(editor.getReport());
+					});
 		});
 	}
 
-	private void handleMethodChange(ImpactMethodDescriptor selection) {
-		if (selection == null && project.getImpactMethodId() == null)
-			return;
-		if (selection != null
-				&& Objects.equals(selection.getId(),
-						project.getImpactMethodId()))
-			return;
-		project.setNwSetId(null);
-		if (selection == null)
-			project.setImpactMethodId(null);
-		else
-			project.setImpactMethodId(selection.getId());
-		editor.setDirty(true);
-	}
-
 	private void createVariantsSection(Composite body) {
-		Section section = UI.section(body, toolkit, "Variants");
+		Section section = UI.section(body, toolkit, Messages.Variants);
 		Composite composite = UI.sectionClient(section, toolkit);
 		UI.gridLayout(composite, 1);
 		String[] properties = { Messages.Name, Messages.ProductSystem,
 				Messages.AllocationMethod, Messages.Flow, Messages.Amount,
-				Messages.Unit };
+				Messages.Unit, Messages.Description };
 		variantViewer = Tables.createViewer(composite, properties);
 		variantViewer.setLabelProvider(new VariantLabelProvider());
-		Tables.bindColumnWidths(variantViewer, 0.2, 0.2, 0.2, 0.2, 0.1, 0.1);
+		Tables.bindColumnWidths(variantViewer,
+				0.15, 0.15, 0.15, 0.15, 0.125, 0.125, 0.15);
 		ModifySupport<ProjectVariant> support = new ModifySupport<>(
 				variantViewer);
 		support.bind(Messages.Name, new VariantNameEditor());
 		support.bind(Messages.AllocationMethod, new VariantAllocationEditor());
 		support.bind(Messages.Amount, new VariantAmountEditor());
 		support.bind(Messages.Unit, new VariantUnitEditor());
+		support.bind(Messages.Description, new VariantDescriptionEditor());
 		addVariantActions(variantViewer, section);
 		UI.gridData(variantViewer.getTable(), true, true).minimumHeight = 150;
 	}
 
 	private void createParameterSection(Composite body) {
-		Section section = UI.section(body, toolkit, "Parameters");
+		Section section = UI.section(body, toolkit, Messages.Parameters);
 		parameterTable = new ProjectParameterTable(editor);
 		parameterTable.render(section, toolkit);
 	}
 
 	private void addVariantActions(TableViewer viewer, Section section) {
-		Action add = Actions.onAdd(() -> addVariant());
-		Action remove = Actions.onRemove(() -> removeVariant());
+		Action add = Actions.onAdd(this::addVariant);
+		Action remove = Actions.onRemove(this::removeVariant);
 		Actions.bind(section, add, remove);
 		Actions.bind(viewer, add, remove);
+		Tables.onDoubleClick(viewer, (event) -> {
+			TableItem item = Tables.getItem(viewer, event);
+			if (item == null) {
+				addVariant();
+				return;
+			}
+			ProjectVariant variant = Viewers.getFirstSelected(viewer);
+			if (variant != null)
+				App.openEditor(variant.getProductSystem());
+		});
 	}
 
 	private void addVariant() {
@@ -219,14 +202,15 @@ class ProjectSetupPage extends ModelPage<Project> {
 		ProjectVariant variant = createVariant(system, variants.size() + 1);
 		variants.add(variant);
 		variantViewer.setInput(variants);
-		editor.setDirty(true);
 		parameterTable.addVariant(variant);
+		variantSync.variantAdded(variant);
+		editor.setDirty(true);
 	}
 
 	private ProjectVariant createVariant(ProductSystem system, int i) {
 		ProjectVariant variant = new ProjectVariant();
 		variant.setProductSystem(system);
-		variant.setName("Variant " + i);
+		variant.setName(Messages.Variant + i);
 		variant.setAllocationMethod(AllocationMethod.NONE);
 		variant.setAmount(system.getTargetAmount());
 		variant.setFlowPropertyFactor(system.getTargetFlowPropertyFactor());
@@ -247,6 +231,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 			parameterTable.removeVariant(var);
 		}
 		variantViewer.setInput(variants);
+		variantSync.variantsRemoved(selection);
 		editor.setDirty(true);
 	}
 
@@ -260,8 +245,26 @@ class ProjectSetupPage extends ModelPage<Project> {
 		protected void setText(ProjectVariant variant, String text) {
 			if (Objects.equals(text, variant.getName()))
 				return;
+			variantSync.updateName(variant, text);
 			variant.setName(text);
 			parameterTable.updateVariant(variant);
+			editor.setDirty(true);
+		}
+	}
+
+	private class VariantDescriptionEditor extends
+			TextCellModifier<ProjectVariant> {
+		@Override
+		protected String getText(ProjectVariant variant) {
+			return variantSync.getDescription(variant);
+		}
+
+		@Override
+		protected void setText(ProjectVariant variant, String text) {
+			String oldText = variantSync.getDescription(variant);
+			if (Objects.equals(text, oldText))
+				return;
+			variantSync.updateDescription(variant, text);
 			editor.setDirty(true);
 		}
 	}
@@ -279,7 +282,8 @@ class ProjectSetupPage extends ModelPage<Project> {
 				variant.setAmount(val);
 				editor.setDirty(true);
 			} catch (Exception e) {
-				Error.showBox("Invalid number", text + " is not a valid number");
+				Error.showBox(Messages.InvalidNumber, text + " "
+						+ Messages.IsNotValidNumber);
 			}
 		}
 	}
@@ -325,13 +329,10 @@ class ProjectSetupPage extends ModelPage<Project> {
 			UnitGroup unitGroup = fac.getFlowProperty().getUnitGroup();
 			Unit[] units = unitGroup.getUnits().toArray(
 					new Unit[unitGroup.getUnits().size()]);
-			Arrays.sort(units, new Comparator<Unit>() {
-				@Override
-				public int compare(Unit u1, Unit u2) {
-					if (u1 == null || u2 == null)
-						return 0;
-					return Strings.compare(u1.getName(), u2.getName());
-				}
+			Arrays.sort(units, (u1, u2) -> {
+				if (u1 == null || u2 == null)
+					return 0;
+				return Strings.compare(u1.getName(), u2.getName());
 			});
 			return units;
 		}
@@ -380,6 +381,8 @@ class ProjectSetupPage extends ModelPage<Project> {
 			case 5:
 				Unit unit = variant.getUnit();
 				return unit == null ? null : unit.getName();
+			case 6:
+				return variantSync.getDescription(variant);
 			default:
 				return null;
 			}
@@ -391,7 +394,5 @@ class ProjectSetupPage extends ModelPage<Project> {
 			Exchange refExchange = system.getReferenceExchange();
 			return Labels.getDisplayName(refExchange.getFlow());
 		}
-
 	}
-
 }

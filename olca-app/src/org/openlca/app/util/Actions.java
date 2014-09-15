@@ -8,11 +8,10 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
-import org.openlca.app.resources.ImageManager;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageManager;
+import org.openlca.app.rcp.ImageType;
 
 /**
  * Factory methods for some standard actions, ready for Java 8, e.g.:
@@ -43,7 +42,7 @@ public class Actions {
 	public static Action onAdd(final Runnable runnable) {
 		return new Action() {
 			{
-				setText(Messages.AddAction_Text);
+				setText(Messages.CreateNew);
 				setImageDescriptor(ImageManager
 						.getImageDescriptor(ImageType.ADD_ICON));
 				setDisabledImageDescriptor(ImageManager
@@ -60,7 +59,7 @@ public class Actions {
 	public static Action onCalculate(final Runnable runnable) {
 		return new Action() {
 			{
-				setText(Messages.Systems_CalculateButtonText);
+				setText(Messages.CalculateResults);
 				setImageDescriptor(ImageType.CALCULATE_ICON.getDescriptor());
 			}
 
@@ -74,7 +73,7 @@ public class Actions {
 	public static Action onRemove(final Runnable runnable) {
 		return new Action() {
 			{
-				setText(Messages.RemoveAction_Text);
+				setText(Messages.RemoveSelected);
 				setImageDescriptor(ImageManager
 						.getImageDescriptor(ImageType.DELETE_ICON));
 				setDisabledImageDescriptor(ImageManager
@@ -93,13 +92,11 @@ public class Actions {
 			{
 				setText(Messages.Save);
 				setToolTipText(Messages.Save);
-				ISharedImages images = PlatformUI.getWorkbench()
-						.getSharedImages();
-				ImageDescriptor image = images
-						.getImageDescriptor(ISharedImages.IMG_ETOOL_SAVE_EDIT);
+				ImageDescriptor image = ImageType
+						.getPlatformDescriptor(ISharedImages.IMG_ETOOL_SAVE_EDIT);
 				setImageDescriptor(image);
-				ImageDescriptor imageDis = images
-						.getImageDescriptor(ISharedImages.IMG_ETOOL_SAVE_EDIT_DISABLED);
+				ImageDescriptor imageDis = ImageType
+						.getPlatformDescriptor(ISharedImages.IMG_ETOOL_SAVE_EDIT_DISABLED);
 				setDisabledImageDescriptor(imageDis);
 			}
 

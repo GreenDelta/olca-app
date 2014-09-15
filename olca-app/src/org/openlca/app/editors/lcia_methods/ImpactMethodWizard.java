@@ -11,7 +11,7 @@ public class ImpactMethodWizard extends AbstractWizard<ImpactMethod> {
 
 	@Override
 	protected String getTitle() {
-		return Messages.Methods_WizardTitle;
+		return Messages.NewImpactMethod;
 	}
 
 	@Override

@@ -3,8 +3,6 @@ package org.openlca.app.results.quick;
 import java.io.File;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
@@ -16,8 +14,9 @@ import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Cache;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.results.ContributionChartSection;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.InformationPopup;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
@@ -74,10 +73,11 @@ public class QuickResultInfoPage extends FormPage {
 		createText(composite, Messages.TargetAmount, targetText);
 		ImpactMethodDescriptor method = setup.getImpactMethod();
 		if (method != null)
-			createText(composite, Messages.ImpactMethodTitle, method.getName());
+			createText(composite, Messages.ImpactAssessmentMethod,
+					method.getName());
 		NwSetDescriptor nwSet = setup.getNwSet();
 		if (nwSet != null)
-			createText(composite, Messages.NormalizationWeightingSet,
+			createText(composite, Messages.NormalizationAndWeightingSet,
 					nwSet.getName());
 		createExportButton(composite);
 	}
@@ -87,12 +87,7 @@ public class QuickResultInfoPage extends FormPage {
 		Button button = toolkit.createButton(composite, Messages.ExportToExcel,
 				SWT.NONE);
 		button.setImage(ImageType.FILE_EXCEL_SMALL.get());
-		button.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				tryExport();
-			}
-		});
+		Controls.onSelect(button, (e) -> tryExport());
 	}
 
 	private void tryExport() {
@@ -107,7 +102,7 @@ public class QuickResultInfoPage extends FormPage {
 			@Override
 			public void run() {
 				if (export.doneWithSuccess()) {
-					InformationPopup.show("Export done");
+					InformationPopup.show(Messages.ExportDone);
 				}
 			}
 		});

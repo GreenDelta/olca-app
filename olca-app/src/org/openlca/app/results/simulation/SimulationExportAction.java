@@ -4,9 +4,10 @@ import java.io.File;
 
 import org.eclipse.jface.action.Action;
 import org.openlca.app.App;
+import org.openlca.app.Messages;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Cache;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.core.results.SimulationResult;
 import org.openlca.core.results.SimulationResultProvider;
 import org.openlca.io.xls.results.SimulationResultExport;
@@ -20,7 +21,7 @@ class SimulationExportAction extends Action {
 
 	public SimulationExportAction() {
 		setId("SimulationResultExport");
-		setToolTipText("Export results to Excel");
+		setToolTipText(Messages.ExportResultsToExcel);
 		setImageDescriptor(ImageType.FILE_EXCEL_SMALL.getDescriptor());
 	}
 
@@ -34,7 +35,7 @@ class SimulationExportAction extends Action {
 				"simulation_result.xlsx");
 		if (file == null)
 			return;
-		App.run("Export simulation result", new Runnable() {
+		App.run(Messages.ExportResultsToExcel, new Runnable() {
 			public void run() {
 				tryRun(file);
 			}

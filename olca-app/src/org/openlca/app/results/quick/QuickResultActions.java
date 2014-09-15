@@ -9,7 +9,7 @@ import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Cache;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.InformationPopup;
 import org.openlca.core.math.CalculationSetup;
@@ -57,15 +57,10 @@ public class QuickResultActions extends EditorActionBarContributor {
 			final InventoryResultExport export = new InventoryResultExport(
 					setup, result, Cache.getEntityCache());
 			export.setExportFile(file);
-			App.run("Export results", export, new Runnable() {
-				public void run() {
-					if (export.doneWithSuccess())
-						InformationPopup.show("Export done",
-								"Exported successfully to " + file.getName());
-				}
+			App.run(Messages.ExportResults, export, () -> {
+				if (export.doneWithSuccess())
+					InformationPopup.show(Messages.ExportDone);
 			});
 		}
-
 	}
-
 }

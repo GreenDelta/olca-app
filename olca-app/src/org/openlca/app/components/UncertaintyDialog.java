@@ -3,8 +3,6 @@ package org.openlca.app.components;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.custom.StackLayout;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -16,6 +14,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.util.Colors;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
@@ -68,7 +67,7 @@ public class UncertaintyDialog extends Dialog {
 		toolkit.adapt(parent);
 		createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL,
 				true);
-		createButton(parent, IDialogConstants.HELP_ID, "Test", false);
+		createButton(parent, IDialogConstants.HELP_ID, Messages.Test, false);
 		createButton(parent, IDialogConstants.CANCEL_ID,
 				IDialogConstants.CANCEL_LABEL, false);
 		getShell().pack();
@@ -92,7 +91,7 @@ public class UncertaintyDialog extends Dialog {
 			return;
 		try {
 			final NumberGenerator generator = makeGenerator();
-			App.run("test", new Runnable() {
+			App.run(Messages.Test, new Runnable() {
 				public void run() {
 					UncertaintyShell.show(generator);
 				}
@@ -159,12 +158,7 @@ public class UncertaintyDialog extends Dialog {
 		}
 		combo.setItems(items);
 		combo.select(idx);
-		combo.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				initComposite();
-			}
-		});
+		Controls.onSelect(combo, (e) -> initComposite());
 	}
 
 	private void initComposite() {
@@ -355,7 +349,7 @@ public class UncertaintyDialog extends Dialog {
 				return true;
 			} catch (Exception e) {
 				if (interpreterScope == null)
-					Error.showBox(s + " is not a valid number");
+					Error.showBox(s + " " + Messages.IsNotValidNumber);
 				return false;
 			}
 		}
@@ -367,7 +361,7 @@ public class UncertaintyDialog extends Dialog {
 				interpreterScope.eval(s);
 				return true;
 			} catch (Exception e) {
-				Error.showBox("Formula evaluation of " + s + " failed");
+				Error.showBox(Messages.FormulaEvaluationFailed + ": " + s);
 				return false;
 			}
 		}

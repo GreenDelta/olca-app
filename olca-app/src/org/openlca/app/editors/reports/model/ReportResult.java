@@ -5,24 +5,15 @@ import java.util.List;
 
 class ReportResult {
 
-	private String indicator;
-	private String unit;
+	private final int indicatorId;
 	private List<VariantResult> variantResults = new ArrayList<>();
 
-	public String getIndicator() {
-		return indicator;
+	public ReportResult(int indicatorId) {
+		this.indicatorId = indicatorId;
 	}
 
-	public void setIndicator(String indicator) {
-		this.indicator = indicator;
-	}
-
-	public String getUnit() {
-		return unit;
-	}
-
-	public void setUnit(String unit) {
-		this.unit = unit;
+	public int getIndicatorId() {
+		return indicatorId;
 	}
 
 	public List<VariantResult> getVariantResults() {
@@ -58,16 +49,16 @@ class ReportResult {
 
 	static class Contribution {
 
-		private String process;
+		private long processId;
 		private double amount;
 		private boolean rest;
 
-		public String getProcess() {
-			return process;
+		public long getProcessId() {
+			return processId;
 		}
 
-		public void setProcess(String process) {
-			this.process = process;
+		public void setProcessId(long processId) {
+			this.processId = processId;
 		}
 
 		public double getAmount() {

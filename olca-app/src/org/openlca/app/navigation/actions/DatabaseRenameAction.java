@@ -1,5 +1,8 @@
 package org.openlca.app.navigation.actions;
 
+import java.io.File;
+import java.util.List;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.window.Window;
@@ -11,15 +14,12 @@ import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.DbUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.util.List;
 
 public class DatabaseRenameAction extends Action implements INavigationAction {
 
@@ -57,15 +57,15 @@ public class DatabaseRenameAction extends Action implements INavigationAction {
 			return;
 		InputDialog dialog = new InputDialog(UI.shell(),
 				Messages.Rename,
-				Messages.PleaseEnterNewName,
+				Messages.PleaseEnterANewName,
 				config.getName(), null);
 		if (dialog.open() != Window.OK)
 			return;
 		String newName = dialog.getValue();
 		if (!DbUtils.isValidName(newName) || Database.getConfigurations()
 				.nameExists(newName.trim())) {
-			org.openlca.app.util.Error.showBox("The given name is not a valid" +
-					" database name or the database already exists.");
+			org.openlca.app.util.Error
+					.showBox(Messages.DatabaseRenameError);
 			return;
 		}
 		doRename(newName);

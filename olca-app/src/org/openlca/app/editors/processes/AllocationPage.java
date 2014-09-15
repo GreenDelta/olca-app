@@ -1,11 +1,10 @@
 package org.openlca.app.editors.processes;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -16,10 +15,13 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Event;
 import org.openlca.app.Messages;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
+import org.openlca.app.util.Actions;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
+import org.openlca.app.util.TableClipboard;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AllocationMethodViewer;
@@ -43,7 +45,7 @@ class AllocationPage extends FormPage {
 	private CausalFactorTable causalFactorTable;
 
 	public AllocationPage(ProcessEditor editor) {
-		super(editor, "process.AllocationPage", "Allocation");
+		super(editor, "process.AllocationPage", Messages.Allocation);
 		this.editor = editor;
 		editor.getEventBus().register(this);
 		editor.onSaved(() -> setTableInputs());
@@ -53,13 +55,14 @@ class AllocationPage extends FormPage {
 		try {
 			double val = Double.parseDouble(text);
 			if (val < -0.0001 || val > 1.0001) {
-				Error.showBox("Invalid factor",
-						"An allocation factor should have a value between 0 and 1.");
+				Error.showBox(Messages.InvalidAllocationFactor,
+						Messages.InvalidAllocationFactorMessage);
 				return null;
 			}
 			return val;
 		} catch (Exception e) {
-			Error.showBox("Invalid number", text + " is not a valid number");
+			Error.showBox(Messages.InvalidNumber, text + " "
+					+ Messages.IsNotValidNumber);
 			return null;
 		}
 	}
@@ -82,7 +85,7 @@ class AllocationPage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, "Allocation");
+		ScrolledForm form = UI.formHeader(managedForm, Messages.Allocation);
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		Composite composite = UI.formComposite(body, toolkit);
@@ -114,22 +117,19 @@ class AllocationPage extends FormPage {
 	private void createCalcButton(Composite composite) {
 		UI.formLabel(composite, toolkit, "");
 		Button button = toolkit.createButton(composite,
-				Messages.CalculateDefaults, SWT.NONE);
+				Messages.CalculateDefaultValues, SWT.NONE);
 		button.setImage(ImageType.CALCULATE_ICON.get());
-		button.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				AllocationSync.calculateDefaults(process());
-				factorViewer.refresh();
-				causalFactorTable.refresh();
-				editor.setDirty(true);
-			}
+		Controls.onSelect(button, (e) -> {
+			AllocationSync.calculateDefaults(process());
+			factorViewer.refresh();
+			causalFactorTable.refresh();
+			editor.setDirty(true);
 		});
 	}
 
 	private void createPhysicalEconomicSection(Composite body) {
 		Section section = UI.section(body, toolkit,
-				"Physical & economic allocation");
+				Messages.PhysicalAndEconomicAllocation);
 		Composite composite = UI.sectionClient(section, toolkit);
 		UI.gridLayout(composite, 1);
 		String[] colNames = { Messages.Product, Messages.Physical,
@@ -144,10 +144,12 @@ class AllocationPage extends FormPage {
 				AllocationMethod.PHYSICAL));
 		modifySupport.bind(Messages.Economic, new ValueModifier(
 				AllocationMethod.ECONOMIC));
+		Action copy = TableClipboard.onCopy(factorViewer);
+		Actions.bind(factorViewer, copy);
 	}
 
 	private void createCausalSection(Composite body) {
-		Section section = UI.section(body, toolkit, "Causal allocation");
+		Section section = UI.section(body, toolkit, Messages.CausalAllocation);
 		UI.gridData(section, true, true);
 		causalFactorTable = new CausalFactorTable(editor);
 		causalFactorTable.render(section, toolkit);

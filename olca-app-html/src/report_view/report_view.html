@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html ng-app="ReportPreviewPage" id="ng-app">
+<head>
+    <meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <title>Report Preview</title>
+    <link href="libs/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <style type="text/css">
+		//@include('./style.css')	
+    </style>
+</head>
+
+<body>
+	
+	<div id="contentDiv" data-ng-controller="Controller" style="max-width: 1000px; margin: auto">
+		<div class="container-fluid" style="margin:20px">
+			<div class="row">
+				<h1 class="col-sm-12 box-row1" style="text-align: center">{{report.title}}</h1>
+			</div>
+			<div class="row">
+				<div data-ng-repeat="section in report.sections" class="col-sm-12 box-row1">
+					<h3 style="text-align: center">{{section.title}}</h3>
+					<p style="text-align: justify" data-ng-bind-html="section.text"></p>
+					
+                    <div data-ng-if="section.componentId === 'variant_description_table'">
+						//@include('./templates/variant_description_table.html')
+					</div>
+					
+					<div data-ng-if="section.componentId === 'indicator_description_table'">
+						//@include('./templates/indicator_description_table.html')
+					</div>
+					
+                    <div data-ng-if="section.componentId === 'parameter_description_table'">
+						//@include('./templates/parameter_description_table.html')
+					</div>
+					
+                    <div data-ng-if="section.componentId === 'parameter_value_table'">
+						//@include('./templates/parameter_value_table.html')
+					</div>
+					
+					<div data-ng-if="section.componentId === 'process_contribution_chart'">
+						//@include('./templates/process_contribution_chart.html')	
+					</div>
+					
+					<div data-ng-if="section.componentId === 'impact_result_table'">
+						//@include('./templates/impact_result_table.html')	
+					</div>
+					
+                    <div data-ng-if="section.componentId === 'normalisation_result_table' && report.withNormalisation">
+						//@include('./templates/normalisation_result_table.html')	
+					</div>
+					
+                    <div data-ng-if="section.componentId === 'single_score_table' && report.withWeighting">
+						//@include('./templates/single_score_table.html')
+					</div>
+					
+					<div data-ng-if="section.componentId === 'indicator_bar_chart'">
+						//@include('./templates/indicator_bar_chart.html')	
+					</div>
+					
+					<div data-ng-if="section.componentId === 'relative_indicator_bar_chart'">
+						//@include('./templates/relative_indicator_bar_chart.html')
+					</div>
+					
+					<div data-ng-if="section.componentId === 'normalisation_bar_chart'">
+						//@include('./templates/normalisation_bar_chart.html')	
+					</div>
+					
+					<div data-ng-if="section.componentId === 'relative_indicator_radar_chart'">
+						//@include('./templates/relative_indicator_radar_chart.html')
+					</div>
+					
+					<div data-ng-if="section.componentId === 'normalisation_radar_chart'">
+						//@include('./templates/normalisation_radar_chart.html')
+					</div>
+					
+					<div data-ng-if="section.componentId === 'single_score_bar_chart'">
+						//@include('./templates/single_score_bar_chart.html')
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+    <script src="libs/jquery.min.js"></script>
+    <script src="libs/angular.min.js"></script>
+	<script src="libs/angular-sanitize.min.js"></script>
+    <script src="libs/Chart.min.js"></script>
+	<script src="libs/Chart.StackedBar.js"></script>
+	
+    <script type="text/javascript">
+		
+		//@include('../js/Colors.js')
+		
+        var variantsIndex = 0;
+        var app = angular.module('ReportPreviewPage', ['ngSanitize']);
+
+        app.filter('scientific', function () {
+            return function (text) {
+                return parseFloat(text).toExponential(5);
+            };
+        });
+
+	    //@include('./js/Controller.js')
+        app.controller('Controller', Controller);
+
+		//@include('./js/IndicatorBarChart.js')
+		app.directive("indicatorBarChart", IndicatorBarChart);
+		
+		//@include('./js/NormalisedIndicatorChart.js')
+		app.directive("normalisedIndicatorChart", NormalisedIndicatorChart);
+		
+		//@include('./js/SingleScoreBarChart.js')
+		app.directive("singleScoreBarChart", SingleScoreBarChart);
+		
+		//@include('./js/VariantLegend.js')
+		app.directive("variantLegend", VariantLegend);
+		
+		//@include('./js/ContributionChart.js')
+		app.directive("contributionChart", ContributionChart);
+		
+		function setData(report) {
+			//@include('./js/Initializer.js')
+			Initializer(report);
+        }
+
+		//do not remove or modify the comment below, it is used as template for static report exports.
+		//{{set_data_call}}
+		
+    </script>
+</body>
+</html>

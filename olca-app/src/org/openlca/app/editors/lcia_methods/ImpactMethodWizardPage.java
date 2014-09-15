@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.Messages;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.wizards.AbstractWizardPage;
 import org.openlca.core.model.ImpactMethod;
 
@@ -12,8 +12,8 @@ class ImpactMethodWizardPage extends AbstractWizardPage<ImpactMethod> {
 
 	public ImpactMethodWizardPage() {
 		super("LCIAMethodWizardPage");
-		setTitle(Messages.Methods_WizardTitle);
-		setMessage(Messages.Methods_WizardMessage);
+		setTitle(Messages.NewImpactMethod);
+		setMessage(Messages.CreatesANewImpactMethod);
 		setImageDescriptor(ImageType.NEW_WIZ_METHOD.getDescriptor());
 		setPageComplete(false);
 	}

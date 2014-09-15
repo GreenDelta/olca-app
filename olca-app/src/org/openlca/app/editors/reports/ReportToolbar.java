@@ -13,10 +13,10 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.ui.part.EditorActionBarContributor;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.editors.reports.model.Report;
-import org.openlca.app.html.HtmlFolder;
-import org.openlca.app.html.HtmlView;
-import org.openlca.app.resources.ImageType;
-import org.openlca.app.util.Actions;
+import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.RcpActivator;
+import org.openlca.app.rcp.html.HtmlFolder;
+import org.openlca.app.rcp.html.HtmlView;
 import org.openlca.app.util.Editors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,20 +29,12 @@ public class ReportToolbar extends EditorActionBarContributor {
 
 	@Override
 	public void contributeToToolBar(IToolBarManager manager) {
-		Action previewAction = Actions.create(
-				"Preview",
-				ImageType.SEARCH_ICON.getDescriptor(), () -> {
-					Report report = getReport();
-					if (report != null)
-						ReportViewer.open(getReport());
-				});
-		manager.add(previewAction);
 		manager.add(new ExportAction());
 	}
 
 	private Report getReport() {
 		try {
-			ReportEditor editor = Editors.getActive();
+			ReportViewer editor = Editors.getActive();
 			if (editor == null) {
 				log.error("unexpected error: report editor is not active");
 				return null;
@@ -71,7 +63,8 @@ public class ReportToolbar extends EditorActionBarContributor {
 			File dir = FileChooser.forExport(FileChooser.DIRECTORY_DIALOG);
 			if (dir == null)
 				return;
-			File htmlDir = HtmlFolder.getRoot();
+			File htmlDir = HtmlFolder.getDir(RcpActivator.getDefault()
+					.getBundle());
 			if (htmlDir == null)
 				return;
 			tryExport(report, dir, htmlDir);
@@ -83,15 +76,14 @@ public class ReportToolbar extends EditorActionBarContributor {
 				String json = new Gson().toJson(report);
 				String call = "$(window).load( function() { setData(" + json
 						+ ")});";
-				File template = HtmlFolder.getFile(HtmlView.REPORT_VIEW
-						.getResource());
+				File template = HtmlFolder.getFile(RcpActivator.getDefault()
+						.getBundle(), HtmlView.REPORT_VIEW
+						.getFileName());
 				List<String> templateLines = Files.readAllLines(
 						template.toPath(), Charset.forName("utf-8"));
 				List<String> reportLines = new ArrayList<>();
 				for (String line : templateLines) {
 					String reportLine = line;
-					if (line.contains("../libs/"))
-						reportLine = line.replace("../libs/", "libs/");
 					if (line.contains(CALL_HOOK))
 						reportLine = line.replace(CALL_HOOK, call);
 					reportLines.add(reportLine);

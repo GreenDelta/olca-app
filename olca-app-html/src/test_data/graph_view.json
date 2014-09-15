@@ -1,0 +1,19 @@
+{
+	"nodes": [
+		{"name":"proc 1", "group":1},
+		{"name":"proc 2", "group":1},
+		{"name":"proc 3", "group":2},
+		{"name":"proc 4", "group":2},
+		{"name":"proc 5", "group":3},
+		{"name":"proc 6", "group":3}
+	],
+	"links": [
+		{"source":0, "target":1},
+		{"source":1, "target":2},
+		{"source":1, "target":4},
+		{"source":2, "target":3},
+		{"source":3, "target":4},
+		{"source":3, "target":5},
+		{"source":4, "target":5}
+	]
+}

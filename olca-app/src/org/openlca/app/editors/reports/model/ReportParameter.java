@@ -2,13 +2,15 @@ package org.openlca.app.editors.reports.model;
 
 import org.openlca.core.model.ParameterRedef;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ReportParameter {
 
 	private ParameterRedef redef;
-	private String userFriendlyName;
-	private double value;
-	private double defaultValue;
+	private String name;
 	private String description;
+	private Map<Integer, Double> variantValues = new HashMap<>();
 
 	public ParameterRedef getRedef() {
 		return redef;
@@ -18,28 +20,12 @@ public class ReportParameter {
 		this.redef = redef;
 	}
 
-	public String getUserFriendlyName() {
-		return userFriendlyName;
+	public String getName() {
+		return name;
 	}
 
-	public void setUserFriendlyName(String userFriendlyName) {
-		this.userFriendlyName = userFriendlyName;
-	}
-
-	public double getValue() {
-		return value;
-	}
-
-	public void setValue(double value) {
-		this.value = value;
-	}
-
-	public double getDefaultValue() {
-		return defaultValue;
-	}
-
-	public void setDefaultValue(double defaultValue) {
-		this.defaultValue = defaultValue;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public String getDescription() {
@@ -48,6 +34,14 @@ public class ReportParameter {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public void putValue(int variantId, double value) {
+		variantValues.put(variantId, value);
+	}
+
+	public void removeValue(int variantId) {
+		variantValues.remove(variantId);
 	}
 
 }

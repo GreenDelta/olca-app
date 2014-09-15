@@ -13,7 +13,7 @@ class OpenAction extends EditorAction {
 
 	OpenAction() {
 		setId(ActionIds.OPEN);
-		setText(Messages.OpenEditorAction_Text);
+		setText(Messages.OpenInEditor);
 	}
 
 	@Override

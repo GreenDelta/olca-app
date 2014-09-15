@@ -40,14 +40,14 @@ class FlowInfoPage extends ModelPage<Flow> {
 	}
 
 	private void createAdditionalInfo(InfoSection infoSection, Composite body) {
-		createCheckBox(Messages.IsInfrastructureFlow, "infrastructureFlow",
+		createCheckBox(Messages.InfrastructureFlow, "infrastructureFlow",
 				infoSection.getContainer());
 		createReadOnly(Messages.FlowType,
 				Images.getIcon(getModel().getFlowType()), "flowType",
 				infoSection.getContainer());
 		Composite composite = UI.formSection(body, toolkit,
-				Messages.AdditionalInfo);
-		createText(Messages.CasNumber, "casNumber", composite);
+				Messages.AdditionalInformation);
+		createText(Messages.CASNumber, "casNumber", composite);
 		createText(Messages.Formula, "formula", composite);
 		createLocationViewer(composite);
 	}

@@ -3,8 +3,6 @@ package org.openlca.app.results.analysis;
 import java.io.File;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
@@ -16,8 +14,9 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.components.FileChooser;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.results.ContributionChartSection;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.InformationPopup;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
@@ -27,15 +26,12 @@ import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.NwSetDescriptor;
 import org.openlca.core.results.FullResultProvider;
 import org.openlca.io.xls.results.AnalysisResultExport;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Overall information page of the analysis editor.
  */
 public class AnalyzeInfoPage extends FormPage {
 
-	private Logger log = LoggerFactory.getLogger(getClass());
 	private CalculationSetup setup;
 	private FullResultProvider result;
 	private FormToolkit toolkit;
@@ -53,7 +49,7 @@ public class AnalyzeInfoPage extends FormPage {
 		toolkit = managedForm.getToolkit();
 		toolkit.getHyperlinkGroup().setHyperlinkUnderlineMode(
 				HyperlinkSettings.UNDERLINE_HOVER);
-		form.setText(Messages.ResultOf + " "
+		form.setText(Messages.AnalysisResultOf + " "
 				+ Labels.getDisplayName(setup.getProductSystem()));
 		toolkit.decorateFormHeading(form.getForm());
 		Composite body = UI.formBody(form, toolkit);
@@ -73,10 +69,11 @@ public class AnalyzeInfoPage extends FormPage {
 		createText(composite, Messages.TargetAmount, targetText);
 		ImpactMethodDescriptor method = setup.getImpactMethod();
 		if (method != null)
-			createText(composite, Messages.ImpactMethodTitle, method.getName());
+			createText(composite, Messages.ImpactAssessmentMethod,
+					method.getName());
 		NwSetDescriptor nwSet = setup.getNwSet();
 		if (nwSet != null)
-			createText(composite, Messages.NormalizationWeightingSet,
+			createText(composite, Messages.NormalizationAndWeightingSet,
 					nwSet.getName());
 		createExportButton(composite);
 	}
@@ -86,12 +83,7 @@ public class AnalyzeInfoPage extends FormPage {
 		Button button = toolkit.createButton(composite, Messages.ExportToExcel,
 				SWT.NONE);
 		button.setImage(ImageType.FILE_EXCEL_SMALL.get());
-		button.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				tryExport();
-			}
-		});
+		Controls.onSelect(button, (e) -> tryExport());
 	}
 
 	private void tryExport() {
@@ -101,11 +93,11 @@ public class AnalyzeInfoPage extends FormPage {
 			return;
 		final AnalysisResultExport export = new AnalysisResultExport(
 				setup.getProductSystem(), exportFile, result);
-		App.run("Export...", export, new Runnable() {
+		App.run(Messages.Export, export, new Runnable() {
 			@Override
 			public void run() {
 				if (export.doneWithSuccess()) {
-					InformationPopup.show("Export done");
+					InformationPopup.show(Messages.ExportDone);
 				}
 			}
 		});

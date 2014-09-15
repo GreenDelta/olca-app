@@ -13,12 +13,15 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.Config;
-import org.openlca.app.html.HtmlPage;
-import org.openlca.app.html.HtmlView;
-import org.openlca.app.html.IHtmlResource;
+import org.openlca.app.Messages;
 import org.openlca.app.navigation.actions.DatabaseImportAction;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.RcpActivator;
+import org.openlca.app.rcp.html.HtmlFolder;
+import org.openlca.app.rcp.html.HtmlPage;
+import org.openlca.app.rcp.html.HtmlView;
 import org.openlca.app.util.Desktop;
+import org.openlca.app.util.EclipseCommandLine;
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.UI;
 import org.openlca.util.OS;
@@ -61,29 +64,40 @@ public class StartPage extends FormEditor {
 		private Browser browser;
 
 		public Page() {
-			super(StartPage.this, "olca.StartPage.Page", "Welcome");
+			super(StartPage.this, "olca.StartPage.Page", Messages.Welcome);
 		}
 
 		@Override
-		public IHtmlResource getResource() {
-			return HtmlView.START_PAGE.getResource();
+		public String getUrl() {
+			String langCode = EclipseCommandLine.getArg("nl");
+			if (langCode == null
+					|| "en".equalsIgnoreCase(langCode)
+					|| langCode.startsWith("en_"))
+				return HtmlView.START_PAGE.getUrl();
+			String pageName = "start_page_" + langCode + ".html";
+			try {
+				return HtmlFolder.getUrl(
+						RcpActivator.getDefault().getBundle(), pageName);
+			} catch (Exception e) {
+				log.error("failed to get start page for language "
+						+ langCode, e);
+				return HtmlView.START_PAGE.getUrl();
+			}
 		}
 
 		@Override
 		public void onLoaded() {
 			new ImportDatabaseCallback(browser);
 			new OpenUrlCallback(browser);
-			String version = "Version " + Config.VERSION + " for "
-					+ OS.getCurrent() + " (" + getArch() + ")";
+			String version = Messages.Version + " " + Config.VERSION + " ("
+					+ OS.getCurrent() + " " + getArch() + ")";
 			String json = "{'version' : '" + version + "' }";
 			String command = "setData(" + json + ")";
 			try {
 				browser.evaluate(command);
 			} catch (Exception e) {
-				log.error("failed to set report data to browser", e);
+				log.warn("failed to set report data to browser", e);
 			}
-			// TODO: set translation + version text
-			// System.out.println(Messages.asJson());
 		}
 
 		@Override
@@ -165,7 +179,7 @@ public class StartPage extends FormEditor {
 
 		@Override
 		public String getName() {
-			return "Welcome";
+			return Messages.Welcome;
 		}
 
 		@Override
@@ -175,7 +189,7 @@ public class StartPage extends FormEditor {
 
 		@Override
 		public String getToolTipText() {
-			return "Welcome";
+			return Messages.Welcome;
 		}
 
 		@Override

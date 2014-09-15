@@ -1,0 +1,33 @@
+{
+    "amount": 25,
+    "unit": "kg",
+    "children": [{
+        "processId": 1,
+        "processName": "Process 1",
+        "amount": 25.3704817795660347,
+        "children": [
+            {
+                "processId": 2,
+                "processName": "Process 2",
+                "amount": 10.5904759648256004
+            },
+            {
+                "processId": 3,
+                "processName": "Process 3",
+                "amount": 15.04082009056583047,
+                "children": [
+                    {
+                        "processId": 4,
+                        "processName": "Process 4",
+                        "amount": 5.32139013707637787
+                    },
+                    {
+                        "processId": 5,
+                        "processName": "Process 5",
+                        "amount": 10.32139013707637787
+                    }
+                ]
+            }
+       ]
+    }]
+}

@@ -1,15 +1,13 @@
 package org.openlca.app;
 
 import java.io.File;
-import java.net.URL;
 
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.osgi.service.datalocation.Location;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.PartInitException;
 import org.openlca.app.editors.ModelEditorInput;
 import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.rcp.RcpActivator;
+import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.Editors;
 import org.openlca.core.math.IMatrixSolver;
 import org.openlca.core.math.JavaSolver;
@@ -73,28 +71,6 @@ public class App {
 		if (val == null)
 			return false;
 		return val.equals("true");
-	}
-
-	/**
-	 * Returns the absolute path to the installed XUL-Runner. Returns null if no
-	 * XUL runner installation could be found.
-	 */
-	public static String getXulRunnerPath() {
-		Location location = Platform.getInstallLocation();
-		if (location == null)
-			return null;
-		try {
-			URL url = location.getURL();
-			File installDir = new File(url.getFile());
-			File xulRunnerDir = new File(installDir, "xulrunner");
-			log.trace("search for XULRunner at {}", xulRunnerDir);
-			if (xulRunnerDir.exists())
-				return xulRunnerDir.getAbsolutePath();
-			return null;
-		} catch (Exception e) {
-			log.error("Error while searching for XUL-Runner", e);
-			return null;
-		}
 	}
 
 	public static EventBus getEventBus() {
@@ -172,8 +148,8 @@ public class App {
 	}
 
 	/**
-	 * Returns the workspace directory where databases and other resources
-	 * are stored (native libraries, HTML resources, etc.).
+	 * Returns the workspace directory where databases and other resources are
+	 * stored (native libraries, HTML resources, etc.).
 	 */
 	public static File getWorkspace() {
 		return Workspace.getDir();

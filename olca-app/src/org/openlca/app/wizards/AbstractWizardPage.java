@@ -13,7 +13,7 @@ public abstract class AbstractWizardPage<T extends RootEntity> extends
 		WizardPage {
 
 	protected Text descriptionText;
-	private String EMPTY_NAME_ERROR = Messages.PleaseEnterName;
+	private String EMPTY_NAME_ERROR = Messages.PleaseEnterAName;
 	protected Text nameText;
 
 	protected AbstractWizardPage(String pageName) {

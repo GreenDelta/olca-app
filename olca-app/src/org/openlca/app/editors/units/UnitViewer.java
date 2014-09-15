@@ -10,8 +10,9 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.TableItem;
 import org.openlca.app.Messages;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
@@ -43,6 +44,11 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 		getModifySupport().bind(IS_REFERENCE, new ReferenceModifier());
 		getViewer().refresh(true);
 		Tables.bindColumnWidths(getViewer(), 0.25, 0.15, 0.15, 0.15, 0.15, 0.15);
+		Tables.onDoubleClick(getViewer(), (event) -> {
+			TableItem item = Tables.getItem(getViewer(), event);
+			if (item == null)
+				onCreate();
+		});
 	}
 
 	@Override
@@ -231,12 +237,17 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 		@Override
 		protected void setChecked(Unit element, boolean value) {
 			UnitGroup group = editor.getModel();
-			if (value) {
-				if (!Objects.equals(element, group.getReferenceUnit())) {
-					group.setReferenceUnit(element);
-					editor.setDirty(true);
-				}
+			if (!value)
+				return;
+			if (Objects.equals(element, group.getReferenceUnit()))
+				return;
+			group.setReferenceUnit(element);
+			double f = element.getConversionFactor();
+			for (Unit unit : group.getUnits()) {
+				double factor = unit.getConversionFactor() / f;
+				unit.setConversionFactor(factor);
 			}
+			editor.setDirty(true);
 		}
 
 		@Override

@@ -17,12 +17,13 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.components.ParameterRedefDialog;
 import org.openlca.app.db.Cache;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Images;
 import org.openlca.app.util.Labels;
@@ -42,10 +43,14 @@ import org.openlca.util.Strings;
 
 class ProjectParameterTable {
 
+	private final int LABEL_COLS = 4;
 	private final String PARAMETER = Messages.Parameter;
 	private final String CONTEXT = Messages.Context;
+	private final String NAME = "Report name";
+	private final String DESCRIPTION = Messages.Description;
 
 	private ProjectEditor editor;
+	private ReportParameterSync reportSync;
 	private EntityCache cache = Cache.getEntityCache();
 
 	private List<ParameterRedef> redefs = new ArrayList<>();
@@ -54,6 +59,7 @@ class ProjectParameterTable {
 
 	public ProjectParameterTable(ProjectEditor editor) {
 		this.editor = editor;
+		this.reportSync = new ReportParameterSync(editor);
 		Project project = editor.getModel();
 		initColumns(project);
 		initParameterRedefs(project);
@@ -113,36 +119,47 @@ class ProjectParameterTable {
 		UI.gridLayout(composite, 1);
 		viewer = Tables.createViewer(composite, getColumnTitles());
 		viewer.setLabelProvider(new LabelProvider());
-		Tables.bindColumnWidths(viewer, 0.15, 0.2);
+		Tables.bindColumnWidths(viewer, 0.15, 0.15, 0.15, 0.15);
 		UI.gridData(viewer.getTable(), true, true).minimumHeight = 150;
 		viewer.setInput(redefs);
 		createModifySupport();
-		Action add = Actions.onAdd(() -> onAdd());
-		Action remove = Actions.onRemove(() -> onRemove());
+		Action add = Actions.onAdd(this::onAdd);
+		Action remove = Actions.onRemove(this::onRemove);
 		Actions.bind(section, add, remove);
 		Actions.bind(viewer, add, remove);
+		Tables.onDoubleClick(viewer, (event) -> {
+			TableItem item = Tables.getItem(viewer, event);
+			if (item == null)
+				onAdd();
+		});
 	}
 
 	private String[] getColumnTitles() {
-		String[] titles = new String[columns.length + 2];
+		String[] titles = new String[LABEL_COLS + columns.length];
 		titles[0] = PARAMETER;
 		titles[1] = CONTEXT;
+		titles[2] = NAME;
+		titles[3] = DESCRIPTION;
 		for (int i = 0; i < columns.length; i++)
-			titles[i + 2] = columns[i].getTitle();
+			titles[i + LABEL_COLS] = columns[i].getTitle();
 		return titles;
 	}
 
 	private void createModifySupport() {
 		// we use unique key to map the columns / editors to project variants
-		String[] keys = new String[columns.length + 2];
+		String[] keys = new String[LABEL_COLS + columns.length];
 		keys[0] = PARAMETER;
 		keys[1] = CONTEXT;
+		keys[2] = NAME;
+		keys[3] = DESCRIPTION;
 		for (int i = 0; i < columns.length; i++)
-			keys[i + 2] = columns[i].getKey();
+			keys[i + LABEL_COLS] = columns[i].getKey();
 		viewer.setColumnProperties(keys);
 		ModifySupport<ParameterRedef> modifySupport = new ModifySupport<>(
 				viewer);
-		for (int i = 2; i < keys.length; i++)
+		modifySupport.bind(NAME, new NameModifier());
+		modifySupport.bind(DESCRIPTION, new DescriptionModifier());
+		for (int i = LABEL_COLS; i < keys.length; i++)
 			modifySupport.bind(keys[i], new ValueModifier(keys[i]));
 	}
 
@@ -153,6 +170,7 @@ class ProjectParameterTable {
 			if (contains(redef))
 				continue;
 			this.redefs.add(redef);
+			reportSync.parameterAdded(redef);
 			for (Column column : columns) {
 				if (findVariantRedef(column.variant, redef) == null)
 					column.variant.getParameterRedefs().add(redef.clone());
@@ -164,7 +182,7 @@ class ProjectParameterTable {
 
 	private Set<Long> getParameterContexts() {
 		Project project = editor.getModel();
-		HashSet<Long> contexts = new HashSet<Long>();
+		HashSet<Long> contexts = new HashSet<>();
 		if (project.getImpactMethodId() != null)
 			contexts.add(project.getImpactMethodId());
 		for (ProjectVariant variant : project.getVariants()) {
@@ -179,6 +197,7 @@ class ProjectParameterTable {
 		List<ParameterRedef> selection = Viewers.getAllSelected(viewer);
 		for (ParameterRedef selected : selection) {
 			this.redefs.remove(selected);
+			reportSync.parameterRemoved(selected);
 			for (Column column : columns) {
 				ProjectVariant variant = column.variant;
 				ParameterRedef redef = findVariantRedef(variant, selected);
@@ -215,7 +234,7 @@ class ProjectParameterTable {
 					newColumns.length - idx);
 		columns = newColumns;
 		Table table = viewer.getTable();
-		table.getColumn(idx + 2).dispose();
+		table.getColumn(idx + LABEL_COLS).dispose();
 		createModifySupport();
 		viewer.refresh();
 	}
@@ -227,7 +246,7 @@ class ProjectParameterTable {
 		Column column = columns[idx];
 		Table table = viewer.getTable();
 		String title = column.getTitle() == null ? "" : column.getTitle();
-		table.getColumn(idx + 2).setText(title);
+		table.getColumn(idx + LABEL_COLS).setText(title);
 		viewer.refresh();
 	}
 
@@ -300,12 +319,16 @@ class ProjectParameterTable {
 				return redef.getName();
 			if (col == 1)
 				return getModelColumnText(redef);
+			if (col == 2)
+				return reportSync.getName(redef);
+			if (col == 3)
+				return reportSync.getDescription(redef);
 			else
 				return getVariantValue(col, redef);
 		}
 
 		private String getVariantValue(int col, ParameterRedef redef) {
-			int idx = col - 2;
+			int idx = col - LABEL_COLS;
 			if (idx < 0 || idx >= columns.length)
 				return null;
 			ProjectVariant variant = columns[idx].getVariant();
@@ -368,11 +391,44 @@ class ProjectParameterTable {
 			try {
 				double d = Double.parseDouble(text);
 				variantRedef.setValue(d);
+				reportSync.valueChanged(redef, variant, d);
 				editor.setDirty(true);
 			} catch (Exception e) {
-				org.openlca.app.util.Error.showBox("Invalid number", text
-						+ " is not a valid number.");
+				org.openlca.app.util.Error.showBox(Messages.InvalidNumber, text
+						+ " " + Messages.IsNotValidNumber);
 			}
+		}
+	}
+
+	private class NameModifier extends TextCellModifier<ParameterRedef> {
+		@Override
+		protected String getText(ParameterRedef redef) {
+			return reportSync.getName(redef);
+		}
+
+		@Override
+		protected void setText(ParameterRedef redef, String text) {
+			String oldName = reportSync.getName(redef);
+			if (Objects.equals(oldName, text))
+				return;
+			reportSync.setName(text, redef);
+			editor.setDirty(true);
+		}
+	}
+
+	private class DescriptionModifier extends TextCellModifier<ParameterRedef> {
+		@Override
+		protected String getText(ParameterRedef redef) {
+			return reportSync.getDescription(redef);
+		}
+
+		@Override
+		protected void setText(ParameterRedef redef, String text) {
+			String oldText = reportSync.getDescription(redef);
+			if (Objects.equals(oldText, text))
+				return;
+			reportSync.setDescription(text, redef);
+			editor.setDirty(true);
 		}
 	}
 

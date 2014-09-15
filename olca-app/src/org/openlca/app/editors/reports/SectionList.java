@@ -14,10 +14,11 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.editors.DataBinding;
+import org.openlca.app.editors.projects.ProjectEditor;
 import org.openlca.app.editors.reports.model.Report;
 import org.openlca.app.editors.reports.model.ReportComponent;
 import org.openlca.app.editors.reports.model.ReportSection;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
@@ -26,7 +27,7 @@ import org.openlca.app.util.Viewers;
 class SectionList {
 
 	private Report report;
-	private ReportEditor editor;
+	private ProjectEditor editor;
 	private DataBinding binding;
 	private Composite parent;
 	private FormToolkit toolkit;
@@ -34,7 +35,7 @@ class SectionList {
 
 	private List<Sec> sections = new ArrayList<>();
 
-	SectionList(ReportEditor editor, Composite parent, ScrolledForm form,
+	SectionList(ProjectEditor editor, Composite parent, ScrolledForm form,
 			FormToolkit toolkit) {
 		this.editor = editor;
 		this.binding = new DataBinding(editor);
@@ -195,16 +196,34 @@ class SectionList {
 			switch (component) {
 			case NONE:
 				return "None";
-			case PARAMETER_TABLE:
-				return "Parameter table";
-			case RESULT_CHART:
-				return "Result chart";
-			case RESULT_TABLE:
-				return "Result table";
-			case VARIANT_TABLE:
-				return "Project variant table";
-			case CONTRIBUTION_CHARTS:
-				return "Contribution charts";
+			case VARIANT_DESCRIPTION_TABLE:
+				return "Variant description table";
+			case INDICATOR_DESCRIPTION_TABLE:
+				return "LCIA category description table";
+			case PARAMETER_DESCRIPTION_TABLE:
+				return "Parameter description table";
+			case PARAMETER_VALUE_TABLE:
+				return "Parameter value table";
+			case IMPACT_RESULT_TABLE:
+				return "LCIA result table";
+			case PROCESS_CONTRIBUTION_CHART:
+				return "Process contribution chart";
+			case NORMALISATION_RESULT_TABLE:
+				return "Normalisation result table";
+			case SINGLE_SCORE_TABLE:
+				return "Single score table";
+			case INDICATOR_BAR_CHART:
+				return "Indicator bar chart";
+			case NORMALISATION_BAR_CHART:
+				return "Normalisation - bar chart";
+			case NORMALISATION_RADAR_CHART:
+				return "Normalisation - radar chart";
+			case RELATIVE_INDICATOR_BAR_CHART:
+				return "Relative LCIA results - bar chart";
+			case RELATIVE_INDICATOR_RADAR_CHART:
+				return "Relative LCIA results - radar chart";
+			case SINGLE_SCORE_BAR_CHART:
+				return "Single score bar chart";
 			default:
 				return "unknown";
 			}

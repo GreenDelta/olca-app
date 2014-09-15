@@ -58,7 +58,7 @@ public class ReconnectLinkCommand extends Command {
 
 	@Override
 	public String getLabel() {
-		return Messages.Systems_ProcessLinkReconnectCommand_Text;
+		return Messages.ReconnectProcesslink;
 	}
 
 	@Override

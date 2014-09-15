@@ -20,7 +20,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.Messages;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.UIFactory;
 
 /**
@@ -49,7 +49,7 @@ public class ProblemsPage extends WizardPage {
 		super(ID);
 		this.problems = problems;
 		setTitle(Messages.Delete);
-		setDescription(Messages.ProblemsPage_FoundProblems + " "
+		setDescription(Messages.FoundProblems + " "
 				+ problems.length);
 		setPageComplete(!hasErrors());
 	}

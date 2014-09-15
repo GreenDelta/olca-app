@@ -1,46 +1,36 @@
 package org.openlca.app.results.simulation;
 
 import org.eclipse.jface.operation.ModalContext;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
+import org.openlca.app.Messages;
+import org.openlca.app.util.Controls;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * A wrapper for a button that controls the simulation progress: start / cancel.
  */
-class SimulationControl implements SelectionListener {
+class SimulationControl {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
-	private Button button;
 	private SimulationMonitor monitor;
 	private SimulationPage page;
 	private SimulationEditor editor;
 
 	public SimulationControl(Button button, SimulationEditor editor,
 			SimulationPage page) {
-		this.button = button;
 		this.page = page;
 		this.editor = editor;
 		monitor = new SimulationMonitor();
-		button.addSelectionListener(this);
-	}
-
-	@Override
-	public void widgetSelected(SelectionEvent e) {
-		widgetDefaultSelected(e);
-	}
-
-	@Override
-	public void widgetDefaultSelected(SelectionEvent e) {
-		if (!monitor.isRunning()) {
-			button.setText("Cancel");
-			startProgress();
-		} else {
-			monitor.setCanceled(true);
-		}
+		Controls.onSelect(button, (e) -> {
+			if (!monitor.isRunning()) {
+				button.setText(Messages.Cancel);
+				startProgress();
+			} else {
+				monitor.setCanceled(true);
+			}
+		});
 	}
 
 	private void startProgress() {

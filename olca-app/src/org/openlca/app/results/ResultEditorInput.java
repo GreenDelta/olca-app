@@ -3,8 +3,9 @@ package org.openlca.app.results;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
+import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Labels;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.descriptors.ProductSystemDescriptor;
@@ -57,7 +58,7 @@ public class ResultEditorInput implements IEditorInput {
 			return "";
 		ProductSystemDescriptor d = cache.get(ProductSystemDescriptor.class,
 				productSystemId);
-		return "Inventory result of " + Labels.getDisplayName(d);
+		return Messages.Results + ": " + Labels.getDisplayName(d);
 	}
 
 	@Override

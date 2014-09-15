@@ -1,7 +1,5 @@
 package org.openlca.app.util;
 
-import java.util.List;
-
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -13,14 +11,22 @@ import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.openlca.app.components.IModelDropHandler;
 import org.openlca.app.components.ModelTransfer;
 import org.openlca.core.model.descriptors.BaseDescriptor;
+
+import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * A helper class for creating tables, table viewers and related resources.
@@ -40,7 +46,7 @@ public class Tables {
 	public static TableViewer createViewer(Composite parent,
 			String... properties) {
 		TableViewer viewer = new TableViewer(parent, SWT.BORDER
-				| SWT.FULL_SELECTION | SWT.VIRTUAL);
+				| SWT.FULL_SELECTION | SWT.VIRTUAL | SWT.MULTI);
 		viewer.setContentProvider(new ArrayContentProvider());
 		viewer.setColumnProperties(properties);
 		Table table = viewer.getTable();
@@ -143,5 +149,41 @@ public class Tables {
 				}
 			});
 		}
+	}
+
+	/** Add an event handler for double clicks on the given table viewer. */
+	public static void onDoubleClick(TableViewer viewer,
+			Consumer<MouseEvent> handler) {
+		if (viewer == null || viewer.getTable() == null || handler == null)
+			return;
+		viewer.getTable().addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDoubleClick(MouseEvent e) {
+				handler.accept(e);
+			}
+		});
+	}
+
+	/**
+	 * Get the table item where the given event occurred. Returns null if the
+	 * event occurred in the empty table area.
+	 */
+	public static TableItem getItem(TableViewer viewer, MouseEvent event) {
+		if (viewer == null || event == null)
+			return null;
+		Table table = viewer.getTable();
+		if (table == null)
+			return null;
+		return table.getItem(new Point(event.x, event.y));
+	}
+
+	public static void onDeletePressed(TableViewer viewer, Consumer<Event> handler) {
+		if (viewer == null || viewer.getTable() == null || handler == null)
+			return;
+		viewer.getTable().addListener(SWT.KeyUp, (event) -> {
+			if (event.keyCode == SWT.DEL) {
+				handler.accept(event);
+			}
+		});
 	}
 }

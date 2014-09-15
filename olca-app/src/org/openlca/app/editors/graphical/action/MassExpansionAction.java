@@ -3,7 +3,7 @@ package org.openlca.app.editors.graphical.action;
 import org.eclipse.jface.action.Action;
 import org.openlca.app.Messages;
 import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Question;
 
 class MassExpansionAction extends Action {
@@ -17,11 +17,11 @@ class MassExpansionAction extends Action {
 	MassExpansionAction(int type) {
 		if (type == EXPAND) {
 			setId(ActionIds.EXPAND_ALL);
-			setText(Messages.Systems_ExpandAllAction_Text);
+			setText(Messages.ExpandAll);
 			setImageDescriptor(ImageType.EXPAND_ICON.getDescriptor());
 		} else if (type == COLLAPSE) {
 			setId(ActionIds.COLLAPSE_ALL);
-			setText(Messages.Systems_CollapseAllAction_Text);
+			setText(Messages.CollapseAll);
 			setImageDescriptor(ImageType.COLLAPSE_ICON.getDescriptor());
 		}
 		this.type = type;
@@ -40,9 +40,9 @@ class MassExpansionAction extends Action {
 		int amount = editor.getModel().getProductSystem().getProcesses().size();
 		if (amount < 500)
 			return true;
-		String title = Messages.Systems_ExpandAllQuestion_Title;
-		String text = Messages.bind(Messages.Systems_ExpandAllQuestion_Text,
-				amount);
+		String title = Messages.ExpandAll;
+		String text = Messages.ExpandAll + ": " + amount + " "
+				+ Messages.Processes;
 		return Question.ask(title, text);
 	}
 

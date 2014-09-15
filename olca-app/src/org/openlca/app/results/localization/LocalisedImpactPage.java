@@ -9,9 +9,8 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
-import org.openlca.app.html.HtmlPage;
-import org.openlca.app.html.HtmlView;
-import org.openlca.app.html.IHtmlResource;
+import org.openlca.app.rcp.html.HtmlPage;
+import org.openlca.app.rcp.html.HtmlView;
 import org.openlca.app.results.analysis.AnalyzeEditor;
 import org.openlca.app.results.localization.LocalisedImpactResult.Entry;
 import org.openlca.app.util.UI;
@@ -40,8 +39,8 @@ public class LocalisedImpactPage extends FormPage implements HtmlPage {
 	}
 
 	@Override
-	public IHtmlResource getResource() {
-		return HtmlView.RESULT_LOCALISED_LCIA.getResource();
+	public String getUrl() {
+		return HtmlView.RESULT_LOCALISED_LCIA.getUrl();
 	}
 
 	@Override

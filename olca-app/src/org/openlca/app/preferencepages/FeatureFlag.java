@@ -8,7 +8,8 @@ import org.openlca.app.Preferences;
  */
 public enum FeatureFlag {
 
-	USE_MOZILLA_BROWSER("Use Mozilla browser (not available on every platform)"),
+	// can be removed if it runs stable on Windows 64bit
+	// USE_MOZILLA_BROWSER("Use Mozilla browser (not available on every platform)"),
 
 	LOCALISED_LCIA("Enable localised impact assessment"),
 

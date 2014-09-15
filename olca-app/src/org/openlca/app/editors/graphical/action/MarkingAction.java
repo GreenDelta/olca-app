@@ -20,10 +20,10 @@ class MarkingAction extends EditorAction {
 	MarkingAction(int type) {
 		if (type == MARK) {
 			setId(ActionIds.MARK);
-			setText(Messages.Systems_MarkProcess);
+			setText(Messages.Mark);
 		} else if (type == UNMARK) {
 			setId(ActionIds.UNMARK);
-			setText(Messages.Systems_UnmarkProcess);
+			setText(Messages.Unmark);
 		}
 		this.type = type;
 	}

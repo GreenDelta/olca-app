@@ -1,0 +1,17 @@
+[
+{
+	"name":"line process",
+	"amount":24,
+	"kml":"<?xml version='1.0' encoding='UTF-8'?><kml xmlns='http://earth.google.com/kml/2.0'><Folder><name>OpenLayers export</name><description>Exported on Tue May 06 2014 13:03:31 GMT+0200 (W. Europe Daylight Time)</description><Placemark><name>OpenLayers_Feature_Vector_491</name><description>No description available</description><LineString><coordinates>-105.96355587244338,33.487278798339865 -101.56902462244363,34.28982731499593 -98.97625118494947,36.51044890616197 -98.49285274744295,37.77151404990764</coordinates></LineString></Placemark></Folder></kml>" 
+},
+{
+	"name":"point process",
+	"amount":30,
+	"kml":"<?xml version='1.0' encoding='UTF-8'?><kml xmlns='http://earth.google.com/kml/2.0'><Folder><name>OpenLayers export</name><description>Exported on Tue May 06 2014 13:01:34 GMT+0200 (W. Europe Daylight Time)</description><Placemark><name>OpenLayers_Feature_Vector_249</name><description>No description available</description><Point><coordinates>-104.37011718750457,35.67514743608417</coordinates></Point></Placemark></Folder></kml>"
+},
+{
+	"name":"polygon process",
+	"amount":46,
+	"kml":"<?xml version='1.0' encoding='UTF-8'?><kml xmlns='http://earth.google.com/kml/2.0'><Folder><name>OpenLayers export</name><description>Exported on Tue May 06 2014 13:05:15 GMT+0200 (W. Europe Daylight Time)</description><Placemark><name>OpenLayers_Feature_Vector_233</name><description>No description available</description><Polygon><outerBoundaryIs><LinearRing><coordinates>-103.93657833338474,38.03590886541514 -106.22173458337885,35.57327109599401 -101.34380489588157,33.10619401150866 -97.60845333338585,35.965487581974635 -99.93755489588383,38.346757546500086 -103.93657833338474,38.03590886541514</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></Folder></kml>"
+}
+]

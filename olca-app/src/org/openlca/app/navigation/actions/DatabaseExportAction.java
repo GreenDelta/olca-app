@@ -11,11 +11,14 @@ import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseFolder;
 import org.openlca.app.db.DerbyConfiguration;
 import org.openlca.app.db.IDatabaseConfiguration;
+import org.openlca.app.db.MySQLConfiguration;
+import org.openlca.app.db.MySQLDatabaseExport;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.resources.ImageType;
-import org.openlca.app.util.*;
+import org.openlca.app.rcp.ImageType;
+import org.openlca.app.util.Editors;
+import org.openlca.app.util.InformationPopup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeroturnaround.zip.ZipUtil;
@@ -35,9 +38,6 @@ public class DatabaseExportAction extends Action implements INavigationAction {
 		if (!(element instanceof DatabaseElement))
 			return false;
 		DatabaseElement e = (DatabaseElement) element;
-		IDatabaseConfiguration config = e.getContent();
-		if (!config.isLocal())
-			return false;
 		this.element = e;
 		return true;
 	}
@@ -51,52 +51,46 @@ public class DatabaseExportAction extends Action implements INavigationAction {
 	public void run() {
 		if (element == null || element.getContent() == null)
 			return;
-		IDatabaseConfiguration c = element.getContent();
-		if (!(c instanceof DerbyConfiguration))
-			return;
-		DerbyConfiguration config = (DerbyConfiguration) c;
+		IDatabaseConfiguration config = element.getContent();
 		File file = FileChooser.forExport("*.zolca", config.getName()
 				+ ".zolca");
 		if (file == null)
 			return;
-		if (Database.isActive(config))
-			run(config, file, true);
-		else
-			run(config, file, false);
+		run(config, file, Database.isActive(config));
 	}
 
-	private void run(final DerbyConfiguration config, final File zip,
+	private void run(IDatabaseConfiguration config, final File zip,
 			final boolean active) {
 		if (zip.exists()) {
 			log.trace("delete existing file {}", zip);
 			boolean deleted = zip.delete();
-			if(!deleted) {
-				org.openlca.app.util.Error.showBox("Could not overwrite " +
-				zip.getName());
+			if (!deleted) {
+				org.openlca.app.util.Error.showBox(Messages.CouldNotOverwriteFile
+						+ ": " + zip.getName());
 				return;
 			}
 		}
 		if (active)
 			Editors.closeAll();
 		log.trace("run database export to file {}", zip);
-		App.run("Export database", new Runnable() {
-			public void run() {
-				realExport(config, zip, active);
-			}
-		}, new Runnable() {
-			public void run() {
-				updateUI(zip, active);
-			}
-		});
+		App.run(Messages.ExportDatabase,
+				() -> realExport(config, zip, active),
+				() -> updateUI(zip, active));
 	}
 
-	private void realExport(final DerbyConfiguration config, final File zip,
-			final boolean active) {
+	private void realExport(IDatabaseConfiguration config, File zip,
+			boolean active) {
 		try {
 			if (active)
 				Database.close();
-			File folder = DatabaseFolder.getRootFolder(config.getName());
-			ZipUtil.pack(folder, zip);
+			if (config instanceof DerbyConfiguration) {
+				File folder = DatabaseFolder.getRootFolder(config.getName());
+				ZipUtil.pack(folder, zip);
+			} else if (config instanceof MySQLConfiguration) {
+				MySQLDatabaseExport export = new MySQLDatabaseExport(
+						(MySQLConfiguration) config, zip);
+				export.run();
+			}
 		} catch (Exception e) {
 			log.error("Export failed " + zip, e);
 		}
@@ -105,7 +99,7 @@ public class DatabaseExportAction extends Action implements INavigationAction {
 	private void updateUI(final File zip, final boolean active) {
 		if (active)
 			Navigator.refresh();
-		InformationPopup.show("Export done", "Database was exported to file "
-				+ zip.getName());
+		InformationPopup.show(Messages.ExportDone, Messages.DatabaseWasExportedToFile
+				+ ": " + zip.getName());
 	}
 }

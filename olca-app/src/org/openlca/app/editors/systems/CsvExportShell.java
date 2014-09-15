@@ -4,7 +4,6 @@ import java.io.File;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
@@ -15,9 +14,11 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.App;
+import org.openlca.app.Messages;
 import org.openlca.app.components.FileSelection;
 import org.openlca.app.db.Cache;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.Dialog;
 import org.openlca.app.util.InformationPopup;
 import org.openlca.app.util.UI;
@@ -28,15 +29,19 @@ import org.openlca.io.xls.CsvMatrixExportData;
 /**
  * The dialog for exporting product systems as matrices.
  */
-public class CsvExportShell extends Shell implements SelectionListener {
+public class CsvExportShell extends Shell {
 
 	private final FormToolkit toolkit = new FormToolkit(Display.getDefault());
 
 	private String[] columnSeparators = { ",", ";", "\t" };
-	private String[] columnSeparatorNames = { "Comma (,)", "Semicolon (;)",
-			"Tab (\\t)" };
+	private String[] columnSeparatorNames = {
+			Messages.Comma + " (,)",
+			Messages.Semicolon + " (;)",
+			Messages.Tab + " (\\t)" };
 	private String[] decimalSeparators = { ".", "," };
-	private String[] decimalSeparatorNames = { "Point (.)", "Comma (,)" };
+	private String[] decimalSeparatorNames = {
+			Messages.Dot + " (.)",
+			Messages.Comma + " (,)" };
 
 	private Combo pointCombo;
 	private Combo columnCombo;
@@ -48,7 +53,7 @@ public class CsvExportShell extends Shell implements SelectionListener {
 		super(parent, SWT.SHELL_TRIM);
 		setImage(ImageType.MATRIX_ICON.get());
 		setLayout(new FillLayout(SWT.HORIZONTAL));
-		setText("Matrix Export");
+		setText(Messages.MatrixExport);
 		setSize(450, 450);
 		createContents();
 		data = new CsvMatrixExportData();
@@ -62,18 +67,18 @@ public class CsvExportShell extends Shell implements SelectionListener {
 		Composite composite = toolkit.createComposite(this, SWT.NONE);
 		toolkit.paintBordersFor(composite);
 		UI.gridLayout(composite, 1);
-		Group formatGroup = createGroup("CSV Format", composite, 2);
-		pointCombo = createCombo("Decimal separator", formatGroup,
+		Group formatGroup = createGroup(Messages.CSVFormat, composite, 2);
+		pointCombo = createCombo(Messages.DecimalSeparator, formatGroup,
 				decimalSeparatorNames);
-		columnCombo = createCombo("Column separator", formatGroup,
+		columnCombo = createCombo(Messages.ColumnSeparator, formatGroup,
 				columnSeparatorNames);
-		Group fileGroup = createGroup("Matrix Files", composite, 1);
+		Group fileGroup = createGroup(Messages.MatrixFiles, composite, 1);
 		techSelection = new FileSelection(fileGroup, toolkit,
-				"Technology Matrix");
+				Messages.TexchnologyMatrix);
 		techSelection.setDefaultFileName("technology_matrix.csv");
 		techSelection.setFilter("*.csv");
 		enviSelection = new FileSelection(fileGroup, toolkit,
-				"Intervention Matrix");
+				Messages.InterventionMatrix);
 		enviSelection.setDefaultFileName("intervention_matrix.csv");
 		enviSelection.setFilter("*.csv");
 		createButtons(composite);
@@ -104,15 +109,15 @@ public class CsvExportShell extends Shell implements SelectionListener {
 				false));
 		toolkit.paintBordersFor(composite);
 		UI.gridLayout(composite, 2);
-		Button okButton = toolkit.createButton(composite, "OK", SWT.NONE);
-		okButton.setData("_method", "ok");
-		okButton.addSelectionListener(this);
-		UI.gridData(okButton, false, false).widthHint = 80;
-		Button cancelButton = toolkit.createButton(composite, "Cancel",
+		Button ok = toolkit.createButton(composite, Messages.OK, SWT.NONE);
+		ok.setData("_method", "ok");
+		Controls.onSelect(ok, (e) -> buttonPressed(e));
+		UI.gridData(ok, false, false).widthHint = 80;
+		Button cancel = toolkit.createButton(composite, Messages.Cancel,
 				SWT.NONE);
-		cancelButton.setData("_method", "cancel");
-		cancelButton.addSelectionListener(this);
-		UI.gridData(cancelButton, false, false).widthHint = 80;
+		cancel.setData("_method", "cancel");
+		Controls.onSelect(cancel, (e) -> buttonPressed(e));
+		UI.gridData(cancel, false, false).widthHint = 80;
 	}
 
 	@Override
@@ -125,13 +130,7 @@ public class CsvExportShell extends Shell implements SelectionListener {
 		super.dispose();
 	}
 
-	@Override
-	public void widgetDefaultSelected(SelectionEvent e) {
-		widgetSelected(e);
-	}
-
-	@Override
-	public void widgetSelected(SelectionEvent e) {
+	private void buttonPressed(SelectionEvent e) {
 		Object method = e.widget.getData("_method");
 		if (method == null)
 			return;
@@ -145,7 +144,7 @@ public class CsvExportShell extends Shell implements SelectionListener {
 		File enviFile = enviSelection.getFile();
 		File techFile = techSelection.getFile();
 		if (enviFile == null || techFile == null) {
-			Dialog.showError(this, "The export files must be selected.");
+			Dialog.showError(this, Messages.NoExportFilesSelected);
 			return;
 		}
 		data.setInterventionFile(enviFile);
@@ -157,11 +156,9 @@ public class CsvExportShell extends Shell implements SelectionListener {
 		String column = idx >= 0 ? columnSeparators[idx] : columnCombo
 				.getText();
 		data.setColumnSeperator(column);
-		App.run("Export matrix", new CsvMatrixExport(data), new Runnable() {
-			public void run() {
-				InformationPopup.show("Export finished", "Export is finished");
-			}
-		});
+		App.run(Messages.ExportMatrix,
+				new CsvMatrixExport(data),
+				() -> InformationPopup.show(Messages.ExportDone));
 		this.dispose();
 	}
 

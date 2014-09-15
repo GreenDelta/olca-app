@@ -4,6 +4,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IExportWizard;
 import org.eclipse.ui.IWorkbench;
+import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.RcpActivator;
 import org.slf4j.Logger;
@@ -20,7 +21,7 @@ public class ExportWizard extends Wizard implements IExportWizard {
 
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		setWindowTitle("ILCD Network Export");
+		setWindowTitle(Messages.ILCDNetworkExport);
 		setDefaultPageImageDescriptor(RcpActivator.imageDescriptorFromPlugin(
 				RcpActivator.PLUGIN_ID, "/icons/network_wiz.png"));
 		setNeedsProgressMonitor(true);

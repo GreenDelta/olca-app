@@ -1,0 +1,26 @@
+<div class="table-responsive">
+	<table class="table table-hover reportTable">
+		<thead>
+			<tr>
+				<th>LCIA category</th>
+				<th data-ng-repeat="variant in report.variants">{{variant.name}}</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr data-ng-repeat="indicator in report.indicators| filter: {displayed:true}">
+				<td>
+					{{indicator.reportName}}
+				</td>
+				<td data-ng-repeat="variant in report.variants">
+					{{(indicator.weightingFactor * getVariantResult(variant, indicator)) / indicator.normalisationFactor | scientific}}
+				</td>
+			</tr>
+			<tr>
+				<td><b>Total</b></td>
+				<td data-ng-repeat="variant in report.variants">
+					<b>{{getSingleScore(variant) | scientific}}</b>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>

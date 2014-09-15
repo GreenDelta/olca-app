@@ -1,12 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.app.results.analysis.sankey;
 
 import org.eclipse.draw2d.ColorConstants;
@@ -71,7 +62,7 @@ public class ProductSystemFigure extends Figure {
 
 		Object selection = productSystemNode.getSelection();
 		double cutoffValue = productSystemNode.getCutoff() * 100;
-		String cutoffText = Messages.CutOff + ": "
+		String cutoffText = Messages.Cutoff + ": "
 				+ Numbers.format(cutoffValue, 3) + "%";
 		if (selection != null) {
 			String label = selectionLabel(selection);
@@ -82,8 +73,8 @@ public class ProductSystemFigure extends Figure {
 			graphics.drawText(cutoffText, new Point(5, 60));
 
 		} else {
-			graphics.drawText(Messages.Sankey_NoOptions, new Point(5, 5));
-			graphics.drawText("Click here to change the display", new Point(5,
+			graphics.drawText(Messages.NoAnalysisOptionsSet, new Point(5, 5));
+			graphics.drawText(Messages.ClickHereToChangeDisplay, new Point(5,
 					30));
 		}
 
@@ -111,7 +102,7 @@ public class ProductSystemFigure extends Figure {
 			ImpactCategoryDescriptor category = (ImpactCategoryDescriptor) selection;
 			return Messages.ImpactCategory + ": " + category.getName();
 		}
-		return Messages.Sankey_NoOptions;
+		return Messages.NoAnalysisOptionsSet;
 	}
 
 	private void drawColorScale(Graphics graphics) {

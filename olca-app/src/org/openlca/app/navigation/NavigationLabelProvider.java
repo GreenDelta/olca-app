@@ -1,12 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.app.navigation;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -15,25 +6,21 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.navigator.ICommonContentExtensionSite;
 import org.eclipse.ui.navigator.ICommonLabelProvider;
+import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.IDatabaseConfiguration;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 
-/**
- * Implementation of the {@link ICommonLabelProvider} interface for providing
- * labels for the common viewer of the applications navigator
- */
 public class NavigationLabelProvider extends ColumnLabelProvider implements
 		ICommonLabelProvider {
 
 	@Override
 	public void addListener(ILabelProviderListener listener) {
-
 	}
 
 	@Override
@@ -123,25 +110,25 @@ public class NavigationLabelProvider extends ColumnLabelProvider implements
 			return null;
 		switch (o) {
 		case ACTOR:
-			return "Actors";
+			return Messages.Actors;
 		case FLOW:
-			return "Flows";
+			return Messages.Flows;
 		case FLOW_PROPERTY:
-			return "Flow properties";
+			return Messages.FlowProperties;
 		case IMPACT_METHOD:
-			return "Impact methods";
+			return Messages.ImpactAssessmentMethods;
 		case PROCESS:
-			return "Processes";
+			return Messages.Processes;
 		case PRODUCT_SYSTEM:
-			return "Product systems";
+			return Messages.ProductSystems;
 		case PROJECT:
-			return "Projects";
+			return Messages.Projects;
 		case SOURCE:
-			return "Sources";
+			return Messages.Sources;
 		case UNIT_GROUP:
-			return "Unit groups";
+			return Messages.UnitGroups;
 		default:
-			return "<<unknown>>";
+			return Messages.Unknown;
 		}
 	}
 

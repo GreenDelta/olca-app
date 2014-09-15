@@ -21,7 +21,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.db.Cache;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.Images;
@@ -115,7 +115,7 @@ public class SearchResultView extends FormEditor {
 
 		@Override
 		public String getName() {
-			return "Search results for " + term;
+			return Messages.SearchResults + ": " + term;
 		}
 
 		@Override
@@ -132,14 +132,14 @@ public class SearchResultView extends FormEditor {
 	private class Page extends FormPage {
 		public Page() {
 			super(SearchResultView.this, "SearchResultView.Page",
-					"Search results");
+					Messages.SearchResults);
 		}
 
 		@Override
 		protected void createFormContent(IManagedForm managedForm) {
 			ScrolledForm form = UI.formHeader(managedForm,
-					"Search results for '" + term + "' (" + results.size()
-							+ " results)");
+					Messages.SearchResults + ": " + term + " (" + results.size()
+							+ Messages.Results + ")");
 			FormToolkit toolkit = managedForm.getToolkit();
 			Composite body = UI.formBody(form, toolkit);
 			UI.gridLayout(body, 1).verticalSpacing = 5;

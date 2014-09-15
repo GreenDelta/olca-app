@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="project" default="main">
+
+	<property name="platform_dir" value="${basedir}/platform" />
+	<property name="download_dir" value="${basedir}/downloads" />
+
+	<target name="main">
+
+		<mkdir dir="${download_dir}" />
+		<mkdir dir="${platform_dir}" />
+		<mkdir dir="${platform_dir}/features" />
+		<mkdir dir="${platform_dir}/plugins" />
+
+		<antcall target="clean" />
+		<antcall target="download" />
+		<antcall target="extract" />
+
+	</target>
+
+	<target name="clean">
+		<delete dir="${platform_dir}/features" includes="*/**" includeEmptyDirs="true" />
+		<delete dir="${platform_dir}/plugins" includes="*/**" includeEmptyDirs="true" />
+	</target>
+
+	<target name="download">
+		<!--
+		<delete dir="${download_dir}" includes="*/**" />
+		-->
+
+		<!-- Eclipse Babel language packs -->
+		<get dest="${download_dir}/babel_bg_4.4.0.zip" verbose="true" skipexisting="true">
+			<url url="http://www.eclipse.org/downloads/download.php?file=/technology/babel/babel_language_packs/R0.12.0/luna/BabelLanguagePack-eclipse-bg_4.4.0.v20140623020002.zip&amp;r=1" />
+		</get>
+		<get dest="${download_dir}/babel_de_4.4.0.zip" verbose="true" skipexisting="true">
+			<url url="http://www.eclipse.org/downloads/download.php?file=/technology/babel/babel_language_packs/R0.12.0/luna/BabelLanguagePack-eclipse-de_4.4.0.v20140623020002.zip&amp;r=1" />
+		</get>
+		<get dest="${download_dir}/babel_es_4.4.0.zip" verbose="true" skipexisting="true">
+			<url url="http://www.eclipse.org/downloads/download.php?file=/technology/babel/babel_language_packs/R0.12.0/luna/BabelLanguagePack-eclipse-es_4.4.0.v20140623020002.zip&amp;r=1" />
+		</get>
+		<get dest="${download_dir}/babel_fr_4.4.0.zip" verbose="true" skipexisting="true">
+			<url url="http://www.eclipse.org/downloads/download.php?file=/technology/babel/babel_language_packs/R0.12.0/luna/BabelLanguagePack-eclipse-fr_4.4.0.v20140623020002.zip&amp;r=1" />
+		</get>
+		<get dest="${download_dir}/babel_it_4.4.0.zip" verbose="true" skipexisting="true">
+			<url url="http://www.eclipse.org/downloads/download.php?file=/technology/babel/babel_language_packs/R0.12.0/luna/BabelLanguagePack-eclipse-it_4.4.0.v20140623020002.zip&amp;r=1" />
+		</get>
+		<get dest="${download_dir}/babel_zh_4.4.0.zip" verbose="true" skipexisting="true">
+			<url url="http://www.eclipse.org/downloads/download.php?file=/technology/babel/babel_language_packs/R0.12.0/luna/BabelLanguagePack-eclipse-zh_4.4.0.v20140623020002.zip&amp;r=1" />
+		</get>
+
+		<!-- Eclipse Birt Chart SDK -->
+		<get dest="${download_dir}/birt_charts_4.4.0.zip" verbose="true" skipexisting="true">
+			<url url="http://www.eclipse.org/downloads/download.php?file=/birt/downloads/drops/R-R1-4_4_0-201406111043/birt-charts-4_4_0-20140611.zip&amp;r=1" />
+		</get>
+
+		<!-- Eclipse Delta Pack -->
+		<get dest="${download_dir}/delta_pack_4.4.zip" verbose="true" skipexisting="true">
+			<url url="http://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.4-201406061215/eclipse-4.4-delta-pack.zip&amp;r=1" />
+		</get>
+
+		<!-- Eclipse GEF and Draw2d -->
+		<get dest="${download_dir}/gef_3.9.zip" verbose="true" skipexisting="true">
+			<url url="http://www.eclipse.org/downloads/download.php?file=/tools/gef/downloads/drops/3.9.100/R201405261516/GEF-runtime-3.9.100.zip&amp;r=1" />
+		</get>
+
+		<!-- Eclipse Mylyn -->
+		<get dest="${download_dir}/mylyn_3.12.zip" verbose="true" skipexisting="true">
+			<url url="http://www.eclipse.org/downloads/download.php?file=/mylyn/drops/3.12.0/v20140609-1648/mylyn-3.12.0.v20140609-1648.zip&amp;r=1" />
+		</get>
+
+		<!-- Eclipse Nebula -->
+		<get dest="${download_dir}/nebula.zip" verbose="true" skipexisting="true">
+			<url url="http://download.eclipse.org/technology/nebula/snapshot/repository.zip" />
+		</get>
+
+		<!-- Eclipse SDK -->
+		<get dest="${download_dir}/sdk_4.4.zip" verbose="true" skipexisting="true">
+			<url url="http://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.4-201406061215/eclipse-SDK-4.4-win32-x86_64.zip&amp;r=1" />
+		</get>
+
+		<!-- SWT Charts -->
+		<get dest="${download_dir}/swt_charts_0.9.0.zip" verbose="true" skipexisting="true">
+			<url url="http://sourceforge.net/projects/swt-chart/files/SWTChart/0.9.0/org.swtchart_0.9.0.zip/download" />
+		</get>
+	</target>
+
+	<target name="extract">
+
+		<!-- Eclipse Babel language packs -->
+		<copy todir="${platform_dir}" overwrite="false">
+			<zipfileset src="${download_dir}/babel_bg_4.4.0.zip">
+				<include name="eclipse/features/**" />
+				<include name="eclipse/plugins/**" />
+			</zipfileset>
+			<zipfileset src="${download_dir}/babel_de_4.4.0.zip">
+				<include name="eclipse/features/**" />
+				<include name="eclipse/plugins/**" />
+			</zipfileset>
+			<zipfileset src="${download_dir}/babel_es_4.4.0.zip">
+				<include name="eclipse/features/**" />
+				<include name="eclipse/plugins/**" />
+			</zipfileset>
+			<zipfileset src="${download_dir}/babel_fr_4.4.0.zip">
+				<include name="eclipse/features/**" />
+				<include name="eclipse/plugins/**" />
+			</zipfileset>
+			<zipfileset src="${download_dir}/babel_it_4.4.0.zip">
+				<include name="eclipse/features/**" />
+				<include name="eclipse/plugins/**" />
+			</zipfileset>
+			<zipfileset src="${download_dir}/babel_zh_4.4.0.zip">
+				<include name="eclipse/features/**" />
+				<include name="eclipse/plugins/**" />
+			</zipfileset>
+			<cutdirsmapper dirs="1" />
+		</copy>
+
+		<!-- Eclipse Birt Chart SDK -->
+		<copy todir="${platform_dir}" overwrite="false">
+			<zipfileset src="${download_dir}/birt_charts_4.4.0.zip">
+				<include name="ChartRuntime/eclipse/features/**" />
+				<include name="ChartRuntime/eclipse/plugins/**" />
+			</zipfileset>
+			<cutdirsmapper dirs="2" />
+		</copy>
+
+		<!-- Eclipse Delta Pack -->
+		<copy todir="${platform_dir}" overwrite="false">
+			<zipfileset src="${download_dir}/delta_pack_4.4.zip">
+				<include name="eclipse/features/**" />
+				<include name="eclipse/plugins/**" />
+			</zipfileset>
+			<cutdirsmapper dirs="1" />
+		</copy>
+
+		<!-- Eclipse GEF and Draw2d -->
+		<copy todir="${platform_dir}" overwrite="false">
+			<zipfileset src="${download_dir}/gef_3.9.zip">
+				<include name="eclipse/features/**" />
+				<include name="eclipse/plugins/**" />
+			</zipfileset>
+			<cutdirsmapper dirs="1" />
+		</copy>
+
+		<!-- Eclipse Mylyn -->
+		<copy todir="${platform_dir}" overwrite="false">
+			<zipfileset src="${download_dir}/mylyn_3.12.zip">
+				<include name="features/**" />
+				<include name="plugins/**" />
+			</zipfileset>
+		</copy>
+
+		<!-- Eclipse Nebula -->
+		<copy todir="${platform_dir}" overwrite="false">
+			<zipfileset src="${download_dir}/nebula.zip">
+				<include name="features/**" />
+				<include name="plugins/**" />
+			</zipfileset>
+		</copy>
+
+		<!-- Eclipse SDK -->
+		<copy todir="${platform_dir}" overwrite="false">
+			<zipfileset src="${download_dir}/sdk_4.4.zip">
+				<include name="eclipse/features/**" />
+				<include name="eclipse/plugins/**" />
+			</zipfileset>
+			<cutdirsmapper dirs="1" />
+		</copy>
+
+		<!-- SWT Charts -->
+		<copy todir="${platform_dir}" overwrite="false">
+			<zipfileset src="${download_dir}/swt_charts_0.9.0.zip">
+				<include name="plugins/**" />
+			</zipfileset>
+		</copy>
+	</target>
+
+</project>

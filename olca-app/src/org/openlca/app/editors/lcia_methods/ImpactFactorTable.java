@@ -12,16 +12,17 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
-import org.openlca.app.components.IModelDropHandler;
 import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.components.UncertaintyCellEditor;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.ParameterPageListener;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Error;
+import org.openlca.app.util.TableClipboard;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UncertaintyLabel;
 import org.openlca.app.util.Viewers;
@@ -80,11 +81,12 @@ class ImpactFactorTable implements ParameterPageListener {
 	}
 
 	void setImpactCategory(ImpactCategory impactCategory, boolean sort) {
-		this.category = impactCategory;
-		if (category == null) {
-			viewer.setInput(null);
+		if (impactCategory == null) {
+			viewer.setInput(Collections.emptyList());
+			this.category = null;
 			return;
 		}
+		this.category = impactCategory;
 		List<ImpactFactor> factors = impactCategory.getImpactFactors();
 		if (sort)
 			sortFactors(factors);
@@ -105,25 +107,20 @@ class ImpactFactorTable implements ParameterPageListener {
 	}
 
 	private void bindActions(TableViewer viewer, Section section) {
-		Action add = Actions.onAdd(new Runnable() {
-			public void run() {
-				onAdd();
-			}
-		});
-		Action remove = Actions.onRemove(new Runnable() {
-			public void run() {
-				onRemove();
-			}
-		});
-		Tables.addDropSupport(viewer, new IModelDropHandler() {
-			@Override
-			public void handleDrop(List<BaseDescriptor> descriptors) {
-				createFactors(descriptors);
-			}
-		});
+		Action add = Actions.onAdd(this::onAdd);
+		Action remove = Actions.onRemove(this::onRemove);
 		Action formulaSwitch = new FormulaSwitchAction();
+		Action copy = TableClipboard.onCopy(viewer);
 		Actions.bind(section, add, remove, formulaSwitch);
-		Actions.bind(viewer, add, remove, formulaSwitch);
+		Actions.bind(viewer, add, remove, copy);
+		Tables.onDeletePressed(viewer, (e) -> onRemove());
+		Tables.addDropSupport(viewer,
+				(descriptors) -> createFactors(descriptors));
+		Tables.onDoubleClick(viewer, (event) -> {
+			TableItem item = Tables.getItem(viewer, event);
+			if (item == null)
+				onAdd();
+		});
 	}
 
 	private void onAdd() {
@@ -207,7 +204,7 @@ class ImpactFactorTable implements ParameterPageListener {
 		}
 
 		private String getFactorUnit(ImpactFactor factor) {
-			if (factor.getUnit() == null)
+			if (factor.getUnit() == null || category == null)
 				return null;
 			String impactUnit = category.getReferenceUnit();
 			if (Strings.notEmpty(impactUnit))
@@ -307,8 +304,8 @@ class ImpactFactorTable implements ParameterPageListener {
 					factor.setFormula(text);
 					fireChange();
 				} catch (Exception ex) {
-					Error.showBox("Invalid formula", text
-							+ " is an invalid formula");
+					Error.showBox(Messages.InvalidFormula, text
+							+ " " + Messages.IsInvalidFormula);
 				}
 			}
 		}

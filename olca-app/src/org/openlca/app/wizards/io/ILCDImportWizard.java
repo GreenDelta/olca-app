@@ -14,7 +14,7 @@ import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.io.ilcd.ILCDImport;
 
 /**
@@ -36,7 +36,7 @@ public class ILCDImportWizard extends Wizard implements IImportWizard {
 
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		setWindowTitle(Messages.ILCDImportWizard_WindowTitle);
+		setWindowTitle(Messages.ImportILCD);
 		setDefaultPageImageDescriptor(ImageType.IMPORT_ZIP_WIZARD
 				.getDescriptor());
 	}
@@ -69,7 +69,7 @@ public class ILCDImportWizard extends Wizard implements IImportWizard {
 			@Override
 			public void run(IProgressMonitor monitor)
 					throws InvocationTargetException, InterruptedException {
-				monitor.beginTask("Import: ", IProgressMonitor.UNKNOWN);
+				monitor.beginTask(Messages.Import, IProgressMonitor.UNKNOWN);
 				ImportHandler handler = new ImportHandler(monitor);
 				ILCDImport iImport = new ILCDImport(zip, Database.get());
 				if (App.runsInDevMode())

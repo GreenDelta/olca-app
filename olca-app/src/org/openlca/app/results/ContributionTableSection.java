@@ -5,17 +5,15 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.app.viewers.combo.FlowViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
@@ -74,9 +72,8 @@ public class ContributionTableSection {
 		Composite header = toolkit.createComposite(composite);
 		UI.gridData(header, true, false);
 		UI.gridLayout(header, 5);
-		ComboSelectionChange selectionChange = new ComboSelectionChange();
 		createItemCombo(toolkit, header);
-		createSpinner(toolkit, header, selectionChange);
+		createSpinner(toolkit, header);
 		table = new ContributionTable(composite);
 		UI.gridData(table.getTable(), true, true);
 	}
@@ -95,12 +92,7 @@ public class ContributionTableSection {
 		Set<FlowDescriptor> set = provider.getFlowDescriptors();
 		FlowDescriptor[] flows = set.toArray(new FlowDescriptor[set.size()]);
 		viewer.setInput(flows);
-		viewer.addSelectionChangedListener(new ISelectionChangedListener<FlowDescriptor>() {
-			@Override
-			public void selectionChanged(FlowDescriptor selection) {
-				refreshValues();
-			}
-		});
+		viewer.addSelectionChangedListener((selection) -> refreshValues());
 		this.itemViewer = viewer;
 	}
 
@@ -110,23 +102,17 @@ public class ContributionTableSection {
 		ImpactCategoryDescriptor[] impacts = set
 				.toArray(new ImpactCategoryDescriptor[set.size()]);
 		viewer.setInput(impacts);
-		viewer.addSelectionChangedListener(new ISelectionChangedListener<ImpactCategoryDescriptor>() {
-			@Override
-			public void selectionChanged(ImpactCategoryDescriptor selection) {
-				refreshValues();
-			}
-		});
+		viewer.addSelectionChangedListener((selection) -> refreshValues());
 		this.itemViewer = viewer;
 	}
 
-	private void createSpinner(FormToolkit toolkit, Composite header,
-			ComboSelectionChange selectionChange) {
-		toolkit.createLabel(header, Messages.CutOff);
+	private void createSpinner(FormToolkit toolkit, Composite header) {
+		toolkit.createLabel(header, Messages.Cutoff);
 		spinner = new Spinner(header, SWT.BORDER);
 		spinner.setValues(2, 0, 100, 0, 1, 10);
 		toolkit.adapt(spinner);
 		toolkit.createLabel(header, "%");
-		spinner.addSelectionListener(selectionChange);
+		Controls.onSelect(spinner, (e) -> refreshValues());
 	}
 
 	void refreshValues() {
@@ -162,18 +148,4 @@ public class ContributionTableSection {
 		}
 		table.setInput(tableData, unit);
 	}
-
-	private class ComboSelectionChange implements SelectionListener {
-
-		@Override
-		public void widgetDefaultSelected(SelectionEvent e) {
-			widgetSelected(e);
-		}
-
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			refreshValues();
-		}
-	}
-
 }

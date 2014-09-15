@@ -11,6 +11,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Item;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.Messages;
 import org.openlca.app.util.Tables;
 import org.openlca.core.model.ProcessCostEntry;
 import org.slf4j.Logger;
@@ -23,9 +24,9 @@ class ProcessCostViewer {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 
-	private final String COST_CATEGORY = "Cost category";
-	private final String AMOUNT = "Amount";
-	private final String FIX = "Fixed costs";
+	private final String COST_CATEGORY = Messages.CostCategory;
+	private final String AMOUNT = Messages.Amount;
+	private final String FIX = Messages.FixedCosts;
 	private TableViewer viewer;
 	private ProcessEditor editor;
 
@@ -110,7 +111,7 @@ class ProcessCostViewer {
 			case 1:
 				return Double.toString(entry.getAmount());
 			case 2:
-				return isFix(entry) ? "Yes" : "No";
+				return isFix(entry) ? Messages.Yes : Messages.No;
 			}
 			return null;
 		}

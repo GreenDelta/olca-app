@@ -5,13 +5,13 @@ import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.openlca.app.Messages;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 
 class ShowOutlineAction extends EditorAction {
 
 	ShowOutlineAction() {
 		setId(ActionIds.SHOW_OUTLINE);
-		setText(Messages.Systems_ShowOutlineAction_Text);
+		setText(Messages.ShowOutline);
 		setImageDescriptor(ImageType.OUTLINE_ICON.getDescriptor());
 	}
 

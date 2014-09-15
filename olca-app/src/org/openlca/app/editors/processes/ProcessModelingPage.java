@@ -20,7 +20,7 @@ class ProcessModelingPage extends ModelPage<Process> {
 
 	ProcessModelingPage(ProcessEditor editor) {
 		super(editor, "ProcessInfoPage",
-				Messages.ModelingAndValidationPageLabel);
+				Messages.ModelingAndValidation);
 		this.editor = editor;
 	}
 
@@ -40,7 +40,7 @@ class ProcessModelingPage extends ModelPage<Process> {
 
 	private void createModelingSection(Composite parent) {
 		Composite composite = UI.formSection(parent, toolkit,
-				Messages.ModelingAndValidationPageLabel);
+				Messages.ModelingAndValidation);
 		getManagedForm().getToolkit().createLabel(composite,
 				Messages.ProcessType);
 		ProcessTypeViewer typeViewer = new ProcessTypeViewer(composite);
@@ -59,24 +59,24 @@ class ProcessModelingPage extends ModelPage<Process> {
 
 	private void createDataSourceSection(Composite parent) {
 		Composite composite = UI.formSection(parent, toolkit,
-				Messages.DataSourceInfoSectionLabel);
-		createMultiText(Messages.Sampling, "documentation.sampling", composite);
+				Messages.DataSourceInformation);
+		createMultiText(Messages.SamplingProcedure, "documentation.sampling", composite);
 		createMultiText(Messages.DataCollectionPeriod,
 				"documentation.dataCollectionPeriod", composite);
 	}
 
 	private void createEvaluationSection(Composite parent) {
 		Composite composite = UI.formSection(parent, toolkit,
-				Messages.EvaluationSectionLabel);
+				Messages.ProcessEvaluationAndValidation);
 		createDropComponent(Messages.Reviewer, "documentation.reviewer",
 				ModelType.ACTOR, composite);
-		createMultiText(Messages.DatasetOtherEvaluation,
+		createMultiText(Messages.DataSetOtherEvaluation,
 				"documentation.reviewDetails", composite);
 	}
 
 	private void createSourcesSection(Composite parent) {
 		Section section = UI.section(parent, toolkit,
-				Messages.SourcesInfoSectionLabel);
+				Messages.Sources);
 		Composite composite = toolkit.createComposite(section);
 		UI.gridLayout(composite, 1);
 		UI.gridData(composite, true, true);

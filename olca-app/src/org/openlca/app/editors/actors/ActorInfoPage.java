@@ -33,14 +33,14 @@ class ActorInfoPage extends ModelPage<Actor> {
 
 	private void createAdditionalInfo(Composite body) {
 		Composite composite = UI.formSection(body, toolkit,
-				Messages.AdditionalInfo);
+				Messages.AdditionalInformation);
 		createText(Messages.Address, "address", composite);
 		createText(Messages.City, "city", composite);
 		createText(Messages.Country, "country", composite);
-		createText(Messages.EMail, "email", composite);
+		createText(Messages.Email, "email", composite);
 		createText(Messages.Telefax, "telefax", composite);
 		createText(Messages.Telephone, "telephone", composite);
-		createText(Messages.WebSite, "website", composite);
+		createText(Messages.Website, "website", composite);
 		createText(Messages.ZipCode, "zipCode", composite);
 	}
 

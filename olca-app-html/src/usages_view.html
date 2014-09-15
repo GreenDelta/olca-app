@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html data-ng-app="UsagePage">
+
+<head>
+    <title>Usages</title>
+    <link href="libs/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <style type="text/css">
+        .selectedPage {
+        	color: black;
+        	font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid" data-ng-controller="Controller" id="contentDiv">
+        <div class="row-fluid">
+            <div class="col-sm-12 row-fluid" style="padding: 30px">
+
+
+                <!-- Search box -->
+                <div class="col-sm-4 col-sm-offset-1">
+                    <form class="form-horizontal">
+                        <div class="control-group">
+                            <label class="control-label">Filter results</label>
+                            <div class="controls">
+                                <input type="text" class="form-control" style="width: 350px" data-ng-model="nameFilter" data-ng-change="search()">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-sm-12">
+                <table class="table table-hover">
+                    <tr>
+                        <th>Type</th>
+                        <th>Name</th>
+                        <th class="muted">UUID</th>
+                    </tr>
+                    <tr data-ng-repeat="item in pager.pageContent">
+                        <td>
+                            <img data-ng-src="{{item.image}}" title="{{item.type}}">
+                        </td>
+                        <td>
+                            <a href="#" data-ng-click="doOpenModel(item)" title="{{item.description}}">{{item.name}}</a>
+                        </td>
+                        <td class="muted">{{item.refId}}</td>
+                    </tr>
+                </table>
+                <div style="text-align: center;">
+                    <a data-ng-show="pager.pageCount > 1" data-ng-click="pager.previous()">&lt;&lt;</a>
+                    <a data-ng-repeat="n in pageNumbers()" data-ng-click="pager.selectPage(n)" data-ng-class="{selectedPage: n===pager.currentPage}">{{" " + n + " "}}</a>
+                    <a data-ng-show="pager.pageCount > 1" data-ng-click="pager.next()">&gt;&gt;</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="libs/jquery.min.js"></script>
+    <script src="libs/angular.min.js"></script>
+    <script src="libs/bootstrap/js/bootstrap.min.js"></script>
+    <script src="libs/olca.utils.js"></script>
+
+    <script>
+        var app = angular.module('UsagePage', []);
+        var Controller = function ($scope) {
+            $scope.items = [];
+            $scope.pager = new olca.Pager(100);
+            $scope.nameFilter = "";
+        
+            $scope.setData = function (items) {
+                $scope.items = items;
+                $scope.pager.setItems(items);
+            };
+        
+            $scope.pageNumbers = function () {
+                var numbers = [];
+                for (var i = 1; i <= $scope.pager.pageCount; i++) {
+                    numbers.push(i);
+                }
+                return numbers;
+            };
+        
+            $scope.search = function () {
+                if (!($scope.nameFilter)) {
+                    $scope.pager.setItems($scope.items);
+                } else {
+                    var filter = $scope.nameFilter.toLowerCase();
+                    var filtered = [];
+                    for (var i = 0; i < $scope.items.length; i++) {
+                        var item = $scope.items[i];
+                        if (!item.name)
+                            continue;
+                        if (item.name.toLowerCase().indexOf(filter) !== -1)
+                            filtered.push(item);
+                    }
+                    $scope.pager.setItems(filtered);
+                }
+            };
+            
+            $scope.doOpenModel = function(item) {
+                if (typeof (openModel) !== 'undefined') {
+                    openModel(angular.toJson(item.descriptor));
+                } else {
+                    console.log('openModel is not a registered function');
+                }
+            };
+        
+        };
+        app.controller('Controller', Controller);
+        
+        // set the page data
+        function setData(descriptors) {
+            var items = makeItems(descriptors);
+            var element = document.getElementById("contentDiv");
+            var scope = angular.element(element).scope();
+            scope.$apply(function () {
+                scope.setData(items);
+            });
+        }
+        
+        // Transform the input descriptors to items for the table.
+        function makeItems(descriptors) {
+            var items = [];
+            for (var i = 0; i < descriptors.length; i++) {
+                var descriptor = descriptors[i];
+                var item = {};
+                for (var prop in descriptor) {
+                    if (descriptor.hasOwnProperty(prop)) {
+                        item[prop] = descriptor[prop];
+                    }
+                }
+                item.image = getImage(descriptor);
+                item.descriptor = descriptor;
+                items.push(item);
+            }
+            return items;
+        }
+        
+       
+        
+        // get the image for the
+        function getImage(descriptor) {
+            if (descriptor.type === 'PROJECT')
+                return 'images/project_obj.gif';
+            if (descriptor.type === 'IMPACT_METHOD')
+                return 'images/LCIA_obj.gif';
+            if (descriptor.type === 'PROCESS')
+                return 'images/proc_obj.gif';
+            if (descriptor.type === 'FLOW')
+                return 'images/flow_obj.gif';
+            if (descriptor.type === 'FLOW_PROPERTY')
+                return 'images/flowprop_obj.gif';
+            if (descriptor.type === 'UNIT_GROUP')
+                return 'images/unitgroup_obj.gif';
+            if (descriptor.type === 'ACTOR')
+                return 'images/actor_obj.gif';
+            if (descriptor.type === 'SOURCE')
+                return 'images/source_obj.gif';
+        }
+    </script>
+
+</body>
+
+</html>

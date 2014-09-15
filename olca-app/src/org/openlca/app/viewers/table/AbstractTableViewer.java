@@ -1,14 +1,5 @@
 package org.openlca.app.viewers.table;
 
-import java.lang.annotation.Annotation;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -22,17 +13,25 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.Messages;
 import org.openlca.app.components.ModelTransfer;
-import org.openlca.app.resources.ImageManager;
-import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.TableClipboard;
+import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
 import org.openlca.app.viewers.AbstractViewer;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.lang.annotation.Annotation;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Abstract implementation of AbstractViewer for SWT table viewer.
@@ -58,41 +57,51 @@ public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 	protected TableViewer createViewer(Composite parent) {
 		TableViewer viewer = new TableViewer(parent, SWT.BORDER
 				| SWT.FULL_SELECTION | SWT.MULTI);
-
 		viewer.setContentProvider(ArrayContentProvider.getInstance());
 		viewer.setLabelProvider(getLabelProvider());
-
+		initTable(viewer);
 		Table table = viewer.getTable();
-		String[] columnHeaders = getColumnHeaders();
+		UI.gridData(table, true, true);
+		createActions(viewer);
+		if (supports(OnDrop.class))
+			addDropSupport(viewer);
+		if (useColumnHeaders())
+			cellModifySupport = new ModifySupport<>(viewer);
+		return viewer;
+	}
+
+	private void initTable(TableViewer viewer) {
+		Table table = viewer.getTable();
 		if (!useColumnHeaders()) {
 			table.setLinesVisible(false);
 			table.setHeaderVisible(false);
 		} else {
+			String[] columnHeaders = getColumnHeaders();
 			table.setLinesVisible(true);
 			table.setHeaderVisible(true);
 			for (String p : columnHeaders)
 				new TableColumn(table, SWT.NULL).setText(p);
 			for (TableColumn c : table.getColumns())
 				c.pack();
-		}
-		if (useColumnHeaders())
 			viewer.setColumnProperties(columnHeaders);
-		UI.gridData(table, true, true);
+		}
+	}
 
+	private void createActions(TableViewer viewer) {
 		actions = new ArrayList<>();
 		if (supports(OnAdd.class))
-			actions.add(new CreateAction());
-		if (supports(OnRemove.class))
-			actions.add(new RemoveAction());
-		Actions.bind(viewer, actions.toArray(new Action[actions.size()]));
-
-		if (supports(OnDrop.class))
-			addDropSupport(viewer);
-
-		if (useColumnHeaders())
-			cellModifySupport = new ModifySupport<>(viewer);
-
-		return viewer;
+			actions.add(Actions.onAdd(() -> call(OnAdd.class)));
+		if (supports(OnRemove.class)) {
+			actions.add(Actions.onRemove(() -> call(OnRemove.class)));
+			Tables.onDeletePressed(viewer, (e) -> call(OnRemove.class));
+		}
+		// we have to create this array, because we do not want to have the copy
+		// action in the section menu
+		Action[] tableActions = new Action[actions.size() +1];
+		for(int i = 0; i < actions.size(); i++)
+			tableActions[i] = actions.get(i);
+		tableActions[actions.size()] = TableClipboard.onCopy(viewer);
+		Actions.bind(viewer, tableActions);
 	}
 
 	private void addDropSupport(TableViewer viewer) {
@@ -112,7 +121,8 @@ public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 
 			private void tryInvoke(Method method, Object value) {
 				Class<?> parameterType = method.getParameterTypes().length > 0 ? method
-						.getParameterTypes()[0] : null;
+						.getParameterTypes()[0]
+						: null;
 				Class<?> dataType = value.getClass();
 				if (dataType.isArray()) {
 					for (Object object : (Object[]) value)
@@ -208,38 +218,6 @@ public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.METHOD)
 	public @interface OnDrop {
-	}
-
-	private class CreateAction extends Action {
-
-		private CreateAction() {
-			setText(Messages.AddAction_Text);
-			setImageDescriptor(ImageManager
-					.getImageDescriptor(ImageType.ADD_ICON));
-			setDisabledImageDescriptor(ImageManager
-					.getImageDescriptor(ImageType.ADD_ICON_DISABLED));
-		}
-
-		@Override
-		public void run() {
-			call(OnAdd.class);
-		}
-	}
-
-	private class RemoveAction extends Action {
-
-		private RemoveAction() {
-			setText(Messages.RemoveAction_Text);
-			setImageDescriptor(ImageManager
-					.getImageDescriptor(ImageType.DELETE_ICON));
-			setDisabledImageDescriptor(ImageManager
-					.getImageDescriptor(ImageType.DELETE_ICON_DISABLED));
-		}
-
-		@Override
-		public void run() {
-			call(OnRemove.class);
-		}
 	}
 
 }

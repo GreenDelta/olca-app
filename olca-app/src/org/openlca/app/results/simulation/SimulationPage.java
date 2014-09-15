@@ -20,7 +20,6 @@ import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.app.viewers.combo.FlowViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
@@ -52,7 +51,7 @@ public class SimulationPage extends FormPage {
 	private ImpactCategoryViewer impactViewer;
 
 	public SimulationPage(SimulationEditor editor) {
-		super(editor, "SimulationPage", "Simulation");
+		super(editor, "SimulationPage", Messages.MonteCarloSimulation);
 		this.editor = editor;
 		SimulationResult result = editor.getSimulator().getResult();
 		this.result = new SimulationResultProvider<>(result,
@@ -80,7 +79,7 @@ public class SimulationPage extends FormPage {
 		Text qRefText = UI.formText(settings, toolkit,
 				Messages.QuantitativeReference);
 		Text simCountText = UI.formText(settings, toolkit,
-				Messages.Simulation_NumberOfSimulations);
+				Messages.NumberOfSimulations);
 		if (editor.getSetup() != null) {
 			CalculationSetup setup = editor.getSetup();
 			systemText.setText(setup.getProductSystem().getName());
@@ -146,8 +145,7 @@ public class SimulationPage extends FormPage {
 		impactViewer.setEnabled(false);
 		Set<ImpactCategoryDescriptor> impacts = result.getImpactDescriptors();
 		impactViewer.setInput(impacts);
-		impactViewer
-				.addSelectionChangedListener(new SelectionChange<ImpactCategoryDescriptor>());
+		impactViewer.addSelectionChangedListener((e) -> updateSelection());
 		impactViewer.selectFirst();
 		new ResultTypeCheck<>(impactViewer, impactCheck, IMPACT);
 	}
@@ -160,8 +158,7 @@ public class SimulationPage extends FormPage {
 		Set<FlowDescriptor> flows = result.getFlowDescriptors();
 		flowViewer.setInput(flows.toArray(new FlowDescriptor[flows.size()]));
 		flowViewer.selectFirst();
-		flowViewer
-				.addSelectionChangedListener(new SelectionChange<FlowDescriptor>());
+		flowViewer.addSelectionChangedListener((e) -> updateSelection());
 		new ResultTypeCheck<>(flowViewer, flowsCheck, FLOW);
 	}
 
@@ -193,13 +190,6 @@ public class SimulationPage extends FormPage {
 		progressSection.pack();
 		progressSection.setVisible(false);
 		form.reflow(true);
-	}
-
-	private class SelectionChange<T> implements ISelectionChangedListener<T> {
-		@Override
-		public void selectionChanged(T selection) {
-			updateSelection();
-		}
 	}
 
 	private class ResultTypeCheck<T> implements SelectionListener {

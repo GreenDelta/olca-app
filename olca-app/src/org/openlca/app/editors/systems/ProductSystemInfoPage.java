@@ -1,8 +1,6 @@
 package org.openlca.app.editors.systems;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
@@ -12,7 +10,8 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.Messages;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.ExchangeViewer;
@@ -53,7 +52,7 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 
 	private void createAdditionalInfo(Composite body) {
 		Composite composite = UI.formSection(body, toolkit,
-				Messages.Systems_ProductSystemInfoSectionLabel);
+				Messages.Reference);
 
 		createLink(Messages.Process, "referenceProcess", composite);
 
@@ -91,11 +90,8 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 		Button button = toolkit.createButton(composite, Messages.Calculate,
 				SWT.NONE);
 		button.setImage(ImageType.CALCULATE_ICON.get());
-		button.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				new CalculationWizardDialog(getModel()).open();
-			}
+		Controls.onSelect(button, (e) -> {
+			new CalculationWizardDialog(getModel()).open();
 		});
 	}
 

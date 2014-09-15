@@ -26,13 +26,13 @@ class ImpactNwPage extends ModelPage<ImpactMethod> {
 
 	ImpactNwPage(ImpactMethodEditor editor) {
 		super(editor, "ImpactNormalizationWeightingPage",
-				Messages.NormalizationWeightingPageLabel);
+				Messages.NormalizationWeighting);
 		this.editor = editor;
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, Messages.ImpactMethod
+		ScrolledForm form = UI.formHeader(managedForm, Messages.ImpactAssessmentMethod
 				+ ": " + getModel().getName());
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);

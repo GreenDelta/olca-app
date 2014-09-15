@@ -8,7 +8,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.Hyperlink;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.Messages;
+import org.openlca.app.rcp.ImageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,14 +26,14 @@ public class ErrorPopup extends Popup {
 
 	public ErrorPopup(String title, String message) {
 		super(title, message);
-		defaultTitle("An Unexpected Error Occured");
+		defaultTitle(Messages.ErrorPopupTitle);
 		popupShellImage(ImageType.ERROR_ICON);
 	}
 
 	@Override
 	protected void makeLink(Composite composite) {
 		Hyperlink hyperlink = new Hyperlink(composite, SWT.NONE);
-		hyperlink.setText("See the log-file for further information");
+		hyperlink.setText(Messages.ErrorPopupMessage);
 		hyperlink.setForeground(composite.getDisplay().getSystemColor(
 				SWT.COLOR_BLUE));
 		hyperlink.addHyperlinkListener(new LinkActivation());

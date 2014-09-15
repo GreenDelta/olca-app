@@ -5,8 +5,6 @@ import java.io.File;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseTrackAdapter;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -23,8 +21,9 @@ import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseFolder;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Colors;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.Desktop;
 import org.openlca.app.util.Info;
 import org.openlca.app.util.Question;
@@ -61,7 +60,7 @@ class SourceInfoPage extends ModelPage<Source> {
 
 	protected void createAdditionalInfo(Composite body) {
 		Composite composite = UI.formSection(body, toolkit,
-				Messages.SourceInfoSectionLabel);
+				Messages.AdditionalInformation);
 		createText(Messages.Doi, "doi", composite);
 		createText(Messages.TextReference, "textReference", composite);
 		Text text = UI.formText(composite, getManagedForm().getToolkit(),
@@ -80,14 +79,9 @@ class SourceInfoPage extends ModelPage<Source> {
 		layout.numColumns = 3;
 		composite.setLayout(layout);
 		composite.addMouseTrackListener(new DeleteFileVisibility());
-		Button browseButton = toolkit.createButton(composite, "Browse",
+		Button browseButton = toolkit.createButton(composite, Messages.Browse,
 				SWT.NONE);
-		browseButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				selectFile();
-			}
-		});
+		Controls.onSelect(browseButton, (e) -> selectFile());
 		createFileLink(composite);
 		createDeleteLink(composite);
 	}
@@ -122,9 +116,9 @@ class SourceInfoPage extends ModelPage<Source> {
 		File dir = DatabaseFolder.getExternalDocLocation(Database.get());
 		File dbFile = new File(dir, fileName);
 		if (dbFile.exists()) {
-			boolean doIt = Question.ask("Overwrite database file?",
-					"A file with the given name already exists in this database. "
-							+ "Do you want to overwrite it?");
+			boolean doIt = Question
+					.ask(Messages.OverwriteFile,
+							Messages.SourceFileOverwriteFileQuestion);
 			if (!doIt)
 				return;
 		}
@@ -180,9 +174,7 @@ class SourceInfoPage extends ModelPage<Source> {
 				log.trace("open file {}", file);
 				Desktop.browse(file.toURI().toString());
 			} else {
-				Info.showBox("File does not exist",
-						"The file " + file.getName()
-								+ " does not exist in the database folder");
+				Info.showBox(Messages.FileDoesNotExist);
 			}
 		}
 	}
@@ -193,9 +185,8 @@ class SourceInfoPage extends ModelPage<Source> {
 			if (getModel().getExternalFile() == null)
 				return;
 			File file = getDatabaseFile();
-			boolean doIt = Question.ask("Delete file?",
-					"Do you really want to delete the file " + file.getName()
-							+ "?");
+			boolean doIt = Question.ask(Messages.DeleteFile,
+					Messages.SourceFileDeleteQuestion);
 			if (!doIt)
 				return;
 			try {

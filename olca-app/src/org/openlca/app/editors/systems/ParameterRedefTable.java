@@ -10,17 +10,19 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.components.ParameterRedefDialog;
 import org.openlca.app.components.UncertaintyCellEditor;
 import org.openlca.app.db.Cache;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Dialog;
 import org.openlca.app.util.Images;
 import org.openlca.app.util.Labels;
+import org.openlca.app.util.TableClipboard;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UncertaintyLabel;
 import org.openlca.app.util.Viewers;
@@ -78,10 +80,17 @@ class ParameterRedefTable {
 	}
 
 	public void bindActions(Section section) {
-		Action addAction = Actions.onAdd(() -> add());
-		Action removeAction = Actions.onRemove(() -> remove());
+		Action addAction = Actions.onAdd(this::add);
+		Action removeAction = Actions.onRemove(this::remove);
+		Action copy = TableClipboard.onCopy(viewer);
 		Actions.bind(section, addAction, removeAction);
-		Actions.bind(viewer, addAction, removeAction);
+		Actions.bind(viewer, addAction, removeAction, copy);
+		Tables.onDeletePressed(viewer, (e) -> remove());
+		Tables.onDoubleClick(viewer, (event) -> {
+			TableItem item = Tables.getItem(viewer, event);
+			if (item == null)
+				add();
+		});
 	}
 
 	private void add() {
@@ -136,7 +145,7 @@ class ParameterRedefTable {
 				editor.setDirty(true);
 			} catch (Exception e) {
 				Dialog.showError(viewer.getTable().getShell(), text
-						+ " is not a valid number");
+						+ " " + Messages.IsNotValidNumber);
 			}
 		}
 	}

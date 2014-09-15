@@ -77,16 +77,8 @@ public class DatabaseParameterPage extends PreferencePage implements
 	}
 
 	private void createActions(Section section) {
-		addParameterAction = Actions.onAdd(new Runnable() {
-			public void run() {
-				addParameter();
-			}
-		});
-		removeParameterAction = Actions.onRemove(new Runnable() {
-			public void run() {
-				deleteParameter();
-			}
-		});
+		addParameterAction = Actions.onAdd(() -> addParameter());
+		removeParameterAction = Actions.onRemove(() -> deleteParameter());
 		Actions.bind(section, addParameterAction, removeParameterAction);
 		parameterTable.setActions(addParameterAction, removeParameterAction);
 		removeParameterAction.setEnabled(false);
@@ -109,15 +101,15 @@ public class DatabaseParameterPage extends PreferencePage implements
 
 	@Override
 	public String getTitle() {
-		return Messages.GlobalParametersPreferencePage_Title;
+		return Messages.GlobalParameters;
 	}
 
 	@Override
 	public boolean performOk() {
 		if (database == null)
 			return true;
-		boolean b = Question.ask("Save changes?",
-				"Do you want to save the changes?");
+		boolean b = Question.ask(Messages.SaveChanges,
+				Messages.SaveChangesQuestion);
 		if (!b)
 			return true;
 		try {
@@ -151,9 +143,9 @@ public class DatabaseParameterPage extends PreferencePage implements
 		Parameter parameter = parameterTable.getSelected();
 		if (parameter == null)
 			return;
-		boolean b = Question.ask("Delete paramater",
-				"Do you really want to delete parameter " + parameter.getName()
-						+ " from the database?");
+		boolean b = Question
+				.ask(Messages.DeleteParameter,
+						Messages.DeleteDatabaseParameterQuestion);
 		if (!b)
 			return;
 		tryDelete(parameter);

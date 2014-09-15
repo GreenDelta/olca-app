@@ -19,10 +19,9 @@ import org.openlca.app.Messages;
 import org.openlca.app.components.FlowImpactSelection;
 import org.openlca.app.components.FlowImpactSelection.EventHandler;
 import org.openlca.app.db.Cache;
-import org.openlca.app.html.HtmlPage;
-import org.openlca.app.html.HtmlView;
-import org.openlca.app.html.IHtmlResource;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.html.HtmlPage;
+import org.openlca.app.rcp.html.HtmlView;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
@@ -62,8 +61,8 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 	}
 
 	@Override
-	public IHtmlResource getResource() {
-		return HtmlView.GMAP_HEATMAP.getResource();
+	public String getUrl() {
+		return HtmlView.GMAP_HEATMAP.getUrl();
 	}
 
 	@Override

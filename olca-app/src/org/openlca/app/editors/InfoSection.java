@@ -18,7 +18,7 @@ import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.openlca.app.Messages;
 import org.openlca.app.events.EventHandler;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Images;
 import org.openlca.app.util.UI;
@@ -161,11 +161,11 @@ public class InfoSection {
 
 		private void configureLink() {
 			if (type == MAJOR) {
-				tooltip = "Update major version";
+				tooltip = Messages.UpdateMajorVersion;
 				hoverIcon = ImageType.UP_16.get();
 				icon = ImageType.UP_DIS_16.get();
 			} else {
-				tooltip = "Update minor version";
+				tooltip = Messages.UpdateMinorVersion;
 				hoverIcon = ImageType.UP_DOUBLE_16.get();
 				icon = ImageType.UP_DOUBLE_DIS_16.get();
 			}

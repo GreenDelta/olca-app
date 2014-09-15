@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+<title>Location heatmap</title>
+<style type="text/css">
+html,body,#map_canvas {
+	width: 100%;
+	height: 100%;
+	margin: 0px;
+	padding: 0px;
+	height: 100%;
+}
+</style>
+</head>
+<body onload="initialize()">
+	<div id="map_canvas"></div>
+	<script type="text/javascript"
+		src="https://maps.google.com/maps/api/js?sensor=false&amp;libraries=visualization">
+		
+	</script>
+	<script type="text/javascript">
+		var heatmap;
+		var map;
+		function initialize() {
+			var latlng = new google.maps.LatLng(40.5, 15);
+			var mapOptions = {
+				zoom : 2,
+				center : latlng,
+				zoomControl : false,
+				panControl : false,
+				mapTypeControl : false,
+				scaleControl : false,
+				streetViewControl : false,
+				overviewMapControl : false,
+				mapTypeId : google.maps.MapTypeId.TERRAIN,
+				styles : [ 
+  					{ featureType : "water", elementType : "geometry",
+    				  	stylers : [ { visibility : "on" } ]
+  					}, 
+  					{ featureType: "administrative", elementType: "labels",
+    					stylers: [ { visibility: "off" } ]
+  					}, 
+  					{ featureType: "poi", elementType: "labels",
+    					stylers: [ { visibility: "off" } ]
+  					}, 
+  					{ featureType: "water", elementType: "labels",
+    					stylers: [ { visibility: "off" } ]
+  					}, 
+  					{ featureType: "road", elementType: "labels",
+    					stylers: [ { visibility: "off" } ]
+  					}
+				]
+			};
+			map = new google.maps.Map(document.getElementById("map_canvas"),
+					mapOptions);
+
+			heatmap = new google.maps.visualization.HeatmapLayer({
+				data : []
+			});
+			heatmap.setMap(map);
+
+			var gradient = [ 'rgba(0, 255, 255,0)', 'rgb(15,60,240)',
+					'rgb(31,83,224)', 'rgb(47,99,208)', 'rgb(63,110,192)',
+					'rgb(79,118,176)', 'rgb(95,123,160)', 'rgb(111,126,144)',
+					'rgb(127,127,128)', 'rgb(143,127,112)', 'rgb(159,124,96)',
+					'rgb(175,118,80)', 'rgb(191,111,64)', 'rgb(207,100,48)',
+					'rgb(223,84,32)', 'rgb(239,62,16)', 'rgb(255,0,0)' ];
+			heatmap.setOptions({
+				gradient : gradient,
+				radius : 35
+			});
+		}
+
+		// Set the data of the heat map. The data format is as follows:
+		// [{"latitude":<double>, "longitude":<double>,"weigth":<int>}]
+		// the weight is "a number of points" that this point presents
+		// so a point with weight = 5 is drawn like 5 points at this place
+		// see https://developers.google.com/maps/documentation/javascript/layers#JSHeatMaps
+		function setData(data) {
+			var locations = [];
+			for ( var i = 0; i < data.length; i++) {
+				var point = data[i];
+				var location = {
+					location : new google.maps.LatLng(point.latitude,
+							point.longitude),
+					weight : point.weight
+				};
+				locations.push(location);
+			}
+			heatmap.setData(locations);
+		}
+	</script>
+</body>
+</html>

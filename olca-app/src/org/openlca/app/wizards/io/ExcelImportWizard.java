@@ -9,10 +9,11 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
+import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.io.xls.process.input.ExcelImport;
 
 public class ExcelImportWizard extends Wizard implements IImportWizard {
@@ -21,7 +22,7 @@ public class ExcelImportWizard extends Wizard implements IImportWizard {
 
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		setWindowTitle("Import processes from MS Excel");
+		setWindowTitle(Messages.ProcessExcelImportDescription);
 		setDefaultPageImageDescriptor(ImageType.IMPORT_ZIP_WIZARD
 				.getDescriptor());
 		setNeedsProgressMonitor(true);
@@ -54,7 +55,7 @@ public class ExcelImportWizard extends Wizard implements IImportWizard {
 			@Override
 			public void run(IProgressMonitor monitor)
 					throws InvocationTargetException, InterruptedException {
-				monitor.beginTask("Import: ", files.length);
+				monitor.beginTask(Messages.Import, files.length);
 				for (File file : files) {
 					monitor.subTask(file.getName());
 					ExcelImport excelImport = new ExcelImport(file, Database

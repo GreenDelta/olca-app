@@ -1,0 +1,14 @@
+[
+    {
+        "name": "Test data set 1",
+        "type": "PROCESS",
+        "description": "Description of the data set",
+        "refId": "uuid"
+    },
+    {
+        "name": "Test data set 2",
+        "type": "PROCESS",
+        "description": "Description of the data set",
+        "refId": "uuid"
+    }
+]

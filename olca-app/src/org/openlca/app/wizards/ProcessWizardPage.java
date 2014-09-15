@@ -1,12 +1,8 @@
 package org.openlca.app.wizards;
 
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -21,7 +17,8 @@ import org.openlca.app.navigation.NavigationTree;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.filters.EmptyCategoryFilter;
 import org.openlca.app.navigation.filters.FlowTypeFilter;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
 import org.openlca.app.viewers.combo.FlowPropertyViewer;
@@ -48,8 +45,8 @@ class ProcessWizardPage extends AbstractWizardPage<Process> {
 
 	protected ProcessWizardPage() {
 		super("ProcessWizardPage");
-		setTitle(Messages.Processes_WizardTitle);
-		setMessage(Messages.Processes_WizardMessage);
+		setTitle(Messages.NewProcess);
+		setMessage(Messages.NewProcess);
 		setImageDescriptor(ImageType.NEW_WIZ_PROCESS.getDescriptor());
 		setPageComplete(false);
 	}
@@ -58,7 +55,7 @@ class ProcessWizardPage extends AbstractWizardPage<Process> {
 	protected void checkInput() {
 		super.checkInput();
 		boolean createFlow = createRefFlowCheck.getSelection();
-		String err = Messages.EmptyQuantitativeReferenceError;
+		String err = Messages.NoQuantitativeReferenceSelected;
 		if (createFlow) {
 			if (flowPropertyViewer.getSelected() == null)
 				setErrorMessage(err);
@@ -89,27 +86,24 @@ class ProcessWizardPage extends AbstractWizardPage<Process> {
 
 	private void createRefFlowCheck(Composite container) {
 		createRefFlowCheck = new Button(container, SWT.CHECK);
-		createRefFlowCheck.setText(Messages.CreateProductFlow);
-		createRefFlowCheck.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				boolean createFlow = createRefFlowCheck.getSelection();
-				StackLayout labelLayout = (StackLayout) labelStack.getLayout();
-				StackLayout contentLayout = (StackLayout) contentStack
-						.getLayout();
-				if (createFlow) {
-					labelLayout.topControl = selectFlowPropertyLabel;
-					contentLayout.topControl = flowPropertyViewerContainer;
-					filterText.setEnabled(false);
-				} else {
-					labelLayout.topControl = selectFlowLabel;
-					contentLayout.topControl = productViewerContainer;
-					filterText.setEnabled(true);
-				}
-				labelStack.layout();
-				contentStack.layout();
-				checkInput();
+		createRefFlowCheck.setText(Messages.CreateANewProductFlowForTheProcess);
+		Controls.onSelect(createRefFlowCheck, (e) -> {
+			boolean createFlow = createRefFlowCheck.getSelection();
+			StackLayout labelLayout = (StackLayout) labelStack.getLayout();
+			StackLayout contentLayout = (StackLayout) contentStack
+					.getLayout();
+			if (createFlow) {
+				labelLayout.topControl = selectFlowPropertyLabel;
+				contentLayout.topControl = flowPropertyViewerContainer;
+				filterText.setEnabled(false);
+			} else {
+				labelLayout.topControl = selectFlowLabel;
+				contentLayout.topControl = productViewerContainer;
+				filterText.setEnabled(true);
 			}
+			labelStack.layout();
+			contentStack.layout();
+			checkInput();
 		});
 	}
 
@@ -143,13 +137,7 @@ class ProcessWizardPage extends AbstractWizardPage<Process> {
 				FlowType.WASTE_FLOW));
 		productViewer.addFilter(new EmptyCategoryFilter());
 		productViewer.addFilter(new ModelTextFilter(filterText, productViewer));
-		productViewer
-				.addSelectionChangedListener(new ISelectionChangedListener() {
-					@Override
-					public void selectionChanged(SelectionChangedEvent event) {
-						checkInput();
-					}
-				});
+		productViewer.addSelectionChangedListener((s) -> checkInput());
 		productViewer.setInput(Navigator.findElement(ModelType.FLOW));
 	}
 

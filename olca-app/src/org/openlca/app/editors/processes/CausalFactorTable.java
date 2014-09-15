@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -17,9 +18,11 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
+import org.openlca.app.util.TableClipboard;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.table.modify.ModifySupport;
@@ -106,6 +109,8 @@ class CausalFactorTable {
 		String[] columnTitles = getColumnTitles();
 		viewer = Tables.createViewer(composite, columnTitles);
 		viewer.setLabelProvider(new FactorLabel());
+		Action copy = TableClipboard.onCopy(viewer);
+		Actions.bind(viewer, copy);
 		Tables.bindColumnWidths(viewer, 0.2, 0.1, 0.1, 0.1);
 		createModifySupport();
 		Table table = viewer.getTable();
@@ -184,7 +189,7 @@ class CausalFactorTable {
 			case 0:
 				return Labels.getDisplayName(exchange.getFlow());
 			case 1:
-				return exchange.isInput() ? "Input" : "Output";
+				return exchange.isInput() ? Messages.Input : Messages.Output;
 			case 2:
 				return CategoryPath.getShort(exchange.getFlow().getCategory());
 			case 3:

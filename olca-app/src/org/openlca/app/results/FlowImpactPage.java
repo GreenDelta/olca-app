@@ -8,8 +8,6 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -21,14 +19,13 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.Messages;
 import org.openlca.app.components.ContributionImage;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
 import org.openlca.core.model.descriptors.FlowDescriptor;
-import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.ContributionItem;
 import org.openlca.core.results.ContributionResultProvider;
 import org.openlca.core.results.ContributionSet;
@@ -50,7 +47,7 @@ public class FlowImpactPage extends FormPage {
 
 	public FlowImpactPage(FormEditor editor,
 			ContributionResultProvider<?> result) {
-		super(editor, "FlowImpactPage", "Flow contributions");
+		super(editor, "FlowImpactPage", Messages.FlowContributions);
 		this.result = result;
 	}
 
@@ -58,7 +55,8 @@ public class FlowImpactPage extends FormPage {
 	protected void createFormContent(IManagedForm managedForm) {
 		FormToolkit toolkit = managedForm.getToolkit();
 
-		ScrolledForm form = UI.formHeader(managedForm, "Flow contributions");
+		ScrolledForm form = UI.formHeader(managedForm,
+				Messages.FlowContributions);
 		Composite body = UI.formBody(form, toolkit);
 
 		Composite composite = toolkit.createComposite(body);
@@ -68,27 +66,26 @@ public class FlowImpactPage extends FormPage {
 		Composite selectionContainer = toolkit.createComposite(composite);
 		UI.gridData(selectionContainer, true, false);
 		UI.gridLayout(selectionContainer, 5);
-		UI.formLabel(selectionContainer, toolkit, "Impact category");
+		UI.formLabel(selectionContainer, toolkit, Messages.ImpactCategory);
 		impactCombo = new ImpactCategoryViewer(selectionContainer);
 		impactCombo.setInput(result.getImpactDescriptors());
-		impactCombo
-				.addSelectionChangedListener(new ISelectionChangedListener<ImpactCategoryDescriptor>() {
-					@Override
-					public void selectionChanged(ImpactCategoryDescriptor impact) {
-						ContributionSet<FlowDescriptor> contributions = result
-								.getFlowContributions(impact);
-						List<ContributionItem<FlowDescriptor>> items = contributions
-								.getContributions();
-						Contributions.sortDescending(items);
-						flowViewer.setInput(items);
-					}
-				});
-		UI.formLabel(selectionContainer, toolkit, "Cut-Off");
+		impactCombo.addSelectionChangedListener((impact) -> {
+			ContributionSet<FlowDescriptor> contributions = result
+					.getFlowContributions(impact);
+			List<ContributionItem<FlowDescriptor>> items = contributions
+					.getContributions();
+			Contributions.sortDescending(items);
+			flowViewer.setInput(items);
+		});
+		UI.formLabel(selectionContainer, toolkit, Messages.Cutoff);
 		spinner = new Spinner(selectionContainer, SWT.BORDER);
 		spinner.setValues(1, 0, 10000, 2, 1, 100);
 		toolkit.adapt(spinner);
 		toolkit.createLabel(selectionContainer, "%");
-		spinner.addSelectionListener(new CutOffChange());
+		Controls.onSelect(spinner, (e) -> {
+			cutOff = spinner.getSelection();
+			flowViewer.refresh();
+		});
 
 		createFlowViewer(composite);
 
@@ -103,20 +100,6 @@ public class FlowImpactPage extends FormPage {
 		flowViewer.setFilters(new ViewerFilter[] { new CutOffFilter() });
 		Tables.bindColumnWidths(flowViewer.getTable(), new double[] { 0.1, 0.4,
 				0.3, 0.2 });
-	}
-
-	private class CutOffChange implements SelectionListener {
-
-		@Override
-		public void widgetDefaultSelected(SelectionEvent e) {
-			widgetSelected(e);
-		}
-
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			cutOff = spinner.getSelection();
-			flowViewer.refresh();
-		}
 	}
 
 	private class FlowImpactLabelProvider extends BaseLabelProvider implements

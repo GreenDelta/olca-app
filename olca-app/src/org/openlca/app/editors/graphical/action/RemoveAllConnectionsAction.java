@@ -19,7 +19,7 @@ class RemoveAllConnectionsAction extends EditorAction {
 
 	RemoveAllConnectionsAction() {
 		setId(ActionIds.REMOVE_ALL_CONNECTIONS);
-		setText(Messages.Systems_RemoveAllConnectionsAction_Text);
+		setText(Messages.RemoveConnections);
 	}
 
 	@Override

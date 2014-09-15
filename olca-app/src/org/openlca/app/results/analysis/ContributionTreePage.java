@@ -26,7 +26,7 @@ import org.openlca.app.components.ContributionImage;
 import org.openlca.app.components.FlowImpactSelection;
 import org.openlca.app.components.FlowImpactSelection.EventHandler;
 import org.openlca.app.db.Cache;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
@@ -52,7 +52,7 @@ public class ContributionTreePage extends FormPage {
 			Messages.Process, Messages.Amount, Messages.Unit };
 
 	public ContributionTreePage(AnalyzeEditor editor, FullResultProvider result) {
-		super(editor, "analysis.ContributionTreePage", "Contribution tree");
+		super(editor, "analysis.ContributionTreePage", Messages.ContributionTree);
 		this.result = result;
 		Iterator<FlowDescriptor> it = result.getFlowDescriptors().iterator();
 		if (it.hasNext())
@@ -62,7 +62,7 @@ public class ContributionTreePage extends FormPage {
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
 		FormToolkit toolkit = managedForm.getToolkit();
-		ScrolledForm form = UI.formHeader(managedForm, "Contribution tree");
+		ScrolledForm form = UI.formHeader(managedForm, Messages.ContributionTree);
 		Composite body = UI.formBody(form, toolkit);
 		Composite composite = toolkit.createComposite(body);
 		UI.gridLayout(composite, 2);

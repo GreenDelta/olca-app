@@ -11,7 +11,7 @@ import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.preferencepages.FeatureFlag;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.UI;
@@ -61,7 +61,7 @@ public class ProductSystemActions extends EditorActionBarContributor {
 	private class CsvExportAction extends Action {
 		public CsvExportAction() {
 			setImageDescriptor(ImageType.MATRIX_ICON.getDescriptor());
-			setText(Messages.Systems_MatrixExportAction_Text);
+			setText(Messages.ExportAsMatrix);
 		}
 
 		@Override
@@ -75,7 +75,7 @@ public class ProductSystemActions extends EditorActionBarContributor {
 	private class ExcelExportAction extends Action {
 		public ExcelExportAction() {
 			setImageDescriptor(ImageType.FILE_EXCEL_SMALL.getDescriptor());
-			setText(Messages.Systems_MatrixExportAction_Text);
+			setText(Messages.ExportAsMatrix);
 		}
 
 		@Override
@@ -97,7 +97,7 @@ public class ProductSystemActions extends EditorActionBarContributor {
 			final File file = FileChooser.forExport("*.png", "matrix.png");
 			if (system == null || file == null)
 				return;
-			App.run("Image export", new Runnable() {
+			App.run(Messages.ImageExport, new Runnable() {
 				public void run() {
 					try {
 						Inventory inventory = DataStructures.createInventory(

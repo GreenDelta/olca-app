@@ -22,10 +22,10 @@ class HideShowAction extends Action {
 	HideShowAction(int type) {
 		if (type == SHOW) {
 			setId(ActionIds.SHOW);
-			setText(Messages.Systems_HideShowAction_ShowText);
+			setText(Messages.Show);
 		} else if (type == HIDE) {
 			setId(ActionIds.HIDE);
-			setText(Messages.Systems_HideShowAction_HideText);
+			setText(Messages.Hide);
 		}
 		this.type = type;
 	}

@@ -11,6 +11,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.openlca.app.Messages;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.NavigationContentProvider;
 import org.openlca.app.navigation.NavigationLabelProvider;
@@ -26,8 +27,8 @@ public class ExportWizardPage extends WizardPage implements ICheckStateListener 
 
 	public ExportWizardPage() {
 		super("ilcd.network.SelectProcessPage");
-		setTitle("ILCD Network Export");
-		setDescription("Export processes or product systems to an ILCD network.");
+		setTitle(Messages.ILCDNetworkExport);
+		setDescription(Messages.ILCDNetworkExportDescription);
 		setPageComplete(false);
 	}
 

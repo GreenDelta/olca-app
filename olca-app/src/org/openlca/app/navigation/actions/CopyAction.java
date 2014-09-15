@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.openlca.app.Messages;
+import org.openlca.app.navigation.CopyPaste;
 import org.openlca.app.navigation.INavigationElement;
-import org.openlca.app.util.CopyPaste;
 
 public class CopyAction extends Action implements INavigationAction {
 

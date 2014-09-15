@@ -24,8 +24,8 @@ import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.html.HtmlFolder;
-import org.openlca.app.html.HtmlPage;
+import org.openlca.app.rcp.browser.BrowserFactory;
+import org.openlca.app.rcp.html.HtmlPage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,8 +41,7 @@ public class UI {
 	public static Browser createBrowser(Composite parent, final HtmlPage page) {
 		final Browser browser = createBrowser(parent);
 		try {
-			String url = HtmlFolder.getUrl(page.getResource());
-			browser.setUrl(url);
+			browser.setUrl(page.getUrl());
 			browser.addProgressListener(new ProgressListener() {
 				boolean initialzed = false;
 

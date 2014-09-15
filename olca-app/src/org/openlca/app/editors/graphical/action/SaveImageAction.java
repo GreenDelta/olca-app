@@ -18,7 +18,7 @@ import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

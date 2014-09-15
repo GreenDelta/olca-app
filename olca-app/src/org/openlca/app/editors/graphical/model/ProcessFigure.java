@@ -35,7 +35,7 @@ import org.openlca.app.editors.graphical.command.ChangeStateCommand;
 import org.openlca.app.editors.graphical.command.CommandFactory;
 import org.openlca.app.editors.graphical.layout.GraphAnimation;
 import org.openlca.app.editors.graphical.model.ProcessExpander.Side;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.ProcessType;
 

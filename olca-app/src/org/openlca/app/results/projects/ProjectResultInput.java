@@ -3,6 +3,7 @@ package org.openlca.app.results.projects;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
+import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
 import org.openlca.app.util.Labels;
 import org.openlca.core.database.EntityCache;
@@ -49,7 +50,7 @@ public class ProjectResultInput implements IEditorInput {
 		if (cache == null)
 			return "";
 		ProjectDescriptor d = cache.get(ProjectDescriptor.class, projectId);
-		return "Project result of " + Labels.getDisplayName(d);
+		return Messages.Results + ": " + Labels.getDisplayName(d);
 	}
 
 	@Override

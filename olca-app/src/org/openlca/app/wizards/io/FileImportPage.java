@@ -1,12 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.app.wizards.io;
 
 import java.io.File;
@@ -14,11 +5,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
@@ -56,7 +45,7 @@ public class FileImportPage extends WizardPage {
 
 	public FileImportPage(String[] fileExtensions, boolean multi) {
 		super("FileImportPage");
-		setTitle(Messages.FileImportPage_Title);
+		setTitle(Messages.SelectImportFiles);
 		setDescription(Messages.FileImportPage_Description);
 		if (fileExtensions != null) {
 			for (String extension : fileExtensions)
@@ -102,15 +91,14 @@ public class FileImportPage extends WizardPage {
 				true, false));
 
 		new Label(chooseDirectoryComposite, SWT.NONE)
-				.setText(Messages.FileImportPage_ChooseDirectoryLabel);
+				.setText(Messages.FromDirectory);
 
 		createDirectoryText(chooseDirectoryComposite);
 
 		// create button to open directory dialog
 		final Button chooseDirectoryButton = new Button(
 				chooseDirectoryComposite, SWT.NONE);
-		chooseDirectoryButton
-				.setText(Messages.FileImportPage_ChooseDirectoryButton);
+		chooseDirectoryButton.setText(Messages.ChooseDirectory);
 		chooseDirectoryButton.addSelectionListener(new DirectorySelection());
 
 		new Label(body, SWT.SEPARATOR | SWT.HORIZONTAL)
@@ -137,20 +125,13 @@ public class FileImportPage extends WizardPage {
 		directoryViewer.getTree().setLayoutData(gddv);
 		directoryViewer.setContentProvider(new DirectoryContentProvider());
 		directoryViewer.setLabelProvider(new FileLabelProvider());
-
-		directoryViewer
-				.addSelectionChangedListener(new ISelectionChangedListener() {
-
-					@Override
-					public void selectionChanged(SelectionChangedEvent event) {
-						if (!event.getSelection().isEmpty()) {
-							IStructuredSelection selection = (IStructuredSelection) event
-									.getSelection();
-							fileViewer.setInput(selection.getFirstElement());
-						}
-					}
-
-				});
+		directoryViewer.addSelectionChangedListener((e) -> {
+			if (!e.getSelection().isEmpty()) {
+				IStructuredSelection selection = (IStructuredSelection) e
+						.getSelection();
+				fileViewer.setInput(selection.getFirstElement());
+			}
+		});
 
 		// create table viewer to select a file from a selected sub directory
 		fileViewer = new TableViewer(chooseFileComposite, SWT.BORDER
@@ -161,23 +142,19 @@ public class FileImportPage extends WizardPage {
 		fileViewer.setContentProvider(new FileContentProvider());
 		fileViewer.setLabelProvider(new FileLabelProvider());
 
-		fileViewer.addSelectionChangedListener(new ISelectionChangedListener() {
-
-			@Override
-			public void selectionChanged(SelectionChangedEvent event) {
-				ISelection selection = event.getSelection();
-				if (!(selection instanceof IStructuredSelection)
-						|| selection.isEmpty()) {
-					setPageComplete(false);
-					return;
-				}
-				Object[] files = ((IStructuredSelection) selection).toArray();
-				selectedFiles = new File[files.length];
-				for (int i = 0; i < files.length; i++) {
-					selectedFiles[i] = (File) files[i];
-				}
-				setPageComplete(true);
+		fileViewer.addSelectionChangedListener((event) -> {
+			ISelection selection = event.getSelection();
+			if (!(selection instanceof IStructuredSelection)
+					|| selection.isEmpty()) {
+				setPageComplete(false);
+				return;
 			}
+			Object[] files = ((IStructuredSelection) selection).toArray();
+			selectedFiles = new File[files.length];
+			for (int i = 0; i < files.length; i++) {
+				selectedFiles[i] = (File) files[i];
+			}
+			setPageComplete(true);
 		});
 
 		setViewerInput();

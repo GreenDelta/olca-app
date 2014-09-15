@@ -9,7 +9,7 @@ public class FlowPropertyWizard extends AbstractWizard<FlowProperty> {
 
 	@Override
 	protected String getTitle() {
-		return Messages.FlowProps_WizardTitle;
+		return Messages.NewFlowProperty;
 	}
 
 	@Override

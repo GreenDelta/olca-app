@@ -9,7 +9,7 @@ public class SourceWizard extends AbstractWizard<Source> {
 
 	@Override
 	protected String getTitle() {
-		return Messages.Sources_WizardTitle;
+		return Messages.NewSource;
 	}
 
 	@Override

@@ -1,0 +1,37 @@
+{
+    "name": "Processes",
+    "children": [
+        {
+            "name": "direct process result",
+            "value": 2
+        },
+        {
+            "name": "category 1",
+            "children": [
+                {
+                    "name": "process1",
+                    "value": 5
+                },
+                {
+                    "name": "process2",
+                    "value": 8
+                }
+            ]
+        },
+        {
+            "name": "category 2",
+            "children": [{
+                "name": "sub category 2",
+                "children": [
+                    {
+                        "name": "process3",
+                        "value": 7
+                        },
+                    {
+                        "name": "process4",
+                        "value": 1
+                        }]
+                }]
+        }
+    ]
+}

@@ -1,14 +1,14 @@
 package org.openlca.app.wizards.io;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
@@ -18,12 +18,9 @@ import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseList;
 import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.util.Colors;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 class DbImportPage extends WizardPage {
 
@@ -60,11 +57,8 @@ class DbImportPage extends WizardPage {
 		Button existingCheck = new Button(body, SWT.RADIO);
 		existingCheck.setText("Existing database");
 		existingCheck.setSelection(true);
-		existingCheck.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				setSelection(config.EXISTING_MODE);
-			}
+		Controls.onSelect(existingCheck, (e) -> {
+			setSelection(config.EXISTING_MODE);
 		});
 		Composite composite = new Composite(body, SWT.NONE);
 		UI.gridLayout(composite, 1);
@@ -73,12 +67,8 @@ class DbImportPage extends WizardPage {
 		UI.gridData(existingViewer.getControl(), true, false);
 		existingViewer.setLabelProvider(new DbLabel());
 		existingViewer.setContentProvider(ArrayContentProvider.getInstance());
-		existingViewer.addSelectionChangedListener(new ISelectionChangedListener() {
-			@Override
-			public void selectionChanged(SelectionChangedEvent e) {
-				selectDatabase();
-			}
-		});
+		existingViewer
+				.addSelectionChangedListener((e) -> selectDatabase());
 		fillExistingViewer();
 	}
 
@@ -105,12 +95,7 @@ class DbImportPage extends WizardPage {
 	private void createFileSection(Composite body) {
 		Button fileCheck = new Button(body, SWT.RADIO);
 		fileCheck.setText("From exported zolca-File");
-		fileCheck.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				setSelection(config.FILE_MODE);
-			}
-		});
+		Controls.onSelect(fileCheck, (e) -> setSelection(config.FILE_MODE));
 		Composite composite = UI.formComposite(body);
 		UI.gridData(composite, true, false);
 		fileText = new Text(composite, SWT.READ_ONLY | SWT.BORDER);
@@ -118,12 +103,7 @@ class DbImportPage extends WizardPage {
 		UI.gridData(fileText, true, false);
 		browseButton = new Button(composite, SWT.NONE);
 		browseButton.setText("Browse");
-		browseButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				selectFile();
-			}
-		});
+		Controls.onSelect(browseButton, (e) -> selectFile());
 	}
 
 	private void selectFile() {
@@ -149,7 +129,6 @@ class DbImportPage extends WizardPage {
 			setPageComplete(config.file != null);
 		}
 	}
-
 
 	static class ImportConfig {
 
@@ -181,7 +160,8 @@ class DbImportPage extends WizardPage {
 			return databaseConfiguration;
 		}
 
-		public void setDatabaseConfiguration(IDatabaseConfiguration databaseConfiguration) {
+		public void setDatabaseConfiguration(
+				IDatabaseConfiguration databaseConfiguration) {
 			this.databaseConfiguration = databaseConfiguration;
 		}
 	}

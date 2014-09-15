@@ -15,7 +15,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.TableWrapData;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
 import org.openlca.app.Messages;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.ModelType;
@@ -126,7 +126,7 @@ public final class TextDropComponent extends Composite {
 		removeButton.setLayoutData(new TableWrapData());
 		removeButton.setImage(ImageType.DELETE_ICON.get());
 		removeButton
-				.setToolTipText(Messages.TextDropComponent_RemoveButtonText);
+				.setToolTipText(Messages.RemoveObject);
 		if (content == null)
 			removeButton.setEnabled(false);
 		removeButton.addMouseListener(new MouseAdapter() {

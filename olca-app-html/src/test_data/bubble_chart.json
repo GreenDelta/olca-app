@@ -1,0 +1,39 @@
+{
+    "refName": "flow 1",
+    "refUnit": "kg",
+    "totalAmount": 61,
+    "items": [
+        {
+            "name": "process 1",
+            "amount": 34
+        },
+        {
+            "name": "process 2",
+            "amount": 24
+        },
+        {
+            "name": "process 3",
+            "amount": 2
+        },
+        {
+            "name": "process 4",
+            "amount": 1
+        },
+        {
+            "name": "process 5",
+            "amount": -23
+        },
+        {
+            "name": "process 6",
+            "amount": 0
+        },
+        {
+            "name": "process 7",
+            "amount": 0
+        },
+        {
+            "name": "process 8",
+            "amount": 0
+        }
+        ]
+}

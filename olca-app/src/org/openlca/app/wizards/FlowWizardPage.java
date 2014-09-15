@@ -6,16 +6,14 @@ import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.FlowPropertyViewer;
 import org.openlca.app.viewers.combo.FlowTypeViewer;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.FlowType;
-import org.openlca.core.model.descriptors.FlowPropertyDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,8 +24,8 @@ class FlowWizardPage extends AbstractWizardPage<Flow> {
 
 	public FlowWizardPage() {
 		super("FlowWizardPage");
-		setTitle(Messages.Flows_WizardTitle);
-		setMessage(Messages.Flows_WizardMessage);
+		setTitle(Messages.NewFlow);
+		setMessage(Messages.CreatesANewFlow);
 		setImageDescriptor(ImageType.NEW_WIZ_FLOW.getDescriptor());
 		setPageComplete(false);
 	}
@@ -37,7 +35,7 @@ class FlowWizardPage extends AbstractWizardPage<Flow> {
 		super.checkInput();
 		if (getErrorMessage() == null) {
 			if (referenceFlowPropertyViewer.getSelected() == null) {
-				setErrorMessage(Messages.EmptyReferenceFlowPropertyError);
+				setErrorMessage(Messages.NoReferenceFlowPropertySelected);
 			}
 		}
 		setPageComplete(getErrorMessage() == null);
@@ -58,14 +56,7 @@ class FlowWizardPage extends AbstractWizardPage<Flow> {
 	protected void initModifyListeners() {
 		super.initModifyListeners();
 		referenceFlowPropertyViewer
-				.addSelectionChangedListener(new ISelectionChangedListener<FlowPropertyDescriptor>() {
-
-					@Override
-					public void selectionChanged(FlowPropertyDescriptor selected) {
-						checkInput();
-					}
-
-				});
+				.addSelectionChangedListener((s) -> checkInput());
 	}
 
 	@Override
@@ -82,7 +73,8 @@ class FlowWizardPage extends AbstractWizardPage<Flow> {
 	private void addFlowProperty(Flow flow) {
 		try {
 			long id = referenceFlowPropertyViewer.getSelected().getId();
-			FlowProperty flowProp = Cache.getEntityCache().get(FlowProperty.class,
+			FlowProperty flowProp = Cache.getEntityCache().get(
+					FlowProperty.class,
 					id);
 			flow.setReferenceFlowProperty(flowProp);
 			FlowPropertyFactor factor = new FlowPropertyFactor();
@@ -90,7 +82,7 @@ class FlowWizardPage extends AbstractWizardPage<Flow> {
 			factor.setFlowProperty(flowProp);
 			flow.getFlowPropertyFactors().add(factor);
 		} catch (Exception e) {
-			setErrorMessage("Failed to load flow property");
+			setErrorMessage(Messages.FailedToLoadFlowProperty);
 			Logger log = LoggerFactory.getLogger(getClass());
 			log.error("Failed to load flow property", e);
 		}

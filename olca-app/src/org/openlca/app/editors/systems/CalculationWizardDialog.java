@@ -1,12 +1,10 @@
 package org.openlca.app.editors.systems;
 
 import org.eclipse.jface.wizard.WizardDialog;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.Messages;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ProductSystem;
 
@@ -48,35 +46,21 @@ class CalculationWizardDialog extends WizardDialog {
 
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
-		// create save button
-		saveButton = createButton(parent, -1, Messages.SaveDefaults, false);
+		saveButton = createButton(parent, -1, Messages.SaveAsDefault, false);
 		saveButton.setEnabled(false);
-		saveButton.addSelectionListener(new SelectionListener() {
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				widgetSelected(e);
-			}
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				saveDefaultValues();
-				saveButton.setEnabled(false);
-			}
+		Controls.onSelect(saveButton, (e) -> {
+			saveDefaultValues();
+			saveButton.setEnabled(false);
 		});
-
-		// create reset button
 		resetButton = createButton(parent, -2, Messages.Reset, false);
-		resetButton.addSelectionListener(new SelectionAdapter() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				CalculationWizardPage calculationPage = (CalculationWizardPage) getWizard()
-						.getPage(CalculationWizardPage.class.getCanonicalName());
-				calculationPage.reset();
-			}
-		});
-
+		Controls.onSelect(
+				resetButton,
+				(e) -> {
+					CalculationWizardPage page = (CalculationWizardPage) getWizard()
+							.getPage(CalculationWizardPage.class
+									.getCanonicalName());
+					page.reset();
+				});
 		super.createButtonsForButtonBar(parent);
 	}
 

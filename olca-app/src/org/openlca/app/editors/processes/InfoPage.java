@@ -84,11 +84,8 @@ class InfoPage extends ModelPage<Process> {
 		Button button = toolkit.createButton(container,
 				Messages.CreateProductSystem, SWT.NONE);
 		button.setImage(ImageType.PRODUCT_SYSTEM_ICON_NEW.get());
-		button.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				SystemCreation.run(getModel());
-			}
+		Controls.onSelect(button, (e) -> {
+			SystemCreation.run(getModel());
 		});
 	}
 
@@ -108,23 +105,21 @@ class InfoPage extends ModelPage<Process> {
 	}
 
 	private void createTechnologySection(Composite body) {
-		Composite composite = UI.formSection(body, toolkit,
-				Messages.TechnologyInfoSectionLabel);
+		Composite composite = UI
+				.formSection(body, toolkit, Messages.Technology);
 		createMultiText(Messages.Description, "documentation.technology",
 				composite);
 	}
 
 	private void createTimeSection(Composite body) {
-		Composite composite = UI.formSection(body, toolkit,
-				Messages.TimeInfoSectionLabel);
+		Composite composite = UI.formSection(body, toolkit, Messages.Time);
 		createDate(Messages.StartDate, "documentation.validFrom", composite);
 		createDate(Messages.EndDate, "documentation.validUntil", composite);
 		createMultiText(Messages.Description, "documentation.time", composite);
 	}
 
 	private void createGeographySection(Composite body) {
-		Composite composite = UI.formSection(body, toolkit,
-				Messages.GeographyInfoSectionLabel);
+		Composite composite = UI.formSection(body, toolkit, Messages.Geography);
 		toolkit.createLabel(composite, Messages.Location);
 		locationViewer = new LocationViewer(composite);
 		locationViewer.setNullable(true);

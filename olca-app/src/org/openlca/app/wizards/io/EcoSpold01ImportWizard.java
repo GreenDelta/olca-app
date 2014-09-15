@@ -10,7 +10,7 @@ import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.core.model.Category;
 import org.openlca.io.EcoSpoldUnitFetch;
 import org.openlca.io.UnitMapping;
@@ -73,7 +73,7 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		setWindowTitle(Messages.EcoSpoldImportWizard_WindowTitle);
+		setWindowTitle(Messages.ImportEcoSpold);
 		setDefaultPageImageDescriptor(ImageType.IMPORT_ZIP_WIZARD
 				.getDescriptor());
 	}
@@ -105,7 +105,7 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 
 	private void parse(IProgressMonitor monitor, File[] files,
 	                   UnitMapping unitMapping) {
-		monitor.beginTask("Import EcoSpold 01 data sets",
+		monitor.beginTask(Messages.ImportEcoSpold01DataSets,
 				IProgressMonitor.UNKNOWN);
 		EcoSpold01Import importer = new EcoSpold01Import(Database.get(),
 				unitMapping);

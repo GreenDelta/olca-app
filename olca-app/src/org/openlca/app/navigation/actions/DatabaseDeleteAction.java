@@ -9,6 +9,7 @@ import org.apache.commons.io.FileUtils;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.osgi.util.NLS;
+import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseFolder;
@@ -18,7 +19,7 @@ import org.openlca.app.db.MySQLConfiguration;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.UI;
 import org.slf4j.Logger;
@@ -73,6 +74,22 @@ public class DatabaseDeleteAction extends Action implements INavigationAction {
 			return;
 		if (createMessageDialog().open() != MessageDialog.OK)
 			return;
+		checkCloseEditors();
+		App.run(Messages.DeleteDatabase,
+				() -> doDelete(),
+				() -> Navigator.refresh());
+	}
+
+	private void checkCloseEditors() {
+		for (IDatabaseConfiguration config : this.configs) {
+			if (Database.isActive(config)) {
+				Editors.closeAll();
+				break;
+			}
+		}
+	}
+
+	private void doDelete() {
 		for (IDatabaseConfiguration config : this.configs) {
 			try {
 				tryDelete(config);
@@ -80,14 +97,11 @@ public class DatabaseDeleteAction extends Action implements INavigationAction {
 				log.error("failed to delete database", e);
 			}
 		}
-		Navigator.refresh();
 	}
 
 	private void tryDelete(IDatabaseConfiguration config) throws Exception {
-		if (Database.isActive(config)) {
-			Editors.closeAll();
+		if (Database.isActive(config))
 			Database.close();
-		}
 		File dbFolder = DatabaseFolder.getRootFolder(config.getName());
 		if (dbFolder.isDirectory())
 			FileUtils.deleteDirectory(dbFolder);
@@ -101,10 +115,10 @@ public class DatabaseDeleteAction extends Action implements INavigationAction {
 		String name = configs.size() == 1 ? configs.get(0).getName()
 				: "the selected databases";
 		return new MessageDialog(UI.shell(), Messages.Delete, null, NLS.bind(
-				Messages.NavigationView_DeleteQuestion, name),
+				Messages.DoYouReallyWantToDelete, name),
 				MessageDialog.QUESTION, new String[] {
-						Messages.NavigationView_YesButton,
-						Messages.NavigationView_NoButton, },
+						Messages.Yes,
+						Messages.No, },
 				MessageDialog.CANCEL);
 	}
 

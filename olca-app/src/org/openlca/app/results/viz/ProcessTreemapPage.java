@@ -10,9 +10,8 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.components.FlowImpactSelection;
 import org.openlca.app.components.FlowImpactSelection.EventHandler;
 import org.openlca.app.db.Cache;
-import org.openlca.app.html.HtmlPage;
-import org.openlca.app.html.HtmlView;
-import org.openlca.app.html.IHtmlResource;
+import org.openlca.app.rcp.html.HtmlPage;
+import org.openlca.app.rcp.html.HtmlView;
 import org.openlca.app.util.UI;
 import org.openlca.core.matrix.FlowIndex;
 import org.openlca.core.model.descriptors.FlowDescriptor;
@@ -35,8 +34,8 @@ public class ProcessTreemapPage extends FormPage implements HtmlPage {
 	}
 
 	@Override
-	public IHtmlResource getResource() {
-		return HtmlView.TREEMAP.getResource();
+	public String getUrl() {
+		return HtmlView.TREEMAP.getUrl();
 	}
 
 	@Override

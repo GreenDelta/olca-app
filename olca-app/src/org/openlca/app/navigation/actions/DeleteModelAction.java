@@ -11,14 +11,14 @@ import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
+import org.openlca.app.db.Resources;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Question;
-import org.openlca.app.util.Resources;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.usage.IUseSearch;
@@ -91,10 +91,7 @@ public class DeleteModelAction extends Action implements INavigationAction {
 		List<BaseDescriptor> descriptors = search.findUses(descriptor);
 		if (descriptors.isEmpty())
 			return false;
-		String name = Labels.getDisplayName(descriptor);
-		Error.showBox("Cannot delete", name
-				+ " cannot be deleted because it is used in other data "
-				+ "sets. See the usage view to see where it is used.");
+		Error.showBox(Messages.CannotDelete, Messages.CannotDeleteMessage);
 		return true;
 	}
 
@@ -120,7 +117,7 @@ public class DeleteModelAction extends Action implements INavigationAction {
 		if (descriptor == null)
 			return false;
 		String name = Labels.getDisplayName(descriptor);
-		String message = NLS.bind(Messages.NavigationView_DeleteQuestion, name);
+		String message = NLS.bind(Messages.DoYouReallyWantToDelete, name);
 		return Question.ask(Messages.Delete, message);
 	}
 }

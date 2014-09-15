@@ -9,8 +9,6 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -25,9 +23,10 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.editors.ParameterPage;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Colors;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.Tables;
@@ -81,13 +80,10 @@ class ShapeFilePage extends FormPage {
 		Button importButton = toolkit.createButton(composite, Messages.Import,
 				SWT.NONE);
 		importButton.setImage(ImageType.IMPORT_ICON.get());
-		importButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				File file = FileChooser.forImport("*.shp");
-				if (file != null)
-					checkRunImport(file);
-			}
+		Controls.onSelect(importButton, (e) -> {
+			File file = FileChooser.forImport("*.shp");
+			if (file != null)
+				checkRunImport(file);
 		});
 	}
 

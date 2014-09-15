@@ -6,9 +6,9 @@ import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Shell;
-import org.openlca.app.html.HtmlPage;
-import org.openlca.app.html.HtmlView;
-import org.openlca.app.html.IHtmlResource;
+import org.openlca.app.Messages;
+import org.openlca.app.rcp.html.HtmlPage;
+import org.openlca.app.rcp.html.HtmlView;
 import org.openlca.app.util.UI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +45,7 @@ public class MapEditor implements HtmlPage {
 		Shell parent = UI.shell();
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
 		shell.setLayout(new FillLayout());
-		shell.setText("KML Editor");
+		shell.setText(Messages.KmlEditor);
 		browser = UI.createBrowser(shell, this);
 		Point parentSize = parent.getSize();
 		shell.setSize((int) (parentSize.x * 0.85), (int) (parentSize.y * 0.85));
@@ -61,8 +61,8 @@ public class MapEditor implements HtmlPage {
 	}
 
 	@Override
-	public IHtmlResource getResource() {
-		return HtmlView.KML_EDITOR.getResource();
+	public String getUrl() {
+		return HtmlView.KML_EDITOR.getUrl();
 	}
 
 	@Override

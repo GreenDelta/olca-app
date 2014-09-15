@@ -11,7 +11,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.io.refdata.RefDataImport;
 
 public class XRefDataImport extends Action implements INavigationAction {

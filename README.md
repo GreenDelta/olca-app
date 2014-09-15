@@ -1,45 +1,59 @@
 olca-app
 ========
-**Note that this is not a stable version yet.**
+This repository contains the source code of the [openLCA](http://openlca.org) 
+application. openLCA is a Java application that runs on the Eclipse Rich Client
+Platform ([Eclipse RCP](http://wiki.eclipse.org/index.php/Rich_Client_Platform)).
+This project depends on the [olca-modules](https://github.com/GreenDelta/olca-modules) 
+project which is a plain [Maven](http://maven.apache.org/) project that contains
+the core functionalities (e.g. the model, database access, calculations, and data
+exchange). 
 
-This is the openLCA RCP application which is build on top of the 
-[olca-modules](https://github.com/GreenDelta/olca-modules) project.
+The repository has the following sub-projects:
+
+* [olca-app](./olca-app): contains the source code of the openLCA RCP application.
+* [olca-app-build](./olca-app-build): contains the build scripts for compiling
+  openLCA and creating the installers for Windows, Linux, and MacOS.
+* [olca-app-html](./olca-app-html): contains the HTML and JavaScript source code	
+  for the HTML views in openLCA (like the start page or the report views).
+* [olca-app-runtime](./olca-app-runtime): contains the build scripts for creating
+  the Eclipse RCP runtime for openLCA.
+
+See also the README files that are contained in these sub-projects.
+
 
 Building
 --------
-To build the openLCA application package, first, you need to install the 
-[olca-modules](https://github.com/GreenDelta/olca-modules) into your local
-Maven repository. Then, after you cloned this repository, navigate to the
-folder olca-app in this repository and run the Maven build script via
+To compile openLCA you need to have the following tools installed:
 
-    mvn package
-	
-This will copy the required dependencies into the `lib` folder of this project.
-After this, import the olca-app project into the workspace of an Eclipse 
-installation (we recommend to use the 
-[Eclipse Standard package](http://www.eclipse.org/downloads/), you may have to install
-the Maven plugin for Eclipse).
+* a [Java Development Kit 8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
+* [Maven](http://maven.apache.org/)
+* the current [Eclipse Standard package](https://www.eclipse.org/downloads/)
 
-Download the most recent version of the 
-[openLCA RCP runtime](http://sourceforge.net/projects/openlca/files/openlca_framework/Platform/),
-import it as project into the same workspace, open the `platform.target` file, and
-run the command 'Set as target platform' from the menu.
+You can then build openLCA from source code with the following steps:
 
-After this, your development environment is ready. The project is build on
-the Eclipse 3.x platform. For tutorials about Eclipse RCP development see for 
-example http://www.vogella.com/eclipse.html. 
+1. Compile and install the the openLCA modules into your local Maven repository
+   as described in the [README](https://github.com/GreenDelta/olca-modules) file 
+   of the olca-modules project.
 
-Embedding a XulRunner
----------------------
-To display HTML views it is possible to embed a 
-[XulRunner](https://developer.mozilla.org/en/docs/XULRunner) in openLCA. When 
-openLCA tries to open an HTML view the first time in a session, it checks if 
-the feature-flag USE_MOZILLA_BROWSER is enabled and if a XULRunner directory 
-is located in the installation folder. To 'install' a XulRunner just copy the
-`xulrunner` folder into your target platform project (next to the folders
-`plugins` and `features`). You can get the XulRunner runtime from 
-[here](http://ftp.mozilla.org/pub/mozilla.org/xulrunner/releases/10.0/runtimes/).
-Eclipse 3.8 which we currently use as runtime platform supports XulRunner 10.0.
+2. Download this repository and import the projects of this repository into your
+   Eclipse workspace (File/Import/Import existing projects).
+
+3. Run the ANT script [olca-app-runtime/build.xml](./olca-app-runtime/build.xml) 
+   that will download and prepare the Eclipse runtime for openLCA. Then open the 
+   file [olca-app-runtime/platform.target](./olca-app-runtime/platform.target) 
+   and click on 'Set as target platform'.
+
+4. Run the script `update_modules.bat` or `update_modules.sh` (this will 
+   copy/update the olca-modules in the olca-app folder) and refresh your 
+   Eclipse workspace (via F5).
+
+5. Finally, open the file [olca-app/openLCA.product](./olca-app/openLCA.product)
+   and click on the run icon. openLCA should now start.
+
+If you want to build an installable product, see the description in the 
+[olca-app-build](./olca-app-build) sub-project or simply use the Eclipse export
+wizard (Export/Eclipse product).     
+
 
 License
 -------

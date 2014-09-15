@@ -38,14 +38,14 @@ public class ChangeStateCommand extends Command {
 	public String getLabel() {
 		if (node.isMinimized())
 			if (initiallyMinimized)
-				return Messages.Systems_MaximizeCommand_Text;
+				return Messages.Maximize;
 			else
-				return Messages.Systems_MinimizeCommand_Text;
+				return Messages.Minimize;
 		else {
 			if (initiallyMinimized)
-				return Messages.Systems_MinimizeCommand_Text;
+				return Messages.Minimize;
 			else
-				return Messages.Systems_MaximizeCommand_Text;
+				return Messages.Maximize;
 		}
 	}
 

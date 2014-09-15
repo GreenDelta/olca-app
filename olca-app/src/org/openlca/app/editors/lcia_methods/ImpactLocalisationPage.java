@@ -14,9 +14,8 @@ import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelPage;
-import org.openlca.app.html.HtmlPage;
-import org.openlca.app.html.HtmlView;
-import org.openlca.app.html.IHtmlResource;
+import org.openlca.app.rcp.html.HtmlPage;
+import org.openlca.app.rcp.html.HtmlView;
 import org.openlca.app.results.localization.LocalisedImpactCategory;
 import org.openlca.app.results.localization.LocalisedImpactMethod;
 import org.openlca.app.results.localization.LocalisedMethodExport;
@@ -52,8 +51,8 @@ public class ImpactLocalisationPage extends ModelPage<ImpactMethod> implements
 	}
 
 	@Override
-	public IHtmlResource getResource() {
-		return HtmlView.IMPACT_LOCALISATION_PAGE.getResource();
+	public String getUrl() {
+		return HtmlView.IMPACT_LOCALISATION_PAGE.getUrl();
 	}
 
 	@Override

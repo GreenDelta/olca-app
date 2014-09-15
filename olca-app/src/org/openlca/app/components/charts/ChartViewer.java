@@ -37,8 +37,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
 import org.openlca.app.Messages;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.UI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -162,9 +162,8 @@ public class ChartViewer extends Composite implements PaintListener,
 	}
 
 	@Override
-	public void processAction(
-			final org.eclipse.birt.chart.model.data.Action action,
-			final StructureSource source) {
+	public void processAction(org.eclipse.birt.chart.model.data.Action action,
+			StructureSource source, RunTimeContext arg2) {
 		if (ActionType.SHOW_TOOLTIP_LITERAL.equals(action.getType())) {
 			final TooltipValue tv = (TooltipValue) action.getValue();
 			if (StructureType.SERIES_DATA_POINT.equals(source.getType())) {
@@ -206,8 +205,8 @@ public class ChartViewer extends Composite implements PaintListener,
 
 		@Override
 		public ImageDescriptor getImageDescriptor() {
-			return PlatformUI.getWorkbench().getSharedImages()
-					.getImageDescriptor(ISharedImages.IMG_ETOOL_SAVE_EDIT);
+			return ImageType
+					.getPlatformDescriptor(ISharedImages.IMG_ETOOL_SAVE_EDIT);
 		}
 
 		@Override

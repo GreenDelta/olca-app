@@ -18,7 +18,7 @@ import org.eclipse.swt.graphics.ImageLoader;
 import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.components.FileChooser;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.results.analysis.sankey.SankeyDiagram;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +56,7 @@ class SankeyImageAction extends Action {
 		if (image == null)
 			return;
 		ImageWriter writer = new ImageWriter(file, image);
-		App.run(Messages.Sankey_SavingAsImage, writer);
+		App.run(Messages.SavingDiagramAsImageIn, writer);
 	}
 
 	private Image createImage() {

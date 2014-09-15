@@ -2,6 +2,7 @@ package org.openlca.app.editors.projects;
 
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.ui.part.EditorActionBarContributor;
+import org.openlca.app.Messages;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Dialog;
 import org.openlca.app.util.Editors;
@@ -16,11 +17,9 @@ public class ProjectEditorActions extends EditorActionBarContributor {
 
 	@Override
 	public void contributeToToolBar(IToolBarManager toolBarManager) {
-		toolBarManager.add(Actions.onCalculate(new Runnable() {
-			public void run() {
-				Project project = getProject();
-				Calculation.run(project);
-			}
+		toolBarManager.add(Actions.onCalculate(() -> {
+			Project project = getProject();
+			Calculation.run(project);
 		}));
 	}
 
@@ -33,7 +32,7 @@ public class ProjectEditorActions extends EditorActionBarContributor {
 		}
 		final Project project = editor.getModel();
 		if (project.getVariants().isEmpty()) {
-			Dialog.showError(UI.shell(), "No project varaints are defined");
+			Dialog.showError(UI.shell(), Messages.NoProjectVaraintsAreDefined);
 			return null;
 		}
 		return project;

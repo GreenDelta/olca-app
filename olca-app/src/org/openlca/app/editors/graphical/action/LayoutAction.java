@@ -15,7 +15,7 @@ class LayoutAction extends Action {
 	private GraphLayoutType layoutType;
 
 	LayoutAction(GraphLayoutType layoutType) {
-		setText(NLS.bind(Messages.Systems_LayoutAction_Text,
+		setText(NLS.bind(Messages.LayoutAs,
 				layoutType.getDisplayName()));
 		switch (layoutType) {
 		case TREE_LAYOUT:

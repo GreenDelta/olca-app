@@ -13,8 +13,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -30,7 +28,8 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.editors.graphical.GraphicalViewerConfigurator;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.ImageType;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 
 class OpenMiniatureViewAction extends EditorAction {
@@ -43,7 +42,7 @@ class OpenMiniatureViewAction extends EditorAction {
 
 	OpenMiniatureViewAction() {
 		setId(ActionIds.OPEN_MINIATURE_VIEW);
-		setText(Messages.Systems_OpenMiniatureViewAction_Text);
+		setText(Messages.OpenMiniatureView);
 		setImageDescriptor(ImageType.MINI_VIEW_ICON.getDescriptor());
 	}
 
@@ -109,13 +108,8 @@ class OpenMiniatureViewAction extends EditorAction {
 			scale.setIncrement(increment);
 			scale.setMinimum(0);
 			scale.setMaximum(100);
-			scale.addSelectionListener(new SelectionAdapter() {
-
-				@Override
-				public void widgetSelected(final SelectionEvent e) {
-					zoomManager.setZoom(values[scale.getSelection() / increment]);
-				}
-
+			Controls.onSelect(scale, (e) -> {
+				zoomManager.setZoom(values[scale.getSelection() / increment]);
 			});
 			scale.setSelection(increment * (values.length - 1) / 2);
 			Canvas canvas = new Canvas(composite, SWT.BORDER);

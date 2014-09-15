@@ -1,0 +1,45 @@
+ <!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>JavaScript editor</title>
+<link rel="stylesheet" href="libs/codemirror.css">
+<style>
+	html{
+		height: 100%;
+	}
+	body {
+		min-height: 100%;
+	}
+	.CodeMirror {
+		border: 1px solid #eee;
+		height: auto;
+	}
+	.CodeMirror-scroll {
+		overflow-y: hidden;
+		overflow-x: auto;
+	}
+</style>
+
+</head>
+<body>
+<script src="libs/codemirror.js"></script>
+<script src="libs/javascript.js"></script>
+<script>
+
+	var codeMirror = CodeMirror(document.body, {
+		mode:  "javascript",		
+		lineNumbers: true
+	});
+	
+	function getContent() {
+		return codeMirror.getValue();
+	}
+	
+	function setContent(s) {
+		return codeMirror.setValue(s);
+	}
+	
+</script>
+</body>
+</html> 

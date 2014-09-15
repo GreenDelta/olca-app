@@ -14,7 +14,6 @@ import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.AbstractViewer;
-import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.FlowViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
 import org.openlca.core.model.descriptors.FlowDescriptor;
@@ -94,12 +93,7 @@ public class ContributionChartSection {
 		Set<FlowDescriptor> set = provider.getFlowDescriptors();
 		FlowDescriptor[] flows = set.toArray(new FlowDescriptor[set.size()]);
 		viewer.setInput(flows);
-		viewer.addSelectionChangedListener(new ISelectionChangedListener<FlowDescriptor>() {
-			@Override
-			public void selectionChanged(FlowDescriptor selection) {
-				refresh();
-			}
-		});
+		viewer.addSelectionChangedListener((selection) -> refresh());
 		this.itemViewer = viewer;
 	}
 
@@ -109,12 +103,7 @@ public class ContributionChartSection {
 		ImpactCategoryDescriptor[] impacts = set
 				.toArray(new ImpactCategoryDescriptor[set.size()]);
 		viewer.setInput(impacts);
-		viewer.addSelectionChangedListener(new ISelectionChangedListener<ImpactCategoryDescriptor>() {
-			@Override
-			public void selectionChanged(ImpactCategoryDescriptor selection) {
-				refresh();
-			}
-		});
+		viewer.addSelectionChangedListener((selection) -> refresh());
 		this.itemViewer = viewer;
 	}
 
@@ -133,6 +122,8 @@ public class ContributionChartSection {
 			unit = impact.getReferenceUnit();
 			contributionSet = provider.getProcessContributions(impact);
 		}
+		if (contributionSet == null)
+			return;
 		List<ContributionItem<ProcessDescriptor>> items = Contributions
 				.topWithRest(contributionSet.getContributions(), maxItems);
 		List<ContributionItem<?>> chartData = new ArrayList<>();
