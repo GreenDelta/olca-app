@@ -175,6 +175,7 @@ public class Messages extends NLS {
 	public static String ExportTo;
 	public static String ExportToExcel;
 	public static String ExportDatabase;
+	public static String ExternalSource;
 	public static String Factor;
 	public static String FancyToolTip_NoDescription;
 	public static String File;

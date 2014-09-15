@@ -33,6 +33,13 @@ public class ParameterPage extends FormPage {
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private FormToolkit toolkit;
 	private ParameterPageSupport input;
+	private List<ExternalSource> externalSources;
+
+	public ParameterPage(ParameterPageSupport input,
+			List<ExternalSource> externalSources) {
+		this(input);
+		this.externalSources = externalSources;
+	}
 
 	public ParameterPage(ParameterPageSupport input) {
 		super(input.getEditor(), ID, Messages.Parameters);
@@ -46,7 +53,8 @@ public class ParameterPage extends FormPage {
 		Composite body = UI.formBody(form, toolkit);
 		try {
 			createGlobalParamterSection(body);
-			ParameterSection.forInputParameters(input, body);
+			ParameterSection.forInputParameters(input, body)
+					.setExternalSources(externalSources);
 			ParameterSection.forDependentParameters(input, body);
 			body.setFocus();
 			form.reflow(true);

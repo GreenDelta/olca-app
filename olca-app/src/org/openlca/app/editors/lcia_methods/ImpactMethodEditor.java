@@ -1,11 +1,14 @@
 package org.openlca.app.editors.lcia_methods;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
+import org.openlca.app.editors.ExternalSource;
 import org.openlca.app.editors.IEditor;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.ParameterPage;
@@ -71,7 +74,7 @@ public class ImpactMethodEditor extends ModelEditor<ImpactMethod> implements
 			addPage(new ImpactMethodInfoPage(this));
 			addPage(new ImpactFactorPage(this));
 			addPage(new ImpactNwPage(this));
-			addPage(new ParameterPage(parameterSupport));
+			addPage(new ParameterPage(parameterSupport, getExternalSources()));
 			if (FeatureFlag.LOCALISED_LCIA.isEnabled()) {
 				addPage(new ShapeFilePage(this));
 				// addPage(new ImpactLocalisationPage(this));
@@ -81,4 +84,11 @@ public class ImpactMethodEditor extends ModelEditor<ImpactMethod> implements
 		}
 	}
 
+	private List<ExternalSource> getExternalSources() throws IOException {
+		List<ExternalSource> sources = new ArrayList<>();
+		for (String file : ShapeFileUtils.getShapeFiles(getModel()))
+			sources.add(new ExternalSource(file, "SHAPE_FILE", ShapeFileUtils
+					.getParameters(getModel(), file)));
+		return sources;
+	}
 }

@@ -15,6 +15,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.components.UncertaintyCellEditor;
+import org.openlca.app.editors.lcia_methods.ShapeFileParameter;
 import org.openlca.app.resources.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Dialog;
@@ -23,9 +24,11 @@ import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.UncertaintyLabel;
 import org.openlca.app.util.Viewers;
+import org.openlca.app.viewers.table.modify.ComboBoxCellModifier;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.model.Parameter;
+import org.openlca.core.model.Uncertainty;
 import org.openlca.expressions.FormulaInterpreter;
 import org.openlca.util.Strings;
 
@@ -44,11 +47,13 @@ public class ParameterSection implements ParameterPageListener {
 	private final String FORMULA = Messages.Formula;
 	private final String UNCERTAINTY = Messages.Uncertainty;
 	private final String DESCRIPTION = Messages.Description;
+	private final String EXTERNAL_SOURCE = Messages.ExternalSource;
 
-	private boolean forInputParameters = true;
+	private boolean forInputParameters;
 	private ParameterPageSupport support;
 	private ModelEditor<?> editor;
 	private List<Parameter> parameters;
+	private List<ExternalSource> externalSources = new ArrayList<>();
 
 	public static ParameterSection forInputParameters(
 			ParameterPageSupport support, Composite body) {
@@ -63,15 +68,16 @@ public class ParameterSection implements ParameterPageListener {
 	}
 
 	private ParameterSection(ParameterPageSupport support, Composite body,
-			boolean forInputParams) {
-		forInputParameters = forInputParams;
+			boolean forInputParameters) {
+		this.forInputParameters = forInputParameters;
 		editor = support.getEditor();
 		this.support = support;
 		support.addListener(this);
 		parameters = support.getParameters();
 		String[] props = {};
-		if (forInputParams)
-			props = new String[] { NAME, VALUE, UNCERTAINTY, DESCRIPTION };
+		if (forInputParameters)
+			props = new String[] { NAME, VALUE, UNCERTAINTY, DESCRIPTION,
+					EXTERNAL_SOURCE };
 		else
 			props = new String[] { NAME, FORMULA, VALUE, DESCRIPTION };
 		createComponents(body, props);
@@ -82,6 +88,13 @@ public class ParameterSection implements ParameterPageListener {
 			parameters = support.getParameters(); // reloads it from the model
 				setInput();
 			});
+	}
+
+	public void setExternalSources(List<ExternalSource> externalSources) {
+		if (externalSources == null)
+			this.externalSources = new ArrayList<>();
+		else
+			this.externalSources = externalSources;
 	}
 
 	@Override
@@ -99,7 +112,7 @@ public class ParameterSection implements ParameterPageListener {
 		viewer.setLabelProvider(new ParameterLabelProvider());
 		Table table = viewer.getTable();
 		if (forInputParameters)
-			Tables.bindColumnWidths(table, 0.3, 0.3, 0.2, 0.2);
+			Tables.bindColumnWidths(table, 0.25, 0.25, 0.2, 0.2, 0.1);
 		else
 			Tables.bindColumnWidths(table, 0.3, 0.3, 0.2, 0.2);
 		bindActions(section);
@@ -120,6 +133,7 @@ public class ParameterSection implements ParameterPageListener {
 			modifySupport.bind(VALUE, new ValueModifier());
 			modifySupport.bind(UNCERTAINTY,
 					new UncertaintyCellEditor(viewer.getTable(), editor));
+			modifySupport.bind(EXTERNAL_SOURCE, new ExternalSourceModifier());
 		} else
 			modifySupport.bind(FORMULA, new FormulaModifier());
 	}
@@ -197,6 +211,9 @@ public class ParameterSection implements ParameterPageListener {
 					return Double.toString(parameter.getValue());
 			case 3:
 				return parameter.getDescription();
+			case 4:
+				if (forInputParameters)
+					return parameter.getExternalSource();
 			default:
 				return null;
 			}
@@ -280,6 +297,46 @@ public class ParameterSection implements ParameterPageListener {
 				support.fireParameterChange();
 			}
 		}
+	}
+
+	private class ExternalSourceModifier extends
+			ComboBoxCellModifier<Parameter, ExternalSource> {
+
+		@Override
+		protected ExternalSource getItem(Parameter element) {
+			for (ExternalSource source : externalSources)
+				if (source.getSource().equals(element.getExternalSource())
+						&& source.getType().equals(element.getSourceType()))
+					return source;
+			return null;
+		}
+
+		@Override
+		protected ExternalSource[] getItems(Parameter element) {
+			List<ExternalSource> externalSources = new ArrayList<>();
+			for (ExternalSource source : ParameterSection.this.externalSources)
+				if (source.isProvidingParameter(element.getName()))
+					externalSources.add(source);
+			return externalSources.toArray(new ExternalSource[externalSources
+					.size()]);
+		}
+
+		@Override
+		protected String getText(ExternalSource value) {
+			return value.getSource();
+		}
+
+		@Override
+		protected void setItem(Parameter element, ExternalSource item) {
+			ShapeFileParameter param = item.getParameter(element.getName());
+			element.setSourceType(item.getType());
+			element.setExternalSource(item.getSource());
+			element.setValue((param.getMin() + param.getMax()) / 2);
+			element.setUncertainty(Uncertainty.uniform(param.getMin(),
+					param.getMax()));
+			support.fireParameterChange();
+		}
+
 	}
 
 }
