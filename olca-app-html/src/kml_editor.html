@@ -5,6 +5,8 @@
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
     <title>KML Editor</title>
     <link href="libs/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="libs/codemirror.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="libs/codemirror.js"></script>
     <style type="text/css">
         html, body {
               width: 100%;
@@ -12,23 +14,66 @@
               margin: 0;
           }
           
-          #mapDiv {
-          	width: 100%;
-          	height: 90%;
-          	margin: 0;
+          #mapDiv, #textDiv {
+            width: 100%;
+            height: 80%;
+            margin: 0;
+            border: 1px solid #d5d5d5;
           }
+
+          #textDiv textarea {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+          }
+
+          #nameText {
+            display: inline-block;
+            width: auto!important;
+          }
+          
+          .CodeMirror {
+		      height: 100%;          
+          }
+
+          .cm-s-solarized .cm-tag {
+          	color: #cb4b16;
+          }
+
+          .cm-s-solarized .cm-tab:before {
+          	content: '';
+          }
+
+          .cm-s-solarized.cm-s-light {
+          	background-color: #f5f5f5;
+          	text-shadow: #f5f5f5 0 1px;
+          }
+
     </style>
 </head>
 
 <body>
-    <div id="mapDiv"></div>
-
+    <ul class="nav nav-tabs">
+      <li class="active">
+        <a href="#mapDiv" data-toggle="tab">Map</a>
+      </li>
+      <li>
+        <a href="#textDiv" data-toggle="tab">Text</a>
+      </li>
+    </ul>
+    <div class="tab-pane active" id="mapDiv"></div>
+    <div class="tab-pane" id="textDiv" style="display:none">
+      <textarea></textarea>
+    </div>      
     <div class="container-fluid" style="margin: 20px">
         <div class="row pull-right">
-            <button class="btn btn-primary" onclick="onSave()">
-                Save
+            <button id="saveAsButton" class="btn btn-primary btn-save" onclick="onSave(false)">
+                Save as new location
             </button>
-            <button class="btn btn-primary" onclick="onDestroyFeatures()">
+            <button id="updateButton" class="btn btn-default btn-save" onclick="onSave(true)">
+                Update location <span id="locationName"></span>
+            </button>
+            <button class="btn btn-default" onclick="onDestroyFeatures()">
                 Clear
             </button>
         </div>
@@ -43,117 +88,142 @@
     </div>
 
     <script src="http://openlayers.org/api/OpenLayers.js"></script>
-    <script src="libs/jquery.min.js"></script>
-    <script src="libs/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../libs/jquery.min_1.9.0.js"></script>
+    <script src="../libs/bootstrap/js/bootstrap.min.js"></script>
     <script>
-        	var map,
-        		editLayer;
+          var map,
+            editLayer;
         
-        	$(document).ready(init());
-        	
-          	function init() {
-           
-            	var mapLayer = new OpenLayers.Layer.OSM();
-            	editLayer = new OpenLayers.Layer.Vector( "Editable", {
-    			    styleMap: new OpenLayers.StyleMap({
-    			        "default": new OpenLayers.Style({
-    			    		pointRadius: 5,
-    			            strokeColor: "#428bca",
-    			            strokeOpacity: .7,
-    			            strokeWidth: 2,
-    			            fillColor: "#428bca",
-    			            fillOpacity: .3,
-    			            cursor: "pointer"
-    			        }),
-    			        "temporary": new OpenLayers.Style({
-    			        	pointRadius: 2,
-    			            strokeColor: "#428bca",
-    			            strokeOpacity: .9,
-    			            strokeWidth: 2,
-    			            fillColor: "#428bca",
-    			            fillOpacity: .3,
-    			            cursor: "pointer"
-    			        }),
-    			        "select": new OpenLayers.Style({
-    			        	pointRadius: 5,
-    			            strokeColor: "#d9534f",
-    			            strokeOpacity: .7,
-    			            strokeWidth: 2,
-    			            fillColor: "#d9534f",
-    			            fillOpacity: 0,
-    			            graphicZIndex: 2,
-    			            cursor: "pointer"
-    			        })
-    			    })
-    			} );
-            
-            	map = new OpenLayers.Map("mapDiv", {
-             	 controls: [
-             	 	new OpenLayers.Control.EditingToolbar(editLayer),
-             	 	new OpenLayers.Control.PanZoomBar()]
-             	});
-            
-            	map.addLayers([mapLayer, editLayer]);
-            	map.setCenter(new OpenLayers.LonLat(0,0) // Center of the map
-              		.transform(
-                		new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
-                		new OpenLayers.Projection("EPSG:900913") // to Spherical Mercator Projection
-              		), 1 // Zoom level
-            	);
-          	}
+            var textEditor;
           
-          	function onDestroyFeatures() {
-          		if(!editLayer.features) {
-          			return;
-          		}
-          		editLayer.destroyFeatures();
-          		editLayer.refresh({force:true});
-          	}
-          	
-          	function showError(message) {
-          		$('#errorText').text(message);
-          		$('#errorBox').modal('show'); 
-          	}
-          	
-          	function onSave() {          		
-          		if(editLayer.features && editLayer.features.length > 1) {
-          			showError("There are more than one features on the map but only one is allowed");
-          			return;
-          		}
-          		var kml = getKML();
-          		 if(typeof(doSave) === "function") {
-                    doSave(kml);
-                } else {
-                	showError("Save function not bound. KML test is: " + kml);
-                	if (typeof(console) !== "undefined") {
-                    	console.log(kml);
-                	}
+          $(document).ready(init());
+          
+            function showTabContent(tab) {
+                var id = $(tab).attr("href");
+                $(".tab-pane").hide();
+                $(id).show();
+                if (id == "#textDiv") {
+                    textEditor.setValue(transformKML(prettifyKML(getKML())));
+                } else if (id == "#mapDiv") {
+                    onDestroyFeatures()
+                    setKML(textEditor.getValue())               
                 }
-          	}
-          	      	      
-          	function getKML() {
-          		if(!editLayer.features || editLayer.features.length === 0) {
-          			return "";
-          		}
-          		var format = new OpenLayers.Format.KML({
-            		'maxDepth':10,
-            		'internalProjection': map.baseLayer.projection,
-            		'externalProjection': new OpenLayers.Projection("EPSG:4326")
-        		});
-          		return format.write(editLayer.features);
-          	}
-          	
-          	function setKML(kml) {
-          		var format = new OpenLayers.Format.KML({
-            		'maxDepth':10,
-            		'internalProjection': map.baseLayer.projection,
-            		'externalProjection': new OpenLayers.Projection("EPSG:4326")
-        		});
-        		var features = format.read(kml);
-        		editLayer.addFeatures(features);
-        		editLayer.refresh({force:true});
-        		map.zoomToExtent(editLayer.getDataExtent());        		
-          	}
+            }
+
+            function init() {
+        textEditor = CodeMirror.fromTextArea($('#textDiv textarea')[0], {theme: 'solarized light', lineWrapping: true, lineNumbers: true});
+              $('.nav-tabs a').click(function (e) {
+                e.preventDefault()
+                showTabContent(this);
+              });
+              var mapLayer = new OpenLayers.Layer.OSM();
+              editLayer = new OpenLayers.Layer.Vector( "Editable", {
+              styleMap: new OpenLayers.StyleMap({
+                  "default": new OpenLayers.Style({
+                  pointRadius: 5,
+                      strokeColor: "#428bca",
+                      strokeOpacity: .7,
+                      strokeWidth: 2,
+                      fillColor: "#428bca",
+                      fillOpacity: .3,
+                      cursor: "pointer"
+                  }),
+                  "temporary": new OpenLayers.Style({
+                    pointRadius: 2,
+                      strokeColor: "#428bca",
+                      strokeOpacity: .9,
+                      strokeWidth: 2,
+                      fillColor: "#428bca",
+                      fillOpacity: .3,
+                      cursor: "pointer"
+                  }),
+                  "select": new OpenLayers.Style({
+                    pointRadius: 5,
+                      strokeColor: "#d9534f",
+                      strokeOpacity: .7,
+                      strokeWidth: 2,
+                      fillColor: "#d9534f",
+                      fillOpacity: 0,
+                      graphicZIndex: 2,
+                      cursor: "pointer"
+                  })
+              })
+          } );
+            
+              map = new OpenLayers.Map("mapDiv", {
+               controls: [
+                new OpenLayers.Control.EditingToolbar(editLayer),
+                new OpenLayers.Control.PanZoomBar()]
+              });
+            
+              map.addLayers([mapLayer, editLayer]);
+              map.setCenter(new OpenLayers.LonLat(0,0) // Center of the map
+                  .transform(
+                    new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
+                    new OpenLayers.Projection("EPSG:900913") // to Spherical Mercator Projection
+                  ), 1 // Zoom level
+              );
+            }
+          
+            function onDestroyFeatures() {
+              if(!editLayer.features) {
+                return;
+              }
+              editLayer.destroyFeatures();
+              editLayer.refresh({force:true});
+            }
+            
+            function showError(message) {
+              $('#errorText').text(message);
+              $('#errorBox').modal('show'); 
+            }
+            
+            function onSave(overwrite) {              
+              var kml = getKML();
+              kml = transformKML(prettifyKML(kml));
+                if(typeof(doSave) == "function") {
+                    doSave(kml, overwrite);
+                } else {
+                  showError("Save function not bound. KML test is: " + kml);
+                  if (typeof(console) != "undefined") {
+                      console.log(kml);
+                  }
+                }
+            }
+                          
+            function getKML() {
+              if(!editLayer.features || editLayer.features.length == 0) {
+                return "";
+              }
+              var format = new OpenLayers.Format.KML({
+                'maxDepth':10,
+                'internalProjection': map.baseLayer.projection,
+                'externalProjection': new OpenLayers.Projection("EPSG:4326")
+            });
+              return format.write(editLayer.features);
+            }
+                        
+            function setEditOnly() {
+              $('#saveAsButton').hide();
+              $('#updateButton').addClass('btn-primary');
+            }            
+            
+            function setKML(kml) {
+              var format = new OpenLayers.Format.KML({
+                'maxDepth':10,
+                'internalProjection': map.baseLayer.projection,
+                'externalProjection': new OpenLayers.Projection("EPSG:4326")
+              });
+              if (kml) {
+                var features = format.read(kml);
+                editLayer.addFeatures(features);
+                editLayer.refresh({force:true});
+                map.zoomToExtent(editLayer.getDataExtent());            
+              }
+            }
+            
+            
     </script>
+
 </body>
 </html>

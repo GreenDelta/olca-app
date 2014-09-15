@@ -187,7 +187,8 @@ public class Messages extends NLS {
 	public static String ExportResultsToExcel;
 	public static String ExportToExcel;
 	public static String ExportingProcesses;
-
+	public static String ExternalSource;
+	
 	public static String Factor;
 	public static String FailedToLoadFlowProperty;
 	public static String File;

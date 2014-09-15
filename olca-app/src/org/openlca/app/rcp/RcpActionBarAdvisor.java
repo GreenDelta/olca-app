@@ -7,6 +7,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.action.ToolBarContributionItem;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.ui.IWorkbenchActionConstants;
@@ -19,16 +20,17 @@ import org.eclipse.ui.application.IActionBarConfigurer;
 import org.openlca.app.Config;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
-import org.openlca.app.db.sql.SqlEditor;
+import org.openlca.app.devtools.js.JavaScriptEditor;
+import org.openlca.app.devtools.python.PythonEditor;
+import org.openlca.app.devtools.sql.SqlEditor;
 import org.openlca.app.editors.StartPage;
 import org.openlca.app.editors.locations.LocationsEditor;
-import org.openlca.app.rcp.plugins.PluginManagerDialog;
-import org.openlca.app.resources.ImageType;
+import org.openlca.app.rcp.browser.MozillaConfigView;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.DefaultInput;
 import org.openlca.app.util.Desktop;
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.Error;
-import org.openlca.app.util.UI;
 
 public class RcpActionBarAdvisor extends ActionBarAdvisor {
 
@@ -156,21 +158,6 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		@Override
 		public void run() {
 			Desktop.browse(Config.HELP_URL);
-		}
-	}
-
-	private class PluginAction extends Action {
-		public PluginAction() {
-			setText("Plugins");
-			setImageDescriptor(ImageType.LOGO_16_32.getDescriptor());
-		}
-
-		@Override
-		public void run() {
-			PluginManagerDialog dialog = new PluginManagerDialog(UI.shell());
-			dialog.create();
-			dialog.getShell().setSize(500, 600);
-			dialog.open();
 		}
 	}
 
