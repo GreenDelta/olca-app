@@ -1,8 +1,14 @@
 package org.openlca.app.devtools;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.openlca.app.App;
 import org.openlca.app.db.Cache;
 import org.openlca.core.database.ActorDao;
+import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.FlowPropertyDao;
 import org.openlca.core.database.IDatabase;
@@ -13,8 +19,10 @@ import org.openlca.core.database.ProjectDao;
 import org.openlca.core.database.SourceDao;
 import org.openlca.core.database.UnitGroupDao;
 import org.openlca.core.math.CalculationSetup;
+import org.openlca.core.math.Simulator;
 import org.openlca.core.math.SystemCalculator;
 import org.openlca.core.model.Actor;
+import org.openlca.core.model.Category;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.ImpactMethod;
@@ -37,9 +45,15 @@ import org.openlca.core.results.ContributionResult;
 import org.openlca.core.results.ContributionResultProvider;
 import org.openlca.core.results.SimpleResult;
 import org.openlca.core.results.SimpleResultProvider;
+import org.openlca.core.results.SimulationResult;
+import org.openlca.core.results.SimulationResultProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.List;
-
+/**
+ * This is a facade for accessing the openLCA API through the scripting support.
+ * It is not intended to use instances of this class in other contexts.
+ */
 public class ScriptApi {
 
 	private final IDatabase database;
@@ -48,9 +62,16 @@ public class ScriptApi {
 		this.database = database;
 	}
 
-	/** Returns true if a connection to a database exists. */
+	/**
+	 * Returns true if a connection to a database exists.
+	 */
 	public boolean isConnected() {
 		return database != null;
+	}
+
+	public Category getCategory(int id) {
+		CategoryDao dao = new CategoryDao(database);
+		return dao.getForId(id);
 	}
 
 	public Actor getActor(String name) {
@@ -392,10 +413,53 @@ public class ScriptApi {
 		return new ContributionResultProvider<>(result, Cache.getEntityCache());
 	}
 
+	public SimulationResultProvider<SimulationResult> simulate(ProductSystem
+			system, int iterations) {
+		return simulate(system, null, iterations);
+	}
+
+	public SimulationResultProvider<SimulationResult> simulate(ProductSystem
+			system, ImpactMethod method, int iterations) {
+		CalculationSetup setup = new CalculationSetup(system);
+		if (method != null)
+			setup.setImpactMethod(Descriptors.toDescriptor(method));
+		setup.getParameterRedefs().addAll(system.getParameterRedefs());
+		Simulator simulator = new Simulator(setup, Cache.getMatrixCache(),
+				App.getSolver());
+		for (int i = 0; i < iterations; i++)
+			simulator.nextRun();
+		SimulationResult result = simulator.getResult();
+		return new SimulationResultProvider<>(result, Cache.getEntityCache());
+	}
+
+	public void inspect(Object object) {
+		Logger log = LoggerFactory.getLogger(getClass());
+		if (object == null) {
+			log.info("null");
+			return;
+		}
+		List<String> methods = new ArrayList<>();
+		for (Method method : object.getClass().getMethods()) {
+			String signature = "\n  " + method.getName() + "(";
+			Parameter[] params = method.getParameters();
+			for (int i = 0; i < params.length; i++) {
+				Parameter param = params[i];
+				signature += param.getType().getSimpleName();
+				if (i < (params.length - 1))
+					signature += ", ";
+			}
+			signature += ") : " + method.getReturnType().getSimpleName();
+			methods.add(signature);
+		}
+		methods.sort((s1, s2) -> s1.compareToIgnoreCase(s2));
+		StringBuilder protocol = new StringBuilder("\nprotocol:");
+		methods.forEach((m) -> protocol.append(m));
+		log.info(protocol.toString());
+	}
+
 	// It seems that Jython does not map lambdas to interfaces with more than
 	// 1 method even when the other methods are declared as default methods.
-	// Thus,
-	// we have our own consumer function here.
+	// Thus, we have our own consumer function here.
 	@FunctionalInterface
 	public static interface Consumer<T> {
 		void accept(T value);
