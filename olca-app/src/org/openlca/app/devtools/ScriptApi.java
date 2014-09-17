@@ -1,10 +1,5 @@
 package org.openlca.app.devtools;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.openlca.app.App;
 import org.openlca.app.db.Cache;
 import org.openlca.core.database.ActorDao;
@@ -49,6 +44,11 @@ import org.openlca.core.results.SimulationResult;
 import org.openlca.core.results.SimulationResultProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is a facade for accessing the openLCA API through the scripting support.
