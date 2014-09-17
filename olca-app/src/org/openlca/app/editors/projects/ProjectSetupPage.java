@@ -19,6 +19,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
+import org.openlca.app.Config;
 import org.openlca.app.Messages;
 import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.db.Database;
@@ -27,7 +28,6 @@ import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.reports.ReportViewer;
 import org.openlca.app.editors.reports.Reports;
 import org.openlca.app.editors.reports.model.ReportCalculator;
-import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
@@ -93,8 +93,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 		createVariantsSection(body);
 		createParameterSection(body);
 		initialInput();
-		if (FeatureFlag.REPORTS.isEnabled())
-			new ProcessContributionSection(editor).create(body, toolkit);
+		new ProcessContributionSection(editor).create(body, toolkit);
 		body.setFocus();
 		form.reflow(true);
 	}
@@ -110,7 +109,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 		toolkit.createLabel(composite, "");
 		Composite buttonContainer = toolkit.createComposite(composite);
 		UI.gridLayout(buttonContainer, 2).marginHeight = 5;
-		if (FeatureFlag.REPORTS.isEnabled())
+		if (Config.isBrowserEnabled())
 			createReportButton(buttonContainer);
 		else
 			createCalculationButton(buttonContainer);

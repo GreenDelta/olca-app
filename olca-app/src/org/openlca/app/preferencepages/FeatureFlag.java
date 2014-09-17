@@ -19,9 +19,7 @@ public enum FeatureFlag {
 
 	MATRIX_IMAGE_EXPORT("Enable matrix image export"),
 
-	PRODUCT_SYSTEM_CUTOFF("Enable cut-offs in product system creations"),
-
-	REPORTS("Create reports for project results");
+	PRODUCT_SYSTEM_CUTOFF("Enable cut-offs in product system creations");
 
 	// AUTOMATIC_UPDATES("Enable automatic updates");
 

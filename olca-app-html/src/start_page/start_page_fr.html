@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html ng-app="StartPage" id="ng-app">
+  <head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <title>Welcome to openLCA</title>
+    <link href="libs/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <style type="text/css">
+        //@include('./style.css')
+    </style>
+  </head>
+  <body>
+	<div id="contentDiv" data-ng-controller="Controller">
+	    <div class="page-header">
+	      <table style="width: 100%;" border="0">
+	        <tbody>
+	          <tr>
+	            <td id="logo-cell">
+	                <img id="logo" src="images/logo.png" onclick="callOpenUrl('http://www.openlca.org')" />
+	                <h1>Welcome to openLCA!</h1>
+	                <span class="subtitle">{{data.version}}</span>
+	            </td>
+	          </tr>
+	          <tr>
+	            <td>
+	              <p class="description">Logiciel d'Analyse du Cycle de Vie (ACV) et d'évaluation de la durabilité à haute performance. Véritablement open source.</p>
+	              <p class="description">Disponible gratuitement. Créé et maintenu depuis 2006 par GreenDelta, Berlin. <a onclick="callOpenUrl('http://www.greendelta.com')" target="blank" class="subtle-link">www.greendelta.com</a></p>
+	            </td>
+	          </tr>
+	          <tr>
+	            <td>
+	              <div id="gd-logo"></div>
+	              <p class="description">Publié sous licence Mozilla Public License (<a onclick="callOpenUrl('http://www.openlca.org/open-source')" target="blank" class="btn btn-default">qu'est-ce que ça veut dire ?</a>).</p>
+				</td>                  
+	          </tr>
+	        </tbody>
+	      </table>
+	    </div>
+	    <div id="navigation-section" class="container-fluid" style="margin: 20px;">
+	      <table style="background-color: rgb(255, 255, 255);">
+	        <tbody>
+	          <tr>
+	            <td>
+	              <h3><img src="images/news.gif"
+	                  alt="">Quoi de neuf ?</h3>
+	              <p>Pour la version 1.4, nous avons complètement redessiné et "rénové" openLCA. Résultat :</p>
+	              <ul>
+	                <li>des performances <b>drastiquement</b> <a onclick="callOpenUrl('http://www.openlca.org/performance')" class="btn btn-default"><b>améliorées</b></a>, jusqu'à 400%</li>
+	                <li><b>de nombreuses</b> <a onclick="callOpenUrl('http://www.openlca.org/features#usability')" class="btn btn-default"><b>améliorations pour vous faciliter la vie</b></a></li>
+	                <li><b>beaucoup de</b> <a onclick="callOpenUrl('http://www.openlca.org/features#overview1.4')"  class="btn btn-default"><b>nouvelles fonctionnalités</b></a></li>
+	              </ul>
+	            </td>
+	            <td>
+	              <h3><img src="images/getting-started.gif"
+	                  alt="">Mise en route</h3>
+	              <p>Quand vous lancez openLCA pour la première fois, il ne contient aucune
+	                donnée. Avec la nouvelle version d'openLCA, il est très facile de
+	                se lancer. Vous pouvez simplement importer une base de données à partir
+	                d'un fichier zolca existant par un simple clic droit dans la Navigation,
+					à gauche de la fenêtre.
+	                Ensuite, double-cliquez sur la base de données pour l'ouvrir.</p>
+	              <p>Vous pouvez vous aider de <a onclick="callOpenUrl('http://www.openlca.org/videos')"
+	                  target="blank" class="btn btn-default">ce tutoriel vidéo</a></p>
+	            </td>
+	          </tr>
+	          <tr>
+	            <td>
+	              <h3><img style="width: 61px; height: 54px;" src="images/search.gif"
+	                  alt="">Trouver et télécharger des données</h3>
+	              <p>Un large éventail de bases de données d'ACV sont disponibles
+				  sur <a onclick="callOpenUrl('http://nexus.openlca.org')" target="blank"
+	                  class="btn btn-default">openLCA Nexus</a>,
+	                où vous pouvez trouver des données uniques ou des bases de données
+	                complètes, et les charger dans openLCA. Ces bases de données sont toutes
+	                adaptées pour openLCA, et vous pouvez en combiner plusieurs.</p>
+	              <p>Tout cela est également expliqué dans une <a onclick="callOpenUrl('http://www.openlca.org/videos')"
+	                  target="blank" class="btn btn-default">vidéo</a><br>
+	                Des méthodes d'ÉICV (Évaluation des Impacts du Cycle de Vie) sont disponibles sur <a onclick="callOpenUrl('http://www.openlca.org/downloads')"
+	                  target="blank" class="btn btn-default">la page des téléchargements</a> d'openLCA</p>
+	            </td>
+	            <td>
+	              <h3><img src="images/documentation.gif"
+	                  alt="">Manuels d'utilisation</h3>
+	              <p>Le wiki d'openLCA décrit la plupart des fonctionnalités d'openLCA. 
+	                Il évolue régulièrement, aussi pensez à y revenir de temps en temps !.</p>
+	              <p>De nouveaux <a onclick="callOpenUrl('http://www.openlca.org/manuals')" target="blank"
+	                  class="btn btn-default">manuels</a> d'introduction et plus complets sont également disponibles en ligne.</p>
+	            </td>
+	          </tr>
+	          <tr>
+	            <td>
+	              <h3><img src="images/examples.gif"
+	                  alt="">Exemples</h3>
+	              <p>Voici quelques cas d'étude qui peuvent aider à vous initier à openLCA :</p>
+	              <p><a onclick="callOpenUrl('http://www.openlca.org/case_studies#1_3')" target="blank" class="btn btn-default">Cas d'étude
+	                  pour la version 1.3</a></p>
+	              <p><a onclick="callOpenUrl('http://www.openlca.org/case_studies#1_4')" target="blank" class="btn btn-default">Cas d'étude pour la version 1.4</a></p>
+	            </td>
+	            <td>
+	              <h3><img src="images/community.gif"
+	                  alt="">Communauté</h3>
+	              <p>Un nombre croissant de personnes utilisent openLCA. Inscrivez-vous sur le <a
+	                  onclick="callOpenUrl('http://www.openlca.org/forum')" target="blank" class="btn btn-default">forum</a> pour donner votre avis, poser des questions, trouver des réponses et participer au sein de la communauté.</p>
+	            </td>
+	          </tr>
+		        </tbody>
+		      </table>
+		    </div>
+		</div>
+
+        <script src="libs/jquery.min.js"></script>
+        <script src="libs/angular.min.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $('#gd-logo').on('click', function() {
+                    callOpenUrl('http://www.greendelta.com');
+                });
+            });
+
+            var app = angular.module('StartPage', []);
+
+            var Controller = function ($scope) {
+                $scope.data = {};
+            	//setData({'version' : '1.4' });
+            };
+	        app.controller('Controller', Controller);
+
+           function setData(data) {
+                var element = document.getElementById("contentDiv");
+                var scope = angular.element(element).scope();
+                scope.$apply(function () {
+                    scope.data = data;
+                });
+            }
+
+            // the functions openUrl and importDatabase should be registered by the 
+            // host editor in openLCA
+
+            function callOpenUrl(url) {
+                if(typeof(openUrl) === "function") {
+                    openUrl(url);
+                } else if (typeof(console) !== "undefined") {
+                    console.log("could not open " + url + "; openUrl is not a function");
+                }
+            }
+       </script>
+  </body>
+</html>
