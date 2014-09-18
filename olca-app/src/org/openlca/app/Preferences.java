@@ -24,7 +24,6 @@ public final class Preferences extends AbstractPreferenceInitializer {
 		int acc = store.getDefaultInt(NUMBER_ACCURACY);
 		Numbers.setDefaultAccuracy(acc);
 		log.trace("preference {} = {}", NUMBER_ACCURACY, acc);
-		new ColorInit().run();
 	}
 
 	public static IPreferenceStore getStore() {

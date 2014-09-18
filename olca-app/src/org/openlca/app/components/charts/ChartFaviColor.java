@@ -7,9 +7,6 @@ import org.openlca.app.FaviColor;
 
 /**
  * Defines methods for pre-defined colors.
- * 
- * @author Michael Srocka
- * 
  */
 public class ChartFaviColor {
 
