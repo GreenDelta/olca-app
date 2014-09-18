@@ -16,8 +16,10 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.Messages;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.db.Database;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
+import org.openlca.app.util.TableClipboard;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.core.math.CalculationSetup;
@@ -104,6 +106,7 @@ public class NwResultPage extends FormPage {
 		Tables.bindColumnWidths(viewer, colWidths);
 		List<ContributionItem<ImpactResult>> items = makeContributions(results);
 		viewer.setInput(items);
+		Actions.bind(viewer, TableClipboard.onCopy(viewer));
 	}
 
 	private List<ContributionItem<ImpactResult>> makeContributions(

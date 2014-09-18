@@ -14,7 +14,9 @@ import org.openlca.app.db.Database;
 import org.openlca.app.editors.reports.model.Report;
 import org.openlca.app.editors.reports.model.ReportIndicator;
 import org.openlca.app.rcp.ImageType;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
+import org.openlca.app.util.TableClipboard;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.table.modify.CheckBoxCellModifier;
@@ -48,6 +50,7 @@ class IndicatorTable {
 		modifySupport.bind(Messages.Description, new DescriptionModifier());
 		if (editor.getReport() != null)
 			viewer.setInput(editor.getReport().getIndicators());
+		Actions.bind(viewer, TableClipboard.onCopy(viewer));
 	}
 
 	public void methodChanged(ImpactMethodDescriptor method) {

@@ -19,9 +19,11 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.Messages;
 import org.openlca.app.components.ContributionImage;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
+import org.openlca.app.util.TableClipboard;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
@@ -100,6 +102,7 @@ public class FlowImpactPage extends FormPage {
 		flowViewer.setFilters(new ViewerFilter[] { new CutOffFilter() });
 		Tables.bindColumnWidths(flowViewer.getTable(), new double[] { 0.1, 0.4,
 				0.3, 0.2 });
+		Actions.bind(flowViewer, TableClipboard.onCopy(flowViewer));
 	}
 
 	private class FlowImpactLabelProvider extends BaseLabelProvider implements

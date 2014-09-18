@@ -14,7 +14,9 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.openlca.app.Messages;
 import org.openlca.app.components.ContributionImage;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Numbers;
+import org.openlca.app.util.TableClipboard;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.Location;
@@ -37,7 +39,8 @@ class LocationContributionTable {
 
 	public LocationContributionTable(Composite parent) {
 		UI.gridLayout(parent, 1);
-		viewer = new TableViewer(parent);
+		viewer = new TableViewer(parent, SWT.BORDER | SWT.FULL_SELECTION
+				| SWT.VIRTUAL | SWT.MULTI);
 		viewer.setContentProvider(ArrayContentProvider.getInstance());
 		viewer.setLabelProvider(new LabelProvider());
 		Table table = viewer.getTable();
@@ -49,6 +52,7 @@ class LocationContributionTable {
 			column.setText(col);
 		}
 		Tables.bindColumnWidths(table, 0.5, 0.25, 0.25);
+		Actions.bind(viewer, TableClipboard.onCopy(viewer));
 	}
 
 	public void setInput(List<ContributionItem<Location>> contributions,

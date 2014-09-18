@@ -33,6 +33,7 @@ import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Labels;
+import org.openlca.app.util.TableClipboard;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
@@ -171,8 +172,9 @@ class ProjectSetupPage extends ModelPage<Project> {
 	private void addVariantActions(TableViewer viewer, Section section) {
 		Action add = Actions.onAdd(this::addVariant);
 		Action remove = Actions.onRemove(this::removeVariant);
+		Action copy = TableClipboard.onCopy(viewer);
 		Actions.bind(section, add, remove);
-		Actions.bind(viewer, add, remove);
+		Actions.bind(viewer, add, remove, copy);
 		Tables.onDoubleClick(viewer, (event) -> {
 			TableItem item = Tables.getItem(viewer, event);
 			if (item == null) {

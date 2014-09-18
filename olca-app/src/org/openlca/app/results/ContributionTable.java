@@ -14,8 +14,10 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.openlca.app.Messages;
 import org.openlca.app.components.ContributionImage;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
+import org.openlca.app.util.TableClipboard;
 import org.openlca.app.util.TableColumnSorter;
 import org.openlca.app.util.Tables;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -39,7 +41,7 @@ class ContributionTable extends TableViewer {
 	private String unit;
 
 	public ContributionTable(Composite parent) {
-		super(parent);
+		super(parent, SWT.BORDER | SWT.FULL_SELECTION | SWT.VIRTUAL | SWT.MULTI);
 		createColumns();
 		Table table = this.getTable();
 		table.setHeaderVisible(true);
@@ -49,6 +51,7 @@ class ContributionTable extends TableViewer {
 		setLabelProvider(label);
 		createColumnSorters(label);
 		Tables.bindColumnWidths(table, 0.2, 0.4, 0.2, 0.2);
+		Actions.bind(this, TableClipboard.onCopy(this));
 	}
 
 	public void setInput(List<ContributionItem<?>> items, String unit) {
@@ -69,14 +72,12 @@ class ContributionTable extends TableViewer {
 	private void createColumnSorters(Label p) {
 		TableColumnSorter<?> first = new AmountSorter(CONTRIBUTION);
 		first.setAscending(false);
-		// @formatter:off
 		Tables.registerSorters(
 				this,
 				first,
 				new TableColumnSorter<>(ContributionItem.class, NAME, p),
 				new AmountSorter(AMOUNT),
 				new TableColumnSorter<>(ContributionItem.class, UNIT, p));
-		// @formatter:on
 	}
 
 	@SuppressWarnings("rawtypes")
