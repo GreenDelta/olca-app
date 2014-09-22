@@ -19,13 +19,14 @@
       		default="false"
       		id="SqlEditor"
       		name="SQL"
-      		icon="icons/sql_16.png">
+      		icon="icons/sql_16.gif">
       </editor>
       <editor
       		class="org.openlca.app.devtools.js.JavaScriptEditor"
       		default="false"
       		id="JavaScriptEditor"
       		name="JavaScript"
+      		icon="icons/javascript_16.gif"
       		contributorClass="org.openlca.app.devtools.Toolbar">
       </editor>
        <editor
@@ -33,6 +34,7 @@
       		default="false"
       		id="PythonEditor"
       		name="Python"
+      		icon="icons/python_16.gif"
       		contributorClass="org.openlca.app.devtools.Toolbar">
       </editor>      
       
