@@ -57,7 +57,6 @@ public class FlowImpactSelection {
 			selectFlow(o);
 		else if (o instanceof ImpactCategoryDescriptor)
 			selectImpact(o);
-		fireSelection();
 	}
 
 	public Object getSelection() {
