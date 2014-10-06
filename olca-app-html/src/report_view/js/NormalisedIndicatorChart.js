@@ -50,7 +50,11 @@ NormalisedIndicatorChart = function() {
 					data.push(val / factor);
 				} else {
 					var max = indexEntry.max;
-					data.push(100 * val / max);
+					if(!max) {
+						data.push(0);
+					} else {
+						data.push(100 * val / max);
+					}
 				}
 			}
 			var rgb = Colors.getPredefinedRgb(i);
