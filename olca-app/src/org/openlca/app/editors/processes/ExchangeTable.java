@@ -183,11 +183,8 @@ class ExchangeTable implements ParameterPageListener {
 	private void onRemove() {
 		Process process = editor.getModel();
 		List<Exchange> selection = Viewers.getAllSelected(viewer);
-		if (selection.contains(process.getQuantitativeReference())) {
-			Error.showBox(Messages.CannotDeleteRefFlow,
-					Messages.CannotDeleteRefFlowMessage);
+		if (!Exchanges.canRemove(process, selection))
 			return;
-		}
 		selection.forEach((e) -> process.getExchanges().remove(e));
 		viewer.setInput(process.getExchanges());
 		fireChange();
