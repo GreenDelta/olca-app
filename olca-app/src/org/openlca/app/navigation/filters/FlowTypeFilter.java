@@ -1,12 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.app.navigation.filters;
 
 import org.eclipse.jface.viewers.TreeViewer;
@@ -21,7 +12,7 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 
 /**
- * Filter for filtering specific flow types
+ * Filter for excluding specific flow types.
  */
 public class FlowTypeFilter extends ViewerFilter {
 
@@ -31,15 +22,21 @@ public class FlowTypeFilter extends ViewerFilter {
 		this.flowTypes = types;
 	}
 
-	private boolean containsType(CategoryElement element) {
-		for (INavigationElement<?> child : element.getChildren())
-			if (child instanceof ModelElement
-					&& matchType((ModelElement) child))
-				return true;
-			else if (child instanceof CategoryElement
-					&& containsType((CategoryElement) child))
-				return true;
-		return false;
+	@Override
+	public boolean select(Viewer viewer, Object parentElement, Object element) {
+		boolean select = true;
+		TreeViewer treeViewer = (TreeViewer) viewer;
+		if (element instanceof ModelElement) {
+			select = !matchType((ModelElement) element);
+		} else if (element instanceof CategoryElement) {
+			if (filterEmptyCategories(treeViewer)) {
+				CategoryElement catElem = (CategoryElement) element;
+				Category category = catElem.getContent();
+				if (category.getModelType() == ModelType.FLOW)
+					select = containsOtherTypes(catElem);
+			}
+		}
+		return select;
 	}
 
 	private boolean matchType(ModelElement element) {
@@ -52,23 +49,16 @@ public class FlowTypeFilter extends ViewerFilter {
 		return false;
 	}
 
-	@Override
-	public boolean select(Viewer viewer, Object parentElement, Object element) {
-		boolean select = true;
-		TreeViewer treeViewer = (TreeViewer) viewer;
-
-		// if element is model component element
-		if (element instanceof ModelElement) {
-			select = !matchType((ModelElement) element);
-		} else if (element instanceof CategoryElement) {
-			if (filterEmptyCategories(treeViewer)) {
-				Category category = ((CategoryElement) element).getContent();
-				if (category.getModelType() == ModelType.FLOW)
-					select = !containsType((CategoryElement) element);
-			}
+	private boolean containsOtherTypes(CategoryElement element) {
+		for (INavigationElement<?> child : element.getChildren()) {
+			if (child instanceof ModelElement
+					&& !matchType((ModelElement) child))
+				return true;
+			else if (child instanceof CategoryElement
+					&& containsOtherTypes((CategoryElement) child))
+				return true;
 		}
-
-		return select;
+		return false;
 	}
 
 	private boolean filterEmptyCategories(TreeViewer treeViewer) {
