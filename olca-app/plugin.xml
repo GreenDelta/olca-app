@@ -361,6 +361,22 @@
          <property
                name="introBrandingImageText"
                value="openLCA" />
+         <property
+               name="startupProgressRect"
+               value="0,425,633,5">
+         </property>
+         <property
+               name="preferenceCustomization"
+               value="plugin_customization.ini">
+         </property>
+         <property
+               name="startupForegroundColor"
+               value="000000">
+         </property>
+         <property
+               name="startupMessageRect"
+               value="7,500,445,20">
+         </property>
       </product>
    </extension>
    <extension
