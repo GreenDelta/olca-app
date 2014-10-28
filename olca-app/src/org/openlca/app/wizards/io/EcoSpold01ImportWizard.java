@@ -1,5 +1,9 @@
 package org.openlca.app.wizards.io;
 
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -16,13 +20,9 @@ import org.openlca.io.EcoSpoldUnitFetch;
 import org.openlca.io.UnitMapping;
 import org.openlca.io.UnitMappingEntry;
 import org.openlca.io.UnitMappingSync;
-import org.openlca.io.ecospold1.importer.EcoSpold01Import;
+import org.openlca.io.ecospold1.input.EcoSpold01Import;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.util.List;
 
 /**
  * Import wizard for EcoSpold 01 data sets
@@ -41,7 +41,7 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 
 	@Override
 	public void addPages() {
-		importPage = new FileImportPage(new String[]{"zip", "xml"}, true);
+		importPage = new FileImportPage(new String[] { "zip", "xml" }, true);
 		addPage(importPage);
 
 		mappingPage = new UnitMappingPage() {
@@ -104,7 +104,7 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 	}
 
 	private void parse(IProgressMonitor monitor, File[] files,
-	                   UnitMapping unitMapping) {
+			UnitMapping unitMapping) {
 		monitor.beginTask(Messages.ImportEcoSpold01DataSets,
 				IProgressMonitor.UNKNOWN);
 		EcoSpold01Import importer = new EcoSpold01Import(Database.get(),

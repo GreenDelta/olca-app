@@ -1,10 +1,8 @@
 package org.openlca.app.wizards.io;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IExportWizard;
@@ -17,7 +15,7 @@ import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.BaseDescriptor;
-import org.openlca.io.ecospold1.exporter.EcoSpold01Outputter;
+import org.openlca.io.ecospold1.output.EcoSpold1Export;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,50 +49,46 @@ public class EcoSpold01ExportWizard extends Wizard implements IExportWizard {
 	@Override
 	public boolean performFinish() {
 		boolean errorOccured = false;
-		final List<BaseDescriptor> models = page.getSelectedModels();
+		List<BaseDescriptor> models = page.getSelectedModels();
 		try {
-			getContainer().run(true, true, new IRunnableWithProgress() {
-
-				@Override
-				public void run(IProgressMonitor monitor)
-						throws InvocationTargetException, InterruptedException {
-					// set up
-					int objectAmount = models.size();
-					monitor.beginTask(Messages.ExportingProcesses,
-							objectAmount + 1);
-					monitor.subTask(Messages.CreatingEcoSpoldFolder);
-					EcoSpold01Outputter outputter = new EcoSpold01Outputter(
-							page.getExportDestination());
-					monitor.worked(1);
-
-					try {
-						for (BaseDescriptor descriptor : models) {
-							if (!monitor.isCanceled()) {
-								monitor.subTask(descriptor.getName());
-								if (type == ModelType.PROCESS) {
-									Process process = new ProcessDao(Database
-											.get()).getForId(descriptor.getId());
-									outputter.exportProcess(process);
-								} else if (type == ModelType.IMPACT_METHOD) {
-									ImpactMethod method = new ImpactMethodDao(
-											Database.get()).getForId(descriptor
-											.getId());
-									outputter.exportLCIAMethod(method);
-								}
-								monitor.worked(1);
-							}
-						}
-					} catch (final Exception e) {
-						log.error("Perform finish failed", e);
-						throw new InterruptedException(e.getMessage());
-					}
-					monitor.done();
-				}
+			getContainer().run(true, true, (monitor) -> {
+				int size = models.size();
+				monitor.beginTask(Messages.ExportingProcesses, size + 1);
+				monitor.subTask(Messages.CreatingEcoSpoldFolder);
+				EcoSpold1Export export = new EcoSpold1Export(
+						page.getExportDestination());
+				monitor.worked(1);
+				doExport(models, monitor, export);
+				monitor.done();
 			});
-		} catch (final Exception e) {
+		} catch (Exception e) {
 			log.error("Perform finish failed", e);
 			errorOccured = true;
 		}
 		return !errorOccured;
+	}
+
+	private void doExport(List<BaseDescriptor> models,
+			IProgressMonitor monitor, EcoSpold1Export export)
+			throws InterruptedException {
+		ProcessDao pDao = new ProcessDao(Database.get());
+		ImpactMethodDao mDao = new ImpactMethodDao(Database.get());
+		try {
+			for (BaseDescriptor d : models) {
+				if (monitor.isCanceled())
+					break;
+				monitor.subTask(d.getName());
+				if (type == ModelType.PROCESS) {
+					Process process = pDao.getForId(d.getId());
+					export.export(process);
+				} else if (type == ModelType.IMPACT_METHOD) {
+					ImpactMethod method = mDao.getForId(d.getId());
+					export.export(method);
+				}
+				monitor.worked(1);
+			}
+		} catch (Exception e) {
+			throw new InterruptedException(e.getMessage());
+		}
 	}
 }
