@@ -16,6 +16,7 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.io.ecospold1.output.EcoSpold1Export;
+import org.openlca.io.ecospold1.output.ExportConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,13 +51,14 @@ public class EcoSpold01ExportWizard extends Wizard implements IExportWizard {
 	public boolean performFinish() {
 		boolean errorOccured = false;
 		List<BaseDescriptor> models = page.getSelectedModels();
-		try {
+		ExportConfig config = new ExportConfig();
+		config.setSingleFile(true);
+		try (EcoSpold1Export export = new EcoSpold1Export(
+				page.getExportDestination(), config)) {
 			getContainer().run(true, true, (monitor) -> {
 				int size = models.size();
 				monitor.beginTask(Messages.ExportingProcesses, size + 1);
 				monitor.subTask(Messages.CreatingEcoSpoldFolder);
-				EcoSpold1Export export = new EcoSpold1Export(
-						page.getExportDestination());
 				monitor.worked(1);
 				doExport(models, monitor, export);
 				monitor.done();
