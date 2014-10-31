@@ -1,5 +1,11 @@
 package org.openlca.app.devtools;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.openlca.app.App;
 import org.openlca.app.db.Cache;
 import org.openlca.core.database.ActorDao;
@@ -8,6 +14,7 @@ import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.FlowPropertyDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ImpactMethodDao;
+import org.openlca.core.database.NativeSql;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.database.ProductSystemDao;
 import org.openlca.core.database.ProjectDao;
@@ -45,11 +52,6 @@ import org.openlca.core.results.SimulationResultProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * This is a facade for accessing the openLCA API through the scripting support.
  * It is not intended to use instances of this class in other contexts.
@@ -72,6 +74,12 @@ public class ScriptApi {
 	public Category getCategory(int id) {
 		CategoryDao dao = new CategoryDao(database);
 		return dao.getForId(id);
+	}
+
+	public Category getCategory(String name) {
+		CategoryDao dao = new CategoryDao(database);
+		List<Category> list = dao.getForName(name);
+		return list.isEmpty() ? null : list.get(0);
 	}
 
 	public Actor getActor(String name) {
@@ -290,9 +298,14 @@ public class ScriptApi {
 		}
 	}
 
-	public void updateActor(Actor model) {
+	public Category updateCategory(Category category) {
+		CategoryDao dao = new CategoryDao(database);
+		return dao.update(category);
+	}
+
+	public Actor updateActor(Actor model) {
 		ActorDao dao = new ActorDao(database);
-		dao.update(model);
+		return dao.update(model);
 	}
 
 	public void insertActor(Actor model) {
@@ -300,9 +313,9 @@ public class ScriptApi {
 		dao.insert(model);
 	}
 
-	public void updateSource(Source model) {
+	public Source updateSource(Source model) {
 		SourceDao dao = new SourceDao(database);
-		dao.update(model);
+		return dao.update(model);
 	}
 
 	public void insertSource(Source model) {
@@ -310,9 +323,9 @@ public class ScriptApi {
 		dao.insert(model);
 	}
 
-	public void updateUnitGroup(UnitGroup model) {
+	public UnitGroup updateUnitGroup(UnitGroup model) {
 		UnitGroupDao dao = new UnitGroupDao(database);
-		dao.update(model);
+		return dao.update(model);
 	}
 
 	public void insertUnitGroup(UnitGroup model) {
@@ -320,9 +333,9 @@ public class ScriptApi {
 		dao.insert(model);
 	}
 
-	public void updateFlowProperty(FlowProperty model) {
+	public FlowProperty updateFlowProperty(FlowProperty model) {
 		FlowPropertyDao dao = new FlowPropertyDao(database);
-		dao.update(model);
+		return dao.update(model);
 	}
 
 	public void insertFlowProperty(FlowProperty model) {
@@ -330,9 +343,9 @@ public class ScriptApi {
 		dao.insert(model);
 	}
 
-	public void updateFlow(Flow model) {
+	public Flow updateFlow(Flow model) {
 		FlowDao dao = new FlowDao(database);
-		dao.update(model);
+		return dao.update(model);
 	}
 
 	public void insertFlow(Flow model) {
@@ -340,9 +353,9 @@ public class ScriptApi {
 		dao.insert(model);
 	}
 
-	public void updateProcess(Process model) {
+	public Process updateProcess(Process model) {
 		ProcessDao dao = new ProcessDao(database);
-		dao.update(model);
+		return dao.update(model);
 	}
 
 	public void insertProcess(Process model) {
@@ -350,9 +363,9 @@ public class ScriptApi {
 		dao.insert(model);
 	}
 
-	public void updateSystem(ProductSystem model) {
+	public ProductSystem updateSystem(ProductSystem model) {
 		ProductSystemDao dao = new ProductSystemDao(database);
-		dao.update(model);
+		return dao.update(model);
 	}
 
 	public void insertSystem(ProductSystem model) {
@@ -360,9 +373,9 @@ public class ScriptApi {
 		dao.insert(model);
 	}
 
-	public void updateMethod(ImpactMethod model) {
+	public ImpactMethod updateMethod(ImpactMethod model) {
 		ImpactMethodDao dao = new ImpactMethodDao(database);
-		dao.update(model);
+		return dao.update(model);
 	}
 
 	public void insertMethod(ImpactMethod model) {
@@ -370,9 +383,9 @@ public class ScriptApi {
 		dao.insert(model);
 	}
 
-	public void updateProject(Project model) {
+	public Project updateProject(Project model) {
 		ProjectDao dao = new ProjectDao(database);
-		dao.update(model);
+		return dao.update(model);
 	}
 
 	public void insertProject(Project model) {
@@ -430,6 +443,27 @@ public class ScriptApi {
 			simulator.nextRun();
 		SimulationResult result = simulator.getResult();
 		return new SimulationResultProvider<>(result, Cache.getEntityCache());
+	}
+
+	public void querySql(String query, Consumer<ResultSet> fn) {
+		try {
+			NativeSql.on(database).query(query, (r) -> {
+				fn.accept(r);
+				return true;
+			});
+		} catch (Exception e) {
+			Logger log = LoggerFactory.getLogger(getClass());
+			log.error("failed to execute " + query, e);
+		}
+	}
+
+	public void updateSql(String sql) {
+		try {
+			NativeSql.on(database).runUpdate(sql);
+		} catch (Exception e) {
+			Logger log = LoggerFactory.getLogger(getClass());
+			log.error("failed to execute " + sql, e);
+		}
 	}
 
 	public void inspect(Object object) {
