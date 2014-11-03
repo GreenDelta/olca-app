@@ -47,7 +47,11 @@ NormalisedIndicatorChart = function() {
 				var val = indexEntry.variantResults[variant.name];
 				if (type === 'normalisation_radar' || type === 'normalisation_bar') {
 					var factor = indicator.normalisationFactor;
-					data.push(val / factor);
+					if(!factor) {
+						data.push(0);
+					} else {
+						data.push(val / factor);
+					}
 				} else {
 					var max = indexEntry.max;
 					if(!max) {
