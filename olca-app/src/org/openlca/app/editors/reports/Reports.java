@@ -22,7 +22,6 @@ import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.Project;
 import org.openlca.core.model.ProjectVariant;
-import org.openlca.core.model.descriptors.Descriptors;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +47,6 @@ public final class Reports {
 		}
 		createReportVariants(project, report);
 		createReportIndicators(project, report, database);
-		report.setProject(Descriptors.toDescriptor(project));
 		report.setTitle("Results of project '" + project.getName() + "'");
 		return report;
 	}
@@ -120,11 +118,11 @@ public final class Reports {
 		}
 	}
 
-	public static void save(Report report, IDatabase database) {
-		if (report == null || report.getProject() == null)
+	public static void save(Project project, Report report, IDatabase database) {
+		if (report == null || project == null)
 			return;
 		Logger log = LoggerFactory.getLogger(Reports.class);
-		File file = getReportFile(report.getProject().getRefId(), database);
+		File file = getReportFile(project.getRefId(), database);
 		if (file == null) {
 			log.error("failed to get report file {} for {}" + file, report);
 			return;

@@ -56,7 +56,7 @@ public class ProjectEditor extends ModelEditor<Project> implements IEditor {
 	@Override
 	public void doSave(IProgressMonitor monitor) {
 		getModel().setLastModificationDate(Calendar.getInstance().getTime());
-		Reports.save(report, Database.get());
+		Reports.save(getModel(), report, Database.get());
 		super.doSave(monitor);
 	}
 

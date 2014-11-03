@@ -47,7 +47,7 @@ public class ProjectEditorActions extends EditorActionBarContributor {
 		App.run(Messages.Calculate,
 				new ReportCalculator(project, report),
 				() -> {
-					Reports.save(report, Database.get());
+					Reports.save(project, report, Database.get());
 					ReportViewer.open(report);
 				});
 	}

@@ -135,7 +135,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 			App.run(Messages.Calculate,
 					new ReportCalculator(getModel(), editor.getReport()),
 					() -> {
-						Reports.save(editor.getReport(), database);
+						Reports.save(getModel(), editor.getReport(), database);
 						ReportViewer.open(editor.getReport());
 					});
 		});
