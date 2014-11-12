@@ -19,7 +19,9 @@ public enum FeatureFlag {
 
 	MATRIX_IMAGE_EXPORT("Enable matrix image export"),
 
-	PRODUCT_SYSTEM_CUTOFF("Enable cut-offs in product system creations");
+	// PRODUCT_SYSTEM_CUTOFF("Enable cut-offs in product system creations");
+
+	ECOSPOLD1_EXPORT_CONFIG("EcoSpold 1 export configuration");
 
 	// AUTOMATIC_UPDATES("Enable automatic updates");
 

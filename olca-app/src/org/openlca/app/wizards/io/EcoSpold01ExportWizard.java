@@ -9,6 +9,7 @@ import org.eclipse.ui.IExportWizard;
 import org.eclipse.ui.IWorkbench;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
+import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.ImpactMethod;
@@ -26,7 +27,8 @@ import org.slf4j.LoggerFactory;
 public class EcoSpold01ExportWizard extends Wizard implements IExportWizard {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
-	private ModelSelectionPage page;
+	private ModelSelectionPage modelPage;
+	private Es1ExportConfigPage configPage;
 	private final ModelType type;
 
 	public EcoSpold01ExportWizard(ModelType type) {
@@ -37,8 +39,12 @@ public class EcoSpold01ExportWizard extends Wizard implements IExportWizard {
 
 	@Override
 	public void addPages() {
-		page = new ModelSelectionPage(type);
-		addPage(page);
+		modelPage = new ModelSelectionPage(type);
+		addPage(modelPage);
+		if (FeatureFlag.ECOSPOLD1_EXPORT_CONFIG.isEnabled()) {
+			configPage = new Es1ExportConfigPage();
+			addPage(configPage);
+		}
 	}
 
 	@Override
@@ -50,11 +56,10 @@ public class EcoSpold01ExportWizard extends Wizard implements IExportWizard {
 	@Override
 	public boolean performFinish() {
 		boolean errorOccured = false;
-		List<BaseDescriptor> models = page.getSelectedModels();
-		ExportConfig config = new ExportConfig();
-		config.setSingleFile(true);
+		List<BaseDescriptor> models = modelPage.getSelectedModels();
+		ExportConfig config = getConfig();
 		try (EcoSpold1Export export = new EcoSpold1Export(
-				page.getExportDestination(), config)) {
+				modelPage.getExportDestination(), config)) {
 			getContainer().run(true, true, (monitor) -> {
 				int size = models.size();
 				monitor.beginTask(Messages.ExportingProcesses, size + 1);
@@ -68,6 +73,13 @@ public class EcoSpold01ExportWizard extends Wizard implements IExportWizard {
 			errorOccured = true;
 		}
 		return !errorOccured;
+	}
+
+	private ExportConfig getConfig() {
+		if (configPage == null)
+			return ExportConfig.getDefault();
+		else
+			return configPage.getConfig();
 	}
 
 	private void doExport(List<BaseDescriptor> models,
@@ -90,6 +102,7 @@ public class EcoSpold01ExportWizard extends Wizard implements IExportWizard {
 				monitor.worked(1);
 			}
 		} catch (Exception e) {
+			log.error("Export failed", e);
 			throw new InterruptedException(e.getMessage());
 		}
 	}

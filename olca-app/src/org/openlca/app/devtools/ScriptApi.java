@@ -82,6 +82,13 @@ public class ScriptApi {
 		return list.isEmpty() ? null : list.get(0);
 	}
 
+	public void eachCategory(Consumer<Category> consumer) {
+		CategoryDao dao = new CategoryDao(database);
+		for (Category category : dao.getAll()) {
+			consumer.accept(category);
+		}
+	}
+
 	public Actor getActor(String name) {
 		ActorDao dao = new ActorDao(database);
 		List<Actor> list = dao.getForName(name);
