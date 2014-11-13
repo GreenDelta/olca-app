@@ -320,6 +320,11 @@ public class ScriptApi {
 		dao.insert(model);
 	}
 
+	public void deleteActor(Actor actor) {
+		ActorDao dao = new ActorDao(database);
+		dao.delete(actor);
+	}
+
 	public Source updateSource(Source model) {
 		SourceDao dao = new SourceDao(database);
 		return dao.update(model);
@@ -328,6 +333,11 @@ public class ScriptApi {
 	public void insertSource(Source model) {
 		SourceDao dao = new SourceDao(database);
 		dao.insert(model);
+	}
+
+	public void deleteSource(Source source) {
+		SourceDao dao = new SourceDao(database);
+		dao.delete(source);
 	}
 
 	public UnitGroup updateUnitGroup(UnitGroup model) {
@@ -340,6 +350,11 @@ public class ScriptApi {
 		dao.insert(model);
 	}
 
+	public void deleteUnitGroup(UnitGroup unitGroup) {
+		UnitGroupDao dao = new UnitGroupDao(database);
+		dao.delete(unitGroup);
+	}
+
 	public FlowProperty updateFlowProperty(FlowProperty model) {
 		FlowPropertyDao dao = new FlowPropertyDao(database);
 		return dao.update(model);
@@ -348,6 +363,11 @@ public class ScriptApi {
 	public void insertFlowProperty(FlowProperty model) {
 		FlowPropertyDao dao = new FlowPropertyDao(database);
 		dao.insert(model);
+	}
+
+	public void deleteFlowProperty(FlowProperty flowProperty) {
+		FlowPropertyDao dao = new FlowPropertyDao(database);
+		dao.delete(flowProperty);
 	}
 
 	public Flow updateFlow(Flow model) {
@@ -360,6 +380,11 @@ public class ScriptApi {
 		dao.insert(model);
 	}
 
+	public void deleteFlow(Flow flow) {
+		FlowDao dao = new FlowDao(database);
+		dao.delete(flow);
+	}
+
 	public Process updateProcess(Process model) {
 		ProcessDao dao = new ProcessDao(database);
 		return dao.update(model);
@@ -368,6 +393,11 @@ public class ScriptApi {
 	public void insertProcess(Process model) {
 		ProcessDao dao = new ProcessDao(database);
 		dao.insert(model);
+	}
+
+	public void deleteProcess(Process process) {
+		ProcessDao dao = new ProcessDao(database);
+		dao.delete(process);
 	}
 
 	public ProductSystem updateSystem(ProductSystem model) {
@@ -380,6 +410,11 @@ public class ScriptApi {
 		dao.insert(model);
 	}
 
+	public void deleteSystem(ProductSystem system) {
+		ProductSystemDao dao = new ProductSystemDao(database);
+		dao.delete(system);
+	}
+
 	public ImpactMethod updateMethod(ImpactMethod model) {
 		ImpactMethodDao dao = new ImpactMethodDao(database);
 		return dao.update(model);
@@ -390,6 +425,11 @@ public class ScriptApi {
 		dao.insert(model);
 	}
 
+	public void deleteMethod(ImpactMethod impactMethod) {
+		ImpactMethodDao dao = new ImpactMethodDao(database);
+		dao.delete(impactMethod);
+	}
+
 	public Project updateProject(Project model) {
 		ProjectDao dao = new ProjectDao(database);
 		return dao.update(model);
@@ -398,6 +438,11 @@ public class ScriptApi {
 	public void insertProject(Project model) {
 		ProjectDao dao = new ProjectDao(database);
 		dao.insert(model);
+	}
+
+	public void deleteProject(Project project) {
+		ProjectDao dao = new ProjectDao(database);
+		dao.delete(project);
 	}
 
 	public SimpleResultProvider<SimpleResult> calculate(ProductSystem system) {
