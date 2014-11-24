@@ -31,7 +31,7 @@ class PedigreeShell extends Shell {
 	private List<PedigreeCell> dataCells = new ArrayList<>();
 	private Exchange exchange;
 	private Text baseUncertaintyText;
-	private Label valueLabel;
+	private Text valueLabel;
 
 	public PedigreeShell(Shell parent, Exchange exchange) {
 		super(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
@@ -148,7 +148,8 @@ class PedigreeShell extends Shell {
 		UI.gridData(baseUncertaintyText, false, false).widthHint = 80;
 		baseUncertaintyText.addModifyListener((e) -> calculateSigmaG());
 		toolkit.createLabel(composite, "\u03c3g: ");
-		valueLabel = toolkit.createLabel(composite, "");
+		valueLabel = toolkit.createText(composite, "", SWT.NONE);
+		valueLabel.setEditable(false);
 		UI.gridData(valueLabel, true, false);
 		createButtons(composite);
 	}
@@ -174,7 +175,7 @@ class PedigreeShell extends Shell {
 		String baseFactorText = baseUncertaintyText.getText();
 		try {
 			double baseFactor = Double.parseDouble(baseFactorText);
-			double sigma = PedigreeShellData.calculateSigmaG(getSelection(),
+			double sigma = PedigreeMatrix.getGeometricSD(getSelection(),
 					baseFactor);
 			valueLabel.setText(Double.toString(sigma));
 			baseUncertaintyText.setBackground(getDisplay().getSystemColor(
