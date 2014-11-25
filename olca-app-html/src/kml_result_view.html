@@ -4,95 +4,85 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 		<title>KML Result View</title>
+		<link rel="stylesheet" type="text/css" href="libs/ol.css">
+		<script src="libs/ol.js"></script>
+		<script src="libs/olca.utils.js"></script>
+		<script src="libs/jquery.min.js"></script>
 		<style type="text/css">
-        html, body {
-              width: 100%;
-              height: 100%;
-              margin: 0;
-          }
-          
-          #mapDiv {
-          	width: 100%;
-          	height: 100%;
-          	margin: 0;
-          }
-    	</style>
+			html, body {
+				width: 100%;
+				height: 100%;
+				margin: 0;
+			}
+		
+			#mapDiv {
+				width: 100%;
+				height: 100%;
+				margin: 0;
+			}
+		</style>
 	</head>
 	<body>
-		<div id="mapDiv"></div>
-		<script src="http://openlayers.org/api/OpenLayers.js"></script>
-		<script src="libs/jquery.min.js"></script>
-		<script src="libs/olca.utils.js"></script>
+		<div id="map">
+		</div>
 		<script>
-			
-			var map, featureLayer;
-			
-			var refAmount = 1;
-			
+			var map, features, format;
+			var refAmount = 0;			
 			$(document).ready(init());
-			
+
 			function init() {
-				var mapLayer = new OpenLayers.Layer.OSM();
-				
-				// see http://openlayers.org/dev/examples/styles-context.html for context based styling
-				
-				var styleTemplate = {
-					pointRadius: 5,
-    			    strokeColor: "${getColor}",
-    			    strokeOpacity: .7,
-    			    strokeWidth: 2,
-    			    fillColor: "${getColor}",
-    			    fillOpacity: .3,
-    			    cursor: "pointer",
-    			    title:'${name}'
-				};
-				
-				var styleContext = {
-					getColor: function(feature) {
-						var amount = feature.attributes.amount;
-						return olca.contributionColor(amount, refAmount);
-					}
-				};
-				var style = new OpenLayers.Style(styleTemplate, {context: styleContext});
-				featureLayer = new OpenLayers.Layer.Vector( "FeatureLayer", {
-    			    styleMap: new OpenLayers.StyleMap(style)
-    			});
-								
-				map = new OpenLayers.Map("mapDiv", {
-             	 controls: [
-             	 	new OpenLayers.Control.PanZoomBar(),
-             	 	new OpenLayers.Control.Navigation()]
-             	});
-            
-            	map.addLayers([mapLayer, featureLayer]);
-            	map.setCenter(new OpenLayers.LonLat(0,0) // Center of the map
-              		.transform(
-                		new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
-                		new OpenLayers.Projection("EPSG:900913") // to Spherical Mercator Projection
-              		), 1 // Zoom level
-            	);
+				var baseLayer = new ol.layer.Tile({
+					source: new ol.source.OSM()
+				});
+				format = new ol.format.KML({
+					extractStyles: false
+				});
+				features = new ol.source.Vector({
+					features: []
+				});
+				var vectorLayer = new ol.layer.Vector({
+					source: features,
+				})
+				map = new ol.Map({
+					target: 'map',
+					layers: [baseLayer, vectorLayer],
+					view: new ol.View({
+						center: [0, 0],
+						zoom: 2,
+					})
+				});	
 			}
-			
-			function setData(data) {
-				if(!data || !featureLayer)
+
+			function initData(value) {
+				features.clear();
+				refAmount = value
+			}
+
+			function addFeature(data) {
+				if (data.amount <= 0)
 					return;
-				refAmount = olca.refValue(data, function(item) {return item.amount; });
-				featureLayer.removeAllFeatures();
-				var format = new OpenLayers.Format.KML({
-            		'maxDepth':10,
-            		'internalProjection': map.baseLayer.projection,
-            		'externalProjection': new OpenLayers.Projection("EPSG:4326")
-        		});
-        		for(var i = 0; i < data.length; i++) {
-        			var item = data[i];
-        			var features = format.read(item.kml);  
-        			features[0].attributes = {name: item.name, amount: item.amount }; 
-        			featureLayer.addFeatures(features);       			      			
-        		} 
-        		featureLayer.refresh({force:true});
-        		map.zoomToExtent(featureLayer.getDataExtent());
+				var feature = format.readFeature(data.kml, {
+					dataProjection: 'EPSG:4326', 
+					featureProjection: 'EPSG:3857'
+				});
+				feature.setStyle(getStyle(data.amount));
+				features.addFeature(feature);
 			}
-			
+
+			function getStyle(value) {
+				var color = olca.contributionColorRGB(value, refAmount);
+				var rgb = color[0] + ', ' + color[1] + ', ' + color[2];
+				return new ol.style.Style({
+					stroke: new ol.style.Stroke({
+						color: 'rgba(' + rgb + ', 0.7)', 
+						width: 2, 
+					}),
+					fill: new ol.style.Fill({
+						color: 'rgba(' + rgb + ', 0.3)'
+					})
+				})
+			}
+
 		</script>		
 	</body>
 </html>

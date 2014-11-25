@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="openLCA" uid="openLCA" id="olca-app.openLCA" application="org.openlca.app.Application" version="1.4.0.final" useFeatures="false" includeLaunchers="true">
+<product name="openLCA" uid="openLCA" id="olca-app.openLCA" application="org.openlca.app.Application" version="1.4.1.beta3-geo2" useFeatures="false" includeLaunchers="true">
 
    <aboutInfo>
       <image path="/olca-app/icons/about.png"/>
@@ -24,7 +24,7 @@ project and other open source software.
 en
 -data @noDefault
       </programArgs>
-      <vmArgs>-Xmx1024M
+      <vmArgs>-Xmx4G
       </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
       </vmArgsMac>
@@ -55,11 +55,13 @@ en
    </vm>
 
    <plugins>
+      <plugin id="com.google.gson"/>
       <plugin id="com.ibm.icu"/>
       <plugin id="javax.annotation"/>
       <plugin id="javax.inject"/>
       <plugin id="javax.xml"/>
       <plugin id="olca-app"/>
+      <plugin id="olca-scs"/>
       <plugin id="org.apache.batik.css"/>
       <plugin id="org.apache.batik.util"/>
       <plugin id="org.apache.batik.util.gui"/>

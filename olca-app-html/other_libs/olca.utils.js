@@ -88,7 +88,7 @@ olca.refValue = function (collection, fn) {
     return Math.max(Math.abs(max), Math.abs(min));
 };
 
-olca.contributionColor = function (datum, refAmount, fn) {
+olca.contributionColorRGB = function (datum, refAmount, fn) {
     if (refAmount === 0)
         return 0;
     var value = fn ? fn(datum) : datum;
@@ -103,6 +103,16 @@ olca.contributionColor = function (datum, refAmount, fn) {
         red = Math.round(Math.sqrt(green * (255 - green)));
         blue = Math.round(255 - green);
     }
+    return [red, green, blue];
+};
+
+olca.contributionColor = function (datum, refAmount, fn) {
+    if (refAmount === 0)
+        return 0;
+    var color = olca.contributionColorRGB(datum, refAmount, fn);
+    var red = color[0];
+    var green = color[1];
+    var blue = color[2];
     var redHex = red.toString(16),
         greenHex = green.toString(16),
         blueHex = blue.toString(16);

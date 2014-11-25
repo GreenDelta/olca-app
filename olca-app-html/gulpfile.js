@@ -43,7 +43,7 @@ gulp.task('libs', function() {
 			.pipe(gulp.dest('./build/libs/bootstrap'));
 	
 	// other libs
-	gulp.src(['./other_libs/*.js']).pipe(gulp.dest("./build/libs"));
+	gulp.src(['./other_libs/**/*.*']).pipe(gulp.dest("./build/libs"));
 	
 });
 

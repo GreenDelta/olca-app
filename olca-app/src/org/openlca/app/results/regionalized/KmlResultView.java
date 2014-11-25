@@ -23,6 +23,7 @@ import org.openlca.app.rcp.html.HtmlPage;
 import org.openlca.app.rcp.html.HtmlView;
 import org.openlca.app.util.UI;
 import org.openlca.core.matrix.LongPair;
+import org.openlca.core.model.Location;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -116,10 +117,10 @@ class KmlResultView extends FormPage implements HtmlPage {
 			if (maximum == 0d)
 				return;
 			KmlItem nextItem = null;
-			String lastFeatureId = null;
+			Long lastFeatureId = null;
 			for (LongPair processProduct : keys) {
 				KmlFeature feature = features.get(processProduct);
-				if (!feature.getIdentifier().equals(lastFeatureId)) {
+				if (feature.getIdentifier() != lastFeatureId) {
 					sendToView(nextItem);
 					nextItem = null;
 				}
@@ -138,12 +139,12 @@ class KmlResultView extends FormPage implements HtmlPage {
 
 		private double getMaximum(Map<LongPair, KmlFeature> features,
 				List<LongPair> sortedKeys, Map<Long, Double> results) {
-			String lastFeatureId = null;
+			Long lastFeatureId = null;
 			double maximum = 0;
 			double current = 0;
 			for (LongPair processProduct : sortedKeys) {
 				KmlFeature feature = features.get(processProduct);
-				if (!feature.getIdentifier().equals(lastFeatureId)) {
+				if (feature.getIdentifier() != lastFeatureId) {
 					maximum = Math.max(maximum, current);
 					current = 0;
 				}
@@ -187,10 +188,13 @@ class KmlResultView extends FormPage implements HtmlPage {
 			return keys;
 		}
 
-		private KmlItem createItem(KmlFeature feature, double result) {
+		private KmlItem createItem(KmlFeature feature, double value) {
 			KmlItem item = new KmlItem();
-			item.amount = result;
+			item.amount = value;
 			item.kml = feature.getKml();
+			Location location = result.getBaseResult().getCache()
+					.get(Location.class, feature.getIdentifier());
+			item.label = location.getName();
 			return item;
 		}
 	}
@@ -199,6 +203,7 @@ class KmlResultView extends FormPage implements HtmlPage {
 	private class KmlItem {
 		double amount;
 		String kml;
+		String label;
 	}
 
 	private class ByFeatureComparator implements Comparator<LongPair> {
@@ -212,12 +217,10 @@ class KmlResultView extends FormPage implements HtmlPage {
 		@Override
 		public int compare(LongPair o1, LongPair o2) {
 			KmlFeature f1 = features.get(o1);
-			String id1 = f1 != null ? f1.getIdentifier() : "";
-			id1 = id1 != null ? id1 : "";
 			KmlFeature f2 = features.get(o2);
-			String id2 = f2 != null ? f2.getIdentifier() : "";
-			id2 = id2 != null ? id2 : "";
-			return id1.compareTo(id2);
+			long id1 = f1 != null ? f1.getIdentifier() : 0;
+			long id2 = f2 != null ? f2.getIdentifier() : 0;
+			return Long.compare(id1, id2);
 		}
 
 	}

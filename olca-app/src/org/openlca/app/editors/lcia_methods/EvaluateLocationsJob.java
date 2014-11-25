@@ -81,7 +81,7 @@ public class EvaluateLocationsJob implements IRunnableWithProgress {
 		if (forceEvaluation)
 			return true;
 		KmlFeature feature = KmlFeature.empty();
-		feature.setIdentifier(location.getRefId());
+		feature.setIdentifier(location.getId());
 		for (String shapeFile : shapeFiles)
 			if (!parameterRepository.contains(feature, shapeFile))
 				return true;
@@ -117,7 +117,7 @@ public class EvaluateLocationsJob implements IRunnableWithProgress {
 			return null;
 		try {
 			KmlFeature feature = KmlFeature.parse(kml);
-			feature.setIdentifier(location.getRefId());
+			feature.setIdentifier(location.getId());
 			return feature;
 		} catch (Exception e) {
 			log.warn("Could not parse kml data for location "
