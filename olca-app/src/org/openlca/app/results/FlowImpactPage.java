@@ -79,7 +79,7 @@ public class FlowImpactPage extends FormPage {
 		createImpactViewer(composite);
 		UI.formLabel(composite, toolkit, Messages.Cutoff);
 		spinner = new Spinner(composite, SWT.BORDER);
-		spinner.setValues(1, 0, 10000, 2, 1, 100);
+		spinner.setValues(1, 0, 100, 0, 1, 10);
 		toolkit.adapt(spinner);
 		toolkit.createLabel(composite, "%");
 		Controls.onSelect(spinner, (e) -> {
