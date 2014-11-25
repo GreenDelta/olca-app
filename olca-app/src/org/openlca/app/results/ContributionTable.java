@@ -1,7 +1,6 @@
 package org.openlca.app.results;
 
 import java.util.List;
-
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -22,8 +21,6 @@ import org.openlca.app.util.TableColumnSorter;
 import org.openlca.app.util.Tables;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.ContributionItem;
-
-import com.google.common.primitives.Doubles;
 
 /**
  * Table viewer for process contributions to a LCIA category or flow.
@@ -70,40 +67,13 @@ class ContributionTable extends TableViewer {
 	}
 
 	private void createColumnSorters(Label p) {
-		TableColumnSorter<?> first = new AmountSorter(CONTRIBUTION);
+		TableColumnSorter<?> first = ContributionSorter.forShare(CONTRIBUTION);
 		first.setAscending(false);
-		Tables.registerSorters(
-				this,
+		Tables.registerSorters(this,
 				first,
 				new TableColumnSorter<>(ContributionItem.class, NAME, p),
-				new AmountSorter(AMOUNT),
+				ContributionSorter.forAmount(AMOUNT),
 				new TableColumnSorter<>(ContributionItem.class, UNIT, p));
-	}
-
-	@SuppressWarnings("rawtypes")
-	private class AmountSorter extends TableColumnSorter<ContributionItem> {
-
-		public AmountSorter(int column) {
-			super(ContributionItem.class, column);
-		}
-
-		@Override
-		public int compare(ContributionItem item1, ContributionItem item2) {
-			double val1 = getVal(item1);
-			double val2 = getVal(item2);
-			return Doubles.compare(val1, val2);
-		}
-
-		private double getVal(ContributionItem item) {
-			switch (getColumn()) {
-			case CONTRIBUTION:
-				return item.getShare();
-			case AMOUNT:
-				return item.getAmount();
-			default:
-				return 0;
-			}
-		}
 	}
 
 	private class Label extends ColumnLabelProvider implements
