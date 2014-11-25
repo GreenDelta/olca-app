@@ -5,6 +5,7 @@ import java.io.File;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -84,6 +85,18 @@ class ShapeFilePage extends FormPage {
 			File file = FileChooser.forImport("*.shp");
 			if (file != null)
 				checkRunImport(file);
+		});
+		UI.formLabel(composite, toolkit, "");
+		Button evaluateButton = toolkit.createButton(composite,
+				Messages.EvaluateLocations, SWT.NONE);
+		evaluateButton.setImage(ImageType.EXPRESSION_ICON.get());
+		Controls.onSelect(evaluateButton, (e) -> {
+			try {
+				new ProgressMonitorDialog(UI.shell()).run(true, true,
+						new EvaluateLocationsJob(method));
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
 		});
 	}
 

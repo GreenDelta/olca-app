@@ -8,6 +8,7 @@ import org.eclipse.jface.wizard.Wizard;
 import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
+import org.openlca.app.db.Database;
 import org.openlca.app.results.ResultEditorInput;
 import org.openlca.app.results.analysis.AnalyzeEditor;
 import org.openlca.app.results.quick.QuickResultEditor;
@@ -15,13 +16,30 @@ import org.openlca.app.results.regionalized.RegionalizedResultEditor;
 import org.openlca.app.results.simulation.SimulationInit;
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.Info;
+import org.openlca.core.database.IDatabase;
 import org.openlca.core.math.CalculationSetup;
+import org.openlca.core.math.DataStructures;
+import org.openlca.core.math.IMatrixSolver;
+import org.openlca.core.math.LcaCalculator;
 import org.openlca.core.math.SystemCalculator;
+import org.openlca.core.matrix.ImpactMatrix;
+import org.openlca.core.matrix.ImpactTable;
+import org.openlca.core.matrix.Inventory;
+import org.openlca.core.matrix.InventoryMatrix;
+import org.openlca.core.matrix.ParameterTable;
+import org.openlca.core.matrix.ProductIndex;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.results.ContributionResult;
+import org.openlca.core.results.ContributionResultProvider;
 import org.openlca.core.results.FullResult;
+import org.openlca.core.results.FullResultProvider;
+import org.openlca.expressions.FormulaInterpreter;
+import org.openlca.geo.RegionalizationSetup;
 import org.openlca.geo.RegionalizedCalculator;
 import org.openlca.geo.RegionalizedResult;
+import org.openlca.geo.RegionalizedResultProvider;
+import org.openlca.geo.kml.IKmlLoader;
+import org.openlca.geo.kml.KmlLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,6 +78,14 @@ class CalculationWizard extends Wizard {
 			log.error("Calculation failed", e);
 			return false;
 		}
+	}
+
+	private ResultEditorInput getEditorInput(Object result,
+			CalculationSetup setup) {
+		String resultKey = Cache.getAppCache().put(result);
+		String setupKey = Cache.getAppCache().put(setup);
+		return new ResultEditorInput(setup.getProductSystem().getId(),
+				resultKey, setupKey);
 	}
 
 	private class Calculation implements IRunnableWithProgress {
@@ -104,7 +130,9 @@ class CalculationWizard extends Wizard {
 					Cache.getMatrixCache(), App.getSolver());
 			FullResult result = calculator.calculateFull(setup);
 			log.trace("calculation done, open editor");
-			ResultEditorInput input = getEditorInput(result);
+			FullResultProvider resultProvider = new FullResultProvider(result,
+					Cache.getEntityCache());
+			ResultEditorInput input = getEditorInput(resultProvider, setup);
 			Editors.open(input, AnalyzeEditor.ID);
 			done = true;
 		}
@@ -116,23 +144,10 @@ class CalculationWizard extends Wizard {
 			ContributionResult result = calculator
 					.calculateContributions(setup);
 			log.trace("calculation done, open editor");
-			ResultEditorInput input = getEditorInput(result);
+			ContributionResultProvider<ContributionResult> resultProvider = new ContributionResultProvider<>(
+					result, Cache.getEntityCache());
+			ResultEditorInput input = getEditorInput(resultProvider, setup);
 			Editors.open(input, QuickResultEditor.ID);
-			done = true;
-		}
-
-		private void calcRegionalized() {
-			log.trace("calculate regionalized result");
-			RegionalizedCalculator calculator = new RegionalizedCalculator(
-					Cache.getMatrixCache(), App.getSolver());
-			RegionalizedResult result = calculator.calculate(setup,
-					Cache.getEntityCache());
-			if (result == null) {
-				Info.showBox("No regionalized information available for this system");
-				return;
-			}
-			ResultEditorInput input = getEditorInput(result);
-			Editors.open(input, RegionalizedResultEditor.ID);
 			done = true;
 		}
 
@@ -144,12 +159,85 @@ class CalculationWizard extends Wizard {
 			done = true;
 		}
 
-		private ResultEditorInput getEditorInput(Object result) {
-			String resultKey = Cache.getAppCache().put(result);
-			String setupKey = Cache.getAppCache().put(setup);
-			return new ResultEditorInput(setup.getProductSystem().getId(),
-					resultKey, setupKey);
+		private void calcRegionalized() {
+			log.trace("init regionalized calculation");
+			RegionalizedCalculation calculation = new RegionalizedCalculation(
+					setup);
+			calculation.run();
+			done = true;
 		}
 
 	}
+
+	private class RegionalizedCalculation {
+
+		private IMatrixSolver solver = App.getSolver();
+		private IDatabase database = Database.get();
+		private CalculationSetup setup;
+
+		public RegionalizedCalculation(CalculationSetup setup) {
+			this.setup = setup;
+		}
+
+		public void run() {
+			log.trace("calculate regionalized result");
+			Inventory inventory = DataStructures.createInventory(setup,
+					Cache.getMatrixCache());
+			ParameterTable parameterTable = DataStructures
+					.createParameterTable(database, setup, inventory);
+			FormulaInterpreter interpreter = parameterTable.createInterpreter();
+			InventoryMatrix inventoryMatrix = inventory.createMatrix(
+					solver.getMatrixFactory(), interpreter);
+			ImpactMatrix impactMatrix = null;
+			ImpactTable impactTable = null;
+			if (setup.getImpactMethod() != null) {
+				impactTable = ImpactTable.build(Cache.getMatrixCache(), setup
+						.getImpactMethod().getId(), inventory.getFlowIndex());
+				impactMatrix = impactTable.createMatrix(
+						solver.getMatrixFactory(), interpreter);
+			}
+			LcaCalculator calculator = new LcaCalculator(solver);
+			ContributionResult baseResult = calculator.calculateContributions(
+					inventoryMatrix, impactMatrix);
+			RegionalizationSetup regioSetup = setupRegio(baseResult
+					.getProductIndex());
+			if (regioSetup == null)
+				return;
+			RegionalizedResult result = calculate(baseResult, regioSetup,
+					interpreter, impactTable);
+			RegionalizedResultProvider resultProvider = new RegionalizedResultProvider();
+			resultProvider
+					.setBaseResult(new ContributionResultProvider<ContributionResult>(
+							result.getBaseResult(), Cache.getEntityCache()));
+			resultProvider
+					.setRegionalizedResult(new ContributionResultProvider<ContributionResult>(
+							result.getRegionalizedResult(), Cache
+									.getEntityCache()));
+			resultProvider.setKmlFeatures(result.getKmlFeatures());
+			ResultEditorInput input = getEditorInput(resultProvider, setup);
+			Editors.open(input, RegionalizedResultEditor.ID);
+		}
+
+		private RegionalizationSetup setupRegio(ProductIndex productIndex) {
+			RegionalizationSetup regioSetup = new RegionalizationSetup(
+					database, setup.getImpactMethod());
+			IKmlLoader kmlLoader = new KmlLoader(database);
+			if (!regioSetup.init(kmlLoader, productIndex)) {
+				Info.showBox("No regionalized information available for this system");
+				return null;
+			}
+			return regioSetup;
+		}
+
+		private RegionalizedResult calculate(ContributionResult baseResult,
+				RegionalizationSetup regioSetup,
+				FormulaInterpreter interpreter, ImpactTable impactTable) {
+			RegionalizedCalculator calculator = new RegionalizedCalculator(
+					solver);
+			return calculator.calculate(regioSetup, baseResult, interpreter,
+					impactTable);
+		}
+
+	}
+
 }

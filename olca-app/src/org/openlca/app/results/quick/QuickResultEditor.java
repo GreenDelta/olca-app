@@ -18,7 +18,6 @@ import org.openlca.app.results.TotalImpactResultPage;
 import org.openlca.app.results.viz.ContributionBubblePage;
 import org.openlca.app.results.viz.ProcessTreemapPage;
 import org.openlca.core.math.CalculationSetup;
-import org.openlca.core.results.ContributionResult;
 import org.openlca.core.results.ContributionResultProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,10 +38,9 @@ public class QuickResultEditor extends FormEditor {
 			ResultEditorInput input = (ResultEditorInput) editorInput;
 			setup = Cache.getAppCache().get(input.getSetupKey(),
 					CalculationSetup.class);
-			ContributionResult result = Cache.getAppCache().get(
-					input.getResultKey(), ContributionResult.class);
-			this.result = new ContributionResultProvider<>(result,
-					Cache.getEntityCache());
+			ContributionResultProvider<?> result = Cache.getAppCache().get(
+					input.getResultKey(), ContributionResultProvider.class);
+			this.result = result;
 		} catch (Exception e) {
 			log.error("failed to load inventory result", e);
 			throw new PartInitException("failed to load inventory result", e);

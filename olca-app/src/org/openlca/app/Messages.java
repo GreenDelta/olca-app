@@ -170,6 +170,7 @@ public class Messages extends NLS {
 	public static String Error;
 	public static String ErrorPopupMessage;
 	public static String ErrorPopupTitle;
+	public static String EvaluateLocations;
 	public static String Example;
 	public static String ExcelExport;
 	public static String Expand;

@@ -1,17 +1,18 @@
 package org.openlca.app.devtools.js;
 
-import org.openlca.app.App;
-import org.openlca.app.db.Database;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.IOException;
+import java.util.Properties;
 
 import javax.script.Bindings;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.SimpleBindings;
-import java.io.IOException;
-import java.util.Properties;
+
+import org.openlca.app.App;
+import org.openlca.app.db.Database;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JavaScript {
 

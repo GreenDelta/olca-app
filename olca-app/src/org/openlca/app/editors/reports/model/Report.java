@@ -1,9 +1,9 @@
 package org.openlca.app.editors.reports.model;
 
-import org.openlca.core.model.descriptors.ProjectDescriptor;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.openlca.core.model.descriptors.ProjectDescriptor;
 
 public class Report {
 

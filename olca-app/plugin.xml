@@ -180,6 +180,13 @@
             default="false"
             name="Search result view">
       </editor>    
+      <editor
+            class="org.openlca.app.editors.locations.LocationsEditor"
+            default="false"
+            icon="icons/location_editor.png"
+            id="editors.locations"
+            name="Locations editor">
+      </editor>    
    </extension>
    
    <extension
@@ -271,11 +278,6 @@
    
    <extension
          point="org.eclipse.ui.preferencePages">
-	  <page
-            class="org.openlca.app.preferencepages.LocationPreferencePage"
-            id="preferencepages.location"
-            name="%Locations">
-      </page>
       <page
             class="org.openlca.app.preferencepages.DatabaseParameterPage"
             id="preferencepages.parameters"
@@ -324,13 +326,6 @@
                		 </control>
                </toolbar>
          </menuContribution>
-   </extension>
-   <extension
-         point="org.eclipse.help.contexts">
-      <contexts
-            file="context.xml"
-            plugin="olca-app">
-      </contexts>
    </extension>
    <extension
          id="openLCA"
@@ -552,6 +547,11 @@
 		   name="SimaPro CSV">
 		   <description>Import SimaPro CSV files.</description>
 	   </wizard>
+     <wizard
+           class="org.openlca.app.editors.locations.KmzImportWizard"
+           id="wizard.import.kml"
+           name="KMZ import wizard">
+     </wizard>
    </extension>
    
    <!-- export wizards -->

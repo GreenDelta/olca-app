@@ -1,5 +1,7 @@
 package org.openlca.app.devtools;
 
+import java.util.List;
+
 import org.openlca.core.database.ActorDao;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.FlowPropertyDao;
@@ -28,8 +30,6 @@ import org.openlca.core.model.descriptors.ProductSystemDescriptor;
 import org.openlca.core.model.descriptors.ProjectDescriptor;
 import org.openlca.core.model.descriptors.SourceDescriptor;
 import org.openlca.core.model.descriptors.UnitGroupDescriptor;
-
-import java.util.List;
 
 public class ScriptApi {
 

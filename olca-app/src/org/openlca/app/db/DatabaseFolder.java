@@ -1,9 +1,9 @@
 package org.openlca.app.db;
 
+import java.io.File;
+
 import org.openlca.app.App;
 import org.openlca.core.database.IDatabase;
-
-import java.io.File;
 
 /**
  * Contains helper methods for database folders. The folder of a database is

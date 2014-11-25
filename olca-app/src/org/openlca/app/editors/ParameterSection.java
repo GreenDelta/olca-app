@@ -92,7 +92,7 @@ public class ParameterSection implements ParameterPageListener {
 			});
 		addDoubleClickHandler();
 	}
-	
+
 	private void addDoubleClickHandler() {
 		Tables.onDoubleClick(viewer, (event) -> {
 			TableItem item = Tables.getItem(viewer, event);
@@ -100,7 +100,7 @@ public class ParameterSection implements ParameterPageListener {
 				onAdd();
 		});
 	}
-	
+
 	public void setExternalSources(List<ExternalSource> externalSources) {
 		if (externalSources == null)
 			this.externalSources = new ArrayList<>();
@@ -269,8 +269,8 @@ public class ParameterSection implements ParameterPageListener {
 				param.setValue(d);
 				support.fireParameterChange();
 			} catch (Exception e) {
-				Dialog.showError(viewer.getTable().getShell(), text
-						+ " " + Messages.IsNotValidNumber);
+				Dialog.showError(viewer.getTable().getShell(), text + " "
+						+ Messages.IsNotValidNumber);
 			}
 		}
 	}
@@ -327,6 +327,8 @@ public class ParameterSection implements ParameterPageListener {
 		@Override
 		protected ExternalSource[] getItems(Parameter element) {
 			List<ExternalSource> externalSources = new ArrayList<>();
+			externalSources.add(new ExternalSource("", "", Collections
+					.emptyList()));
 			for (ExternalSource source : ParameterSection.this.externalSources)
 				if (source.isProvidingParameter(element.getName()))
 					externalSources.add(source);
@@ -341,12 +343,19 @@ public class ParameterSection implements ParameterPageListener {
 
 		@Override
 		protected void setItem(Parameter element, ExternalSource item) {
-			ShapeFileParameter param = item.getParameter(element.getName());
-			element.setSourceType(item.getType());
-			element.setExternalSource(item.getSource());
-			element.setValue((param.getMin() + param.getMax()) / 2);
-			element.setUncertainty(Uncertainty.uniform(param.getMin(),
-					param.getMax()));
+			if (item == null || Strings.nullOrEmpty(item.getSource())) {
+				element.setSourceType(null);
+				element.setExternalSource(null);
+				element.setDescription(null);
+			} else {
+				ShapeFileParameter param = item.getParameter(element.getName());
+				element.setSourceType(item.getType());
+				element.setExternalSource(item.getSource());
+				element.setDescription("from shapefile: " + item.getSource());
+				element.setValue((param.getMin() + param.getMax()) / 2);
+				element.setUncertainty(Uncertainty.uniform(param.getMin(),
+						param.getMax()));
+			}
 			support.fireParameterChange();
 		}
 

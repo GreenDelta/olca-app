@@ -1,16 +1,16 @@
 package org.openlca.app.editors.projects;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+
 import org.openlca.app.editors.reports.model.Report;
 import org.openlca.app.editors.reports.model.ReportParameter;
 import org.openlca.app.editors.reports.model.ReportVariant;
 import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.Project;
 import org.openlca.core.model.ProjectVariant;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
 
 class ReportParameterSync {
 

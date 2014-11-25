@@ -10,8 +10,7 @@ import org.openlca.app.results.ContributionTablePage;
 import org.openlca.app.results.ResultEditorInput;
 import org.openlca.app.results.TotalFlowResultPage;
 import org.openlca.app.results.TotalImpactResultPage;
-import org.openlca.core.math.CalculationSetup;
-import org.openlca.geo.RegionalizedResult;
+import org.openlca.geo.RegionalizedResultProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,8 +19,7 @@ public class RegionalizedResultEditor extends FormEditor {
 	public static String ID = "RegionalizedResultEditor";
 
 	private Logger log = LoggerFactory.getLogger(getClass());
-	private CalculationSetup setup;
-	private RegionalizedResult result;
+	private RegionalizedResultProvider result;
 
 	@Override
 	public void init(IEditorSite site, IEditorInput editorInput)
@@ -29,10 +27,8 @@ public class RegionalizedResultEditor extends FormEditor {
 		super.init(site, editorInput);
 		try {
 			ResultEditorInput input = (ResultEditorInput) editorInput;
-			setup = Cache.getAppCache().get(input.getSetupKey(),
-					CalculationSetup.class);
 			result = Cache.getAppCache().get(input.getResultKey(),
-					RegionalizedResult.class);
+					RegionalizedResultProvider.class);
 		} catch (Exception e) {
 			log.error("failed to load regionalized result", e);
 			throw new PartInitException("failed to load regionalized result", e);

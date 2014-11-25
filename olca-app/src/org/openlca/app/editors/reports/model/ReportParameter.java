@@ -1,9 +1,9 @@
 package org.openlca.app.editors.reports.model;
 
-import org.openlca.core.model.ParameterRedef;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import org.openlca.core.model.ParameterRedef;
 
 public class ReportParameter {
 

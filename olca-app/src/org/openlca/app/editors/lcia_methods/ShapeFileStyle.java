@@ -1,5 +1,7 @@
 package org.openlca.app.editors.lcia_methods;
 
+import java.awt.Color;
+
 import org.eclipse.swt.graphics.RGB;
 import org.geotools.data.DataStore;
 import org.geotools.factory.CommonFactoryFinder;
@@ -17,8 +19,6 @@ import org.opengis.filter.expression.Expression;
 import org.openlca.app.FaviColor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.awt.Color;
 
 class ShapeFileStyle {
 

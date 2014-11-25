@@ -1,5 +1,9 @@
 package org.openlca.app.viewers.table.modify;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
@@ -10,10 +14,6 @@ import org.openlca.app.components.DialogCellEditor;
 import org.openlca.app.viewers.table.modify.ICellModifier.CellEditingType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
 
 /**
  * Provides an easy and type safe way to add cell editors to a table viewer. It

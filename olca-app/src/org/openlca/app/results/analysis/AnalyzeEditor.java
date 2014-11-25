@@ -22,7 +22,6 @@ import org.openlca.app.results.viz.ContributionBubblePage;
 import org.openlca.app.results.viz.ProcessTreemapPage;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.results.FullResult;
 import org.openlca.core.results.FullResultProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,13 +55,13 @@ public class AnalyzeEditor extends FormEditor {
 		ResultEditorInput editorInput = (ResultEditorInput) input;
 		String resultKey = editorInput.getResultKey();
 		String setupKey = editorInput.getSetupKey();
-		FullResult result = Cache.getAppCache().remove(resultKey,
-				FullResult.class);
+		FullResultProvider result = Cache.getAppCache().remove(resultKey,
+				FullResultProvider.class);
 		setup = Cache.getAppCache().remove(setupKey, CalculationSetup.class);
 		ProductSystem system = setup.getProductSystem();
 		String name = Messages.AnalysisResultOf + " " + system.getName();
 		setPartName(name);
-		this.result = new FullResultProvider(result, Cache.getEntityCache());
+		this.result = result;
 	}
 
 	@Override

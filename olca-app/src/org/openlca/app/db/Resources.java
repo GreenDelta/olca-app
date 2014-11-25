@@ -1,5 +1,8 @@
 package org.openlca.app.db;
 
+import java.io.File;
+import java.util.Objects;
+
 import org.apache.commons.io.FileUtils;
 import org.openlca.app.editors.graphical.layout.NodeLayoutStore;
 import org.openlca.core.model.CategorizedEntity;
@@ -8,9 +11,6 @@ import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.util.Objects;
 
 /**
  * Provides helper methods for the management of external resources of entities

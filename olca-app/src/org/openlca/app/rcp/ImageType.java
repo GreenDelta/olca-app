@@ -1,11 +1,12 @@
 package org.openlca.app.rcp;
 
-import com.google.common.io.Files;
+import java.io.File;
+
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.PlatformUI;
 
-import java.io.File;
+import com.google.common.io.Files;
 
 public enum ImageType {
 

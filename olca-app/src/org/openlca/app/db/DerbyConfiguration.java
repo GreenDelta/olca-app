@@ -1,8 +1,8 @@
 package org.openlca.app.db;
 
-import org.openlca.core.database.derby.DerbyDatabase;
-
 import java.util.Objects;
+
+import org.openlca.core.database.derby.DerbyDatabase;
 
 /**
  * Configuration of a local derby database. Derby databases are stored directly

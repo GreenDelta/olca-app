@@ -57,6 +57,8 @@ public class LocationsEditor extends FormEditor implements IEditor {
 	void locationChanged(Location location) {
 		if (added.contains(location))
 			return;
+		if (removed.contains(location))
+			return;
 		// since we did not load kmz from the beginning we need to do now,
 		// otherwise kmz would be overwritten with null on save
 		if (location.getKmz() == null)
@@ -98,8 +100,7 @@ public class LocationsEditor extends FormEditor implements IEditor {
 		for (Location changed : changed)
 			dao.update(changed);
 		changed.clear();
-		locations = dao.getAll();
-		Collections.sort(locations, new LocationComparator());
+		updateModel();
 		for (EventHandler handler : savedHandlers)
 			handler.handleEvent();
 		setDirty(false);

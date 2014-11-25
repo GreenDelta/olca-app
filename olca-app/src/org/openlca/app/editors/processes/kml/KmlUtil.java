@@ -12,7 +12,6 @@ import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
-import org.openlca.geo.multi.MultiPlacemarkMerger;
 import org.openlca.util.BinUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,10 +62,6 @@ public class KmlUtil {
 			log.error("failed to format XML", e);
 			return kml;
 		}
-	}
-
-	public static String transformMultiPlacemarks(String kml) {
-		return new MultiPlacemarkMerger().merge(kml);
 	}
 
 	public static String getDisplayText(byte[] kmz) {

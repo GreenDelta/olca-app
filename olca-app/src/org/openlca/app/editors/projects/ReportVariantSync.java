@@ -1,13 +1,13 @@
 package org.openlca.app.editors.projects;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.TreeSet;
+
 import org.openlca.app.editors.reports.model.Report;
 import org.openlca.app.editors.reports.model.ReportParameter;
 import org.openlca.app.editors.reports.model.ReportVariant;
 import org.openlca.core.model.ProjectVariant;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.TreeSet;
 
 /**
  * Synchronizes the variant information that are shared between project and

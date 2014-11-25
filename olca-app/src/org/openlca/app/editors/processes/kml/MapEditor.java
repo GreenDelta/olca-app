@@ -69,13 +69,11 @@ public class MapEditor implements HtmlPage {
 	public void onLoaded() {
 		registerSaveFunction();
 		registerPrettifyFunction();
-		registerTransformFunction();
 		if (kml == null)
 			kml = "";
 		try {
 			browser.evaluate("setKML('" + kml + "')");
-			if (editOnly)
-				browser.evaluate("setEditOnly()");
+			browser.evaluate("setEditOnly(" + editOnly + ")");
 		} catch (Exception e) {
 			log.error("failed to set KML data", e);
 		}
@@ -105,18 +103,6 @@ public class MapEditor implements HtmlPage {
 				if (kml == null || kml.isEmpty())
 					return null;
 				return KmlUtil.prettyFormat(kml);
-			}
-		};
-	}
-
-	private void registerTransformFunction() {
-		new BrowserFunction(browser, "transformKML") {
-			@Override
-			public Object function(Object[] arguments) {
-				String kml = getArg(arguments, 0);
-				if (kml == null || kml.isEmpty())
-					return null;
-				return KmlUtil.transformMultiPlacemarks(kml);
 			}
 		};
 	}
