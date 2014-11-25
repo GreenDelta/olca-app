@@ -42,12 +42,12 @@ public final class Reports {
 		Report report = new Report();
 		createDefaultSections(report);
 		if (project == null) {
-			report.setTitle("No project");
+			report.setTitle("@No project");
 			return report;
 		}
 		createReportVariants(project, report);
 		createReportIndicators(project, report, database);
-		report.setTitle("Results of project '" + project.getName() + "'");
+		report.setTitle("@Results of project '" + project.getName() + "'");
 		return report;
 	}
 

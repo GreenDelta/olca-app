@@ -52,7 +52,7 @@ public class ReportToolbar extends EditorActionBarContributor {
 
 		public ExportAction() {
 			setImageDescriptor(ImageType.EXPORT_ICON.getDescriptor());
-			setToolTipText("Export report");
+			setToolTipText("@Export report");
 		}
 
 		@Override

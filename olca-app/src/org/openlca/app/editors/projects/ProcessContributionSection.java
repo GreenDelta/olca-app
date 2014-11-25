@@ -39,10 +39,10 @@ class ProcessContributionSection {
 	}
 
 	void create(Composite body, FormToolkit toolkit) {
-		Section section = UI.section(body, toolkit, "Process contributions");
+		Section section = UI.section(body, toolkit, "@Process contributions");
 		Composite composite = UI.sectionClient(section, toolkit);
 		UI.gridLayout(composite, 1);
-		String[] properties = { Messages.Process, "Report name",
+		String[] properties = { Messages.Process, "@Report name",
 				Messages.Description };
 		viewer = Tables.createViewer(composite, properties);
 		viewer.setLabelProvider(new Label());
@@ -63,7 +63,7 @@ class ProcessContributionSection {
 
 	private void bindModifySupport() {
 		ModifySupport<ReportProcess> support = new ModifySupport<>(viewer);
-		support.bind("Report name", ReportProcess::getReportName,
+		support.bind("@Report name", ReportProcess::getReportName,
 				(p, text) -> {
 					p.setReportName(text);
 					editor.setDirty(true);

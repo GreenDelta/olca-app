@@ -108,7 +108,7 @@ public class ReportViewer extends FormEditor {
 		@Override
 		public String getName() {
 			String name = report.getTitle() != null ? report.getTitle()
-					: "Report";
+					: "@Report";
 			return Strings.cut(name, 75);
 		}
 
@@ -119,7 +119,7 @@ public class ReportViewer extends FormEditor {
 
 		@Override
 		public String getToolTipText() {
-			return report.getTitle() != null ? report.getTitle() : "Report";
+			return report.getTitle() != null ? report.getTitle() : "@Report";
 		}
 	}
 
@@ -128,7 +128,7 @@ public class ReportViewer extends FormEditor {
 		private Browser browser;
 
 		public Page() {
-			super(ReportViewer.this, "olca.ReportPreview.Page", "Report view");
+			super(ReportViewer.this, "olca.ReportPreview.Page", "@Report view");
 		}
 
 		@Override

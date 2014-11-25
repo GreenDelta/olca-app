@@ -38,15 +38,15 @@ class IndicatorTable {
 
 	public void render(Composite parent) {
 		viewer = Tables.createViewer(parent, Messages.ImpactCategory,
-				"Display", "Report name", Messages.Description);
+				"@Display", "@Report name", Messages.Description);
 		Tables.bindColumnWidths(viewer, 0.3, 0.1, 0.2, 0.4);
 		UI.gridData(viewer.getTable(), true, false).heightHint = 150;
 		Label label = new Label();
 		viewer.setLabelProvider(label);
 		ModifySupport<ReportIndicator> modifySupport = new ModifySupport<>(
 				viewer);
-		modifySupport.bind("Display", new DisplayModifier());
-		modifySupport.bind("Report name", new NameModifier());
+		modifySupport.bind("@Display", new DisplayModifier());
+		modifySupport.bind("@Report name", new NameModifier());
 		modifySupport.bind(Messages.Description, new DescriptionModifier());
 		if (editor.getReport() != null)
 			viewer.setInput(editor.getReport().getIndicators());

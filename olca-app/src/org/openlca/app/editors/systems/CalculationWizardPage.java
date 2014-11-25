@@ -119,7 +119,7 @@ class CalculationWizardPage extends WizardPage {
 		case REGIONALIZED:
 			return Messages.RegionalizedLCIA;
 		default:
-			return "unknown";
+			return Messages.Unknown;
 		}
 	}
 

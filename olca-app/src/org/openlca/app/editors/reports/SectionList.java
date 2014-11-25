@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.Messages;
 import org.openlca.app.editors.DataBinding;
 import org.openlca.app.editors.projects.ProjectEditor;
 import org.openlca.app.editors.reports.model.Report;
@@ -63,8 +64,8 @@ class SectionList {
 		ReportSection model = new ReportSection();
 		model.setIndex(report.getSections().size());
 		report.getSections().add(model);
-		model.setTitle("New section");
-		model.setText("TODO: add text");
+		model.setTitle("@New section");
+		model.setText("");
 		Sec section = new Sec(model);
 		sections.add(section);
 		form.reflow(true);
@@ -100,19 +101,19 @@ class SectionList {
 		private void createUi() {
 			ui = UI.section(parent, toolkit, model.getTitle());
 			Composite composite = UI.sectionClient(ui, toolkit);
-			titleText = UI.formText(composite, toolkit, "Section");
+			titleText = UI.formText(composite, toolkit, "@Section");
 			binding.onString(() -> model, "title", titleText);
 			titleText.addModifyListener((e) -> {
 				ui.setText(titleText.getText());
 			});
-			descriptionText = UI.formMultiText(composite, toolkit, "Text");
+			descriptionText = UI.formMultiText(composite, toolkit, "@Text");
 			binding.onString(() -> model, "text", descriptionText);
 			createComponentViewer(composite);
 			createActions();
 		}
 
 		private void createComponentViewer(Composite composite) {
-			UI.formLabel(composite, toolkit, "Component");
+			UI.formLabel(composite, toolkit, "@Component");
 			componentViewer = new ComboViewer(composite);
 			UI.gridData(componentViewer.getControl(), false, false).widthHint = 250;
 			componentViewer.setContentProvider(ArrayContentProvider
@@ -137,23 +138,23 @@ class SectionList {
 
 		private void createActions() {
 			Action up = Actions.create(
-					"Move up",
+					"@Move up",
 					ImageType.UP_16.getDescriptor(),
 					() -> moveUp());
 			Action down = Actions.create(
-					"Move down",
+					"@Move down",
 					ImageType.DOWN_16.getDescriptor(),
 					() -> moveDown());
 			Action delete = Actions.create(
-					"Delete section",
+					"@Delete section",
 					ImageType.DELETE_ICON.getDescriptor(),
 					() -> delete());
 			Actions.bind(ui, up, down, delete);
 		}
 
 		private void delete() {
-			boolean b = Question.ask("Delete section",
-					"Do you really want to delete this report section?");
+			boolean b = Question.ask("@Delete section",
+					"@Do you really want to delete this report section?");
 			if (!b)
 				return;
 			report.getSections().remove(model);
@@ -195,37 +196,37 @@ class SectionList {
 		private String getLabel(ReportComponent component) {
 			switch (component) {
 			case NONE:
-				return "None";
+				return Messages.None;
 			case VARIANT_DESCRIPTION_TABLE:
-				return "Variant description table";
+				return "@Variant description table";
 			case INDICATOR_DESCRIPTION_TABLE:
-				return "LCIA category description table";
+				return "@LCIA category description table";
 			case PARAMETER_DESCRIPTION_TABLE:
-				return "Parameter description table";
+				return "@Parameter description table";
 			case PARAMETER_VALUE_TABLE:
-				return "Parameter value table";
+				return "@Parameter value table";
 			case IMPACT_RESULT_TABLE:
-				return "LCIA result table";
+				return "@LCIA result table";
 			case PROCESS_CONTRIBUTION_CHART:
-				return "Process contribution chart";
+				return "@Process contribution chart";
 			case NORMALISATION_RESULT_TABLE:
-				return "Normalisation result table";
+				return "@Normalisation result table";
 			case SINGLE_SCORE_TABLE:
-				return "Single score table";
+				return "@Single score table";
 			case INDICATOR_BAR_CHART:
-				return "Indicator bar chart";
+				return "@Indicator bar chart";
 			case NORMALISATION_BAR_CHART:
-				return "Normalisation - bar chart";
+				return "@Normalisation - bar chart";
 			case NORMALISATION_RADAR_CHART:
-				return "Normalisation - radar chart";
+				return "@Normalisation - radar chart";
 			case RELATIVE_INDICATOR_BAR_CHART:
-				return "Relative LCIA results - bar chart";
+				return "@Relative LCIA results - bar chart";
 			case RELATIVE_INDICATOR_RADAR_CHART:
-				return "Relative LCIA results - radar chart";
+				return "@Relative LCIA results - radar chart";
 			case SINGLE_SCORE_BAR_CHART:
-				return "Single score bar chart";
+				return "@Single score bar chart";
 			default:
-				return "unknown";
+				return Messages.Unknown;
 			}
 		}
 	}
