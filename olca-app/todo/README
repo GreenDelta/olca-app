@@ -1,8 +1,4 @@
 this folder contains classes that need to be ported to the new version:
 
 * cost calculation + result display
-* display of LCIA results in quick calculation
 * save product system results as system processes
-* excel export of quick results
-* old project setup configs
-* Excel export of product systems as matrices

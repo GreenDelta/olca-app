@@ -117,7 +117,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 
 	private void createDeveloperMenu(MenuManager windowMenu) {
 		windowMenu.add(new Separator());
-		MenuManager devMenu = new MenuManager("@Developer tools");
+		MenuManager devMenu = new MenuManager(Messages.DeveloperTools);
 		windowMenu.add(devMenu);
 		devMenu.add(Actions.create("SQL",
 				ImageType.SQL_ICON.getDescriptor(),

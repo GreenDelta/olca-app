@@ -153,6 +153,7 @@ public class Messages extends NLS {
 	public static String DeleteProcesslink;
 	public static String DependentParameters;
 	public static String Description;
+	public static String DeveloperTools;
 	public static String DirectContribution;
 	public static String DirectImpact;
 	public static String Direction;
@@ -323,6 +324,7 @@ public class Messages extends NLS {
 	public static String Name;
 	public static String NameCannotBeEmpty;
 	public static String NameEmptyOrAlreadyExists;
+	public static String NeedOpenDatabase;
 	public static String Never;
 	public static String NewActor;
 	public static String NewCategory;
@@ -466,7 +468,6 @@ public class Messages extends NLS {
 	public static String SearchProvidersFor;
 	public static String SearchRecipientsFor;
 	public static String SearchResults;
-	public static String SearchTextOpenDatabaseMessage;
 	public static String Searching;
 	public static String SearchingForUnits;
 	public static String Select;

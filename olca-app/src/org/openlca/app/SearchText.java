@@ -68,7 +68,7 @@ public class SearchText extends WorkbenchWindowControlContribution {
 
 	private void doSearch() {
 		if (Database.get() == null) {
-			InformationPopup.show(Messages.SearchTextOpenDatabaseMessage);
+			InformationPopup.show(Messages.NeedOpenDatabase);
 			return;
 		}
 		final String term = text.getText();
