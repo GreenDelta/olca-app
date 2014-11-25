@@ -74,6 +74,7 @@ public class Messages extends NLS {
 	public static String Comma;
 	public static String Complete;
 	public static String CompleteReferenceData;
+	public static String Configuration;
 	public static String Connect;
 	public static String ConnectProviders;
 	public static String ConnectRecipients;
@@ -304,6 +305,7 @@ public class Messages extends NLS {
 	public static String Maximize;
 	public static String MaximizeAll;
 	public static String Maximum;
+	public static String MaximumMemoryUsage;
 	public static String Mean;
 	public static String Methods;
 	public static String MinimalTree;
@@ -439,7 +441,6 @@ public class Messages extends NLS {
 	public static String Rename;
 	public static String Report;
 	public static String ReportParameters;
-	public static String ReserveMemoryMessage;
 	public static String Reset;
 	public static String Resize;
 	public static String Result;
@@ -544,6 +545,7 @@ public class Messages extends NLS {
 	public static String UpstreamTotal;
 	public static String Usage;
 	public static String UsageOf;
+	public static String UseBrowserFeatures;
 	public static String UsedInProcesses;
 	public static String User;
 	public static String UserFriendlyName;

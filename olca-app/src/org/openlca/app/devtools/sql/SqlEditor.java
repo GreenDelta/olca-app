@@ -16,7 +16,7 @@ public class SqlEditor extends FormEditor {
 	public static void open() {
 		if (Database.get() == null) {
 			Info.showBox("@No database connection",
-					"@You first need to activate a database.");
+					"@You need to activate a database.");
 			return;
 		}
 		Editors.open(new ScriptEditorInput("@SQL Editor"), ID);
