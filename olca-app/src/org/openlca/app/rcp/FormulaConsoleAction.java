@@ -22,12 +22,12 @@ class FormulaConsoleAction extends Action {
 
 	public FormulaConsoleAction() {
 		setId("FormulaConsoleAction");
-		setText("Formula Interpreter");
+		setText("@Formula interpreter");
 	}
 
 	@Override
 	public void run() {
-		IOConsole console = findOrCreateConsole("Formula Intepreter");
+		IOConsole console = findOrCreateConsole("@Formula intepreter");
 		ConsoleJob job = new ConsoleJob(console);
 		job.schedule();
 	}
