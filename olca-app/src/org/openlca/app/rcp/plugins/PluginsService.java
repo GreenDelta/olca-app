@@ -35,7 +35,7 @@ import com.google.common.io.OutputSupplier;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.client.apache4.ApacheHttpClient4;
+import com.sun.jersey.client.apache.ApacheHttpClient;
 
 public class PluginsService {
 	private static final Logger log = LoggerFactory
@@ -495,7 +495,7 @@ public class PluginsService {
 	}
 
 	public Client createWSClient() {
-		return ApacheHttpClient4.create();
+		return ApacheHttpClient.create();
 	}
 
 	/**

@@ -20,7 +20,7 @@ import com.google.common.io.OutputSupplier;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.client.apache4.ApacheHttpClient4;
+import com.sun.jersey.client.apache.ApacheHttpClient;
 
 public class UpdateService {
 
@@ -29,7 +29,7 @@ public class UpdateService {
 
 	public void downloadToFileWithProgress(String url, final File target)
 			throws Exception {
-		Client c = ApacheHttpClient4.create();
+		Client c = ApacheHttpClient.create();
 		WebResource r2 = c.resource(url);
 		final ClientResponse response = r2.get(ClientResponse.class);
 		if (response.getClientResponseStatus().getFamily() != Family.SUCCESSFUL) {
