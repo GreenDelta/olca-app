@@ -2,22 +2,27 @@ package org.openlca.app.results;
 
 import java.util.List;
 
-import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeColumn;
 import org.openlca.app.Messages;
 import org.openlca.app.components.ContributionImage;
+import org.openlca.app.results.LocationContributionPage.TreeInputElement;
 import org.openlca.app.util.Numbers;
-import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.Location;
+import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.ContributionItem;
 
 /**
@@ -27,34 +32,100 @@ import org.openlca.core.results.ContributionItem;
 class LocationContributionTable {
 
 	private final int LOCATION_COL = 0;
-	private final int AMOUNT_COL = 1;
-	private final int UNIT_COL = 2;
-	private String[] COLUMN_LABELS = { Messages.Location, Messages.Amount,
-			Messages.Unit };
+	private final int PROCESS_COL = 1;
+	private final int AMOUNT_COL = 2;
+	private final int UNIT_COL = 3;
+	private String[] COLUMN_LABELS = { Messages.Location, Messages.Process,
+			Messages.Amount, Messages.Unit };
 
-	private TableViewer viewer;
+	private TreeViewer viewer;
 	private String unit;
 
-	public LocationContributionTable(Composite parent) {
+	public LocationContributionTable(Composite parent, boolean fullSize) {
 		UI.gridLayout(parent, 1);
-		viewer = new TableViewer(parent);
-		viewer.setContentProvider(ArrayContentProvider.getInstance());
+		viewer = new TreeViewer(parent);
+		viewer.setContentProvider(new ContentProvider());
 		viewer.setLabelProvider(new LabelProvider());
-		Table table = viewer.getTable();
-		UI.gridData(table, true, true).heightHint = 150;
-		table.setHeaderVisible(true);
-		table.setLinesVisible(true);
+		Tree tree = viewer.getTree();
+		GridData gridData = UI.gridData(tree, true, true);
+		if (!fullSize)
+			gridData.heightHint = 150;
+		tree.setHeaderVisible(true);
+		tree.setLinesVisible(true);
 		for (String col : COLUMN_LABELS) {
-			TableColumn column = new TableColumn(table, SWT.NONE);
+			TreeColumn column = new TreeColumn(tree, SWT.NONE);
 			column.setText(col);
 		}
-		Tables.bindColumnWidths(table, 0.5, 0.25, 0.25);
+		bindColumnWidths(tree, 0.35, 0.35, 0.15, 0.15);
 	}
 
-	public void setInput(List<ContributionItem<Location>> contributions,
-			String unit) {
+	private void bindColumnWidths(Tree tree, double... percents) {
+		tree.addControlListener(new ControlAdapter() {
+			@Override
+			public void controlResized(ControlEvent e) {
+				double width = tree.getSize().x - 25;
+				if (width < 50)
+					return;
+				TreeColumn[] columns = tree.getColumns();
+				for (int i = 0; i < columns.length; i++) {
+					if (i >= percents.length)
+						break;
+					double colWidth = percents[i] * width;
+					columns[i].setWidth((int) colWidth);
+				}
+			}
+		});
+	}
+
+	public void setInput(List<TreeInputElement> contributions, String unit) {
 		this.unit = unit;
 		viewer.setInput(contributions);
+	}
+
+	private class ContentProvider implements ITreeContentProvider {
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public Object[] getElements(Object inputElement) {
+			if (inputElement == null)
+				return new Object[0];
+			List<TreeInputElement> element = List.class.cast(inputElement);
+			return element.toArray(new TreeInputElement[element.size()]);
+		}
+
+		@Override
+		public Object[] getChildren(Object parentElement) {
+			if (!(parentElement instanceof TreeInputElement))
+				return new Object[0];
+			TreeInputElement element = (TreeInputElement) parentElement;
+			List<ContributionItem<ProcessDescriptor>> items = element
+					.getProcessContributions();
+			return items.toArray(new ContributionItem[items.size()]);
+		}
+
+		@Override
+		public Object getParent(Object element) {
+			return null;
+		}
+
+		@Override
+		public boolean hasChildren(Object inputElement) {
+			if (!(inputElement instanceof TreeInputElement))
+				return false;
+			TreeInputElement element = (TreeInputElement) inputElement;
+			return element.getProcessContributions().size() > 0;
+		}
+
+		@Override
+		public void dispose() {
+			// do nothing
+		}
+
+		@Override
+		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+			// do nothing
+		}
+
 	}
 
 	private class LabelProvider extends ColumnLabelProvider implements
@@ -70,26 +141,55 @@ class LocationContributionTable {
 		}
 
 		@Override
-		@SuppressWarnings("unchecked")
 		public Image getColumnImage(Object element, int col) {
 			if (col != 0)
 				return null;
-			if (!(element instanceof ContributionItem))
-				return null;
-			ContributionItem<Location> contribution = ContributionItem.class
-					.cast(element);
+			ContributionItem<?> contribution = null;
+			if (element instanceof TreeInputElement) {
+				TreeInputElement inputElement = (TreeInputElement) element;
+				contribution = inputElement.getContribution();
+			} else
+				contribution = ContributionItem.class.cast(element);
 			return image.getForTable(contribution.getShare());
 		}
 
-		@Override
 		@SuppressWarnings("unchecked")
+		@Override
 		public String getColumnText(Object element, int col) {
-			if (!(element instanceof ContributionItem))
-				return null;
-			ContributionItem<Location> contribution = ContributionItem.class
+			if (element instanceof TreeInputElement) {
+				TreeInputElement inputElement = (TreeInputElement) element;
+				return getLocationColumnText(inputElement.getContribution(),
+						col);
+			}
+			ContributionItem<ProcessDescriptor> contribution = ContributionItem.class
 					.cast(element);
+			return getProcessColumnText(
+					(ContributionItem<ProcessDescriptor>) contribution, col);
+		}
+
+		private String getLocationColumnText(
+				ContributionItem<Location> contribution, int col) {
 			switch (col) {
 			case LOCATION_COL:
+				return contribution.getItem() == null ? Messages.Other
+						: contribution.getItem().getName();
+			case PROCESS_COL:
+				return "";
+			case AMOUNT_COL:
+				return Numbers.format(contribution.getAmount());
+			case UNIT_COL:
+				return unit;
+			default:
+				return null;
+			}
+		}
+
+		private String getProcessColumnText(
+				ContributionItem<ProcessDescriptor> contribution, int col) {
+			switch (col) {
+			case LOCATION_COL:
+				return "";
+			case PROCESS_COL:
 				return contribution.getItem() == null ? Messages.Other
 						: contribution.getItem().getName();
 			case AMOUNT_COL:

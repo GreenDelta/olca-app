@@ -15,8 +15,8 @@ import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.geo.kml.KmlFeature;
+import org.openlca.geo.parameter.ParameterCalculator;
 import org.openlca.geo.parameter.ParameterRepository;
-import org.openlca.geo.parameter.ParameterSetBuilder;
 import org.openlca.geo.parameter.ShapeFileRepository;
 import org.python.google.common.base.Strings;
 import org.slf4j.Logger;
@@ -28,7 +28,7 @@ public class EvaluateLocationsJob implements IRunnableWithProgress {
 	private ImpactMethod method;
 	private ShapeFileRepository shapeFileRepository;
 	private ParameterRepository parameterRepository;
-	private ParameterSetBuilder setBuilder;
+	private ParameterCalculator parameterCalculator;
 	private LocationDao locationDao;
 	private IProgressMonitor monitor;
 	private boolean forceEvaluation;
@@ -61,7 +61,7 @@ public class EvaluateLocationsJob implements IRunnableWithProgress {
 		List<Parameter> parameters = getShapeFileParameters();
 		if (parameters.size() == 0)
 			return Collections.emptyList();
-		setBuilder = ParameterSetBuilder.createBuilder(parameters,
+		parameterCalculator = new ParameterCalculator(parameters,
 				shapeFileRepository, parameterRepository);
 		locationDao = new LocationDao(Database.get());
 		return locationDao.getDescriptors();
@@ -72,7 +72,7 @@ public class EvaluateLocationsJob implements IRunnableWithProgress {
 		if (needsEvaluation(location)) {
 			KmlFeature feature = getKmlFeature(location);
 			if (feature != null)
-				setBuilder.build(Collections.singleton(feature));
+				parameterCalculator.calculate(location.getId(), feature);
 		}
 		worked();
 	}
@@ -80,10 +80,8 @@ public class EvaluateLocationsJob implements IRunnableWithProgress {
 	private boolean needsEvaluation(BaseDescriptor location) {
 		if (forceEvaluation)
 			return true;
-		KmlFeature feature = KmlFeature.empty();
-		feature.setIdentifier(location.getId());
 		for (String shapeFile : shapeFiles)
-			if (!parameterRepository.contains(feature, shapeFile))
+			if (!parameterRepository.contains(location.getId(), shapeFile))
 				return true;
 		return false;
 	}
@@ -117,7 +115,6 @@ public class EvaluateLocationsJob implements IRunnableWithProgress {
 			return null;
 		try {
 			KmlFeature feature = KmlFeature.parse(kml);
-			feature.setIdentifier(location.getId());
 			return feature;
 		} catch (Exception e) {
 			log.warn("Could not parse kml data for location "

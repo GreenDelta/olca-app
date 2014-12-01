@@ -7,6 +7,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.openlca.app.db.Cache;
 import org.openlca.app.results.ContributionTablePage;
+import org.openlca.app.results.LocationContributionPage;
 import org.openlca.app.results.ResultEditorInput;
 import org.openlca.app.results.TotalFlowResultPage;
 import org.openlca.app.results.TotalImpactResultPage;
@@ -45,6 +46,8 @@ public class RegionalizedResultEditor extends FormEditor {
 				addPage(new ContributionTablePage(this,
 						result.getRegionalizedResult()));
 				addPage(new KmlResultView(this, result));
+				addPage(new LocationContributionPage(this,
+						result.getRegionalizedResult(), false));
 			}
 		} catch (Exception e) {
 			log.error("failed to add pages", e);

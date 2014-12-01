@@ -1,7 +1,9 @@
 package org.openlca.app.results;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jface.action.Action;
@@ -27,12 +29,16 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.Location;
+import org.openlca.core.model.ModelType;
+import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
+import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.ContributionItem;
 import org.openlca.core.results.ContributionResultProvider;
 import org.openlca.core.results.ContributionSet;
 import org.openlca.core.results.Contributions;
+import org.openlca.core.results.Contributions.Function;
 import org.openlca.core.results.LocationContribution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,11 +58,20 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 	private LocationContributionTable table;
 	private LocationContribution calculator;
 	private FlowImpactSelection flowImpactSelection;
+	private TreeInputBuilder inputBuilder;
+	private boolean showMap;
 
 	public LocationContributionPage(FormEditor editor,
 			ContributionResultProvider<?> result) {
+		this(editor, result, true);
+	}
+
+	public LocationContributionPage(FormEditor editor,
+			ContributionResultProvider<?> result, boolean showMap) {
 		super(editor, "analysis.MapPage", Messages.Locations);
+		this.showMap = showMap;
 		this.result = result;
+		this.inputBuilder = new TreeInputBuilder(result);
 		calculator = new LocationContribution(result);
 	}
 
@@ -81,7 +96,8 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 		Composite body = UI.formBody(form, toolkit);
 		createCombos(body, toolkit);
 		createTable(body, toolkit);
-		createBrowser(body, toolkit);
+		if (showMap)
+			createBrowser(body, toolkit);
 		form.reflow(true);
 	}
 
@@ -95,10 +111,12 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 	}
 
 	private void createTable(Composite body, FormToolkit toolkit) {
-		Composite composite = UI.formSection(body, toolkit,
+		Section section = UI.section(body, toolkit,
 				Messages.ResultContributions);
+		UI.gridData(section, true, true);
+		Composite composite = UI.sectionClient(section, toolkit);
 		UI.gridLayout(composite, 1);
-		table = new LocationContributionTable(composite);
+		table = new LocationContributionTable(composite, showMap);
 	}
 
 	private void createBrowser(Composite body, FormToolkit toolkit) {
@@ -150,7 +168,8 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 				return;
 			String unit = Labels.getRefUnit(flow, result.getCache());
 			ContributionSet<Location> set = calculator.calculate(flow);
-			setData(unit, set);
+			double total = result.getTotalFlowResult(flow).getValue();
+			setData(set, flow, total, unit);
 		}
 
 		@Override
@@ -159,15 +178,125 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 				return;
 			String unit = impact.getReferenceUnit();
 			ContributionSet<Location> set = calculator.calculate(impact);
-			setData(unit, set);
+			double total = result.getTotalImpactResult(impact).getValue();
+			setData(set, impact, total, unit);
 		}
 
-		private void setData(String unit, ContributionSet<Location> set) {
-			List<ContributionItem<Location>> items = set.getContributions();
-			Contributions.sortDescending(items);
+		private void setData(ContributionSet<Location> set,
+				BaseDescriptor descriptor, double total, String unit) {
+			Contributions.sortDescending(set.getContributions());
+			List<TreeInputElement> items = inputBuilder.build(set, descriptor,
+					total);
 			table.setInput(items, unit);
 			renderMap(set.getContributions());
 		}
+
+	}
+
+	private class TreeInputBuilder {
+
+		private ContributionResultProvider<?> result;
+		private Map<Location, List<ProcessDescriptor>> processIndex = new HashMap<>();
+
+		private TreeInputBuilder(ContributionResultProvider<?> result) {
+			this.result = result;
+			initProcessIndex();
+		}
+
+		private void initProcessIndex() {
+			if (result == null)
+				return;
+			EntityCache cache = result.getCache();
+			for (ProcessDescriptor process : result.getProcessDescriptors()) {
+				Location loc = null;
+				if (process.getLocation() != null)
+					loc = cache.get(Location.class, process.getLocation());
+				List<ProcessDescriptor> list = processIndex.get(loc);
+				if (list == null) {
+					list = new ArrayList<>();
+					processIndex.put(loc, list);
+				}
+				list.add(process);
+			}
+		}
+
+		private List<TreeInputElement> build(
+				ContributionSet<Location> contributions,
+				BaseDescriptor descriptor, double total) {
+			List<TreeInputElement> elements = new ArrayList<>();
+			for (ContributionItem<Location> contribution : contributions
+					.getContributions())
+				elements.add(new TreeInputElement(contribution));
+			Contributions.calculate(processIndex.keySet(), total,
+					new Function<Location>() {
+						@Override
+						public double value(Location location) {
+							TreeInputElement element = getInputFor(elements,
+									location);
+							List<ProcessDescriptor> list = processIndex
+									.get(location);
+							double amount = 0;
+							for (ProcessDescriptor p : list) {
+								amount += getSingleResult(p, descriptor);
+								ContributionItem<ProcessDescriptor> processContribution = new ContributionItem<>();
+								processContribution.setRest(p == null);
+								processContribution.setItem(p);
+								processContribution.setAmount(amount);
+								processContribution.setShare(amount / total);
+								element.getProcessContributions().add(
+										processContribution);
+							}
+							Contributions.sortDescending(element
+									.getProcessContributions());
+							return amount;
+						}
+					});
+			return elements;
+		}
+
+		private double getSingleResult(ProcessDescriptor process,
+				BaseDescriptor descriptor) {
+			if (descriptor.getModelType() == ModelType.IMPACT_CATEGORY)
+				return result.getSingleImpactResult(process,
+						(ImpactCategoryDescriptor) descriptor).getValue();
+			return result.getSingleFlowResult(process,
+					(FlowDescriptor) descriptor).getValue();
+		}
+
+		private TreeInputElement getInputFor(List<TreeInputElement> elements,
+				Location location) {
+			for (TreeInputElement element : elements) {
+				Location other = element.getContribution().getItem();
+				if (other == null)
+					if (location == null)
+						return element;
+					else
+						continue;
+				if (other.equals(location))
+					return element;
+			}
+			return null;
+		}
+
+	}
+
+	class TreeInputElement {
+
+		private ContributionItem<Location> contribution;
+		private List<ContributionItem<ProcessDescriptor>> processContributions = new ArrayList<>();
+
+		private TreeInputElement(ContributionItem<Location> contribution) {
+			this.contribution = contribution;
+		}
+
+		public List<ContributionItem<ProcessDescriptor>> getProcessContributions() {
+			return processContributions;
+		}
+
+		public ContributionItem<Location> getContribution() {
+			return contribution;
+		}
+
 	}
 
 	private class RefreshMapAction extends Action {

@@ -213,7 +213,7 @@ class CalculationWizard extends Wizard {
 					.setRegionalizedResult(new ContributionResultProvider<ContributionResult>(
 							result.getRegionalizedResult(), Cache
 									.getEntityCache()));
-			resultProvider.setKmlFeatures(result.getKmlFeatures());
+			resultProvider.setKmlData(regioSetup.getKmlData());
 			ResultEditorInput input = getEditorInput(resultProvider, setup);
 			Editors.open(input, RegionalizedResultEditor.ID);
 		}
