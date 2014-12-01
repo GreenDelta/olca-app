@@ -2,6 +2,7 @@
 <?pde version="3.5"?>
 
 <product name="openLCA" uid="openLCA" id="olca-app.openLCA" application="org.openlca.app.Application" version="1.4.1.beta6" useFeatures="false" includeLaunchers="true">
+
    <aboutInfo>
       <image path="/olca-app/icons/about.png"/>
       <text>
@@ -63,7 +64,6 @@ en
       <plugin id="javax.inject"/>
       <plugin id="javax.xml"/>
       <plugin id="olca-app"/>
-      <plugin id="olca-scs"/>
       <plugin id="org.apache.batik.css"/>
       <plugin id="org.apache.batik.util"/>
       <plugin id="org.apache.batik.util.gui"/>
