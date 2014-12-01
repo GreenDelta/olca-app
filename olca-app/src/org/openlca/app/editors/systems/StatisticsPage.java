@@ -27,14 +27,14 @@ public class StatisticsPage extends FormPage implements HtmlPage {
 	private Browser browser;
 
 	public StatisticsPage(ProductSystemEditor editor) {
-		super(editor, "ProductSystemStatisticsPage", "Statistics");
+		super(editor, "ProductSystemStatisticsPage", "@Statistics");
 		system = editor.getModel();
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
 		ScrolledForm form = UI.formHeader(managedForm,
-				"Product system statistics");
+				"@Product system statistics");
 		FormToolkit toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		browser = UI.createBrowser(body, this);

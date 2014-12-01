@@ -20,13 +20,14 @@
       		default="false"
       		id="SqlEditor"
       		name="SQL"
-      		icon="icons/sql_16.png">
+      		icon="icons/sql_16.gif">
       </editor>
       <editor
       		class="org.openlca.app.devtools.js.JavaScriptEditor"
       		default="false"
       		id="JavaScriptEditor"
       		name="JavaScript"
+      		icon="icons/javascript_16.gif"
       		contributorClass="org.openlca.app.devtools.Toolbar">
       </editor>
        <editor
@@ -34,6 +35,7 @@
       		default="false"
       		id="PythonEditor"
       		name="Python"
+      		icon="icons/python_16.gif"
       		contributorClass="org.openlca.app.devtools.Toolbar">
       </editor>      
       
@@ -355,6 +357,22 @@
          <property
                name="introBrandingImageText"
                value="openLCA" />
+         <property
+               name="startupProgressRect"
+               value="0,425,633,5">
+         </property>
+         <property
+               name="preferenceCustomization"
+               value="plugin_customization.ini">
+         </property>
+         <property
+               name="startupForegroundColor"
+               value="000000">
+         </property>
+         <property
+               name="startupMessageRect"
+               value="7,500,445,20">
+         </property>
       </product>
    </extension>
    <extension

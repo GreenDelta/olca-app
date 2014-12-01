@@ -123,11 +123,17 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 
 	private void createDeveloperMenu(MenuManager windowMenu) {
 		windowMenu.add(new Separator());
-		MenuManager devMenu = new MenuManager("@Developer tools");
+		MenuManager devMenu = new MenuManager(Messages.DeveloperTools);
 		windowMenu.add(devMenu);
-		devMenu.add(Actions.create("SQL", null, SqlEditor::open));
-		devMenu.add(Actions.create("JavaScript", null, JavaScriptEditor::open));
-		devMenu.add(Actions.create("Python", null, PythonEditor::open));
+		devMenu.add(Actions.create("SQL",
+				ImageType.SQL_ICON.getDescriptor(),
+				SqlEditor::open));
+		devMenu.add(Actions.create("JavaScript",
+				ImageType.JAVASCRIPT_ICON.getDescriptor(),
+				JavaScriptEditor::open));
+		devMenu.add(Actions.create("Python",
+				ImageType.PYTHON_ICON.getDescriptor(),
+				PythonEditor::open));
 		windowMenu.add(new Separator());
 	}
 

@@ -27,6 +27,7 @@ import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Images;
 import org.openlca.app.util.Labels;
+import org.openlca.app.util.TableClipboard;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
@@ -46,7 +47,7 @@ class ProjectParameterTable {
 	private final int LABEL_COLS = 4;
 	private final String PARAMETER = Messages.Parameter;
 	private final String CONTEXT = Messages.Context;
-	private final String NAME = "Report name";
+	private final String NAME = "@Report name";
 	private final String DESCRIPTION = Messages.Description;
 
 	private ProjectEditor editor;
@@ -125,8 +126,9 @@ class ProjectParameterTable {
 		createModifySupport();
 		Action add = Actions.onAdd(this::onAdd);
 		Action remove = Actions.onRemove(this::onRemove);
+		Action copy = TableClipboard.onCopy(viewer);
 		Actions.bind(section, add, remove);
-		Actions.bind(viewer, add, remove);
+		Actions.bind(viewer, add, remove, copy);
 		Tables.onDoubleClick(viewer, (event) -> {
 			TableItem item = Tables.getItem(viewer, event);
 			if (item == null)

@@ -86,16 +86,16 @@ olca.BarChart = function(divId, width, height) {
 	// calculates the bar height for the datum i
 	this.barHeight = function(datum, i) {
 		var value = self.fetchValue(datum);
-		if(value == 0)
+		if(value === 0)
 			return 0;
 		if(value > 0) {
-			if(self.maxAbsPositive == 0)
+			if(self.maxAbsPositive === 0)
 				return 0;
 			var share = value / self.maxAbsPositive;
 			var distance = self.zeroLineY - self.offsetTop;
 			return share * distance;			
 		} else {
-			if(self.maxAbsNegative == 0)
+			if(self.maxAbsNegative === 0)
 				return 0;
 			var share = Math.abs(value) / self.maxAbsNegative;
 			var distance = self.height - self.offsetBottom - self.zeroLineY;

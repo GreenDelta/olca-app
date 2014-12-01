@@ -1,7 +1,6 @@
 package org.openlca.app.results;
 
 import java.util.List;
-
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -14,14 +13,14 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.openlca.app.Messages;
 import org.openlca.app.components.ContributionImage;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
+import org.openlca.app.util.TableClipboard;
 import org.openlca.app.util.TableColumnSorter;
 import org.openlca.app.util.Tables;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.ContributionItem;
-
-import com.google.common.primitives.Doubles;
 
 /**
  * Table viewer for process contributions to a LCIA category or flow.
@@ -39,7 +38,7 @@ class ContributionTable extends TableViewer {
 	private String unit;
 
 	public ContributionTable(Composite parent) {
-		super(parent);
+		super(parent, SWT.BORDER | SWT.FULL_SELECTION | SWT.VIRTUAL | SWT.MULTI);
 		createColumns();
 		Table table = this.getTable();
 		table.setHeaderVisible(true);
@@ -49,6 +48,7 @@ class ContributionTable extends TableViewer {
 		setLabelProvider(label);
 		createColumnSorters(label);
 		Tables.bindColumnWidths(table, 0.2, 0.4, 0.2, 0.2);
+		Actions.bind(this, TableClipboard.onCopy(this));
 	}
 
 	public void setInput(List<ContributionItem<?>> items, String unit) {
@@ -67,42 +67,13 @@ class ContributionTable extends TableViewer {
 	}
 
 	private void createColumnSorters(Label p) {
-		TableColumnSorter<?> first = new AmountSorter(CONTRIBUTION);
+		TableColumnSorter<?> first = ContributionSorter.forShare(CONTRIBUTION);
 		first.setAscending(false);
-		// @formatter:off
-		Tables.registerSorters(
-				this,
+		Tables.registerSorters(this,
 				first,
 				new TableColumnSorter<>(ContributionItem.class, NAME, p),
-				new AmountSorter(AMOUNT),
+				ContributionSorter.forAmount(AMOUNT),
 				new TableColumnSorter<>(ContributionItem.class, UNIT, p));
-		// @formatter:on
-	}
-
-	@SuppressWarnings("rawtypes")
-	private class AmountSorter extends TableColumnSorter<ContributionItem> {
-
-		public AmountSorter(int column) {
-			super(ContributionItem.class, column);
-		}
-
-		@Override
-		public int compare(ContributionItem item1, ContributionItem item2) {
-			double val1 = getVal(item1);
-			double val2 = getVal(item2);
-			return Doubles.compare(val1, val2);
-		}
-
-		private double getVal(ContributionItem item) {
-			switch (getColumn()) {
-			case CONTRIBUTION:
-				return item.getShare();
-			case AMOUNT:
-				return item.getAmount();
-			default:
-				return 0;
-			}
-		}
 	}
 
 	private class Label extends ColumnLabelProvider implements

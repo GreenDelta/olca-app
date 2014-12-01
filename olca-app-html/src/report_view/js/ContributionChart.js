@@ -95,10 +95,10 @@ ContributionChart = function() {
 		});
 		dataSets.push({
 			label: "Other",
-			fillColor: "rgba(151,187,205,0.5)",
-			strokeColor: "rgba(151,187,205,0.8)",
-			highlightFill: "rgba(151,187,205,0.75)",
-			highlightStroke: "rgba(151,187,205,1)",
+			fillColor: "rgba(211,211,211,0.5)",
+			strokeColor: "rgba(211,211,211,0.8)",
+			highlightFill: "rgba(211,211,211,0.75)",
+			highlightStroke: "rgba(211,211,211,1)",
 			data: []
 		});
 		return dataSets;

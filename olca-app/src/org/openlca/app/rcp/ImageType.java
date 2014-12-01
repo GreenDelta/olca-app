@@ -1,7 +1,5 @@
 package org.openlca.app.rcp;
 
-import java.io.File;
-
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.PlatformUI;
@@ -144,6 +142,8 @@ public enum ImageType {
 
 	INPUT_ICON("input_16.png"),
 
+	JAVASCRIPT_ICON("javascript_16.gif"),
+
 	LAYOUT_ICON("layout.gif"),
 
 	LCIA_CATEGORY_ICON("folder_wa.png"),
@@ -244,6 +244,8 @@ public enum ImageType {
 
 	PROJECT_ICON_NEW("project_obj_new.png"),
 
+	PYTHON_ICON("python_16.gif"),
+
 	REFRESH_ICON("refresh_16.png"),
 
 	RUN_SMALL("run_16.gif"),
@@ -265,6 +267,8 @@ public enum ImageType {
 	SOURCE_ICON_NEW("source_obj_new.png"),
 
 	SP_ICON("sp.png"),
+
+	SQL_ICON("sql_16.gif"),
 
 	SWITCH_ICON("switch_view_mode.gif"),
 
@@ -319,7 +323,7 @@ public enum ImageType {
 	}
 
 	public String getPath() {
-		return File.separator + "icons" + File.separator + this.fileName;
+		return "icons/" + this.fileName;
 	}
 
 	public static ImageType forFile(String fileName) {
@@ -364,8 +368,8 @@ public enum ImageType {
 	 * platform. See ISharedImages for the image names.
 	 */
 	public static ImageDescriptor getPlatformDescriptor(String name) {
-		return PlatformUI.getWorkbench()
-				.getSharedImages().getImageDescriptor(name);
+		return PlatformUI.getWorkbench().getSharedImages()
+				.getImageDescriptor(name);
 	}
 
 	/**
@@ -373,7 +377,6 @@ public enum ImageType {
 	 * See ISharedImages for the image names.
 	 */
 	public static Image getPlatformImage(String name) {
-		return PlatformUI.getWorkbench()
-				.getSharedImages().getImage(name);
+		return PlatformUI.getWorkbench().getSharedImages().getImage(name);
 	}
 }

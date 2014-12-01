@@ -28,7 +28,7 @@ public abstract class ScriptEditorPage extends FormPage implements HtmlPage {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, "JavaScript Editor");
+		ScrolledForm form = UI.formHeader(managedForm, getTitle());
 		FormToolkit toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		body.setLayout(new FillLayout());

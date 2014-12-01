@@ -101,6 +101,15 @@
                 return parseFloat(text).toExponential(5);
             };
         });
+		
+		//@include('./js/VariantLegend.js')
+		app.directive("variantLegend", variantLegend);
+
+		//@include('./js/IndicatorLegend.js')
+		app.directive("indicatorLegend", indicatorLegend);
+		
+		//@include('./js/ContributionLegend.js')
+		app.directive("contributionLegend", contributionLegend);
 
 	    //@include('./js/Controller.js')
         app.controller('Controller', Controller);
@@ -113,10 +122,7 @@
 		
 		//@include('./js/SingleScoreBarChart.js')
 		app.directive("singleScoreBarChart", SingleScoreBarChart);
-		
-		//@include('./js/VariantLegend.js')
-		app.directive("variantLegend", VariantLegend);
-		
+				
 		//@include('./js/ContributionChart.js')
 		app.directive("contributionChart", ContributionChart);
 		

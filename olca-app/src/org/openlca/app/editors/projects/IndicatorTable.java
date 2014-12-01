@@ -14,7 +14,9 @@ import org.openlca.app.db.Database;
 import org.openlca.app.editors.reports.model.Report;
 import org.openlca.app.editors.reports.model.ReportIndicator;
 import org.openlca.app.rcp.ImageType;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
+import org.openlca.app.util.TableClipboard;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.table.modify.CheckBoxCellModifier;
@@ -36,18 +38,19 @@ class IndicatorTable {
 
 	public void render(Composite parent) {
 		viewer = Tables.createViewer(parent, Messages.ImpactCategory,
-				"Display", "Report name", Messages.Description);
+				"@Display", "@Report name", Messages.Description);
 		Tables.bindColumnWidths(viewer, 0.3, 0.1, 0.2, 0.4);
 		UI.gridData(viewer.getTable(), true, false).heightHint = 150;
 		Label label = new Label();
 		viewer.setLabelProvider(label);
 		ModifySupport<ReportIndicator> modifySupport = new ModifySupport<>(
 				viewer);
-		modifySupport.bind("Display", new DisplayModifier());
-		modifySupport.bind("Report name", new NameModifier());
+		modifySupport.bind("@Display", new DisplayModifier());
+		modifySupport.bind("@Report name", new NameModifier());
 		modifySupport.bind(Messages.Description, new DescriptionModifier());
 		if (editor.getReport() != null)
 			viewer.setInput(editor.getReport().getIndicators());
+		Actions.bind(viewer, TableClipboard.onCopy(viewer));
 	}
 
 	public void methodChanged(ImpactMethodDescriptor method) {

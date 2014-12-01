@@ -7,7 +7,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
-import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.ImpactMethodViewer;
 import org.openlca.app.viewers.combo.NwSetComboViewer;
@@ -36,10 +35,8 @@ class ImpactSection {
 		Composite form = UI.formComposite(composite, toolkit);
 		UI.gridData(form, true, false);
 		createViewers(toolkit, form);
-		if (FeatureFlag.REPORTS.isEnabled()) {
-			indicatorTable = new IndicatorTable(editor);
-			indicatorTable.render(composite);
-		}
+		indicatorTable = new IndicatorTable(editor);
+		indicatorTable.render(composite);
 		setInitialSelection();
 		addListeners(); // do this after the initial selection to not set the
 						// editor dirty

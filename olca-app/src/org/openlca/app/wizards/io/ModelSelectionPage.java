@@ -8,6 +8,8 @@ import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -53,6 +55,14 @@ class ModelSelectionPage extends WizardPage {
 		setDescription(descr);
 	}
 
+	public File getExportDestination() {
+		return new File(exportDestination.getAbsolutePath());
+	}
+
+	public List<BaseDescriptor> getSelectedModels() {
+		return selectedComponents;
+	}
+
 	private String getTypeName(ModelType type) {
 		switch (type) {
 		case PROCESS:
@@ -83,8 +93,8 @@ class ModelSelectionPage extends WizardPage {
 
 	private void createChooseDirectoryComposite(final Composite body) {
 		// create composite
-		final Composite chooseDirectoryComposite = new Composite(body, SWT.NONE);
-		final GridLayout dirLayout = new GridLayout(3, false);
+		Composite chooseDirectoryComposite = new Composite(body, SWT.NONE);
+		GridLayout dirLayout = new GridLayout(3, false);
 		dirLayout.marginLeft = 0;
 		dirLayout.marginRight = 0;
 		dirLayout.marginBottom = 0;
@@ -99,7 +109,7 @@ class ModelSelectionPage extends WizardPage {
 				.setText(Messages.ToDirectory);
 
 		// create text for selecting a category
-		final Text directoryText = new Text(chooseDirectoryComposite,
+		Text directoryText = new Text(chooseDirectoryComposite,
 				SWT.BORDER);
 		String lastDirectory = ApplicationProperties.PROP_EXPORT_DIRECTORY
 				.getValue();
@@ -137,35 +147,35 @@ class ModelSelectionPage extends WizardPage {
 
 	@Override
 	public void createControl(final Composite parent) {
-		final Composite body = UIFactory.createContainer(parent);
-		final GridLayout bodyLayout = new GridLayout(1, true);
+		Composite body = UIFactory.createContainer(parent);
+		GridLayout bodyLayout = new GridLayout(1, true);
 		bodyLayout.marginHeight = 10;
 		bodyLayout.marginWidth = 10;
 		bodyLayout.verticalSpacing = 10;
 		body.setLayout(bodyLayout);
-
 		createChooseDirectoryComposite(body);
-
-		final Composite processComposite = new Composite(body, SWT.NONE);
-		final GridLayout processLayout = new GridLayout(2, false);
-		processLayout.marginLeft = 0;
-		processLayout.marginRight = 0;
-		processLayout.marginBottom = 0;
-		processLayout.marginTop = 0;
-		processLayout.marginHeight = 0;
-		processLayout.marginWidth = 0;
-		processComposite.setLayout(processLayout);
-		processComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
-				true));
-
-		createViewer(processComposite);
-
+		Composite viewerComposite = createViewerComposite(body);
+		createViewer(viewerComposite);
 		setControl(body);
 		checkCompletion();
 	}
 
-	private void createViewer(Composite processComposite) {
-		viewer = new CheckboxTreeViewer(processComposite, SWT.VIRTUAL
+	private Composite createViewerComposite(final Composite body) {
+		Composite composite = new Composite(body, SWT.NONE);
+		GridLayout layout = new GridLayout(2, false);
+		layout.marginLeft = 0;
+		layout.marginRight = 0;
+		layout.marginBottom = 0;
+		layout.marginTop = 0;
+		layout.marginHeight = 0;
+		layout.marginWidth = 0;
+		composite.setLayout(layout);
+		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		return composite;
+	}
+
+	private void createViewer(Composite composite) {
+		viewer = new CheckboxTreeViewer(composite, SWT.VIRTUAL
 				| SWT.MULTI | SWT.BORDER);
 		viewer.setUseHashlookup(true);
 		viewer.getTree().setLayoutData(
@@ -174,21 +184,35 @@ class ModelSelectionPage extends WizardPage {
 		viewer.setLabelProvider(new NavigationLabelProvider());
 		viewer.setSorter(new NavigationSorter());
 		viewer.addCheckStateListener(new ModelSelectionState(this, viewer));
+		registerInputHandler(composite);
+		ColumnViewerToolTipSupport.enableFor(viewer);
+	}
+
+	// We want to avoid a resizing of the import dialog when the user flips to
+	// this page. Thus, we set the input of the tree viewer after receiving the
+	// first paint event.
+	private void registerInputHandler(Composite composite) {
+		composite.addPaintListener(new PaintListener() {
+			private boolean init = false;
+
+			@Override
+			public void paintControl(PaintEvent e) {
+				if (init) {
+					composite.removePaintListener(this);
+					return;
+				}
+				init = true;
+				setInitialInput();
+			}
+		});
+	}
+
+	private void setInitialInput() {
 		if (type != null)
 			viewer.setInput(Navigator.findElement(type));
 		else
 			viewer.setInput(Navigator.findElement(Database
 					.getActiveConfiguration()));
-
-		ColumnViewerToolTipSupport.enableFor(viewer);
-	}
-
-	public File getExportDestination() {
-		return new File(exportDestination.getAbsolutePath());
-	}
-
-	public List<BaseDescriptor> getSelectedModels() {
-		return selectedComponents;
 	}
 
 }

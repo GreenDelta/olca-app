@@ -196,7 +196,7 @@ class ShapeFilePage extends FormPage {
 		}
 
 		private void delete() {
-			boolean del = Question.ask("Delete " + shapeFile + "?", "Do you "
+			boolean del = Question.ask("@Delete " + shapeFile + "?", "Do you "
 					+ "really want to delete " + shapeFile + "?");
 			if (!del)
 				return;

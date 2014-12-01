@@ -35,7 +35,7 @@ public class ConfigPage extends PreferencePage implements
 
 	@Override
 	public String getTitle() {
-		return "@Configuration";
+		return Messages.Configuration;
 	}
 
 	@Override
@@ -58,10 +58,10 @@ public class ConfigPage extends PreferencePage implements
 		UI.gridLayout(composite, 2);
 		UI.gridData(composite, true, false);
 		createLanguageCombo(composite);
-		memoryText = UI.formText(composite, "@Maximum memory usage in MB");
+		memoryText = UI.formText(composite, Messages.MaximumMemoryUsage);
 		memoryText.setText(Integer.toString(iniFile.getMaxMemory()));
 		memoryText.addModifyListener((e) -> setDirty());
-		browserCheck = UI.formCheckBox(composite, "@Use browser features");
+		browserCheck = UI.formCheckBox(composite, Messages.UseBrowserFeatures);
 		browserCheck.setSelection(browserEnabled);
 		Controls.onSelect(browserCheck, (e) -> {
 			browserEnabled = browserCheck.getSelection();

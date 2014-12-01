@@ -74,6 +74,7 @@ public class Messages extends NLS {
 	public static String Comma;
 	public static String Complete;
 	public static String CompleteReferenceData;
+	public static String Configuration;
 	public static String Connect;
 	public static String ConnectProviders;
 	public static String ConnectRecipients;
@@ -152,6 +153,7 @@ public class Messages extends NLS {
 	public static String DeleteProcesslink;
 	public static String DependentParameters;
 	public static String Description;
+	public static String DeveloperTools;
 	public static String DirectContribution;
 	public static String DirectImpact;
 	public static String Direction;
@@ -306,6 +308,7 @@ public class Messages extends NLS {
 	public static String Maximize;
 	public static String MaximizeAll;
 	public static String Maximum;
+	public static String MaximumMemoryUsage;
 	public static String Mean;
 	public static String Methods;
 	public static String MinimalTree;
@@ -323,6 +326,7 @@ public class Messages extends NLS {
 	public static String Name;
 	public static String NameCannotBeEmpty;
 	public static String NameEmptyOrAlreadyExists;
+	public static String NeedOpenDatabase;
 	public static String Never;
 	public static String NewActor;
 	public static String NewCategory;
@@ -441,7 +445,6 @@ public class Messages extends NLS {
 	public static String Rename;
 	public static String Report;
 	public static String ReportParameters;
-	public static String ReserveMemoryMessage;
 	public static String Reset;
 	public static String Resize;
 	public static String Result;
@@ -467,7 +470,6 @@ public class Messages extends NLS {
 	public static String SearchProvidersFor;
 	public static String SearchRecipientsFor;
 	public static String SearchResults;
-	public static String SearchTextOpenDatabaseMessage;
 	public static String Searching;
 	public static String SearchingForUnits;
 	public static String Select;
@@ -546,6 +548,7 @@ public class Messages extends NLS {
 	public static String UpstreamTotal;
 	public static String Usage;
 	public static String UsageOf;
+	public static String UseBrowserFeatures;
 	public static String UsedInProcesses;
 	public static String User;
 	public static String UserFriendlyName;

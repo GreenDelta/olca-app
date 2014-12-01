@@ -2,6 +2,7 @@ package org.openlca.app.devtools.sql;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.forms.editor.FormEditor;
+import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.devtools.ScriptEditorInput;
 import org.openlca.app.util.Editors;
@@ -15,11 +16,11 @@ public class SqlEditor extends FormEditor {
 
 	public static void open() {
 		if (Database.get() == null) {
-			Info.showBox("@No database connection",
-					"@You first need to activate a database.");
+			Info.showBox(Messages.NoDatabaseOpened,
+					Messages.NeedOpenDatabase);
 			return;
 		}
-		Editors.open(new ScriptEditorInput("@SQL Editor"), ID);
+		Editors.open(new ScriptEditorInput("SQL"), ID);
 	}
 
 	@Override

@@ -13,7 +13,9 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Numbers;
+import org.openlca.app.util.TableClipboard;
 import org.openlca.app.util.TableColumnSorter;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
@@ -63,16 +65,15 @@ public class TotalImpactResultPage extends FormPage {
 		viewer.setLabelProvider(labelProvider);
 		createColumnSorters(viewer, labelProvider);
 		Tables.bindColumnWidths(viewer.getTable(), 0.50, 0.30, 0.2);
+		Actions.bind(viewer, TableClipboard.onCopy(viewer));
 		return viewer;
 	}
 
 	private void createColumnSorters(TableViewer viewer, LCIALabelProvider p) {
-		//@formatter:off
-		Tables.registerSorters(viewer, 
+		Tables.registerSorters(viewer,
 				new TableColumnSorter<>(ImpactCategoryDescriptor.class, 0, p),
 				new AmountSorter(),
 				new TableColumnSorter<>(ImpactCategoryDescriptor.class, 2, p));
-		//@formatter:on
 	}
 
 	private class LCIALabelProvider extends BaseLabelProvider implements

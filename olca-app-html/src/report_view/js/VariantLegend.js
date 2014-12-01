@@ -1,5 +1,5 @@
 
-VariantLegend = function() {
+variantLegend = function() {
 	
 	return function(scope, elem, atts) {
 		var element = $(elem.get(0));

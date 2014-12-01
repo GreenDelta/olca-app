@@ -1,12 +1,15 @@
 package org.openlca.app.devtools.python;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.Objects;
+import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
 import org.openlca.app.App;
+import org.openlca.app.Config;
 import org.openlca.app.db.Database;
 import org.openlca.app.devtools.ScriptApi;
 import org.openlca.app.rcp.RcpActivator;
@@ -17,15 +20,14 @@ import org.zeroturnaround.zip.ZipUtil;
 
 class Python {
 
-	private static final String version = "2.7-b3";
-
 	private static boolean initialized = false;
 
 	public static void eval(String script) {
 		try {
 			if (!initialized)
 				initialize();
-			doEval(script);
+			String fullScript = prependImports(script);
+			doEval(fullScript);
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(Python.class);
 			log.error("failed to evaluate script", e);
@@ -44,6 +46,20 @@ class Python {
 		}
 	}
 
+	private static String prependImports(String script)
+			throws IOException {
+		StringBuilder builder = new StringBuilder();
+		Properties properties = new Properties();
+		properties.load(
+				Python.class.getResourceAsStream("bindings.properties"));
+		properties.forEach((name, fullName) -> {
+			builder.append("import ").append(fullName)
+					.append(" as ").append(name).append("\n");
+		});
+		builder.append(script);
+		return builder.toString();
+	}
+
 	private static void initialize() throws Exception {
 		File workspace = App.getWorkspace();
 		File pyDir = new File(workspace, "python");
@@ -60,7 +76,7 @@ class Python {
 			return false;
 		byte[] bytes = Files.readAllBytes(versionFile.toPath());
 		String v = new String(bytes, "utf-8");
-		return Objects.equals(v, version);
+		return Objects.equals(v, Config.VERSION);
 	}
 
 	private static void initPythonDir(File pyDir) throws Exception {
@@ -78,6 +94,6 @@ class Python {
 			});
 		}
 		File file = new File(pyDir, ".version");
-		Files.write(file.toPath(), version.getBytes("utf-8"));
+		Files.write(file.toPath(), Config.VERSION.getBytes("utf-8"));
 	}
 }

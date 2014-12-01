@@ -8,8 +8,6 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ControlAdapter;
-import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -19,7 +17,10 @@ import org.eclipse.swt.widgets.TreeColumn;
 import org.openlca.app.Messages;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.results.LocationContributionPage.TreeInputElement;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Numbers;
+import org.openlca.app.util.TreeClipboard;
+import org.openlca.app.util.Trees;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -56,25 +57,8 @@ class LocationContributionTable {
 			TreeColumn column = new TreeColumn(tree, SWT.NONE);
 			column.setText(col);
 		}
-		bindColumnWidths(tree, 0.35, 0.35, 0.15, 0.15);
-	}
-
-	private void bindColumnWidths(Tree tree, double... percents) {
-		tree.addControlListener(new ControlAdapter() {
-			@Override
-			public void controlResized(ControlEvent e) {
-				double width = tree.getSize().x - 25;
-				if (width < 50)
-					return;
-				TreeColumn[] columns = tree.getColumns();
-				for (int i = 0; i < columns.length; i++) {
-					if (i >= percents.length)
-						break;
-					double colWidth = percents[i] * width;
-					columns[i].setWidth((int) colWidth);
-				}
-			}
-		});
+		Trees.bindColumnWidths(tree, 0.35, 0.35, 0.15, 0.15);
+		Actions.bind(viewer, TreeClipboard.onCopy(viewer));
 	}
 
 	public void setInput(List<TreeInputElement> contributions, String unit) {

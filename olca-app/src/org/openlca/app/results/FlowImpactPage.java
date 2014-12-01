@@ -2,6 +2,7 @@ package org.openlca.app.results;
 
 import java.util.List;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -19,9 +20,13 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.Messages;
 import org.openlca.app.components.ContributionImage;
+import org.openlca.app.db.Cache;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
+import org.openlca.app.util.TableClipboard;
+import org.openlca.app.util.TableColumnSorter;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
@@ -37,11 +42,12 @@ import org.openlca.core.results.Contributions;
 public class FlowImpactPage extends FormPage {
 
 	private final static String[] COLUMN_LABELS = { Messages.Contribution,
-			Messages.Flow, Messages.Amount, Messages.Unit };
+			Messages.Flow, Messages.Category, Messages.SubCategory,
+			Messages.Amount, Messages.Unit };
 
 	private ContributionResultProvider<?> result;
 	private ImpactCategoryViewer impactCombo;
-	private TableViewer flowViewer;
+	private TableViewer table;
 	private Spinner spinner;
 	private double cutOff = 1;
 
@@ -54,20 +60,37 @@ public class FlowImpactPage extends FormPage {
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
 		FormToolkit toolkit = managedForm.getToolkit();
-
 		ScrolledForm form = UI.formHeader(managedForm,
 				Messages.FlowContributions);
 		Composite body = UI.formBody(form, toolkit);
-
 		Composite composite = toolkit.createComposite(body);
 		UI.gridLayout(composite, 1);
 		UI.gridData(composite, true, true);
+		makeSelectionElements(toolkit, composite);
+		makeTable(composite);
+		form.reflow(true);
+		impactCombo.selectFirst();
+	}
 
-		Composite selectionContainer = toolkit.createComposite(composite);
-		UI.gridData(selectionContainer, true, false);
-		UI.gridLayout(selectionContainer, 5);
-		UI.formLabel(selectionContainer, toolkit, Messages.ImpactCategory);
-		impactCombo = new ImpactCategoryViewer(selectionContainer);
+	private void makeSelectionElements(FormToolkit toolkit, Composite parent) {
+		Composite composite = toolkit.createComposite(parent);
+		UI.gridData(composite, true, false);
+		UI.gridLayout(composite, 5);
+		UI.formLabel(composite, toolkit, Messages.ImpactCategory);
+		createImpactViewer(composite);
+		UI.formLabel(composite, toolkit, Messages.Cutoff);
+		spinner = new Spinner(composite, SWT.BORDER);
+		spinner.setValues(1, 0, 100, 0, 1, 10);
+		toolkit.adapt(spinner);
+		toolkit.createLabel(composite, "%");
+		Controls.onSelect(spinner, (e) -> {
+			cutOff = spinner.getSelection();
+			table.refresh();
+		});
+	}
+
+	private void createImpactViewer(Composite parent) {
+		impactCombo = new ImpactCategoryViewer(parent);
 		impactCombo.setInput(result.getImpactDescriptors());
 		impactCombo.addSelectionChangedListener((impact) -> {
 			ContributionSet<FlowDescriptor> contributions = result
@@ -75,34 +98,28 @@ public class FlowImpactPage extends FormPage {
 			List<ContributionItem<FlowDescriptor>> items = contributions
 					.getContributions();
 			Contributions.sortDescending(items);
-			flowViewer.setInput(items);
+			table.setInput(items);
 		});
-		UI.formLabel(selectionContainer, toolkit, Messages.Cutoff);
-		spinner = new Spinner(selectionContainer, SWT.BORDER);
-		spinner.setValues(1, 0, 10000, 2, 1, 100);
-		toolkit.adapt(spinner);
-		toolkit.createLabel(selectionContainer, "%");
-		Controls.onSelect(spinner, (e) -> {
-			cutOff = spinner.getSelection();
-			flowViewer.refresh();
-		});
-
-		createFlowViewer(composite);
-
-		form.reflow(true);
-
-		impactCombo.selectFirst();
 	}
 
-	private void createFlowViewer(Composite parent) {
-		flowViewer = Tables.createViewer(parent, COLUMN_LABELS);
-		flowViewer.setLabelProvider(new FlowImpactLabelProvider());
-		flowViewer.setFilters(new ViewerFilter[] { new CutOffFilter() });
-		Tables.bindColumnWidths(flowViewer.getTable(), new double[] { 0.1, 0.4,
-				0.3, 0.2 });
+	private void makeTable(Composite parent) {
+		table = Tables.createViewer(parent, COLUMN_LABELS);
+		Label label = new Label();
+		table.setLabelProvider(label);
+		table.setFilters(new ViewerFilter[] { new CutOffFilter() });
+		Tables.bindColumnWidths(table.getTable(), new double[] { 0.1, 0.3, 0.2,
+				0.2, 0.1, 0.1 });
+		Actions.bind(table, TableClipboard.onCopy(table));
+		Tables.registerSorters(table,
+				ContributionSorter.forShare(0),
+				new TableColumnSorter<>(ContributionItem.class, 1, label),
+				new TableColumnSorter<>(ContributionItem.class, 2, label),
+				new TableColumnSorter<>(ContributionItem.class, 3, label),
+				ContributionSorter.forAmount(4),
+				new TableColumnSorter<>(ContributionItem.class, 5, label));
 	}
 
-	private class FlowImpactLabelProvider extends BaseLabelProvider implements
+	private class Label extends BaseLabelProvider implements
 			ITableLabelProvider {
 
 		private ContributionImage image = new ContributionImage(
@@ -115,7 +132,8 @@ public class FlowImpactPage extends FormPage {
 				return null;
 			if (columnIndex != 0)
 				return null;
-			ContributionItem<FlowDescriptor> contribution = (ContributionItem<FlowDescriptor>) element;
+			ContributionItem<FlowDescriptor> contribution = ContributionItem.class
+					.cast(element);
 			return image.getForTable(contribution.getShare());
 		}
 
@@ -124,18 +142,27 @@ public class FlowImpactPage extends FormPage {
 		public String getColumnText(Object element, int columnIndex) {
 			if (!(element instanceof ContributionItem))
 				return null;
-			ContributionItem<FlowDescriptor> contribution = (ContributionItem<FlowDescriptor>) element;
+			ContributionItem<FlowDescriptor> contribution = ContributionItem.class
+					.cast(element);
+			FlowDescriptor flow = contribution.getItem();
+			Pair<String, String> category = Labels.getFlowCategory(flow,
+					Cache.getEntityCache());
 			switch (columnIndex) {
 			case 0:
 				return Numbers.percent(contribution.getShare());
 			case 1:
-				return Labels.getDisplayName(contribution.getItem());
+				return Labels.getDisplayName(flow);
 			case 2:
-				return Numbers.format(contribution.getAmount());
+				return category.getLeft();
 			case 3:
+				return category.getRight();
+			case 4:
+				return Numbers.format(contribution.getAmount());
+			case 5:
 				return impactCombo.getSelected().getReferenceUnit();
+			default:
+				return null;
 			}
-			return null;
 		}
 
 		@Override

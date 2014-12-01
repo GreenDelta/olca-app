@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="openLCA" uid="openLCA" id="olca-app.openLCA" application="org.openlca.app.Application" version="1.4.1.beta3-geo2" useFeatures="false" includeLaunchers="true">
-
+<product name="openLCA" uid="openLCA" id="olca-app.openLCA" application="org.openlca.app.Application" version="1.4.1.beta6" useFeatures="false" includeLaunchers="true">
    <aboutInfo>
       <image path="/olca-app/icons/about.png"/>
       <text>
@@ -33,7 +32,10 @@ en
    <windowImages i16="/olca-app/icons/logo_16_32bit.png" i32="/olca-app/icons/logo_32_32bit.png" i48="/olca-app/icons/logo_48_32bit.png" i64="/olca-app/icons/logo_64.png" i128="/olca-app/icons/logo_128.png"/>
 
    <splash
-      location="olca-app" />
+      location="olca-app"
+      startupProgressRect="0,425,633,5"
+      startupMessageRect="7,500,445,20"
+      startupForegroundColor="000000" />
    <launcher name="openLCA">
       <macosx icon="/olca-app/icons/logo.icns"/>
       <solaris/>

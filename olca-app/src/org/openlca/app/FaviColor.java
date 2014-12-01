@@ -10,14 +10,34 @@ import org.openlca.app.util.Colors;
  */
 public class FaviColor {
 
-	private static RGB[] chartColors = { new RGB(229, 48, 57),
-			new RGB(41, 111, 196), new RGB(255, 201, 35), new RGB(82, 168, 77),
-			new RGB(132, 76, 173), new RGB(127, 183, 229),
-			new RGB(255, 137, 0), new RGB(53, 155, 88), new RGB(49, 148, 68),
-			new RGB(252, 255, 100) };
+	private static RGB[] chartColors = {
+			new RGB(229, 48, 57),
+			new RGB(41, 111, 196),
+			new RGB(255, 201, 35),
+			new RGB(82, 168, 77),
+			new RGB(132, 76, 173),
+			new RGB(127, 183, 229),
+			new RGB(255, 137, 0),
+			new RGB(128, 0, 128),
+			new RGB(135, 76, 63),
+			new RGB(252, 255, 100),
+			new RGB(0, 177, 241),
+			new RGB(112, 187, 40),
+			new RGB(18, 89, 133),
+			new RGB(226, 0, 115),
+			new RGB(255, 255, 85),
+			new RGB(218, 0, 24),
+			new RGB(0, 111, 154),
+			new RGB(255, 153, 0)
+	};
 
-	private static final RGB[] COLORS = { new RGB(0, 150, 0),
-			new RGB(0, 100, 180), new RGB(0, 150, 230), new RGB(255, 0, 0) };
+	private static final RGB[] COLORS = {
+			new RGB(0, 150, 0),
+			new RGB(0, 100, 180),
+			new RGB(0, 150, 230),
+			new RGB(255, 0, 0)
+	};
+
 	private static final int[] STEPS = { 80, 40, 81 };
 	private static final ColorCalculator colorCalc = new ColorCalculator(
 			COLORS, STEPS);

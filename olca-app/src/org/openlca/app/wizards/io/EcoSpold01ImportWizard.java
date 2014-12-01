@@ -20,7 +20,7 @@ import org.openlca.io.EcoSpoldUnitFetch;
 import org.openlca.io.UnitMapping;
 import org.openlca.io.UnitMappingEntry;
 import org.openlca.io.UnitMappingSync;
-import org.openlca.io.ecospold1.importer.EcoSpold01Import;
+import org.openlca.io.ecospold1.input.EcoSpold01Import;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +41,7 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 
 	@Override
 	public void addPages() {
-		importPage = new FileImportPage(new String[]{"zip", "xml"}, true);
+		importPage = new FileImportPage(new String[] { "zip", "xml" }, true);
 		addPage(importPage);
 
 		mappingPage = new UnitMappingPage() {
@@ -104,7 +104,7 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 	}
 
 	private void parse(IProgressMonitor monitor, File[] files,
-	                   UnitMapping unitMapping) {
+			UnitMapping unitMapping) {
 		monitor.beginTask(Messages.ImportEcoSpold01DataSets,
 				IProgressMonitor.UNKNOWN);
 		EcoSpold01Import importer = new EcoSpold01Import(Database.get(),

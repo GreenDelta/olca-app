@@ -14,7 +14,7 @@ import com.google.common.base.Strings;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.client.apache4.ApacheHttpClient4;
+import com.sun.jersey.client.apache.ApacheHttpClient;
 
 public class UpdateCheckService {
 	private static final Logger log = LoggerFactory
@@ -23,7 +23,7 @@ public class UpdateCheckService {
 	public VersionInfo loadNewestVersionFromServer(String serverRoot)
 			throws RuntimeException, IntermittentConnectionFailure {
 		VersionInfo retval = null;
-		Client c = ApacheHttpClient4.create();
+		Client c = ApacheHttpClient.create();
 		WebResource r2 = c.resource(serverRoot + "openlca.json");
 		try (InputStream s = r2.get(InputStream.class)) {
 			log.debug("Inputstream for openlca.json null? " + (s == null));

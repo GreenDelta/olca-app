@@ -18,8 +18,10 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
+import org.openlca.app.util.TableClipboard;
 import org.openlca.app.util.TableColumnSorter;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
@@ -54,7 +56,8 @@ public class TotalFlowResultPage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, Messages.InventoryResults);
+		ScrolledForm form = UI.formHeader(managedForm,
+				Messages.InventoryResults);
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		TableViewer inputViewer = createSectionAndViewer(body, true);
@@ -79,18 +82,17 @@ public class TotalFlowResultPage extends FormPage {
 		viewer.setFilters(new ViewerFilter[] { new InputOutputFilter(input) });
 		createColumnSorters(viewer, labelProvider);
 		Tables.bindColumnWidths(viewer.getTable(), 0.40, 0.20, 0.20, 0.08, 0.10);
+		Actions.bind(viewer, TableClipboard.onCopy(viewer));
 		return viewer;
 	}
 
 	private void createColumnSorters(TableViewer viewer, LabelProvider p) {
-		//@formatter:off
-		Tables.registerSorters(viewer, 
+		Tables.registerSorters(viewer,
 				new TableColumnSorter<>(FlowDescriptor.class, 0, p),
 				new TableColumnSorter<>(FlowDescriptor.class, 1, p),
 				new TableColumnSorter<>(FlowDescriptor.class, 2, p),
 				new TableColumnSorter<>(FlowDescriptor.class, 3, p),
 				new AmountSorter());
-		//@formatter:on
 	}
 
 	private class LabelProvider extends BaseLabelProvider implements

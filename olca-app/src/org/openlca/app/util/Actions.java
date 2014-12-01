@@ -5,8 +5,10 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
@@ -118,6 +120,19 @@ public class Actions {
 		for (Action action : actions)
 			menu.add(action);
 		table.setMenu(menu.createContextMenu(table));
+	}
+
+	/**
+	 * Creates a context menu with the given actions on the tree viewer.
+	 */
+	public static void bind(TreeViewer viewer, Action... actions) {
+		Tree tree = viewer.getTree();
+		if (tree == null)
+			return;
+		MenuManager menu = new MenuManager();
+		for (Action action : actions)
+			menu.add(action);
+		tree.setMenu(menu.createContextMenu(tree));
 	}
 
 	/**

@@ -6,9 +6,6 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableItem;
@@ -22,6 +19,7 @@ import org.openlca.app.editors.reports.model.ReportProcess;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
+import org.openlca.app.util.TableClipboard;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
@@ -41,10 +39,10 @@ class ProcessContributionSection {
 	}
 
 	void create(Composite body, FormToolkit toolkit) {
-		Section section = UI.section(body, toolkit, "Process contributions");
+		Section section = UI.section(body, toolkit, "@Process contributions");
 		Composite composite = UI.sectionClient(section, toolkit);
 		UI.gridLayout(composite, 1);
-		String[] properties = { Messages.Process, "Report name",
+		String[] properties = { Messages.Process, "@Report name",
 				Messages.Description };
 		viewer = Tables.createViewer(composite, properties);
 		viewer.setLabelProvider(new Label());
@@ -65,7 +63,7 @@ class ProcessContributionSection {
 
 	private void bindModifySupport() {
 		ModifySupport<ReportProcess> support = new ModifySupport<>(viewer);
-		support.bind("Report name", ReportProcess::getReportName,
+		support.bind("@Report name", ReportProcess::getReportName,
 				(p, text) -> {
 					p.setReportName(text);
 					editor.setDirty(true);
@@ -80,8 +78,9 @@ class ProcessContributionSection {
 	private void bindActions(TableViewer viewer, Section section) {
 		Action add = Actions.onAdd(this::onAdd);
 		Action remove = Actions.onRemove(this::onRemove);
+		Action copy = TableClipboard.onCopy(viewer);
 		Actions.bind(section, add, remove);
-		Actions.bind(viewer, add, remove);
+		Actions.bind(viewer, add, remove, copy);
 		Tables.onDoubleClick(viewer, (event) -> {
 			TableItem item = Tables.getItem(viewer, event);
 			if (item == null)
@@ -92,13 +91,7 @@ class ProcessContributionSection {
 						App.openEditor(process.getDescriptor());
 				}
 			});
-		viewer.getTable().addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.character == SWT.DEL)
-					onRemove();
-			}
-		});
+		Tables.onDeletePressed(viewer, (e) -> onRemove());
 	}
 
 	private void onAdd() {

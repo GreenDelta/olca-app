@@ -4,13 +4,13 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
+import org.openlca.app.Config;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.IEditor;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.reports.ReportEditorPage;
 import org.openlca.app.editors.reports.Reports;
 import org.openlca.app.editors.reports.model.Report;
-import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.core.model.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,15 +36,14 @@ public class ProjectEditor extends ModelEditor<Project> implements IEditor {
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
 		super.init(site, input);
-		if (FeatureFlag.REPORTS.isEnabled())
-			report = Reports.createOrOpen(getModel(), Database.get());
+		report = Reports.createOrOpen(getModel(), Database.get());
 	}
 
 	@Override
 	protected void addPages() {
 		try {
 			addPage(new ProjectSetupPage(this));
-			if (FeatureFlag.REPORTS.isEnabled()) {
+			if (Config.isBrowserEnabled()) {
 				addPage(new ReportEditorPage(this, report));
 			} else {
 				addPage(new ProjectInfoPage(this));
@@ -57,8 +56,7 @@ public class ProjectEditor extends ModelEditor<Project> implements IEditor {
 	@Override
 	public void doSave(IProgressMonitor monitor) {
 		getModel().setLastModificationDate(Calendar.getInstance().getTime());
-		if (FeatureFlag.REPORTS.isEnabled())
-			Reports.save(report, Database.get());
+		Reports.save(getModel(), report, Database.get());
 		super.doSave(monitor);
 	}
 

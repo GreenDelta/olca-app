@@ -8,6 +8,7 @@ import org.openlca.app.editors.graphical.layout.NodeLayoutStore;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.ProductSystem;
+import org.openlca.core.model.Project;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +29,9 @@ public class Resources {
 		case IMPACT_METHOD:
 			deleteShapeFiles(descriptor);
 			break;
+		case PROJECT:
+			deleteProjectFolder(descriptor);
+			break;
 		default:
 			break;
 		}
@@ -43,6 +47,22 @@ public class Resources {
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(Resources.class);
 			log.error("failed to delete shape file folder for " + descriptor, e);
+		}
+	}
+
+	private static void deleteProjectFolder(BaseDescriptor descriptor) {
+		File dir = DatabaseFolder.getFileStorageLocation(Database.get());
+		if (dir == null || descriptor.getRefId() == null)
+			return;
+		dir = new File(dir, "projects");
+		dir = new File(dir, descriptor.getRefId());
+		if (!dir.exists())
+			return;
+		try {
+			FileUtils.deleteDirectory(dir);
+		} catch (Exception e) {
+			Logger log = LoggerFactory.getLogger(Resources.class);
+			log.error("failed to delete project folder for " + descriptor, e);
 		}
 	}
 
@@ -63,6 +83,8 @@ public class Resources {
 			copyMethodResources(original, copy);
 		else if (original instanceof ProductSystem)
 			copySystemResources(original, copy);
+		else if (original instanceof Project)
+			copyProjectResources(original, copy);
 	}
 
 	private static void copyMethodResources(CategorizedEntity original,
@@ -96,4 +118,23 @@ public class Resources {
 					+ copy, e);
 		}
 	}
+
+	private static void copyProjectResources(CategorizedEntity original,
+			CategorizedEntity copy) {
+		File dir = DatabaseFolder.getFileStorageLocation(Database.get());
+		if (dir == null)
+			return;
+		File projectDir = new File(dir, "projects");
+		File originalDir = new File(projectDir, original.getRefId());
+		if (!originalDir.exists())
+			return;
+		File copyDir = new File(projectDir, copy.getRefId());
+		try {
+			FileUtils.copyDirectory(originalDir, copyDir);
+		} catch (Exception e) {
+			Logger log = LoggerFactory.getLogger(Resources.class);
+			log.error("failed to copy folder of " + original + " to " + copy, e);
+		}
+	}
+
 }

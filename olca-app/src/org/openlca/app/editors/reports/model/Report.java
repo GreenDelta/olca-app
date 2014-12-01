@@ -8,7 +8,6 @@ import org.openlca.core.model.descriptors.ProjectDescriptor;
 public class Report {
 
 	private String title;
-	private ProjectDescriptor project;
 	private boolean withNormalisation;
 	private boolean withWeighting;
 	private List<ReportSection> sections = new ArrayList<>();
@@ -24,14 +23,6 @@ public class Report {
 
 	public void setTitle(String title) {
 		this.title = title;
-	}
-
-	public ProjectDescriptor getProject() {
-		return project;
-	}
-
-	public void setProject(ProjectDescriptor project) {
-		this.project = project;
 	}
 
 	public List<ReportSection> getSections() {
