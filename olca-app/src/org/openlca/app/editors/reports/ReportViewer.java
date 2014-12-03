@@ -3,7 +3,6 @@ package org.openlca.app.editors.reports;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
@@ -143,7 +142,8 @@ public class ReportViewer extends FormEditor {
 		public void onLoaded() {
 			Gson gson = new Gson();
 			String json = gson.toJson(report);
-			String command = "setData(" + json + ")";
+			String messages = Messages.asJson();
+			String command = "setData(" + json + ", " + messages + ")";
 			try {
 				browser.evaluate(command);
 			} catch (Exception e) {
@@ -157,23 +157,6 @@ public class ReportViewer extends FormEditor {
 			Composite composite = form.getBody();
 			composite.setLayout(new FillLayout());
 			browser = UI.createBrowser(composite, this);
-
-			new BrowserFunction(browser, "saveReport") {
-				public Object function(Object[] arguments) {
-					Report report = new Gson().fromJson((String) arguments[0],
-							Report.class);
-					return super.function(arguments);
-				}
-			};
-
-			new BrowserFunction(browser, "calculate") {
-				@Override
-				public Object function(Object[] arguments) {
-					// TODO: recalculate the report results
-					return null;
-				}
-			};
-
 		}
 	}
 }

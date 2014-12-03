@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html ng-app="ReportPreviewPage" id="ng-app">
+<html ng-app="ReportPage" id="ng-app">
 <head>
     <meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-    <title>Report Preview</title>
+    <title>Report</title>
     <link href="libs/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
     <style type="text/css">
 		//@include('./style.css')	
@@ -94,7 +94,7 @@
 		//@include('../js/Colors.js')
 		
         var variantsIndex = 0;
-        var app = angular.module('ReportPreviewPage', ['ngSanitize']);
+        var app = angular.module('ReportPage', ['ngSanitize']);
 
         app.filter('scientific', function () {
             return function (text) {
@@ -126,9 +126,9 @@
 		//@include('./js/ContributionChart.js')
 		app.directive("contributionChart", ContributionChart);
 		
-		function setData(report) {
+		function setData(report, messages) {
 			//@include('./js/Initializer.js')
-			Initializer(report);
+			Initializer(report, messages);
         }
 
 		//do not remove or modify the comment below, it is used as template for static report exports.

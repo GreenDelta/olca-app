@@ -75,8 +75,9 @@ public class ReportToolbar extends EditorActionBarContributor {
 			try {
 				copyLibs(targetDir, htmlFolder);
 				String json = new Gson().toJson(report);
+				String messages = Messages.asJson();
 				String call = "$(window).load( function() { setData(" + json
-						+ ")});";
+						+ ", " + messages + ")});";
 				File template = HtmlFolder.getFile(RcpActivator.getDefault()
 						.getBundle(), HtmlView.REPORT_VIEW
 						.getFileName());

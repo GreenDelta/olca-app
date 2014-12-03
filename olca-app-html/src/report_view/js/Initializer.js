@@ -1,10 +1,11 @@
-var Initializer = function(report) {
+var Initializer = function(report, messages) {
 
 	var element = document.getElementById("contentDiv");
 	var scope = angular.element(element).scope();
 	sortLists(report);
 	scope.$apply(function() {
 		scope.report = report;
+		scope.Messages = messages;
 		var initialIndicator = getFirstDisplayedIndicator(report);
 		scope.selectedContributionIndicator = initialIndicator;
 		scope.selectedBarChartIndicator = initialIndicator;
