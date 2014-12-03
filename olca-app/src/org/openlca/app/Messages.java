@@ -20,6 +20,7 @@ public class Messages extends NLS {
 	public static String Add;
 	public static String AddConnectedProcesses;
 	public static String AddNewChildCategory;
+	public static String AddSection;
 	public static String AdditionalInformation;
 	public static String Address;
 	public static String AdministrativeInformation;
@@ -74,7 +75,9 @@ public class Messages extends NLS {
 	public static String Comma;
 	public static String Complete;
 	public static String CompleteReferenceData;
+	public static String Component;
 	public static String Configuration;
+	public static String ConfigureEcospoldMessage;
 	public static String Connect;
 	public static String ConnectProviders;
 	public static String ConnectRecipients;
@@ -96,6 +99,7 @@ public class Messages extends NLS {
 	public static String CreateANewDatabase;
 	public static String CreateANewProductFlowForTheProcess;
 	public static String CreateDatabase;
+	public static String CreateDefaultValuesForMissingFields;
 	public static String CreateNew;
 	public static String CreateProcess;
 	public static String CreateProcesslink;
@@ -151,22 +155,27 @@ public class Messages extends NLS {
 	public static String DeleteParameter;
 	public static String DeleteProcess;
 	public static String DeleteProcesslink;
+	public static String DeleteReportSectionQuestion;
+	public static String DeleteSection;
 	public static String DependentParameters;
 	public static String Description;
 	public static String DeveloperTools;
 	public static String DirectContribution;
 	public static String DirectImpact;
 	public static String Direction;
+	public static String Display;
 	public static String DoYouReallyWantToDelete;
 	public static String Doi;
 	public static String Dot;
 
 	public static String EcoSpold2Export;
+	public static String EcoSpoldConfiguration;
 	public static String Economic;
 	public static String Edit;
 	public static String ElementaryFlow;
 	public static String Email;
 	public static String EmptyDatabase;
+	public static String EmptyValueMessage;
 	public static String EndDate;
 	public static String English;
 	public static String Error;
@@ -178,6 +187,7 @@ public class Messages extends NLS {
 	public static String ExpandAll;
 	public static String Export;
 	public static String ExportAsMatrix;
+	public static String ExportDataSetsInOneFile;
 	public static String ExportDatabase;
 	public static String ExportDirectory;
 	public static String ExportDone;
@@ -185,6 +195,7 @@ public class Messages extends NLS {
 	public static String ExportILCD;
 	public static String ExportMatrix;
 	public static String ExportProcess;
+	public static String ExportReport;
 	public static String ExportResults;
 	public static String ExportResultsToExcel;
 	public static String ExportToExcel;
@@ -210,6 +221,7 @@ public class Messages extends NLS {
 	public static String Folder;
 	public static String Formula;
 	public static String FormulaEvaluationFailed;
+	public static String FormulaInterpreter;
 	public static String FoundProblems;
 	public static String FromDirectory;
 	public static String FunctionalUnit;
@@ -258,6 +270,7 @@ public class Messages extends NLS {
 	public static String ImportEcoSpold01DataSets;
 	public static String ImportEcoSpold02DataSets;
 	public static String ImportILCD;
+	public static String IndicatorBarChart;
 	public static String IndicatorScore;
 	public static String Information;
 	public static String InfrastructureFlow;
@@ -272,6 +285,7 @@ public class Messages extends NLS {
 	public static String InvalidAllocationFactor;
 	public static String InvalidAllocationFactorMessage;
 	public static String InvalidFormula;
+	public static String InvalidMemoryValue;
 	public static String InvalidNumber;
 	public static String InvalidParameterName;
 	public static String InvalidValue;
@@ -292,6 +306,8 @@ public class Messages extends NLS {
 	public static String Latitude;
 	public static String Layout;
 	public static String LayoutAs;
+	public static String LciaCategoryDescriptionTable;
+	public static String LciaResultTable;
 	public static String Local;
 	public static String LocalDatabase;
 	public static String Location;
@@ -308,6 +324,8 @@ public class Messages extends NLS {
 	public static String Maximum;
 	public static String MaximumMemoryUsage;
 	public static String Mean;
+	public static String MemoryToHighMessage;
+	public static String MemoryToLowMessage;
 	public static String Methods;
 	public static String MinimalTree;
 	public static String Minimize;
@@ -320,6 +338,8 @@ public class Messages extends NLS {
 	public static String MonteCarloSimulation;
 	public static String Monthly;
 	public static String Move;
+	public static String MoveDown;
+	public static String MoveUp;
 
 	public static String Name;
 	public static String NameCannotBeEmpty;
@@ -341,6 +361,7 @@ public class Messages extends NLS {
 	public static String NewProcess;
 	public static String NewProductSystem;
 	public static String NewProject;
+	public static String NewSection;
 	public static String NewSource;
 	public static String NewUnitGroup;
 	public static String No;
@@ -357,11 +378,15 @@ public class Messages extends NLS {
 	public static String NoUnitGroupSelected;
 	public static String None;
 	public static String NormalDistribution;
+	public static String NormalisationBarChart;
+	public static String NormalisationRadarChart;
+	public static String NormalisationResultTable;
 	public static String Normalization;
 	public static String NormalizationAndWeightingSet;
 	public static String NormalizationFactor;
 	public static String NormalizationWeighting;
 	public static String NormalizationWeightingSets;
+	public static String NotAnIntegerNumber;
 	public static String Note;
 	public static String Notification;
 	public static String NumberFormatPage_Description;
@@ -384,6 +409,8 @@ public class Messages extends NLS {
 	public static String OverwriteFileQuestion;
 
 	public static String Parameter;
+	public static String ParameterDescriptionTable;
+	public static String ParameterValueTable;
 	public static String Parameters;
 	public static String Password;
 	public static String Paste;
@@ -401,6 +428,7 @@ public class Messages extends NLS {
 	public static String Port;
 	public static String Prefer;
 	public static String Process;
+	public static String ProcessContributionChart;
 	public static String ProcessContributions;
 	public static String ProcessCosts;
 	public static String ProcessEvaluationAndValidation;
@@ -413,6 +441,7 @@ public class Messages extends NLS {
 	public static String ProductSystem;
 	public static String ProductSystemExcelExport;
 	public static String ProductSystemExcelExportMessage;
+	public static String ProductSystemStatistics;
 	public static String ProductSystems;
 	public static String Progress;
 	public static String Project;
@@ -432,6 +461,8 @@ public class Messages extends NLS {
 	public static String ReferenceUnit;
 	public static String ReferenceUnitIsEmptyOrInvalid;
 	public static String RegionalizedLCIA;
+	public static String RelativeLciaResultsBarChart;
+	public static String RelativeLciaResultsRadarChart;
 	public static String Reload;
 	public static String Remote;
 	public static String RemoteDatabase;
@@ -442,13 +473,17 @@ public class Messages extends NLS {
 	public static String RemoveSupplyChain;
 	public static String Rename;
 	public static String Report;
+	public static String ReportName;
 	public static String ReportParameters;
+	public static String ReportSections;
+	public static String ReportView;
 	public static String Reset;
 	public static String Resize;
 	public static String Result;
 	public static String ResultContributions;
 	public static String Results;
 	public static String ResultsOf;
+	public static String ResultsOfProject;
 	public static String Reviewer;
 	public static String Route;
 	public static String RunCalculation;
@@ -470,6 +505,7 @@ public class Messages extends NLS {
 	public static String SearchResults;
 	public static String Searching;
 	public static String SearchingForUnits;
+	public static String Section;
 	public static String Select;
 	public static String SelectADirectory;
 	public static String SelectAUserInterfaceLanguage;
@@ -492,6 +528,8 @@ public class Messages extends NLS {
 	public static String SimaProCSVImport;
 	public static String SingleAmount;
 	public static String SingleScore;
+	public static String SingleScoreBarChart;
+	public static String SingleScoreTable;
 	public static String SolvingProblems;
 	public static String Source;
 	public static String SourceFileDeleteQuestion;
@@ -500,6 +538,7 @@ public class Messages extends NLS {
 	public static String StandardDeviation;
 	public static String Start;
 	public static String StartDate;
+	public static String Statistics;
 	public static String SubCategory;
 	public static String Synonyms;
 	public static String SystemProcess;
@@ -513,10 +552,12 @@ public class Messages extends NLS {
 	public static String Test;
 	public static String TestDistribution;
 	public static String TexchnologyMatrix;
+	public static String Text;
 	public static String TextDropComponent_ToolTipText;
 	public static String TextReference;
 	public static String Time;
 	public static String TimeAndAuthor;
+	public static String Title;
 	public static String ToDirectory;
 	public static String TotalAmount;
 	public static String Tree;
@@ -553,6 +594,7 @@ public class Messages extends NLS {
 
 	public static String Value;
 	public static String Variant;
+	public static String VariantDescriptionTable;
 	public static String Variants;
 	public static String Version;
 	public static String VersionNewer;

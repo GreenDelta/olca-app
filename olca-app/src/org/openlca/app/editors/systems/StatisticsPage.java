@@ -8,6 +8,7 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
+import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
 import org.openlca.app.rcp.html.HtmlPage;
 import org.openlca.app.rcp.html.HtmlView;
@@ -27,14 +28,14 @@ public class StatisticsPage extends FormPage implements HtmlPage {
 	private Browser browser;
 
 	public StatisticsPage(ProductSystemEditor editor) {
-		super(editor, "ProductSystemStatisticsPage", "@Statistics");
+		super(editor, "ProductSystemStatisticsPage", Messages.Statistics);
 		system = editor.getModel();
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
 		ScrolledForm form = UI.formHeader(managedForm,
-				"@Product system statistics");
+				Messages.ProductSystemStatistics);
 		FormToolkit toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		browser = UI.createBrowser(body, this);
@@ -83,7 +84,7 @@ public class StatisticsPage extends FormPage implements HtmlPage {
 
 	private void calculate() {
 		Statistics[] stats = new Statistics[1];
-		App.run("Calculate statistics",
+		App.run("@Calculate statistics",
 				() -> {
 					stats[0] = Statistics.calculate(system,
 							Cache.getEntityCache());

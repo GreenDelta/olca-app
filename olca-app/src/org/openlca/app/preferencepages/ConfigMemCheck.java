@@ -1,5 +1,6 @@
 package org.openlca.app.preferencepages;
 
+import org.openlca.app.Messages;
 import org.openlca.util.OS;
 
 /**
@@ -21,22 +22,23 @@ class ConfigMemCheck {
 	 */
 	public static int parseAndCheck(String value) {
 		if (value == null || value.trim().isEmpty())
-			return showError("@The given value is empty.");
+			return showError(Messages.EmptyValueMessage);
 		try {
 			int val = Integer.parseInt(value);
 			if (val < 256)
-				return showError("@The memory value must be at least 256 MB.");
+				return showError(Messages.MemoryToLowMessage);
 			if (val > 1280 && isX86() && OS.getCurrent() == OS.Windows)
-				return showError("@The memory value is to high for your operating system.");
+				return showError(Messages.MemoryToHighMessage);
 			else
 				return val;
 		} catch (Exception e) {
-			return showError("@The given value is not an integer number");
+			return showError(Messages.NotAnIntegerNumber);
 		}
 	}
 
 	private static int showError(String message) {
-		org.openlca.app.util.Error.showBox("@Invalid memory value", message);
+		org.openlca.app.util.Error
+				.showBox(Messages.InvalidMemoryValue, message);
 		return -1;
 	}
 

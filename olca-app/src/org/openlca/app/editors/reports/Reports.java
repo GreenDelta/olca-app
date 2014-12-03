@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
+import org.openlca.app.Messages;
 import org.openlca.app.db.DatabaseFolder;
 import org.openlca.app.editors.reports.model.Report;
 import org.openlca.app.editors.reports.model.ReportComponent;
@@ -42,12 +43,12 @@ public final class Reports {
 		Report report = new Report();
 		createDefaultSections(report);
 		if (project == null) {
-			report.setTitle("@No project");
+			report.setTitle("No project");
 			return report;
 		}
 		createReportVariants(project, report);
 		createReportIndicators(project, report, database);
-		report.setTitle("@Results of project '" + project.getName() + "'");
+		report.setTitle(Messages.ResultsOfProject + " " + project.getName());
 		return report;
 	}
 

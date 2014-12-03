@@ -12,6 +12,7 @@ import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.IOConsole;
 import org.eclipse.ui.console.IOConsoleOutputStream;
+import org.openlca.app.Messages;
 import org.openlca.expressions.Repl;
 
 /**
@@ -22,12 +23,12 @@ class FormulaConsoleAction extends Action {
 
 	public FormulaConsoleAction() {
 		setId("FormulaConsoleAction");
-		setText("@Formula interpreter");
+		setText(Messages.FormulaInterpreter);
 	}
 
 	@Override
 	public void run() {
-		IOConsole console = findOrCreateConsole("@Formula intepreter");
+		IOConsole console = findOrCreateConsole(Messages.FormulaInterpreter);
 		ConsoleJob job = new ConsoleJob(console);
 		job.schedule();
 	}
@@ -49,7 +50,7 @@ class FormulaConsoleAction extends Action {
 		private IOConsole console;
 
 		public ConsoleJob(IOConsole console) {
-			super("Formula Interpreter");
+			super(Messages.FormulaInterpreter);
 			this.console = console;
 		}
 

@@ -14,6 +14,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.openlca.app.Messages;
 import org.openlca.app.editors.reports.model.Report;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.app.rcp.html.HtmlPage;
@@ -108,7 +109,7 @@ public class ReportViewer extends FormEditor {
 		@Override
 		public String getName() {
 			String name = report.getTitle() != null ? report.getTitle()
-					: "@Report";
+					: Messages.Report;
 			return Strings.cut(name, 75);
 		}
 
@@ -119,7 +120,8 @@ public class ReportViewer extends FormEditor {
 
 		@Override
 		public String getToolTipText() {
-			return report.getTitle() != null ? report.getTitle() : "@Report";
+			return report.getTitle() != null ? report.getTitle()
+					: Messages.Report;
 		}
 	}
 
@@ -128,7 +130,8 @@ public class ReportViewer extends FormEditor {
 		private Browser browser;
 
 		public Page() {
-			super(ReportViewer.this, "olca.ReportPreview.Page", "@Report view");
+			super(ReportViewer.this, "olca.ReportPreview.Page",
+					Messages.ReportView);
 		}
 
 		@Override
