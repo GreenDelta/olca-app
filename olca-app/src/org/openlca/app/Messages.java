@@ -41,6 +41,7 @@ public class Messages extends NLS {
 
 	public static String BaseUncertainty;
 	public static String Browse;
+	public static String BrowserConfiguration;
 	public static String BuildNextTier;
 	public static String BuildSupplyChain;
 
@@ -540,6 +541,7 @@ public class Messages extends NLS {
 	public static String StartDate;
 	public static String Statistics;
 	public static String SubCategory;
+	public static String Sum;
 	public static String Synonyms;
 	public static String SystemProcess;
 	public static String SystemSaveProceedQuestion;
