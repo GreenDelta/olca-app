@@ -188,7 +188,8 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 			List<TreeInputElement> items = inputBuilder.build(set, descriptor,
 					total);
 			table.setInput(items, unit);
-			renderMap(set.getContributions());
+			if (showMap)
+				renderMap(set.getContributions());
 		}
 
 	}

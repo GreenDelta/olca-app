@@ -64,6 +64,7 @@ en
       <plugin id="javax.inject"/>
       <plugin id="javax.xml"/>
       <plugin id="olca-app"/>
+      <plugin id="olca-scs"/>
       <plugin id="org.apache.batik.css"/>
       <plugin id="org.apache.batik.util"/>
       <plugin id="org.apache.batik.util.gui"/>
