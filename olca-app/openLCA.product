@@ -24,7 +24,7 @@ project and other open source software.
 en
 -data @noDefault
       </programArgs>
-      <vmArgs>-Xmx4G
+      <vmArgs>-Xmx2G
       </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
       </vmArgsMac>
