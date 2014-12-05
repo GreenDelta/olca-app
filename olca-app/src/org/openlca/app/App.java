@@ -2,8 +2,10 @@ package org.openlca.app;
 
 import java.io.File;
 
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.progress.UIJob;
 import org.openlca.app.editors.ModelEditorInput;
 import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.rcp.RcpActivator;
@@ -120,18 +122,19 @@ public class App {
 		return "editors." + type.getModelClass().getSimpleName().toLowerCase();
 	}
 
-	public static void runInUI(String name, Runnable runnable) {
+	public static UIJob runInUI(String name, Runnable runnable) {
 		WrappedUIJob job = new WrappedUIJob(name, runnable);
 		job.setUser(true);
 		job.schedule();
+		return job;
 	}
 
 	/**
 	 * Wraps a runnable in a job and executes it using the Eclipse jobs
 	 * framework. No UI access is allowed for the runnable.
 	 */
-	public static void run(String name, Runnable runnable) {
-		run(name, runnable, null);
+	public static Job run(String name, Runnable runnable) {
+		return run(name, runnable, null);
 	}
 
 	/**
@@ -139,12 +142,13 @@ public class App {
 	 * to give a callback which is executed in the UI thread when the runnable
 	 * is finished.
 	 */
-	public static void run(String name, Runnable runnable, Runnable callback) {
+	public static Job run(String name, Runnable runnable, Runnable callback) {
 		WrappedJob job = new WrappedJob(name, runnable);
 		if (callback != null)
 			job.setCallback(callback);
 		job.setUser(true);
 		job.schedule();
+		return job;
 	}
 
 	/**

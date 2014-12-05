@@ -1,10 +1,12 @@
 package org.openlca.app.results.regionalized;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
@@ -27,11 +29,12 @@ import com.google.gson.Gson;
 
 class KmlResultView extends FormPage implements HtmlPage {
 
-	Logger log = LoggerFactory.getLogger(getClass());
+	private Logger log = LoggerFactory.getLogger(getClass());
 
-	RegionalizedResultProvider result;
-	Browser browser;
+	private RegionalizedResultProvider result;
+	private Browser browser;
 	private FlowImpactSelection flowImpactSelection;
+	private boolean incompleteData = false;
 
 	public KmlResultView(FormEditor editor, RegionalizedResultProvider result) {
 		super(editor, "KmlResultView", "Result map");
@@ -69,7 +72,21 @@ class KmlResultView extends FormPage implements HtmlPage {
 		form.reflow(true);
 	}
 
+	@Override
+	public void setActive(boolean active) {
+		super.setActive(active);
+		if (incompleteData)
+			// reset browser data
+			try {
+				browser.evaluate("initData()");
+			} catch (Exception e) {
+				log.error("failed to evaluate initData()", e);
+			}
+	}
+
 	private class KmlSelectionHandler extends SelectionHandler {
+
+		private List<Job> delayedJobs = new ArrayList<>();
 
 		private KmlSelectionHandler(RegionalizedResultProvider result) {
 			super(result);
@@ -77,6 +94,8 @@ class KmlResultView extends FormPage implements HtmlPage {
 
 		@Override
 		protected void processResultData(List<LocationResult> results) {
+			delayedJobs.clear();
+			incompleteData = false;
 			double maximum = getMaximum(results);
 			evaluate("initData(" + maximum + ")");
 			for (LocationResult result : results)
@@ -103,10 +122,15 @@ class KmlResultView extends FormPage implements HtmlPage {
 			Map<String, Object> item = new HashMap<String, Object>();
 			item.put("kml", result.getKmlFeature().getKml());
 			item.put("amount", result.getTotalAmount());
-			App.runInUI("Setting item", () -> evaluate(item));
+			delayedJobs.add(App.runInUI("Setting item", () -> evaluate(item)));
 		}
 
 		private void evaluate(Object value) {
+			if (!isActive()) {
+				incompleteData = true;
+				cancelDelayedJobs();
+				return;
+			}
 			String command = null;
 			if (value instanceof String)
 				command = value.toString();
@@ -121,6 +145,12 @@ class KmlResultView extends FormPage implements HtmlPage {
 				log.error("failed to evaluate " + value, e);
 			}
 		}
+
+		private void cancelDelayedJobs() {
+			for (Job job : delayedJobs)
+				job.cancel();
+		}
+
 	}
 
 }

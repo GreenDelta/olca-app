@@ -25,7 +25,9 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.birt.core.ui,
  com.ibm.icu
 Bundle-ActivationPolicy: lazy
-Export-Package: org.openlca.app,
+Export-Package: com.google.gson,
+ com.google.gson.reflect,
+ org.openlca.app,
  org.openlca.app.components,
  org.openlca.app.db,
  org.openlca.app.editors,

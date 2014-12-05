@@ -177,4 +177,5 @@ public class ChartCanvas extends Canvas {
 			cachedImage.dispose();
 		super.dispose();
 	}
+
 }

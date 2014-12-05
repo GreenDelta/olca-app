@@ -6,11 +6,11 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.ui.progress.UIJob;
 
-class WrappedUIJob extends UIJob {
+public class WrappedUIJob extends UIJob {
 
 	private Runnable runnable;
 
-	public WrappedUIJob(String name, Runnable runnable) {
+	WrappedUIJob(String name, Runnable runnable) {
 		super(name);
 		this.runnable = runnable;
 	}
@@ -19,7 +19,12 @@ class WrappedUIJob extends UIJob {
 	public IStatus runInUIThread(IProgressMonitor monitor) {
 		App.log.trace("execute UI job {}", this);
 		monitor.beginTask(getName(), IProgressMonitor.UNKNOWN);
-		BusyIndicator.showWhile(getDisplay(), new Runnable() {
+		BusyIndicator.showWhile(getDisplay(), getRunnable());
+		return Status.OK_STATUS;
+	}
+
+	private Runnable getRunnable() {
+		return new Runnable() {
 			@Override
 			public void run() {
 				try {
@@ -28,8 +33,6 @@ class WrappedUIJob extends UIJob {
 					App.log.error("UI callback failed", e);
 				}
 			}
-		});
-		return Status.OK_STATUS;
+		};
 	}
-
 }
