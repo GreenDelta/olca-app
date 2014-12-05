@@ -85,9 +85,7 @@ public class AnalyzeEditor extends FormEditor {
 				addPage(new ContributionBubblePage(this, result));
 				addPage(new SunBurstView(this, result));
 			}
-			if (FeatureFlag.LOCALISED_LCIA.isEnabled()
-					&& result.hasImpactResults())
-				addPage(new LocalisedImpactPage(this, result));
+			addPage(new LocalisedImpactPage(this, result));
 			diagram = new SankeyDiagram(setup, result);
 			diagramIndex = addPage(diagram, getEditorInput());
 			setPageText(diagramIndex, Messages.SankeyDiagram);

@@ -11,8 +11,6 @@ public enum FeatureFlag {
 	// can be removed if it runs stable on Windows 64bit
 	// USE_MOZILLA_BROWSER("Use Mozilla browser (not available on every platform)"),
 
-	LOCALISED_LCIA("Enable localised impact assessment"),
-
 	EXPERIMENTAL_VISUALISATIONS("Experimental visualisations"),
 
 	USE_SPARSE_MATRICES("Calculate with sparse matrices (requires restart)"),

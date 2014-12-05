@@ -13,7 +13,6 @@ import org.openlca.app.editors.IEditor;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.ParameterPage;
 import org.openlca.app.editors.ParameterPageSupport;
-import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ImpactFactor;
 import org.openlca.core.model.ImpactMethod;
@@ -75,10 +74,8 @@ public class ImpactMethodEditor extends ModelEditor<ImpactMethod> implements
 			addPage(new ImpactFactorPage(this));
 			addPage(new ImpactNwPage(this));
 			addPage(new ParameterPage(parameterSupport, getExternalSources()));
-			if (FeatureFlag.LOCALISED_LCIA.isEnabled()) {
-				addPage(new ShapeFilePage(this));
-				// addPage(new ImpactLocalisationPage(this));
-			}
+			addPage(new ShapeFilePage(this));
+			// addPage(new ImpactLocalisationPage(this));
 		} catch (Exception e) {
 			log.error("failed to add page", e);
 		}

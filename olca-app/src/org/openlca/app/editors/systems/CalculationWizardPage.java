@@ -9,7 +9,6 @@ import org.eclipse.swt.widgets.Text;
 import org.openlca.app.ApplicationProperties;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
-import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Error;
@@ -66,8 +65,7 @@ class CalculationWizardPage extends WizardPage {
 	}
 
 	private void createIterationText(Composite typePanel) {
-		Label label = UI.formLabel(typePanel,
-				Messages.NumberOfIterations);
+		Label label = UI.formLabel(typePanel, Messages.NumberOfIterations);
 		UI.gridData(label, false, false).horizontalIndent = 16;
 		iterationText = new Text(typePanel, SWT.BORDER);
 		UI.gridData(iterationText, false, false).widthHint = 80;
@@ -99,13 +97,9 @@ class CalculationWizardPage extends WizardPage {
 	}
 
 	private CalculationType[] getCalculationTypes() {
-		if (FeatureFlag.LOCALISED_LCIA.isEnabled())
-			return new CalculationType[] { CalculationType.QUICK,
-					CalculationType.ANALYSIS, CalculationType.REGIONALIZED,
-					CalculationType.MONTE_CARLO };
-		else
-			return new CalculationType[] { CalculationType.QUICK,
-					CalculationType.ANALYSIS, CalculationType.MONTE_CARLO };
+		return new CalculationType[] { CalculationType.QUICK,
+				CalculationType.ANALYSIS, CalculationType.REGIONALIZED,
+				CalculationType.MONTE_CARLO };
 	}
 
 	private String getLabel(CalculationType type) {
@@ -150,8 +144,8 @@ class CalculationWizardPage extends WizardPage {
 		UI.formLabel(parent, Messages.ImpactAssessmentMethod);
 		methodViewer = new ImpactMethodViewer(parent);
 		methodViewer.setInput(Database.get());
-		methodViewer.addSelectionChangedListener(
-				(selection) -> nwViewer.setInput(methodViewer.getSelected()));
+		methodViewer.addSelectionChangedListener((selection) -> nwViewer
+				.setInput(methodViewer.getSelected()));
 	}
 
 	private void setDefaultData() {
