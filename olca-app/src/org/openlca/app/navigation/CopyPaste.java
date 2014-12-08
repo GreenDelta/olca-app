@@ -134,7 +134,7 @@ public class CopyPaste {
 		if (cacheIsEmpty())
 			return;
 		if (!canPasteTo(categoryElement))
-			throw new IllegalArgumentException("Can only paste to same type");
+			return;
 		for (INavigationElement<?> element : cache) {
 			paste(element, categoryElement);
 			INavigationElement<?> root = Navigator
@@ -202,24 +202,38 @@ public class CopyPaste {
 	}
 
 	private static void move(CategoryElement element,
-			INavigationElement<?> category) {
-		Category newParent = getCategory(category);
+			INavigationElement<?> categoryElement) {
+		Category newParent = getCategory(categoryElement);
 		Category oldParent = getCategory(element.getParent());
-		Category content = element.getContent();
-		if (Objects.equals(content, newParent))
+		Category category = element.getContent();
+		if (Objects.equals(category, newParent))
 			return;
+		if (isChild(newParent, category))
+			return; // do not create category cycles
 		if (oldParent != null)
-			oldParent.getChildCategories().remove(content);
+			oldParent.getChildCategories().remove(category);
 		if (newParent != null)
-			newParent.getChildCategories().add(content);
-		content.setParentCategory(newParent);
+			newParent.getChildCategories().add(category);
+		category.setParentCategory(newParent);
 		CategoryDao dao = new CategoryDao(Database.get());
 		if (oldParent != null)
 			dao.update(oldParent);
 		if (newParent != null)
 			dao.update(newParent);
 		else
-			dao.update(content);
+			dao.update(category);
+	}
+
+	private static boolean isChild(Category category, Category parent) {
+		if (category == null || parent == null)
+			return false;
+		Category p = category.getParentCategory();
+		while (p != null) {
+			if (Objects.equals(p, parent))
+				return true;
+			p = p.getParentCategory();
+		}
+		return false;
 	}
 
 	private static void move(ModelElement element,
