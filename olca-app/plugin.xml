@@ -293,11 +293,6 @@
       		name="%NumberFormat">
       </page>
       <page
-            class="org.openlca.app.rcp.update.UpdatePreferencePage"
-            id="preferencepages.update"
-            name="%Updates">
-      </page>
-      <page
             class="org.openlca.app.preferencepages.FeatureFlagPage"
             id="preferencepages.featureflag"
             name="Experimental features">
@@ -310,7 +305,7 @@
       <page
             id="preferencepages.config"
             class="org.openlca.app.preferencepages.ConfigPage"
-            name="@Configuration">
+            name="%Configuration">
       </page>
    </extension>
    <extension
@@ -325,13 +320,6 @@
                		 </control>
                </toolbar>
          </menuContribution>
-   </extension>
-   <extension
-         point="org.eclipse.help.contexts">
-      <contexts
-            file="context.xml"
-            plugin="olca-app">
-      </contexts>
    </extension>
    <extension
          id="openLCA"
