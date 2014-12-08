@@ -346,12 +346,10 @@ public class ParameterSection implements ParameterPageListener {
 			if (item == null || Strings.nullOrEmpty(item.getSource())) {
 				element.setSourceType(null);
 				element.setExternalSource(null);
-				element.setDescription(null);
 			} else {
 				ShapeFileParameter param = item.getParameter(element.getName());
 				element.setSourceType(item.getType());
 				element.setExternalSource(item.getSource());
-				element.setDescription("from shapefile: " + item.getSource());
 				element.setValue((param.getMin() + param.getMax()) / 2);
 				element.setUncertainty(Uncertainty.uniform(param.getMin(),
 						param.getMax()));
