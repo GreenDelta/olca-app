@@ -60,7 +60,6 @@
 	<classpathentry exported="true" kind="lib" path="libs/log4j-1.2.17.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/mimepull-1.9.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/mysql-connector-java-5.1.23.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/ojalgo-34.8.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-core-1.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-ecospold-1-1.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-ecospold-2-1.0.0.jar"/>

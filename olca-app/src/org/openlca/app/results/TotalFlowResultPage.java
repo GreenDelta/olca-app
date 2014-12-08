@@ -19,6 +19,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.TableClipboard;
@@ -99,17 +100,22 @@ public class TotalFlowResultPage extends FormPage {
 			ITableLabelProvider {
 
 		@Override
-		public Image getColumnImage(Object element, int columnIndex) {
-			return null;
+		public Image getColumnImage(Object element, int col) {
+			if (col != 0)
+				return null;
+			if (!(element instanceof FlowDescriptor))
+				return null;
+			FlowDescriptor flow = (FlowDescriptor) element;
+			return Images.getIcon(flow.getFlowType());
 		}
 
 		@Override
-		public String getColumnText(Object element, int columnIndex) {
+		public String getColumnText(Object element, int col) {
 			if (!(element instanceof FlowDescriptor))
 				return null;
 			FlowDescriptor flow = (FlowDescriptor) element;
 			Pair<String, String> category = Labels.getFlowCategory(flow, cache);
-			switch (columnIndex) {
+			switch (col) {
 			case 0:
 				return Labels.getDisplayName(flow);
 			case 1:
