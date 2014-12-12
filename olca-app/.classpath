@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="libs/compiler-0.8.17.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-jsonld-1.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/bcprov-jdk16-1.46.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/bonecp-0.8.0.RELEASE.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/common-2.6.0.jar"/>

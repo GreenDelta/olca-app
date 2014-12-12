@@ -579,15 +579,16 @@
             id="export.category.ilcdnetwork"
             name="%ILCDNetworkExport">
       </category>
+      <category
+      		id="openlca.export.category"
+      		name="openLCA">
+      </category>
       <wizard
             category="export.category.ecospold"
             class="org.openlca.app.wizards.io.EcoSpold01ExportProcessWizard"
             icon="icons/xml.png"
             id="wizard.export.ecospold.process"
             name="%Processes">
-         <description>
-            
-         </description>
        </wizard>
        <wizard
             category="export.category.excel"
@@ -612,9 +613,6 @@
             icon="icons/xml.png"
             id="wizard.export.ecospold.impactmethod"
             name="%ImpactMethods">
-         <description>
-            
-         </description>
       </wizard>
       <wizard
             category="export.category.ilcd"
@@ -678,6 +676,13 @@
             icon="icons/network16.png"
             id="org.openlca.ilcd.network.ExportWizard"
             name="%ILCDNetworkExport">
+      </wizard>
+      <wizard
+      		category="openlca.export.category"
+      		class="org.openlca.app.wizards.io.JsonExportWizard"
+      		icon="icons/logo_16_32bit.png"
+      		id="org.openlca.app.wizards.io.JsonExportWizard"
+      		name="@JSON-LD">
       </wizard>
    </extension>
 </plugin>

@@ -20,6 +20,7 @@ import org.eclipse.swt.widgets.Text;
 import org.openlca.app.ApplicationProperties;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
+import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.navigation.NavigationContentProvider;
 import org.openlca.app.navigation.NavigationLabelProvider;
 import org.openlca.app.navigation.NavigationSorter;
@@ -33,26 +34,20 @@ import org.openlca.core.model.descriptors.BaseDescriptor;
 
 class ModelSelectionPage extends WizardPage {
 
-	private final ModelType type;
-
+	private ModelType type;
 	private File exportDestination;
 	private List<BaseDescriptor> selectedComponents = new ArrayList<>();
 	private CheckboxTreeViewer viewer;
+
+	public ModelSelectionPage() {
+		this(null);
+	}
 
 	public ModelSelectionPage(ModelType type) {
 		super(ModelSelectionPage.class.getCanonicalName());
 		this.type = type;
 		setPageComplete(false);
 		createTexts();
-	}
-
-	private void createTexts() {
-		String typeName = getTypeName(type);
-		String title = Messages.bind(Messages.Select, typeName);
-		setTitle(title);
-		String descr = Messages.SelectObjectPage_Description;
-		descr = Messages.bind(descr, typeName);
-		setDescription(descr);
 	}
 
 	public File getExportDestination() {
@@ -63,7 +58,20 @@ class ModelSelectionPage extends WizardPage {
 		return selectedComponents;
 	}
 
+	private void createTexts() {
+		// TODO: change labels to 'Select data sets etc.'
+		String typeName = getTypeName(type);
+		String title = Messages.bind(Messages.Select, typeName);
+		setTitle(title);
+		String descr = Messages.SelectObjectPage_Description;
+		descr = Messages.bind(descr, typeName);
+		setDescription(descr);
+	}
+
+	// TODO: this method can be removed if the labels are a bit more generic
 	private String getTypeName(ModelType type) {
+		if (type == null)
+			return "@data sets";
 		switch (type) {
 		case PROCESS:
 			return Messages.Processes;
@@ -199,9 +207,10 @@ class ModelSelectionPage extends WizardPage {
 	private void setInitialInput() {
 		if (type != null)
 			viewer.setInput(Navigator.findElement(type));
-		else
-			viewer.setInput(Navigator.findElement(Database
-					.getActiveConfiguration()));
+		else {
+			IDatabaseConfiguration config = Database.getActiveConfiguration();
+			viewer.setInput(Navigator.findElement(config));
+		}
 	}
 
 }

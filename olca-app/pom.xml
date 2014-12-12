@@ -21,12 +21,6 @@
 
 	<dependencies>
 
-		<!-- We need an extra build for the POI dependencies as it is not possible 
-			to generate OSGi bundles of the single POI libraries. <dependency> <groupId>org.apache.poi</groupId> 
-			<artifactId>poi</artifactId> <version>3.9</version> </dependency> <dependency> 
-			<groupId>org.apache.poi</groupId> <artifactId>poi-ooxml</artifactId> <version>3.9</version> 
-			</dependency> -->
-
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
@@ -192,6 +186,12 @@
 		<dependency>
 			<groupId>org.openlca</groupId>
 			<artifactId>olca-io</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.openlca</groupId>
+			<artifactId>olca-jsonld</artifactId>
 			<version>1.0.0</version>
 		</dependency>
 
