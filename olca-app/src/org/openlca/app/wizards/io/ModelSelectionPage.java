@@ -56,7 +56,7 @@ class ModelSelectionPage extends WizardPage {
 	}
 
 	public File getExportDestination() {
-		return new File(exportDestination.getAbsolutePath());
+		return exportDestination;
 	}
 
 	public List<BaseDescriptor> getSelectedModels() {
@@ -91,60 +91,6 @@ class ModelSelectionPage extends WizardPage {
 				&& selectedComponents.size() > 0);
 	}
 
-	private void createChooseDirectoryComposite(final Composite body) {
-		// create composite
-		Composite chooseDirectoryComposite = new Composite(body, SWT.NONE);
-		GridLayout dirLayout = new GridLayout(3, false);
-		dirLayout.marginLeft = 0;
-		dirLayout.marginRight = 0;
-		dirLayout.marginBottom = 0;
-		dirLayout.marginTop = 0;
-		dirLayout.marginHeight = 0;
-		dirLayout.marginWidth = 0;
-		chooseDirectoryComposite.setLayout(dirLayout);
-		chooseDirectoryComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL,
-				true, false));
-
-		new Label(chooseDirectoryComposite, SWT.NONE)
-				.setText(Messages.ToDirectory);
-
-		// create text for selecting a category
-		Text directoryText = new Text(chooseDirectoryComposite,
-				SWT.BORDER);
-		String lastDirectory = ApplicationProperties.PROP_EXPORT_DIRECTORY
-				.getValue();
-		if (lastDirectory != null && new File(lastDirectory).exists()) {
-			directoryText.setText(lastDirectory);
-			exportDestination = new File(lastDirectory);
-		} else {
-			lastDirectory = null;
-		}
-		directoryText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
-				false));
-		directoryText.setEditable(false);
-		directoryText.setBackground(Colors.getWhite());
-
-		// create button to open directory dialog
-		final Button chooseDirectoryButton = new Button(
-				chooseDirectoryComposite, SWT.NONE);
-		chooseDirectoryButton.setText(Messages.ChooseDirectory);
-		Controls.onSelect(chooseDirectoryButton, (e) -> {
-			DirectoryDialog dialog = new DirectoryDialog(UI.shell());
-			String dir = ApplicationProperties.PROP_EXPORT_DIRECTORY
-					.getValue();
-			dialog.setFilterPath(dir != null && new File(dir).exists() ? dir
-					: "");
-			String directoryPath = dialog.open();
-			if (directoryPath != null) {
-				directoryText.setText(directoryPath);
-				ApplicationProperties.PROP_EXPORT_DIRECTORY
-						.setValue(directoryPath);
-				exportDestination = new File(directoryPath);
-				checkCompletion();
-			}
-		});
-	}
-
 	@Override
 	public void createControl(final Composite parent) {
 		Composite body = UIFactory.createContainer(parent);
@@ -158,6 +104,49 @@ class ModelSelectionPage extends WizardPage {
 		createViewer(viewerComposite);
 		setControl(body);
 		checkCompletion();
+	}
+
+	private void createChooseDirectoryComposite(final Composite body) {
+		Composite composite = new Composite(body, SWT.NONE);
+		GridLayout layout = UI.gridLayout(composite, 3);
+		layout.marginHeight = 0;
+		layout.marginWidth = 5;
+		UI.gridData(composite, true, false);
+		new Label(composite, SWT.NONE).setText(Messages.ToDirectory);
+		Text text = createDirectoryText(composite);
+		text.setEditable(false);
+		text.setBackground(Colors.getWhite());
+		Button button = new Button(composite, SWT.NONE);
+		button.setText(Messages.Browse);
+		Controls.onSelect(button, (e) -> selectDirectory(text));
+	}
+
+	private Text createDirectoryText(Composite composite) {
+		Text text = new Text(composite, SWT.BORDER);
+		String lastDir = ApplicationProperties.PROP_EXPORT_DIRECTORY.getValue();
+		if (lastDir != null && new File(lastDir).exists()) {
+			text.setText(lastDir);
+			exportDestination = new File(lastDir);
+		} else {
+			lastDir = null;
+		}
+		UI.gridData(text, true, false);
+		return text;
+	}
+
+	private void selectDirectory(Text text) {
+		DirectoryDialog dialog = new DirectoryDialog(UI.shell());
+		String dir = ApplicationProperties.PROP_EXPORT_DIRECTORY
+				.getValue();
+		if (dir != null && new File(dir).exists())
+			dialog.setFilterPath(dir);
+		String path = dialog.open();
+		if (path != null) {
+			text.setText(path);
+			ApplicationProperties.PROP_EXPORT_DIRECTORY.setValue(path);
+			exportDestination = new File(path);
+			checkCompletion();
+		}
 	}
 
 	private Composite createViewerComposite(final Composite body) {
