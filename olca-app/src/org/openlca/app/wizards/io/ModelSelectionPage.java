@@ -25,6 +25,7 @@ import org.openlca.app.navigation.NavigationContentProvider;
 import org.openlca.app.navigation.NavigationLabelProvider;
 import org.openlca.app.navigation.NavigationSorter;
 import org.openlca.app.navigation.Navigator;
+import org.openlca.app.navigation.filters.ModelTypeFilter;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
@@ -34,18 +35,14 @@ import org.openlca.core.model.descriptors.BaseDescriptor;
 
 class ModelSelectionPage extends WizardPage {
 
-	private ModelType type;
+	private ModelType[] types;
 	private File exportDestination;
 	private List<BaseDescriptor> selectedComponents = new ArrayList<>();
 	private CheckboxTreeViewer viewer;
 
-	public ModelSelectionPage() {
-		this(null);
-	}
-
-	public ModelSelectionPage(ModelType type) {
+	public ModelSelectionPage(ModelType... types) {
 		super(ModelSelectionPage.class.getCanonicalName());
-		this.type = type;
+		this.types = types;
 		setPageComplete(false);
 		createTexts();
 	}
@@ -60,7 +57,7 @@ class ModelSelectionPage extends WizardPage {
 
 	private void createTexts() {
 		// TODO: change labels to 'Select data sets etc.'
-		String typeName = getTypeName(type);
+		String typeName = getTypeName();
 		String title = Messages.bind(Messages.Select, typeName);
 		setTitle(title);
 		String descr = Messages.SelectObjectPage_Description;
@@ -69,9 +66,10 @@ class ModelSelectionPage extends WizardPage {
 	}
 
 	// TODO: this method can be removed if the labels are a bit more generic
-	private String getTypeName(ModelType type) {
-		if (type == null)
+	private String getTypeName() {
+		if (types == null || types.length != 1)
 			return "@data sets";
+		ModelType type = types[0];
 		switch (type) {
 		case PROCESS:
 			return Messages.Processes;
@@ -180,6 +178,7 @@ class ModelSelectionPage extends WizardPage {
 		viewer.setContentProvider(new NavigationContentProvider());
 		viewer.setLabelProvider(new NavigationLabelProvider());
 		viewer.setSorter(new NavigationSorter());
+		viewer.addFilter(new ModelTypeFilter(types));
 		viewer.addCheckStateListener(new ModelSelectionState(this, viewer));
 		registerInputHandler(composite);
 		ColumnViewerToolTipSupport.enableFor(viewer);
@@ -205,8 +204,8 @@ class ModelSelectionPage extends WizardPage {
 	}
 
 	private void setInitialInput() {
-		if (type != null)
-			viewer.setInput(Navigator.findElement(type));
+		if (types != null && types.length == 1)
+			viewer.setInput(Navigator.findElement(types[0]));
 		else {
 			IDatabaseConfiguration config = Database.getActiveConfiguration();
 			viewer.setInput(Navigator.findElement(config));

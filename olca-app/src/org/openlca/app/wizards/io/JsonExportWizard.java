@@ -31,7 +31,11 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 
 	@Override
 	public void addPages() {
-		page = new ModelSelectionPage();
+		ModelType[] types = {
+				ModelType.PROCESS, ModelType.FLOW, ModelType.FLOW_PROPERTY,
+				ModelType.UNIT_GROUP, ModelType.ACTOR, ModelType.SOURCE
+		};
+		page = new ModelSelectionPage(types);
 		addPage(page);
 	}
 
