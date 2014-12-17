@@ -18,6 +18,8 @@ import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.jsonld.JsonWriter;
 import org.openlca.jsonld.ZipStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JsonExportWizard extends Wizard implements IExportWizard {
 
@@ -32,8 +34,9 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 	@Override
 	public void addPages() {
 		ModelType[] types = {
-				ModelType.PROCESS, ModelType.FLOW, ModelType.FLOW_PROPERTY,
-				ModelType.UNIT_GROUP, ModelType.ACTOR, ModelType.SOURCE
+				ModelType.IMPACT_METHOD, ModelType.PROCESS, ModelType.FLOW,
+				ModelType.FLOW_PROPERTY, ModelType.UNIT_GROUP, ModelType.ACTOR,
+				ModelType.SOURCE
 		};
 		page = new ModelSelectionPage(types);
 		addPage(page);
@@ -56,6 +59,8 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 			getContainer().run(true, true, export);
 			return true;
 		} catch (Exception e) {
+			Logger log = LoggerFactory.getLogger(getClass());
+			log.error("failed to export data sets", e);
 			return false;
 		}
 	}
@@ -91,7 +96,7 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 			for (BaseDescriptor model : models) {
 				if (monitor.isCanceled())
 					break;
-				monitor.setTaskName(model.getName());
+				monitor.subTask(model.getName());
 				ModelType type = model.getModelType();
 				Class<?> clazz = type.getModelClass();
 				Object o = database.createDao(clazz)
@@ -100,6 +105,7 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 					RootEntity entity = (RootEntity) o;
 					writer.write(entity, database);
 				}
+				monitor.worked(1);
 			}
 		}
 	}
