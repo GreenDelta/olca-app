@@ -90,9 +90,7 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 		Button button = toolkit.createButton(composite, Messages.Calculate,
 				SWT.NONE);
 		button.setImage(ImageType.CALCULATE_ICON.get());
-		Controls.onSelect(button, (e) -> {
-			new CalculationWizardDialog(getModel()).open();
-		});
+		Controls.onSelect(button, (e) -> CalculationWizard.open(getModel()));
 	}
 
 	private class ProductChangedListener implements

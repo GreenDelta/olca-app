@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
@@ -14,6 +15,7 @@ import org.openlca.app.results.quick.QuickResultEditor;
 import org.openlca.app.results.regionalized.RegionalizedResultEditor;
 import org.openlca.app.results.simulation.SimulationInit;
 import org.openlca.app.util.Editors;
+import org.openlca.app.util.UI;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.SystemCalculator;
 import org.openlca.core.model.ProductSystem;
@@ -39,6 +41,14 @@ class CalculationWizard extends Wizard {
 		this.productSystem = productSystem;
 		setNeedsProgressMonitor(true);
 		setWindowTitle(Messages.CalculationProperties);
+	}
+
+	public static void open(ProductSystem productSystem) {
+		if (productSystem == null)
+			return;
+		CalculationWizard wizard = new CalculationWizard(productSystem);
+		WizardDialog dialog = new WizardDialog(UI.shell(), wizard);
+		dialog.open();
 	}
 
 	@Override

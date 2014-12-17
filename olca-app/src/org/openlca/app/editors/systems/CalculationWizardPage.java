@@ -56,7 +56,6 @@ class CalculationWizardPage extends WizardPage {
 		UI.formLabel(body, Messages.NormalizationAndWeightingSet);
 		nwViewer = new NwSetComboViewer(body);
 		nwViewer.setDatabase(Database.get());
-
 		UI.formLabel(body, Messages.CalculationType);
 		Composite typePanel = new Composite(body, SWT.NONE);
 		UI.gridLayout(typePanel, 2).horizontalSpacing = 15;
