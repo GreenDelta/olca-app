@@ -24,8 +24,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.openlca.app.ApplicationProperties;
 import org.openlca.app.Messages;
+import org.openlca.app.Preferences;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.UI;
 
@@ -57,8 +57,7 @@ public class FileImportPage extends WizardPage {
 	}
 
 	private File getLastDir() {
-		String lastDirPath = ApplicationProperties.PROP_IMPORT_DIRECTORY
-				.getValue();
+		String lastDirPath = Preferences.get(Preferences.LAST_IMPORT_FOLDER);
 		if (lastDirPath == null)
 			return null;
 		File f = new File(lastDirPath);
@@ -321,8 +320,7 @@ public class FileImportPage extends WizardPage {
 			if (directoryPath != null) {
 				lastDir = new File(directoryPath);
 				directoryText.setText(directoryPath);
-				ApplicationProperties.PROP_IMPORT_DIRECTORY
-						.setValue(directoryPath);
+				Preferences.set(Preferences.LAST_IMPORT_FOLDER, directoryPath);
 				directoryViewer.setInput(lastDir);
 				fileViewer.setInput(lastDir);
 			}

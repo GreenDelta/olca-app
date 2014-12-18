@@ -6,7 +6,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.openlca.app.ApplicationProperties;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.preferencepages.FeatureFlag;
@@ -20,7 +19,6 @@ import org.openlca.app.viewers.combo.NwSetComboViewer;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.NwSetDescriptor;
 
 /**
@@ -61,7 +59,7 @@ class CalculationWizardPage extends WizardPage {
 		UI.gridLayout(typePanel, 2).horizontalSpacing = 15;
 		createRadios(typePanel);
 		createIterationText(typePanel);
-		setDefaultData();
+		setDefaults();
 	}
 
 	private void createIterationText(Composite typePanel) {
@@ -153,28 +151,7 @@ class CalculationWizardPage extends WizardPage {
 				(selection) -> nwViewer.setInput(methodViewer.getSelected()));
 	}
 
-	private void setDefaultData() {
-		setDefaultAllocationMethod();
-		// TODO set default method and nw set
+	private void setDefaults() {
 	}
 
-	private void setDefaultAllocationMethod() {
-		String method = ApplicationProperties.PROP_DEFAULT_ALLOCATION_METHOD
-				.getValue();
-		if (method == null)
-			return;
-		allocationViewer.select(AllocationMethod.valueOf(method));
-	}
-
-	protected void reset() {
-		if (allocationViewer != null)
-			allocationViewer.select(null);
-		if (methodViewer != null)
-			methodViewer.select(null);
-		if (nwViewer != null) {
-			nwViewer.select(null);
-			nwViewer.setInput((ImpactMethodDescriptor) null);
-		}
-		setDefaultData();
-	}
 }

@@ -17,8 +17,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.openlca.app.ApplicationProperties;
 import org.openlca.app.Messages;
+import org.openlca.app.Preferences;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.navigation.NavigationContentProvider;
@@ -129,7 +129,7 @@ class ModelSelectionPage extends WizardPage {
 
 	private Text createDirectoryText(Composite composite) {
 		Text text = new Text(composite, SWT.BORDER);
-		String lastDir = ApplicationProperties.PROP_EXPORT_DIRECTORY.getValue();
+		String lastDir = Preferences.get(Preferences.LAST_EXPORT_FOLDER);
 		if (lastDir != null && new File(lastDir).exists()) {
 			text.setText(lastDir);
 			exportDestination = new File(lastDir);
@@ -142,14 +142,13 @@ class ModelSelectionPage extends WizardPage {
 
 	private void selectDirectory(Text text) {
 		DirectoryDialog dialog = new DirectoryDialog(UI.shell());
-		String dir = ApplicationProperties.PROP_EXPORT_DIRECTORY
-				.getValue();
+		String dir = Preferences.get(Preferences.LAST_EXPORT_FOLDER);
 		if (dir != null && new File(dir).exists())
 			dialog.setFilterPath(dir);
 		String path = dialog.open();
 		if (path != null) {
 			text.setText(path);
-			ApplicationProperties.PROP_EXPORT_DIRECTORY.setValue(path);
+			Preferences.set(Preferences.LAST_EXPORT_FOLDER, path);
 			exportDestination = new File(path);
 			checkCompletion();
 		}
