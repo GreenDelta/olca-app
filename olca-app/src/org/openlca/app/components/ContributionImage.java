@@ -26,22 +26,26 @@ public class ContributionImage {
 	}
 
 	/**
-	 * Get an contribution image for table label providers. Returns null if the
-	 * contribution is lower than -1 or greater than 1.
+	 * Get an contribution image for table label providers. Returns the maximum
+	 * image (for +1 or -1) if the contribution is lower than -1 or greater than
+	 * 1.
 	 * 
 	 * @param contribution
 	 *            the contribution value between -1 and 1
 	 */
 	public Image getForTable(double contribution) {
-		if (contribution < -1 || contribution > 1)
-			return null;
-		int contributionInt = (int) (50d * contribution);
+		double c = contribution;
+		if (c < -1)
+			c = -1;
+		if (c > 1)
+			c = 1;
+		int contributionInt = (int) (50d * c);
 		String key = Integer.toString(contributionInt);
 		Image image = imageRegistry.get(key);
 		if (image == null) {
 			image = new Image(display, 60, 15);
 			GC gc = new GC(image);
-			RGB color = FaviColor.getForContribution(contribution);
+			RGB color = FaviColor.getForContribution(c);
 			gc.setBackground(Colors.getColor(color));
 			int width = Math.abs(contributionInt);
 			gc.fillRectangle(5, 5, width, 5);
