@@ -72,7 +72,8 @@ public class SystemExportDialog extends WizardDialog {
 				impactMethodViewer = new ImpactMethodViewer(methodGroup);
 				impactMethodViewer.setInput(database);
 
-				Group fileGroup = createGroup(Messages.ExportDirectory, composite, 1);
+				Group fileGroup = createGroup(Messages.ExportDirectory,
+						composite, 1);
 				directorySelection = new FileSelection(fileGroup);
 				directorySelection.setSelectDirectory(true);
 				directorySelection

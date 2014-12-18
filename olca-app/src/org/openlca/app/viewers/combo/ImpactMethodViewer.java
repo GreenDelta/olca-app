@@ -2,7 +2,6 @@ package org.openlca.app.viewers.combo;
 
 import java.util.Collections;
 import java.util.List;
-
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ImpactMethodDao;
@@ -22,11 +21,10 @@ public class ImpactMethodViewer extends
 
 	public void setInput(IDatabase database) {
 		try {
-			List<ImpactMethodDescriptor> descriptors = new ImpactMethodDao(
-					database).getDescriptors();
-			Collections.sort(descriptors);
-			setInput(descriptors.toArray(new ImpactMethodDescriptor[descriptors
-					.size()]));
+			ImpactMethodDao dao = new ImpactMethodDao(database);
+			List<ImpactMethodDescriptor> list = dao.getDescriptors();
+			Collections.sort(list);
+			setInput(list.toArray(new ImpactMethodDescriptor[list.size()]));
 		} catch (Exception e) {
 			log.error("Loading impact methods failed", e);
 		}
@@ -36,5 +34,5 @@ public class ImpactMethodViewer extends
 	public Class<ImpactMethodDescriptor> getType() {
 		return ImpactMethodDescriptor.class;
 	}
-	
+
 }
