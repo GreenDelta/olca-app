@@ -77,7 +77,10 @@ public class ParameterPage extends FormPage {
 		Action copy = TableClipboard.onCopy(table);
 		Action refresh = Actions.create(Messages.Reload,
 				ImageType.REFRESH_ICON.getDescriptor(),
-				() -> setGlobalTableInput(table));
+				() -> {
+					setGlobalTableInput(table);
+					input.fireParameterChange();
+				});
 		Action edit = Actions.create(Messages.Edit,
 				ImageType.EDIT_16.getDescriptor(),
 				() -> PreferencesUtil.createPreferenceDialogOn(UI.shell(),
