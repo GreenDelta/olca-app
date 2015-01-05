@@ -62,6 +62,8 @@ public enum ImageType {
 
 	DOWN_DIS_16("down_dis_16.png"),
 
+	EDIT_16("edit_16.png"),
+
 	ERROR_ICON("error.gif"),
 
 	EXCHANGE_BG_LEFT("left.jpg"),
