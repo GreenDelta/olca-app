@@ -1,5 +1,8 @@
 package org.openlca.app.util;
 
+import java.util.List;
+import java.util.function.Consumer;
+
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -24,9 +27,6 @@ import org.eclipse.swt.widgets.TableItem;
 import org.openlca.app.components.IModelDropHandler;
 import org.openlca.app.components.ModelTransfer;
 import org.openlca.core.model.descriptors.BaseDescriptor;
-
-import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * A helper class for creating tables, table viewers and related resources.
@@ -177,7 +177,8 @@ public class Tables {
 		return table.getItem(new Point(event.x, event.y));
 	}
 
-	public static void onDeletePressed(TableViewer viewer, Consumer<Event> handler) {
+	public static void onDeletePressed(TableViewer viewer,
+			Consumer<Event> handler) {
 		if (viewer == null || viewer.getTable() == null || handler == null)
 			return;
 		viewer.getTable().addListener(SWT.KeyUp, (event) -> {
