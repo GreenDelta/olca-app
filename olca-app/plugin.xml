@@ -682,7 +682,7 @@
       		class="org.openlca.app.wizards.io.JsonExportWizard"
       		icon="icons/logo_16_32bit.png"
       		id="org.openlca.app.wizards.io.JsonExportWizard"
-      		name="@JSON-LD">
+      		name="JSON-LD">
       </wizard>
    </extension>
 </plugin>

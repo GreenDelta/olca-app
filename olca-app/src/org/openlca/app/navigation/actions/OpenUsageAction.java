@@ -22,16 +22,15 @@ public class OpenUsageAction extends Action implements INavigationAction {
 
 	private BaseDescriptor descriptor;
 
-	//@formatter:off
 	private EnumSet<ModelType> types = EnumSet.of(
 			ModelType.ACTOR,
-			ModelType.SOURCE, 
-			ModelType.UNIT_GROUP, 
+			ModelType.SOURCE,
+			ModelType.UNIT_GROUP,
 			ModelType.FLOW_PROPERTY,
-			ModelType.FLOW, 
+			ModelType.FLOW,
 			ModelType.PROCESS,
-			ModelType.IMPACT_METHOD);
-	//@formatter:on
+			ModelType.IMPACT_METHOD,
+			ModelType.PRODUCT_SYSTEM);
 
 	public OpenUsageAction() {
 		setText(Messages.Usage);
