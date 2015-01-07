@@ -31,6 +31,7 @@ import org.openlca.app.editors.reports.model.ReportCalculator;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
+import org.openlca.app.util.Editors;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.TableClipboard;
@@ -85,6 +86,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 	protected void createFormContent(IManagedForm managedForm) {
 		ScrolledForm form = UI.formHeader(managedForm, Messages.Project + ": "
 				+ getModel().getName());
+		Editors.addRefresh(form, editor);
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		InfoSection infoSection = new InfoSection(getEditor());

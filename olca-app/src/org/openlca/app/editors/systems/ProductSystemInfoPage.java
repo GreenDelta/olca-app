@@ -12,6 +12,7 @@ import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Controls;
+import org.openlca.app.util.Editors;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.ExchangeViewer;
@@ -40,6 +41,7 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 	protected void createFormContent(IManagedForm managedForm) {
 		ScrolledForm form = UI.formHeader(managedForm, Messages.ProductSystem
 				+ ": " + getModel().getName());
+		Editors.addRefresh(form, getEditor());
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		InfoSection infoSection = new InfoSection(getEditor());
