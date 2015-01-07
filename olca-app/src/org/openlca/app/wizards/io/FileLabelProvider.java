@@ -27,7 +27,10 @@ class FileLabelProvider extends LabelProvider {
 			return ImageType.XML_ICON.get();
 		if (hasExtension(file, ".zip"))
 			return ImageType.ZIP_ICON.get();
-		return ImageType.FILE_SMALL.get();
+		if (hasExtension(file, ".xls") || hasExtension(file, ".xlsx"))
+			return ImageType.FILE_EXCEL_SMALL.get();
+		else
+			return ImageType.FILE_SMALL.get();
 	}
 
 	private boolean hasExtension(File file, String extension) {
