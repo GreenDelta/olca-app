@@ -97,6 +97,11 @@ public class App {
 		}
 	}
 
+	public static void closeEditor(CategorizedEntity entity) {
+		BaseDescriptor descriptor = Descriptors.toDescriptor(entity);
+		closeEditor(descriptor);
+	}
+
 	public static void closeEditor(BaseDescriptor descriptor) {
 		if (descriptor == null) {
 			log.error("model is null, could not close editor");

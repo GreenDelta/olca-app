@@ -37,7 +37,7 @@ public final class Config {
 	/**
 	 * Link to the openLCA online help.
 	 */
-	public static final String HELP_URL = "http://www.openlca.org/documentation";
+	public static final String HELP_URL = "http://www.openlca.org/manuals";
 
 	private static Boolean browserEnabled;
 
