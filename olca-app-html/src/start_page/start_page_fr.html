@@ -139,8 +139,8 @@
             function callOpenUrl(url) {
                 if(typeof(openUrl) === "function") {
                     openUrl(url);
-                } else if (typeof(console) !== "undefined") {
-                    console.log("could not open " + url + "; openUrl is not a function");
+                } else {
+                    window.open(url);
                 }
             }
        </script>
