@@ -113,38 +113,7 @@
         <script src="libs/jquery.min.js"></script>
         <script src="libs/angular.min.js"></script>
         <script type="text/javascript">
-            $(document).ready(function() {
-                $('#gd-logo').on('click', function() {
-                    callOpenUrl('http://www.greendelta.com');
-                });
-            });
-
-            var app = angular.module('StartPage', []);
-
-            var Controller = function ($scope) {
-                $scope.data = {};
-            	//setData({'version' : '1.4' });
-            };
-	        app.controller('Controller', Controller);
-
-           function setData(data) {
-                var element = document.getElementById("contentDiv");
-                var scope = angular.element(element).scope();
-                scope.$apply(function () {
-                    scope.data = data;
-                });
-            }
-
-            // the functions openUrl and importDatabase should be registered by the 
-            // host editor in openLCA
-
-            function callOpenUrl(url) {
-                if(typeof(openUrl) === "function") {
-                    openUrl(url);
-                } else {
-                    window.open(url);
-                }
-            }
-       </script>
+        //@include('./start_page.js')
+        </script>
   </body>
 </html>

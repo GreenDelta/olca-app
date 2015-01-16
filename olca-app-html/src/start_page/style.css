@@ -4,15 +4,6 @@ body {
 .well {            
     background-color: #FFF;
 }
-.box-row1 {
-    padding-bottom: 0px;
-    padding-left: 20px;
-    padding-right: 20px;
-    padding-top: 20px;
-}
-.box-row2 {
-    padding: 20px;
-}
 .btn-primary {
     width:225px;
 }

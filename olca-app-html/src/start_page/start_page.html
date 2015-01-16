@@ -42,21 +42,21 @@
 	          <tr>
 	            <td>
 	              <h3><img src="images/news.gif"
-	                  alt="">What's new</h3>
+	                  alt="">What's new?</h3>
 	              <p>For the 1.4 version, we completely redesigned and “renovated”
 	                openLCA. Results are</p>
 	              <ul>
-	                <li><b>drastically</b> <a onclick="callOpenUrl('http://www.openlca.org/performance')" class="btn btn-default"><b>improved performance</b></a> of about 400%,</li>
-	                <li><b>numerous</b> <a onclick="callOpenUrl('http://www.openlca.org/features#usability')" class="btn btn-default"><b>usability improvements</b></a>, and</li>
-	                <li><b>many</b> <a onclick="callOpenUrl('http://www.openlca.org/features_overview')"  class="btn btn-default"><b>new features</b></a>.</li>
+	                <li><b>drastically</b> <a onclick="callOpenUrl('http://www.openlca.org/performance')" class="btn btn-default"><b>improved performance</b></a> of about 400%</li>
+	                <li><b>numerous</b> <a onclick="callOpenUrl('http://www.openlca.org/features#usability')" class="btn btn-default"><b>usability improvements</b></a></li>
+	                <li><b>many</b> <a onclick="callOpenUrl('http://www.openlca.org/features_overview')"  class="btn btn-default"><b>new features</b></a></li>
 	              </ul>
-				  <p>Find out what is new in version 1.4.1 here.</p>
+				  <p>What's new in version 1.4.1? Find out here.</p>
 	            </td>
 	            <td>
 	              <h3><img src="images/getting-started.gif"
 	                  alt="">Getting started</h3>
-	              <p>With the new version of openLCA, it is really easy to get started
-				    you can just import a database from an existing zolca file and open
+	              <p>With the new version of openLCA, it is really easy to get started.
+				    You can just import a database from an existing zolca file and open
 					it in the navigation window with a simple double-click.
 	                </p>
 	              <p>Some basic openLCA functions are also explained in this <a onclick="callOpenUrl('https://www.youtube.com/watch?v=kEosW6PceVg')"
@@ -69,9 +69,9 @@
 	                  alt="">Download</h3>
 	              <p>A broad range of LCA databases are available in <a onclick="callOpenUrl('http://nexus.openlca.org')" target="blank"
 	                  class="btn btn-default">openLCA Nexus</a>,
-	                where you can search for both single data sets and 
+	                where you can search for both single data sets and
 					complete databases and download them for import into openLCA. The databases are all
-	                fit for openLCA and several databases can be combined.</p>
+	                formatted for use in openLCA and several databases can be combined.</p>
 	              <p>How you can import databases and impact assessment methods into openLCA is also explained in a <a onclick="callOpenUrl('http://www.youtube.com/watch?v=FqVMbwhAEW4')"
 	                  target="blank" class="btn btn-default">video</a>.<br></p>
 	                <p>LCIA method packs are available from the openLCA <a onclick="callOpenUrl('http://www.openlca.org/downloads')"
@@ -83,6 +83,8 @@
 	              <p>Find out how to work with openLCA in our <a onclick="callOpenUrl('http://www.openlca.org/manuals')" target="blank"
 	                  class="btn btn-default">User Manuals</a>. These illustrate the most basic features and functions
 				    as well as offer comprehensive information on more advanced topics.</p>
+					<p>See also our <a onclick="callOpenUrl('https://www.youtube.com/channel/UCGiahq1YZWK4pRXDVXuIi6w')"
+	                  target="blank" class="btn btn-default">instructional videos</a> that explain and demonstrate specific subjects.<p>
 	            </td>
 	          </tr>
 	          <tr>
@@ -110,38 +112,7 @@
         <script src="libs/jquery.min.js"></script>
         <script src="libs/angular.min.js"></script>
         <script type="text/javascript">
-            $(document).ready(function() {
-                $('#gd-logo').on('click', function() {
-                    callOpenUrl('http://www.greendelta.com');
-                });
-            });
-
-            var app = angular.module('StartPage', []);
-
-            var Controller = function ($scope) {
-                $scope.data = {};
-            	//setData({'version' : '1.4' });
-            };
-	        app.controller('Controller', Controller);
-
-           function setData(data) {
-                var element = document.getElementById("contentDiv");
-                var scope = angular.element(element).scope();
-                scope.$apply(function () {
-                    scope.data = data;
-                });
-            }
-
-            // the functions openUrl and importDatabase should be registered by the 
-            // host editor in openLCA
-
-            function callOpenUrl(url) {
-                if(typeof(openUrl) === "function") {
-                    openUrl(url);
-                } else {
-                    window.open(url);
-                }
-            }
+        //@include('./start_page.js')    
        </script>
   </body>
 </html>
