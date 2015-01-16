@@ -15,9 +15,6 @@ h1 {
     color: #888;
     font-size: 20px;
 }
-h3 {
-    color: #00B0F0;
-}
 h3 > img {
     margin-right: 15px !important;
 }
@@ -31,20 +28,23 @@ h3 > img {
     vertical-align: inherit;
 }
 a.btn-default {
-    color: #00B0F0;
+    color: #000000;
     background-color: transparent;
+    font-weight: bold;
     border: none;
-    padding: 5px 0px 5px 0px;
+    padding: 0px 0px 0px 0px;
     margin: 0;
 }
 a.btn-default:hover {
-    color: #00B0F0;
+    color: #000000;
 }
 .page-header a.btn-default {
+    font-weight: normal;
+    color: #888;
+    font-size: 16px;
     padding: 0;
 }
 .page-header a.btn-default:hover {
-    color: #00B0F0;
     background: transparent;
 }
 .page-header a.subtle-link {
@@ -102,5 +102,9 @@ tr {
 #gd-logo:hover {
     cursor: pointer;
     background: url('images/gd_transparent.png');
+}
+.section_content {
+	padding-left: 48px;
+	padding-right: 48px;
 }
 
