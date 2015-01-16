@@ -9,7 +9,7 @@
         //@include('./style.css')
     </style>
   </head>
-  <body>
+  <body style="background-color: rgb(243, 243, 243)">
 	<div id="contentDiv" data-ng-controller="Controller">
 	    <div class="page-header">
 	      <table style="width: 100%;" border="0">
@@ -36,72 +36,94 @@
 	        </tbody>
 	      </table>
 	    </div>
+		
 	    <div id="navigation-section" class="container-fluid" style="margin: 20px;">
-	      <table style="background-color: rgb(255, 255, 255);">
+	      <table>
 	        <tbody>
 	          <tr>
+				  
 	            <td>
-	              <h3><img src="images/news.gif"
+	              <h3 style="color: rgb(18,89,133);"><img src="images/news_32.png"
 	                  alt="">Novedades y mejoras</h3>
-	              <p>Para la versión 1.4 hemos rediseñado y "renovado" completamente
-	                openLCA. Los resultados son:</p>
-	              <ul>
-	                <li>drástico <a onclick="callOpenUrl('http://www.openlca.org/performance')" class="btn btn-default">incremento del rendimiento</a> de alrededor del 400%</li>
-	                <li>numerosas <a onclick="callOpenUrl('http://www.openlca.org/features#usability')" class="btn btn-default">mejoras de uso</a></li>
-	                <li>muchas <a onclick="callOpenUrl('http://www.openlca.org/features#overview1.4')"  class="btn btn-default">nuevas funcionalidades</a></li>
-	              </ul>
+					<div class="section_content">
+						<p>Para la versión 1.4 hemos rediseñado y "renovado" completamente
+						openLCA. Los resultados son:</p>
+					  <ul>
+						<li>drástico <a onclick="callOpenUrl('http://www.openlca.org/performance')" class="btn btn-default">incremento del rendimiento</a> de alrededor del 400%</li>
+						<li>numerosas <a onclick="callOpenUrl('http://www.openlca.org/features#usability')" class="btn btn-default">mejoras de uso</a></li>
+						<li>muchas <a onclick="callOpenUrl('http://www.openlca.org/features#overview1.4')"  class="btn btn-default">nuevas funcionalidades</a></li>
+					  </ul>
+					</div>
 	            </td>
+				
 	            <td>
-	              <h3><img src="images/getting-started.gif"
+	              <h3 style="color: rgb(128,0,128)"><img src="images/getting_started_32.png"
 	                  alt="">Cómo empezar</h3>
-	              <p>Cuando se inicia openLCA por primera vez, no contiene ningún
-	                dato. Pero es realmente fácil empezar
-	                a usar openLCA. Sólo hay que importar una base de datos desde un archivo
-					zolca existente. Después, abra la base de datos haciendo doble click 
-					sobre ella en el menú de navegación de la izquierda.
-	                </p>
-	              <p>Ésto se explica más detalladamente en un vídeo disponible <a onclick="callOpenUrl('http://www.openlca.org/videos')"
-	                  target="blank" class="btn btn-default">aquí</a></p>
+					<div class="section_content">
+						<p>Cuando se inicia openLCA por primera vez, no contiene ningún
+						  dato. Pero es realmente fácil empezar
+						  a usar openLCA. Sólo hay que importar una base de datos desde un archivo
+						  zolca existente. Después, abra la base de datos haciendo doble click 
+						  sobre ella en el menú de navegación de la izquierda.
+						  </p>
+						<p>Ésto se explica más detalladamente en un vídeo disponible <a onclick="callOpenUrl('http://www.openlca.org/videos')"
+							target="blank" class="btn btn-default">aquí</a></p>
+					</div>  
 	            </td>
+				
 	          </tr>
 	          <tr>
-	            <td>
-	              <h3><img style="width: 61px; height: 54px;" src="images/search.gif"
+	            
+				<td>
+	              <h3 style="color: rgb(0,177,241)"><img src="images/downloads_32.png"
 	                  alt="">Buscar y descargar datos</h3>
-	              <p>Un gran número de bases de datos de ACV están disponibles en <a onclick="callOpenUrl('http://nexus.openlca.org')" target="blank"
-	                  class="btn btn-default">openLCA Nexus</a>,
-	                donde se pueden buscar tanto series de datos individuales como
-	                bases de datos completas. Todas estas bases de datos
-					pueden utilizarse en openLCA, incluso combinándolas entre ellas.</p>
-	              <p>Hay una explicación más detallada en video disponible <a onclick="callOpenUrl('http://www.openlca.org/videos')"
-	                  target="blank" class="btn btn-default">aquí</a><br>
-	                Paquetes de métodos para la evaluación del impacto del ciclo de vida (EICV) están disponibles en la página de <a onclick="callOpenUrl('http://www.openlca.org/downloads')"
-	                  target="blank" class="btn btn-default">descargas </a> de openLCA</p>
-	            </td>
+					<div class="section_content">
+						<p>Un gran número de bases de datos de ACV están disponibles en <a onclick="callOpenUrl('http://nexus.openlca.org')" target="blank"
+							class="btn btn-default">openLCA Nexus</a>,
+						  donde se pueden buscar tanto series de datos individuales como
+						  bases de datos completas. Todas estas bases de datos
+						  pueden utilizarse en openLCA, incluso combinándolas entre ellas.</p>
+						<p>Hay una explicación más detallada en video disponible <a onclick="callOpenUrl('http://www.openlca.org/videos')"
+							target="blank" class="btn btn-default">aquí</a><br>
+						  Paquetes de métodos para la evaluación del impacto del ciclo de vida (EICV) están disponibles en la página de <a onclick="callOpenUrl('http://www.openlca.org/downloads')"
+							target="blank" class="btn btn-default">descargas </a> de openLCA</p>
+					</div>
+				</td>
+				
 	            <td>
-	              <h3><img src="images/documentation.gif"
+	              <h3 style="color: rgb(255,153,0)"><img src="images/manuals_32.png"
 	                  alt="">Manuales de usuario</h3>
-	              <p>La wiki de openLCA disponible en la red contiene detalles sobre casi todas las
-	                funciones del software. Se actualiza periódicamente, así que recomendamos que los 
-					usuarios la revisen de vez en cuando.</p>
-	              <p>Hay también disponibles nuevos <a onclick="callOpenUrl('http://www.openlca.org/manuals')" target="blank"
-	                  class="btn btn-default">manuales </a> de introducción detallados en la web.</p>
-	            </td>
+					<div class="section_content">
+						<p>La wiki de openLCA disponible en la red contiene detalles sobre casi todas las
+						  funciones del software. Se actualiza periódicamente, así que recomendamos que los 
+						  usuarios la revisen de vez en cuando.</p>
+						<p>Hay también disponibles nuevos <a onclick="callOpenUrl('http://www.openlca.org/manuals')" target="blank"
+							class="btn btn-default">manuales </a> de introducción detallados en la web.</p>
+					</div>
+				</td>
+				
 	          </tr>
 	          <tr>
+				  
 	            <td>
-	              <h3><img src="images/examples.gif"
+	              <h3 style="color: rgb(112,187,40)"><img src="images/case_studies_32.png"
 	                  alt="">Ejemplos</h3>
-	              <p>Aquí se pueden consultar casos prácticos que demuestran cómo usar openLCA:</p>
-	              <p><a onclick="callOpenUrl('http://www.openlca.org/case_studies#1_3')" target="blank" class="btn btn-default">Estudios para la versión 1.3</a></p>
-	              <p><a onclick="callOpenUrl('http://www.openlca.org/case_studies#1_4')" target="blank" class="btn btn-default">Estudios para la versión 1.4</a></p>
-	            </td>
+					<div class="section_content">
+						<p>Aquí se pueden consultar casos prácticos que demuestran cómo usar openLCA:</p>
+						<p><a onclick="callOpenUrl('http://www.openlca.org/case_studies#1_3')" target="blank" class="btn btn-default">Estudios para la versión 1.3</a></p>
+						<p><a onclick="callOpenUrl('http://www.openlca.org/case_studies#1_4')" target="blank" class="btn btn-default">Estudios para la versión 1.4</a></p>
+					</div>
+				</td>
+				
 	            <td>
-	              <h3><img src="images/community.gif"
+	              <h3 style="color: rgb(200,92,112)"><img src="images/community_32.png"
 	                  alt="">Comunidad de usuarios</h3>
-	              <p>Cada vez hay más gente que usa openLCA. Regístrese en el <a
-	                  onclick="callOpenUrl('http://www.openlca.org/forum')" target="blank" class="btn btn-default">foro</a> para compartir sus opiniones, hacer preguntas, consultar respuestas y participar en la comunidad de usuarios.</p>
-	            </td>
+					<div class="section_content">
+						<p>Cada vez hay más gente que usa openLCA. Regístrese en el <a
+							onclick="callOpenUrl('http://www.openlca.org/forum')" target="blank" class="btn btn-default">foro</a> para compartir sus opiniones, hacer preguntas, consultar respuestas y participar en la comunidad de usuarios.</p>
+					</div>
+				</td>
+				
 	          </tr>
 		        </tbody>
 		      </table>
