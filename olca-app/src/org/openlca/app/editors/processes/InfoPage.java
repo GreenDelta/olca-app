@@ -21,6 +21,7 @@ import org.openlca.app.editors.processes.kml.EditorHandler;
 import org.openlca.app.editors.processes.kml.KmlUtil;
 import org.openlca.app.editors.processes.kml.MapEditor;
 import org.openlca.app.editors.processes.kml.TextEditor;
+import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Editors;
@@ -56,7 +57,8 @@ class InfoPage extends ModelPage<Process> {
 	protected void createFormContent(IManagedForm managedForm) {
 		form = UI.formHeader(managedForm, Messages.Process + ": "
 				+ getModel().getName());
-		Editors.addRefresh(form, editor);
+		if (FeatureFlag.SHOW_REFRESH_BUTTONS.isEnabled())
+			Editors.addRefresh(form, editor);
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		InfoSection infoSection = new InfoSection(getEditor());

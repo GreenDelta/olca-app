@@ -34,7 +34,7 @@ en
 
    <splash
       location="olca-app"
-      startupProgressRect="0,366,549,5"
+      startupProgressRect="0,356,536,5"
       startupMessageRect="7,500,445,20"
       startupForegroundColor="000000" />
    <launcher name="openLCA">

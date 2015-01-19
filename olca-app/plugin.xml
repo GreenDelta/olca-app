@@ -351,7 +351,7 @@
                value="openLCA" />
          <property
                name="startupProgressRect"
-               value="0,366,549,5">
+               value="0,356,536,5">
          </property>
          <property
                name="preferenceCustomization"
