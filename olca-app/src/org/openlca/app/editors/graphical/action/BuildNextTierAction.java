@@ -69,6 +69,7 @@ class BuildNextTierAction extends Action implements IBuildAction {
 			command = command.chain(CommandFactory
 					.createExpandLeftCommand(node));
 		CommandUtil.executeCommand(command, systemNode.getEditor());
+		systemNode.getEditor().setDirty(true);
 	}
 
 	private void collectFor(ProcessNode node,

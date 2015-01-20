@@ -16,8 +16,8 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.BaseDescriptor;
-import org.openlca.jsonld.JsonWriter;
 import org.openlca.jsonld.ZipStore;
+import org.openlca.jsonld.output.JsonExport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,7 +92,7 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 		}
 
 		private void doExport(IProgressMonitor monitor, ZipStore store) {
-			JsonWriter writer = new JsonWriter(store);
+			JsonExport writer = new JsonExport(database, store);
 			for (BaseDescriptor model : models) {
 				if (monitor.isCanceled())
 					break;
@@ -103,7 +103,7 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 						.getForId(model.getId());
 				if (o instanceof RootEntity) {
 					RootEntity entity = (RootEntity) o;
-					writer.write(entity, database);
+					writer.write(entity);
 				}
 				monitor.worked(1);
 			}
