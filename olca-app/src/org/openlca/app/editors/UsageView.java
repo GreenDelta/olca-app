@@ -17,8 +17,10 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
 import org.openlca.app.Messages;
+import org.openlca.app.db.Database;
 import org.openlca.app.rcp.html.HtmlPage;
 import org.openlca.app.rcp.html.HtmlView;
+import org.openlca.app.util.Editors;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.IDatabase;
@@ -48,6 +50,13 @@ public class UsageView extends FormEditor {
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private BaseDescriptor model;
 	private IDatabase database;
+
+	public static void open(BaseDescriptor descriptor) {
+		if (descriptor == null)
+			return;
+		UsageViewInput input = new UsageViewInput(descriptor, Database.get());
+		Editors.open(input, UsageView.ID);
+	}
 
 	@Override
 	protected void addPages() {

@@ -12,7 +12,7 @@ import org.openlca.core.model.descriptors.BaseDescriptor;
  * Input for the usage view. Contains the descriptor of the model which usages
  * should be shown.
  */
-public class UsageViewInput implements IEditorInput {
+class UsageViewInput implements IEditorInput {
 
 	private BaseDescriptor descriptor;
 	private IDatabase database;

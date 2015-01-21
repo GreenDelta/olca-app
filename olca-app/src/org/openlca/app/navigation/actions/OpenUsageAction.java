@@ -5,13 +5,10 @@ import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.openlca.app.Messages;
-import org.openlca.app.db.Database;
 import org.openlca.app.editors.UsageView;
-import org.openlca.app.editors.UsageViewInput;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.rcp.ImageType;
-import org.openlca.app.util.Editors;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 
@@ -43,8 +40,7 @@ public class OpenUsageAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		Editors.open(new UsageViewInput(descriptor, Database.get()),
-				UsageView.ID);
+		UsageView.open(descriptor);
 	}
 
 	@Override
