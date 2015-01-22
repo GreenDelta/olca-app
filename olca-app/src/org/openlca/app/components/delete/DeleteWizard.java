@@ -70,7 +70,7 @@ public class DeleteWizard<T extends BaseDescriptor> extends ProblemWizard {
 		}
 
 		private String getMessage(T used, BaseDescriptor user) {
-			String s1 = used.getClass().getSimpleName() + " " + used.getName();
+			String s1 = used.getName();
 			String s2 = user.getModelType().getModelClass().getSimpleName()
 					+ " " + user.getName();
 			return s1 + " is used by " + s2;

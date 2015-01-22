@@ -1,7 +1,6 @@
 package org.openlca.app.results;
 
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
@@ -70,7 +69,8 @@ class GroupSetAction extends Action {
 						ProcessGroupSet.class).getAll();
 				ProcessGroupSet[] groups = list
 						.toArray(new ProcessGroupSet[list.size()]);
-				Arrays.sort(groups, new GroupSetComparator());
+				Arrays.sort(groups, (s1, s2) ->
+						Strings.compare(s1.getName(), s1.getName()));
 				return groups;
 			} catch (Exception e) {
 				log.error("Failed to load the grouping sets", e);
@@ -142,13 +142,6 @@ class GroupSetAction extends Action {
 			if (toolkit != null)
 				toolkit.dispose();
 			return super.close();
-		}
-	}
-
-	private class GroupSetComparator implements Comparator<ProcessGroupSet> {
-		@Override
-		public int compare(ProcessGroupSet o1, ProcessGroupSet o2) {
-			return Strings.compare(o1.getName(), o2.getName());
 		}
 	}
 
