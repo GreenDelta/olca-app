@@ -549,6 +549,12 @@
            id="wizard.import.db"
            name="Database Import">
       </wizard>
+      <wizard
+      		class="org.openlca.app.wizards.io.JsonImportWizard"
+      		icon="icons/logo_16_32bit.png"
+            id="wizard.import.json"
+            name="JSON-LD">
+      </wizard>
   	  <wizard
 	       category="import.category.file"
 		   class="org.openlca.app.wizards.io.SimaProCsvImportWizard"
