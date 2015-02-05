@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="openLCA" uid="openLCA" id="olca-app.openLCA" application="org.openlca.app.Application" version="1.4.1.beta7" useFeatures="false" includeLaunchers="true">
+<product name="openLCA" uid="openLCA" id="olca-app.openLCA" application="org.openlca.app.Application" version="1.4.1" useFeatures="false" includeLaunchers="true">
 
    <aboutInfo>
       <image path="/olca-app/icons/about.png"/>
@@ -34,7 +34,7 @@ en
 
    <splash
       location="olca-app"
-      startupProgressRect="0,356,536,5"
+      startupProgressRect="0,360,540,5"
       startupMessageRect="7,500,445,20"
       startupForegroundColor="000000" />
    <launcher name="openLCA">
