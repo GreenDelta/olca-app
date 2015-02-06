@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -21,6 +22,7 @@ import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Dialog;
 import org.openlca.app.util.Error;
+import org.openlca.app.util.Question;
 import org.openlca.app.util.TableClipboard;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
@@ -55,7 +57,7 @@ public class ParameterSection implements ParameterPageListener {
 	private ParameterPageSupport support;
 	private ModelEditor<?> editor;
 	private List<Parameter> parameters;
-	private List<ExternalSource> externalSources = new ArrayList<>();
+	private Function<Void, List<ExternalSource>> getExternalSources;
 
 	public static ParameterSection forInputParameters(
 			ParameterPageSupport support, Composite body) {
@@ -101,11 +103,9 @@ public class ParameterSection implements ParameterPageListener {
 		});
 	}
 
-	public void setExternalSources(List<ExternalSource> externalSources) {
-		if (externalSources == null)
-			this.externalSources = new ArrayList<>();
-		else
-			this.externalSources = externalSources;
+	public void setGetExternalSources(
+			Function<Void, List<ExternalSource>> getExternalSources) {
+		this.getExternalSources = getExternalSources;
 	}
 
 	@Override
@@ -165,6 +165,7 @@ public class ParameterSection implements ParameterPageListener {
 				input.add(param);
 		}
 		viewer.setInput(input);
+		viewer.refresh(true);
 	}
 
 	private void onAdd() {
@@ -234,6 +235,12 @@ public class ParameterSection implements ParameterPageListener {
 	}
 
 	private class NameModifier extends TextCellModifier<Parameter> {
+
+		@Override
+		public boolean canModify(Parameter element) {
+			return element.getExternalSource() == null;
+		}
+
 		@Override
 		protected String getText(Parameter param) {
 			return param.getName();
@@ -317,7 +324,7 @@ public class ParameterSection implements ParameterPageListener {
 
 		@Override
 		protected ExternalSource getItem(Parameter element) {
-			for (ExternalSource source : externalSources)
+			for (ExternalSource source : getExternalSources.apply(null))
 				if (source.getSource().equals(element.getExternalSource())
 						&& source.getType().equals(element.getSourceType()))
 					return source;
@@ -329,9 +336,10 @@ public class ParameterSection implements ParameterPageListener {
 			List<ExternalSource> externalSources = new ArrayList<>();
 			externalSources.add(new ExternalSource("", "", Collections
 					.emptyList()));
-			for (ExternalSource source : ParameterSection.this.externalSources)
-				if (source.isProvidingParameter(element.getName()))
-					externalSources.add(source);
+			if (getExternalSources != null)
+				for (ExternalSource source : getExternalSources.apply(null))
+					if (source.isProvidingParameter(element.getName()))
+						externalSources.add(source);
 			return externalSources.toArray(new ExternalSource[externalSources
 					.size()]);
 		}
@@ -343,6 +351,8 @@ public class ParameterSection implements ParameterPageListener {
 
 		@Override
 		protected void setItem(Parameter element, ExternalSource item) {
+			if (!hasChanged(element, item))
+				return;
 			if (item == null || Strings.nullOrEmpty(item.getSource())) {
 				element.setSourceType(null);
 				element.setExternalSource(null);
@@ -350,13 +360,26 @@ public class ParameterSection implements ParameterPageListener {
 				ShapeFileParameter param = item.getParameter(element.getName());
 				element.setSourceType(item.getType());
 				element.setExternalSource(item.getSource());
-				element.setValue((param.getMin() + param.getMax()) / 2);
-				element.setUncertainty(Uncertainty.uniform(param.getMin(),
-						param.getMax()));
+				if (Question.ask(Messages.RecalculateQuestionTitle,
+						Messages.RecalculateQuestionText)) {
+					element.setValue((param.getMin() + param.getMax()) / 2);
+					element.setUncertainty(Uncertainty.uniform(param.getMin(),
+							param.getMax()));
+				}
 			}
 			support.fireParameterChange();
 		}
 
+		private boolean hasChanged(Parameter element, ExternalSource item) {
+			String source = element.getExternalSource();
+			if (source == null)
+				source = "";
+			String type = element.getSourceType();
+			if (type == null)
+				type = "";
+			return !source.equals(item.getSource())
+					|| !type.equals(item.getType());
+		}
 	}
 
 }

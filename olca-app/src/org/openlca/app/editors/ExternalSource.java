@@ -37,4 +37,19 @@ public class ExternalSource {
 		return null;
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == this)
+			return true;
+		if (!(obj instanceof ExternalSource))
+			return false;
+		ExternalSource other = (ExternalSource) obj;
+		String source = getSource() != null ? getSource() : "";
+		String type = getType() != null ? getType() : "";
+		if (!type.equals(other.getType()))
+			return false;
+		if (!source.equals(other.getSource()))
+			return false;
+		return true;
+	}
 }

@@ -2,7 +2,10 @@ package org.openlca.app.editors.lcia_methods;
 
 import java.awt.Desktop;
 import java.io.File;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
@@ -29,6 +32,7 @@ import org.openlca.app.util.Actions;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Error;
+import org.openlca.app.util.Info;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
@@ -131,11 +135,11 @@ class ShapeFilePage extends FormPage {
 		}
 	}
 
-	private void checkRunImport(File file) {
+	private List<ShapeFileParameter> checkRunImport(File file) {
 		if (!ShapeFileUtils.isValid(file)) {
 			org.openlca.app.util.Error.showBox("Invalid file", "The file "
 					+ file.getName() + " is not a valid shape file.");
-			return;
+			return Collections.emptyList();
 		}
 		if (ShapeFileUtils.alreadyExists(method, file)) {
 			org.openlca.app.util.Error
@@ -143,27 +147,39 @@ class ShapeFilePage extends FormPage {
 							"File already exists",
 							"A shape "
 									+ "file with the given name already exists for this method.");
-			return;
+			return Collections.emptyList();
 		}
 		try {
-			runImport(file);
+			return runImport(file);
 		} catch (Exception e) {
 			log.error("Failed to import shape file " + file, e);
+			return Collections.emptyList();
 		}
 	}
 
-	private void runImport(File file) throws Exception {
+	private List<ShapeFileParameter> runImport(File file) throws Exception {
 		String shapeFile = ShapeFileUtils.importFile(method, file);
+		List<ShapeFileParameter> params = ShapeFileUtils.getParameters(method,
+				shapeFile);
+		for (ShapeFileParameter parameter : params) {
+			if (!Parameter.isValidName(parameter.getName())) {
+				org.openlca.app.util.Error.showBox("Invalid parameter",
+						"The parameter name '" + parameter.getName()
+								+ "' is not supported");
+				ShapeFileUtils.deleteFile(method, shapeFile);
+				return Collections.emptyList();
+			}
+		}
 		ShapeFileSection section = new ShapeFileSection(sections.length,
 				shapeFile);
 		ShapeFileSection[] newSections = new ShapeFileSection[sections.length + 1];
 		System.arraycopy(sections, 0, newSections, 0, sections.length);
 		newSections[sections.length] = section;
 		this.sections = newSections;
-		List<ShapeFileParameter> params = ShapeFileUtils.getParameters(method,
-				shapeFile);
 		section.parameterTable.viewer.setInput(params);
 		form.reflow(true);
+		editor.getParameterSupport().fireParameterChange();
+		return params;
 	}
 
 	private class ShapeFileSection {
@@ -187,17 +203,39 @@ class ShapeFilePage extends FormPage {
 				@Override
 				public void run() {
 					delete();
+					removeExternalSourceReferences();
 				}
 			});
+			Action update = new Action("Update") {
+				@Override
+				public void run() {
+					File file = FileChooser.forImport("*.shp");
+					if (file == null)
+						return;
+					Set<String> previouslyLinked = getReferencedParameters();
+					delete(true);
+					List<ShapeFileParameter> parameters = checkRunImport(file);
+					Set<String> stillLinked = getReferencedParameters();
+					for (ShapeFileParameter parameter : parameters)
+						if (previouslyLinked.contains(parameter.getName()))
+							stillLinked.add(parameter.getName());
+					updateExternalSourceReferences(stillLinked);
+				}
+			};
 			ShowMapAction showAction = new ShowMapAction(this);
 			AddParamAction addAction = new AddParamAction(this);
-			Actions.bind(section, showAction, delete);
+			Actions.bind(section, showAction, delete, update);
 			Actions.bind(parameterTable.viewer, showAction, addAction);
 		}
 
 		private void delete() {
-			boolean del = Question.ask("@Delete " + shapeFile + "?", "Do you "
-					+ "really want to delete " + shapeFile + "?");
+			delete(false);
+		}
+
+		private void delete(boolean force) {
+			boolean del = force
+					|| Question.ask("@Delete " + shapeFile + "?", "Do you "
+							+ "really want to delete " + shapeFile + "?");
 			if (!del)
 				return;
 			ShapeFileUtils.deleteFile(method, shapeFile);
@@ -209,6 +247,36 @@ class ShapeFilePage extends FormPage {
 						newSections.length - index);
 			sections = newSections;
 			form.reflow(true);
+		}
+
+		private void removeExternalSourceReferences() {
+			for (Parameter parameter : method.getParameters())
+				if (parameter.isInputParameter())
+					if (shapeFile.equals(parameter.getExternalSource()))
+						parameter.setExternalSource(null);
+			editor.getParameterSupport().fireParameterChange();
+		}
+
+		/*
+		 * stillLinked: names of parameters that were linked to the shape file
+		 * before updating and afterwards (only set those)
+		 */
+		private void updateExternalSourceReferences(Set<String> stillLinked) {
+			for (Parameter parameter : method.getParameters())
+				if (parameter.isInputParameter())
+					if (shapeFile.equals(parameter.getExternalSource()))
+						if (!stillLinked.contains(parameter.getName()))
+							parameter.setExternalSource(null);
+			editor.getParameterSupport().fireParameterChange();
+		}
+
+		private Set<String> getReferencedParameters() {
+			Set<String> names = new HashSet<>();
+			for (Parameter parameter : method.getParameters())
+				if (parameter.isInputParameter())
+					if (shapeFile.equals(parameter.getExternalSource()))
+						names.add(parameter.getName());
+			return names;
 		}
 	}
 
@@ -300,8 +368,14 @@ class ShapeFilePage extends FormPage {
 		@Override
 		public void run() {
 			ShapeFileParameter param = getSelected();
-			if (param == null || exists(param))
+			if (param == null)
 				return;
+			if (exists(param)) {
+				Info.showBox("Parameter already added",
+						"The selected parameter was already added "
+								+ "in this LCIA method");
+				return;
+			}
 			if (otherExists(param)) {
 				Error.showBox("Parameter with same name exists",
 						"An other parameter with the same name already exists "

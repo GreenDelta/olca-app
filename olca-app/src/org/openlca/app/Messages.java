@@ -426,7 +426,9 @@ public class Messages extends NLS {
 
 	public static String QuantitativeReference;
 	public static String QuickResults;
-
+	
+	public static String RecalculateQuestionTitle;
+	public static String RecalculateQuestionText;
 	public static String ReconnectProcesslink;
 	public static String Reference;
 	public static String ReferenceFlowProperty;

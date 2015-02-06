@@ -73,7 +73,8 @@ public class ImpactMethodEditor extends ModelEditor<ImpactMethod> implements
 			addPage(new ImpactMethodInfoPage(this));
 			addPage(new ImpactFactorPage(this));
 			addPage(new ImpactNwPage(this));
-			addPage(new ParameterPage(parameterSupport, getExternalSources()));
+			addPage(new ParameterPage(parameterSupport,
+					this::getExternalSources));
 			addPage(new ShapeFilePage(this));
 			// addPage(new ImpactLocalisationPage(this));
 		} catch (Exception e) {
@@ -81,11 +82,15 @@ public class ImpactMethodEditor extends ModelEditor<ImpactMethod> implements
 		}
 	}
 
-	private List<ExternalSource> getExternalSources() throws IOException {
+	private List<ExternalSource> getExternalSources(Void input) {
 		List<ExternalSource> sources = new ArrayList<>();
 		for (String file : ShapeFileUtils.getShapeFiles(getModel()))
-			sources.add(new ExternalSource(file, "SHAPE_FILE", ShapeFileUtils
-					.getParameters(getModel(), file)));
+			try {
+				sources.add(new ExternalSource(file, "SHAPE_FILE",
+						ShapeFileUtils.getParameters(getModel(), file)));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		return sources;
 	}
 }

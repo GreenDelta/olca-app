@@ -2,6 +2,7 @@ package org.openlca.app.editors;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -35,12 +36,12 @@ public class ParameterPage extends FormPage {
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private FormToolkit toolkit;
 	private ParameterPageSupport input;
-	private List<ExternalSource> externalSources;
+	private Function<Void, List<ExternalSource>> getExternalSources;
 
 	public ParameterPage(ParameterPageSupport input,
-			List<ExternalSource> externalSources) {
+			Function<Void, List<ExternalSource>> getExternalSources) {
 		this(input);
-		this.externalSources = externalSources;
+		this.getExternalSources = getExternalSources;
 	}
 
 	public ParameterPage(ParameterPageSupport input) {
@@ -54,9 +55,9 @@ public class ParameterPage extends FormPage {
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		try {
-			createGlobalParamterSection(body);
+			createGlobalParameterSection(body);
 			ParameterSection.forInputParameters(input, body)
-					.setExternalSources(externalSources);
+					.setGetExternalSources(getExternalSources);
 			ParameterSection.forDependentParameters(input, body);
 			body.setFocus();
 			form.reflow(true);
@@ -65,7 +66,7 @@ public class ParameterPage extends FormPage {
 		}
 	}
 
-	private void createGlobalParamterSection(Composite body) {
+	private void createGlobalParameterSection(Composite body) {
 		Section section = UI.section(body, toolkit, Messages.GlobalParameters);
 		Composite client = UI.sectionClient(section, toolkit);
 		UI.gridLayout(client, 1);

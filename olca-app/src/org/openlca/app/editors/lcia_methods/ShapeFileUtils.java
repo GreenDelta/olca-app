@@ -129,7 +129,13 @@ class ShapeFileUtils {
 		for (File file : folder.listFiles()) {
 			String fName = FilenameUtils.removeExtension(file.getName());
 			if (Strings.nullOrEqual(rawName, fName))
-				files.add(file);
+				if (!file.isDirectory())
+					files.add(file);
+				else {
+					for (File file2 : file.listFiles())
+						files.add(file2);
+					files.add(file);
+				}
 		}
 		return files;
 	}
