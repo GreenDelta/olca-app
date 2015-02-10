@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="libs/compiler-0.8.17.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-jsonld-1.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-eigen-0.3.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jersey-apache-client4-1.17.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jdom-1.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/bonecp-0.8.0.RELEASE.jar"/>
@@ -62,11 +65,9 @@
 	<classpathentry exported="true" kind="lib" path="libs/log4j-1.2.17.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/mimepull-1.9.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/mysql-connector-java-5.1.23.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/ojalgo-34.8.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-core-1.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-ecospold-1-1.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-ecospold-2-1.0.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-eigen-0.3.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-formula-1.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-geo-0.0.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-ilcd-1.0.0.jar"/>

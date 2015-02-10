@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: olca-app
 Bundle-SymbolicName: olca-app;singleton:=true
-Bundle-Version: 1.4.1.beta6
+Bundle-Version: 1.4.1
 Bundle-Activator: org.openlca.app.rcp.RcpActivator
 Bundle-Vendor: openLCA.org
 Require-Bundle: org.eclipse.ui,
@@ -143,11 +143,9 @@ Bundle-ClassPath: .,
  libs/log4j-1.2.17.jar,
  libs/mimepull-1.9.3.jar,
  libs/mysql-connector-java-5.1.23.jar,
- libs/ojalgo-34.8.jar,
  libs/olca-core-1.0.0.jar,
  libs/olca-ecospold-1-1.0.0.jar,
  libs/olca-ecospold-2-1.0.0.jar,
- libs/olca-eigen-0.3.0.jar,
  libs/olca-formula-1.0.0.jar,
  libs/olca-geo-0.0.2.jar,
  libs/olca-ilcd-1.0.0.jar,
@@ -178,4 +176,7 @@ Bundle-ClassPath: .,
  libs/xsd-2.6.0.jar,
  libs/zt-zip-1.6.jar,
  libs/jdom-1.0.jar,
- libs/jersey-apache-client4-1.17.1.jar
+ libs/jersey-apache-client4-1.17.1.jar,
+ libs/olca-eigen-0.3.0.jar,
+ libs/compiler-0.8.17.jar,
+ libs/olca-jsonld-1.0.0.jar

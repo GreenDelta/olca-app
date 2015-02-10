@@ -18,7 +18,9 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
+import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.Editors;
 import org.openlca.app.util.TableClipboard;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
@@ -48,6 +50,8 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 		ScrolledForm form = UI.formHeader(managedForm,
 				Messages.ImpactAssessmentMethod
 						+ ": " + getModel().getName());
+		if (FeatureFlag.SHOW_REFRESH_BUTTONS.isEnabled())
+			Editors.addRefresh(form, editor);
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		InfoSection infoSection = new InfoSection(getEditor());

@@ -26,8 +26,10 @@ import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.processes.kml.EditorHandler;
 import org.openlca.app.editors.processes.kml.KmlUtil;
 import org.openlca.app.editors.processes.kml.MapEditor;
+import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Controls;
+import org.openlca.app.util.Editors;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.ExchangeViewer;
 import org.openlca.app.viewers.combo.LocationViewer;
@@ -64,6 +66,8 @@ class InfoPage extends ModelPage<Process> {
 	protected void createFormContent(IManagedForm managedForm) {
 		form = UI.formHeader(managedForm, Messages.Process + ": "
 				+ getModel().getName());
+		if (FeatureFlag.SHOW_REFRESH_BUTTONS.isEnabled())
+			Editors.addRefresh(form, editor);
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		InfoSection infoSection = new InfoSection(getEditor());

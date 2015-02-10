@@ -64,7 +64,7 @@ class SectionList {
 		ReportSection model = new ReportSection();
 		model.setIndex(report.getSections().size());
 		report.getSections().add(model);
-		model.setTitle("@New section");
+		model.setTitle(Messages.NewSection);
 		model.setText("");
 		Sec section = new Sec(model);
 		sections.add(section);
@@ -101,36 +101,34 @@ class SectionList {
 		private void createUi() {
 			ui = UI.section(parent, toolkit, model.getTitle());
 			Composite composite = UI.sectionClient(ui, toolkit);
-			titleText = UI.formText(composite, toolkit, "@Section");
+			titleText = UI.formText(composite, toolkit, Messages.Section);
 			binding.onString(() -> model, "title", titleText);
 			titleText.addModifyListener((e) -> {
 				ui.setText(titleText.getText());
 			});
-			descriptionText = UI.formMultiText(composite, toolkit, "@Text");
+			descriptionText = UI.formMultiText(composite, toolkit,
+					Messages.Text);
 			binding.onString(() -> model, "text", descriptionText);
 			createComponentViewer(composite);
 			createActions();
 		}
 
 		private void createComponentViewer(Composite composite) {
-			UI.formLabel(composite, toolkit, "@Component");
+			UI.formLabel(composite, toolkit, Messages.Component);
 			componentViewer = new ComboViewer(composite);
 			UI.gridData(componentViewer.getControl(), false, false).widthHint = 250;
 			componentViewer.setContentProvider(ArrayContentProvider
 					.getInstance());
 			componentViewer.setLabelProvider(new ComponentLabel());
 			componentViewer.setInput(ReportComponent.values());
-			componentViewer
-					.addSelectionChangedListener((evt) -> {
-						ReportComponent component = Viewers.getFirst(evt
-								.getSelection());
-						if (component == null
-								|| component == ReportComponent.NONE)
-							model.setComponentId(null);
-						else
-							model.setComponentId(component.getId());
-						editor.setDirty(true);
-					});
+			componentViewer.addSelectionChangedListener((evt) -> {
+				ReportComponent c = Viewers.getFirst(evt.getSelection());
+				if (c == null || c == ReportComponent.NONE)
+					model.setComponentId(null);
+					else
+						model.setComponentId(c.getId());
+					editor.setDirty(true);
+				});
 			if (model.getComponentId() != null)
 				componentViewer.setSelection(new StructuredSelection(
 						ReportComponent.getForId(model.getComponentId())));
@@ -138,23 +136,23 @@ class SectionList {
 
 		private void createActions() {
 			Action up = Actions.create(
-					"@Move up",
+					Messages.MoveUp,
 					ImageType.UP_16.getDescriptor(),
 					() -> moveUp());
 			Action down = Actions.create(
-					"@Move down",
+					Messages.MoveDown,
 					ImageType.DOWN_16.getDescriptor(),
 					() -> moveDown());
 			Action delete = Actions.create(
-					"@Delete section",
+					Messages.DeleteSection,
 					ImageType.DELETE_ICON.getDescriptor(),
 					() -> delete());
 			Actions.bind(ui, up, down, delete);
 		}
 
 		private void delete() {
-			boolean b = Question.ask("@Delete section",
-					"@Do you really want to delete this report section?");
+			boolean b = Question.ask(Messages.DeleteSection,
+					Messages.DeleteReportSectionQuestion);
 			if (!b)
 				return;
 			report.getSections().remove(model);
@@ -198,33 +196,33 @@ class SectionList {
 			case NONE:
 				return Messages.None;
 			case VARIANT_DESCRIPTION_TABLE:
-				return "@Variant description table";
+				return Messages.VariantDescriptionTable;
 			case INDICATOR_DESCRIPTION_TABLE:
-				return "@LCIA category description table";
+				return Messages.LciaCategoryDescriptionTable;
 			case PARAMETER_DESCRIPTION_TABLE:
-				return "@Parameter description table";
+				return Messages.ParameterDescriptionTable;
 			case PARAMETER_VALUE_TABLE:
-				return "@Parameter value table";
+				return Messages.ParameterValueTable;
 			case IMPACT_RESULT_TABLE:
-				return "@LCIA result table";
+				return Messages.LciaResultTable;
 			case PROCESS_CONTRIBUTION_CHART:
-				return "@Process contribution chart";
+				return Messages.ProcessContributionChart;
 			case NORMALISATION_RESULT_TABLE:
-				return "@Normalisation result table";
+				return Messages.NormalisationResultTable;
 			case SINGLE_SCORE_TABLE:
-				return "@Single score table";
+				return Messages.SingleScoreTable;
 			case INDICATOR_BAR_CHART:
-				return "@Indicator bar chart";
+				return Messages.IndicatorBarChart;
 			case NORMALISATION_BAR_CHART:
-				return "@Normalisation - bar chart";
+				return Messages.NormalisationBarChart;
 			case NORMALISATION_RADAR_CHART:
-				return "@Normalisation - radar chart";
+				return Messages.NormalisationRadarChart;
 			case RELATIVE_INDICATOR_BAR_CHART:
-				return "@Relative LCIA results - bar chart";
+				return Messages.RelativeLciaResultsBarChart;
 			case RELATIVE_INDICATOR_RADAR_CHART:
-				return "@Relative LCIA results - radar chart";
+				return Messages.RelativeLciaResultsRadarChart;
 			case SINGLE_SCORE_BAR_CHART:
-				return "@Single score bar chart";
+				return Messages.SingleScoreBarChart;
 			default:
 				return Messages.Unknown;
 			}

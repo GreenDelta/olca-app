@@ -13,6 +13,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.TableClipboard;
@@ -80,8 +81,10 @@ public class TotalImpactResultPage extends FormPage {
 			ITableLabelProvider {
 
 		@Override
-		public Image getColumnImage(Object element, int columnIndex) {
-			return null;
+		public Image getColumnImage(Object element, int col) {
+			if (col != 0)
+				return null;
+			return ImageType.LCIA_CATEGORY_ICON.get();
 		}
 
 		@Override

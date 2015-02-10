@@ -114,7 +114,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		createDeveloperMenu(windowMenu);
 		windowMenu.add(new FormulaConsoleAction());
 		if (MozillaConfigView.canShow()) {
-			windowMenu.add(Actions.create("Browser configuration",
+			windowMenu.add(Actions.create(Messages.BrowserConfiguration,
 					ImageType.FIREFOX_ICON.getDescriptor(),
 					MozillaConfigView::open));
 		}

@@ -296,11 +296,6 @@
       		name="%NumberFormat">
       </page>
       <page
-            class="org.openlca.app.rcp.update.UpdatePreferencePage"
-            id="preferencepages.update"
-            name="%Updates">
-      </page>
-      <page
             class="org.openlca.app.preferencepages.FeatureFlagPage"
             id="preferencepages.featureflag"
             name="Experimental features">
@@ -313,7 +308,7 @@
       <page
             id="preferencepages.config"
             class="org.openlca.app.preferencepages.ConfigPage"
-            name="@Configuration">
+            name="%Configuration">
       </page>
    </extension>
    <extension
@@ -371,7 +366,7 @@
          </property>
          <property
                name="startupProgressRect"
-               value="0,425,633,5">
+               value="0,360,540,5">
          </property>
       </product>
    </extension>
@@ -557,6 +552,12 @@
            id="wizard.import.db"
            name="Database Import">
       </wizard>
+      <wizard
+      		class="org.openlca.app.wizards.io.JsonImportWizard"
+      		icon="icons/logo_16_32bit.png"
+            id="wizard.import.json"
+            name="JSON-LD">
+      </wizard>
   	  <wizard
 	       category="import.category.file"
 		   class="org.openlca.app.wizards.io.SimaProCsvImportWizard"
@@ -592,15 +593,16 @@
             id="export.category.ilcdnetwork"
             name="%ILCDNetworkExport">
       </category>
+      <category
+      		id="openlca.export.category"
+      		name="openLCA">
+      </category>
       <wizard
             category="export.category.ecospold"
             class="org.openlca.app.wizards.io.EcoSpold01ExportProcessWizard"
             icon="icons/xml.png"
             id="wizard.export.ecospold.process"
             name="%Processes">
-         <description>
-            
-         </description>
        </wizard>
        <wizard
             category="export.category.excel"
@@ -625,9 +627,6 @@
             icon="icons/xml.png"
             id="wizard.export.ecospold.impactmethod"
             name="%ImpactMethods">
-         <description>
-            
-         </description>
       </wizard>
       <wizard
             category="export.category.ilcd"
@@ -691,6 +690,13 @@
             icon="icons/network16.png"
             id="org.openlca.ilcd.network.ExportWizard"
             name="%ILCDNetworkExport">
+      </wizard>
+      <wizard
+      		category="openlca.export.category"
+      		class="org.openlca.app.wizards.io.JsonExportWizard"
+      		icon="icons/logo_16_32bit.png"
+      		id="org.openlca.app.wizards.io.JsonExportWizard"
+      		name="JSON-LD">
       </wizard>
    </extension>
 </plugin>

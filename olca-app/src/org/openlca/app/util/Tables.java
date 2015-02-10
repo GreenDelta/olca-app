@@ -177,7 +177,8 @@ public class Tables {
 		return table.getItem(new Point(event.x, event.y));
 	}
 
-	public static void onDeletePressed(TableViewer viewer, Consumer<Event> handler) {
+	public static void onDeletePressed(TableViewer viewer,
+			Consumer<Event> handler) {
 		if (viewer == null || viewer.getTable() == null || handler == null)
 			return;
 		viewer.getTable().addListener(SWT.KeyUp, (event) -> {

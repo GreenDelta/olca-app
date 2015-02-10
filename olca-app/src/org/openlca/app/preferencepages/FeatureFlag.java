@@ -8,8 +8,9 @@ import org.openlca.app.Preferences;
  */
 public enum FeatureFlag {
 
-	// can be removed if it runs stable on Windows 64bit
-	// USE_MOZILLA_BROWSER("Use Mozilla browser (not available on every platform)"),
+	// the refresh buttons work but currently get always the keyboard focus
+	// which looks a bit ugly
+	SHOW_REFRESH_BUTTONS("Show refresh buttons in editors"),
 
 	EXPERIMENTAL_VISUALISATIONS("Experimental visualisations"),
 

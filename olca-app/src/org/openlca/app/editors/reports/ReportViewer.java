@@ -3,7 +3,6 @@ package org.openlca.app.editors.reports;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
@@ -14,6 +13,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.openlca.app.Messages;
 import org.openlca.app.editors.reports.model.Report;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.app.rcp.html.HtmlPage;
@@ -108,7 +108,7 @@ public class ReportViewer extends FormEditor {
 		@Override
 		public String getName() {
 			String name = report.getTitle() != null ? report.getTitle()
-					: "@Report";
+					: Messages.Report;
 			return Strings.cut(name, 75);
 		}
 
@@ -119,7 +119,8 @@ public class ReportViewer extends FormEditor {
 
 		@Override
 		public String getToolTipText() {
-			return report.getTitle() != null ? report.getTitle() : "@Report";
+			return report.getTitle() != null ? report.getTitle()
+					: Messages.Report;
 		}
 	}
 
@@ -128,7 +129,8 @@ public class ReportViewer extends FormEditor {
 		private Browser browser;
 
 		public Page() {
-			super(ReportViewer.this, "olca.ReportPreview.Page", "@Report view");
+			super(ReportViewer.this, "olca.ReportPreview.Page",
+					Messages.ReportView);
 		}
 
 		@Override
@@ -140,7 +142,8 @@ public class ReportViewer extends FormEditor {
 		public void onLoaded() {
 			Gson gson = new Gson();
 			String json = gson.toJson(report);
-			String command = "setData(" + json + ")";
+			String messages = Messages.asJson();
+			String command = "setData(" + json + ", " + messages + ")";
 			try {
 				browser.evaluate(command);
 			} catch (Exception e) {
@@ -154,23 +157,6 @@ public class ReportViewer extends FormEditor {
 			Composite composite = form.getBody();
 			composite.setLayout(new FillLayout());
 			browser = UI.createBrowser(composite, this);
-
-			new BrowserFunction(browser, "saveReport") {
-				public Object function(Object[] arguments) {
-					Report report = new Gson().fromJson((String) arguments[0],
-							Report.class);
-					return super.function(arguments);
-				}
-			};
-
-			new BrowserFunction(browser, "calculate") {
-				@Override
-				public Object function(Object[] arguments) {
-					// TODO: recalculate the report results
-					return null;
-				}
-			};
-
 		}
 	}
 }

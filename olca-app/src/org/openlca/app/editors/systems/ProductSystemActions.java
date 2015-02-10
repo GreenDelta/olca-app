@@ -41,7 +41,7 @@ public class ProductSystemActions extends EditorActionBarContributor {
 				ProductSystem productSystem = getProductSystem();
 				if (productSystem == null)
 					return;
-				new CalculationWizardDialog(productSystem).open();
+				CalculationWizard.open(productSystem);
 			}
 		}));
 	}

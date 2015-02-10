@@ -30,7 +30,7 @@ public class ExcelImportWizard extends Wizard implements IImportWizard {
 
 	@Override
 	public void addPages() {
-		importPage = new FileImportPage(new String[] { "xlsx", "xls" }, false);
+		importPage = new FileImportPage(new String[] { "xlsx", "xls" }, true);
 		addPage(importPage);
 	}
 
@@ -58,9 +58,8 @@ public class ExcelImportWizard extends Wizard implements IImportWizard {
 				monitor.beginTask(Messages.Import, files.length);
 				for (File file : files) {
 					monitor.subTask(file.getName());
-					ExcelImport excelImport = new ExcelImport(file, Database
-							.get());
-					excelImport.run();
+					ExcelImport importer = new ExcelImport(file, Database.get());
+					importer.run();
 					monitor.worked(1);
 				}
 				monitor.done();

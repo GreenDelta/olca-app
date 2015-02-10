@@ -5,7 +5,6 @@ import java.io.File;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.progress.UIJob;
 import org.openlca.app.editors.ModelEditorInput;
 import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.rcp.RcpActivator;
@@ -99,6 +98,11 @@ public class App {
 		}
 	}
 
+	public static void closeEditor(CategorizedEntity entity) {
+		BaseDescriptor descriptor = Descriptors.toDescriptor(entity);
+		closeEditor(descriptor);
+	}
+
 	public static void closeEditor(BaseDescriptor descriptor) {
 		if (descriptor == null) {
 			log.error("model is null, could not close editor");
@@ -122,7 +126,7 @@ public class App {
 		return "editors." + type.getModelClass().getSimpleName().toLowerCase();
 	}
 
-	public static UIJob runInUI(String name, Runnable runnable) {
+	public static Job runInUI(String name, Runnable runnable) {
 		WrappedUIJob job = new WrappedUIJob(name, runnable);
 		job.setUser(true);
 		job.schedule();

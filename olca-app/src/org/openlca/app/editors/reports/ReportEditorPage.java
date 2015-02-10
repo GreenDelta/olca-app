@@ -26,7 +26,7 @@ public class ReportEditorPage extends FormPage {
 	private SectionList sectionList;
 
 	public ReportEditorPage(ProjectEditor editor, Report report) {
-		super(editor, "ReportInfoPage", "@Report sections");
+		super(editor, "ReportInfoPage", Messages.ReportSections);
 		this.editor = editor;
 		this.report = report;
 		this.binding = new DataBinding(editor);
@@ -34,7 +34,7 @@ public class ReportEditorPage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, "@Report sections");
+		ScrolledForm form = UI.formHeader(managedForm, Messages.ReportSections);
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		createInfoSection(body);
@@ -46,7 +46,7 @@ public class ReportEditorPage extends FormPage {
 	private void createAddButton(Composite body) {
 		Composite composite = UI.formComposite(body, toolkit);
 		UI.formLabel(composite, "");
-		Button addButton = toolkit.createButton(composite, "@Add section",
+		Button addButton = toolkit.createButton(composite, Messages.AddSection,
 				SWT.NONE);
 		addButton.setImage(ImageType.ADD_ICON.get());
 		Controls.onSelect(addButton, (e) -> {
@@ -57,7 +57,7 @@ public class ReportEditorPage extends FormPage {
 	private void createInfoSection(Composite body) {
 		Composite composite = UI.formSection(body, toolkit,
 				Messages.GeneralInformation);
-		Text titleText = UI.formText(composite, toolkit, "@Title");
+		Text titleText = UI.formText(composite, toolkit, Messages.Title);
 		binding.onString(() -> report, "title", titleText);
 	}
 

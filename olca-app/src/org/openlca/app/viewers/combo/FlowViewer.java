@@ -8,7 +8,7 @@ import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.Messages;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.util.Images;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Location;
@@ -131,20 +131,11 @@ public class FlowViewer extends AbstractComboViewer<FlowDescriptor> {
 			ITableLabelProvider {
 
 		@Override
-		public Image getColumnImage(Object element, int columnIndex) {
-			if (columnIndex != 0 && columnIndex != 3)
+		public Image getColumnImage(Object element, int col) {
+			if (col != 0 && col != 3)
 				return null;
 			FlowDescriptor flow = (FlowDescriptor) element;
-			switch (flow.getFlowType()) {
-			case ELEMENTARY_FLOW:
-				return ImageType.FLOW_SUBSTANCE.get();
-			case PRODUCT_FLOW:
-				return ImageType.FLOW_PRODUCT.get();
-			case WASTE_FLOW:
-				return ImageType.FLOW_WASTE.get();
-			default:
-				return null;
-			}
+			return Images.getIcon(flow.getFlowType());
 		}
 
 		@Override

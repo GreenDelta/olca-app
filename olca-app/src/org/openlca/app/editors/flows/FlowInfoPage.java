@@ -10,6 +10,8 @@ import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
+import org.openlca.app.preferencepages.FeatureFlag;
+import org.openlca.app.util.Editors;
 import org.openlca.app.util.Images;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.LocationViewer;
@@ -27,6 +29,8 @@ class FlowInfoPage extends ModelPage<Flow> {
 	protected void createFormContent(IManagedForm managedForm) {
 		ScrolledForm form = UI.formHeader(managedForm, Messages.Flow + ": "
 				+ getModel().getName());
+		if (FeatureFlag.SHOW_REFRESH_BUTTONS.isEnabled())
+			Editors.addRefresh(form, getEditor());
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		InfoSection infoSection = new InfoSection(getEditor());

@@ -1,5 +1,6 @@
 package org.openlca.app.editors.flows;
 
+import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.jface.viewers.IBaseLabelProvider;
@@ -13,13 +14,16 @@ import org.eclipse.swt.widgets.TableItem;
 import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.components.ModelSelectionDialog;
+import org.openlca.app.db.Database;
 import org.openlca.app.rcp.ImageType;
+import org.openlca.app.util.Error;
 import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.table.AbstractTableViewer;
 import org.openlca.app.viewers.table.modify.CheckBoxCellModifier;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.database.EntityCache;
+import org.openlca.core.database.usage.FlowPropertyFactorUseSearch;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyFactor;
@@ -108,13 +112,24 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 
 	@OnRemove
 	protected void onRemove() {
+		FlowPropertyFactor fac = getSelected();
+		if (fac == null)
+			return;
 		Flow flow = editor.getModel();
-		for (FlowPropertyFactor factor : getAllSelected()) {
-			if (Objects.equals(factor.getFlowProperty(),
-					flow.getReferenceFlowProperty()))
-				continue;
-			flow.getFlowPropertyFactors().remove(factor);
+		if (fac.equals(flow.getReferenceFactor())) {
+			Error.showBox("@Cannot delete reference flow property",
+					"@The reference flow property of a flow cannot be deleted.");
+			return;
 		}
+		FlowPropertyFactorUseSearch search = new FlowPropertyFactorUseSearch(
+				flow, Database.get());
+		List<BaseDescriptor> list = search.findUses(fac);
+		if (!list.isEmpty()) {
+			Error.showBox("@Cannot delete flow property",
+					"@The given flow property is used in processes or LCIA methods.");
+			return;
+		}
+		flow.getFlowPropertyFactors().remove(fac);
 		setInput(flow.getFlowPropertyFactors());
 		editor.setDirty(true);
 	}

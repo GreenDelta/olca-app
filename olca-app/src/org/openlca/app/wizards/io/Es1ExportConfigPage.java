@@ -4,6 +4,7 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.openlca.app.Messages;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.io.ecospold1.output.ExportConfig;
@@ -14,8 +15,8 @@ class Es1ExportConfigPage extends WizardPage {
 
 	Es1ExportConfigPage() {
 		super("Es1ExportConfigPage");
-		setTitle("@EcoSpold Configuration");
-		setDescription("@On this page you can configure the EcoSpold format");
+		setTitle(Messages.EcoSpoldConfiguration);
+		setDescription(Messages.ConfigureEcospoldMessage);
 		config = new ExportConfig();
 	}
 
@@ -35,7 +36,7 @@ class Es1ExportConfigPage extends WizardPage {
 
 	private void createDefaultCheck(Composite body) {
 		Button check = new Button(body, SWT.CHECK);
-		check.setText("@Create default values for missing fields");
+		check.setText(Messages.CreateDefaultValuesForMissingFields);
 		check.setSelection(config.isCreateDefaults());
 		Controls.onSelect(check, (e) ->
 				config.setCreateDefaults(check.getSelection()));
@@ -43,7 +44,7 @@ class Es1ExportConfigPage extends WizardPage {
 
 	private void createSingleCheck(Composite body) {
 		Button check = new Button(body, SWT.CHECK);
-		check.setText("@Export all data sets into one file");
+		check.setText(Messages.ExportDataSetsInOneFile);
 		check.setSelection(config.isSingleFile());
 		Controls.onSelect(check, (e) ->
 				config.setSingleFile(check.getSelection()));
