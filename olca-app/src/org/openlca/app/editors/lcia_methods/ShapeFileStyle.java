@@ -8,15 +8,19 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.GeoTools;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.Fill;
+import org.geotools.styling.LineSymbolizer;
+import org.geotools.styling.PointSymbolizer;
 import org.geotools.styling.PolygonSymbolizer;
 import org.geotools.styling.Rule;
 import org.geotools.styling.Stroke;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleBuilder;
+import org.geotools.styling.Symbolizer;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.expression.Expression;
 import org.openlca.app.FaviColor;
+import org.openlca.geo.kml.FeatureType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,14 +29,15 @@ class ShapeFileStyle {
 	private ShapeFileStyle() {
 	}
 
-	public static Style create(DataStore dataStore, ShapeFileParameter param) {
+	public static Style create(DataStore dataStore, ShapeFileParameter param,
+			FeatureType type) {
 		try {
 			StyleBuilder styleBuilder = new StyleBuilder();
 			Style style = styleBuilder.createStyle();
 			double[] breaks = createBreaks(param.getMin(), param.getMax());
 			Color[] colors = createColors();
 			Rule[] rules = createRules(param.getName(), styleBuilder, breaks,
-					colors);
+					colors, type);
 			String typeName = dataStore.getTypeNames()[0];
 			FeatureTypeStyle fts = styleBuilder.createFeatureTypeStyle(
 					typeName, rules);
@@ -70,16 +75,15 @@ class ShapeFileStyle {
 		return new Color(rgb.red, rgb.green, rgb.blue);
 	}
 
-	private static Rule[] createRules(String parameter, StyleBuilder styleBuilder,
-	                                  double[] breaks, Color[] colors) {
+	private static Rule[] createRules(String parameter,
+			StyleBuilder styleBuilder, double[] breaks, Color[] colors,
+			FeatureType type) {
 		FilterFactory filterFactory = CommonFactoryFinder
 				.getFilterFactory(GeoTools.getDefaultHints());
 		Rule[] rules = new Rule[breaks.length];
 		for (int i = 0; i < breaks.length; i++) {
-			Fill fill = styleBuilder.createFill(colors[i]);
-			Stroke stroke = styleBuilder.createStroke(colors[i], 1d);
-			PolygonSymbolizer symbolizer = styleBuilder
-					.createPolygonSymbolizer(stroke, fill);
+			Symbolizer symbolizer = createSymbolizer(styleBuilder, colors[i],
+					type);
 			Rule rule = styleBuilder.createRule(symbolizer);
 			Expression property = filterFactory.property(parameter);
 			Filter filter = filterFactory.lessOrEqual(property,
@@ -93,6 +97,36 @@ class ShapeFileStyle {
 			rules[i] = rule;
 		}
 		return rules;
+	}
+
+	private static Symbolizer createSymbolizer(StyleBuilder styleBuilder,
+			Color color, FeatureType type) {
+		switch (type) {
+		case POINT:
+			return createPointSymbolizer(styleBuilder);
+		case LINE:
+			return createLineSymbolizer(styleBuilder, color);
+		case POLYGON:
+		default:
+			return createPolygonSymbolizer(styleBuilder, color);
+		}
+	}
+
+	private static PointSymbolizer createPointSymbolizer(
+			StyleBuilder styleBuilder) {
+		return styleBuilder.createPointSymbolizer();
+	}
+
+	private static LineSymbolizer createLineSymbolizer(
+			StyleBuilder styleBuilder, Color color) {
+		return styleBuilder.createLineSymbolizer(color, 2);
+	}
+
+	private static PolygonSymbolizer createPolygonSymbolizer(
+			StyleBuilder styleBuilder, Color color) {
+		Fill fill = styleBuilder.createFill(color);
+		Stroke stroke = styleBuilder.createStroke(color, 1d);
+		return styleBuilder.createPolygonSymbolizer(stroke, fill);
 	}
 
 }

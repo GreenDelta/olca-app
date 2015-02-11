@@ -38,12 +38,14 @@ import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseFolder;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ImpactMethod;
+import org.openlca.geo.kml.FeatureType;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.io.Files;
 import com.google.gson.Gson;
+import com.vividsolutions.jts.geom.LineString;
 
 class ShapeFileUtils {
 
@@ -212,18 +214,7 @@ class ShapeFileUtils {
 	}
 
 	static void openFileInMap(ImpactMethod method, String shapeFileName) {
-		DataStore dataStore = openDataStore(method, shapeFileName);
-		if (dataStore == null)
-			return;
-		Logger log = LoggerFactory.getLogger(ShapeFileUtils.class);
-		try {
-			SimpleFeatureCollection source = dataStore.getFeatureSource(
-					dataStore.getTypeNames()[0]).getFeatures();
-			Style style = SLD.createSimpleStyle(source.getSchema());
-			showMapFrame(shapeFileName, source, style);
-		} catch (Exception e) {
-			log.error("Failed to open shape-file", e);
-		}
+		openFileInMap(method, shapeFileName, null);
 	}
 
 	static void openFileInMap(ImpactMethod method, String shapeFileName,
@@ -233,10 +224,21 @@ class ShapeFileUtils {
 			return;
 		Logger log = LoggerFactory.getLogger(ShapeFileUtils.class);
 		try {
-			Style style = ShapeFileStyle.create(dataStore, parameter);
 			SimpleFeatureCollection source = dataStore.getFeatureSource(
 					dataStore.getTypeNames()[0]).getFeatures();
-			showMapFrame(shapeFileName, source, style);
+			SimpleFeatureIterator it = source.features();
+			if (it.hasNext()) {
+				Object type = it.next().getDefaultGeometry();
+				FeatureType fType = FeatureType.POLYGON;
+				if (type instanceof com.vividsolutions.jts.geom.Point)
+					fType = FeatureType.POINT;
+				else if (type instanceof LineString)
+					fType = FeatureType.LINE;
+				Style style = SLD.createSimpleStyle(source.getSchema());
+				if (parameter != null && fType != FeatureType.POINT)
+					style = ShapeFileStyle.create(dataStore, parameter, fType);
+				showMapFrame(shapeFileName, source, style);
+			}
 		} catch (Exception e) {
 			log.error("Failed to open shape-file", e);
 		}
