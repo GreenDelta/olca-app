@@ -15,6 +15,7 @@ import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterScope;
 import org.openlca.core.model.Process;
+import org.openlca.core.model.ProcessDocumentation;
 import org.openlca.expressions.FormulaInterpreter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +40,9 @@ public class ProcessEditor extends ModelEditor<Process> implements IEditor {
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
 		super.init(site, input);
+		Process p = getModel();
+		if (p.getDocumentation() == null)
+			p.setDocumentation(new ProcessDocumentation());
 		Supplier<List<Parameter>> supplier = () -> getModel().getParameters();
 		parameterSupport = new ParameterPageSupport(this, supplier,
 				ParameterScope.PROCESS);

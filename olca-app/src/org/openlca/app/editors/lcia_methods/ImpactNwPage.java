@@ -1,5 +1,6 @@
 package org.openlca.app.editors.lcia_methods;
 
+import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.swt.SWT;
@@ -32,8 +33,9 @@ class ImpactNwPage extends ModelPage<ImpactMethod> {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, Messages.ImpactAssessmentMethod
-				+ ": " + getModel().getName());
+		ScrolledForm form = UI.formHeader(managedForm,
+				Messages.ImpactAssessmentMethod
+						+ ": " + getModel().getName());
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		Section section = UI.section(body, toolkit,
@@ -64,28 +66,29 @@ class ImpactNwPage extends ModelPage<ImpactMethod> {
 	private NwSetViewer createNwSetViewer(Section section, SashForm sashForm) {
 		NwSetViewer viewer = new NwSetViewer(sashForm, editor);
 		viewer.bindTo(section);
-		viewer.addSelectionChangedListener((selection) -> {
-			factorViewer.setInput(selection);
-		});
+		viewer.addSelectionChangedListener((selection) ->
+				factorViewer.setInput(selection));
 		viewer.setInput(getModel());
 		return viewer;
 	}
 
 	private void updateInput() {
-		setViewer.setInput(getModel());
 		NwSet newNwSet = findNewNwSet();
+		setViewer.setInput(getModel());
 		setViewer.select(newNwSet);
-		factorViewer.setInput(newNwSet);
 	}
 
 	private NwSet findNewNwSet() {
-		NwSet oldNwSet = setViewer.getSelected();
-		if (oldNwSet == null)
+		List<NwSet> list = getModel().getNwSets();
+		if (list.isEmpty())
 			return null;
-		for (NwSet newNwSet : getModel().getNwSets()) {
-			if (Objects.equals(oldNwSet.getRefId(), newNwSet.getRefId()))
-				return newNwSet;
+		NwSet old = setViewer.getSelected();
+		if (old == null)
+			return list.get(0);
+		for (NwSet set : list) {
+			if (Objects.equals(old.getRefId(), set.getRefId()))
+				return set;
 		}
-		return null;
+		return list.get(0);
 	}
 }

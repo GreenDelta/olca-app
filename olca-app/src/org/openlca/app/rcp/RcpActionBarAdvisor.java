@@ -38,7 +38,6 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	private IWorkbenchAction exportAction;
 
 	private IWorkbenchAction importAction;
-	private IWorkbenchAction newWindowAction;
 	private IWorkbenchAction preferencesAction;
 	private IWorkbenchAction saveAction;
 	private IWorkbenchAction saveAllAction;
@@ -101,7 +100,6 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	private void fillWindowMenu(IMenuManager menuBar) {
 		MenuManager windowMenu = new MenuManager(Messages.Window,
 				IWorkbenchActionConstants.M_WINDOW);
-		windowMenu.add(newWindowAction);
 		MenuManager viewMenu = new MenuManager(Messages.Showviews);
 		viewMenu.add(showViews);
 		windowMenu.add(viewMenu);
@@ -142,7 +140,6 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		importAction = ActionFactory.IMPORT.create(window);
 		exportAction = ActionFactory.EXPORT.create(window);
 		exitAction = ActionFactory.QUIT.create(window);
-		newWindowAction = ActionFactory.OPEN_NEW_WINDOW.create(window);
 		showViews = ContributionItemFactory.VIEWS_SHORTLIST.create(window);
 		aboutAction = ActionFactory.ABOUT.create(window);
 	}

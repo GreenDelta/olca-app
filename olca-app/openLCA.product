@@ -6,9 +6,9 @@
    <aboutInfo>
       <image path="/olca-app/icons/about.png"/>
       <text>
-         openLCA 1.4
+         openLCA 1.4.1
 
-Copyright (c) 2007 - 2014 GreenDelta. All rights reserved.
+Copyright (c) 2007 - 2015 GreenDelta. All rights reserved.
 Visit http://openlca.org and http://greendelta.com
 
 This product includes software developed in the openLCA 
@@ -56,6 +56,7 @@ en
    <vm>
       <windows include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8</windows>
    </vm>
+
 
    <plugins>
       <plugin id="com.ibm.icu"/>
