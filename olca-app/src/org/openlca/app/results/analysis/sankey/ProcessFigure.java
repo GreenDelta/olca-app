@@ -88,9 +88,9 @@ public class ProcessFigure extends Figure {
 		String name = Strings.cut(processNode.getName(), 30);
 		g.drawText(name, loc.x + 5, loc.y + 5);
 		g.setFont(normalFont);
-		g.drawText(Messages.SingleAmount + ":", loc.x + 5, loc.y + 35);
+		g.drawText(Messages.DirectContribution + ":", loc.x + 5, loc.y + 35);
 		g.drawText(single, loc.x + 5, loc.y + 50);
-		g.drawText(Messages.TotalAmount + ":", loc.x + 5, loc.y + 80);
+		g.drawText(Messages.UpstreamTotal + ":", loc.x + 5, loc.y + 80);
 		g.drawText(total, loc.x + 5, loc.y + 95);
 		g.setForegroundColor(black);
 	}

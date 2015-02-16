@@ -272,7 +272,8 @@ class ProcessResultPage extends FormPage {
 
 		@Override
 		public int compare(Viewer viewer, Object e1, Object e2) {
-			if (!((e1 instanceof FlowDescriptor && e2 instanceof FlowDescriptor) || (e1 instanceof ImpactCategoryDescriptor && e2 instanceof ImpactCategoryDescriptor)))
+			if (!((e1 instanceof FlowDescriptor && e2 instanceof FlowDescriptor)
+			|| (e1 instanceof ImpactCategoryDescriptor && e2 instanceof ImpactCategoryDescriptor)))
 				return 0;
 
 			double contribution1 = 0;
@@ -383,7 +384,7 @@ class ProcessResultPage extends FormPage {
 			if (total == 0)
 				return 0;
 			double val = result.getUpstreamFlowResult(process, flow).getValue();
-			double contribution = val / total;
+			double contribution = val / Math.abs(total);
 			if (contribution > 1)
 				return 1;
 			return contribution;
@@ -409,7 +410,7 @@ class ProcessResultPage extends FormPage {
 				return 0;
 			double val = result.getUpstreamImpactResult(process, category)
 					.getValue();
-			double contribution = val / total;
+			double contribution = val / Math.abs(total);
 			if (contribution > 1)
 				return 1;
 			return contribution;
