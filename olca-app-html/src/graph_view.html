@@ -38,8 +38,12 @@
 		
 			d3.select("center").select("svg").remove();
 			
-			var width = 960, 
-				height = 500;
+			var w = window,
+				d = document,
+				e = d.documentElement,
+				g = d.getElementsByTagName('body')[0],
+				width = w.innerWidth || e.clientWidth || g.clientWidth,
+				height = w.innerHeight|| e.clientHeight|| g.clientHeight;
 			
 			var svg = d3.select("center")
 						.append("svg")
@@ -49,8 +53,9 @@
 			var color = d3.scale.category20();
 			
 			var force = d3.layout.force()
-						.charge(-120)
-						.linkDistance(30)
+						.charge(getCharge(input))
+						.linkDistance(10)
+						.linkStrength(0.5)
 						.size([width, height]);
 	
 	
@@ -94,4 +99,19 @@
 					});
 				});
 		}
+		
+		function getCharge(input) {
+			var len = input.nodes.length;
+			if(len > 500)
+				return -5;
+			if(len > 250)
+				return -15;
+			if(len > 100)
+				return -30;
+			if(len > 50)
+				return -60;
+			else
+				return -120;
+		}
+		
 	</script>
