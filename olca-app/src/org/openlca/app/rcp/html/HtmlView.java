@@ -10,8 +10,6 @@ public enum HtmlView {
 
 	GRAPH_VIEW("graph_view.html"),
 
-	IMPACT_LOCALISATION_PAGE("impact_localisation_page.html"),
-
 	JAVASCRIPT_EDITOR("javascript_editor.html"),
 
 	KML_EDITOR("kml_editor.html"),
@@ -23,8 +21,6 @@ public enum HtmlView {
 	PYTHON_EDITOR("python_editor.html"),
 
 	REPORT_VIEW("report_view.html"),
-
-	RESULT_LOCALISED_LCIA("result_localised_lcia.html"),
 
 	START_PAGE("start_page.html"),
 
