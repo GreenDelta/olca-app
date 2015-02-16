@@ -49,6 +49,7 @@ public class ImpactMethodEditor extends ModelEditor<ImpactMethod> implements
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
 		super.init(site, input);
+		// Formulas.eval(Database.get(), getModel());
 		Supplier<List<Parameter>> supplier = () -> getModel().getParameters();
 		parameterSupport = new ParameterPageSupport(this, supplier,
 				ParameterScope.IMPACT_METHOD);

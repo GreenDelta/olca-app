@@ -40,13 +40,11 @@ class Processes {
 	}
 
 	static boolean isOutputProduct(Exchange exchange) {
-		//@formatter:off
-		return exchange != null 
+		return exchange != null
 				&& exchange.getFlow() != null
-				&& !exchange.isInput() 
+				&& !exchange.isInput()
 				&& !exchange.isAvoidedProduct()
 				&& exchange.getFlow().getFlowType() == FlowType.PRODUCT_FLOW;
-		//@formatter:on
 	}
 
 }

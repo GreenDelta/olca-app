@@ -159,9 +159,8 @@ public class ParameterSection implements ParameterPageListener {
 		parameter.setScope(support.getScope());
 		parameter.setInputParameter(forInputParameters);
 		parameter.setValue(1.0);
-		if (!forInputParameters) {
+		if (!forInputParameters)
 			parameter.setFormula("1.0");
-		}
 		parameters.add(parameter);
 		setInput();
 		support.fireParameterChange();

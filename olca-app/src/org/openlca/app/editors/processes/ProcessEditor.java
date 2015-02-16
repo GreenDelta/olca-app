@@ -6,6 +6,8 @@ import java.util.function.Supplier;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
+import org.openlca.app.db.Database;
+import org.openlca.app.editors.Formulas;
 import org.openlca.app.editors.IEditor;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.ParameterPage;
@@ -43,6 +45,7 @@ public class ProcessEditor extends ModelEditor<Process> implements IEditor {
 		Process p = getModel();
 		if (p.getDocumentation() == null)
 			p.setDocumentation(new ProcessDocumentation());
+		Formulas.eval(Database.get(), p); // TODO: display possible errors
 		Supplier<List<Parameter>> supplier = () -> getModel().getParameters();
 		parameterSupport = new ParameterPageSupport(this, supplier,
 				ParameterScope.PROCESS);
