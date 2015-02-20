@@ -7,9 +7,6 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.openlca.core.model.ModelType;
 
-/**
- * A sorter for navigation elements.
- */
 public class NavigationSorter extends ViewerSorter {
 
 	private Map<ModelType, Integer> typeOrder = new HashMap<>();
@@ -20,7 +17,6 @@ public class NavigationSorter extends ViewerSorter {
 	}
 
 	private void fillTypeOrder() {
-		//@formatter:off
 		ModelType[] order = new ModelType[] {
 				ModelType.PROJECT,
 				ModelType.PRODUCT_SYSTEM,
@@ -32,7 +28,6 @@ public class NavigationSorter extends ViewerSorter {
 				ModelType.SOURCE,
 				ModelType.ACTOR
 		};
-		//@formatter:on
 		for (int i = 0; i < order.length; i++)
 			typeOrder.put(order[i], i);
 	}
