@@ -21,6 +21,9 @@ import org.openlca.app.util.UI;
 
 class LocationsPage extends FormPage {
 
+	private static final int TYPE_XML = 1;
+	private static final int TYPE_KML = 2;
+
 	private LocationViewer viewer;
 
 	LocationsPage(LocationsEditor editor) {
@@ -39,7 +42,11 @@ class LocationsPage extends FormPage {
 		FormToolkit toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		UI.gridData(body, true, true);
-		createImportButton(body);
+		Composite buttonContainer = toolkit.createComposite(body, SWT.NONE);
+		UI.gridData(buttonContainer, true, false);
+		UI.gridLayout(buttonContainer, 2);
+		createImportButton(buttonContainer, TYPE_XML);
+		createImportButton(buttonContainer, TYPE_KML);
 		Section section = UI.section(body, toolkit, Messages.Locations);
 		UI.gridData(section, true, true);
 		Composite container = UI.sectionClient(section, toolkit);
@@ -50,26 +57,41 @@ class LocationsPage extends FormPage {
 		form.reflow(true);
 	}
 
-	private void createImportButton(Composite parent) {
+	private void createImportButton(Composite parent, int type) {
+		String typeName = null;
+		String wizardId = null;
+		switch (type) {
+		case TYPE_XML:
+			typeName = "XML";
+			wizardId = KmzImportWizard.ID;
+			break;
+		case TYPE_KML:
+			typeName = "KML";
+			wizardId = KmlImportWizard.ID;
+			break;
+		}
+		if (typeName == null)
+			return;
 		Button importButton = new Button(parent, SWT.NONE);
-		importButton.setText("Import data from KML file...");
+		importButton.setText("Import data from " + typeName + " file...");
+		final String title = "Import " + typeName + " data";
+		final String question = "Previous changes must be saved before importing "
+				+ typeName.toLowerCase() + "  data. Do you want to continue?";
+		final String finalWizardId = wizardId;
 		importButton.addSelectionListener(new SelectionAdapter() {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				boolean doContinue = true;
 				if (getEditor().isDirty()) {
-					doContinue = Question
-							.ask("Import KML data",
-									"Previous changes must be saved before importing kml data. Do you want to continue?");
+					doContinue = Question.ask(title, question);
 					if (doContinue)
 						getEditor().doSave();
 				}
 				if (!doContinue)
 					return;
 				IWizardDescriptor descriptor = PlatformUI.getWorkbench()
-						.getImportWizardRegistry()
-						.findWizard(KmzImportWizard.ID);
+						.getImportWizardRegistry().findWizard(finalWizardId);
 				if (descriptor == null)
 					return;
 				try {
@@ -85,5 +107,7 @@ class LocationsPage extends FormPage {
 			}
 
 		});
+
 	}
+
 }

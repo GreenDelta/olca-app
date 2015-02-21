@@ -568,8 +568,13 @@
 	   </wizard>
      <wizard
            class="org.openlca.app.editors.locations.KmzImportWizard"
-           id="wizard.import.kml"
+           id="wizard.import.kmz"
            name="KMZ import wizard">
+     </wizard>
+     <wizard
+           class="org.openlca.app.editors.locations.KmlImportWizard"
+           id="wizard.import.kml"
+           name="KML import wizard">
      </wizard>
    </extension>
    

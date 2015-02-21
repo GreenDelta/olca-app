@@ -1,6 +1,9 @@
 package org.openlca.app.editors.locations;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -9,11 +12,11 @@ import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
 import org.openlca.app.db.Database;
 import org.openlca.app.wizards.io.FileImportPage;
-import org.openlca.io.refdata.GeoKmzImport;
+import org.openlca.io.MultiKmlImport;
 
-public class KmzImportWizard extends Wizard implements IImportWizard {
+public class KmlImportWizard extends Wizard implements IImportWizard {
 
-	public static final String ID = "wizard.import.kmz";
+	public static final String ID = "wizard.import.kml";
 	private FileImportPage fileImportPage;
 
 	@Override
@@ -23,7 +26,7 @@ public class KmzImportWizard extends Wizard implements IImportWizard {
 
 	@Override
 	public void addPages() {
-		addPage(fileImportPage = new FileImportPage(new String[] { "xml" },
+		addPage(fileImportPage = new FileImportPage(new String[] { "kml" },
 				false));
 	}
 
@@ -33,15 +36,21 @@ public class KmzImportWizard extends Wizard implements IImportWizard {
 			getContainer().run(true, false, (monitor) -> runImport(monitor));
 		} catch (Exception e) {
 			e.printStackTrace();
+			return false;
 		}
 		return true;
 	}
 
-	private void runImport(IProgressMonitor monitor) {
+	private void runImport(IProgressMonitor monitor)
+			throws InvocationTargetException {
 		monitor.beginTask("Importing KML data", IProgressMonitor.UNKNOWN);
 		File file = fileImportPage.getFiles()[0];
-		new GeoKmzImport(file, Database.get()).run();
-		monitor.done();
+		try (InputStream stream = new FileInputStream(file)) {
+			MultiKmlImport parser = new MultiKmlImport(Database.get(), stream);
+			parser.parseAndInsert();
+			monitor.done();
+		} catch (Exception e) {
+			throw new InvocationTargetException(e);
+		}
 	}
-
 }

@@ -3,12 +3,15 @@ package org.openlca.app.editors.lcia_methods;
 import java.awt.Desktop;
 import java.io.File;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -27,6 +30,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.editors.ParameterPage;
+import org.openlca.app.rcp.ImageManager;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Colors;
@@ -207,6 +211,14 @@ class ShapeFilePage extends FormPage {
 				}
 			});
 			Action update = new Action("Update") {
+
+				@Override
+				public ImageDescriptor getImageDescriptor() {
+					return ImageManager
+							.getImageDescriptor(ImageType.REFRESH_ICON);
+
+				}
+
 				@Override
 				public void run() {
 					File file = FileChooser.forImport("*.shp");
@@ -216,10 +228,13 @@ class ShapeFilePage extends FormPage {
 					delete(true);
 					List<ShapeFileParameter> parameters = checkRunImport(file);
 					Set<String> stillLinked = getReferencedParameters();
+					Map<String, ShapeFileParameter> nameToParam = new HashMap<>();
 					for (ShapeFileParameter parameter : parameters)
-						if (previouslyLinked.contains(parameter.getName()))
+						if (previouslyLinked.contains(parameter.getName())) {
 							stillLinked.add(parameter.getName());
-					updateExternalSourceReferences(stillLinked);
+							nameToParam.put(parameter.getName(), parameter);
+						}
+					updateExternalSourceReferences(stillLinked, nameToParam);
 				}
 			};
 			ShowMapAction showAction = new ShowMapAction(this);
@@ -261,12 +276,23 @@ class ShapeFilePage extends FormPage {
 		 * stillLinked: names of parameters that were linked to the shape file
 		 * before updating and afterwards (only set those)
 		 */
-		private void updateExternalSourceReferences(Set<String> stillLinked) {
+		private void updateExternalSourceReferences(Set<String> stillLinked,
+				Map<String, ShapeFileParameter> nameToParam) {
 			for (Parameter parameter : method.getParameters())
 				if (parameter.isInputParameter())
 					if (shapeFile.equals(parameter.getExternalSource()))
 						if (!stillLinked.contains(parameter.getName()))
 							parameter.setExternalSource(null);
+						else {
+							ShapeFileParameter param = nameToParam
+									.get(parameter.getName());
+							if (param == null)
+								continue;
+							parameter
+									.setValue((param.getMin() + param.getMax()) / 2);
+							parameter.setUncertainty(Uncertainty.uniform(
+									param.getMin(), param.getMax()));
+						}
 			editor.getParameterSupport().fireParameterChange();
 		}
 
