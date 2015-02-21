@@ -10,6 +10,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -17,6 +18,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.TableClipboard;
 import org.openlca.app.util.Tables;
@@ -76,9 +78,24 @@ public class ParameterPage extends FormPage {
 		table.setLabelProvider(new ParameterLabel());
 		Tables.bindColumnWidths(table.getTable(), 0.4, 0.3);
 		section.setExpanded(false);
-		Action copy = TableClipboard.onCopy(table);
-		Actions.bind(table, copy);
 		setGlobalTableInput(table);
+		bindGlobalParamActions(section, table);
+	}
+
+	private void bindGlobalParamActions(Section section, TableViewer table) {
+		Action copy = TableClipboard.onCopy(table);
+		Action refresh = Actions.create(Messages.Reload,
+				ImageType.REFRESH_ICON.getDescriptor(),
+				() -> {
+					setGlobalTableInput(table);
+					input.fireParameterChange();
+				});
+		Action edit = Actions.create(Messages.Edit,
+				ImageType.EDIT_16.getDescriptor(),
+				() -> PreferencesUtil.createPreferenceDialogOn(UI.shell(),
+						"preferencepages.parameters", null, null).open());
+		Actions.bind(table, copy, refresh, edit);
+		Actions.bind(section, refresh, edit);
 	}
 
 	private void setGlobalTableInput(TableViewer table) {
