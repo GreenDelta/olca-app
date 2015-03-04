@@ -1,10 +1,10 @@
 package org.openlca.app.navigation;
 
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.TreeItem;
 import org.openlca.app.util.Labels;
 
 /**
@@ -15,14 +15,24 @@ public class ModelTextFilter extends ViewerFilter {
 
 	private Text filterText;
 
-	public ModelTextFilter(Text filterText, final Viewer viewer) {
+	public ModelTextFilter(Text filterText, final TreeViewer viewer) {
 		this.filterText = filterText;
-		filterText.addModifyListener(new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
-				viewer.refresh();
-			}
+		filterText.addModifyListener((e) -> {
+			viewer.refresh();
+			expand(viewer);
 		});
+	}
+
+	private void expand(TreeViewer viewer) {
+		TreeItem[] items = viewer.getTree().getItems();
+		while (items != null && items.length > 0) {
+			TreeItem next = items[0];
+			next.setExpanded(true);
+			for (int i = 1; i < items.length; i++)
+				items[i].setExpanded(false);
+			items = next.getItems();
+			viewer.refresh();
+		}
 	}
 
 	@Override
