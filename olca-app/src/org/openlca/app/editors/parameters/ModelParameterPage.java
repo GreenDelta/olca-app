@@ -10,7 +10,6 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -108,8 +107,7 @@ public class ModelParameterPage extends FormPage {
 				});
 		Action edit = Actions.create(Messages.Edit,
 				ImageType.EDIT_16.getDescriptor(),
-				() -> PreferencesUtil.createPreferenceDialogOn(UI.shell(),
-						"preferencepages.parameters", null, null).open());
+				GlobalParameterEditor::open);
 		Actions.bind(table, copy, refresh, edit);
 		Actions.bind(section, refresh, edit);
 	}

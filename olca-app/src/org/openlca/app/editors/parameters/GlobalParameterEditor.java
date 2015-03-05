@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -131,21 +133,18 @@ public class GlobalParameterEditor extends FormEditor implements IEditor {
 					Messages.GlobalParameters);
 			FormToolkit toolkit = managedForm.getToolkit();
 			Composite body = UI.formBody(form, toolkit);
-			try {
-				Supplier<List<Parameter>> supplier = () -> parameters;
-				ParameterSection
-						.forInputParameters(GlobalParameterEditor.this,
-								support, body, toolkit)
-						.setSupplier(supplier, ParameterScope.GLOBAL);
-				ParameterSection
-						.forDependentParameters(GlobalParameterEditor.this,
-								support, body, toolkit)
-						.setSupplier(supplier, ParameterScope.GLOBAL);
-				body.setFocus();
-				form.reflow(true);
-			} catch (Exception e) {
-				log.error("failed to create parameter tables", e);
-			}
+			SashForm sash = new SashForm(body, SWT.VERTICAL);
+			UI.gridData(sash, true, true);
+			toolkit.adapt(sash);
+			Supplier<List<Parameter>> supplier = () -> parameters;
+			ParameterSection
+					.forInputParameters(GlobalParameterEditor.this,
+							support, sash, toolkit)
+					.setSupplier(supplier, ParameterScope.GLOBAL);
+			ParameterSection
+					.forDependentParameters(GlobalParameterEditor.this,
+							support, sash, toolkit)
+					.setSupplier(supplier, ParameterScope.GLOBAL);
 		}
 	}
 }

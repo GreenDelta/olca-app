@@ -19,6 +19,7 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Table;
@@ -53,7 +54,8 @@ public class Tables {
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
 		createColumns(table, properties);
-		UI.gridData(table, true, true).minimumHeight = 150;
+		GridData data = UI.gridData(table, true, true);
+		data.minimumHeight = 150;
 		return viewer;
 	}
 
