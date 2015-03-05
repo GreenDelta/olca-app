@@ -106,6 +106,14 @@
             contributorClass="org.openlca.app.editors.systems.ProductSystemActions">
       </editor>
       
+      <editor
+           class="org.openlca.app.editors.parameters.GlobalParameterEditor"
+           default="false"
+           icon="icons/formula_16.png"
+           id="editors.GlobalParameterEditor"
+           name="Global parameters">
+      </editor>
+      
       <!-- result views -->
       <editor
             class="org.openlca.app.results.quick.QuickResultEditor"
