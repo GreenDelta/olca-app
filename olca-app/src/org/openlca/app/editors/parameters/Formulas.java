@@ -1,4 +1,4 @@
-package org.openlca.app.editors;
+package org.openlca.app.editors.parameters;
 
 import java.util.ArrayList;
 import java.util.Collections;

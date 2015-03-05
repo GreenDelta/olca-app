@@ -1,7 +1,8 @@
-package org.openlca.app.editors;
+package org.openlca.app.editors.parameters;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -17,6 +18,9 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
+import org.openlca.app.editors.ModelEditor;
+import org.openlca.app.editors.lcia_methods.ImpactMethodEditor;
+import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.TableClipboard;
@@ -26,21 +30,37 @@ import org.openlca.app.util.UncertaintyLabel;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ParameterDao;
 import org.openlca.core.model.Parameter;
+import org.openlca.core.model.ParameterScope;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ParameterPage extends FormPage {
+/** Parameter page for LCIA methods or processes. */
+public class ModelParameterPage extends FormPage {
 
 	public static final String ID = "ParameterPage";
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private FormToolkit toolkit;
-	private ParameterPageSupport input;
+	private ParameterChangeSupport support;
+	private ModelEditor<?> editor;
+	private Supplier<List<Parameter>> supplier;
+	private ParameterScope scope;
 
-	public ParameterPage(ParameterPageSupport input) {
-		super(input.getEditor(), ID, Messages.Parameters);
-		this.input = input;
+	public ModelParameterPage(ProcessEditor editor) {
+		super(editor, ID, Messages.Parameters);
+		this.support = editor.getParameterSupport();
+		this.editor = editor;
+		this.supplier = () -> editor.getModel().getParameters();
+		this.scope = ParameterScope.PROCESS;
+	}
+
+	public ModelParameterPage(ImpactMethodEditor editor) {
+		super(editor, ID, Messages.Parameters);
+		this.support = editor.getParameterSupport();
+		this.editor = editor;
+		this.supplier = () -> editor.getModel().getParameters();
+		this.scope = ParameterScope.IMPACT_METHOD;
 	}
 
 	@Override
@@ -50,8 +70,12 @@ public class ParameterPage extends FormPage {
 		Composite body = UI.formBody(form, toolkit);
 		try {
 			createGlobalParamterSection(body);
-			ParameterSection.forInputParameters(input, body);
-			ParameterSection.forDependentParameters(input, body);
+			ParameterSection
+					.forInputParameters(editor, support, body, toolkit)
+					.setSupplier(supplier, scope);
+			ParameterSection
+					.forDependentParameters(editor, support, body, toolkit)
+					.setSupplier(supplier, scope);
 			body.setFocus();
 			form.reflow(true);
 		} catch (Exception e) {
@@ -79,7 +103,8 @@ public class ParameterPage extends FormPage {
 				ImageType.REFRESH_ICON.getDescriptor(),
 				() -> {
 					setGlobalTableInput(table);
-					input.fireParameterChange();
+					support.evaluate();
+					editor.setDirty(true);
 				});
 		Action edit = Actions.create(Messages.Edit,
 				ImageType.EDIT_16.getDescriptor(),

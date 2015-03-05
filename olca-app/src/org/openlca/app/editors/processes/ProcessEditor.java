@@ -1,24 +1,19 @@
 package org.openlca.app.editors.processes;
 
 import java.util.List;
-import java.util.function.Supplier;
 
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
+import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
-import org.openlca.app.editors.Formulas;
 import org.openlca.app.editors.IEditor;
 import org.openlca.app.editors.ModelEditor;
-import org.openlca.app.editors.ParameterPage;
-import org.openlca.app.editors.ParameterPageListener;
-import org.openlca.app.editors.ParameterPageSupport;
-import org.openlca.core.model.Exchange;
-import org.openlca.core.model.Parameter;
-import org.openlca.core.model.ParameterScope;
+import org.openlca.app.editors.parameters.Formulas;
+import org.openlca.app.editors.parameters.ModelParameterPage;
+import org.openlca.app.editors.parameters.ParameterChangeSupport;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessDocumentation;
-import org.openlca.expressions.FormulaInterpreter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +27,7 @@ public class ProcessEditor extends ModelEditor<Process> implements IEditor {
 
 	public static String ID = "editors.process";
 	private Logger log = LoggerFactory.getLogger(getClass());
-	private ParameterPageSupport parameterSupport;
+	private ParameterChangeSupport parameterSupport;
 
 	public ProcessEditor() {
 		super(Process.class);
@@ -45,29 +40,24 @@ public class ProcessEditor extends ModelEditor<Process> implements IEditor {
 		Process p = getModel();
 		if (p.getDocumentation() == null)
 			p.setDocumentation(new ProcessDocumentation());
-		Formulas.eval(Database.get(), p); // TODO: display possible errors
-		Supplier<List<Parameter>> supplier = () -> getModel().getParameters();
-		parameterSupport = new ParameterPageSupport(this, supplier,
-				ParameterScope.PROCESS);
-		// it is important that this listener is added before the listener
-		// in the exchange page, otherwise the exchange tables will be refreshed
-		// with old values
-		parameterSupport.addListener(new ParameterPageListener() {
-			@Override
-			public void parameterChanged() {
-				log.trace("evaluate exchange formulas");
-				for (Exchange exchange : getModel().getExchanges()) {
-					parameterSupport.eval(exchange);
-				}
-			}
-		});
+		evalFormulas();
+		parameterSupport = new ParameterChangeSupport();
+		parameterSupport.doEvaluation(this::evalFormulas);
 	}
 
-	public FormulaInterpreter getInterpreter() {
-		return parameterSupport.getInterpreter();
+	private void evalFormulas() {
+		Process p = getModel();
+		List<String> errors = Formulas.eval(Database.get(), p);
+		if (!errors.isEmpty()) {
+			String message = errors.get(0);
+			if (errors.size() > 1)
+				message += " (" + (errors.size() - 1) + " more)";
+			org.openlca.app.util.Error.showBox(
+					Messages.FormulaEvaluationFailed, message);
+		}
 	}
 
-	public ParameterPageSupport getParameterSupport() {
+	public ParameterChangeSupport getParameterSupport() {
 		return parameterSupport;
 	}
 
@@ -78,7 +68,7 @@ public class ProcessEditor extends ModelEditor<Process> implements IEditor {
 			addPage(new ProcessExchangePage(this));
 			addPage(new AdminInfoPage(this));
 			addPage(new ProcessModelingPage(this));
-			addPage(new ParameterPage(parameterSupport));
+			addPage(new ModelParameterPage(this));
 			addPage(new AllocationPage(this));
 			addPage(new ProcessCostPage(this));
 		} catch (Exception e) {

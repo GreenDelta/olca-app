@@ -22,7 +22,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.components.FileChooser;
-import org.openlca.app.editors.ParameterPage;
+import org.openlca.app.editors.parameters.ModelParameterPage;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Colors;
@@ -346,8 +346,8 @@ class ShapeFilePage extends FormPage {
 			realParam.setScope(ParameterScope.IMPACT_METHOD);
 			realParam.setSourceType("SHAPE_FILE");
 			method.getParameters().add(realParam);
-			editor.setActivePage(ParameterPage.ID);
-			editor.getParameterSupport().fireParameterChange();
+			editor.setActivePage(ModelParameterPage.ID);
+			editor.setDirty(true);
 		}
 	}
 

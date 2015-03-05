@@ -1,9 +1,10 @@
-package org.openlca.app.editors;
+package org.openlca.app.editors.parameters;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -13,9 +14,11 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.components.UncertaintyCellEditor;
+import org.openlca.app.editors.IEditor;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Dialog;
@@ -28,7 +31,7 @@ import org.openlca.app.util.Viewers;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.model.Parameter;
-import org.openlca.expressions.FormulaInterpreter;
+import org.openlca.core.model.ParameterScope;
 import org.openlca.util.Strings;
 
 /**
@@ -37,7 +40,7 @@ import org.openlca.util.Strings;
  * with the columns name, value, and description, or for dependent parameters
  * with the columns name, formula, value, and description.
  */
-public class ParameterSection implements ParameterPageListener {
+public class ParameterSection {
 
 	private TableViewer viewer;
 
@@ -48,43 +51,42 @@ public class ParameterSection implements ParameterPageListener {
 	private final String DESCRIPTION = Messages.Description;
 
 	private boolean forInputParameters = true;
-	private ParameterPageSupport support;
-	private ModelEditor<?> editor;
-	private List<Parameter> parameters;
+	private ParameterChangeSupport support;
+	private IEditor editor;
+	private Supplier<List<Parameter>> supplier;
+	private ParameterScope scope;
 
-	public static ParameterSection forInputParameters(
-			ParameterPageSupport support, Composite body) {
-		ParameterSection table = new ParameterSection(support, body, true);
-		return table;
+	public static ParameterSection forInputParameters(IEditor editor,
+			ParameterChangeSupport support, Composite body, FormToolkit toolkit) {
+		return new ParameterSection(editor, support, body, toolkit, true);
 	}
 
-	public static ParameterSection forDependentParameters(
-			ParameterPageSupport support, Composite body) {
-		ParameterSection table = new ParameterSection(support, body, false);
-		return table;
+	public static ParameterSection forDependentParameters(IEditor editor,
+			ParameterChangeSupport support, Composite body, FormToolkit toolkit) {
+		return new ParameterSection(editor, support, body, toolkit, false);
 	}
 
-	private ParameterSection(ParameterPageSupport support, Composite body,
-			boolean forInputParams) {
+	private ParameterSection(IEditor editor, ParameterChangeSupport support,
+			Composite body, FormToolkit toolkit, boolean forInputParams) {
 		forInputParameters = forInputParams;
-		editor = support.getEditor();
+		this.editor = editor;
 		this.support = support;
-		support.addListener(this);
-		parameters = support.getParameters();
 		String[] props = {};
 		if (forInputParams)
 			props = new String[] { NAME, VALUE, UNCERTAINTY, DESCRIPTION };
 		else
 			props = new String[] { NAME, FORMULA, VALUE, DESCRIPTION };
-		createComponents(body, props);
+		createComponents(body, toolkit, props);
 		createCellModifiers();
-		fillInitialInput();
-		support.getEditor().getEventBus().register(this);
-		support.getEditor().onSaved(() -> {
-			parameters = support.getParameters(); // reloads it from the model
-				setInput();
-			});
 		addDoubleClickHandler();
+		support.afterEvaluation(this::setInput);
+	}
+
+	public void setSupplier(Supplier<List<Parameter>> supplier,
+			ParameterScope scope) {
+		this.supplier = supplier;
+		this.scope = scope;
+		fillInitialInput();
 	}
 
 	private void addDoubleClickHandler() {
@@ -95,17 +97,13 @@ public class ParameterSection implements ParameterPageListener {
 		});
 	}
 
-	@Override
-	public void parameterChanged() {
-		setInput();
-	}
-
-	private void createComponents(Composite body, String[] properties) {
+	private void createComponents(Composite body, FormToolkit toolkit,
+			String[] properties) {
 		String label = forInputParameters ? Messages.InputParameters
 				: Messages.DependentParameters;
-		Section section = UI.section(body, editor.getToolkit(), label);
+		Section section = UI.section(body, toolkit, label);
 		UI.gridData(section, true, true);
-		Composite parent = UI.sectionClient(section, editor.getToolkit());
+		Composite parent = UI.sectionClient(section, toolkit);
 		viewer = Tables.createViewer(parent, properties);
 		viewer.setLabelProvider(new ParameterLabelProvider());
 		Table table = viewer.getTable();
@@ -138,15 +136,18 @@ public class ParameterSection implements ParameterPageListener {
 	}
 
 	private void fillInitialInput() {
-		// when the viewer is created, we first sort the parameters by name
-		Collections.sort(parameters,
+		if (supplier == null)
+			return;
+		Collections.sort(supplier.get(),
 				(o1, o2) -> Strings.compare(o1.getName(), o2.getName()));
 		setInput();
 	}
 
 	private void setInput() {
+		if (supplier == null)
+			return;
 		List<Parameter> input = new ArrayList<>();
-		for (Parameter param : parameters) {
+		for (Parameter param : supplier.get()) {
 			if (param.isInputParameter() == forInputParameters)
 				input.add(param);
 		}
@@ -154,25 +155,32 @@ public class ParameterSection implements ParameterPageListener {
 	}
 
 	private void onAdd() {
+		if (supplier == null)
+			return;
+		List<Parameter> params = supplier.get();
 		Parameter parameter = new Parameter();
-		parameter.setName("p_" + parameters.size());
-		parameter.setScope(support.getScope());
+		parameter.setName("p_" + params.size());
+		parameter.setScope(scope);
 		parameter.setInputParameter(forInputParameters);
 		parameter.setValue(1.0);
 		if (!forInputParameters)
 			parameter.setFormula("1.0");
-		parameters.add(parameter);
+		params.add(parameter);
 		setInput();
-		support.fireParameterChange();
+		editor.setDirty(true);
 	}
 
 	private void onRemove() {
+		if (supplier == null)
+			return;
+		List<Parameter> params = supplier.get();
 		List<Parameter> selection = Viewers.getAllSelected(viewer);
 		for (Parameter parameter : selection) {
-			parameters.remove(parameter);
+			params.remove(parameter);
 		}
 		setInput();
-		support.fireParameterChange();
+		editor.setDirty(true);
+		support.evaluate();
 	}
 
 	private class ParameterLabelProvider extends LabelProvider implements
@@ -234,7 +242,8 @@ public class ParameterSection implements ParameterPageListener {
 				return;
 			}
 			param.setName(name);
-			support.fireParameterChange();
+			editor.setDirty(true);
+			support.evaluate();
 		}
 	}
 
@@ -249,7 +258,8 @@ public class ParameterSection implements ParameterPageListener {
 			try {
 				double d = Double.parseDouble(text);
 				param.setValue(d);
-				support.fireParameterChange();
+				editor.setDirty(true);
+				support.evaluate();
 			} catch (Exception e) {
 				Dialog.showError(viewer.getTable().getShell(), text
 						+ " " + Messages.IsNotValidNumber);
@@ -266,12 +276,9 @@ public class ParameterSection implements ParameterPageListener {
 		@Override
 		protected void setText(Parameter param, String formula) {
 			try {
-				FormulaInterpreter interpreter = support.getInterpreter();
-				long scope = editor.getModel().getId();
-				double val = interpreter.getScope(scope).eval(formula);
 				param.setFormula(formula);
-				param.setValue(val);
-				support.fireParameterChange();
+				editor.setDirty(true);
+				support.evaluate();
 			} catch (Exception e) {
 				Error.showBox(Messages.InvalidFormula,
 						Strings.cut(e.getMessage(), 75));
@@ -289,7 +296,7 @@ public class ParameterSection implements ParameterPageListener {
 		protected void setText(Parameter param, String text) {
 			if (!Objects.equals(text, param.getDescription())) {
 				param.setDescription(text);
-				support.fireParameterChange();
+				editor.setDirty(true);
 			}
 		}
 	}
