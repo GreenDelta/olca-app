@@ -1,9 +1,13 @@
 package org.openlca.app;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.progress.IProgressService;
 import org.openlca.app.editors.ModelEditorInput;
 import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.rcp.RcpActivator;
@@ -150,6 +154,20 @@ public class App {
 			job.setCallback(callback);
 		job.setUser(true);
 		job.schedule();
+	}
+
+	public static void runWithProgress(String name, Runnable runnable) {
+		IProgressService progress = PlatformUI.getWorkbench()
+				.getProgressService();
+		try {
+			progress.run(true, false, (monitor) -> {
+				monitor.beginTask(name, IProgressMonitor.UNKNOWN);
+				runnable.run();
+				monitor.done();
+			});
+		} catch (InvocationTargetException | InterruptedException e) {
+			log.error("Error while running progress " + name, e);
+		}
 	}
 
 	/**
