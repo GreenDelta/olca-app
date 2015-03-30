@@ -4,11 +4,5 @@
 		"displayName": "EPD Editor",
 		"version": "1.3.6",
 		"description": "As a partner with the German Federal Institute for Research on Building, Urban Affairs and Spatial Development, the openLCA team has developed an EPD plugin to create EPDs according to the European Standard EN15804 in order to meet the needs of the construction industry. Furthermore, GreenDelta has created a life cycle impact assessment methods pack specifically for the preparation of EPDs in accordance with the EN15804."
-	},
-	{
-		"symbolicName": "olca-scs",
-		"displayName": "LEO-SCS-002",
-		"version": "1.0.0",
-		"description": "The developed plugin will provide a new editor that allows to specify virtual locations for processes and to start a regionalized impact calculation using the virtual locations. This will include a KML editor to directly input the location to be used for the regionalized impact assessment."
 	}
 ]
