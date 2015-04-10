@@ -176,18 +176,31 @@ class AllocationSync {
 		List<Pair<Exchange, Double>> amounts = new ArrayList<>();
 		double totalAmount = 0;
 		for (Exchange product : products) {
-			double amount = product.getAmountValue()
-					* product.getUnit().getConversionFactor();
+			double refAmount = getRefAmount(product);
+			double amount = 0;
 			if (commonProp != null) {
 				Flow flow = product.getFlow();
 				FlowPropertyFactor factor = flow.getFactor(commonProp);
 				if (factor != null)
-					amount = amount / factor.getConversionFactor();
+					amount = refAmount * factor.getConversionFactor();
 			}
 			totalAmount += amount;
 			amounts.add(Pair.of(product, amount));
 		}
 		return makeRelative(amounts, totalAmount);
+	}
+
+	private double getRefAmount(Exchange exchange) {
+		if (exchange.getUnit() == null
+				|| exchange.getFlowPropertyFactor() == null)
+			return 0;
+		double amount = exchange.getAmountValue();
+		double unitFactor = exchange.getUnit().getConversionFactor();
+		double propFactor = exchange.getFlowPropertyFactor()
+				.getConversionFactor();
+		if (propFactor == 0)
+			return 0;
+		return amount * unitFactor / propFactor;
 	}
 
 	private List<Pair<Exchange, Double>> makeRelative(
