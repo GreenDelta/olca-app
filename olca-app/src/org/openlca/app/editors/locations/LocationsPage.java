@@ -62,7 +62,7 @@ class LocationsPage extends FormPage {
 		String wizardId = null;
 		switch (type) {
 		case TYPE_XML:
-			typeName = "XML";
+			typeName = "XML (EcoSpold2 format)";
 			wizardId = KmzImportWizard.ID;
 			break;
 		case TYPE_KML:
