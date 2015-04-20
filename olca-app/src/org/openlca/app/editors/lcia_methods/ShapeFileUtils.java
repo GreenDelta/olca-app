@@ -38,6 +38,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseFolder;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ImpactMethod;
+import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.geo.kml.FeatureType;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
@@ -47,13 +48,24 @@ import com.google.common.io.Files;
 import com.google.gson.Gson;
 import com.vividsolutions.jts.geom.LineString;
 
-class ShapeFileUtils {
+public class ShapeFileUtils {
 
 	/**
 	 * Get the folder where the shape-files are stored for the given LCIA,
 	 * method.
 	 */
 	static File getFolder(ImpactMethod method) {
+		if (method == null || method.getRefId() == null)
+			return null;
+		return DatabaseFolder.getShapeFileLocation(Database.get(),
+				method.getRefId());
+	}
+
+	/**
+	 * Get the folder where the shape-files are stored for the given LCIA,
+	 * method.
+	 */
+	static File getFolder(ImpactMethodDescriptor method) {
 		if (method == null || method.getRefId() == null)
 			return null;
 		return DatabaseFolder.getShapeFileLocation(Database.get(),
@@ -146,8 +158,21 @@ class ShapeFileUtils {
 	 * Returns the names of the shape-files of the given method (without file
 	 * extension).
 	 */
-	static List<String> getShapeFiles(ImpactMethod method) {
+	public static List<String> getShapeFiles(ImpactMethod method) {
 		File folder = getFolder(method);
+		return getShapeFiles(folder);
+	}
+
+	/**
+	 * Returns the names of the shape-files of the given method (without file
+	 * extension).
+	 */
+	public static List<String> getShapeFiles(ImpactMethodDescriptor method) {
+		File folder = getFolder(method);
+		return getShapeFiles(folder);
+	}
+
+	private static List<String> getShapeFiles(File folder) {
 		if (folder == null || !folder.exists())
 			return Collections.emptyList();
 		List<String> files = new ArrayList<>();
