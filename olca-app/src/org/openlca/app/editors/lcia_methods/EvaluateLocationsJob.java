@@ -31,7 +31,6 @@ public class EvaluateLocationsJob implements IRunnableWithProgress {
 	private ParameterCalculator parameterCalculator;
 	private LocationDao locationDao;
 	private IProgressMonitor monitor;
-	private boolean forceEvaluation;
 	private List<String> shapeFiles;
 
 	public EvaluateLocationsJob(ImpactMethod method) {
@@ -69,21 +68,12 @@ public class EvaluateLocationsJob implements IRunnableWithProgress {
 
 	private void evaluate(BaseDescriptor location) {
 		subTask(location.getName());
-		if (needsEvaluation(location)) {
-			KmlFeature feature = getKmlFeature(location);
-			if (feature != null)
-				parameterCalculator.calculate(location.getId(), feature);
-		}
+		for (String shapeFile : ShapeFileUtils.getShapeFiles(method))
+			parameterRepository.remove(location.getId(), shapeFile);
+		KmlFeature feature = getKmlFeature(location);
+		if (feature != null)
+			parameterCalculator.calculate(location.getId(), feature);
 		worked();
-	}
-
-	private boolean needsEvaluation(BaseDescriptor location) {
-		if (forceEvaluation)
-			return true;
-		for (String shapeFile : shapeFiles)
-			if (!parameterRepository.contains(location.getId(), shapeFile))
-				return true;
-		return false;
 	}
 
 	private List<Parameter> getShapeFileParameters() {
@@ -97,6 +87,8 @@ public class EvaluateLocationsJob implements IRunnableWithProgress {
 				Collections.singletonMap("methodId", methodId));
 		List<Parameter> shapeFileParams = new ArrayList<>();
 		for (Parameter param : allParams) {
+			if (param == null)
+				continue;
 			if (param.getExternalSource() == null)
 				continue;
 			if (!"SHAPE_FILE".equals(param.getSourceType()))
