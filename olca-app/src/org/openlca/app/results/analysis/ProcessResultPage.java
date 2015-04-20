@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.forms.IManagedForm;
+import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
@@ -33,6 +34,7 @@ import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.ProcessViewer;
 import org.openlca.core.database.EntityCache;
+import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.matrix.FlowIndex;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
@@ -42,10 +44,10 @@ import org.openlca.core.results.FullResultProvider;
 /**
  * Shows the single and upstream results of the processes in an analysis result.
  */
-class ProcessResultPage extends FormPage {
+public class ProcessResultPage extends FormPage {
 
 	private EntityCache cache = Cache.getEntityCache();
-	private AnalyzeEditor editor;
+	private CalculationSetup setup;
 	private FullResultProvider result;
 	private ResultProvider flowResultProvider;
 	private ResultProvider impactResultProvider;
@@ -64,18 +66,17 @@ class ProcessResultPage extends FormPage {
 	private double impactCutOff = 0.01;
 
 	private final static String[] EXCHANGE_COLUMN_LABELS = {
-			Messages.Contribution,
-			Messages.Flow, Messages.UpstreamTotal, Messages.DirectContribution,
-			Messages.Unit };
+			Messages.Contribution, Messages.Flow, Messages.UpstreamTotal,
+			Messages.DirectContribution, Messages.Unit };
 	private final static String[] IMPACT_COLUMN_LABELS = {
-			Messages.Contribution,
-			Messages.ImpactCategory, Messages.UpstreamTotal,
-			Messages.DirectImpact, Messages.Unit };
+			Messages.Contribution, Messages.ImpactCategory,
+			Messages.UpstreamTotal, Messages.DirectImpact, Messages.Unit };
 
-	public ProcessResultPage(AnalyzeEditor editor, FullResultProvider result) {
+	public ProcessResultPage(FormEditor editor, FullResultProvider result,
+			CalculationSetup setup) {
 		super(editor, ProcessResultPage.class.getName(),
 				Messages.ProcessResults);
-		this.editor = editor;
+		this.setup = setup;
 		this.result = result;
 		this.flowResultProvider = new ResultProvider(result);
 		this.impactResultProvider = new ResultProvider(result);
@@ -133,7 +134,7 @@ class ProcessResultPage extends FormPage {
 		UI.gridLayout(container, 5);
 		UI.formLabel(container, toolkit, Messages.Process);
 		flowProcessViewer = new ProcessViewer(container, cache);
-		flowProcessViewer.setInput(editor.getSetup().getProductSystem());
+		flowProcessViewer.setInput(setup.getProductSystem());
 		flowProcessViewer.addSelectionChangedListener((selection) -> {
 			flowResultProvider.setProcess(selection);
 			inputViewer.refresh();
@@ -181,7 +182,7 @@ class ProcessResultPage extends FormPage {
 		UI.gridData(container, true, false);
 		UI.formLabel(container, toolkit, Messages.Process);
 		impactProcessViewer = new ProcessViewer(container, cache);
-		impactProcessViewer.setInput(editor.getSetup().getProductSystem());
+		impactProcessViewer.setInput(setup.getProductSystem());
 		impactProcessViewer.addSelectionChangedListener((selection) -> {
 			impactResultProvider.setProcess(selection);
 			impactViewer.refresh();

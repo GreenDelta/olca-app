@@ -17,6 +17,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.forms.IManagedForm;
+import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
@@ -51,7 +52,7 @@ public class ContributionTreePage extends FormPage {
 	private static final String[] HEADERS = { Messages.Contribution,
 			Messages.Process, Messages.Amount, Messages.Unit };
 
-	public ContributionTreePage(AnalyzeEditor editor, FullResultProvider result) {
+	public ContributionTreePage(FormEditor editor, FullResultProvider result) {
 		super(editor, "analysis.ContributionTreePage",
 				Messages.ContributionTree);
 		this.result = result;

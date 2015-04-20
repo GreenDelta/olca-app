@@ -3,6 +3,7 @@ package org.openlca.app.results.analysis;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
+import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
@@ -30,7 +31,7 @@ public class SunBurstView extends FormPage implements HtmlPage {
 	private Browser browser;
 	private FlowImpactSelection flowImpactSelection;
 
-	public SunBurstView(AnalyzeEditor editor, FullResultProvider result) {
+	public SunBurstView(FormEditor editor, FullResultProvider result) {
 		super(editor, "analysis.SunBurstView", "Sun burst");
 		this.result = result;
 

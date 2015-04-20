@@ -225,8 +225,8 @@ class CalculationWizard extends Wizard {
 						solver.getMatrixFactory(), interpreter);
 			}
 			LcaCalculator calculator = new LcaCalculator(solver);
-			ContributionResult baseResult = calculator.calculateContributions(
-					inventoryMatrix, impactMatrix);
+			FullResult baseResult = calculator.calculateFull(inventoryMatrix,
+					impactMatrix);
 			RegionalizationSetup regioSetup = setupRegio(baseResult
 					.getProductIndex());
 			if (regioSetup == null)
@@ -234,13 +234,10 @@ class CalculationWizard extends Wizard {
 			RegionalizedResult result = calculate(baseResult, regioSetup,
 					interpreter, impactTable);
 			RegionalizedResultProvider resultProvider = new RegionalizedResultProvider();
-			resultProvider
-					.setBaseResult(new ContributionResultProvider<ContributionResult>(
-							result.getBaseResult(), Cache.getEntityCache()));
-			resultProvider
-					.setRegionalizedResult(new ContributionResultProvider<ContributionResult>(
-							result.getRegionalizedResult(), Cache
-									.getEntityCache()));
+			resultProvider.setBaseResult(new FullResultProvider(result
+					.getBaseResult(), Cache.getEntityCache()));
+			resultProvider.setRegionalizedResult(new FullResultProvider(result
+					.getRegionalizedResult(), Cache.getEntityCache()));
 			resultProvider.setKmlData(regioSetup.getKmlData());
 			ResultEditorInput input = getEditorInput(resultProvider, setup);
 			Editors.open(input, RegionalizedResultEditor.ID);
@@ -257,7 +254,7 @@ class CalculationWizard extends Wizard {
 			return regioSetup;
 		}
 
-		private RegionalizedResult calculate(ContributionResult baseResult,
+		private RegionalizedResult calculate(FullResult baseResult,
 				RegionalizationSetup regioSetup,
 				FormulaInterpreter interpreter, ImpactTable impactTable) {
 			RegionalizedCalculator calculator = new RegionalizedCalculator(

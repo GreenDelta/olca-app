@@ -3,6 +3,7 @@ package org.openlca.app.results.localization;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
+import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
@@ -11,9 +12,9 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.html.HtmlPage;
 import org.openlca.app.rcp.html.HtmlView;
-import org.openlca.app.results.analysis.AnalyzeEditor;
 import org.openlca.app.results.localization.LocalisedImpactResult.Entry;
 import org.openlca.app.util.UI;
+import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.results.ContributionResultProvider;
@@ -27,15 +28,15 @@ import com.google.gson.JsonObject;
 public class LocalisedImpactPage extends FormPage implements HtmlPage {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
-	private AnalyzeEditor editor;
 	private ContributionResultProvider<?> result;
 	private Browser browser;
+	private CalculationSetup setup;
 
-	public LocalisedImpactPage(AnalyzeEditor editor,
-			ContributionResultProvider<?> result) {
+	public LocalisedImpactPage(FormEditor editor,
+			ContributionResultProvider<?> result, CalculationSetup setup) {
 		super(editor, "analyse.LocalisedImpactPage", "Localised LCIA (beta)");
-		this.editor = editor;
 		this.result = result;
+		this.setup = setup;
 	}
 
 	@Override
@@ -89,8 +90,7 @@ public class LocalisedImpactPage extends FormPage implements HtmlPage {
 		}
 
 		private LocalisedImpactMethod loadMethod() {
-			ImpactMethodDescriptor impactMethod = editor.getSetup()
-					.getImpactMethod();
+			ImpactMethodDescriptor impactMethod = setup.getImpactMethod();
 			if (!result.hasImpactResults() || impactMethod == null)
 				return null;
 			return LocalisedMethodStorage.getOrCreate(Database.get(),

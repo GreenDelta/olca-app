@@ -74,7 +74,7 @@ public class AnalyzeEditor extends FormEditor {
 			if (result.hasImpactResults() && setup.getNwSet() != null)
 				addPage(new NwResultPage(this, result, setup));
 			addPage(new ContributionTablePage(this, result));
-			addPage(new ProcessResultPage(this, result));
+			addPage(new ProcessResultPage(this, result, setup));
 			if (result.hasImpactResults())
 				addPage(new FlowImpactPage(this, result));
 			addPage(new ContributionTreePage(this, result));
@@ -85,7 +85,7 @@ public class AnalyzeEditor extends FormEditor {
 				addPage(new ContributionBubblePage(this, result));
 				addPage(new SunBurstView(this, result));
 			}
-			addPage(new LocalisedImpactPage(this, result));
+			addPage(new LocalisedImpactPage(this, result, setup));
 			diagram = new SankeyDiagram(setup, result);
 			diagramIndex = addPage(diagram, getEditorInput());
 			setPageText(diagramIndex, Messages.SankeyDiagram);

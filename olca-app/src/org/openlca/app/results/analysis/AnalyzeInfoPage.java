@@ -8,6 +8,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.HyperlinkSettings;
 import org.eclipse.ui.forms.IManagedForm;
+import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
@@ -36,7 +37,7 @@ public class AnalyzeInfoPage extends FormPage {
 	private FullResultProvider result;
 	private FormToolkit toolkit;
 
-	public AnalyzeInfoPage(AnalyzeEditor editor, FullResultProvider result,
+	public AnalyzeInfoPage(FormEditor editor, FullResultProvider result,
 			CalculationSetup setup) {
 		super(editor, "AnalyzeInfoPage", Messages.GeneralInformation);
 		this.setup = setup;
