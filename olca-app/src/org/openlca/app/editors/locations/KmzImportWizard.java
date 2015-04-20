@@ -38,7 +38,7 @@ public class KmzImportWizard extends Wizard implements IImportWizard {
 	}
 
 	private void runImport(IProgressMonitor monitor) {
-		monitor.beginTask("Importing KML data", IProgressMonitor.UNKNOWN);
+		monitor.beginTask("Importing XML data", IProgressMonitor.UNKNOWN);
 		File file = fileImportPage.getFiles()[0];
 		new GeoKmzImport(file, Database.get()).run();
 		monitor.done();
