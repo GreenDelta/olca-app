@@ -294,11 +294,10 @@ class LocationViewer extends AbstractTableViewer<Location> {
 				boolean overwrite) {
 			// ignore overwrite, always true in this case
 			location.setKmz(KmlUtil.toKmz(kml));
-			editor.locationChanged(location);
+			editor.locationKmlChanged(location);
 			mapEditor.close();
 			getViewer().refresh(location, true);
 		}
-
 	}
 
 }

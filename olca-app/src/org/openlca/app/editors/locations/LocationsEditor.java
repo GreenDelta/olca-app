@@ -1,5 +1,6 @@
 package org.openlca.app.editors.locations;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -13,10 +14,16 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.openlca.app.db.Database;
+import org.openlca.app.db.DatabaseFolder;
 import org.openlca.app.editors.IEditor;
+import org.openlca.app.editors.lcia_methods.ShapeFileUtils;
 import org.openlca.app.events.EventHandler;
+import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.database.LocationDao;
 import org.openlca.core.model.Location;
+import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
+import org.openlca.geo.parameter.ParameterRepository;
+import org.openlca.geo.parameter.ShapeFileRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +35,7 @@ public class LocationsEditor extends FormEditor implements IEditor {
 	private Set<Location> added = new HashSet<>();
 	private Set<Location> removed = new HashSet<>();
 	private Set<Location> changed = new HashSet<>();
+	private Set<Location> kmlChanged = new HashSet<>();
 	private LocationDao dao;
 	private boolean dirty;
 	private List<EventHandler> savedHandlers = new ArrayList<>();
@@ -50,7 +58,12 @@ public class LocationsEditor extends FormEditor implements IEditor {
 			added.remove(location);
 		else
 			removed.add(location);
+		if (changed.contains(location))
+			changed.remove(location);
+		if (kmlChanged.contains(location))
+			kmlChanged.remove(location);
 		locations.remove(location);
+		kmlChanged.add(location);
 		setDirty(true);
 	}
 
@@ -59,11 +72,13 @@ public class LocationsEditor extends FormEditor implements IEditor {
 			return;
 		if (removed.contains(location))
 			return;
-		// since we did not load kmz from the beginning we need to do now,
-		// otherwise kmz would be overwritten with null on save
-		if (location.getKmz() == null)
-			location.setKmz(dao.getKmz(location.getId()));
 		changed.add(location);
+		setDirty(true);
+	}
+
+	void locationKmlChanged(Location location) {
+		locationChanged(location);
+		kmlChanged.add(location);
 		setDirty(true);
 	}
 
@@ -97,8 +112,28 @@ public class LocationsEditor extends FormEditor implements IEditor {
 		for (Location removed : removed)
 			dao.delete(removed);
 		removed.clear();
-		for (Location changed : changed)
+		for (Location changed : changed) {
+			// since we did not load kmz from the beginning we need to do now,
+			// otherwise kmz would be overwritten with null on save
+			if (changed.getKmz() == null)
+				changed.setKmz(dao.getKmz(changed.getId()));
 			dao.update(changed);
+		}
+		File shapeFileDirectory = DatabaseFolder.getShapeFileDirectory(Database
+				.get());
+		if (!shapeFileDirectory.exists())
+			return;
+		ImpactMethodDao methodDao = new ImpactMethodDao(Database.get());
+		List<ImpactMethodDescriptor> descriptors = methodDao.getDescriptors();
+		for (ImpactMethodDescriptor method : descriptors) {
+			ShapeFileRepository repo = new ShapeFileRepository(
+					DatabaseFolder.getShapeFileLocation(Database.get(),
+							method.getRefId()));
+			ParameterRepository pRepo = new ParameterRepository(repo);
+			for (String shapeFile : ShapeFileUtils.getShapeFiles(method))
+				for (Location kmlChanged : kmlChanged)
+					pRepo.remove(kmlChanged.getId(), shapeFile);
+		}
 		changed.clear();
 		updateModel();
 		for (EventHandler handler : savedHandlers)
