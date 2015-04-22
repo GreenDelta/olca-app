@@ -28,7 +28,7 @@ public class RcpWorkbenchAdvisor extends WorkbenchAdvisor {
 	@Override
 	public void initialize(final IWorkbenchConfigurer configurer) {
 		super.initialize(configurer);
-		configurer.setSaveAndRestore(true);
+		configurer.setSaveAndRestore(false);
 		if (LoggerPreference.getShowConsole()) {
 			Console.show();
 		}
