@@ -23,12 +23,10 @@ import org.openlca.app.devtools.js.JavaScriptEditor;
 import org.openlca.app.devtools.python.PythonEditor;
 import org.openlca.app.devtools.sql.SqlEditor;
 import org.openlca.app.editors.StartPage;
-import org.openlca.app.editors.parameters.GlobalParameterEditor;
 import org.openlca.app.rcp.browser.MozillaConfigView;
-import org.openlca.app.rcp.plugins.PluginManagerDialog;
+import org.openlca.app.rcp.plugins.PluginManager;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Desktop;
-import org.openlca.app.util.UI;
 
 public class RcpActionBarAdvisor extends ActionBarAdvisor {
 
@@ -73,32 +71,28 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		HelpAction helpAction = new HelpAction();
 		helpMenu.add(helpAction);
 		helpMenu.add(new Separator());
-		// Plugin manager can be shown if version check is implemented correctly
-		// helpMenu.add(new PluginAction());
 		helpMenu.add(aboutAction);
 		menuBar.add(helpMenu);
 	}
 
 	private void fillFileMenu(IMenuManager menuBar) {
-		MenuManager menu = new MenuManager(Messages.File,
+		MenuManager fileMenu = new MenuManager(Messages.File,
 				IWorkbenchActionConstants.M_FILE);
-		menu.add(saveAction);
-		menu.add(saveAsAction);
-		menu.add(saveAllAction);
-		menu.add(new Separator());
-		menu.add(closeAction);
-		menu.add(closeAllAction);
-		menu.add(new Separator());
-		menu.add(preferencesAction);
-		menu.add(Actions.create(Messages.GlobalParameters,
-				ImageType.FORMULA_ICON.getDescriptor(),
-				GlobalParameterEditor::open));
-		menu.add(new Separator());
-		menu.add(importAction);
-		menu.add(exportAction);
-		menu.add(new Separator());
-		menu.add(exitAction);
-		menuBar.add(menu);
+		fileMenu.add(saveAction);
+		fileMenu.add(saveAsAction);
+		fileMenu.add(saveAllAction);
+		fileMenu.add(new Separator());
+		fileMenu.add(closeAction);
+		fileMenu.add(closeAllAction);
+		fileMenu.add(new Separator());
+		fileMenu.add(preferencesAction);
+		fileMenu.add(new OpenPluginManagerAction());
+		fileMenu.add(new Separator());
+		fileMenu.add(importAction);
+		fileMenu.add(exportAction);
+		fileMenu.add(new Separator());
+		fileMenu.add(exitAction);
+		menuBar.add(fileMenu);
 	}
 
 	private void fillWindowMenu(IMenuManager menuBar) {
@@ -121,15 +115,13 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		windowMenu.add(new Separator());
 		MenuManager devMenu = new MenuManager(Messages.DeveloperTools);
 		windowMenu.add(devMenu);
-		devMenu.add(Actions.create("SQL",
-				ImageType.SQL_ICON.getDescriptor(),
+		devMenu.add(Actions.create("SQL", ImageType.SQL_ICON.getDescriptor(),
 				SqlEditor::open));
 		devMenu.add(Actions.create("JavaScript",
 				ImageType.JAVASCRIPT_ICON.getDescriptor(),
 				JavaScriptEditor::open));
 		devMenu.add(Actions.create("Python",
-				ImageType.PYTHON_ICON.getDescriptor(),
-				PythonEditor::open));
+				ImageType.PYTHON_ICON.getDescriptor(), PythonEditor::open));
 		windowMenu.add(new Separator());
 	}
 
@@ -161,21 +153,6 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		}
 	}
 
-	private class PluginAction extends Action {
-		public PluginAction() {
-			setText("Plugins");
-			setImageDescriptor(ImageType.LOGO_16_32.getDescriptor());
-		}
-
-		@Override
-		public void run() {
-			PluginManagerDialog dialog = new PluginManagerDialog(UI.shell());
-			dialog.create();
-			dialog.getShell().setSize(500, 600);
-			dialog.open();
-		}
-	}
-
 	private class HomeAction extends Action {
 		public HomeAction() {
 			setImageDescriptor(ImageType.HOME_ICON.getDescriptor());
@@ -188,4 +165,15 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		}
 	}
 
+	private class OpenPluginManagerAction extends Action {
+		public OpenPluginManagerAction() {
+			setText("Manage plugins");
+			setToolTipText("Opens the openLCA Plugin Manager");
+		}
+
+		@Override
+		public void run() {
+			new PluginManager().open();
+		}
+	}
 }

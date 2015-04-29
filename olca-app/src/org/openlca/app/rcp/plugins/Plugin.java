@@ -1,45 +1,20 @@
 package org.openlca.app.rcp.plugins;
 
-import java.util.ArrayList;
-import java.util.List;
+class Plugin {
 
-public class Plugin {
-
+	// <json>
 	private String symbolicName;
-	private String downloadUrl;
-	private String image;
+	private String displayName;
+	private String logo;
 	private String version;
-	private String installedVersion;
-	private String minOpenLcaVersion;
-	private String name;
 	private String description;
-	private boolean installable;
+	// </json>
 
-	public String getImage() {
-		return image;
-	}
-
-	public void setImage(String image) {
-		this.image = image;
-	}
-
-	public void setInstallable(boolean installable) {
-		this.installable = installable;
-	}
-
-	public boolean isInstallable() {
-		return installable;
-	}
-
-	private List<Dependency> dependencies = new ArrayList<>();
-
-	public List<Dependency> getDependencies() {
-		return dependencies;
-	}
-
-	public void setDependencies(List<Dependency> dependencies) {
-		this.dependencies = dependencies;
-	}
+	private boolean restartNecessary;
+	private boolean installed = false;
+	private boolean updated = false;
+	private boolean updateable = false;
+	private String currentVersion;
 
 	public String getSymbolicName() {
 		return symbolicName;
@@ -49,12 +24,20 @@ public class Plugin {
 		this.symbolicName = symbolicName;
 	}
 
-	public String getDownloadUrl() {
-		return downloadUrl;
+	public String getDisplayName() {
+		return displayName;
 	}
 
-	public void setDownloadUrl(String downloadUrl) {
-		this.downloadUrl = downloadUrl;
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+
+	public String getLogo() {
+		return logo;
+	}
+
+	public void setLogo(String logo) {
+		this.logo = logo;
 	}
 
 	public String getVersion() {
@@ -65,30 +48,6 @@ public class Plugin {
 		this.version = version;
 	}
 
-	public String getInstalledVersion() {
-		return installedVersion;
-	}
-
-	public void setInstalledVersion(String installedVersion) {
-		this.installedVersion = installedVersion;
-	}
-
-	public String getMinOpenLcaVersion() {
-		return minOpenLcaVersion;
-	}
-
-	public void setMinOpenLcaVersion(String minOpenLcaVersion) {
-		this.minOpenLcaVersion = minOpenLcaVersion;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	public String getDescription() {
 		return description;
 	}
@@ -97,10 +56,57 @@ public class Plugin {
 		this.description = description;
 	}
 
+	public String getFileName() {
+		return getSymbolicName() + "_" + getVersion() + ".jar";
+	}
+
+	public boolean isRestartNecessary() {
+		return restartNecessary;
+	}
+
+	public void setRestartNecessary(boolean restartNecessary) {
+		this.restartNecessary = restartNecessary;
+	}
+
+	public boolean isInstalled() {
+		return installed;
+	}
+
+	public void setInstalled(boolean installed) {
+		this.installed = installed;
+	}
+
+	public boolean isUpdated() {
+		return updated;
+	}
+
+	public void setUpdated(boolean updated) {
+		this.updated = updated;
+	}
+
+	public boolean isUpdateable() {
+		return updateable;
+	}
+
+	public void setUpdateable(boolean updateable) {
+		this.updateable = updateable;
+	}
+
+	public String getCurrentVersion() {
+		return currentVersion;
+	}
+
+	public void setCurrentVersion(String currentVersion) {
+		this.currentVersion = currentVersion;
+	}
+
+	public String getFullDisplayName() {
+		return getDisplayName() + " " + getVersion();
+	}
+
 	@Override
 	public String toString() {
-		return getSymbolicName() + ":(inst:" + getInstalledVersion()
-				+ "/avail:" + getVersion() + ")";
+		return getSymbolicName() + " (" + getVersion() + ")";
 	}
 
 	@Override
@@ -109,9 +115,13 @@ public class Plugin {
 			return false;
 		Plugin plugin = (Plugin) obj;
 		if (getSymbolicName().equals(plugin.getSymbolicName()))
-			if (getVersion() == null && plugin.getVersion() == null
-					|| getVersion().equals(plugin))
-				return true;
+			if (getVersion() == null)
+				if (plugin.getVersion() == null)
+					return true;
+				else
+					return false;
+			else
+				return getVersion().equals(plugin);
 		return false;
 	}
 }

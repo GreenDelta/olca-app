@@ -1,0 +1,35 @@
+.plugin-container(data-plugin=symbolicName)
+	.left
+		if logo
+			img(src='data:image/png;base64,#{logo}').logo
+		else
+			.logo.default-logo
+	.center
+		h3 #{displayName}
+			//- Avoid UI glitches when icons appear/disappear 
+			//- Therefore set color to background color if 'hidden'
+			span.glyphicon.glyphicon-ok(class=installed?'glyphicon-green':'glyphicon-white')
+		div #{description}
+	.right
+		if restartNecessary 
+			if installed && !updated
+				.status-info Plugin will be active after next restart
+				button.btn.btn-default(disabled=true) Installed #{version}
+			else if updated
+				.status-info Plugin will be updated after next restart
+				button.btn.btn-default(disabled=true) Updated to #{version}
+			else
+				.status-info Plugin will be removed after next restart
+				button.btn.btn-default(disabled=true) Uninstalled #{currentVersion}
+		else
+			if !installed
+				if online
+					button.btn.btn-default.btn-install Install #{version}
+				else
+					.status-info File offline (Please check your internet connection)
+					button.btn.btn-default.btn-install(disabled=true) Install #{version}				
+			if installed && updateable
+				button.btn.btn-default.btn-update Update to #{version}
+			if installed
+				button.btn.btn-default.btn-uninstall(class=updateable?'updateable':'') Uninstall #{currentVersion}			
+.clear	
