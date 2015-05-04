@@ -117,9 +117,10 @@ public class ParameterSection {
 	private void bindActions(Section section) {
 		Action addAction = Actions.onAdd(() -> onAdd());
 		Action removeAction = Actions.onRemove(() -> onRemove());
-		Action clipboard = TableClipboard.onCopy(viewer);
+		Action copy = TableClipboard.onCopy(viewer);
+		Action paste = TableClipboard.onPaste(viewer, this::onPaste);
 		Actions.bind(section, addAction, removeAction);
-		Actions.bind(viewer, addAction, removeAction, clipboard);
+		Actions.bind(viewer, addAction, removeAction, copy, paste);
 		Tables.onDeletePressed(viewer, (e) -> onRemove());
 	}
 
@@ -183,6 +184,21 @@ public class ParameterSection {
 		support.evaluate();
 	}
 
+	private void onPaste(String text) {
+		if (supplier == null)
+			return;
+		List<Parameter> params = forInputParameters ?
+				Clipboard.readInputParams(text)
+				: Clipboard.readCalculatedParams(text);
+		for (Parameter param : params) {
+			param.setScope(scope);
+			supplier.get().add(param);
+		}
+		setInput();
+		editor.setDirty(true);
+		support.evaluate();
+	}
+
 	private class ParameterLabelProvider extends LabelProvider implements
 			ITableLabelProvider {
 		@Override
@@ -192,7 +208,7 @@ public class ParameterSection {
 			Parameter parameter = (Parameter) element;
 			if (parameter.getExternalSource() != null)
 				return ImageType.LCIA_ICON.get(); // currently the only external
-													// sources are shape files
+			// sources are shape files
 			else
 				return null;
 		}
