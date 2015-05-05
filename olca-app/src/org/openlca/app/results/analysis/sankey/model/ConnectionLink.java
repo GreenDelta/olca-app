@@ -1,15 +1,10 @@
-package org.openlca.app.results.analysis.sankey;
+package org.openlca.app.results.analysis.sankey.model;
 
 import java.util.Objects;
 
 import org.eclipse.draw2d.IFigure;
 import org.openlca.core.model.ProcessLink;
 
-/**
- * 
- * Internal model for a link between two exchanges representing a process link
- * in the graphical editor
- */
 public class ConnectionLink {
 
 	public static final int MAXIMIM_WIDTH = 45;

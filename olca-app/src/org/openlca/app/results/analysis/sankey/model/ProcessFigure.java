@@ -1,13 +1,4 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
-package org.openlca.app.results.analysis.sankey;
+package org.openlca.app.results.analysis.sankey.model;
 
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Graphics;
@@ -23,14 +14,12 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 import org.openlca.app.FaviColor;
 import org.openlca.app.Messages;
+import org.openlca.app.results.analysis.sankey.ProcessMouseClick;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.util.Strings;
 
-/**
- * The figure of a process in the Sankey diagram.
- */
 public class ProcessFigure extends Figure {
 
 	public static final int HEIGHT = 120;

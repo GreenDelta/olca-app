@@ -1,14 +1,4 @@
-/*******************************************************************************
- * Copyright (c) 2003, 2005 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *     IBM Corporation - initial API and implementation
- *******************************************************************************/
-package org.openlca.app.results.analysis.sankey;
+package org.openlca.app.results.analysis.sankey.layout;
 
 import java.util.List;
 
@@ -16,25 +6,16 @@ import org.eclipse.draw2d.AbstractLayout;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.openlca.app.results.analysis.sankey.model.ProcessEditPart;
+import org.openlca.app.results.analysis.sankey.model.ProcessNode;
+import org.openlca.app.results.analysis.sankey.model.ProductSystemEditPart;
+import org.openlca.app.results.analysis.sankey.model.ProductSystemNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Layout manager for placing the nodes in the graphical viewer
- * 
- * @author Sebastian Greve
- * 
- */
-class GraphLayoutManager extends AbstractLayout {
+public class GraphLayoutManager extends AbstractLayout {
 
-	/**
-	 * Horizontal spacing between process nodes
-	 */
 	public static int horizontalSpacing = 100;
-
-	/**
-	 * Vertical spacing between process nodes
-	 */
 	public static int verticalSpacing = 200;
 
 	private ProductSystemEditPart diagram;

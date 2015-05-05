@@ -1,4 +1,4 @@
-package org.openlca.app.results.analysis.sankey;
+package org.openlca.app.results.analysis.sankey.model;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -18,6 +18,8 @@ import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.swt.graphics.Font;
 import org.openlca.app.db.Cache;
+import org.openlca.app.results.analysis.sankey.layout.LayoutPolicy;
+import org.openlca.app.results.analysis.sankey.layout.XYLayoutCommand;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.slf4j.Logger;
@@ -25,9 +27,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Objects;
 
-/**
- * EditPart of a {@link ProductSystemNode}
- */
 public class ProcessEditPart extends AbstractGraphicalEditPart implements
 		NodeEditPart, PropertyChangeListener {
 

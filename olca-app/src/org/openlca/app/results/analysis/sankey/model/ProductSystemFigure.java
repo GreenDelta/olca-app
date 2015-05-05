@@ -1,4 +1,4 @@
-package org.openlca.app.results.analysis.sankey;
+package org.openlca.app.results.analysis.sankey.model;
 
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.Figure;
@@ -15,15 +15,13 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 import org.openlca.app.FaviColor;
 import org.openlca.app.Messages;
-import org.openlca.app.results.analysis.AnalysisEditorActions;
+import org.openlca.app.results.analysis.sankey.actions.SankeySelectionAction;
+import org.openlca.app.results.analysis.sankey.layout.GraphLayoutManager;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Numbers;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 
-/**
- * Figure of the product system.
- */
 public class ProductSystemFigure extends Figure {
 
 	private boolean firstTime = true;
@@ -43,9 +41,8 @@ public class ProductSystemFigure extends Figure {
 
 	@Override
 	public void paint(Graphics graphics) {
-		if (firstTime) {
+		if (firstTime)
 			firePropertyChange("firstTimeInitialized", null, "not null");
-		}
 		super.paint(graphics);
 		if (firstTime) {
 			((GraphLayoutManager) getLayoutManager()).layoutTree();
@@ -156,8 +153,7 @@ public class ProductSystemFigure extends Figure {
 			int x = arg0.getLocation().x;
 			int y = arg0.getLocation().y;
 			if (in(x, 350) && in(y, 120)) {
-				SankeySelectionAction psa = AnalysisEditorActions.getInstance()
-						.getPropertySelectionAction();
+				SankeySelectionAction psa = new SankeySelectionAction();
 				psa.setSankeyDiagram(productSystemNode.getEditor());
 				psa.run();
 			}

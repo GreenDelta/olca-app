@@ -1,19 +1,11 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
-package org.openlca.app.results.analysis.sankey;
+package org.openlca.app.results.analysis.sankey.model;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openlca.app.results.analysis.sankey.SankeyDiagram;
 import org.openlca.core.model.ProductSystem;
 
 public class ProductSystemNode extends Node implements PropertyChangeListener {
@@ -51,6 +43,7 @@ public class ProductSystemNode extends Node implements PropertyChangeListener {
 			node.dispose();
 		}
 		getChildrenArray().clear();
+		editor = null;
 	}
 
 	public double getCutoff() {

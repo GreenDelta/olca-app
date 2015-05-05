@@ -1,8 +1,9 @@
-package org.openlca.app.results.analysis.sankey;
+package org.openlca.app.results.analysis.sankey.model;
 
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.PolylineConnection;
 import org.eclipse.swt.SWT;
+import org.openlca.app.results.analysis.sankey.SankeyDiagram;
 
 /**
  * Figure for connection links.

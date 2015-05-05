@@ -1,13 +1,4 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
-package org.openlca.app.results.analysis.sankey;
+package org.openlca.app.results.analysis.sankey.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,15 +9,8 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
-/**
- * Internal model representing a process in the graphical viewer
- * 
- * @author Sebastian Greve
- * 
- */
 public class ProcessNode extends Node {
 
-	/** String for the PropertyChangeEvent 'CONNECTION' */
 	public static String CONNECTION = "Connection";
 
 	private ProcessFigure figure;
@@ -45,35 +29,35 @@ public class ProcessNode extends Node {
 		this.process = process;
 	}
 
-	double getTotalResult() {
+	public double getTotalResult() {
 		return totalResult;
 	}
 
-	void setTotalResult(double totalResult) {
+	public void setTotalResult(double totalResult) {
 		this.totalResult = totalResult;
 	}
 
-	double getSingleResult() {
+	public double getSingleResult() {
 		return singleResult;
 	}
 
-	void setSingleResult(double singleResult) {
+	public void setSingleResult(double singleResult) {
 		this.singleResult = singleResult;
 	}
 
-	double getSingleContribution() {
+	public double getSingleContribution() {
 		return singleContribution;
 	}
 
-	void setSingleContribution(double singleContribution) {
+	public void setSingleContribution(double singleContribution) {
 		this.singleContribution = singleContribution;
 	}
 
-	double getTotalContribution() {
+	public double getTotalContribution() {
 		return totalContribution;
 	}
 
-	void setTotalContribution(double totalContribution) {
+	public void setTotalContribution(double totalContribution) {
 		this.totalContribution = totalContribution;
 	}
 
@@ -174,27 +158,15 @@ public class ProcessNode extends Node {
 		listeners.firePropertyChange(Node.PROPERTY_LAYOUT, null, "not null");
 	}
 
-	/**
-	 * Compares to connection links (based on their nodes location)
-	 * 
-	 * @author Sebastian Greve
-	 */
 	private class LinkComparator implements Comparator<ConnectionLink> {
 
 		/**
 		 * Indicates if the links compared are source connections or target
 		 * connections
 		 */
-		private final boolean source;
+		private boolean source;
 
-		/**
-		 * Creates a new instance
-		 * 
-		 * @param source
-		 *            Indicates if the links compared are source connections or
-		 *            target connections
-		 */
-		private LinkComparator(final boolean source) {
+		private LinkComparator(boolean source) {
 			this.source = source;
 		}
 

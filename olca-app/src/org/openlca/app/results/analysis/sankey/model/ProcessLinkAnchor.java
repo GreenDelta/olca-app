@@ -1,4 +1,4 @@
-package org.openlca.app.results.analysis.sankey;
+package org.openlca.app.results.analysis.sankey.model;
 
 import java.util.List;
 

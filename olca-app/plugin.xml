@@ -136,8 +136,7 @@
             default="false"
             icon="icons/analyze.gif"
             id="editors.analyze"
-            name="Analyze viewer"
-            contributorClass="org.openlca.app.results.analysis.AnalysisEditorActions">
+            name="Analyze viewer">
       </editor>
       <editor
             class="org.openlca.app.results.simulation.SimulationEditor"

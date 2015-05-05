@@ -1,16 +1,10 @@
-package org.openlca.app.results.analysis.sankey;
+package org.openlca.app.results.analysis.sankey.layout;
 
 import org.eclipse.draw2d.BendpointConnectionRouter;
 import org.eclipse.draw2d.Connection;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.PointList;
 
-/**
- * Connection router for the tree layout of the sankey diagram
- * 
- * @author Sebastian Greve
- * 
- */
 public class TreeConnectionRouter extends BendpointConnectionRouter {
 
 	@Override

@@ -1,12 +1,12 @@
-package org.openlca.app.results.analysis.sankey;
+package org.openlca.app.results.analysis.sankey.layout;
 
 import org.eclipse.draw2d.BendpointConnectionRouter;
 import org.eclipse.draw2d.Connection;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.PointList;
+import org.openlca.app.results.analysis.sankey.model.ProcessFigure;
 
-/** Creates rectangular links. */
-class ConnectionRouterImp extends BendpointConnectionRouter {
+public class ConnectionRouterImp extends BendpointConnectionRouter {
 
 	@Override
 	public void route(Connection conn) {

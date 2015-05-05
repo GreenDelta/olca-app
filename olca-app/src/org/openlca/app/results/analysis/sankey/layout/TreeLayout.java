@@ -1,13 +1,4 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
-package org.openlca.app.results.analysis.sankey;
+package org.openlca.app.results.analysis.sankey.layout;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,16 +11,13 @@ import java.util.Set;
 
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.openlca.app.results.analysis.sankey.model.ProcessFigure;
+import org.openlca.app.results.analysis.sankey.model.ProcessNode;
+import org.openlca.app.results.analysis.sankey.model.ProductSystemNode;
 import org.openlca.core.matrix.ProcessLinkSearchMap;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
 
-/**
- * Lays out the process nodes as a tree
- * 
- * @author Sebastian Greve
- * 
- */
 public class TreeLayout {
 
 	/**
@@ -141,18 +129,6 @@ public class TreeLayout {
 		locations.clear();
 	}
 
-	/**
-	 * Applies the layout onto the node
-	 * 
-	 * @param node
-	 *            The node on which the layout should be applied
-	 * @param addition
-	 *            last x value
-	 * @param actualDepth
-	 *            last y value
-	 * @param maximalDepth
-	 *            maximum depth
-	 */
 	private void applyLayout(final Node node, int addition,
 			final int actualDepth, final int maximalDepth) {
 		int y = maximalDepth - actualDepth + 3;
@@ -185,13 +161,6 @@ public class TreeLayout {
 		}
 	}
 
-	/**
-	 * Builds the internal tree
-	 * 
-	 * @param productSystem
-	 *            The product system behind the node that should be layed out
-	 * @return A node as the root of the tree (reference process)
-	 */
 	private Node build(final ProductSystem productSystem) {
 		final Node node = new Node();
 		node.processKey = productSystem.getReferenceProcess().getId();
@@ -199,15 +168,6 @@ public class TreeLayout {
 		return node;
 	}
 
-	/**
-	 * Sub method of {@link #build(ProductSystem)}. Builds the next step of the
-	 * tree
-	 * 
-	 * @param productSystem
-	 *            The product system behind the node that should be layed out
-	 * @param nodes
-	 *            The next nodes
-	 */
 	private void build(final ProductSystem productSystem, final Node[] nodes) {
 		List<Node> children = new ArrayList<>();
 		for (Node node : nodes) {
@@ -261,34 +221,12 @@ public class TreeLayout {
 		}
 	}
 
-	/**
-	 * Internal model for building a tree from the process nodes
-	 * 
-	 * @author Sebastian Greve
-	 * 
-	 */
 	class Node {
 
-		/**
-		 * The providing processes as nodes
-		 */
 		List<Node> leftChildren = new ArrayList<>();
-
-		/**
-		 * The key of the process behind this node
-		 */
 		long processKey;
-
-		/**
-		 * The recieving processes as nodes
-		 */
 		List<Node> rightChildren = new ArrayList<>();
 
-		/**
-		 * Gets the depth of the node to the left
-		 * 
-		 * @return The depth of the node to the left
-		 */
 		int getLeftDepth() {
 			int depth = 0;
 			if (leftChildren.size() > 0) {
@@ -303,11 +241,6 @@ public class TreeLayout {
 			return depth;
 		}
 
-		/**
-		 * Gets the size of the node
-		 * 
-		 * @return The size of the node
-		 */
 		int getSize() {
 			int size = 0;
 			if (rightChildren.size() == 0 && leftChildren.size() == 0) {
@@ -323,9 +256,6 @@ public class TreeLayout {
 			return size;
 		}
 
-		/**
-		 * Sorts the left children by size
-		 */
 		void sort() {
 			final List<Node> temp = new ArrayList<>();
 			temp.addAll(leftChildren);

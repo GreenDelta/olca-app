@@ -1,9 +1,11 @@
-package org.openlca.app.results.analysis;
+package org.openlca.app.results.analysis.sankey.actions;
 
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.LightweightSystem;
 import org.eclipse.draw2d.Viewport;
 import org.eclipse.draw2d.parts.ScrollableThumbnail;
+import org.eclipse.gef.LayerConstants;
+import org.eclipse.gef.editparts.ScalableRootEditPart;
 import org.eclipse.gef.editparts.ZoomManager;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.window.ApplicationWindow;
@@ -27,10 +29,11 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.editors.graphical.action.ActionIds;
 import org.openlca.app.rcp.ImageType;
+import org.openlca.app.results.analysis.sankey.SankeyDiagram;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 
-public class OpenMiniatureViewAction extends Action {
+public class SankeyMiniViewAction extends Action {
 
 	private Control control;
 	private IFigure figure;
@@ -38,7 +41,7 @@ public class OpenMiniatureViewAction extends Action {
 	private MiniView window;
 	private ZoomManager zoomManager;
 
-	OpenMiniatureViewAction() {
+	public SankeyMiniViewAction() {
 		setId(ActionIds.OPEN_MINIATURE_VIEW);
 		setText(Messages.OpenMiniatureView);
 		setImageDescriptor(ImageType.MINI_VIEW_ICON.getDescriptor());
@@ -53,7 +56,22 @@ public class OpenMiniatureViewAction extends Action {
 			window.refresh();
 	}
 
-	public void update(Viewport port, IFigure figure, Control control,
+	public void setSankeyDiagram(SankeyDiagram diagram) {
+		if (diagram == null)
+			return;
+		update((Viewport) (
+				(ScalableRootEditPart) diagram.getGraphicalViewer()
+						.getRootEditPart()).getFigure(),
+				((ScalableRootEditPart) diagram
+						.getGraphicalViewer().getRootEditPart())
+						.getLayer(LayerConstants.PRINTABLE_LAYERS),
+				diagram.getGraphicalViewer().getControl(),
+				((ScalableRootEditPart) diagram
+						.getGraphicalViewer().getRootEditPart())
+						.getZoomManager());
+	}
+
+	private void update(Viewport port, IFigure figure, Control control,
 			ZoomManager zoomManager) {
 		this.port = port;
 		this.figure = figure;

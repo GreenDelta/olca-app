@@ -1,4 +1,4 @@
-package org.openlca.app.results.analysis;
+package org.openlca.app.results.analysis.sankey.actions;
 
 import java.io.File;
 
@@ -26,10 +26,10 @@ import org.slf4j.LoggerFactory;
 /**
  * Action for the image export of a Sankey diagram.
  */
-class SankeyImageAction extends Action {
+public class SankeyImageAction extends Action {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
-	public SankeyDiagram sankeyDiagram;
+	private SankeyDiagram sankeyDiagram;
 
 	@Override
 	public String getText() {
@@ -41,7 +41,7 @@ class SankeyImageAction extends Action {
 		return ImageType.SAVE_AS_IMAGE_ICON.getDescriptor();
 	}
 
-	public void setSankeyDiagram(final SankeyDiagram sankeyDiagram) {
+	public void setSankeyDiagram(SankeyDiagram sankeyDiagram) {
 		this.sankeyDiagram = sankeyDiagram;
 	}
 

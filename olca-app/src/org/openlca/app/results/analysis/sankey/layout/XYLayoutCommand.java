@@ -1,40 +1,16 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
-package org.openlca.app.results.analysis.sankey;
+package org.openlca.app.results.analysis.sankey.layout;
 
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.Messages;
+import org.openlca.app.results.analysis.sankey.model.ProcessFigure;
+import org.openlca.app.results.analysis.sankey.model.ProcessNode;
 
-/**
- * Sets new layout
- * 
- * @author Sebastian Greve
- * 
- */
-class XYLayoutCommand extends Command {
+public class XYLayoutCommand extends Command {
 
-	/**
-	 * The new layout constraints
-	 */
 	private Rectangle layout;
-
-	/**
-	 * The old layout constraints
-	 */
 	private Rectangle oldLayout;
-
-	/**
-	 * The selected {@link ProcessNode}
-	 */
 	private ProcessNode processNode;
 
 	@Override
@@ -47,15 +23,6 @@ class XYLayoutCommand extends Command {
 		return true;
 	}
 
-	/**
-	 * Applies the location to the grid
-	 * 
-	 * @param x
-	 *            The new x value
-	 * @param y
-	 *            The new y value
-	 * @return The new location on the grid
-	 */
 	private Point applyGrid(final int x, final int y) {
 		int newX = x;
 		int newY = y;
@@ -116,22 +83,10 @@ class XYLayoutCommand extends Command {
 		execute();
 	}
 
-	/**
-	 * Setter of {@link #layout}
-	 * 
-	 * @param rect
-	 *            - the new layout constraints
-	 */
 	public void setConstraint(final Rectangle rect) {
 		layout = rect;
 	}
 
-	/**
-	 * Setter of {@link #processNode}
-	 * 
-	 * @param processNode
-	 *            - the selected ProcessNode
-	 */
 	public void setProcessNode(final ProcessNode processNode) {
 		this.processNode = processNode;
 	}
