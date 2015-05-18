@@ -12,6 +12,7 @@ import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
+import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.jsonld.ZipStore;
 import org.openlca.jsonld.input.JsonImport;
@@ -70,6 +71,7 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 			monitor.beginTask(Messages.Import, IProgressMonitor.UNKNOWN);
 			try (ZipStore store = ZipStore.open(zip)) {
 				JsonImport importer = new JsonImport(store, Database.get());
+				importer.setUpdateExisting(FeatureFlag.JSONLD_UPDATES.isEnabled());
 				importer.run();
 			} catch (Exception e) {
 				throw new InvocationTargetException(e);
