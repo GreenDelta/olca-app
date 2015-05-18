@@ -16,6 +16,7 @@ public class SankeyMenu {
 		SankeyImageAction imageAction = new SankeyImageAction();
 		imageAction.setSankeyDiagram(diagram);
 		manager.add(imageAction);
+		manager.add(new SankeyMiniViewAction(diagram));
 		// ZoomManager zoom = ((ScalableRootEditPart)
 		// diagram.getGraphicalViewer()
 		// .getRootEditPart()).getZoomManager();

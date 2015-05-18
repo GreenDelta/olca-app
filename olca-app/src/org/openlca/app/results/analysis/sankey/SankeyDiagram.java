@@ -41,8 +41,6 @@ import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
-import org.openlca.core.model.descriptors.NwSetDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.FullResultProvider;
 
@@ -57,8 +55,6 @@ public class SankeyDiagram extends GraphicalEditor implements
 	private Map<ProcessLink, ConnectionLink> createdLinks = new HashMap<>();
 	private Map<Long, ProcessNode> createdProcesses = new HashMap<>();
 	private ProductSystemNode systemNode;
-	private ImpactMethodDescriptor method;
-	private NwSetDescriptor nwSet;
 	private ProductSystem productSystem;
 	private FullResultProvider result;
 
@@ -71,11 +67,8 @@ public class SankeyDiagram extends GraphicalEditor implements
 		linkSearchMap = new ProcessLinkSearchMap(
 				productSystem.getProcessLinks());
 		sankeyResult = new SankeyResult(productSystem, result);
-		method = setUp.getImpactMethod();
-		nwSet = setUp.getNwSet();
-		if (productSystem != null) {
+		if (productSystem != null) 
 			setPartName(productSystem.getName());
-		}
 	}
 
 	public FullResultProvider getResult() {

@@ -4,6 +4,7 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.LightweightSystem;
 import org.eclipse.draw2d.Viewport;
 import org.eclipse.draw2d.parts.ScrollableThumbnail;
+import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.LayerConstants;
 import org.eclipse.gef.editparts.ScalableRootEditPart;
 import org.eclipse.gef.editparts.ZoomManager;
@@ -11,8 +12,6 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -35,120 +34,91 @@ import org.openlca.app.util.UI;
 
 public class SankeyMiniViewAction extends Action {
 
-	private Control control;
-	private IFigure figure;
-	private Viewport port;
-	private MiniView window;
-	private ZoomManager zoomManager;
+	private SankeyDiagram diagram;
 
-	public SankeyMiniViewAction() {
+	public SankeyMiniViewAction(SankeyDiagram diagram) {
 		setId(ActionIds.OPEN_MINIATURE_VIEW);
 		setText(Messages.OpenMiniatureView);
 		setImageDescriptor(ImageType.MINI_VIEW_ICON.getDescriptor());
+		this.diagram = diagram;
 	}
 
 	@Override
 	public void run() {
-		if (window == null) {
-			window = new MiniView(UI.shell());
-			window.open();
-		} else
-			window.refresh();
-	}
-
-	public void setSankeyDiagram(SankeyDiagram diagram) {
-		if (diagram == null)
-			return;
-		update((Viewport) (
-				(ScalableRootEditPart) diagram.getGraphicalViewer()
-						.getRootEditPart()).getFigure(),
-				((ScalableRootEditPart) diagram
-						.getGraphicalViewer().getRootEditPart())
-						.getLayer(LayerConstants.PRINTABLE_LAYERS),
-				diagram.getGraphicalViewer().getControl(),
-				((ScalableRootEditPart) diagram
-						.getGraphicalViewer().getRootEditPart())
-						.getZoomManager());
-	}
-
-	private void update(Viewport port, IFigure figure, Control control,
-			ZoomManager zoomManager) {
-		this.port = port;
-		this.figure = figure;
-		this.control = control;
-		this.zoomManager = zoomManager;
-		if (window != null)
-			window.refresh();
+		MiniView view = new MiniView(UI.shell(), diagram);
+		view.open();
 	}
 
 	private class MiniView extends ApplicationWindow {
 
-		private DisposeListener disposeListener;
-		private LightweightSystem lws;
-		private ScrollableThumbnail thumbnail;
+		private boolean closed = false;
 
-		public MiniView(Shell parentShell) {
-			super(parentShell);
-		}
+		private GraphicalViewer viewer;
+		private ScalableRootEditPart part;
 
-		private void refresh() {
-			thumbnail = new ScrollableThumbnail(port);
-			thumbnail.setSource(figure);
-			lws.setContents(thumbnail);
+		public MiniView(Shell shell, SankeyDiagram diagram) {
+			super(shell);
+			viewer = diagram.getGraphicalViewer();
+			part = (ScalableRootEditPart) viewer.getRootEditPart();
 		}
 
 		@Override
-		protected Control createContents(final Composite parent) {
+		protected Control createContents(Composite parent) {
+			Composite composite = createForm(parent);
+			createScale(composite);
+			Canvas canvas = new Canvas(composite, SWT.BORDER);
+			canvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+			LightweightSystem lws = new LightweightSystem(canvas);
+			ScrollableThumbnail thumbnail = createThumbnail();
+			lws.setContents(thumbnail);
+			viewer.getControl().addDisposeListener((e) -> {
+				if (!closed)
+					close();
+			});
+			return super.createContents(parent);
+		}
+
+		private ScrollableThumbnail createThumbnail() {
+			Viewport port = (Viewport) part.getFigure();
+			IFigure figure = part.getLayer(LayerConstants.PRINTABLE_LAYERS);
+			ScrollableThumbnail thumbnail = new ScrollableThumbnail(port);
+			thumbnail.setSource(figure);
+			return thumbnail;
+		}
+
+		private Composite createForm(Composite parent) {
 			FormToolkit toolkit = new FormToolkit(Display.getCurrent());
-			ScrolledForm scrolledForm = toolkit.createScrolledForm(parent);
-			Composite body = scrolledForm.getBody();
+			ScrolledForm form = toolkit.createScrolledForm(parent);
+			Composite body = form.getBody();
 			body.setLayout(new FillLayout());
 			toolkit.paintBordersFor(body);
-
-			SashForm sashForm = new SashForm(body, SWT.VERTICAL);
-			toolkit.adapt(sashForm, true, true);
-
-			Section categorySection = toolkit
-					.createSection(sashForm, ExpandableComposite.NO_TITLE
-							| ExpandableComposite.EXPANDED);
-			categorySection.setText("");
-			Composite composite = toolkit.createComposite(categorySection,
-					SWT.NONE);
+			SashForm sash = new SashForm(body, SWT.VERTICAL);
+			toolkit.adapt(sash, true, true);
+			Section section = toolkit
+					.createSection(sash,
+							ExpandableComposite.NO_TITLE
+									| ExpandableComposite.EXPANDED);
+			section.setText("");
+			Composite composite = toolkit.createComposite(section, SWT.NONE);
 			composite.setLayout(new GridLayout());
-			categorySection.setClient(composite);
+			section.setClient(composite);
 			toolkit.paintBordersFor(composite);
-			final Scale scale = new Scale(composite, SWT.NONE);
+			return composite;
+		}
+
+		private void createScale(Composite composite) {
+			Scale scale = new Scale(composite, SWT.NONE);
 			scale.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-			final double[] values = new double[] { 0.25, 0.5, 0.75, 1.0, 1.5,
+			double[] values = new double[] { 0.25, 0.5, 0.75, 1.0, 1.5,
 					2.0, 2.5, 3.0, 4.0, 5.0, 10.0, 20.0 };
 			scale.setIncrement(9);
 			scale.setMinimum(0);
 			scale.setMaximum(99);
 			Controls.onSelect(scale, (e) -> {
-				zoomManager.setZoom(values[scale.getSelection() / 9]);
+				ZoomManager zoom = part.getZoomManager();
+				zoom.setZoom(values[scale.getSelection() / 9]);
 			});
 			scale.setSelection(33);
-			Canvas canvas = new Canvas(composite, SWT.BORDER);
-			canvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-			lws = new LightweightSystem(canvas);
-			thumbnail = new ScrollableThumbnail(port);
-			thumbnail.setSource(figure);
-			lws.setContents(thumbnail);
-			disposeListener = new DisposeListener() {
-
-				@Override
-				public void widgetDisposed(final DisposeEvent e) {
-					if (thumbnail != null) {
-						thumbnail.deactivate();
-						thumbnail = null;
-					}
-					if (control != null && !control.isDisposed())
-						control.removeDisposeListener(disposeListener);
-					close();
-				}
-			};
-			control.addDisposeListener(disposeListener);
-			return super.createContents(parent);
 		}
 
 		@Override
@@ -158,10 +128,8 @@ public class SankeyMiniViewAction extends Action {
 
 		@Override
 		public boolean close() {
-			window = null;
+			closed = true;
 			return super.close();
 		}
-
 	}
-
 }
