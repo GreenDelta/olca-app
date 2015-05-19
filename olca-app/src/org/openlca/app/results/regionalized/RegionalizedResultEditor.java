@@ -29,9 +29,9 @@ public class RegionalizedResultEditor extends FormEditor {
 		super.init(site, editorInput);
 		try {
 			ResultEditorInput input = (ResultEditorInput) editorInput;
-			setup = Cache.getAppCache().get(input.getSetupKey(),
+			setup = Cache.getAppCache().remove(input.getSetupKey(),
 					CalculationSetup.class);
-			result = Cache.getAppCache().get(input.getResultKey(),
+			result = Cache.getAppCache().remove(input.getResultKey(),
 					RegionalizedResult.class);
 		} catch (Exception e) {
 			log.error("failed to load regionalized result", e);
