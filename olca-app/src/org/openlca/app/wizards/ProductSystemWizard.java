@@ -8,8 +8,9 @@ import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
+import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.core.database.BaseDao;
-import org.openlca.core.database.IProductSystemBuilder;
+import org.openlca.core.matrix.ProductSystemBuilder;
 import org.openlca.core.matrix.cache.MatrixCache;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
@@ -53,6 +54,8 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 			}
 			boolean preferSystems = page.useSystemProcesses();
 			Runner runner = new Runner(system, preferSystems);
+			if (FeatureFlag.PRODUCT_SYSTEM_CUTOFF.isEnabled())
+				runner.setCutoff(page.getCutoff());
 			getContainer().run(true, true, runner);
 			system = runner.system;
 			Cache.registerNew(Descriptors.toDescriptor(system));
@@ -87,13 +90,10 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 			try {
 				monitor.beginTask(Messages.CreatingProductSystem,
 						IProgressMonitor.UNKNOWN);
-				IProductSystemBuilder builder = null;
-				if (cutoff == null)
-					builder = IProductSystemBuilder.Factory.create(cache,
-							preferSystemProcesses);
-				else
-					builder = IProductSystemBuilder.Factory.create(cache,
-							preferSystemProcesses, cutoff);
+				ProductSystemBuilder builder = new ProductSystemBuilder(cache,
+						preferSystemProcesses);
+				if (cutoff != null)
+					builder.setCutoff(cutoff);
 				system = builder.autoComplete(system);
 				monitor.done();
 			} catch (Exception e) {

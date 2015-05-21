@@ -13,8 +13,8 @@ import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
 import org.openlca.app.editors.graphical.layout.NodeLayoutStore;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.util.UI;
-import org.openlca.core.database.IProductSystemBuilder;
 import org.openlca.core.matrix.LongPair;
+import org.openlca.core.matrix.ProductSystemBuilder;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.ProductSystem;
 import org.slf4j.Logger;
@@ -74,9 +74,9 @@ class BuildSupplyChainAction extends Action implements IBuildAction {
 				throws InvocationTargetException, InterruptedException {
 			monitor.beginTask(Messages.CreatingProductSystem,
 					IProgressMonitor.UNKNOWN);
-			IProductSystemBuilder builder = IProductSystemBuilder.Factory
-					.create(Cache.getMatrixCache(),
-							preferredType == ProcessType.LCI_RESULT);
+			ProductSystemBuilder builder = new ProductSystemBuilder(
+					Cache.getMatrixCache(), 
+					preferredType == ProcessType.LCI_RESULT);
 			for (ProcessNode node : nodes) {
 				LongPair idPair = new LongPair(node.getProcess().getId(), node
 						.getProcess().getQuantitativeReference());
