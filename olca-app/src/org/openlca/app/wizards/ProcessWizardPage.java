@@ -71,7 +71,7 @@ class ProcessWizardPage extends AbstractWizardPage<Process> {
 	protected void createContents(Composite container) {
 		new Label(container, SWT.NONE);
 		createRefFlowCheck(container);
-		filterText = UI.formText(container, Messages.Filter);
+		filterText = UI.formText(container, Messages.QuantitativeReference);
 		createLabelStack(container);
 		contentStack = new Composite(container, SWT.NONE);
 		UI.gridData(contentStack, true, true).heightHint = 200;
@@ -113,7 +113,6 @@ class ProcessWizardPage extends AbstractWizardPage<Process> {
 				.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
 		labelStack.setLayout(new StackLayout());
 		selectFlowLabel = new Label(labelStack, SWT.NONE);
-		selectFlowLabel.setText(Messages.QuantitativeReference);
 		selectFlowPropertyLabel = new Label(labelStack, SWT.NONE);
 		selectFlowPropertyLabel.setText(Messages.ReferenceFlowProperty);
 	}

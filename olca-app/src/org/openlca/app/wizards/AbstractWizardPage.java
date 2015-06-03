@@ -1,8 +1,6 @@
 package org.openlca.app.wizards;
 
 import org.eclipse.jface.wizard.WizardPage;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.openlca.app.Messages;
@@ -12,12 +10,17 @@ import org.openlca.core.model.RootEntity;
 public abstract class AbstractWizardPage<T extends RootEntity> extends
 		WizardPage {
 
-	protected Text descriptionText;
-	private String EMPTY_NAME_ERROR = Messages.PleaseEnterAName;
+	private final String EMPTY_NAME_ERROR = Messages.PleaseEnterAName;
+	private Text descriptionText;
 	protected Text nameText;
+	private boolean withDescription = true;
 
 	protected AbstractWizardPage(String pageName) {
 		super(pageName);
+	}
+
+	public final void setWithDescription(boolean withDescription) {
+		this.withDescription = withDescription;
 	}
 
 	@Override
@@ -27,8 +30,9 @@ public abstract class AbstractWizardPage<T extends RootEntity> extends
 		setControl(container);
 		nameText = UIFactory.createTextWithLabel(container, Messages.Name,
 				false);
-		descriptionText = UIFactory.createTextWithLabel(container,
-				Messages.Description, true);
+		if (withDescription)
+			descriptionText = UIFactory.createTextWithLabel(container,
+					Messages.Description, true);
 		createContents(container);
 		initModifyListeners();
 	}
@@ -44,12 +48,7 @@ public abstract class AbstractWizardPage<T extends RootEntity> extends
 	}
 
 	protected void initModifyListeners() {
-		nameText.addModifyListener(new ModifyListener() {
-			@Override
-			public void modifyText(final ModifyEvent e) {
-				checkInput();
-			}
-		});
+		nameText.addModifyListener((e) -> checkInput());
 	}
 
 	protected void checkInput() {

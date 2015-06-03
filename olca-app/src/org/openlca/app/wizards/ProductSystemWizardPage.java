@@ -53,6 +53,7 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 		setMessage(Messages.CreatesANewProductSystem);
 		setImageDescriptor(ImageType.NEW_WIZ_PRODUCT_SYSTEM.getDescriptor());
 		setPageComplete(false);
+		setWithDescription(false);
 	}
 
 	public void setProcess(Process process) {
@@ -103,8 +104,8 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 
 	@Override
 	protected void createContents(Composite container) {
-		filterText = UI.formText(container, Messages.Filter);
-		UI.formLabel(container, Messages.ReferenceProcess);
+		filterText = UI.formText(container, Messages.ReferenceProcess);
+		UI.formLabel(container, "");
 		createProcessViewer(container);
 		createOptions(container);
 		if (refProcess != null) {
