@@ -39,7 +39,8 @@ public class KmzImportWizard extends Wizard implements IImportWizard {
 	}
 
 	private void runImport(IProgressMonitor monitor) {
-		monitor.beginTask("Importing XML (EcoSpold2 format) data", IProgressMonitor.UNKNOWN);
+		monitor.beginTask("Importing XML (EcoSpold2 format) data",
+				IProgressMonitor.UNKNOWN);
 		File file = fileImportPage.getFiles()[0];
 		boolean wasValidFile = new GeoKmzImport(file, Database.get()).run();
 		if (!wasValidFile)

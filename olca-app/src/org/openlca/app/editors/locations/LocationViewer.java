@@ -27,24 +27,22 @@ import org.openlca.app.util.Error;
 import org.openlca.app.util.Tables;
 import org.openlca.app.viewers.BaseLabelProvider;
 import org.openlca.app.viewers.table.AbstractTableViewer;
-import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.database.LocationDao;
 import org.openlca.core.database.usage.IUseSearch;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.Descriptors;
-import org.openlca.io.KeyGen;
 
 class LocationViewer extends AbstractTableViewer<Location> {
 
-	private static final String COLUMN_NAME = "Name";
-	private static final String COLUMN_CODE = "Code";
-	private static final String COLUMN_LATITUDE = "Latitude";
-	private static final String COLUMN_LONGITUDE = "Longitude";
-	private static final String COLUMN_REF_ID = "Reference Id";
-	private static final String COLUMN_KML = "KML";
-	private static final String[] COLUMNS = { COLUMN_NAME, COLUMN_CODE,
+	static final String COLUMN_NAME = "Name";
+	static final String COLUMN_CODE = "Code";
+	static final String COLUMN_LATITUDE = "Latitude";
+	static final String COLUMN_LONGITUDE = "Longitude";
+	static final String COLUMN_REF_ID = "Reference Id";
+	static final String COLUMN_KML = "KML";
+	static final String[] COLUMNS = { COLUMN_NAME, COLUMN_CODE,
 			COLUMN_LATITUDE, COLUMN_LONGITUDE, COLUMN_REF_ID, COLUMN_KML };
 	private static final int KML_COLUMN = 5;
 	private LocationsEditor editor;
@@ -57,10 +55,7 @@ class LocationViewer extends AbstractTableViewer<Location> {
 		GridData layoutData = (GridData) getViewer().getTable().getLayoutData();
 		layoutData.heightHint = heightHint;
 		this.editor = editor;
-		getModifySupport().bind(COLUMN_NAME, new NameModifier());
-		getModifySupport().bind(COLUMN_CODE, new CodeModifier());
-		getModifySupport().bind(COLUMN_LATITUDE, new LatitudeModifier());
-		getModifySupport().bind(COLUMN_LONGITUDE, new LongitudeModifier());
+		LocationViewerModifiers.register(getModifySupport(), editor);
 		getViewer().getTable().addListener(SWT.MouseDown, new KmlListener());
 		setInput(editor.getLocations());
 		Tables.bindColumnWidths(getViewer(), 0.3, 0.1, 0.1, 0.1, 0.2, 0.1, 0.1);
@@ -163,81 +158,6 @@ class LocationViewer extends AbstractTableViewer<Location> {
 		@Override
 		public Color getBackground(Object element, int columnIndex) {
 			return null;
-		}
-	}
-
-	private class NameModifier extends TextCellModifier<Location> {
-
-		@Override
-		protected String getText(Location element) {
-			return element.getName();
-		}
-
-		@Override
-		protected void setText(Location element, String text) {
-			if (text == null || text.isEmpty())
-				return;
-			element.setName(text);
-			editor.locationChanged(element);
-		}
-
-	}
-
-	private class CodeModifier extends TextCellModifier<Location> {
-
-		@Override
-		protected String getText(Location element) {
-			return element.getCode();
-		}
-
-		@Override
-		protected void setText(Location element, String text) {
-			if (text == null || text.isEmpty())
-				return;
-			element.setCode(text);
-			element.setRefId(KeyGen.get(text));
-			editor.locationChanged(element);
-		}
-
-	}
-
-	private class LatitudeModifier extends TextCellModifier<Location> {
-
-		@Override
-		protected String getText(Location element) {
-			return Double.toString(element.getLatitude());
-		}
-
-		@Override
-		protected void setText(Location element, String text) {
-			if (text == null || text.isEmpty())
-				return;
-			try {
-				element.setLatitude(Double.parseDouble(text));
-				editor.locationChanged(element);
-			} catch (NumberFormatException e) {
-				// ignore
-			}
-		}
-	}
-
-	private class LongitudeModifier extends TextCellModifier<Location> {
-
-		@Override
-		protected String getText(Location element) {
-			return Double.toString(element.getLongitude());
-		}
-
-		@Override
-		protected void setText(Location element, String text) {
-			if (text == null || text.isEmpty())
-				return;
-			try {
-				element.setLongitude(Double.parseDouble(text));
-				editor.locationChanged(element);
-			} catch (NumberFormatException e) {
-				// ignore
-			}
 		}
 	}
 
