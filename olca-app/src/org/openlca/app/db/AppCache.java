@@ -32,12 +32,7 @@ public class AppCache {
 		Object o = map.remove(key);
 		return castSave(o, type);
 	}
-
-	public <T> T get(String key, Class<T> type) {
-		Object o = map.get(key);
-		return castSave(o, type);
-	}
-
+	
 	private <T> T castSave(Object o, Class<T> type) {
 		if (type.isInstance(o))
 			return type.cast(o);

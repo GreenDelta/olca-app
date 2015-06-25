@@ -30,6 +30,10 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.swt.SWT;
 import org.openlca.app.App;
 import org.openlca.app.db.Cache;
+import org.openlca.app.results.analysis.sankey.actions.SankeyMenu;
+import org.openlca.app.results.analysis.sankey.model.ConnectionLink;
+import org.openlca.app.results.analysis.sankey.model.ProcessNode;
+import org.openlca.app.results.analysis.sankey.model.ProductSystemNode;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.matrix.ProcessLinkSearchMap;
@@ -37,8 +41,6 @@ import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
-import org.openlca.core.model.descriptors.NwSetDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.FullResultProvider;
 
@@ -53,8 +55,6 @@ public class SankeyDiagram extends GraphicalEditor implements
 	private Map<ProcessLink, ConnectionLink> createdLinks = new HashMap<>();
 	private Map<Long, ProcessNode> createdProcesses = new HashMap<>();
 	private ProductSystemNode systemNode;
-	private ImpactMethodDescriptor method;
-	private NwSetDescriptor nwSet;
 	private ProductSystem productSystem;
 	private FullResultProvider result;
 
@@ -67,11 +67,8 @@ public class SankeyDiagram extends GraphicalEditor implements
 		linkSearchMap = new ProcessLinkSearchMap(
 				productSystem.getProcessLinks());
 		sankeyResult = new SankeyResult(productSystem, result);
-		method = setUp.getImpactMethod();
-		nwSet = setUp.getNwSet();
-		if (productSystem != null) {
+		if (productSystem != null) 
 			setPartName(productSystem.getName());
-		}
 	}
 
 	public FullResultProvider getResult() {
@@ -149,18 +146,15 @@ public class SankeyDiagram extends GraphicalEditor implements
 		// configure viewer
 		super.configureGraphicalViewer();
 
-		MenuManager manager = new MenuManager();
-		SankeySelectionAction action = new SankeySelectionAction();
-		action.setSankeyDiagram(this);
-		manager.add(action);
-		getGraphicalViewer().setContextMenu(manager);
+		MenuManager menu = SankeyMenu.create(this);
+		getGraphicalViewer().setContextMenu(menu);
 
-		final GraphicalViewer viewer = getGraphicalViewer();
+		GraphicalViewer viewer = getGraphicalViewer();
 		viewer.setEditPartFactory(new SankeyEditPartFactory());
-		final ScalableRootEditPart rootEditPart = new ScalableRootEditPart();
+		ScalableRootEditPart rootEditPart = new ScalableRootEditPart();
 		viewer.setRootEditPart(rootEditPart);
 
-		final ZoomManager zoomManager = rootEditPart.getZoomManager();
+		ZoomManager zoomManager = rootEditPart.getZoomManager();
 
 		// append zoom actions to action registry
 		getActionRegistry().registerAction(new ZoomInAction(zoomManager));
@@ -173,7 +167,7 @@ public class SankeyDiagram extends GraphicalEditor implements
 		zoomManager.setZoomLevelContributions(zoomContributions);
 
 		// create key handler
-		final KeyHandler keyHandler = new KeyHandler();
+		KeyHandler keyHandler = new KeyHandler();
 		keyHandler.put(KeyStroke.getPressed('+', SWT.KEYPAD_ADD, 0),
 				getActionRegistry().getAction(GEFActionConstants.ZOOM_IN));
 		keyHandler.put(KeyStroke.getPressed('-', SWT.KEYPAD_SUBTRACT, 0),
@@ -193,17 +187,14 @@ public class SankeyDiagram extends GraphicalEditor implements
 
 			@Override
 			protected LayeredPane createPrintableLayers() {
-				final LayeredPane pane = new LayeredPane();
-
+				LayeredPane pane = new LayeredPane();
 				Layer layer = new ConnectionLayer();
 				layer.setPreferredSize(new Dimension(5, 5));
 				pane.add(layer, CONNECTION_LAYER);
-
 				layer = new Layer();
 				layer.setOpaque(false);
 				layer.setLayoutManager(new StackLayout());
 				pane.add(layer, PRIMARY_LAYER);
-
 				return pane;
 			}
 
@@ -258,6 +249,7 @@ public class SankeyDiagram extends GraphicalEditor implements
 	public void dispose() {
 		if (systemNode != null)
 			systemNode.dispose();
+		result = null;
 		super.dispose();
 	}
 
@@ -267,10 +259,6 @@ public class SankeyDiagram extends GraphicalEditor implements
 
 	public ProductSystemNode getModel() {
 		return systemNode;
-	}
-
-	public NwSetDescriptor getNwSet() {
-		return nwSet;
 	}
 
 	public double getProductSystemResult() {
@@ -300,26 +288,20 @@ public class SankeyDiagram extends GraphicalEditor implements
 		return super.getGraphicalViewer();
 	}
 
-	public void update(final Object selection, final double cutoff) {
+	public void update(Object selection, double cutoff) {
 		if (selection == null || cutoff < 0d || cutoff > 1d)
 			return;
-		App.run("Calculate sankey results", new Runnable() {
-			@Override
-			public void run() {
-				sankeyResult.calculate(selection);
-			}
-		}, new Runnable() {
-			@Override
-			public void run() {
-				systemNode = new ProductSystemNode(productSystem,
-						SankeyDiagram.this, selection, cutoff);
-				createdProcesses.clear();
-				createdLinks.clear();
-				updateModel(cutoff);
-				getGraphicalViewer().deselectAll();
-				getGraphicalViewer().setContents(systemNode);
-			}
-		});
+		App.run("Calculate sankey results",
+				() -> sankeyResult.calculate(selection),
+				() -> {
+					systemNode = new ProductSystemNode(productSystem,
+							SankeyDiagram.this, selection, cutoff);
+					createdProcesses.clear();
+					createdLinks.clear();
+					updateModel(cutoff);
+					getGraphicalViewer().deselectAll();
+					getGraphicalViewer().setContents(systemNode);
+				});
 	}
 
 }

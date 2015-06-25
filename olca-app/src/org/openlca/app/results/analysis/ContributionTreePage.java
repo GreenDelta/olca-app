@@ -85,7 +85,7 @@ public class ContributionTreePage extends FormPage {
 
 	private void createTree(FormToolkit toolkit, Composite treeContainer) {
 		tree = new TreeViewer(treeContainer, SWT.FULL_SELECTION
-				| SWT.SINGLE | SWT.BORDER);
+				| SWT.MULTI | SWT.BORDER);
 		tree.setAutoExpandLevel(2);
 		tree.getTree().setLinesVisible(false);
 		tree.getTree().setHeaderVisible(true);
@@ -100,10 +100,14 @@ public class ContributionTreePage extends FormPage {
 		UI.gridData(tree.getTree(), true, true);
 		toolkit.adapt(tree.getTree(), false, false);
 		toolkit.paintBordersFor(tree.getTree());
-		MenuManager menuManager = new MenuManager();
-		menuManager.add(new OpenEditorAction());
-		Menu menu = menuManager
-				.createContextMenu(tree.getControl());
+		createMenu();
+	}
+
+	private void createMenu() {
+		MenuManager manager = new MenuManager();
+		manager.add(new OpenEditorAction());
+		manager.add(TreeClipboard.onCopy(tree));
+		Menu menu = manager.createContextMenu(tree.getControl());
 		tree.getControl().setMenu(menu);
 	}
 

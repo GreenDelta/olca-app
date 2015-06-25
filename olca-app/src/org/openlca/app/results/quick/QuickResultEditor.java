@@ -36,9 +36,9 @@ public class QuickResultEditor extends FormEditor {
 		super.init(site, editorInput);
 		try {
 			ResultEditorInput input = (ResultEditorInput) editorInput;
-			setup = Cache.getAppCache().get(input.getSetupKey(),
+			setup = Cache.getAppCache().remove(input.getSetupKey(),
 					CalculationSetup.class);
-			ContributionResultProvider<?> result = Cache.getAppCache().get(
+			ContributionResultProvider<?> result = Cache.getAppCache().remove(
 					input.getResultKey(), ContributionResultProvider.class);
 			this.result = result;
 		} catch (Exception e) {

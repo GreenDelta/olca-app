@@ -7,10 +7,6 @@ import org.eclipse.ui.IMemento;
 import org.eclipse.ui.navigator.ICommonContentExtensionSite;
 import org.eclipse.ui.navigator.ICommonContentProvider;
 
-/**
- * A content provider that accepts instances of {@link INavigationElement} as
- * input elements. No conversion of these elements is done.
- */
 public class NavigationContentProvider implements ICommonContentProvider {
 
 	@Override
@@ -36,11 +32,10 @@ public class NavigationContentProvider implements ICommonContentProvider {
 
 	@Override
 	public Object getParent(Object element) {
-		Object object = null;
-		if (element instanceof INavigationElement) {
-			object = ((INavigationElement<?>) element).getParent();
-		}
-		return object;
+		if (element instanceof INavigationElement)
+			return ((INavigationElement<?>) element).getParent();
+		else
+			return null;
 	}
 
 	@Override

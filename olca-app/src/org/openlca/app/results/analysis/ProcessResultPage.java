@@ -384,7 +384,7 @@ public class ProcessResultPage extends FormPage {
 			if (total == 0)
 				return 0;
 			double val = result.getUpstreamFlowResult(process, flow).getValue();
-			double contribution = val / total;
+			double contribution = val / Math.abs(total);
 			if (contribution > 1)
 				return 1;
 			return contribution;
@@ -410,7 +410,7 @@ public class ProcessResultPage extends FormPage {
 				return 0;
 			double val = result.getUpstreamImpactResult(process, category)
 					.getValue();
-			double contribution = val / total;
+			double contribution = val / Math.abs(total);
 			if (contribution > 1)
 				return 1;
 			return contribution;

@@ -26,6 +26,7 @@ import org.openlca.app.devtools.sql.SqlEditor;
 import org.openlca.app.editors.StartPage;
 import org.openlca.app.editors.locations.LocationsEditor;
 import org.openlca.app.rcp.browser.MozillaConfigView;
+import org.openlca.app.rcp.plugins.PluginManager;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.DefaultInput;
 import org.openlca.app.util.Desktop;
@@ -40,8 +41,6 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	private IWorkbenchAction exitAction;
 	private IWorkbenchAction exportAction;
 	private IWorkbenchAction importAction;
-	private IWorkbenchAction newEditorAction;
-	private IWorkbenchAction newWindowAction;
 	private IWorkbenchAction preferencesAction;
 	private IWorkbenchAction saveAction;
 	private IWorkbenchAction saveAllAction;
@@ -95,6 +94,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		fileMenu.add(new Separator());
 		fileMenu.add(new EditLocationsAction());
 		fileMenu.add(preferencesAction);
+		fileMenu.add(new OpenPluginManagerAction());
 		fileMenu.add(new Separator());
 		fileMenu.add(importAction);
 		fileMenu.add(exportAction);
@@ -106,8 +106,6 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	private void fillWindowMenu(IMenuManager menuBar) {
 		MenuManager windowMenu = new MenuManager(Messages.Window,
 				IWorkbenchActionConstants.M_WINDOW);
-		windowMenu.add(newWindowAction);
-		windowMenu.add(newEditorAction);
 		MenuManager viewMenu = new MenuManager(Messages.Showviews);
 		viewMenu.add(showViews);
 		windowMenu.add(viewMenu);
@@ -125,15 +123,13 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		windowMenu.add(new Separator());
 		MenuManager devMenu = new MenuManager(Messages.DeveloperTools);
 		windowMenu.add(devMenu);
-		devMenu.add(Actions.create("SQL",
-				ImageType.SQL_ICON.getDescriptor(),
+		devMenu.add(Actions.create("SQL", ImageType.SQL_ICON.getDescriptor(),
 				SqlEditor::open));
 		devMenu.add(Actions.create("JavaScript",
 				ImageType.JAVASCRIPT_ICON.getDescriptor(),
 				JavaScriptEditor::open));
 		devMenu.add(Actions.create("Python",
-				ImageType.PYTHON_ICON.getDescriptor(),
-				PythonEditor::open));
+				ImageType.PYTHON_ICON.getDescriptor(), PythonEditor::open));
 		windowMenu.add(new Separator());
 	}
 
@@ -148,8 +144,6 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		importAction = ActionFactory.IMPORT.create(window);
 		exportAction = ActionFactory.EXPORT.create(window);
 		exitAction = ActionFactory.QUIT.create(window);
-		newWindowAction = ActionFactory.OPEN_NEW_WINDOW.create(window);
-		newEditorAction = ActionFactory.NEW_EDITOR.create(window);
 		showViews = ContributionItemFactory.VIEWS_SHORTLIST.create(window);
 		aboutAction = ActionFactory.ABOUT.create(window);
 	}
@@ -193,6 +187,18 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 			}
 			Editors.open(new DefaultInput(LocationsEditor.ID),
 					LocationsEditor.ID);
+		}
+	}
+
+	private class OpenPluginManagerAction extends Action {
+		public OpenPluginManagerAction() {
+			setText("Manage plugins");
+			setToolTipText("Opens the openLCA Plugin Manager");
+		}
+
+		@Override
+		public void run() {
+			new PluginManager().open();
 		}
 	}
 }

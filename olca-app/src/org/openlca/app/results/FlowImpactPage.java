@@ -180,7 +180,7 @@ public class FlowImpactPage extends FormPage {
 			if (!(element instanceof ContributionItem))
 				return false;
 			ContributionItem<?> item = (ContributionItem<?>) element;
-			if ((item.getShare() * 100) < cutOff)
+			if (Math.abs(item.getShare() * 100) < cutOff)
 				return false;
 			return true;
 		}

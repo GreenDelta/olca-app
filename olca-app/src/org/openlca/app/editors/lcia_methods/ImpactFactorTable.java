@@ -18,7 +18,6 @@ import org.openlca.app.Messages;
 import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.components.UncertaintyCellEditor;
 import org.openlca.app.db.Database;
-import org.openlca.app.editors.ParameterPageListener;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Error;
@@ -41,7 +40,7 @@ import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.io.CategoryPath;
 import org.openlca.util.Strings;
 
-class ImpactFactorTable implements ParameterPageListener {
+class ImpactFactorTable {
 
 	private final String FLOW = Messages.Flow;
 	private final String CATEGORY = Messages.Category;
@@ -58,12 +57,7 @@ class ImpactFactorTable implements ParameterPageListener {
 
 	public ImpactFactorTable(ImpactMethodEditor editor) {
 		this.editor = editor;
-		editor.getParameterSupport().addListener(this);
-	}
-
-	@Override
-	public void parameterChanged() {
-		viewer.refresh();
+		editor.getParameterSupport().afterEvaluation(() -> viewer.refresh());
 	}
 
 	public void render(Composite parent, Section section) {
@@ -150,7 +144,7 @@ class ImpactFactorTable implements ParameterPageListener {
 			category.getImpactFactors().add(factor);
 		}
 		viewer.setInput(category.getImpactFactors());
-		fireChange();
+		editor.setDirty(true);
 	}
 
 	private void onRemove() {
@@ -160,11 +154,6 @@ class ImpactFactorTable implements ParameterPageListener {
 		for (ImpactFactor factor : factors)
 			category.getImpactFactors().remove(factor);
 		viewer.setInput(category.getImpactFactors());
-		fireChange();
-	}
-
-	private void fireChange() {
-		editor.postEvent(editor.IMPACT_FACTOR_CHANGE, this);
 		editor.setDirty(true);
 	}
 
@@ -243,7 +232,7 @@ class ImpactFactorTable implements ParameterPageListener {
 					.getFlowProperty())) {
 				FlowPropertyFactor factor = element.getFlow().getFactor(item);
 				element.setFlowPropertyFactor(factor);
-				fireChange();
+				editor.setDirty(true);
 			}
 		}
 	}
@@ -273,7 +262,7 @@ class ImpactFactorTable implements ParameterPageListener {
 		protected void setItem(ImpactFactor element, Unit item) {
 			if (!Objects.equals(item, element.getUnit())) {
 				element.setUnit(item);
-				fireChange();
+				editor.setDirty(true);
 			}
 		}
 	}
@@ -296,13 +285,12 @@ class ImpactFactorTable implements ParameterPageListener {
 					return; // nothing changed
 				factor.setValue(value);
 				factor.setFormula(null);
-				fireChange();
+				editor.setDirty(true);
 			} catch (NumberFormatException e) {
 				try {
-					double val = editor.getParameterSupport().eval(text);
-					factor.setValue(val);
 					factor.setFormula(text);
-					fireChange();
+					editor.setDirty(true);
+					editor.getParameterSupport().evaluate();
 				} catch (Exception ex) {
 					Error.showBox(Messages.InvalidFormula, text
 							+ " " + Messages.IsInvalidFormula);

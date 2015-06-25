@@ -21,7 +21,7 @@ class NwSetViewer extends AbstractTableViewer<NwSet> {
 	private static final String NAME = Messages.NormalizationAndWeightingSet;
 	private static final String UNIT = Messages.ReferenceUnit;
 
-	private final ImpactMethodEditor editor;
+	private ImpactMethodEditor editor;
 
 	public NwSetViewer(Composite parent, ImpactMethodEditor editor) {
 		super(parent);
@@ -55,11 +55,12 @@ class NwSetViewer extends AbstractTableViewer<NwSet> {
 	@OnAdd
 	protected void onCreate() {
 		NwSet set = new NwSet();
-		set.setName("newSet");
+		set.setName("Enter a name");
 		set.setRefId(UUID.randomUUID().toString());
 		ImpactMethod method = editor.getModel();
 		method.getNwSets().add(set);
 		setInput(method.getNwSets());
+		select(set);
 		editor.setDirty(true);
 	}
 

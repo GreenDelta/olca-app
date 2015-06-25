@@ -27,7 +27,7 @@ public class ProjectResultEditor extends FormEditor {
 		super.init(site, editorInput);
 		try {
 			ProjectResultInput input = (ProjectResultInput) editorInput;
-			result = Cache.getAppCache().get(input.getResultKey(),
+			result = Cache.getAppCache().remove(input.getResultKey(),
 					ProjectResultProvider.class);
 			ProjectDao dao = new ProjectDao(Database.get());
 			project = dao.getForId(input.getProjectId());

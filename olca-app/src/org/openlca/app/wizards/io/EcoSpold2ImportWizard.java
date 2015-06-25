@@ -1,10 +1,8 @@
 package org.openlca.app.wizards.io;
 
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
@@ -42,18 +40,14 @@ public class EcoSpold2ImportWizard extends Wizard implements IImportWizard {
 
 	@Override
 	public boolean performFinish() {
-		final EcoSpold2Import pi = createImport();
+		EcoSpold2Import pi = createImport();
 		if (pi == null)
 			return false;
 		try {
-			getContainer().run(true, true, new IRunnableWithProgress() {
-				@Override
-				public void run(final IProgressMonitor monitor)
-						throws InvocationTargetException, InterruptedException {
-					monitor.beginTask(Messages.Import, IProgressMonitor.UNKNOWN);
-					ImportHandler handler = new ImportHandler(monitor);
-					handler.run(pi);
-				}
+			getContainer().run(true, true, (monitor) -> {
+				monitor.beginTask(Messages.Import, IProgressMonitor.UNKNOWN);
+				ImportHandler handler = new ImportHandler(monitor);
+				handler.run(pi);
 			});
 			return true;
 		} catch (Exception e) {
@@ -85,8 +79,8 @@ public class EcoSpold2ImportWizard extends Wizard implements IImportWizard {
 
 	@Override
 	public void addPages() {
-		importPage = new FileImportPage(new String[] { "zip", "spold", "xml" },
-				false);
+		String[] exts = { "zip", "spold" };
+		importPage = new FileImportPage(exts, false);
 		addPage(importPage);
 	}
 

@@ -6,13 +6,14 @@ import java.util.TimerTask;
 import org.eclipse.draw2d.MouseEvent;
 import org.eclipse.draw2d.MouseListener;
 import org.openlca.app.App;
+import org.openlca.app.results.analysis.sankey.model.ProcessNode;
 
 /**
  * Opens the process editor on a double click. As 'mouseDoubleClick' not works
  * this listener reacts on 'mousePressed' with a delay function between the
  * clicks.
  */
-class ProcessMouseClick implements MouseListener {
+public class ProcessMouseClick implements MouseListener {
 
 	private boolean firstClick = true;
 	private ProcessNode processNode;

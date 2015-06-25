@@ -17,7 +17,6 @@ import org.openlca.app.results.ResultEditorInput;
 import org.openlca.app.results.TotalFlowResultPage;
 import org.openlca.app.results.TotalImpactResultPage;
 import org.openlca.app.results.analysis.sankey.SankeyDiagram;
-import org.openlca.app.results.localization.LocalisedImpactPage;
 import org.openlca.app.results.viz.ContributionBubblePage;
 import org.openlca.app.results.viz.ProcessTreemapPage;
 import org.openlca.core.math.CalculationSetup;
@@ -85,7 +84,6 @@ public class AnalyzeEditor extends FormEditor {
 				addPage(new ContributionBubblePage(this, result));
 				addPage(new SunBurstView(this, result));
 			}
-			addPage(new LocalisedImpactPage(this, result, setup));
 			diagram = new SankeyDiagram(setup, result);
 			diagramIndex = addPage(diagram, getEditorInput());
 			setPageText(diagramIndex, Messages.SankeyDiagram);
@@ -134,5 +132,8 @@ public class AnalyzeEditor extends FormEditor {
 	public void close(boolean save) {
 		super.close(save);
 	}
-
+	@Override
+	public void dispose() {
+		super.dispose();
+	}
 }

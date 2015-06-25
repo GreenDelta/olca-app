@@ -13,7 +13,7 @@ public final class Config {
 	 * The version that is shown in the application to the user. Note that this
 	 * can be another version then the internal build version.
 	 */
-	public static final String VERSION = "1.4.1";
+	public static final String VERSION = "1.4.2.beta1";
 
 	/**
 	 * The name of the application that is shown to the user.
@@ -53,7 +53,8 @@ public final class Config {
 	public static void setBrowserEnabled(boolean enabled) {
 		browserEnabled = enabled;
 		boolean disabled = !enabled;
-		Preferences.getStore().setValue("olca.disable.browser", disabled);
+		Preferences.getStore()
+				.setValue("olca.disable.browser", disabled);
 	}
 
 }

@@ -21,7 +21,6 @@ import org.openlca.app.results.analysis.ContributionTreePage;
 import org.openlca.app.results.analysis.ProcessResultPage;
 import org.openlca.app.results.analysis.SunBurstView;
 import org.openlca.app.results.analysis.sankey.SankeyDiagram;
-import org.openlca.app.results.localization.LocalisedImpactPage;
 import org.openlca.app.results.viz.ContributionBubblePage;
 import org.openlca.app.results.viz.ProcessTreemapPage;
 import org.openlca.core.math.CalculationSetup;
@@ -46,10 +45,10 @@ public class RegionalizedResultEditor extends FormEditor {
 		super.init(site, editorInput);
 		try {
 			ResultEditorInput input = (ResultEditorInput) editorInput;
-			result = Cache.getAppCache().get(input.getResultKey(),
-					RegionalizedResultProvider.class);
-			setup = Cache.getAppCache().get(input.getSetupKey(),
+			setup = Cache.getAppCache().remove(input.getSetupKey(),
 					CalculationSetup.class);
+			result = Cache.getAppCache().remove(input.getResultKey(),
+					RegionalizedResultProvider.class);
 		} catch (Exception e) {
 			log.error("failed to load regionalized result", e);
 			throw new PartInitException("failed to load regionalized result", e);
@@ -81,7 +80,6 @@ public class RegionalizedResultEditor extends FormEditor {
 					addPage(new ContributionBubblePage(this, regioRresult));
 					addPage(new SunBurstView(this, regioRresult));
 				}
-				addPage(new LocalisedImpactPage(this, regioRresult, setup));
 				diagram = new SankeyDiagram(setup, regioRresult);
 				diagramIndex = addPage(diagram, getEditorInput());
 				setPageText(diagramIndex, Messages.SankeyDiagram);

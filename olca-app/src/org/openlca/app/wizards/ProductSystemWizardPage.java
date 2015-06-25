@@ -20,6 +20,7 @@ import org.openlca.app.navigation.ModelTextFilter;
 import org.openlca.app.navigation.NavigationTree;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.filters.EmptyCategoryFilter;
+import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
@@ -52,6 +53,7 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 		setMessage(Messages.CreatesANewProductSystem);
 		setImageDescriptor(ImageType.NEW_WIZ_PRODUCT_SYSTEM.getDescriptor());
 		setPageComplete(false);
+		setWithDescription(false);
 	}
 
 	public void setProcess(Process process) {
@@ -102,8 +104,8 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 
 	@Override
 	protected void createContents(Composite container) {
-		filterText = UI.formText(container, Messages.Filter);
-		UI.formLabel(container, Messages.ReferenceProcess);
+		filterText = UI.formText(container, Messages.ReferenceProcess);
+		UI.formLabel(container, "");
 		createProcessViewer(container);
 		createOptions(container);
 		if (refProcess != null) {
@@ -133,9 +135,9 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 		useSystemProcesses = UIFactory.createButton(container,
 				Messages.ConnectWithSystemProcessesIfPossible);
 		useSystemProcesses.setSelection(true);
-		// if (FeatureFlag.PRODUCT_SYSTEM_CUTOFF.isEnabled()) {
-		// createCutoffText(container);
-		// }
+		if (FeatureFlag.PRODUCT_SYSTEM_CUTOFF.isEnabled()) {
+			createCutoffText(container);
+		}
 	}
 
 	private void createCutoffText(final Composite container) {

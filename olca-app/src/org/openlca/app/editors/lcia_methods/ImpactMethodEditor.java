@@ -11,8 +11,6 @@ import org.eclipse.ui.PartInitException;
 import org.openlca.app.editors.ExternalSource;
 import org.openlca.app.editors.IEditor;
 import org.openlca.app.editors.ModelEditor;
-import org.openlca.app.editors.ParameterPage;
-import org.openlca.app.editors.ParameterPageSupport;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ImpactFactor;
 import org.openlca.core.model.ImpactMethod;
@@ -76,7 +74,6 @@ public class ImpactMethodEditor extends ModelEditor<ImpactMethod> implements
 			addPage(new ParameterPage(parameterSupport,
 					this::getExternalSources));
 			addPage(new ShapeFilePage(this));
-			// addPage(new ImpactLocalisationPage(this));
 		} catch (Exception e) {
 			log.error("failed to add page", e);
 		}

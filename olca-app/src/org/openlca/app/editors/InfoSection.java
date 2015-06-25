@@ -58,8 +58,10 @@ public class InfoSection {
 			createBreadcrumb(container);
 		}
 		createVersionText(toolkit);
-		// UI.formLabel(container, "ID");
-		// UI.formLabel(container, entity.getRefId());
+		Text uuidText = UI.formText(container, toolkit, "UUID");
+		uuidText.setEditable(false);
+		if (entity.getRefId() != null)
+			uuidText.setText(entity.getRefId());
 		createDateText(toolkit);
 	}
 

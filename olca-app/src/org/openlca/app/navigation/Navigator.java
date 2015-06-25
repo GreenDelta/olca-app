@@ -27,9 +27,6 @@ import org.openlca.core.model.descriptors.BaseDescriptor;
 
 import com.google.common.base.Objects;
 
-/**
- * The navigation tree.
- */
 public class Navigator extends CommonNavigator {
 
 	public static String ID = "views.navigation";

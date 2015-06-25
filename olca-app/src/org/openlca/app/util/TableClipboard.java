@@ -1,5 +1,7 @@
 package org.openlca.app.util;
 
+import java.util.function.Consumer;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.TableViewer;
@@ -19,14 +21,26 @@ public final class TableClipboard {
 	private TableClipboard() {
 	}
 
-	/** Registers Ctr+c for copying table content to clipboard and returns an
-	 * action which also calls this function. */
+	/**
+	 * Registers Ctr+c for copying table content to clipboard and returns an
+	 * action which also calls this function.
+	 */
 	public static Action onCopy(TableViewer viewer) {
 		return onCopy(viewer.getTable());
 	}
 
-	/** Registers Ctr+c for copying table content to clipboard and returns an
-	 * action which also calls this function. */
+	/**
+	 * Registers Ctr+v for pasting table content from clipboard and returns an
+	 * action which also calls this function.
+	 */
+	public static Action onPaste(TableViewer viewer, Consumer<String> fn) {
+		return onPaste(viewer.getTable(), fn);
+	}
+
+	/**
+	 * Registers Ctr+c for copying table content to clipboard and returns an
+	 * action which also calls this function.
+	 */
 	public static Action onCopy(Table table) {
 		table.addListener(SWT.KeyUp, (event) -> {
 			if (event.stateMask == SWT.CTRL && event.keyCode == 'c') {
@@ -36,6 +50,21 @@ public final class TableClipboard {
 		ImageDescriptor image = ImageType.getPlatformDescriptor(
 				ISharedImages.IMG_TOOL_COPY);
 		return Actions.create(Messages.Copy, image, () -> copy(table));
+	}
+
+	/**
+	 * Registers Ctr+v for pasting table content from clipboard and returns an
+	 * action which also calls this function.
+	 */
+	public static Action onPaste(Table table, Consumer<String> fn) {
+		table.addListener(SWT.KeyUp, (event) -> {
+			if (event.stateMask == SWT.CTRL && event.keyCode == 'v') {
+				paste(table, fn);
+			}
+		});
+		ImageDescriptor image = ImageType.getPlatformDescriptor(
+				ISharedImages.IMG_TOOL_PASTE);
+		return Actions.create(Messages.Paste, image, () -> paste(table, fn));
 	}
 
 	private static void copy(Table table) {
@@ -72,6 +101,21 @@ public final class TableClipboard {
 					text.append('\t');
 			}
 			text.append('\n');
+		}
+	}
+
+	private static void paste(Table table, Consumer<String> fn) {
+		if (table == null || fn == null)
+			return;
+		Clipboard clipboard = new Clipboard(UI.shell().getDisplay());
+		try {
+			TextTransfer transfer = TextTransfer.getInstance();
+			Object content = clipboard.getContents(transfer);
+			if (!(content instanceof String))
+				return;
+			fn.accept((String) content);
+		} finally {
+			clipboard.dispose();
 		}
 	}
 }
