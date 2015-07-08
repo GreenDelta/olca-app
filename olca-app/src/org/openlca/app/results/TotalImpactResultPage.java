@@ -1,5 +1,7 @@
 package org.openlca.app.results;
 
+import java.util.function.Function;
+
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -16,14 +18,12 @@ import org.openlca.app.Messages;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Numbers;
-import org.openlca.app.util.TableClipboard;
-import org.openlca.app.util.TableColumnSorter;
-import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
+import org.openlca.app.util.tables.TableClipboard;
+import org.openlca.app.util.tables.Tables;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
+import org.openlca.core.results.ImpactResult;
 import org.openlca.core.results.SimpleResultProvider;
-
-import com.google.common.primitives.Doubles;
 
 public class TotalImpactResultPage extends FormPage {
 
@@ -71,10 +71,12 @@ public class TotalImpactResultPage extends FormPage {
 	}
 
 	private void createColumnSorters(TableViewer viewer, LCIALabelProvider p) {
-		Tables.registerSorters(viewer,
-				new TableColumnSorter<>(ImpactCategoryDescriptor.class, 0, p),
-				new AmountSorter(),
-				new TableColumnSorter<>(ImpactCategoryDescriptor.class, 2, p));
+		Tables.sortByLabels(viewer, p, 0, 2);
+		Function<ImpactCategoryDescriptor, Double> amount = (d) -> {
+			ImpactResult r = result.getTotalImpactResult(d);
+			return r == null ? 0 : r.getValue();
+		};
+		Tables.sortByDouble(viewer, amount, 1);
 	}
 
 	private class LCIALabelProvider extends BaseLabelProvider implements
@@ -104,21 +106,6 @@ public class TotalImpactResultPage extends FormPage {
 			default:
 				return null;
 			}
-		}
-	}
-
-	private class AmountSorter extends
-			TableColumnSorter<ImpactCategoryDescriptor> {
-		public AmountSorter() {
-			super(ImpactCategoryDescriptor.class, 1);
-		}
-
-		@Override
-		public int compare(ImpactCategoryDescriptor d1,
-				ImpactCategoryDescriptor d2) {
-			double val1 = result.getTotalImpactResult(d1).getValue();
-			double val2 = result.getTotalImpactResult(d2).getValue();
-			return Doubles.compare(val1, val2);
 		}
 	}
 

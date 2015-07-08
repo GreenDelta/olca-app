@@ -1,6 +1,7 @@
 package org.openlca.app.results;
 
 import java.util.List;
+
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -16,9 +17,8 @@ import org.openlca.app.components.ContributionImage;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
-import org.openlca.app.util.TableClipboard;
-import org.openlca.app.util.TableColumnSorter;
-import org.openlca.app.util.Tables;
+import org.openlca.app.util.tables.TableClipboard;
+import org.openlca.app.util.tables.Tables;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.ContributionItem;
 
@@ -38,7 +38,8 @@ class ContributionTable extends TableViewer {
 	private String unit;
 
 	public ContributionTable(Composite parent) {
-		super(parent, SWT.BORDER | SWT.FULL_SELECTION | SWT.VIRTUAL | SWT.MULTI);
+		super(parent,
+				SWT.BORDER | SWT.FULL_SELECTION | SWT.VIRTUAL | SWT.MULTI);
 		createColumns();
 		Table table = this.getTable();
 		table.setHeaderVisible(true);
@@ -67,13 +68,11 @@ class ContributionTable extends TableViewer {
 	}
 
 	private void createColumnSorters(Label p) {
-		TableColumnSorter<?> first = ContributionSorter.forShare(CONTRIBUTION);
-		first.setAscending(false);
-		Tables.registerSorters(this,
-				first,
-				new TableColumnSorter<>(ContributionItem.class, NAME, p),
-				ContributionSorter.forAmount(AMOUNT),
-				new TableColumnSorter<>(ContributionItem.class, UNIT, p));
+		Tables.sortByLabels(this, p, NAME, UNIT);
+		Tables.sortByDouble(this, (ContributionItem<?> i) -> i.getShare(),
+				CONTRIBUTION);
+		Tables.sortByDouble(this, (ContributionItem<?> i) -> i.getAmount(),
+				AMOUNT);
 	}
 
 	private class Label extends ColumnLabelProvider implements

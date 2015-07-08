@@ -6,7 +6,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableItem;
 import org.openlca.app.App;
 import org.openlca.app.components.ModelSelectionDialog;
-import org.openlca.app.util.Tables;
+import org.openlca.app.util.tables.Tables;
 import org.openlca.app.viewers.table.AbstractTableViewer;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.SourceDao;

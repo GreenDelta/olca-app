@@ -1,4 +1,4 @@
-package org.openlca.app.util;
+package org.openlca.app.util.tables;
 
 import java.util.function.Consumer;
 
@@ -15,6 +15,8 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.ISharedImages;
 import org.openlca.app.Messages;
 import org.openlca.app.rcp.ImageType;
+import org.openlca.app.util.Actions;
+import org.openlca.app.util.UI;
 
 public final class TableClipboard {
 

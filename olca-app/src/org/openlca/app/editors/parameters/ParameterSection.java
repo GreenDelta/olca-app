@@ -23,11 +23,11 @@ import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Dialog;
 import org.openlca.app.util.Error;
-import org.openlca.app.util.TableClipboard;
-import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.UncertaintyLabel;
 import org.openlca.app.util.Viewers;
+import org.openlca.app.util.tables.TableClipboard;
+import org.openlca.app.util.tables.Tables;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.model.Parameter;
@@ -57,12 +57,14 @@ public class ParameterSection {
 	private ParameterScope scope;
 
 	public static ParameterSection forInputParameters(IEditor editor,
-			ParameterChangeSupport support, Composite body, FormToolkit toolkit) {
+			ParameterChangeSupport support, Composite body,
+			FormToolkit toolkit) {
 		return new ParameterSection(editor, support, body, toolkit, true);
 	}
 
 	public static ParameterSection forDependentParameters(IEditor editor,
-			ParameterChangeSupport support, Composite body, FormToolkit toolkit) {
+			ParameterChangeSupport support, Composite body,
+			FormToolkit toolkit) {
 		return new ParameterSection(editor, support, body, toolkit, false);
 	}
 
@@ -187,8 +189,8 @@ public class ParameterSection {
 	private void onPaste(String text) {
 		if (supplier == null)
 			return;
-		List<Parameter> params = forInputParameters ?
-				Clipboard.readInputParams(text)
+		List<Parameter> params = forInputParameters
+				? Clipboard.readInputParams(text)
 				: Clipboard.readCalculatedParams(text);
 		for (Parameter param : params) {
 			param.setScope(scope);
