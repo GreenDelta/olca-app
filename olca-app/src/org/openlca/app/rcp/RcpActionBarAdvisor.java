@@ -23,6 +23,7 @@ import org.openlca.app.devtools.js.JavaScriptEditor;
 import org.openlca.app.devtools.python.PythonEditor;
 import org.openlca.app.devtools.sql.SqlEditor;
 import org.openlca.app.editors.StartPage;
+import org.openlca.app.editors.parameters.GlobalParameterEditor;
 import org.openlca.app.rcp.browser.MozillaConfigView;
 import org.openlca.app.rcp.plugins.PluginManager;
 import org.openlca.app.util.Actions;
@@ -76,23 +77,26 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	}
 
 	private void fillFileMenu(IMenuManager menuBar) {
-		MenuManager fileMenu = new MenuManager(Messages.File,
+		MenuManager menu = new MenuManager(Messages.File,
 				IWorkbenchActionConstants.M_FILE);
-		fileMenu.add(saveAction);
-		fileMenu.add(saveAsAction);
-		fileMenu.add(saveAllAction);
-		fileMenu.add(new Separator());
-		fileMenu.add(closeAction);
-		fileMenu.add(closeAllAction);
-		fileMenu.add(new Separator());
-		fileMenu.add(preferencesAction);
-		fileMenu.add(new OpenPluginManagerAction());
-		fileMenu.add(new Separator());
-		fileMenu.add(importAction);
-		fileMenu.add(exportAction);
-		fileMenu.add(new Separator());
-		fileMenu.add(exitAction);
-		menuBar.add(fileMenu);
+		menu.add(saveAction);
+		menu.add(saveAsAction);
+		menu.add(saveAllAction);
+		menu.add(new Separator());
+		menu.add(closeAction);
+		menu.add(closeAllAction);
+		menu.add(new Separator());
+		menu.add(Actions.create(Messages.GlobalParameters, 
+				ImageType.FORMULA_ICON.getDescriptor(), 
+				() -> GlobalParameterEditor.open()));
+		menu.add(preferencesAction);
+		menu.add(new OpenPluginManagerAction());
+		menu.add(new Separator());
+		menu.add(importAction);
+		menu.add(exportAction);
+		menu.add(new Separator());
+		menu.add(exitAction);
+		menuBar.add(menu);
 	}
 
 	private void fillWindowMenu(IMenuManager menuBar) {

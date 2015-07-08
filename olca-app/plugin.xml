@@ -285,11 +285,6 @@
             name="%Locations">
       </page>
       <page
-            class="org.openlca.app.preferencepages.DatabaseParameterPage"
-            id="preferencepages.parameters"
-            name="%GlobalParameters">
-      </page>
-      <page
             class="org.openlca.app.logging.LoggerConfigPage"
             id="preferencepages.logging"
             name="%Logging">
