@@ -12,7 +12,6 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
@@ -35,10 +34,10 @@ import org.openlca.core.model.ParameterScope;
 import org.openlca.util.Strings;
 
 /**
- * A section with a table for parameters in processes and LCIA methods. It is
- * possible to create two kinds of tables with this class: for input parameters
- * with the columns name, value, and description, or for dependent parameters
- * with the columns name, formula, value, and description.
+ * A section with a table for parameters in processes, LCIA methods, and global
+ * parameters. It is possible to create two kinds of tables with this class: for
+ * input parameters with the columns name, value, and description, or for
+ * dependent parameters with the columns name, formula, value, and description.
  */
 public class ParameterSection {
 
@@ -101,19 +100,30 @@ public class ParameterSection {
 
 	private void createComponents(Composite body, FormToolkit toolkit,
 			String[] properties) {
-		String label = forInputParameters ? Messages.InputParameters
+		String title = forInputParameters ? Messages.InputParameters
 				: Messages.DependentParameters;
-		Section section = UI.section(body, toolkit, label);
+		Section section = UI.section(body, toolkit, title);
 		UI.gridData(section, true, true);
 		Composite parent = UI.sectionClient(section, toolkit);
 		viewer = Tables.createViewer(parent, properties);
-		viewer.setLabelProvider(new ParameterLabelProvider());
-		Table table = viewer.getTable();
+		ParameterLabelProvider label = new ParameterLabelProvider();
+		viewer.setLabelProvider(label);
+		addSorters(viewer, label);
 		if (forInputParameters)
-			Tables.bindColumnWidths(table, 0.3, 0.3, 0.2, 0.2);
+			Tables.bindColumnWidths(viewer, 0.3, 0.3, 0.2, 0.2);
 		else
-			Tables.bindColumnWidths(table, 0.3, 0.3, 0.2, 0.2);
+			Tables.bindColumnWidths(viewer, 0.3, 0.3, 0.2, 0.2);
 		bindActions(section);
+	}
+
+	private void addSorters(TableViewer table, ParameterLabelProvider label) {
+		if (forInputParameters) {
+			Tables.sortByLabels(table, label, 0, 2, 3);
+			Tables.sortByDouble(table, (Parameter p) -> p.getValue(), 1);
+		} else {
+			Tables.sortByLabels(table, label, 0, 1, 3);
+			Tables.sortByDouble(table, (Parameter p) -> p.getValue(), 2);
+		}
 	}
 
 	private void bindActions(Section section) {
