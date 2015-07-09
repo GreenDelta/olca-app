@@ -24,7 +24,7 @@ import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.NwSetDescriptor;
-import org.openlca.io.xls.results.InventoryResultExport;
+import org.openlca.io.xls.results.QuickResultExport;
 
 public class QuickResultInfoPage extends FormPage {
 
@@ -95,7 +95,7 @@ public class QuickResultInfoPage extends FormPage {
 				"quick_result.xlsx");
 		if (exportFile == null)
 			return;
-		final InventoryResultExport export = new InventoryResultExport(
+		QuickResultExport export = new QuickResultExport(
 				editor.getSetup(), editor.getResult(), Cache.getEntityCache());
 		export.setExportFile(exportFile);
 		App.run(Messages.Export, export, new Runnable() {

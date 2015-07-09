@@ -89,7 +89,10 @@ public class ModelParameterPage extends FormPage {
 		String[] columns = { Messages.Name, Messages.Value,
 				Messages.Uncertainty, Messages.Description };
 		TableViewer table = Tables.createViewer(client, columns);
-		table.setLabelProvider(new ParameterLabel());
+		ParameterLabel label = new ParameterLabel();
+		table.setLabelProvider(label);
+		Tables.sortByLabels(table, label, 0, 2, 3);
+		Tables.sortByDouble(table, (Parameter p) -> p.getValue(), 1);
 		Tables.bindColumnWidths(table.getTable(), 0.4, 0.3);
 		section.setExpanded(false);
 		setGlobalTableInput(table);

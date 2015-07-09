@@ -14,7 +14,7 @@ import org.openlca.app.util.Editors;
 import org.openlca.app.util.InformationPopup;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.results.ContributionResultProvider;
-import org.openlca.io.xls.results.InventoryResultExport;
+import org.openlca.io.xls.results.QuickResultExport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +39,8 @@ public class QuickResultActions extends EditorActionBarContributor {
 		public void run() {
 			QuickResultEditor editor = Editors.getActive();
 			if (editor == null) {
-				log.error("unexpected error: the product system editor is not active");
+				log.error(
+						"unexpected error: the product system editor is not active");
 				return;
 			}
 			ContributionResultProvider<?> result = editor.getResult();
@@ -54,7 +55,7 @@ public class QuickResultActions extends EditorActionBarContributor {
 
 		private void runExport(ContributionResultProvider<?> result,
 				CalculationSetup setup, final File file) {
-			final InventoryResultExport export = new InventoryResultExport(
+			QuickResultExport export = new QuickResultExport(
 					setup, result, Cache.getEntityCache());
 			export.setExportFile(file);
 			App.run(Messages.ExportResults, export, () -> {
