@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Item;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
-import org.openlca.app.util.Tables;
+import org.openlca.app.util.tables.Tables;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.Unit;

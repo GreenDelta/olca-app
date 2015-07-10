@@ -12,7 +12,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Item;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.Messages;
-import org.openlca.app.util.Tables;
+import org.openlca.app.util.tables.Tables;
 import org.openlca.core.model.ProcessCostEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

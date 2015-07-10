@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry exported="true" kind="lib" path="libs/compiler-0.8.17.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-jsonld-1.0.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-eigen-0.3.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/jersey-apache-client4-1.17.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/jdom-1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-jsonld-1.0.0.jar" sourcepath="/olca-jsonld"/>
+	<classpathentry exported="true" kind="lib" path="libs/bcprov-jdk16-1.46.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/bonecp-0.8.0.RELEASE.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/common-2.6.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-beanutils-1.8.3.jar"/>
@@ -37,8 +35,6 @@
 	<classpathentry exported="true" kind="lib" path="libs/gt-xsd-core-10.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/gt-xsd-kml-10.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/guava-14.0.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/httpclient-4.1.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/httpcore-4.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/imageio-ext-tiff-1.1.7.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/imageio-ext-utilities-1.1.7.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jackson-annotations-2.1.4.jar"/>
@@ -49,6 +45,8 @@
 	<classpathentry exported="true" kind="lib" path="libs/jai_imageio-1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/javax.persistence-2.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jcl-over-slf4j-1.7.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jdom-1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jdom-2.0.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jersey-apache-client-1.17.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jersey-client-1.17.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jersey-core-1.17.1.jar"/>
@@ -56,7 +54,6 @@
 	<classpathentry exported="true" kind="lib" path="libs/jgridshift-1.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/joda-convert-1.3.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/joda-time-2.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/json-simple-1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jsr-275-1.0-beta-2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jt-utils-1.3.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jt-zonalstats-1.3.1.jar"/>
@@ -65,13 +62,14 @@
 	<classpathentry exported="true" kind="lib" path="libs/log4j-1.2.17.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/mimepull-1.9.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/mysql-connector-java-5.1.23.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-core-1.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-core-1.0.0.jar" sourcepath="/olca-core"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-ecospold-1-1.0.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-ecospold-2-1.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-ecospold-2-1.0.0.jar" sourcepath="/olca-ecospold-2"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-eigen-0.3.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-formula-1.0.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-geo-0.0.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-ilcd-1.0.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-io-1.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-geo-0.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-ilcd-1.0.0.jar" sourcepath="/olca-ilcd"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-io-1.0.0.jar" sourcepath="/olca-io"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-simapro-csv-1.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.antlr-3.2.0.v201206041011.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.asm-3.3.1.v201206041142.jar"/>
@@ -97,10 +95,8 @@
 	<classpathentry exported="true" kind="lib" path="libs/xmlbeans-2.3.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/xsd-2.6.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/zt-zip-1.6.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/bcprov-jdk16-1.46.jar"/>
-	<classpathentry kind="lib" path="libs/jdom-2.0.2.jar"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -21,10 +21,10 @@ import org.openlca.app.db.Database;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Error;
-import org.openlca.app.util.TableClipboard;
-import org.openlca.app.util.Tables;
 import org.openlca.app.util.UncertaintyLabel;
 import org.openlca.app.util.Viewers;
+import org.openlca.app.util.tables.TableClipboard;
+import org.openlca.app.util.tables.Tables;
 import org.openlca.app.viewers.table.modify.ComboBoxCellModifier;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
@@ -63,7 +63,10 @@ class ImpactFactorTable {
 	public void render(Composite parent, Section section) {
 		viewer = Tables.createViewer(parent, new String[] { FLOW, CATEGORY,
 				FLOW_PROPERTY, UNIT, FACTOR, UNCERTAINTY });
-		viewer.setLabelProvider(new FactorLabelProvider());
+		FactorLabelProvider label = new FactorLabelProvider();
+		Tables.sortByLabels(viewer, label, 0, 1, 2, 3, 5);
+		Tables.sortByDouble(viewer, (ImpactFactor f) -> f.getValue(), 4);
+		viewer.setLabelProvider(label);
 		Tables.bindColumnWidths(viewer, 0.2, 0.2, 0.15, 0.15, 0.15, 0.15);
 		ModifySupport<ImpactFactor> support = new ModifySupport<>(viewer);
 		support.bind(FLOW_PROPERTY, new FlowPropertyModifier());
@@ -74,14 +77,14 @@ class ImpactFactorTable {
 		bindActions(viewer, section);
 	}
 
-	void setImpactCategory(ImpactCategory impactCategory, boolean sort) {
-		if (impactCategory == null) {
+	void setImpactCategory(ImpactCategory impact, boolean sort) {
+		if (impact == null) {
 			viewer.setInput(Collections.emptyList());
 			this.category = null;
 			return;
 		}
-		this.category = impactCategory;
-		List<ImpactFactor> factors = impactCategory.getImpactFactors();
+		this.category = impact;
+		List<ImpactFactor> factors = impact.getImpactFactors();
 		if (sort)
 			sortFactors(factors);
 		viewer.setInput(factors);
@@ -166,27 +169,26 @@ class ImpactFactorTable {
 		}
 
 		@Override
-		public String getColumnText(Object element, int columnIndex) {
-			if (!(element instanceof ImpactFactor))
+		public String getColumnText(Object o, int col) {
+			if (!(o instanceof ImpactFactor))
 				return null;
-			ImpactFactor factor = (ImpactFactor) element;
-			switch (columnIndex) {
+			ImpactFactor f = (ImpactFactor) o;
+			switch (col) {
 			case 0:
-				return factor.getFlow().getName();
+				return f.getFlow().getName();
 			case 1:
-				return CategoryPath.getShort(factor.getFlow().getCategory());
+				return CategoryPath.getShort(f.getFlow().getCategory());
 			case 2:
-				return factor.getFlowPropertyFactor().getFlowProperty()
-						.getName();
+				return f.getFlowPropertyFactor().getFlowProperty().getName();
 			case 3:
-				return getFactorUnit(factor);
+				return getFactorUnit(f);
 			case 4:
-				if (factor.getFormula() == null || !showFormulas)
-					return Double.toString(factor.getValue());
+				if (f.getFormula() == null || !showFormulas)
+					return Double.toString(f.getValue());
 				else
-					return factor.getFormula();
+					return f.getFormula();
 			case 5:
-				return UncertaintyLabel.get(factor.getUncertainty());
+				return UncertaintyLabel.get(f.getUncertainty());
 			default:
 				return null;
 			}
@@ -237,7 +239,8 @@ class ImpactFactorTable {
 		}
 	}
 
-	private class UnitModifier extends ComboBoxCellModifier<ImpactFactor, Unit> {
+	private class UnitModifier
+			extends ComboBoxCellModifier<ImpactFactor, Unit> {
 
 		@Override
 		protected Unit[] getItems(ImpactFactor element) {

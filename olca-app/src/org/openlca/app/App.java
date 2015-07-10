@@ -42,7 +42,8 @@ public class App {
 		if (solver != null)
 			return solver;
 		if (!NativeLibrary.isLoaded()) {
-			log.warn("could not load a high-performance library for calculations");
+			log.warn(
+					"could not load a high-performance library for calculations");
 			solver = new JavaSolver();
 			return solver;
 		}

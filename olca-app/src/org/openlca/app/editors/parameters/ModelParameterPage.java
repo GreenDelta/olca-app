@@ -22,10 +22,10 @@ import org.openlca.app.editors.lcia_methods.ImpactMethodEditor;
 import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
-import org.openlca.app.util.TableClipboard;
-import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.UncertaintyLabel;
+import org.openlca.app.util.tables.TableClipboard;
+import org.openlca.app.util.tables.Tables;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ParameterDao;
 import org.openlca.core.model.Parameter;
@@ -89,7 +89,10 @@ public class ModelParameterPage extends FormPage {
 		String[] columns = { Messages.Name, Messages.Value,
 				Messages.Uncertainty, Messages.Description };
 		TableViewer table = Tables.createViewer(client, columns);
-		table.setLabelProvider(new ParameterLabel());
+		ParameterLabel label = new ParameterLabel();
+		table.setLabelProvider(label);
+		Tables.sortByLabels(table, label, 0, 2, 3);
+		Tables.sortByDouble(table, (Parameter p) -> p.getValue(), 1);
 		Tables.bindColumnWidths(table.getTable(), 0.4, 0.3);
 		section.setExpanded(false);
 		setGlobalTableInput(table);

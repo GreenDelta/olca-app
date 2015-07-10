@@ -107,6 +107,14 @@
             contributorClass="org.openlca.app.editors.systems.ProductSystemActions">
       </editor>
       
+      <editor
+           class="org.openlca.app.editors.parameters.GlobalParameterEditor"
+           default="false"
+           icon="icons/formula_16.png"
+           id="editors.GlobalParameterEditor"
+           name="Global parameters">
+      </editor>
+      
       <!-- result views -->
       <editor
             class="org.openlca.app.results.quick.QuickResultEditor"
@@ -129,8 +137,7 @@
             default="false"
             icon="icons/analyze.gif"
             id="editors.analyze"
-            name="Analyze viewer"
-            contributorClass="org.openlca.app.results.analysis.AnalysisEditorActions">
+            name="Analyze viewer">
       </editor>
       <editor
             class="org.openlca.app.results.simulation.SimulationEditor"
@@ -281,11 +288,6 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            class="org.openlca.app.preferencepages.DatabaseParameterPage"
-            id="preferencepages.parameters"
-            name="%GlobalParameters">
-      </page>
-      <page
             class="org.openlca.app.logging.LoggerConfigPage"
             id="preferencepages.logging"
             name="%Logging">
@@ -336,7 +338,7 @@
          </property>
          <property
                name="aboutText"
-               value="openLCA 1.4&#x0A;&#x0A;Copyright (c) 2007 - 2014 GreenDelta. All rights reserved.&#x0A;Visit http://openlca.org and http://greendelta.com&#x0A;&#x0A;This product includes software developed in the openLCA &#x0A;project and other open source software.">
+               value="openLCA 1.4.1&#x0A;&#x0A;Copyright (c) 2007 - 2015 GreenDelta. All rights reserved.&#x0A;Visit http://openlca.org and http://greendelta.com&#x0A;&#x0A;This product includes software developed in the openLCA &#x0A;project and other open source software.">
          </property>
          <property
                name="aboutImage"
@@ -374,6 +376,20 @@
          point="org.eclipse.ui.navigator.viewer">
       <viewer
             viewerId="views.navigation">
+            <options>
+		        <property
+		            name="org.eclipse.ui.navigator.hideLinkWithEditorAction"
+		            value="true">
+		         </property>
+		         <property
+		            name="org.eclipse.ui.navigator.hideCollapseAllAction"
+		            value="true">
+		         </property>
+		         <property
+		            name="org.eclipse.ui.navigator.hideAvailableCustomizationsDialog"
+		            value="true">
+		         </property>
+			</options>           
       </viewer>
       <viewerContentBinding
             viewerId="views.navigation">

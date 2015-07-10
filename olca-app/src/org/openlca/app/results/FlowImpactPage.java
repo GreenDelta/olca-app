@@ -25,10 +25,9 @@ import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
-import org.openlca.app.util.TableClipboard;
-import org.openlca.app.util.TableColumnSorter;
-import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
+import org.openlca.app.util.tables.TableClipboard;
+import org.openlca.app.util.tables.Tables;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.results.ContributionItem;
@@ -107,16 +106,11 @@ public class FlowImpactPage extends FormPage {
 		Label label = new Label();
 		table.setLabelProvider(label);
 		table.setFilters(new ViewerFilter[] { new CutOffFilter() });
-		Tables.bindColumnWidths(table.getTable(), new double[] { 0.1, 0.3, 0.2,
-				0.2, 0.1, 0.1 });
+		Tables.bindColumnWidths(table.getTable(), 0.1, 0.3, 0.2, 0.2, 0.1, 0.1);
 		Actions.bind(table, TableClipboard.onCopy(table));
-		Tables.registerSorters(table,
-				ContributionSorter.forShare(0),
-				new TableColumnSorter<>(ContributionItem.class, 1, label),
-				new TableColumnSorter<>(ContributionItem.class, 2, label),
-				new TableColumnSorter<>(ContributionItem.class, 3, label),
-				ContributionSorter.forAmount(4),
-				new TableColumnSorter<>(ContributionItem.class, 5, label));
+		Tables.sortByLabels(table, label, 1, 2, 3, 5);
+		Tables.sortByDouble(table, (ContributionItem<?> i) -> i.getShare(), 0);
+		Tables.sortByDouble(table, (ContributionItem<?> i) -> i.getAmount(), 4);
 	}
 
 	private class Label extends BaseLabelProvider implements

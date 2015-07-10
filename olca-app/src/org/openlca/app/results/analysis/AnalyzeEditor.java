@@ -125,12 +125,8 @@ public class AnalyzeEditor extends FormEditor {
 	}
 
 	@Override
-	public void setFocus() {
-	}
-
-	@Override
-	public void close(boolean save) {
-		super.close(save);
+	public void dispose() {
+		super.dispose();
 	}
 	@Override
 	public void dispose() {

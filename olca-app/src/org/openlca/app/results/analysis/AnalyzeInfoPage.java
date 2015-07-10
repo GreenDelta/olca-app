@@ -88,12 +88,11 @@ public class AnalyzeInfoPage extends FormPage {
 	}
 
 	private void tryExport() {
-		final File exportFile = FileChooser.forExport("*.xlsx",
-				"analysis_result.xlsx");
-		if (exportFile == null)
+		File file = FileChooser.forExport("*.xlsx", "analysis_result.xlsx");
+		if (file == null)
 			return;
-		final AnalysisResultExport export = new AnalysisResultExport(
-				setup.getProductSystem(), exportFile, result);
+		AnalysisResultExport export = new AnalysisResultExport(setup, file,
+				result);
 		App.run(Messages.Export, export, new Runnable() {
 			@Override
 			public void run() {

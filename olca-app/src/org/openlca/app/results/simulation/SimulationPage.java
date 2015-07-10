@@ -127,8 +127,8 @@ public class SimulationPage extends FormPage {
 		if (result == null)
 			return;
 		Section section = UI.section(body, toolkit, Messages.Results);
-		SimulationExportAction exportAction = new SimulationExportAction();
-		exportAction.configure(result.getResult());
+		SimulationExportAction exportAction = new SimulationExportAction(
+				result, editor.getSetup());
 		Actions.bind(section, exportAction);
 		Composite composite = UI.sectionClient(section, toolkit);
 		initFlowCheckViewer(toolkit, composite);
