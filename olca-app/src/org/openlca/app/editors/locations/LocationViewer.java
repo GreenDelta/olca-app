@@ -24,7 +24,7 @@ import org.openlca.app.editors.processes.kml.EditorHandler;
 import org.openlca.app.editors.processes.kml.KmlUtil;
 import org.openlca.app.editors.processes.kml.MapEditor;
 import org.openlca.app.util.Error;
-import org.openlca.app.util.Tables;
+import org.openlca.app.util.tables.Tables;
 import org.openlca.app.viewers.BaseLabelProvider;
 import org.openlca.app.viewers.table.AbstractTableViewer;
 import org.openlca.core.database.LocationDao;

@@ -12,12 +12,11 @@ import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.parameters.Formulas;
 import org.openlca.app.editors.parameters.ModelParameterPage;
 import org.openlca.app.editors.parameters.ParameterChangeSupport;
-import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.core.model.ImpactMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ImpactMethodEditor extends ModelEditor<ImpactMethod> implements
+public class ImpactMethodEditor extends ModelEditor<ImpactMethod>implements
 		IEditor {
 
 	public static String ID = "editors.impactmethod";
@@ -66,9 +65,7 @@ public class ImpactMethodEditor extends ModelEditor<ImpactMethod> implements
 			addPage(new ImpactFactorPage(this));
 			addPage(new ImpactNwPage(this));
 			addPage(new ModelParameterPage(this));
-			if (FeatureFlag.LOCALISED_LCIA.isEnabled()) {
-				addPage(new ShapeFilePage(this));
-			}
+			addPage(new ShapeFilePage(this));
 		} catch (Exception e) {
 			log.error("failed to add page", e);
 		}

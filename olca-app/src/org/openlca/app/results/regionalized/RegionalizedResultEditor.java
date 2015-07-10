@@ -51,7 +51,8 @@ public class RegionalizedResultEditor extends FormEditor {
 					RegionalizedResultProvider.class);
 		} catch (Exception e) {
 			log.error("failed to load regionalized result", e);
-			throw new PartInitException("failed to load regionalized result", e);
+			throw new PartInitException("failed to load regionalized result",
+					e);
 		}
 	}
 
@@ -69,7 +70,8 @@ public class RegionalizedResultEditor extends FormEditor {
 					addPage(new NwResultPage(this, regioRresult, setup));
 				addPage(new ContributionTablePage(this, regioRresult));
 				addPage(new KmlResultView(this, this.result));
-				addPage(new LocationContributionPage(this, regioRresult, false));
+				addPage(new LocationContributionPage(this, regioRresult,
+						false));
 				addPage(new ProcessResultPage(this, regioRresult, setup));
 				if (regioRresult.hasImpactResults())
 					addPage(new FlowImpactPage(this, regioRresult));

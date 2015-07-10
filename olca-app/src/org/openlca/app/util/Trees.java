@@ -3,7 +3,6 @@ package org.openlca.app.util;
 import java.util.List;
 import java.util.function.Consumer;
 
-import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
@@ -15,8 +14,6 @@ import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Tree;
@@ -76,44 +73,6 @@ public class Trees {
 				}
 			}
 		});
-	}
-
-	public static <T> void makeSortable(Class<T> contentType,
-			TreeViewer viewer, ITableLabelProvider labelProvider, int... cols) {
-		TableColumnSorter<?>[] sorters = new TableColumnSorter<?>[cols.length];
-		for (int i = 0; i < cols.length; i++) {
-			sorters[i] = new TableColumnSorter<>(contentType, cols[i],
-					labelProvider);
-		}
-		registerSorters(viewer, sorters);
-	}
-
-	public static void registerSorters(final TreeViewer viewer,
-			TableColumnSorter<?>... sorters) {
-		if (viewer == null || sorters == null)
-			return;
-		final Tree tree = viewer.getTree();
-		int count = tree.getColumnCount();
-		for (final TableColumnSorter<?> sorter : sorters) {
-			if (sorter.getColumn() >= count)
-				continue;
-			final TreeColumn column = tree.getColumn(sorter.getColumn());
-			column.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					TreeColumn current = tree.getSortColumn();
-					if (column == current)
-						sorter.setAscending(!sorter.isAscending());
-					else
-						sorter.setAscending(true);
-					int direction = sorter.isAscending() ? SWT.UP : SWT.DOWN;
-					tree.setSortDirection(direction);
-					tree.setSortColumn(column);
-					viewer.setSorter(sorter);
-					viewer.refresh();
-				}
-			});
-		}
 	}
 
 	/** Add an event handler for double clicks on the given tree viewer. */

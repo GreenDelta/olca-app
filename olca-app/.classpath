@@ -67,7 +67,6 @@
 	<classpathentry exported="true" kind="lib" path="libs/olca-ecospold-2-1.0.0.jar" sourcepath="/olca-ecospold-2"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-eigen-0.3.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-formula-1.0.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-geo-0.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-ilcd-1.0.0.jar" sourcepath="/olca-ilcd"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-io-1.0.0.jar" sourcepath="/olca-io"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-simapro-csv-1.0.0.jar"/>
@@ -95,6 +94,7 @@
 	<classpathentry exported="true" kind="lib" path="libs/xmlbeans-2.3.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/xsd-2.6.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/zt-zip-1.6.jar"/>
+	<classpathentry kind="lib" path="libs/olca-geo-0.0.2.jar"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>

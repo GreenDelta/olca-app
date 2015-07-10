@@ -124,12 +124,4 @@ public class AnalyzeEditor extends FormEditor {
 		return page;
 	}
 
-	@Override
-	public void dispose() {
-		super.dispose();
-	}
-	@Override
-	public void dispose() {
-		super.dispose();
-	}
 }

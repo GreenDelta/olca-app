@@ -29,7 +29,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.components.FileChooser;
-import org.openlca.app.editors.ParameterPage;
+import org.openlca.app.editors.parameters.ModelParameterPage;
 import org.openlca.app.rcp.ImageManager;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
@@ -38,9 +38,9 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Info;
 import org.openlca.app.util.Question;
-import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
+import org.openlca.app.util.tables.Tables;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterScope;
@@ -176,13 +176,14 @@ class ShapeFilePage extends FormPage {
 		}
 		ShapeFileSection section = new ShapeFileSection(sections.length,
 				shapeFile);
-		ShapeFileSection[] newSections = new ShapeFileSection[sections.length + 1];
+		ShapeFileSection[] newSections = new ShapeFileSection[sections.length
+				+ 1];
 		System.arraycopy(sections, 0, newSections, 0, sections.length);
 		newSections[sections.length] = section;
 		this.sections = newSections;
 		section.parameterTable.viewer.setInput(params);
 		form.reflow(true);
-		editor.getParameterSupport().fireParameterChange();
+		editor.getParameterSupport().evaluate();
 		return params;
 	}
 
@@ -255,7 +256,8 @@ class ShapeFilePage extends FormPage {
 				return;
 			ShapeFileUtils.deleteFile(method, shapeFile);
 			section.dispose();
-			ShapeFileSection[] newSections = new ShapeFileSection[sections.length - 1];
+			ShapeFileSection[] newSections = new ShapeFileSection[sections.length
+					- 1];
 			System.arraycopy(sections, 0, newSections, 0, index);
 			if ((index + 1) < sections.length)
 				System.arraycopy(sections, index + 1, newSections, index,
@@ -269,7 +271,7 @@ class ShapeFilePage extends FormPage {
 				if (parameter.isInputParameter())
 					if (shapeFile.equals(parameter.getExternalSource()))
 						parameter.setExternalSource(null);
-			editor.getParameterSupport().fireParameterChange();
+			editor.getParameterSupport().evaluate();
 		}
 
 		/*
@@ -289,11 +291,12 @@ class ShapeFilePage extends FormPage {
 							if (param == null)
 								continue;
 							parameter
-									.setValue((param.getMin() + param.getMax()) / 2);
+									.setValue((param.getMin() + param.getMax())
+											/ 2);
 							parameter.setUncertainty(Uncertainty.uniform(
 									param.getMin(), param.getMax()));
 						}
-			editor.getParameterSupport().fireParameterChange();
+			editor.getParameterSupport().evaluate();
 		}
 
 		private Set<String> getReferencedParameters() {
@@ -459,8 +462,8 @@ class ShapeFilePage extends FormPage {
 			realParam.setScope(ParameterScope.IMPACT_METHOD);
 			realParam.setSourceType("SHAPE_FILE");
 			method.getParameters().add(realParam);
-			editor.setActivePage(ParameterPage.ID);
-			editor.getParameterSupport().fireParameterChange();
+			editor.setActivePage(ModelParameterPage.ID);
+			editor.getParameterSupport().evaluate();
 		}
 	}
 

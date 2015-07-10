@@ -215,7 +215,8 @@ public class ShapeFileUtils {
 			List<ShapeFileParameter> list = Arrays.asList(params);
 			Collections.sort(list, new Comparator<ShapeFileParameter>() {
 				@Override
-				public int compare(ShapeFileParameter o1, ShapeFileParameter o2) {
+				public int compare(ShapeFileParameter o1,
+						ShapeFileParameter o2) {
 					return Strings.compare(o1.getName(), o2.getName());
 				}
 			});
@@ -225,7 +226,7 @@ public class ShapeFileUtils {
 
 	private static void writeParameters(ImpactMethod method,
 			String shapeFileName, Collection<ShapeFileParameter> parameters)
-			throws IOException {
+					throws IOException {
 		File folder = getFolder(method);
 		if (!folder.exists())
 			folder.mkdirs();

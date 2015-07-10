@@ -24,21 +24,15 @@ import org.openlca.app.devtools.js.JavaScriptEditor;
 import org.openlca.app.devtools.python.PythonEditor;
 import org.openlca.app.devtools.sql.SqlEditor;
 import org.openlca.app.editors.StartPage;
-<<<<<<< HEAD
 import org.openlca.app.editors.locations.LocationsEditor;
-=======
 import org.openlca.app.editors.parameters.GlobalParameterEditor;
->>>>>>> refs/heads/master
 import org.openlca.app.rcp.browser.MozillaConfigView;
 import org.openlca.app.rcp.plugins.PluginManager;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.DefaultInput;
 import org.openlca.app.util.Desktop;
-<<<<<<< HEAD
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.Error;
-=======
->>>>>>> refs/heads/master
 
 public class RcpActionBarAdvisor extends ActionBarAdvisor {
 
@@ -90,24 +84,6 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	private void fillFileMenu(IMenuManager menuBar) {
 		MenuManager menu = new MenuManager(Messages.File,
 				IWorkbenchActionConstants.M_FILE);
-<<<<<<< HEAD
-		fileMenu.add(saveAction);
-		fileMenu.add(saveAsAction);
-		fileMenu.add(saveAllAction);
-		fileMenu.add(new Separator());
-		fileMenu.add(closeAction);
-		fileMenu.add(closeAllAction);
-		fileMenu.add(new Separator());
-		fileMenu.add(new EditLocationsAction());
-		fileMenu.add(preferencesAction);
-		fileMenu.add(new OpenPluginManagerAction());
-		fileMenu.add(new Separator());
-		fileMenu.add(importAction);
-		fileMenu.add(exportAction);
-		fileMenu.add(new Separator());
-		fileMenu.add(exitAction);
-		menuBar.add(fileMenu);
-=======
 		menu.add(saveAction);
 		menu.add(saveAsAction);
 		menu.add(saveAllAction);
@@ -115,8 +91,9 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		menu.add(closeAction);
 		menu.add(closeAllAction);
 		menu.add(new Separator());
-		menu.add(Actions.create(Messages.GlobalParameters, 
-				ImageType.FORMULA_ICON.getDescriptor(), 
+		menu.add(new EditLocationsAction());
+		menu.add(Actions.create(Messages.GlobalParameters,
+				ImageType.FORMULA_ICON.getDescriptor(),
 				() -> GlobalParameterEditor.open()));
 		menu.add(preferencesAction);
 		menu.add(new OpenPluginManagerAction());
@@ -126,7 +103,6 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		menu.add(new Separator());
 		menu.add(exitAction);
 		menuBar.add(menu);
->>>>>>> refs/heads/master
 	}
 
 	private void fillWindowMenu(IMenuManager menuBar) {
@@ -199,7 +175,6 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		}
 	}
 
-<<<<<<< HEAD
 	private class EditLocationsAction extends Action {
 		public EditLocationsAction() {
 			setText("Edit locations");
@@ -217,8 +192,6 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		}
 	}
 
-=======
->>>>>>> refs/heads/master
 	private class OpenPluginManagerAction extends Action {
 		public OpenPluginManagerAction() {
 			setText("Manage plugins");

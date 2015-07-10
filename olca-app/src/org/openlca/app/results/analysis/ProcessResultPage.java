@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.forms.IManagedForm;
+import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
@@ -33,6 +34,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.viewers.combo.ProcessViewer;
 import org.openlca.core.database.EntityCache;
+import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.matrix.FlowIndex;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
@@ -42,10 +44,10 @@ import org.openlca.core.results.FullResultProvider;
 /**
  * Shows the single and upstream results of the processes in an analysis result.
  */
-class ProcessResultPage extends FormPage {
+public class ProcessResultPage extends FormPage {
 
 	private EntityCache cache = Cache.getEntityCache();
-	private AnalyzeEditor editor;
+	private CalculationSetup setup;
 	private FullResultProvider result;
 	private ResultProvider flowResult;
 	private ResultProvider impactResult;
@@ -72,10 +74,11 @@ class ProcessResultPage extends FormPage {
 			Messages.ImpactCategory, Messages.UpstreamTotal,
 			Messages.DirectImpact, Messages.Unit };
 
-	public ProcessResultPage(AnalyzeEditor editor, FullResultProvider result) {
+	public ProcessResultPage(FormEditor editor, FullResultProvider result,
+			CalculationSetup setup) {
 		super(editor, ProcessResultPage.class.getName(),
 				Messages.ProcessResults);
-		this.editor = editor;
+		this.setup = setup;
 		this.result = result;
 		this.flowResult = new ResultProvider(result);
 		this.impactResult = new ResultProvider(result);
@@ -135,7 +138,7 @@ class ProcessResultPage extends FormPage {
 		UI.gridLayout(container, 5);
 		UI.formLabel(container, toolkit, Messages.Process);
 		flowProcessViewer = new ProcessViewer(container, cache);
-		flowProcessViewer.setInput(editor.getSetup().getProductSystem());
+		flowProcessViewer.setInput(setup.getProductSystem());
 		flowProcessViewer.addSelectionChangedListener((selection) -> {
 			flowResult.setProcess(selection);
 			inputTable.refresh();
@@ -190,7 +193,7 @@ class ProcessResultPage extends FormPage {
 		UI.gridData(container, true, false);
 		UI.formLabel(container, toolkit, Messages.Process);
 		impactProcessCombo = new ProcessViewer(container, cache);
-		impactProcessCombo.setInput(editor.getSetup().getProductSystem());
+		impactProcessCombo.setInput(setup.getProductSystem());
 		impactProcessCombo.addSelectionChangedListener((selection) -> {
 			impactResult.setProcess(selection);
 			impactTable.refresh();
