@@ -1,6 +1,7 @@
 package org.openlca.app.results;
 
 import java.util.Collection;
+import java.util.function.Function;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.jface.viewers.BaseLabelProvider;
@@ -22,16 +23,14 @@ import org.openlca.app.util.Actions;
 import org.openlca.app.util.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
-import org.openlca.app.util.TableClipboard;
-import org.openlca.app.util.TableColumnSorter;
-import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
+import org.openlca.app.util.tables.TableClipboard;
+import org.openlca.app.util.tables.Tables;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.matrix.FlowIndex;
 import org.openlca.core.model.descriptors.FlowDescriptor;
+import org.openlca.core.results.FlowResult;
 import org.openlca.core.results.SimpleResultProvider;
-
-import com.google.common.primitives.Doubles;
 
 /**
  * Shows the total inventory result of a quick calculation, analysis result,
@@ -69,7 +68,8 @@ public class TotalFlowResultPage extends FormPage {
 		outputViewer.setInput(flows);
 	}
 
-	private TableViewer createSectionAndViewer(Composite parent, boolean input) {
+	private TableViewer createSectionAndViewer(Composite parent,
+			boolean input) {
 		Section section = UI.section(parent, toolkit, input ? Messages.Inputs
 				: Messages.Outputs);
 		UI.gridData(section, true, true);
@@ -82,18 +82,19 @@ public class TotalFlowResultPage extends FormPage {
 		viewer.setLabelProvider(labelProvider);
 		viewer.setFilters(new ViewerFilter[] { new InputOutputFilter(input) });
 		createColumnSorters(viewer, labelProvider);
-		Tables.bindColumnWidths(viewer.getTable(), 0.40, 0.20, 0.20, 0.08, 0.10);
+		Tables.bindColumnWidths(viewer.getTable(), 0.40, 0.20, 0.20, 0.08,
+				0.10);
 		Actions.bind(viewer, TableClipboard.onCopy(viewer));
 		return viewer;
 	}
 
-	private void createColumnSorters(TableViewer viewer, LabelProvider p) {
-		Tables.registerSorters(viewer,
-				new TableColumnSorter<>(FlowDescriptor.class, 0, p),
-				new TableColumnSorter<>(FlowDescriptor.class, 1, p),
-				new TableColumnSorter<>(FlowDescriptor.class, 2, p),
-				new TableColumnSorter<>(FlowDescriptor.class, 3, p),
-				new AmountSorter());
+	private void createColumnSorters(TableViewer viewer, LabelProvider label) {
+		Tables.sortByLabels(viewer, label, 0, 1, 2, 3);
+		Function<FlowDescriptor, Double> amount = (f) -> {
+			FlowResult r = resultProvider.getTotalFlowResult(f);
+			return r == null ? 0 : r.getValue();
+		};
+		Tables.sortByDouble(viewer, amount, 4);
 	}
 
 	private class LabelProvider extends BaseLabelProvider implements
@@ -149,19 +150,6 @@ public class TotalFlowResultPage extends FormPage {
 			FlowIndex index = resultProvider.getResult().getFlowIndex();
 			FlowDescriptor flow = (FlowDescriptor) element;
 			return index.isInput(flow.getId()) == input;
-		}
-	}
-
-	private class AmountSorter extends TableColumnSorter<FlowDescriptor> {
-		public AmountSorter() {
-			super(FlowDescriptor.class, 4);
-		}
-
-		@Override
-		public int compare(FlowDescriptor obj1, FlowDescriptor obj2) {
-			double v1 = resultProvider.getTotalFlowResult(obj1).getValue();
-			double v2 = resultProvider.getTotalFlowResult(obj2).getValue();
-			return Doubles.compare(v1, v2);
 		}
 	}
 

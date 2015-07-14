@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: olca-app
 Bundle-SymbolicName: olca-app;singleton:=true
-Bundle-Version: 1.4.2.beta1
+Bundle-Version: 1.4.2
 Bundle-Activator: org.openlca.app.rcp.RcpActivator
 Bundle-Vendor: openLCA.org
 Require-Bundle: org.eclipse.ui,
@@ -140,6 +140,7 @@ Export-Package: com.google.gson,
  org.openlca.app.rcp,
  org.openlca.app.rcp.html,
  org.openlca.app.util,
+ org.openlca.app.util.tables,
  org.openlca.app.viewers,
  org.openlca.app.viewers.combo,
  org.openlca.app.viewers.table,

@@ -15,9 +15,9 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.openlca.app.Messages;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.util.Actions;
-import org.openlca.app.util.TableClipboard;
-import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
+import org.openlca.app.util.tables.TableClipboard;
+import org.openlca.app.util.tables.Tables;
 import org.openlca.core.results.ContributionItem;
 import org.openlca.core.results.ProcessGrouping;
 

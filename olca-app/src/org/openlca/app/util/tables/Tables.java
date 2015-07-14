@@ -1,7 +1,8 @@
-package org.openlca.app.util;
+package org.openlca.app.util.tables;
 
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -27,6 +28,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.openlca.app.components.IModelDropHandler;
 import org.openlca.app.components.ModelTransfer;
+import org.openlca.app.util.UI;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 
 /**
@@ -86,7 +88,8 @@ public class Tables {
 		});
 	}
 
-	public static void bindColumnWidths(TableViewer viewer, double... percents) {
+	public static void bindColumnWidths(TableViewer viewer,
+			double... percents) {
 		bindColumnWidths(viewer.getTable(), percents);
 	}
 
@@ -115,42 +118,46 @@ public class Tables {
 		});
 	}
 
-	public static <T> void makeSortable(Class<T> contentType,
-			TableViewer viewer, ITableLabelProvider labelProvider, int... cols) {
-		TableColumnSorter<?>[] sorters = new TableColumnSorter<?>[cols.length];
-		for (int i = 0; i < cols.length; i++) {
-			sorters[i] = new TableColumnSorter<>(contentType, cols[i],
-					labelProvider);
-		}
-		registerSorters(viewer, sorters);
+	public static <T> void sortByString(TableViewer viewer,
+			Function<T, String> fn, int col) {
+		StringSorter<T> s = new StringSorter<>(col, fn);
+		addSorter(viewer, s);
 	}
 
-	public static void registerSorters(final TableViewer viewer,
-			TableColumnSorter<?>... sorters) {
-		if (viewer == null || sorters == null)
-			return;
-		final Table table = viewer.getTable();
-		int count = table.getColumnCount();
-		for (final TableColumnSorter<?> sorter : sorters) {
-			if (sorter.getColumn() >= count)
-				continue;
-			final TableColumn column = table.getColumn(sorter.getColumn());
-			column.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					TableColumn current = table.getSortColumn();
-					if (column == current)
-						sorter.setAscending(!sorter.isAscending());
-					else
-						sorter.setAscending(true);
-					int direction = sorter.isAscending() ? SWT.UP : SWT.DOWN;
-					table.setSortDirection(direction);
-					table.setSortColumn(column);
-					viewer.setSorter(sorter);
-					viewer.refresh();
-				}
-			});
+	public static <T> void sortByDouble(TableViewer viewer,
+			Function<T, Double> fn, int col) {
+		DoubleSorter<T> s = new DoubleSorter<>(col, fn);
+		addSorter(viewer, s);
+	}
+
+	public static <T> void sortByLabels(TableViewer viewer,
+			ITableLabelProvider labelProvider, int... cols) {
+		for (int i = 0; i < cols.length; i++) {
+			LabelSorter<T> s = new LabelSorter<>(cols[i], labelProvider);
+			addSorter(viewer, s);
 		}
+	}
+
+	private static void addSorter(TableViewer viewer, Sorter<?> sorter) {
+		Table table = viewer.getTable();
+		if (sorter.column >= table.getColumnCount())
+			return;
+		TableColumn column = table.getColumn(sorter.column);
+		column.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				TableColumn current = table.getSortColumn();
+				if (column == current)
+					sorter.ascending = !sorter.ascending;
+				else
+					sorter.ascending = true;
+				int direction = sorter.ascending ? SWT.UP : SWT.DOWN;
+				table.setSortDirection(direction);
+				table.setSortColumn(column);
+				viewer.setSorter(sorter);
+				viewer.refresh();
+			}
+		});
 	}
 
 	/** Add an event handler for double clicks on the given table viewer. */

@@ -1,6 +1,7 @@
 package org.openlca.app.results.analysis;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -10,7 +11,6 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
-import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridLayout;
@@ -29,8 +29,8 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
-import org.openlca.app.util.Tables;
 import org.openlca.app.util.UI;
+import org.openlca.app.util.tables.Tables;
 import org.openlca.app.viewers.combo.ProcessViewer;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.matrix.FlowIndex;
@@ -47,15 +47,15 @@ class ProcessResultPage extends FormPage {
 	private EntityCache cache = Cache.getEntityCache();
 	private AnalyzeEditor editor;
 	private FullResultProvider result;
-	private ResultProvider flowResultProvider;
-	private ResultProvider impactResultProvider;
+	private ResultProvider flowResult;
+	private ResultProvider impactResult;
 
 	private FormToolkit toolkit;
 	private ProcessViewer flowProcessViewer;
-	private ProcessViewer impactProcessViewer;
-	private TableViewer inputViewer;
-	private TableViewer outputViewer;
-	private TableViewer impactViewer;
+	private ProcessViewer impactProcessCombo;
+	private TableViewer inputTable;
+	private TableViewer outputTable;
+	private TableViewer impactTable;
 	private Spinner flowSpinner;
 	private Spinner impactSpinner;
 	private ContributionImage image = new ContributionImage(
@@ -77,8 +77,8 @@ class ProcessResultPage extends FormPage {
 				Messages.ProcessResults);
 		this.editor = editor;
 		this.result = result;
-		this.flowResultProvider = new ResultProvider(result);
-		this.impactResultProvider = new ResultProvider(result);
+		this.flowResult = new ResultProvider(result);
+		this.impactResult = new ResultProvider(result);
 	}
 
 	@Override
@@ -100,25 +100,27 @@ class ProcessResultPage extends FormPage {
 	}
 
 	private void setInputs() {
-		FlowIndex flowIndex = result.getResult().getFlowIndex();
-		List<FlowDescriptor> inputFlows = new ArrayList<>();
-		List<FlowDescriptor> outputFlows = new ArrayList<>();
-		for (FlowDescriptor flow : result.getFlowDescriptors()) {
-			if (flowIndex.isInput(flow.getId()))
-				inputFlows.add(flow);
-			else
-				outputFlows.add(flow);
-		}
-		inputViewer.setInput(inputFlows);
-		outputViewer.setInput(outputFlows);
-
+		fillFlows(inputTable);
+		fillFlows(outputTable);
 		ProcessDescriptor p = cache.get(ProcessDescriptor.class, result
 				.getResult().getProductIndex().getRefProduct().getFirst());
 		flowProcessViewer.select(p);
 		if (result.hasImpactResults()) {
-			impactProcessViewer.select(p);
-			impactViewer.setInput(result.getImpactDescriptors());
+			impactProcessCombo.select(p);
+			impactTable.setInput(result.getImpactDescriptors());
 		}
+	}
+
+	private void fillFlows(TableViewer table) {
+		boolean input = table == inputTable;
+		FlowIndex idx = result.getResult().getFlowIndex();
+		List<FlowDescriptor> list = new ArrayList<>();
+		for (FlowDescriptor f : result.getFlowDescriptors()) {
+			if (idx.isInput(f.getId()) == input)
+				list.add(f);
+		}
+		Collections.sort(list);
+		table.setInput(list);
 	}
 
 	private void createFlowSection(Composite parent) {
@@ -135,9 +137,9 @@ class ProcessResultPage extends FormPage {
 		flowProcessViewer = new ProcessViewer(container, cache);
 		flowProcessViewer.setInput(editor.getSetup().getProductSystem());
 		flowProcessViewer.addSelectionChangedListener((selection) -> {
-			flowResultProvider.setProcess(selection);
-			inputViewer.refresh();
-			outputViewer.refresh();
+			flowResult.setProcess(selection);
+			inputTable.refresh();
+			outputTable.refresh();
 		});
 
 		UI.formLabel(container, toolkit, Messages.Cutoff);
@@ -147,25 +149,32 @@ class ProcessResultPage extends FormPage {
 		toolkit.createLabel(container, "%");
 		Controls.onSelect(flowSpinner, (e) -> {
 			flowCutOff = flowSpinner.getSelection();
-			inputViewer.refresh();
-			outputViewer.refresh();
+			inputTable.refresh();
+			outputTable.refresh();
 		});
 
 		Composite resultContainer = new Composite(composite, SWT.NONE);
 		resultContainer.setLayout(new GridLayout(2, true));
 		UI.gridData(resultContainer, true, true);
-
 		UI.formLabel(resultContainer, Messages.Inputs);
 		UI.formLabel(resultContainer, Messages.Outputs);
+		inputTable = createFlowTable(resultContainer);
+		outputTable = createFlowTable(resultContainer);
+	}
 
-		inputViewer = new TableViewer(resultContainer);
-		inputViewer.setLabelProvider(new FlowLabel());
-		decorateResultViewer(inputViewer, EXCHANGE_COLUMN_LABELS);
-
-		outputViewer = new TableViewer(resultContainer);
-		outputViewer.setLabelProvider(new FlowLabel());
-		decorateResultViewer(outputViewer, EXCHANGE_COLUMN_LABELS);
-
+	private TableViewer createFlowTable(Composite parent) {
+		TableViewer table = new TableViewer(parent);
+		decorateResultViewer(table, EXCHANGE_COLUMN_LABELS);
+		FlowLabel label = new FlowLabel();
+		table.setLabelProvider(label);
+		Tables.sortByLabels(table, label, 1, 4);
+		Tables.sortByDouble(table, (FlowDescriptor f) -> flowResult
+				.getUpstreamContribution(f), 0);
+		Tables.sortByDouble(table, (FlowDescriptor f) -> flowResult
+				.getUpstreamTotal(f), 2);
+		Tables.sortByDouble(table, (FlowDescriptor f) -> flowResult
+				.getDirectResult(f), 3);
+		return table;
 	}
 
 	private void createImpactSection(Composite parent) {
@@ -180,11 +189,11 @@ class ProcessResultPage extends FormPage {
 		UI.gridLayout(container, 5);
 		UI.gridData(container, true, false);
 		UI.formLabel(container, toolkit, Messages.Process);
-		impactProcessViewer = new ProcessViewer(container, cache);
-		impactProcessViewer.setInput(editor.getSetup().getProductSystem());
-		impactProcessViewer.addSelectionChangedListener((selection) -> {
-			impactResultProvider.setProcess(selection);
-			impactViewer.refresh();
+		impactProcessCombo = new ProcessViewer(container, cache);
+		impactProcessCombo.setInput(editor.getSetup().getProductSystem());
+		impactProcessCombo.addSelectionChangedListener((selection) -> {
+			impactResult.setProcess(selection);
+			impactTable.refresh();
 		});
 		UI.formLabel(container, toolkit, Messages.Cutoff);
 		impactSpinner = new Spinner(container, SWT.BORDER);
@@ -193,59 +202,68 @@ class ProcessResultPage extends FormPage {
 		toolkit.createLabel(container, "%");
 		Controls.onSelect(impactSpinner, (e) -> {
 			impactCutOff = impactSpinner.getSelection();
-			impactViewer.refresh();
+			impactTable.refresh();
 		});
-
-		impactViewer = new TableViewer(composite);
-		impactViewer.setLabelProvider(new ImpactLabel());
-		decorateResultViewer(impactViewer, IMPACT_COLUMN_LABELS);
+		impactTable = createImpactTable(composite);
 	}
 
-	private void decorateResultViewer(TableViewer viewer, String[] columnLabels) {
-		viewer.setContentProvider(ArrayContentProvider.getInstance());
-		viewer.getTable().setLinesVisible(true);
-		viewer.getTable().setHeaderVisible(true);
+	private TableViewer createImpactTable(Composite composite) {
+		TableViewer table = new TableViewer(composite);
+		decorateResultViewer(table, IMPACT_COLUMN_LABELS);
+		ImpactLabel label = new ImpactLabel();
+		table.setLabelProvider(label);
+		Tables.sortByLabels(table, label, 1, 4);
+		Tables.sortByDouble(table, (ImpactCategoryDescriptor i) -> impactResult
+				.getUpstreamContribution(i), 0);
+		Tables.sortByDouble(table, (ImpactCategoryDescriptor i) -> impactResult
+				.getUpstreamTotal(i), 2);
+		Tables.sortByDouble(table, (ImpactCategoryDescriptor i) -> impactResult
+				.getDirectResult(i), 3);
+		return table;
+	}
 
-		for (int i = 0; i < columnLabels.length; i++) {
-			final TableColumn c = new TableColumn(viewer.getTable(), SWT.NULL);
-			c.setText(columnLabels[i]);
+	private void decorateResultViewer(TableViewer table, String[] columns) {
+		table.setContentProvider(ArrayContentProvider.getInstance());
+		table.getTable().setLinesVisible(true);
+		table.getTable().setHeaderVisible(true);
+		for (int i = 0; i < columns.length; i++) {
+			TableColumn c = new TableColumn(table.getTable(), SWT.NULL);
+			c.setText(columns[i]);
 		}
-		viewer.setColumnProperties(columnLabels);
-		viewer.setSorter(new ContributionSorter());
-		viewer.setFilters(new ViewerFilter[] { new CutOffFilter() });
-		UI.gridData(viewer.getTable(), true, true);
-		Tables.bindColumnWidths(viewer.getTable(), new double[] { 0.20, 0.30,
-				0.20, 0.20, 0.10 });
+		table.setColumnProperties(columns);
+		table.setFilters(new ViewerFilter[] { new CutOffFilter() });
+		UI.gridData(table.getTable(), true, true);
+		Tables.bindColumnWidths(table.getTable(), 0.20, 0.30, 0.20, 0.20, 0.10);
 	}
 
 	private class FlowLabel extends BaseLabelProvider implements
 			ITableLabelProvider {
 
 		@Override
-		public Image getColumnImage(Object element, int columnIndex) {
-			if (!(element instanceof FlowDescriptor) || columnIndex != 0)
+		public Image getColumnImage(Object o, int col) {
+			if (!(o instanceof FlowDescriptor) || col != 0)
 				return null;
-			FlowDescriptor flow = (FlowDescriptor) element;
-			return image.getForTable(flowResultProvider
-					.getUpstreamContribution(flow));
+			FlowDescriptor flow = (FlowDescriptor) o;
+			double c = flowResult.getUpstreamContribution(flow);
+			return image.getForTable(c);
 		}
 
 		@Override
-		public String getColumnText(Object element, int columnIndex) {
-			if (!(element instanceof FlowDescriptor))
+		public String getColumnText(Object o, int col) {
+			if (!(o instanceof FlowDescriptor))
 				return null;
-			FlowDescriptor flow = (FlowDescriptor) element;
-			switch (columnIndex) {
+			FlowDescriptor flow = (FlowDescriptor) o;
+			switch (col) {
 			case 0:
-				return Numbers.percent(flowResultProvider
-						.getUpstreamContribution(flow));
+				return Numbers.percent(
+						flowResult.getUpstreamContribution(flow));
 			case 1:
 				return getFlowLabel(flow);
 			case 2:
 				return Numbers
-						.format(flowResultProvider.getUpstreamTotal(flow));
+						.format(flowResult.getUpstreamTotal(flow));
 			case 3:
-				return Numbers.format(flowResultProvider.getDirectResult(flow));
+				return Numbers.format(flowResult.getDirectResult(flow));
 			case 4:
 				return Labels.getRefUnit(flow, cache);
 			default:
@@ -268,71 +286,35 @@ class ProcessResultPage extends FormPage {
 		}
 	}
 
-	private class ContributionSorter extends ViewerSorter {
-
-		@Override
-		public int compare(Viewer viewer, Object e1, Object e2) {
-			if (!((e1 instanceof FlowDescriptor && e2 instanceof FlowDescriptor)
-			|| (e1 instanceof ImpactCategoryDescriptor && e2 instanceof ImpactCategoryDescriptor)))
-				return 0;
-
-			double contribution1 = 0;
-			if (e1 instanceof FlowDescriptor)
-				contribution1 = flowResultProvider
-						.getUpstreamContribution((FlowDescriptor) e1);
-			else if (e1 instanceof ImpactCategoryDescriptor)
-				contribution1 = impactResultProvider
-						.getUpstreamContribution((ImpactCategoryDescriptor) e1);
-
-			double contribution2 = 0;
-			if (e2 instanceof FlowDescriptor)
-				contribution2 = flowResultProvider
-						.getUpstreamContribution((FlowDescriptor) e2);
-			else if (e2 instanceof ImpactCategoryDescriptor)
-				contribution2 = impactResultProvider
-						.getUpstreamContribution((ImpactCategoryDescriptor) e2);
-
-			return -1 * Double.compare(contribution1, contribution2);
-		}
-	}
-
 	private class ImpactLabel extends BaseLabelProvider implements
 			ITableLabelProvider {
 
 		@Override
-		public Image getColumnImage(Object element, int columnIndex) {
-			if (!(element instanceof ImpactCategoryDescriptor)
-					|| element == null)
+		public Image getColumnImage(Object o, int col) {
+			if (!(o instanceof ImpactCategoryDescriptor))
 				return null;
-			if (columnIndex != 0)
+			if (col != 0)
 				return null;
-
-			return image
-					.getForTable(impactResultProvider
-							.getUpstreamContribution((ImpactCategoryDescriptor) element));
+			ImpactCategoryDescriptor d = (ImpactCategoryDescriptor) o;
+			return image.getForTable(impactResult.getUpstreamContribution(d));
 		}
 
 		@Override
-		public String getColumnText(Object element, int columnIndex) {
-			if (!(element instanceof ImpactCategoryDescriptor)
-					|| element == null)
+		public String getColumnText(Object o, int col) {
+			if (!(o instanceof ImpactCategoryDescriptor))
 				return null;
-
-			ImpactCategoryDescriptor category = (ImpactCategoryDescriptor) element;
-			switch (columnIndex) {
+			ImpactCategoryDescriptor d = (ImpactCategoryDescriptor) o;
+			switch (col) {
 			case 0:
-				return Numbers.percent(impactResultProvider
-						.getUpstreamContribution(category));
+				return Numbers.percent(impactResult.getUpstreamContribution(d));
 			case 1:
-				return category.getName();
+				return d.getName();
 			case 2:
-				return Numbers.format(impactResultProvider
-						.getUpstreamTotal(category));
+				return Numbers.format(impactResult.getUpstreamTotal(d));
 			case 3:
-				return Numbers.format(impactResultProvider
-						.getDirectResult(category));
+				return Numbers.format(impactResult.getDirectResult(d));
 			case 4:
-				return category.getReferenceUnit();
+				return d.getReferenceUnit();
 			}
 			return null;
 		}
@@ -342,22 +324,22 @@ class ProcessResultPage extends FormPage {
 	private class CutOffFilter extends ViewerFilter {
 
 		@Override
-		public boolean select(Viewer viewer, Object parentElement,
-				Object element) {
-			if (!(element instanceof FlowDescriptor || element instanceof ImpactCategoryDescriptor))
+		public boolean select(Viewer viewer, Object parent, Object o) {
+			if (!(o instanceof FlowDescriptor
+					|| o instanceof ImpactCategoryDescriptor))
 				return false;
-			boolean forFlow = element instanceof FlowDescriptor;
+			boolean forFlow = o instanceof FlowDescriptor;
 			double cutoff = forFlow ? flowCutOff : impactCutOff;
 			if (cutoff == 0)
 				return true;
-			double contribution = 0;
+			double c = 0;
 			if (forFlow)
-				contribution = flowResultProvider
-						.getUpstreamContribution((FlowDescriptor) element);
+				c = flowResult
+						.getUpstreamContribution((FlowDescriptor) o);
 			else
-				contribution = impactResultProvider
-						.getUpstreamContribution((ImpactCategoryDescriptor) element);
-			return contribution * 100 > cutoff;
+				c = impactResult
+						.getUpstreamContribution((ImpactCategoryDescriptor) o);
+			return c * 100 > cutoff;
 		}
 	}
 
@@ -384,10 +366,8 @@ class ProcessResultPage extends FormPage {
 			if (total == 0)
 				return 0;
 			double val = result.getUpstreamFlowResult(process, flow).getValue();
-			double contribution = val / Math.abs(total);
-			if (contribution > 1)
-				return 1;
-			return contribution;
+			double c = val / Math.abs(total);
+			return c > 1 ? 1 : c;
 		}
 
 		private double getDirectResult(FlowDescriptor flow) {
@@ -402,18 +382,15 @@ class ProcessResultPage extends FormPage {
 			return result.getUpstreamFlowResult(process, flow).getValue();
 		}
 
-		private double getUpstreamContribution(ImpactCategoryDescriptor category) {
-			if (process == null || category == null)
+		private double getUpstreamContribution(ImpactCategoryDescriptor d) {
+			if (process == null || d == null)
 				return 0;
-			double total = result.getTotalImpactResult(category).getValue();
+			double total = result.getTotalImpactResult(d).getValue();
 			if (total == 0)
 				return 0;
-			double val = result.getUpstreamImpactResult(process, category)
-					.getValue();
-			double contribution = val / Math.abs(total);
-			if (contribution > 1)
-				return 1;
-			return contribution;
+			double val = result.getUpstreamImpactResult(process, d).getValue();
+			double c = val / Math.abs(total);
+			return c > 1 ? 1 : c;
 		}
 
 		private double getDirectResult(ImpactCategoryDescriptor category) {
