@@ -18,6 +18,8 @@ class JsonLoader {
 	private final static Logger log = LoggerFactory
 			.getLogger(PluginService.class);
 	private final static String JSON_NAME = "plugins.json";
+	private final static String JSON_FULL_NAME = "plugins_" + App.getVersion()
+			+ ".json";
 
 	public String getPluginsJson() {
 		String json = getRemoteJson();
@@ -66,7 +68,7 @@ class JsonLoader {
 
 	private File localJsonFile() {
 		File workspace = Workspace.getDir();
-		File jsonFile = new File(workspace, JSON_NAME);
+		File jsonFile = new File(workspace, JSON_FULL_NAME);
 		return jsonFile;
 	}
 
