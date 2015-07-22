@@ -47,6 +47,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	private IWorkbenchAction saveAllAction;
 	private IWorkbenchAction saveAsAction;
 	private IContributionItem showViews;
+	private IContributionItem showPerspectives;
 
 	public RcpActionBarAdvisor(IActionBarConfigurer configurer) {
 		super(configurer);
@@ -72,8 +73,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	}
 
 	private void fillHelpMenu(IMenuManager menuBar) {
-		MenuManager helpMenu = new MenuManager(Messages.Help,
-				IWorkbenchActionConstants.M_HELP);
+		MenuManager helpMenu = new MenuManager(Messages.Help, IWorkbenchActionConstants.M_HELP);
 		HelpAction helpAction = new HelpAction();
 		helpMenu.add(helpAction);
 		helpMenu.add(new Separator());
@@ -82,8 +82,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	}
 
 	private void fillFileMenu(IMenuManager menuBar) {
-		MenuManager menu = new MenuManager(Messages.File,
-				IWorkbenchActionConstants.M_FILE);
+		MenuManager menu = new MenuManager(Messages.File, IWorkbenchActionConstants.M_FILE);
 		menu.add(saveAction);
 		menu.add(saveAsAction);
 		menu.add(saveAllAction);
@@ -92,8 +91,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		menu.add(closeAllAction);
 		menu.add(new Separator());
 		menu.add(new EditLocationsAction());
-		menu.add(Actions.create(Messages.GlobalParameters,
-				ImageType.FORMULA_ICON.getDescriptor(),
+		menu.add(Actions.create(Messages.GlobalParameters, ImageType.FORMULA_ICON.getDescriptor(),
 				() -> GlobalParameterEditor.open()));
 		menu.add(preferencesAction);
 		menu.add(new OpenPluginManagerAction());
@@ -106,16 +104,17 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	}
 
 	private void fillWindowMenu(IMenuManager menuBar) {
-		MenuManager windowMenu = new MenuManager(Messages.Window,
-				IWorkbenchActionConstants.M_WINDOW);
+		MenuManager windowMenu = new MenuManager(Messages.Window, IWorkbenchActionConstants.M_WINDOW);
 		MenuManager viewMenu = new MenuManager(Messages.Showviews);
 		viewMenu.add(showViews);
 		windowMenu.add(viewMenu);
+		MenuManager perspectivesMenu = new MenuManager(Messages.Showperspectives);
+		perspectivesMenu.add(showPerspectives);
+		windowMenu.add(perspectivesMenu);
 		createDeveloperMenu(windowMenu);
 		windowMenu.add(new FormulaConsoleAction());
 		if (MozillaConfigView.canShow()) {
-			windowMenu.add(Actions.create(Messages.BrowserConfiguration,
-					ImageType.FIREFOX_ICON.getDescriptor(),
+			windowMenu.add(Actions.create(Messages.BrowserConfiguration, ImageType.FIREFOX_ICON.getDescriptor(),
 					MozillaConfigView::open));
 		}
 		menuBar.add(windowMenu);
@@ -125,13 +124,9 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		windowMenu.add(new Separator());
 		MenuManager devMenu = new MenuManager(Messages.DeveloperTools);
 		windowMenu.add(devMenu);
-		devMenu.add(Actions.create("SQL", ImageType.SQL_ICON.getDescriptor(),
-				SqlEditor::open));
-		devMenu.add(Actions.create("JavaScript",
-				ImageType.JAVASCRIPT_ICON.getDescriptor(),
-				JavaScriptEditor::open));
-		devMenu.add(Actions.create("Python",
-				ImageType.PYTHON_ICON.getDescriptor(), PythonEditor::open));
+		devMenu.add(Actions.create("SQL", ImageType.SQL_ICON.getDescriptor(), SqlEditor::open));
+		devMenu.add(Actions.create("JavaScript", ImageType.JAVASCRIPT_ICON.getDescriptor(), JavaScriptEditor::open));
+		devMenu.add(Actions.create("Python", ImageType.PYTHON_ICON.getDescriptor(), PythonEditor::open));
 		windowMenu.add(new Separator());
 	}
 
@@ -147,6 +142,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		exportAction = ActionFactory.EXPORT.create(window);
 		exitAction = ActionFactory.QUIT.create(window);
 		showViews = ContributionItemFactory.VIEWS_SHORTLIST.create(window);
+		showPerspectives = ContributionItemFactory.PERSPECTIVES_SHORTLIST.create(window);
 		aboutAction = ActionFactory.ABOUT.create(window);
 	}
 
@@ -187,8 +183,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 				Error.showBox("You need to activate a database first");
 				return;
 			}
-			Editors.open(new DefaultInput(LocationsEditor.ID),
-					LocationsEditor.ID);
+			Editors.open(new DefaultInput(LocationsEditor.ID), LocationsEditor.ID);
 		}
 	}
 

@@ -530,6 +530,7 @@ public class Messages extends NLS {
 	public static String ShowOutline;
 	public static String ShowValues;
 	public static String Showviews;
+	public static String Showperspectives;
 	public static String SimaProCSVImport;
 	public static String SingleAmount;
 	public static String SingleScore;

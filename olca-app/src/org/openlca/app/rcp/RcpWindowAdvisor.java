@@ -1,6 +1,11 @@
 package org.openlca.app.rcp;
 
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.ui.IPerspectiveDescriptor;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
@@ -20,8 +25,7 @@ public class RcpWindowAdvisor extends WorkbenchWindowAdvisor {
 	}
 
 	@Override
-	public ActionBarAdvisor createActionBarAdvisor(
-			IActionBarConfigurer configurer) {
+	public ActionBarAdvisor createActionBarAdvisor(IActionBarConfigurer configurer) {
 		return new RcpActionBarAdvisor(configurer);
 	}
 
@@ -39,7 +43,16 @@ public class RcpWindowAdvisor extends WorkbenchWindowAdvisor {
 	@Override
 	public void postWindowOpen() {
 		if (Config.isBrowserEnabled())
-			StartPage.open();
+			if (isStandardPerspective())
+				StartPage.open();
+	}
+
+	private boolean isStandardPerspective() {
+		IWorkbench wb = PlatformUI.getWorkbench();
+		IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+		IWorkbenchPage page = win.getActivePage();
+		IPerspectiveDescriptor perspective = page.getPerspective();
+		return perspective.getId().equals(RcpPerspective.ID);
 	}
 
 	@Override

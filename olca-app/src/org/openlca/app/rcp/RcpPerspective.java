@@ -8,19 +8,19 @@ import org.openlca.app.navigation.Navigator;
 
 public class RcpPerspective implements IPerspectiveFactory {
 
+	public final static String ID = "perspectives.standard";
+
 	@Override
 	public void createInitialLayout(final IPageLayout layout) {
 		String editorArea = layout.getEditorArea();
 		layout.setEditorAreaVisible(true);
 		layout.setFixed(false);
-		IFolderLayout naviFolder = layout.createFolder("Navigation",
-				IPageLayout.LEFT, 0.31f, editorArea);
+		IFolderLayout naviFolder = layout.createFolder("Navigation", IPageLayout.LEFT, 0.31f, editorArea);
 		naviFolder.addView(Navigator.ID);
 		IViewLayout naviLayout = layout.getViewLayout(Navigator.ID);
 		naviLayout.setCloseable(false);
 		naviLayout.setMoveable(false);
 		// outline place holder
-		layout.addPlaceholder(IPageLayout.ID_OUTLINE, IPageLayout.RIGHT, 0.8f,
-				editorArea);
+		layout.addPlaceholder(IPageLayout.ID_OUTLINE, IPageLayout.RIGHT, 0.8f, editorArea);
 	}
 }
