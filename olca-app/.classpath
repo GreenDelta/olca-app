@@ -94,7 +94,7 @@
 	<classpathentry exported="true" kind="lib" path="libs/xmlbeans-2.3.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/xsd-2.6.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/zt-zip-1.6.jar"/>
-	<classpathentry kind="lib" path="libs/olca-geo-0.0.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-geo-0.0.2.jar"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
