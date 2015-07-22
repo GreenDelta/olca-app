@@ -77,6 +77,7 @@ public class AnalyzeEditor extends FormEditor {
 			if (result.hasImpactResults())
 				addPage(new FlowImpactPage(this, result));
 			addPage(new ContributionTreePage(this, result));
+			addPage(new ImpactTreePage(this, result)); 
 			addPage(new GroupPage(this, result));
 			addPage(new LocationContributionPage(this, result));
 			if (FeatureFlag.EXPERIMENTAL_VISUALISATIONS.isEnabled()) {
