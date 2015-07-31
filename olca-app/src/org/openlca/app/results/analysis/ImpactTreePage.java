@@ -34,7 +34,6 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
-import org.openlca.core.results.ContributionItem;
 import org.openlca.core.results.FlowResult;
 import org.openlca.core.results.FullResultProvider;
 
@@ -108,7 +107,7 @@ public class ImpactTreePage extends FormPage {
 	private void createCutOffFilter(Composite parent) {
 		UI.formLabel(parent, toolkit, Messages.Cutoff);
 		spinner = new Spinner(parent, SWT.BORDER);
-		spinner.setValues(1, 0, 100, 0, 1, 10);
+		spinner.setValues(0, 0, 100, 0, 1, 10);
 		toolkit.adapt(spinner);
 		toolkit.createLabel(parent, "%");
 		Controls.onSelect(spinner, (e) -> {
