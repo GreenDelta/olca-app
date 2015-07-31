@@ -42,7 +42,7 @@ public class ImpactTreePage extends FormPage {
 
 	private final static String COLUMN_NAME = "Process/Flow name";
 	private final static String COLUMN_LOCATION = "Location";
-	private final static String COLUMN_CATEGORY = "Category";
+	private final static String COLUMN_CATEGORY = "Flow category";
 	private final static String COLUMN_AMOUNT = "Inventory result";
 	private final static String COLUMN_FACTOR = "Impact factor";
 	private final static String COLUMN_IMPACT_RESULT = "Impact result";
@@ -58,16 +58,16 @@ public class ImpactTreePage extends FormPage {
 	private double cutOff = 0;
 
 	public ImpactTreePage(FormEditor editor, FullResultProvider result) {
-		super(editor, "AnalyzeInfoPage", "Impact contributions");
+		super(editor, "ImpactTreePage", "Impact analysis");
 		this.result = result;
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, "Impact contributions");
+		ScrolledForm form = UI.formHeader(managedForm, "Impact analysis");
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
-		Section section = UI.section(body, toolkit, "Impact contributions");
+		Section section = UI.section(body, toolkit, "Impact analysis");
 		UI.gridData(section, true, true);
 		Composite client = toolkit.createComposite(section);
 		section.setClient(client);
@@ -80,7 +80,7 @@ public class ImpactTreePage extends FormPage {
 
 	private void createSelectionAndFilter(Composite parent) {
 		Composite container = new Composite(parent, SWT.NONE);
-		UI.gridLayout(container, 4);
+		UI.gridLayout(container, 7);
 		UI.gridData(container, true, false);
 		UI.formLabel(container, "Impact category");
 		createCategorySelection(container);
@@ -98,7 +98,7 @@ public class ImpactTreePage extends FormPage {
 	}
 
 	private void createNoImpactFilter(Composite parent) {
-		filterZeroButton = UI.formCheckBox(parent, toolkit, "Filter zero entries");
+		filterZeroButton = UI.formCheckBox(parent, toolkit, "Exclude zero entries");
 		Controls.onSelect(filterZeroButton, (event) -> {
 			filterZeroes = filterZeroButton.getSelection();
 			viewer.refresh();
@@ -140,14 +140,11 @@ public class ImpactTreePage extends FormPage {
 
 		@Override
 		public Image getColumnImage(Object element, int columnIndex) {
-			if (!(element instanceof ContributionItem))
-				return null;
 			if (columnIndex > 0)
 				return null;
-			ContributionItem<?> item = (ContributionItem<?>) element;
-			if (item.getItem() instanceof ProcessDescriptor)
+			if (element instanceof ProcessDescriptor)
 				return Images.getIcon(ModelType.PROCESS);
-			if (item.getItem() instanceof FlowDescriptor)
+			if (element instanceof FlowWithProcessDescriptor)
 				return Images.getIcon(ModelType.FLOW);
 			return null;
 		}
@@ -179,16 +176,15 @@ public class ImpactTreePage extends FormPage {
 		}
 
 		private String getFlowText(FlowWithProcessDescriptor descriptor, String column) {
-			FlowResult flowResult = result.getSingleFlowResult(descriptor.process, descriptor.flow);
 			switch (column) {
 			case COLUMN_NAME:
 				return descriptor.flow.getName();
 			case COLUMN_CATEGORY:
 				return toString(Labels.getFlowCategory(descriptor.flow, result.getCache()));
 			case COLUMN_AMOUNT:
-				return Double.toString(flowResult.getValue());
+				return Double.toString(getAmount(descriptor));
 			case COLUMN_FACTOR:
-				return "0.0";
+				return Double.toString(getFactor(descriptor));
 			case COLUMN_IMPACT_RESULT:
 				return Double.toString(getResult(descriptor));
 			}
@@ -201,8 +197,21 @@ public class ImpactTreePage extends FormPage {
 
 	}
 
+	private double getAmount(FlowWithProcessDescriptor descriptor) {
+		FlowResult flowResult = result.getSingleFlowResult(descriptor.process, descriptor.flow);
+		return flowResult.getValue();
+	}
+
+	private double getFactor(FlowWithProcessDescriptor descriptor) {
+		int row = result.getResult().getImpactIndex().getIndex(impactCategory.getId());
+		int col = result.getResult().getFlowIndex().getIndex(descriptor.flow.getId());
+		return result.getResult().getImpactFactorMatrix().getEntry(row, col);
+	}
+
 	private double getResult(FlowWithProcessDescriptor descriptor) {
-		return 0;
+		double factor = getFactor(descriptor);
+		double amount = getAmount(descriptor);
+		return factor * amount;
 	}
 
 	private double getResult(ProcessDescriptor descriptor) {

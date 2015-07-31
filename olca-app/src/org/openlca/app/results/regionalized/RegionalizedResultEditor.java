@@ -18,6 +18,7 @@ import org.openlca.app.results.TotalFlowResultPage;
 import org.openlca.app.results.TotalImpactResultPage;
 import org.openlca.app.results.analysis.AnalyzeInfoPage;
 import org.openlca.app.results.analysis.ContributionTreePage;
+import org.openlca.app.results.analysis.ImpactTreePage;
 import org.openlca.app.results.analysis.ProcessResultPage;
 import org.openlca.app.results.analysis.SunBurstView;
 import org.openlca.app.results.analysis.sankey.SankeyDiagram;
@@ -76,6 +77,7 @@ public class RegionalizedResultEditor extends FormEditor {
 				if (regioRresult.hasImpactResults())
 					addPage(new FlowImpactPage(this, regioRresult));
 				addPage(new ContributionTreePage(this, regioRresult));
+				addPage(new ImpactTreePage(this, regioRresult));
 				addPage(new GroupPage(this, regioRresult));
 				if (FeatureFlag.EXPERIMENTAL_VISUALISATIONS.isEnabled()) {
 					addPage(new ProcessTreemapPage(this, regioRresult));
