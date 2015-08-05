@@ -20,8 +20,7 @@ gulp.task('libs', ['base_libs', 'bootstrap']);
 
 gulp.task('clean', function() {
 	return gulp.src([
-			'build', 
-			'dist', 
+			'build',
 			'src/plugin_manager/precompiled'
 		], {read: false})
 		.pipe(clean());
@@ -44,9 +43,7 @@ gulp.task('html_pages', function() {
 
 gulp.task('jade_pages', function() {
 	return gulp.src('src/plugin_manager/jade/plugin_manager.jade')
-		.pipe(jade({
-			locals: {}
-		}))
+		.pipe(jade({ locals: {} }))
 		.pipe(gulp.dest('build'));
 });
 
@@ -100,5 +97,5 @@ gulp.task('plugin_manager_styles', function() {
 gulp.task('zip', function() {
 	return gulp.src('build/**')
 		.pipe(zip('base_html.zip'))
-		.pipe(gulp.dest('dist'));
+		.pipe(gulp.dest('../olca-app/html'));
 });

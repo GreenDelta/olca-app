@@ -1,0 +1,3 @@
+# run the Gulp script in the olca-app-html project to generate the html pages
+# that are packed with the application
+base_html.zip
