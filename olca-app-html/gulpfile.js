@@ -73,9 +73,7 @@ gulp.task('bootstrap', function() {
 
 gulp.task('plugin_manager_scripts', function() {
 	return gulp.src('src/plugin_manager/coffeescript/*.coffee')
-		.pipe(coffee({
-			bare: true
-		}))
+		.pipe(coffee({ bare: true }))
 		.pipe(gulp.dest('src/plugin_manager/precompiled'));
 });
 
@@ -87,9 +85,7 @@ gulp.task('plugin_manager_templates', function() {
 
 gulp.task('plugin_manager_styles', function() {
 	return gulp.src('src/plugin_manager/stylus/*.styl')
-		.pipe(stylus({
-			use: [nib()]
-		}))
+		.pipe(stylus({ use: [nib()] }))
 		.pipe(concat('main.css'))
 		.pipe(gulp.dest('src/plugin_manager/precompiled'));
 });
