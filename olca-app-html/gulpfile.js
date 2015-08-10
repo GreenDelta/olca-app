@@ -54,20 +54,20 @@ gulp.task('images', function() {
 
 gulp.task('base_libs', function() {
 	return gulp.src([
-			'bower_components/angular/angular.min.js',
-			'bower_components/angular-sanitize/angular-sanitize.min.js',
-			'bower_components/codemirror/lib/*',
-			'bower_components/codemirror/mode/javascript/javascript.js',
-			'bower_components/codemirror/mode/python/python.js',
-			'bower_components/d3/d3.min.js',
-			'bower_components/jquery/dist/jquery.min.js',
+			'node_modules/angular/angular.min.js',
+			'node_modules/angular-sanitize/angular-sanitize.min.js',
+			'node_modules/codemirror/lib/*',
+			'node_modules/codemirror/mode/javascript/javascript.js',
+			'node_modules/codemirror/mode/python/python.js',
+			'node_modules/d3/d3.min.js',
+			'node_modules/jquery/dist/jquery.min.js',
 			'other_libs/*.js'
 		])
 		.pipe(gulp.dest('build/libs'));
 });
 
 gulp.task('bootstrap', function() {
-	return gulp.src(['bower_components/bootstrap/dist/**'])
+	return gulp.src(['node_modules/bootstrap/dist/**'])
 		.pipe(gulp.dest('build/libs/bootstrap'));
 });
 
