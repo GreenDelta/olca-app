@@ -82,7 +82,7 @@ After this, open Eclipse and select the created workspace directory. Import the 
 (select the olca/olca-app directory). You should now see the olca-app, alca-app-build, and olca-app-runtime projects in your Eclipse workspace.
 
 ####Build the Eclipse runtime
-Within Eclipse right-click on the `olca-app-runtime/build.xml` file and select `Run as.../Ant build`. This will download the RCP platform on which openLCA is built. When this script is finished (note that this could take a while) open the file `olca-app-runtime/platform.target` within Eclipse and click on 'Set as target platform' on the top right of the editor.
+Within Eclipse right-click on the `olca-app-runtime/build.xml` file and select `Run as.../Ant build`. This will download the RCP platform on which openLCA is built. When this script is finished (note that this could take a while) open the file `olca-app-runtime/platform.target` within Eclipse. Modify the current location to an absolute path which points to the `olca-app-runtime/platform` folder. After this click on 'Set as target platform' on the top right of the editor.
 
 After this, go back to the command line and navigate to the `olca-app/olca-app` folder:
 
