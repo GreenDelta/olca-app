@@ -56,8 +56,7 @@ public class ProjectResultChart extends Composite {
 
 	public void renderChart(BaseDescriptor reference,
 			ContributionSet<ProjectVariant> set) {
-		List<ContributionItem<ProjectVariant>> contributions = set
-				.getContributions();
+		List<ContributionItem<ProjectVariant>> contributions = set.contributions;
 		ChartWithAxes chart = ChartWithAxesImpl.create();
 		chart.setDimension(ChartDimension.TWO_DIMENSIONAL_LITERAL);
 		chart.getTitle().setVisible(false);
@@ -72,13 +71,12 @@ public class ProjectResultChart extends Composite {
 	}
 
 	private void scale(Axis yAxis, ContributionSet<ProjectVariant> set) {
-		List<ContributionItem<ProjectVariant>> contributions = set
-				.getContributions();
+		List<ContributionItem<ProjectVariant>> contributions = set.contributions;
 		if (contributions.isEmpty())
 			return;
 		double[] vals = new double[contributions.size()];
 		for (int i = 0; i < contributions.size(); i++)
-			vals[i] = contributions.get(i).getAmount();
+			vals[i] = contributions.get(i).amount;
 		double min = Doubles.min(vals);
 		double max = Doubles.max(vals);
 		if (min == 0 && max == 0)
@@ -96,7 +94,8 @@ public class ProjectResultChart extends Composite {
 				.create("#.0###E0"));
 	}
 
-	private Axis yAxis(ChartWithAxes chart, Axis xAxis, BaseDescriptor reference) {
+	private Axis yAxis(ChartWithAxes chart, Axis xAxis,
+			BaseDescriptor reference) {
 		String title = Messages.Results;
 		String unit = null;
 		if (reference instanceof FlowDescriptor) {
@@ -126,7 +125,7 @@ public class ProjectResultChart extends Composite {
 			List<ContributionItem<ProjectVariant>> contributions) {
 		String[] variantNames = new String[contributions.size()];
 		for (int i = 0; i < contributions.size(); i++)
-			variantNames[i] = contributions.get(i).getItem().getName();
+			variantNames[i] = contributions.get(i).item.getName();
 		TextDataSet xAxisValues = TextDataSetImpl.create(variantNames);
 		Series series = SeriesImpl.create();
 		series.setDataSet(xAxisValues);
@@ -154,7 +153,7 @@ public class ProjectResultChart extends Composite {
 			List<ContributionItem<ProjectVariant>> contributions) {
 		double[] values = new double[contributions.size()];
 		for (int i = 0; i < contributions.size(); i++)
-			values[i] = contributions.get(i).getAmount();
+			values[i] = contributions.get(i).amount;
 		NumberDataSet dataSet = NumberDataSetImpl.create(values);
 		BarSeries barSeries = (BarSeries) BarSeriesImpl.create();
 		barSeries.setDataSet(dataSet);

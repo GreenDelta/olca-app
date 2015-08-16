@@ -92,10 +92,9 @@ public class FlowImpactPage extends FormPage {
 		impactCombo = new ImpactCategoryViewer(parent);
 		impactCombo.setInput(result.getImpactDescriptors());
 		impactCombo.addSelectionChangedListener((impact) -> {
-			ContributionSet<FlowDescriptor> contributions = result
+			ContributionSet<FlowDescriptor> set = result
 					.getFlowContributions(impact);
-			List<ContributionItem<FlowDescriptor>> items = contributions
-					.getContributions();
+			List<ContributionItem<FlowDescriptor>> items = set.contributions;
 			Contributions.sortDescending(items);
 			table.setInput(items);
 		});
@@ -109,8 +108,8 @@ public class FlowImpactPage extends FormPage {
 		Tables.bindColumnWidths(table.getTable(), 0.1, 0.3, 0.2, 0.2, 0.1, 0.1);
 		Actions.bind(table, TableClipboard.onCopy(table));
 		Tables.sortByLabels(table, label, 1, 2, 3, 5);
-		Tables.sortByDouble(table, (ContributionItem<?> i) -> i.getShare(), 0);
-		Tables.sortByDouble(table, (ContributionItem<?> i) -> i.getAmount(), 4);
+		Tables.sortByDouble(table, (ContributionItem<?> i) -> i.share, 0);
+		Tables.sortByDouble(table, (ContributionItem<?> i) -> i.amount, 4);
 	}
 
 	private class Label extends BaseLabelProvider implements
@@ -128,7 +127,7 @@ public class FlowImpactPage extends FormPage {
 				return null;
 			ContributionItem<FlowDescriptor> contribution = ContributionItem.class
 					.cast(element);
-			return image.getForTable(contribution.getShare());
+			return image.getForTable(contribution.share);
 		}
 
 		@Override
@@ -138,12 +137,12 @@ public class FlowImpactPage extends FormPage {
 				return null;
 			ContributionItem<FlowDescriptor> contribution = ContributionItem.class
 					.cast(element);
-			FlowDescriptor flow = contribution.getItem();
+			FlowDescriptor flow = contribution.item;
 			Pair<String, String> category = Labels.getFlowCategory(flow,
 					Cache.getEntityCache());
 			switch (columnIndex) {
 			case 0:
-				return Numbers.percent(contribution.getShare());
+				return Numbers.percent(contribution.share);
 			case 1:
 				return Labels.getDisplayName(flow);
 			case 2:
@@ -151,7 +150,7 @@ public class FlowImpactPage extends FormPage {
 			case 3:
 				return category.getRight();
 			case 4:
-				return Numbers.format(contribution.getAmount());
+				return Numbers.format(contribution.amount);
 			case 5:
 				return impactCombo.getSelected().getReferenceUnit();
 			default:
@@ -174,7 +173,7 @@ public class FlowImpactPage extends FormPage {
 			if (!(element instanceof ContributionItem))
 				return false;
 			ContributionItem<?> item = (ContributionItem<?>) element;
-			if (Math.abs(item.getShare() * 100) < cutOff)
+			if (Math.abs(item.share * 100) < cutOff)
 				return false;
 			return true;
 		}

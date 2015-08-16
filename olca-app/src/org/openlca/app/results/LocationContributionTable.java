@@ -106,7 +106,8 @@ class LocationContributionTable {
 		}
 
 		@Override
-		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+		public void inputChanged(Viewer viewer, Object oldInput,
+				Object newInput) {
 			// do nothing
 		}
 
@@ -134,7 +135,7 @@ class LocationContributionTable {
 				contribution = inputElement.getContribution();
 			} else
 				contribution = ContributionItem.class.cast(element);
-			return image.getForTable(contribution.getShare());
+			return image.getForTable(contribution.share);
 		}
 
 		@SuppressWarnings("unchecked")
@@ -155,12 +156,12 @@ class LocationContributionTable {
 				ContributionItem<Location> contribution, int col) {
 			switch (col) {
 			case LOCATION_COL:
-				return contribution.getItem() == null ? Messages.Other
-						: contribution.getItem().getName();
+				return contribution.item == null ? Messages.Other
+						: contribution.item.getName();
 			case PROCESS_COL:
 				return "";
 			case AMOUNT_COL:
-				return Numbers.format(contribution.getAmount());
+				return Numbers.format(contribution.amount);
 			case UNIT_COL:
 				return unit;
 			default:
@@ -174,10 +175,10 @@ class LocationContributionTable {
 			case LOCATION_COL:
 				return "";
 			case PROCESS_COL:
-				return contribution.getItem() == null ? Messages.Other
-						: contribution.getItem().getName();
+				return contribution.item == null ? Messages.Other
+						: contribution.item.getName();
 			case AMOUNT_COL:
-				return Numbers.format(contribution.getAmount());
+				return Numbers.format(contribution.amount);
 			case UNIT_COL:
 				return unit;
 			default:

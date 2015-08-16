@@ -38,7 +38,6 @@ import org.openlca.core.results.ContributionItem;
 import org.openlca.core.results.ContributionResultProvider;
 import org.openlca.core.results.ContributionSet;
 import org.openlca.core.results.Contributions;
-import org.openlca.core.results.Contributions.Function;
 import org.openlca.core.results.LocationContribution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -135,11 +134,11 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 		for (ContributionItem<Location> contribution : contributions) {
 			if (!showContribution(contribution))
 				continue;
-			Location location = contribution.getItem();
+			Location location = contribution.item;
 			HeatmapPoint point = new HeatmapPoint();
 			point.latitude = location.getLatitude();
 			point.longitude = location.getLongitude();
-			point.weight = (int) (100d * contribution.getShare());
+			point.weight = (int) (100d * contribution.share);
 			points.add(point);
 		}
 		if (points.size() == 1)
@@ -150,12 +149,12 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 	}
 
 	private boolean showContribution(ContributionItem<Location> contribution) {
-		Location location = contribution.getItem();
+		Location location = contribution.item;
 		if (location == null)
 			return false;
 		if (location.getLatitude() == 0 && location.getLongitude() == 0)
 			return false;
-		if (contribution.getShare() <= 0)
+		if (contribution.share <= 0)
 			return false;
 		return true;
 	}
@@ -166,9 +165,9 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 		public void flowSelected(FlowDescriptor flow) {
 			if (table == null || calculator == null || flow == null)
 				return;
-			String unit = Labels.getRefUnit(flow, result.getCache());
+			String unit = Labels.getRefUnit(flow, result.cache);
 			ContributionSet<Location> set = calculator.calculate(flow);
-			double total = result.getTotalFlowResult(flow).getValue();
+			double total = result.getTotalFlowResult(flow).value;
 			setData(set, flow, total, unit);
 		}
 
@@ -178,18 +177,18 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 				return;
 			String unit = impact.getReferenceUnit();
 			ContributionSet<Location> set = calculator.calculate(impact);
-			double total = result.getTotalImpactResult(impact).getValue();
+			double total = result.getTotalImpactResult(impact).value;
 			setData(set, impact, total, unit);
 		}
 
 		private void setData(ContributionSet<Location> set,
 				BaseDescriptor descriptor, double total, String unit) {
-			Contributions.sortDescending(set.getContributions());
+			Contributions.sortDescending(set.contributions);
 			List<TreeInputElement> items = inputBuilder.build(set, descriptor,
 					total);
 			table.setInput(items, unit);
 			if (showMap)
-				renderMap(set.getContributions());
+				renderMap(set.contributions);
 		}
 
 	}
@@ -207,7 +206,7 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 		private void initProcessIndex() {
 			if (result == null)
 				return;
-			EntityCache cache = result.getCache();
+			EntityCache cache = result.cache;
 			for (ProcessDescriptor process : result.getProcessDescriptors()) {
 				Location loc = null;
 				if (process.getLocation() != null)
@@ -221,36 +220,28 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 			}
 		}
 
-		private List<TreeInputElement> build(
-				ContributionSet<Location> contributions,
+		private List<TreeInputElement> build(ContributionSet<Location> set,
 				BaseDescriptor descriptor, double total) {
 			List<TreeInputElement> elements = new ArrayList<>();
-			for (ContributionItem<Location> contribution : contributions
-					.getContributions())
+			for (ContributionItem<Location> contribution : set.contributions)
 				elements.add(new TreeInputElement(contribution));
 			Contributions.calculate(processIndex.keySet(), total,
-					new Function<Location>() {
-						@Override
-						public double value(Location location) {
-							TreeInputElement element = getInputFor(elements,
-									location);
-							List<ProcessDescriptor> list = processIndex
-									.get(location);
-							double amount = 0;
-							for (ProcessDescriptor p : list) {
-								amount += getSingleResult(p, descriptor);
-								ContributionItem<ProcessDescriptor> processContribution = new ContributionItem<>();
-								processContribution.setRest(p == null);
-								processContribution.setItem(p);
-								processContribution.setAmount(amount);
-								processContribution.setShare(amount / total);
-								element.getProcessContributions().add(
-										processContribution);
-							}
-							Contributions.sortDescending(element
-									.getProcessContributions());
-							return amount;
+					(loc) -> {
+						TreeInputElement elem = getInputFor(elements, loc);
+						List<ProcessDescriptor> list = processIndex.get(loc);
+						double amount = 0;
+						for (ProcessDescriptor p : list) {
+							amount += getSingleResult(p, descriptor);
+							ContributionItem<ProcessDescriptor> item = new ContributionItem<>();
+							item.rest = p == null;
+							item.item = p;
+							item.amount = amount;
+							item.share = amount / total;
+							elem.getProcessContributions().add(item);
 						}
+						Contributions
+								.sortDescending(elem.getProcessContributions());
+						return amount;
 					});
 			return elements;
 		}
@@ -259,15 +250,15 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 				BaseDescriptor descriptor) {
 			if (descriptor.getModelType() == ModelType.IMPACT_CATEGORY)
 				return result.getSingleImpactResult(process,
-						(ImpactCategoryDescriptor) descriptor).getValue();
+						(ImpactCategoryDescriptor) descriptor).value;
 			return result.getSingleFlowResult(process,
-					(FlowDescriptor) descriptor).getValue();
+					(FlowDescriptor) descriptor).value;
 		}
 
 		private TreeInputElement getInputFor(List<TreeInputElement> elements,
 				Location location) {
 			for (TreeInputElement element : elements) {
-				Location other = element.getContribution().getItem();
+				Location other = element.getContribution().item;
 				if (other == null)
 					if (location == null)
 						return element;

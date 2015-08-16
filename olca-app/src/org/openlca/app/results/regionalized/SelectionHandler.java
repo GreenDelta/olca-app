@@ -31,9 +31,8 @@ abstract class SelectionHandler implements EventHandler {
 		Set<ProcessDescriptor> processes = provider.getProcessDescriptors();
 		Map<Long, Double> results = new HashMap<>();
 		for (ProcessDescriptor process : processes) {
-			double amount = provider.getSingleFlowResult(process, flow)
-					.getValue();
-			results.put(process.getId(), amount);
+			double v = provider.getSingleFlowResult(process, flow).value;
+			results.put(process.getId(), v);
 		}
 		processResultData(getResultData(results));
 	}
@@ -44,9 +43,8 @@ abstract class SelectionHandler implements EventHandler {
 		Set<ProcessDescriptor> processes = provider.getProcessDescriptors();
 		Map<Long, Double> results = new HashMap<>();
 		for (ProcessDescriptor process : processes) {
-			double amount = provider.getSingleImpactResult(process, impact)
-					.getValue();
-			results.put(process.getId(), amount);
+			double v = provider.getSingleImpactResult(process, impact).value;
+			results.put(process.getId(), v);
 		}
 		processResultData(getResultData(results));
 	}

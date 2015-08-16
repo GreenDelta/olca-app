@@ -115,7 +115,7 @@ public class ContributionChartSection {
 		ContributionSet<ProcessDescriptor> contributionSet = null;
 		if (selection instanceof FlowDescriptor) {
 			FlowDescriptor flow = (FlowDescriptor) selection;
-			unit = Labels.getRefUnit(flow, provider.getCache());
+			unit = Labels.getRefUnit(flow, provider.cache);
 			contributionSet = provider.getProcessContributions(flow);
 		} else if (selection instanceof ImpactCategoryDescriptor) {
 			ImpactCategoryDescriptor impact = (ImpactCategoryDescriptor) selection;
@@ -125,7 +125,7 @@ public class ContributionChartSection {
 		if (contributionSet == null)
 			return;
 		List<ContributionItem<ProcessDescriptor>> items = Contributions
-				.topWithRest(contributionSet.getContributions(), maxItems);
+				.topWithRest(contributionSet.contributions, maxItems);
 		List<ContributionItem<?>> chartData = new ArrayList<>();
 		chartData.addAll(items);
 		chart.setData(chartData, unit);

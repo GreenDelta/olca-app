@@ -77,7 +77,7 @@ public class ContributionChart {
 
 	private boolean hasRest(List<ContributionItem<?>> data) {
 		for (ContributionItem<?> item : data) {
-			if (item.isRest())
+			if (item.rest)
 				return true;
 		}
 		return false;
@@ -86,7 +86,7 @@ public class ContributionChart {
 	private void createChart(List<ContributionItem<?>> data, boolean withRest) {
 		List<Double> vals = new ArrayList<>();
 		for (ContributionItem<?> item : data)
-			vals.add(item.getAmount());
+			vals.add(item.amount);
 		Chart chart = new ContributionChartCreator(vals).createChart(withRest);
 		chartCanvas.setChart(chart);
 		chartCanvas.redraw();
@@ -97,7 +97,7 @@ public class ContributionChart {
 		for (ContributionItem<?> item : data) {
 			ImageHyperlink link = new ImageHyperlink(linkComposite, SWT.TOP);
 			link.setText(getLinkText(item));
-			if (item.isRest())
+			if (item.rest)
 				link.setImage(getLinkImage(-1));
 			else
 				link.setImage(getLinkImage(colorIndex++));
@@ -106,19 +106,19 @@ public class ContributionChart {
 	}
 
 	private String getLinkText(ContributionItem<?> item) {
-		String number = Numbers.format(item.getAmount(), 3);
+		String number = Numbers.format(item.amount, 3);
 		if (unit != null)
 			number += " " + unit;
 		String text = "";
-		Object content = item.getItem();
+		Object content = item.item;
 		// TODO: it would be better if a label provider could be set here
 		if (content instanceof BaseDescriptor)
 			text = Labels.getDisplayName((BaseDescriptor) content);
 		else if (content instanceof RootEntity)
 			text = Labels.getDisplayName((RootEntity) content);
 		else if (content instanceof ProcessGrouping)
-			text = ((ProcessGrouping) content).getName();
-		else if (item.isRest())
+			text = ((ProcessGrouping) content).name;
+		else if (item.rest)
 			text = Messages.Other;
 		return number + ": " + text;
 	}

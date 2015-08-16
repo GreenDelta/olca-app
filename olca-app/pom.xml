@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.openlca</groupId>
 	<artifactId>olca-deps</artifactId>
-	<version>1.4.0</version>
+	<version>1.5.0</version>
 	<packaging>pom</packaging>
 
 	<repositories>
@@ -156,43 +156,43 @@
 		<dependency>
 			<groupId>org.openlca</groupId>
 			<artifactId>olca-eigen</artifactId>
-			<version>0.3.0</version>
+			<version>${project.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.openlca</groupId>
 			<artifactId>olca-formula</artifactId>
-			<version>1.0.0</version>
+			<version>${project.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.openlca</groupId>
 			<artifactId>olca-core</artifactId>
-			<version>1.0.0</version>
+			<version>${project.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.openlca</groupId>
 			<artifactId>olca-ecospold-1</artifactId>
-			<version>1.0.0</version>
+			<version>${project.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.openlca</groupId>
 			<artifactId>olca-ilcd</artifactId>
-			<version>1.0.0</version>
+			<version>${project.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.openlca</groupId>
 			<artifactId>olca-io</artifactId>
-			<version>1.0.0</version>
+			<version>${project.version}</version>
 		</dependency>
 		
 		<dependency>
 			<groupId>org.openlca</groupId>
 			<artifactId>olca-jsonld</artifactId>
-			<version>1.0.0</version>
+			<version>${project.version}</version>
 		</dependency>
 
 		<dependency>
@@ -205,7 +205,7 @@
 		<dependency>
 			<groupId>org.openlca</groupId>
 			<artifactId>olca-simapro-csv</artifactId>
-			<version>1.0.0</version>
+			<version>${project.version}</version>
 		</dependency>
 
 		<dependency>
@@ -217,7 +217,7 @@
 		<dependency>
 			<groupId>org.openlca</groupId>
 			<artifactId>olca-geo</artifactId>
-			<version>0.0.2</version>
+			<version>${project.version}</version>
 		</dependency>
 
 		<dependency>

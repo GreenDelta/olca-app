@@ -53,7 +53,7 @@ class GroupResultSection {
 		String unit;
 		if (resultType == FLOW) {
 			FlowDescriptor flow = flowViewer.getSelected();
-			unit = Labels.getRefUnit(flow, result.getCache());
+			unit = Labels.getRefUnit(flow, result.cache);
 			selection = flow;
 		} else {
 			ImpactCategoryDescriptor impact = impactViewer.getSelected();
@@ -65,7 +65,8 @@ class GroupResultSection {
 
 	private void updateResults(Object selection, String unit) {
 		if (selection != null && table != null) {
-			List<ContributionItem<ProcessGrouping>> items = calculate(selection);
+			List<ContributionItem<ProcessGrouping>> items = calculate(
+					selection);
 			Contributions.sortDescending(items);
 			table.setInput(items, unit);
 			List<ContributionItem<?>> chartData = new ArrayList<>();
@@ -74,15 +75,16 @@ class GroupResultSection {
 		}
 	}
 
-	private List<ContributionItem<ProcessGrouping>> calculate(Object selection) {
+	private List<ContributionItem<ProcessGrouping>> calculate(
+			Object selection) {
 		GroupingContribution calculator = new GroupingContribution(result,
 				groups);
 		if (selection instanceof FlowDescriptor)
-			return calculator.calculate((FlowDescriptor) selection)
-					.getContributions();
+			return calculator
+					.calculate((FlowDescriptor) selection).contributions;
 		if (selection instanceof ImpactCategoryDescriptor)
-			return calculator.calculate((ImpactCategoryDescriptor) selection)
-					.getContributions();
+			return calculator.calculate(
+					(ImpactCategoryDescriptor) selection).contributions;
 		return Collections.emptyList();
 	}
 

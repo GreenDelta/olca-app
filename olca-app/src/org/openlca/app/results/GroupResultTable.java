@@ -75,7 +75,7 @@ class GroupResultTable {
 			if (!(element instanceof ContributionItem) || column != 0)
 				return null;
 			ContributionItem<?> item = (ContributionItem) element;
-			return image.getForTable(item.getShare());
+			return image.getForTable(item.share);
 		}
 
 		@Override
@@ -88,7 +88,7 @@ class GroupResultTable {
 			case GROUP_COL:
 				return getName(resultItem);
 			case AMOUNT_COL:
-				return Double.toString(resultItem.getAmount());
+				return Double.toString(resultItem.amount);
 			case UNIT_COL:
 				return unit;
 			default:
@@ -97,9 +97,9 @@ class GroupResultTable {
 		}
 
 		private String getName(ContributionItem<ProcessGrouping> resultItem) {
-			ProcessGrouping group = resultItem.getItem();
+			ProcessGrouping group = resultItem.item;
 			if (group != null)
-				return group.getName();
+				return group.name;
 			return null;
 		}
 	}

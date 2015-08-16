@@ -228,8 +228,8 @@ class CalculationWizard extends Wizard {
 			LcaCalculator calculator = new LcaCalculator(solver);
 			FullResult baseResult = calculator.calculateFull(inventoryMatrix,
 					impactMatrix);
-			RegionalizationSetup regioSetup = setupRegio(baseResult
-					.getProductIndex());
+			RegionalizationSetup regioSetup = setupRegio(
+					baseResult.productIndex);
 			if (regioSetup == null)
 				return;
 			RegionalizedResult result = calculate(baseResult, regioSetup,

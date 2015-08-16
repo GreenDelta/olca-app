@@ -115,10 +115,10 @@ public class NwResultPage extends FormPage {
 				new Contributions.Function<ImpactResult>() {
 					@Override
 					public double value(ImpactResult impactResult) {
-						return impactResult.getValue();
+						return impactResult.value;
 					}
 				});
-		List<ContributionItem<ImpactResult>> items = set.getContributions();
+		List<ContributionItem<ImpactResult>> items = set.contributions;
 		Contributions.sortDescending(items);
 		return items;
 	}
@@ -146,7 +146,7 @@ public class NwResultPage extends FormPage {
 				return null;
 			ContributionItem<ImpactResult> item = ContributionItem.class
 					.cast(o);
-			return image.getForTable(item.getShare());
+			return image.getForTable(item.share);
 		}
 
 		@Override
@@ -158,10 +158,9 @@ public class NwResultPage extends FormPage {
 					.cast(o);
 			switch (col) {
 			case 0:
-				return Labels
-						.getDisplayName(item.getItem().getImpactCategory());
+				return Labels.getDisplayName(item.item.impactCategory);
 			case 1:
-				return Numbers.format(item.getAmount());
+				return Numbers.format(item.amount);
 			case 2:
 				if (setup.getNwSet() != null)
 					return setup.getNwSet().getWeightedScoreUnit();

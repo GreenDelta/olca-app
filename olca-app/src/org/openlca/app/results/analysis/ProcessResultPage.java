@@ -105,8 +105,8 @@ public class ProcessResultPage extends FormPage {
 	private void setInputs() {
 		fillFlows(inputTable);
 		fillFlows(outputTable);
-		ProcessDescriptor p = cache.get(ProcessDescriptor.class, result
-				.getResult().getProductIndex().getRefProduct().getFirst());
+		ProcessDescriptor p = cache.get(ProcessDescriptor.class,
+				result.result.productIndex.getRefProduct().getFirst());
 		flowProcessViewer.select(p);
 		if (result.hasImpactResults()) {
 			impactProcessCombo.select(p);
@@ -116,7 +116,7 @@ public class ProcessResultPage extends FormPage {
 
 	private void fillFlows(TableViewer table) {
 		boolean input = table == inputTable;
-		FlowIndex idx = result.getResult().getFlowIndex();
+		FlowIndex idx = result.result.flowIndex;
 		List<FlowDescriptor> list = new ArrayList<>();
 		for (FlowDescriptor f : result.getFlowDescriptors()) {
 			if (idx.isInput(f.getId()) == input)
@@ -352,7 +352,7 @@ public class ProcessResultPage extends FormPage {
 		private FullResultProvider result;
 
 		public ResultProvider(FullResultProvider result) {
-			long refProcessId = result.getResult().getProductIndex()
+			long refProcessId = result.result.productIndex
 					.getRefProduct().getFirst();
 			this.process = cache.get(ProcessDescriptor.class, refProcessId);
 			this.result = result;
@@ -365,10 +365,10 @@ public class ProcessResultPage extends FormPage {
 		private double getUpstreamContribution(FlowDescriptor flow) {
 			if (process == null || flow == null)
 				return 0;
-			double total = result.getTotalFlowResult(flow).getValue();
+			double total = result.getTotalFlowResult(flow).value;
 			if (total == 0)
 				return 0;
-			double val = result.getUpstreamFlowResult(process, flow).getValue();
+			double val = result.getUpstreamFlowResult(process, flow).value;
 			double c = val / Math.abs(total);
 			return c > 1 ? 1 : c;
 		}
@@ -376,22 +376,22 @@ public class ProcessResultPage extends FormPage {
 		private double getDirectResult(FlowDescriptor flow) {
 			if (process == null || flow == null)
 				return 0;
-			return result.getSingleFlowResult(process, flow).getValue();
+			return result.getSingleFlowResult(process, flow).value;
 		}
 
 		private double getUpstreamTotal(FlowDescriptor flow) {
 			if (process == null || flow == null)
 				return 0;
-			return result.getUpstreamFlowResult(process, flow).getValue();
+			return result.getUpstreamFlowResult(process, flow).value;
 		}
 
 		private double getUpstreamContribution(ImpactCategoryDescriptor d) {
 			if (process == null || d == null)
 				return 0;
-			double total = result.getTotalImpactResult(d).getValue();
+			double total = result.getTotalImpactResult(d).value;
 			if (total == 0)
 				return 0;
-			double val = result.getUpstreamImpactResult(process, d).getValue();
+			double val = result.getUpstreamImpactResult(process, d).value;
 			double c = val / Math.abs(total);
 			return c > 1 ? 1 : c;
 		}
@@ -399,13 +399,13 @@ public class ProcessResultPage extends FormPage {
 		private double getDirectResult(ImpactCategoryDescriptor category) {
 			if (process == null || category == null)
 				return 0;
-			return result.getSingleImpactResult(process, category).getValue();
+			return result.getSingleImpactResult(process, category).value;
 		}
 
 		private double getUpstreamTotal(ImpactCategoryDescriptor category) {
 			if (process == null || category == null)
 				return 0;
-			return result.getUpstreamImpactResult(process, category).getValue();
+			return result.getUpstreamImpactResult(process, category).value;
 		}
 	}
 

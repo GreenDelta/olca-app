@@ -69,9 +69,9 @@ class ContributionTable extends TableViewer {
 
 	private void createColumnSorters(Label p) {
 		Tables.sortByLabels(this, p, NAME, UNIT);
-		Tables.sortByDouble(this, (ContributionItem<?> i) -> i.getShare(),
+		Tables.sortByDouble(this, (ContributionItem<?> i) -> i.share,
 				CONTRIBUTION);
-		Tables.sortByDouble(this, (ContributionItem<?> i) -> i.getAmount(),
+		Tables.sortByDouble(this, (ContributionItem<?> i) -> i.amount,
 				AMOUNT);
 	}
 
@@ -88,7 +88,7 @@ class ContributionTable extends TableViewer {
 			if (columnIndex != CONTRIBUTION)
 				return null;
 			ContributionItem<?> item = ContributionItem.class.cast(element);
-			return contributionImage.getForTable(item.getShare());
+			return contributionImage.getForTable(item.share);
 		}
 
 		@Override
@@ -100,11 +100,11 @@ class ContributionTable extends TableViewer {
 					.cast(element);
 			switch (columnIndex) {
 			case CONTRIBUTION:
-				return Numbers.percent(item.getShare());
+				return Numbers.percent(item.share);
 			case NAME:
-				return Labels.getDisplayName(item.getItem());
+				return Labels.getDisplayName(item.item);
 			case AMOUNT:
-				return Numbers.format(item.getAmount());
+				return Numbers.format(item.amount);
 			case UNIT:
 				return unit;
 			default:

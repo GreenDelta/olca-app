@@ -40,7 +40,7 @@ public class ProcessTreemap {
 	private ProcessTreemap(ContributionResultProvider<?> result,
 			Object selection) {
 		this.result = result;
-		this.cache = result.getCache();
+		this.cache = result.cache;
 		this.selection = selection;
 		calculate();
 	}
@@ -90,10 +90,10 @@ public class ProcessTreemap {
 		node.name = Labels.getDisplayName(process);
 		if (selection instanceof FlowDescriptor)
 			node.value = result.getSingleFlowResult(process,
-					(FlowDescriptor) selection).getValue();
+					(FlowDescriptor) selection).value;
 		else if (selection instanceof ImpactCategoryDescriptor) {
 			node.value = result.getSingleImpactResult(process,
-					(ImpactCategoryDescriptor) selection).getValue();
+					(ImpactCategoryDescriptor) selection).value;
 		}
 		return node;
 	}

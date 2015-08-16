@@ -125,12 +125,12 @@ public class ContributionTableSection {
 		List<ContributionItem<ProcessDescriptor>> items = null;
 		if (selected instanceof FlowDescriptor) {
 			FlowDescriptor flow = (FlowDescriptor) selected;
-			unit = Labels.getRefUnit(flow, provider.getCache());
-			items = provider.getProcessContributions(flow).getContributions();
+			unit = Labels.getRefUnit(flow, provider.cache);
+			items = provider.getProcessContributions(flow).contributions;
 		} else if (selected instanceof ImpactCategoryDescriptor) {
 			ImpactCategoryDescriptor impact = (ImpactCategoryDescriptor) selected;
 			unit = impact.getReferenceUnit();
-			items = provider.getProcessContributions(impact).getContributions();
+			items = provider.getProcessContributions(impact).contributions;
 		}
 		setTableData(items, unit);
 	}
@@ -143,7 +143,7 @@ public class ContributionTableSection {
 		Contributions.sortDescending(items);
 		List<ContributionItem<?>> tableData = new ArrayList<>();
 		for (ContributionItem<?> item : items) {
-			if (Math.abs(cutOff) < 1e-5 || item.getShare() >= cutOff)
+			if (Math.abs(cutOff) < 1e-5 || item.share >= cutOff)
 				tableData.add(item);
 		}
 		table.setInput(tableData, unit);

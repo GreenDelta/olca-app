@@ -62,8 +62,9 @@ public class ProjectResultPage extends FormPage {
 	private void createTable(Composite body, FormToolkit toolkit) {
 		Composite composite = UI.formSection(body, toolkit, Messages.Results);
 		UI.gridLayout(composite, 1);
-		tableViewer = Tables.createViewer(composite, new String[] { Messages.Variant,
-				Messages.Amount, Messages.Unit });
+		tableViewer = Tables.createViewer(composite,
+				new String[] { Messages.Variant,
+						Messages.Amount, Messages.Unit });
 		tableViewer.setLabelProvider(new TableLabel());
 		Tables.bindColumnWidths(tableViewer, 0.4, 0.3, 0.3);
 		UI.gridData(tableViewer.getTable(), true, true).minimumHeight = 150;
@@ -91,7 +92,7 @@ public class ProjectResultPage extends FormPage {
 			ContributionSet<ProjectVariant> contributionSet = result
 					.getContributions(flow);
 			chart.renderChart(flow, contributionSet);
-			tableViewer.setInput(contributionSet.getContributions());
+			tableViewer.setInput(contributionSet.contributions);
 		}
 
 		@Override
@@ -100,7 +101,7 @@ public class ProjectResultPage extends FormPage {
 			ContributionSet<ProjectVariant> contributionSet = result
 					.getContributions(impactCategory);
 			chart.renderChart(impactCategory, contributionSet);
-			tableViewer.setInput(contributionSet.getContributions());
+			tableViewer.setInput(contributionSet.contributions);
 		}
 	}
 
@@ -120,9 +121,9 @@ public class ProjectResultPage extends FormPage {
 			ContributionItem<ProjectVariant> contribution = (ContributionItem<ProjectVariant>) element;
 			switch (col) {
 			case 0:
-				return contribution.getItem().getName();
+				return contribution.item.getName();
 			case 1:
-				return Numbers.format(contribution.getAmount());
+				return Numbers.format(contribution.amount);
 			case 2:
 				return getUnit();
 			default:

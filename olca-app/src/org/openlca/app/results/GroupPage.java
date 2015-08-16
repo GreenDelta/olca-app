@@ -73,10 +73,10 @@ public class GroupPage extends FormPage {
 	private void initGroups(ContributionResultProvider<?> result) {
 		groups = new ArrayList<>();
 		ProcessGrouping restGroup = new ProcessGrouping();
-		restGroup.setName(Messages.Other);
-		restGroup.setRest(true);
+		restGroup.name = Messages.Other;
+		restGroup.rest = true;
 		for (ProcessDescriptor p : result.getProcessDescriptors())
-			restGroup.getProcesses().add(p);
+			restGroup.processes.add(p);
 		groups.add(restGroup);
 	}
 
@@ -153,7 +153,7 @@ public class GroupPage extends FormPage {
 		groupViewer.addSelectionChangedListener((e) -> {
 			ProcessGrouping g = Viewers.getFirst(e.getSelection());
 			if (g != null)
-				processViewer.setInput(g.getProcesses());
+				processViewer.setInput(g.processes);
 		});
 	}
 
@@ -189,7 +189,7 @@ public class GroupPage extends FormPage {
 			if (code == Window.OK) {
 				String name = dialog.getValue();
 				ProcessGrouping group = new ProcessGrouping();
-				group.setName(name);
+				group.name = name;
 				groups.add(group);
 				groupViewer.add(group);
 				resultSection.update();
@@ -207,13 +207,13 @@ public class GroupPage extends FormPage {
 		@Override
 		public void run() {
 			ProcessGrouping grouping = Viewers.getFirstSelected(groupViewer);
-			if (grouping == null || grouping.isRest())
+			if (grouping == null || grouping.rest)
 				return;
 			ProcessGrouping rest = findRest();
 			if (rest == null)
 				return;
 			groups.remove(grouping);
-			rest.getProcesses().addAll(grouping.getProcesses());
+			rest.processes.addAll(grouping.processes);
 			updateViewers();
 		}
 
@@ -221,7 +221,7 @@ public class GroupPage extends FormPage {
 			if (groups == null)
 				return null;
 			for (ProcessGrouping g : groups) {
-				if (g.isRest())
+				if (g.rest)
 					return g;
 			}
 			return null;
@@ -256,10 +256,11 @@ public class GroupPage extends FormPage {
 		}
 
 		private void move(ProcessGrouping sourceGroup,
-				ProcessGrouping targetGroup, List<ProcessDescriptor> processes) {
-			sourceGroup.getProcesses().removeAll(processes);
-			targetGroup.getProcesses().addAll(processes);
-			processViewer.setInput(sourceGroup.getProcesses());
+				ProcessGrouping targetGroup,
+				List<ProcessDescriptor> processes) {
+			sourceGroup.processes.removeAll(processes);
+			targetGroup.processes.addAll(processes);
+			processViewer.setInput(sourceGroup.processes);
 			resultSection.update();
 		}
 
@@ -278,7 +279,7 @@ public class GroupPage extends FormPage {
 			List<ProcessGrouping> other = getOther(group);
 			for (ProcessGrouping g : other) {
 				MenuItem menuItem = new MenuItem(groupMoveMenu, SWT.PUSH);
-				menuItem.setText(g.getName());
+				menuItem.setText(g.name);
 				menuItem.setData(g);
 				menuItem.addSelectionListener(this);
 			}
@@ -299,7 +300,7 @@ public class GroupPage extends FormPage {
 		public int compare(ProcessGrouping o1, ProcessGrouping o2) {
 			if (o1 == null || o2 == null)
 				return 0;
-			return Strings.compare(o1.getName(), o2.getName());
+			return Strings.compare(o1.name, o2.name);
 		}
 	}
 
@@ -316,7 +317,7 @@ public class GroupPage extends FormPage {
 		public String getText(Object element) {
 			if (element instanceof ProcessGrouping) {
 				ProcessGrouping group = (ProcessGrouping) element;
-				return group.getName();
+				return group.name;
 			} else if (element instanceof ProcessDescriptor) {
 				ProcessDescriptor p = (ProcessDescriptor) element;
 				return Strings.cut(Labels.getDisplayName(p), 75);
@@ -348,8 +349,9 @@ public class GroupPage extends FormPage {
 			return compareNames(first.getName(), second.getName());
 		}
 
-		private int compareGroups(ProcessGrouping first, ProcessGrouping second) {
-			return compareNames(first.getName(), second.getName());
+		private int compareGroups(ProcessGrouping first,
+				ProcessGrouping second) {
+			return compareNames(first.name, second.name);
 		}
 
 		private int compareNames(String first, String second) {
@@ -432,12 +434,12 @@ public class GroupPage extends FormPage {
 				return Collections.emptyList();
 			List<ProcessGroup> groups = new ArrayList<>();
 			for (ProcessGrouping pageGroup : pageGroups) {
-				if (pageGroup.isRest())
+				if (pageGroup.rest)
 					continue;
 				ProcessGroup group = new ProcessGroup();
-				group.setName(pageGroup.getName());
+				group.setName(pageGroup.name);
 				groups.add(group);
-				for (ProcessDescriptor process : pageGroup.getProcesses())
+				for (ProcessDescriptor process : pageGroup.processes)
 					group.getProcessIds().add(process.getRefId());
 			}
 			return groups;

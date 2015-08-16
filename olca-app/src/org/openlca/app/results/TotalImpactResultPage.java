@@ -74,7 +74,7 @@ public class TotalImpactResultPage extends FormPage {
 		Tables.sortByLabels(viewer, p, 0, 2);
 		Function<ImpactCategoryDescriptor, Double> amount = (d) -> {
 			ImpactResult r = result.getTotalImpactResult(d);
-			return r == null ? 0 : r.getValue();
+			return r == null ? 0 : r.value;
 		};
 		Tables.sortByDouble(viewer, amount, 1);
 	}
@@ -98,8 +98,7 @@ public class TotalImpactResultPage extends FormPage {
 			case 0:
 				return impactCategory.getName();
 			case 1:
-				double val = result.getTotalImpactResult(impactCategory)
-						.getValue();
+				double val = result.getTotalImpactResult(impactCategory).value;
 				return Numbers.format(val);
 			case 2:
 				return impactCategory.getReferenceUnit();

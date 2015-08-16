@@ -40,7 +40,7 @@ public class ProcessTreemapPage extends FormPage implements HtmlPage {
 
 	@Override
 	public void onLoaded() {
-		FlowIndex flowIndex = result.getResult().getFlowIndex();
+		FlowIndex flowIndex = result.result.flowIndex;
 		long flowId = flowIndex.getFlowAt(0);
 		FlowDescriptor first = Cache.getEntityCache().get(FlowDescriptor.class,
 				flowId);

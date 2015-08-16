@@ -154,7 +154,7 @@ public class SimulationPage extends FormPage {
 		Button flowsCheck = toolkit.createButton(section, Messages.Flows,
 				SWT.RADIO);
 		flowsCheck.setSelection(true);
-		flowViewer = new FlowViewer(section, result.getCache());
+		flowViewer = new FlowViewer(section, result.cache);
 		Set<FlowDescriptor> flows = result.getFlowDescriptors();
 		flowViewer.setInput(flows.toArray(new FlowDescriptor[flows.size()]));
 		flowViewer.selectFirst();

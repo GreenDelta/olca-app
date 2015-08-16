@@ -92,7 +92,7 @@ public class TotalFlowResultPage extends FormPage {
 		Tables.sortByLabels(viewer, label, 0, 1, 2, 3);
 		Function<FlowDescriptor, Double> amount = (f) -> {
 			FlowResult r = resultProvider.getTotalFlowResult(f);
-			return r == null ? 0 : r.getValue();
+			return r == null ? 0 : r.value;
 		};
 		Tables.sortByDouble(viewer, amount, 4);
 	}
@@ -126,7 +126,7 @@ public class TotalFlowResultPage extends FormPage {
 			case 3:
 				return Labels.getRefUnit(flow, cache);
 			case 4:
-				double v = resultProvider.getTotalFlowResult(flow).getValue();
+				double v = resultProvider.getTotalFlowResult(flow).value;
 				return Numbers.format(v);
 			default:
 				return null;
@@ -147,7 +147,7 @@ public class TotalFlowResultPage extends FormPage {
 				Object element) {
 			if (!(element instanceof FlowDescriptor))
 				return false;
-			FlowIndex index = resultProvider.getResult().getFlowIndex();
+			FlowIndex index = resultProvider.result.flowIndex;
 			FlowDescriptor flow = (FlowDescriptor) element;
 			return index.isInput(flow.getId()) == input;
 		}

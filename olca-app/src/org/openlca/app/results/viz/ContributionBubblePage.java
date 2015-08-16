@@ -46,7 +46,7 @@ public class ContributionBubblePage extends FormPage implements HtmlPage {
 
 	@Override
 	public void onLoaded() {
-		FlowIndex flowIndex = result.getResult().getFlowIndex();
+		FlowIndex flowIndex = result.result.flowIndex;
 		long flowId = flowIndex.getFlowAt(0);
 		FlowDescriptor first = Cache.getEntityCache().get(FlowDescriptor.class,
 				flowId);
@@ -79,8 +79,8 @@ public class ContributionBubblePage extends FormPage implements HtmlPage {
 					.getProcessContributions(flow);
 			BubbleChartDataSet dataSet = new BubbleChartDataSet();
 			dataSet.setRefName(Labels.getDisplayName(flow));
-			dataSet.setRefUnit(Labels.getRefUnit(flow, result.getCache()));
-			dataSet.setTotalAmount(result.getTotalFlowResult(flow).getValue());
+			dataSet.setRefUnit(Labels.getRefUnit(flow, result.cache));
+			dataSet.setTotalAmount(result.getTotalFlowResult(flow).value);
 			setItems(set, dataSet);
 			setResultData(dataSet);
 		}
@@ -92,19 +92,17 @@ public class ContributionBubblePage extends FormPage implements HtmlPage {
 			BubbleChartDataSet dataSet = new BubbleChartDataSet();
 			dataSet.setRefName(Labels.getDisplayName(impact));
 			dataSet.setRefUnit(impact.getReferenceUnit());
-			dataSet.setTotalAmount(result.getTotalImpactResult(impact)
-					.getValue());
+			dataSet.setTotalAmount(result.getTotalImpactResult(impact).value);
 			setItems(set, dataSet);
 			setResultData(dataSet);
 		}
 
 		private void setItems(ContributionSet<ProcessDescriptor> set,
 				BubbleChartDataSet dataSet) {
-			for (ContributionItem<ProcessDescriptor> item : set
-					.getContributions()) {
+			for (ContributionItem<ProcessDescriptor> item : set.contributions) {
 				Item bubbleItem = new Item();
-				bubbleItem.setAmount(item.getAmount());
-				bubbleItem.setName(Labels.getDisplayName(item.getItem()));
+				bubbleItem.setAmount(item.amount);
+				bubbleItem.setName(Labels.getDisplayName(item.item));
 				dataSet.getItems().add(bubbleItem);
 			}
 		}
@@ -112,7 +110,8 @@ public class ContributionBubblePage extends FormPage implements HtmlPage {
 		private void setResultData(BubbleChartDataSet dataSet) {
 			String command = "setData(" + dataSet.toJson() + ")";
 			try {
-				log.trace("set bubble result data for {}", dataSet.getRefName());
+				log.trace("set bubble result data for {}",
+						dataSet.getRefName());
 				browser.evaluate(command);
 			} catch (Exception e) {
 				log.error("failed to set bubble chart data", e);

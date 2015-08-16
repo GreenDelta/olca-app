@@ -61,12 +61,11 @@ public class SunBurstView extends FormPage implements HtmlPage {
 					return;
 				flowImpactSelection.selectWithEvent(first);
 			}
-		}
-				);
+		});
 	}
 
 	private FlowDescriptor firstFlow() {
-		FlowIndex flowIndex = result.getResult().getFlowIndex();
+		FlowIndex flowIndex = result.result.flowIndex;
 		long flowId = flowIndex.getFlowAt(0);
 		return Cache.getEntityCache().get(FlowDescriptor.class, flowId);
 	}

@@ -33,7 +33,8 @@ class SankeyResult {
 	private double[] singleResults;
 	private double[] singleContributions;
 
-	public SankeyResult(ProductSystem productSystem, FullResultProvider results) {
+	public SankeyResult(ProductSystem productSystem,
+			FullResultProvider results) {
 		this.productSystem = productSystem;
 		this.results = results;
 	}
@@ -105,8 +106,10 @@ class SankeyResult {
 			totalResults = calcAggFlowResults((FlowDescriptor) selection);
 			singleResults = calcSingFlowResults((FlowDescriptor) selection);
 		} else if (selection instanceof ImpactCategoryDescriptor) {
-			totalResults = calcAggImpactResults((ImpactCategoryDescriptor) selection);
-			singleResults = calcSingImpactResults((ImpactCategoryDescriptor) selection);
+			totalResults = calcAggImpactResults(
+					(ImpactCategoryDescriptor) selection);
+			singleResults = calcSingImpactResults(
+					(ImpactCategoryDescriptor) selection);
 		} else {
 			singleResults = totalResults = new double[processIndex.size()];
 		}
@@ -135,8 +138,7 @@ class SankeyResult {
 		double[] vector = new double[processIndex.size()];
 		for (int i = 0; i < processIndex.size(); i++) {
 			ProcessDescriptor process = processes[i];
-			double result = results.getUpstreamFlowResult(process, flow)
-					.getValue();
+			double result = results.getUpstreamFlowResult(process, flow).value;
 			vector[i] = result;
 		}
 		return vector;
@@ -146,9 +148,8 @@ class SankeyResult {
 		double[] vector = new double[processIndex.size()];
 		for (int i = 0; i < processIndex.size(); i++) {
 			ProcessDescriptor process = processes[i];
-			double result = results.getSingleFlowResult(process, flow)
-					.getValue();
-			vector[i] = result;
+			double r = results.getSingleFlowResult(process, flow).value;
+			vector[i] = r;
 		}
 		return vector;
 	}
@@ -157,9 +158,8 @@ class SankeyResult {
 		double[] vector = new double[processIndex.size()];
 		for (int i = 0; i < processIndex.size(); i++) {
 			ProcessDescriptor process = processes[i];
-			double result = results.getUpstreamImpactResult(process, impact)
-					.getValue();
-			vector[i] = result;
+			double r = results.getUpstreamImpactResult(process, impact).value;
+			vector[i] = r;
 		}
 		return vector;
 	}
@@ -168,9 +168,8 @@ class SankeyResult {
 		double[] vector = new double[processIndex.size()];
 		for (int i = 0; i < processIndex.size(); i++) {
 			ProcessDescriptor process = processes[i];
-			double result = results.getSingleImpactResult(process, impact)
-					.getValue();
-			vector[i] = result;
+			double r = results.getSingleImpactResult(process, impact).value;
+			vector[i] = r;
 		}
 		return vector;
 	}
