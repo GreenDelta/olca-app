@@ -14,6 +14,7 @@ import org.openlca.app.navigation.actions.CreateModelAction;
 import org.openlca.app.navigation.actions.CutAction;
 import org.openlca.app.navigation.actions.DatabaseActivateAction;
 import org.openlca.app.navigation.actions.DatabaseCloseAction;
+import org.openlca.app.navigation.actions.DatabaseCopyAction;
 import org.openlca.app.navigation.actions.DatabaseCreateAction;
 import org.openlca.app.navigation.actions.DatabaseDeleteAction;
 import org.openlca.app.navigation.actions.DatabaseExportAction;
@@ -92,21 +93,22 @@ public class NavigationActionProvider extends CommonActionProvider {
 	}
 
 	private INavigationAction[] getDatabaseActions() {
-		int count = App.runsInDevMode() ? 12 : 6;
+		int count = App.runsInDevMode() ? 13 : 7;
 		INavigationAction[] actions = new INavigationAction[count];
 		actions[0] = new DatabaseActivateAction();
-		actions[1] = new DatabasePropertiesAction();
-		actions[2] = new DatabaseCloseAction();
-		actions[3] = new DatabaseExportAction();
-		actions[4] = new DatabaseRenameAction();
-		actions[5] = new DatabaseDeleteAction();
+		actions[1] = new DatabaseCopyAction();
+		actions[2] = new DatabasePropertiesAction();
+		actions[3] = new DatabaseCloseAction();
+		actions[4] = new DatabaseExportAction();
+		actions[5] = new DatabaseRenameAction();
+		actions[6] = new DatabaseDeleteAction();
 		if (count == 12) {
-			actions[6] = new XEI3MetaDataImportAction();
-			actions[7] = new XEI3MarketProcessCleanUp();
-			actions[8] = new XParameterCheckAction();
-			actions[9] = new XNexusIndexExportAction();
-			actions[10] = new XRefDataExport();
-			actions[11] = new XRefDataImport();
+			actions[7] = new XEI3MetaDataImportAction();
+			actions[8] = new XEI3MarketProcessCleanUp();
+			actions[9] = new XParameterCheckAction();
+			actions[10] = new XNexusIndexExportAction();
+			actions[11] = new XRefDataExport();
+			actions[12] = new XRefDataImport();
 		}
 		return actions;
 	}

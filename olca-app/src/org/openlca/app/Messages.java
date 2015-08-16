@@ -203,7 +203,7 @@ public class Messages extends NLS {
 	public static String ExportToExcel;
 	public static String ExportingProcesses;
 	public static String ExternalSource;
-	
+
 	public static String Factor;
 	public static String FailedToLoadFlowProperty;
 	public static String File;
@@ -456,7 +456,7 @@ public class Messages extends NLS {
 
 	public static String QuantitativeReference;
 	public static String QuickResults;
-	
+
 	public static String RecalculateQuestionTitle;
 	public static String RecalculateQuestionText;
 	public static String ReconnectProcesslink;
