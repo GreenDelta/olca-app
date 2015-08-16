@@ -205,10 +205,9 @@ public class ImpactTreePage extends FormPage {
 
 	}
 
-	private double getAmount(FlowWithProcessDescriptor descriptor) {
-		FlowResult flowResult = result.getSingleFlowResult(descriptor.process,
-				descriptor.flow);
-		return flowResult.getValue();
+	private double getAmount(FlowWithProcessDescriptor d) {
+		FlowResult r = result.getSingleFlowResult(d.process, d.flow);
+		return r.value;
 	}
 
 	private double getFactor(FlowWithProcessDescriptor descriptor) {
@@ -216,7 +215,7 @@ public class ImpactTreePage extends FormPage {
 				.getIndex(impactCategory.getId());
 		int col = result.result.flowIndex
 				.getIndex(descriptor.flow.getId());
-		return result.result.getImpactFactorMatrix().getEntry(row, col);
+		return result.result.impactFactors.getEntry(row, col);
 	}
 
 	private double getResult(FlowWithProcessDescriptor descriptor) {
@@ -225,9 +224,8 @@ public class ImpactTreePage extends FormPage {
 		return factor * amount;
 	}
 
-	private double getResult(ProcessDescriptor descriptor) {
-		return result.getSingleImpactResult(descriptor, impactCategory)
-				.getValue();
+	private double getResult(ProcessDescriptor d) {
+		return result.getSingleImpactResult(d, impactCategory).value;
 	}
 
 	private class ContentProvider implements ITreeContentProvider {
@@ -250,8 +248,7 @@ public class ImpactTreePage extends FormPage {
 			List<ProcessDescriptor> descriptors = new ArrayList<>();
 			for (ProcessDescriptor process : result.getProcessDescriptors()) {
 				double value = result
-						.getSingleImpactResult(process, impactCategory)
-						.getValue();
+						.getSingleImpactResult(process, impactCategory).value;
 				if (value > 0)
 					descriptors.add(process);
 			}
@@ -323,7 +320,7 @@ public class ImpactTreePage extends FormPage {
 			if (element instanceof FlowWithProcessDescriptor) {
 				FlowWithProcessDescriptor descriptor = (FlowWithProcessDescriptor) element;
 				double inventory = result.getSingleFlowResult(
-						descriptor.process, descriptor.flow).getValue();
+						descriptor.process, descriptor.flow).value;
 				if (inventory == 0d)
 					return false;
 				return getResult(descriptor) > 0d;
