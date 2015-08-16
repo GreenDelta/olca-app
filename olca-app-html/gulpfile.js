@@ -20,8 +20,7 @@ gulp.task('libs', ['base_libs', 'bootstrap']);
 
 gulp.task('clean', function() {
 	return gulp.src([
-			'build', 
-			'dist', 
+			'build',
 			'src/plugin_manager/precompiled'
 		], {read: false})
 		.pipe(clean());
@@ -44,9 +43,7 @@ gulp.task('html_pages', function() {
 
 gulp.task('jade_pages', function() {
 	return gulp.src('src/plugin_manager/jade/plugin_manager.jade')
-		.pipe(jade({
-			locals: {}
-		}))
+		.pipe(jade({ locals: {} }))
 		.pipe(gulp.dest('build'));
 });
 
@@ -57,28 +54,26 @@ gulp.task('images', function() {
 
 gulp.task('base_libs', function() {
 	return gulp.src([
-			'bower_components/angular/angular.min.js',
-			'bower_components/angular-sanitize/angular-sanitize.min.js',
-			'bower_components/codemirror/lib/*',
-			'bower_components/codemirror/mode/javascript/javascript.js',
-			'bower_components/codemirror/mode/python/python.js',
-			'bower_components/d3/d3.min.js',
-			'bower_components/jquery/dist/jquery.min.js',
+			'node_modules/angular/angular.min.js',
+			'node_modules/angular-sanitize/angular-sanitize.min.js',
+			'node_modules/codemirror/lib/*',
+			'node_modules/codemirror/mode/javascript/javascript.js',
+			'node_modules/codemirror/mode/python/python.js',
+			'node_modules/d3/d3.min.js',
+			'node_modules/jquery/dist/jquery.min.js',
 			'other_libs/*.js'
 		])
 		.pipe(gulp.dest('build/libs'));
 });
 
 gulp.task('bootstrap', function() {
-	return gulp.src(['bower_components/bootstrap/dist/**'])
+	return gulp.src(['node_modules/bootstrap/dist/**'])
 		.pipe(gulp.dest('build/libs/bootstrap'));
 });
 
 gulp.task('plugin_manager_scripts', function() {
 	return gulp.src('src/plugin_manager/coffeescript/*.coffee')
-		.pipe(coffee({
-			bare: true
-		}))
+		.pipe(coffee({ bare: true }))
 		.pipe(gulp.dest('src/plugin_manager/precompiled'));
 });
 
@@ -90,9 +85,7 @@ gulp.task('plugin_manager_templates', function() {
 
 gulp.task('plugin_manager_styles', function() {
 	return gulp.src('src/plugin_manager/stylus/*.styl')
-		.pipe(stylus({
-			use: [nib()]
-		}))
+		.pipe(stylus({ use: [nib()] }))
 		.pipe(concat('main.css'))
 		.pipe(gulp.dest('src/plugin_manager/precompiled'));
 });
@@ -100,5 +93,5 @@ gulp.task('plugin_manager_styles', function() {
 gulp.task('zip', function() {
 	return gulp.src('build/**')
 		.pipe(zip('base_html.zip'))
-		.pipe(gulp.dest('dist'));
+		.pipe(gulp.dest('../olca-app/html'));
 });

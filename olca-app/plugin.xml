@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
+
 	<extension-point id="org.openlca.app.editors.graphical.actions" name="org.openlca.app.editors.graphical.actions" schema="schema/org.openlca.app.editors.graphical.actions.exsd"/>
 	
 	<extension
@@ -188,14 +189,15 @@
             icon="icons/search_obj.png"
             default="false"
             name="Search result view">
-      </editor>    
-      <editor
+      </editor> 
+
+	  <editor
             class="org.openlca.app.editors.locations.LocationsEditor"
             default="false"
             icon="icons/location_editor.png"
             id="editors.locations"
             name="Locations editor">
-      </editor>    
+      </editor>	  
    </extension>
    
    <extension
@@ -287,7 +289,7 @@
    
    <extension
          point="org.eclipse.ui.preferencePages">
-      <page
+	  <page
             class="org.openlca.app.logging.LoggerConfigPage"
             id="preferencepages.logging"
             name="%Logging">
@@ -338,7 +340,7 @@
          </property>
          <property
                name="aboutText"
-               value="openLCA 1.4.1&#x0A;&#x0A;Copyright (c) 2007 - 2015 GreenDelta. All rights reserved.&#x0A;Visit http://openlca.org and http://greendelta.com&#x0A;&#x0A;This product includes software developed in the openLCA &#x0A;project and other open source software.">
+               value="openLCA 1.4.2&#x0A;&#x0A;Copyright (c) 2007 - 2015 GreenDelta. All rights reserved.&#x0A;Visit http://openlca.org and http://greendelta.com&#x0A;&#x0A;This product includes software developed in the openLCA &#x0A;project and other open source software.">
          </property>
          <property
                name="aboutImage"
@@ -355,8 +357,8 @@
                name="introBrandingImageText"
                value="openLCA" />
          <property
-               name="preferenceCustomization"
-               value="plugin_customization.ini">
+               name="startupProgressRect"
+               value="0,360,540,5">
          </property>
          <property
                name="startupForegroundColor"
@@ -367,8 +369,8 @@
                value="7,500,445,20">
          </property>
          <property
-               name="startupProgressRect"
-               value="0,360,540,5">
+               name="preferenceCustomization"
+               value="plugin_customization.ini">
          </property>
       </product>
    </extension>
@@ -582,16 +584,11 @@
 		   name="SimaPro CSV">
 		   <description>Import SimaPro CSV files.</description>
 	   </wizard>
-     <wizard
+	   <wizard
            class="org.openlca.app.editors.locations.KmzImportWizard"
            id="wizard.import.kmz"
            name="KMZ import wizard">
-     </wizard>
-     <wizard
-           class="org.openlca.app.editors.locations.KmlImportWizard"
-           id="wizard.import.kml"
-           name="KML import wizard">
-     </wizard>
+       </wizard>
    </extension>
    
    <!-- export wizards -->

@@ -4,7 +4,9 @@
 	<loadproperties srcFile="build.properties" />
 
 	<target name="main">
+		<!--
 		<antcall target="build32bit" />
+		-->
 		<antcall target="build64bit" />
 	</target>
 

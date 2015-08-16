@@ -17,7 +17,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
@@ -28,6 +27,7 @@ import org.openlca.app.components.FlowImpactSelection;
 import org.openlca.app.components.FlowImpactSelection.EventHandler;
 import org.openlca.app.db.Cache;
 import org.openlca.app.rcp.ImageType;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
@@ -52,7 +52,8 @@ public class ContributionTreePage extends FormPage {
 	private static final String[] HEADERS = { Messages.Contribution,
 			Messages.Process, Messages.Amount, Messages.Unit };
 
-	public ContributionTreePage(FormEditor editor, FullResultProvider result) {
+	public ContributionTreePage(AnalyzeEditor editor,
+			FullResultProvider result) {
 		super(editor, "analysis.ContributionTreePage",
 				Messages.ContributionTree);
 		this.result = result;
@@ -104,10 +105,14 @@ public class ContributionTreePage extends FormPage {
 	}
 
 	private void createMenu() {
-		MenuManager manager = new MenuManager();
-		manager.add(new OpenEditorAction());
-		manager.add(TreeClipboard.onCopy(tree));
-		Menu menu = manager.createContextMenu(tree.getControl());
+		MenuManager mm = new MenuManager();
+		mm.add(new OpenEditorAction());
+		mm.add(TreeClipboard.onCopy(tree));
+		mm.add(Actions.create(Messages.ExpandAll,
+				ImageType.EXPAND_ICON.getDescriptor(), () -> {
+					tree.expandAll();
+				}));
+		Menu menu = mm.createContextMenu(tree.getControl());
 		tree.getControl().setMenu(menu);
 	}
 
@@ -249,7 +254,8 @@ public class ContributionTreePage extends FormPage {
 
 		@Override
 		public int compare(Viewer viewer, Object e1, Object e2) {
-			if (!(e1 instanceof UpstreamTreeNode && e2 instanceof UpstreamTreeNode)
+			if (!(e1 instanceof UpstreamTreeNode
+					&& e2 instanceof UpstreamTreeNode)
 					|| e1 == null || e2 == null)
 				return 0;
 			UpstreamTreeNode node1 = (UpstreamTreeNode) e1;

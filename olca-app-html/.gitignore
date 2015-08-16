@@ -3,5 +3,6 @@
 
 /build/
 /dist/
+/nbproject/
 /.project
 /.gitignore
