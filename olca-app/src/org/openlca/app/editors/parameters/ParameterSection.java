@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.function.Supplier;
 
 import org.eclipse.jface.action.Action;
@@ -171,14 +172,15 @@ public class ParameterSection {
 		if (supplier == null)
 			return;
 		List<Parameter> params = supplier.get();
-		Parameter parameter = new Parameter();
-		parameter.setName("p_" + params.size());
-		parameter.setScope(scope);
-		parameter.setInputParameter(forInputParameters);
-		parameter.setValue(1.0);
+		Parameter p = new Parameter();
+		p.setRefId(UUID.randomUUID().toString());
+		p.setName("p_" + params.size());
+		p.setScope(scope);
+		p.setInputParameter(forInputParameters);
+		p.setValue(1.0);
 		if (!forInputParameters)
-			parameter.setFormula("1.0");
-		params.add(parameter);
+			p.setFormula("1.0");
+		params.add(p);
 		setInput();
 		editor.setDirty(true);
 	}

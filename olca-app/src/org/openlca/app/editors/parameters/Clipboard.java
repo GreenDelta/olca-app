@@ -3,6 +3,7 @@ package org.openlca.app.editors.parameters;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -65,6 +66,7 @@ class Clipboard {
 		if (Strings.isNullOrEmpty(name) || Strings.isNullOrEmpty(formula))
 			return null;
 		Parameter p = new Parameter();
+		p.setRefId(UUID.randomUUID().toString());
 		p.setInputParameter(false);
 		p.setName(name);
 		p.setFormula(formula);
@@ -83,6 +85,7 @@ class Clipboard {
 			return null;
 		double val = parseValue(fields[1]);
 		Parameter p = new Parameter();
+		p.setRefId(UUID.randomUUID().toString());
 		p.setInputParameter(true);
 		p.setName(name);
 		p.setValue(val);

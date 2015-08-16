@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
@@ -452,6 +453,7 @@ class ShapeFilePage extends FormPage {
 
 		private void addParam(ShapeFileParameter param) {
 			Parameter realParam = new Parameter();
+			realParam.setRefId(UUID.randomUUID().toString());
 			realParam.setExternalSource(section.shapeFile);
 			realParam.setInputParameter(true);
 			realParam.setName(param.getName());
