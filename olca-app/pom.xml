@@ -198,7 +198,7 @@
 		<dependency>
 			<groupId>org.zeroturnaround</groupId>
 			<artifactId>zt-zip</artifactId>
-			<version>1.6</version>
+			<version>1.8</version>
 			<type>jar</type>
 		</dependency>
 

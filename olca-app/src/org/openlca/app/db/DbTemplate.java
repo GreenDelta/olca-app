@@ -27,8 +27,8 @@ enum DbTemplate {
 	public void extract(File dir) throws Exception {
 		if (!dir.exists())
 			dir.mkdirs();
-		try (InputStream inputStream = RcpActivator.getStream(resourcePath)) {
-			ZipUtil.unpack(inputStream, dir);
+		try (InputStream in = RcpActivator.getStream(resourcePath)) {
+			ZipUtil.unpack(in, dir);
 		}
 	}
 
