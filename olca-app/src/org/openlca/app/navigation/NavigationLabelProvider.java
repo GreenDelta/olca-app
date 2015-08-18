@@ -24,10 +24,10 @@ public class NavigationLabelProvider extends ColumnLabelProvider implements
 	}
 
 	@Override
-	public String getDescription(Object anElement) {
-		if (!(anElement instanceof ModelElement))
+	public String getDescription(Object obj) {
+		if (!(obj instanceof ModelElement))
 			return null;
-		ModelElement element = (ModelElement) anElement;
+		ModelElement element = (ModelElement) obj;
 		BaseDescriptor descriptor = element.getContent();
 		return Labels.getDisplayInfoText(descriptor);
 	}
@@ -72,6 +72,8 @@ public class NavigationLabelProvider extends ColumnLabelProvider implements
 			return ImageType.PRODUCT_SYSTEM_ICON.get();
 		case PROJECT:
 			return ImageType.PROJECT_ICON.get();
+		case SOCIAL_INDICATOR:
+			return ImageType.ACTOR_ICON.get(); // TODO: change icon
 		case SOURCE:
 			return ImageType.SOURCE_ICON.get();
 		case UNIT_GROUP:
@@ -123,6 +125,8 @@ public class NavigationLabelProvider extends ColumnLabelProvider implements
 			return Messages.ProductSystems;
 		case PROJECT:
 			return Messages.Projects;
+		case SOCIAL_INDICATOR:
+			return "#Social indicators";
 		case SOURCE:
 			return Messages.Sources;
 		case UNIT_GROUP:

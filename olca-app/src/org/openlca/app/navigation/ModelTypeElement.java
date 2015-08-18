@@ -18,8 +18,8 @@ public class ModelTypeElement extends NavigationElement<ModelType> {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 
-	public ModelTypeElement(INavigationElement<?> parent, ModelType modelType) {
-		super(parent, modelType);
+	public ModelTypeElement(INavigationElement<?> parent, ModelType type) {
+		super(parent, type);
 	}
 
 	@Override

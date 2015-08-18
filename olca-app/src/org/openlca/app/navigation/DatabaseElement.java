@@ -20,19 +20,18 @@ public class DatabaseElement extends NavigationElement<IDatabaseConfiguration> {
 	protected List<INavigationElement<?>> queryChilds() {
 		if (!Database.isActive(getContent()))
 			return Collections.emptyList();
-		//@formatter:off
 		ModelType[] types = new ModelType[] {
-			ModelType.PROJECT,
-			ModelType.PRODUCT_SYSTEM,
-			ModelType.IMPACT_METHOD,
-			ModelType.PROCESS,
-			ModelType.FLOW,
-			ModelType.FLOW_PROPERTY,
-			ModelType.UNIT_GROUP,
-			ModelType.ACTOR,
-			ModelType.SOURCE
+				ModelType.PROJECT,
+				ModelType.PRODUCT_SYSTEM,
+				ModelType.IMPACT_METHOD,
+				ModelType.SOCIAL_INDICATOR,
+				ModelType.PROCESS,
+				ModelType.FLOW,
+				ModelType.FLOW_PROPERTY,
+				ModelType.UNIT_GROUP,
+				ModelType.ACTOR,
+				ModelType.SOURCE
 		};
-		//@formatter:on
 		List<INavigationElement<?>> elements = new ArrayList<>();
 		for (ModelType type : types)
 			elements.add(new ModelTypeElement(this, type));

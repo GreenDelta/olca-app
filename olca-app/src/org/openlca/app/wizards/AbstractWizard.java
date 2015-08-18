@@ -57,7 +57,7 @@ public abstract class AbstractWizard<T extends CategorizedEntity> extends
 			App.openEditor(model);
 			return true;
 		} catch (Exception e) {
-			log.error("failed to create actor", e);
+			log.error("failed to create save " + model, e);
 			return false;
 		}
 	}

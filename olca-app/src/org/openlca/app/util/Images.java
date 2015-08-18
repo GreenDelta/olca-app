@@ -155,7 +155,7 @@ public class Images {
 		case UNIT_GROUP:
 			return ImageType.UNIT_GROUP_CATEGORY_ICON;
 		default:
-			return ImageType.COLLAPSE_ICON;
+			return ImageType.FOLDER_SMALL;
 		}
 	}
 

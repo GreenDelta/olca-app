@@ -14,6 +14,7 @@ import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.database.ProductSystemDao;
 import org.openlca.core.database.ProjectDao;
+import org.openlca.core.database.SocialIndicatorDao;
 import org.openlca.core.database.SourceDao;
 import org.openlca.core.database.UnitGroupDao;
 import org.openlca.core.model.ModelType;
@@ -162,6 +163,8 @@ public class Database {
 			return new ProductSystemDao(database);
 		case PROJECT:
 			return new ProjectDao(database);
+		case SOCIAL_INDICATOR:
+			return new SocialIndicatorDao(database);
 		case SOURCE:
 			return new SourceDao(database);
 		case UNIT_GROUP:

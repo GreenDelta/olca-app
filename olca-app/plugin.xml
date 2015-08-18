@@ -107,6 +107,13 @@
             name="%ProductSystemEditor" 
             contributorClass="org.openlca.app.editors.systems.ProductSystemActions">
       </editor>
+      <editor
+            class="org.openlca.app.editors.social.SocialIndicatorEditor"
+            default="false"
+            icon="icons/actor_obj.png"
+            id="editors.socialindicator"
+            name="#Social indicator">
+      </editor>
       
       <editor
            class="org.openlca.app.editors.parameters.GlobalParameterEditor"
@@ -255,6 +262,11 @@
             icon="icons/chart_organisation_new.png"
             id="wizards.new.productsystem"
             name="%ProductSystems">
+      </wizard>
+      <wizard
+            class="org.openlca.app.wizards.SocialIndicatorWizard"
+            id="wizards.new.socialindicator"
+            name="#Social indicator">
       </wizard>
    </extension>   
    
