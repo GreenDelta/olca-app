@@ -17,7 +17,7 @@ import org.openlca.core.model.ProcessDocumentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ProcessEditor extends ModelEditor<Process> implements IEditor {
+public class ProcessEditor extends ModelEditor<Process>implements IEditor {
 
 	/**
 	 * An event message that indicates the removal or addition of one or more
@@ -71,6 +71,7 @@ public class ProcessEditor extends ModelEditor<Process> implements IEditor {
 			addPage(new ModelParameterPage(this));
 			addPage(new AllocationPage(this));
 			addPage(new ProcessCostPage(this));
+			addPage(new SocialAspectsPage(this));
 		} catch (Exception e) {
 			log.error("failed to add page", e);
 		}
