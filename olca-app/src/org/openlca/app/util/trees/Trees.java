@@ -1,4 +1,4 @@
-package org.openlca.app.util;
+package org.openlca.app.util.trees;
 
 import java.util.List;
 import java.util.function.Consumer;

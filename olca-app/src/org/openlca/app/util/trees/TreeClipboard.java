@@ -1,4 +1,4 @@
-package org.openlca.app.util;
+package org.openlca.app.util.trees;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -13,6 +13,8 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.ISharedImages;
 import org.openlca.app.Messages;
 import org.openlca.app.rcp.ImageType;
+import org.openlca.app.util.Actions;
+import org.openlca.app.util.UI;
 
 public final class TreeClipboard {
 

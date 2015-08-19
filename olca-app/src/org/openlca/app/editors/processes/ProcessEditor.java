@@ -12,6 +12,7 @@ import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.parameters.Formulas;
 import org.openlca.app.editors.parameters.ModelParameterPage;
 import org.openlca.app.editors.parameters.ParameterChangeSupport;
+import org.openlca.app.editors.processes.social.SocialAspectsPage;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessDocumentation;
 import org.slf4j.Logger;

@@ -1,13 +1,13 @@
-package org.openlca.app.editors.processes;
+package org.openlca.app.editors.processes.social;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
@@ -16,17 +16,17 @@ import org.openlca.app.Messages;
 import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelPage;
+import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
+import org.openlca.app.util.Viewers;
+import org.openlca.app.util.trees.Trees;
 import org.openlca.app.viewers.combo.FlowPropertyViewer;
 import org.openlca.app.viewers.combo.UnitViewer;
 import org.openlca.core.database.SocialIndicatorDao;
-import org.openlca.core.model.AbstractEntity;
-import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.SocialIndicator;
-import org.openlca.core.model.Source;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 
 public class SocialAspectsPage extends ModelPage<Process> {
@@ -37,13 +37,6 @@ public class SocialAspectsPage extends ModelPage<Process> {
 	private TreeModel treeModel = new TreeModel();
 
 	private List<SocialAspect> socialAspects = new ArrayList<>();
-
-	private class SocialAspect extends AbstractEntity {
-		SocialIndicator indicator;
-		String rawAmount;
-		String comment;
-		Source source;
-	}
 
 	public SocialAspectsPage(ProcessEditor editor) {
 		super(editor, "SocialAspectsPage", "#Social aspects");
@@ -74,11 +67,34 @@ public class SocialAspectsPage extends ModelPage<Process> {
 		Composite comp = UI.sectionClient(section, tk);
 		UI.gridData(section, true, true);
 		UI.gridLayout(comp, 1);
-		tree = new TreeViewer(comp);
-		UI.gridData(tree.getTree(), true, true);
-		tree.setContentProvider(new ContentProvider());
-		tree.setInput(treeModel);
 		Actions.bind(section, Actions.onAdd(this::addIndicator));
+		createTree(comp);
+		Trees.onDoubleClick(tree, (e) -> {
+			Object o = Viewers.getFirstSelected(tree);
+			if (o instanceof SocialAspect)
+				Dialog.open((SocialAspect) o);
+		});
+	}
+
+	private void createTree(Composite comp) {
+		String[] headers = { Messages.Name, "#Raw amount", Messages.Unit,
+				"#Risk level", "#Data quality", "#Comment", Messages.Source };
+		tree = new TreeViewer(comp, SWT.FULL_SELECTION
+				| SWT.MULTI | SWT.BORDER);
+		Tree t = tree.getTree();
+		for (int i = 0; i < headers.length; i++) {
+			TreeColumn c = new TreeColumn(t, SWT.NULL);
+			c.setText(headers[i]);
+		}
+		tree.setColumnProperties(headers);
+		Trees.bindColumnWidths(t, 0.2, 0.1, 0.1, 0.1, 0.1, 0.2, 0.2);
+		tree.setAutoExpandLevel(2);
+		t.setLinesVisible(false);
+		t.setHeaderVisible(true);
+		UI.gridData(t, true, true);
+		tree.setContentProvider(new TreeContent());
+		tree.setLabelProvider(new TreeLabel());
+		tree.setInput(treeModel);
 	}
 
 	private void addIndicator() {
@@ -109,96 +125,6 @@ public class SocialAspectsPage extends ModelPage<Process> {
 	}
 
 	private void deleteIndicator() {
-
-	}
-
-	private class TreeModel {
-
-		CategoryNode root = new CategoryNode();
-
-		void addAspect(SocialAspect a) {
-			if (a == null || a.indicator == null)
-				return;
-			SocialIndicator i = a.indicator;
-			CategoryNode n = getNode(i.getCategory());
-			n.aspects.add(a);
-		}
-
-		CategoryNode getNode(Category c) {
-			if (c == null)
-				return root;
-			CategoryNode parent = getNode(c.getParentCategory());
-			CategoryNode node = parent.findChild(c);
-			if (node == null) {
-				node = new CategoryNode(c);
-				parent.childs.add(node);
-			}
-			return node;
-		}
-
-	}
-
-	private class CategoryNode {
-
-		Category category;
-		List<CategoryNode> childs = new ArrayList<>();
-		List<SocialAspect> aspects = new ArrayList<>();
-
-		CategoryNode() {
-		}
-
-		CategoryNode(Category c) {
-			category = c;
-		}
-
-		private CategoryNode findChild(Category c) {
-			for (CategoryNode child : childs) {
-				if (Objects.equals(c, child.category))
-					return child;
-			}
-			return null;
-		}
-	}
-
-	private class ContentProvider implements ITreeContentProvider {
-
-		@Override
-		public void dispose() {
-		}
-
-		@Override
-		public void inputChanged(Viewer viewer, Object oldInput,
-				Object newInput) {
-		}
-
-		@Override
-		public Object[] getElements(Object obj) {
-			if (!(obj instanceof TreeModel))
-				return null;
-			TreeModel tm = (TreeModel) obj;
-			return getChildren(tm.root);
-		}
-
-		@Override
-		public Object[] getChildren(Object obj) {
-			if (!(obj instanceof CategoryNode))
-				return null;
-			CategoryNode cn = (CategoryNode) obj;
-			List<Object> list = new ArrayList<>();
-			list.addAll(cn.childs);
-			list.addAll(cn.aspects);
-			return list.toArray();
-		}
-
-		@Override
-		public Object getParent(Object element) {
-			return null;
-		}
-
-		@Override
-		public boolean hasChildren(Object obj) {
-			return obj instanceof CategoryNode;
-		}
 
 	}
 }

@@ -45,7 +45,8 @@ public class ModelSelectionDialog extends FormDialog {
 	private Font boldLabelFont;
 
 	public static BaseDescriptor select(ModelType type) {
-		ModelSelectionDialog dialog = new ModelSelectionDialog(UI.shell(), type);
+		ModelSelectionDialog dialog = new ModelSelectionDialog(UI.shell(),
+				type);
 		if (dialog.open() == OK) {
 			BaseDescriptor[] selection = dialog.getSelection();
 			if (selection == null || selection.length == 0)
@@ -56,7 +57,8 @@ public class ModelSelectionDialog extends FormDialog {
 	}
 
 	public static BaseDescriptor[] multiSelect(ModelType type) {
-		ModelSelectionDialog dialog = new ModelSelectionDialog(UI.shell(), type);
+		ModelSelectionDialog dialog = new ModelSelectionDialog(UI.shell(),
+				type);
 		dialog.multiSelection = true;
 		if (dialog.open() == OK)
 			return dialog.getSelection();
@@ -77,7 +79,7 @@ public class ModelSelectionDialog extends FormDialog {
 	}
 
 	@Override
-	protected void createButtonsForButtonBar(final Composite parent) {
+	protected void createButtonsForButtonBar(Composite parent) {
 		createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL,
 				false);
 		getButton(IDialogConstants.OK_ID).setEnabled(false);
@@ -87,19 +89,19 @@ public class ModelSelectionDialog extends FormDialog {
 
 	@Override
 	protected void createFormContent(IManagedForm form) {
-		FormToolkit toolkit = form.getToolkit();
+		FormToolkit tk = form.getToolkit();
 		UI.formHeader(form, getTitle());
-		Composite body = UI.formBody(form.getForm(), form.getToolkit());
+		Composite body = UI.formBody(form.getForm(), tk);
 		UI.gridLayout(body, 1);
 		Label filterLabel = UI.formLabel(body, form.getToolkit(),
 				Messages.Filter);
 		boldLabelFont = UI.boldFont(filterLabel);
 		filterLabel.setFont(boldLabelFont);
 		filterText = UI.formText(body, SWT.SEARCH);
-		Section section = UI.section(body, toolkit, Messages.Content);
+		Section section = UI.section(body, tk, Messages.Content);
 		addSectionActions(section);
 		UI.gridData(section, true, true);
-		Composite composite = UI.sectionClient(section, toolkit);
+		Composite composite = UI.sectionClient(section, tk);
 		UI.gridLayout(composite, 1);
 		createViewer(composite);
 	}
@@ -125,6 +127,8 @@ public class ModelSelectionDialog extends FormDialog {
 					: Messages.ProductSystem;
 		case PROJECT:
 			return multiSelection ? Messages.Projects : Messages.Project;
+		case SOCIAL_INDICATOR:
+			return multiSelection ? "#Social indicators" : "#Social indicator";
 		case SOURCE:
 			return multiSelection ? Messages.Sources : Messages.Source;
 		case UNIT_GROUP:
@@ -161,26 +165,14 @@ public class ModelSelectionDialog extends FormDialog {
 	}
 
 	private void addSectionActions(Section section) {
-		Action expand = new Action() {
-			{
-				setImageDescriptor(ImageType.EXPAND_ICON.getDescriptor());
-			}
-
-			@Override
-			public void run() {
-				viewer.expandAll();
-			}
-		};
-		Action collapse = new Action() {
-			{
-				setImageDescriptor(ImageType.COLLAPSE_ICON.getDescriptor());
-			}
-
-			@Override
-			public void run() {
-				viewer.collapseAll();
-			}
-		};
+		Action expand = Actions.create(
+				Messages.ExpandAll,
+				ImageType.EXPAND_ICON.getDescriptor(),
+				viewer::expandAll);
+		Action collapse = Actions.create(
+				Messages.CollapseAll,
+				ImageType.COLLAPSE_ICON.getDescriptor(),
+				viewer::collapseAll);
 		Actions.bind(section, expand, collapse);
 	}
 
@@ -202,18 +194,21 @@ public class ModelSelectionDialog extends FormDialog {
 				.contains(filterText.getText().toLowerCase());
 	}
 
-	private class SelectionChangedListener implements ISelectionChangedListener {
+	private class SelectionChangedListener
+			implements ISelectionChangedListener {
 
 		@Override
 		public void selectionChanged(SelectionChangedEvent event) {
-			if (event.getSelection() != null && !event.getSelection().isEmpty()) {
+			if (event.getSelection() != null
+					&& !event.getSelection().isEmpty()) {
 				IStructuredSelection s = (IStructuredSelection) event
 						.getSelection();
 
 				List<BaseDescriptor> currentSelection = new ArrayList<>();
 				for (Object selected : s.toArray())
 					currentSelection
-							.addAll(getSelection((INavigationElement<?>) selected));
+							.addAll(getSelection(
+									(INavigationElement<?>) selected));
 				selection = currentSelection
 						.toArray(new BaseDescriptor[currentSelection.size()]);
 			}
