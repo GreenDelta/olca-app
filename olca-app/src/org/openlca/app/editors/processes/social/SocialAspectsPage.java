@@ -21,8 +21,6 @@ import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
 import org.openlca.app.util.trees.Trees;
-import org.openlca.app.viewers.combo.FlowPropertyViewer;
-import org.openlca.app.viewers.combo.UnitViewer;
 import org.openlca.core.database.SocialIndicatorDao;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
@@ -48,18 +46,8 @@ public class SocialAspectsPage extends ModelPage<Process> {
 		ScrolledForm form = UI.formHeader(mform, "#Social aspects");
 		FormToolkit tk = mform.getToolkit();
 		Composite body = UI.formBody(form, tk);
-		createActivitySection(tk, body);
 		createEntrySection(tk, body);
-	}
-
-	private void createActivitySection(FormToolkit tk, Composite body) {
-		Composite comp = UI.formSection(body, tk, "#Activity variable");
-		UI.formLabel(comp, tk, "#Quantity");
-		FlowPropertyViewer propViewer = new FlowPropertyViewer(comp);
-		propViewer.setInput(Database.get());
-		UI.formLabel(comp, tk, Messages.Unit);
-		UnitViewer unitViewer = new UnitViewer(comp);
-		UI.formText(comp, tk, Messages.Amount);
+		form.reflow(true);
 	}
 
 	private void createEntrySection(FormToolkit tk, Composite body) {
@@ -86,8 +74,10 @@ public class SocialAspectsPage extends ModelPage<Process> {
 			TreeColumn c = new TreeColumn(t, SWT.NULL);
 			c.setText(headers[i]);
 		}
+		for (TreeColumn c : t.getColumns())
+			c.pack();
 		tree.setColumnProperties(headers);
-		Trees.bindColumnWidths(t, 0.2, 0.1, 0.1, 0.1, 0.1, 0.2, 0.2);
+		Trees.bindColumnWidths(t, 0.2, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1);
 		tree.setAutoExpandLevel(2);
 		t.setLinesVisible(false);
 		t.setHeaderVisible(true);

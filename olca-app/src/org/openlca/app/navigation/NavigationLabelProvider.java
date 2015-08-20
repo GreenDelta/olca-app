@@ -73,7 +73,7 @@ public class NavigationLabelProvider extends ColumnLabelProvider implements
 		case PROJECT:
 			return ImageType.PROJECT_ICON.get();
 		case SOCIAL_INDICATOR:
-			return ImageType.ACTOR_ICON.get(); // TODO: change icon
+			return ImageType.INDICATOR_ICON.get();
 		case SOURCE:
 			return ImageType.SOURCE_ICON.get();
 		case UNIT_GROUP:

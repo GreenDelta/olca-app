@@ -3,22 +3,32 @@ package org.openlca.app.editors.processes.social;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.Messages;
+import org.openlca.app.components.TextDropComponent;
+import org.openlca.app.db.Database;
 import org.openlca.app.util.UI;
+import org.openlca.app.util.UIFactory;
+import org.openlca.core.database.SourceDao;
+import org.openlca.core.model.ModelType;
 
 class Dialog extends FormDialog {
 
 	private SocialAspect aspect;
 
 	public static int open(SocialAspect aspect) {
+		if (aspect == null || aspect.indicator == null)
+			return CANCEL;
 		Dialog d = new Dialog(aspect);
 		return d.open();
 	}
 
-	public Dialog(SocialAspect aspect) {
+	private Dialog(SocialAspect aspect) {
 		super(UI.shell());
 		this.aspect = aspect;
 	}
@@ -34,9 +44,62 @@ class Dialog extends FormDialog {
 	@Override
 	protected void createFormContent(IManagedForm mform) {
 		FormToolkit tk = mform.getToolkit();
-		UI.formHeader(mform, "#Social aspect");
+		String title = aspect.indicator.getName();
+		if (title == null)
+			title = "#Social aspect";
+		UI.formHeader(mform, title);
 		Composite body = UI.formBody(mform.getForm(), tk);
 		UI.gridLayout(body, 3);
+		amountRow(body, tk);
+		riskRow(body, tk);
+		sourceRow(body, tk);
+		commentRow(body, tk);
+		qualityRow(body, tk);
+	}
+
+	private void amountRow(Composite body, FormToolkit tk) {
+		Text t = UI.formText(body, tk, "#Raw amount");
+		if (aspect.rawAmount != null)
+			t.setText(aspect.rawAmount);
+		t.addModifyListener((e) -> {
+			aspect.rawAmount = t.getText();
+		});
+		String unit = aspect.indicator.unitOfMeasurement;
+		if (unit == null)
+			unit = "";
+		UI.formLabel(body, tk, unit);
+	}
+
+	private void riskRow(Composite body, FormToolkit tk) {
+		Combo combo = UI.formCombo(body, tk, "#Risk level");
+		UI.formLabel(body, tk, "");
+	}
+
+	private void sourceRow(Composite body, FormToolkit tk) {
+		TextDropComponent drop = UIFactory.createDropComponent(body,
+				Messages.Source, tk, ModelType.SOURCE);
+		drop.setHandler((d) -> {
+			if (d == null) {
+				aspect.source = null;
+			} else {
+				SourceDao dao = new SourceDao(Database.get());
+				aspect.source = dao.getForId(d.getId());
+			}
+		});
+		UI.formLabel(body, tk, "");
+	}
+
+	private void commentRow(Composite body, FormToolkit tk) {
+		Text t = UI.formMultiText(body, tk, "#Comment");
+		if (aspect.comment != null)
+			t.setText(aspect.comment);
+		t.addModifyListener((e) -> {
+			aspect.comment = t.getText();
+		});
+		UI.formLabel(body, tk, "");
+	}
+
+	private void qualityRow(Composite body, FormToolkit tk) {
 
 	}
 

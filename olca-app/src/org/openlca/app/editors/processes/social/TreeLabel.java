@@ -11,7 +11,12 @@ class TreeLabel extends BaseLabelProvider implements ITableLabelProvider {
 	public Image getColumnImage(Object obj, int col) {
 		if (col != 0)
 			return null;
-		return ImageType.FOLDER_SMALL.get();
+		if (obj instanceof CategoryNode)
+			return ImageType.INDICATOR_CATEGORY_ICON.get();
+		if (obj instanceof SocialAspect)
+			return ImageType.INDICATOR_ICON.get();
+		else
+			return null;
 	}
 
 	@Override
@@ -38,7 +43,7 @@ class TreeLabel extends BaseLabelProvider implements ITableLabelProvider {
 		case 1:
 			return a.rawAmount;
 		case 2:
-			return a.indicator != null ? a.indicator.unit : null;
+			return a.indicator != null ? a.indicator.unitOfMeasurement : null;
 		default:
 			return null;
 		}

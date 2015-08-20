@@ -106,6 +106,8 @@ public class Images {
 			return ImageType.PROJECT_ICON;
 		case SOURCE:
 			return ImageType.SOURCE_ICON;
+		case SOCIAL_INDICATOR:
+			return ImageType.INDICATOR_ICON;
 		case UNIT_GROUP:
 		case UNIT:
 			return ImageType.UNIT_GROUP_ICON;
@@ -152,6 +154,8 @@ public class Images {
 			return ImageType.PROJECT_CATEGORY_ICON;
 		case SOURCE:
 			return ImageType.SOURCE_CATEGORY_ICON;
+		case SOCIAL_INDICATOR:
+			return ImageType.INDICATOR_CATEGORY_ICON;
 		case UNIT_GROUP:
 			return ImageType.UNIT_GROUP_CATEGORY_ICON;
 		default:
