@@ -44,4 +44,13 @@ class TreeModel {
 		}
 	}
 
+	void remove(SocialAspect a) {
+		if (a == null || a.indicator == null)
+			return;
+		CategoryNode n = getNode(a.indicator.getCategory());
+		if (n == null)
+			return;
+		n.aspects.remove(a);
+	}
+
 }

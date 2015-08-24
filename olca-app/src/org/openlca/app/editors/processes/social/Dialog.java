@@ -16,6 +16,7 @@ import org.openlca.app.util.UIFactory;
 import org.openlca.core.database.SourceDao;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.SocialAspect;
+import org.openlca.core.model.descriptors.Descriptors;
 
 class Dialog extends FormDialog {
 
@@ -51,6 +52,7 @@ class Dialog extends FormDialog {
 		Composite body = UI.formBody(mform.getForm(), tk);
 		UI.gridLayout(body, 3);
 		amountRow(body, tk);
+		activityRow(body, tk);
 		new RiskCombo(aspect).create(body, tk);
 		sourceRow(body, tk);
 		commentRow(body, tk);
@@ -70,9 +72,30 @@ class Dialog extends FormDialog {
 		UI.formLabel(body, tk, unit);
 	}
 
+	private void activityRow(Composite body, FormToolkit tk) {
+		String label = "#Activity variable";
+		if (aspect.indicator.activityVariable != null)
+			label += " (" + aspect.indicator.activityVariable + ")";
+		Text t = UI.formText(body, tk, label);
+		t.setText(Double.toString(aspect.activityValue));
+		t.addModifyListener((e) -> {
+			try {
+				double d = Double.parseDouble(t.getText());
+				aspect.activityValue = d;
+			} catch (Exception ex) {
+			}
+		});
+		String unit = "";
+		if (aspect.indicator.activityUnit != null)
+			unit = aspect.indicator.activityUnit.getName();
+		UI.formLabel(body, tk, unit);
+	}
+
 	private void sourceRow(Composite body, FormToolkit tk) {
 		TextDropComponent drop = UIFactory.createDropComponent(body,
 				Messages.Source, tk, ModelType.SOURCE);
+		if (aspect.source != null)
+			drop.setContent(Descriptors.toDescriptor(aspect.source));
 		drop.setHandler((d) -> {
 			if (d == null) {
 				aspect.source = null;

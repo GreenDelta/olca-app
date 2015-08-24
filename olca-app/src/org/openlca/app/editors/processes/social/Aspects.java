@@ -43,6 +43,15 @@ class Aspects {
 		copyValues(a, pa);
 	}
 
+	static void remove(Process p, SocialAspect a) {
+		if (p == null || a == null)
+			return;
+		SocialAspect pa = find(p, a.indicator);
+		if (pa == null)
+			return;
+		p.socialAspects.remove(pa);
+	}
+
 	static void copyValues(SocialAspect from, SocialAspect to) {
 		if (from == null || to == null)
 			return;

@@ -1,5 +1,6 @@
 package org.openlca.app.editors.processes.social;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
@@ -15,6 +16,7 @@ import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.processes.ProcessEditor;
+import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.Viewers;
@@ -54,20 +56,27 @@ public class SocialAspectsPage extends ModelPage<Process> {
 		Composite comp = UI.sectionClient(section, tk);
 		UI.gridData(section, true, true);
 		UI.gridLayout(comp, 1);
-		Actions.bind(section, Actions.onAdd(this::addIndicator));
 		createTree(comp);
-		Trees.onDoubleClick(tree, (e) -> {
-			Object o = Viewers.getFirstSelected(tree);
-			if (o instanceof SocialAspect) {
-				SocialAspect copy = ((SocialAspect) o).clone();
-				if (Dialog.open(copy) == Window.OK) {
-					Aspects.update(getModel(), copy);
-					treeModel.update(copy);
-					tree.refresh();
-					editor.setDirty(true);
-				}
-			}
-		});
+		Trees.onDoubleClick(tree, (e) -> editAspect());
+		Action add = Actions.onAdd(this::addIndicator);
+		Action edit = Actions.create(Messages.Edit,
+				ImageType.EDIT_16.getDescriptor(), this::editAspect);
+		Action delete = Actions.onRemove(this::deleteAspect);
+		Actions.bind(section, add, edit, delete);
+		Actions.bind(tree, add, edit, delete);
+	}
+
+	private void editAspect() {
+		Object o = Viewers.getFirstSelected(tree);
+		if (!(o instanceof SocialAspect))
+			return;
+		SocialAspect copy = ((SocialAspect) o).clone();
+		if (Dialog.open(copy) == Window.OK) {
+			Aspects.update(getModel(), copy);
+			treeModel.update(copy);
+			tree.refresh();
+			editor.setDirty(true);
+		}
 	}
 
 	private void createTree(Composite comp) {
@@ -115,7 +124,14 @@ public class SocialAspectsPage extends ModelPage<Process> {
 		editor.setDirty(true);
 	}
 
-	private void deleteIndicator() {
-
+	private void deleteAspect() {
+		Object o = Viewers.getFirstSelected(tree);
+		if (!(o instanceof SocialAspect))
+			return;
+		SocialAspect a = (SocialAspect) o;
+		Aspects.remove(getModel(), a);
+		treeModel.remove(a);
+		tree.refresh();
+		editor.setDirty(true);
 	}
 }
