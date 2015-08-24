@@ -13,6 +13,7 @@ import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessType;
+import org.openlca.core.model.RiskLevel;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.UncertaintyType;
 import org.openlca.core.model.Unit;
@@ -225,6 +226,27 @@ public class Labels {
 			return Messages.Physical;
 		default:
 			return null;
+		}
+	}
+
+	public static String riskLevel(RiskLevel rl) {
+		if (rl == null)
+			return Messages.Unknown;
+		switch (rl) {
+		case VERY_LOW:
+			return "#Very low";
+		case LOW:
+			return "#Low";
+		case MEDIUM:
+			return "#Medium";
+		case HIGH:
+			return "#High";
+		case VERY_HIGH:
+			return "#Very high";
+		case NO_DATA:
+			return "#No data";
+		default:
+			return Messages.Unknown;
 		}
 	}
 

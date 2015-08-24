@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.openlca.core.model.Category;
+import org.openlca.core.model.SocialAspect;
 
 class CategoryNode {
 

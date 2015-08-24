@@ -4,6 +4,7 @@ import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.openlca.app.rcp.ImageType;
+import org.openlca.core.model.SocialAspect;
 
 class TreeLabel extends BaseLabelProvider implements ITableLabelProvider {
 

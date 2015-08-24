@@ -3,7 +3,6 @@ package org.openlca.app.editors.processes.social;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.FormDialog;
@@ -16,6 +15,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.util.UIFactory;
 import org.openlca.core.database.SourceDao;
 import org.openlca.core.model.ModelType;
+import org.openlca.core.model.SocialAspect;
 
 class Dialog extends FormDialog {
 
@@ -51,7 +51,7 @@ class Dialog extends FormDialog {
 		Composite body = UI.formBody(mform.getForm(), tk);
 		UI.gridLayout(body, 3);
 		amountRow(body, tk);
-		riskRow(body, tk);
+		new RiskCombo(aspect).create(body, tk);
 		sourceRow(body, tk);
 		commentRow(body, tk);
 		qualityRow(body, tk);
@@ -68,11 +68,6 @@ class Dialog extends FormDialog {
 		if (unit == null)
 			unit = "";
 		UI.formLabel(body, tk, unit);
-	}
-
-	private void riskRow(Composite body, FormToolkit tk) {
-		Combo combo = UI.formCombo(body, tk, "#Risk level");
-		UI.formLabel(body, tk, "");
 	}
 
 	private void sourceRow(Composite body, FormToolkit tk) {

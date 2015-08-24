@@ -1,9 +1,7 @@
 package org.openlca.app.editors.processes.social;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Tree;
@@ -24,6 +22,7 @@ import org.openlca.app.util.trees.Trees;
 import org.openlca.core.database.SocialIndicatorDao;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
+import org.openlca.core.model.SocialAspect;
 import org.openlca.core.model.SocialIndicator;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 
@@ -34,8 +33,6 @@ public class SocialAspectsPage extends ModelPage<Process> {
 	private TreeViewer tree;
 	private TreeModel treeModel = new TreeModel();
 
-	private List<SocialAspect> socialAspects = new ArrayList<>();
-
 	public SocialAspectsPage(ProcessEditor editor) {
 		super(editor, "SocialAspectsPage", "#Social aspects");
 		this.editor = editor;
@@ -43,6 +40,8 @@ public class SocialAspectsPage extends ModelPage<Process> {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
+		for (SocialAspect a : getModel().socialAspects)
+			treeModel.addAspect(a);
 		ScrolledForm form = UI.formHeader(mform, "#Social aspects");
 		FormToolkit tk = mform.getToolkit();
 		Composite body = UI.formBody(form, tk);
@@ -59,8 +58,15 @@ public class SocialAspectsPage extends ModelPage<Process> {
 		createTree(comp);
 		Trees.onDoubleClick(tree, (e) -> {
 			Object o = Viewers.getFirstSelected(tree);
-			if (o instanceof SocialAspect)
-				Dialog.open((SocialAspect) o);
+			if (o instanceof SocialAspect) {
+				SocialAspect copy = ((SocialAspect) o).clone();
+				if (Dialog.open(copy) == Window.OK) {
+					Aspects.update(getModel(), copy);
+					treeModel.update(copy);
+					tree.refresh();
+					editor.setDirty(true);
+				}
+			}
 		});
 	}
 
@@ -92,15 +98,8 @@ public class SocialAspectsPage extends ModelPage<Process> {
 		BaseDescriptor[] list = ModelSelectionDialog
 				.multiSelect(ModelType.SOCIAL_INDICATOR);
 		for (BaseDescriptor d : list) {
-			boolean found = false;
-			for (SocialAspect a : socialAspects) {
-				SocialIndicator i = a.indicator;
-				if (i != null && i.getId() == d.getId()) {
-					found = true;
-					break;
-				}
-			}
-			if (!found)
+			SocialAspect aspect = Aspects.find(getModel(), d);
+			if (aspect == null)
 				addIndicator(d);
 		}
 	}
@@ -110,9 +109,10 @@ public class SocialAspectsPage extends ModelPage<Process> {
 		SocialIndicator i = dao.getForId(d.getId());
 		SocialAspect a = new SocialAspect();
 		a.indicator = i;
-		socialAspects.add(a);
+		getModel().socialAspects.add(a);
 		treeModel.addAspect(a);
 		tree.refresh();
+		editor.setDirty(true);
 	}
 
 	private void deleteIndicator() {
