@@ -118,7 +118,9 @@ class Dialog extends FormDialog {
 	}
 
 	private void qualityRow(Composite body, FormToolkit tk) {
-
+		UI.formLabel(body, tk, "#Data quality");
+		new QualityPanel(aspect).create(body, tk);
+		UI.formLabel(body, tk, "");
 	}
 
 	@Override
