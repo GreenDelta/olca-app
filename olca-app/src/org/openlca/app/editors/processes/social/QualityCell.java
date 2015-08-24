@@ -6,7 +6,6 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseTrackListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -33,9 +32,7 @@ class QualityCell {
 	void create(Composite parent, FormToolkit tk, QualityLabelData data) {
 		String text = data.getLabel(row, score);
 		composite = tk.createComposite(parent, SWT.BORDER);
-		GridData gridData = UI.gridData(composite, true, true);
-		// gridData.minimumWidth = 50;
-		// gridData.widthHint = 50;
+		UI.gridData(composite, true, true);
 		FillLayout layout = new FillLayout(SWT.HORIZONTAL);
 		layout.marginHeight = 2;
 		layout.marginWidth = 2;
@@ -78,7 +75,7 @@ class QualityCell {
 
 		@Override
 		public void mouseDown(MouseEvent e) {
-			panel.select(row, score);
+			panel.select(row, score, true);
 		}
 	}
 }

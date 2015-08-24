@@ -110,7 +110,7 @@
       <editor
             class="org.openlca.app.editors.social.SocialIndicatorEditor"
             default="false"
-            icon="icons/actor_obj.png"
+            icon="icons/indicator_obj.png"
             id="editors.socialindicator"
             name="#Social indicator">
       </editor>

@@ -1,14 +1,16 @@
 package org.openlca.app.editors.processes.social;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.util.UI;
+import org.openlca.core.model.PedigreeMatrix;
 import org.openlca.core.model.PedigreeMatrixRow;
 import org.openlca.core.model.SocialAspect;
 
@@ -29,6 +31,18 @@ class QualityPanel {
 		UI.gridLayout(comp, 6, 2, 0);
 		drawHeader(comp);
 		drawContent(comp);
+		initSelection();
+	}
+
+	private void initSelection() {
+		Map<PedigreeMatrixRow, Integer> map = null;
+		if (aspect.quality != null)
+			map = PedigreeMatrix.fromString(aspect.quality);
+		else
+			map = QualityLabelData.defaultSelection();
+		for (PedigreeMatrixRow key : map.keySet()) {
+			select(key, map.get(key), false);
+		}
 	}
 
 	private void drawHeader(Composite comp) {
@@ -44,9 +58,7 @@ class QualityPanel {
 		for (PedigreeMatrixRow row : PedigreeMatrixRow.values()) {
 			String rowText = data.getRowLabel(row);
 			Label rowLabel = tk.createLabel(comp, rowText, SWT.WRAP);
-			GridData gridData = UI.gridData(rowLabel, false, true);
-			// gridData.widthHint = 50;
-			// gridData.minimumWidth = 50;
+			UI.gridData(rowLabel, false, true);
 			createRowData(comp, row, data);
 		}
 	}
@@ -60,12 +72,23 @@ class QualityPanel {
 		}
 	}
 
-	void select(PedigreeMatrixRow row, int score) {
+	void select(PedigreeMatrixRow row, int score, boolean updateValue) {
 		for (QualityCell cell : cells) {
 			if (cell.row == row) {
 				cell.selected = (cell.score == score);
 				cell.setColor();
 			}
 		}
+		if (updateValue)
+			aspect.quality = getSelection();
+	}
+
+	private String getSelection() {
+		Map<PedigreeMatrixRow, Integer> vals = new HashMap<>();
+		for (QualityCell cell : cells) {
+			if (cell.selected)
+				vals.put(cell.row, cell.score);
+		}
+		return PedigreeMatrix.toString(vals);
 	}
 }

@@ -1,6 +1,8 @@
 package org.openlca.app.editors.processes.social;
 
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import org.eclipse.swt.graphics.Color;
@@ -39,5 +41,12 @@ class QualityLabelData {
 		colors[3] = Colors.getColor(246, 207, 191);
 		colors[4] = Colors.getColor(246, 182, 174);
 		return colors;
+	}
+
+	public static Map<PedigreeMatrixRow, Integer> defaultSelection() {
+		Map<PedigreeMatrixRow, Integer> map = new HashMap<>();
+		for (PedigreeMatrixRow row : PedigreeMatrixRow.values())
+			map.put(row, 5);
+		return map;
 	}
 }
