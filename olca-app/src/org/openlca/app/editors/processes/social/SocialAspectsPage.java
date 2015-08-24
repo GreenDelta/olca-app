@@ -65,8 +65,9 @@ public class SocialAspectsPage extends ModelPage<Process> {
 	}
 
 	private void createTree(Composite comp) {
-		String[] headers = { Messages.Name, "#Raw amount", Messages.Unit,
-				"#Risk level", "#Data quality", "#Comment", Messages.Source };
+		String[] headers = { Messages.Name, "#Raw amount", "#Risk level",
+				"#Activity variable", "#Data quality", "#Comment",
+				Messages.Source };
 		tree = new TreeViewer(comp, SWT.FULL_SELECTION
 				| SWT.MULTI | SWT.BORDER);
 		Tree t = tree.getTree();

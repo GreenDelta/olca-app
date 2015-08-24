@@ -43,10 +43,21 @@ class TreeLabel extends BaseLabelProvider implements ITableLabelProvider {
 		case 1:
 			return a.rawAmount;
 		case 2:
-			return a.indicator != null ? a.indicator.unitOfMeasurement : null;
+			return getRawAmount(a);
 		default:
 			return null;
 		}
+	}
+
+	private String getRawAmount(SocialAspect a) {
+		if (a == null || a.rawAmount == null)
+			return null;
+		String t = a.rawAmount;
+		if (a.indicator != null && a.indicator.unitOfMeasurement != null) {
+			String u = a.indicator.unitOfMeasurement;
+			t += " [" + u + "]";
+		}
+		return t;
 	}
 
 }
