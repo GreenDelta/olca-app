@@ -3,6 +3,7 @@ package org.openlca.app.editors.processes.social;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.Messages;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
@@ -20,7 +21,7 @@ class RiskCombo {
 	}
 
 	void create(Composite body, FormToolkit tk) {
-		combo = UI.formCombo(body, tk, "#Risk level");
+		combo = UI.formCombo(body, tk, Messages.RiskLevel);
 		levels = RiskLevel.values();
 		String[] labels = new String[levels.length];
 		int selected = -1;

@@ -126,7 +126,7 @@ public class NavigationLabelProvider extends ColumnLabelProvider implements
 		case PROJECT:
 			return Messages.Projects;
 		case SOCIAL_INDICATOR:
-			return "#Social indicators";
+			return Messages.SocialIndicators;
 		case SOURCE:
 			return Messages.Sources;
 		case UNIT_GROUP:

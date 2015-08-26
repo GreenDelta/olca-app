@@ -128,7 +128,8 @@ public class ModelSelectionDialog extends FormDialog {
 		case PROJECT:
 			return multiSelection ? Messages.Projects : Messages.Project;
 		case SOCIAL_INDICATOR:
-			return multiSelection ? "#Social indicators" : "#Social indicator";
+			return multiSelection ? Messages.SocialIndicators
+					: Messages.SocialIndicator;
 		case SOURCE:
 			return multiSelection ? Messages.Sources : Messages.Source;
 		case UNIT_GROUP:

@@ -109,7 +109,7 @@ public class CreateModelAction extends Action implements INavigationAction {
 		case PROJECT:
 			return Messages.NewProject;
 		case SOCIAL_INDICATOR:
-			return "#New social indicator";
+			return Messages.NewSocialIndicator;
 		case SOURCE:
 			return Messages.NewSource;
 		case UNIT_GROUP:

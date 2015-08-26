@@ -15,6 +15,7 @@ import com.google.gson.Gson;
 public class Messages extends NLS {
 
 	public static String AccessAndUseRestrictions;
+	public static String ActivityVariable;
 	public static String Actor;
 	public static String Actors;
 	public static String Add;
@@ -74,6 +75,7 @@ public class Messages extends NLS {
 	public static String CollapseAll;
 	public static String ColumnSeparator;
 	public static String Comma;
+	public static String Comment;
 	public static String Complete;
 	public static String CompleteReferenceData;
 	public static String Component;
@@ -129,6 +131,7 @@ public class Messages extends NLS {
 	public static String DataCompleteness;
 	public static String DataDocumentor;
 	public static String DataGenerator;
+	public static String DataQuality;
 	public static String DataSelection;
 	public static String DataSetOtherEvaluation;
 	public static String DataSetOwner;
@@ -183,6 +186,7 @@ public class Messages extends NLS {
 	public static String ErrorPopupMessage;
 	public static String ErrorPopupTitle;
 	public static String EvaluateLocations;
+	public static String EvaluationScheme;
 	public static String Example;
 	public static String ExcelExport;
 	public static String Expand;
@@ -365,6 +369,7 @@ public class Messages extends NLS {
 	public static String NewProductSystem;
 	public static String NewProject;
 	public static String NewSection;
+	public static String NewSocialIndicator;
 	public static String NewSource;
 	public static String NewUnitGroup;
 	public static String No;
@@ -455,10 +460,12 @@ public class Messages extends NLS {
 	public static String Publication;
 
 	public static String QuantitativeReference;
+	public static String Quantity;
 	public static String QuickResults;
 
-	public static String RecalculateQuestionTitle;
+	public static String RawValue;
 	public static String RecalculateQuestionText;
+	public static String RecalculateQuestionTitle;
 	public static String ReconnectProcesslink;
 	public static String Reference;
 	public static String ReferenceFlowProperty;
@@ -490,6 +497,7 @@ public class Messages extends NLS {
 	public static String ResultsOf;
 	public static String ResultsOfProject;
 	public static String Reviewer;
+	public static String RiskLevel;
 	public static String Route;
 	public static String RunCalculation;
 
@@ -529,13 +537,18 @@ public class Messages extends NLS {
 	public static String ShowFormulas;
 	public static String ShowOutline;
 	public static String ShowValues;
-	public static String Showviews;
 	public static String Showperspectives;
+	public static String Showviews;
 	public static String SimaProCSVImport;
 	public static String SingleAmount;
 	public static String SingleScore;
 	public static String SingleScoreBarChart;
 	public static String SingleScoreTable;
+	public static String SocialAspect;
+	public static String SocialAspects;
+	public static String SocialAssessment;
+	public static String SocialIndicator;
+	public static String SocialIndicators;
 	public static String SolvingProblems;
 	public static String Source;
 	public static String SourceFileDeleteQuestion;
@@ -580,6 +593,7 @@ public class Messages extends NLS {
 	public static String UnitGroup;
 	public static String UnitGroups;
 	public static String UnitMappingPage_Description;
+	public static String UnitOfMeasurement;
 	public static String UnitProcess;
 	public static String Units;
 	public static String UnitsAndFlowProperties;

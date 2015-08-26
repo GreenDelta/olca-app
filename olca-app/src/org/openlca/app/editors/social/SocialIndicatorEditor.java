@@ -57,8 +57,8 @@ public class SocialIndicatorEditor extends ModelEditor<SocialIndicator>
 
 		@Override
 		protected void createFormContent(IManagedForm managedForm) {
-			ScrolledForm form = UI.formHeader(managedForm, "#Social indicator: "
-					+ getModel().getName());
+			ScrolledForm form = UI.formHeader(managedForm,
+					Messages.SocialIndicator + ": " + getModel().getName());
 			FormToolkit toolkit = managedForm.getToolkit();
 			Composite body = UI.formBody(form, toolkit);
 			InfoSection infoSection = new InfoSection(getEditor());
@@ -72,14 +72,14 @@ public class SocialIndicatorEditor extends ModelEditor<SocialIndicator>
 		private void createAdditionalInfo(Composite body, FormToolkit tk) {
 			Composite comp = UI.formSection(body, tk,
 					Messages.AdditionalInformation);
-			Text ut = UI.formText(comp, tk, "Unit of measurement");
+			Text ut = UI.formText(comp, tk, Messages.UnitOfMeasurement);
 			if (getModel().unitOfMeasurement != null)
 				ut.setText(getModel().unitOfMeasurement);
 			ut.addModifyListener((e) -> {
 				getModel().unitOfMeasurement = ut.getText();
 				editor.setDirty(true);
 			});
-			Text et = UI.formMultiText(comp, tk, "Evaluation scheme");
+			Text et = UI.formMultiText(comp, tk, Messages.EvaluationScheme);
 			if (getModel().evaluationScheme != null)
 				et.setText(getModel().evaluationScheme);
 			et.addModifyListener((e) -> {
@@ -89,7 +89,8 @@ public class SocialIndicatorEditor extends ModelEditor<SocialIndicator>
 		}
 
 		private void createActivitySection(FormToolkit tk, Composite body) {
-			Composite comp = UI.formSection(body, tk, "#Activity variable");
+			Composite comp = UI.formSection(body, tk,
+					Messages.ActivityVariable);
 			Text t = UI.formText(comp, tk, Messages.Name);
 			if (getModel().activityVariable != null)
 				t.setText(getModel().activityVariable);
@@ -102,7 +103,7 @@ public class SocialIndicatorEditor extends ModelEditor<SocialIndicator>
 		}
 
 		private void createQuantityCombo(FormToolkit tk, Composite comp) {
-			UI.formLabel(comp, tk, "#Quantity");
+			UI.formLabel(comp, tk, Messages.Quantity);
 			quantityCombo = new FlowPropertyViewer(comp);
 			quantityCombo.setInput(Database.get());
 			FlowProperty aq = getModel().activityQuantity;

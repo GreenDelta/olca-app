@@ -36,7 +36,7 @@ public class SocialAspectsPage extends ModelPage<Process> {
 	private TreeModel treeModel = new TreeModel();
 
 	public SocialAspectsPage(ProcessEditor editor) {
-		super(editor, "SocialAspectsPage", "#Social aspects");
+		super(editor, "SocialAspectsPage", Messages.SocialAspects);
 		this.editor = editor;
 	}
 
@@ -44,7 +44,7 @@ public class SocialAspectsPage extends ModelPage<Process> {
 	protected void createFormContent(IManagedForm mform) {
 		for (SocialAspect a : getModel().socialAspects)
 			treeModel.addAspect(a);
-		ScrolledForm form = UI.formHeader(mform, "#Social aspects");
+		ScrolledForm form = UI.formHeader(mform, Messages.SocialAspects);
 		FormToolkit tk = mform.getToolkit();
 		Composite body = UI.formBody(form, tk);
 		createEntrySection(tk, body);
@@ -52,7 +52,7 @@ public class SocialAspectsPage extends ModelPage<Process> {
 	}
 
 	private void createEntrySection(FormToolkit tk, Composite body) {
-		Section section = UI.section(body, tk, "#Social assessment");
+		Section section = UI.section(body, tk, Messages.SocialAssessment);
 		Composite comp = UI.sectionClient(section, tk);
 		UI.gridData(section, true, true);
 		UI.gridLayout(comp, 1);
@@ -80,9 +80,9 @@ public class SocialAspectsPage extends ModelPage<Process> {
 	}
 
 	private void createTree(Composite comp) {
-		String[] headers = { Messages.Name, "#Raw amount", "#Risk level",
-				"#Activity variable", "#Data quality", "#Comment",
-				Messages.Source };
+		String[] headers = { Messages.Name, Messages.RawValue,
+				Messages.RiskLevel, Messages.ActivityVariable,
+				Messages.DataQuality, Messages.Comment, Messages.Source };
 		tree = new TreeViewer(comp, SWT.FULL_SELECTION
 				| SWT.MULTI | SWT.BORDER);
 		Tree t = tree.getTree();

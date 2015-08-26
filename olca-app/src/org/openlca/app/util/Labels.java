@@ -232,6 +232,7 @@ public class Labels {
 	public static String riskLevel(RiskLevel rl) {
 		if (rl == null)
 			return Messages.Unknown;
+		// "# TODO: these values should be translated
 		switch (rl) {
 		case VERY_LOW:
 			return "#Very low";

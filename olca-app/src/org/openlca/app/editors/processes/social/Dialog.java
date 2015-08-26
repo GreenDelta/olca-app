@@ -47,7 +47,7 @@ class Dialog extends FormDialog {
 		FormToolkit tk = mform.getToolkit();
 		String title = aspect.indicator.getName();
 		if (title == null)
-			title = "#Social aspect";
+			title = Messages.SocialAspect;
 		UI.formHeader(mform, title);
 		Composite body = UI.formBody(mform.getForm(), tk);
 		UI.gridLayout(body, 3);
@@ -60,7 +60,7 @@ class Dialog extends FormDialog {
 	}
 
 	private void amountRow(Composite body, FormToolkit tk) {
-		Text t = UI.formText(body, tk, "#Raw amount");
+		Text t = UI.formText(body, tk, Messages.RawValue);
 		if (aspect.rawAmount != null)
 			t.setText(aspect.rawAmount);
 		t.addModifyListener((e) -> {
@@ -73,7 +73,7 @@ class Dialog extends FormDialog {
 	}
 
 	private void activityRow(Composite body, FormToolkit tk) {
-		String label = "#Activity variable";
+		String label = Messages.ActivityVariable;
 		if (aspect.indicator.activityVariable != null)
 			label += " (" + aspect.indicator.activityVariable + ")";
 		Text t = UI.formText(body, tk, label);
@@ -108,7 +108,7 @@ class Dialog extends FormDialog {
 	}
 
 	private void commentRow(Composite body, FormToolkit tk) {
-		Text t = UI.formMultiText(body, tk, "#Comment");
+		Text t = UI.formMultiText(body, tk, Messages.Comment);
 		if (aspect.comment != null)
 			t.setText(aspect.comment);
 		t.addModifyListener((e) -> {
@@ -118,7 +118,7 @@ class Dialog extends FormDialog {
 	}
 
 	private void qualityRow(Composite body, FormToolkit tk) {
-		UI.formLabel(body, tk, "#Data quality");
+		UI.formLabel(body, tk, Messages.DataQuality);
 		new QualityPanel(aspect).create(body, tk);
 		UI.formLabel(body, tk, "");
 	}
