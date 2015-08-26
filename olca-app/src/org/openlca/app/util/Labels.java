@@ -234,18 +234,28 @@ public class Labels {
 			return Messages.Unknown;
 		// "# TODO: these values should be translated
 		switch (rl) {
-		case VERY_LOW:
-			return "#Very low";
-		case LOW:
-			return "#Low";
-		case MEDIUM:
-			return "#Medium";
-		case HIGH:
-			return "#High";
-		case VERY_HIGH:
-			return "#Very high";
+		case HIGH_OPPORTUNITY:
+			return "High opportunity";
+		case MEDIUM_OPPORTUNITY:
+			return "Medium opportunity";
+		case LOW_OPPORTUNITY:
+			return "Low opportunity";
+		case NO_RISK:
+			return "No risk";
+		case VERY_LOW_RISK:
+			return "Very low risk";
+		case LOW_RISK:
+			return "Low risk";
+		case MEDIUM_RISK:
+			return "Medium risk";
+		case HIGH_RISK:
+			return "High risk";
+		case VERY_HIGH_RISK:
+			return "Very high risk";
 		case NO_DATA:
-			return "#No data";
+			return "No data";
+		case NOT_APPLICABLE:
+			return "Not applicable";
 		default:
 			return Messages.Unknown;
 		}
