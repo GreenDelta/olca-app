@@ -18,6 +18,7 @@ import org.openlca.core.database.NativeSql;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.database.ProductSystemDao;
 import org.openlca.core.database.ProjectDao;
+import org.openlca.core.database.SocialIndicatorDao;
 import org.openlca.core.database.SourceDao;
 import org.openlca.core.database.UnitGroupDao;
 import org.openlca.core.math.CalculationSetup;
@@ -31,6 +32,7 @@ import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.Project;
+import org.openlca.core.model.SocialIndicator;
 import org.openlca.core.model.Source;
 import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.descriptors.ActorDescriptor;
@@ -41,6 +43,7 @@ import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.model.descriptors.ProductSystemDescriptor;
 import org.openlca.core.model.descriptors.ProjectDescriptor;
+import org.openlca.core.model.descriptors.SocialIndicatorDescriptor;
 import org.openlca.core.model.descriptors.SourceDescriptor;
 import org.openlca.core.model.descriptors.UnitGroupDescriptor;
 import org.openlca.core.results.ContributionResult;
@@ -443,6 +446,45 @@ public class ScriptApi {
 	public void deleteProject(Project project) {
 		ProjectDao dao = new ProjectDao(database);
 		dao.delete(project);
+	}
+
+	public SocialIndicator getSocialIndicator(String name) {
+		SocialIndicatorDao dao = new SocialIndicatorDao(database);
+		List<SocialIndicator> list = dao.getForName(name);
+		return list.isEmpty() ? null : list.get(0);
+	}
+
+	public SocialIndicator getSocialIndicator(int id) {
+		SocialIndicatorDao dao = new SocialIndicatorDao(database);
+		return dao.getForId(id);
+	}
+
+	public List<SocialIndicatorDescriptor> getSocialIndicatorDescriptors() {
+		SocialIndicatorDao dao = new SocialIndicatorDao(database);
+		return dao.getDescriptors();
+	}
+
+	public void eachSocialIndicator(Consumer<SocialIndicator> consumer) {
+		SocialIndicatorDao dao = new SocialIndicatorDao(database);
+		for (SocialIndicatorDescriptor descriptor : dao.getDescriptors()) {
+			SocialIndicator val = dao.getForId(descriptor.getId());
+			consumer.accept(val);
+		}
+	}
+
+	public SocialIndicator updateSocialIndicator(SocialIndicator model) {
+		SocialIndicatorDao dao = new SocialIndicatorDao(database);
+		return dao.update(model);
+	}
+
+	public void insertSocialIndicator(SocialIndicator model) {
+		SocialIndicatorDao dao = new SocialIndicatorDao(database);
+		dao.insert(model);
+	}
+
+	public void deleteSocialIndicator(SocialIndicator model) {
+		SocialIndicatorDao dao = new SocialIndicatorDao(database);
+		dao.delete(model);
 	}
 
 	public SimpleResultProvider<SimpleResult> calculate(ProductSystem system) {

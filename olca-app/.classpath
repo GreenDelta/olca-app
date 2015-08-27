@@ -93,7 +93,7 @@
 	<classpathentry kind="lib" path="libs/olca-geo-1.5.0.jar"/>
 	<classpathentry kind="lib" path="libs/olca-ilcd-1.5.0.jar"/>
 	<classpathentry kind="lib" path="libs/olca-io-1.5.0.jar"/>
-	<classpathentry kind="lib" path="libs/olca-jsonld-1.5.0.jar"/>
+	<classpathentry kind="lib" path="libs/olca-jsonld-1.5.0.jar" sourcepath="/olca-jsonld"/>
 	<classpathentry kind="lib" path="libs/olca-simapro-csv-1.5.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
