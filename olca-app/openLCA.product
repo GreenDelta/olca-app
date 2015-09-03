@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="openLCA" uid="openLCA" id="olca-app.openLCA" application="org.openlca.app.Application" version="1.4.2" useFeatures="false" includeLaunchers="true">
+<product name="openLCA" uid="openLCA" id="olca-app.openLCA" application="org.openlca.app.Application" version="1.5.0alpha1" useFeatures="false" includeLaunchers="true">
 
    <aboutInfo>
       <image path="/olca-app/icons/about.png"/>
       <text>
-         openLCA 1.4.2
+         openLCA 1.5.0
 
 Copyright (c) 2007 - 2015 GreenDelta. All rights reserved.
 Visit http://openlca.org and http://greendelta.com
@@ -57,7 +57,6 @@ en
       <windows include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8</windows>
    </vm>
 
-
    <plugins>
       <plugin id="com.google.gson"/>
       <plugin id="com.ibm.icu"/>
@@ -65,7 +64,6 @@ en
       <plugin id="javax.inject"/>
       <plugin id="javax.xml"/>
       <plugin id="olca-app"/>
-      <plugin id="olca-scs"/>
       <plugin id="org.apache.batik.css"/>
       <plugin id="org.apache.batik.util"/>
       <plugin id="org.apache.batik.util.gui"/>

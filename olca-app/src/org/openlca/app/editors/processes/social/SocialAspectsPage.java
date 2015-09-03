@@ -94,7 +94,7 @@ public class SocialAspectsPage extends ModelPage<Process> {
 			c.pack();
 		tree.setColumnProperties(headers);
 		Trees.bindColumnWidths(t, 0.2, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1);
-		tree.setAutoExpandLevel(2);
+		tree.setAutoExpandLevel(3);
 		t.setLinesVisible(false);
 		t.setHeaderVisible(true);
 		UI.gridData(t, true, true);
