@@ -5,7 +5,6 @@
 	<classpathentry exported="true" kind="lib" path="libs/bonecp-0.8.0.RELEASE.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/common-2.6.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-beanutils-1.8.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/commons-codec-1.5.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-collections-3.2.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-httpclient-3.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-io-2.4.jar"/>
@@ -79,6 +78,13 @@
 	<classpathentry exported="true" kind="lib" path="libs/xml-apis-1.0.b2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/xmlbeans-2.3.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/xsd-2.6.0.jar"/>
+	<classpathentry kind="lib" path="libs/commons-codec-1.10.jar"/>
+	<classpathentry kind="lib" path="libs/jackson-jaxrs-base-2.5.2.jar"/>
+	<classpathentry kind="lib" path="libs/jackson-jaxrs-json-provider-2.5.2.jar"/>
+	<classpathentry kind="lib" path="libs/jackson-module-jaxb-annotations-2.5.2.jar"/>
+	<classpathentry kind="lib" path="libs/lca-cloud-api-0.1.0.jar"/>
+	<classpathentry kind="lib" path="libs/lucene-analyzers-common-5.2.1.jar"/>
+	<classpathentry kind="lib" path="libs/lucene-core-5.2.1.jar"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
