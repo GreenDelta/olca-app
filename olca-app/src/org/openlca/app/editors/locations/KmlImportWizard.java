@@ -12,7 +12,7 @@ import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
 import org.openlca.app.db.Database;
 import org.openlca.app.wizards.io.FileImportPage;
-import org.openlca.io.MultiKmlImport;
+import org.openlca.geo.io.MultiKmlImport;
 
 public class KmlImportWizard extends Wizard implements IImportWizard {
 
