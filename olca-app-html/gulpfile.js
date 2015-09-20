@@ -61,7 +61,7 @@ gulp.task('base_libs', function() {
 			'node_modules/codemirror/mode/python/python.js',
 			'node_modules/d3/d3.min.js',
 			'node_modules/jquery/dist/jquery.min.js',
-			'other_libs/*.js'
+			'other_libs/*.*'
 		])
 		.pipe(gulp.dest('build/libs'));
 });
