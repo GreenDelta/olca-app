@@ -15,6 +15,7 @@ import org.openlca.app.logging.Console;
 import org.openlca.app.logging.LoggerConfig;
 import org.openlca.app.rcp.html.HtmlFolder;
 import org.openlca.eigen.NativeLibrary;
+import org.openlca.util.OS;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -24,8 +25,7 @@ public class RcpActivator extends AbstractUIPlugin {
 
 	public static final String PLUGIN_ID = "olca-app";
 
-	private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(this
-			.getClass());
+	private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(this.getClass());
 	private static RcpActivator plugin;
 
 	/**
@@ -47,8 +47,7 @@ public class RcpActivator extends AbstractUIPlugin {
 	 */
 	public static InputStream getStream(final String path) {
 		try {
-			return FileLocator.openStream(plugin.getBundle(), new Path(path),
-					false);
+			return FileLocator.openStream(plugin.getBundle(), new Path(path), false);
 		} catch (final IOException e) {
 			return null;
 		}
@@ -64,13 +63,17 @@ public class RcpActivator extends AbstractUIPlugin {
 		WorkbenchLayout.initialize(workspace);
 		log.trace("Start application. Workspace: {}.", Platform.getLocation());
 		log.trace("Bundle {} started", PLUGIN_ID);
-		log.trace("Try init olca-eigen");
-		NativeLibrary.loadFromDir(workspace);
-		log.trace("olca-eigen loaded: {}", NativeLibrary.isLoaded());
 		log.trace("initialize HTML folder");
-		HtmlFolder.initialize(RcpActivator.getDefault().getBundle(),
-				"html/base_html.zip");
+		HtmlFolder.initialize(RcpActivator.getDefault().getBundle(), "html/base_html.zip");
 		Preferences.init();
+		log.trace("Try init olca-eigen");
+		try {
+			NativeLibrary.loadFromDir(workspace);
+		} catch (UnsatisfiedLinkError e) {
+			if (OS.getCurrent() == OS.Linux)
+				MissingLibraryMessage.checkAndShow();
+		}
+		log.trace("olca-eigen loaded: {}", NativeLibrary.isLoaded());
 	}
 
 	@Override
