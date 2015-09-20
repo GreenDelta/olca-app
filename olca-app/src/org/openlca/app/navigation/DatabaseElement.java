@@ -30,7 +30,9 @@ public class DatabaseElement extends NavigationElement<IDatabaseConfiguration> {
 				ModelType.FLOW_PROPERTY,
 				ModelType.UNIT_GROUP,
 				ModelType.ACTOR,
-				ModelType.SOURCE
+				ModelType.SOURCE,
+				ModelType.LOCATION,
+				ModelType.PARAMETER
 		};
 		List<INavigationElement<?>> elements = new ArrayList<>();
 		for (ModelType type : types)

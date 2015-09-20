@@ -101,6 +101,12 @@ public abstract class ModelPage<T extends CategorizedEntity> extends FormPage {
 		return text;
 	}
 
+	protected Text createDoubleText(String label, String property, Composite parent) {
+		Text text = UI.formText(parent, getManagedForm().getToolkit(), label);
+		binding.onDouble(() -> getModel(), property, text);
+		return text;
+	}
+
 	protected Text createMultiText(String label, String property,
 			Composite parent) {
 		Text text = UI.formMultiText(parent, getManagedForm().getToolkit(),

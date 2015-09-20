@@ -70,7 +70,7 @@
     <div class="tab-pane" id="textDiv" style="display:none">
       <textarea></textarea>
     </div>      
-    <div class="container-fluid" style="margin: 20px">
+    <div class="container-fluid" style="margin: 20px" id="buttonBar">
         <div class="row pull-right">
             <button id="saveAsButton" class="btn btn-primary btn-save">
                 Save as new location
@@ -113,44 +113,50 @@
             }
 
             function init() {
-        textEditor = CodeMirror.fromTextArea($('#textDiv textarea')[0], {theme: 'solarized light', lineWrapping: true, lineNumbers: true});
+              textEditor = CodeMirror.fromTextArea($('#textDiv textarea')[0], {theme: 'solarized light', lineWrapping: true, lineNumbers: true, 'onChange': function (cm) {
+                alert(1);
+                alert(kmlChanged);
+                if (typeof(kmlChanged) === "function") {
+                  kmlChanged(cm.Value());
+                }
+              }});
               $('.nav-tabs a').click(function (e) {
                 e.preventDefault()
                 showTabContent(this);
               });
               var mapLayer = new OpenLayers.Layer.OSM();
               editLayer = new OpenLayers.Layer.Vector( "Editable", {
-              styleMap: new OpenLayers.StyleMap({
-                  "default": new OpenLayers.Style({
-                  pointRadius: 5,
-                      strokeColor: "#428bca",
-                      strokeOpacity: .7,
-                      strokeWidth: 2,
-                      fillColor: "#428bca",
-                      fillOpacity: .3,
-                      cursor: "pointer"
-                  }),
-                  "temporary": new OpenLayers.Style({
-                    pointRadius: 2,
-                      strokeColor: "#428bca",
-                      strokeOpacity: .9,
-                      strokeWidth: 2,
-                      fillColor: "#428bca",
-                      fillOpacity: .3,
-                      cursor: "pointer"
-                  }),
-                  "select": new OpenLayers.Style({
+                styleMap: new OpenLayers.StyleMap({
+                    "default": new OpenLayers.Style({
                     pointRadius: 5,
-                      strokeColor: "#d9534f",
-                      strokeOpacity: .7,
-                      strokeWidth: 2,
-                      fillColor: "#d9534f",
-                      fillOpacity: 0,
-                      graphicZIndex: 2,
-                      cursor: "pointer"
-                  })
-              })
-          } );
+                        strokeColor: "#428bca",
+                        strokeOpacity: .7,
+                        strokeWidth: 2,
+                        fillColor: "#428bca",
+                        fillOpacity: .3,
+                        cursor: "pointer"
+                    }),
+                    "temporary": new OpenLayers.Style({
+                      pointRadius: 2,
+                        strokeColor: "#428bca",
+                        strokeOpacity: .9,
+                        strokeWidth: 2,
+                        fillColor: "#428bca",
+                        fillOpacity: .3,
+                        cursor: "pointer"
+                    }),
+                    "select": new OpenLayers.Style({
+                      pointRadius: 5,
+                        strokeColor: "#d9534f",
+                        strokeOpacity: .7,
+                        strokeWidth: 2,
+                        fillColor: "#d9534f",
+                        fillOpacity: 0,
+                        graphicZIndex: 2,
+                        cursor: "pointer"
+                    })
+                })
+              } );
             
               map = new OpenLayers.Map("mapDiv", {
                controls: [
@@ -165,6 +171,14 @@
                     new OpenLayers.Projection("EPSG:900913") // to Spherical Mercator Projection
                   ), 1 // Zoom level
               );
+              map.on('change', function() {
+                alert(2);
+                alert(kmlChanged);
+                if (typeof(kmlChanged) === "function") {
+                  var kml = getKML();
+                  kmlChanged(kml);
+                }
+              });
 
               $("#updateButton").on("click", function() {
                 onSave(true);
@@ -221,7 +235,11 @@
                 $('#saveAsButton').addClass('btn-primary');
                 $('#updateButton').hide();
               }
-            }            
+            }         
+
+            function setEmbedded() {
+              $('#buttonBar').hide();
+            }   
             
             function setKML(kml) {
               var format = new OpenLayers.Format.KML({

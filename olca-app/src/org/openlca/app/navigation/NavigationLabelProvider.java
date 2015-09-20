@@ -16,8 +16,7 @@ import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 
-public class NavigationLabelProvider extends ColumnLabelProvider implements
-		ICommonLabelProvider {
+public class NavigationLabelProvider extends ColumnLabelProvider implements ICommonLabelProvider {
 
 	@Override
 	public void addListener(ILabelProviderListener listener) {
@@ -78,6 +77,10 @@ public class NavigationLabelProvider extends ColumnLabelProvider implements
 			return ImageType.SOURCE_ICON.get();
 		case UNIT_GROUP:
 			return ImageType.UNIT_GROUP_ICON.get();
+		case LOCATION:
+			return ImageType.LOCATION_ICON.get();
+		case PARAMETER:
+			return ImageType.FORMULA_ICON.get();
 		default:
 			return null;
 		}
@@ -131,6 +134,10 @@ public class NavigationLabelProvider extends ColumnLabelProvider implements
 			return Messages.Sources;
 		case UNIT_GROUP:
 			return Messages.UnitGroups;
+		case LOCATION:
+			return Messages.Locations;
+		case PARAMETER:
+			return Messages.GlobalParameters;
 		default:
 			return Messages.Unknown;
 		}

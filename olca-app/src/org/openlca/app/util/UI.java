@@ -122,8 +122,7 @@ public class UI {
 		toolkit.paintBordersFor(composite);
 	}
 
-	public static GridData gridData(Control control, boolean hFill,
-			boolean vFill) {
+	public static GridData gridData(Control control, boolean hFill, boolean vFill) {
 		int hStyle = hFill ? SWT.FILL : SWT.LEFT;
 		int vStyle = vFill ? SWT.FILL : SWT.CENTER;
 		GridData data = new GridData(hStyle, vStyle, hFill, vFill);
@@ -141,26 +140,21 @@ public class UI {
 	public static ScrolledForm formHeader(IManagedForm managedForm, String title) {
 		ScrolledForm form = managedForm.getForm();
 		FormToolkit toolkit = managedForm.getToolkit();
-		toolkit.getHyperlinkGroup().setHyperlinkUnderlineMode(
-				HyperlinkSettings.UNDERLINE_HOVER);
+		toolkit.getHyperlinkGroup().setHyperlinkUnderlineMode(HyperlinkSettings.UNDERLINE_HOVER);
 		form.setText(title);
 		toolkit.decorateFormHeading(form.getForm());
 		return form;
 	}
 
-	public static Composite formSection(Composite parent, FormToolkit toolkit,
-			String label) {
+	public static Composite formSection(Composite parent, FormToolkit toolkit, String label) {
 		Section section = section(parent, toolkit, label);
 		Composite client = sectionClient(section, toolkit);
 		return client;
 	}
 
-	public static Section section(Composite parent, FormToolkit toolkit,
-			String label) {
-		Section section = toolkit.createSection(parent,
-				ExpandableComposite.TITLE_BAR | ExpandableComposite.FOCUS_TITLE
-						| ExpandableComposite.EXPANDED
-						| ExpandableComposite.TWISTIE);
+	public static Section section(Composite parent, FormToolkit toolkit, String label) {
+		Section section = toolkit.createSection(parent, ExpandableComposite.TITLE_BAR | ExpandableComposite.FOCUS_TITLE
+				| ExpandableComposite.EXPANDED | ExpandableComposite.TWISTIE);
 		gridData(section, true, false);
 		section.setText(label);
 		return section;
@@ -197,8 +191,7 @@ public class UI {
 		return gridLayout(composite, columns, 10, 10);
 	}
 
-	public static GridLayout gridLayout(Composite composite, int columns,
-			int spacing, int margin) {
+	public static GridLayout gridLayout(Composite composite, int columns, int spacing, int margin) {
 		final GridLayout layout = new GridLayout(columns, false);
 		layout.verticalSpacing = spacing;
 		layout.marginWidth = margin;
@@ -224,8 +217,7 @@ public class UI {
 		return formCheckBox(parent, null, label);
 	}
 
-	public static Button formCheckBox(Composite parent, FormToolkit toolkit,
-			String label) {
+	public static Button formCheckBox(Composite parent, FormToolkit toolkit, String label) {
 		formLabel(parent, label);
 		Button button = null;
 		if (toolkit != null)
@@ -234,6 +226,22 @@ public class UI {
 			button = new Button(parent, SWT.CHECK);
 		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, false);
 		button.setLayoutData(gd);
+		return button;
+	}
+
+	public static Button formRadio(Composite parent, String label) {
+		return formRadio(parent, null, label);
+	}
+
+	public static Button formRadio(Composite parent, FormToolkit toolkit, String label) {
+		Button button = null;
+		if (toolkit != null)
+			button = toolkit.createButton(parent, null, SWT.RADIO);
+		else
+			button = new Button(parent, SWT.RADIO);
+		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, false);
+		button.setLayoutData(gd);
+		formLabel(parent, label);
 		return button;
 	}
 
@@ -249,13 +257,11 @@ public class UI {
 		return formText(parent, null, label, flags | SWT.BORDER);
 	}
 
-	public static Text formText(Composite parent, FormToolkit toolkit,
-			String label) {
+	public static Text formText(Composite parent, FormToolkit toolkit, String label) {
 		return formText(parent, toolkit, label, SWT.BORDER);
 	}
 
-	public static Text formText(Composite parent, FormToolkit toolkit,
-			String label, int flags) {
+	public static Text formText(Composite parent, FormToolkit toolkit, String label, int flags) {
 		if (label != null)
 			formLabel(parent, toolkit, label);
 		Text text = null;
@@ -271,16 +277,13 @@ public class UI {
 		return formMultiText(parent, null, label);
 	}
 
-	public static Text formMultiText(Composite parent, FormToolkit toolkit,
-			String label) {
+	public static Text formMultiText(Composite parent, FormToolkit toolkit, String label) {
 		formLabel(parent, toolkit, label);
 		Text text = null;
 		if (toolkit != null)
-			text = toolkit.createText(parent, null, SWT.BORDER | SWT.V_SCROLL
-					| SWT.WRAP | SWT.MULTI);
+			text = toolkit.createText(parent, null, SWT.BORDER | SWT.V_SCROLL | SWT.WRAP | SWT.MULTI);
 		else
-			text = new Text(parent, SWT.BORDER | SWT.V_SCROLL | SWT.WRAP
-					| SWT.MULTI);
+			text = new Text(parent, SWT.BORDER | SWT.V_SCROLL | SWT.WRAP | SWT.MULTI);
 		GridData gd = gridData(text, true, false);
 		gd.minimumHeight = 100;
 		gd.heightHint = 100;
@@ -292,8 +295,7 @@ public class UI {
 		return formCombo(parent, null, label);
 	}
 
-	public static Combo formCombo(Composite parent, FormToolkit toolkit,
-			String label) {
+	public static Combo formCombo(Composite parent, FormToolkit toolkit, String label) {
 		formLabel(parent, toolkit, label);
 		Combo combo = new Combo(parent, SWT.READ_ONLY);
 		gridData(combo, true, false);
@@ -304,8 +306,7 @@ public class UI {
 		return formLabel(parent, null, text);
 	}
 
-	public static Label formLabel(Composite parent, FormToolkit toolkit,
-			String label) {
+	public static Label formLabel(Composite parent, FormToolkit toolkit, String label) {
 		Label labelWidget = null;
 		if (toolkit != null)
 			labelWidget = toolkit.createLabel(parent, label, SWT.NONE);

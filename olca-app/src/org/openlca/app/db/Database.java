@@ -11,6 +11,8 @@ import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.FlowPropertyDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ImpactMethodDao;
+import org.openlca.core.database.LocationDao;
+import org.openlca.core.database.ParameterDao;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.database.ProductSystemDao;
 import org.openlca.core.database.ProjectDao;
@@ -169,6 +171,10 @@ public class Database {
 			return new SourceDao(database);
 		case UNIT_GROUP:
 			return new UnitGroupDao(database);
+		case LOCATION:
+			return new LocationDao(database);
+		case PARAMETER:
+			return new ParameterDao(database);
 		default:
 			return null;
 		}

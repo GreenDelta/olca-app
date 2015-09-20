@@ -111,6 +111,8 @@ public class Messages extends NLS {
 	public static String CreatesANewFlow;
 	public static String CreatesANewFlowProperty;
 	public static String CreatesANewImpactMethod;
+	public static String CreatesANewLocation;
+	public static String CreatesANewParameter;
 	public static String CreatesANewProductSystem;
 	public static String CreatesANewProject;
 	public static String CreatesANewSource;
@@ -365,6 +367,8 @@ public class Messages extends NLS {
 	public static String NewImpactCategory;
 	public static String NewImpactMethod;
 	public static String NewLCIAMethod;
+	public static String NewLocation;
+	public static String NewParameter;
 	public static String NewProcess;
 	public static String NewProductSystem;
 	public static String NewProject;

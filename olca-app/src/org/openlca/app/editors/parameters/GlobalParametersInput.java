@@ -6,7 +6,7 @@ import org.eclipse.ui.IPersistableElement;
 import org.openlca.app.Messages;
 import org.openlca.app.rcp.ImageType;
 
-class GlobalParameterInput implements IEditorInput {
+class GlobalParametersInput implements IEditorInput {
 
 	@Override
 	@SuppressWarnings("rawtypes")
@@ -41,6 +41,6 @@ class GlobalParameterInput implements IEditorInput {
 
 	@Override
 	public boolean equals(Object obj) {
-		return (obj instanceof GlobalParameterInput);
+		return (obj instanceof GlobalParametersInput);
 	}
 }

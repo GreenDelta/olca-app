@@ -43,7 +43,7 @@ public class KmlImportWizard extends Wizard implements IImportWizard {
 
 	private void runImport(IProgressMonitor monitor)
 			throws InvocationTargetException {
-		monitor.beginTask("Importing KML data", IProgressMonitor.UNKNOWN);
+		monitor.beginTask("#Importing KML data", IProgressMonitor.UNKNOWN);
 		File file = fileImportPage.getFiles()[0];
 		try (InputStream stream = new FileInputStream(file)) {
 			MultiKmlImport parser = new MultiKmlImport(Database.get(), stream);
