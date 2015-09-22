@@ -37,8 +37,8 @@ public final class NodeLayoutStore {
 		}
 	}
 
-	private static void writeAsJson(List<NodeLayoutInfo> layoutInfo, File toFile)
-			throws IOException {
+	private static void writeAsJson(List<NodeLayoutInfo> layoutInfo,
+			File toFile) throws IOException {
 		JsonWriter writer = new JsonWriter(new FileWriter(toFile));
 		writer.beginObject();
 		writer.name("nodes");
@@ -149,17 +149,12 @@ public final class NodeLayoutStore {
 	}
 
 	public static File getLayoutFile(String refId) {
-		File layoutStore = getLayoutStore();
-		File layoutFile = new File(layoutStore, refId + ".json");
+		File rootDir = DatabaseFolder.getFileStorageLocation(Database.get());
+		File layoutDir = new File(rootDir, "layouts");
+		if (!layoutDir.exists())
+			layoutDir.mkdirs();
+		File layoutFile = new File(layoutDir, refId + ".json");
 		return layoutFile;
-	}
-
-	private static File getLayoutStore() {
-		File storage = DatabaseFolder.getFileStorageLocation(Database.get());
-		File layoutStore = new File(storage, "layouts");
-		if (!layoutStore.exists())
-			layoutStore.mkdirs();
-		return layoutStore;
 	}
 
 	public static void deleteLayout(String refId) {
