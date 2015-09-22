@@ -59,10 +59,10 @@ public class DeleteCategoryAction extends Action implements INavigationAction {
 		Category category = categoryElement.getContent();
 		try {
 			BaseDao<Category> dao = Database.get().createDao(Category.class);
-			Category parent = category.getParentCategory();
+			Category parent = category.getCategory();
 			if (parent != null) {
 				parent.getChildCategories().remove(category);
-				category.setParentCategory(null);
+				category.setCategory(null);
 				dao.update(parent);
 			}
 			dao.delete(category);

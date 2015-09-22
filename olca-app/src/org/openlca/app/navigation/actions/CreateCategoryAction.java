@@ -83,7 +83,7 @@ public class CreateCategoryAction extends Action implements INavigationAction {
 		if (parent == null)
 			dao.insert(category);
 		else {
-			category.setParentCategory(parent);
+			category.setCategory(parent);
 			parent.getChildCategories().add(category);
 			dao.update(parent);
 		}

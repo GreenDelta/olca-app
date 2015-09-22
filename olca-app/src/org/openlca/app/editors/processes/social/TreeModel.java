@@ -21,7 +21,7 @@ class TreeModel {
 	CategoryNode getNode(Category c) {
 		if (c == null)
 			return root;
-		CategoryNode parent = getNode(c.getParentCategory());
+		CategoryNode parent = getNode(c.getCategory());
 		CategoryNode node = parent.findChild(c);
 		if (node == null) {
 			node = new CategoryNode(c);
