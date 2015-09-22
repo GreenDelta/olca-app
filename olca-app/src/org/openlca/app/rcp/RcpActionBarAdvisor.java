@@ -19,20 +19,15 @@ import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 import org.openlca.app.Config;
 import org.openlca.app.Messages;
-import org.openlca.app.db.Database;
 import org.openlca.app.devtools.js.JavaScriptEditor;
 import org.openlca.app.devtools.python.PythonEditor;
 import org.openlca.app.devtools.sql.SqlEditor;
 import org.openlca.app.editors.StartPage;
-import org.openlca.app.editors.locations.LocationsEditor;
-import org.openlca.app.editors.parameters.GlobalParameterEditor;
+import org.openlca.app.editors.parameters.GlobalParametersEditor;
 import org.openlca.app.rcp.browser.MozillaConfigView;
 import org.openlca.app.rcp.plugins.PluginManager;
 import org.openlca.app.util.Actions;
-import org.openlca.app.util.DefaultInput;
 import org.openlca.app.util.Desktop;
-import org.openlca.app.util.Editors;
-import org.openlca.app.util.Error;
 
 public class RcpActionBarAdvisor extends ActionBarAdvisor {
 
@@ -90,9 +85,8 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		menu.add(closeAction);
 		menu.add(closeAllAction);
 		menu.add(new Separator());
-		menu.add(new EditLocationsAction());
 		menu.add(Actions.create(Messages.GlobalParameters, ImageType.FORMULA_ICON.getDescriptor(),
-				() -> GlobalParameterEditor.open()));
+				() -> GlobalParametersEditor.open()));
 		menu.add(preferencesAction);
 		menu.add(new OpenPluginManagerAction());
 		menu.add(new Separator());
@@ -168,22 +162,6 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		@Override
 		public void run() {
 			StartPage.open();
-		}
-	}
-
-	private class EditLocationsAction extends Action {
-		public EditLocationsAction() {
-			setText("Edit locations");
-			setToolTipText("Opens the locations editor");
-		}
-
-		@Override
-		public void run() {
-			if (Database.get() == null) {
-				Error.showBox("You need to activate a database first");
-				return;
-			}
-			Editors.open(new DefaultInput(LocationsEditor.ID), LocationsEditor.ID);
 		}
 	}
 

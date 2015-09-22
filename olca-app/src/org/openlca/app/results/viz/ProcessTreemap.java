@@ -76,10 +76,10 @@ public class ProcessTreemap {
 		node.children = new ArrayList<>();
 		node.name = category.getName();
 		categoryNodes.put(category.getId(), node);
-		if (category.getParentCategory() == null)
+		if (category.getCategory() == null)
 			root.children.add(node);
 		else {
-			TreeMapNode parent = getCategoryNode(category.getParentCategory());
+			TreeMapNode parent = getCategoryNode(category.getCategory());
 			parent.children.add(node);
 		}
 		return node;

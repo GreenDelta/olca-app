@@ -110,7 +110,7 @@ public class ModelParameterPage extends FormPage {
 				});
 		Action edit = Actions.create(Messages.Edit,
 				ImageType.EDIT_16.getDescriptor(),
-				GlobalParameterEditor::open);
+				GlobalParametersEditor::open);
 		Actions.bind(table, copy, refresh, edit);
 		Actions.bind(section, refresh, edit);
 	}

@@ -214,7 +214,7 @@ public class CopyPaste {
 			oldParent.getChildCategories().remove(category);
 		if (newParent != null)
 			newParent.getChildCategories().add(category);
-		category.setParentCategory(newParent);
+		category.setCategory(newParent);
 		CategoryDao dao = new CategoryDao(Database.get());
 		if (oldParent != null)
 			dao.update(oldParent);
@@ -227,11 +227,11 @@ public class CopyPaste {
 	private static boolean isChild(Category category, Category parent) {
 		if (category == null || parent == null)
 			return false;
-		Category p = category.getParentCategory();
+		Category p = category.getCategory();
 		while (p != null) {
 			if (Objects.equals(p, parent))
 				return true;
-			p = p.getParentCategory();
+			p = p.getCategory();
 		}
 		return false;
 	}
@@ -259,7 +259,7 @@ public class CopyPaste {
 			if (rootCopy == null)
 				rootCopy = copy;
 			copy.getChildCategories().clear();
-			copy.setParentCategory(parent);
+			copy.setCategory(parent);
 			if (currentParent != null)
 				currentParent.getChildCategories().add(copy);
 			for (INavigationElement<?> child : current.getChildren())

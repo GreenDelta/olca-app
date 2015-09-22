@@ -37,8 +37,7 @@ public class MapEditor implements HtmlPage {
 		editor.openShell();
 	}
 
-	private MapEditor(String name, String kml, boolean editOnly,
-			EditorHandler handler) {
+	private MapEditor(String name, String kml, boolean editOnly, EditorHandler handler) {
 		this.kml = kml;
 		this.editOnly = editOnly;
 		this.handler = handler;
@@ -67,8 +66,8 @@ public class MapEditor implements HtmlPage {
 
 	@Override
 	public void onLoaded() {
-		registerSaveFunction();
-		registerPrettifyFunction();
+		new LocationSaveFunction(browser, handler, this::close);
+		new KmlPrettifyFunction(browser);
 		if (kml == null)
 			kml = "";
 		try {
@@ -79,39 +78,59 @@ public class MapEditor implements HtmlPage {
 		}
 	}
 
-	private void registerSaveFunction() {
-		new BrowserFunction(browser, "doSave") {
-			@Override
-			public Object function(Object[] args) {
-				if (handler == null)
-					return null;
-				String kml = getArg(args, 0);
-				Boolean overwrite = getArg(args, 1);
-				if (overwrite == null)
-					return null;
-				handler.contentSaved(MapEditor.this, kml, overwrite);
+	public static class LocationSaveFunction extends BrowserFunction {
+
+		private EditorHandler handler;
+		private Runnable callback;
+
+		public LocationSaveFunction(Browser browser, EditorHandler handler, Runnable callback) {
+			super(browser, "doSave");
+			this.handler = handler;
+			this.callback = callback;
+		}
+
+		@Override
+		public Object function(Object[] args) {
+			if (handler == null)
 				return null;
-			}
-		};
-	}
-
-	private void registerPrettifyFunction() {
-		new BrowserFunction(browser, "prettifyKML") {
-			@Override
-			public Object function(Object[] arguments) {
-				String kml = getArg(arguments, 0);
-				if (kml == null || kml.isEmpty())
-					return null;
-				return KmlUtil.prettyFormat(kml);
-			}
-		};
-	}
-
-	@SuppressWarnings("unchecked")
-	private <T> T getArg(Object[] args, int index) {
-		if (args.length <= index)
+			String kml = getArg(args, 0);
+			Boolean overwrite = getArg(args, 1);
+			if (overwrite == null)
+				return null;
+			handler.contentSaved(kml, overwrite, callback);
 			return null;
-		return (T) args[index];
+		}
+
+		@SuppressWarnings("unchecked")
+		private <T> T getArg(Object[] args, int index) {
+			if (args.length <= index)
+				return null;
+			return (T) args[index];
+		}
+
+	}
+
+	public static class KmlPrettifyFunction extends BrowserFunction {
+
+		public KmlPrettifyFunction(Browser browser) {
+			super(browser, "prettifyKML");
+		}
+
+		@Override
+		public Object function(Object[] arguments) {
+			String kml = getArg(arguments, 0);
+			if (kml == null || kml.isEmpty())
+				return null;
+			return KmlUtil.prettyFormat(kml);
+		}
+
+		@SuppressWarnings("unchecked")
+		private <T> T getArg(Object[] args, int index) {
+			if (args.length <= index)
+				return null;
+			return (T) args[index];
+		}
+
 	}
 
 }

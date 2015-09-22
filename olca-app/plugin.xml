@@ -116,7 +116,7 @@
       </editor>
       
       <editor
-           class="org.openlca.app.editors.parameters.GlobalParameterEditor"
+           class="org.openlca.app.editors.parameters.GlobalParametersEditor"
            default="false"
            icon="icons/formula_16.png"
            id="editors.GlobalParameterEditor"
@@ -199,12 +199,21 @@
       </editor> 
 
 	  <editor
-            class="org.openlca.app.editors.locations.LocationsEditor"
+            class="org.openlca.app.editors.locations.LocationEditor"
             default="false"
             icon="icons/location_editor.png"
-            id="editors.locations"
-            name="Locations editor">
+            id="editors.location"
+            name="Location editor">
       </editor>	  
+
+	  <editor
+            class="org.openlca.app.editors.parameters.GlobalParameterEditor"
+            default="false"
+            icon="icons/formula_16.png"
+            id="editors.parameter"
+            name="Global parameter editor">
+      </editor>	  
+
    </extension>
    
    <extension
@@ -220,6 +229,18 @@
             icon="icons/source_obj_new.png"
             id="wizards.new.source"
             name="%Sources">
+      </wizard>
+      <wizard
+            class="org.openlca.app.wizards.LocationWizard"
+            icon="icons/actor_obj_new.png"
+            id="wizards.new.location"
+            name="Locations wizard">
+      </wizard>
+      <wizard
+            class="org.openlca.app.wizards.ParameterWizard"
+            icon="icons/actor_obj_new.png"
+            id="wizards.new.parameter"
+            name="Global parameters wizard">
       </wizard>
       <wizard
             class="org.openlca.app.wizards.UnitGroupWizard"
@@ -600,6 +621,11 @@
            class="org.openlca.app.editors.locations.KmzImportWizard"
            id="wizard.import.kmz"
            name="KMZ import wizard">
+       </wizard>
+	   <wizard
+           class="org.openlca.app.editors.locations.KmlImportWizard"
+           id="wizard.import.kml"
+           name="KML import wizard">
        </wizard>
    </extension>
    

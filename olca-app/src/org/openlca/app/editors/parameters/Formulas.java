@@ -58,7 +58,7 @@ public class Formulas {
 				bind(p, scope);
 			evalParams(params, scope);
 		} catch (Exception e) {
-			log.error("unexpected error in formula evaluation", e);
+			log.warn("unexpected error in formula evaluation", e);
 		}
 		return errors;
 	}
@@ -69,7 +69,7 @@ public class Formulas {
 			evalParams(p.getParameters(), s);
 			evalExchanges(p.getExchanges(), s);
 		} catch (Exception e) {
-			log.error("unexpected error in formula evaluation", e);
+			log.warn("unexpected error in formula evaluation", e);
 		}
 		return errors;
 	}
@@ -81,7 +81,7 @@ public class Formulas {
 			for (ImpactCategory ic : m.getImpactCategories())
 				evalFactors(ic.getImpactFactors(), s);
 		} catch (Exception e) {
-			log.error("unexpected error in formula evaluation", e);
+			log.warn("unexpected error in formula evaluation", e);
 		}
 		return errors;
 	}
@@ -130,7 +130,7 @@ public class Formulas {
 			log.trace("evaluated: {} -> {}", formula, val);
 			return val;
 		} catch (Exception e) {
-			log.error("failed to evaluate " + formula, e);
+			log.warn("failed to evaluate " + formula, e);
 			errors.add(formula);
 			return 0;
 		}

@@ -26,6 +26,8 @@ import org.openlca.app.navigation.actions.DeleteModelAction;
 import org.openlca.app.navigation.actions.ExportAction;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.actions.ImportAction;
+import org.openlca.app.navigation.actions.ImportKmlAction;
+import org.openlca.app.navigation.actions.ImportXmlKmlAction;
 import org.openlca.app.navigation.actions.OpenModelAction;
 import org.openlca.app.navigation.actions.OpenUsageAction;
 import org.openlca.app.navigation.actions.PasteAction;
@@ -65,6 +67,11 @@ public class NavigationActionProvider extends CommonActionProvider {
 			new INavigationAction[] {
 				new ImportAction(),
 				new ExportAction(),
+			},
+			// Location KML import actions
+			new INavigationAction[] {
+				new ImportKmlAction(),
+				new ImportXmlKmlAction()
 			},
 			// category actions
 			new INavigationAction[] {

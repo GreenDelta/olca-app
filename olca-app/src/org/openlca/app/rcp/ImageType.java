@@ -163,6 +163,10 @@ public enum ImageType {
 	LINK_16_BLUE("16x16_link_blue.png"),
 
 	LOAD_ICON("load_obj.gif"),
+	
+	LOCATION_ICON("location_editor.png"),
+
+	LOCATION_CATEGORY_ICON("folder_location.png"),
 
 	LOGO_128_32("logo_128_32bit.png"),
 
@@ -219,6 +223,8 @@ public enum ImageType {
 	OUTLINE_ICON("outline_co.gif"),
 
 	OUTPUT_ICON("output_16.png"),
+
+	PARAMETER_CATEGORY_ICON("folder_parameter.png"),
 
 	PLUS_ICON("add_stat.gif"),
 

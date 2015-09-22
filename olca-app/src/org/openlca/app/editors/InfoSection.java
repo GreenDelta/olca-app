@@ -105,14 +105,14 @@ public class InfoSection {
 		Category current = entity.getCategory();
 		while (current != null) {
 			stack.push(current);
-			current = current.getParentCategory();
+			current = current.getCategory();
 		}
 		Composite breadcrumb = new Composite(parent, SWT.NONE);
 		UI.gridLayout(breadcrumb, stack.size() * 2 - 1, 0, 0);
 		while (!stack.isEmpty()) {
 			current = stack.pop();
 			Hyperlink link = null;
-			if (current.getParentCategory() == null) {
+			if (current.getCategory() == null) {
 				link = new ImageHyperlink(breadcrumb, SWT.NONE);
 				((ImageHyperlink) link).setImage(Images.getIcon(current));
 			} else {

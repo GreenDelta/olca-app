@@ -12,7 +12,7 @@ import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
 import org.openlca.app.db.Database;
 import org.openlca.app.wizards.io.FileImportPage;
-import org.openlca.io.MultiKmlImport;
+import org.openlca.geo.io.MultiKmlImport;
 
 public class KmlImportWizard extends Wizard implements IImportWizard {
 
@@ -43,7 +43,7 @@ public class KmlImportWizard extends Wizard implements IImportWizard {
 
 	private void runImport(IProgressMonitor monitor)
 			throws InvocationTargetException {
-		monitor.beginTask("Importing KML data", IProgressMonitor.UNKNOWN);
+		monitor.beginTask("#Importing KML data", IProgressMonitor.UNKNOWN);
 		File file = fileImportPage.getFiles()[0];
 		try (InputStream stream = new FileInputStream(file)) {
 			MultiKmlImport parser = new MultiKmlImport(Database.get(), stream);

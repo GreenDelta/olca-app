@@ -158,6 +158,10 @@ public class Images {
 			return ImageType.INDICATOR_CATEGORY_ICON;
 		case UNIT_GROUP:
 			return ImageType.UNIT_GROUP_CATEGORY_ICON;
+		case LOCATION:
+			return ImageType.LOCATION_CATEGORY_ICON;
+		case PARAMETER:
+			return ImageType.PARAMETER_CATEGORY_ICON;
 		default:
 			return ImageType.FOLDER_SMALL;
 		}

@@ -64,16 +64,14 @@ class InfoPage extends ModelPage<Process> {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		form = UI.formHeader(managedForm, Messages.Process + ": "
-				+ getModel().getName());
+		form = UI.formHeader(managedForm, Messages.Process + ": " + getModel().getName());
 		if (FeatureFlag.SHOW_REFRESH_BUTTONS.isEnabled())
 			Editors.addRefresh(form, editor);
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		InfoSection infoSection = new InfoSection(getEditor());
 		infoSection.render(body, toolkit);
-		createCheckBox(Messages.InfrastructureProcess, "infrastructureProcess",
-				infoSection.getContainer());
+		createCheckBox(Messages.InfrastructureProcess, "infrastructureProcess", infoSection.getContainer());
 		createSystemButton(infoSection.getContainer());
 		createQuanRefSection(body);
 		createTimeSection(body);
@@ -85,8 +83,7 @@ class InfoPage extends ModelPage<Process> {
 
 	private void createSystemButton(Composite container) {
 		toolkit.createLabel(container, "");
-		Button button = toolkit.createButton(container,
-				Messages.CreateProductSystem, SWT.NONE);
+		Button button = toolkit.createButton(container, Messages.CreateProductSystem, SWT.NONE);
 		button.setImage(ImageType.PRODUCT_SYSTEM_ICON_NEW.get());
 		Controls.onSelect(button, (e) -> {
 			SystemCreation.run(getModel());
@@ -94,14 +91,11 @@ class InfoPage extends ModelPage<Process> {
 	}
 
 	private void createQuanRefSection(Composite body) {
-		Composite composite = UI.formSection(body, toolkit,
-				Messages.QuantitativeReference);
+		Composite composite = UI.formSection(body, toolkit, Messages.QuantitativeReference);
 		UI.formLabel(composite, toolkit, Messages.QuantitativeReference);
-		quanRefViewer = new ExchangeViewer(composite, ExchangeViewer.OUTPUTS,
-				ExchangeViewer.PRODUCTS);
+		quanRefViewer = new ExchangeViewer(composite, ExchangeViewer.OUTPUTS, ExchangeViewer.PRODUCTS);
 		quanRefViewer.setInput(getModel());
-		getBinding().onModel(() -> getModel(), "quantitativeReference",
-				quanRefViewer);
+		getBinding().onModel(() -> getModel(), "quantitativeReference", quanRefViewer);
 		editor.onSaved(() -> {
 			quanRefViewer.setInput(getModel());
 			quanRefViewer.select(getModel().getQuantitativeReference());
@@ -109,10 +103,8 @@ class InfoPage extends ModelPage<Process> {
 	}
 
 	private void createTechnologySection(Composite body) {
-		Composite composite = UI
-				.formSection(body, toolkit, Messages.Technology);
-		createMultiText(Messages.Description, "documentation.technology",
-				composite);
+		Composite composite = UI.formSection(body, toolkit, Messages.Technology);
+		createMultiText(Messages.Description, "documentation.technology", composite);
 	}
 
 	private void createTimeSection(Composite body) {
@@ -129,11 +121,9 @@ class InfoPage extends ModelPage<Process> {
 		locationViewer.setNullable(true);
 		locationViewer.setInput(Database.get());
 		getBinding().onModel(() -> getModel(), "location", locationViewer);
-		locationViewer.addSelectionChangedListener((s) -> kmlLink
-				.setText(getKmlDisplayText()));
+		locationViewer.addSelectionChangedListener((s) -> kmlLink.setText(getKmlDisplayText()));
 		createKmlSection(composite);
-		createMultiText(Messages.Description, "documentation.geography",
-				composite);
+		createMultiText(Messages.Description, "documentation.geography", composite);
 	}
 
 	private void createKmlSection(Composite parent) {
@@ -147,8 +137,7 @@ class InfoPage extends ModelPage<Process> {
 		kmlLink.addHyperlinkListener(new MapEditorDispatch());
 		UI.gridData(kmlLink, true, false).horizontalSpan = 2;
 		kmlLink.setText(getKmlDisplayText());
-		Button mapButton = toolkit.createButton(composite, "Map editor",
-				SWT.NONE);
+		Button mapButton = toolkit.createButton(composite, "#Map editor", SWT.NONE);
 		mapButton.addSelectionListener(new MapEditorDispatch());
 		mapButton.setImage(ImageType.LCIA_ICON.get());
 	}
@@ -184,8 +173,7 @@ class InfoPage extends ModelPage<Process> {
 		return getModel().getLocation().getName();
 	}
 
-	private class MapEditorDispatch extends HyperlinkAdapter implements
-			SelectionListener, EditorHandler {
+	private class MapEditorDispatch extends HyperlinkAdapter implements SelectionListener, EditorHandler {
 
 		private LocationDao locationDao = new LocationDao(Database.get());
 
@@ -204,8 +192,7 @@ class InfoPage extends ModelPage<Process> {
 		}
 
 		@Override
-		public void contentSaved(MapEditor mapEditor, String kml,
-				boolean overwrite) {
+		public void contentSaved(String kml, boolean overwrite, Runnable callback) {
 			Process process = getModel();
 			Location location = null;
 			if (overwrite)
@@ -220,7 +207,8 @@ class InfoPage extends ModelPage<Process> {
 			if (!overwrite)
 				getEditor().setDirty(true);
 			kmlLink.setText(getKmlDisplayText());
-			mapEditor.close();
+			if (callback != null)
+				callback.run();
 		}
 
 		private Location updateLocation(Location location, String kml) {
@@ -270,11 +258,10 @@ class InfoPage extends ModelPage<Process> {
 				Composite body = new Composite(parent, SWT.NONE);
 				UI.gridLayout(body, 1);
 				UI.gridData(body, true, true);
-				UI.formLabel(body,
-						"Please enter a name and the code of the new location");
+				UI.formLabel(body, "#Please enter a name and the code of the new location");
 				Composite container = UI.formComposite(body);
 				UI.gridData(container, true, true);
-				final Text nameText = UI.formText(container, "Name");
+				final Text nameText = UI.formText(container, "#Name");
 				nameText.addModifyListener(new ModifyListener() {
 
 					@Override
@@ -283,7 +270,7 @@ class InfoPage extends ModelPage<Process> {
 						updateButtons();
 					}
 				});
-				final Text codeText = UI.formText(container, "Code");
+				final Text codeText = UI.formText(container, "#Code");
 				codeText.addModifyListener(new ModifyListener() {
 
 					@Override

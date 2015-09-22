@@ -106,10 +106,10 @@ public class Labels {
 		Category cat = cache.get(Category.class, flow.getCategory());
 		if (cat == null)
 			return Pair.of("", "");
-		if (cat.getParentCategory() == null)
+		if (cat.getCategory() == null)
 			return Pair.of(cat.getName(), "");
 		else
-			return Pair.of(cat.getParentCategory().getName(), cat.getName());
+			return Pair.of(cat.getCategory().getName(), cat.getName());
 	}
 
 	public static String getEnumText(Object enumValue) {

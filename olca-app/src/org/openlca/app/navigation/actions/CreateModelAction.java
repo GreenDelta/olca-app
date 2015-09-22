@@ -68,8 +68,8 @@ public class CreateModelAction extends Action implements INavigationAction {
 	public void run() {
 		String wizardId = getWizardId();
 		try {
-			IWorkbenchWizard wizard = PlatformUI.getWorkbench()
-					.getNewWizardRegistry().findWizard(wizardId).createWizard();
+			IWorkbenchWizard wizard = PlatformUI.getWorkbench().getNewWizardRegistry().findWizard(wizardId)
+					.createWizard();
 			if (wizard instanceof INewModelWizard) {
 				INewModelWizard modelWizard = (INewModelWizard) wizard;
 				modelWizard.setCategory(category);
@@ -85,8 +85,7 @@ public class CreateModelAction extends Action implements INavigationAction {
 	private String getWizardId() {
 		if (type == null)
 			return null;
-		return "wizards.new."
-				+ type.getModelClass().getSimpleName().toLowerCase();
+		return "wizards.new." + type.getModelClass().getSimpleName().toLowerCase();
 	}
 
 	@Override
@@ -114,6 +113,10 @@ public class CreateModelAction extends Action implements INavigationAction {
 			return Messages.NewSource;
 		case UNIT_GROUP:
 			return Messages.NewUnitGroup;
+		case LOCATION:
+			return Messages.NewLocation;
+		case PARAMETER:
+			return Messages.NewParameter;
 		default:
 			return Messages.Unknown + "?";
 		}
@@ -142,6 +145,8 @@ public class CreateModelAction extends Action implements INavigationAction {
 			return ImageType.SOURCE_ICON_NEW.getDescriptor();
 		case UNIT_GROUP:
 			return ImageType.UNIT_GROUP_ICON_NEW.getDescriptor();
+			// TODO add location icon
+			// TODO add parameter icon
 		default:
 			return null;
 		}

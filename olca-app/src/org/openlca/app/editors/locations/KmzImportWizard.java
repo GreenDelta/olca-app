@@ -39,12 +39,12 @@ public class KmzImportWizard extends Wizard implements IImportWizard {
 	}
 
 	private void runImport(IProgressMonitor monitor) {
-		monitor.beginTask("Importing XML (EcoSpold2 format) data",
+		monitor.beginTask("#Importing XML (EcoSpold2 format) data",
 				IProgressMonitor.UNKNOWN);
 		File file = fileImportPage.getFiles()[0];
 		boolean wasValidFile = new GeoKmzImport(file, Database.get()).run();
 		if (!wasValidFile)
-			Info.showBox("Could not find KML data in the file you provided. Is it compliant to the EcoSpold2 format? More information regarding the format can be found at http://www.ecoinvent.org/data-providers/how-to-submit-data/ecospold2");
+			Info.showBox("#Could not find KML data in the file you provided. Is it compliant to the EcoSpold2 format? More information regarding the format can be found at http://www.ecoinvent.org/data-providers/how-to-submit-data/ecospold2");
 		monitor.done();
 	}
 
