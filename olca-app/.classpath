@@ -82,7 +82,6 @@
 	<classpathentry kind="lib" path="libs/jackson-jaxrs-base-2.5.2.jar"/>
 	<classpathentry kind="lib" path="libs/jackson-jaxrs-json-provider-2.5.2.jar"/>
 	<classpathentry kind="lib" path="libs/jackson-module-jaxb-annotations-2.5.2.jar"/>
-	<classpathentry kind="lib" path="libs/lca-cloud-api-0.1.0.jar"/>
 	<classpathentry kind="lib" path="libs/lucene-analyzers-common-5.2.1.jar"/>
 	<classpathentry kind="lib" path="libs/lucene-core-5.2.1.jar"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>

@@ -20,13 +20,7 @@
 	</repositories>
 
 	<dependencies>
-
-		<dependency>
-			<groupId>com.greendelta</groupId>
-			<artifactId>lca-cloud-api</artifactId>
-			<version>0.1.0</version>
-		</dependency>
-
+	
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
