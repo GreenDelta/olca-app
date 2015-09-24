@@ -27,17 +27,13 @@ import org.openlca.app.rcp.html.HtmlFolder;
 import org.openlca.app.rcp.html.HtmlPage;
 import org.openlca.app.util.Info;
 import org.openlca.app.util.UI;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class PluginManager extends FormDialog implements HtmlPage {
 
-	private final static Logger log = LoggerFactory
-			.getLogger(PluginManager.class);
-	private final static ObjectMapper mapper = new ObjectMapper();
+	private final static Gson mapper = new GsonBuilder().serializeNulls().create();
 	private final static PluginService service = new PluginService();
 	private final static BundleService bundleService = new BundleService();
 	private static Map<String, Plugin> plugins;
@@ -124,13 +120,9 @@ public class PluginManager extends FormDialog implements HtmlPage {
 
 	private void refresh() {
 		loadPlugins();
-		try {
-			String data = mapper.writeValueAsString(plugins.values());
-			boolean online = isOnline();
-			browser.evaluate("setData(" + data + ", " + online + ")");
-		} catch (JsonProcessingException e) {
-			log.error("Error writing plugins json", e);
-		}
+		String data = mapper.toJson(plugins.values());
+		boolean online = isOnline();
+		browser.evaluate("setData(" + data + ", " + online + ")");
 	}
 
 	private boolean isOnline() {

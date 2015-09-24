@@ -17,8 +17,8 @@ import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 class PluginService {
 
@@ -27,13 +27,14 @@ class PluginService {
 			.getLogger(PluginService.class);
 	private final static JsonLoader jsonLoader = new JsonLoader();
 	private final static BundleService bundleService = new BundleService();
-	private final static ObjectMapper mapper = new ObjectMapper();
+	private final static Gson mapper = new Gson();
 	private final static String PLUGINS_DIRECTORY = "plugins";
 
 	public List<Plugin> getAvailablePlugins() {
 		String json = jsonLoader.getPluginsJson();
 		try {
-			List<Plugin> plugins = mapper.readValue(json, new PluginList());
+			List<Plugin> plugins = mapper.fromJson(json, new TypeToken<List<Plugin>>() {
+			}.getType());
 			for (Plugin plugin : plugins)
 				setStatus(plugin);
 			return plugins;
@@ -165,10 +166,6 @@ class PluginService {
 	public void update(Plugin plugin) {
 		install(plugin);
 		plugin.setUpdated(true);
-	}
-
-	private class PluginList extends TypeReference<List<Plugin>> {
-
 	}
 
 }
