@@ -16,6 +16,8 @@ import org.openlca.app.db.DatabaseFolder;
 import org.openlca.app.db.DerbyConfiguration;
 import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.db.MySQLConfiguration;
+import org.openlca.app.events.DatabaseEvent;
+import org.openlca.app.events.DatabaseEvent.Type;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
@@ -37,8 +39,7 @@ public class DatabaseDeleteAction extends Action implements INavigationAction {
 
 	public DatabaseDeleteAction() {
 		setImageDescriptor(ImageType.DELETE_ICON.getDescriptor());
-		setDisabledImageDescriptor(ImageType.DELETE_ICON_DISABLED
-				.getDescriptor());
+		setDisabledImageDescriptor(ImageType.DELETE_ICON_DISABLED.getDescriptor());
 	}
 
 	@Override
@@ -74,10 +75,20 @@ public class DatabaseDeleteAction extends Action implements INavigationAction {
 			return;
 		if (createMessageDialog().open() != MessageDialog.OK)
 			return;
+		String previouslyActiveDb = Database.get() != null ? Database.get().getName() : null;
 		checkCloseEditors();
-		App.run(Messages.DeleteDatabase,
-				() -> doDelete(),
-				() -> Navigator.refresh());
+		App.run(Messages.DeleteDatabase, () -> doDelete(), () -> {
+			Navigator.refresh();
+			notifyClients(previouslyActiveDb);
+		});
+	}
+
+	private void notifyClients(String previouslyActiveDb) {
+		for (IDatabaseConfiguration config : configs) {
+			if (config.getName().equals(previouslyActiveDb))
+				App.getEventBus().post(new DatabaseEvent(config.getName(), Type.CLOSE));
+			App.getEventBus().post(new DatabaseEvent(config.getName(), Type.DELETE));
+		}
 	}
 
 	private void checkCloseEditors() {
@@ -112,13 +123,10 @@ public class DatabaseDeleteAction extends Action implements INavigationAction {
 	}
 
 	private MessageDialog createMessageDialog() {
-		String name = configs.size() == 1 ? configs.get(0).getName()
-				: "the selected databases";
+		String name = configs.size() == 1 ? configs.get(0).getName() : "the selected databases";
 		return new MessageDialog(UI.shell(), Messages.Delete, null, NLS.bind(
 				Messages.DoYouReallyWantToDelete, name),
-				MessageDialog.QUESTION, new String[] {
-						Messages.Yes,
-						Messages.No, },
+				MessageDialog.QUESTION, new String[] { Messages.Yes, Messages.No, },
 				MessageDialog.CANCEL);
 	}
 

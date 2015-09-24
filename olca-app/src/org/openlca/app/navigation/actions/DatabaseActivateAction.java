@@ -12,6 +12,8 @@ import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.IDatabaseConfiguration;
+import org.openlca.app.events.DatabaseEvent;
+import org.openlca.app.events.DatabaseEvent.Type;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
@@ -125,6 +127,7 @@ public class DatabaseActivateAction extends Action implements INavigationAction 
 				break;
 			case CURRENT:
 				Navigator.refresh();
+				App.getEventBus().post(new DatabaseEvent(config.getName(), Type.ACTIVATE));
 				break;
 			default:
 				break;
@@ -152,8 +155,10 @@ public class DatabaseActivateAction extends Action implements INavigationAction 
 					() -> {
 						if (failed.get())
 							closeDatabase();
-						else
+						else {
 							Navigator.refresh();
+							App.getEventBus().post(new DatabaseEvent(config.getName(), Type.ACTIVATE));
+						}
 					});
 		}
 

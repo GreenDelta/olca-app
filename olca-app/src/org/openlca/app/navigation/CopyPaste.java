@@ -1,21 +1,22 @@
 package org.openlca.app.navigation;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
 
+import org.openlca.app.App;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Resources;
+import org.openlca.app.events.ModelEvent;
+import org.openlca.app.events.ModelEvent.Type;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.CategorizedEntityDao;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -188,12 +189,14 @@ public class CopyPaste {
 	}
 
 	private static void copy(ModelElement element,
-			INavigationElement<?> category) {
+			INavigationElement<?> categoryElement) {
 		CategorizedEntity copy = copy(element);
 		if (copy == null)
 			return;
-		copy.setCategory(getCategory(category));
-		insert(copy);
+		Category category = getCategory(categoryElement);
+		copy.setCategory(category);
+		copy = insert(copy);
+		App.getEventBus().post(new ModelEvent(copy, Type.CREATE));
 	}
 
 	private static Category getCategory(INavigationElement<?> element) {
@@ -216,12 +219,12 @@ public class CopyPaste {
 			newParent.getChildCategories().add(category);
 		category.setCategory(newParent);
 		CategoryDao dao = new CategoryDao(Database.get());
-		if (oldParent != null)
-			dao.update(oldParent);
-		if (newParent != null)
-			dao.update(newParent);
-		else
-			dao.update(category);
+		if (oldParent != null) 
+			oldParent = dao.update(oldParent);
+		if (newParent != null) 
+			newParent = dao.update(newParent);
+		category = dao.update(category);
+		App.getEventBus().post(new ModelEvent(category, Type.MODIFY));
 	}
 
 	private static boolean isChild(Category category, Category parent) {
@@ -237,51 +240,47 @@ public class CopyPaste {
 	}
 
 	private static void move(ModelElement element,
-			INavigationElement<?> category) {
-		Optional<Category> parent = Optional
-				.fromNullable(getCategory(category));
-		BaseDescriptor descriptor = element.getContent();
-		Database.createRootDao(descriptor.getModelType()).updateCategory(
-				descriptor, parent);
+			INavigationElement<?> categoryElement) {
+		CategorizedDescriptor descriptor = element.getContent();
+		Category category = getCategory(categoryElement);
+		Optional<Category> parent = Optional.fromNullable(category);
+		Database.createRootDao(descriptor.getModelType())
+				.updateCategory(descriptor, parent);
+		App.getEventBus().post(new ModelEvent(category, Type.MODIFY));
 	}
 
 	private static void copy(CategoryElement element,
 			INavigationElement<?> category) {
-		List<CategorizedEntity> entitiesToInsert = new ArrayList<>();
 		Category parent = getCategory(category);
-		Category rootCopy = null;
 		Queue<CategoryElement> elements = new LinkedList<>();
 		elements.add(element);
-		Category currentParent = parent;
 		while (!elements.isEmpty()) {
 			CategoryElement current = elements.poll();
 			Category copy = current.getContent().clone();
-			if (rootCopy == null)
-				rootCopy = copy;
 			copy.getChildCategories().clear();
 			copy.setCategory(parent);
-			if (currentParent != null)
-				currentParent.getChildCategories().add(copy);
+			if (parent == null)
+				copy = new CategoryDao(Database.get()).insert(copy);
+			else {
+				parent.getChildCategories().add(copy);
+				copy = new CategoryDao(Database.get()).update(parent);
+			}
+			App.getEventBus().post(new ModelEvent(copy, Type.CREATE));
 			for (INavigationElement<?> child : current.getChildren())
 				if (child instanceof CategoryElement)
 					elements.add((CategoryElement) child);
 				else {
 					CategorizedEntity modelCopy = copy((ModelElement) child);
 					modelCopy.setCategory(copy);
-					entitiesToInsert.add(modelCopy);
+					modelCopy = insert(modelCopy);
+					App.getEventBus().post(new ModelEvent(modelCopy, Type.CREATE));
 				}
-			currentParent = copy;
+			parent = copy;
 		}
-		if (parent != null)
-			new CategoryDao(Database.get()).update(parent);
-		else
-			new CategoryDao(Database.get()).insert(rootCopy);
-		for (CategorizedEntity entity : entitiesToInsert)
-			insert(entity);
 	}
 
 	private static CategorizedEntity copy(ModelElement element) {
-		BaseDescriptor descriptor = element.getContent();
+		CategorizedDescriptor descriptor = element.getContent();
 		CategorizedEntityDao<?, ?> dao = Database.createRootDao(descriptor
 				.getModelType());
 		CategorizedEntity entity = dao.getForId(descriptor.getId());
@@ -304,10 +303,10 @@ public class CopyPaste {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static <T extends CategorizedEntity> void insert(T entity) {
+	private static <T extends CategorizedEntity> T insert(T entity) {
 		BaseDao<T> dao = (BaseDao<T>) Database.get().createDao(
 				entity.getClass());
-		dao.insert(entity);
+		return dao.insert(entity);
 	}
 
 	public static boolean cacheIsEmpty() {
