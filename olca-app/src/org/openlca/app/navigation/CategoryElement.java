@@ -7,7 +7,7 @@ import java.util.List;
 import org.openlca.app.db.Database;
 import org.openlca.core.database.CategorizedEntityDao;
 import org.openlca.core.model.Category;
-import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,9 +47,8 @@ public class CategoryElement extends NavigationElement<Category> {
 			if (dao == null)
 				return;
 			Optional<Category> optional = Optional.fromNullable(category);
-			for (BaseDescriptor descriptor : dao.getDescriptors(optional)) {
+			for (CategorizedDescriptor descriptor : dao.getDescriptors(optional)) 
 				list.add(new ModelElement(this, descriptor));
-			}
 		} catch (Exception e) {
 			log.error("failed to get model elements: " + category, e);
 		}

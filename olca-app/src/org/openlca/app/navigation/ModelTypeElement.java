@@ -8,7 +8,7 @@ import org.openlca.core.database.CategorizedEntityDao;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,9 +51,8 @@ public class ModelTypeElement extends NavigationElement<ModelType> {
 			if (entityDao == null)
 				return;
 			Optional<Category> nil = Optional.absent();
-			for (BaseDescriptor descriptor : entityDao.getDescriptors(nil)) {
+			for (CategorizedDescriptor descriptor : entityDao.getDescriptors(nil)) 
 				elements.add(new ModelElement(this, descriptor));
-			}
 		} catch (Exception e) {
 			log.error("Failed to add model elements: " + type, e);
 		}
