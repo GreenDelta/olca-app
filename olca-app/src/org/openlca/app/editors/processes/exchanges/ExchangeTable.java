@@ -1,4 +1,4 @@
-package org.openlca.app.editors.processes;
+package org.openlca.app.editors.processes.exchanges;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -23,6 +23,7 @@ import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.components.UncertaintyCellEditor;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
+import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Error;
@@ -41,11 +42,9 @@ import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
-import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.Unit;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -67,9 +66,9 @@ class ExchangeTable {
 
 	private final String FLOW = Messages.Flow;
 	private final String CATEGORY = Messages.Category;
-	private final String FLOW_PROPERTY = Messages.FlowProperty;
-	private final String UNIT = Messages.Unit;
 	private final String AMOUNT = Messages.Amount;
+	private final String UNIT = Messages.Unit;
+	private final String PRICE = "#Price";
 	private final String PEDIGREE = Messages.PedigreeUncertainty;
 	private final String DEFAULT_PROVIDER = Messages.DefaultProvider;
 	private final String UNCERTAINTY = Messages.Uncertainty;
@@ -119,17 +118,16 @@ class ExchangeTable {
 	}
 
 	private void bindModifiers() {
-		ModifySupport<Exchange> modifySupport = new ModifySupport<>(viewer);
-		modifySupport.bind(FLOW_PROPERTY, new FlowPropertyModifier());
-		modifySupport.bind(UNIT, new UnitModifier());
-		modifySupport.bind(AMOUNT, new AmountModifier());
-		modifySupport.bind(PEDIGREE, new PedigreeCellEditor(viewer, editor));
-		modifySupport.bind(UNCERTAINTY,
+		ModifySupport<Exchange> support = new ModifySupport<>(viewer);
+		support.bind(AMOUNT, new AmountModifier());
+		support.bind(UNIT, new UnitCell(editor));
+		support.bind(PEDIGREE, new PedigreeCellEditor(viewer, editor));
+		support.bind(UNCERTAINTY,
 				new UncertaintyCellEditor(viewer.getTable(), editor));
 		if (forInputs)
-			modifySupport.bind(DEFAULT_PROVIDER, new ProviderModifier());
+			support.bind(DEFAULT_PROVIDER, new ProviderModifier());
 		if (!forInputs)
-			modifySupport.bind(AVOIDED_PRODUCT, new AvoidedProductModifier());
+			support.bind(AVOIDED_PRODUCT, new AvoidedProductModifier());
 	}
 
 	private void bindActions(Section section, final TableViewer viewer) {
@@ -157,10 +155,10 @@ class ExchangeTable {
 
 	private String[] getColumns() {
 		if (forInputs)
-			return new String[] { FLOW, CATEGORY, FLOW_PROPERTY, UNIT, AMOUNT,
+			return new String[] { FLOW, CATEGORY, AMOUNT, UNIT, PRICE,
 					UNCERTAINTY, DEFAULT_PROVIDER, PEDIGREE };
 		else
-			return new String[] { FLOW, CATEGORY, FLOW_PROPERTY, UNIT, AMOUNT,
+			return new String[] { FLOW, CATEGORY, AMOUNT, UNIT, PRICE,
 					UNCERTAINTY, AVOIDED_PRODUCT, PEDIGREE };
 	}
 
@@ -252,22 +250,21 @@ class ExchangeTable {
 		}
 
 		@Override
-		public String getColumnText(Object element, int columnIndex) {
-			if (!(element instanceof Exchange))
+		public String getColumnText(Object obj, int col) {
+			if (!(obj instanceof Exchange))
 				return null;
-			Exchange exchange = (Exchange) element;
-			switch (columnIndex) {
+			Exchange exchange = (Exchange) obj;
+			switch (col) {
 			case 0:
 				return Labels.getDisplayName(exchange.getFlow());
 			case 1:
 				return CategoryPath.getShort(exchange.getFlow().getCategory());
 			case 2:
-				return Labels.getDisplayName(exchange.getFlowPropertyFactor()
-						.getFlowProperty());
+				return getAmountText(exchange);
 			case 3:
 				return Labels.getDisplayName(exchange.getUnit());
 			case 4:
-				return getAmountText(exchange);
+				return "? USD";
 			case 5:
 				return UncertaintyLabel.get(exchange.getUncertainty());
 			case 6:
@@ -296,64 +293,6 @@ class ExchangeTable {
 				return Double.toString(exchange.getAmountValue());
 			else
 				return exchange.getAmountFormula();
-		}
-	}
-
-	private class FlowPropertyModifier extends
-			ComboBoxCellModifier<Exchange, FlowPropertyFactor> {
-
-		@Override
-		protected FlowPropertyFactor[] getItems(Exchange element) {
-			List<FlowPropertyFactor> factors = element.getFlow()
-					.getFlowPropertyFactors();
-			return factors.toArray(new FlowPropertyFactor[factors.size()]);
-		}
-
-		@Override
-		protected FlowPropertyFactor getItem(Exchange element) {
-			return element.getFlowPropertyFactor();
-		}
-
-		@Override
-		protected String getText(FlowPropertyFactor value) {
-			return value.getFlowProperty().getName();
-		}
-
-		@Override
-		protected void setItem(Exchange element, FlowPropertyFactor item) {
-			if (!Objects.equals(element.getFlowPropertyFactor(), item)) {
-				element.setFlowPropertyFactor(item);
-				editor.setDirty(true);
-			}
-		}
-
-	}
-
-	private class UnitModifier extends ComboBoxCellModifier<Exchange, Unit> {
-
-		@Override
-		protected Unit[] getItems(Exchange element) {
-			List<Unit> units = element.getFlowPropertyFactor()
-					.getFlowProperty().getUnitGroup().getUnits();
-			return units.toArray(new Unit[units.size()]);
-		}
-
-		@Override
-		protected Unit getItem(Exchange element) {
-			return element.getUnit();
-		}
-
-		@Override
-		protected String getText(Unit value) {
-			return value.getName();
-		}
-
-		@Override
-		protected void setItem(Exchange element, Unit item) {
-			if (!Objects.equals(element.getUnit(), item)) {
-				element.setUnit(item);
-				editor.setDirty(true);
-			}
 		}
 	}
 
@@ -386,8 +325,7 @@ class ExchangeTable {
 		}
 	}
 
-	private class ProviderModifier extends
-			ComboBoxCellModifier<Exchange, ProcessDescriptor> {
+	private class ProviderModifier extends ComboBoxCellModifier<Exchange, ProcessDescriptor> {
 
 		@Override
 		public boolean canModify(Exchange element) {

@@ -1,4 +1,4 @@
-package org.openlca.app.editors.processes;
+package org.openlca.app.editors.processes.exchanges;
 
 import java.util.Map;
 
