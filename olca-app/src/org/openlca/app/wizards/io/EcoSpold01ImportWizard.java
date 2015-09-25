@@ -8,9 +8,12 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
+import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
+import org.openlca.app.events.TaskEvent;
+import org.openlca.app.events.TaskEvent.Type;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.core.model.Category;
@@ -76,6 +79,7 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 	@Override
 	public boolean performFinish() {
 		try {
+			App.getEventBus().post(new TaskEvent(Type.IMPORT_STARTED));
 			getContainer().run(true, true, (monitor) -> {
 				File[] files = importPage.getFiles();
 				List<UnitMappingEntry> mappings = mappingPage
@@ -84,6 +88,7 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 						.run(mappings);
 				parse(monitor, files, mapping);
 			});
+			App.getEventBus().post(new TaskEvent(Type.IMPORT_STOPPED));
 			return true;
 		} catch (Exception e) {
 			log.error("import failed ", e);

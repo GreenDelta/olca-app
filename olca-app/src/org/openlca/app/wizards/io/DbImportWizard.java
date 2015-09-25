@@ -13,8 +13,11 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
+import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
+import org.openlca.app.events.TaskEvent;
+import org.openlca.app.events.TaskEvent.Type;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Question;
@@ -53,6 +56,7 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 			return true;
 		}
 		try {
+			App.getEventBus().post(new TaskEvent(Type.IMPORT_STARTED));
 			DbImportPage.ImportConfig config = page.getConfig();
 			ConnectionDispatch connectionDispatch = createConnection(config);
 			boolean canRun = canRun(config, connectionDispatch);
@@ -64,6 +68,7 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 					connectionDispatch);
 			getContainer().run(true, true, importDispatch);
 			Navigator.refresh();
+			App.getEventBus().post(new TaskEvent(Type.IMPORT_STOPPED));
 			return true;
 		} catch (Exception e) {
 			log.error("database import failed", e);

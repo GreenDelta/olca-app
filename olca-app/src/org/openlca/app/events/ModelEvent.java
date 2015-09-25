@@ -6,8 +6,8 @@ import org.openlca.core.model.descriptors.Descriptors;
 
 public class ModelEvent {
 
-	private CategorizedDescriptor model;
-	private Type type;
+	public final CategorizedDescriptor model;
+	public final Type type;
 
 	public ModelEvent(CategorizedDescriptor model, Type type) {
 		this.model = model;
@@ -19,15 +19,7 @@ public class ModelEvent {
 		this.type = type;
 	}
 
-	public CategorizedDescriptor getModel() {
-		return model;
-	}
-
-	public Type getType() {
-		return type;
-	}
-
-	public static enum Type {
+	public static enum Type implements TypeEnum {
 		CREATE, DELETE, MODIFY;
 	}
 
