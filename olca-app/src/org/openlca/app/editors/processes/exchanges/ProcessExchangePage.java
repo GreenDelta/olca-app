@@ -1,4 +1,4 @@
-package org.openlca.app.editors.processes;
+package org.openlca.app.editors.processes.exchanges;
 
 import java.util.List;
 
@@ -11,18 +11,19 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.editors.ModelPage;
+import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Process;
 import org.openlca.io.CategoryPath;
 import org.openlca.util.Strings;
 
-class ProcessExchangePage extends ModelPage<Process> {
+public class ProcessExchangePage extends ModelPage<Process> {
 
 	private ProcessEditor editor;
 	private FormToolkit toolkit;
 
-	ProcessExchangePage(ProcessEditor editor) {
+	public ProcessExchangePage(ProcessEditor editor) {
 		super(editor, "ProcessExchangePage", Messages.InputsOutputs);
 		this.editor = editor;
 	}

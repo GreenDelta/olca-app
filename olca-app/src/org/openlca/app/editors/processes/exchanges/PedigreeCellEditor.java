@@ -1,10 +1,11 @@
-package org.openlca.app.editors.processes;
+package org.openlca.app.editors.processes.exchanges;
 
 import java.util.Objects;
 
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.Control;
 import org.openlca.app.components.DialogCellEditor;
+import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.core.model.Exchange;
 
 class PedigreeCellEditor extends DialogCellEditor {

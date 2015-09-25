@@ -12,6 +12,7 @@ import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.parameters.Formulas;
 import org.openlca.app.editors.parameters.ModelParameterPage;
 import org.openlca.app.editors.parameters.ParameterChangeSupport;
+import org.openlca.app.editors.processes.exchanges.ProcessExchangePage;
 import org.openlca.app.editors.processes.social.SocialAspectsPage;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessDocumentation;
@@ -24,7 +25,7 @@ public class ProcessEditor extends ModelEditor<Process>implements IEditor {
 	 * An event message that indicates the removal or addition of one or more
 	 * exchanges exchange.
 	 */
-	final String EXCHANGES_CHANGED = "EXCHANGE_CHANGED";
+	public final String EXCHANGES_CHANGED = "EXCHANGE_CHANGED";
 
 	public static String ID = "editors.process";
 	private Logger log = LoggerFactory.getLogger(getClass());
@@ -71,7 +72,6 @@ public class ProcessEditor extends ModelEditor<Process>implements IEditor {
 			addPage(new ProcessModelingPage(this));
 			addPage(new ModelParameterPage(this));
 			addPage(new AllocationPage(this));
-			addPage(new ProcessCostPage(this));
 			addPage(new SocialAspectsPage(this));
 		} catch (Exception e) {
 			log.error("failed to add page", e);
