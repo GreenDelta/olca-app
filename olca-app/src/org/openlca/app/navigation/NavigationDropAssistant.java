@@ -45,7 +45,8 @@ public class NavigationDropAssistant extends CommonDropAdapterAssistant {
 					&& !Objects.equal(o, targetElement))
 				elements.add((INavigationElement<?>) o);
 		if (CopyPaste.canMove(elements, targetElement)) {
-			if ((event.detail & DND.DROP_COPY) == DND.DROP_COPY)
+			boolean copy = (event.detail & DND.DROP_COPY) == DND.DROP_COPY;
+			if (copy)
 				CopyPaste.copy(elements);
 			else
 				CopyPaste.cut(elements);

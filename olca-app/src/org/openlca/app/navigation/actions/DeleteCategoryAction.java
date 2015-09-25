@@ -3,8 +3,11 @@ package org.openlca.app.navigation.actions;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
+import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
+import org.openlca.app.events.ModelEvent;
+import org.openlca.app.events.ModelEvent.Type;
 import org.openlca.app.navigation.CategoryElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
@@ -71,6 +74,7 @@ public class DeleteCategoryAction extends Action implements INavigationAction {
 			INavigationElement<?> element = Navigator.findElement(category
 					.getModelType());
 			Navigator.refresh(element);
+			App.getEventBus().post(new ModelEvent(category, Type.DELETE));
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(getClass());
 			log.error("failed to delete category " + category, e);

@@ -9,8 +9,11 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.openlca.app.App;
 import org.openlca.app.Preferences;
 import org.openlca.app.db.Database;
+import org.openlca.app.events.DatabaseEvent;
+import org.openlca.app.events.DatabaseEvent.Type;
 import org.openlca.app.logging.Console;
 import org.openlca.app.logging.LoggerConfig;
 import org.openlca.app.rcp.html.HtmlFolder;
@@ -82,7 +85,12 @@ public class RcpActivator extends AbstractUIPlugin {
 		Console.dispose();
 		try {
 			log.info("close database");
+			String name = null;
+			if (Database.get() != null)
+				name = Database.get().getName();
 			Database.close();
+			if (name != null)
+				App.getEventBus().post(new DatabaseEvent(name, Type.CLOSE));
 		} catch (Exception e) {
 			log.error("Failed to close database", e);
 		}

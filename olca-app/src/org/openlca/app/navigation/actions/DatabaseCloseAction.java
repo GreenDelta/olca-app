@@ -7,6 +7,8 @@ import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.IDatabaseConfiguration;
+import org.openlca.app.events.DatabaseEvent;
+import org.openlca.app.events.DatabaseEvent.Type;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
@@ -41,6 +43,7 @@ public class DatabaseCloseAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
+		String name = Database.get().getName();
 		Editors.closeAll();
 		App.run(Messages.CloseDatabase, new Runnable() {
 			public void run() {
@@ -53,6 +56,7 @@ public class DatabaseCloseAction extends Action implements INavigationAction {
 		}, new Runnable() {
 			public void run() {
 				Navigator.refresh();
+				App.getEventBus().post(new DatabaseEvent(name, Type.CLOSE));
 			}
 		});
 	}

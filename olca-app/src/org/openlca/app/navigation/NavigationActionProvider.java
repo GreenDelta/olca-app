@@ -109,7 +109,7 @@ public class NavigationActionProvider extends CommonActionProvider {
 		actions[4] = new DatabaseExportAction();
 		actions[5] = new DatabaseRenameAction();
 		actions[6] = new DatabaseDeleteAction();
-		if (count == 12) {
+		if (App.runsInDevMode()) {
 			actions[7] = new XEI3MetaDataImportAction();
 			actions[8] = new XEI3MarketProcessCleanUp();
 			actions[9] = new XParameterCheckAction();
