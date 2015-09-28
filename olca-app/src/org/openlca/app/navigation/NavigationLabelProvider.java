@@ -16,7 +16,8 @@ import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 
-public class NavigationLabelProvider extends ColumnLabelProvider implements ICommonLabelProvider {
+public class NavigationLabelProvider extends ColumnLabelProvider
+		implements ICommonLabelProvider {
 
 	@Override
 	public void addListener(ILabelProviderListener listener) {
@@ -62,6 +63,8 @@ public class NavigationLabelProvider extends ColumnLabelProvider implements ICom
 		switch (modelComponent.getModelType()) {
 		case ACTOR:
 			return ImageType.ACTOR_ICON.get();
+		case COST_CATEGORY:
+			return ImageType.COST_CALC_ICON.get();
 		case FLOW:
 			return ImageType.FLOW_ICON.get();
 		case FLOW_PROPERTY:
@@ -122,6 +125,8 @@ public class NavigationLabelProvider extends ColumnLabelProvider implements ICom
 		switch (o) {
 		case ACTOR:
 			return Messages.Actors;
+		case COST_CATEGORY:
+			return "#Cost categories";
 		case FLOW:
 			return Messages.Flows;
 		case FLOW_PROPERTY:

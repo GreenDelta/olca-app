@@ -7,7 +7,6 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
-import org.openlca.app.editors.IEditor;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.ModelPage;
@@ -24,8 +23,7 @@ import org.openlca.core.model.descriptors.FlowPropertyDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SocialIndicatorEditor extends ModelEditor<SocialIndicator>
-		implements IEditor {
+public class SocialIndicatorEditor extends ModelEditor<SocialIndicator> {
 
 	public static String ID = "editors.socialindicator";
 	private Logger log = LoggerFactory.getLogger(getClass());

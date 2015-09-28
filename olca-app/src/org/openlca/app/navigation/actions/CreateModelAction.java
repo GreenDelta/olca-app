@@ -68,7 +68,9 @@ public class CreateModelAction extends Action implements INavigationAction {
 	public void run() {
 		String wizardId = getWizardId();
 		try {
-			IWorkbenchWizard wizard = PlatformUI.getWorkbench().getNewWizardRegistry().findWizard(wizardId)
+			IWorkbenchWizard wizard = PlatformUI.getWorkbench()
+					.getNewWizardRegistry()
+					.findWizard(wizardId)
 					.createWizard();
 			if (wizard instanceof INewModelWizard) {
 				INewModelWizard modelWizard = (INewModelWizard) wizard;
@@ -95,6 +97,8 @@ public class CreateModelAction extends Action implements INavigationAction {
 		switch (type) {
 		case ACTOR:
 			return Messages.NewActor;
+		case COST_CATEGORY:
+			return "#New cost category";
 		case FLOW:
 			return Messages.NewFlow;
 		case FLOW_PROPERTY:
@@ -145,8 +149,9 @@ public class CreateModelAction extends Action implements INavigationAction {
 			return ImageType.SOURCE_ICON_NEW.getDescriptor();
 		case UNIT_GROUP:
 			return ImageType.UNIT_GROUP_ICON_NEW.getDescriptor();
-			// TODO add location icon
-			// TODO add parameter icon
+		// TODO add cost category icon
+		// TODO add location icon
+		// TODO add parameter icon
 		default:
 			return null;
 		}

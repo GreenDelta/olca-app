@@ -114,7 +114,13 @@
             id="editors.socialindicator"
             name="#Social indicator">
       </editor>
-      
+      <editor
+            class="org.openlca.app.editors.costs.CostCategoryEditor"
+            default="false"
+            icon="icons/cost_calc_icon.png"
+            id="editors.costcategory"
+            name="#Cost category">
+      </editor>
       <editor
            class="org.openlca.app.editors.parameters.GlobalParametersEditor"
            default="false"
@@ -288,6 +294,11 @@
             class="org.openlca.app.wizards.SocialIndicatorWizard"
             id="wizards.new.socialindicator"
             name="#Social indicator">
+      </wizard>
+      <wizard
+            class="org.openlca.app.wizards.CostCategoryWizard"
+            id="wizards.new.costcategory"
+            name="#Cost category">
       </wizard>
    </extension>   
    
