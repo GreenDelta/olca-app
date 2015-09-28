@@ -121,6 +121,7 @@ class ExchangeTable {
 		ModifySupport<Exchange> support = new ModifySupport<>(viewer);
 		support.bind(AMOUNT, new AmountModifier());
 		support.bind(UNIT, new UnitCell(editor));
+		support.bind(PRICE, new PriceCellEditor(viewer, editor));
 		support.bind(PEDIGREE, new PedigreeCellEditor(viewer, editor));
 		support.bind(UNCERTAINTY,
 				new UncertaintyCellEditor(viewer.getTable(), editor));
