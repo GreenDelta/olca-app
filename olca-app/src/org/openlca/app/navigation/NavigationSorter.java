@@ -34,6 +34,8 @@ public class NavigationSorter extends ViewerSorter {
 
 	@Override
 	public int compare(Viewer viewer, Object e1, Object e2) {
+		if (e1 instanceof GroupElement && e2 instanceof GroupElement)
+			return 0;
 		if (e1 instanceof CategoryElement && e2 instanceof ModelElement)
 			return -1;
 		if (e2 instanceof CategoryElement && e1 instanceof ModelElement)

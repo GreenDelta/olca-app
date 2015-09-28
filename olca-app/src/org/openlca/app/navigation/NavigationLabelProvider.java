@@ -32,18 +32,21 @@ public class NavigationLabelProvider extends ColumnLabelProvider implements ICom
 	}
 
 	@Override
-	public Image getImage(Object element) {
-		if (!(element instanceof INavigationElement))
+	public Image getImage(Object obj) {
+		if (!(obj instanceof INavigationElement))
 			return null;
-		Object o = ((INavigationElement<?>) element).getContent();
-		if (o instanceof IDatabaseConfiguration)
-			return getDatabaseImage((IDatabaseConfiguration) o);
-		if (o instanceof Category)
-			return Images.getIcon((Category) o);
-		if (o instanceof BaseDescriptor)
-			return getModelComponentImage((BaseDescriptor) o);
-		if (o instanceof ModelType)
-			return Images.getIcon(dummyCategory((ModelType) o));
+		INavigationElement<?> elem = (INavigationElement<?>) obj;
+		if (elem instanceof GroupElement)
+			return ImageType.FOLDER_SMALL.get();
+		Object content = (elem).getContent();
+		if (content instanceof IDatabaseConfiguration)
+			return getDatabaseImage((IDatabaseConfiguration) content);
+		if (content instanceof ModelType)
+			return Images.getIcon(dummyCategory((ModelType) content));
+		if (content instanceof Category)
+			return Images.getIcon((Category) content);
+		if (content instanceof BaseDescriptor)
+			return getModelComponentImage((BaseDescriptor) content);
 		return null;
 	}
 
@@ -94,18 +97,21 @@ public class NavigationLabelProvider extends ColumnLabelProvider implements ICom
 	}
 
 	@Override
-	public String getText(Object element) {
-		if (!(element instanceof INavigationElement))
+	public String getText(Object obj) {
+		if (!(obj instanceof INavigationElement))
 			return null;
-		Object o = ((INavigationElement<?>) element).getContent();
-		if (o instanceof IDatabaseConfiguration)
-			return ((IDatabaseConfiguration) o).getName();
-		if (o instanceof Category)
-			return ((Category) o).getName();
-		if (o instanceof ModelType)
-			return getTypeName((ModelType) o);
-		if (o instanceof BaseDescriptor)
-			return Labels.getDisplayName((BaseDescriptor) o);
+		INavigationElement<?> elem = (INavigationElement<?>) obj;
+		if (elem instanceof GroupElement)
+			return ((GroupElement) elem).label;
+		Object content = (elem).getContent();
+		if (content instanceof IDatabaseConfiguration)
+			return ((IDatabaseConfiguration) content).getName();
+		if (content instanceof Category)
+			return ((Category) content).getName();
+		if (content instanceof ModelType)
+			return getTypeName((ModelType) content);
+		if (content instanceof BaseDescriptor)
+			return Labels.getDisplayName((BaseDescriptor) content);
 		else
 			return null;
 	}
