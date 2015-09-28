@@ -105,7 +105,7 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 			return null;
 		INavigationElement<?> elem = (INavigationElement<?>) obj;
 		if (elem instanceof GroupElement)
-			return ((GroupElement) elem).label;
+			return ((GroupElement) elem).getContent().label;
 		Object content = (elem).getContent();
 		if (content instanceof IDatabaseConfiguration)
 			return ((IDatabaseConfiguration) content).getName();
