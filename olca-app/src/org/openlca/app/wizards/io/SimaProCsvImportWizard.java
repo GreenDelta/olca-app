@@ -9,8 +9,11 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
+import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
+import org.openlca.app.events.TaskEvent;
+import org.openlca.app.events.TaskEvent.Type;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.core.database.IDatabase;
@@ -43,6 +46,7 @@ public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
 		final SimaProCsvImport importer = new SimaProCsvImport(database,
 				files[0]);
 		try {
+			App.getEventBus().post(new TaskEvent(Type.IMPORT_STARTED));
 			getContainer().run(true, true, new IRunnableWithProgress() {
 				@Override
 				public void run(final IProgressMonitor monitor)
@@ -53,6 +57,7 @@ public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
 				}
 			});
 			Navigator.refresh();
+			App.getEventBus().post(new TaskEvent(Type.IMPORT_STOPPED));
 		} catch (Exception e) {
 			log.error("SimaPro CSV import failed", e);
 		}

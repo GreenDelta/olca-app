@@ -9,6 +9,7 @@ import org.openlca.app.App;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Resources;
 import org.openlca.app.events.ModelEvent;
+import org.openlca.app.events.TaskEvent;
 import org.openlca.app.events.ModelEvent.Type;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.CategorizedEntityDao;
@@ -136,12 +137,14 @@ public class CopyPaste {
 			return;
 		if (!canPasteTo(categoryElement))
 			return;
+		App.getEventBus().post(new TaskEvent(TaskEvent.Type.PASTE_STARTED));
 		for (INavigationElement<?> element : cache) {
 			paste(element, categoryElement);
 			INavigationElement<?> root = Navigator
 					.findElement(getModelType(element));
 			Navigator.refresh(root);
 		}
+		App.getEventBus().post(new TaskEvent(TaskEvent.Type.PASTE_STOPPED));
 		if (currentAction == Action.CUT) {
 			cache = null;
 			currentAction = Action.NONE;
