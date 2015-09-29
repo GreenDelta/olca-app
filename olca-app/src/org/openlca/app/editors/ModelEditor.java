@@ -16,6 +16,7 @@ import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.events.EventHandler;
+import org.openlca.app.events.ModelEvent;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
@@ -114,6 +115,7 @@ public abstract class ModelEditor<T extends CategorizedEntity> extends
 		Cache.evict(descriptor);
 		for (EventHandler handler : savedHandlers)
 			handler.handleEvent();
+		App.getEventBus().post(new ModelEvent(model, ModelEvent.Type.MODIFY));
 	}
 
 	@Override
