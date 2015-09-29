@@ -103,7 +103,7 @@ public class DatabaseWizard extends Wizard {
 		}
 
 		private void extractDerbyTemplate() {
-			File dir = DatabaseFolder.getRootFolder(config.getName());
+			File dir = DatabaseDir.getRootFolder(config.getName());
 			if (dir.exists()) {
 				log.error("could not create database {}; folder with name "
 						+ "already exists", config);

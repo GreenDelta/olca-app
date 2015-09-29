@@ -7,10 +7,10 @@ import java.util.Queue;
 
 import org.openlca.app.App;
 import org.openlca.app.db.Database;
-import org.openlca.app.db.Resources;
+import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.events.ModelEvent;
-import org.openlca.app.events.TaskEvent;
 import org.openlca.app.events.ModelEvent.Type;
+import org.openlca.app.events.TaskEvent;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.CategorizedEntityDao;
 import org.openlca.core.database.CategoryDao;
@@ -222,9 +222,9 @@ public class CopyPaste {
 			newParent.getChildCategories().add(category);
 		category.setCategory(newParent);
 		CategoryDao dao = new CategoryDao(Database.get());
-		if (oldParent != null) 
+		if (oldParent != null)
 			oldParent = dao.update(oldParent);
-		if (newParent != null) 
+		if (newParent != null)
 			newParent = dao.update(newParent);
 		category = dao.update(category);
 		App.getEventBus().post(new ModelEvent(category, Type.MODIFY));
@@ -296,7 +296,7 @@ public class CopyPaste {
 	private static CategorizedEntity cloneIt(CategorizedEntity entity) {
 		try {
 			CategorizedEntity clone = (CategorizedEntity) entity.clone();
-			Resources.copy(entity, clone);
+			DatabaseDir.copyDir(entity, clone);
 			return clone;
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(CopyPaste.class);

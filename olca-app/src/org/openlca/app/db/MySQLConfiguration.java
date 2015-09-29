@@ -19,7 +19,7 @@ public class MySQLConfiguration implements IDatabaseConfiguration {
 	public IDatabase createInstance() throws Exception {
 		String url = "jdbc:mysql://" + host + ":" + port + "/" + name;
 		MySQLDatabase db = new MySQLDatabase(url, user, password);
-		db.setFileStorageLocation(DatabaseFolder.getFileStorageLocation(db));
+		db.setFileStorageLocation(DatabaseDir.getFileStorageLocation(db));
 		return db;
 	}
 

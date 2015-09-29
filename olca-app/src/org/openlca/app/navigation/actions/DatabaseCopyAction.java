@@ -10,7 +10,7 @@ import org.eclipse.jface.window.Window;
 import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
-import org.openlca.app.db.DatabaseFolder;
+import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.db.DerbyConfiguration;
 import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.navigation.DatabaseElement;
@@ -78,8 +78,8 @@ public class DatabaseCopyAction extends Action implements INavigationAction {
 				Editors.closeAll();
 				Database.close();
 			}
-			File fromFolder = DatabaseFolder.getRootFolder(config.getName());
-			File toFolder = DatabaseFolder.getRootFolder(newName);
+			File fromFolder = DatabaseDir.getRootFolder(config.getName());
+			File toFolder = DatabaseDir.getRootFolder(newName);
 			FileUtils.copyDirectory(fromFolder, toFolder);
 			DerbyConfiguration newConf = new DerbyConfiguration();
 			newConf.setName(newName);

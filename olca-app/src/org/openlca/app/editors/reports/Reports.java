@@ -11,7 +11,7 @@ import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
 import org.openlca.app.Messages;
-import org.openlca.app.db.DatabaseFolder;
+import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.editors.reports.model.Report;
 import org.openlca.app.editors.reports.model.ReportComponent;
 import org.openlca.app.editors.reports.model.ReportIndicator;
@@ -105,7 +105,7 @@ public final class Reports {
 	private static Report openReport(Project project, IDatabase database) {
 		if (project == null)
 			return null;
-		File file = getReportFile(project.getRefId(), database);
+		File file = getReportFile(project, database);
 		if (file == null || !file.exists())
 			return null;
 		try (FileInputStream fis = new FileInputStream(file);
@@ -123,7 +123,7 @@ public final class Reports {
 		if (report == null || project == null)
 			return;
 		Logger log = LoggerFactory.getLogger(Reports.class);
-		File file = getReportFile(project.getRefId(), database);
+		File file = getReportFile(project, database);
 		if (file == null) {
 			log.error("failed to get report file {} for {}" + file, report);
 			return;
@@ -140,14 +140,12 @@ public final class Reports {
 		}
 	}
 
-	private static File getReportFile(String projectId, IDatabase database) {
-		if (projectId == null)
+	private static File getReportFile(Project project, IDatabase database) {
+		if (project == null)
 			return null;
-		File dir = DatabaseFolder.getFileStorageLocation(database);
+		File dir = DatabaseDir.getDir(project);
 		if (dir == null)
 			return null;
-		dir = new File(dir, "projects");
-		dir = new File(dir, projectId);
 		return new File(dir, "report.json");
 	}
 
