@@ -8,6 +8,7 @@ import org.openlca.core.database.ActorDao;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.CategorizedEntityDao;
 import org.openlca.core.database.CostCategoryDao;
+import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.FlowPropertyDao;
 import org.openlca.core.database.IDatabase;
@@ -156,6 +157,8 @@ public class Database {
 			return new ActorDao(database);
 		case COST_CATEGORY:
 			return new CostCategoryDao(database);
+		case CURRENCY:
+			return new CurrencyDao(database);
 		case FLOW:
 			return new FlowDao(database);
 		case FLOW_PROPERTY:

@@ -122,6 +122,13 @@
             name="#Cost category">
       </editor>
       <editor
+            class="org.openlca.app.editors.costs.CurrencyEditor"
+            default="false"
+            icon="icons/cost_calc_icon.png"
+            id="editors.currency"
+            name="#Currency">
+      </editor>
+      <editor
            class="org.openlca.app.editors.parameters.GlobalParametersEditor"
            default="false"
            icon="icons/formula_16.png"
@@ -299,6 +306,11 @@
             class="org.openlca.app.wizards.CostCategoryWizard"
             id="wizards.new.costcategory"
             name="#Cost category">
+      </wizard>
+      <wizard
+            class="org.openlca.app.wizards.CurrencyWizard"
+            id="wizards.new.currency"
+            name="#Currency">
       </wizard>
    </extension>   
    

@@ -65,6 +65,8 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 			return ImageType.ACTOR_ICON.get();
 		case COST_CATEGORY:
 			return ImageType.COST_CALC_ICON.get();
+		case CURRENCY:
+			return ImageType.COST_CALC_ICON.get();
 		case FLOW:
 			return ImageType.FLOW_ICON.get();
 		case FLOW_PROPERTY:
@@ -127,6 +129,8 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 			return Messages.Actors;
 		case COST_CATEGORY:
 			return "#Cost categories";
+		case CURRENCY:
+			return "#Currencies";
 		case FLOW:
 			return Messages.Flows;
 		case FLOW_PROPERTY:

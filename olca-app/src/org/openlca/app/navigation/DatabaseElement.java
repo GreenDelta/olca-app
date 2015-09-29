@@ -34,6 +34,7 @@ public class DatabaseElement extends NavigationElement<IDatabaseConfiguration> {
 		list.add(new GroupElement(this, g("#Background data",
 				ModelType.FLOW_PROPERTY,
 				ModelType.UNIT_GROUP,
+				ModelType.CURRENCY,
 				ModelType.ACTOR,
 				ModelType.SOURCE,
 				ModelType.LOCATION)));
