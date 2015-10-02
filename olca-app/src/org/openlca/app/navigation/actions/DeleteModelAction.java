@@ -110,7 +110,7 @@ public class DeleteModelAction extends Action implements INavigationAction {
 			T instance = dao.getForId(descriptor.getId());
 			dao.delete(instance);
 			Cache.evict(descriptor);
-			Resources.cleanup(descriptor);
+			Resources.delete(descriptor);
 			log.trace("element deleted");
 		} catch (Exception e) {
 			log.error("failed to delete element " + descriptor, e);

@@ -112,7 +112,7 @@ class ShapeFilePage extends FormPage {
 	private void createFolderLink(Composite composite) {
 		UI.formLabel(composite, toolkit, "Location");
 		ImageHyperlink link = toolkit.createImageHyperlink(composite, SWT.TOP);
-		final File folder = ShapeFileUtils.getFolder(method);
+		File folder = ShapeFileUtils.getFolder(method);
 		link.setText(Strings.cut(folder.getAbsolutePath(), 75));
 		link.setImage(ImageType.FOLDER_SMALL.get());
 		link.setForeground(Colors.getLinkBlue());
@@ -120,24 +120,14 @@ class ShapeFilePage extends FormPage {
 		link.addHyperlinkListener(new HyperlinkAdapter() {
 			@Override
 			public void linkActivated(HyperlinkEvent e) {
-				openFolder(folder);
+				try {
+					if (folder.exists() && folder.isDirectory())
+						Desktop.getDesktop().open(folder);
+				} catch (Exception ex) {
+					log.error("failed to open shape-file folder", ex);
+				}
 			}
 		});
-	}
-
-	private void openFolder(final File folder) {
-		try {
-			File f = folder;
-			do {
-				if (f.exists()) {
-					Desktop.getDesktop().open(f);
-					break;
-				}
-				f = f.getParentFile();
-			} while (f != null);
-		} catch (Exception ex) {
-			log.error("failed to open shape-file folder", ex);
-		}
 	}
 
 	private List<ShapeFileParameter> checkRunImport(File file) {
@@ -148,10 +138,8 @@ class ShapeFilePage extends FormPage {
 		}
 		if (ShapeFileUtils.alreadyExists(method, file)) {
 			org.openlca.app.util.Error
-					.showBox(
-							"File already exists",
-							"A shape "
-									+ "file with the given name already exists for this method.");
+					.showBox("File already exists", "A shape file with the given "
+							+ "name already exists for this method.");
 			return Collections.emptyList();
 		}
 		try {
@@ -205,12 +193,9 @@ class ShapeFilePage extends FormPage {
 			section = UI.section(body, toolkit, "Parameters of " + shapeFile);
 			Composite composite = UI.sectionClient(section, toolkit);
 			parameterTable = new ShapeFileParameterTable(shapeFile, composite);
-			Action delete = Actions.onRemove(new Runnable() {
-				@Override
-				public void run() {
-					delete();
-					removeExternalSourceReferences();
-				}
+			Action delete = Actions.onRemove(() -> {
+				delete();
+				removeExternalSourceReferences();
 			});
 			Action update = new Action("Update") {
 

@@ -35,23 +35,4 @@ public class DatabaseFolder {
 			return new File(getRootFolder(database.getName()), "_olca_");
 	}
 
-	public static File getShapeFileDirectory(IDatabase database) {
-		File fileStore = getFileStorageLocation(database);
-		return new File(fileStore, "shapefiles");
-	}
-
-	/**
-	 * Shapefiles are stored per LCIA method under the folder
-	 * database/shapefiles/method_uuid.
-	 */
-	public static File getShapeFileLocation(IDatabase database,
-			String methodUuid) {
-		File shapeDir = getShapeFileDirectory(database);
-		return new File(shapeDir, methodUuid);
-	}
-
-	public static File getExternalDocLocation(IDatabase database) {
-		return new File(getFileStorageLocation(database), "external_docs");
-	}
-
 }

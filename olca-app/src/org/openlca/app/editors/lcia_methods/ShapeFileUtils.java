@@ -35,8 +35,8 @@ import org.geotools.swt.SwtMapFrame;
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
 import org.openlca.app.db.Database;
-import org.openlca.app.db.DatabaseFolder;
 import org.openlca.app.util.UI;
+import org.openlca.core.database.FileStore;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.geo.kml.FeatureType;
@@ -57,8 +57,7 @@ public class ShapeFileUtils {
 	static File getFolder(ImpactMethod method) {
 		if (method == null || method.getRefId() == null)
 			return null;
-		return DatabaseFolder.getShapeFileLocation(Database.get(),
-				method.getRefId());
+		return new FileStore(Database.get()).getFolder(method);
 	}
 
 	/**
@@ -68,8 +67,7 @@ public class ShapeFileUtils {
 	static File getFolder(ImpactMethodDescriptor method) {
 		if (method == null || method.getRefId() == null)
 			return null;
-		return DatabaseFolder.getShapeFileLocation(Database.get(),
-				method.getRefId());
+		return new FileStore(Database.get()).getFolder(method);
 	}
 
 	/**

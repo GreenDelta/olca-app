@@ -18,7 +18,6 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.Messages;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
-import org.openlca.app.db.DatabaseFolder;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.rcp.ImageType;
@@ -28,6 +27,7 @@ import org.openlca.app.util.Desktop;
 import org.openlca.app.util.Info;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
+import org.openlca.core.database.FileStore;
 import org.openlca.core.model.Source;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,7 +113,7 @@ class SourceInfoPage extends ModelPage<Source> {
 		if (file == null)
 			return;
 		String fileName = file.getName();
-		File dir = DatabaseFolder.getExternalDocLocation(Database.get());
+		File dir = new FileStore(Database.get()).getFolder(getModel());
 		File dbFile = new File(dir, fileName);
 		if (dbFile.exists()) {
 			boolean doIt = Question
@@ -159,7 +159,7 @@ class SourceInfoPage extends ModelPage<Source> {
 		String fileName = getModel().getExternalFile();
 		if (fileName == null)
 			return null;
-		File dir = DatabaseFolder.getExternalDocLocation(Database.get());
+		File dir = new FileStore(Database.get()).getFolder(getModel());
 		File file = new File(dir, fileName);
 		return file;
 	}
