@@ -2,12 +2,10 @@ package org.openlca.app.wizards;
 
 import java.util.UUID;
 
-import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -25,6 +23,8 @@ import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.UIFactory;
+import org.openlca.app.util.Viewers;
+import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
@@ -41,7 +41,7 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 	private final String EMPTY_REFERENCEPROCESS_ERROR = Messages.NoReferenceProcessSelected;
 
 	private Button addSupplyChainButton;
-	private TreeViewer processViewer;
+	private TreeViewer processTree;
 	private Process refProcess;
 	private Button useSystemProcesses;
 	private double cutoff = 0;
@@ -66,23 +66,23 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 
 	@Override
 	public ProductSystem createModel() {
-		ProductSystem productSystem = new ProductSystem();
-		productSystem.setRefId(UUID.randomUUID().toString());
-		productSystem.setName(getModelName());
-		productSystem.setDescription(getModelDescription());
+		ProductSystem system = new ProductSystem();
+		system.setRefId(UUID.randomUUID().toString());
+		system.setName(getModelName());
+		system.setDescription(getModelDescription());
 		try {
-			productSystem.getProcesses().add(refProcess.getId());
-			productSystem.setReferenceProcess(refProcess);
+			system.getProcesses().add(refProcess.getId());
+			system.setReferenceProcess(refProcess);
 			Exchange qRef = refProcess.getQuantitativeReference();
-			productSystem.setReferenceExchange(qRef);
-			productSystem.setTargetUnit(qRef.getUnit());
-			productSystem.setTargetFlowPropertyFactor(qRef
+			system.setReferenceExchange(qRef);
+			system.setTargetUnit(qRef.getUnit());
+			system.setTargetFlowPropertyFactor(qRef
 					.getFlowPropertyFactor());
-			productSystem.setTargetAmount(qRef.getAmountValue());
+			system.setTargetAmount(qRef.getAmountValue());
 		} catch (final Exception e) {
 			log.error("Loading reference process failed / no selected", e);
 		}
-		return productSystem;
+		return system;
 	}
 
 	public boolean useSystemProcesses() {
@@ -103,87 +103,76 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 	}
 
 	@Override
-	protected void createContents(Composite container) {
-		filterText = UI.formText(container, Messages.ReferenceProcess);
-		UI.formLabel(container, "");
-		createProcessViewer(container);
-		createOptions(container);
+	protected void createContents(Composite composite) {
+		filterText = UI.formText(composite, Messages.ReferenceProcess);
+		UI.formLabel(composite, "");
+		createProcessTree(composite);
+		createOptions(composite);
 		if (refProcess != null) {
 			nameText.setText(refProcess.getName());
 			ProcessDescriptor descriptor = Descriptors.toDescriptor(refProcess);
 			INavigationElement<?> elem = Navigator.findElement(descriptor);
 			if (elem != null)
-				processViewer.setSelection(new StructuredSelection(elem));
+				processTree.setSelection(new StructuredSelection(elem));
 			checkInput();
 		}
 	}
 
-	private void createProcessViewer(Composite container) {
-		processViewer = NavigationTree.createViewer(container);
-		processViewer.setInput(Navigator.findElement(ModelType.PROCESS));
-		processViewer.addFilter(new EmptyCategoryFilter());
-		processViewer.addFilter(new ModelTextFilter(filterText, processViewer));
+	private void createProcessTree(Composite composite) {
+		processTree = NavigationTree.createViewer(composite);
+		processTree.setInput(Navigator.findElement(ModelType.PROCESS));
+		processTree.addFilter(new EmptyCategoryFilter());
+		processTree.addFilter(new ModelTextFilter(filterText, processTree));
 		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
 		gd.heightHint = 200;
-		processViewer.getTree().setLayoutData(gd);
+		processTree.getTree().setLayoutData(gd);
+		processTree.addSelectionChangedListener(this::processSelected);
 	}
 
-	private void createOptions(final Composite container) {
-		addSupplyChainButton = UIFactory.createButton(container,
-				Messages.AddConnectedProcesses);
-		addSupplyChainButton.setSelection(true);
-		useSystemProcesses = UIFactory.createButton(container,
-				Messages.ConnectWithSystemProcessesIfPossible);
-		useSystemProcesses.setSelection(true);
-		if (FeatureFlag.PRODUCT_SYSTEM_CUTOFF.isEnabled()) {
-			createCutoffText(container);
+	private void processSelected(SelectionChangedEvent e) {
+		Object obj = Viewers.getFirst(e.getSelection());
+		if (obj instanceof ModelElement) {
+			refProcess = null;
+			checkInput();
+			return;
+		}
+		ModelElement elem = (ModelElement) obj;
+		try {
+			ProcessDao dao = new ProcessDao(Database.get());
+			refProcess = dao.getForId(elem.getContent().getId());
+			checkInput();
+		} catch (Exception ex) {
+			log.error("failed to load process", ex);
 		}
 	}
 
-	private void createCutoffText(final Composite container) {
-		final Text cutoffText = UI.formText(container, Messages.Cutoff);
-		cutoffText.setText("0.0");
-		cutoffText.addModifyListener(new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
-				String text = cutoffText.getText();
-				try {
-					cutoff = Double.parseDouble(text);
-					log.trace("Cutoff set to {}", cutoff);
-				} catch (Exception ex) {
-					log.warn("invalid number: cutoff {}", text);
-				}
-			}
+	private void createOptions(Composite composite) {
+		addSupplyChainButton = UIFactory.createButton(composite,
+				Messages.AddConnectedProcesses);
+		addSupplyChainButton.setSelection(true);
+		useSystemProcesses = UIFactory.createButton(composite,
+				Messages.ConnectWithSystemProcessesIfPossible);
+		useSystemProcesses.setSelection(true);
+		Controls.onSelect(addSupplyChainButton, (e) -> {
+			useSystemProcesses.setEnabled(addSupplyChainButton.getSelection());
 		});
+		if (FeatureFlag.PRODUCT_SYSTEM_CUTOFF.isEnabled()) {
+			createCutoffText(composite);
+		}
 	}
 
-	@Override
-	protected void initModifyListeners() {
-		super.initModifyListeners();
-
-		Controls.onSelect(addSupplyChainButton, (e) -> {
-			useSystemProcesses.setEnabled(addSupplyChainButton
-					.getSelection());
+	private void createCutoffText(Composite composite) {
+		Text text = UI.formText(composite, Messages.Cutoff);
+		text.setText("0.0");
+		text.addModifyListener(e -> {
+			String s = text.getText();
+			try {
+				cutoff = Double.parseDouble(s);
+				log.trace("Cutoff set to {}", cutoff);
+			} catch (Exception ex) {
+				log.warn("invalid number: cutoff {}", s);
+			}
 		});
-
-		processViewer
-				.addSelectionChangedListener((event) -> {
-					IStructuredSelection selection = (IStructuredSelection) event
-							.getSelection();
-					if (selection.getFirstElement() instanceof ModelElement) {
-						ModelElement elem = (ModelElement) ((IStructuredSelection) processViewer
-								.getSelection()).getFirstElement();
-						try {
-							refProcess = Database.load(elem.getContent());
-							checkInput();
-						} catch (Exception e) {
-							log.error("failed to load process", e);
-						}
-					} else {
-						refProcess = null;
-						checkInput();
-					}
-				});
 	}
 
 }

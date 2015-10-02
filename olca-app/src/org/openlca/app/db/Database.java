@@ -22,7 +22,6 @@ import org.openlca.core.database.SocialIndicatorDao;
 import org.openlca.core.database.SourceDao;
 import org.openlca.core.database.UnitGroupDao;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,15 +37,6 @@ public class Database {
 
 	public static IDatabase get() {
 		return database;
-	}
-
-	@SuppressWarnings("unchecked")
-	public static <T> T load(BaseDescriptor descriptor) {
-		if (descriptor == null || descriptor.getModelType() == null)
-			return null;
-		Class<?> clazz = descriptor.getModelType().getModelClass();
-		Object o = createDao(clazz).getForId(descriptor.getId());
-		return (T) o;
 	}
 
 	public static IDatabase activate(IDatabaseConfiguration config)
@@ -103,14 +93,12 @@ public class Database {
 	}
 
 	public static IDatabaseConfiguration getActiveConfiguration() {
-		for (IDatabaseConfiguration configuration : configurations
-				.getLocalDatabases())
-			if (isActive(configuration))
-				return configuration;
-		for (IDatabaseConfiguration configuration : configurations
-				.getRemoteDatabases())
-			if (isActive(configuration))
-				return configuration;
+		for (IDatabaseConfiguration conf : configurations.getLocalDatabases())
+			if (isActive(conf))
+				return conf;
+		for (IDatabaseConfiguration conf : configurations.getRemoteDatabases())
+			if (isActive(conf))
+				return conf;
 		return null;
 	}
 
