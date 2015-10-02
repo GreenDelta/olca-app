@@ -11,7 +11,7 @@ import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
 import org.openlca.app.Messages;
-import org.openlca.app.db.DatabaseFolder;
+import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.editors.reports.model.Report;
 import org.openlca.app.editors.reports.model.ReportComponent;
 import org.openlca.app.editors.reports.model.ReportIndicator;
@@ -143,7 +143,7 @@ public final class Reports {
 	private static File getReportFile(String projectId, IDatabase database) {
 		if (projectId == null)
 			return null;
-		File dir = DatabaseFolder.getFileStorageLocation(database);
+		File dir = DatabaseDir.getFileStorageLocation(database);
 		if (dir == null)
 			return null;
 		dir = new File(dir, "projects");

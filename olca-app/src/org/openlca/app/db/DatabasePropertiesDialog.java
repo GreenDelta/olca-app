@@ -71,7 +71,7 @@ public class DatabasePropertiesDialog extends FormDialog {
 
 	private void renderFolderLink(final DerbyConfiguration conf,
 			Composite parent, FormToolkit toolkit) {
-		File folder = DatabaseFolder.getRootFolder(conf.getName());
+		File folder = DatabaseDir.getRootFolder(conf.getName());
 		final String path = folder.toURI().toString();
 		Hyperlink link = new Hyperlink(parent, SWT.NONE);
 		toolkit.adapt(link);

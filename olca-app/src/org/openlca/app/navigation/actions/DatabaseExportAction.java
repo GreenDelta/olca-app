@@ -8,7 +8,7 @@ import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
-import org.openlca.app.db.DatabaseFolder;
+import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.db.DerbyConfiguration;
 import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.db.MySQLConfiguration;
@@ -84,7 +84,7 @@ public class DatabaseExportAction extends Action implements INavigationAction {
 			if (active)
 				Database.close();
 			if (config instanceof DerbyConfiguration) {
-				File folder = DatabaseFolder.getRootFolder(config.getName());
+				File folder = DatabaseDir.getRootFolder(config.getName());
 				ZipUtil.pack(folder, zip);
 			} else if (config instanceof MySQLConfiguration) {
 				MySQLDatabaseExport export = new MySQLDatabaseExport(

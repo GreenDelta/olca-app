@@ -12,7 +12,7 @@ import org.eclipse.osgi.util.NLS;
 import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
-import org.openlca.app.db.DatabaseFolder;
+import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.db.DerbyConfiguration;
 import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.db.MySQLConfiguration;
@@ -113,7 +113,7 @@ public class DatabaseDeleteAction extends Action implements INavigationAction {
 	private void tryDelete(IDatabaseConfiguration config) throws Exception {
 		if (Database.isActive(config))
 			Database.close();
-		File dbFolder = DatabaseFolder.getRootFolder(config.getName());
+		File dbFolder = DatabaseDir.getRootFolder(config.getName());
 		if (dbFolder.isDirectory())
 			FileUtils.deleteDirectory(dbFolder);
 		if (config instanceof DerbyConfiguration)

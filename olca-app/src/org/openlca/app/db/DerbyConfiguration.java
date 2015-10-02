@@ -14,7 +14,7 @@ public class DerbyConfiguration implements IDatabaseConfiguration {
 
 	@Override
 	public DerbyDatabase createInstance() throws Exception {
-		DerbyDatabase db = new DerbyDatabase(DatabaseFolder.getRootFolder(name));
+		DerbyDatabase db = new DerbyDatabase(DatabaseDir.getRootFolder(name));
 		return db;
 	}
 

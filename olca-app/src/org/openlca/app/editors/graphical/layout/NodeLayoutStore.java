@@ -9,7 +9,7 @@ import java.util.List;
 
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
-import org.openlca.app.db.DatabaseFolder;
+import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -149,7 +149,7 @@ public final class NodeLayoutStore {
 	}
 
 	public static File getLayoutFile(String refId) {
-		File rootDir = DatabaseFolder.getFileStorageLocation(Database.get());
+		File rootDir = DatabaseDir.getFileStorageLocation(Database.get());
 		File layoutDir = new File(rootDir, "layouts");
 		if (!layoutDir.exists())
 			layoutDir.mkdirs();

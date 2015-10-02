@@ -3,7 +3,10 @@ package org.openlca.app.db;
 import java.io.File;
 
 import org.openlca.app.App;
+import org.openlca.core.database.FileStore;
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.model.CategorizedEntity;
+import org.openlca.core.model.descriptors.BaseDescriptor;
 
 /**
  * Contains helper methods for database folders. The folder of a database is
@@ -13,9 +16,9 @@ import org.openlca.core.database.IDatabase;
  * Note that the getter methods in this class do not create the file directories
  * in the getter methods.
  */
-public class DatabaseFolder {
+public class DatabaseDir {
 
-	private DatabaseFolder() {
+	private DatabaseDir() {
 	}
 
 	public static File getRootFolder(String databaseName) {
@@ -33,6 +36,22 @@ public class DatabaseFolder {
 			return database.getFileStorageLocation();
 		else
 			return new File(getRootFolder(database.getName()), "_olca_");
+	}
+
+	public static void deleteDir(BaseDescriptor descriptor) {
+		File dir = DatabaseDir.getFileStorageLocation(Database.get());
+		if (dir == null || !dir.exists())
+			return;
+		FileStore fs = new FileStore(dir);
+		fs.deleteFolder(descriptor);
+	}
+
+	public static void copyDir(CategorizedEntity from, CategorizedEntity to) {
+		File dir = DatabaseDir.getFileStorageLocation(Database.get());
+		if (dir == null || !dir.exists())
+			return;
+		FileStore fs = new FileStore(dir);
+		fs.copyFolder(from, to);
 	}
 
 }

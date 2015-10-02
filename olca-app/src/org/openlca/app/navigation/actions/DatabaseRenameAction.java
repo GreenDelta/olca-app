@@ -9,7 +9,7 @@ import org.eclipse.jface.window.Window;
 import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
-import org.openlca.app.db.DatabaseFolder;
+import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.db.DerbyConfiguration;
 import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.events.DatabaseEvent;
@@ -82,8 +82,8 @@ public class DatabaseRenameAction extends Action implements INavigationAction {
 				Database.close();
 				App.getEventBus().post(new DatabaseEvent(config.getName(), Type.CLOSE));
 			}
-			File oldDbFolder = DatabaseFolder.getRootFolder(config.getName());
-			File newDbFolder = DatabaseFolder.getRootFolder(newName);
+			File oldDbFolder = DatabaseDir.getRootFolder(config.getName());
+			File newDbFolder = DatabaseDir.getRootFolder(newName);
 			boolean success = oldDbFolder.renameTo(newDbFolder);
 			if (!success) {
 				log.error("failed to rename folder");
