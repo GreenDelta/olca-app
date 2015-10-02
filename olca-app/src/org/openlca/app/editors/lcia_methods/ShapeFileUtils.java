@@ -35,6 +35,7 @@ import org.geotools.swt.SwtMapFrame;
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
 import org.openlca.app.db.Database;
+import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.FileStore;
 import org.openlca.core.model.ImpactMethod;
@@ -57,7 +58,7 @@ public class ShapeFileUtils {
 	static File getFolder(ImpactMethod method) {
 		if (method == null || method.getRefId() == null)
 			return null;
-		return new FileStore(Database.get()).getFolder(method);
+		return DatabaseDir.getDir(method);
 	}
 
 	/**

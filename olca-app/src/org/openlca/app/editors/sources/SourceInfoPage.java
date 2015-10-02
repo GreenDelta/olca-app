@@ -18,6 +18,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.Messages;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
+import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.rcp.ImageType;
@@ -113,7 +114,7 @@ class SourceInfoPage extends ModelPage<Source> {
 		if (file == null)
 			return;
 		String fileName = file.getName();
-		File dir = new FileStore(Database.get()).getFolder(getModel());
+		File dir = DatabaseDir.getDir(getModel());
 		File dbFile = new File(dir, fileName);
 		if (dbFile.exists()) {
 			boolean doIt = Question

@@ -8,10 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openlca.app.db.Cache;
-import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
+import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 import com.google.gson.stream.JsonReader;
@@ -71,16 +71,16 @@ public final class NodeLayoutStore {
 		writer.endObject();
 	}
 
-	public static boolean loadLayout(ProductSystemNode model) {
-		if (model == null)
+	public static boolean loadLayout(ProductSystemNode node) {
+		if (node == null || node.getProductSystem() == null)
 			return false;
-		File layoutFile = getLayoutFile(model.getProductSystem().getRefId());
-		if (!layoutFile.exists())
+		File file = getLayoutFile(node.getProductSystem());
+		if (!file.exists())
 			return false;
 		try {
-			List<NodeLayoutInfo> layoutInfo = parseJson(layoutFile);
+			List<NodeLayoutInfo> layoutInfo = parseJson(file);
 			for (NodeLayoutInfo layout : layoutInfo)
-				apply(layout, model);
+				apply(layout, node);
 			return true;
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -139,29 +139,21 @@ public final class NodeLayoutStore {
 				expandedRight, marked);
 	}
 
-	private static File createLayoutFile(ProductSystemNode model)
+	private static File createLayoutFile(ProductSystemNode node)
 			throws IOException {
-		File file = getLayoutFile(model.getProductSystem().getRefId());
+		File file = getLayoutFile(node.getProductSystem());
 		if (file.exists())
 			file.delete();
 		file.createNewFile();
 		return file;
 	}
 
-	public static File getLayoutFile(String refId) {
-		File rootDir = DatabaseDir.getFileStorageLocation(Database.get());
-		File layoutDir = new File(rootDir, "layouts");
-		if (!layoutDir.exists())
-			layoutDir.mkdirs();
-		File layoutFile = new File(layoutDir, refId + ".json");
+	private static File getLayoutFile(ProductSystem system) {
+		File dir = DatabaseDir.getDir(system);
+		if (!dir.exists())
+			dir.mkdirs();
+		File layoutFile = new File(dir, "layout.json");
 		return layoutFile;
 	}
 
-	public static void deleteLayout(String refId) {
-		File layoutFile = getLayoutFile(refId);
-		if (!layoutFile.exists())
-			return;
-		if (!layoutFile.delete())
-			layoutFile.deleteOnExit();
-	}
 }

@@ -6,6 +6,7 @@ import org.openlca.app.App;
 import org.openlca.core.database.FileStore;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.CategorizedEntity;
+import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 
 /**
@@ -31,11 +32,23 @@ public class DatabaseDir {
 	 * Get the general location for storing additional files for a database (in
 	 * general this is database_name/_olca_)
 	 */
-	public static File getFileStorageLocation(IDatabase database) {
+	static File getFileStorageLocation(IDatabase database) {
 		if (database.getFileStorageLocation() != null)
 			return database.getFileStorageLocation();
 		else
 			return new File(getRootFolder(database.getName()), "_olca_");
+	}
+
+	public static File getDir(BaseDescriptor d) {
+		File root = getFileStorageLocation(Database.get());
+		FileStore fs = new FileStore(root);
+		return fs.getFolder(d);
+	}
+
+	public static File getDir(RootEntity e) {
+		File root = getFileStorageLocation(Database.get());
+		FileStore fs = new FileStore(root);
+		return fs.getFolder(e);
 	}
 
 	public static void deleteDir(BaseDescriptor descriptor) {

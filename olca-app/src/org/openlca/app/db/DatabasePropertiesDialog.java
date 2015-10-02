@@ -59,8 +59,8 @@ public class DatabasePropertiesDialog extends FormDialog {
 				.setText(Boolean.toString(withPassword));
 	}
 
-	private void renderDerbyConfig(final DerbyConfiguration conf,
-			Composite parent, FormToolkit toolkit) {
+	private void renderDerbyConfig(DerbyConfiguration conf, Composite parent,
+			FormToolkit toolkit) {
 		UI.formText(parent, toolkit, Messages.Type, SWT.READ_ONLY).setText(
 				Messages.LocalDatabase);
 		UI.formText(parent, toolkit, Messages.Name, SWT.READ_ONLY).setText(
@@ -69,10 +69,10 @@ public class DatabasePropertiesDialog extends FormDialog {
 		renderFolderLink(conf, parent, toolkit);
 	}
 
-	private void renderFolderLink(final DerbyConfiguration conf,
-			Composite parent, FormToolkit toolkit) {
+	private void renderFolderLink(DerbyConfiguration conf, Composite parent,
+			FormToolkit toolkit) {
 		File folder = DatabaseDir.getRootFolder(conf.getName());
-		final String path = folder.toURI().toString();
+		String path = folder.toURI().toString();
 		Hyperlink link = new Hyperlink(parent, SWT.NONE);
 		toolkit.adapt(link);
 		link.setText(Strings.cut(path, 75));
