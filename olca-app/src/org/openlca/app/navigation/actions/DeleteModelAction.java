@@ -14,6 +14,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.events.ModelEvent;
 import org.openlca.app.events.ModelEvent.Type;
+import org.openlca.app.navigation.CategoryElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.Navigator;
@@ -24,6 +25,7 @@ import org.openlca.app.util.Question;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.usage.IUseSearch;
+import org.openlca.core.model.Category;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.slf4j.Logger;
@@ -84,7 +86,11 @@ public class DeleteModelAction extends Action implements INavigationAction {
 			App.closeEditor(descriptor);
 			delete(descriptor);
 			Navigator.refresh(element.getParent());
-			App.getEventBus().post(new ModelEvent(descriptor, Type.DELETE));
+			Category category = null;
+			if (element.getParent() instanceof CategoryElement)
+				category = ((CategoryElement) element.getParent()).getContent();
+			App.getEventBus().post(
+					new ModelEvent(descriptor, category, Type.DELETE));
 		}
 		elements = null;
 	}
