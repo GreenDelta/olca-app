@@ -6,7 +6,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.navigator.ICommonContentExtensionSite;
 import org.eclipse.ui.navigator.ICommonLabelProvider;
-import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.rcp.ImageType;
@@ -114,48 +113,11 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 		if (content instanceof Category)
 			return ((Category) content).getName();
 		if (content instanceof ModelType)
-			return getTypeName((ModelType) content);
+			return Labels.modelType((ModelType) content);
 		if (content instanceof BaseDescriptor)
 			return Labels.getDisplayName((BaseDescriptor) content);
 		else
 			return null;
-	}
-
-	private String getTypeName(ModelType o) {
-		if (o == null)
-			return null;
-		switch (o) {
-		case ACTOR:
-			return Messages.Actors;
-		case COST_CATEGORY:
-			return "#Cost categories";
-		case CURRENCY:
-			return "#Currencies";
-		case FLOW:
-			return Messages.Flows;
-		case FLOW_PROPERTY:
-			return Messages.FlowProperties;
-		case IMPACT_METHOD:
-			return Messages.ImpactAssessmentMethods;
-		case PROCESS:
-			return Messages.Processes;
-		case PRODUCT_SYSTEM:
-			return Messages.ProductSystems;
-		case PROJECT:
-			return Messages.Projects;
-		case SOCIAL_INDICATOR:
-			return Messages.SocialIndicators;
-		case SOURCE:
-			return Messages.Sources;
-		case UNIT_GROUP:
-			return Messages.UnitGroups;
-		case LOCATION:
-			return Messages.Locations;
-		case PARAMETER:
-			return Messages.GlobalParameters;
-		default:
-			return Messages.Unknown;
-		}
 	}
 
 	@Override
