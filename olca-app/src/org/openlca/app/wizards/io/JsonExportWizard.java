@@ -13,6 +13,7 @@ import org.eclipse.ui.IWorkbench;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.model.Callback.Message;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.BaseDescriptor;
@@ -23,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 public class JsonExportWizard extends Wizard implements IExportWizard {
 
+	private Logger log = LoggerFactory.getLogger(getClass());
 	private ModelSelectionPage page;
 
 	@Override
@@ -92,22 +94,38 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 		}
 
 		private void doExport(IProgressMonitor monitor, ZipStore store) {
-			JsonExport writer = new JsonExport(database, store);
+			JsonExport export = new JsonExport(database, store);
 			for (BaseDescriptor model : models) {
 				if (monitor.isCanceled())
 					break;
 				monitor.subTask(model.getName());
 				ModelType type = model.getModelType();
 				Class<?> clazz = type.getModelClass();
-				Object o = database.createDao(clazz)
-						.getForId(model.getId());
-				if (o instanceof RootEntity) {
-					RootEntity entity = (RootEntity) o;
-					writer.write(entity);
-				}
+				Object o = database.createDao(clazz).getForId(model.getId());
+				if (o instanceof RootEntity)
+					doExport(export, (RootEntity) o);
 				monitor.worked(1);
 			}
 		}
-	}
 
+		private void doExport(JsonExport export, RootEntity entity) {
+			export.write(entity, (message, data) -> {
+				if (message == null)
+					return;
+				switch (message.type) {
+				case Message.INFO:
+					log.trace("{}: {}", data, message.text);
+					break;
+				case Message.WARN:
+					log.warn("{}: {}", data, message.text);
+					break;
+				case Message.ERROR:
+					log.error("{}: {}", data, message.text);
+					break;
+				default:
+					break;
+				}
+			});
+		}
+	}
 }
