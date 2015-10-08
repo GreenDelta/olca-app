@@ -15,8 +15,8 @@ import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 
-public class NavigationLabelProvider extends ColumnLabelProvider
-		implements ICommonLabelProvider {
+public class NavigationLabelProvider extends ColumnLabelProvider implements
+		ICommonLabelProvider {
 
 	@Override
 	public void addListener(ILabelProviderListener listener) {
@@ -46,7 +46,7 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 		if (content instanceof Category)
 			return Images.getIcon((Category) content);
 		if (content instanceof BaseDescriptor)
-			return getModelComponentImage((BaseDescriptor) content);
+			return Images.getIcon(((BaseDescriptor) content).getModelType());
 		return null;
 	}
 
@@ -54,43 +54,6 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 		Category dummy = new Category();
 		dummy.setModelType(type);
 		return dummy;
-	}
-
-	private Image getModelComponentImage(BaseDescriptor modelComponent) {
-		if (modelComponent == null || modelComponent.getModelType() == null)
-			return null;
-		switch (modelComponent.getModelType()) {
-		case ACTOR:
-			return ImageType.ACTOR_ICON.get();
-		case COST_CATEGORY:
-			return ImageType.COST_CALC_ICON.get();
-		case CURRENCY:
-			return ImageType.COST_CALC_ICON.get();
-		case FLOW:
-			return ImageType.FLOW_ICON.get();
-		case FLOW_PROPERTY:
-			return ImageType.FLOW_PROPERTY_ICON.get();
-		case IMPACT_METHOD:
-			return ImageType.LCIA_ICON.get();
-		case PROCESS:
-			return ImageType.PROCESS_ICON.get();
-		case PRODUCT_SYSTEM:
-			return ImageType.PRODUCT_SYSTEM_ICON.get();
-		case PROJECT:
-			return ImageType.PROJECT_ICON.get();
-		case SOCIAL_INDICATOR:
-			return ImageType.INDICATOR_ICON.get();
-		case SOURCE:
-			return ImageType.SOURCE_ICON.get();
-		case UNIT_GROUP:
-			return ImageType.UNIT_GROUP_ICON.get();
-		case LOCATION:
-			return ImageType.LOCATION_ICON.get();
-		case PARAMETER:
-			return ImageType.FORMULA_ICON.get();
-		default:
-			return null;
-		}
 	}
 
 	private Image getDatabaseImage(IDatabaseConfiguration config) {
