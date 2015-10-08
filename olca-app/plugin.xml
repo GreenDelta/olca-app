@@ -666,10 +666,6 @@
             name="ILCD">
       </category>
       <category
-            id="export.category.ilcdnetwork"
-            name="%ILCDNetworkExport">
-      </category>
-      <category
       		id="openlca.export.category"
       		name="openLCA">
       </category>
@@ -706,62 +702,13 @@
       </wizard>
       <wizard
             category="export.category.ilcd"
-            class="org.openlca.app.wizards.io.ILCDExportSystemWizard"
-            icon="icons/ilcd16.png"
-            id="wizard.export.ilcd.productsystem"
-            name="%ProductSystems">
-      </wizard>
-       <wizard
-            category="export.category.ilcd"
-            class="org.openlca.app.wizards.io.ILCDExportMethodWizard"
-            icon="icons/ilcd16.png"
-            id="wizard.export.ilcd.method"
-            name="%LCIAMethods">
-      </wizard>
-      <wizard
-            category="export.category.ilcd"
-            class="org.openlca.app.wizards.io.ILCDExportProcessWizard"
-            icon="icons/ilcd16.png"
-            id="wizard.export.ilcd.process"
-            name="%Processes">
-      </wizard>
-      <wizard
-            category="export.category.ilcd"
-            class="org.openlca.app.wizards.io.ILCDExportFlowWizard"
-            icon="icons/ilcd16.png"
-            id="wizard.export.ilcd.flow"
-            name="%Flows">
-      </wizard>
-      <wizard
-            category="export.category.ilcd"
-            class="org.openlca.app.wizards.io.ILCDExportFlowPropertyWizard"
-            icon="icons/ilcd16.png"
-            id="wizard.export.ilcd.flowproperty"
-            name="%FlowProperties">
-      </wizard>
-      <wizard
-            category="export.category.ilcd"
-            class="org.openlca.app.wizards.io.ILCDExportUnitGroupWizard"
-            icon="icons/ilcd16.png"
-            id="wizard.export.ilcd.unitgroup"
-            name="%UnitGroups">
-      </wizard>
-      <wizard
-            category="export.category.ilcd"
-            class="org.openlca.app.wizards.io.ILCDExportActorWizard"
-            icon="icons/ilcd16.png"
-            id="wizard.export.actor"
-            name="%Actors">
-      </wizard>
-      <wizard
-            category="export.category.ilcd"
-            class="org.openlca.app.wizards.io.ILCDSourceExportWizard"
+            class="org.openlca.app.wizards.io.ILCDExportWizard"
             icon="icons/ilcd16.png"
             id="wizard.export.source"
-            name="%Sources">
+            name="@ILCD Zip-File">
       </wizard>
       <wizard
-            category="export.category.ilcdnetwork"
+            category="export.category.ilcd"
             class="org.openlca.app.ilcd_network.ExportWizard"
             icon="icons/network16.png"
             id="org.openlca.ilcd.network.ExportWizard"
