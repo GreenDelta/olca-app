@@ -10,11 +10,14 @@ import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ImpactMethod;
+import org.openlca.core.model.Location;
 import org.openlca.core.model.ModelType;
+import org.openlca.core.model.Parameter;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.Project;
 import org.openlca.core.model.RootEntity;
+import org.openlca.core.model.SocialIndicator;
 import org.openlca.core.model.Source;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
@@ -84,7 +87,7 @@ public class Images {
 		return imageType.getDescriptor();
 	}
 
-	private static ImageType getImageType(ModelType type) {
+	public static ImageType getImageType(ModelType type) {
 		if (type == null)
 			return null;
 		switch (type) {
@@ -108,6 +111,10 @@ public class Images {
 			return ImageType.SOURCE_ICON;
 		case SOCIAL_INDICATOR:
 			return ImageType.INDICATOR_ICON;
+		case LOCATION:
+			return ImageType.LOCATION_ICON;
+		case PARAMETER:
+			return ImageType.FORMULA_ICON;
 		case UNIT_GROUP:
 		case UNIT:
 			return ImageType.UNIT_GROUP_ICON;
@@ -116,7 +123,7 @@ public class Images {
 		}
 	}
 
-	private static ImageType getImageType(FlowType type) {
+	public static ImageType getImageType(FlowType type) {
 		if (type == null)
 			return null;
 		switch (type) {
@@ -131,7 +138,7 @@ public class Images {
 		}
 	}
 
-	private static ImageType getImageType(Category category) {
+	public static ImageType getImageType(Category category) {
 		if (category == null)
 			return null;
 		ModelType modelType = category.getModelType();
@@ -193,6 +200,14 @@ public class Images {
 			return ModelType.UNIT;
 		if (clazz.equals(ImpactCategory.class))
 			return ModelType.IMPACT_CATEGORY;
+		if (clazz.equals(Category.class))
+			return ModelType.CATEGORY;
+		if (clazz.equals(Location.class))
+			return ModelType.LOCATION;
+		if (clazz.equals(SocialIndicator.class))
+			return ModelType.SOCIAL_INDICATOR;
+		if (clazz.equals(Parameter.class))
+			return ModelType.PARAMETER;
 		return null;
 	}
 
