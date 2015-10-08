@@ -7,6 +7,7 @@ import org.openlca.app.App;
 import org.openlca.core.database.ActorDao;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.CategorizedEntityDao;
+import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.CostCategoryDao;
 import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.database.FlowDao;
@@ -169,6 +170,8 @@ public class Database {
 			return new LocationDao(database);
 		case PARAMETER:
 			return new ParameterDao(database);
+		case CATEGORY:
+			return new CategoryDao(database);
 		default:
 			return null;
 		}

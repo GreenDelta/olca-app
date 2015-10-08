@@ -11,6 +11,7 @@ import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyType;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Location;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.RiskLevel;
@@ -260,5 +261,45 @@ public class Labels {
 			return Messages.Unknown;
 		}
 	}
+	
+	public static String modelType(ModelType o) {
+		if (o == null)
+			return null;
+		switch (o) {
+		case ACTOR:
+			return Messages.Actors;
+		case COST_CATEGORY:
+			return "#Cost categories";
+		case CURRENCY:
+			return "#Currencies";
+		case FLOW:
+			return Messages.Flows;
+		case FLOW_PROPERTY:
+			return Messages.FlowProperties;
+		case IMPACT_METHOD:
+			return Messages.ImpactAssessmentMethods;
+		case PROCESS:
+			return Messages.Processes;
+		case PRODUCT_SYSTEM:
+			return Messages.ProductSystems;
+		case PROJECT:
+			return Messages.Projects;
+		case SOCIAL_INDICATOR:
+			return Messages.SocialIndicators;
+		case SOURCE:
+			return Messages.Sources;
+		case UNIT_GROUP:
+			return Messages.UnitGroups;
+		case LOCATION:
+			return Messages.Locations;
+		case PARAMETER:
+			return Messages.GlobalParameters;
+		case CATEGORY:
+			return Messages.Category;
+		default:
+			return Messages.Unknown;
+		}
+	}
+
 
 }
