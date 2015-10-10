@@ -37,7 +37,7 @@ class PedigreeCellEditor extends DialogCellEditor {
 	@Override
 	protected Object openDialogBox(Control control) {
 		PedigreeShell shell = new PedigreeShell(control.getShell(), exchange);
-		shell.addDisposeListener((e) -> {
+		shell.addDisposeListener(e -> {
 			if (valuesChanged()) {
 				updateContents(exchange.getPedigreeUncertainty());
 				editor.setDirty(true);

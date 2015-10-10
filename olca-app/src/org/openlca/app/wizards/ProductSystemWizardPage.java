@@ -131,7 +131,7 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 
 	private void processSelected(SelectionChangedEvent e) {
 		Object obj = Viewers.getFirst(e.getSelection());
-		if (obj instanceof ModelElement) {
+		if (!(obj instanceof ModelElement)) {
 			refProcess = null;
 			checkInput();
 			return;

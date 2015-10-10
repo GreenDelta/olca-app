@@ -1,18 +1,22 @@
 package org.openlca.app.editors.processes.exchanges;
 
+import java.util.Objects;
+
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.Control;
 import org.openlca.app.components.DialogCellEditor;
 import org.openlca.app.editors.processes.ProcessEditor;
+import org.openlca.core.model.CostCategory;
 import org.openlca.core.model.Exchange;
 
-class PriceCellEditor extends DialogCellEditor {
+class CostCellEditor extends DialogCellEditor {
 
 	private ProcessEditor editor;
 	private Exchange exchange;
 	private Double oldValue;
+	private CostCategory oldCategory;
 
-	PriceCellEditor(TableViewer viewer, ProcessEditor editor) {
+	CostCellEditor(TableViewer viewer, ProcessEditor editor) {
 		super(viewer.getTable());
 		this.editor = editor;
 	}
@@ -21,8 +25,9 @@ class PriceCellEditor extends DialogCellEditor {
 	protected void doSetValue(Object obj) {
 		if (obj instanceof Exchange) {
 			exchange = (Exchange) obj;
-			// TODO: oldValue = exchange.price;
-			super.doSetValue(1.0);
+			oldValue = exchange.costValue;
+			oldCategory = exchange.costCategory;
+			super.doSetValue(oldValue);
 		} else {
 			exchange = null;
 			oldValue = null;
@@ -31,9 +36,17 @@ class PriceCellEditor extends DialogCellEditor {
 
 	@Override
 	protected Object openDialogBox(Control window) {
-		PriceDialog.open(exchange);
+		CostDialog.open(exchange);
+		if (valuesChanged()) {
+			updateContents(exchange.costValue);
+			editor.setDirty(true);
+		}
+		return exchange.costValue;
+	}
 
-		return null;
+	private boolean valuesChanged() {
+		return !Objects.equals(oldValue, exchange.costValue)
+				|| !Objects.equals(oldCategory, exchange.costCategory);
 	}
 
 }
