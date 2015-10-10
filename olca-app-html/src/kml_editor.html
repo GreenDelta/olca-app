@@ -113,13 +113,12 @@
             }
 
             function init() {
-              textEditor = CodeMirror.fromTextArea($('#textDiv textarea')[0], {theme: 'solarized light', lineWrapping: true, lineNumbers: true, 'onChange': function (cm) {
-                alert(1);
-                alert(kmlChanged);
+              textEditor = CodeMirror.fromTextArea($('#textDiv textarea')[0], {theme: 'solarized light', lineWrapping: true, lineNumbers: true});
+              textEditor.on('change', function() {
                 if (typeof(kmlChanged) === "function") {
                   kmlChanged(cm.Value());
                 }
-              }});
+              });
               $('.nav-tabs a').click(function (e) {
                 e.preventDefault()
                 showTabContent(this);
@@ -171,14 +170,6 @@
                     new OpenLayers.Projection("EPSG:900913") // to Spherical Mercator Projection
                   ), 1 // Zoom level
               );
-              map.on('change', function() {
-                alert(2);
-                alert(kmlChanged);
-                if (typeof(kmlChanged) === "function") {
-                  var kml = getKML();
-                  kmlChanged(kml);
-                }
-              });
 
               $("#updateButton").on("click", function() {
                 onSave(true);
