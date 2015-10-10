@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry exported="true" kind="lib" path="libs/commons-codec-1.9.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/mapdb-2.0-beta7.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/bonecp-0.8.0.RELEASE.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/common-2.6.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-beanutils-1.8.3.jar"/>
