@@ -55,7 +55,7 @@ public class ShapeFileUtils {
 	 * Get the folder where the shape-files are stored for the given LCIA,
 	 * method.
 	 */
-	static File getFolder(ImpactMethod method) {
+	public static File getFolder(ImpactMethod method) {
 		if (method == null || method.getRefId() == null)
 			return null;
 		return DatabaseDir.getDir(method);
@@ -65,7 +65,7 @@ public class ShapeFileUtils {
 	 * Get the folder where the shape-files are stored for the given LCIA,
 	 * method.
 	 */
-	static File getFolder(ImpactMethodDescriptor method) {
+	public static File getFolder(ImpactMethodDescriptor method) {
 		if (method == null || method.getRefId() == null)
 			return null;
 		return new FileStore(Database.get()).getFolder(method);
