@@ -68,7 +68,7 @@ class ExchangeTable {
 	private final String CATEGORY = Messages.Category;
 	private final String AMOUNT = Messages.Amount;
 	private final String UNIT = Messages.Unit;
-	private final String PRICE = "#Price";
+	private final String COSTS = "#Costs";
 	private final String PEDIGREE = Messages.PedigreeUncertainty;
 	private final String DEFAULT_PROVIDER = Messages.DefaultProvider;
 	private final String UNCERTAINTY = Messages.Uncertainty;
@@ -100,7 +100,7 @@ class ExchangeTable {
 		Composite composite = UI.sectionClient(section, toolkit);
 		UI.gridLayout(composite, 1);
 		viewer = Tables.createViewer(composite, getColumns());
-		ExchangeLabelProvider label = new ExchangeLabelProvider();
+		ExchangeLabel label = new ExchangeLabel();
 		viewer.setLabelProvider(label);
 		bindModifiers();
 		Tables.addDropSupport(viewer, (droppedModels) -> add(droppedModels));
@@ -121,7 +121,7 @@ class ExchangeTable {
 		ModifySupport<Exchange> support = new ModifySupport<>(viewer);
 		support.bind(AMOUNT, new AmountModifier());
 		support.bind(UNIT, new UnitCell(editor));
-		support.bind(PRICE, new PriceCellEditor(viewer, editor));
+		support.bind(COSTS, new CostCellEditor(viewer, editor));
 		support.bind(PEDIGREE, new PedigreeCellEditor(viewer, editor));
 		support.bind(UNCERTAINTY,
 				new UncertaintyCellEditor(viewer.getTable(), editor));
@@ -156,10 +156,10 @@ class ExchangeTable {
 
 	private String[] getColumns() {
 		if (forInputs)
-			return new String[] { FLOW, CATEGORY, AMOUNT, UNIT, PRICE,
+			return new String[] { FLOW, CATEGORY, AMOUNT, UNIT, COSTS,
 					UNCERTAINTY, DEFAULT_PROVIDER, PEDIGREE };
 		else
-			return new String[] { FLOW, CATEGORY, AMOUNT, UNIT, PRICE,
+			return new String[] { FLOW, CATEGORY, AMOUNT, UNIT, COSTS,
 					UNCERTAINTY, AVOIDED_PRODUCT, PEDIGREE };
 	}
 
@@ -204,7 +204,7 @@ class ExchangeTable {
 		editor.postEvent(editor.EXCHANGES_CHANGED, this);
 	}
 
-	private class ExchangeLabelProvider extends LabelProvider implements
+	private class ExchangeLabel extends LabelProvider implements
 			ITableLabelProvider {
 
 		@Override
@@ -265,7 +265,8 @@ class ExchangeTable {
 			case 3:
 				return Labels.getDisplayName(exchange.getUnit());
 			case 4:
-				return "? USD";
+				return exchange.costValue == null ? null
+						: exchange.costValue.toString() + " USD";
 			case 5:
 				return UncertaintyLabel.get(exchange.getUncertainty());
 			case 6:
