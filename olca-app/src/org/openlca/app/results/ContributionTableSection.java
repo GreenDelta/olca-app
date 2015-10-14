@@ -15,8 +15,11 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
+import org.openlca.app.viewers.combo.CostCategoryViewer;
 import org.openlca.app.viewers.combo.FlowViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
+import org.openlca.core.model.ModelType;
+import org.openlca.core.model.descriptors.CostCategoryDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -30,7 +33,7 @@ import org.openlca.core.results.Contributions;
  */
 public class ContributionTableSection {
 
-	private boolean forFlows = true;
+	private ModelType type;
 
 	private String sectionTitle = "";
 	private String selectionName = "";
@@ -42,7 +45,7 @@ public class ContributionTableSection {
 	public static ContributionTableSection forFlows(
 			ContributionResultProvider<?> provider) {
 		ContributionTableSection section = new ContributionTableSection(
-				provider, true);
+				provider, ModelType.FLOW);
 		section.sectionTitle = Messages.FlowContributions;
 		section.selectionName = Messages.Flow;
 		return section;
@@ -51,16 +54,25 @@ public class ContributionTableSection {
 	public static ContributionTableSection forImpacts(
 			ContributionResultProvider<?> provider) {
 		ContributionTableSection section = new ContributionTableSection(
-				provider, false);
+				provider, ModelType.IMPACT_CATEGORY);
 		section.sectionTitle = Messages.ImpactContributions;
 		section.selectionName = Messages.ImpactCategory;
 		return section;
 	}
 
+	public static ContributionTableSection forCosts(
+			ContributionResultProvider<?> provider) {
+		ContributionTableSection section = new ContributionTableSection(
+				provider, ModelType.COST_CATEGORY);
+		section.sectionTitle = "#Added values";
+		section.selectionName = Messages.CostCategory;
+		return section;
+	}
+
 	private ContributionTableSection(ContributionResultProvider<?> provider,
-			boolean forFlows) {
+			ModelType type) {
 		this.provider = provider;
-		this.forFlows = forFlows;
+		this.type = type;
 	}
 
 	public void render(Composite parent, FormToolkit toolkit) {
@@ -80,10 +92,19 @@ public class ContributionTableSection {
 
 	private void createItemCombo(FormToolkit toolkit, Composite header) {
 		toolkit.createLabel(header, selectionName);
-		if (forFlows)
+		switch (type) {
+		case FLOW:
 			createFlowViewer(header);
-		else
+			break;
+		case IMPACT_CATEGORY:
 			createImpactViewer(header);
+			break;
+		case COST_CATEGORY:
+			createCostViewer(header);
+			break;
+		default:
+			break;
+		}
 		itemViewer.selectFirst();
 	}
 
@@ -102,6 +123,16 @@ public class ContributionTableSection {
 		ImpactCategoryDescriptor[] impacts = set
 				.toArray(new ImpactCategoryDescriptor[set.size()]);
 		viewer.setInput(impacts);
+		viewer.addSelectionChangedListener((selection) -> refreshValues());
+		this.itemViewer = viewer;
+	}
+
+	private void createCostViewer(Composite header) {
+		CostCategoryViewer viewer = new CostCategoryViewer(header);
+		Set<CostCategoryDescriptor> set = provider.getCostDescriptors();
+		CostCategoryDescriptor[] costs = set.toArray(
+				new CostCategoryDescriptor[set.size()]);
+		viewer.setInput(costs);
 		viewer.addSelectionChangedListener((selection) -> refreshValues());
 		this.itemViewer = viewer;
 	}
@@ -131,6 +162,10 @@ public class ContributionTableSection {
 			ImpactCategoryDescriptor impact = (ImpactCategoryDescriptor) selected;
 			unit = impact.getReferenceUnit();
 			items = provider.getProcessContributions(impact).contributions;
+		} else if (selected instanceof CostCategoryDescriptor) {
+			CostCategoryDescriptor cost = (CostCategoryDescriptor) selected;
+			unit = "#USD";
+			items = provider.getProcessContributions(cost).contributions;
 		}
 		setTableData(items, unit);
 	}

@@ -31,17 +31,24 @@ public class ContributionTablePage extends FormPage {
 
 	private void createSections(ScrolledForm form, FormToolkit toolkit,
 			Composite body) {
-		ContributionTableSection fowSection = ContributionTableSection
+		ContributionTableSection flowSection = ContributionTableSection
 				.forFlows(result);
-		fowSection.render(body, toolkit);
+		flowSection.render(body, toolkit);
 		ContributionTableSection impactSection = null;
+		ContributionTableSection costSection = null;
 		if (result.hasImpactResults()) {
 			impactSection = ContributionTableSection.forImpacts(result);
 			impactSection.render(body, toolkit);
 		}
+		if (result.hasCostResults()) {
+			costSection = ContributionTableSection.forCosts(result);
+			costSection.render(body, toolkit);
+		}
 		form.reflow(true);
-		fowSection.refreshValues();
+		flowSection.refreshValues();
 		if (impactSection != null)
 			impactSection.refreshValues();
+		if (costSection != null)
+			costSection.refreshValues();
 	}
 }
