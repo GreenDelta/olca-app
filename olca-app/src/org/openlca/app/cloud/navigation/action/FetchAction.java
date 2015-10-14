@@ -10,15 +10,13 @@ import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.cloud.CloudUtil.JsonLoader;
 import org.openlca.app.cloud.index.Diff;
 import org.openlca.app.cloud.index.DiffIndex;
-import org.openlca.app.cloud.index.DiffIndexer;
 import org.openlca.app.cloud.navigation.RepositoryElement;
 import org.openlca.app.cloud.navigation.RepositoryNavigator;
 import org.openlca.app.cloud.ui.CommitEntryDialog;
 import org.openlca.app.cloud.ui.DiffDialog;
 import org.openlca.app.cloud.ui.DiffNodeBuilder;
-import org.openlca.app.cloud.ui.DiffNodeBuilder.Node;
+import org.openlca.app.cloud.ui.DiffNodeBuilder.DiffNode;
 import org.openlca.app.cloud.ui.DiffResult;
-import org.openlca.app.cloud.ui.DiffResult.DiffResponse;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
@@ -27,7 +25,6 @@ import org.openlca.app.util.Info;
 
 import com.greendelta.cloud.api.RepositoryClient;
 import com.greendelta.cloud.model.data.CommitDescriptor;
-import com.greendelta.cloud.model.data.DatasetDescriptor;
 import com.greendelta.cloud.model.data.FetchRequestData;
 import com.greendelta.cloud.util.WebRequests.WebRequestException;
 
@@ -53,7 +50,7 @@ public class FetchAction extends Action implements INavigationAction {
 		private List<CommitDescriptor> commits;
 		private List<DiffResult> differences;
 		private WebRequestException error;
-		private Node root;
+		private DiffNode root;
 
 		public void run() {
 			App.runWithProgress("#Fetching commits", this::fetchCommits);
@@ -108,9 +105,7 @@ public class FetchAction extends Action implements INavigationAction {
 			try {
 				// TODO apply merge results for conflicts
 				client.fetch();
-				DiffIndexer indexer = new DiffIndexer(index);
-				indexer.addToIndex(extractNew());
-				// TODO apply merged data to index
+				// TODO apply fetch to index
 			} catch (WebRequestException e) {
 				error = e;
 			}
@@ -121,14 +116,6 @@ public class FetchAction extends Action implements INavigationAction {
 				return;
 			RepositoryNavigator.refresh();
 			Navigator.refresh();
-		}
-
-		private List<DatasetDescriptor> extractNew() {
-			List<DatasetDescriptor> identifiers = new ArrayList<>();
-			for (DiffResult result : differences)
-				if (result.getType() == DiffResponse.ADD_TO_LOCAL)
-					identifiers.add(result.getDescriptor());
-			return identifiers;
 		}
 
 		private void showNoChangesBox() {
@@ -142,10 +129,6 @@ public class FetchAction extends Action implements INavigationAction {
 				Diff local = index.get(identifier.getRefId());
 				if (identifier.isDeleted() && local == null)
 					continue;
-				if (local == null) {
-					differences.add(new DiffResult(identifier));
-					continue;
-				}
 				differences.add(new DiffResult(identifier, local));
 			}
 			return differences;
