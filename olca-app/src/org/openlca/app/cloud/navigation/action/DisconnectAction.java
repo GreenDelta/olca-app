@@ -9,12 +9,12 @@ import org.openlca.app.cloud.navigation.RepositoryNavigator;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.actions.INavigationAction;
 
-import com.greendelta.cloud.api.RepositoryConfig;
+import com.greendelta.cloud.api.RepositoryClient;
 import com.greendelta.cloud.util.Directories;
 
 public class DisconnectAction extends Action implements INavigationAction {
 
-	private RepositoryConfig config;
+	private RepositoryClient client;
 
 	@Override
 	public String getText() {
@@ -23,12 +23,12 @@ public class DisconnectAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		// TODO add monitor
-		config.disconnect();
-		File fileStorage = config.getDatabase().getFileStorageLocation();
+		client.getConfig().disconnect();
+		File fileStorage = client.getConfig().getDatabase()
+				.getFileStorageLocation();
 		RepositoryNavigator.disconnect();
 		Directories.delete(new File(fileStorage, "cloud/"
-				+ config.getRepositoryId()));
+				+ client.getConfig().getRepositoryId()));
 		RepositoryNavigator.refresh();
 	}
 
@@ -36,8 +36,8 @@ public class DisconnectAction extends Action implements INavigationAction {
 	public boolean accept(INavigationElement<?> element) {
 		if (!(element instanceof RepositoryElement))
 			return false;
-		config = (RepositoryConfig) element.getContent();
-		if (config == null)
+		client = (RepositoryClient) element.getContent();
+		if (client == null)
 			return false;
 		return true;
 	}

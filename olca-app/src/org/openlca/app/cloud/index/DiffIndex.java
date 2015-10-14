@@ -9,6 +9,8 @@ import org.mapdb.DB;
 import org.mapdb.DBMaker;
 
 import com.greendelta.cloud.model.data.DatasetDescriptor;
+import com.greendelta.cloud.api.RepositoryClient;
+import com.greendelta.cloud.api.RepositoryConfig;
 
 // NOT SYNCHRONIZED //
 public class DiffIndex {
@@ -17,7 +19,13 @@ public class DiffIndex {
 	private DB db;
 	private Map<String, Diff> map;
 
-	public DiffIndex(File indexDirectory) {
+	public static DiffIndex getFor(RepositoryClient client) {
+		RepositoryConfig config = client.getConfig();
+		return new DiffIndex(new File(config.getDatabase()
+				.getFileStorageLocation(), "cloud/" + config.getRepositoryId()));
+	}
+
+	private DiffIndex(File indexDirectory) {
 		if (!indexDirectory.exists())
 			indexDirectory.mkdirs();
 		file = new File(indexDirectory, "indexfile");

@@ -22,7 +22,6 @@ import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.util.Info;
 
 import com.greendelta.cloud.api.RepositoryClient;
-import com.greendelta.cloud.api.RepositoryConfig;
 import com.greendelta.cloud.model.data.CommitDescriptor;
 import com.greendelta.cloud.model.data.DatasetDescriptor;
 import com.greendelta.cloud.model.data.FetchRequestData;
@@ -30,7 +29,7 @@ import com.greendelta.cloud.util.WebRequests.WebRequestException;
 
 public class FetchAction extends Action implements INavigationAction {
 
-	private RepositoryConfig config;
+	private RepositoryClient client;
 
 	public FetchAction() {
 		setText("#Fetch...");
@@ -38,7 +37,6 @@ public class FetchAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		RepositoryClient client = new RepositoryClient(config);
 		try {
 			// TODO add monitor
 			List<CommitDescriptor> commits = client.fetchNewCommitHistory();
@@ -50,7 +48,7 @@ public class FetchAction extends Action implements INavigationAction {
 			List<FetchRequestData> descriptors = client.requestFetch();
 			DiffIndex index = RepositoryNavigator.getDiffIndex();
 			List<DiffResult> differences = createDifferences(index, descriptors);
-			Node root = new DiffNodeBuilder(config.getDatabase(),
+			Node root = new DiffNodeBuilder(client.getConfig().getDatabase(),
 					RepositoryNavigator.getDiffIndex()).build(differences);
 			// TODO
 			DiffDialog dialog = new DiffDialog(root);
@@ -66,7 +64,7 @@ public class FetchAction extends Action implements INavigationAction {
 		} catch (WebRequestException e) {
 			// TODO handle errors
 			Info.showBox(e.getMessage());
-			config.disconnect();
+			client.getConfig().disconnect();
 		}
 	}
 
@@ -103,8 +101,8 @@ public class FetchAction extends Action implements INavigationAction {
 	public boolean accept(INavigationElement<?> element) {
 		if (!(element instanceof RepositoryElement))
 			return false;
-		config = ((RepositoryElement) element).getContent();
-		if (config == null)
+		client = ((RepositoryElement) element).getContent();
+		if (client == null)
 			return false;
 		return true;
 	}

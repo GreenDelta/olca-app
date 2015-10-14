@@ -8,15 +8,15 @@ import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelTypeElement;
 import org.openlca.core.model.ModelType;
 
-import com.greendelta.cloud.api.RepositoryConfig;
+import com.greendelta.cloud.api.RepositoryClient;
 
-public class RepositoryElement implements INavigationElement<RepositoryConfig> {
+public class RepositoryElement implements INavigationElement<RepositoryClient> {
 
-	private RepositoryConfig config;
+	private RepositoryClient client;
 	private List<INavigationElement<?>> children;
 
-	public RepositoryElement(RepositoryConfig config) {
-		this.config = config;
+	public RepositoryElement(RepositoryClient client) {
+		this.client = client;
 	}
 
 	@Override
@@ -28,7 +28,7 @@ public class RepositoryElement implements INavigationElement<RepositoryConfig> {
 	public List<INavigationElement<?>> getChildren() {
 		if (children != null)
 			return children;
-		if (config == null) {
+		if (client == null) {
 			children = Collections.emptyList();
 			return children;
 		}
@@ -44,8 +44,8 @@ public class RepositoryElement implements INavigationElement<RepositoryConfig> {
 	}
 
 	@Override
-	public RepositoryConfig getContent() {
-		return config;
+	public RepositoryClient getContent() {
+		return client;
 	}
 
 	@Override

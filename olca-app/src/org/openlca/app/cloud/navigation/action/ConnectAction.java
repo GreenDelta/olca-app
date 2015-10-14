@@ -121,8 +121,8 @@ public class ConnectAction extends Action implements INavigationAction {
 	public boolean accept(INavigationElement<?> element) {
 		if (!(element instanceof RepositoryElement))
 			return false;
-		RepositoryConfig config = ((RepositoryElement) element).getContent();
-		if (config != null)
+		RepositoryClient client = ((RepositoryElement) element).getContent();
+		if (client != null)
 			return false;
 		return true;
 	}
