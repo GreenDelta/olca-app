@@ -9,6 +9,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
+import org.openlca.app.App;
+import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.cloud.index.DiffIndexer;
 import org.openlca.app.cloud.index.DiffType;
 import org.openlca.app.cloud.navigation.NavigationRoot;
@@ -41,23 +43,29 @@ public class ConnectAction extends Action implements INavigationAction {
 		if (dialog.open() != Dialog.OK)
 			return;
 		RepositoryConfig config = dialog.createConfig();
+		NavigationRoot root = RepositoryNavigator.getNavigationRoot();
+		App.run("#Connecting to repository " + config.getServerUrl() + " "
+				+ config.getRepositoryId(), () -> connect(config, root),
+				RepositoryNavigator::refresh);
+	}
+
+	private void connect(RepositoryConfig config, NavigationRoot root) {
 		RepositoryClient client = new RepositoryClient(config);
 		try {
 			// only fetch to check if can connect
 			client.requestFetch();
 		} catch (WebRequestException e) {
-			// TODO handle errors
 			Info.showBox(e.getMessage());
 			config.disconnect();
 			return;
 		}
-		NavigationRoot root = RepositoryNavigator.getNavigationRoot();
+		root.setClient(client);
 		root.update();
-		DiffIndexer indexer = new DiffIndexer(
-				RepositoryNavigator.getDiffIndex());
+		DiffIndex index = DiffIndex.getFor(client);
+		DiffIndexer indexer = new DiffIndexer(index);
 		indexer.addToIndex(collectDescriptors(root.getChildren().get(0)),
 				DiffType.NEW);
-		RepositoryNavigator.refresh();
+		index.close();
 	}
 
 	private List<DatasetDescriptor> collectDescriptors(
