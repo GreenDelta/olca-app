@@ -29,7 +29,7 @@ public class CommitDialog extends FormDialog {
 	public CommitDialog(List<DiffResult> changes) {
 		super(UI.shell());
 		this.changes = changes;
-	}
+		setBlockOnOpen(true);	}
 
 	@Override
 	protected Point getInitialSize() {

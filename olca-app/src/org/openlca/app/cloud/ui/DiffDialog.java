@@ -20,6 +20,7 @@ public class DiffDialog extends FormDialog {
 	public DiffDialog(Node rootNode) {
 		super(UI.shell());
 		this.rootNode = rootNode;
+		setBlockOnOpen(true);
 	}
 
 	@Override
