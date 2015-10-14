@@ -7,7 +7,6 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.forms.HyperlinkSettings;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
@@ -34,20 +33,15 @@ public class TotalImpactResultPage extends FormPage {
 	private FormToolkit toolkit;
 	private SimpleResultProvider<?> result;
 
-	public TotalImpactResultPage(FormEditor editor,
-			SimpleResultProvider<?> result) {
+	public TotalImpactResultPage(FormEditor editor, SimpleResultProvider<?> result) {
 		super(editor, "ImpactResultPage", Messages.LCIAResult);
 		this.result = result;
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = managedForm.getForm();
-		toolkit = managedForm.getToolkit();
-		toolkit.getHyperlinkGroup().setHyperlinkUnderlineMode(
-				HyperlinkSettings.UNDERLINE_HOVER);
-		form.setText(Messages.LCIAResult);
-		toolkit.decorateFormHeading(form.getForm());
+	protected void createFormContent(IManagedForm mform) {
+		ScrolledForm form = UI.formHeader(mform, Messages.LCIAResult);
+		toolkit = mform.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		TableViewer impactViewer = createSectionAndViewer(body);
 		form.reflow(true);
@@ -62,25 +56,24 @@ public class TotalImpactResultPage extends FormPage {
 		UI.gridLayout(composite, 1);
 		String[] columns = { IMPACT_CATEGORY, RESULT, REFERENCE_UNIT };
 		TableViewer viewer = Tables.createViewer(composite, columns);
-		LCIALabelProvider labelProvider = new LCIALabelProvider();
-		viewer.setLabelProvider(labelProvider);
-		createColumnSorters(viewer, labelProvider);
+		Label label = new Label();
+		viewer.setLabelProvider(label);
+		createColumnSorters(viewer, label);
 		Tables.bindColumnWidths(viewer.getTable(), 0.50, 0.30, 0.2);
 		Actions.bind(viewer, TableClipboard.onCopy(viewer));
 		return viewer;
 	}
 
-	private void createColumnSorters(TableViewer viewer, LCIALabelProvider p) {
-		Tables.sortByLabels(viewer, p, 0, 2);
-		Function<ImpactCategoryDescriptor, Double> amount = (d) -> {
+	private void createColumnSorters(TableViewer viewer, Label label) {
+		Tables.sortByLabels(viewer, label, 0, 2);
+		Function<ImpactCategoryDescriptor, Double> amountFn = (d) -> {
 			ImpactResult r = result.getTotalImpactResult(d);
 			return r == null ? 0 : r.value;
 		};
-		Tables.sortByDouble(viewer, amount, 1);
+		Tables.sortByDouble(viewer, amountFn, 1);
 	}
 
-	private class LCIALabelProvider extends BaseLabelProvider implements
-			ITableLabelProvider {
+	private class Label extends BaseLabelProvider implements ITableLabelProvider {
 
 		@Override
 		public Image getColumnImage(Object element, int col) {
