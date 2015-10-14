@@ -10,6 +10,7 @@ import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.cloud.CloudUtil.JsonLoader;
 import org.openlca.app.cloud.index.Diff;
 import org.openlca.app.cloud.index.DiffIndex;
+import org.openlca.app.cloud.index.DiffIndexer;
 import org.openlca.app.cloud.navigation.RepositoryElement;
 import org.openlca.app.cloud.navigation.RepositoryNavigator;
 import org.openlca.app.cloud.ui.CommitEntryDialog;
@@ -17,6 +18,7 @@ import org.openlca.app.cloud.ui.DiffDialog;
 import org.openlca.app.cloud.ui.DiffNodeBuilder;
 import org.openlca.app.cloud.ui.DiffNodeBuilder.DiffNode;
 import org.openlca.app.cloud.ui.DiffResult;
+import org.openlca.app.cloud.ui.DiffResult.DiffResponse;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
@@ -92,11 +94,13 @@ public class FetchAction extends Action implements INavigationAction {
 		private void showDifferences() {
 			if (error != null)
 				return;
-			JsonLoader loader = CloudUtil.getJsonLoader(client);
-			DiffDialog dialog = new DiffDialog(root, loader::getLocalJson,
-					loader::getRemoteJson);
-			if (dialog.open() != IDialogConstants.OK_ID)
-				return;
+			if (root != null) {
+				JsonLoader loader = CloudUtil.getJsonLoader(client);
+				DiffDialog dialog = new DiffDialog(root, loader::getLocalJson,
+						loader::getRemoteJson);
+				if (dialog.open() != IDialogConstants.OK_ID)
+					return;
+			}
 			App.runWithProgress("#Fetching data", this::fetchData);
 			afterFetchData();
 		}
@@ -105,6 +109,16 @@ public class FetchAction extends Action implements INavigationAction {
 			try {
 				// TODO apply merge results for conflicts
 				client.fetch();
+				DiffIndexer indexer = new DiffIndexer(index);
+				for (DiffResult result : differences) {
+					if (result.getType().isOneOf(DiffResponse.NONE,
+							DiffResponse.MODIFY_IN_LOCAL))
+						indexer.indexFetch(result.getDescriptor());
+					else if (result.getType() == DiffResponse.ADD_TO_LOCAL)
+						indexer.addToIndex(result.getDescriptor());
+					else if (result.getType() == DiffResponse.DELETE_FROM_LOCAL)
+						indexer.indexDelete(result.getDescriptor());
+				}
 				// TODO apply fetch to index
 			} catch (WebRequestException e) {
 				error = e;
