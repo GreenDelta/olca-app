@@ -63,11 +63,11 @@ public class SankeyDiagram extends GraphicalEditor implements
 	public SankeyDiagram(CalculationSetup setUp, FullResultProvider result) {
 		setEditDomain(new DefaultEditDomain(this));
 		this.result = result;
-		productSystem = setUp.getProductSystem();
+		productSystem = setUp.productSystem;
 		linkSearchMap = new ProcessLinkSearchMap(
 				productSystem.getProcessLinks());
 		sankeyResult = new SankeyResult(productSystem, result);
-		if (productSystem != null) 
+		if (productSystem != null)
 			setPartName(productSystem.getName());
 	}
 

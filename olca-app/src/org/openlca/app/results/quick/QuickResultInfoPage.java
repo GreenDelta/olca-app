@@ -39,7 +39,7 @@ public class QuickResultInfoPage extends FormPage {
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
 		ScrolledForm form = UI.formHeader(managedForm, Messages.ResultsOf + " "
-				+ Labels.getDisplayName(editor.getSetup().getProductSystem()));
+				+ Labels.getDisplayName(editor.getSetup().productSystem));
 		this.toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		createInfoSection(body);
@@ -58,24 +58,24 @@ public class QuickResultInfoPage extends FormPage {
 
 	private void createInfoSection(Composite body) {
 		CalculationSetup setup = editor.getSetup();
-		if (setup == null || setup.getProductSystem() == null)
+		if (setup == null || setup.productSystem == null)
 			return;
-		ProductSystem system = setup.getProductSystem();
+		ProductSystem system = setup.productSystem;
 		Composite composite = UI.formSection(body, toolkit,
 				Messages.GeneralInformation);
-		String sysText = Labels.getDisplayName(setup.getProductSystem());
+		String sysText = Labels.getDisplayName(system);
 		createText(composite, Messages.ProductSystem, sysText);
-		String allocText = Labels.getEnumText(setup.getAllocationMethod());
+		String allocText = Labels.getEnumText(setup.allocationMethod);
 		createText(composite, Messages.AllocationMethod, allocText);
 		String targetText = system.getTargetAmount() + " "
 				+ system.getTargetUnit().getName() + " "
 				+ system.getReferenceExchange().getFlow().getName();
 		createText(composite, Messages.TargetAmount, targetText);
-		ImpactMethodDescriptor method = setup.getImpactMethod();
+		ImpactMethodDescriptor method = setup.impactMethod;
 		if (method != null)
 			createText(composite, Messages.ImpactAssessmentMethod,
 					method.getName());
-		NwSetDescriptor nwSet = setup.getNwSet();
+		NwSetDescriptor nwSet = setup.nwSet;
 		if (nwSet != null)
 			createText(composite, Messages.NormalizationAndWeightingSet,
 					nwSet.getName());

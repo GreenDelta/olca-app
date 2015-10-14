@@ -67,7 +67,7 @@ public class RegionalizedResultEditor extends FormEditor {
 				addPage(new TotalFlowResultPage(this, regioRresult));
 				if (regioRresult.hasImpactResults())
 					addPage(new TotalImpactResultPage(this, regioRresult));
-				if (regioRresult.hasImpactResults() && setup.getNwSet() != null)
+				if (regioRresult.hasImpactResults() && setup.nwSet != null)
 					addPage(new NwResultPage(this, regioRresult, setup));
 				addPage(new ContributionTablePage(this, regioRresult));
 				addPage(new KmlResultView(this, this.result));

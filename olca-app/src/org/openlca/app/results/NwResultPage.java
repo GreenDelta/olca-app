@@ -124,10 +124,10 @@ public class NwResultPage extends FormPage {
 	}
 
 	private NwSetTable loadNwSetTable() {
-		if (setup.getNwSet() == null)
+		if (setup.nwSet == null)
 			return null;
 		try {
-			return NwSetTable.build(Database.get(), setup.getNwSet().getId());
+			return NwSetTable.build(Database.get(), setup.nwSet.getId());
 		} catch (Exception e) {
 			log.error("failed to load NW set factors from database", e);
 			return null;
@@ -162,8 +162,8 @@ public class NwResultPage extends FormPage {
 			case 1:
 				return Numbers.format(item.amount);
 			case 2:
-				if (setup.getNwSet() != null)
-					return setup.getNwSet().getWeightedScoreUnit();
+				if (setup.nwSet != null)
+					return setup.nwSet.getWeightedScoreUnit();
 			default:
 				return null;
 			}

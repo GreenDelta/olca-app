@@ -138,7 +138,7 @@ public class ProcessResultPage extends FormPage {
 		UI.gridLayout(container, 5);
 		UI.formLabel(container, toolkit, Messages.Process);
 		flowProcessViewer = new ProcessViewer(container, cache);
-		flowProcessViewer.setInput(setup.getProductSystem());
+		flowProcessViewer.setInput(setup.productSystem);
 		flowProcessViewer.addSelectionChangedListener((selection) -> {
 			flowResult.setProcess(selection);
 			inputTable.refresh();
@@ -193,7 +193,7 @@ public class ProcessResultPage extends FormPage {
 		UI.gridData(container, true, false);
 		UI.formLabel(container, toolkit, Messages.Process);
 		impactProcessCombo = new ProcessViewer(container, cache);
-		impactProcessCombo.setInput(setup.getProductSystem());
+		impactProcessCombo.setInput(setup.productSystem);
 		impactProcessCombo.addSelectionChangedListener((selection) -> {
 			impactResult.setProcess(selection);
 			impactTable.refresh();

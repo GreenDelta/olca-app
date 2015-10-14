@@ -50,12 +50,13 @@ class CalculationWizardPage extends WizardPage {
 
 	public CalculationSetup getSetup() {
 		CalculationSetup setUp = new CalculationSetup(productSystem);
-		setUp.setAllocationMethod(allocationViewer.getSelected());
-		setUp.setImpactMethod(methodViewer.getSelected());
+		setUp.withCosts = true; // TODO: make it editable
+		setUp.allocationMethod = allocationViewer.getSelected();
+		setUp.impactMethod = methodViewer.getSelected();
 		NwSetDescriptor set = nwViewer.getSelected();
-		setUp.setNwSet(set);
-		setUp.setNumberOfRuns(iterationCount);
-		setUp.getParameterRedefs().addAll(productSystem.getParameterRedefs());
+		setUp.nwSet = set;
+		setUp.numberOfRuns = iterationCount;
+		setUp.parameterRedefs.addAll(productSystem.getParameterRedefs());
 		return setUp;
 	}
 

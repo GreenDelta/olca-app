@@ -57,7 +57,7 @@ public class AnalyzeEditor extends FormEditor {
 		FullResultProvider result = Cache.getAppCache().remove(resultKey,
 				FullResultProvider.class);
 		setup = Cache.getAppCache().remove(setupKey, CalculationSetup.class);
-		ProductSystem system = setup.getProductSystem();
+		ProductSystem system = setup.productSystem;
 		String name = Messages.AnalysisResultOf + " " + system.getName();
 		setPartName(name);
 		this.result = result;
@@ -70,14 +70,14 @@ public class AnalyzeEditor extends FormEditor {
 			addPage(new TotalFlowResultPage(this, result));
 			if (result.hasImpactResults())
 				addPage(new TotalImpactResultPage(this, result));
-			if (result.hasImpactResults() && setup.getNwSet() != null)
+			if (result.hasImpactResults() && setup.nwSet != null)
 				addPage(new NwResultPage(this, result, setup));
 			addPage(new ContributionTablePage(this, result));
 			addPage(new ProcessResultPage(this, result, setup));
 			if (result.hasImpactResults())
 				addPage(new FlowImpactPage(this, result));
 			addPage(new ContributionTreePage(this, result));
-			addPage(new ImpactTreePage(this, result)); 
+			addPage(new ImpactTreePage(this, result));
 			addPage(new GroupPage(this, result));
 			addPage(new LocationContributionPage(this, result));
 			if (FeatureFlag.EXPERIMENTAL_VISUALISATIONS.isEnabled()) {

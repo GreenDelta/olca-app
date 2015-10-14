@@ -51,7 +51,7 @@ public class AnalyzeInfoPage extends FormPage {
 		toolkit.getHyperlinkGroup().setHyperlinkUnderlineMode(
 				HyperlinkSettings.UNDERLINE_HOVER);
 		form.setText(Messages.AnalysisResultOf + " "
-				+ Labels.getDisplayName(setup.getProductSystem()));
+				+ Labels.getDisplayName(setup.productSystem));
 		toolkit.decorateFormHeading(form.getForm());
 		Composite body = UI.formBody(form, toolkit);
 		createInfoSection(body);
@@ -62,17 +62,17 @@ public class AnalyzeInfoPage extends FormPage {
 	private void createInfoSection(Composite body) {
 		Composite composite = UI.formSection(body, toolkit,
 				Messages.GeneralInformation);
-		ProductSystem system = setup.getProductSystem();
+		ProductSystem system = setup.productSystem;
 		createText(composite, Messages.ProductSystem, system.getName());
 		String targetText = system.getTargetAmount() + " "
 				+ system.getTargetUnit().getName() + " "
 				+ system.getReferenceExchange().getFlow().getName();
 		createText(composite, Messages.TargetAmount, targetText);
-		ImpactMethodDescriptor method = setup.getImpactMethod();
+		ImpactMethodDescriptor method = setup.impactMethod;
 		if (method != null)
 			createText(composite, Messages.ImpactAssessmentMethod,
 					method.getName());
-		NwSetDescriptor nwSet = setup.getNwSet();
+		NwSetDescriptor nwSet = setup.nwSet;
 		if (nwSet != null)
 			createText(composite, Messages.NormalizationAndWeightingSet,
 					nwSet.getName());

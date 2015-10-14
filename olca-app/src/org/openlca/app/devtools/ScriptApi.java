@@ -495,8 +495,8 @@ public class ScriptApi {
 			ImpactMethod method) {
 		CalculationSetup setup = new CalculationSetup(system);
 		if (method != null)
-			setup.setImpactMethod(Descriptors.toDescriptor(method));
-		setup.getParameterRedefs().addAll(system.getParameterRedefs());
+			setup.impactMethod = Descriptors.toDescriptor(method);
+		setup.parameterRedefs.addAll(system.getParameterRedefs());
 		SystemCalculator calculator = new SystemCalculator(
 				Cache.getMatrixCache(), App.getSolver());
 		SimpleResult result = calculator.calculateSimple(setup);
@@ -512,8 +512,8 @@ public class ScriptApi {
 			ProductSystem system, ImpactMethod method) {
 		CalculationSetup setup = new CalculationSetup(system);
 		if (method != null)
-			setup.setImpactMethod(Descriptors.toDescriptor(method));
-		setup.getParameterRedefs().addAll(system.getParameterRedefs());
+			setup.impactMethod = Descriptors.toDescriptor(method);
+		setup.parameterRedefs.addAll(system.getParameterRedefs());
 		SystemCalculator calculator = new SystemCalculator(
 				Cache.getMatrixCache(), App.getSolver());
 		ContributionResult result = calculator.calculateContributions(setup);
@@ -529,8 +529,8 @@ public class ScriptApi {
 			ProductSystem system, ImpactMethod method, int iterations) {
 		CalculationSetup setup = new CalculationSetup(system);
 		if (method != null)
-			setup.setImpactMethod(Descriptors.toDescriptor(method));
-		setup.getParameterRedefs().addAll(system.getParameterRedefs());
+			setup.impactMethod = Descriptors.toDescriptor(method);
+		setup.parameterRedefs.addAll(system.getParameterRedefs());
 		Simulator simulator = new Simulator(setup, Cache.getMatrixCache(),
 				App.getSolver());
 		for (int i = 0; i < iterations; i++)

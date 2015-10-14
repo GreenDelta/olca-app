@@ -98,20 +98,20 @@ class CalculationWizard extends Wizard {
 			CalculationSetup setup) {
 		String resultKey = Cache.getAppCache().put(result);
 		String setupKey = Cache.getAppCache().put(setup);
-		return new ResultEditorInput(setup.getProductSystem().getId(),
+		return new ResultEditorInput(setup.productSystem.getId(),
 				resultKey, setupKey);
 	}
 
 	private void saveDefaults(CalculationSetup setup, CalculationType type) {
 		if (setup == null)
 			return;
-		AllocationMethod am = setup.getAllocationMethod();
+		AllocationMethod am = setup.allocationMethod;
 		String amVal = am == null ? "NONE" : am.name();
 		Preferences.set("calc.allocation.method", amVal);
-		BaseDescriptor m = setup.getImpactMethod();
+		BaseDescriptor m = setup.impactMethod;
 		String mVal = m == null ? "" : m.getRefId();
 		Preferences.set("calc.impact.method", mVal);
-		BaseDescriptor nws = setup.getNwSet();
+		BaseDescriptor nws = setup.nwSet;
 		String nwsVal = nws == null ? "" : nws.getRefId();
 		Preferences.set("calc.nwset", nwsVal);
 	}
@@ -219,15 +219,15 @@ class CalculationWizard extends Wizard {
 					solver.getMatrixFactory(), interpreter);
 			ImpactMatrix impactMatrix = null;
 			ImpactTable impactTable = null;
-			if (setup.getImpactMethod() != null) {
-				impactTable = ImpactTable.build(Cache.getMatrixCache(), setup
-						.getImpactMethod().getId(), inventory.getFlowIndex());
+			if (setup.impactMethod != null) {
+				impactTable = ImpactTable.build(Cache.getMatrixCache(), setup.impactMethod.getId(),
+						inventory.getFlowIndex());
 				impactMatrix = impactTable.createMatrix(
 						solver.getMatrixFactory(), interpreter);
 			}
-			LcaCalculator calculator = new LcaCalculator(solver);
-			FullResult baseResult = calculator.calculateFull(inventoryMatrix,
-					impactMatrix);
+			LcaCalculator calculator = new LcaCalculator(solver, inventoryMatrix);
+			calculator.setImpactMatrix(impactMatrix);
+			FullResult baseResult = calculator.calculateFull();
 			RegionalizationSetup regioSetup = setupRegio(
 					baseResult.productIndex);
 			if (regioSetup == null)
@@ -246,7 +246,7 @@ class CalculationWizard extends Wizard {
 
 		private RegionalizationSetup setupRegio(ProductIndex productIndex) {
 			RegionalizationSetup regioSetup = new RegionalizationSetup(
-					database, setup.getImpactMethod());
+					database, setup.impactMethod);
 			IKmlLoader kmlLoader = new KmlLoader(database);
 			if (!regioSetup.init(kmlLoader, productIndex)) {
 				Info.showBox(

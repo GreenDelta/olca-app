@@ -61,7 +61,7 @@ public class QuickResultEditor extends FormEditor {
 			addPage(new TotalFlowResultPage(this, result));
 			if (result.hasImpactResults())
 				addPage(new TotalImpactResultPage(this, result));
-			if (result.hasImpactResults() && setup.getNwSet() != null)
+			if (result.hasImpactResults() && setup.nwSet != null)
 				addPage(new NwResultPage(this, result, setup));
 			addPage(new ContributionTablePage(this, result));
 			if (result.hasImpactResults())

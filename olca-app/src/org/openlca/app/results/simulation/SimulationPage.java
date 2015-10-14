@@ -82,11 +82,11 @@ public class SimulationPage extends FormPage {
 				Messages.NumberOfSimulations);
 		if (editor.getSetup() != null) {
 			CalculationSetup setup = editor.getSetup();
-			systemText.setText(setup.getProductSystem().getName());
-			processText.setText(setup.getProductSystem().getReferenceProcess()
+			systemText.setText(setup.productSystem.getName());
+			processText.setText(setup.productSystem.getReferenceProcess()
 					.getName());
 			qRefText.setText(getQRefText());
-			simCountText.setText(Integer.toString(setup.getNumberOfRuns()));
+			simCountText.setText(Integer.toString(setup.numberOfRuns));
 		}
 		systemText.setEditable(false);
 		processText.setEditable(false);
@@ -97,7 +97,7 @@ public class SimulationPage extends FormPage {
 	private String getQRefText() {
 		try {
 			CalculationSetup setup = editor.getSetup();
-			ProductSystem system = setup.getProductSystem();
+			ProductSystem system = setup.productSystem;
 			Exchange exchange = system.getReferenceExchange();
 			double amount = system.getTargetAmount();
 			Flow flow = exchange.getFlow();
@@ -115,7 +115,7 @@ public class SimulationPage extends FormPage {
 		progressSection = UI.section(body, toolkit, Messages.Progress);
 		Composite composite = UI.sectionClient(progressSection, toolkit);
 		progressBar = new ProgressBar(composite, SWT.SMOOTH);
-		progressBar.setMaximum(editor.getSetup().getNumberOfRuns());
+		progressBar.setMaximum(editor.getSetup().numberOfRuns);
 		UI.gridWidth(progressBar, 470);
 		final Button progressButton = toolkit.createButton(composite,
 				Messages.Start, SWT.NONE);

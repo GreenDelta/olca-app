@@ -23,16 +23,17 @@ class SimulationProgress implements IRunnableWithProgress {
 			SimulationPage page) {
 		this.display = display;
 		this.solver = editor.getSimulator();
-		this.numberOfRuns = editor.getSetup().getNumberOfRuns();
+		this.numberOfRuns = editor.getSetup().numberOfRuns;
 		this.page = page;
 	}
 
 	@Override
 	public void run(IProgressMonitor monitor) throws InvocationTargetException,
 			InterruptedException {
-		// one simulation has already be done at init step, so only (numberOfRuns - 1) remains
-		monitor.beginTask(Messages.MonteCarloSimulation + "...", numberOfRuns-1);
-		for (int i = 0; i < numberOfRuns-1; i++) {
+		// one simulation has already be done at init step, so only
+		// (numberOfRuns - 1) remains
+		monitor.beginTask(Messages.MonteCarloSimulation + "...", numberOfRuns - 1);
+		for (int i = 0; i < numberOfRuns - 1; i++) {
 			if (monitor.isCanceled()) {
 				doneAfter(i);
 				break;
@@ -40,7 +41,7 @@ class SimulationProgress implements IRunnableWithProgress {
 			doNextRun();
 		}
 		monitor.done();
-		doneAfter(numberOfRuns-1);
+		doneAfter(numberOfRuns - 1);
 	}
 
 	private void doneAfter(final int numberOfRuns) {

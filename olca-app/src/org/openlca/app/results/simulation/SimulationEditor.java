@@ -28,7 +28,7 @@ public class SimulationEditor extends FormEditor {
 		SimulationInput input = (SimulationInput) editorInput;
 		setup = Cache.getAppCache().remove(input.getSetupKey(),
 				CalculationSetup.class);
-		setPartName(Strings.cut(setup.getProductSystem().getName(), 75));
+		setPartName(Strings.cut(setup.productSystem.getName(), 75));
 		simulator = Cache.getAppCache()
 				.remove(input.getSolverKey(), Simulator.class);
 	}
