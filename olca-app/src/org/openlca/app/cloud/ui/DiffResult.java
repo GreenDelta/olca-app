@@ -99,6 +99,15 @@ public class DiffResult {
 
 		NONE, ADD_TO_LOCAL, DELETE_FROM_LOCAL, MODIFY_IN_REMOTE, MODIFY_IN_LOCAL, ADD_TO_REMOTE, DELETE_FROM_REMOTE, CONFLICT;
 
+		public boolean isOneOf(DiffResponse... types) {
+			if (types == null)
+				return false;
+			for (DiffResponse type : types)
+				if (type == this)
+					return true;
+			return false;
+		}
+
 	}
 
 }

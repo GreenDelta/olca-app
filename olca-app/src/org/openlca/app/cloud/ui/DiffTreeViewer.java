@@ -12,7 +12,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Tree;
-import org.openlca.app.cloud.ui.DiffNodeBuilder.Node;
+import org.openlca.app.cloud.ui.DiffNodeBuilder.DiffNode;
 import org.openlca.app.cloud.ui.DiffResult.DiffResponse;
 import org.openlca.app.rcp.ImageManager;
 import org.openlca.app.rcp.ImageType;
@@ -26,7 +26,7 @@ import org.openlca.core.model.ModelType;
 import com.google.gson.JsonObject;
 import com.greendelta.cloud.model.data.DatasetDescriptor;
 	
-public class DiffTreeViewer extends AbstractViewer<Node, TreeViewer> {
+public class DiffTreeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 
 	private Function<DiffResult, JsonObject> getLocalJson;
 	private Function<DiffResult, JsonObject> getRemoteJson;
@@ -64,7 +64,7 @@ public class DiffTreeViewer extends AbstractViewer<Node, TreeViewer> {
 				.getSelection();
 		if (selection.size() > 1)
 			return;
-		Node selected = (Node) selection.getFirstElement();
+		DiffNode selected = (DiffNode) selection.getFirstElement();
 		if (!(selected.getContent() instanceof DiffResult))
 			return;
 		DiffResult result = (DiffResult) selected.getContent();
@@ -82,25 +82,25 @@ public class DiffTreeViewer extends AbstractViewer<Node, TreeViewer> {
 
 		@Override
 		public Object[] getElements(Object inputElement) {
-			Node node = (Node) ((Object[]) inputElement)[0];
+			DiffNode node = (DiffNode) ((Object[]) inputElement)[0];
 			return node.getChildren().toArray();
 		}
 
 		@Override
 		public Object[] getChildren(Object parentElement) {
-			Node node = (Node) parentElement;
+			DiffNode node = (DiffNode) parentElement;
 			return node.getChildren().toArray();
 		}
 
 		@Override
 		public Object getParent(Object element) {
-			Node node = (Node) element;
+			DiffNode node = (DiffNode) element;
 			return node.getParent();
 		}
 
 		@Override
 		public boolean hasChildren(Object element) {
-			Node node = (Node) element;
+			DiffNode node = (DiffNode) element;
 			return !node.getChildren().isEmpty();
 		}
 
@@ -122,7 +122,7 @@ public class DiffTreeViewer extends AbstractViewer<Node, TreeViewer> {
 		public String getText(Object element) {
 			if (element == null)
 				return null;
-			Node node = (Node) element;
+			DiffNode node = (DiffNode) element;
 			if (node.getContent() instanceof DiffResult)
 				return ((DiffResult) node.getContent()).getDisplayName();
 			if (node.getContent() instanceof ModelType)
@@ -134,7 +134,7 @@ public class DiffTreeViewer extends AbstractViewer<Node, TreeViewer> {
 		public Image getImage(Object element) {
 			if (element == null)
 				return null;
-			Node node = (Node) element;
+			DiffNode node = (DiffNode) element;
 			if (node.getContent() instanceof DiffResult)
 				return getImage((DiffResult) node.getContent());
 			if (node.getContent() instanceof ModelType)

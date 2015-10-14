@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.cloud.index.DiffIndex;
+import org.openlca.app.cloud.ui.DiffResult.DiffResponse;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Category;
@@ -16,7 +17,7 @@ import com.greendelta.cloud.model.data.DatasetDescriptor;
 
 public class DiffNodeBuilder {
 
-	private final Map<String, Node> nodes = new HashMap<>();
+	private final Map<String, DiffNode> nodes = new HashMap<>();
 	private final Map<String, DiffResult> diffs = new HashMap<>();
 	private final CategoryDao categoryDao;
 	private final DiffIndex index;
@@ -28,37 +29,40 @@ public class DiffNodeBuilder {
 		this.database = database.getName();
 	}
 
-	public Node build(List<DiffResult> diffs) {
+	public DiffNode build(List<DiffResult> diffs) {
 		for (DiffResult result : diffs)
-			this.diffs.put(result.getDescriptor().getRefId(), result);
+			if (result.getType() != DiffResponse.NONE)
+				this.diffs.put(result.getDescriptor().getRefId(), result);
+		if (this.diffs.size() == 0)
+			return null;
 		nodes.clear();
-		Node root = new Node(null, database);
+		DiffNode root = new DiffNode(null, database);
 		nodes.put("", root);
-		for (DiffResult result : diffs) {
+		for (DiffResult result : this.diffs.values()) {
 			if (nodes.containsKey(result.getDescriptor().getRefId()))
 				continue;
-			Node parent = getOrCreateParentNode(result);
-			Node node = new Node(parent, result);
+			DiffNode parent = getOrCreateParentNode(result);
+			DiffNode node = new DiffNode(parent, result);
 			parent.getChildren().add(node);
 			nodes.put(result.getDescriptor().getRefId(), node);
 		}
 		return root;
 	}
 
-	private Node getOrCreateParentNode(DiffResult result) {
+	private DiffNode getOrCreateParentNode(DiffResult result) {
 		if (result.remote != null)
 			return getOrCreateParentNode(result.remote);
 		return getOrCreateParentNode(result.local.getDescriptor());
 	}
 
-	private Node getOrCreateParentNode(DatasetDescriptor descriptor) {
+	private DiffNode getOrCreateParentNode(DatasetDescriptor descriptor) {
 		String parentId = descriptor.getCategoryRefId();
 		ModelType categoryType = descriptor.getType();
 		if (categoryType == ModelType.CATEGORY)
 			categoryType = descriptor.getCategoryType();
 		if (parentId == null)
 			return getOrCreateModelTypeNode(categoryType);
-		Node categoryNode = nodes.get(parentId);
+		DiffNode categoryNode = nodes.get(parentId);
 		if (categoryNode != null)
 			return categoryNode;
 		DiffResult result = diffs.get(parentId);
@@ -68,41 +72,41 @@ public class DiffNodeBuilder {
 		return createNodeFromCategory(category);
 	}
 
-	private Node createNodeFromCategory(Category category) {
-		Node parent = getOrCreateParentNode(CloudUtil.toDescriptor(category));
+	private DiffNode createNodeFromCategory(Category category) {
+		DiffNode parent = getOrCreateParentNode(CloudUtil.toDescriptor(category));
 		DiffResult result = new DiffResult(index.get(category.getRefId()));
-		Node node = new Node(parent, result);
+		DiffNode node = new DiffNode(parent, result);
 		parent.getChildren().add(node);
 		nodes.put(category.getRefId(), node);
 		return node;
 	}
 
-	private Node createNodeFromDiff(DiffResult result) {
-		Node parent = getOrCreateParentNode(result.getDescriptor());
-		Node node = new Node(parent, result);
+	private DiffNode createNodeFromDiff(DiffResult result) {
+		DiffNode parent = getOrCreateParentNode(result.getDescriptor());
+		DiffNode node = new DiffNode(parent, result);
 		parent.getChildren().add(node);
 		nodes.put(result.getDescriptor().getRefId(), node);
 		return node;
 	}
 
-	private Node getOrCreateModelTypeNode(ModelType type) {
-		Node typeNode = nodes.get(type.name());
+	private DiffNode getOrCreateModelTypeNode(ModelType type) {
+		DiffNode typeNode = nodes.get(type.name());
 		if (typeNode != null)
 			return typeNode;
-		Node root = nodes.get("");
-		typeNode = new Node(root, type);
+		DiffNode root = nodes.get("");
+		typeNode = new DiffNode(root, type);
 		root.getChildren().add(typeNode);
 		nodes.put(type.name(), typeNode);
 		return typeNode;
 	}
 
-	public static class Node {
+	public static class DiffNode {
 
 		private final Object content;
-		private final Node parent;
-		private final List<Node> children = new ArrayList<>();
+		private final DiffNode parent;
+		private final List<DiffNode> children = new ArrayList<>();
 
-		public Node(Node parent, Object content) {
+		public DiffNode(DiffNode parent, Object content) {
 			this.content = content;
 			this.parent = parent;
 		}
@@ -111,11 +115,11 @@ public class DiffNodeBuilder {
 			return content;
 		}
 
-		public Node getParent() {
+		public DiffNode getParent() {
 			return parent;
 		}
 
-		public List<Node> getChildren() {
+		public List<DiffNode> getChildren() {
 			return children;
 		}
 

@@ -1,7 +1,6 @@
 package org.openlca.app.cloud.ui;
 
 import java.util.Collections;
-import java.util.List;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
@@ -17,23 +16,21 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.cloud.CloudUtil.JsonLoader;
-import org.openlca.app.cloud.navigation.RepositoryNavigator;
-import org.openlca.app.cloud.ui.DiffNodeBuilder.Node;
-import org.openlca.app.db.Database;
+import org.openlca.app.cloud.ui.DiffNodeBuilder.DiffNode;
 import org.openlca.app.util.UI;
 
 import com.greendelta.cloud.api.RepositoryClient;
 
 public class CommitDialog extends FormDialog {
 
-	private final List<DiffResult> changes;
+	private DiffNode node;
 	private String message;
 	private DiffTreeViewer viewer;
 	private RepositoryClient client;
 
-	public CommitDialog(List<DiffResult> changes, RepositoryClient client) {
+	public CommitDialog(DiffNode node, RepositoryClient client) {
 		super(UI.shell());
-		this.changes = changes;
+		this.node = node;
 		this.client = client;
 		setBlockOnOpen(true);
 	}
@@ -55,13 +52,7 @@ public class CommitDialog extends FormDialog {
 		createCommitMessage(body, toolkit);
 		createModelViewer(body, toolkit);
 		form.reflow(true);
-		viewer.setInput(Collections.singleton(createModel()));
-	}
-
-	private Node createModel() {
-		// TODO
-		return new DiffNodeBuilder(Database.get(),
-				RepositoryNavigator.getDiffIndex()).build(changes);
+		viewer.setInput(Collections.singleton(node));
 	}
 
 	private void createCommitMessage(Composite parent, FormToolkit toolkit) {
@@ -102,10 +93,6 @@ public class CommitDialog extends FormDialog {
 
 	public String getMessage() {
 		return message;
-	}
-
-	public List<DiffResult> getSelection() {
-		return changes;
 	}
 
 }

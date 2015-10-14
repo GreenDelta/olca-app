@@ -16,6 +16,8 @@ import org.openlca.app.cloud.index.DiffIndexer;
 import org.openlca.app.cloud.navigation.RepositoryElement;
 import org.openlca.app.cloud.navigation.RepositoryNavigator;
 import org.openlca.app.cloud.ui.CommitDialog;
+import org.openlca.app.cloud.ui.DiffNodeBuilder;
+import org.openlca.app.cloud.ui.DiffNodeBuilder.DiffNode;
 import org.openlca.app.cloud.ui.DiffResult;
 import org.openlca.app.cloud.ui.DiffResult.DiffResponse;
 import org.openlca.app.db.Database;
@@ -89,7 +91,11 @@ public class CommitAction extends Action implements INavigationAction {
 		private void openCommitDialog() {
 			if (!canContinue())
 				return;
-			CommitDialog dialog = new CommitDialog(changes, client);
+			DiffNode node = new DiffNodeBuilder(Database.get(),
+					RepositoryNavigator.getDiffIndex()).build(changes);
+			if (node == null)
+				return;
+			CommitDialog dialog = new CommitDialog(node, client);
 			dialog.setBlockOnOpen(true);
 			if (dialog.open() != IDialogConstants.OK_ID)
 				return;

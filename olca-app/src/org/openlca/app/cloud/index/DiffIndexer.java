@@ -1,5 +1,6 @@
 package org.openlca.app.cloud.index;
 
+import java.util.Collections;
 import java.util.List;
 
 import com.greendelta.cloud.model.data.DatasetDescriptor;
@@ -12,6 +13,14 @@ public class DiffIndexer {
 		this.index = index;
 	}
 
+	public void addToIndex(DatasetDescriptor descriptor) {
+		addToIndex(descriptor, null);
+	}
+
+	public void addToIndex(DatasetDescriptor descriptor, DiffType diffType) {
+		addToIndex(Collections.singletonList(descriptor), diffType);
+	}
+
 	public void addToIndex(List<DatasetDescriptor> descriptors) {
 		addToIndex(descriptors, null);
 	}
@@ -19,11 +28,11 @@ public class DiffIndexer {
 	public void addToIndex(List<DatasetDescriptor> descriptors,
 			DiffType diffType) {
 		for (DatasetDescriptor descriptor : descriptors)
-			addToIndex(descriptor, diffType);
+			_addToIndex(descriptor, diffType);
 		index.commit();
 	}
 
-	private void addToIndex(DatasetDescriptor descriptor, DiffType diffType) {
+	private void _addToIndex(DatasetDescriptor descriptor, DiffType diffType) {
 		index.add(descriptor);
 		if (diffType != null && diffType != DiffType.NO_DIFF)
 			index.update(descriptor, diffType);
@@ -58,6 +67,11 @@ public class DiffIndexer {
 			index.remove(descriptor.getRefId());
 		} else
 			index.update(descriptor, DiffType.NO_DIFF);
+		index.commit();
+	}
+
+	public void indexFetch(DatasetDescriptor descriptor) {
+		index.update(descriptor, DiffType.NO_DIFF);
 		index.commit();
 	}
 
