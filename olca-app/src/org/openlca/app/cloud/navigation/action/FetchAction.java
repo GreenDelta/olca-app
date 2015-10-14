@@ -44,7 +44,7 @@ public class FetchAction extends Action implements INavigationAction {
 				showNoChangesBox();
 				return;
 			}
-			new CommitEntryDialog(commits).open();
+			new CommitEntryDialog(commits, client).open();
 			List<FetchRequestData> descriptors = client.requestFetch();
 			DiffIndex index = RepositoryNavigator.getDiffIndex();
 			List<DiffResult> differences = createDifferences(index, descriptors);

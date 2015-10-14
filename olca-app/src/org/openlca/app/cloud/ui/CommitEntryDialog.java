@@ -12,16 +12,21 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.util.UI;
 
+import com.greendelta.cloud.api.RepositoryClient;
 import com.greendelta.cloud.model.data.CommitDescriptor;
 
 public class CommitEntryDialog extends FormDialog {
 
 	private final List<CommitDescriptor> commits;
 	private CommitEntryViewer viewer;
+	private RepositoryClient client;
 
-	public CommitEntryDialog(List<CommitDescriptor> commits) {
+	public CommitEntryDialog(List<CommitDescriptor> commits,
+			RepositoryClient client) {
 		super(UI.shell());
 		this.commits = commits;
+		this.client = client;
+		setBlockOnOpen(true);
 	}
 
 	@Override
@@ -49,7 +54,7 @@ public class CommitEntryDialog extends FormDialog {
 	}
 
 	private void createCommitViewer(Composite parent, FormToolkit toolkit) {
-		viewer = new CommitEntryViewer(parent);
+		viewer = new CommitEntryViewer(parent, client);
 	}
 
 }
