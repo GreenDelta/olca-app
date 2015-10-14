@@ -15,7 +15,7 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
-import org.openlca.app.components.FlowImpactSelection;
+import org.openlca.app.components.ResultTypeSelection;
 import org.openlca.app.db.Cache;
 import org.openlca.app.rcp.html.HtmlPage;
 import org.openlca.app.rcp.html.HtmlView;
@@ -33,7 +33,7 @@ class KmlResultView extends FormPage implements HtmlPage {
 
 	private RegionalizedResultProvider result;
 	private Browser browser;
-	private FlowImpactSelection flowImpactSelection;
+	private ResultTypeSelection flowImpactSelection;
 	private boolean incompleteData = false;
 
 	public KmlResultView(FormEditor editor, RegionalizedResultProvider result) {
@@ -63,7 +63,7 @@ class KmlResultView extends FormPage implements HtmlPage {
 		Composite body = UI.formBody(form, toolkit);
 		Composite composite = toolkit.createComposite(body);
 		UI.gridLayout(composite, 2);
-		flowImpactSelection = FlowImpactSelection
+		flowImpactSelection = ResultTypeSelection
 				.on(result.getRegionalizedResult(), Cache.getEntityCache())
 				.withEventHandler(new KmlSelectionHandler(result))
 				.create(composite, toolkit);

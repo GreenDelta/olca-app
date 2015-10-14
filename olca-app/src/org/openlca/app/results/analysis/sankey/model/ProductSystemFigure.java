@@ -19,6 +19,7 @@ import org.openlca.app.results.analysis.sankey.actions.SankeySelectionAction;
 import org.openlca.app.results.analysis.sankey.layout.GraphLayoutManager;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Numbers;
+import org.openlca.core.model.descriptors.CostCategoryDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 
@@ -62,10 +63,10 @@ public class ProductSystemFigure extends Figure {
 		String cutoffText = Messages.Cutoff + ": "
 				+ Numbers.format(cutoffValue, 3) + "%";
 		if (selection != null) {
-			String label = selectionLabel(selection);
 			graphics.drawText(Messages.ProductSystem + ": "
 					+ productSystemNode.getProductSystem().getName(),
 					new Point(5, 5));
+			String label = selectionLabel(selection);
 			graphics.drawText(label, new Point(5, 30));
 			graphics.drawText(cutoffText, new Point(5, 60));
 
@@ -96,8 +97,12 @@ public class ProductSystemFigure extends Figure {
 			return Messages.Flow + ": " + flow.getName();
 		}
 		if (selection instanceof ImpactCategoryDescriptor) {
-			ImpactCategoryDescriptor category = (ImpactCategoryDescriptor) selection;
-			return Messages.ImpactCategory + ": " + category.getName();
+			ImpactCategoryDescriptor impact = (ImpactCategoryDescriptor) selection;
+			return Messages.ImpactCategory + ": " + impact.getName();
+		}
+		if (selection instanceof CostCategoryDescriptor) {
+			CostCategoryDescriptor cost = (CostCategoryDescriptor) selection;
+			return Messages.CostCategory + ": " + cost.getName();
 		}
 		return Messages.NoAnalysisOptionsSet;
 	}

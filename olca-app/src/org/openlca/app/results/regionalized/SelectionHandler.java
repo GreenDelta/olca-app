@@ -6,8 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.openlca.app.components.FlowImpactSelection.EventHandler;
+import org.openlca.app.components.ResultTypeSelection.EventHandler;
 import org.openlca.core.matrix.LongPair;
+import org.openlca.core.model.descriptors.CostCategoryDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -44,6 +45,18 @@ abstract class SelectionHandler implements EventHandler {
 		Map<Long, Double> results = new HashMap<>();
 		for (ProcessDescriptor process : processes) {
 			double v = provider.getSingleImpactResult(process, impact).value;
+			results.put(process.getId(), v);
+		}
+		processResultData(getResultData(results));
+	}
+
+	@Override
+	public void costCategorySelected(CostCategoryDescriptor cost) {
+		ContributionResultProvider<?> provider = result.getRegionalizedResult();
+		Set<ProcessDescriptor> processes = provider.getProcessDescriptors();
+		Map<Long, Double> results = new HashMap<>();
+		for (ProcessDescriptor process : processes) {
+			double v = provider.getSingleCostResult(process, cost).value;
 			results.put(process.getId(), v);
 		}
 		processResultData(getResultData(results));

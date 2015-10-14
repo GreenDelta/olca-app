@@ -7,13 +7,14 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.openlca.app.components.FlowImpactSelection;
-import org.openlca.app.components.FlowImpactSelection.EventHandler;
+import org.openlca.app.components.ResultTypeSelection;
+import org.openlca.app.components.ResultTypeSelection.EventHandler;
 import org.openlca.app.db.Cache;
 import org.openlca.app.rcp.html.HtmlPage;
 import org.openlca.app.rcp.html.HtmlView;
 import org.openlca.app.util.UI;
 import org.openlca.core.matrix.FlowIndex;
+import org.openlca.core.model.descriptors.CostCategoryDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.ContributionResultProvider;
@@ -25,7 +26,7 @@ public class ProcessTreemapPage extends FormPage implements HtmlPage {
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private ContributionResultProvider<?> result;
 	private Browser browser;
-	private FlowImpactSelection flowImpactSelection;
+	private ResultTypeSelection flowImpactSelection;
 
 	public ProcessTreemapPage(FormEditor editor,
 			ContributionResultProvider<?> result) {
@@ -56,7 +57,7 @@ public class ProcessTreemapPage extends FormPage implements HtmlPage {
 		Composite body = UI.formBody(form, toolkit);
 		Composite composite = toolkit.createComposite(body);
 		UI.gridLayout(composite, 2);
-		flowImpactSelection = FlowImpactSelection
+		flowImpactSelection = ResultTypeSelection
 				.on(result, Cache.getEntityCache())
 				.withEventHandler(new SelectionHandler())
 				.create(composite, toolkit);
@@ -77,6 +78,11 @@ public class ProcessTreemapPage extends FormPage implements HtmlPage {
 		public void impactCategorySelected(ImpactCategoryDescriptor impact) {
 			String resultData = ProcessTreemap.calculate(result, impact);
 			setResultData(resultData);
+		}
+
+		@Override
+		public void costCategorySelected(CostCategoryDescriptor cost) {
+			// TODO Auto-generated method stub
 		}
 
 		private void setResultData(String result) {

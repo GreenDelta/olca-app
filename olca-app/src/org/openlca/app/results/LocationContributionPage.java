@@ -18,8 +18,8 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
-import org.openlca.app.components.FlowImpactSelection;
-import org.openlca.app.components.FlowImpactSelection.EventHandler;
+import org.openlca.app.components.ResultTypeSelection;
+import org.openlca.app.components.ResultTypeSelection.EventHandler;
 import org.openlca.app.db.Cache;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.app.rcp.html.HtmlPage;
@@ -31,6 +31,7 @@ import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.CostCategoryDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -56,7 +57,7 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 	private Browser browser;
 	private LocationContributionTable table;
 	private LocationContribution calculator;
-	private FlowImpactSelection flowImpactSelection;
+	private ResultTypeSelection flowImpactSelection;
 	private TreeInputBuilder inputBuilder;
 	private boolean showMap;
 
@@ -103,7 +104,7 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 	private void createCombos(Composite body, FormToolkit toolkit) {
 		Composite composite = toolkit.createComposite(body);
 		UI.gridLayout(composite, 2);
-		flowImpactSelection = FlowImpactSelection.on(result, cache)
+		flowImpactSelection = ResultTypeSelection.on(result, cache)
 				.withEventHandler(new SelectionHandler())
 				.withSelection(result.getFlowDescriptors().iterator().next())
 				.create(composite, toolkit);
@@ -179,6 +180,10 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 			ContributionSet<Location> set = calculator.calculate(impact);
 			double total = result.getTotalImpactResult(impact).value;
 			setData(set, impact, total, unit);
+		}
+
+		@Override
+		public void costCategorySelected(CostCategoryDescriptor cost) {
 		}
 
 		private void setData(ContributionSet<Location> set,

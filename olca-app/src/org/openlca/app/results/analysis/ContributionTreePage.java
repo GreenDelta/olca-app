@@ -24,8 +24,8 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.components.ContributionImage;
-import org.openlca.app.components.FlowImpactSelection;
-import org.openlca.app.components.FlowImpactSelection.EventHandler;
+import org.openlca.app.components.ResultTypeSelection;
+import org.openlca.app.components.ResultTypeSelection.EventHandler;
 import org.openlca.app.db.Cache;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
@@ -36,6 +36,7 @@ import org.openlca.app.util.Viewers;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.matrix.LongPair;
 import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.CostCategoryDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -71,7 +72,7 @@ public class ContributionTreePage extends FormPage {
 		Composite body = UI.formBody(form, toolkit);
 		Composite composite = toolkit.createComposite(body);
 		UI.gridLayout(composite, 2);
-		FlowImpactSelection selector = FlowImpactSelection
+		ResultTypeSelection selector = ResultTypeSelection
 				.on(result, Cache.getEntityCache())
 				.withEventHandler(new SelectionHandler())
 				.create(composite, toolkit);
@@ -131,6 +132,13 @@ public class ContributionTreePage extends FormPage {
 				ImpactCategoryDescriptor impactCategory) {
 			selection = impactCategory;
 			UpstreamTree model = result.getTree(impactCategory);
+			tree.setInput(model);
+		}
+
+		@Override
+		public void costCategorySelected(CostCategoryDescriptor cost) {
+			selection = cost;
+			UpstreamTree model = result.getTree(cost);
 			tree.setInput(model);
 		}
 	}
@@ -223,9 +231,12 @@ public class ContributionTreePage extends FormPage {
 			if (selection instanceof FlowDescriptor) {
 				FlowDescriptor flow = (FlowDescriptor) selection;
 				return Labels.getRefUnit(flow, cache);
-			} else if (selection instanceof ImpactCategoryDescriptor)
-				return ((ImpactCategoryDescriptor) selection)
-						.getReferenceUnit();
+			} else if (selection instanceof ImpactCategoryDescriptor) {
+				ImpactCategoryDescriptor impact = (ImpactCategoryDescriptor) selection;
+				return impact.getReferenceUnit();
+			} else if (selection instanceof CostCategoryDescriptor) {
+				return "#USD";
+			}
 			return null;
 		}
 

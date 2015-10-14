@@ -14,8 +14,8 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.Messages;
-import org.openlca.app.components.FlowImpactSelection;
-import org.openlca.app.components.FlowImpactSelection.EventHandler;
+import org.openlca.app.components.ResultTypeSelection;
+import org.openlca.app.components.ResultTypeSelection.EventHandler;
 import org.openlca.app.db.Cache;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
@@ -23,6 +23,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.ProjectVariant;
+import org.openlca.core.model.descriptors.CostCategoryDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.ContributionItem;
@@ -34,7 +35,7 @@ public class ProjectResultPage extends FormPage {
 	private EntityCache cache = Cache.getEntityCache();
 	private ProjectResultProvider result;
 	private ProjectResultChart chart;
-	private FlowImpactSelection selector;
+	private ResultTypeSelection selector;
 	private TableViewer tableViewer;
 
 	public ProjectResultPage(ProjectResultEditor editor) {
@@ -49,7 +50,7 @@ public class ProjectResultPage extends FormPage {
 		Composite body = UI.formBody(form, toolkit);
 		Composite composite = toolkit.createComposite(body);
 		UI.gridLayout(composite, 2);
-		selector = FlowImpactSelection.on(result, cache)
+		selector = ResultTypeSelection.on(result, cache)
 				.withEventHandler(new SelectionHandler())
 				.create(composite, toolkit);
 		createTable(body, toolkit);
@@ -70,7 +71,7 @@ public class ProjectResultPage extends FormPage {
 		UI.gridData(tableViewer.getTable(), true, true).minimumHeight = 150;
 	}
 
-	private void initialSelection(FlowImpactSelection selector) {
+	private void initialSelection(ResultTypeSelection selector) {
 		Set<FlowDescriptor> flowSet = result.getFlowDescriptors();
 		if (flowSet.isEmpty())
 			return;
@@ -102,6 +103,10 @@ public class ProjectResultPage extends FormPage {
 					.getContributions(impactCategory);
 			chart.renderChart(impactCategory, contributionSet);
 			tableViewer.setInput(contributionSet.contributions);
+		}
+
+		@Override
+		public void costCategorySelected(CostCategoryDescriptor cost) {
 		}
 	}
 

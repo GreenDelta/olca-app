@@ -1,8 +1,6 @@
 package org.openlca.app.results.analysis.sankey;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.ui.forms.FormDialog;
@@ -10,10 +8,11 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.Messages;
-import org.openlca.app.components.FlowImpactSelection;
-import org.openlca.app.components.FlowImpactSelection.EventHandler;
+import org.openlca.app.components.ResultTypeSelection;
+import org.openlca.app.components.ResultTypeSelection.EventHandler;
 import org.openlca.app.db.Cache;
 import org.openlca.app.util.UI;
+import org.openlca.core.model.descriptors.CostCategoryDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.FullResultProvider;
@@ -35,28 +34,25 @@ public class SankeySelectionDialog extends FormDialog implements EventHandler {
 		ScrolledForm form = UI.formHeader(mform,
 				Messages.SettingsForTheSankeyDiagram);
 		Composite body = UI.formBody(form, toolkit);
-		FlowImpactSelection.on(result, Cache.getEntityCache())
+		UI.gridLayout(body, 2);
+		ResultTypeSelection.on(result, Cache.getEntityCache())
 				.withEventHandler(this).withSelection(selection)
 				.create(body, toolkit);
 		createCutoffSpinner(toolkit, body);
 	}
 
-	private void createCutoffSpinner(FormToolkit toolkit, Composite body) {
-		Composite composite = UI.formComposite(body, toolkit);
-		toolkit.createLabel(composite, Messages.CutOffForFirstLayerIn);
-		final Spinner cutoffSpinner = new Spinner(composite, SWT.BORDER);
-		cutoffSpinner.setIncrement(100);
-		cutoffSpinner.setMinimum(0);
-		cutoffSpinner.setMaximum(100000);
-		cutoffSpinner.setDigits(3);
-		cutoffSpinner.setSelection((int) (cutoff * 100000));
-		cutoffSpinner.addModifyListener(new ModifyListener() {
-			@Override
-			public void modifyText(final ModifyEvent e) {
-				cutoff = cutoffSpinner.getSelection() / 100000d;
-			}
+	private void createCutoffSpinner(FormToolkit toolkit, Composite composite) {
+		toolkit.createLabel(composite, Messages.Cutoff);
+		Spinner spinner = new Spinner(composite, SWT.BORDER);
+		spinner.setIncrement(100);
+		spinner.setMinimum(0);
+		spinner.setMaximum(100000);
+		spinner.setDigits(3);
+		spinner.setSelection((int) (cutoff * 100000));
+		spinner.addModifyListener(e -> {
+			cutoff = spinner.getSelection() / 100000d;
 		});
-		toolkit.adapt(cutoffSpinner);
+		toolkit.adapt(spinner);
 	}
 
 	public double getCutoff() {
@@ -81,8 +77,13 @@ public class SankeySelectionDialog extends FormDialog implements EventHandler {
 	}
 
 	@Override
-	public void impactCategorySelected(ImpactCategoryDescriptor impactCategory) {
-		this.selection = impactCategory;
+	public void impactCategorySelected(ImpactCategoryDescriptor impact) {
+		this.selection = impact;
+	}
+
+	@Override
+	public void costCategorySelected(CostCategoryDescriptor cost) {
+		this.selection = cost;
 	}
 
 }
