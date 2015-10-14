@@ -25,13 +25,12 @@ import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.ModelType;
 
 import com.greendelta.cloud.api.RepositoryClient;
-import com.greendelta.cloud.api.RepositoryConfig;
 import com.greendelta.cloud.model.data.DatasetDescriptor;
 import com.greendelta.cloud.util.WebRequests.WebRequestException;
 
 public class CommitAction extends Action implements INavigationAction {
 
-	private RepositoryConfig config;
+	private RepositoryClient client;
 
 	public CommitAction() {
 		setText("#Commit...");
@@ -41,7 +40,6 @@ public class CommitAction extends Action implements INavigationAction {
 	public void run() {
 		// TODO add monitor
 		try {
-			RepositoryClient client = new RepositoryClient(config);
 			if (!upToDate(client))
 				return;
 			DiffIndex index = RepositoryNavigator.getDiffIndex();
@@ -114,8 +112,8 @@ public class CommitAction extends Action implements INavigationAction {
 	public boolean accept(INavigationElement<?> element) {
 		while (!(element instanceof RepositoryElement))
 			element = element.getParent();
-		config = (RepositoryConfig) element.getContent();
-		if (config == null)
+		client = (RepositoryClient) element.getContent();
+		if (client == null)
 			return false;
 		return true;
 	}
