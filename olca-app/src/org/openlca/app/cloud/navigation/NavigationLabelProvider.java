@@ -28,7 +28,7 @@ public class NavigationLabelProvider extends
 		DiffIndexer indexer = new DiffIndexer(
 				RepositoryNavigator.getDiffIndex());
 		Diff diff = indexer.getDiff(NavigationUtil
-				.toIdentifier((INavigationElement<?>) element));
+				.toDescriptor((INavigationElement<?>) element));
 		if (diff.type != DiffType.NEW)
 			return super.getImage(element);
 		ImageType imageType = null;
@@ -57,7 +57,7 @@ public class NavigationLabelProvider extends
 			return baseText;
 		DiffIndexer indexer = new DiffIndexer(
 				RepositoryNavigator.getDiffIndex());
-		Diff diff = indexer.getDiff(NavigationUtil.toIdentifier(element));
+		Diff diff = indexer.getDiff(NavigationUtil.toDescriptor(element));
 		if (element instanceof ModelElement)
 			if (hasChanged(element, diff, indexer) && !isNew(element, diff))
 				return "> " + baseText;
@@ -82,7 +82,7 @@ public class NavigationLabelProvider extends
 				|| element instanceof ModelTypeElement) {
 			for (INavigationElement<?> child : element.getChildren()) {
 				Diff childDiff = indexer.getDiff(NavigationUtil
-						.toIdentifier(child));
+						.toDescriptor(child));
 				if (hasChanged(child, childDiff, indexer))
 					return true;
 			}

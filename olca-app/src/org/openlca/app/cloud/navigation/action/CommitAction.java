@@ -26,7 +26,7 @@ import org.openlca.core.model.ModelType;
 
 import com.greendelta.cloud.api.RepositoryClient;
 import com.greendelta.cloud.api.RepositoryConfig;
-import com.greendelta.cloud.model.data.DatasetIdentifier;
+import com.greendelta.cloud.model.data.DatasetDescriptor;
 import com.greendelta.cloud.util.WebRequests.WebRequestException;
 
 public class CommitAction extends Action implements INavigationAction {
@@ -59,7 +59,7 @@ public class CommitAction extends Action implements INavigationAction {
 			DiffIndexer indexer = new DiffIndexer(
 					RepositoryNavigator.getDiffIndex());
 			for (DiffResult result : selection)
-				indexer.indexCommit(result.getIdentifier());
+				indexer.indexCommit(result.getDescriptor());
 			RepositoryNavigator.refresh();
 		} catch (WebRequestException e) {
 			e.printStackTrace();
@@ -89,11 +89,11 @@ public class CommitAction extends Action implements INavigationAction {
 		for (DiffResult change : changes) {
 			if (change.getType() == DiffResponse.DELETE_FROM_REMOTE)
 				continue;
-			Set<String> sublist = map.get(change.getIdentifier().getType());
+			Set<String> sublist = map.get(change.getDescriptor().getType());
 			if (sublist == null)
-				map.put(change.getIdentifier().getType(),
+				map.put(change.getDescriptor().getType(),
 						sublist = new HashSet<>());
-			sublist.add(change.getIdentifier().getRefId());
+			sublist.add(change.getDescriptor().getRefId());
 		}
 		List<CategorizedEntity> entities = new ArrayList<>();
 		for (ModelType type : map.keySet())
@@ -102,11 +102,11 @@ public class CommitAction extends Action implements INavigationAction {
 		return entities;
 	}
 
-	private List<DatasetIdentifier> filterDeleted(List<DiffResult> changes) {
-		List<DatasetIdentifier> deleted = new ArrayList<>();
+	private List<DatasetDescriptor> filterDeleted(List<DiffResult> changes) {
+		List<DatasetDescriptor> deleted = new ArrayList<>();
 		for (DiffResult change : changes)
 			if (change.getType() == DiffResponse.DELETE_FROM_REMOTE)
-				deleted.add(change.getIdentifier());
+				deleted.add(change.getDescriptor());
 		return deleted;
 	}
 

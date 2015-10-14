@@ -25,7 +25,7 @@ import org.openlca.app.util.UI;
 
 import com.greendelta.cloud.api.RepositoryClient;
 import com.greendelta.cloud.api.RepositoryConfig;
-import com.greendelta.cloud.model.data.DatasetIdentifier;
+import com.greendelta.cloud.model.data.DatasetDescriptor;
 import com.greendelta.cloud.util.WebRequests.WebRequestException;
 
 public class ConnectAction extends Action implements INavigationAction {
@@ -55,19 +55,20 @@ public class ConnectAction extends Action implements INavigationAction {
 		root.update();
 		DiffIndexer indexer = new DiffIndexer(
 				RepositoryNavigator.getDiffIndex());
-		indexer.addToIndex(collectIdentifier(root.getChildren().get(0)), DiffType.NEW);
+		indexer.addToIndex(collectDescriptors(root.getChildren().get(0)),
+				DiffType.NEW);
 		RepositoryNavigator.refresh();
 	}
 
-	private List<DatasetIdentifier> collectIdentifier(
+	private List<DatasetDescriptor> collectDescriptors(
 			INavigationElement<?> element) {
-		List<DatasetIdentifier> identifier = new ArrayList<>();
+		List<DatasetDescriptor> descriptor = new ArrayList<>();
 		if (element instanceof ModelElement
 				|| element instanceof CategoryElement)
-			identifier.add(NavigationUtil.toIdentifier(element));
+			descriptor.add(NavigationUtil.toDescriptor(element));
 		for (INavigationElement<?> child : element.getChildren())
-			identifier.addAll(collectIdentifier(child));
-		return identifier;
+			descriptor.addAll(collectDescriptors(child));
+		return descriptor;
 	}
 
 	private class InputDialog extends Dialog {

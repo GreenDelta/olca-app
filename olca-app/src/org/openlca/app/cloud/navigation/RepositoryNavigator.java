@@ -20,7 +20,7 @@ import org.openlca.app.events.ModelEvent;
 
 import com.google.common.eventbus.Subscribe;
 import com.greendelta.cloud.api.RepositoryConfig;
-import com.greendelta.cloud.model.data.DatasetIdentifier;
+import com.greendelta.cloud.model.data.DatasetDescriptor;
 
 public class RepositoryNavigator extends CommonNavigator {
 
@@ -134,17 +134,17 @@ public class RepositoryNavigator extends CommonNavigator {
 		if (getConfig() == null)
 			return;
 		DiffIndexer indexHelper = new DiffIndexer(index);
-		DatasetIdentifier identifier = CloudUtil.toIdentifier(event.model,
+		DatasetDescriptor descriptor = CloudUtil.toDescriptor(event.model,
 				event.category);
 		switch (event.type) {
 		case CREATE:
-			indexHelper.indexCreate(identifier);
+			indexHelper.indexCreate(descriptor);
 			break;
 		case MODIFY:
-			indexHelper.indexModify(identifier);
+			indexHelper.indexModify(descriptor);
 			break;
 		case DELETE:
-			indexHelper.indexDelete(identifier);
+			indexHelper.indexDelete(descriptor);
 			break;
 		}
 		refresh();

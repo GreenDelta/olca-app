@@ -2,7 +2,7 @@ package org.openlca.app.cloud.index;
 
 import java.util.List;
 
-import com.greendelta.cloud.model.data.DatasetIdentifier;
+import com.greendelta.cloud.model.data.DatasetDescriptor;
 
 public class DiffIndexer {
 
@@ -12,59 +12,59 @@ public class DiffIndexer {
 		this.index = index;
 	}
 
-	public void addToIndex(List<DatasetIdentifier> identifiers) {
-		addToIndex(identifiers, null);
+	public void addToIndex(List<DatasetDescriptor> descriptors) {
+		addToIndex(descriptors, null);
 	}
 
-	public void addToIndex(List<DatasetIdentifier> identifiers,
+	public void addToIndex(List<DatasetDescriptor> descriptors,
 			DiffType diffType) {
-		for (DatasetIdentifier identifier : identifiers)
-			addToIndex(identifier, diffType);
+		for (DatasetDescriptor descriptor : descriptors)
+			addToIndex(descriptor, diffType);
 		index.commit();
 	}
 
-	private void addToIndex(DatasetIdentifier identifier, DiffType diffType) {
-		index.add(identifier);
+	private void addToIndex(DatasetDescriptor descriptor, DiffType diffType) {
+		index.add(descriptor);
 		if (diffType != null && diffType != DiffType.NO_DIFF)
-			index.update(identifier, diffType);
+			index.update(descriptor, diffType);
 	}
 
-	public void indexCreate(DatasetIdentifier identifier) {
-		index.add(identifier);
-		index.update(identifier, DiffType.NEW);
+	public void indexCreate(DatasetDescriptor descriptor) {
+		index.add(descriptor);
+		index.update(descriptor, DiffType.NEW);
 		index.commit();
 	}
 
-	public void indexModify(DatasetIdentifier identifier) {
-		indexModify(identifier, false);
+	public void indexModify(DatasetDescriptor descriptor) {
+		indexModify(descriptor, false);
 	}
 
-	public void indexModify(DatasetIdentifier identifier, boolean forceOverwrite) {
-		DiffType previousType = index.get(identifier.getRefId()).type;
+	public void indexModify(DatasetDescriptor descriptor, boolean forceOverwrite) {
+		DiffType previousType = index.get(descriptor.getRefId()).type;
 		if (forceOverwrite || previousType != DiffType.NEW) {
-			index.update(identifier, DiffType.CHANGED);
+			index.update(descriptor, DiffType.CHANGED);
 			index.commit();
 		}
 	}
 
-	public void indexDelete(DatasetIdentifier identifier) {
-		index.update(identifier, DiffType.DELETED);
+	public void indexDelete(DatasetDescriptor descriptor) {
+		index.update(descriptor, DiffType.DELETED);
 		index.commit();
 	}
 
-	public void indexCommit(DatasetIdentifier identifier) {
-		DiffType before = index.get(identifier.getRefId()).type;
+	public void indexCommit(DatasetDescriptor descriptor) {
+		DiffType before = index.get(descriptor.getRefId()).type;
 		if (before == DiffType.DELETED) {
-			index.remove(identifier.getRefId());
+			index.remove(descriptor.getRefId());
 		} else
-			index.update(identifier, DiffType.NO_DIFF);
+			index.update(descriptor, DiffType.NO_DIFF);
 		index.commit();
 	}
 
-	public Diff getDiff(DatasetIdentifier identifier) {
-		if (identifier == null)
+	public Diff getDiff(DatasetDescriptor descriptor) {
+		if (descriptor == null)
 			return null;
-		return index.get(identifier.getRefId());
+		return index.get(descriptor.getRefId());
 	}
 
 }

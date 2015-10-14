@@ -14,8 +14,8 @@ import org.openlca.app.cloud.ui.CommitEntryDialog;
 import org.openlca.app.cloud.ui.DiffDialog;
 import org.openlca.app.cloud.ui.DiffNodeBuilder;
 import org.openlca.app.cloud.ui.DiffNodeBuilder.Node;
-import org.openlca.app.cloud.ui.DiffResult.DiffResponse;
 import org.openlca.app.cloud.ui.DiffResult;
+import org.openlca.app.cloud.ui.DiffResult.DiffResponse;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
@@ -24,7 +24,7 @@ import org.openlca.app.util.Info;
 import com.greendelta.cloud.api.RepositoryClient;
 import com.greendelta.cloud.api.RepositoryConfig;
 import com.greendelta.cloud.model.data.CommitDescriptor;
-import com.greendelta.cloud.model.data.DatasetIdentifier;
+import com.greendelta.cloud.model.data.DatasetDescriptor;
 import com.greendelta.cloud.model.data.FetchRequestData;
 import com.greendelta.cloud.util.WebRequests.WebRequestException;
 
@@ -47,9 +47,9 @@ public class FetchAction extends Action implements INavigationAction {
 				return;
 			}
 			new CommitEntryDialog(commits).open();
-			List<FetchRequestData> identifiers = client.requestFetch();
+			List<FetchRequestData> descriptors = client.requestFetch();
 			DiffIndex index = RepositoryNavigator.getDiffIndex();
-			List<DiffResult> differences = createDifferences(index, identifiers);
+			List<DiffResult> differences = createDifferences(index, descriptors);
 			Node root = new DiffNodeBuilder(config.getDatabase(),
 					RepositoryNavigator.getDiffIndex()).build(differences);
 			// TODO
@@ -59,7 +59,7 @@ public class FetchAction extends Action implements INavigationAction {
 			// TODO apply merge results for conflicts
 			client.fetch();
 			DiffIndexer indexer = new DiffIndexer(index);
-			indexer.addToIndex(extractNewIdentifiers(differences));
+			indexer.addToIndex(extractNew(differences));
 			// TODO apply merged data to index
 			RepositoryNavigator.refresh();
 			Navigator.refresh();
@@ -70,13 +70,13 @@ public class FetchAction extends Action implements INavigationAction {
 		}
 	}
 
-	private List<DatasetIdentifier> extractNewIdentifiers(
+	private List<DatasetDescriptor> extractNew(
 			List<DiffResult> results) {
-		List<DatasetIdentifier> identifiers = new ArrayList<>();
+		List<DatasetDescriptor> descriptors = new ArrayList<>();
 		for (DiffResult result : results)
 			if (result.getType() == DiffResponse.ADD_TO_LOCAL)
-				identifiers.add(result.getIdentifier());
-		return identifiers;
+				descriptors.add(result.getDescriptor());
+		return descriptors;
 	}
 
 	private void showNoChangesBox() {
@@ -86,15 +86,15 @@ public class FetchAction extends Action implements INavigationAction {
 	private List<DiffResult> createDifferences(DiffIndex index,
 			List<FetchRequestData> remotes) {
 		List<DiffResult> differences = new ArrayList<>();
-		for (FetchRequestData identifier : remotes) {
-			Diff local = index.get(identifier.getRefId());
-			if (identifier.isDeleted() && local == null)
+		for (FetchRequestData descriptor : remotes) {
+			Diff local = index.get(descriptor.getRefId());
+			if (descriptor.isDeleted() && local == null)
 				continue;
 			if (local == null) {
-				differences.add(new DiffResult(identifier));
+				differences.add(new DiffResult(descriptor));
 				continue;
 			}
-			differences.add(new DiffResult(identifier, local));
+			differences.add(new DiffResult(descriptor, local));
 		}
 		return differences;
 	}

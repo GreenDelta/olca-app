@@ -19,7 +19,7 @@ import org.openlca.app.viewers.AbstractViewer;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 
-import com.greendelta.cloud.model.data.DatasetIdentifier;
+import com.greendelta.cloud.model.data.DatasetDescriptor;
 
 public class DiffTreeViewer extends AbstractViewer<Node, TreeViewer> {
 
@@ -108,13 +108,13 @@ public class DiffTreeViewer extends AbstractViewer<Node, TreeViewer> {
 		}
 
 		private Image getImage(DiffResult diff) {
-			DatasetIdentifier identifier = diff.getIdentifier();
+			DatasetDescriptor descriptor = diff.getDescriptor();
 			ImageType image = null;
-			if (identifier.getType() == ModelType.CATEGORY)
-				image = Images.getImageType(dummyCategory(identifier
+			if (descriptor.getType() == ModelType.CATEGORY)
+				image = Images.getImageType(dummyCategory(descriptor
 						.getCategoryType()));
 			else
-				image = Images.getImageType(identifier.getType());
+				image = Images.getImageType(descriptor.getType());
 			ImageType overlay = getOverlay(diff.getType());
 			if (overlay == null)
 				return ImageManager.getImage(image);

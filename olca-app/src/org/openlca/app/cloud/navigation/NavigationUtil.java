@@ -15,7 +15,7 @@ import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.CategoryDescriptor;
 import org.openlca.core.model.descriptors.Descriptors;
 
-import com.greendelta.cloud.model.data.DatasetIdentifier;
+import com.greendelta.cloud.model.data.DatasetDescriptor;
 
 public class NavigationUtil {
 
@@ -69,7 +69,7 @@ public class NavigationUtil {
 		return findElement(root, category.getCategoryType(), 0l);
 	}
 
-	public static DatasetIdentifier toIdentifier(INavigationElement<?> element) {
+	public static DatasetDescriptor toDescriptor(INavigationElement<?> element) {
 		CategorizedDescriptor descriptor = null;
 		if (element instanceof CategoryElement) {
 			descriptor = Descriptors.toDescriptor(((CategoryElement) element)
@@ -81,8 +81,8 @@ public class NavigationUtil {
 		Category category = null;
 		if (element.getParent() instanceof CategoryElement)
 			category = ((CategoryElement) element.getParent()).getContent();
-		return CloudUtil.toIdentifier(descriptor,
+		return CloudUtil.toDescriptor(descriptor,
 				Descriptors.toDescriptor(category));
 	}
-	
+
 }
