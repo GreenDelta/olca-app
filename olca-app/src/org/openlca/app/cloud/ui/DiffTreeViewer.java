@@ -1,6 +1,10 @@
 package org.openlca.app.cloud.ui;
 
+import java.util.function.Function;
+
+import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
@@ -19,12 +23,25 @@ import org.openlca.app.viewers.AbstractViewer;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 
+import com.google.gson.JsonObject;
 import com.greendelta.cloud.model.data.DatasetDescriptor;
-
+	
 public class DiffTreeViewer extends AbstractViewer<Node, TreeViewer> {
 
-	public DiffTreeViewer(Composite parent) {
+	private Function<DiffResult, JsonObject> getLocalJson;
+	private Function<DiffResult, JsonObject> getRemoteJson;
+
+	public DiffTreeViewer(Composite parent,
+			Function<DiffResult, JsonObject> getJson) {
+		this(parent, getJson, getJson);
+	}
+
+	public DiffTreeViewer(Composite parent,
+			Function<DiffResult, JsonObject> getLocalJson,
+			Function<DiffResult, JsonObject> getRemoteJson) {
 		super(parent);
+		this.getLocalJson = getLocalJson;
+		this.getRemoteJson = getRemoteJson;
 	}
 
 	@Override
@@ -32,9 +49,28 @@ public class DiffTreeViewer extends AbstractViewer<Node, TreeViewer> {
 		TreeViewer viewer = new TreeViewer(parent, SWT.BORDER);
 		viewer.setContentProvider(new ContentProvider());
 		viewer.setLabelProvider(getLabelProvider());
+		viewer.addDoubleClickListener(this::onDoubleClick);
 		Tree tree = viewer.getTree();
 		UI.gridData(tree, true, true);
 		return viewer;
+	}
+
+	private void onDoubleClick(DoubleClickEvent event) {
+		if (event.getSelection().isEmpty())
+			return;
+		if (!(event.getSelection() instanceof IStructuredSelection))
+			return;
+		IStructuredSelection selection = (IStructuredSelection) event
+				.getSelection();
+		if (selection.size() > 1)
+			return;
+		Node selected = (Node) selection.getFirstElement();
+		if (!(selected.getContent() instanceof DiffResult))
+			return;
+		DiffResult result = (DiffResult) selected.getContent();
+		JsonObject local = getLocalJson.apply(result);
+		JsonObject remote = getRemoteJson.apply(result);
+		new DiffEditorDialog(local, remote).open();
 	}
 
 	@Override

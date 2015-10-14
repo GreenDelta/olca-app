@@ -6,6 +6,8 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.openlca.app.App;
+import org.openlca.app.cloud.CloudUtil;
+import org.openlca.app.cloud.CloudUtil.JsonLoader;
 import org.openlca.app.cloud.index.Diff;
 import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.cloud.index.DiffIndexer;
@@ -93,7 +95,9 @@ public class FetchAction extends Action implements INavigationAction {
 		private void showDifferences() {
 			if (error != null)
 				return;
-			DiffDialog dialog = new DiffDialog(root);
+			JsonLoader loader = CloudUtil.getJsonLoader(client);
+			DiffDialog dialog = new DiffDialog(root, loader::getLocalJson,
+					loader::getRemoteJson);
 			if (dialog.open() != IDialogConstants.OK_ID)
 				return;
 			App.runWithProgress("#Fetching data", this::fetchData);

@@ -1,6 +1,7 @@
 package org.openlca.app.cloud.ui;
 
 import java.util.Collections;
+import java.util.function.Function;
 
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridLayout;
@@ -12,14 +13,26 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.cloud.ui.DiffNodeBuilder.Node;
 import org.openlca.app.util.UI;
 
+import com.google.gson.JsonObject;
+
 public class DiffDialog extends FormDialog {
 
 	private Node rootNode;
 	private DiffTreeViewer viewer;
+	private Function<DiffResult, JsonObject> getLocalJson;
+	private Function<DiffResult, JsonObject> getRemoteJson;
 
-	public DiffDialog(Node rootNode) {
+	public DiffDialog(Node rootNode, Function<DiffResult, JsonObject> getJson) {
+		this(rootNode, getJson, getJson);
+	}
+
+	public DiffDialog(Node rootNode,
+			Function<DiffResult, JsonObject> getLocalJson,
+			Function<DiffResult, JsonObject> getRemoteJson) {
 		super(UI.shell());
 		this.rootNode = rootNode;
+		this.getLocalJson = getLocalJson;
+		this.getRemoteJson = getRemoteJson;
 		setBlockOnOpen(true);
 	}
 
@@ -36,7 +49,7 @@ public class DiffDialog extends FormDialog {
 		body.setLayout(new GridLayout());
 		toolkit.paintBordersFor(body);
 		UI.gridData(body, true, true);
-		viewer = new DiffTreeViewer(body);
+		viewer = new DiffTreeViewer(body, getLocalJson, getRemoteJson);
 		form.reflow(true);
 		viewer.setInput(Collections.singletonList(rootNode));
 	}

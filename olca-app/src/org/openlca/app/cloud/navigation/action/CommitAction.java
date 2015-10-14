@@ -89,7 +89,7 @@ public class CommitAction extends Action implements INavigationAction {
 		private void openCommitDialog() {
 			if (!canContinue())
 				return;
-			CommitDialog dialog = new CommitDialog(changes);
+			CommitDialog dialog = new CommitDialog(changes, client);
 			dialog.setBlockOnOpen(true);
 			if (dialog.open() != IDialogConstants.OK_ID)
 				return;

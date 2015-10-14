@@ -15,21 +15,28 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.cloud.CloudUtil;
+import org.openlca.app.cloud.CloudUtil.JsonLoader;
 import org.openlca.app.cloud.navigation.RepositoryNavigator;
 import org.openlca.app.cloud.ui.DiffNodeBuilder.Node;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.UI;
+
+import com.greendelta.cloud.api.RepositoryClient;
 
 public class CommitDialog extends FormDialog {
 
 	private final List<DiffResult> changes;
 	private String message;
 	private DiffTreeViewer viewer;
+	private RepositoryClient client;
 
-	public CommitDialog(List<DiffResult> changes) {
+	public CommitDialog(List<DiffResult> changes, RepositoryClient client) {
 		super(UI.shell());
 		this.changes = changes;
-		setBlockOnOpen(true);	}
+		this.client = client;
+		setBlockOnOpen(true);
+	}
 
 	@Override
 	protected Point getInitialSize() {
@@ -72,11 +79,13 @@ public class CommitDialog extends FormDialog {
 	private void createModelViewer(Composite parent, FormToolkit toolkit) {
 		Section section = UI.section(parent, toolkit, "#Files");
 		UI.gridData(section, true, true);
-		Composite client = toolkit.createComposite(section);
-		UI.gridData(client, true, true);
-		UI.gridLayout(client, 1);
-		section.setClient(client);
-		viewer = new DiffTreeViewer(client);
+		Composite composite = toolkit.createComposite(section);
+		UI.gridData(composite, true, true);
+		UI.gridLayout(composite, 1);
+		section.setClient(composite);
+		JsonLoader loader = CloudUtil.getJsonLoader(client);
+		viewer = new DiffTreeViewer(composite, loader::getLocalJson,
+				loader::getRemoteJson);
 	}
 
 	@Override
