@@ -103,10 +103,10 @@ public class SankeyDiagram extends GraphicalEditor implements
 		ProcessNode node = new ProcessNode(process);
 		long processId = process.getId();
 		node.setSingleContribution(sankeyResult
-				.getSingleContribution(processId));
-		node.setSingleResult(sankeyResult.getSingleResult(processId));
-		node.setTotalContribution(sankeyResult.getTotalContribution(processId));
-		node.setTotalResult(sankeyResult.getTotalResult(processId));
+				.getDirectContribution(processId));
+		node.setSingleResult(sankeyResult.getDirectResult(processId));
+		node.setTotalContribution(sankeyResult.getUpstreamContribution(processId));
+		node.setTotalResult(sankeyResult.getUpstreamResult(processId));
 		createdProcesses.put(process.getId(), node);
 		return node;
 	}
@@ -262,7 +262,7 @@ public class SankeyDiagram extends GraphicalEditor implements
 	}
 
 	public double getProductSystemResult() {
-		return sankeyResult.getTotalResult(productSystem.getReferenceProcess()
+		return sankeyResult.getUpstreamResult(productSystem.getReferenceProcess()
 				.getId());
 	}
 
