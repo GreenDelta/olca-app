@@ -7,13 +7,15 @@ import org.openlca.app.db.Database;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.core.database.IDatabase;
 
-import com.greendelta.cloud.api.RepositoryConfig;
+import com.greendelta.cloud.api.RepositoryClient;
 
 public class NavigationRoot implements INavigationElement<NavigationRoot> {
 
 	private List<INavigationElement<?>> children;
+	private RepositoryClient client;
 
 	public NavigationRoot() {
+
 	}
 
 	@Override
@@ -27,8 +29,7 @@ public class NavigationRoot implements INavigationElement<NavigationRoot> {
 			return children;
 		IDatabase database = Database.get();
 		if (database != null)
-			children = Collections.singletonList(
-					new RepositoryElement(RepositoryConfig.loadFor(database)));
+			children = Collections.singletonList(new RepositoryElement(client));
 		else
 			children = Collections.emptyList();
 		return children;
@@ -37,6 +38,10 @@ public class NavigationRoot implements INavigationElement<NavigationRoot> {
 	@Override
 	public NavigationRoot getContent() {
 		return this;
+	}
+
+	public void setClient(RepositoryClient client) {
+		this.client = client;
 	}
 
 	@Override

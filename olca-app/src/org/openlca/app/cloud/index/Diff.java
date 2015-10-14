@@ -4,18 +4,18 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.greendelta.cloud.model.data.DatasetIdentifier;
+import com.greendelta.cloud.model.data.DatasetDescriptor;
 
 public class Diff implements Serializable {
 
 	private static final long serialVersionUID = 252758475629265830L;
-	public DatasetIdentifier identifier;
-	public DatasetIdentifier changed;
+	public DatasetDescriptor descriptor;
+	public DatasetDescriptor changed;
 	public DiffType type;
 	Set<String> changedChildren = new HashSet<>();
 
-	Diff(DatasetIdentifier identifier, DiffType type) {
-		this.identifier = identifier;
+	Diff(DatasetDescriptor descriptor, DiffType type) {
+		this.descriptor = descriptor;
 		this.type = type;
 	}
 
@@ -27,10 +27,10 @@ public class Diff implements Serializable {
 		return !changedChildren.isEmpty();
 	}
 
-	public DatasetIdentifier getIdentifier() {
+	public DatasetDescriptor getDescriptor() {
 		if (changed != null)
 			return changed;
-		return identifier;
+		return descriptor;
 	}
 
 	@Override
@@ -38,8 +38,8 @@ public class Diff implements Serializable {
 		if (!(obj instanceof Diff))
 			return false;
 		Diff diff = (Diff) obj;
-		return getIdentifier().getRefId().equals(
-				diff.getIdentifier().getRefId());
+		return getDescriptor().getRefId().equals(
+				diff.getDescriptor().getRefId());
 	}
 
 }

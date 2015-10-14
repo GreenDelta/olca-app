@@ -12,7 +12,7 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 
-import com.greendelta.cloud.model.data.DatasetIdentifier;
+import com.greendelta.cloud.model.data.DatasetDescriptor;
 
 public class DiffNodeBuilder {
 
@@ -30,17 +30,17 @@ public class DiffNodeBuilder {
 
 	public Node build(List<DiffResult> diffs) {
 		for (DiffResult result : diffs)
-			this.diffs.put(result.getIdentifier().getRefId(), result);
+			this.diffs.put(result.getDescriptor().getRefId(), result);
 		nodes.clear();
 		Node root = new Node(null, database);
 		nodes.put("", root);
 		for (DiffResult result : diffs) {
-			if (nodes.containsKey(result.getIdentifier().getRefId()))
+			if (nodes.containsKey(result.getDescriptor().getRefId()))
 				continue;
 			Node parent = getOrCreateParentNode(result);
 			Node node = new Node(parent, result);
 			parent.getChildren().add(node);
-			nodes.put(result.getIdentifier().getRefId(), node);
+			nodes.put(result.getDescriptor().getRefId(), node);
 		}
 		return root;
 	}
@@ -48,14 +48,14 @@ public class DiffNodeBuilder {
 	private Node getOrCreateParentNode(DiffResult result) {
 		if (result.remote != null)
 			return getOrCreateParentNode(result.remote);
-		return getOrCreateParentNode(result.local.getIdentifier());
+		return getOrCreateParentNode(result.local.getDescriptor());
 	}
 
-	private Node getOrCreateParentNode(DatasetIdentifier identifier) {
-		String parentId = identifier.getCategoryRefId();
-		ModelType categoryType = identifier.getType();
+	private Node getOrCreateParentNode(DatasetDescriptor descriptor) {
+		String parentId = descriptor.getCategoryRefId();
+		ModelType categoryType = descriptor.getType();
 		if (categoryType == ModelType.CATEGORY)
-			categoryType = identifier.getCategoryType();
+			categoryType = descriptor.getCategoryType();
 		if (parentId == null)
 			return getOrCreateModelTypeNode(categoryType);
 		Node categoryNode = nodes.get(parentId);
@@ -69,7 +69,7 @@ public class DiffNodeBuilder {
 	}
 
 	private Node createNodeFromCategory(Category category) {
-		Node parent = getOrCreateParentNode(CloudUtil.toIdentifier(category));
+		Node parent = getOrCreateParentNode(CloudUtil.toDescriptor(category));
 		DiffResult result = new DiffResult(index.get(category.getRefId()));
 		Node node = new Node(parent, result);
 		parent.getChildren().add(node);
@@ -78,10 +78,10 @@ public class DiffNodeBuilder {
 	}
 
 	private Node createNodeFromDiff(DiffResult result) {
-		Node parent = getOrCreateParentNode(result.getIdentifier());
+		Node parent = getOrCreateParentNode(result.getDescriptor());
 		Node node = new Node(parent, result);
 		parent.getChildren().add(node);
-		nodes.put(result.getIdentifier().getRefId(), node);
+		nodes.put(result.getDescriptor().getRefId(), node);
 		return node;
 	}
 

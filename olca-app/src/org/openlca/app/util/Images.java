@@ -62,6 +62,13 @@ public class Images {
 		return imageType.get();
 	}
 
+	public static Image getCategoryIcon(ModelType type) {
+		ImageType imageType = getCategoryImageType(type);
+		if (imageType == null)
+			return null;
+		return imageType.get();
+	}
+
 	public static ImageDescriptor getIconDescriptor(RootEntity entity) {
 		return getIconDescriptor(getType(entity));
 	}
@@ -141,7 +148,10 @@ public class Images {
 	public static ImageType getImageType(Category category) {
 		if (category == null)
 			return null;
-		ModelType modelType = category.getModelType();
+		return getCategoryImageType(category.getModelType());
+	}
+
+	public static ImageType getCategoryImageType(ModelType modelType) {
 		if (modelType == null)
 			return null;
 		switch (modelType) {

@@ -1,7 +1,5 @@
 package org.openlca.app.cloud.navigation;
 
-import java.io.File;
-
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbench;
@@ -15,18 +13,20 @@ import org.openlca.app.App;
 import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.cloud.index.DiffIndexer;
+import org.openlca.app.db.Database;
 import org.openlca.app.events.DatabaseEvent;
 import org.openlca.app.events.ModelEvent;
 
 import com.google.common.eventbus.Subscribe;
+import com.greendelta.cloud.api.RepositoryClient;
 import com.greendelta.cloud.api.RepositoryConfig;
-import com.greendelta.cloud.model.data.DatasetIdentifier;
+import com.greendelta.cloud.model.data.DatasetDescriptor;
 
 public class RepositoryNavigator extends CommonNavigator {
 
 	public static String ID = "views.repository.navigation";
 	private NavigationRoot root;
-	private RepositoryConfig config;
+	private RepositoryClient client;
 	private DiffIndex index;
 
 	@Override
@@ -97,12 +97,12 @@ public class RepositoryNavigator extends CommonNavigator {
 		return root;
 	}
 
-	public static RepositoryConfig getConfig() {
+	public static RepositoryClient getClient() {
 		RepositoryNavigator instance = getInstance();
 		if (instance == null)
 			return null;
-		if (instance.config != null)
-			return instance.config;
+		if (instance.client != null)
+			return instance.client;
 		NavigationRoot root = instance.getRoot();
 		if (root == null)
 			return null;
@@ -112,7 +112,7 @@ public class RepositoryNavigator extends CommonNavigator {
 			return null;
 		RepositoryElement element = (RepositoryElement) root.getChildren().get(
 				0);
-		return instance.config = element.getContent();
+		return instance.client = element.getContent();
 	}
 
 	public static DiffIndex getDiffIndex() {
@@ -121,30 +121,29 @@ public class RepositoryNavigator extends CommonNavigator {
 			return null;
 		if (instance.index != null)
 			return instance.index;
-		RepositoryConfig config = getConfig();
-		if (config == null)
+		RepositoryClient client = getClient();
+		if (client == null)
 			return null;
-		instance.index = new DiffIndex(new File(config.getDatabase()
-				.getFileStorageLocation(), "cloud/" + config.getRepositoryId()));
+		instance.index = DiffIndex.getFor(client);
 		return instance.index;
 	}
 
 	@Subscribe
 	public void handleModelChange(ModelEvent event) {
-		if (getConfig() == null)
+		if (getClient() == null)
 			return;
 		DiffIndexer indexHelper = new DiffIndexer(index);
-		DatasetIdentifier identifier = CloudUtil.toIdentifier(event.model,
+		DatasetDescriptor descriptor = CloudUtil.toDescriptor(event.model,
 				event.category);
 		switch (event.type) {
 		case CREATE:
-			indexHelper.indexCreate(identifier);
+			indexHelper.indexCreate(descriptor);
 			break;
 		case MODIFY:
-			indexHelper.indexModify(identifier);
+			indexHelper.indexModify(descriptor);
 			break;
 		case DELETE:
-			indexHelper.indexDelete(identifier);
+			indexHelper.indexDelete(descriptor);
 			break;
 		}
 		refresh();
@@ -157,6 +156,11 @@ public class RepositoryNavigator extends CommonNavigator {
 			return;
 		if (event.type == DatabaseEvent.Type.CLOSE)
 			disconnect();
+		else if (event.type == DatabaseEvent.Type.ACTIVATE) {
+			RepositoryConfig config = RepositoryConfig.loadFor(Database.get());
+			if (config != null)
+				root.setClient(new RepositoryClient(config));
+		}
 		refresh();
 	}
 
@@ -165,7 +169,8 @@ public class RepositoryNavigator extends CommonNavigator {
 		if (instance.index != null)
 			instance.index.close();
 		instance.index = null;
-		instance.config = null;
+		instance.client = null;
+		instance.root.setClient(null);
 	}
 
 }

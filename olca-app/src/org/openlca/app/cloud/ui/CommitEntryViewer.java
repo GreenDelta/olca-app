@@ -1,20 +1,50 @@
 package org.openlca.app.cloud.ui;
 
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.List;
 
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.openlca.app.viewers.table.AbstractTableViewer;
+import org.eclipse.swt.widgets.Tree;
+import org.openlca.app.rcp.ImageManager;
+import org.openlca.app.rcp.ImageType;
+import org.openlca.app.util.Images;
+import org.openlca.app.util.Labels;
+import org.openlca.app.util.UI;
+import org.openlca.app.viewers.AbstractViewer;
+import org.openlca.core.model.ModelType;
+import org.openlca.util.Strings;
 
+import com.greendelta.cloud.api.RepositoryClient;
 import com.greendelta.cloud.model.data.CommitDescriptor;
+import com.greendelta.cloud.model.data.FetchRequestData;
+import com.greendelta.cloud.util.WebRequests.WebRequestException;
 
-class CommitEntryViewer extends AbstractTableViewer<CommitDescriptor> {
+class CommitEntryViewer extends AbstractViewer<CommitDescriptor, TreeViewer> {
 
-	public CommitEntryViewer(Composite parent) {
+	private RepositoryClient client;
+
+	public CommitEntryViewer(Composite parent, RepositoryClient client) {
 		super(parent);
+		this.client = client;
+	}
+
+	@Override
+	protected TreeViewer createViewer(Composite parent) {
+		TreeViewer viewer = new TreeViewer(parent, SWT.BORDER);
+		viewer.setContentProvider(new ContentProvider());
+		viewer.setLabelProvider(getLabelProvider());
+		Tree tree = viewer.getTree();
+		UI.gridData(tree, true, true);
+		return viewer;
 	}
 
 	@Override
@@ -22,19 +52,94 @@ class CommitEntryViewer extends AbstractTableViewer<CommitDescriptor> {
 		return new LabelProvider();
 	}
 
+	private class ContentProvider implements ITreeContentProvider {
+
+		@Override
+		public void dispose() {
+
+		}
+
+		@Override
+		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+
+		}
+
+		@Override
+		public Object[] getElements(Object inputElement) {
+			return (Object[]) inputElement;
+		}
+
+		@Override
+		public Object[] getChildren(Object parentElement) {
+			if (!(parentElement instanceof CommitDescriptor))
+				return null;
+			CommitDescriptor commit = (CommitDescriptor) parentElement;
+			try {
+				List<FetchRequestData> references = client.getReferences(commit
+						.getId());
+				Collections.sort(references, (d1, d2) -> {
+					return Strings.compare(getFileReferenceText(d1)
+							.toLowerCase(), getFileReferenceText(d2)
+							.toLowerCase());
+				});
+				return references.toArray();
+			} catch (WebRequestException e) {
+				// TODO handle errors
+				e.printStackTrace();
+			}
+			return null;
+		}
+
+		@Override
+		public Object getParent(Object element) {
+			return null;
+		}
+
+		@Override
+		public boolean hasChildren(Object element) {
+			if (element instanceof CommitDescriptor)
+				return true;
+			return false;
+		}
+
+	}
+
 	private class LabelProvider extends BaseLabelProvider implements
 			ILabelProvider {
 
 		@Override
 		public Image getImage(Object element) {
+			if (element instanceof CommitDescriptor)
+				return ImageManager.getImage(ImageType.COMMIT_ICON);
+			if (element instanceof FetchRequestData) {
+				FetchRequestData data = (FetchRequestData) element;
+				ImageType imageType = null;
+				if (data.getType() == ModelType.CATEGORY)
+					imageType = Images.getCategoryImageType(data
+							.getCategoryType());
+				else
+					imageType = Images.getImageType(data.getType());
+				if (data.isAdded())
+					return ImageManager.getImageWithOverlay(imageType,
+							ImageType.OVERLAY_ADDED);
+				else if (data.isDeleted())
+					return ImageManager.getImageWithOverlay(imageType,
+							ImageType.OVERLAY_DELETED);
+				return ImageManager.getImage(imageType);
+			}
 			return null;
 		}
 
 		@Override
 		public String getText(Object element) {
-			if (!(element instanceof CommitDescriptor))
-				return null;
-			CommitDescriptor descriptor = (CommitDescriptor) element;
+			if (element instanceof CommitDescriptor)
+				return getCommitText((CommitDescriptor) element);
+			if (element instanceof FetchRequestData)
+				return getFileReferenceText((FetchRequestData) element);
+			return null;
+		}
+
+		private String getCommitText(CommitDescriptor descriptor) {
 			String text = descriptor.getUser() + ": ";
 			text += descriptor.getMessage() + " (";
 			text += getTime(descriptor.getTimestamp()) + ")";
@@ -88,4 +193,8 @@ class CommitEntryViewer extends AbstractTableViewer<CommitDescriptor> {
 		}
 	}
 
+	private String getFileReferenceText(FetchRequestData reference) {
+		String modelType = Labels.modelType(reference.getCategoryType());
+		return modelType + "/" + reference.getFullPath();
+	}
 }

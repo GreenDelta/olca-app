@@ -14,7 +14,7 @@ import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Images;
 import org.openlca.core.database.IDatabase;
 
-import com.greendelta.cloud.api.RepositoryConfig;
+import com.greendelta.cloud.api.RepositoryClient;
 
 public class NavigationLabelProvider extends
 		org.openlca.app.navigation.NavigationLabelProvider {
@@ -28,7 +28,7 @@ public class NavigationLabelProvider extends
 		DiffIndexer indexer = new DiffIndexer(
 				RepositoryNavigator.getDiffIndex());
 		Diff diff = indexer.getDiff(NavigationUtil
-				.toIdentifier((INavigationElement<?>) element));
+				.toDescriptor((INavigationElement<?>) element));
 		if (diff.type != DiffType.NEW)
 			return super.getImage(element);
 		ImageType imageType = null;
@@ -52,12 +52,12 @@ public class NavigationLabelProvider extends
 		String baseText = getBaseText(element);
 		if (element instanceof NavigationRoot)
 			return baseText;
-		RepositoryConfig config = RepositoryNavigator.getConfig();
-		if (config == null)
+		RepositoryClient client = RepositoryNavigator.getClient();
+		if (client == null)
 			return baseText;
 		DiffIndexer indexer = new DiffIndexer(
 				RepositoryNavigator.getDiffIndex());
-		Diff diff = indexer.getDiff(NavigationUtil.toIdentifier(element));
+		Diff diff = indexer.getDiff(NavigationUtil.toDescriptor(element));
 		if (element instanceof ModelElement)
 			if (hasChanged(element, diff, indexer) && !isNew(element, diff))
 				return "> " + baseText;
@@ -82,7 +82,7 @@ public class NavigationLabelProvider extends
 				|| element instanceof ModelTypeElement) {
 			for (INavigationElement<?> child : element.getChildren()) {
 				Diff childDiff = indexer.getDiff(NavigationUtil
-						.toIdentifier(child));
+						.toDescriptor(child));
 				if (hasChanged(child, childDiff, indexer))
 					return true;
 			}
@@ -97,17 +97,18 @@ public class NavigationLabelProvider extends
 		return super.getText(element);
 	}
 
-	private Image getImage(RepositoryConfig config) {
-		if (config == null)
+	private Image getImage(RepositoryClient client) {
+		if (client == null)
 			return ImageType.DB_ICON_DIS.get();
 		return ImageType.DB_ICON.get();
 	}
 
-	private String getText(RepositoryConfig config) {
+	private String getText(RepositoryClient client) {
 		IDatabase database = Database.get();
-		if (config == null)
+		if (client == null)
 			return database.getName() + " [Not connected]";
-		return "#" + database.getName() + " [" + config.getServerUrl() + " "
-				+ config.getRepositoryId() + "]";
+		return "#" + database.getName() + " ["
+				+ client.getConfig().getServerUrl() + " "
+				+ client.getConfig().getRepositoryId() + "]";
 	}
 }

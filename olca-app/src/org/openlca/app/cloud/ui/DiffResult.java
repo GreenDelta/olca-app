@@ -3,7 +3,7 @@ package org.openlca.app.cloud.ui;
 import org.openlca.app.cloud.index.Diff;
 import org.openlca.app.cloud.index.DiffType;
 
-import com.greendelta.cloud.model.data.DatasetIdentifier;
+import com.greendelta.cloud.model.data.DatasetDescriptor;
 import com.greendelta.cloud.model.data.FetchRequestData;
 
 public class DiffResult {
@@ -24,9 +24,9 @@ public class DiffResult {
 		this.local = local;
 	}
 
-	public DatasetIdentifier getIdentifier() {
+	public DatasetDescriptor getDescriptor() {
 		if (local != null)
-			return local.getIdentifier();
+			return local.getDescriptor();
 		return remote;
 	}
 
@@ -77,7 +77,7 @@ public class DiffResult {
 
 	public String getDisplayName() {
 		if (local != null)
-			return local.getIdentifier().getName();
+			return local.getDescriptor().getName();
 		if (remote != null)
 			return remote.getName();
 		return null;
@@ -87,8 +87,8 @@ public class DiffResult {
 	public String toString() {
 		String l = "null";
 		if (local != null) {
-			l = "type: " + local.getIdentifier().getType();
-			l += ", name: " + local.getIdentifier().getName();
+			l = "type: " + local.getDescriptor().getType();
+			l += ", name: " + local.getDescriptor().getName();
 		}
 		String text = "model: {" + l + "}, diff: {" + local.type
 				+ "}, result: {" + getType() + "}";

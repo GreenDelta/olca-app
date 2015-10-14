@@ -334,7 +334,9 @@ public enum ImageType {
 
 	OVERLAY_MODIFY_IN_REMOTE("repo/modify_remote.png"),
 
-	OVERLAY_CONFLICT("repo/conflict.png");	
+	OVERLAY_CONFLICT("repo/conflict.png"),
+	
+	COMMIT_ICON("repo/commit.png");
 	
 	private final String fileName;
 

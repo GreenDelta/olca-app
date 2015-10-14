@@ -9,6 +9,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
+import org.openlca.app.App;
+import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.cloud.index.DiffIndexer;
 import org.openlca.app.cloud.index.DiffType;
 import org.openlca.app.cloud.navigation.NavigationRoot;
@@ -25,7 +27,7 @@ import org.openlca.app.util.UI;
 
 import com.greendelta.cloud.api.RepositoryClient;
 import com.greendelta.cloud.api.RepositoryConfig;
-import com.greendelta.cloud.model.data.DatasetIdentifier;
+import com.greendelta.cloud.model.data.DatasetDescriptor;
 import com.greendelta.cloud.util.WebRequests.WebRequestException;
 
 public class ConnectAction extends Action implements INavigationAction {
@@ -41,33 +43,40 @@ public class ConnectAction extends Action implements INavigationAction {
 		if (dialog.open() != Dialog.OK)
 			return;
 		RepositoryConfig config = dialog.createConfig();
+		NavigationRoot root = RepositoryNavigator.getNavigationRoot();
+		App.run("#Connecting to repository " + config.getServerUrl() + " "
+				+ config.getRepositoryId(), () -> connect(config, root),
+				RepositoryNavigator::refresh);
+	}
+
+	private void connect(RepositoryConfig config, NavigationRoot root) {
 		RepositoryClient client = new RepositoryClient(config);
 		try {
 			// only fetch to check if can connect
 			client.requestFetch();
 		} catch (WebRequestException e) {
-			// TODO handle errors
 			Info.showBox(e.getMessage());
 			config.disconnect();
 			return;
 		}
-		NavigationRoot root = RepositoryNavigator.getNavigationRoot();
+		root.setClient(client);
 		root.update();
-		DiffIndexer indexer = new DiffIndexer(
-				RepositoryNavigator.getDiffIndex());
-		indexer.addToIndex(collectIdentifier(root.getChildren().get(0)), DiffType.NEW);
-		RepositoryNavigator.refresh();
+		DiffIndex index = DiffIndex.getFor(client);
+		DiffIndexer indexer = new DiffIndexer(index);
+		indexer.addToIndex(collectDescriptors(root.getChildren().get(0)),
+				DiffType.NEW);
+		index.close();
 	}
 
-	private List<DatasetIdentifier> collectIdentifier(
+	private List<DatasetDescriptor> collectDescriptors(
 			INavigationElement<?> element) {
-		List<DatasetIdentifier> identifier = new ArrayList<>();
+		List<DatasetDescriptor> descriptor = new ArrayList<>();
 		if (element instanceof ModelElement
 				|| element instanceof CategoryElement)
-			identifier.add(NavigationUtil.toIdentifier(element));
+			descriptor.add(NavigationUtil.toDescriptor(element));
 		for (INavigationElement<?> child : element.getChildren())
-			identifier.addAll(collectIdentifier(child));
-		return identifier;
+			descriptor.addAll(collectDescriptors(child));
+		return descriptor;
 	}
 
 	private class InputDialog extends Dialog {
@@ -120,8 +129,8 @@ public class ConnectAction extends Action implements INavigationAction {
 	public boolean accept(INavigationElement<?> element) {
 		if (!(element instanceof RepositoryElement))
 			return false;
-		RepositoryConfig config = ((RepositoryElement) element).getContent();
-		if (config != null)
+		RepositoryClient client = ((RepositoryElement) element).getContent();
+		if (client != null)
 			return false;
 		return true;
 	}

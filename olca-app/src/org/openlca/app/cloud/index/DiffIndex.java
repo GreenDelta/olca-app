@@ -8,7 +8,9 @@ import java.util.Map;
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
 
-import com.greendelta.cloud.model.data.DatasetIdentifier;
+import com.greendelta.cloud.model.data.DatasetDescriptor;
+import com.greendelta.cloud.api.RepositoryClient;
+import com.greendelta.cloud.api.RepositoryConfig;
 
 // NOT SYNCHRONIZED //
 public class DiffIndex {
@@ -17,7 +19,13 @@ public class DiffIndex {
 	private DB db;
 	private Map<String, Diff> map;
 
-	public DiffIndex(File indexDirectory) {
+	public static DiffIndex getFor(RepositoryClient client) {
+		RepositoryConfig config = client.getConfig();
+		return new DiffIndex(new File(config.getDatabase()
+				.getFileStorageLocation(), "cloud/" + config.getRepositoryId()));
+	}
+
+	private DiffIndex(File indexDirectory) {
 		if (!indexDirectory.exists())
 			indexDirectory.mkdirs();
 		file = new File(indexDirectory, "indexfile");
@@ -34,31 +42,31 @@ public class DiffIndex {
 			db.close();
 	}
 
-	void add(DatasetIdentifier identifier) {
-		Diff diff = map.get(identifier.getRefId());
+	void add(DatasetDescriptor descriptor) {
+		Diff diff = map.get(descriptor.getRefId());
 		if (diff != null)
 			return;
-		diff = new Diff(identifier, DiffType.NO_DIFF);
-		map.put(identifier.getRefId(), diff);
+		diff = new Diff(descriptor, DiffType.NO_DIFF);
+		map.put(descriptor.getRefId(), diff);
 	}
 
-	void update(DatasetIdentifier identifier, DiffType newType) {
-		Diff diff = map.get(identifier.getRefId());
+	void update(DatasetDescriptor descriptor, DiffType newType) {
+		Diff diff = map.get(descriptor.getRefId());
 		if (diff.type == DiffType.NEW && newType == DiffType.DELETED) {
 			// user added something and then deleted it again
-			remove(identifier.getRefId());
+			remove(descriptor.getRefId());
 			return;
 		}
 		diff.type = newType;
 		if (newType == DiffType.NO_DIFF) {
 			updateParents(diff, false);
-			diff.identifier = identifier;
+			diff.descriptor = descriptor;
 			diff.changed = null;
 		} else {
-			diff.changed = identifier;
+			diff.changed = descriptor;
 			updateParents(diff, true);
 		}
-		map.put(identifier.getRefId(), diff);
+		map.put(descriptor.getRefId(), diff);
 	}
 
 	public Diff get(String key) {
@@ -81,20 +89,20 @@ public class DiffIndex {
 	private void updateParents(Diff diff, boolean add) {
 		if (diff.changed != null) // case 1)
 			updateParents(diff.changed, add);
-		if (diff.identifier != null) // case 2)
-			updateParents(diff.identifier, add);
+		if (diff.descriptor != null) // case 2)
+			updateParents(diff.descriptor, add);
 	}
 
-	private void updateParents(DatasetIdentifier identifier, boolean add) {
-		String parentId = identifier.getCategoryRefId();
+	private void updateParents(DatasetDescriptor descriptor, boolean add) {
+		String parentId = descriptor.getCategoryRefId();
 		while (parentId != null) {
 			Diff parent = map.get(parentId);
 			if (add)
-				parent.changedChildren.add(identifier.getRefId());
+				parent.changedChildren.add(descriptor.getRefId());
 			else
-				parent.changedChildren.remove(identifier.getRefId());
+				parent.changedChildren.remove(descriptor.getRefId());
 			map.put(parentId, parent);
-			parentId = parent.identifier.getCategoryRefId();
+			parentId = parent.descriptor.getCategoryRefId();
 		}
 	}
 

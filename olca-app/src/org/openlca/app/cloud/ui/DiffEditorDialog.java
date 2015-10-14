@@ -1,7 +1,5 @@
 package org.openlca.app.cloud.ui;
 
-import java.util.List;
-
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridLayout;
@@ -12,49 +10,43 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.util.UI;
 
-import com.greendelta.cloud.api.RepositoryClient;
-import com.greendelta.cloud.model.data.CommitDescriptor;
+import com.google.gson.JsonObject;
 
-public class CommitEntryDialog extends FormDialog {
+public class DiffEditorDialog extends FormDialog {
 
-	private final List<CommitDescriptor> commits;
-	private CommitEntryViewer viewer;
-	private RepositoryClient client;
+	private JsonObject local;
+	private JsonObject remote;
+	private DiffEditor editor;
 
-	public CommitEntryDialog(List<CommitDescriptor> commits,
-			RepositoryClient client) {
+	public DiffEditorDialog(JsonObject local, JsonObject remote) {
 		super(UI.shell());
-		this.commits = commits;
-		this.client = client;
-		setBlockOnOpen(true);
+		this.local = local;
+		this.remote = remote;
 	}
 
 	@Override
 	protected Point getInitialSize() {
-		return new Point(500, 600);
+		return new Point(1000, 600);
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		ScrolledForm form = UI.formHeader(mform, "#Fetched changes");
+		ScrolledForm form = UI.formHeader(mform, "#Diff");
 		FormToolkit toolkit = mform.getToolkit();
 		Composite body = form.getBody();
 		body.setLayout(new GridLayout());
 		toolkit.paintBordersFor(body);
 		UI.gridData(body, true, true);
-		createCommitViewer(body, toolkit);
+		editor = new DiffEditor(body, toolkit);
+		UI.gridData(editor, true, true);
 		form.reflow(true);
-		viewer.setInput(commits);
+		editor.setInput(local, remote);
 	}
 
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
 		createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL,
 				true);
-	}
-
-	private void createCommitViewer(Composite parent, FormToolkit toolkit) {
-		viewer = new CommitEntryViewer(parent, client);
 	}
 
 }
