@@ -27,6 +27,8 @@ public class DiffIndexer {
 
 	public void addToIndex(List<DatasetDescriptor> descriptors,
 			DiffType diffType) {
+		if (descriptors.isEmpty())
+			return;
 		for (DatasetDescriptor descriptor : descriptors)
 			index.add(descriptor);
 		if (diffType != null && diffType != DiffType.NO_DIFF)
@@ -40,6 +42,8 @@ public class DiffIndexer {
 	}
 
 	public void indexCreate(List<DatasetDescriptor> descriptors) {
+		if (descriptors.isEmpty())
+			return;
 		for (DatasetDescriptor descriptor : descriptors)
 			index.add(descriptor);
 		for (DatasetDescriptor descriptor : descriptors)
@@ -61,6 +65,8 @@ public class DiffIndexer {
 
 	public void indexModify(List<DatasetDescriptor> descriptors,
 			boolean forceOverwrite) {
+		if (descriptors.isEmpty())
+			return;
 		boolean updated = false;
 		for (DatasetDescriptor descriptor : descriptors) {
 			DiffType previousType = index.get(descriptor.getRefId()).type;
@@ -78,6 +84,8 @@ public class DiffIndexer {
 	}
 
 	public void indexDelete(List<DatasetDescriptor> descriptors) {
+		if (descriptors.isEmpty())
+			return;
 		for (DatasetDescriptor descriptor : descriptors)
 			index.update(descriptor, DiffType.DELETED);
 		index.commit();
@@ -88,6 +96,8 @@ public class DiffIndexer {
 	}
 
 	public void indexCommit(List<DatasetDescriptor> descriptors) {
+		if (descriptors.isEmpty())
+			return;
 		for (DatasetDescriptor descriptor : descriptors) {
 			DiffType before = index.get(descriptor.getRefId()).type;
 			if (before == DiffType.DELETED)
@@ -103,6 +113,8 @@ public class DiffIndexer {
 	}
 
 	public void indexFetch(List<DatasetDescriptor> descriptors) {
+		if (descriptors.isEmpty())
+			return;
 		for (DatasetDescriptor descriptor : descriptors)
 			index.update(descriptor, DiffType.NO_DIFF);
 		index.commit();

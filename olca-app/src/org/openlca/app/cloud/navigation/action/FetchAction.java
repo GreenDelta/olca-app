@@ -126,7 +126,8 @@ public class FetchAction extends Action implements INavigationAction {
 				toFetch.addAll(modified);
 				toFetch.addAll(added);
 				toFetch.addAll(deleted);
-				client.fetch(toFetch);
+				if (!toFetch.isEmpty())
+					client.fetch(toFetch);
 				DiffIndexer indexer = new DiffIndexer(index);
 				indexer.addToIndex(added);
 				indexer.indexDelete(deleted);
