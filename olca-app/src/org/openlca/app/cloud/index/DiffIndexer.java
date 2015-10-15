@@ -28,19 +28,22 @@ public class DiffIndexer {
 	public void addToIndex(List<DatasetDescriptor> descriptors,
 			DiffType diffType) {
 		for (DatasetDescriptor descriptor : descriptors)
-			_addToIndex(descriptor, diffType);
+			index.add(descriptor);
+		if (diffType != null && diffType != DiffType.NO_DIFF)
+			for (DatasetDescriptor descriptor : descriptors)
+				index.update(descriptor, diffType);
 		index.commit();
 	}
 
-	private void _addToIndex(DatasetDescriptor descriptor, DiffType diffType) {
-		index.add(descriptor);
-		if (diffType != null && diffType != DiffType.NO_DIFF)
-			index.update(descriptor, diffType);
+	public void indexCreate(DatasetDescriptor descriptor) {
+		indexCreate(Collections.singletonList(descriptor));
 	}
 
-	public void indexCreate(DatasetDescriptor descriptor) {
-		index.add(descriptor);
-		index.update(descriptor, DiffType.NEW);
+	public void indexCreate(List<DatasetDescriptor> descriptors) {
+		for (DatasetDescriptor descriptor : descriptors)
+			index.add(descriptor);
+		for (DatasetDescriptor descriptor : descriptors)
+			index.update(descriptor, DiffType.NEW);
 		index.commit();
 	}
 
@@ -49,29 +52,59 @@ public class DiffIndexer {
 	}
 
 	public void indexModify(DatasetDescriptor descriptor, boolean forceOverwrite) {
-		DiffType previousType = index.get(descriptor.getRefId()).type;
-		if (forceOverwrite || previousType != DiffType.NEW) {
-			index.update(descriptor, DiffType.CHANGED);
-			index.commit();
+		indexModify(Collections.singletonList(descriptor), forceOverwrite);
+	}
+
+	public void indexModify(List<DatasetDescriptor> descriptors) {
+		indexModify(descriptors, false);
+	}
+
+	public void indexModify(List<DatasetDescriptor> descriptors,
+			boolean forceOverwrite) {
+		boolean updated = false;
+		for (DatasetDescriptor descriptor : descriptors) {
+			DiffType previousType = index.get(descriptor.getRefId()).type;
+			if (forceOverwrite || previousType != DiffType.NEW) {
+				index.update(descriptor, DiffType.CHANGED);
+				updated = true;
+			}
 		}
+		if (updated)
+			index.commit();
 	}
 
 	public void indexDelete(DatasetDescriptor descriptor) {
-		index.update(descriptor, DiffType.DELETED);
+		indexDelete(Collections.singletonList(descriptor));
+	}
+
+	public void indexDelete(List<DatasetDescriptor> descriptors) {
+		for (DatasetDescriptor descriptor : descriptors)
+			index.update(descriptor, DiffType.DELETED);
 		index.commit();
 	}
 
 	public void indexCommit(DatasetDescriptor descriptor) {
-		DiffType before = index.get(descriptor.getRefId()).type;
-		if (before == DiffType.DELETED) {
-			index.remove(descriptor.getRefId());
-		} else
-			index.update(descriptor, DiffType.NO_DIFF);
+		indexCommit(Collections.singletonList(descriptor));
+	}
+
+	public void indexCommit(List<DatasetDescriptor> descriptors) {
+		for (DatasetDescriptor descriptor : descriptors) {
+			DiffType before = index.get(descriptor.getRefId()).type;
+			if (before == DiffType.DELETED)
+				index.remove(descriptor.getRefId());
+			else
+				index.update(descriptor, DiffType.NO_DIFF);
+		}
 		index.commit();
 	}
 
 	public void indexFetch(DatasetDescriptor descriptor) {
-		index.update(descriptor, DiffType.NO_DIFF);
+		indexFetch(Collections.singletonList(descriptor));
+	}
+
+	public void indexFetch(List<DatasetDescriptor> descriptors) {
+		for (DatasetDescriptor descriptor : descriptors)
+			index.update(descriptor, DiffType.NO_DIFF);
 		index.commit();
 	}
 

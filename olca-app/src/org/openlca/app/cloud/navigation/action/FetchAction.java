@@ -27,6 +27,7 @@ import org.openlca.app.util.Info;
 
 import com.greendelta.cloud.api.RepositoryClient;
 import com.greendelta.cloud.model.data.CommitDescriptor;
+import com.greendelta.cloud.model.data.DatasetDescriptor;
 import com.greendelta.cloud.model.data.FetchRequestData;
 import com.greendelta.cloud.util.WebRequests.WebRequestException;
 
@@ -107,19 +108,26 @@ public class FetchAction extends Action implements INavigationAction {
 
 		private void fetchData() {
 			try {
+				List<DatasetDescriptor> unchanged = new ArrayList<>();
+				List<DatasetDescriptor> modified = new ArrayList<>();
+				List<DatasetDescriptor> added = new ArrayList<>();
+				List<DatasetDescriptor> deleted = new ArrayList<>();
+				for (DiffResult result : differences)
+					if (result.getType() == DiffResponse.NONE)
+						unchanged.add(result.getDescriptor());
+					else if (result.getType() == DiffResponse.MODIFY_IN_LOCAL)
+						modified.add(result.getDescriptor());
+					else if (result.getType() == DiffResponse.ADD_TO_LOCAL)
+						added.add(result.getDescriptor());
+					else if (result.getType() == DiffResponse.DELETE_FROM_LOCAL)
+						deleted.add(result.getDescriptor());
 				// TODO apply merge results for conflicts
 				client.fetch();
 				DiffIndexer indexer = new DiffIndexer(index);
-				for (DiffResult result : differences) {
-					if (result.getType().isOneOf(DiffResponse.NONE,
-							DiffResponse.MODIFY_IN_LOCAL))
-						indexer.indexFetch(result.getDescriptor());
-					else if (result.getType() == DiffResponse.ADD_TO_LOCAL)
-						indexer.addToIndex(result.getDescriptor());
-					else if (result.getType() == DiffResponse.DELETE_FROM_LOCAL)
-						indexer.indexDelete(result.getDescriptor());
-				}
-				// TODO apply fetch to index
+				indexer.addToIndex(added);
+				indexer.indexDelete(deleted);
+				indexer.indexFetch(modified);
+				indexer.indexFetch(unchanged);
 			} catch (WebRequestException e) {
 				error = e;
 			}
