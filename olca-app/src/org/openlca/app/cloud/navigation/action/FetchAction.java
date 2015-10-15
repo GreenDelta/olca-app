@@ -122,7 +122,12 @@ public class FetchAction extends Action implements INavigationAction {
 					else if (result.getType() == DiffResponse.DELETE_FROM_LOCAL)
 						deleted.add(result.getDescriptor());
 				// TODO apply merge results for conflicts
-				client.fetch();
+				List<DatasetDescriptor> toFetch = new ArrayList<>();
+				toFetch.addAll(modified);
+				toFetch.addAll(added);
+				toFetch.addAll(deleted);
+				if (!toFetch.isEmpty())
+					client.fetch(toFetch);
 				DiffIndexer indexer = new DiffIndexer(index);
 				indexer.addToIndex(added);
 				indexer.indexDelete(deleted);

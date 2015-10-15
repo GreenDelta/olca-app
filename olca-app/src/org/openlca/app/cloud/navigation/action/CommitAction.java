@@ -149,7 +149,7 @@ public class CommitAction extends Action implements INavigationAction {
 				CommitInvocation commit) {
 			for (DiffResult change : changes)
 				if (change.getType() == DiffResponse.DELETE_FROM_REMOTE)
-					commit.putDeleted(change.getDescriptor());
+					commit.put(change.getDescriptor(), null);
 				else
 					commit.put(Database.createRootDao(
 							change.getDescriptor().getType()).getForRefId(
