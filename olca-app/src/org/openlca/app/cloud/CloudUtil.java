@@ -1,5 +1,8 @@
 package org.openlca.app.cloud;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.openlca.app.cloud.ui.DiffResult;
 import org.openlca.app.db.Database;
 import org.openlca.core.model.CategorizedEntity;
@@ -19,6 +22,13 @@ import com.greendelta.cloud.util.WebRequests.WebRequestException;
 
 public class CloudUtil {
 
+	public static List<DatasetDescriptor> toDescriptors(List<DiffResult> results) {
+		List<DatasetDescriptor> descriptors = new ArrayList<>();
+		for (DiffResult result : results)
+			descriptors.add(result.getDescriptor());
+		return descriptors;
+	}
+	
 	public static DatasetDescriptor toDescriptor(CategorizedDescriptor entity,
 			CategoryDescriptor category) {
 		DatasetDescriptor descriptor = new DatasetDescriptor();

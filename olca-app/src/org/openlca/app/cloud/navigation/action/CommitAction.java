@@ -6,6 +6,7 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.openlca.app.App;
+import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.cloud.index.Diff;
 import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.cloud.index.DiffIndexer;
@@ -108,8 +109,7 @@ public class CommitAction extends Action implements INavigationAction {
 				putChanges(changes, commit);
 				client.execute(commit);
 				DiffIndexer indexer = new DiffIndexer(index);
-				for (DiffResult result : changes)
-					indexer.indexCommit(result.getDescriptor());
+				indexer.indexCommit(CloudUtil.toDescriptors(changes));
 			} catch (WebRequestException e) {
 				error = e;
 			}
