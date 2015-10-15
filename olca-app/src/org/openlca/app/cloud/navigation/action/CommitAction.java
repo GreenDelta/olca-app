@@ -1,11 +1,7 @@
 package org.openlca.app.cloud.navigation.action;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -24,11 +20,9 @@ import org.openlca.app.db.Database;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.util.Error;
-import org.openlca.core.model.CategorizedEntity;
-import org.openlca.core.model.ModelType;
 
+import com.greendelta.cloud.api.CommitInvocation;
 import com.greendelta.cloud.api.RepositoryClient;
-import com.greendelta.cloud.model.data.DatasetDescriptor;
 import com.greendelta.cloud.util.WebRequests.WebRequestException;
 
 public class CommitAction extends Action implements INavigationAction {
@@ -99,6 +93,7 @@ public class CommitAction extends Action implements INavigationAction {
 			dialog.setBlockOnOpen(true);
 			if (dialog.open() != IDialogConstants.OK_ID)
 				return;
+			message = dialog.getMessage();
 			App.runWithProgress("#Commiting changes", this::commit);
 			afterCommit();
 		}
@@ -108,8 +103,10 @@ public class CommitAction extends Action implements INavigationAction {
 				checkUpToDate(client);
 				if (!canContinue())
 					return;
-				client.commit(message, loadEntities(changes),
-						filterDeleted(changes));
+				CommitInvocation commit = client.createCommitInvocation();
+				commit.setCommitMessage(message);
+				putChanges(changes, commit);
+				client.execute(commit);
 				DiffIndexer indexer = new DiffIndexer(index);
 				for (DiffResult result : changes)
 					indexer.indexCommit(result.getDescriptor());
@@ -148,31 +145,17 @@ public class CommitAction extends Action implements INavigationAction {
 			return true;
 		}
 
-		private List<CategorizedEntity> loadEntities(List<DiffResult> changes) {
-			Map<ModelType, Set<String>> map = new HashMap<>();
-			for (DiffResult change : changes) {
-				if (change.getType() == DiffResponse.DELETE_FROM_REMOTE)
-					continue;
-				Set<String> sublist = map.get(change.getDescriptor().getType());
-				if (sublist == null)
-					map.put(change.getDescriptor().getType(),
-							sublist = new HashSet<>());
-				sublist.add(change.getDescriptor().getRefId());
-			}
-			List<CategorizedEntity> entities = new ArrayList<>();
-			for (ModelType type : map.keySet())
-				entities.addAll(Database.createRootDao(type).getForRefIds(
-						map.get(type)));
-			return entities;
-		}
-
-		private List<DatasetDescriptor> filterDeleted(List<DiffResult> changes) {
-			List<DatasetDescriptor> deleted = new ArrayList<>();
+		private void putChanges(List<DiffResult> changes,
+				CommitInvocation commit) {
 			for (DiffResult change : changes)
 				if (change.getType() == DiffResponse.DELETE_FROM_REMOTE)
-					deleted.add(change.getDescriptor());
-			return deleted;
+					commit.putDeleted(change.getDescriptor());
+				else
+					commit.put(Database.createRootDao(
+							change.getDescriptor().getType()).getForRefId(
+							change.getDescriptor().getRefId()));
 		}
+
 	}
 
 }
