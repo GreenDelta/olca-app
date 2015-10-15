@@ -39,15 +39,16 @@ import org.openlca.core.results.FullResultProvider;
 
 public class ImpactTreePage extends FormPage {
 
-	private final static String COLUMN_NAME = "Process/Flow name";
-	private final static String COLUMN_LOCATION = "Location";
-	private final static String COLUMN_CATEGORY = "Flow category";
-	private final static String COLUMN_AMOUNT = "Inventory result";
-	private final static String COLUMN_FACTOR = "Impact factor";
-	private final static String COLUMN_IMPACT_RESULT = "Impact result";
+	private final static String COLUMN_NAME = "#Process/Flow name";
+	private final static String COLUMN_LOCATION = "#Location";
+	private final static String COLUMN_CATEGORY = "#Flow category";
+	private final static String COLUMN_AMOUNT = "#Inventory result";
+	private final static String COLUMN_FACTOR = "#Impact factor";
+	private final static String COLUMN_IMPACT_RESULT = "#Impact result";
 	private final static String[] COLUMN_LABELS = { COLUMN_NAME,
 			COLUMN_LOCATION, COLUMN_CATEGORY, COLUMN_AMOUNT, COLUMN_FACTOR,
 			COLUMN_IMPACT_RESULT };
+
 	private final FullResultProvider result;
 	private FormToolkit toolkit;
 	private ImpactCategoryViewer categoryViewer;
@@ -59,16 +60,16 @@ public class ImpactTreePage extends FormPage {
 	private double cutOff = 0;
 
 	public ImpactTreePage(FormEditor editor, FullResultProvider result) {
-		super(editor, "ImpactTreePage", "Impact analysis");
+		super(editor, "ImpactTreePage", "#Impact analysis");
 		this.result = result;
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, "Impact analysis");
+		ScrolledForm form = UI.formHeader(managedForm, "#Impact analysis");
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
-		Section section = UI.section(body, toolkit, "Impact analysis");
+		Section section = UI.section(body, toolkit, "#Impact analysis");
 		UI.gridData(section, true, true);
 		Composite client = toolkit.createComposite(section);
 		section.setClient(client);
@@ -83,7 +84,7 @@ public class ImpactTreePage extends FormPage {
 		Composite container = new Composite(parent, SWT.NONE);
 		UI.gridLayout(container, 7);
 		UI.gridData(container, true, false);
-		UI.formLabel(container, "Impact category");
+		UI.formLabel(container, "#Impact category");
 		createCategorySelection(container);
 		createCutOffFilter(container);
 		createNoImpactFilter(container);
@@ -100,7 +101,7 @@ public class ImpactTreePage extends FormPage {
 
 	private void createNoImpactFilter(Composite parent) {
 		filterZeroButton = UI.formCheckBox(parent, toolkit,
-				"Exclude zero entries");
+				"#Exclude zero entries");
 		Controls.onSelect(filterZeroButton, (event) -> {
 			filterZeroes = filterZeroButton.getSelection();
 			viewer.refresh();

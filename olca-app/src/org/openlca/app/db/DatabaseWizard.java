@@ -14,7 +14,6 @@ import org.openlca.app.events.DatabaseEvent.Type;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.UI;
-import org.openlca.core.database.DatabaseContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,13 +67,13 @@ public class DatabaseWizard extends Wizard {
 	private class Runner implements IRunnableWithProgress {
 
 		private IDatabaseConfiguration config;
-		private DatabaseContent content;
+		private DbTemplate content;
 
 		Runner(IDatabaseConfiguration config) {
 			this.config = config;
 		}
 
-		Runner(IDatabaseConfiguration config, DatabaseContent content) {
+		Runner(IDatabaseConfiguration config, DbTemplate content) {
 			this(config);
 			this.content = content;
 		}
@@ -110,25 +109,9 @@ public class DatabaseWizard extends Wizard {
 				return;
 			}
 			try {
-				DbTemplate template = getTemplate();
-				template.extract(dir);
+				content.extract(dir);
 			} catch (Exception e) {
 				log.error("failed to extract database template", e);
-			}
-		}
-
-		private DbTemplate getTemplate() {
-			if (content == null)
-				return DbTemplate.EMPTY;
-			switch (content) {
-			case ALL_REF_DATA:
-				return DbTemplate.FLOWS;
-			case EMPTY:
-				return DbTemplate.EMPTY;
-			case UNITS:
-				return DbTemplate.UNITS;
-			default:
-				return DbTemplate.EMPTY;
 			}
 		}
 

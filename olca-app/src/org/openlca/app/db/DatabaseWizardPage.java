@@ -14,7 +14,6 @@ import org.openlca.app.Messages;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
-import org.openlca.core.database.DatabaseContent;
 import org.openlca.core.database.DbUtils;
 
 class DatabaseWizardPage extends WizardPage {
@@ -116,15 +115,15 @@ class DatabaseWizardPage extends WizardPage {
 	private void createContentRadios(Composite composite) {
 		Composite radioGroup = new Composite(composite, SWT.NONE);
 		radioGroup.setLayout(new RowLayout(SWT.VERTICAL));
-		contentRadios = new Button[DatabaseContent.values().length];
-		for (int i = 0; i < DatabaseContent.values().length; i++) {
+		contentRadios = new Button[DbTemplate.values().length];
+		for (int i = 0; i < DbTemplate.values().length; i++) {
 			contentRadios[i] = new Button(radioGroup, SWT.RADIO);
-			contentRadios[i].setText(contentLabel(DatabaseContent.values()[i]));
+			contentRadios[i].setText(contentLabel(DbTemplate.values()[i]));
 		}
 		contentRadios[2].setSelection(true);
 	}
 
-	private String contentLabel(DatabaseContent content) {
+	private String contentLabel(DbTemplate content) {
 		if (content == null)
 			return null;
 		switch (content) {
@@ -132,7 +131,7 @@ class DatabaseWizardPage extends WizardPage {
 			return Messages.EmptyDatabase;
 		case UNITS:
 			return Messages.UnitsAndFlowProperties;
-		case ALL_REF_DATA:
+		case FLOWS:
 			return Messages.CompleteReferenceData;
 		default:
 			return null;
@@ -209,13 +208,13 @@ class DatabaseWizardPage extends WizardPage {
 		}
 	}
 
-	DatabaseContent getSelectedContent() {
+	DbTemplate getSelectedContent() {
 		for (int i = 0; i < contentRadios.length; i++) {
 			if (contentRadios[i].getSelection()) {
-				return DatabaseContent.values()[i];
+				return DbTemplate.values()[i];
 			}
 		}
-		return DatabaseContent.ALL_REF_DATA;
+		return DbTemplate.FLOWS;
 	}
 
 	private String getText(Text text) {
