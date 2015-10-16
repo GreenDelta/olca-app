@@ -11,6 +11,7 @@ import org.openlca.app.Messages;
 import org.openlca.app.Preferences;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
+import org.openlca.app.editors.lcia_methods.ShapeFileUtils;
 import org.openlca.app.results.ResultEditorInput;
 import org.openlca.app.results.analysis.AnalyzeEditor;
 import org.openlca.app.results.quick.QuickResultEditor;
@@ -130,8 +131,7 @@ class CalculationWizard extends Wizard {
 		@Override
 		public void run(IProgressMonitor monitor)
 				throws InvocationTargetException, InterruptedException {
-			monitor.beginTask(Messages.RunCalculation,
-					IProgressMonitor.UNKNOWN);
+			monitor.beginTask(Messages.RunCalculation, IProgressMonitor.UNKNOWN);
 			int size = productSystem.getProcesses().size();
 			log.trace("calculate a {} x {} system", size, size);
 			switch (type) {
@@ -228,8 +228,7 @@ class CalculationWizard extends Wizard {
 			LcaCalculator calculator = new LcaCalculator(solver, inventoryMatrix);
 			calculator.setImpactMatrix(impactMatrix);
 			FullResult baseResult = calculator.calculateFull();
-			RegionalizationSetup regioSetup = setupRegio(
-					baseResult.productIndex);
+			RegionalizationSetup regioSetup = setupRegio(baseResult.productIndex);
 			if (regioSetup == null)
 				return;
 			RegionalizedResult result = calculate(baseResult, regioSetup,
@@ -246,11 +245,11 @@ class CalculationWizard extends Wizard {
 
 		private RegionalizationSetup setupRegio(ProductIndex productIndex) {
 			RegionalizationSetup regioSetup = new RegionalizationSetup(
-					database, setup.impactMethod);
+					database, setup.impactMethod,
+					ShapeFileUtils.getFolder(setup.impactMethod));
 			IKmlLoader kmlLoader = new KmlLoader(database);
 			if (!regioSetup.init(kmlLoader, productIndex)) {
-				Info.showBox(
-						"No regionalized information available for this system");
+				Info.showBox("No regionalized information available for this system");
 				return null;
 			}
 			return regioSetup;

@@ -314,8 +314,30 @@ public enum ImageType {
 
 	XML_ICON("xml_16.gif"),
 
-	ZIP_ICON("zip.gif");
+	ZIP_ICON("zip.gif"),
 
+	// repository overlays
+	
+	OVERLAY_ADDED("repo/added.png"),
+
+	OVERLAY_DELETED("repo/deleted.png"),
+
+	OVERLAY_ADD_TO_LOCAL("repo/add_local.png"),
+
+	OVERLAY_ADD_TO_REMOTE("repo/add_remote.png"),
+
+	OVERLAY_DELETE_FROM_LOCAL("repo/delete_local.png"),
+
+	OVERLAY_DELETE_FROM_REMOTE("repo/delete_remote.png"),
+
+	OVERLAY_MODIFY_IN_LOCAL("repo/modify_local.png"),
+
+	OVERLAY_MODIFY_IN_REMOTE("repo/modify_remote.png"),
+
+	OVERLAY_CONFLICT("repo/conflict.png"),
+	
+	COMMIT_ICON("repo/commit.png");
+	
 	private final String fileName;
 
 	private ImageType(String fileName) {

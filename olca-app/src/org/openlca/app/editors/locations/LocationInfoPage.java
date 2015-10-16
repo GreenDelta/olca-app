@@ -33,7 +33,8 @@ public class LocationInfoPage extends ModelPage<Location> implements HtmlPage {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, Messages.Location + ": " + getModel().getName());
+		ScrolledForm form = UI.formHeader(managedForm, Messages.Location + ": "
+				+ getModel().getName());
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		InfoSection infoSection = new InfoSection(getEditor());
@@ -45,15 +46,18 @@ public class LocationInfoPage extends ModelPage<Location> implements HtmlPage {
 	}
 
 	private void createAdditionalInfo(Composite body) {
-		Composite composite = UI.formSection(body, toolkit, Messages.AdditionalInformation);
+		Composite composite = UI.formSection(body, toolkit,
+				Messages.AdditionalInformation);
 		createText(Messages.Code, "code", composite);
 		createDoubleText(Messages.Longitude, "longitude", composite);
 		createDoubleText(Messages.Latitude, "latitude", composite);
 	}
 
 	private void createMapEditorArea(Composite body) {
-		Section section = toolkit.createSection(body, ExpandableComposite.TITLE_BAR | ExpandableComposite.FOCUS_TITLE
-				| ExpandableComposite.EXPANDED | ExpandableComposite.TWISTIE);
+		Section section = toolkit.createSection(body,
+				ExpandableComposite.TITLE_BAR | ExpandableComposite.FOCUS_TITLE
+						| ExpandableComposite.EXPANDED
+						| ExpandableComposite.TWISTIE);
 		UI.gridData(section, true, true);
 		section.setText(Messages.KmlEditor);
 		Composite composite = toolkit.createComposite(section);
@@ -80,6 +84,7 @@ public class LocationInfoPage extends ModelPage<Location> implements HtmlPage {
 		kml = KmlUtil.toKml(getModel().getKmz());
 		if (kml == null)
 			kml = "";
+		kml = kml.replace("\r\n", "").replace("\n", "").replace("\r", "");
 		try {
 			browser.evaluate("setKML('" + kml + "')");
 			browser.evaluate("setEmbedded()");
