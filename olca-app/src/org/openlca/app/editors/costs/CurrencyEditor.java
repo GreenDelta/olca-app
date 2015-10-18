@@ -17,7 +17,6 @@ import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Controls;
-import org.openlca.app.util.InformationPopup;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.Currency;
 import org.slf4j.Logger;
@@ -110,8 +109,7 @@ public class CurrencyEditor extends ModelEditor<Currency> {
 					SWT.NONE);
 			button.setImage(ImageType.COST_CALC_ICON.get());
 			Controls.onSelect(button, e -> {
-				InformationPopup.show("#Not yet implemented");
-				// TODO: convert currencies in database
+				RefCurrencyUpdate.run(getModel());
 			});
 		}
 

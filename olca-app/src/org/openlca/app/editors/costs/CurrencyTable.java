@@ -11,8 +11,10 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.App;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.UI;
+import org.openlca.app.util.Viewers;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.model.Currency;
@@ -34,6 +36,10 @@ class CurrencyTable {
 		Tables.bindColumnWidths(table, 0.4, 0.2, 0.4);
 		table.setLabelProvider(new Label());
 		table.setInput(getOthers());
+		Tables.onDoubleClick(table, e -> {
+			Currency c = Viewers.getFirstSelected(table);
+			App.openEditor(c);
+		});
 	}
 
 	private List<Currency> getOthers() {
@@ -76,11 +82,11 @@ class CurrencyTable {
 			}
 		}
 
-		private String getExchangeRate(Currency c) {
+		private String getExchangeRate(Currency other) {
 			String s = "1 " + currency.code + " = ";
-			double f = Math.round(100 * c.conversionFactor / currency.conversionFactor) / 100.0;
-			s += f;
-			s += " " + c.code;
+			double f = currency.conversionFactor / other.conversionFactor;
+			f = Math.round(1000 * f) / 1000.0;
+			s += f + " " + other.code;
 			return s;
 		}
 

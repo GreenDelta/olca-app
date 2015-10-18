@@ -46,6 +46,7 @@ public class CurrencyWizard extends AbstractWizard<Currency> {
 			c.setName(getModelName());
 			c.setDescription(getModelDescription());
 			c.conversionFactor = 1.0;
+			c.code = getModelName();
 			Currency ref = getRefCurrency();
 			if (ref != null)
 				c.referenceCurrency = ref;
