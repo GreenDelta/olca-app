@@ -7,6 +7,7 @@ import org.eclipse.swt.widgets.Control;
 import org.openlca.app.components.DialogCellEditor;
 import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.core.model.CostCategory;
+import org.openlca.core.model.Currency;
 import org.openlca.core.model.Exchange;
 
 class CostCellEditor extends DialogCellEditor {
@@ -15,6 +16,7 @@ class CostCellEditor extends DialogCellEditor {
 	private Exchange exchange;
 	private Double oldValue;
 	private CostCategory oldCategory;
+	private Currency oldCurrency;
 
 	CostCellEditor(TableViewer viewer, ProcessEditor editor) {
 		super(viewer.getTable());
@@ -27,6 +29,7 @@ class CostCellEditor extends DialogCellEditor {
 			exchange = (Exchange) obj;
 			oldValue = exchange.costValue;
 			oldCategory = exchange.costCategory;
+			oldCurrency = exchange.currency;
 			super.doSetValue(oldValue);
 		} else {
 			exchange = null;
@@ -46,7 +49,8 @@ class CostCellEditor extends DialogCellEditor {
 
 	private boolean valuesChanged() {
 		return !Objects.equals(oldValue, exchange.costValue)
-				|| !Objects.equals(oldCategory, exchange.costCategory);
+				|| !Objects.equals(oldCategory, exchange.costCategory)
+				|| !Objects.equals(oldCurrency, exchange.currency);
 	}
 
 }
