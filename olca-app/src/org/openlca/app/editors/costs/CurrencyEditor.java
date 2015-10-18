@@ -41,6 +41,7 @@ public class CurrencyEditor extends ModelEditor<Currency> {
 
 	private class Page extends ModelPage<Currency> {
 
+		private CurrencyTable table;
 		private CurrencyEditor editor;
 
 		private Page() {
@@ -58,7 +59,8 @@ public class CurrencyEditor extends ModelEditor<Currency> {
 			InfoSection infoSection = new InfoSection(getEditor());
 			infoSection.render(body, tk);
 			createAdditionalInfo(body, tk);
-			new CurrencyTable(getModel()).create(body, tk);
+			table = new CurrencyTable(getModel());
+			table.create(body, tk);
 			body.setFocus();
 			form.reflow(true);
 		}
@@ -71,6 +73,7 @@ public class CurrencyEditor extends ModelEditor<Currency> {
 				codeText.setText(getModel().code);
 			codeText.addModifyListener(e -> {
 				getModel().code = codeText.getText();
+				table.refresh();
 				editor.setDirty(true);
 			});
 			Text factorText = UI.formText(comp, tk, "#Conversion factor");
@@ -79,6 +82,8 @@ public class CurrencyEditor extends ModelEditor<Currency> {
 				try {
 					getModel().conversionFactor = Double.parseDouble(
 							factorText.getText());
+					table.refresh();
+					editor.setDirty(true);
 				} catch (Exception ex) {
 					log.trace("not a number (currency conversion factor)", e);
 				}

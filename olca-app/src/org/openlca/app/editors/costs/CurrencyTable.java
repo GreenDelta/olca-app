@@ -58,6 +58,10 @@ class CurrencyTable {
 		return others;
 	}
 
+	void refresh() {
+		table.refresh();
+	}
+
 	private class Label extends LabelProvider implements ITableLabelProvider {
 
 		@Override
