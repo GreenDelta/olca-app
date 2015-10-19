@@ -265,8 +265,7 @@ class ExchangeTable {
 			case 3:
 				return Labels.getDisplayName(exchange.getUnit());
 			case 4:
-				return exchange.costValue == null ? null
-						: exchange.costValue.toString() + " USD";
+				return getCostValue(exchange);
 			case 5:
 				return UncertaintyLabel.get(exchange.getUncertainty());
 			case 6:
@@ -295,6 +294,16 @@ class ExchangeTable {
 				return Double.toString(exchange.getAmountValue());
 			else
 				return exchange.getAmountFormula();
+		}
+
+		private String getCostValue(Exchange exchange) {
+			if (exchange == null || exchange.costValue == null)
+				return null;
+			String s = exchange.costValue.toString();
+			if (exchange.currency == null)
+				return s;
+			else
+				return s + " " + exchange.currency.code;
 		}
 	}
 

@@ -235,7 +235,7 @@ public class ContributionTreePage extends FormPage {
 				ImpactCategoryDescriptor impact = (ImpactCategoryDescriptor) selection;
 				return impact.getReferenceUnit();
 			} else if (selection instanceof CostCategoryDescriptor) {
-				return "#USD";
+				return Labels.getReferenceCurrencyCode();
 			}
 			return null;
 		}
