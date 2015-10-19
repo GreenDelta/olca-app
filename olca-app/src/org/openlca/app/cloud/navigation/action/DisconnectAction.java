@@ -9,8 +9,8 @@ import org.openlca.app.cloud.navigation.RepositoryNavigator;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.actions.INavigationAction;
 
-import com.greendelta.cloud.api.RepositoryClient;
-import com.greendelta.cloud.util.Directories;
+import org.openlca.cloud.api.RepositoryClient;
+import org.openlca.cloud.util.Directories;
 
 public class DisconnectAction extends Action implements INavigationAction {
 

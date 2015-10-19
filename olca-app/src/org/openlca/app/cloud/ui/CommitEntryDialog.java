@@ -12,8 +12,8 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.util.UI;
 
-import com.greendelta.cloud.api.RepositoryClient;
-import com.greendelta.cloud.model.data.CommitDescriptor;
+import org.openlca.cloud.api.RepositoryClient;
+import org.openlca.cloud.model.data.CommitDescriptor;
 
 public class CommitEntryDialog extends FormDialog {
 

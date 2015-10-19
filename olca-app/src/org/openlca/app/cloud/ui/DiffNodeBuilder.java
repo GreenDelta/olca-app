@@ -13,7 +13,7 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 
-import com.greendelta.cloud.model.data.DatasetDescriptor;
+import org.openlca.cloud.model.data.DatasetDescriptor;
 
 public class DiffNodeBuilder {
 

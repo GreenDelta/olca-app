@@ -8,7 +8,7 @@ import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelTypeElement;
 import org.openlca.core.model.ModelType;
 
-import com.greendelta.cloud.api.RepositoryClient;
+import org.openlca.cloud.api.RepositoryClient;
 
 public class RepositoryElement implements INavigationElement<RepositoryClient> {
 

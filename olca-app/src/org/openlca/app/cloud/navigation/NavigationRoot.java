@@ -7,7 +7,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.core.database.IDatabase;
 
-import com.greendelta.cloud.api.RepositoryClient;
+import org.openlca.cloud.api.RepositoryClient;
 
 public class NavigationRoot implements INavigationElement<NavigationRoot> {
 

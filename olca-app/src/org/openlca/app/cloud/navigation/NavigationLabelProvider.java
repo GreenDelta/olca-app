@@ -14,7 +14,7 @@ import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Images;
 import org.openlca.core.database.IDatabase;
 
-import com.greendelta.cloud.api.RepositoryClient;
+import org.openlca.cloud.api.RepositoryClient;
 
 public class NavigationLabelProvider extends
 		org.openlca.app.navigation.NavigationLabelProvider {

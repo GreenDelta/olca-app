@@ -15,10 +15,10 @@ import org.openlca.jsonld.EntityStore;
 import org.openlca.jsonld.output.JsonExport;
 
 import com.google.gson.JsonObject;
-import com.greendelta.cloud.api.InMemoryStore;
-import com.greendelta.cloud.api.RepositoryClient;
-import com.greendelta.cloud.model.data.DatasetDescriptor;
-import com.greendelta.cloud.util.WebRequests.WebRequestException;
+import org.openlca.cloud.api.InMemoryStore;
+import org.openlca.cloud.api.RepositoryClient;
+import org.openlca.cloud.model.data.DatasetDescriptor;
+import org.openlca.cloud.util.WebRequests.WebRequestException;
 
 public class CloudUtil {
 

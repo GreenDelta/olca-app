@@ -25,11 +25,11 @@ import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Info;
 
-import com.greendelta.cloud.api.RepositoryClient;
-import com.greendelta.cloud.model.data.CommitDescriptor;
-import com.greendelta.cloud.model.data.DatasetDescriptor;
-import com.greendelta.cloud.model.data.FetchRequestData;
-import com.greendelta.cloud.util.WebRequests.WebRequestException;
+import org.openlca.cloud.api.RepositoryClient;
+import org.openlca.cloud.model.data.CommitDescriptor;
+import org.openlca.cloud.model.data.DatasetDescriptor;
+import org.openlca.cloud.model.data.FetchRequestData;
+import org.openlca.cloud.util.WebRequests.WebRequestException;
 
 public class FetchAction extends Action implements INavigationAction {
 

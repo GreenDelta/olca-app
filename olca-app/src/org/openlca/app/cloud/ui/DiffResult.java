@@ -3,8 +3,8 @@ package org.openlca.app.cloud.ui;
 import org.openlca.app.cloud.index.Diff;
 import org.openlca.app.cloud.index.DiffType;
 
-import com.greendelta.cloud.model.data.DatasetDescriptor;
-import com.greendelta.cloud.model.data.FetchRequestData;
+import org.openlca.cloud.model.data.DatasetDescriptor;
+import org.openlca.cloud.model.data.FetchRequestData;
 
 public class DiffResult {
 

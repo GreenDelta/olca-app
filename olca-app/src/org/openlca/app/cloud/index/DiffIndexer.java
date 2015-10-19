@@ -3,7 +3,7 @@ package org.openlca.app.cloud.index;
 import java.util.Collections;
 import java.util.List;
 
-import com.greendelta.cloud.model.data.DatasetDescriptor;
+import org.openlca.cloud.model.data.DatasetDescriptor;
 
 public class DiffIndexer {
 

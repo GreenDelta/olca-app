@@ -23,10 +23,10 @@ import org.openlca.app.viewers.AbstractViewer;
 import org.openlca.core.model.ModelType;
 import org.openlca.util.Strings;
 
-import com.greendelta.cloud.api.RepositoryClient;
-import com.greendelta.cloud.model.data.CommitDescriptor;
-import com.greendelta.cloud.model.data.FetchRequestData;
-import com.greendelta.cloud.util.WebRequests.WebRequestException;
+import org.openlca.cloud.api.RepositoryClient;
+import org.openlca.cloud.model.data.CommitDescriptor;
+import org.openlca.cloud.model.data.FetchRequestData;
+import org.openlca.cloud.util.WebRequests.WebRequestException;
 
 class CommitEntryViewer extends AbstractViewer<CommitDescriptor, TreeViewer> {
 

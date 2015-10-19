@@ -25,10 +25,10 @@ import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.util.Info;
 import org.openlca.app.util.UI;
 
-import com.greendelta.cloud.api.RepositoryClient;
-import com.greendelta.cloud.api.RepositoryConfig;
-import com.greendelta.cloud.model.data.DatasetDescriptor;
-import com.greendelta.cloud.util.WebRequests.WebRequestException;
+import org.openlca.cloud.api.RepositoryClient;
+import org.openlca.cloud.api.RepositoryConfig;
+import org.openlca.cloud.model.data.DatasetDescriptor;
+import org.openlca.cloud.util.WebRequests.WebRequestException;
 
 public class ConnectAction extends Action implements INavigationAction {
 
@@ -111,7 +111,7 @@ public class ConnectAction extends Action implements INavigationAction {
 				repositoryId = repoText.getText();
 			});
 			// TODO remove dummy input
-			serverText.setText("http://46.105.145.95:8080/lca-cloud-ws");
+			serverText.setText("http://localhost:8080");
 			usernameText.setText("greve");
 			passwordText.setText("12345sechs");
 			repoText.setText("greve/" + Database.get().getName());
