@@ -36,7 +36,7 @@ import org.openlca.app.viewers.combo.LocationViewer;
 import org.openlca.core.database.LocationDao;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.Process;
-import org.openlca.io.KeyGen;
+import org.openlca.util.KeyGen;
 
 import com.google.common.eventbus.Subscribe;
 
