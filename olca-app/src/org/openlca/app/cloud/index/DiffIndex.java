@@ -8,9 +8,9 @@ import java.util.Map;
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
 
-import com.greendelta.cloud.model.data.DatasetDescriptor;
-import com.greendelta.cloud.api.RepositoryClient;
-import com.greendelta.cloud.api.RepositoryConfig;
+import org.openlca.cloud.model.data.DatasetDescriptor;
+import org.openlca.cloud.api.RepositoryClient;
+import org.openlca.cloud.api.RepositoryConfig;
 
 // NOT SYNCHRONIZED //
 public class DiffIndex {

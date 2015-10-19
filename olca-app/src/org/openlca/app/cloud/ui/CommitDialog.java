@@ -19,7 +19,7 @@ import org.openlca.app.cloud.CloudUtil.JsonLoader;
 import org.openlca.app.cloud.ui.DiffNodeBuilder.DiffNode;
 import org.openlca.app.util.UI;
 
-import com.greendelta.cloud.api.RepositoryClient;
+import org.openlca.cloud.api.RepositoryClient;
 
 public class CommitDialog extends FormDialog {
 

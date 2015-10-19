@@ -15,7 +15,7 @@ import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.CategoryDescriptor;
 import org.openlca.core.model.descriptors.Descriptors;
 
-import com.greendelta.cloud.model.data.DatasetDescriptor;
+import org.openlca.cloud.model.data.DatasetDescriptor;
 
 public class NavigationUtil {
 

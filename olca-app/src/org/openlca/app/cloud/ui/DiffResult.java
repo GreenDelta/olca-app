@@ -3,8 +3,8 @@ package org.openlca.app.cloud.ui;
 import org.openlca.app.cloud.index.Diff;
 import org.openlca.app.cloud.index.DiffType;
 
-import com.greendelta.cloud.model.data.DatasetDescriptor;
-import com.greendelta.cloud.model.data.FetchRequestData;
+import org.openlca.cloud.model.data.DatasetDescriptor;
+import org.openlca.cloud.model.data.FetchRequestData;
 
 public class DiffResult {
 
@@ -27,7 +27,7 @@ public class DiffResult {
 	public DatasetDescriptor getDescriptor() {
 		if (local != null)
 			return local.getDescriptor();
-		return remote;
+		return toDescriptor(remote);
 	}
 
 	public DiffResponse getType() {
@@ -93,6 +93,19 @@ public class DiffResult {
 		String text = "model: {" + l + "}, diff: {" + local.type
 				+ "}, result: {" + getType() + "}";
 		return text;
+	}
+	
+	private DatasetDescriptor toDescriptor(FetchRequestData data) {
+		DatasetDescriptor descriptor = new DatasetDescriptor();
+		descriptor.setCategoryType(data.getCategoryType());
+		descriptor.setCategoryRefId(data.getCategoryRefId());
+		descriptor.setFullPath(data.getFullPath());
+		descriptor.setType(data.getType());
+		descriptor.setRefId(data.getRefId());
+		descriptor.setName(data.getName());
+		descriptor.setLastChange(data.getLastChange());
+		descriptor.setVersion(data.getVersion());
+		return descriptor;
 	}
 
 	public static enum DiffResponse {

@@ -22,9 +22,9 @@ import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.util.Error;
 
-import com.greendelta.cloud.api.CommitInvocation;
-import com.greendelta.cloud.api.RepositoryClient;
-import com.greendelta.cloud.util.WebRequests.WebRequestException;
+import org.openlca.cloud.api.CommitInvocation;
+import org.openlca.cloud.api.RepositoryClient;
+import org.openlca.cloud.util.WebRequests.WebRequestException;
 
 public class CommitAction extends Action implements INavigationAction {
 
@@ -149,7 +149,7 @@ public class CommitAction extends Action implements INavigationAction {
 				CommitInvocation commit) {
 			for (DiffResult change : changes)
 				if (change.getType() == DiffResponse.DELETE_FROM_REMOTE)
-					commit.putDeleted(change.getDescriptor());
+					commit.put(change.getDescriptor(), null);
 				else
 					commit.put(Database.createRootDao(
 							change.getDescriptor().getType()).getForRefId(

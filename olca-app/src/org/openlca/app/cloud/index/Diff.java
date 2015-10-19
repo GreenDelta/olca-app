@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.greendelta.cloud.model.data.DatasetDescriptor;
+import org.openlca.cloud.model.data.DatasetDescriptor;
 
 public class Diff implements Serializable {
 

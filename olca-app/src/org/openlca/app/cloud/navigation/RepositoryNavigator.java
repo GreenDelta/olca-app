@@ -18,9 +18,9 @@ import org.openlca.app.events.DatabaseEvent;
 import org.openlca.app.events.ModelEvent;
 
 import com.google.common.eventbus.Subscribe;
-import com.greendelta.cloud.api.RepositoryClient;
-import com.greendelta.cloud.api.RepositoryConfig;
-import com.greendelta.cloud.model.data.DatasetDescriptor;
+import org.openlca.cloud.api.RepositoryClient;
+import org.openlca.cloud.api.RepositoryConfig;
+import org.openlca.cloud.model.data.DatasetDescriptor;
 
 public class RepositoryNavigator extends CommonNavigator {
 
