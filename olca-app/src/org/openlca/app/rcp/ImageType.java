@@ -336,8 +336,20 @@ public enum ImageType {
 
 	OVERLAY_CONFLICT("repo/conflict.png"),
 	
-	COMMIT_ICON("repo/commit.png");
+	COMMIT_ICON("repo/commit.png"),
+
+	COPY_SELECTED_CHANGE("repo/diff/copy_selected.png"),
+
+	COPY_ALL_CHANGES("repo/diff/copy_all.png"),
 	
+	NEXT_CHANGE("repo/diff/next_change.png"),
+
+	PREVIOUS_CHANGE("repo/diff/previous_change.png"),
+
+	RESET_SELECTED_CHANGE("repo/diff/reset_selected.png"),
+
+	RESET_ALL_CHANGES("repo/diff/reset_all.png");
+
 	private final String fileName;
 
 	private ImageType(String fileName) {
