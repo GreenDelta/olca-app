@@ -164,7 +164,7 @@ public class ContributionTableSection {
 			items = provider.getProcessContributions(impact).contributions;
 		} else if (selected instanceof CostCategoryDescriptor) {
 			CostCategoryDescriptor cost = (CostCategoryDescriptor) selected;
-			unit = "#USD";
+			unit = Labels.getReferenceCurrencyCode();
 			items = provider.getProcessContributions(cost).contributions;
 		}
 		setTableData(items, unit);

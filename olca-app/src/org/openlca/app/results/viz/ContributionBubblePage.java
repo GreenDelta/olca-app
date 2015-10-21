@@ -104,7 +104,7 @@ public class ContributionBubblePage extends FormPage implements HtmlPage {
 					.getProcessContributions(cost);
 			BubbleChartDataSet dataSet = new BubbleChartDataSet();
 			dataSet.setRefName(Labels.getDisplayName(cost));
-			dataSet.setRefUnit("#USD");
+			dataSet.setRefUnit(Labels.getReferenceCurrencyCode());
 			dataSet.setTotalAmount(result.getTotalCostResult(cost).value);
 			setItems(set, dataSet);
 			setResultData(dataSet);

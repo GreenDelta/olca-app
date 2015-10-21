@@ -3,9 +3,12 @@ package org.openlca.app.util;
 import org.apache.commons.lang3.tuple.Pair;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
+import org.openlca.app.db.Database;
+import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.Category;
+import org.openlca.core.model.Currency;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyType;
@@ -22,6 +25,8 @@ import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Labels {
 
@@ -261,7 +266,7 @@ public class Labels {
 			return Messages.Unknown;
 		}
 	}
-	
+
 	public static String modelType(ModelType o) {
 		if (o == null)
 			return null;
@@ -301,5 +306,19 @@ public class Labels {
 		}
 	}
 
+	public static String getReferenceCurrencyCode() {
+		try {
+			CurrencyDao dao = new CurrencyDao(Database.get());
+			Currency c = dao.getReferenceCurrency();
+			if (c != null && c.code != null)
+				return c.code;
+			else
+				return "?";
+		} catch (Exception e) {
+			Logger log = LoggerFactory.getLogger(Labels.class);
+			log.error("failed to get reference currency", e);
+			return "?";
+		}
+	}
 
 }

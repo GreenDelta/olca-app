@@ -14,6 +14,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.TableClipboard;
@@ -76,12 +77,10 @@ public class TotalCostResultPage extends FormPage {
 				double val = result.getTotalCostResult(d).value;
 				return Numbers.format(val);
 			case 2:
-				return "USD";
+				return Labels.getReferenceCurrencyCode();
 			default:
 				return null;
 			}
 		}
-
 	}
-
 }
