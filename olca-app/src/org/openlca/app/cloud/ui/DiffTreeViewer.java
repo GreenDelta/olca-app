@@ -2,6 +2,7 @@ package org.openlca.app.cloud.ui;
 
 import java.util.function.Function;
 
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -12,20 +13,20 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Tree;
-import org.openlca.app.cloud.ui.DiffNodeBuilder.DiffNode;
 import org.openlca.app.cloud.ui.DiffResult.DiffResponse;
+import org.openlca.app.cloud.ui.compare.DiffEditorDialog;
 import org.openlca.app.rcp.ImageManager;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.AbstractViewer;
+import org.openlca.cloud.model.data.DatasetDescriptor;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 
 import com.google.gson.JsonObject;
-import org.openlca.cloud.model.data.DatasetDescriptor;
-	
+
 public class DiffTreeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 
 	private Function<DiffResult, JsonObject> getLocalJson;
@@ -67,10 +68,50 @@ public class DiffTreeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 		DiffNode selected = (DiffNode) selection.getFirstElement();
 		if (!(selected.getContent() instanceof DiffResult))
 			return;
+		openDiffEditor(selected);
+	}
+
+	private void openDiffEditor(DiffNode selected) {
 		DiffResult result = (DiffResult) selected.getContent();
 		JsonObject local = getLocalJson.apply(result);
 		JsonObject remote = getRemoteJson.apply(result);
-		new DiffEditorDialog(local, remote).open();
+		JsonObject merged = result.getMergedData();
+		DiffEditorDialog dialog = null;
+		if (result.getType() == DiffResponse.CONFLICT)
+			dialog = DiffEditorDialog.forEditing(local, remote, merged);
+		else
+			dialog = DiffEditorDialog.forViewing(local, remote);
+		int code = dialog.open();
+		result.setOverwriteLocalChanges(false);
+		result.setOverwriteRemoteChanges(false);
+		if (result.getType() != DiffResponse.CONFLICT)
+			return;
+		if (local != null && remote != null) {
+			if (code == IDialogConstants.OK_ID) {
+				result.setMergedData(local);
+				if (dialog.localDiffersFromRemote())
+					result.setOverwriteRemoteChanges(true);
+				else
+					result.setOverwriteLocalChanges(true);
+			}
+		} else if (local != null) {
+			if (code == DiffEditorDialog.KEEP_LOCAL_MODEL) {
+				result.setMergedData(local);
+				result.setOverwriteRemoteChanges(true);
+			} else if (code == DiffEditorDialog.FETCH_REMOTE_MODEL) {
+				result.setMergedData(null);
+				result.setOverwriteLocalChanges(true);
+			}
+		} else {
+			if (code == DiffEditorDialog.KEEP_LOCAL_MODEL) {
+				result.setMergedData(null);
+				result.setOverwriteRemoteChanges(true);
+			} else if (code == DiffEditorDialog.FETCH_REMOTE_MODEL) {
+				result.setMergedData(remote);
+				result.setOverwriteLocalChanges(true);
+			}
+		}
+		getViewer().refresh(selected);
 	}
 
 	@Override
@@ -151,13 +192,14 @@ public class DiffTreeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 						.getCategoryType()));
 			else
 				image = Images.getImageType(descriptor.getType());
-			ImageType overlay = getOverlay(diff.getType());
+			ImageType overlay = getOverlay(diff);
 			if (overlay == null)
 				return ImageManager.getImage(image);
 			return ImageManager.getImageWithOverlay(image, overlay);
 		}
 
-		private ImageType getOverlay(DiffResponse response) {
+		private ImageType getOverlay(DiffResult result) {
+			DiffResponse response = result.getType();
 			if (response == null)
 				return null;
 			switch (response) {
@@ -169,12 +211,16 @@ public class DiffTreeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 				return ImageType.OVERLAY_MODIFY_IN_LOCAL;
 			case MODIFY_IN_REMOTE:
 				return ImageType.OVERLAY_MODIFY_IN_REMOTE;
-			case CONFLICT:
-				return ImageType.OVERLAY_CONFLICT;
 			case DELETE_FROM_LOCAL:
 				return ImageType.OVERLAY_DELETE_FROM_LOCAL;
 			case DELETE_FROM_REMOTE:
 				return ImageType.OVERLAY_DELETE_FROM_REMOTE;
+			case CONFLICT:
+				if (result.getMergedData() == null
+						&& !result.overwriteLocalChanges()
+						&& !result.overwriteRemoteChanges())
+					return ImageType.OVERLAY_CONFLICT;
+				return ImageType.OVERLAY_MERGED;
 			default:
 				return null;
 			}

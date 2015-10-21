@@ -13,15 +13,15 @@ import org.openlca.app.cloud.index.DiffIndexer;
 import org.openlca.app.cloud.navigation.RepositoryElement;
 import org.openlca.app.cloud.navigation.RepositoryNavigator;
 import org.openlca.app.cloud.ui.CommitDialog;
+import org.openlca.app.cloud.ui.DiffNode;
 import org.openlca.app.cloud.ui.DiffNodeBuilder;
-import org.openlca.app.cloud.ui.DiffNodeBuilder.DiffNode;
 import org.openlca.app.cloud.ui.DiffResult;
 import org.openlca.app.cloud.ui.DiffResult.DiffResponse;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.util.Error;
-
+import org.openlca.app.util.Info;
 import org.openlca.cloud.api.CommitInvocation;
 import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.util.WebRequests.WebRequestException;
@@ -42,9 +42,9 @@ public class CommitAction extends Action implements INavigationAction {
 		if (runner.error != null)
 			Error.showBox(runner.error.getMessage());
 		if (!runner.upToDate)
-			Error.showBox(
-					"#Rejected",
-					"#Rejected - not up to date. Please fetch the latest changes from the repository first");
+			Error.showBox("#Rejected - not up to date. Please fetch the latest changes from the repository first");
+		if (runner.noChanges)
+			Info.showBox("#No changes in local db");
 	}
 
 	@Override
@@ -66,6 +66,7 @@ public class CommitAction extends Action implements INavigationAction {
 	private class Runner {
 
 		private boolean upToDate = true;
+		private boolean noChanges = false;
 		private String message;
 		private List<DiffResult> changes;
 		private WebRequestException error;
@@ -88,8 +89,10 @@ public class CommitAction extends Action implements INavigationAction {
 				return;
 			DiffNode node = new DiffNodeBuilder(Database.get(),
 					RepositoryNavigator.getDiffIndex()).build(changes);
-			if (node == null)
+			if (node == null) {
+				noChanges = true;
 				return;
+			}
 			CommitDialog dialog = new CommitDialog(node, client);
 			dialog.setBlockOnOpen(true);
 			if (dialog.open() != IDialogConstants.OK_ID)

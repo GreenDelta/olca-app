@@ -16,9 +16,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.cloud.CloudUtil.JsonLoader;
-import org.openlca.app.cloud.ui.DiffNodeBuilder.DiffNode;
 import org.openlca.app.util.UI;
-
 import org.openlca.cloud.api.RepositoryClient;
 
 public class CommitDialog extends FormDialog {

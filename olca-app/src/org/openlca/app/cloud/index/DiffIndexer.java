@@ -120,6 +120,19 @@ public class DiffIndexer {
 		index.commit();
 	}
 
+	public void removeFromIndex(DatasetDescriptor descriptor) {
+		removeFromIndex(Collections.singletonList(descriptor));		
+	}
+
+	public void removeFromIndex(List<DatasetDescriptor> descriptors) {
+		if (descriptors.isEmpty())
+			return;
+		for (DatasetDescriptor descriptor : descriptors)
+			index.remove(descriptor.getRefId());
+		index.commit();		
+	}
+
+	
 	public Diff getDiff(DatasetDescriptor descriptor) {
 		if (descriptor == null)
 			return null;

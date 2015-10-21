@@ -1,7 +1,9 @@
 package org.openlca.app.cloud.navigation.action;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -11,12 +13,13 @@ import org.openlca.app.cloud.CloudUtil.JsonLoader;
 import org.openlca.app.cloud.index.Diff;
 import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.cloud.index.DiffIndexer;
+import org.openlca.app.cloud.index.DiffType;
 import org.openlca.app.cloud.navigation.RepositoryElement;
 import org.openlca.app.cloud.navigation.RepositoryNavigator;
 import org.openlca.app.cloud.ui.CommitEntryDialog;
 import org.openlca.app.cloud.ui.DiffDialog;
+import org.openlca.app.cloud.ui.DiffNode;
 import org.openlca.app.cloud.ui.DiffNodeBuilder;
-import org.openlca.app.cloud.ui.DiffNodeBuilder.DiffNode;
 import org.openlca.app.cloud.ui.DiffResult;
 import org.openlca.app.cloud.ui.DiffResult.DiffResponse;
 import org.openlca.app.navigation.INavigationElement;
@@ -24,12 +27,13 @@ import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Info;
-
 import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.model.data.CommitDescriptor;
 import org.openlca.cloud.model.data.DatasetDescriptor;
 import org.openlca.cloud.model.data.FetchRequestData;
 import org.openlca.cloud.util.WebRequests.WebRequestException;
+
+import com.google.gson.JsonObject;
 
 public class FetchAction extends Action implements INavigationAction {
 
@@ -108,34 +112,70 @@ public class FetchAction extends Action implements INavigationAction {
 
 		private void fetchData() {
 			try {
-				List<DatasetDescriptor> unchanged = new ArrayList<>();
-				List<DatasetDescriptor> modified = new ArrayList<>();
-				List<DatasetDescriptor> added = new ArrayList<>();
-				List<DatasetDescriptor> deleted = new ArrayList<>();
-				for (DiffResult result : differences)
-					if (result.getType() == DiffResponse.NONE)
-						unchanged.add(result.getDescriptor());
-					else if (result.getType() == DiffResponse.MODIFY_IN_LOCAL)
-						modified.add(result.getDescriptor());
-					else if (result.getType() == DiffResponse.ADD_TO_LOCAL)
-						added.add(result.getDescriptor());
-					else if (result.getType() == DiffResponse.DELETE_FROM_LOCAL)
-						deleted.add(result.getDescriptor());
-				// TODO apply merge results for conflicts
 				List<DatasetDescriptor> toFetch = new ArrayList<>();
-				toFetch.addAll(modified);
-				toFetch.addAll(added);
-				toFetch.addAll(deleted);
-				if (!toFetch.isEmpty())
-					client.fetch(toFetch);
-				DiffIndexer indexer = new DiffIndexer(index);
-				indexer.addToIndex(added);
-				indexer.indexDelete(deleted);
-				indexer.indexFetch(modified);
-				indexer.indexFetch(unchanged);
+				Map<DatasetDescriptor, JsonObject> mergedData = new HashMap<>();
+				for (DiffResult result : differences)
+					if (result.getType() == DiffResponse.MODIFY_IN_LOCAL)
+						toFetch.add(result.getDescriptor());
+					else if (result.getType() == DiffResponse.ADD_TO_LOCAL)
+						toFetch.add(result.getDescriptor());
+					else if (result.getType() == DiffResponse.DELETE_FROM_LOCAL)
+						toFetch.add(result.getDescriptor());
+					else if (result.getType() == DiffResponse.CONFLICT)
+						mergedData.put(result.getDescriptor(),
+								result.getMergedData());
+				client.fetch(toFetch, mergedData);
+				updateIndex();
 			} catch (WebRequestException e) {
 				error = e;
 			}
+		}
+
+		private void updateIndex() {
+			List<DatasetDescriptor> addToIndex = new ArrayList<>();
+			List<DatasetDescriptor> indexCreate = new ArrayList<>();
+			List<DatasetDescriptor> indexModify= new ArrayList<>();
+			List<DatasetDescriptor> indexDelete = new ArrayList<>();
+			List<DatasetDescriptor> indexFetch = new ArrayList<>();
+			List<DatasetDescriptor> removeFromIndex = new ArrayList<>();
+			for (DiffResult result : differences)
+				if (result.getType() == DiffResponse.NONE)
+					if (result.remote != null && result.remote.isDeleted()
+							&& result.local == null)
+						removeFromIndex.add(result.getDescriptor());
+					else
+						indexFetch.add(result.getDescriptor());
+				else if (result.getType() == DiffResponse.MODIFY_IN_LOCAL)
+					indexFetch.add(result.getDescriptor());
+				else if (result.getType() == DiffResponse.ADD_TO_LOCAL)
+					addToIndex.add(result.getDescriptor());
+				else if (result.getType() == DiffResponse.DELETE_FROM_LOCAL)
+					removeFromIndex.add(result.getDescriptor());
+				else if (result.getType() == DiffResponse.CONFLICT)
+					if (result.local.type == DiffType.CHANGED) {
+						if (result.remote.isDeleted()) {
+							if (result.overwriteRemoteChanges())
+								indexCreate.add(result.getDescriptor());
+							else if (result.overwriteLocalChanges())
+								removeFromIndex.add(result.getDescriptor());
+						} else {
+							if (result.overwriteRemoteChanges()) // merged
+								indexModify.add(result.getDescriptor());
+							else if (result.overwriteLocalChanges())
+								indexFetch.add(result.getDescriptor());							
+						}
+					} else if (result.local.type == DiffType.DELETED)
+						if (result.overwriteRemoteChanges())
+							indexDelete.add(result.getDescriptor());
+						else if (result.overwriteLocalChanges())
+							indexFetch.add(result.getDescriptor());
+			DiffIndexer indexer = new DiffIndexer(index);
+			indexer.addToIndex(addToIndex);
+			indexer.indexCreate(indexCreate);
+			indexer.indexModify(indexModify);
+			indexer.indexDelete(indexDelete);
+			indexer.indexFetch(indexFetch);
+			indexer.removeFromIndex(removeFromIndex);
 		}
 
 		private void afterFetchData() {
@@ -154,8 +194,6 @@ public class FetchAction extends Action implements INavigationAction {
 			List<DiffResult> differences = new ArrayList<>();
 			for (FetchRequestData identifier : remotes) {
 				Diff local = index.get(identifier.getRefId());
-				if (identifier.isDeleted() && local == null)
-					continue;
 				differences.add(new DiffResult(identifier, local));
 			}
 			return differences;

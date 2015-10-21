@@ -157,6 +157,7 @@ public class RepositoryNavigator extends CommonNavigator {
 		if (event.type == DatabaseEvent.Type.CLOSE)
 			disconnect();
 		else if (event.type == DatabaseEvent.Type.ACTIVATE) {
+			disconnect();
 			RepositoryConfig config = RepositoryConfig.loadFor(Database.get());
 			if (config != null)
 				root.setClient(new RepositoryClient(config));

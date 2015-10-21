@@ -74,8 +74,10 @@ public class CloudUtil {
 
 		public JsonObject getLocalJson(DiffResult result) {
 			if (result.local == null)
-				return new JsonObject();
+				return null;
 			CategorizedEntity entity = load(result.local.getDescriptor());
+			if (entity == null)
+				return null;
 			EntityStore store = new InMemoryStore();
 			ModelType type = ModelType.forModelClass(entity.getClass());
 			new JsonExport(null, store).write(entity, (message, data) -> {
@@ -90,13 +92,13 @@ public class CloudUtil {
 
 		public JsonObject getRemoteJson(DiffResult result) {
 			if (result.remote != null && result.remote.isDeleted())
-				return new JsonObject();
+				return null;
 			DatasetDescriptor descriptor = result.getDescriptor();
 			try {
 				return client.getDataset(descriptor.getType(),
 						descriptor.getRefId());
 			} catch (WebRequestException e) {
-				return new JsonObject();
+				return null;
 			}
 		}
 

@@ -2,14 +2,18 @@ package org.openlca.app.cloud.ui;
 
 import org.openlca.app.cloud.index.Diff;
 import org.openlca.app.cloud.index.DiffType;
-
 import org.openlca.cloud.model.data.DatasetDescriptor;
 import org.openlca.cloud.model.data.FetchRequestData;
+
+import com.google.gson.JsonObject;
 
 public class DiffResult {
 
 	public final FetchRequestData remote;
 	public final Diff local;
+	private JsonObject mergedData;
+	private boolean overwriteLocalChanges;
+	private boolean overwriteRemoteChanges;
 
 	public DiffResult(FetchRequestData remote) {
 		this(remote, null);
@@ -21,13 +25,40 @@ public class DiffResult {
 
 	public DiffResult(FetchRequestData remote, Diff local) {
 		this.remote = remote;
-		this.local = local;
+		if (local != null)
+			this.local = local.copy();
+		else
+			this.local = null;
 	}
 
 	public DatasetDescriptor getDescriptor() {
 		if (local != null)
 			return local.getDescriptor();
 		return toDescriptor(remote);
+	}
+
+	public JsonObject getMergedData() {
+		return mergedData;
+	}
+
+	public boolean overwriteLocalChanges() {
+		return overwriteLocalChanges;
+	}
+
+	public boolean overwriteRemoteChanges() {
+		return overwriteRemoteChanges;
+	}
+
+	void setMergedData(JsonObject mergedData) {
+		this.mergedData = mergedData;
+	}
+
+	void setOverwriteLocalChanges(boolean overwriteLocalChanges) {
+		this.overwriteLocalChanges = overwriteLocalChanges;
+	}
+
+	void setOverwriteRemoteChanges(boolean overwriteRemoteChanges) {
+		this.overwriteRemoteChanges = overwriteRemoteChanges;
 	}
 
 	public DiffResponse getType() {
@@ -64,6 +95,8 @@ public class DiffResult {
 	private boolean checkConflict() {
 		if (local.type == DiffType.DELETED && !remote.isDeleted())
 			return true;
+		if (local.type != DiffType.DELETED && remote.isDeleted())
+			return true;
 		if (remote.getType() != local.changed.getType())
 			return true;
 		if (!remote.getRefId().equals(local.changed.getRefId()))
@@ -94,7 +127,7 @@ public class DiffResult {
 				+ "}, result: {" + getType() + "}";
 		return text;
 	}
-	
+
 	private DatasetDescriptor toDescriptor(FetchRequestData data) {
 		DatasetDescriptor descriptor = new DatasetDescriptor();
 		descriptor.setCategoryType(data.getCategoryType());

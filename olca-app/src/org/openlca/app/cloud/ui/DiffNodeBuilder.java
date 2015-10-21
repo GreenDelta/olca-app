@@ -1,6 +1,5 @@
 package org.openlca.app.cloud.ui;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +11,6 @@ import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
-
 import org.openlca.cloud.model.data.DatasetDescriptor;
 
 public class DiffNodeBuilder {
@@ -98,31 +96,6 @@ public class DiffNodeBuilder {
 		root.getChildren().add(typeNode);
 		nodes.put(type.name(), typeNode);
 		return typeNode;
-	}
-
-	public static class DiffNode {
-
-		private final Object content;
-		private final DiffNode parent;
-		private final List<DiffNode> children = new ArrayList<>();
-
-		public DiffNode(DiffNode parent, Object content) {
-			this.content = content;
-			this.parent = parent;
-		}
-
-		public Object getContent() {
-			return content;
-		}
-
-		public DiffNode getParent() {
-			return parent;
-		}
-
-		public List<DiffNode> getChildren() {
-			return children;
-		}
-
 	}
 
 }

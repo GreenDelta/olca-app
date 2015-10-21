@@ -41,5 +41,11 @@ public class Diff implements Serializable {
 		return getDescriptor().getRefId().equals(
 				diff.getDescriptor().getRefId());
 	}
+	
+	public Diff copy() {
+		Diff diff = new Diff(descriptor, type);
+		diff.changed = changed;
+		return diff;
+	}
 
 }

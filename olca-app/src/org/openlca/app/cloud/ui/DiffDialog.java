@@ -10,7 +10,6 @@ import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.openlca.app.cloud.ui.DiffNodeBuilder.DiffNode;
 import org.openlca.app.util.UI;
 
 import com.google.gson.JsonObject;
@@ -22,7 +21,8 @@ public class DiffDialog extends FormDialog {
 	private Function<DiffResult, JsonObject> getLocalJson;
 	private Function<DiffResult, JsonObject> getRemoteJson;
 
-	public DiffDialog(DiffNode rootNode, Function<DiffResult, JsonObject> getJson) {
+	public DiffDialog(DiffNode rootNode,
+			Function<DiffResult, JsonObject> getJson) {
 		this(rootNode, getJson, getJson);
 	}
 
