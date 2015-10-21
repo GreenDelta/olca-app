@@ -9,8 +9,11 @@ import org.eclipse.ui.actions.ActionContext;
 import org.eclipse.ui.navigator.CommonActionProvider;
 import org.openlca.app.cloud.navigation.action.CommitAction;
 import org.openlca.app.cloud.navigation.action.ConnectAction;
+import org.openlca.app.cloud.navigation.action.DeleteAction;
 import org.openlca.app.cloud.navigation.action.DisconnectAction;
 import org.openlca.app.cloud.navigation.action.FetchAction;
+import org.openlca.app.cloud.navigation.action.ShareAction;
+import org.openlca.app.cloud.navigation.action.UnshareAction;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.util.Viewers;
@@ -22,7 +25,8 @@ public class NavigationActionProvider extends CommonActionProvider {
 
 	private INavigationAction[][] actions = {
 			{ new CommitAction(), new FetchAction() },
-			{ new ConnectAction(), new DisconnectAction() } };
+			{ new ShareAction(), new UnshareAction() },
+			{ new ConnectAction(), new DeleteAction(), new DisconnectAction() } };
 
 	@Override
 	public void fillContextMenu(IMenuManager menu) {
