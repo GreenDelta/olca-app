@@ -2,6 +2,9 @@ package org.openlca.app.wizards;
 
 import java.util.UUID;
 
+import org.openlca.app.App;
+import org.openlca.app.events.ModelEvent;
+import org.openlca.app.events.ModelEvent.Type;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Exchange;
@@ -107,6 +110,7 @@ class ProcessCreationController {
 		factor.setFlowProperty(property);
 		flow.getFlowPropertyFactors().add(factor);
 		database.createDao(Flow.class).insert(flow);
+		App.getEventBus().post(new ModelEvent(flow, Type.CREATE));
 		return flow;
 	}
 

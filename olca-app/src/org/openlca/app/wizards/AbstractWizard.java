@@ -58,8 +58,8 @@ public abstract class AbstractWizard<T extends CategorizedEntity> extends
 			createDao().insert(model);
 			CategorizedDescriptor descriptor = Descriptors.toDescriptor(model);
 			Cache.registerNew(descriptor);
-			App.openEditor(model);
 			App.getEventBus().post(new ModelEvent(model, Type.CREATE));
+			App.openEditor(model);
 			return true;
 		} catch (Exception e) {
 			log.error("failed to create save " + model, e);
