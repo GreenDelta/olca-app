@@ -335,7 +335,9 @@ public enum ImageType {
 	OVERLAY_MODIFY_IN_REMOTE("repo/modify_remote.png"),
 
 	OVERLAY_CONFLICT("repo/conflict.png"),
-	
+
+	OVERLAY_MERGED("repo/merged.png"),
+
 	COMMIT_ICON("repo/commit.png"),
 
 	COPY_SELECTED_CHANGE("repo/diff/copy_selected.png"),
