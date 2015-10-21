@@ -22,9 +22,8 @@ import org.openlca.app.navigation.CategoryElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.actions.INavigationAction;
-import org.openlca.app.util.Info;
+import org.openlca.app.util.Error;
 import org.openlca.app.util.UI;
-
 import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.api.RepositoryConfig;
 import org.openlca.cloud.model.data.DatasetDescriptor;
@@ -39,44 +38,71 @@ public class ConnectAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		InputDialog dialog = new InputDialog();
-		if (dialog.open() != Dialog.OK)
-			return;
-		RepositoryConfig config = dialog.createConfig();
-		NavigationRoot root = RepositoryNavigator.getNavigationRoot();
-		App.run("#Connecting to repository " + config.getServerUrl() + " "
-				+ config.getRepositoryId(), () -> connect(config, root),
-				RepositoryNavigator::refresh);
+		Runner runner = new Runner();
+		runner.run();
+		if (runner.error != null)
+			Error.showBox(runner.error.getMessage());
+		RepositoryNavigator.refresh();
 	}
 
-	private void connect(RepositoryConfig config, NavigationRoot root) {
-		RepositoryClient client = new RepositoryClient(config);
-		try {
-			// only fetch to check if can connect
-			client.requestFetch();
-		} catch (WebRequestException e) {
-			Info.showBox(e.getMessage());
-			config.disconnect();
-			return;
+	private class Runner {
+
+		private Exception error;
+
+		private void run() {
+			InputDialog dialog = new InputDialog();
+			if (dialog.open() != Dialog.OK)
+				return;
+			RepositoryConfig config = dialog.createConfig();
+			NavigationRoot root = RepositoryNavigator.getNavigationRoot();
+			App.runWithProgress(
+					"#Connecting to repository " + config.getServerUrl() + " "
+							+ config.getRepositoryId(),
+					() -> connect(config, root));
 		}
-		root.setClient(client);
-		root.update();
-		DiffIndex index = DiffIndex.getFor(client);
-		DiffIndexer indexer = new DiffIndexer(index);
-		indexer.addToIndex(collectDescriptors(root.getChildren().get(0)),
-				DiffType.NEW);
-		index.close();
-	}
 
-	private List<DatasetDescriptor> collectDescriptors(
-			INavigationElement<?> element) {
-		List<DatasetDescriptor> descriptor = new ArrayList<>();
-		if (element instanceof ModelElement
-				|| element instanceof CategoryElement)
-			descriptor.add(NavigationUtil.toDescriptor(element));
-		for (INavigationElement<?> child : element.getChildren())
-			descriptor.addAll(collectDescriptors(child));
-		return descriptor;
+		private void connect(RepositoryConfig config, NavigationRoot root) {
+			RepositoryClient client = new RepositoryClient(config);
+			try {
+				client.login();
+				String owner = config.getRepositoryId().split("/")[0];
+				String repositoryName = config.getRepositoryId().split("/")[1];
+				if (owner.equals(config.getUsername())) {
+					if (!client.repositoryExists(repositoryName))
+						client.createRepository(repositoryName);
+				} else {
+					if (!client.hasAccess(config.getRepositoryId())) {
+						error = new Exception(
+								"#Repository does not exist or user does not have access to it");
+						config.disconnect();
+						return;
+					}
+				}
+			} catch (WebRequestException e) {
+				error = e;
+				config.disconnect();
+				return;
+			}
+			root.setClient(client);
+			root.update();
+			DiffIndex index = DiffIndex.getFor(client);
+			DiffIndexer indexer = new DiffIndexer(index);
+			indexer.addToIndex(collectDescriptors(root.getChildren().get(0)),
+					DiffType.NEW);
+			index.close();
+		}
+
+		private List<DatasetDescriptor> collectDescriptors(
+				INavigationElement<?> element) {
+			List<DatasetDescriptor> descriptor = new ArrayList<>();
+			if (element instanceof ModelElement
+					|| element instanceof CategoryElement)
+				descriptor.add(NavigationUtil.toDescriptor(element));
+			for (INavigationElement<?> child : element.getChildren())
+				descriptor.addAll(collectDescriptors(child));
+			return descriptor;
+		}
+
 	}
 
 	private class InputDialog extends Dialog {
