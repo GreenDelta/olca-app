@@ -14,7 +14,6 @@
 	<classpathentry exported="true" kind="lib" path="libs/commons-logging-1.1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-math3-3.1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-pool-1.5.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/compiler-0.8.17.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/derby-10.10.1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/ecore-2.6.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/gson-2.2.4.jar"/>
