@@ -1,4 +1,4 @@
-package org.openlca.app.results.analysis;
+package org.openlca.app.results;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -301,11 +301,11 @@ public class ImpactTreePage extends FormPage {
 				return true;
 			if (element instanceof FlowWithProcessDescriptor) {
 				FlowWithProcessDescriptor descriptor = (FlowWithProcessDescriptor) element;
-				return getResult(descriptor) > 0d;
+				return getResult(descriptor) != 0d;
 			}
 			if (element instanceof ProcessDescriptor) {
 				ProcessDescriptor descriptor = (ProcessDescriptor) element;
-				return getResult(descriptor) > 0d;
+				return getResult(descriptor) != 0d;
 			}
 			return true;
 		}
@@ -324,11 +324,11 @@ public class ImpactTreePage extends FormPage {
 						descriptor.process, descriptor.flow).value;
 				if (inventory == 0d)
 					return false;
-				return getResult(descriptor) > 0d;
+				return getResult(descriptor) != 0d;
 			}
 			if (element instanceof ProcessDescriptor) {
 				ProcessDescriptor descriptor = (ProcessDescriptor) element;
-				return getResult(descriptor) > 0d;
+				return getResult(descriptor) != 0d;
 			}
 			return true;
 		}

@@ -11,6 +11,7 @@ import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.results.ContributionTablePage;
 import org.openlca.app.results.FlowImpactPage;
 import org.openlca.app.results.GroupPage;
+import org.openlca.app.results.ImpactTreePage;
 import org.openlca.app.results.LocationContributionPage;
 import org.openlca.app.results.NwResultPage;
 import org.openlca.app.results.ResultEditorInput;
@@ -49,14 +50,12 @@ public class AnalyzeEditor extends FormEditor {
 	}
 
 	@Override
-	public void init(IEditorSite site, IEditorInput input)
-			throws PartInitException {
+	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);
 		ResultEditorInput editorInput = (ResultEditorInput) input;
 		String resultKey = editorInput.getResultKey();
 		String setupKey = editorInput.getSetupKey();
-		FullResultProvider result = Cache.getAppCache().remove(resultKey,
-				FullResultProvider.class);
+		FullResultProvider result = Cache.getAppCache().remove(resultKey, FullResultProvider.class);
 		setup = Cache.getAppCache().remove(setupKey, CalculationSetup.class);
 		ProductSystem system = setup.productSystem;
 		String name = Messages.AnalysisResultOf + " " + system.getName();
@@ -80,7 +79,8 @@ public class AnalyzeEditor extends FormEditor {
 			if (result.hasImpactResults())
 				addPage(new FlowImpactPage(this, result));
 			addPage(new ContributionTreePage(this, result));
-			addPage(new ImpactTreePage(this, result));
+			if (result.hasImpactResults())
+				addPage(new ImpactTreePage(this, result));
 			addPage(new GroupPage(this, result));
 			addPage(new LocationContributionPage(this, result));
 			if (FeatureFlag.EXPERIMENTAL_VISUALISATIONS.isEnabled()) {
