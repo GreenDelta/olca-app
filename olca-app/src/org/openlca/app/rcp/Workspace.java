@@ -1,6 +1,7 @@
 package org.openlca.app.rcp;
 
 import java.io.File;
+import java.net.URI;
 import java.net.URL;
 
 import org.eclipse.core.runtime.Platform;
@@ -59,16 +60,15 @@ public class Workspace {
 		return dir;
 	}
 
-	private static File getFromInstallLocation() {
-		String path = Platform.getInstallLocation().getURL().toString();
-		if (path.startsWith("file:"))
-			path = path.substring(6);
-		File installDir = new File(path);
+	private static File getFromInstallLocation() throws Exception {
+		URI uri = Platform.getInstallLocation().getURL().toURI();
+		File installDir = new File(uri);
 		File dir = new File(installDir, Config.WORK_SPACE_FOLDER_NAME);
 		if (!dir.exists())
 			dir.mkdirs();
 		return dir;
 	}
+
 	private static File getDirFromCommandLine() {
 		try {
 			String path = CommandArgument.DATA_DIR.getValue();
