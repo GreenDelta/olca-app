@@ -26,7 +26,14 @@ public final class Config {
 	 * "openLCA-data", but it can be renamed in development versions (so that
 	 * the users can run multiple versions of openLCA in parallel).
 	 */
-	public static final String WORK_SPACE_FOLDER_NAME = "openLCA-data-1.4";
+	public static final String WORK_SPACE_FOLDER_NAME = "openLCA-data-1.5";
+
+	/**
+	 * Indicates if the workspace folder should be located in the user dir. If
+	 * false the workspace will be created in the installation directory of
+	 * openLCA
+	 */
+	public static final boolean WORK_SPACE_IN_USER_DIR = false;
 
 	/**
 	 * The name of default folder where the local databases are stored. This
@@ -44,8 +51,7 @@ public final class Config {
 	public static boolean isBrowserEnabled() {
 		if (browserEnabled != null)
 			return browserEnabled;
-		boolean disabled = Preferences.getStore().getBoolean(
-				"olca.disable.browser");
+		boolean disabled = Preferences.getStore().getBoolean("olca.disable.browser");
 		browserEnabled = !disabled;
 		return browserEnabled;
 	}
@@ -53,8 +59,7 @@ public final class Config {
 	public static void setBrowserEnabled(boolean enabled) {
 		browserEnabled = enabled;
 		boolean disabled = !enabled;
-		Preferences.getStore()
-				.setValue("olca.disable.browser", disabled);
+		Preferences.getStore().setValue("olca.disable.browser", disabled);
 	}
 
 }

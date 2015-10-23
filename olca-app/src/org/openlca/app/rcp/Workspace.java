@@ -35,7 +35,10 @@ public class Workspace {
 			Platform.getInstanceLocation().release();
 			File dir = getDirFromCommandLine();
 			if (dir == null)
-				dir = getFromUserHome();
+				if (Config.WORK_SPACE_IN_USER_DIR)
+					dir = getFromUserHome();
+				else
+					dir = getFromInstallLocation();
 			URL workspaceUrl = new URL("file", null, dir.getAbsolutePath());
 			Platform.getInstanceLocation().set(workspaceUrl, true);
 			Workspace.dir = dir;
@@ -56,6 +59,16 @@ public class Workspace {
 		return dir;
 	}
 
+	private static File getFromInstallLocation() {
+		String path = Platform.getInstallLocation().getURL().toString();
+		if (path.startsWith("file:"))
+			path = path.substring(6);
+		File installDir = new File(path);
+		File dir = new File(installDir, Config.WORK_SPACE_FOLDER_NAME);
+		if (!dir.exists())
+			dir.mkdirs();
+		return dir;
+	}
 	private static File getDirFromCommandLine() {
 		try {
 			String path = CommandArgument.DATA_DIR.getValue();
