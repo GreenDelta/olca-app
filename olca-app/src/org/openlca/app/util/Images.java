@@ -122,6 +122,10 @@ public class Images {
 			return ImageType.LOCATION_ICON;
 		case PARAMETER:
 			return ImageType.FORMULA_ICON;
+		case COST_CATEGORY:
+			return ImageType.COST_CATEGORY_ICON;
+		case CURRENCY:
+			return ImageType.CURRENCY_ICON;
 		case UNIT_GROUP:
 		case UNIT:
 			return ImageType.UNIT_GROUP_ICON;
@@ -179,6 +183,10 @@ public class Images {
 			return ImageType.LOCATION_CATEGORY_ICON;
 		case PARAMETER:
 			return ImageType.PARAMETER_CATEGORY_ICON;
+		case COST_CATEGORY:
+			return ImageType.COST_CATEGORY_CATEGORY_ICON;
+		case CURRENCY:
+			return ImageType.CURRENCY_CATEGORY_ICON;
 		default:
 			return ImageType.FOLDER_SMALL;
 		}

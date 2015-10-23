@@ -151,9 +151,16 @@ public class CreateModelAction extends Action implements INavigationAction {
 			return ImageType.SOURCE_ICON_NEW.getDescriptor();
 		case UNIT_GROUP:
 			return ImageType.UNIT_GROUP_ICON_NEW.getDescriptor();
-		// TODO add cost category icon
-		// TODO add location icon
-		// TODO add parameter icon
+		case SOCIAL_INDICATOR:
+			return ImageType.INDICATOR_ICON_NEW.getDescriptor();
+		case LOCATION:
+			return ImageType.LOCATION_ICON_NEW.getDescriptor();
+		case PARAMETER:
+			return ImageType.PARAMETER_ICON_NEW.getDescriptor();
+		case COST_CATEGORY:
+			return ImageType.COST_CATEGORY_ICON_NEW.getDescriptor();
+		case CURRENCY:
+			return ImageType.CURRENCY_ICON_NEW.getDescriptor();
 		default:
 			return null;
 		}

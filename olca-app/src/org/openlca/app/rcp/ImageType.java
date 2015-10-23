@@ -42,6 +42,18 @@ public enum ImageType {
 
 	COST_CALC_ICON("cost_calc_icon.png"),
 
+	COST_CATEGORY_ICON("cost_category.png"),
+
+	COST_CATEGORY_ICON_NEW("cost_category_new.png"),
+
+	COST_CATEGORY_CATEGORY_ICON("folder_cost_category.png"),
+
+	CURRENCY_ICON("currency.png"),
+
+	CURRENCY_ICON_NEW("currency_new.png"),
+
+	CURRENCY_CATEGORY_ICON("folder_currency.png"),
+
 	DB_ICON("db_obj.gif"),
 
 	DB_ICON_DIS("db_obj_dis.png"),
@@ -140,6 +152,8 @@ public enum ImageType {
 
 	INDICATOR_ICON("indicator_obj.png"),
 
+	INDICATOR_ICON_NEW("indicator_obj_new.png"),
+
 	INDICATOR_CATEGORY_ICON("folder_indicator.png"),
 
 	HELP_ICON("help_16x16.gif"),
@@ -164,7 +178,9 @@ public enum ImageType {
 
 	LOAD_ICON("load_obj.gif"),
 	
-	LOCATION_ICON("location_editor.png"),
+	LOCATION_ICON("location.png"),
+
+	LOCATION_ICON_NEW("location_new.png"),
 
 	LOCATION_CATEGORY_ICON("folder_location.png"),
 
@@ -223,6 +239,8 @@ public enum ImageType {
 	OUTLINE_ICON("outline_co.gif"),
 
 	OUTPUT_ICON("output_16.png"),
+
+	PARAMETER_ICON_NEW("formula_16_new.png"),
 
 	PARAMETER_CATEGORY_ICON("folder_parameter.png"),
 
