@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.eclipse.draw2d.GridData;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.rcp.ImageManager;
 import org.openlca.app.rcp.ImageType;
@@ -15,54 +15,51 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.Info;
 import org.openlca.app.util.UI;
 
-import com.google.gson.JsonObject;
-
 class DiffEditor extends Composite {
 
 	private FormToolkit toolkit;
-	private Node root;
+	private JsonNode root;
 	private ModelTree localTree;
 	private ModelTree remoteTree;
-	private List<Node> nodesAsList = new ArrayList<Node>();
+	private List<JsonNode> nodesAsList = new ArrayList<JsonNode>();
 	private boolean editMode;
 
-	static DiffEditor forEditing(Composite parent, JsonObject localJson,
-			JsonObject remoteJson, JsonObject mergedJson) {
-		return forEditing(parent, null, localJson, remoteJson, mergedJson);
+	static DiffEditor forEditing(Composite parent, JsonNode root) {
+		return forEditing(parent, null, root);
 	}
 
 	static DiffEditor forEditing(Composite parent, FormToolkit toolkit,
-			JsonObject localJson, JsonObject remoteJson, JsonObject mergedJson) {
-		DiffEditor editor = new DiffEditor(parent, toolkit);
+			JsonNode root) {
+		DiffEditor editor = new DiffEditor(parent, toolkit, root);
 		editor.editMode = true;
-		editor.initialize(localJson, remoteJson, mergedJson);
+		editor.initialize();
 		return editor;
 	}
 
-	static DiffEditor forViewing(Composite parent, JsonObject localJson,
-			JsonObject remoteJson) {
-		return forViewing(parent, null, localJson, remoteJson);
+	static DiffEditor forViewing(Composite parent, JsonNode root) {
+		return forViewing(parent, null, root);
 	}
 
 	static DiffEditor forViewing(Composite parent, FormToolkit toolkit,
-			JsonObject localJson, JsonObject remoteJson) {
-		DiffEditor editor = new DiffEditor(parent, toolkit);
+			JsonNode root) {
+		DiffEditor editor = new DiffEditor(parent, toolkit, root);
 		editor.editMode = false;
-		editor.initialize(localJson, remoteJson, null);
+		editor.initialize();
 		return editor;
 	}
 
-	private DiffEditor(Composite parent, FormToolkit toolkit) {
+	private DiffEditor(Composite parent, FormToolkit toolkit, JsonNode root) {
 		super(parent, SWT.NONE);
 		this.toolkit = toolkit;
+		this.root = root;
 	}
 
-	private void initialize(JsonObject localJson, JsonObject remoteJson,
-			JsonObject mergedJson) {
+	private void initialize() {
 		UI.gridLayout(this, 1, 0, 0);
-		if (localJson != null && remoteJson != null && editMode)
+		if (editMode && root.getLocalElement() != null
+				&& root.getRemoteElement() != null)
 			createMenubar();
-		createTreeParts(localJson, remoteJson, mergedJson);
+		createTreeParts();
 		if (toolkit != null)
 			toolkit.adapt(this);
 	}
@@ -104,18 +101,13 @@ class DiffEditor extends Composite {
 		return button;
 	}
 
-	private void createTreeParts(JsonObject localJson, JsonObject remoteJson,
-			JsonObject mergedJson) {
+	private void createTreeParts() {
 		Composite container = new Composite(this, SWT.BORDER);
-		UI.gridLayout(container, 3, 0, 0);
+		GridLayout layout = UI.gridLayout(container, 2, 0, 0);
+		layout.makeColumnsEqualWidth = true;
 		UI.gridData(container, true, true);
-		root = Node.create(null, null, localJson, remoteJson, mergedJson);
-		new NodeBuilder().build(root, localJson, remoteJson);
-		new NodeSorter().sort(root);
 		addChildrenToList(root);
 		localTree = createTreePart(container, "#Local model", root, true);
-		UI.gridData(new Label(container, SWT.VERTICAL | SWT.SEPARATOR), false,
-				true);
 		remoteTree = createTreePart(container, "#Remote model", root, false);
 		localTree.setCounterpart(remoteTree);
 		remoteTree.setCounterpart(localTree);
@@ -124,25 +116,25 @@ class DiffEditor extends Composite {
 	}
 
 	private ModelTree createTreePart(Composite container, String label,
-			Node root, boolean local) {
+			JsonNode root, boolean local) {
 		Composite localComposite = UI.formComposite(container, toolkit);
 		UI.gridLayout(localComposite, 1, 0, 0);
 		UI.gridData(localComposite, true, true);
 		ModelTree tree = new ModelTree(localComposite, local);
-		tree.setInput(new Node[] { root });
+		tree.setInput(new JsonNode[] { root });
 		return tree;
 	}
 
-	private void addChildrenToList(Node node) {
-		for (Node child : node.children) {
+	private void addChildrenToList(JsonNode node) {
+		for (JsonNode child : node.children) {
 			nodesAsList.add(child);
 			addChildrenToList(child);
 		}
 	}
 
 	private void copySelection() {
-		List<Node> selection = localTree.getSelection();
-		for (Node node : selection)
+		List<JsonNode> selection = localTree.getSelection();
+		for (JsonNode node : selection)
 			if (!node.hasEqualValues())
 				node.copyRemoteValue();
 		localTree.refresh();
@@ -150,7 +142,7 @@ class DiffEditor extends Composite {
 	}
 
 	private void copyAll() {
-		for (Node node : root.children)
+		for (JsonNode node : root.children)
 			if (!node.hasEqualValues())
 				node.copyRemoteValue();
 		localTree.refresh();
@@ -158,27 +150,27 @@ class DiffEditor extends Composite {
 	}
 
 	private void resetSelection() {
-		List<Node> selection = localTree.getSelection();
-		for (Node node : selection)
-			if (node.hasEqualValues())
-				node.reset();
+		List<JsonNode> selection = localTree.getSelection();
+		for (JsonNode node : selection)
+			node.reset();
 		localTree.refresh();
 		remoteTree.refresh();
 	}
 
 	private void resetAll() {
-		root.reset();
+		for (JsonNode node : root.children)
+			node.reset();
 		localTree.refresh();
 		remoteTree.refresh();
 	}
 
 	private void selectNext() {
-		List<Node> selection = localTree.getSelection();
+		List<JsonNode> selection = localTree.getSelection();
 		int selectedIndex = -1;
 		if (!selection.isEmpty())
 			selectedIndex = nodesAsList
 					.indexOf(selection.get(selection.size() - 1));
-		Node select = null;
+		JsonNode select = null;
 		for (int i = selectedIndex + 1; i < nodesAsList.size(); i++)
 			if (!nodesAsList.get(i).hasEqualValues()) {
 				select = nodesAsList.get(i);
@@ -197,12 +189,12 @@ class DiffEditor extends Composite {
 	}
 
 	private void selectPrevious() {
-		List<Node> selection = localTree.getSelection();
+		List<JsonNode> selection = localTree.getSelection();
 		int selectedIndex = nodesAsList.size();
 		if (!selection.isEmpty())
 			selectedIndex = nodesAsList
 					.indexOf(selection.get(selection.size() - 1));
-		Node select = null;
+		JsonNode select = null;
 		for (int i = selectedIndex - 1; i > 0; i--)
 			if (!nodesAsList.get(i).hasEqualValues()) {
 				select = nodesAsList.get(i);
@@ -220,7 +212,7 @@ class DiffEditor extends Composite {
 			Info.showPopup("No more changes found");
 	}
 
-	Node getRootNode() {
+	JsonNode getRootNode() {
 		return root;
 	}
 

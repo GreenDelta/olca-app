@@ -2,16 +2,24 @@ package org.openlca.app.cloud.ui.compare;
 
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-class NodeBuilder {
+public class JsonNodeBuilder {
 
-	void build(Node node, JsonElement localJson, JsonElement remoteJson) {
+	public JsonNode build(JsonElement localJson, JsonElement remoteJson) {
+		JsonNode node = JsonNode.create(null, null, localJson, remoteJson);
+		build(node, localJson, remoteJson);
+		new NodeSorter().sort(node);
+		return node;
+	}
+
+	private void build(JsonNode node, JsonElement localJson,
+			JsonElement remoteJson) {
 		if (localJson != null) {
 			if (localJson.isJsonObject())
 				build(node, JsonUtil.toJsonObject(localJson),
@@ -19,17 +27,17 @@ class NodeBuilder {
 			if (localJson.isJsonArray())
 				build(node, JsonUtil.toJsonArray(localJson),
 						JsonUtil.toJsonArray(remoteJson));
-		} else if (remoteJson != null){
+		} else if (remoteJson != null) {
 			if (remoteJson.isJsonObject())
 				build(node, JsonUtil.toJsonObject(localJson),
 						JsonUtil.toJsonObject(remoteJson));
 			if (remoteJson.isJsonArray())
 				build(node, JsonUtil.toJsonArray(localJson),
-						JsonUtil.toJsonArray(remoteJson));			
+						JsonUtil.toJsonArray(remoteJson));
 		}
 	}
 
-	private void build(Node node, JsonObject localObject,
+	private void build(JsonNode node, JsonObject localObject,
 			JsonObject remoteObject) {
 		Set<String> added = new HashSet<>();
 		if (localObject != null)
@@ -51,7 +59,8 @@ class NodeBuilder {
 			}
 	}
 
-	private void build(Node node, JsonArray localArray, JsonArray remoteArray) {
+	private void build(JsonNode node, JsonArray localArray,
+			JsonArray remoteArray) {
 		// TODO sort by content, so array order matches
 		Iterator<JsonElement> it1 = null;
 		if (localArray != null)
@@ -65,8 +74,8 @@ class NodeBuilder {
 				JsonElement localValue = it1.next();
 				JsonElement remoteValue = it2 != null ? it2.hasNext() ? it2
 						.next() : null : null;
-				Node childNode = Node.create(node, Integer.toString(counter++),
-						localValue, remoteValue);
+				JsonNode childNode = JsonNode.create(node,
+						Integer.toString(counter++), localValue, remoteValue);
 				build(childNode, localValue, remoteValue);
 				node.children.add(childNode);
 			}
@@ -75,18 +84,19 @@ class NodeBuilder {
 				JsonElement localValue = it1 != null ? it1.hasNext() ? it1
 						.next() : null : null;
 				JsonElement remoteValue = it2.next();
-				Node childNode = Node.create(node, Integer.toString(counter++),
-						localValue, remoteValue);
+				JsonNode childNode = JsonNode.create(node,
+						Integer.toString(counter++), localValue, remoteValue);
 				build(childNode, localValue, remoteValue);
 				node.children.add(childNode);
 			}
 	}
 
-	private void build(Node parent, String key, JsonElement localValue,
+	private void build(JsonNode parent, String key, JsonElement localValue,
 			JsonElement remoteValue) {
 		if (!JsonUtil.displayElement(key))
 			return;
-		Node childNode = Node.create(parent, key, localValue, remoteValue);
+		JsonNode childNode = JsonNode.create(parent, key, localValue,
+				remoteValue);
 		parent.children.add(childNode);
 		if (localValue == null) {
 			if (JsonUtil.isReference(remoteValue))

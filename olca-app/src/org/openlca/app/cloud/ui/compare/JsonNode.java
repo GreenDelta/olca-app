@@ -9,29 +9,22 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 
-class Node {
+public class JsonNode {
 
 	String key;
-	Node parent;
-	List<Node> children = new ArrayList<>();
+	JsonNode parent;
+	List<JsonNode> children = new ArrayList<>();
 	private JsonElement localElement;
 	private JsonElement remoteElement;
 	private JsonElement originalElement;
 
-	static Node create(Node parent, String key, JsonElement local,
-			JsonElement remote, JsonElement merged) {
-		if (merged == null)
-			return create(parent, key, local, remote);
-		return new Node(parent, key, merged, remote, local);
-	}
-
-	static Node create(Node parent, String key, JsonElement local,
+	static JsonNode create(JsonNode parent, String key, JsonElement local,
 			JsonElement remote) {
 		JsonElement original = local != null ? JsonUtil.deepCopy(local) : null;
-		return new Node(parent, key, local, remote, original);
+		return new JsonNode(parent, key, local, remote, original);
 	}
 
-	private Node(Node parent, String key, JsonElement localElement,
+	private JsonNode(JsonNode parent, String key, JsonElement localElement,
 			JsonElement remoteElement, JsonElement originalElement) {
 		this.parent = parent;
 		this.key = key;
@@ -46,9 +39,11 @@ class Node {
 		return remoteElement;
 	}
 
-	JsonElement getElement(boolean local) {
-		if (local)
-			return localElement;
+	public JsonElement getLocalElement() {
+		return localElement;
+	}
+
+	public JsonElement getRemoteElement() {
 		return remoteElement;
 	}
 
@@ -94,7 +89,7 @@ class Node {
 	private void updateChildren() {
 		if (children.isEmpty())
 			return;
-		for (Node child : children) {
+		for (JsonNode child : children) {
 			JsonElement element = null;
 			if (localElement.isJsonObject()) {
 				element = localElement.getAsJsonObject().get(child.key);

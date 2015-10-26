@@ -12,7 +12,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
 public class JsonUtil {
-
+	
 	public static JsonObject toJsonObject(JsonElement element) {
 		if (element == null)
 			return null;

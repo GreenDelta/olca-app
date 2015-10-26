@@ -9,38 +9,29 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.util.UI;
 
-import com.google.gson.JsonObject;
-
 public class DiffEditorDialog extends FormDialog {
 
-	public final static int KEEP_LOCAL_MODEL = IDialogConstants.CANCEL_ID;
-	public final static int FETCH_REMOTE_MODEL = IDialogConstants.OK_ID;
-	private JsonObject local;
-	private JsonObject remote;
-	private JsonObject merged;
+	public final static int KEEP_LOCAL_MODEL = 2;
+	public final static int FETCH_REMOTE_MODEL = 3;
 	private DiffEditor editor;
+	private JsonNode root;
 	private boolean editMode;
 
-	public static DiffEditorDialog forEditing(JsonObject local,
-			JsonObject remote, JsonObject merged) {
-		DiffEditorDialog dialog = new DiffEditorDialog(local, remote, merged);
+	public static DiffEditorDialog forEditing(JsonNode root) {
+		DiffEditorDialog dialog = new DiffEditorDialog(root);
 		dialog.editMode = true;
 		return dialog;
 	}
 
-	public static DiffEditorDialog forViewing(JsonObject local,
-			JsonObject remote) {
-		DiffEditorDialog dialog = new DiffEditorDialog(local, remote, null);
+	public static DiffEditorDialog forViewing(JsonNode root) {
+		DiffEditorDialog dialog = new DiffEditorDialog(root);
 		dialog.editMode = false;
 		return dialog;
 	}
 
-	private DiffEditorDialog(JsonObject local, JsonObject remote,
-			JsonObject merged) {
+	private DiffEditorDialog(JsonNode root) {
 		super(UI.shell());
-		this.local = local;
-		this.remote = remote;
-		this.merged = merged;
+		this.root = root;
 		setBlockOnOpen(true);
 	}
 
@@ -58,22 +49,23 @@ public class DiffEditorDialog extends FormDialog {
 		toolkit.paintBordersFor(body);
 		UI.gridData(body, true, true);
 		if (editMode)
-			editor = DiffEditor
-					.forEditing(body, toolkit, local, remote, merged);
+			editor = DiffEditor.forEditing(body, toolkit, root);
 		else
-			editor = DiffEditor.forViewing(body, toolkit, local, remote);
+			editor = DiffEditor.forViewing(body, toolkit, root);
 		UI.gridData(editor, true, true);
 		form.reflow(true);
 	}
 
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
+		boolean hasLocal = root.getLocalElement() != null;
+		boolean hasRemote = root.getRemoteElement() != null;
 		if (!editMode)
 			createButton(parent, IDialogConstants.OK_ID, "#Close", true);
-		else if (local != null && remote != null)
+		else if (hasLocal && hasRemote)
 			createButton(parent, IDialogConstants.OK_ID, "#Mark as merged",
 					true);
-		else if (local == null) {
+		else if (hasLocal) {
 			createButton(parent, KEEP_LOCAL_MODEL, "#Keep model deleted", true);
 			createButton(parent, FETCH_REMOTE_MODEL, "#Fetch remote model",
 					true);
@@ -86,6 +78,15 @@ public class DiffEditorDialog extends FormDialog {
 
 	public boolean localDiffersFromRemote() {
 		return !editor.getRootNode().hasEqualValues();
+	}
+
+	@Override
+	protected void buttonPressed(int buttonId) {
+		super.buttonPressed(buttonId);
+		if (buttonId == KEEP_LOCAL_MODEL || buttonId == FETCH_REMOTE_MODEL) {
+			setReturnCode(buttonId);
+			close();
+		}
 	}
 
 }

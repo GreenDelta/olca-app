@@ -27,7 +27,7 @@ import org.openlca.app.viewers.AbstractViewer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-class ModelTree extends AbstractViewer<Node, TreeViewer> {
+class ModelTree extends AbstractViewer<JsonNode, TreeViewer> {
 
 	private boolean local;
 	private ModelTree counterpart;
@@ -44,7 +44,7 @@ class ModelTree extends AbstractViewer<Node, TreeViewer> {
 	@Override
 	protected TreeViewer createViewer(Composite parent) {
 		TreeViewer viewer = new TreeViewer(parent, SWT.MULTI | SWT.NO_FOCUS
-				| SWT.HIDE_SELECTION);
+				| SWT.HIDE_SELECTION | SWT.BORDER);
 		viewer.setContentProvider(new ContentProvider());
 		viewer.setLabelProvider(getLabelProvider());
 		viewer.getTree().getVerticalBar()
@@ -73,7 +73,7 @@ class ModelTree extends AbstractViewer<Node, TreeViewer> {
 			otherBar.setVisible(false);
 	}
 
-	public List<Node> getSelection() {
+	public List<JsonNode> getSelection() {
 		return Viewers.getAllSelected(getViewer());
 	}
 
@@ -99,9 +99,9 @@ class ModelTree extends AbstractViewer<Node, TreeViewer> {
 		}
 
 		private void setExpanded(Object element, boolean value) {
-			if (!(element instanceof Node))
+			if (!(element instanceof JsonNode))
 				return;
-			Node node = (Node) element;
+			JsonNode node = (JsonNode) element;
 			counterpart.getViewer().setExpandedState(node, value);
 			updateOtherScrollBar();
 		}
@@ -142,30 +142,30 @@ class ModelTree extends AbstractViewer<Node, TreeViewer> {
 			Object[] array = (Object[]) inputElement;
 			if (array.length == 0)
 				return null;
-			if (!(array[0] instanceof Node))
+			if (!(array[0] instanceof JsonNode))
 				return null;
-			return ((Node) array[0]).children.toArray();
+			return ((JsonNode) array[0]).children.toArray();
 		}
 
 		@Override
 		public Object[] getChildren(Object parentElement) {
-			if (!(parentElement instanceof Node))
+			if (!(parentElement instanceof JsonNode))
 				return null;
-			Node node = (Node) parentElement;
+			JsonNode node = (JsonNode) parentElement;
 			return node.children.toArray();
 		}
 
 		@Override
 		public Object getParent(Object element) {
-			Node node = (Node) element;
+			JsonNode node = (JsonNode) element;
 			return node.parent;
 		}
 
 		@Override
 		public boolean hasChildren(Object element) {
-			if (!(element instanceof Node))
+			if (!(element instanceof JsonNode))
 				return false;
-			Node node = (Node) element;
+			JsonNode node = (JsonNode) element;
 			return !node.children.isEmpty();
 		}
 
@@ -176,10 +176,11 @@ class ModelTree extends AbstractViewer<Node, TreeViewer> {
 
 		@Override
 		public String getText(Object obj) {
-			if (!(obj instanceof Node))
+			if (!(obj instanceof JsonNode))
 				return null;
-			Node node = (Node) obj;
-			JsonElement element = node.getElement(local);
+			JsonNode node = (JsonNode) obj;
+			JsonElement element = local ? node.getLocalElement() : node
+					.getRemoteElement();
 			if (element == null)
 				return null;
 			if (element.isJsonNull())
@@ -205,9 +206,9 @@ class ModelTree extends AbstractViewer<Node, TreeViewer> {
 
 		@Override
 		public Color getBackground(Object object) {
-			if (!(object instanceof Node))
+			if (!(object instanceof JsonNode))
 				return null;
-			Node node = (Node) object;
+			JsonNode node = (JsonNode) object;
 			if (node.hasEqualValues())
 				return null;
 			return Colors.getColor(255, 255, 128);

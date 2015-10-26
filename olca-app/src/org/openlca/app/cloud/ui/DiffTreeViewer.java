@@ -1,5 +1,7 @@
 package org.openlca.app.cloud.ui;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -15,6 +17,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Tree;
 import org.openlca.app.cloud.ui.DiffResult.DiffResponse;
 import org.openlca.app.cloud.ui.compare.DiffEditorDialog;
+import org.openlca.app.cloud.ui.compare.JsonNode;
+import org.openlca.app.cloud.ui.compare.JsonNodeBuilder;
+import org.openlca.app.cloud.ui.compare.JsonUtil;
 import org.openlca.app.rcp.ImageManager;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Images;
@@ -31,6 +36,7 @@ public class DiffTreeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 
 	private Function<DiffResult, JsonObject> getLocalJson;
 	private Function<DiffResult, JsonObject> getRemoteJson;
+	private Map<String, JsonNode> nodes = new HashMap<>();
 
 	public DiffTreeViewer(Composite parent,
 			Function<DiffResult, JsonObject> getJson) {
@@ -73,15 +79,26 @@ public class DiffTreeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 
 	private void openDiffEditor(DiffNode selected) {
 		DiffResult result = (DiffResult) selected.getContent();
-		JsonObject local = getLocalJson.apply(result);
-		JsonObject remote = getRemoteJson.apply(result);
-		JsonObject merged = result.getMergedData();
+		JsonNode node = nodes.get(toKey(result.getDescriptor()));
+		JsonObject local = null;
+		JsonObject remote = null;
+		if (node == null) {
+			local = getLocalJson.apply(result);
+			remote = getRemoteJson.apply(result);
+			node = new JsonNodeBuilder().build(local, remote);
+			nodes.put(toKey(result.getDescriptor()), node);
+		} else {
+			local = JsonUtil.toJsonObject(node.getLocalElement());
+			remote = JsonUtil.toJsonObject(node.getRemoteElement());
+		}
 		DiffEditorDialog dialog = null;
-		if (result.getType() == DiffResponse.CONFLICT)
-			dialog = DiffEditorDialog.forEditing(local, remote, merged);
+		if (result.getType() != DiffResponse.CONFLICT)
+			dialog = DiffEditorDialog.forViewing(node);
 		else
-			dialog = DiffEditorDialog.forViewing(local, remote);
+			dialog = DiffEditorDialog.forEditing(node);
 		int code = dialog.open();
+		if (code == IDialogConstants.CANCEL_ID)
+			return;
 		result.setOverwriteLocalChanges(false);
 		result.setOverwriteRemoteChanges(false);
 		if (result.getType() != DiffResponse.CONFLICT)
@@ -112,6 +129,10 @@ public class DiffTreeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 			}
 		}
 		getViewer().refresh(selected);
+	}
+
+	private String toKey(DatasetDescriptor descriptor) {
+		return descriptor.getType().name() + descriptor.getRefId();
 	}
 
 	@Override

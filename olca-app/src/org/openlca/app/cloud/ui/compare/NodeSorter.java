@@ -5,16 +5,16 @@ import java.util.Comparator;
 
 import com.google.gson.JsonElement;
 
-class NodeSorter implements Comparator<Node> {
+class NodeSorter implements Comparator<JsonNode> {
 
-	void sort(Node node) {
+	void sort(JsonNode node) {
 		Collections.sort(node.children, this);
-		for (Node child : node.children)
+		for (JsonNode child : node.children)
 			sort(child);
 	}
 
 	@Override
-	public int compare(Node n1, Node n2) {
+	public int compare(JsonNode n1, JsonNode n2) {
 		int i1 = toInt(n1.getElement());
 		int i2 = toInt(n2.getElement());
 		if (i1 == i2)
