@@ -84,15 +84,21 @@ public class JsonUtil {
 	private static boolean equal(JsonObject e1, JsonObject e2) {
 		Set<String> checked = new HashSet<>();
 		for (Entry<String, JsonElement> entry : e1.entrySet()) {
+			checked.add(entry.getKey());
+			if (!displayElement(entry.getKey()))
+				if (!entry.getKey().equals("@id"))
+					continue;
 			JsonElement element = entry.getValue();
 			JsonElement other = e2.get(entry.getKey());
-			checked.add(entry.getKey());
 			if (!equal(element, other))
 				return false;
 		}
 		for (Entry<String, JsonElement> entry : e2.entrySet()) {
 			if (checked.contains(entry.getKey()))
 				continue;
+			if (!displayElement(entry.getKey()))
+				if (!entry.getKey().equals("@id"))
+					continue;
 			JsonElement element = e1.get(entry.getKey());
 			JsonElement other = entry.getValue();
 			if (!equal(element, other))

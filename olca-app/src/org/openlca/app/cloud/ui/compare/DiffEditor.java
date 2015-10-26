@@ -150,7 +150,9 @@ class DiffEditor extends Composite {
 	}
 
 	private void copyAll() {
-		root.copyRemoteValue();
+		for (Node node : root.children)
+			if (!node.hasEqualValues())
+				node.copyRemoteValue();
 		localTree.refresh();
 		remoteTree.refresh();
 	}
