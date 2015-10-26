@@ -24,6 +24,7 @@ import org.openlca.app.util.Error;
 import org.openlca.app.util.Info;
 import org.openlca.cloud.api.CommitInvocation;
 import org.openlca.cloud.api.RepositoryClient;
+import org.openlca.cloud.model.data.DatasetDescriptor;
 import org.openlca.cloud.util.WebRequests.WebRequestException;
 
 public class CommitAction extends Action implements INavigationAction {
@@ -151,14 +152,15 @@ public class CommitAction extends Action implements INavigationAction {
 		private void putChanges(List<DiffResult> changes,
 				CommitInvocation commit) {
 			for (DiffResult change : changes)
-				if (change.getType() == DiffResponse.DELETE_FROM_REMOTE)
-					commit.put(change.getDescriptor(), null);
-				else
+				if (change.getType() == DiffResponse.DELETE_FROM_REMOTE) {
+					DatasetDescriptor descriptor = change.getDescriptor();
+					descriptor.setFullPath(change.local.descriptor.getFullPath());
+					commit.put(descriptor, null);
+				} else
 					commit.put(Database.createRootDao(
 							change.getDescriptor().getType()).getForRefId(
 							change.getDescriptor().getRefId()));
 		}
-
 	}
 
 }

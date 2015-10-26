@@ -32,9 +32,9 @@ public class DiffResult {
 	}
 
 	public DatasetDescriptor getDescriptor() {
-		if (local != null)
-			return local.getDescriptor();
-		return toDescriptor(remote);
+		if (remote != null)
+			return toDescriptor(remote);
+		return local.getDescriptor();
 	}
 
 	public JsonObject getMergedData() {
