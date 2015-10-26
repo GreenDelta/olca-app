@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Stack;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -61,34 +62,42 @@ public class JsonNodeBuilder {
 
 	private void build(JsonNode node, JsonArray localArray,
 			JsonArray remoteArray) {
-		// TODO sort by content, so array order matches
-		Iterator<JsonElement> it1 = null;
+		Iterator<JsonElement> iterator = null;
 		if (localArray != null)
-			it1 = localArray.iterator();
-		Iterator<JsonElement> it2 = null;
-		if (remoteArray != null)
-			it2 = remoteArray.iterator();
+			iterator = localArray.iterator();
 		int counter = 1;
-		if (it1 != null)
-			while (it1.hasNext()) {
-				JsonElement localValue = it1.next();
-				JsonElement remoteValue = it2 != null ? it2.hasNext() ? it2
-						.next() : null : null;
+		Set<Integer> alreadyAddedRemotes = new HashSet<>();
+		if (iterator != null)
+			while (iterator.hasNext()) {
+				JsonElement localValue = iterator.next();
+				int index = find(node.key, localValue, remoteArray);
+				JsonElement remoteValue = null;
+				if (index != -1) {
+					remoteValue = remoteArray.get(index);
+					alreadyAddedRemotes.add(index);
+				}
 				JsonNode childNode = JsonNode.create(node,
 						Integer.toString(counter++), localValue, remoteValue);
 				build(childNode, localValue, remoteValue);
 				node.children.add(childNode);
 			}
-		if (it2 != null)
-			while (it2.hasNext()) {
-				JsonElement localValue = it1 != null ? it1.hasNext() ? it1
-						.next() : null : null;
-				JsonElement remoteValue = it2.next();
+		if (remoteArray != null)
+			iterator = remoteArray.iterator();
+		if (iterator != null) {
+			int count = 0;
+			while (iterator.hasNext()) {
+				JsonElement remoteValue = iterator.next();
+				if (alreadyAddedRemotes.contains(count++))
+					continue;
+				int index = find(node.key, remoteValue, localArray);
+				JsonElement localValue = index != -1 ? localArray.get(index)
+						: null;
 				JsonNode childNode = JsonNode.create(node,
 						Integer.toString(counter++), localValue, remoteValue);
 				build(childNode, localValue, remoteValue);
 				node.children.add(childNode);
 			}
+		}
 	}
 
 	private void build(JsonNode parent, String key, JsonElement localValue,
@@ -104,5 +113,83 @@ public class JsonNodeBuilder {
 		} else if (JsonUtil.isReference(localValue))
 			return;
 		build(childNode, localValue, remoteValue);
+	}
+
+	private int find(String key, JsonElement element, JsonArray array) {
+		if (key.equals("units"))
+			return find(element, array, "name");
+		if (key.equals("flowProperties"))
+			return find(element, array, "flowProperty.@id");
+		if (key.equals("exchanges"))
+			return find(element, array, "flow.@id", "input");
+		return find(element, array, "@id");
+	}
+
+	private int find(JsonElement element, JsonArray array, String... fields) {
+		if (fields == null)
+			return -1;
+		JsonObject object = element.getAsJsonObject();
+		String[] values = getValues(object, fields);
+		if (values == null)
+			return -1;
+		Iterator<JsonElement> iterator = array.iterator();
+		int index = 0;
+		while (iterator.hasNext()) {
+			JsonObject other = iterator.next().getAsJsonObject();
+			String[] otherValues = getValues(other, fields);
+			if (equal(values, otherValues))
+				return index;
+			index++;
+		}
+		return -1;
+	}
+
+	private String get(JsonObject object, String... path) {
+		if (path == null)
+			return null;
+		if (path.length == 0)
+			return null;
+		Stack<String> stack = new Stack<>();
+		for (int i = path.length - 1; i >= 0; i--)
+			stack.add(path[i]);
+		while (stack.size() > 1) {
+			String next = stack.pop();
+			if (!object.has(next))
+				return null;
+			object = object.get(next).getAsJsonObject();
+		}
+		JsonElement value = object.get(stack.pop());
+		if (value == null || value.isJsonNull())
+			return null;
+		if (!value.isJsonPrimitive())
+			return null;
+		if (value.getAsJsonPrimitive().isNumber())
+			return Double.toString(value.getAsNumber().doubleValue());
+		if (value.getAsJsonPrimitive().isBoolean())
+			return value.getAsBoolean() ? "true" : "false";
+		return value.getAsString();
+	}
+
+	private String[] getValues(JsonObject object, String[] fields) {
+		String[] values = new String[fields.length];
+		for (int i = 0; i < fields.length; i++) {
+			values[i] = get(object, fields[i].split("\\."));
+			if (values[i] == null)
+				return null;
+		}
+		return values;
+	}
+
+	private boolean equal(String[] a1, String[] a2) {
+		if (a1.length != a2.length)
+			return false;
+		for (int i = 0; i < a1.length; i++)
+			if (a1[i] == a2[i])
+				continue;
+			else if (a1[i] == null)
+				return false;
+			else if (!a1[i].equals(a2[i]))
+				return false;
+		return true;
 	}
 }

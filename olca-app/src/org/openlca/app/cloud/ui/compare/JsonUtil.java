@@ -38,10 +38,6 @@ public class JsonUtil {
 	}
 
 	public static boolean equal(JsonElement e1, JsonElement e2) {
-		if (e1 == null && e2 == null)
-			return true;
-		if (e1 == null || e2 == null)
-			return false;			
 		if (isNull(e1) && isNull(e2))
 			return true;
 		if (isNull(e1) || isNull(e2))
@@ -56,6 +52,8 @@ public class JsonUtil {
 	}
 
 	private static boolean isNull(JsonElement element) {
+		if (element == null)
+			return true;
 		if (element.isJsonNull())
 			return true;
 		if (element.isJsonArray())
