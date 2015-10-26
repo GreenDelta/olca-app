@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.openlca.cloud.model.data.DatasetDescriptor;
+import org.openlca.core.model.ModelType;
 
 public class DiffIndexer {
 
@@ -121,7 +122,7 @@ public class DiffIndexer {
 	}
 
 	public void removeFromIndex(DatasetDescriptor descriptor) {
-		removeFromIndex(Collections.singletonList(descriptor));		
+		removeFromIndex(Collections.singletonList(descriptor));
 	}
 
 	public void removeFromIndex(List<DatasetDescriptor> descriptors) {
@@ -129,10 +130,22 @@ public class DiffIndexer {
 			return;
 		for (DatasetDescriptor descriptor : descriptors)
 			index.remove(descriptor.getRefId());
-		index.commit();		
+		index.commit();
 	}
 
-	
+	public boolean hasDeletedChildren(ModelType type) {
+		for (Diff diff : index.getChanged())
+			if (diff.type == DiffType.DELETED)
+				if (diff.getDescriptor().getCategoryRefId() == null
+						&& diff.getDescriptor().getType() == type)
+					return true;
+		return false;
+	}
+
+	public boolean hasChanges() {
+		return index.getChanged().size() != 0;
+	}
+
 	public Diff getDiff(DatasetDescriptor descriptor) {
 		if (descriptor == null)
 			return null;

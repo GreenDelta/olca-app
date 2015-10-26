@@ -78,8 +78,12 @@ public class NavigationLabelProvider extends
 
 	private boolean hasChanged(INavigationElement<?> element, Diff diff,
 			DiffIndexer indexer) {
-		if (element instanceof RepositoryElement
-				|| element instanceof ModelTypeElement) {
+		if (element instanceof RepositoryElement)
+			return indexer.hasChanges();
+		else if (element instanceof ModelTypeElement) {
+			if (indexer.hasDeletedChildren(((ModelTypeElement) element)
+					.getContent()))
+				return true;
 			for (INavigationElement<?> child : element.getChildren()) {
 				Diff childDiff = indexer.getDiff(NavigationUtil
 						.toDescriptor(child));
