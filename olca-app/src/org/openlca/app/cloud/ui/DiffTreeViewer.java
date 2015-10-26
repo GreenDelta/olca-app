@@ -1,7 +1,9 @@
 package org.openlca.app.cloud.ui;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Stack;
 import java.util.function.Function;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -37,6 +39,8 @@ public class DiffTreeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 	private Function<DiffResult, JsonObject> getLocalJson;
 	private Function<DiffResult, JsonObject> getRemoteJson;
 	private Map<String, JsonNode> nodes = new HashMap<>();
+	private Runnable onMerge;
+	private DiffNode root;
 
 	public DiffTreeViewer(Composite parent,
 			Function<DiffResult, JsonObject> getJson) {
@@ -49,6 +53,10 @@ public class DiffTreeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 		super(parent);
 		this.getLocalJson = getLocalJson;
 		this.getRemoteJson = getRemoteJson;
+	}
+
+	public void setOnMerge(Runnable onMerge) {
+		this.onMerge = onMerge;
 	}
 
 	@Override
@@ -101,6 +109,7 @@ public class DiffTreeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 			return;
 		result.setOverwriteLocalChanges(false);
 		result.setOverwriteRemoteChanges(false);
+		result.setMergedData(null);
 		if (result.getType() != DiffResponse.CONFLICT)
 			return;
 		if (local != null && remote != null) {
@@ -129,6 +138,40 @@ public class DiffTreeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 			}
 		}
 		getViewer().refresh(selected);
+		if (onMerge != null)
+			onMerge.run();
+	}
+
+	@Override
+	public void setInput(Collection<DiffNode> collection) {
+		root = collection.iterator().next();
+		super.setInput(collection);
+	}
+
+	@Override
+	public void setInput(DiffNode[] input) {
+		root = input[0];
+		super.setInput(input);
+	}
+
+	public boolean hasConflicts() {
+		Stack<DiffNode> nodes = new Stack<>();
+		nodes.addAll(root.getChildren());
+		while (!nodes.isEmpty()) {
+			DiffNode node = nodes.pop();
+			nodes.addAll(node.getChildren());
+			if (!(node.getContent() instanceof DiffResult)) 
+				continue;
+			DiffResult result = (DiffResult) node.getContent();
+			if (result.getType() != DiffResponse.CONFLICT)
+				continue;
+			if (result.overwriteLocalChanges())
+				continue;
+			if (result.overwriteRemoteChanges())
+				continue;
+			return result.getMergedData() == null;
+		}
+		return false;
 	}
 
 	private String toKey(DatasetDescriptor descriptor) {

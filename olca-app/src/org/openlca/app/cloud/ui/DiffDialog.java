@@ -5,6 +5,7 @@ import java.util.function.Function;
 
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
@@ -52,6 +53,16 @@ public class DiffDialog extends FormDialog {
 		viewer = new DiffTreeViewer(body, getLocalJson, getRemoteJson);
 		form.reflow(true);
 		viewer.setInput(Collections.singletonList(rootNode));
+		viewer.setOnMerge(() -> getButton(OK).setEnabled(!viewer.hasConflicts()));
+	}
+	
+	@Override
+	protected Button createButton(Composite parent, int id, String label,
+			boolean defaultButton) {
+		Button button = super.createButton(parent, id, label, defaultButton);
+		if (id == OK)
+			button.setEnabled(!viewer.hasConflicts());
+		return button;
 	}
 
 }
