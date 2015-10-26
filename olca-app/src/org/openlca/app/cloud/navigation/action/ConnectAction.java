@@ -64,7 +64,6 @@ public class ConnectAction extends Action implements INavigationAction {
 		private void connect(RepositoryConfig config, NavigationRoot root) {
 			RepositoryClient client = new RepositoryClient(config);
 			try {
-				client.login();
 				String owner = config.getRepositoryOwner();
 				String repositoryName = config.getRepositoryName();
 				if (owner.equals(config.getUsername())) {

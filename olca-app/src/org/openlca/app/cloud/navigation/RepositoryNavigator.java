@@ -16,15 +16,19 @@ import org.openlca.app.cloud.index.DiffIndexer;
 import org.openlca.app.db.Database;
 import org.openlca.app.events.DatabaseEvent;
 import org.openlca.app.events.ModelEvent;
-
-import com.google.common.eventbus.Subscribe;
 import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.api.RepositoryConfig;
 import org.openlca.cloud.model.data.DatasetDescriptor;
+import org.openlca.cloud.util.WebRequests.WebRequestException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.eventbus.Subscribe;
 
 public class RepositoryNavigator extends CommonNavigator {
 
 	public static String ID = "views.repository.navigation";
+	private static final Logger log = LoggerFactory.getLogger(RepositoryNavigator.class);
 	private NavigationRoot root;
 	private RepositoryClient client;
 	private DiffIndex index;
@@ -170,6 +174,12 @@ public class RepositoryNavigator extends CommonNavigator {
 		if (instance.index != null)
 			instance.index.close();
 		instance.index = null;
+		if (instance.client != null)
+			try {
+				instance.client.logout();
+			} catch (WebRequestException e) {
+				log.error("Error during logout", e);
+			}
 		instance.client = null;
 		instance.root.setClient(null);
 	}
