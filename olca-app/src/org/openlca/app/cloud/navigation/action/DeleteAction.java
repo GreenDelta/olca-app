@@ -52,7 +52,8 @@ public class DeleteAction extends Action implements INavigationAction {
 		client = (RepositoryClient) element.getContent();
 		if (client == null)
 			return false;
-		return true;
+		String owner = client.getConfig().getRepositoryOwner();
+		return client.getConfig().getUsername().equals(owner);
 	}
 
 	@Override
