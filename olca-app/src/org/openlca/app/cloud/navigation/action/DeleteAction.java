@@ -28,7 +28,7 @@ public class DeleteAction extends Action implements INavigationAction {
 	@Override
 	public void run() {
 		App.runWithProgress("#Deleting repository", () -> {
-			String name = client.getConfig().getRepositoryId().split("/")[1];
+			String name = client.getConfig().getRepositoryName();
 			try {
 				client.deleteRepository(name);
 			} catch (WebRequestException e) {

@@ -65,8 +65,8 @@ public class ConnectAction extends Action implements INavigationAction {
 			RepositoryClient client = new RepositoryClient(config);
 			try {
 				client.login();
-				String owner = config.getRepositoryId().split("/")[0];
-				String repositoryName = config.getRepositoryId().split("/")[1];
+				String owner = config.getRepositoryOwner();
+				String repositoryName = config.getRepositoryName();
 				if (owner.equals(config.getUsername())) {
 					if (!client.repositoryExists(repositoryName))
 						client.createRepository(repositoryName);

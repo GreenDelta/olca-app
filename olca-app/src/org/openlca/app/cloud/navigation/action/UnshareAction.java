@@ -33,7 +33,7 @@ public class UnshareAction extends Action implements INavigationAction {
 			return;
 		String username = dialog.getValue();		
 		App.runWithProgress("#Unsharing repository", () -> {
-			String name = client.getConfig().getRepositoryId().split("/")[1];
+			String name = client.getConfig().getRepositoryName();
 			try {
 				client.unshareRepositoryWith(name, username);
 			} catch (WebRequestException e) {
@@ -53,7 +53,7 @@ public class UnshareAction extends Action implements INavigationAction {
 		client = (RepositoryClient) element.getContent();
 		if (client == null)
 			return false;
-		String owner = client.getConfig().getRepositoryId().split("/")[0];
+		String owner = client.getConfig().getRepositoryOwner();
 		return client.getConfig().getUsername().equals(owner);
 	}
 
