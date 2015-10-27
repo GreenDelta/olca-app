@@ -2,6 +2,7 @@ package org.openlca.app.cloud.ui.compare;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Stack;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -12,7 +13,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
 public class JsonUtil {
-	
+
 	public static JsonObject toJsonObject(JsonElement element) {
 		if (element == null)
 			return null;
@@ -163,6 +164,106 @@ public class JsonUtil {
 		if (element.isNumber())
 			return new JsonPrimitive(element.getAsNumber());
 		return new JsonPrimitive(element.getAsString());
+	}
+
+	static int find(String key, JsonElement element, JsonArray array) {
+		if (element == null)
+			return -1;
+		if (key.equals("units"))
+			return find(element, array, "name");
+		if (key.equals("flowProperties"))
+			return find(element, array, "flowProperty.@id");
+		if (key.equals("exchanges"))
+			return find(element, array, "flow.@id", "input");
+		return find(element, array, "@id");
+	}
+
+	private static int find(JsonElement element, JsonArray array,
+			String... fields) {
+		if (fields == null)
+			return -1;
+		JsonObject object = element.getAsJsonObject();
+		String[] values = getValues(object, fields);
+		if (values == null)
+			return -1;
+		Iterator<JsonElement> iterator = array.iterator();
+		int index = 0;
+		while (iterator.hasNext()) {
+			JsonObject other = iterator.next().getAsJsonObject();
+			String[] otherValues = getValues(other, fields);
+			if (equal(values, otherValues))
+				return index;
+			index++;
+		}
+		return -1;
+	}
+
+	private static String get(JsonObject object, String... path) {
+		if (path == null)
+			return null;
+		if (path.length == 0)
+			return null;
+		Stack<String> stack = new Stack<>();
+		for (int i = path.length - 1; i >= 0; i--)
+			stack.add(path[i]);
+		while (stack.size() > 1) {
+			String next = stack.pop();
+			if (!object.has(next))
+				return null;
+			object = object.get(next).getAsJsonObject();
+		}
+		JsonElement value = object.get(stack.pop());
+		if (value == null || value.isJsonNull())
+			return null;
+		if (!value.isJsonPrimitive())
+			return null;
+		if (value.getAsJsonPrimitive().isNumber())
+			return Double.toString(value.getAsNumber().doubleValue());
+		if (value.getAsJsonPrimitive().isBoolean())
+			return value.getAsBoolean() ? "true" : "false";
+		return value.getAsString();
+	}
+
+	private static String[] getValues(JsonObject object, String[] fields) {
+		String[] values = new String[fields.length];
+		for (int i = 0; i < fields.length; i++) {
+			values[i] = get(object, fields[i].split("\\."));
+			if (values[i] == null)
+				return null;
+		}
+		return values;
+	}
+
+	private static boolean equal(String[] a1, String[] a2) {
+		if (a1.length != a2.length)
+			return false;
+		for (int i = 0; i < a1.length; i++)
+			if (a1[i] == a2[i])
+				continue;
+			else if (a1[i] == null)
+				return false;
+			else if (!a1[i].equals(a2[i]))
+				return false;
+		return true;
+	}
+
+	static JsonArray replace(int index, JsonArray original,
+			JsonElement toReplace) {
+		JsonArray copy = new JsonArray();
+		for (int i = 0; i < original.size(); i++)
+			if (index == i)
+				copy.add(toReplace);
+			else
+				copy.add(original.get(i));
+		return copy;
+	}
+
+	static JsonArray remove(int index, JsonArray original) {
+		JsonArray copy = new JsonArray();
+		for (int i = 0; i < original.size(); i++)
+			if (index != i)
+				copy.add(original.get(i));
+		return copy;
 	}
 
 }

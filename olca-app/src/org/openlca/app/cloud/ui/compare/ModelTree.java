@@ -209,7 +209,9 @@ class ModelTree extends AbstractViewer<JsonNode, TreeViewer> {
 					.getRemoteElement();
 			if (element != null)
 				return false;
-			return node.parent.getElement().isJsonArray();
+			if (node.parent.getElement() != null)
+				return node.parent.getElement().isJsonArray();
+			return false;
 		}
 
 		@Override

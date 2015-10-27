@@ -1,12 +1,10 @@
 package org.openlca.app.cloud.ui.compare;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 
 public class JsonNode {
@@ -52,57 +50,77 @@ public class JsonNode {
 	}
 
 	void reset() {
-		setValue(originalElement);
+		setValue(originalElement, true);
 	}
 
 	void copyRemoteValue() {
-		setValue(remoteElement);
+		setValue(remoteElement, false);
 	}
 
-	private void setValue(JsonElement toSet) {
-		if (parent != null) {
-			JsonElement parentElement = parent.localElement;
-			if (parentElement.isJsonObject())
-				parentElement.getAsJsonObject().add(key, toSet);
-			else if (parentElement.isJsonArray()) {
-				JsonObject arrayParent = parent.parent.localElement
-						.getAsJsonObject();
-				int positionInArray = Integer.parseInt(key);
-				int i = 0;
-				JsonArray newArray = parentElement.getAsJsonArray();
-				Iterator<JsonElement> elements = parentElement.getAsJsonArray()
-						.iterator();
-				while (elements.hasNext()) {
-					JsonElement next = elements.next();
-					if (i++ != positionInArray)
-						newArray.add(next);
-					else
-						newArray.add(toSet);
-				}
-				arrayParent.add(parent.key, newArray);
-			}
-		}
+	private void setValue(JsonElement toSet, boolean isReset) {
+		if (parent.localElement == null)
+			return;
+		JsonElement current = this.localElement;
 		this.localElement = toSet;
-		updateChildren();
+		if (parent != null)
+			updateParent(toSet, current);
+		updateChildren(isReset);
 	}
 
-	private void updateChildren() {
+	private void updateParent(JsonElement toSet, JsonElement current) {
+		JsonElement parentElement = parent.localElement;
+		if (parentElement.isJsonObject())
+			updateParent(parentElement.getAsJsonObject(), toSet, current);
+		else if (parentElement.isJsonArray())
+			updateParent(parentElement.getAsJsonArray(), toSet, current);
+	}
+
+	private void updateParent(JsonObject parentElement, JsonElement toSet,
+			JsonElement current) {
+		parentElement.add(key, toSet);
+	}
+
+	private void updateParent(JsonArray parentElement, JsonElement toSet,
+			JsonElement current) {
+		JsonObject arrayParent = parent.parent.localElement.getAsJsonObject();
+		JsonArray array = parentElement.getAsJsonArray();
+		if (toSet == null) {
+			// remove
+			int index = JsonUtil.find(parent.key, current, array);
+			array = JsonUtil.remove(index, array);
+		} else {
+			// add or replace
+			int index = JsonUtil.find(parent.key, toSet, array);
+			if (index == -1)
+				array.add(toSet);
+			else
+				array = JsonUtil.replace(index, array, toSet);
+		}
+		parent.localElement = array;
+		arrayParent.add(parent.key, array);
+	}
+
+	private void updateChildren(boolean isReset) {
 		if (children.isEmpty())
 			return;
 		for (JsonNode child : children) {
 			JsonElement element = null;
-			if (localElement.isJsonObject()) {
-				element = localElement.getAsJsonObject().get(child.key);
-				if (element == null)
-					element = JsonNull.INSTANCE;
-			} else if (localElement.isJsonArray()) {
-				int index = Integer.parseInt(child.key) - 1;
-				element = localElement.getAsJsonArray().get(index);
-				// TODO if local != remote
-			}
+			if (localElement != null)
+				if (localElement.isJsonObject())
+					element = localElement.getAsJsonObject().get(child.key);
+				else if (localElement.isJsonArray()) {
+					JsonElement toFind = null;
+					if (isReset)
+						toFind = child.originalElement;
+					else
+						toFind = child.remoteElement;
+					int index = JsonUtil.find(key, toFind,
+							localElement.getAsJsonArray());
+					if (index != -1)
+						element = localElement.getAsJsonArray().get(index);
+				}
 			child.localElement = element;
-			child.updateChildren();
+			child.updateChildren(isReset);
 		}
 	}
-
 }
