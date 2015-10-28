@@ -116,7 +116,7 @@
               textEditor = CodeMirror.fromTextArea($('#textDiv textarea')[0], {theme: 'solarized light', lineWrapping: true, lineNumbers: true});
               textEditor.on('change', function() {
                 if (typeof(kmlChanged) === "function") {
-                  kmlChanged(cm.Value());
+                  kmlChanged(textEditor.getValue());
                 }
               });
               $('.nav-tabs a').click(function (e) {
