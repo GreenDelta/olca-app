@@ -156,7 +156,6 @@
                     })
                 })
               } );
-            
               map = new OpenLayers.Map("mapDiv", {
                controls: [
                 new OpenLayers.Control.EditingToolbar(editLayer),
@@ -244,6 +243,11 @@
                 editLayer.refresh({force:true});
                 map.zoomToExtent(editLayer.getDataExtent());            
               }
+							editLayer.events.register("featureadded", null, function(f) {
+                if (typeof(kmlChanged) === "function") {
+                  kmlChanged(getKML());
+                }
+							});
             }
             
             
