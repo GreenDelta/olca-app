@@ -171,6 +171,8 @@ public class RepositoryNavigator extends CommonNavigator {
 
 	public static void disconnect() {
 		RepositoryNavigator instance = getInstance();
+		if (instance == null)
+			return;
 		if (instance.index != null)
 			instance.index.close();
 		instance.index = null;

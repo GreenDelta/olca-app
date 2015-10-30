@@ -186,6 +186,8 @@ public class JsonUtil {
 		String[] values = getValues(object, fields);
 		if (values == null)
 			return -1;
+		if (array == null)
+			return -1;
 		Iterator<JsonElement> iterator = array.iterator();
 		int index = 0;
 		while (iterator.hasNext()) {
