@@ -28,6 +28,7 @@ import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
+import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.results.ContributionItem;
@@ -107,9 +108,9 @@ public class FlowImpactPage extends FormPage {
 		table.setFilters(new ViewerFilter[] { new CutOffFilter() });
 		Tables.bindColumnWidths(table.getTable(), 0.1, 0.3, 0.2, 0.2, 0.1, 0.1);
 		Actions.bind(table, TableClipboard.onCopy(table));
-		Tables.sortByLabels(table, label, 1, 2, 3, 5);
-		Tables.sortByDouble(table, (ContributionItem<?> i) -> i.share, 0);
-		Tables.sortByDouble(table, (ContributionItem<?> i) -> i.amount, 4);
+		Viewers.sortByLabels(table, label, 1, 2, 3, 5);
+		Viewers.sortByDouble(table, (ContributionItem<?> i) -> i.share, 0);
+		Viewers.sortByDouble(table, (ContributionItem<?> i) -> i.amount, 4);
 	}
 
 	private class Label extends BaseLabelProvider implements

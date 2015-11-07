@@ -25,9 +25,9 @@ import org.openlca.app.util.Dialog;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.UncertaintyLabel;
-import org.openlca.app.util.Viewers;
 import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
+import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.model.Parameter;
@@ -119,11 +119,11 @@ public class ParameterSection {
 
 	private void addSorters(TableViewer table, ParameterLabelProvider label) {
 		if (forInputParameters) {
-			Tables.sortByLabels(table, label, 0, 2, 3);
-			Tables.sortByDouble(table, (Parameter p) -> p.getValue(), 1);
+			Viewers.sortByLabels(table, label, 0, 2, 3);
+			Viewers.sortByDouble(table, (Parameter p) -> p.getValue(), 1);
 		} else {
-			Tables.sortByLabels(table, label, 0, 1, 3);
-			Tables.sortByDouble(table, (Parameter p) -> p.getValue(), 2);
+			Viewers.sortByLabels(table, label, 0, 1, 3);
+			Viewers.sortByDouble(table, (Parameter p) -> p.getValue(), 2);
 		}
 	}
 

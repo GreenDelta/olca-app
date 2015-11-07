@@ -26,6 +26,7 @@ import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
+import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.matrix.FlowIndex;
 import org.openlca.core.model.descriptors.FlowDescriptor;
@@ -89,12 +90,12 @@ public class TotalFlowResultPage extends FormPage {
 	}
 
 	private void createColumnSorters(TableViewer viewer, LabelProvider label) {
-		Tables.sortByLabels(viewer, label, 0, 1, 2, 3);
+		Viewers.sortByLabels(viewer, label, 0, 1, 2, 3);
 		Function<FlowDescriptor, Double> amount = (f) -> {
 			FlowResult r = resultProvider.getTotalFlowResult(f);
 			return r == null ? 0 : r.value;
 		};
-		Tables.sortByDouble(viewer, amount, 4);
+		Viewers.sortByDouble(viewer, amount, 4);
 	}
 
 	private class LabelProvider extends BaseLabelProvider implements

@@ -22,7 +22,7 @@ import org.openlca.app.App;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.navigation.actions.DatabaseActivateAction;
-import org.openlca.app.util.Viewers;
+import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 
 import com.google.common.base.Objects;

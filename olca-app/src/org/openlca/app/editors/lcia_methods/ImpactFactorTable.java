@@ -22,9 +22,9 @@ import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.UncertaintyLabel;
-import org.openlca.app.util.Viewers;
 import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
+import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.table.modify.ComboBoxCellModifier;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
@@ -64,8 +64,8 @@ class ImpactFactorTable {
 		viewer = Tables.createViewer(parent, new String[] { FLOW, CATEGORY,
 				FLOW_PROPERTY, UNIT, FACTOR, UNCERTAINTY });
 		FactorLabelProvider label = new FactorLabelProvider();
-		Tables.sortByLabels(viewer, label, 0, 1, 2, 3, 5);
-		Tables.sortByDouble(viewer, (ImpactFactor f) -> f.getValue(), 4);
+		Viewers.sortByLabels(viewer, label, 0, 1, 2, 3, 5);
+		Viewers.sortByDouble(viewer, (ImpactFactor f) -> f.getValue(), 4);
 		viewer.setLabelProvider(label);
 		Tables.bindColumnWidths(viewer, 0.2, 0.2, 0.15, 0.15, 0.15, 0.15);
 		ModifySupport<ImpactFactor> support = new ModifySupport<>(viewer);

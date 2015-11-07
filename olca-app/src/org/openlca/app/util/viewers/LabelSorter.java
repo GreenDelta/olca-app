@@ -1,4 +1,4 @@
-package org.openlca.app.util.tables;
+package org.openlca.app.util.viewers;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.openlca.util.Strings;
@@ -6,6 +6,7 @@ import org.openlca.util.Strings;
 class LabelSorter<T> extends Sorter<T> {
 
 	private final ITableLabelProvider provider;
+	boolean asNumbers;
 
 	LabelSorter(int column, ITableLabelProvider labelProvider) {
 		super(column);
@@ -20,6 +21,9 @@ class LabelSorter<T> extends Sorter<T> {
 			return e1 == null ? -1 : 1;
 		String text1 = provider.getColumnText(e1, column);
 		String text2 = provider.getColumnText(e2, column);
+		if (asNumbers)
+			return Double.compare(Double.parseDouble(text1),
+					Double.parseDouble(text2));
 		return Strings.compare(text1, text2);
 	}
 

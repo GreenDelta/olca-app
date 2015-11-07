@@ -20,7 +20,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.UI;
-import org.openlca.app.util.Viewers;
+import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.database.CostCategoryDao;
 import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.model.CostCategory;

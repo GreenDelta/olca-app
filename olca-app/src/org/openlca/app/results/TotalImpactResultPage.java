@@ -20,6 +20,7 @@ import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
+import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.ImpactResult;
 import org.openlca.core.results.SimpleResultProvider;
@@ -65,12 +66,12 @@ public class TotalImpactResultPage extends FormPage {
 	}
 
 	private void createColumnSorters(TableViewer viewer, Label label) {
-		Tables.sortByLabels(viewer, label, 0, 2);
+		Viewers.sortByLabels(viewer, label, 0, 2);
 		Function<ImpactCategoryDescriptor, Double> amountFn = (d) -> {
 			ImpactResult r = result.getTotalImpactResult(d);
 			return r == null ? 0 : r.value;
 		};
-		Tables.sortByDouble(viewer, amountFn, 1);
+		Viewers.sortByDouble(viewer, amountFn, 1);
 	}
 
 	private class Label extends BaseLabelProvider implements ITableLabelProvider {

@@ -20,7 +20,7 @@ import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
-import org.openlca.app.util.Viewers;
+import org.openlca.app.util.viewers.Viewers;
 
 class DbImportPage extends WizardPage {
 

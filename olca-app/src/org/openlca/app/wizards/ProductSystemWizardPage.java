@@ -23,7 +23,7 @@ import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.UIFactory;
-import org.openlca.app.util.Viewers;
+import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.ModelType;

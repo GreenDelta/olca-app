@@ -14,6 +14,8 @@ import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Tree;
@@ -21,6 +23,7 @@ import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.openlca.app.components.IModelDropHandler;
 import org.openlca.app.components.ModelTransfer;
+import org.openlca.app.util.viewers.Sorter;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 
 /**
@@ -111,4 +114,27 @@ public class Trees {
 			}
 		});
 	}
+
+	public static void addSorter(TreeViewer viewer, Sorter<?> sorter) {
+		Tree tree = viewer.getTree();
+		if (sorter.column >= tree.getColumnCount())
+			return;
+		TreeColumn column = tree.getColumn(sorter.column);
+		column.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				TreeColumn current = tree.getSortColumn();
+				if (column == current)
+					sorter.ascending = !sorter.ascending;
+				else
+					sorter.ascending = true;
+				int direction = sorter.ascending ? SWT.UP : SWT.DOWN;
+				tree.setSortDirection(direction);
+				tree.setSortColumn(column);
+				viewer.setSorter(sorter);
+				viewer.refresh();
+			}
+		});
+	}
+
 }

@@ -19,6 +19,7 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
+import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.ContributionItem;
 
@@ -68,10 +69,10 @@ class ContributionTable extends TableViewer {
 	}
 
 	private void createColumnSorters(Label p) {
-		Tables.sortByLabels(this, p, NAME, UNIT);
-		Tables.sortByDouble(this, (ContributionItem<?> i) -> i.share,
+		Viewers.sortByLabels(this, p, NAME, UNIT);
+		Viewers.sortByDouble(this, (ContributionItem<?> i) -> i.share,
 				CONTRIBUTION);
-		Tables.sortByDouble(this, (ContributionItem<?> i) -> i.amount,
+		Viewers.sortByDouble(this, (ContributionItem<?> i) -> i.amount,
 				AMOUNT);
 	}
 

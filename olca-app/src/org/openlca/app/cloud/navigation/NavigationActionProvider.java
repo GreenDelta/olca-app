@@ -16,7 +16,7 @@ import org.openlca.app.cloud.navigation.action.ShareAction;
 import org.openlca.app.cloud.navigation.action.UnshareAction;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.actions.INavigationAction;
-import org.openlca.app.util.Viewers;
+import org.openlca.app.util.viewers.Viewers;
 
 /**
  * Adds the actions to the context menu of the navigation tree.

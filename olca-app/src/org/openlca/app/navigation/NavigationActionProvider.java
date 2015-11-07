@@ -38,7 +38,7 @@ import org.openlca.app.navigation.actions.XNexusIndexExportAction;
 import org.openlca.app.navigation.actions.XParameterCheckAction;
 import org.openlca.app.navigation.actions.XRefDataExport;
 import org.openlca.app.navigation.actions.XRefDataImport;
-import org.openlca.app.util.Viewers;
+import org.openlca.app.util.viewers.Viewers;
 
 /**
  * Adds the actions to the context menu of the navigation tree.

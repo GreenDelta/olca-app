@@ -23,10 +23,14 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Images;
 import org.openlca.app.util.Labels;
+import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
+import org.openlca.app.util.trees.TreeClipboard;
+import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.Location;
@@ -121,9 +125,10 @@ public class ImpactTreePage extends FormPage {
 	}
 
 	private void createImpactContributionTable(Composite parent) {
-		viewer = new TreeViewer(parent,
-				SWT.FULL_SELECTION | SWT.MULTI | SWT.BORDER);
-		viewer.setLabelProvider(new LabelProvider());
+		viewer = new TreeViewer(parent, SWT.FULL_SELECTION | SWT.MULTI
+				| SWT.BORDER);
+		LabelProvider labelProvider = new LabelProvider();
+		viewer.setLabelProvider(labelProvider);
 		viewer.setContentProvider(new ContentProvider());
 		viewer.getTree().setLinesVisible(true);
 		viewer.getTree().setHeaderVisible(true);
@@ -138,10 +143,17 @@ public class ImpactTreePage extends FormPage {
 		toolkit.adapt(viewer.getTree(), false, false);
 		toolkit.paintBordersFor(viewer.getTree());
 		UI.gridData(viewer.getTree(), true, true);
+		Actions.bind(viewer, TreeClipboard.onCopy(viewer));
+		createColumnSorters(labelProvider);
 	}
 
-	private class LabelProvider extends BaseLabelProvider
-			implements ITableLabelProvider {
+	private void createColumnSorters(LabelProvider p) {
+		Viewers.sortByLabels(viewer, p, 0, 1, 2);
+		Viewers.sortByDouble(viewer, p, 4, 5, 6);
+	}
+
+	private class LabelProvider extends BaseLabelProvider implements
+			ITableLabelProvider {
 
 		@Override
 		public Image getColumnImage(Object element, int columnIndex) {
@@ -177,7 +189,7 @@ public class ImpactTreePage extends FormPage {
 						descriptor.getLocation());
 				return location.getName();
 			case COLUMN_IMPACT_RESULT:
-				return Double.toString(getResult(descriptor));
+				return Numbers.format(getResult(descriptor));
 			}
 			return null;
 		}
@@ -191,11 +203,11 @@ public class ImpactTreePage extends FormPage {
 				return toString(Labels.getFlowCategory(descriptor.flow,
 						result.cache));
 			case COLUMN_AMOUNT:
-				return Double.toString(getAmount(descriptor));
+				return Numbers.format(getAmount(descriptor));
 			case COLUMN_FACTOR:
-				return Double.toString(getFactor(descriptor));
+				return Numbers.format(getFactor(descriptor));
 			case COLUMN_IMPACT_RESULT:
-				return Double.toString(getResult(descriptor));
+				return Numbers.format(getResult(descriptor));
 			}
 			return null;
 		}
@@ -212,11 +224,9 @@ public class ImpactTreePage extends FormPage {
 	}
 
 	private double getFactor(FlowWithProcessDescriptor descriptor) {
-		int row = result.result.impactIndex
-				.getIndex(impactCategory.getId());
-		int col = result.result.flowIndex
-				.getIndex(descriptor.flow.getId());
-		return result.result.impactFactors.getEntry(row, col);
+		int row = result.result.impactIndex.getIndex(impactCategory.getId());
+		int col = result.result.flowIndex.getIndex(descriptor.flow.getId());
+		return Math.abs(result.result.impactFactors.getEntry(row, col));
 	}
 
 	private double getResult(FlowWithProcessDescriptor descriptor) {
@@ -237,8 +247,7 @@ public class ImpactTreePage extends FormPage {
 		}
 
 		@Override
-		public void inputChanged(Viewer viewer, Object oldInput,
-				Object newInput) {
+		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 
 		}
 
@@ -248,9 +257,9 @@ public class ImpactTreePage extends FormPage {
 				return null;
 			List<ProcessDescriptor> descriptors = new ArrayList<>();
 			for (ProcessDescriptor process : result.getProcessDescriptors()) {
-				double value = result
-						.getSingleImpactResult(process, impactCategory).value;
-				if (value > 0)
+				double value = result.getSingleImpactResult(process,
+						impactCategory).value;
+				if (value != 0)
 					descriptors.add(process);
 			}
 			return descriptors.toArray();

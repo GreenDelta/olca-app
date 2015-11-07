@@ -17,7 +17,7 @@ import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelTypeElement;
 import org.openlca.app.navigation.NavigationTree;
 import org.openlca.app.util.UI;
-import org.openlca.app.util.Viewers;
+import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 

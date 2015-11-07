@@ -2,10 +2,8 @@ package org.openlca.app.util.tables;
 
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
@@ -29,6 +27,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.openlca.app.components.IModelDropHandler;
 import org.openlca.app.components.ModelTransfer;
 import org.openlca.app.util.UI;
+import org.openlca.app.util.viewers.Sorter;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 
 /**
@@ -88,8 +87,7 @@ public class Tables {
 		});
 	}
 
-	public static void bindColumnWidths(TableViewer viewer,
-			double... percents) {
+	public static void bindColumnWidths(TableViewer viewer, double... percents) {
 		bindColumnWidths(viewer.getTable(), percents);
 	}
 
@@ -114,48 +112,6 @@ public class Tables {
 					double colWidth = percents[i] * width;
 					columns[i].setWidth((int) colWidth);
 				}
-			}
-		});
-	}
-
-	public static <T> void sortByString(TableViewer viewer,
-			Function<T, String> fn, int col) {
-		StringSorter<T> s = new StringSorter<>(col, fn);
-		addSorter(viewer, s);
-	}
-
-	public static <T> void sortByDouble(TableViewer viewer,
-			Function<T, Double> fn, int col) {
-		DoubleSorter<T> s = new DoubleSorter<>(col, fn);
-		addSorter(viewer, s);
-	}
-
-	public static <T> void sortByLabels(TableViewer viewer,
-			ITableLabelProvider labelProvider, int... cols) {
-		for (int i = 0; i < cols.length; i++) {
-			LabelSorter<T> s = new LabelSorter<>(cols[i], labelProvider);
-			addSorter(viewer, s);
-		}
-	}
-
-	private static void addSorter(TableViewer viewer, Sorter<?> sorter) {
-		Table table = viewer.getTable();
-		if (sorter.column >= table.getColumnCount())
-			return;
-		TableColumn column = table.getColumn(sorter.column);
-		column.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				TableColumn current = table.getSortColumn();
-				if (column == current)
-					sorter.ascending = !sorter.ascending;
-				else
-					sorter.ascending = true;
-				int direction = sorter.ascending ? SWT.UP : SWT.DOWN;
-				table.setSortDirection(direction);
-				table.setSortColumn(column);
-				viewer.setSorter(sorter);
-				viewer.refresh();
 			}
 		});
 	}
@@ -196,4 +152,27 @@ public class Tables {
 			}
 		});
 	}
+
+	public static void addSorter(TableViewer viewer, Sorter<?> sorter) {
+		Table table = viewer.getTable();
+		if (sorter.column >= table.getColumnCount())
+			return;
+		TableColumn column = table.getColumn(sorter.column);
+		column.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				TableColumn current = table.getSortColumn();
+				if (column == current)
+					sorter.ascending = !sorter.ascending;
+				else
+					sorter.ascending = true;
+				int direction = sorter.ascending ? SWT.UP : SWT.DOWN;
+				table.setSortDirection(direction);
+				table.setSortColumn(column);
+				viewer.setSorter(sorter);
+				viewer.refresh();
+			}
+		});
+	}
+	
 }

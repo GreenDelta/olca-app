@@ -23,7 +23,7 @@ import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
-import org.openlca.app.util.Viewers;
+import org.openlca.app.util.viewers.Viewers;
 
 class SectionList {
 

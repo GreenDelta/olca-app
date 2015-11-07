@@ -1,16 +1,23 @@
-package org.openlca.app.util;
+package org.openlca.app.util.viewers;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Function;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.StructuredViewer;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Combo;
+import org.openlca.app.util.tables.Tables;
+import org.openlca.app.util.trees.Trees;
 import org.openlca.app.viewers.BaseLabelProvider;
 import org.openlca.app.viewers.BaseNameSorter;
 import org.slf4j.Logger;
@@ -84,5 +91,41 @@ public class Viewers {
 		viewer.setLabelProvider(new BaseLabelProvider());
 		viewer.setUseHashlookup(true);
 		return viewer;
+	}
+
+	public static <T> void sortByString(ColumnViewer viewer,
+			Function<T, String> fn, int col) {
+		StringSorter<T> s = new StringSorter<>(col, fn);
+		addSorter(viewer, s);
+	}
+
+	public static <T> void sortByDouble(ColumnViewer viewer,
+			Function<T, Double> fn, int col) {
+		DoubleSorter<T> s = new DoubleSorter<>(col, fn);
+		addSorter(viewer, s);
+	}
+
+	public static <T> void sortByDouble(ColumnViewer viewer,
+			ITableLabelProvider labelProvider, int... cols) {
+		for (int i = 0; i < cols.length; i++) {
+			LabelSorter<T> s = new LabelSorter<>(cols[i], labelProvider);
+			s.asNumbers = true;
+			addSorter(viewer, s);
+		}
+	}
+
+	public static <T> void sortByLabels(ColumnViewer viewer,
+			ITableLabelProvider labelProvider, int... cols) {
+		for (int i = 0; i < cols.length; i++) {
+			LabelSorter<T> s = new LabelSorter<>(cols[i], labelProvider);
+			addSorter(viewer, s);
+		}
+	}
+
+	private static void addSorter(ColumnViewer viewer, Sorter<?> sorter) {
+		if (viewer instanceof TableViewer)
+			Tables.addSorter((TableViewer) viewer, sorter);
+		else if (viewer instanceof TreeViewer)
+			Trees.addSorter((TreeViewer) viewer, sorter);
 	}
 }

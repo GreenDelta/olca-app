@@ -21,7 +21,7 @@ import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Tree;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.UI;
-import org.openlca.app.util.Viewers;
+import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.AbstractViewer;
 
 import com.google.gson.JsonElement;

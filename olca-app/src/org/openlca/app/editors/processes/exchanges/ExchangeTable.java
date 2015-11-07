@@ -30,9 +30,9 @@ import org.openlca.app.util.Error;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.UncertaintyLabel;
-import org.openlca.app.util.Viewers;
 import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
+import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.table.modify.CheckBoxCellModifier;
 import org.openlca.app.viewers.table.modify.ComboBoxCellModifier;
 import org.openlca.app.viewers.table.modify.ModifySupport;
@@ -109,8 +109,8 @@ class ExchangeTable {
 		bindDoubleClick(viewer);
 		Tables.bindColumnWidths(viewer, 0.2, 0.15, 0.1, 0.1, 0.1, 0.1, 0.1,
 				0.1);
-		Tables.sortByLabels(viewer, label, 0, 1, 2, 3, 5, 6, 7);
-		Tables.sortByDouble(viewer, (Exchange e) -> e.getAmountValue(), 4);
+		Viewers.sortByLabels(viewer, label, 0, 1, 2, 3, 5, 6, 7);
+		Viewers.sortByDouble(viewer, (Exchange e) -> e.getAmountValue(), 4);
 	}
 
 	void setInput(Process process) {

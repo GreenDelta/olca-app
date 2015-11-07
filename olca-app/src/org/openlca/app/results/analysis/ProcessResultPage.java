@@ -32,6 +32,7 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.Tables;
+import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.combo.ProcessViewer;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.math.CalculationSetup;
@@ -170,12 +171,12 @@ public class ProcessResultPage extends FormPage {
 		decorateResultViewer(table, EXCHANGE_COLUMN_LABELS);
 		FlowLabel label = new FlowLabel();
 		table.setLabelProvider(label);
-		Tables.sortByLabels(table, label, 1, 4);
-		Tables.sortByDouble(table, (FlowDescriptor f) -> flowResult
+		Viewers.sortByLabels(table, label, 1, 4);
+		Viewers.sortByDouble(table, (FlowDescriptor f) -> flowResult
 				.getUpstreamContribution(f), 0);
-		Tables.sortByDouble(table, (FlowDescriptor f) -> flowResult
+		Viewers.sortByDouble(table, (FlowDescriptor f) -> flowResult
 				.getUpstreamTotal(f), 2);
-		Tables.sortByDouble(table, (FlowDescriptor f) -> flowResult
+		Viewers.sortByDouble(table, (FlowDescriptor f) -> flowResult
 				.getDirectResult(f), 3);
 		return table;
 	}
@@ -215,12 +216,12 @@ public class ProcessResultPage extends FormPage {
 		decorateResultViewer(table, IMPACT_COLUMN_LABELS);
 		ImpactLabel label = new ImpactLabel();
 		table.setLabelProvider(label);
-		Tables.sortByLabels(table, label, 1, 4);
-		Tables.sortByDouble(table, (ImpactCategoryDescriptor i) -> impactResult
+		Viewers.sortByLabels(table, label, 1, 4);
+		Viewers.sortByDouble(table, (ImpactCategoryDescriptor i) -> impactResult
 				.getUpstreamContribution(i), 0);
-		Tables.sortByDouble(table, (ImpactCategoryDescriptor i) -> impactResult
+		Viewers.sortByDouble(table, (ImpactCategoryDescriptor i) -> impactResult
 				.getUpstreamTotal(i), 2);
-		Tables.sortByDouble(table, (ImpactCategoryDescriptor i) -> impactResult
+		Viewers.sortByDouble(table, (ImpactCategoryDescriptor i) -> impactResult
 				.getDirectResult(i), 3);
 		return table;
 	}

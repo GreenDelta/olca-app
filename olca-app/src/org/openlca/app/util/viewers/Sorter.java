@@ -1,12 +1,12 @@
-package org.openlca.app.util.tables;
+package org.openlca.app.util.viewers;
 
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 
-abstract class Sorter<T> extends ViewerSorter {
+public abstract class Sorter<T> extends ViewerSorter {
 
-	protected final int column;
-	protected boolean ascending = true;
+	public final int column;
+	public boolean ascending = true;
 
 	protected Sorter(int column) {
 		this.column = column;

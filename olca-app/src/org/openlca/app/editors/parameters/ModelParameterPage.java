@@ -26,6 +26,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.util.UncertaintyLabel;
 import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
+import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ParameterDao;
 import org.openlca.core.model.Parameter;
@@ -91,8 +92,8 @@ public class ModelParameterPage extends FormPage {
 		TableViewer table = Tables.createViewer(client, columns);
 		ParameterLabel label = new ParameterLabel();
 		table.setLabelProvider(label);
-		Tables.sortByLabels(table, label, 0, 2, 3);
-		Tables.sortByDouble(table, (Parameter p) -> p.getValue(), 1);
+		Viewers.sortByLabels(table, label, 0, 2, 3);
+		Viewers.sortByDouble(table, (Parameter p) -> p.getValue(), 1);
 		Tables.bindColumnWidths(table.getTable(), 0.4, 0.3);
 		section.setExpanded(false);
 		setGlobalTableInput(table);

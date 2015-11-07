@@ -1,4 +1,4 @@
-package org.openlca.app.util.tables;
+package org.openlca.app.util.viewers;
 
 import java.util.function.Function;
 
