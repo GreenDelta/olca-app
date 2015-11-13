@@ -1,5 +1,8 @@
 package org.openlca.app.results.regionalized;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -7,11 +10,13 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
+import org.openlca.app.db.Database;
 import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.results.ContributionTablePage;
 import org.openlca.app.results.FlowImpactPage;
 import org.openlca.app.results.GroupPage;
 import org.openlca.app.results.ImpactTreePage;
+import org.openlca.app.results.ImpactTreePage.FlowWithProcessDescriptor;
 import org.openlca.app.results.LocationContributionPage;
 import org.openlca.app.results.NwResultPage;
 import org.openlca.app.results.ResultEditorInput;
@@ -24,9 +29,16 @@ import org.openlca.app.results.analysis.SunBurstView;
 import org.openlca.app.results.analysis.sankey.SankeyDiagram;
 import org.openlca.app.results.viz.ContributionBubblePage;
 import org.openlca.app.results.viz.ProcessTreemapPage;
+import org.openlca.core.database.ImpactCategoryDao;
 import org.openlca.core.math.CalculationSetup;
+import org.openlca.core.matrix.LongPair;
+import org.openlca.core.model.ImpactCategory;
+import org.openlca.core.model.descriptors.FlowDescriptor;
+import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
+import org.openlca.core.results.FullResult;
 import org.openlca.core.results.FullResultProvider;
 import org.openlca.geo.RegionalizedResultProvider;
+import org.openlca.geo.parameter.ParameterSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +51,10 @@ public class RegionalizedResultEditor extends FormEditor {
 	private CalculationSetup setup;
 	private SankeyDiagram diagram;
 	private int diagramIndex;
+	private ImpactFactorCalculator factorCalculator;
+	private ImpactCategoryDao impactCategoryDao;
+	private Map<Long, ImpactCategory> impactCategories = new HashMap<>();
+	private Map<LongPair, Map<FlowDescriptor, Double>> factorsMap = new HashMap<>();
 
 	@Override
 	public void init(IEditorSite site, IEditorInput editorInput)
@@ -50,10 +66,13 @@ public class RegionalizedResultEditor extends FormEditor {
 					CalculationSetup.class);
 			result = Cache.getAppCache().remove(input.getResultKey(),
 					RegionalizedResultProvider.class);
+			impactCategoryDao = new ImpactCategoryDao(Database.get());
+			ParameterSet parameterSet = Cache.getAppCache().remove(
+					input.getParameterSetKey(), ParameterSet.class);
+			factorCalculator = new ImpactFactorCalculator(parameterSet);
 		} catch (Exception e) {
 			log.error("failed to load regionalized result", e);
-			throw new PartInitException("failed to load regionalized result",
-					e);
+			throw new PartInitException("failed to load regionalized result", e);
 		}
 	}
 
@@ -71,13 +90,13 @@ public class RegionalizedResultEditor extends FormEditor {
 					addPage(new NwResultPage(this, regioRresult, setup));
 				addPage(new ContributionTablePage(this, regioRresult));
 				addPage(new KmlResultView(this, this.result));
-				addPage(new LocationContributionPage(this, regioRresult,
-						false));
+				addPage(new LocationContributionPage(this, regioRresult, false));
 				addPage(new ProcessResultPage(this, regioRresult, setup));
 				if (regioRresult.hasImpactResults())
 					addPage(new FlowImpactPage(this, regioRresult));
 				addPage(new ContributionTreePage(this, regioRresult));
-				addPage(new ImpactTreePage(this, regioRresult));
+				addPage(new ImpactTreePage(this, regioRresult,
+						this::getImpactFactor));
 				addPage(new GroupPage(this, regioRresult));
 				if (FeatureFlag.EXPERIMENTAL_VISUALISATIONS.isEnabled()) {
 					addPage(new ProcessTreemapPage(this, regioRresult));
@@ -118,4 +137,39 @@ public class RegionalizedResultEditor extends FormEditor {
 		return page;
 	}
 
+	private double getImpactFactor(ImpactCategoryDescriptor category,
+			FlowWithProcessDescriptor descriptor) {
+		if (descriptor.process.getLocation() == null)
+			return _getImpactFactor(category, descriptor);
+		Map<FlowDescriptor, Double> impactFactors = getImpactFactors(
+				category.getId(), descriptor.process.getLocation());
+		return impactFactors.get(descriptor.flow);
+	}
+
+	private double _getImpactFactor(ImpactCategoryDescriptor category,
+			FlowWithProcessDescriptor descriptor) {
+		FullResult result = this.result.getRegionalizedResult().result;
+		int row = result.impactIndex.getIndex(category.getId());
+		int col = result.flowIndex.getIndex(descriptor.flow.getId());
+		return Math.abs(result.impactFactors.getEntry(row, col));
+	}
+
+	private Map<FlowDescriptor, Double> getImpactFactors(long categoryId,
+			long locationId) {
+		LongPair id = new LongPair(categoryId, locationId);
+		Map<FlowDescriptor, Double> factors = factorsMap.get(id);
+		if (factors == null) {
+			ImpactCategory category = getImpactCategory(categoryId);
+			factors = factorCalculator.calculate(category, locationId);
+			factorsMap.put(id, factors);
+		}
+		return factors;
+	}
+
+	private ImpactCategory getImpactCategory(long id) {
+		ImpactCategory category = impactCategories.get(id);
+		if (category == null)
+			impactCategories.put(id, category = impactCategoryDao.getForId(id));
+		return category;
+	}
 }

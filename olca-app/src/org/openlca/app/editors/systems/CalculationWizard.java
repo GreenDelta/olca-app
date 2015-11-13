@@ -46,6 +46,7 @@ import org.openlca.geo.RegionalizedResult;
 import org.openlca.geo.RegionalizedResultProvider;
 import org.openlca.geo.kml.IKmlLoader;
 import org.openlca.geo.kml.KmlLoader;
+import org.openlca.geo.parameter.ParameterSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,11 +97,14 @@ class CalculationWizard extends Wizard {
 	}
 
 	private ResultEditorInput getEditorInput(Object result,
-			CalculationSetup setup) {
+			CalculationSetup setup, ParameterSet parameterSet) {
 		String resultKey = Cache.getAppCache().put(result);
 		String setupKey = Cache.getAppCache().put(setup);
-		return new ResultEditorInput(setup.productSystem.getId(),
-				resultKey, setupKey);
+		String parameterSetKey = null;
+		if (parameterSet != null)
+			parameterSetKey = Cache.getAppCache().put(parameterSet);
+		return new ResultEditorInput(setup.productSystem.getId(), resultKey,
+				setupKey, parameterSetKey);
 	}
 
 	private void saveDefaults(CalculationSetup setup, CalculationType type) {
@@ -161,7 +165,8 @@ class CalculationWizard extends Wizard {
 			log.trace("calculation done, open editor");
 			FullResultProvider resultProvider = new FullResultProvider(result,
 					Cache.getEntityCache());
-			ResultEditorInput input = getEditorInput(resultProvider, setup);
+			ResultEditorInput input = getEditorInput(resultProvider, setup,
+					null);
 			Editors.open(input, AnalyzeEditor.ID);
 			done = true;
 		}
@@ -175,7 +180,8 @@ class CalculationWizard extends Wizard {
 			log.trace("calculation done, open editor");
 			ContributionResultProvider<ContributionResult> resultProvider = new ContributionResultProvider<>(
 					result, Cache.getEntityCache());
-			ResultEditorInput input = getEditorInput(resultProvider, setup);
+			ResultEditorInput input = getEditorInput(resultProvider, setup,
+					null);
 			Editors.open(input, QuickResultEditor.ID);
 			done = true;
 		}
@@ -220,12 +226,13 @@ class CalculationWizard extends Wizard {
 			ImpactMatrix impactMatrix = null;
 			ImpactTable impactTable = null;
 			if (setup.impactMethod != null) {
-				impactTable = ImpactTable.build(Cache.getMatrixCache(), setup.impactMethod.getId(),
-						inventory.getFlowIndex());
+				impactTable = ImpactTable.build(Cache.getMatrixCache(),
+						setup.impactMethod.getId(), inventory.getFlowIndex());
 				impactMatrix = impactTable.createMatrix(
 						solver.getMatrixFactory(), interpreter);
 			}
-			LcaCalculator calculator = new LcaCalculator(solver, inventoryMatrix);
+			LcaCalculator calculator = new LcaCalculator(solver,
+					inventoryMatrix);
 			calculator.setImpactMatrix(impactMatrix);
 			FullResult baseResult = calculator.calculateFull();
 			RegionalizationSetup regioSetup = setupRegio(baseResult.productIndex);
@@ -239,7 +246,8 @@ class CalculationWizard extends Wizard {
 			resultProvider.setRegionalizedResult(new FullResultProvider(result
 					.getRegionalizedResult(), Cache.getEntityCache()));
 			resultProvider.setKmlData(regioSetup.getKmlData());
-			ResultEditorInput input = getEditorInput(resultProvider, setup);
+			ResultEditorInput input = getEditorInput(resultProvider, setup,
+					regioSetup.getParameterSet());
 			Editors.open(input, RegionalizedResultEditor.ID);
 		}
 

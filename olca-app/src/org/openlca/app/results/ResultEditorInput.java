@@ -15,12 +15,14 @@ public class ResultEditorInput implements IEditorInput {
 	private long productSystemId;
 	private String resultKey;
 	private String setupKey;
+	private String parameterSetKey;
 
 	public ResultEditorInput(long productSystemId, String resultKey,
-			String setupKey) {
+			String setupKey, String parameterSetKey) {
 		this.productSystemId = productSystemId;
 		this.resultKey = resultKey;
 		this.setupKey = setupKey;
+		this.parameterSetKey = parameterSetKey;
 	}
 
 	public long getProductSystemId() {
@@ -35,6 +37,10 @@ public class ResultEditorInput implements IEditorInput {
 		return setupKey;
 	}
 
+	public String getParameterSetKey() {
+		return parameterSetKey;
+	}
+	
 	@Override
 	@SuppressWarnings("rawtypes")
 	public Object getAdapter(Class adapter) {

@@ -54,6 +54,7 @@ public class ImpactTreePage extends FormPage {
 			COLUMN_IMPACT_RESULT };
 
 	private final FullResultProvider result;
+	private final ImpactFactorProvider impactFactors;
 	private FormToolkit toolkit;
 	private ImpactCategoryViewer categoryViewer;
 	private Button filterZeroButton;
@@ -63,9 +64,11 @@ public class ImpactTreePage extends FormPage {
 	private boolean filterZeroes;
 	private double cutOff = 0;
 
-	public ImpactTreePage(FormEditor editor, FullResultProvider result) {
+	public ImpactTreePage(FormEditor editor, FullResultProvider result,
+			ImpactFactorProvider impactFactors) {
 		super(editor, "ImpactTreePage", "#Impact analysis");
 		this.result = result;
+		this.impactFactors = impactFactors;
 	}
 
 	@Override
@@ -224,9 +227,7 @@ public class ImpactTreePage extends FormPage {
 	}
 
 	private double getFactor(FlowWithProcessDescriptor descriptor) {
-		int row = result.result.impactIndex.getIndex(impactCategory.getId());
-		int col = result.result.flowIndex.getIndex(descriptor.flow.getId());
-		return Math.abs(result.result.impactFactors.getEntry(row, col));
+		return impactFactors.get(impactCategory, descriptor);
 	}
 
 	private double getResult(FlowWithProcessDescriptor descriptor) {
@@ -290,10 +291,10 @@ public class ImpactTreePage extends FormPage {
 
 	}
 
-	private class FlowWithProcessDescriptor {
+	public class FlowWithProcessDescriptor {
 
-		private ProcessDescriptor process;
-		private FlowDescriptor flow;
+		public final ProcessDescriptor process;
+		public final FlowDescriptor flow;
 
 		private FlowWithProcessDescriptor(ProcessDescriptor process,
 				FlowDescriptor flow) {
@@ -341,6 +342,13 @@ public class ImpactTreePage extends FormPage {
 			}
 			return true;
 		}
+	}
+
+	public interface ImpactFactorProvider {
+
+		double get(ImpactCategoryDescriptor impactCategory,
+				FlowWithProcessDescriptor flowWithProcess);
+
 	}
 
 }
