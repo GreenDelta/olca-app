@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Stack;
 
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -11,6 +12,7 @@ import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
@@ -95,9 +97,44 @@ public class Navigator extends CommonNavigator {
 		element.update();
 		Object[] oldExpansion = viewer.getExpandedElements();
 		viewer.refresh(element);
+		updateLabels(viewer, element);
 		if (oldExpansion == null)
 			return;
 		setRefreshedExpansion(viewer, oldExpansion);
+	}
+
+	private static void updateLabels(CommonViewer viewer,
+			INavigationElement<?> element) {
+		TreeItem item = findItem(viewer, element);
+		if (item == null)
+			return;
+		do {
+			viewer.doUpdateItem(item);
+			item = item.getParentItem();
+		} while (item != null);
+	}
+
+	private static TreeItem findItem(CommonViewer viewer,
+			INavigationElement<?> element) {
+		Stack<TreeItem> items = new Stack<>();
+		for (TreeItem item : viewer.getTree().getItems())
+			items.add(item);
+		while (!items.empty()) {
+			TreeItem next = items.pop();
+			if (itemEqualsElement(next, element))
+				return next;
+			for (TreeItem item : next.getItems())
+				items.add(item);
+		}
+		return null;
+	}
+
+	private static boolean itemEqualsElement(TreeItem item,
+			INavigationElement<?> element) {
+		INavigationElement<?> data = (INavigationElement<?>) item.getData();
+		if (data == null)
+			return false;
+		return Objects.equal(data.getContent(), element.getContent());
 	}
 
 	/**

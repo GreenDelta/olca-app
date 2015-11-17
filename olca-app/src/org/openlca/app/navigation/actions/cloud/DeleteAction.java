@@ -36,7 +36,7 @@ public class DeleteAction extends Action implements INavigationAction {
 			}
 		});
 		Database.disconnect();
-		Navigator.refresh();
+		Navigator.refresh(Navigator.getNavigationRoot());
 	}
 
 	@Override

@@ -181,7 +181,7 @@ public class FetchAction extends Action implements INavigationAction {
 		private void afterFetchData() {
 			if (error != null)
 				return;
-			Navigator.refresh();
+			Navigator.refresh(Navigator.getNavigationRoot());
 		}
 
 		private void showNoChangesBox() {

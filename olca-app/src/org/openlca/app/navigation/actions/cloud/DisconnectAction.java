@@ -22,7 +22,7 @@ public class DisconnectAction extends Action implements INavigationAction {
 	@Override
 	public void run() {
 		Database.disconnect();
-		Navigator.refresh();
+		Navigator.refresh(Navigator.getNavigationRoot());
 	}
 
 	@Override

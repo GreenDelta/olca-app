@@ -122,7 +122,7 @@ public class CommitAction extends Action implements INavigationAction {
 		private void afterCommit() {
 			if (!canContinue())
 				return;
-			Navigator.refresh();
+			Navigator.refresh(Navigator.getNavigationRoot());
 		}
 
 		private List<DiffResult> createDifferences(DiffIndex index,

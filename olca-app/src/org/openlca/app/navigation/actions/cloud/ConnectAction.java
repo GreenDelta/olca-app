@@ -41,7 +41,7 @@ public class ConnectAction extends Action implements INavigationAction {
 		if (runner.error != null)
 			Error.showBox(runner.error.getMessage());
 		indexDatabase();
-		Navigator.refresh();
+		Navigator.refresh(Navigator.getNavigationRoot());
 	}
 
 	private class Runner {
