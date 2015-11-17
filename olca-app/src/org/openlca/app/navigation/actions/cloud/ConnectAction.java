@@ -1,4 +1,4 @@
-package org.openlca.app.cloud.navigation.action;
+package org.openlca.app.navigation.actions.cloud;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,17 +10,15 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
 import org.openlca.app.App;
-import org.openlca.app.cloud.index.DiffIndex;
+import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.cloud.index.DiffIndexer;
 import org.openlca.app.cloud.index.DiffType;
-import org.openlca.app.cloud.navigation.NavigationRoot;
-import org.openlca.app.cloud.navigation.NavigationUtil;
-import org.openlca.app.cloud.navigation.RepositoryElement;
-import org.openlca.app.cloud.navigation.RepositoryNavigator;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.CategoryElement;
+import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
+import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.UI;
@@ -42,7 +40,8 @@ public class ConnectAction extends Action implements INavigationAction {
 		runner.run();
 		if (runner.error != null)
 			Error.showBox(runner.error.getMessage());
-		RepositoryNavigator.refresh();
+		indexDatabase();
+		Navigator.refresh();
 	}
 
 	private class Runner {
@@ -54,14 +53,12 @@ public class ConnectAction extends Action implements INavigationAction {
 			if (dialog.open() != Dialog.OK)
 				return;
 			RepositoryConfig config = dialog.createConfig();
-			NavigationRoot root = RepositoryNavigator.getNavigationRoot();
-			App.runWithProgress(
-					"#Connecting to repository " + config.getServerUrl() + " "
-							+ config.getRepositoryId(),
-					() -> connect(config, root));
+			String text = "#Connecting to repository " + config.getServerUrl()
+					+ " " + config.getRepositoryId();
+			App.runWithProgress(text, () -> connect(config));
 		}
 
-		private void connect(RepositoryConfig config, NavigationRoot root) {
+		private void connect(RepositoryConfig config) {
 			RepositoryClient client = new RepositoryClient(config);
 			try {
 				String owner = config.getRepositoryOwner();
@@ -82,26 +79,28 @@ public class ConnectAction extends Action implements INavigationAction {
 				config.disconnect();
 				return;
 			}
-			root.setClient(client);
-			root.update();
-			DiffIndex index = DiffIndex.getFor(client);
-			DiffIndexer indexer = new DiffIndexer(index);
-			indexer.addToIndex(collectDescriptors(root.getChildren().get(0)),
-					DiffType.NEW);
-			index.close();
+			Database.connect(config);
 		}
 
-		private List<DatasetDescriptor> collectDescriptors(
-				INavigationElement<?> element) {
-			List<DatasetDescriptor> descriptor = new ArrayList<>();
-			if (element instanceof ModelElement
-					|| element instanceof CategoryElement)
-				descriptor.add(NavigationUtil.toDescriptor(element));
-			for (INavigationElement<?> child : element.getChildren())
-				descriptor.addAll(collectDescriptors(child));
-			return descriptor;
-		}
+	}
 
+	private void indexDatabase() {
+		// TODO maybe this could be done in a better way?
+		DiffIndexer indexer = new DiffIndexer(Database.getDiffIndex());
+		INavigationElement<?> elem = Navigator.findElement(Database.getActiveConfiguration());
+		List<DatasetDescriptor> descriptors = collectDescriptors(elem);
+		indexer.addToIndex(descriptors, DiffType.NEW);
+	}
+
+	private List<DatasetDescriptor> collectDescriptors(
+			INavigationElement<?> element) {
+		List<DatasetDescriptor> descriptor = new ArrayList<>();
+		if (element instanceof ModelElement
+				|| element instanceof CategoryElement)
+			descriptor.add(CloudUtil.toDescriptor(element));
+		for (INavigationElement<?> child : element.getChildren())
+			descriptor.addAll(collectDescriptors(child));
+		return descriptor;
 	}
 
 	private class InputDialog extends Dialog {
@@ -152,9 +151,12 @@ public class ConnectAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean accept(INavigationElement<?> element) {
-		if (!(element instanceof RepositoryElement))
+		if (!(element instanceof DatabaseElement))
 			return false;
-		RepositoryClient client = ((RepositoryElement) element).getContent();
+		DatabaseElement elem = (DatabaseElement) element;
+		if (!Database.isActive(elem.getContent()))
+			return false;
+		RepositoryClient client = Database.getRepositoryClient();
 		if (client != null)
 			return false;
 		return true;

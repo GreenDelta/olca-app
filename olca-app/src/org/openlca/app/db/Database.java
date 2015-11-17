@@ -4,6 +4,9 @@ import java.io.File;
 import java.util.Objects;
 
 import org.openlca.app.App;
+import org.openlca.app.cloud.index.DiffIndex;
+import org.openlca.cloud.api.RepositoryClient;
+import org.openlca.cloud.api.RepositoryConfig;
 import org.openlca.core.database.ActorDao;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.CategorizedEntityDao;
@@ -32,6 +35,8 @@ public class Database {
 	private static IDatabase database;
 	private static IDatabaseConfiguration config;
 	private static DatabaseList configurations = loadConfigs();
+	private static DiffIndex diffIndex;
+	private static RepositoryClient repositoryClient;
 
 	private Database() {
 	}
@@ -49,6 +54,10 @@ public class Database {
 			Logger log = LoggerFactory.getLogger(Database.class);
 			log.trace("activated database {} with version{}",
 					database.getName(), database.getVersion());
+			RepositoryConfig repoConfig = RepositoryConfig.loadFor(Database
+					.get());
+			if (repoConfig != null)
+				connect(repoConfig);
 			return Database.database;
 		} catch (Exception e) {
 			Database.database = null;
@@ -56,6 +65,34 @@ public class Database {
 			Database.config = null;
 			throw e;
 		}
+	}
+
+	public static void connect(RepositoryConfig config) {
+		if (diffIndex != null)
+			diffIndex.close();
+		repositoryClient = new RepositoryClient(config);
+		diffIndex = DiffIndex.getFor(repositoryClient);
+	}
+
+	public static void disconnect() {
+		if (repositoryClient == null)
+			return;
+		diffIndex.close();
+		diffIndex = null;
+		repositoryClient.getConfig().disconnect();
+		repositoryClient = null;
+	}
+
+	public static boolean isConnected() {
+		return repositoryClient != null;
+	}
+
+	public static RepositoryClient getRepositoryClient() {
+		return repositoryClient;
+	}
+
+	public static DiffIndex getDiffIndex() {
+		return diffIndex;
 	}
 
 	public static boolean isActive(IDatabaseConfiguration config) {
@@ -72,6 +109,11 @@ public class Database {
 		database.close();
 		database = null;
 		config = null;
+		if (repositoryClient == null)
+			return;
+		diffIndex.close();
+		diffIndex = null;
+		repositoryClient = null;
 	}
 
 	private static DatabaseList loadConfigs() {

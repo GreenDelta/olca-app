@@ -13,10 +13,11 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.openlca.app.App;
 import org.openlca.app.Event;
 import org.openlca.app.Messages;
+import org.openlca.app.cloud.CloudUtil;
+import org.openlca.app.cloud.index.DiffIndexer;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.events.EventHandler;
-import org.openlca.app.events.ModelEvent;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
@@ -25,6 +26,7 @@ import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Version;
 import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.Descriptors;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -110,12 +112,13 @@ public abstract class ModelEditor<T extends CategorizedEntity> extends
 		EntityCache cache = Cache.getEntityCache();
 		cache.refresh(descriptor.getClass(), descriptor.getId());
 		cache.invalidate(modelClass, model.getId());
-		Navigator.refresh(Navigator.findElement(descriptor));
 		this.setPartName(Labels.getDisplayName(descriptor));
 		Cache.evict(descriptor);
 		for (EventHandler handler : savedHandlers)
 			handler.handleEvent();
-		App.getEventBus().post(new ModelEvent(model, ModelEvent.Type.MODIFY));
+		DiffIndexer indexHelper = new DiffIndexer(Database.getDiffIndex());
+		indexHelper.indexModify(CloudUtil.toDescriptor(model));
+		Navigator.refresh(Navigator.findElement(Descriptors.toDescriptor(model)));
 	}
 
 	@Override

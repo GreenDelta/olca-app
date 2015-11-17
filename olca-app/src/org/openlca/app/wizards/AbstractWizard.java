@@ -4,9 +4,10 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IWorkbench;
 import org.openlca.app.App;
+import org.openlca.app.cloud.CloudUtil;
+import org.openlca.app.cloud.index.DiffIndexer;
 import org.openlca.app.db.Cache;
-import org.openlca.app.events.ModelEvent;
-import org.openlca.app.events.ModelEvent.Type;
+import org.openlca.app.db.Database;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.model.CategorizedEntity;
@@ -58,7 +59,8 @@ public abstract class AbstractWizard<T extends CategorizedEntity> extends
 			createDao().insert(model);
 			CategorizedDescriptor descriptor = Descriptors.toDescriptor(model);
 			Cache.registerNew(descriptor);
-			App.getEventBus().post(new ModelEvent(model, Type.CREATE));
+			DiffIndexer indexHelper = new DiffIndexer(Database.getDiffIndex());
+			indexHelper.indexCreate(CloudUtil.toDescriptor(model));
 			App.openEditor(model);
 			return true;
 		} catch (Exception e) {

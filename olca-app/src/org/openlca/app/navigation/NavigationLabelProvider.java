@@ -36,6 +36,9 @@ public class NavigationLabelProvider extends ColumnLabelProvider implements
 		if (!(obj instanceof INavigationElement))
 			return null;
 		INavigationElement<?> elem = (INavigationElement<?>) obj;
+		Image withOverlay = RepositoryLabel.getWithOverlay(elem);
+		if (withOverlay != null)
+			return withOverlay;
 		if (elem instanceof GroupElement)
 			return ImageType.FOLDER_SMALL.get();
 		Object content = (elem).getContent();
@@ -68,6 +71,23 @@ public class NavigationLabelProvider extends ColumnLabelProvider implements
 		if (!(obj instanceof INavigationElement))
 			return null;
 		INavigationElement<?> elem = (INavigationElement<?>) obj;
+		String baseText = getBaseText(elem);
+		if (baseText == null)
+			return null;
+		if (elem instanceof DatabaseElement) {
+			IDatabaseConfiguration config = ((DatabaseElement) elem)
+					.getContent();
+			String repoText = RepositoryLabel.getRepositoryText(config);
+			if (repoText != null)
+				baseText += repoText;
+		}
+		String state = RepositoryLabel.getStateIndicator(elem);
+		if (state == null)
+			return baseText;
+		return state + baseText;
+	}
+
+	private String getBaseText(INavigationElement<?> elem) {
 		if (elem instanceof GroupElement)
 			return ((GroupElement) elem).getContent().label;
 		Object content = (elem).getContent();

@@ -6,10 +6,10 @@ import java.util.Objects;
 import java.util.Queue;
 
 import org.openlca.app.App;
+import org.openlca.app.cloud.CloudUtil;
+import org.openlca.app.cloud.index.DiffIndexer;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
-import org.openlca.app.events.ModelEvent;
-import org.openlca.app.events.ModelEvent.Type;
 import org.openlca.app.events.TaskEvent;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.CategorizedEntityDao;
@@ -199,7 +199,8 @@ public class CopyPaste {
 		Category category = getCategory(categoryElement);
 		copy.setCategory(category);
 		copy = insert(copy);
-		App.getEventBus().post(new ModelEvent(copy, Type.CREATE));
+		DiffIndexer indexHelper = new DiffIndexer(Database.getDiffIndex());
+		indexHelper.indexCreate(CloudUtil.toDescriptor(copy));
 	}
 
 	private static Category getCategory(INavigationElement<?> element) {
@@ -227,7 +228,8 @@ public class CopyPaste {
 		if (newParent != null)
 			newParent = dao.update(newParent);
 		category = dao.update(category);
-		App.getEventBus().post(new ModelEvent(category, Type.MODIFY));
+		DiffIndexer indexHelper = new DiffIndexer(Database.getDiffIndex());
+		indexHelper.indexModify(CloudUtil.toDescriptor(category));
 	}
 
 	private static boolean isChild(Category category, Category parent) {
@@ -247,13 +249,15 @@ public class CopyPaste {
 		CategorizedDescriptor descriptor = element.getContent();
 		Category category = getCategory(categoryElement);
 		Optional<Category> parent = Optional.fromNullable(category);
-		Database.createRootDao(descriptor.getModelType())
-				.updateCategory(descriptor, parent);
-		App.getEventBus().post(new ModelEvent(category, Type.MODIFY));
+		Database.createRootDao(descriptor.getModelType()).updateCategory(
+				descriptor, parent);
+		DiffIndexer indexHelper = new DiffIndexer(Database.getDiffIndex());
+		indexHelper.indexModify(CloudUtil.toDescriptor(category));
 	}
 
 	private static void copy(CategoryElement element,
 			INavigationElement<?> category) {
+		DiffIndexer indexHelper = new DiffIndexer(Database.getDiffIndex());
 		Category parent = getCategory(category);
 		Queue<CategoryElement> elements = new LinkedList<>();
 		elements.add(element);
@@ -268,7 +272,7 @@ public class CopyPaste {
 				parent.getChildCategories().add(copy);
 				copy = new CategoryDao(Database.get()).update(parent);
 			}
-			App.getEventBus().post(new ModelEvent(copy, Type.CREATE));
+			indexHelper.indexCreate(CloudUtil.toDescriptor(copy));
 			for (INavigationElement<?> child : current.getChildren())
 				if (child instanceof CategoryElement)
 					elements.add((CategoryElement) child);
@@ -276,7 +280,7 @@ public class CopyPaste {
 					CategorizedEntity modelCopy = copy((ModelElement) child);
 					modelCopy.setCategory(copy);
 					modelCopy = insert(modelCopy);
-					App.getEventBus().post(new ModelEvent(modelCopy, Type.CREATE));
+					indexHelper.indexCreate(CloudUtil.toDescriptor(modelCopy));
 				}
 			parent = copy;
 		}

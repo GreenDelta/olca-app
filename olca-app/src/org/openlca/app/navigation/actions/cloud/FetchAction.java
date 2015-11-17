@@ -1,4 +1,4 @@
-package org.openlca.app.cloud.navigation.action;
+package org.openlca.app.navigation.actions.cloud;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,14 +14,14 @@ import org.openlca.app.cloud.index.Diff;
 import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.cloud.index.DiffIndexer;
 import org.openlca.app.cloud.index.DiffType;
-import org.openlca.app.cloud.navigation.RepositoryElement;
-import org.openlca.app.cloud.navigation.RepositoryNavigator;
 import org.openlca.app.cloud.ui.CommitEntryDialog;
 import org.openlca.app.cloud.ui.DiffDialog;
 import org.openlca.app.cloud.ui.DiffNode;
 import org.openlca.app.cloud.ui.DiffNodeBuilder;
 import org.openlca.app.cloud.ui.DiffResult;
 import org.openlca.app.cloud.ui.DiffResult.DiffResponse;
+import org.openlca.app.db.Database;
+import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
@@ -181,7 +181,6 @@ public class FetchAction extends Action implements INavigationAction {
 		private void afterFetchData() {
 			if (error != null)
 				return;
-			RepositoryNavigator.refresh();
 			Navigator.refresh();
 		}
 
@@ -203,12 +202,12 @@ public class FetchAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean accept(INavigationElement<?> element) {
-		if (!(element instanceof RepositoryElement))
+		if (!(element instanceof DatabaseElement))
 			return false;
-		client = RepositoryNavigator.getClient();
+		client = Database.getRepositoryClient();
 		if (client == null)
 			return false;
-		index = RepositoryNavigator.getDiffIndex();
+		index = Database.getDiffIndex();
 		return true;
 	}
 

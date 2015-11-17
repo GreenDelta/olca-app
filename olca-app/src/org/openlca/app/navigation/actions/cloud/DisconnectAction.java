@@ -1,16 +1,14 @@
-package org.openlca.app.cloud.navigation.action;
+package org.openlca.app.navigation.actions.cloud;
 
-import java.io.File;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
-import org.openlca.app.cloud.navigation.RepositoryElement;
-import org.openlca.app.cloud.navigation.RepositoryNavigator;
+import org.openlca.app.db.Database;
+import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
+import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
-
 import org.openlca.cloud.api.RepositoryClient;
-import org.openlca.cloud.util.Directories;
 
 public class DisconnectAction extends Action implements INavigationAction {
 
@@ -23,20 +21,15 @@ public class DisconnectAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		client.getConfig().disconnect();
-		File fileStorage = client.getConfig().getDatabase()
-				.getFileStorageLocation();
-		RepositoryNavigator.disconnect();
-		Directories.delete(new File(fileStorage, "cloud/"
-				+ client.getConfig().getRepositoryId()));
-		RepositoryNavigator.refresh();
+		Database.disconnect();
+		Navigator.refresh();
 	}
 
 	@Override
 	public boolean accept(INavigationElement<?> element) {
-		if (!(element instanceof RepositoryElement))
+		if (!(element instanceof DatabaseElement))
 			return false;
-		client = (RepositoryClient) element.getContent();
+		client = Database.getRepositoryClient();
 		if (client == null)
 			return false;
 		return true;

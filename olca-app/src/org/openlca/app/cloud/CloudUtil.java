@@ -9,10 +9,14 @@ import java.util.Map;
 
 import org.openlca.app.cloud.ui.DiffResult;
 import org.openlca.app.db.Database;
+import org.openlca.app.navigation.CategoryElement;
+import org.openlca.app.navigation.INavigationElement;
+import org.openlca.app.navigation.ModelElement;
 import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.model.data.DatasetDescriptor;
 import org.openlca.cloud.util.WebRequests.WebRequestException;
 import org.openlca.core.model.CategorizedEntity;
+import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Version;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
@@ -32,7 +36,22 @@ public class CloudUtil {
 			descriptors.add(result.getDescriptor());
 		return descriptors;
 	}
-	
+
+	public static DatasetDescriptor toDescriptor(INavigationElement<?> element) {
+		CategorizedDescriptor descriptor = null;
+		if (element instanceof CategoryElement) {
+			descriptor = Descriptors.toDescriptor(((CategoryElement) element)
+					.getContent());
+		} else if (element instanceof ModelElement)
+			descriptor = ((ModelElement) element).getContent();
+		if (descriptor == null)
+			return null;
+		Category category = null;
+		if (element.getParent() instanceof CategoryElement)
+			category = ((CategoryElement) element.getParent()).getContent();
+		return toDescriptor(descriptor, Descriptors.toDescriptor(category));
+	}
+
 	public static DatasetDescriptor toDescriptor(CategorizedDescriptor entity,
 			CategoryDescriptor category) {
 		DatasetDescriptor descriptor = new DatasetDescriptor();
@@ -166,7 +185,7 @@ public class CloudUtil {
 		public byte[] get(String path) {
 			return resources.get(path);
 		}
-		
+
 		@Override
 		public List<String> getBinFiles(ModelType type, String refId) {
 			return null;

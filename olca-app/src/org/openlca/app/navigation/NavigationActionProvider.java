@@ -3,6 +3,7 @@ package org.openlca.app.navigation;
 import java.util.List;
 
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.actions.ActionContext;
@@ -38,6 +39,13 @@ import org.openlca.app.navigation.actions.XNexusIndexExportAction;
 import org.openlca.app.navigation.actions.XParameterCheckAction;
 import org.openlca.app.navigation.actions.XRefDataExport;
 import org.openlca.app.navigation.actions.XRefDataImport;
+import org.openlca.app.navigation.actions.cloud.CommitAction;
+import org.openlca.app.navigation.actions.cloud.ConnectAction;
+import org.openlca.app.navigation.actions.cloud.DeleteAction;
+import org.openlca.app.navigation.actions.cloud.DisconnectAction;
+import org.openlca.app.navigation.actions.cloud.FetchAction;
+import org.openlca.app.navigation.actions.cloud.ShareAction;
+import org.openlca.app.navigation.actions.cloud.UnshareAction;
 import org.openlca.app.util.viewers.Viewers;
 
 /**
@@ -80,8 +88,20 @@ public class NavigationActionProvider extends CommonActionProvider {
 				new DeleteCategoryAction()		
 			}	
 	};
+	
+	private INavigationAction[][] cloudActions = new INavigationAction[][] {	
+		new INavigationAction[] { 
+			new CommitAction(), new FetchAction() 
+		},
+		new INavigationAction[]	{ 
+			new ShareAction(), new UnshareAction() 
+		},
+		new INavigationAction[]	{ 
+			new ConnectAction(), new DeleteAction(), new DisconnectAction() 
+		}	
+	};
 	//@formatter:on
-
+	
 	@Override
 	public void fillContextMenu(IMenuManager menu) {
 		ActionContext con = getContext();
@@ -90,15 +110,29 @@ public class NavigationActionProvider extends CommonActionProvider {
 		List<INavigationElement<?>> elements = Viewers.getAll(selection);
 		int registered = 0;
 		if (elements.size() == 1)
-			registered += registerSingleActions(elements.get(0), menu);
+			registered += registerSingleActions(elements.get(0), menu, actions);
 		else if (elements.size() > 1)
-			registered += registerMultiActions(elements, menu);
+			registered += registerMultiActions(elements, menu, actions);
 		if (registered > 0)
 			menu.add(new Separator());
+		addCloudMenu(elements, menu);
 		menu.add(new DatabaseCreateAction());
 		menu.add(new DatabaseImportAction());
 	}
 
+	private void addCloudMenu(List<INavigationElement<?>> elements, IMenuManager menu) {
+		int registered = 0;
+		IMenuManager subMenu = new MenuManager("Repository");
+		if (elements.size() == 1)
+			registered += registerSingleActions(elements.get(0), subMenu, cloudActions);
+		else if (elements.size() > 1)
+			registered += registerMultiActions(elements, subMenu, cloudActions);
+		if (registered == 0)
+			return;
+		menu.add(subMenu);
+		menu.add(new Separator());
+	}
+	
 	private INavigationAction[] getDatabaseActions() {
 		int count = App.runsInDevMode() ? 13 : 7;
 		INavigationAction[] actions = new INavigationAction[count];
@@ -121,7 +155,7 @@ public class NavigationActionProvider extends CommonActionProvider {
 	}
 
 	private int registerSingleActions(INavigationElement<?> element,
-			IMenuManager menu) {
+			IMenuManager menu, INavigationAction[][] actions) {
 		int count = 0;
 		for (INavigationAction[] group : actions) {
 			boolean acceptedOne = false;
@@ -138,7 +172,7 @@ public class NavigationActionProvider extends CommonActionProvider {
 	}
 
 	private int registerMultiActions(List<INavigationElement<?>> elements,
-			IMenuManager menu) {
+			IMenuManager menu, INavigationAction[][] actions) {
 		int count = 0;
 		for (INavigationAction[] group : actions) {
 			boolean acceptedOne = false;

@@ -9,11 +9,11 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.osgi.util.NLS;
 import org.openlca.app.App;
 import org.openlca.app.Messages;
+import org.openlca.app.cloud.CloudUtil;
+import org.openlca.app.cloud.index.DiffIndexer;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
-import org.openlca.app.events.ModelEvent;
-import org.openlca.app.events.ModelEvent.Type;
 import org.openlca.app.navigation.CategoryElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
@@ -28,6 +28,7 @@ import org.openlca.core.database.usage.IUseSearch;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.descriptors.Descriptors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,12 +86,14 @@ public class DeleteModelAction extends Action implements INavigationAction {
 				continue;
 			App.closeEditor(descriptor);
 			delete(descriptor);
-			Navigator.refresh(element.getParent());
 			Category category = null;
 			if (element.getParent() instanceof CategoryElement)
 				category = ((CategoryElement) element.getParent()).getContent();
-			App.getEventBus().post(
-					new ModelEvent(descriptor, category, Type.DELETE));
+			// TODO CLOUD: check case category == null
+			DiffIndexer indexHelper = new DiffIndexer(Database.getDiffIndex());
+			indexHelper.indexDelete(CloudUtil.toDescriptor(descriptor,
+					Descriptors.toDescriptor(category)));
+			Navigator.refresh(element.getParent());
 		}
 		elements = null;
 	}

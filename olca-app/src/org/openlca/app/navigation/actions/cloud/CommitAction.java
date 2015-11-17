@@ -1,4 +1,4 @@
-package org.openlca.app.cloud.navigation.action;
+package org.openlca.app.navigation.actions.cloud;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,15 +10,15 @@ import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.cloud.index.Diff;
 import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.cloud.index.DiffIndexer;
-import org.openlca.app.cloud.navigation.RepositoryElement;
-import org.openlca.app.cloud.navigation.RepositoryNavigator;
 import org.openlca.app.cloud.ui.CommitDialog;
 import org.openlca.app.cloud.ui.DiffNode;
 import org.openlca.app.cloud.ui.DiffNodeBuilder;
 import org.openlca.app.cloud.ui.DiffResult;
 import org.openlca.app.cloud.ui.DiffResult.DiffResponse;
 import org.openlca.app.db.Database;
+import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
+import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Info;
@@ -50,12 +50,12 @@ public class CommitAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean accept(INavigationElement<?> element) {
-		while (!(element instanceof RepositoryElement))
+		while (!(element instanceof DatabaseElement))
 			element = element.getParent();
-		client = RepositoryNavigator.getClient();
+		client = Database.getRepositoryClient();
 		if (client == null)
 			return false;
-		index = RepositoryNavigator.getDiffIndex();
+		index = Database.getDiffIndex();
 		return true;
 	}
 
@@ -89,7 +89,7 @@ public class CommitAction extends Action implements INavigationAction {
 			if (!canContinue())
 				return;
 			DiffNode node = new DiffNodeBuilder(Database.get(),
-					RepositoryNavigator.getDiffIndex()).build(changes);
+					Database.getDiffIndex()).build(changes);
 			if (node == null) {
 				noChanges = true;
 				return;
@@ -122,7 +122,7 @@ public class CommitAction extends Action implements INavigationAction {
 		private void afterCommit() {
 			if (!canContinue())
 				return;
-			RepositoryNavigator.refresh();
+			Navigator.refresh();
 		}
 
 		private List<DiffResult> createDifferences(DiffIndex index,
@@ -154,7 +154,8 @@ public class CommitAction extends Action implements INavigationAction {
 			for (DiffResult change : changes)
 				if (change.getType() == DiffResponse.DELETE_FROM_REMOTE) {
 					DatasetDescriptor descriptor = change.getDescriptor();
-					descriptor.setFullPath(change.local.descriptor.getFullPath());
+					descriptor.setFullPath(change.local.descriptor
+							.getFullPath());
 					commit.put(descriptor, null);
 				} else
 					commit.put(Database.createRootDao(

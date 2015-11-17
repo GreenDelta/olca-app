@@ -344,13 +344,6 @@
             id="views.navigation"
             name="%Navigation">
       </view>  
-      <view
-            allowMultiple="false"
-            class="org.openlca.app.cloud.navigation.RepositoryNavigator"
-            icon="icons/categories.gif"
-            id="views.repository.navigation"
-            name="#Repository">
-      </view>  
    </extension>
    
    <extension
@@ -459,9 +452,6 @@
 		         </property>
 			</options>           
       </viewer>
-      <viewer
-            viewerId="views.repository.navigation">
-	  </viewer>
       <viewerContentBinding
             viewerId="views.navigation">
          <includes>
@@ -483,28 +473,11 @@
             </contentExtension>
          </includes>
       </viewerContentBinding>
-      <viewerContentBinding
-            viewerId="views.repository.navigation">
-         <includes>
-            <contentExtension
-                  isRoot="true"
-                  pattern="repository.navigatorcontent.context">
-            </contentExtension>
-         </includes>
-      </viewerContentBinding>
       <viewerActionBinding
             viewerId="views.navigation">
          <includes>
             <actionExtension
                   pattern="actionprovider.navigation">
-            </actionExtension>
-         </includes>
-      </viewerActionBinding>
-      <viewerActionBinding
-            viewerId="views.repository.navigation">
-         <includes>
-            <actionExtension
-                  pattern="actionprovider.repository.navigation">
             </actionExtension>
          </includes>
       </viewerActionBinding>
@@ -545,36 +518,9 @@
             </instanceof>
          </possibleChildren>
       </navigatorContent>
-      <navigatorContent
-            activeByDefault="true"
-            contentProvider="org.openlca.app.navigation.NavigationContentProvider"
-            id="repository.navigatorcontent.context"
-            labelProvider="org.openlca.app.cloud.navigation.NavigationLabelProvider"
-            name="%DataProvider"
-            priority="normal">
-         <triggerPoints>
-            <instanceof
-                  value="org.openlca.app.navigation.INavigationElement">
-            </instanceof>
-         </triggerPoints>
-         <commonSorter
-               class="org.openlca.app.navigation.NavigationSorter">
-         </commonSorter>
-         <possibleChildren>
-            <instanceof
-                  value="org.openlca.app.navigation.INavigationElement">
-            </instanceof>
-         </possibleChildren>
-      </navigatorContent>
       <actionProvider
             class="org.openlca.app.navigation.NavigationActionProvider"
             id="actionprovider.navigation"
-            priority="normal">
-         <enablement></enablement>
-      </actionProvider>
-      <actionProvider
-            class="org.openlca.app.cloud.navigation.NavigationActionProvider"
-            id="actionprovider.repository.navigation"
             priority="normal">
          <enablement></enablement>
       </actionProvider>

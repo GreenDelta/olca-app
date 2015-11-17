@@ -6,6 +6,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.openlca.app.App;
 import org.openlca.app.Messages;
+import org.openlca.app.cloud.CloudUtil;
+import org.openlca.app.cloud.index.DiffIndexer;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.preferencepages.FeatureFlag;
@@ -59,6 +61,8 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 			getContainer().run(true, true, runner);
 			system = runner.system;
 			Cache.registerNew(Descriptors.toDescriptor(system));
+			DiffIndexer indexHelper = new DiffIndexer(Database.getDiffIndex());
+			indexHelper.indexCreate(CloudUtil.toDescriptor(system));
 			App.openEditor(system);
 			return true;
 		} catch (Exception e) {

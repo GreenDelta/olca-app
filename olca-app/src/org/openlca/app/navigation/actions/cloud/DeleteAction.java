@@ -1,16 +1,15 @@
-package org.openlca.app.cloud.navigation.action;
+package org.openlca.app.navigation.actions.cloud;
 
-import java.io.File;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.openlca.app.App;
-import org.openlca.app.cloud.navigation.RepositoryElement;
-import org.openlca.app.cloud.navigation.RepositoryNavigator;
+import org.openlca.app.db.Database;
+import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
+import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.cloud.api.RepositoryClient;
-import org.openlca.cloud.util.Directories;
 import org.openlca.cloud.util.WebRequests.WebRequestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,20 +35,15 @@ public class DeleteAction extends Action implements INavigationAction {
 						+ name, e);
 			}
 		});
-		client.getConfig().disconnect();
-		File fileStorage = client.getConfig().getDatabase()
-				.getFileStorageLocation();
-		RepositoryNavigator.disconnect();
-		Directories.delete(new File(fileStorage, "cloud/"
-				+ client.getConfig().getRepositoryId()));
-		RepositoryNavigator.refresh();
+		Database.disconnect();
+		Navigator.refresh();
 	}
 
 	@Override
 	public boolean accept(INavigationElement<?> element) {
-		if (!(element instanceof RepositoryElement))
+		if (!(element instanceof DatabaseElement))
 			return false;
-		client = (RepositoryClient) element.getContent();
+		client = Database.getRepositoryClient();
 		if (client == null)
 			return false;
 		String owner = client.getConfig().getRepositoryOwner();
