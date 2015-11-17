@@ -186,6 +186,8 @@ class ModelTree extends AbstractViewer<JsonNode, TreeViewer> {
 					return null;
 				else if (isEmptyArrayElement(node.parent))
 					return null;
+				else if (isEmptyElement(node.parent))
+					return null;
 				else
 					return node.key + ": null";
 			if (element.isJsonNull())
@@ -209,9 +211,17 @@ class ModelTree extends AbstractViewer<JsonNode, TreeViewer> {
 					.getRemoteElement();
 			if (element != null)
 				return false;
-			if (node.parent.getElement() != null)
+			if (node.parent != null && node.parent.getElement() != null)
 				return node.parent.getElement().isJsonArray();
 			return false;
+		}
+
+		private boolean isEmptyElement(JsonNode node) {
+			JsonElement element = local ? node.getLocalElement() : node
+					.getRemoteElement();
+			if (element != null)
+				return false;
+			return true;
 		}
 
 		@Override
