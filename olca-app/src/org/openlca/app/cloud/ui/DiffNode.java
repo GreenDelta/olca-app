@@ -3,27 +3,38 @@ package org.openlca.app.cloud.ui;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openlca.core.model.ModelType;
+
 public class DiffNode {
 
-	private final Object content;
-	private final DiffNode parent;
-	private final List<DiffNode> children = new ArrayList<>();
+	final Object content;
+	final DiffNode parent;
+	final List<DiffNode> children = new ArrayList<>();
 
-	public DiffNode(DiffNode parent, Object content) {
+	DiffNode(DiffNode parent, Object content) {
 		this.content = content;
 		this.parent = parent;
 	}
 
-	public Object getContent() {
-		return content;
+	boolean isModelTypeNode() {
+		return content instanceof ModelType;
 	}
 
-	public DiffNode getParent() {
-		return parent;
+	boolean isCategoryNode() {
+		return getModelType() == ModelType.CATEGORY;
 	}
 
-	public List<DiffNode> getChildren() {
-		return children;
+	boolean isModelNode() {
+		if (isModelTypeNode())
+			return false;
+		return getModelType() != ModelType.CATEGORY;
+	}
+
+	private ModelType getModelType() {
+		if (isModelTypeNode())
+			return null;
+		DiffResult result = (DiffResult) content;
+		return result.getDescriptor().getType();
 	}
 
 }

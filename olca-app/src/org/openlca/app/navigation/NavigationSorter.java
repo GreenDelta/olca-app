@@ -1,8 +1,5 @@
 package org.openlca.app.navigation;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.jface.viewers.ContentViewer;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
@@ -11,22 +8,6 @@ import org.eclipse.jface.viewers.ViewerSorter;
 import org.openlca.core.model.ModelType;
 
 public class NavigationSorter extends ViewerSorter {
-
-	private Map<ModelType, Integer> typeOrder = new HashMap<>();
-
-	public NavigationSorter() {
-		super();
-		fillTypeOrder();
-	}
-
-	private void fillTypeOrder() {
-		ModelType[] order = new ModelType[] { ModelType.PROJECT,
-				ModelType.PRODUCT_SYSTEM, ModelType.IMPACT_METHOD,
-				ModelType.PROCESS, ModelType.FLOW, ModelType.FLOW_PROPERTY,
-				ModelType.UNIT_GROUP, ModelType.SOURCE, ModelType.ACTOR };
-		for (int i = 0; i < order.length; i++)
-			typeOrder.put(order[i], i);
-	}
 
 	@Override
 	@SuppressWarnings("unchecked")
@@ -47,13 +28,7 @@ public class NavigationSorter extends ViewerSorter {
 	private int compare(ModelTypeElement e1, ModelTypeElement e2) {
 		ModelType type1 = e1.getContent();
 		ModelType type2 = e2.getContent();
-		if (type1 == null || type2 == null)
-			return 0;
-		Integer order1 = typeOrder.get(type1);
-		Integer order2 = typeOrder.get(type2);
-		if (order1 == null || order2 == null)
-			return 0;
-		return order1 - order2;
+		return ModelTypeComparison.compare(type1, type2);
 	}
 
 	private String getLabel(Viewer viewer, Object e1) {

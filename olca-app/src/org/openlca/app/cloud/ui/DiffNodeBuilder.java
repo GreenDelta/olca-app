@@ -41,7 +41,7 @@ public class DiffNodeBuilder {
 				continue;
 			DiffNode parent = getOrCreateParentNode(result);
 			DiffNode node = new DiffNode(parent, result);
-			parent.getChildren().add(node);
+			parent.children.add(node);
 			nodes.put(result.getDescriptor().getRefId(), node);
 		}
 		return root;
@@ -74,7 +74,7 @@ public class DiffNodeBuilder {
 		DiffNode parent = getOrCreateParentNode(CloudUtil.toDescriptor(category));
 		DiffResult result = new DiffResult(index.get(category.getRefId()));
 		DiffNode node = new DiffNode(parent, result);
-		parent.getChildren().add(node);
+		parent.children.add(node);
 		nodes.put(category.getRefId(), node);
 		return node;
 	}
@@ -82,7 +82,7 @@ public class DiffNodeBuilder {
 	private DiffNode createNodeFromDiff(DiffResult result) {
 		DiffNode parent = getOrCreateParentNode(result.getDescriptor());
 		DiffNode node = new DiffNode(parent, result);
-		parent.getChildren().add(node);
+		parent.children.add(node);
 		nodes.put(result.getDescriptor().getRefId(), node);
 		return node;
 	}
@@ -93,7 +93,7 @@ public class DiffNodeBuilder {
 			return typeNode;
 		DiffNode root = nodes.get("");
 		typeNode = new DiffNode(root, type);
-		root.getChildren().add(typeNode);
+		root.children.add(typeNode);
 		nodes.put(type.name(), typeNode);
 		return typeNode;
 	}
