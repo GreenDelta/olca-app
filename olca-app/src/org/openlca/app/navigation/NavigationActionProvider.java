@@ -46,6 +46,7 @@ import org.openlca.app.navigation.actions.cloud.DisconnectAction;
 import org.openlca.app.navigation.actions.cloud.FetchAction;
 import org.openlca.app.navigation.actions.cloud.ShareAction;
 import org.openlca.app.navigation.actions.cloud.UnshareAction;
+import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.util.viewers.Viewers;
 
 /**
@@ -121,6 +122,8 @@ public class NavigationActionProvider extends CommonActionProvider {
 	}
 
 	private void addCloudMenu(List<INavigationElement<?>> elements, IMenuManager menu) {
+		if (!FeatureFlag.REPOSITORIES.isEnabled())
+			return;
 		int registered = 0;
 		IMenuManager subMenu = new MenuManager("Repository");
 		if (elements.size() == 1)

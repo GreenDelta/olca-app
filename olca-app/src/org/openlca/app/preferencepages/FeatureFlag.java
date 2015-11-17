@@ -22,7 +22,9 @@ public enum FeatureFlag {
 
 	ECOSPOLD1_EXPORT_CONFIG("EcoSpold 1 export configuration"),
 
-	JSONLD_UPDATES("Enable flow updates in JSON-LD import");
+	JSONLD_UPDATES("Enable flow updates in JSON-LD import"),
+	
+	REPOSITORIES("Enable repository feature");
 
 	private final String description;
 
