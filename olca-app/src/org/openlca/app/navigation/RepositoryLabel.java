@@ -3,6 +3,7 @@ package org.openlca.app.navigation;
 import org.eclipse.swt.graphics.Image;
 import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.cloud.index.Diff;
+import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.cloud.index.DiffIndexer;
 import org.openlca.app.cloud.index.DiffType;
 import org.openlca.app.db.Database;
@@ -12,6 +13,7 @@ import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Images;
 import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.model.data.DatasetDescriptor;
+import org.openlca.core.model.ModelType;
 
 class RepositoryLabel {
 
@@ -85,7 +87,8 @@ class RepositoryLabel {
 			return hasChanged(CloudUtil.toDescriptor(element));
 		if (element instanceof ModelElement)
 			return hasChanged(CloudUtil.toDescriptor(element));
-		// TODO refactor this
+		if (element instanceof ModelTypeElement)
+			return hasChanged(((ModelTypeElement) element).getContent());
 		for (INavigationElement<?> child : element.getChildren())
 			if (hasChanged(child))
 				return true;
@@ -96,6 +99,11 @@ class RepositoryLabel {
 		DiffIndexer indexer = new DiffIndexer(Database.getDiffIndex());
 		Diff diff = indexer.getDiff(descriptor);
 		return diff.hasChanged() || diff.childrenHaveChanged();
+	}
+
+	private static boolean hasChanged(ModelType type) {
+		DiffIndex index = Database.getDiffIndex();
+		return index.hasChanged(type);
 	}
 
 }

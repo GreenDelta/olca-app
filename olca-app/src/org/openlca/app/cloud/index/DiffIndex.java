@@ -2,21 +2,25 @@ package org.openlca.app.cloud.index;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
 import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.api.RepositoryConfig;
 import org.openlca.cloud.model.data.DatasetDescriptor;
+import org.openlca.core.model.ModelType;
 
 // NOT SYNCHRONIZED //
 public class DiffIndex {
 
 	private File file;
 	private DB db;
-	private Map<String, Diff> map;
+	private Map<String, Diff> index;
+	private Map<String, Set<String>> changedTopLevelElements;
 
 	public static DiffIndex getFor(RepositoryClient client) {
 		RepositoryConfig config = client.getConfig();
@@ -33,7 +37,8 @@ public class DiffIndex {
 
 	private void createDb(File file) {
 		db = DBMaker.fileDB(file).lockDisable().closeOnJvmShutdown().make();
-		map = db.hashMap("diffIndex");
+		index = db.hashMap("diffIndex");
+		changedTopLevelElements = db.hashMap("changedTopLevelElements");
 	}
 
 	public void close() {
@@ -42,20 +47,25 @@ public class DiffIndex {
 	}
 
 	void add(DatasetDescriptor descriptor) {
-		Diff diff = map.get(descriptor.getRefId());
+		Diff diff = index.get(descriptor.getRefId());
 		if (diff != null)
 			return;
 		diff = new Diff(descriptor, DiffType.NO_DIFF);
-		map.put(descriptor.getRefId(), diff);
+		index.put(descriptor.getRefId(), diff);
 	}
 
 	void update(DatasetDescriptor descriptor, DiffType newType) {
-		Diff diff = map.get(descriptor.getRefId());
+		Diff diff = index.get(descriptor.getRefId());
 		if (diff.type == DiffType.NEW && newType == DiffType.DELETED) {
 			// user added something and then deleted it again
 			remove(descriptor.getRefId());
 			return;
 		}
+		updateDiff(diff, descriptor, newType);
+	}
+
+	private void updateDiff(Diff diff, DatasetDescriptor descriptor,
+			DiffType newType) {
 		diff.type = newType;
 		if (newType == DiffType.NO_DIFF) {
 			updateParents(diff, false);
@@ -65,23 +75,47 @@ public class DiffIndex {
 			diff.changed = descriptor;
 			updateParents(diff, true);
 		}
-		map.put(descriptor.getRefId(), diff);
+		if (descriptor.getCategoryRefId() == null)
+			updateChangedTopLevelElements(descriptor, newType);
+		index.put(descriptor.getRefId(), diff);
+	}
+
+	private void updateChangedTopLevelElements(DatasetDescriptor descriptor,
+			DiffType newType) {
+		String type = descriptor.getCategoryType().name();
+		Set<String> elements = changedTopLevelElements.get(type);
+		if (elements == null && newType != DiffType.NO_DIFF) 
+			elements = new HashSet<>();
+		if (newType == DiffType.NO_DIFF)
+			elements.remove(descriptor.getRefId());
+		else
+			elements.add(descriptor.getRefId());
+		if (elements.isEmpty())
+			changedTopLevelElements.remove(type);
+		else
+			changedTopLevelElements.put(type, elements);
 	}
 
 	public Diff get(String key) {
-		return map.get(key);
+		return index.get(key);
 	}
 
 	public List<Diff> getChanged() {
 		List<Diff> changed = new ArrayList<>();
-		for (Diff diff : map.values())
+		for (Diff diff : index.values())
 			if (diff.hasChanged())
 				changed.add(diff);
 		return changed;
 	}
 
+	public boolean hasChanged(ModelType type) {
+		Set<String> elements = changedTopLevelElements.get(type.name());
+		return elements != null && !elements.isEmpty();
+	}
+
 	void remove(String key) {
-		Diff diff = map.remove(key);
+		Diff diff = index.remove(key);
+		updateChangedTopLevelElements(diff.getDescriptor(), DiffType.NO_DIFF);
 		updateParents(diff, false);
 	}
 
@@ -95,12 +129,12 @@ public class DiffIndex {
 	private void updateParents(DatasetDescriptor descriptor, boolean add) {
 		String parentId = descriptor.getCategoryRefId();
 		while (parentId != null) {
-			Diff parent = map.get(parentId);
+			Diff parent = index.get(parentId);
 			if (add)
 				parent.changedChildren.add(descriptor.getRefId());
 			else
 				parent.changedChildren.remove(descriptor.getRefId());
-			map.put(parentId, parent);
+			index.put(parentId, parent);
 			parentId = parent.descriptor.getCategoryRefId();
 		}
 	}

@@ -89,7 +89,6 @@ public class DeleteModelAction extends Action implements INavigationAction {
 			Category category = null;
 			if (element.getParent() instanceof CategoryElement)
 				category = ((CategoryElement) element.getParent()).getContent();
-			// TODO CLOUD: check case category == null
 			DiffIndexer indexHelper = new DiffIndexer(Database.getDiffIndex());
 			indexHelper.indexDelete(CloudUtil.toDescriptor(descriptor,
 					Descriptors.toDescriptor(category)));
