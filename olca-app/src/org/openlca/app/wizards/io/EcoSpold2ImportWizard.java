@@ -11,8 +11,6 @@ import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
-import org.openlca.app.events.TaskEvent;
-import org.openlca.app.events.TaskEvent.Type;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.core.database.IDatabase;
@@ -46,13 +44,11 @@ public class EcoSpold2ImportWizard extends Wizard implements IImportWizard {
 		if (pi == null)
 			return false;
 		try {
-			App.getEventBus().post(new TaskEvent(Type.IMPORT_STARTED));
 			getContainer().run(true, true, (monitor) -> {
 				monitor.beginTask(Messages.Import, IProgressMonitor.UNKNOWN);
 				ImportHandler handler = new ImportHandler(monitor);
 				handler.run(pi);
 			});
-			App.getEventBus().post(new TaskEvent(Type.IMPORT_STOPPED));
 			return true;
 		} catch (Exception e) {
 			log.error("EcoSpold 02 import failed", e);

@@ -7,10 +7,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
-import org.openlca.app.App;
 import org.openlca.app.Messages;
-import org.openlca.app.events.DatabaseEvent;
-import org.openlca.app.events.DatabaseEvent.Type;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.UI;
@@ -39,9 +36,6 @@ public class DatabaseWizard extends Wizard {
 	@Override
 	public boolean performFinish() {
 		try {
-			String previousDb = null;
-			if (Database.get() != null)
-				previousDb = Database.get().getName();
 			Editors.closeAll();
 			IDatabaseConfiguration config = page.getPageData();
 			Runner runner = (config instanceof DerbyConfiguration) ? new Runner(
@@ -49,9 +43,6 @@ public class DatabaseWizard extends Wizard {
 			getContainer().run(true, false, runner);
 			new DatabaseUpdate(Database.get()).run();
 			Navigator.refresh();
-			if (previousDb != null)
-				App.getEventBus().post(new DatabaseEvent(previousDb, Type.CLOSE));
-			App.getEventBus().post(new DatabaseEvent(config.getName(), Type.ACTIVATE));
 			return true;
 		} catch (Exception e) {
 			log.error("Database creation failed", e);
@@ -92,9 +83,7 @@ public class DatabaseWizard extends Wizard {
 					Database.register((DerbyConfiguration) config);
 					extractDerbyTemplate();
 				}
-				App.getEventBus().post(new DatabaseEvent(config.getName(), Type.CREATE));
 				Database.activate(config);
-				App.getEventBus().post(new DatabaseEvent(config.getName(), Type.ACTIVATE));
 			} catch (Exception e) {
 				log.error("Create database failed", e);
 			}

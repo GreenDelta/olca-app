@@ -5,12 +5,10 @@ import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Queue;
 
-import org.openlca.app.App;
 import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.cloud.index.DiffIndexer;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
-import org.openlca.app.events.TaskEvent;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.CategorizedEntityDao;
 import org.openlca.core.database.CategoryDao;
@@ -137,14 +135,12 @@ public class CopyPaste {
 			return;
 		if (!canPasteTo(categoryElement))
 			return;
-		App.getEventBus().post(new TaskEvent(TaskEvent.Type.PASTE_STARTED));
 		for (INavigationElement<?> element : cache) {
 			paste(element, categoryElement);
 			INavigationElement<?> root = Navigator
 					.findElement(getModelType(element));
 			Navigator.refresh(root);
 		}
-		App.getEventBus().post(new TaskEvent(TaskEvent.Type.PASTE_STOPPED));
 		if (currentAction == Action.CUT) {
 			cache = null;
 			currentAction = Action.NONE;

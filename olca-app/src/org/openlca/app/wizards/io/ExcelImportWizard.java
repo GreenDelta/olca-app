@@ -9,12 +9,9 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
-import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
-import org.openlca.app.events.TaskEvent;
-import org.openlca.app.events.TaskEvent.Type;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.io.xls.process.input.ExcelImport;
@@ -43,9 +40,7 @@ public class ExcelImportWizard extends Wizard implements IImportWizard {
 		if (files == null)
 			return false;
 		try {
-			App.getEventBus().post(new TaskEvent(Type.IMPORT_STARTED));
 			doRun(files);
-			App.getEventBus().post(new TaskEvent(Type.IMPORT_STOPPED));
 			return true;
 		} catch (final Exception e) {
 			return false;

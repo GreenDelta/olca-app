@@ -11,8 +11,6 @@ import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
-import org.openlca.app.events.TaskEvent;
-import org.openlca.app.events.TaskEvent.Type;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.io.ilcd.ILCDImport;
@@ -46,9 +44,7 @@ public class ILCDImportWizard extends Wizard implements IImportWizard {
 		if (zip == null)
 			return false;
 		try {
-			App.getEventBus().post(new TaskEvent(Type.IMPORT_STARTED));
 			doRun(zip);
-			App.getEventBus().post(new TaskEvent(Type.IMPORT_STOPPED));
 			return true;
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(getClass());

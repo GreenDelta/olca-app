@@ -4,8 +4,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.openlca.app.App;
 import org.openlca.app.Messages;
-import org.openlca.app.events.DatabaseEvent;
-import org.openlca.app.events.DatabaseEvent.Type;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.Question;
 import org.openlca.core.database.IDatabase;
@@ -46,8 +44,6 @@ public class DatabaseUpdate implements Runnable {
 			break;
 		case CURRENT:
 			Navigator.refresh();
-			App.getEventBus().post(
-					new DatabaseEvent(database.getName(), Type.ACTIVATE));
 			break;
 		default:
 			break;
@@ -85,11 +81,8 @@ public class DatabaseUpdate implements Runnable {
 	private void handleError(AtomicBoolean failed) {
 		if (failed.get())
 			closeDatabase();
-		else {
+		else 
 			Navigator.refresh();
-			App.getEventBus().post(
-					new DatabaseEvent(database.getName(), Type.ACTIVATE));
-		}
 	}
 
 	private void closeDatabase() {

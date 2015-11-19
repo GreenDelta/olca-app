@@ -6,14 +6,11 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.window.Window;
-import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.db.DerbyConfiguration;
 import org.openlca.app.db.IDatabaseConfiguration;
-import org.openlca.app.events.DatabaseEvent;
-import org.openlca.app.events.DatabaseEvent.Type;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
@@ -80,7 +77,6 @@ public class DatabaseRenameAction extends Action implements INavigationAction {
 			if (isActive) {
 				Editors.closeAll();
 				Database.close();
-				App.getEventBus().post(new DatabaseEvent(config.getName(), Type.CLOSE));
 			}
 			File oldDbFolder = DatabaseDir.getRootFolder(config.getName());
 			File newDbFolder = DatabaseDir.getRootFolder(newName);
@@ -92,10 +88,8 @@ public class DatabaseRenameAction extends Action implements INavigationAction {
 			Database.remove(config);
 			config.setName(newName);
 			Database.register(config);
-			if (isActive) {
+			if (isActive) 
 				Database.activate(config);
-				App.getEventBus().post(new DatabaseEvent(newName, Type.ACTIVATE));
-			}
 			Navigator.refresh();
 		} catch (Exception e) {
 			log.error("failed to rename database", e);

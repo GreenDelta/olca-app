@@ -1,4 +1,4 @@
-package org.openlca.app.events;
+package org.openlca.app;
 
 @FunctionalInterface
 public interface EventHandler {

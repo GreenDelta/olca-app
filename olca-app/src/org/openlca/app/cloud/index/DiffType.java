@@ -1,9 +1,17 @@
 package org.openlca.app.cloud.index;
 
-import org.openlca.app.events.TypeEnum;
 
-public enum DiffType implements TypeEnum {
+public enum DiffType {
 
 	NO_DIFF, CHANGED, NEW, DELETED;
 
+	public boolean isOneOf(DiffType... types) {
+		if (types == null)
+			return false;
+		for (DiffType type : types)
+			if (type == this)
+				return true;
+		return false;
+	}
+	
 }
