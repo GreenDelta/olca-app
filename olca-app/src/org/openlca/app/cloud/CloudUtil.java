@@ -23,19 +23,13 @@ import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.CategoryDescriptor;
 import org.openlca.core.model.descriptors.Descriptors;
 import org.openlca.jsonld.EntityStore;
+import org.openlca.jsonld.ModelPath;
 import org.openlca.jsonld.output.JsonExport;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 public class CloudUtil {
-
-	public static List<DatasetDescriptor> toDescriptors(List<DiffResult> results) {
-		List<DatasetDescriptor> descriptors = new ArrayList<>();
-		for (DiffResult result : results)
-			descriptors.add(result.getDescriptor());
-		return descriptors;
-	}
 
 	public static DatasetDescriptor toDescriptor(INavigationElement<?> element) {
 		CategorizedDescriptor descriptor = null;
@@ -174,6 +168,13 @@ public class CloudUtil {
 				return null;
 			else
 				return elem.getAsString();
+		}
+
+		@Override
+		public void putBin(ModelType type, String refId, String filename,
+				byte[] data) {
+			String path = ModelPath.getBin(type, refId) + "/" + filename;
+			put(path, data);
 		}
 
 		@Override

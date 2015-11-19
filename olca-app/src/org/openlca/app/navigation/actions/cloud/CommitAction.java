@@ -6,10 +6,9 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.openlca.app.App;
-import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.cloud.index.Diff;
 import org.openlca.app.cloud.index.DiffIndex;
-import org.openlca.app.cloud.index.DiffIndexer;
+import org.openlca.app.cloud.index.DiffType;
 import org.openlca.app.cloud.ui.CommitDialog;
 import org.openlca.app.cloud.ui.DiffNode;
 import org.openlca.app.cloud.ui.DiffNodeBuilder;
@@ -112,11 +111,22 @@ public class CommitAction extends Action implements INavigationAction {
 				commit.setCommitMessage(message);
 				putChanges(changes, commit);
 				client.execute(commit);
-				DiffIndexer indexer = new DiffIndexer(index);
-				indexer.indexCommit(CloudUtil.toDescriptors(changes));
+				indexCommit();
 			} catch (WebRequestException e) {
 				error = e;
 			}
+		}
+		
+		private void indexCommit() {
+			for (DiffResult change : changes) {
+				DatasetDescriptor descriptor = change.getDescriptor();
+				DiffType before = index.get(descriptor.getRefId()).type;
+				if (before == DiffType.DELETED)
+					index.remove(descriptor.getRefId());
+				else
+					index.update(descriptor, DiffType.NO_DIFF);
+			}
+			index.commit();			
 		}
 
 		private void afterCommit() {
@@ -156,7 +166,7 @@ public class CommitAction extends Action implements INavigationAction {
 					DatasetDescriptor descriptor = change.getDescriptor();
 					descriptor.setFullPath(change.local.descriptor
 							.getFullPath());
-					commit.put(descriptor, null);
+					commit.putForRemoval(descriptor);
 				} else
 					commit.put(Database.createRootDao(
 							change.getDescriptor().getType()).getForRefId(

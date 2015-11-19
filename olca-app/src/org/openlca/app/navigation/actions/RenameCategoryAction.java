@@ -6,8 +6,6 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.window.Window;
 import org.openlca.app.Messages;
-import org.openlca.app.cloud.CloudUtil;
-import org.openlca.app.cloud.index.DiffIndexer;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.CategoryElement;
 import org.openlca.app.navigation.INavigationElement;
@@ -67,8 +65,6 @@ public class RenameCategoryAction extends Action implements INavigationAction {
 		try {
 			category.setName(newName.trim());
 			Database.get().createDao(Category.class).update(category);
-			DiffIndexer indexHelper = new DiffIndexer(Database.getDiffIndex());
-			indexHelper.indexModify(CloudUtil.toDescriptor(category));
 			Navigator.refresh(element);
 		} catch (final Exception e) {
 			log.error("Update category failed", e);

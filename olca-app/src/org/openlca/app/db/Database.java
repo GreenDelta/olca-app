@@ -16,6 +16,7 @@ import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.FlowPropertyDao;
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.database.IDatabaseListener;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.database.LocationDao;
 import org.openlca.core.database.ParameterDao;
@@ -34,6 +35,7 @@ public class Database {
 
 	private static IDatabase database;
 	private static IDatabaseConfiguration config;
+	private static IDatabaseListener listener;
 	private static DatabaseList configurations = loadConfigs();
 	private static DiffIndex diffIndex;
 	private static RepositoryClient repositoryClient;
@@ -49,6 +51,8 @@ public class Database {
 			throws Exception {
 		try {
 			Database.database = config.createInstance();
+			listener = new DatabaseListener();
+			Database.database.addListener(listener);
 			Cache.create(database);
 			Database.config = config;
 			Logger log = LoggerFactory.getLogger(Database.class);
@@ -108,6 +112,7 @@ public class Database {
 		Cache.close();
 		database.close();
 		database = null;
+		listener = null;
 		config = null;
 		if (repositoryClient == null)
 			return;

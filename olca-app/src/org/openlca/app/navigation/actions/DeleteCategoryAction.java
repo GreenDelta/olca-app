@@ -4,8 +4,6 @@ import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.openlca.app.Messages;
-import org.openlca.app.cloud.CloudUtil;
-import org.openlca.app.cloud.index.DiffIndexer;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.CategoryElement;
 import org.openlca.app.navigation.INavigationElement;
@@ -68,8 +66,6 @@ public class DeleteCategoryAction extends Action implements INavigationAction {
 				dao.update(parent);
 			}
 			dao.delete(category);
-			DiffIndexer indexHelper = new DiffIndexer(Database.getDiffIndex());
-			indexHelper.indexDelete(CloudUtil.toDescriptor(category));
 			// we have to refresh the category starting from it's root
 			// otherwise the object model is out of sync.
 			INavigationElement<?> element = Navigator.findElement(category

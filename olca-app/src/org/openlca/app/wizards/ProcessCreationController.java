@@ -2,9 +2,6 @@ package org.openlca.app.wizards;
 
 import java.util.UUID;
 
-import org.openlca.app.cloud.CloudUtil;
-import org.openlca.app.cloud.index.DiffIndexer;
-import org.openlca.app.db.Database;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Exchange;
@@ -110,8 +107,6 @@ class ProcessCreationController {
 		factor.setFlowProperty(property);
 		flow.getFlowPropertyFactors().add(factor);
 		database.createDao(Flow.class).insert(flow);
-		DiffIndexer indexHelper = new DiffIndexer(Database.getDiffIndex());
-		indexHelper.indexCreate(CloudUtil.toDescriptor(flow));
 		return flow;
 	}
 

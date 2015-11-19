@@ -9,6 +9,7 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
+import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
 import org.openlca.app.editors.graphical.layout.NodeLayoutStore;
 import org.openlca.app.editors.graphical.model.ProcessNode;
@@ -85,6 +86,7 @@ class BuildSupplyChainAction extends Action implements IBuildAction {
 			ProductSystemGraphEditor editor = nodes.get(0).getParent()
 					.getEditor();
 			editor.updateModel(monitor);
+			Database.get().notifyUpdate(system);
 		}
 	}
 

@@ -12,14 +12,11 @@ import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.cloud.CloudUtil.JsonLoader;
 import org.openlca.app.cloud.index.Diff;
 import org.openlca.app.cloud.index.DiffIndex;
-import org.openlca.app.cloud.index.DiffIndexer;
-import org.openlca.app.cloud.index.DiffType;
 import org.openlca.app.cloud.ui.CommitEntryDialog;
 import org.openlca.app.cloud.ui.DiffDialog;
 import org.openlca.app.cloud.ui.DiffNode;
 import org.openlca.app.cloud.ui.DiffNodeBuilder;
 import org.openlca.app.cloud.ui.DiffResult;
-import org.openlca.app.cloud.ui.DiffResult.DiffResponse;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
@@ -111,71 +108,29 @@ public class FetchAction extends Action implements INavigationAction {
 		}
 
 		private void fetchData() {
+			List<DatasetDescriptor> toFetch = new ArrayList<>();
+			Map<DatasetDescriptor, JsonObject> mergedData = new HashMap<>();
+			for (DiffResult result : differences) {
+				DatasetDescriptor descriptor = result.getDescriptor();
+				switch (result.getType()) {
+				case MODIFY_IN_LOCAL:
+				case ADD_TO_LOCAL:
+				case DELETE_FROM_LOCAL:
+					toFetch.add(descriptor);
+					break;
+				case CONFLICT:
+					mergedData.put(descriptor, result.getMergedData());
+					break;
+				default:
+					break;
+				}
+			}
 			try {
-				List<DatasetDescriptor> toFetch = new ArrayList<>();
-				Map<DatasetDescriptor, JsonObject> mergedData = new HashMap<>();
-				for (DiffResult result : differences)
-					if (result.getType() == DiffResponse.MODIFY_IN_LOCAL)
-						toFetch.add(result.getDescriptor());
-					else if (result.getType() == DiffResponse.ADD_TO_LOCAL)
-						toFetch.add(result.getDescriptor());
-					else if (result.getType() == DiffResponse.DELETE_FROM_LOCAL)
-						toFetch.add(result.getDescriptor());
-					else if (result.getType() == DiffResponse.CONFLICT)
-						mergedData.put(result.getDescriptor(),
-								result.getMergedData());
 				client.fetch(toFetch, mergedData);
-				updateIndex();
+				FetchIndexHelper.index(differences, index);
 			} catch (WebRequestException e) {
 				error = e;
 			}
-		}
-
-		private void updateIndex() {
-			List<DatasetDescriptor> addToIndex = new ArrayList<>();
-			List<DatasetDescriptor> indexCreate = new ArrayList<>();
-			List<DatasetDescriptor> indexModify= new ArrayList<>();
-			List<DatasetDescriptor> indexDelete = new ArrayList<>();
-			List<DatasetDescriptor> indexFetch = new ArrayList<>();
-			List<DatasetDescriptor> removeFromIndex = new ArrayList<>();
-			for (DiffResult result : differences)
-				if (result.getType() == DiffResponse.NONE)
-					if (result.remote != null && result.remote.isDeleted()
-							&& result.local == null)
-						removeFromIndex.add(result.getDescriptor());
-					else
-						indexFetch.add(result.getDescriptor());
-				else if (result.getType() == DiffResponse.MODIFY_IN_LOCAL)
-					indexFetch.add(result.getDescriptor());
-				else if (result.getType() == DiffResponse.ADD_TO_LOCAL)
-					addToIndex.add(result.getDescriptor());
-				else if (result.getType() == DiffResponse.DELETE_FROM_LOCAL)
-					removeFromIndex.add(result.getDescriptor());
-				else if (result.getType() == DiffResponse.CONFLICT)
-					if (result.local.type == DiffType.CHANGED) {
-						if (result.remote.isDeleted()) {
-							if (result.overwriteRemoteChanges())
-								indexCreate.add(result.getDescriptor());
-							else if (result.overwriteLocalChanges())
-								removeFromIndex.add(result.getDescriptor());
-						} else {
-							if (result.overwriteRemoteChanges()) // merged
-								indexModify.add(result.getDescriptor());
-							else if (result.overwriteLocalChanges())
-								indexFetch.add(result.getDescriptor());							
-						}
-					} else if (result.local.type == DiffType.DELETED)
-						if (result.overwriteRemoteChanges())
-							indexDelete.add(result.getDescriptor());
-						else if (result.overwriteLocalChanges())
-							indexFetch.add(result.getDescriptor());
-			DiffIndexer indexer = new DiffIndexer(index);
-			indexer.addToIndex(addToIndex);
-			indexer.indexCreate(indexCreate);
-			indexer.indexModify(indexModify);
-			indexer.indexDelete(indexDelete);
-			indexer.indexFetch(indexFetch);
-			indexer.removeFromIndex(removeFromIndex);
 		}
 
 		private void afterFetchData() {

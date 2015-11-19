@@ -46,7 +46,7 @@ public class DiffIndex {
 			db.close();
 	}
 
-	void add(DatasetDescriptor descriptor) {
+	public void add(DatasetDescriptor descriptor) {
 		Diff diff = index.get(descriptor.getRefId());
 		if (diff != null)
 			return;
@@ -54,7 +54,7 @@ public class DiffIndex {
 		index.put(descriptor.getRefId(), diff);
 	}
 
-	void update(DatasetDescriptor descriptor, DiffType newType) {
+	public void update(DatasetDescriptor descriptor, DiffType newType) {
 		Diff diff = index.get(descriptor.getRefId());
 		if (diff.type == DiffType.NEW && newType == DiffType.DELETED) {
 			// user added something and then deleted it again
@@ -84,7 +84,7 @@ public class DiffIndex {
 			DiffType newType) {
 		String type = descriptor.getCategoryType().name();
 		Set<String> elements = changedTopLevelElements.get(type);
-		if (elements == null && newType != DiffType.NO_DIFF) 
+		if (elements == null) 
 			elements = new HashSet<>();
 		if (newType == DiffType.NO_DIFF)
 			elements.remove(descriptor.getRefId());
@@ -113,7 +113,7 @@ public class DiffIndex {
 		return elements != null && !elements.isEmpty();
 	}
 
-	void remove(String key) {
+	public void remove(String key) {
 		Diff diff = index.remove(key);
 		updateChangedTopLevelElements(diff.getDescriptor(), DiffType.NO_DIFF);
 		updateParents(diff, false);
@@ -139,7 +139,7 @@ public class DiffIndex {
 		}
 	}
 
-	void commit() {
+	public void commit() {
 		db.commit();
 	}
 

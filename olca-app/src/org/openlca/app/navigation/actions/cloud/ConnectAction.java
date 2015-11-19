@@ -11,7 +11,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
 import org.openlca.app.App;
 import org.openlca.app.cloud.CloudUtil;
-import org.openlca.app.cloud.index.DiffIndexer;
+import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.cloud.index.DiffType;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.CategoryElement;
@@ -40,8 +40,10 @@ public class ConnectAction extends Action implements INavigationAction {
 		runner.run();
 		if (runner.error != null)
 			Error.showBox(runner.error.getMessage());
-		indexDatabase();
-		Navigator.refresh(Navigator.getNavigationRoot());
+		else {
+			indexDatabase();
+			Navigator.refresh(Navigator.getNavigationRoot());
+		}
 	}
 
 	private class Runner {
@@ -85,11 +87,15 @@ public class ConnectAction extends Action implements INavigationAction {
 	}
 
 	private void indexDatabase() {
-		// TODO maybe this could be done in a better way?
-		DiffIndexer indexer = new DiffIndexer(Database.getDiffIndex());
-		INavigationElement<?> elem = Navigator.findElement(Database.getActiveConfiguration());
+		INavigationElement<?> elem = Navigator.findElement(Database
+				.getActiveConfiguration());
 		List<DatasetDescriptor> descriptors = collectDescriptors(elem);
-		indexer.addToIndex(descriptors, DiffType.NEW);
+		DiffIndex index = Database.getDiffIndex();
+		for (DatasetDescriptor descriptor : descriptors)
+			index.add(descriptor);
+		for (DatasetDescriptor descriptor : descriptors)
+			index.update(descriptor, DiffType.NEW);
+		index.commit();
 	}
 
 	private List<DatasetDescriptor> collectDescriptors(

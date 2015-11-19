@@ -7,8 +7,6 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.window.Window;
 import org.openlca.app.Messages;
-import org.openlca.app.cloud.CloudUtil;
-import org.openlca.app.cloud.index.DiffIndexer;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.CategoryElement;
 import org.openlca.app.navigation.INavigationElement;
@@ -73,8 +71,6 @@ public class CreateCategoryAction extends Action implements INavigationAction {
 			// otherwise the object model is out of sync.
 			INavigationElement<?> element = Navigator.findElement(category
 					.getModelType());
-			DiffIndexer indexHelper = new DiffIndexer(Database.getDiffIndex());
-			indexHelper.indexCreate(CloudUtil.toDescriptor(category));
 			Navigator.refresh(element);
 			Navigator.select(category);
 		} catch (Exception e) {

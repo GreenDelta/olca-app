@@ -4,7 +4,6 @@ import org.eclipse.swt.graphics.Image;
 import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.cloud.index.Diff;
 import org.openlca.app.cloud.index.DiffIndex;
-import org.openlca.app.cloud.index.DiffIndexer;
 import org.openlca.app.cloud.index.DiffType;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.IDatabaseConfiguration;
@@ -28,9 +27,7 @@ class RepositoryLabel {
 			return null;
 		if (element instanceof ModelTypeElement)
 			return null;
-		DiffIndexer indexer = new DiffIndexer(Database.getDiffIndex());
-		Diff diff = indexer.getDiff(CloudUtil
-				.toDescriptor((INavigationElement<?>) element));
+		Diff diff = getDiff(CloudUtil.toDescriptor(element));
 		if (diff.type != DiffType.NEW)
 			return null;
 		ImageType imageType = null;
@@ -71,8 +68,7 @@ class RepositoryLabel {
 	}
 
 	private static boolean isNew(INavigationElement<?> element) {
-		DiffIndexer indexer = new DiffIndexer(Database.getDiffIndex());
-		Diff diff = indexer.getDiff(CloudUtil.toDescriptor(element));
+		Diff diff = getDiff(CloudUtil.toDescriptor(element));
 		if (element instanceof DatabaseElement)
 			return false;
 		if (element instanceof GroupElement)
@@ -96,14 +92,18 @@ class RepositoryLabel {
 	}
 
 	private static boolean hasChanged(DatasetDescriptor descriptor) {
-		DiffIndexer indexer = new DiffIndexer(Database.getDiffIndex());
-		Diff diff = indexer.getDiff(descriptor);
+		Diff diff = getDiff(descriptor);
 		return diff.hasChanged() || diff.childrenHaveChanged();
 	}
 
 	private static boolean hasChanged(ModelType type) {
 		DiffIndex index = Database.getDiffIndex();
 		return index.hasChanged(type);
+	}
+
+	private static Diff getDiff(DatasetDescriptor descriptor) {
+		DiffIndex index = Database.getDiffIndex();
+		return index.get(descriptor.getRefId());
 	}
 
 }
