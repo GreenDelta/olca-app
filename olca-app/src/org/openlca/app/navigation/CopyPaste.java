@@ -137,13 +137,12 @@ public class CopyPaste {
 		if (!canPasteTo(categoryElement))
 			return;
 		Database.getIndexUpdater().beginTransaction();
-		for (INavigationElement<?> element : cache) {
+		for (INavigationElement<?> element : cache)
 			paste(element, categoryElement);
-			INavigationElement<?> root = Navigator
-					.findElement(getModelType(element));
-			Navigator.refresh(root);
-		}
 		Database.getIndexUpdater().endTransaction();
+		INavigationElement<?> root = Navigator.findElement(Database
+				.getActiveConfiguration());
+		Navigator.refresh(root);
 		if (currentAction == Action.CUT) {
 			cache = null;
 			currentAction = Action.NONE;
