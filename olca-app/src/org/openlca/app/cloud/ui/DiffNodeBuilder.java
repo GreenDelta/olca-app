@@ -7,11 +7,13 @@ import java.util.Map;
 import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.cloud.ui.DiffResult.DiffResponse;
+import org.openlca.cloud.model.data.DatasetDescriptor;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Category;
+import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ModelType;
-import org.openlca.cloud.model.data.DatasetDescriptor;
 
 public class DiffNodeBuilder {
 
@@ -39,7 +41,7 @@ public class DiffNodeBuilder {
 		for (DiffResult result : this.diffs.values()) {
 			if (nodes.containsKey(result.getDescriptor().getRefId()))
 				continue;
-			if (!isCategorized(result))
+			if (!result.getDescriptor().getType().isCategorized())
 				continue;
 			DiffNode parent = getOrCreateParentNode(result);
 			DiffNode node = new DiffNode(parent, result);
@@ -49,13 +51,10 @@ public class DiffNodeBuilder {
 		return root;
 	}
 
-	private boolean isCategorized(DiffResult result) {
-		ModelType type = result.getDescriptor().getType();
-		if (type == ModelType.IMPACT_CATEGORY || type == ModelType.NW_SET)
-			return false;
-		return true;
+	public static void main(String[] args) {
+		System.out.println(CategorizedEntity.class.isAssignableFrom(ImpactCategory.class));
 	}
-
+	
 	private DiffNode getOrCreateParentNode(DiffResult result) {
 		if (result.remote != null)
 			return getOrCreateParentNode(result.remote);

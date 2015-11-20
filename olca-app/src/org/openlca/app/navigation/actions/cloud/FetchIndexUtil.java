@@ -30,6 +30,8 @@ class FetchIndexHelper {
 
 	void index(DiffResult diff) {
 		DatasetDescriptor descriptor = diff.getDescriptor();
+		if (!descriptor.getType().isCategorized())
+			return;
 		DiffResponse responseType = diff.getType();
 		switch (responseType) {
 		case NONE:

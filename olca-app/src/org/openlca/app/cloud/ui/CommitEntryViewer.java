@@ -94,11 +94,7 @@ class CommitEntryViewer extends AbstractViewer<CommitDescriptor, TreeViewer> {
 				List<FetchRequestData> references) {
 			List<FetchRequestData> filtered = new ArrayList<>();
 			for (FetchRequestData reference : references)
-				if (reference.getType() == ModelType.IMPACT_CATEGORY)
-					continue;
-				else if (reference.getType() == ModelType.NW_SET)
-					continue;
-				else
+				if (reference.getType().isCategorized())
 					filtered.add(reference);
 			return filtered;
 		}
