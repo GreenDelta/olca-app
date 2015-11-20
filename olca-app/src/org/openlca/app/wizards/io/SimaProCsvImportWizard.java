@@ -47,9 +47,11 @@ public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
 				@Override
 				public void run(final IProgressMonitor monitor)
 						throws InvocationTargetException, InterruptedException {
+					Database.getIndexUpdater().beginTransaction();
 					monitor.beginTask(Messages.Import, IProgressMonitor.UNKNOWN);
 					ImportHandler handler = new ImportHandler(monitor);
 					handler.run(importer);
+					Database.getIndexUpdater().endTransaction();
 				}
 			});
 			Navigator.refresh();

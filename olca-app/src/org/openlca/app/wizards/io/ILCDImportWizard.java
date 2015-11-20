@@ -65,12 +65,14 @@ public class ILCDImportWizard extends Wizard implements IImportWizard {
 
 	private void doRun(File zip) throws Exception {
 		getContainer().run(true, true, (monitor) -> {
+			Database.getIndexUpdater().beginTransaction();
 			monitor.beginTask(Messages.Import, IProgressMonitor.UNKNOWN);
 			ImportHandler handler = new ImportHandler(monitor);
 			ILCDImport iImport = new ILCDImport(zip, Database.get());
 			if (App.runsInDevMode())
 				iImport.setImportFlows(true);
 			handler.run(iImport);
+			Database.getIndexUpdater().endTransaction();
 		});
 	}
 

@@ -108,6 +108,8 @@ class DiffTreeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 		else
 			dialog = DiffEditorDialog.forEditing(node);
 		int code = dialog.open();
+		if (result.getType() != DiffResponse.CONFLICT)
+			return;
 		if (code == IDialogConstants.CANCEL_ID)
 			return;
 		result.setOverwriteLocalChanges(false);

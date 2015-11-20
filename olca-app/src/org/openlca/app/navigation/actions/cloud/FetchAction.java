@@ -126,7 +126,9 @@ public class FetchAction extends Action implements INavigationAction {
 				}
 			}
 			try {
+				Database.getIndexUpdater().disable();
 				client.fetch(toFetch, mergedData);
+				Database.getIndexUpdater().enable();
 				FetchIndexHelper.index(differences, index);
 			} catch (WebRequestException e) {
 				error = e;

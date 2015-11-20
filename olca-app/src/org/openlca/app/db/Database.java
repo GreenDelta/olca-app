@@ -16,7 +16,6 @@ import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.FlowPropertyDao;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.database.IDatabaseListener;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.database.LocationDao;
 import org.openlca.core.database.ParameterDao;
@@ -35,7 +34,7 @@ public class Database {
 
 	private static IDatabase database;
 	private static IDatabaseConfiguration config;
-	private static IDatabaseListener listener;
+	private static DatabaseListener listener;
 	private static DatabaseList configurations = loadConfigs();
 	private static DiffIndex diffIndex;
 	private static RepositoryClient repositoryClient;
@@ -45,6 +44,10 @@ public class Database {
 
 	public static IDatabase get() {
 		return database;
+	}
+	
+	public static IndexUpdater getIndexUpdater() {
+		return listener.getIndexUpdater();
 	}
 
 	public static IDatabase activate(IDatabaseConfiguration config)

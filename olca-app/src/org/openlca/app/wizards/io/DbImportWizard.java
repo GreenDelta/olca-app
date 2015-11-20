@@ -125,6 +125,7 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 		public void run(IProgressMonitor monitor)
 				throws InvocationTargetException, OperationCanceledException {
 			try {
+				Database.getIndexUpdater().beginTransaction();
 				monitor.beginTask(Messages.ImportDatabase,
 						IProgressMonitor.UNKNOWN);
 				if (sourceState == VersionState.OLDER) {
@@ -139,6 +140,7 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 				monitor.subTask(Messages.CloseDatabase);
 				connectionDispatch.close();
 				monitor.done();
+				Database.getIndexUpdater().endTransaction();
 			} catch (Exception e) {
 				throw new InvocationTargetException(e);
 			}

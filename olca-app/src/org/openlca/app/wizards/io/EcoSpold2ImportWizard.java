@@ -45,9 +45,11 @@ public class EcoSpold2ImportWizard extends Wizard implements IImportWizard {
 			return false;
 		try {
 			getContainer().run(true, true, (monitor) -> {
+				Database.getIndexUpdater().beginTransaction();
 				monitor.beginTask(Messages.Import, IProgressMonitor.UNKNOWN);
 				ImportHandler handler = new ImportHandler(monitor);
 				handler.run(pi);
+				Database.getIndexUpdater().endTransaction();
 			});
 			return true;
 		} catch (Exception e) {

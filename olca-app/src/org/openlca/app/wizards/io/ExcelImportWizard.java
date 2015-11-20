@@ -55,6 +55,7 @@ public class ExcelImportWizard extends Wizard implements IImportWizard {
 			@Override
 			public void run(IProgressMonitor monitor)
 					throws InvocationTargetException, InterruptedException {
+				Database.getIndexUpdater().beginTransaction();
 				monitor.beginTask(Messages.Import, files.length);
 				for (File file : files) {
 					monitor.subTask(file.getName());
@@ -63,6 +64,7 @@ public class ExcelImportWizard extends Wizard implements IImportWizard {
 					monitor.worked(1);
 				}
 				monitor.done();
+				Database.getIndexUpdater().endTransaction();
 			}
 		});
 
