@@ -51,7 +51,7 @@ public class DiffNodeBuilder {
 
 	private boolean isCategorized(DiffResult result) {
 		ModelType type = result.getDescriptor().getType();
-		if (type == ModelType.CATEGORY || type == ModelType.NW_SET)
+		if (type == ModelType.IMPACT_CATEGORY || type == ModelType.NW_SET)
 			return false;
 		return true;
 	}
