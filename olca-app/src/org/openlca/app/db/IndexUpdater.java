@@ -50,7 +50,7 @@ public class IndexUpdater {
 		disabled = false;
 	}
 
-	void insert(DatasetDescriptor descriptor) {
+	public void insert(DatasetDescriptor descriptor) {
 		DiffIndex index = getIndex();
 		if (index == null)
 			return;
@@ -67,7 +67,7 @@ public class IndexUpdater {
 		index.update(descriptor, DiffType.NEW);
 	}
 
-	void update(DatasetDescriptor descriptor) {
+	public void update(DatasetDescriptor descriptor) {
 		DiffIndex index = getIndex();
 		if (index == null)
 			return;
@@ -85,7 +85,7 @@ public class IndexUpdater {
 			index.update(descriptor, DiffType.CHANGED);
 	}
 
-	void delete(DatasetDescriptor descriptor) {
+	public void delete(DatasetDescriptor descriptor) {
 		DiffIndex index = getIndex();
 		if (index == null)
 			return;

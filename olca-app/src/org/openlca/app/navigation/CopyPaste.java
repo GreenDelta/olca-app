@@ -5,8 +5,10 @@ import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Queue;
 
+import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
+import org.openlca.cloud.model.data.DatasetDescriptor;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.CategorizedEntityDao;
 import org.openlca.core.database.CategoryDao;
@@ -14,6 +16,7 @@ import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.descriptors.Descriptors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -133,12 +136,14 @@ public class CopyPaste {
 			return;
 		if (!canPasteTo(categoryElement))
 			return;
+		Database.getIndexUpdater().beginTransaction();
 		for (INavigationElement<?> element : cache) {
 			paste(element, categoryElement);
 			INavigationElement<?> root = Navigator
 					.findElement(getModelType(element));
 			Navigator.refresh(root);
 		}
+		Database.getIndexUpdater().endTransaction();
 		if (currentAction == Action.CUT) {
 			cache = null;
 			currentAction = Action.NONE;
@@ -236,12 +241,15 @@ public class CopyPaste {
 
 	private static void move(ModelElement element,
 			INavigationElement<?> categoryElement) {
-		CategorizedDescriptor descriptor = element.getContent();
+		CategorizedDescriptor entity = element.getContent();
 		Category category = getCategory(categoryElement);
 		Optional<Category> parent = Optional.fromNullable(category);
-		// TODO this doesnt work with notifications (in database)
-		Database.createRootDao(descriptor.getModelType()).updateCategory(
-				descriptor, parent);
+		Database.createRootDao(entity.getModelType()).updateCategory(entity,
+				parent);
+		// need to notifiy index updater manually here
+		DatasetDescriptor descriptor = CloudUtil.toDescriptor(entity,
+				Descriptors.toDescriptor(category));
+		Database.getIndexUpdater().update(descriptor);
 	}
 
 	private static void copy(CategoryElement element,
