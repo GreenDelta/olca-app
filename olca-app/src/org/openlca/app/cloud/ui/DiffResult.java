@@ -61,41 +61,53 @@ public class DiffResult {
 		this.overwriteRemoteChanges = overwriteRemoteChanges;
 	}
 
+	void reset() {
+		overwriteLocalChanges = false;
+		overwriteRemoteChanges = false;
+		mergedData = null;
+	}
+
 	public DiffResponse getType() {
 		// both null is not an option
 		if (remote == null && local == null)
 			return DiffResponse.NONE;
 		if (remote == null)
-			if (local.type == DiffType.NEW)
+			switch (local.type) {
+			case NEW:
 				return DiffResponse.ADD_TO_REMOTE;
-			else if (local.type == DiffType.DELETED)
+			case DELETED:
 				return DiffResponse.DELETE_FROM_REMOTE;
-			else if (local.type == DiffType.CHANGED)
+			case CHANGED:
 				return DiffResponse.MODIFY_IN_REMOTE;
-			else
+			default:
 				return DiffResponse.NONE;
+			}
 		if (local == null || local.type == null)
 			if (remote.isDeleted())
 				return DiffResponse.NONE;
 			else
 				return DiffResponse.ADD_TO_LOCAL;
 		// remote & local can not be null anymore
-		if (local.type == DiffType.NO_DIFF)
+		switch (local.type) {
+		case NO_DIFF:
 			if (remote.isDeleted())
 				return DiffResponse.DELETE_FROM_LOCAL;
-			else
-				return DiffResponse.MODIFY_IN_LOCAL;
-		if (local.type == DiffType.DELETED && remote.isDeleted())
+			return DiffResponse.MODIFY_IN_LOCAL;
+		case DELETED:
+			if (remote.isDeleted())
+				return DiffResponse.NONE;
+		default:
+			if (checkConflict())
+				return DiffResponse.CONFLICT;
 			return DiffResponse.NONE;
-		if (checkConflict())
-			return DiffResponse.CONFLICT;
-		return DiffResponse.NONE;
+		}
 	}
 
 	private boolean checkConflict() {
-		if (local.type == DiffType.DELETED && !remote.isDeleted())
+		boolean localDeleted = local.type == DiffType.DELETED;
+		if (localDeleted && !remote.isDeleted())
 			return true;
-		if (local.type != DiffType.DELETED && remote.isDeleted())
+		if (localDeleted && remote.isDeleted())
 			return true;
 		if (remote.getType() != local.changed.getType())
 			return true;
@@ -106,6 +118,10 @@ public class DiffResult {
 		if (remote.getLastChange() != local.changed.getLastChange())
 			return true;
 		return false;
+	}
+
+	boolean isConflict() {
+		return getType() == DiffResponse.CONFLICT;
 	}
 
 	public String getDisplayName() {

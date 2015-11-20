@@ -120,23 +120,21 @@ class CommitEntryViewer extends AbstractViewer<CommitDescriptor, TreeViewer> {
 		public Image getImage(Object element) {
 			if (element instanceof CommitDescriptor)
 				return ImageManager.getImage(ImageType.COMMIT_ICON);
-			if (element instanceof FetchRequestData) {
-				FetchRequestData data = (FetchRequestData) element;
-				ImageType imageType = null;
-				if (data.getType() == ModelType.CATEGORY)
-					imageType = Images.getCategoryImageType(data
-							.getCategoryType());
-				else
-					imageType = Images.getImageType(data.getType());
-				if (data.isAdded())
-					return ImageManager.getImageWithOverlay(imageType,
-							ImageType.OVERLAY_ADDED);
-				else if (data.isDeleted())
-					return ImageManager.getImageWithOverlay(imageType,
-							ImageType.OVERLAY_DELETED);
-				return ImageManager.getImage(imageType);
-			}
-			return null;
+			if (!(element instanceof FetchRequestData))
+				return null;
+			FetchRequestData data = (FetchRequestData) element;
+			ImageType imageType = null;
+			if (data.getType() == ModelType.CATEGORY)
+				imageType = Images.getCategoryImageType(data.getCategoryType());
+			else
+				imageType = Images.getImageType(data.getType());
+			if (data.isAdded())
+				return ImageManager.getImageWithOverlay(imageType,
+						ImageType.OVERLAY_ADDED);
+			else if (data.isDeleted())
+				return ImageManager.getImageWithOverlay(imageType,
+						ImageType.OVERLAY_DELETED);
+			return ImageManager.getImage(imageType);
 		}
 
 		@Override

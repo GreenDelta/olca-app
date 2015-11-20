@@ -89,62 +89,63 @@ class DiffTreeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 	}
 
 	private void openDiffEditor(DiffNode selected) {
-		DiffResult result = (DiffResult) selected.content;
-		JsonNode node = nodes.get(toKey(result.getDescriptor()));
-		JsonObject local = null;
-		JsonObject remote = null;
-		if (node == null) {
-			local = getLocalJson.apply(result);
-			remote = getRemoteJson.apply(result);
-			node = new JsonNodeBuilder().build(local, remote);
-			nodes.put(toKey(result.getDescriptor()), node);
-		} else {
-			local = JsonUtil.toJsonObject(node.getLocalElement());
-			remote = JsonUtil.toJsonObject(node.getRemoteElement());
-		}
-		DiffEditorDialog dialog = null;
-		if (result.getType() != DiffResponse.CONFLICT)
-			dialog = DiffEditorDialog.forViewing(node);
-		else
-			dialog = DiffEditorDialog.forEditing(node);
+		DiffData data = new DiffData();
+		data.result = (DiffResult) selected.content;
+		DiffEditorDialog dialog = prepareDialog(data);
 		int code = dialog.open();
-		if (result.getType() != DiffResponse.CONFLICT)
-			return;
 		if (code == IDialogConstants.CANCEL_ID)
 			return;
-		result.setOverwriteLocalChanges(false);
-		result.setOverwriteRemoteChanges(false);
-		result.setMergedData(null);
-		if (result.getType() != DiffResponse.CONFLICT)
+		if (!data.result.isConflict())
 			return;
-		if (local != null && remote != null) {
-			if (code == IDialogConstants.OK_ID) {
-				result.setMergedData(local);
-				if (dialog.localDiffersFromRemote())
-					result.setOverwriteRemoteChanges(true);
-				else
-					result.setOverwriteLocalChanges(true);
-			}
-		} else if (local != null) {
-			if (code == DiffEditorDialog.KEEP_LOCAL_MODEL) {
-				result.setMergedData(local);
-				result.setOverwriteRemoteChanges(true);
-			} else if (code == DiffEditorDialog.FETCH_REMOTE_MODEL) {
-				result.setMergedData(null);
-				result.setOverwriteLocalChanges(true);
-			}
-		} else {
-			if (code == DiffEditorDialog.KEEP_LOCAL_MODEL) {
-				result.setMergedData(null);
-				result.setOverwriteRemoteChanges(true);
-			} else if (code == DiffEditorDialog.FETCH_REMOTE_MODEL) {
-				result.setMergedData(remote);
-				result.setOverwriteLocalChanges(true);
-			}
-		}
+		boolean localDiffersFromRemote = dialog.localDiffersFromRemote();
+		boolean keepLocalModel = code == DiffEditorDialog.KEEP_LOCAL_MODEL;
+		updateResult(data, localDiffersFromRemote, keepLocalModel);
 		getViewer().refresh(selected);
 		if (onMerge != null)
 			onMerge.run();
+	}
+
+	private DiffEditorDialog prepareDialog(DiffData data) {
+		data.node = nodes.get(toKey(data.result.getDescriptor()));
+		if (data.node == null) {
+			data.local = getLocalJson.apply(data.result);
+			data.remote = getRemoteJson.apply(data.result);
+			data.node = new JsonNodeBuilder().build(data.local, data.remote);
+			nodes.put(toKey(data.result.getDescriptor()), data.node);
+		} else {
+			data.local = JsonUtil.toJsonObject(data.node.getLocalElement());
+			data.remote = JsonUtil.toJsonObject(data.node.getRemoteElement());
+		}
+		if (!data.result.isConflict())
+			return DiffEditorDialog.forViewing(data.node);
+		return DiffEditorDialog.forEditing(data.node);
+	}
+
+	private void updateResult(DiffData data, boolean localDiffersFromRemote,
+			boolean keepLocalModel) {
+		data.result.reset();
+		if (overwriteRemoteChanges(data, localDiffersFromRemote, keepLocalModel))
+			data.result.setOverwriteRemoteChanges(true);
+		else
+			data.result.setOverwriteLocalChanges(true);
+		data.result.setMergedData(getMergedData(data, keepLocalModel));
+	}
+
+	private boolean overwriteRemoteChanges(DiffData data,
+			boolean localDiffersFromRemote, boolean keepLocalModel) {
+		if (data.hasLocal() && data.hasRemote() && localDiffersFromRemote)
+			return true;
+		return keepLocalModel;
+	}
+
+	private JsonObject getMergedData(DiffData data, boolean keepLocalModel) {
+		if (data.hasLocal() && data.hasRemote())
+			return data.local;
+		if (data.hasLocal() && keepLocalModel)
+			return data.local;
+		if (data.hasRemote() && !keepLocalModel)
+			return data.remote;
+		return null;
 	}
 
 	@Override
@@ -174,7 +175,9 @@ class DiffTreeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 				continue;
 			if (result.overwriteRemoteChanges())
 				continue;
-			return result.getMergedData() == null;
+			if (result.getMergedData() != null)
+				continue;
+			return true;
 		}
 		return false;
 	}
@@ -186,6 +189,21 @@ class DiffTreeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 	@Override
 	protected IBaseLabelProvider getLabelProvider() {
 		return new LabelProvider();
+	}
+
+	private class DiffData {
+		private JsonObject local;
+		private JsonObject remote;
+		private JsonNode node;
+		private DiffResult result;
+
+		private boolean hasLocal() {
+			return local != null;
+		}
+
+		private boolean hasRemote() {
+			return remote != null;
+		}
 	}
 
 	private class ContentProvider implements ITreeContentProvider {

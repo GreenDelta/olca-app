@@ -2,10 +2,13 @@ package org.openlca.app.cloud.ui.compare;
 
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Stack;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Stack;
 
+import org.openlca.core.model.Exchange;
+
+import com.google.common.reflect.Parameter;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
@@ -120,7 +123,25 @@ public class JsonUtil {
 			return false;
 		if (!element.isJsonObject())
 			return false;
-		return element.getAsJsonObject().get("@id") != null;
+		JsonObject object = element.getAsJsonObject();
+		if (object.get("@id") == null)
+			return false;
+		JsonElement type = object.get("@type");
+		if (type == null)
+			return false;
+		if (type.getAsString().equals(Parameter.class.getSimpleName()))
+			if (!isGlobalParameter(object))
+				return false;
+		if (type.getAsString().equals(Exchange.class.getSimpleName()))
+			return false;
+		return true;
+	}
+
+	private static boolean isGlobalParameter(JsonObject parameter) {
+		JsonElement scope = parameter.get("parameterScope");
+		if (scope == null)
+			return false;
+		return "GLOBAL_SCOPE".equals(scope.getAsString());
 	}
 
 	static boolean displayElement(String key) {

@@ -10,9 +10,7 @@ import org.openlca.app.cloud.ui.DiffResult.DiffResponse;
 import org.openlca.cloud.model.data.DatasetDescriptor;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Category;
-import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ModelType;
 
 public class DiffNodeBuilder {
@@ -51,10 +49,6 @@ public class DiffNodeBuilder {
 		return root;
 	}
 
-	public static void main(String[] args) {
-		System.out.println(CategorizedEntity.class.isAssignableFrom(ImpactCategory.class));
-	}
-	
 	private DiffNode getOrCreateParentNode(DiffResult result) {
 		if (result.remote != null)
 			return getOrCreateParentNode(result.remote);
