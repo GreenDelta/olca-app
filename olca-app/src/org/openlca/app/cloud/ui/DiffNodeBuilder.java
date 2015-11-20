@@ -39,12 +39,21 @@ public class DiffNodeBuilder {
 		for (DiffResult result : this.diffs.values()) {
 			if (nodes.containsKey(result.getDescriptor().getRefId()))
 				continue;
+			if (!isCategorized(result))
+				continue;
 			DiffNode parent = getOrCreateParentNode(result);
 			DiffNode node = new DiffNode(parent, result);
 			parent.children.add(node);
 			nodes.put(result.getDescriptor().getRefId(), node);
 		}
 		return root;
+	}
+
+	private boolean isCategorized(DiffResult result) {
+		ModelType type = result.getDescriptor().getType();
+		if (type == ModelType.CATEGORY || type == ModelType.NW_SET)
+			return false;
+		return true;
 	}
 
 	private DiffNode getOrCreateParentNode(DiffResult result) {
@@ -71,7 +80,8 @@ public class DiffNodeBuilder {
 	}
 
 	private DiffNode createNodeFromCategory(Category category) {
-		DiffNode parent = getOrCreateParentNode(CloudUtil.toDescriptor(category));
+		DiffNode parent = getOrCreateParentNode(CloudUtil
+				.toDescriptor(category));
 		DiffResult result = new DiffResult(index.get(category.getRefId()));
 		DiffNode node = new DiffNode(parent, result);
 		parent.children.add(node);

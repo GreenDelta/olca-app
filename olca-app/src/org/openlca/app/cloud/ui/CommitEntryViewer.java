@@ -1,5 +1,6 @@
 package org.openlca.app.cloud.ui;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
@@ -20,13 +21,12 @@ import org.openlca.app.util.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.AbstractViewer;
-import org.openlca.core.model.ModelType;
-import org.openlca.util.Strings;
-
 import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.model.data.CommitDescriptor;
 import org.openlca.cloud.model.data.FetchRequestData;
 import org.openlca.cloud.util.WebRequests.WebRequestException;
+import org.openlca.core.model.ModelType;
+import org.openlca.util.Strings;
 
 class CommitEntryViewer extends AbstractViewer<CommitDescriptor, TreeViewer> {
 
@@ -82,12 +82,25 @@ class CommitEntryViewer extends AbstractViewer<CommitDescriptor, TreeViewer> {
 							.toLowerCase(), getFileReferenceText(d2)
 							.toLowerCase());
 				});
-				return references.toArray();
+				return filterNonCategorized(references).toArray();
 			} catch (WebRequestException e) {
 				// TODO handle errors
 				e.printStackTrace();
 			}
 			return null;
+		}
+
+		private List<FetchRequestData> filterNonCategorized(
+				List<FetchRequestData> references) {
+			List<FetchRequestData> filtered = new ArrayList<>();
+			for (FetchRequestData reference : references)
+				if (reference.getType() == ModelType.IMPACT_CATEGORY)
+					continue;
+				else if (reference.getType() == ModelType.NW_SET)
+					continue;
+				else
+					filtered.add(reference);
+			return filtered;
 		}
 
 		@Override
