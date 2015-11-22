@@ -151,7 +151,20 @@ public class JsonUtil {
 			return false;
 		if (key.equals("version"))
 			return false;
+		if (key.equals("parameterScope"))
+			return false;
 		return true;
+	}
+
+	static String getType(JsonElement element) {
+		if (element == null)
+			return null;
+		if (!element.isJsonObject())
+			return null;
+		JsonElement type = element.getAsJsonObject().get("@type");
+		if (type == null)
+			return null;
+		return type.getAsString();
 	}
 
 	public static JsonElement deepCopy(JsonElement element) {

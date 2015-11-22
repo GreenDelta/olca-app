@@ -20,6 +20,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Tree;
 import org.openlca.app.util.Colors;
+import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.AbstractViewer;
@@ -189,21 +190,36 @@ class ModelTree extends AbstractViewer<JsonNode, TreeViewer> {
 				else if (isEmptyElement(node.parent))
 					return null;
 				else
-					return node.key + ": null";
+					return node.key + ": " + getValue(node, null);
 			if (element.isJsonNull())
-				return node.key + ": null";
+				return node.key + ": " + getValue(node, null);
 			if (element.isJsonArray())
 				if (element.getAsJsonArray().size() == 0)
-					return node.key + ": null";
+					return node.key + ": " + getValue(node, null);
 				else
 					return node.key;
 			if (element.isJsonObject()) {
 				JsonObject object = element.getAsJsonObject();
 				if (!JsonUtil.isReference(object))
 					return node.key;
-				return node.key + ": " + object.get("name").getAsString();
+				return node.key + ": "
+						+ getValue(node, object.get("name").getAsString());
 			}
-			return node.key + ": " + element.getAsString();
+			return node.key + ": " + getValue(node, element.getAsString());
+		}
+
+		private String getValue(JsonNode node, String value) {
+			JsonElement parent = null;
+			if (node.parent != null)
+				parent = local ? node.parent.getLocalElement() : node.parent
+						.getRemoteElement();
+			if (EnumUtil.isEnum(parent, node.key)) {
+				Object enumValue = EnumUtil.getEnum(parent, node.key, value);
+				value = Labels.getEnumText(enumValue);
+			}
+			if (value != null)
+				return value;
+			return "null";
 		}
 
 		private boolean isEmptyArrayElement(JsonNode node) {

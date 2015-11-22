@@ -129,6 +129,8 @@ public class Labels {
 			return Labels.processType((ProcessType) enumValue);
 		if (enumValue instanceof UncertaintyType)
 			return Labels.uncertaintyType((UncertaintyType) enumValue);
+		if (enumValue instanceof RiskLevel)
+			return Labels.riskLevel((RiskLevel) enumValue);
 		if (enumValue != null)
 			return enumValue.toString();
 		return null;
@@ -234,7 +236,7 @@ public class Labels {
 			return null;
 		}
 	}
-
+	
 	public static String riskLevel(RiskLevel rl) {
 		if (rl == null)
 			return Messages.Unknown;
