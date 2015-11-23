@@ -38,11 +38,7 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 	public void addPages() {
 		List<ModelType> types = new ArrayList<>();
 		for (ModelType type : ModelType.values())
-			if (!type.isCategorized())
-				continue;
-			else if (type == ModelType.PROJECT)
-				continue;
-			else
+			if (type.isCategorized())
 				types.add(type);
 		page = new ModelSelectionPage(
 				types.toArray(new ModelType[types.size()]));
