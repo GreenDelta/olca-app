@@ -9,7 +9,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.openlca.app.App;
 import org.openlca.app.cloud.CloudUtil;
-import org.openlca.app.cloud.CloudUtil.JsonLoader;
+import org.openlca.app.cloud.JsonLoader;
 import org.openlca.app.cloud.index.Diff;
 import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.cloud.ui.CommitEntryDialog;

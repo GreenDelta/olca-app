@@ -156,7 +156,7 @@ public class JsonUtil {
 		return true;
 	}
 
-	static String getType(JsonElement element) {
+	public static String getType(JsonElement element) {
 		if (element == null)
 			return null;
 		if (!element.isJsonObject())
