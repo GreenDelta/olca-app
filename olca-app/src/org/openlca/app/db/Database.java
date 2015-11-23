@@ -7,24 +7,10 @@ import org.openlca.app.App;
 import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.api.RepositoryConfig;
-import org.openlca.core.database.ActorDao;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.CategorizedEntityDao;
-import org.openlca.core.database.CategoryDao;
-import org.openlca.core.database.CostCategoryDao;
-import org.openlca.core.database.CurrencyDao;
-import org.openlca.core.database.FlowDao;
-import org.openlca.core.database.FlowPropertyDao;
+import org.openlca.core.database.Daos;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.database.ImpactMethodDao;
-import org.openlca.core.database.LocationDao;
-import org.openlca.core.database.ParameterDao;
-import org.openlca.core.database.ProcessDao;
-import org.openlca.core.database.ProductSystemDao;
-import org.openlca.core.database.ProjectDao;
-import org.openlca.core.database.SocialIndicatorDao;
-import org.openlca.core.database.SourceDao;
-import org.openlca.core.database.UnitGroupDao;
 import org.openlca.core.model.ModelType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +31,7 @@ public class Database {
 	public static IDatabase get() {
 		return database;
 	}
-	
+
 	public static IndexUpdater getIndexUpdater() {
 		return listener.getIndexUpdater();
 	}
@@ -184,47 +170,13 @@ public class Database {
 	public static <T> BaseDao<T> createDao(Class<T> clazz) {
 		if (database == null)
 			return null;
-		else
-			return database.createDao(clazz);
+		return database.createDao(clazz);
 	}
 
 	public static CategorizedEntityDao<?, ?> createRootDao(ModelType type) {
 		if (database == null)
 			return null;
-		switch (type) {
-		case ACTOR:
-			return new ActorDao(database);
-		case COST_CATEGORY:
-			return new CostCategoryDao(database);
-		case CURRENCY:
-			return new CurrencyDao(database);
-		case FLOW:
-			return new FlowDao(database);
-		case FLOW_PROPERTY:
-			return new FlowPropertyDao(database);
-		case IMPACT_METHOD:
-			return new ImpactMethodDao(database);
-		case PROCESS:
-			return new ProcessDao(database);
-		case PRODUCT_SYSTEM:
-			return new ProductSystemDao(database);
-		case PROJECT:
-			return new ProjectDao(database);
-		case SOCIAL_INDICATOR:
-			return new SocialIndicatorDao(database);
-		case SOURCE:
-			return new SourceDao(database);
-		case UNIT_GROUP:
-			return new UnitGroupDao(database);
-		case LOCATION:
-			return new LocationDao(database);
-		case PARAMETER:
-			return new ParameterDao(database);
-		case CATEGORY:
-			return new CategoryDao(database);
-		default:
-			return null;
-		}
+		return Daos.createCategorizedDao(database, type);
 	}
 
 }
