@@ -175,7 +175,7 @@ class ModelSelectionPage extends WizardPage {
 		viewer.getTree().setLayoutData(
 				new GridData(SWT.FILL, SWT.FILL, true, true));
 		viewer.setContentProvider(new NavigationContentProvider());
-		viewer.setLabelProvider(new NavigationLabelProvider());
+		viewer.setLabelProvider(new NavigationLabelProvider(false));
 		viewer.setSorter(new NavigationSorter());
 		viewer.addFilter(new ModelTypeFilter(types));
 		viewer.addCheckStateListener(new ModelSelectionState(this, viewer));

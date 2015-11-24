@@ -18,6 +18,16 @@ import org.openlca.core.model.descriptors.BaseDescriptor;
 public class NavigationLabelProvider extends ColumnLabelProvider implements
 		ICommonLabelProvider {
 
+	private boolean indicateRepositoryState;
+
+	public NavigationLabelProvider() {
+		this(true);
+	}
+
+	public NavigationLabelProvider(boolean indicateRepositoryState) {
+		this.indicateRepositoryState = indicateRepositoryState;
+	}
+
 	@Override
 	public void addListener(ILabelProviderListener listener) {
 	}
@@ -36,7 +46,9 @@ public class NavigationLabelProvider extends ColumnLabelProvider implements
 		if (!(obj instanceof INavigationElement))
 			return null;
 		INavigationElement<?> elem = (INavigationElement<?>) obj;
-		Image withOverlay = RepositoryLabel.getWithOverlay(elem);
+		Image withOverlay = null;
+		if (!indicateRepositoryState)
+			withOverlay = RepositoryLabel.getWithOverlay(elem);
 		if (withOverlay != null)
 			return withOverlay;
 		if (elem instanceof GroupElement)
@@ -81,6 +93,8 @@ public class NavigationLabelProvider extends ColumnLabelProvider implements
 			if (repoText != null)
 				baseText += repoText;
 		}
+		if (!indicateRepositoryState)
+			return baseText;
 		String state = RepositoryLabel.getStateIndicator(elem);
 		if (state == null)
 			return baseText;

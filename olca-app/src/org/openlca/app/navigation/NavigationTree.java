@@ -46,7 +46,7 @@ public class NavigationTree {
 		int selectionFlag = multi ? SWT.MULTI : SWT.SINGLE;
 		TreeViewer viewer = new TreeViewer(parent, SWT.BORDER | selectionFlag);
 		viewer.setContentProvider(new NavigationContentProvider());
-		viewer.setLabelProvider(new NavigationLabelProvider());
+		viewer.setLabelProvider(new NavigationLabelProvider(false));
 		viewer.setSorter(new NavigationSorter());
 		ColumnViewerToolTipSupport.enableFor(viewer);
 		return viewer;
