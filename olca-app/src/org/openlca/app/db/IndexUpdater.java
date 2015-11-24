@@ -1,8 +1,5 @@
 package org.openlca.app.db;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.cloud.index.DiffType;
 import org.openlca.cloud.model.data.DatasetDescriptor;
@@ -11,10 +8,6 @@ public class IndexUpdater {
 
 	private boolean disabled;
 	private boolean inTransaction;
-
-	private Set<DatasetDescriptor> toInsert = new HashSet<>();
-	private Set<DatasetDescriptor> toUpdate = new HashSet<>();
-	private Set<DatasetDescriptor> toDelete = new HashSet<>();
 
 	public void beginTransaction() {
 		// no multitransaction support implemented
@@ -27,20 +20,8 @@ public class IndexUpdater {
 		if (!inTransaction)
 			throw new IllegalStateException("No transaction running");
 		DiffIndex index = getIndex();
-		if (index == null) {
-			inTransaction = false;
-			return;
-		}
-		for (DatasetDescriptor descriptor : toInsert)
-			insert(descriptor, index);
-		for (DatasetDescriptor descriptor : toUpdate)
-			update(descriptor, index);
-		for (DatasetDescriptor descriptor : toDelete)
-			delete(descriptor, index);
-		index.commit();
-		toInsert.clear();
-		toUpdate.clear();
-		toDelete.clear();
+		if (index != null)
+			index.commit();
 		inTransaction = false;
 	}
 
@@ -56,11 +37,9 @@ public class IndexUpdater {
 		DiffIndex index = getIndex();
 		if (index == null)
 			return;
-		if (inTransaction) {
-			toInsert.add(descriptor);
-			return;
-		}
 		insert(descriptor, index);
+		if (inTransaction)
+			return;
 		index.commit();
 	}
 
@@ -73,11 +52,9 @@ public class IndexUpdater {
 		DiffIndex index = getIndex();
 		if (index == null)
 			return;
-		if (inTransaction) {
-			toUpdate.add(descriptor);
-			return;
-		}
 		update(descriptor, index);
+		if (inTransaction)
+			return;
 		index.commit();
 	}
 
@@ -91,11 +68,9 @@ public class IndexUpdater {
 		DiffIndex index = getIndex();
 		if (index == null)
 			return;
-		if (inTransaction) {
-			toDelete.add(descriptor);
-			return;
-		}
 		delete(descriptor, index);
+		if (inTransaction)
+			return;
 		index.commit();
 	}
 
