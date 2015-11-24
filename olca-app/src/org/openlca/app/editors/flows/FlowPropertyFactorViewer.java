@@ -99,12 +99,14 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 	}
 
 	private void add(FlowPropertyDescriptor descriptor) {
-		FlowPropertyFactor factor = new FlowPropertyFactor();
 		FlowProperty property = cache.get(FlowProperty.class,
 				descriptor.getId());
+		Flow flow = editor.getModel();
+		if (flow.getFactor(property) != null)
+			return;
+		FlowPropertyFactor factor = new FlowPropertyFactor();
 		factor.setFlowProperty(property);
 		factor.setConversionFactor(1);
-		Flow flow = editor.getModel();
 		flow.getFlowPropertyFactors().add(factor);
 		setInput(flow.getFlowPropertyFactors());
 		editor.setDirty(true);

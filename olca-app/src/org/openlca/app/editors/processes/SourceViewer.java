@@ -73,6 +73,8 @@ class SourceViewer extends AbstractTableViewer<Source> {
 			doc = new ProcessDocumentation();
 			process.setDocumentation(doc);
 		}
+		if (doc.getSources().contains(source))
+			return;
 		doc.getSources().add(source);
 		setInput(doc.getSources());
 		editor.setDirty(true);
