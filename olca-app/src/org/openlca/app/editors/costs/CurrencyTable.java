@@ -38,7 +38,8 @@ class CurrencyTable {
 		table.setInput(getOthers());
 		Tables.onDoubleClick(table, e -> {
 			Currency c = Viewers.getFirstSelected(table);
-			App.openEditor(c);
+			if (c != null)
+				App.openEditor(c);
 		});
 	}
 
@@ -48,7 +49,8 @@ class CurrencyTable {
 		for (Currency c : dao.getAll()) {
 			if (Objects.equals(c, currency))
 				continue;
-			if (!Objects.equals(c.referenceCurrency, currency.referenceCurrency))
+			if (!Objects
+					.equals(c.referenceCurrency, currency.referenceCurrency))
 				continue;
 			others.add(c);
 		}
