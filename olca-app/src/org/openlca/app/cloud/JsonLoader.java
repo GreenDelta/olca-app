@@ -8,8 +8,6 @@ import org.openlca.cloud.model.data.DatasetDescriptor;
 import org.openlca.cloud.util.WebRequests.WebRequestException;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.ImpactMethod;
-import org.openlca.core.model.ModelType;
-import org.openlca.jsonld.EntityStore;
 import org.openlca.jsonld.output.JsonExport;
 
 import com.google.gson.JsonObject;
@@ -28,11 +26,7 @@ public class JsonLoader {
 		CategorizedEntity entity = load(result.local.getDescriptor());
 		if (entity == null)
 			return null;
-		EntityStore store = new InMemoryStore();
-		ModelType type = ModelType.forModelClass(entity.getClass());
-		new JsonExport(null, store).write(entity, (message, data) -> {
-		});
-		return store.get(type, entity.getRefId());
+		return JsonExport.toJson(entity);
 	}
 
 	private CategorizedEntity load(DatasetDescriptor descriptor) {
