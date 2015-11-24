@@ -140,9 +140,10 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 				monitor.subTask(Messages.CloseDatabase);
 				connectionDispatch.close();
 				monitor.done();
-				Database.getIndexUpdater().endTransaction();
 			} catch (Exception e) {
 				throw new InvocationTargetException(e);
+			} finally {
+				Database.getIndexUpdater().endTransaction();				
 			}
 		}
 	}

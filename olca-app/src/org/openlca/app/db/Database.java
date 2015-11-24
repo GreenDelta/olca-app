@@ -5,6 +5,7 @@ import java.util.Objects;
 
 import org.openlca.app.App;
 import org.openlca.app.cloud.index.DiffIndex;
+import org.openlca.app.navigation.CopyPaste;
 import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.api.RepositoryConfig;
 import org.openlca.core.database.BaseDao;
@@ -99,6 +100,7 @@ public class Database {
 		if (database == null)
 			return;
 		Cache.close();
+		CopyPaste.clearCache();
 		database.close();
 		database = null;
 		listener = null;

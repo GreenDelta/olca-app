@@ -76,21 +76,21 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 	@Override
 	public boolean performFinish() {
 		try {
+			Database.getIndexUpdater().beginTransaction();
 			getContainer().run(true, true, (monitor) -> {
-				Database.getIndexUpdater().beginTransaction();
 				File[] files = importPage.getFiles();
 				List<UnitMappingEntry> mappings = mappingPage
 						.getUnitMappings();
 				UnitMapping mapping = new UnitMappingSync(Database.get())
 						.run(mappings);
 				parse(monitor, files, mapping);
-				Database.getIndexUpdater().endTransaction();
 			});
 			return true;
 		} catch (Exception e) {
 			log.error("import failed ", e);
 			return false;
 		} finally {
+			Database.getIndexUpdater().endTransaction();
 			Navigator.refresh();
 			Cache.evictAll();
 		}

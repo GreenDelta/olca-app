@@ -44,6 +44,7 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 		if (zip == null)
 			return false;
 		try {
+			Database.getIndexUpdater().beginTransaction();
 			doRun(zip);
 			return true;
 		} catch (Exception e) {
@@ -51,6 +52,7 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 			log.error("JSON import failed", e);
 			return false;
 		} finally {
+			Database.getIndexUpdater().endTransaction();
 			Navigator.refresh();
 			Cache.evictAll();
 		}
@@ -70,7 +72,6 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 	private void doRun(File zip) throws Exception {
 		getContainer().run(true, true, (monitor) -> {
 			monitor.beginTask(Messages.Import, IProgressMonitor.UNKNOWN);
-			Database.getIndexUpdater().beginTransaction();
 			try (ZipStore store = ZipStore.open(zip)) {
 				JsonImport importer = new JsonImport(store, Database.get());
 				UpdateMode updateMode = UpdateMode.NEVER;
@@ -80,8 +81,6 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 				importer.run();
 			} catch (Exception e) {
 				throw new InvocationTargetException(e);
-			} finally {
-				Database.getIndexUpdater().endTransaction();				
 			}
 		});
 	}

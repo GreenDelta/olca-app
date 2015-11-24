@@ -43,20 +43,21 @@ public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
 		final SimaProCsvImport importer = new SimaProCsvImport(database,
 				files[0]);
 		try {
+			Database.getIndexUpdater().beginTransaction();
 			getContainer().run(true, true, new IRunnableWithProgress() {
 				@Override
 				public void run(final IProgressMonitor monitor)
 						throws InvocationTargetException, InterruptedException {
-					Database.getIndexUpdater().beginTransaction();
 					monitor.beginTask(Messages.Import, IProgressMonitor.UNKNOWN);
 					ImportHandler handler = new ImportHandler(monitor);
 					handler.run(importer);
-					Database.getIndexUpdater().endTransaction();
 				}
 			});
 			Navigator.refresh();
 		} catch (Exception e) {
 			log.error("SimaPro CSV import failed", e);
+		} finally {
+			Database.getIndexUpdater().endTransaction();			
 		}
 		return true;
 	}

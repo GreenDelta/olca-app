@@ -136,17 +136,25 @@ public class CopyPaste {
 			return;
 		if (!canPasteTo(categoryElement))
 			return;
-		Database.getIndexUpdater().beginTransaction();
-		for (INavigationElement<?> element : cache)
-			paste(element, categoryElement);
-		Database.getIndexUpdater().endTransaction();
+		boolean started = false;
+		try {
+			Database.getIndexUpdater().beginTransaction();
+			started = true;
+			for (INavigationElement<?> element : cache)
+				paste(element, categoryElement);
+		} finally {
+			if (started)
+				Database.getIndexUpdater().endTransaction();
+			clearCache();
+		}
+	}
+
+	public static void clearCache() {
+		cache = null;
+		currentAction = Action.NONE;
 		INavigationElement<?> root = Navigator.findElement(Database
 				.getActiveConfiguration());
 		Navigator.refresh(root);
-		if (currentAction == Action.CUT) {
-			cache = null;
-			currentAction = Action.NONE;
-		}
 	}
 
 	public static boolean canMove(Collection<INavigationElement<?>> elements,

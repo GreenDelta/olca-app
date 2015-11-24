@@ -27,8 +27,10 @@ public class IndexUpdater {
 		if (!inTransaction)
 			throw new IllegalStateException("No transaction running");
 		DiffIndex index = getIndex();
-		if (index == null)
+		if (index == null) {
+			inTransaction = false;
 			return;
+		}
 		for (DatasetDescriptor descriptor : toInsert)
 			insert(descriptor, index);
 		for (DatasetDescriptor descriptor : toUpdate)

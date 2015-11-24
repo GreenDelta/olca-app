@@ -40,11 +40,13 @@ public class ExcelImportWizard extends Wizard implements IImportWizard {
 		if (files == null)
 			return false;
 		try {
+			Database.getIndexUpdater().beginTransaction();
 			doRun(files);
 			return true;
 		} catch (final Exception e) {
 			return false;
 		} finally {
+			Database.getIndexUpdater().endTransaction();
 			Navigator.refresh();
 			Cache.evictAll();
 		}
@@ -55,7 +57,6 @@ public class ExcelImportWizard extends Wizard implements IImportWizard {
 			@Override
 			public void run(IProgressMonitor monitor)
 					throws InvocationTargetException, InterruptedException {
-				Database.getIndexUpdater().beginTransaction();
 				monitor.beginTask(Messages.Import, files.length);
 				for (File file : files) {
 					monitor.subTask(file.getName());
@@ -64,7 +65,6 @@ public class ExcelImportWizard extends Wizard implements IImportWizard {
 					monitor.worked(1);
 				}
 				monitor.done();
-				Database.getIndexUpdater().endTransaction();
 			}
 		});
 
