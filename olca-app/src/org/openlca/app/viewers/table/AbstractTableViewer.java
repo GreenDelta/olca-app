@@ -128,8 +128,11 @@ public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 					for (Object object : (Object[]) value)
 						if (parameterType == object.getClass()) {
 							try {
+								boolean accessible = method.isAccessible();
+								method.setAccessible(true);
 								method.invoke(thisObject, object);
-							} catch (Exception e) {
+								method.setAccessible(accessible);
+							} catch (Exception e) {								
 								log.error("Error invoking OnDrop method", e);
 							}
 						}
