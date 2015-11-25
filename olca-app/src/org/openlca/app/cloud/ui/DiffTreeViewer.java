@@ -30,7 +30,7 @@ import org.openlca.app.util.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.AbstractViewer;
-import org.openlca.cloud.model.data.DatasetDescriptor;
+import org.openlca.cloud.model.data.Dataset;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 
@@ -106,12 +106,12 @@ class DiffTreeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 	}
 
 	private DiffEditorDialog prepareDialog(DiffData data) {
-		data.node = nodes.get(toKey(data.result.getDescriptor()));
+		data.node = nodes.get(toKey(data.result.getDataset()));
 		if (data.node == null) {
 			data.local = getLocalJson.apply(data.result);
 			data.remote = getRemoteJson.apply(data.result);
 			data.node = new JsonNodeBuilder().build(data.local, data.remote);
-			nodes.put(toKey(data.result.getDescriptor()), data.node);
+			nodes.put(toKey(data.result.getDataset()), data.node);
 		} else {
 			data.local = JsonUtil.toJsonObject(data.node.getLocalElement());
 			data.remote = JsonUtil.toJsonObject(data.node.getRemoteElement());
@@ -182,8 +182,8 @@ class DiffTreeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 		return false;
 	}
 
-	private String toKey(DatasetDescriptor descriptor) {
-		return descriptor.getType().name() + descriptor.getRefId();
+	private String toKey(Dataset dataset) {
+		return dataset.getType().name() + dataset.getRefId();
 	}
 
 	@Override
@@ -267,13 +267,13 @@ class DiffTreeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 		}
 
 		private Image getImage(DiffResult diff) {
-			DatasetDescriptor descriptor = diff.getDescriptor();
+			Dataset dataset = diff.getDataset();
 			ImageType image = null;
-			if (descriptor.getType() == ModelType.CATEGORY)
-				image = Images.getImageType(dummyCategory(descriptor
+			if (dataset.getType() == ModelType.CATEGORY)
+				image = Images.getImageType(dummyCategory(dataset
 						.getCategoryType()));
 			else
-				image = Images.getImageType(descriptor.getType());
+				image = Images.getImageType(dataset.getType());
 			ImageType overlay = getOverlay(diff);
 			if (overlay == null)
 				return ImageManager.getImage(image);

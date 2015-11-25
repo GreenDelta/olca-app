@@ -11,18 +11,16 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.util.UI;
-
 import org.openlca.cloud.api.RepositoryClient;
-import org.openlca.cloud.model.data.CommitDescriptor;
+import org.openlca.cloud.model.data.Commit;
 
 public class CommitEntryDialog extends FormDialog {
 
-	private final List<CommitDescriptor> commits;
+	private final List<Commit> commits;
 	private CommitEntryViewer viewer;
 	private RepositoryClient client;
 
-	public CommitEntryDialog(List<CommitDescriptor> commits,
-			RepositoryClient client) {
+	public CommitEntryDialog(List<Commit> commits, RepositoryClient client) {
 		super(UI.shell());
 		this.commits = commits;
 		this.client = client;

@@ -7,7 +7,7 @@ import java.util.Map;
 import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.cloud.ui.DiffResult.DiffResponse;
-import org.openlca.cloud.model.data.DatasetDescriptor;
+import org.openlca.cloud.model.data.Dataset;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Category;
@@ -30,21 +30,21 @@ public class DiffNodeBuilder {
 	public DiffNode build(List<DiffResult> diffs) {
 		for (DiffResult result : diffs)
 			if (result.getType() != DiffResponse.NONE)
-				this.diffs.put(result.getDescriptor().getRefId(), result);
+				this.diffs.put(result.getDataset().getRefId(), result);
 		if (this.diffs.size() == 0)
 			return null;
 		nodes.clear();
 		DiffNode root = new DiffNode(null, database);
 		nodes.put("", root);
 		for (DiffResult result : this.diffs.values()) {
-			if (nodes.containsKey(result.getDescriptor().getRefId()))
+			if (nodes.containsKey(result.getDataset().getRefId()))
 				continue;
-			if (!result.getDescriptor().getType().isCategorized())
+			if (!result.getDataset().getType().isCategorized())
 				continue;
 			DiffNode parent = getOrCreateParentNode(result);
 			DiffNode node = new DiffNode(parent, result);
 			parent.children.add(node);
-			nodes.put(result.getDescriptor().getRefId(), node);
+			nodes.put(result.getDataset().getRefId(), node);
 		}
 		return root;
 	}
@@ -52,14 +52,14 @@ public class DiffNodeBuilder {
 	private DiffNode getOrCreateParentNode(DiffResult result) {
 		if (result.remote != null)
 			return getOrCreateParentNode(result.remote);
-		return getOrCreateParentNode(result.local.getDescriptor());
+		return getOrCreateParentNode(result.local.getDataset());
 	}
 
-	private DiffNode getOrCreateParentNode(DatasetDescriptor descriptor) {
-		String parentId = descriptor.getCategoryRefId();
-		ModelType categoryType = descriptor.getType();
+	private DiffNode getOrCreateParentNode(Dataset dataset) {
+		String parentId = dataset.getCategoryRefId();
+		ModelType categoryType = dataset.getType();
 		if (categoryType == ModelType.CATEGORY)
-			categoryType = descriptor.getCategoryType();
+			categoryType = dataset.getCategoryType();
 		if (parentId == null)
 			return getOrCreateModelTypeNode(categoryType);
 		DiffNode categoryNode = nodes.get(parentId);
@@ -73,8 +73,7 @@ public class DiffNodeBuilder {
 	}
 
 	private DiffNode createNodeFromCategory(Category category) {
-		DiffNode parent = getOrCreateParentNode(CloudUtil
-				.toDescriptor(category));
+		DiffNode parent = getOrCreateParentNode(CloudUtil.toDataset(category));
 		DiffResult result = new DiffResult(index.get(category.getRefId()));
 		DiffNode node = new DiffNode(parent, result);
 		parent.children.add(node);
@@ -83,10 +82,10 @@ public class DiffNodeBuilder {
 	}
 
 	private DiffNode createNodeFromDiff(DiffResult result) {
-		DiffNode parent = getOrCreateParentNode(result.getDescriptor());
+		DiffNode parent = getOrCreateParentNode(result.getDataset());
 		DiffNode node = new DiffNode(parent, result);
 		parent.children.add(node);
-		nodes.put(result.getDescriptor().getRefId(), node);
+		nodes.put(result.getDataset().getRefId(), node);
 		return node;
 	}
 

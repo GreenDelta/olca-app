@@ -11,7 +11,7 @@ import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.cloud.index.DiffType;
 import org.openlca.app.cloud.ui.DiffResult;
 import org.openlca.app.cloud.ui.DiffResult.DiffResponse;
-import org.openlca.cloud.model.data.DatasetDescriptor;
+import org.openlca.cloud.model.data.Dataset;
 
 class FetchIndexHelper {
 
@@ -29,25 +29,25 @@ class FetchIndexHelper {
 	}
 
 	void index(DiffResult diff) {
-		DatasetDescriptor descriptor = diff.getDescriptor();
-		if (!descriptor.getType().isCategorized())
+		Dataset dataset = diff.getDataset();
+		if (!dataset.getType().isCategorized())
 			return;
 		DiffResponse responseType = diff.getType();
 		switch (responseType) {
 		case NONE:
 			if (bothDeleted(diff))
-				index.remove(descriptor.getRefId());
+				index.remove(dataset.getRefId());
 			else
-				index.update(descriptor, NO_DIFF);
+				index.update(dataset, NO_DIFF);
 			break;
 		case MODIFY_IN_LOCAL:
-			index.update(descriptor, NO_DIFF);
+			index.update(dataset, NO_DIFF);
 			break;
 		case ADD_TO_LOCAL:
-			index.add(descriptor);
+			index.add(dataset);
 			break;
 		case DELETE_FROM_LOCAL:
-			index.remove(descriptor.getRefId());
+			index.remove(dataset.getRefId());
 			break;
 		case CONFLICT:
 			indexConflict(diff);
@@ -65,11 +65,11 @@ class FetchIndexHelper {
 	}
 
 	private void indexDeleted(DiffResult diff) {
-		DatasetDescriptor descriptor = diff.getDescriptor();
+		Dataset dataset = diff.getDataset();
 		if (diff.overwriteRemoteChanges())
-			index.update(descriptor, DELETED);
+			index.update(dataset, DELETED);
 		else if (diff.overwriteLocalChanges())
-			index.update(descriptor, NO_DIFF);
+			index.update(dataset, NO_DIFF);
 	}
 
 	private void indexChanged(DiffResult diff) {
@@ -80,23 +80,23 @@ class FetchIndexHelper {
 	}
 
 	private void indexOverwritten(DiffResult diff) {
-		DatasetDescriptor descriptor = diff.getDescriptor();
+		Dataset dataset = diff.getDataset();
 		if (diff.remote.isDeleted()) {
-			index.add(descriptor);
-			index.update(descriptor, NEW);
+			index.add(dataset);
+			index.update(dataset, NEW);
 		} else {
-			DiffType previousType = index.get(descriptor.getRefId()).type;
+			DiffType previousType = index.get(dataset.getRefId()).type;
 			if (previousType != NEW)
-				index.update(descriptor, CHANGED);
+				index.update(dataset, CHANGED);
 		}
 	}
 
 	private void indexMerged(DiffResult diff) {
-		DatasetDescriptor descriptor = diff.getDescriptor();
+		Dataset dataset = diff.getDataset();
 		if (diff.remote.isDeleted())
-			index.remove(descriptor.getRefId());
+			index.remove(dataset.getRefId());
 		else
-			index.update(descriptor, NO_DIFF);
+			index.update(dataset, NO_DIFF);
 	}
 
 	private boolean bothDeleted(DiffResult diff) {

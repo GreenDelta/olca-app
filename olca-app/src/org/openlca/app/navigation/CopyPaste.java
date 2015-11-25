@@ -8,7 +8,7 @@ import java.util.Queue;
 import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
-import org.openlca.cloud.model.data.DatasetDescriptor;
+import org.openlca.cloud.model.data.Dataset;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.CategorizedEntityDao;
 import org.openlca.core.database.CategoryDao;
@@ -16,6 +16,7 @@ import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.descriptors.CategoryDescriptor;
 import org.openlca.core.model.descriptors.Descriptors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -254,9 +255,9 @@ public class CopyPaste {
 		Database.createRootDao(entity.getModelType()).updateCategory(entity,
 				parent);
 		// need to notifiy index updater manually here
-		DatasetDescriptor descriptor = CloudUtil.toDescriptor(entity,
-				Descriptors.toDescriptor(category));
-		Database.getIndexUpdater().update(descriptor);
+		CategoryDescriptor cDescriptor = Descriptors.toDescriptor(category);
+		Dataset dataset = CloudUtil.toDataset(entity, cDescriptor);
+		Database.getIndexUpdater().update(dataset);
 	}
 
 	private static void copy(CategoryElement element,

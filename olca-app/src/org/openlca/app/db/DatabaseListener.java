@@ -11,13 +11,13 @@ class DatabaseListener implements IDatabaseListener {
 	IndexUpdater getIndexUpdater() {
 		return indexUpdater;
 	}
-	
+
 	@Override
 	public void modelInserted(Object object) {
 		if (!(object instanceof CategorizedEntity))
 			return;
 		CategorizedEntity entity = (CategorizedEntity) object;
-		indexUpdater.insert(CloudUtil.toDescriptor(entity));
+		indexUpdater.insert(CloudUtil.toDataset(entity));
 	}
 
 	@Override
@@ -25,7 +25,7 @@ class DatabaseListener implements IDatabaseListener {
 		if (!(object instanceof CategorizedEntity))
 			return;
 		CategorizedEntity entity = (CategorizedEntity) object;
-		indexUpdater.update(CloudUtil.toDescriptor(entity));
+		indexUpdater.update(CloudUtil.toDataset(entity));
 	}
 
 	@Override
@@ -33,6 +33,6 @@ class DatabaseListener implements IDatabaseListener {
 		if (!(object instanceof CategorizedEntity))
 			return;
 		CategorizedEntity entity = (CategorizedEntity) object;
-		indexUpdater.delete(CloudUtil.toDescriptor(entity));
+		indexUpdater.delete(CloudUtil.toDataset(entity));
 	}
 }

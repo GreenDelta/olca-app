@@ -11,7 +11,7 @@ import org.mapdb.DB;
 import org.mapdb.DBMaker;
 import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.api.RepositoryConfig;
-import org.openlca.cloud.model.data.DatasetDescriptor;
+import org.openlca.cloud.model.data.Dataset;
 import org.openlca.core.model.ModelType;
 
 // NOT SYNCHRONIZED //
@@ -46,50 +46,48 @@ public class DiffIndex {
 			db.close();
 	}
 
-	public void add(DatasetDescriptor descriptor) {
-		Diff diff = index.get(descriptor.getRefId());
+	public void add(Dataset dataset) {
+		Diff diff = index.get(dataset.getRefId());
 		if (diff != null)
 			return;
-		diff = new Diff(descriptor, DiffType.NO_DIFF);
-		index.put(descriptor.getRefId(), diff);
+		diff = new Diff(dataset, DiffType.NO_DIFF);
+		index.put(dataset.getRefId(), diff);
 	}
 
-	public void update(DatasetDescriptor descriptor, DiffType newType) {
-		Diff diff = index.get(descriptor.getRefId());
+	public void update(Dataset dataset, DiffType newType) {
+		Diff diff = index.get(dataset.getRefId());
 		if (diff.type == DiffType.NEW && newType == DiffType.DELETED) {
 			// user added something and then deleted it again
-			remove(descriptor.getRefId());
+			remove(dataset.getRefId());
 			return;
 		}
-		updateDiff(diff, descriptor, newType);
+		updateDiff(diff, dataset, newType);
 	}
 
-	private void updateDiff(Diff diff, DatasetDescriptor descriptor,
-			DiffType newType) {
+	private void updateDiff(Diff diff, Dataset dataset, DiffType newType) {
 		diff.type = newType;
 		if (newType == DiffType.NO_DIFF) {
 			updateParents(diff, false);
-			diff.descriptor = descriptor;
+			diff.dataset = dataset;
 			diff.changed = null;
 		} else {
-			diff.changed = descriptor;
+			diff.changed = dataset;
 			updateParents(diff, true);
 		}
-		if (descriptor.getCategoryRefId() == null)
-			updateChangedTopLevelElements(descriptor, newType);
-		index.put(descriptor.getRefId(), diff);
+		if (dataset.getCategoryRefId() == null)
+			updateChangedTopLevelElements(dataset, newType);
+		index.put(dataset.getRefId(), diff);
 	}
 
-	private void updateChangedTopLevelElements(DatasetDescriptor descriptor,
-			DiffType newType) {
-		String type = descriptor.getCategoryType().name();
+	private void updateChangedTopLevelElements(Dataset dataset, DiffType newType) {
+		String type = dataset.getCategoryType().name();
 		Set<String> elements = changedTopLevelElements.get(type);
-		if (elements == null) 
+		if (elements == null)
 			elements = new HashSet<>();
 		if (newType == DiffType.NO_DIFF)
-			elements.remove(descriptor.getRefId());
+			elements.remove(dataset.getRefId());
 		else
-			elements.add(descriptor.getRefId());
+			elements.add(dataset.getRefId());
 		if (elements.isEmpty())
 			changedTopLevelElements.remove(type);
 		else
@@ -115,27 +113,27 @@ public class DiffIndex {
 
 	public void remove(String key) {
 		Diff diff = index.remove(key);
-		updateChangedTopLevelElements(diff.getDescriptor(), DiffType.NO_DIFF);
+		updateChangedTopLevelElements(diff.getDataset(), DiffType.NO_DIFF);
 		updateParents(diff, false);
 	}
 
 	private void updateParents(Diff diff, boolean add) {
 		if (diff.changed != null) // case 1)
 			updateParents(diff.changed, add);
-		if (diff.descriptor != null) // case 2)
-			updateParents(diff.descriptor, add);
+		if (diff.dataset != null) // case 2)
+			updateParents(diff.dataset, add);
 	}
 
-	private void updateParents(DatasetDescriptor descriptor, boolean add) {
-		String parentId = descriptor.getCategoryRefId();
+	private void updateParents(Dataset dataset, boolean add) {
+		String parentId = dataset.getCategoryRefId();
 		while (parentId != null) {
 			Diff parent = index.get(parentId);
 			if (add)
-				parent.changedChildren.add(descriptor.getRefId());
+				parent.changedChildren.add(dataset.getRefId());
 			else
-				parent.changedChildren.remove(descriptor.getRefId());
+				parent.changedChildren.remove(dataset.getRefId());
 			index.put(parentId, parent);
-			parentId = parent.descriptor.getCategoryRefId();
+			parentId = parent.dataset.getCategoryRefId();
 		}
 	}
 

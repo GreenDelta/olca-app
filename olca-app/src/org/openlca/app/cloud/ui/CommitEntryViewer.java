@@ -22,13 +22,13 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.AbstractViewer;
 import org.openlca.cloud.api.RepositoryClient;
-import org.openlca.cloud.model.data.CommitDescriptor;
+import org.openlca.cloud.model.data.Commit;
 import org.openlca.cloud.model.data.FetchRequestData;
 import org.openlca.cloud.util.WebRequests.WebRequestException;
 import org.openlca.core.model.ModelType;
 import org.openlca.util.Strings;
 
-class CommitEntryViewer extends AbstractViewer<CommitDescriptor, TreeViewer> {
+class CommitEntryViewer extends AbstractViewer<Commit, TreeViewer> {
 
 	private RepositoryClient client;
 
@@ -71,9 +71,9 @@ class CommitEntryViewer extends AbstractViewer<CommitDescriptor, TreeViewer> {
 
 		@Override
 		public Object[] getChildren(Object parentElement) {
-			if (!(parentElement instanceof CommitDescriptor))
+			if (!(parentElement instanceof Commit))
 				return null;
-			CommitDescriptor commit = (CommitDescriptor) parentElement;
+			Commit commit = (Commit) parentElement;
 			try {
 				List<FetchRequestData> references = client.getReferences(commit
 						.getId());
@@ -106,7 +106,7 @@ class CommitEntryViewer extends AbstractViewer<CommitDescriptor, TreeViewer> {
 
 		@Override
 		public boolean hasChildren(Object element) {
-			if (element instanceof CommitDescriptor)
+			if (element instanceof Commit)
 				return true;
 			return false;
 		}
@@ -118,7 +118,7 @@ class CommitEntryViewer extends AbstractViewer<CommitDescriptor, TreeViewer> {
 
 		@Override
 		public Image getImage(Object element) {
-			if (element instanceof CommitDescriptor)
+			if (element instanceof Commit)
 				return ImageManager.getImage(ImageType.COMMIT_ICON);
 			if (!(element instanceof FetchRequestData))
 				return null;
@@ -139,17 +139,17 @@ class CommitEntryViewer extends AbstractViewer<CommitDescriptor, TreeViewer> {
 
 		@Override
 		public String getText(Object element) {
-			if (element instanceof CommitDescriptor)
-				return getCommitText((CommitDescriptor) element);
+			if (element instanceof Commit)
+				return getCommitText((Commit) element);
 			if (element instanceof FetchRequestData)
 				return getFileReferenceText((FetchRequestData) element);
 			return null;
 		}
 
-		private String getCommitText(CommitDescriptor descriptor) {
-			String text = descriptor.getUser() + ": ";
-			text += descriptor.getMessage() + " (";
-			text += getTime(descriptor.getTimestamp()) + ")";
+		private String getCommitText(Commit commit) {
+			String text = commit.getUser() + ": ";
+			text += commit.getMessage() + " (";
+			text += getTime(commit.getTimestamp()) + ")";
 			return text;
 		}
 

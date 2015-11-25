@@ -2,7 +2,7 @@ package org.openlca.app.cloud.ui;
 
 import org.openlca.app.cloud.index.Diff;
 import org.openlca.app.cloud.index.DiffType;
-import org.openlca.cloud.model.data.DatasetDescriptor;
+import org.openlca.cloud.model.data.Dataset;
 import org.openlca.cloud.model.data.FetchRequestData;
 
 import com.google.gson.JsonObject;
@@ -31,10 +31,10 @@ public class DiffResult {
 			this.local = null;
 	}
 
-	public DatasetDescriptor getDescriptor() {
+	public Dataset getDataset() {
 		if (remote != null)
-			return toDescriptor(remote);
-		return local.getDescriptor();
+			return toDataset(remote);
+		return local.getDataset();
 	}
 
 	public JsonObject getMergedData() {
@@ -126,7 +126,7 @@ public class DiffResult {
 
 	public String getDisplayName() {
 		if (local != null)
-			return local.getDescriptor().getName();
+			return local.getDataset().getName();
 		if (remote != null)
 			return remote.getName();
 		return null;
@@ -136,25 +136,25 @@ public class DiffResult {
 	public String toString() {
 		String l = "null";
 		if (local != null) {
-			l = "type: " + local.getDescriptor().getType();
-			l += ", name: " + local.getDescriptor().getName();
+			l = "type: " + local.getDataset().getType();
+			l += ", name: " + local.getDataset().getName();
 		}
 		String text = "model: {" + l + "}, diff: {" + local.type
 				+ "}, result: {" + getType() + "}";
 		return text;
 	}
 
-	private DatasetDescriptor toDescriptor(FetchRequestData data) {
-		DatasetDescriptor descriptor = new DatasetDescriptor();
-		descriptor.setCategoryType(data.getCategoryType());
-		descriptor.setCategoryRefId(data.getCategoryRefId());
-		descriptor.setFullPath(data.getFullPath());
-		descriptor.setType(data.getType());
-		descriptor.setRefId(data.getRefId());
-		descriptor.setName(data.getName());
-		descriptor.setLastChange(data.getLastChange());
-		descriptor.setVersion(data.getVersion());
-		return descriptor;
+	private Dataset toDataset(FetchRequestData data) {
+		Dataset dataset = new Dataset();
+		dataset.setCategoryType(data.getCategoryType());
+		dataset.setCategoryRefId(data.getCategoryRefId());
+		dataset.setFullPath(data.getFullPath());
+		dataset.setType(data.getType());
+		dataset.setRefId(data.getRefId());
+		dataset.setName(data.getName());
+		dataset.setLastChange(data.getLastChange());
+		dataset.setVersion(data.getVersion());
+		return dataset;
 	}
 
 	public static enum DiffResponse {

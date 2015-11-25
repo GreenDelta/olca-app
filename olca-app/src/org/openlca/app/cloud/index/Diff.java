@@ -4,18 +4,18 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.openlca.cloud.model.data.DatasetDescriptor;
+import org.openlca.cloud.model.data.Dataset;
 
 public class Diff implements Serializable {
 
 	private static final long serialVersionUID = 252758475629265830L;
-	public DatasetDescriptor descriptor;
-	public DatasetDescriptor changed;
+	public Dataset dataset;
+	public Dataset changed;
 	public DiffType type;
 	Set<String> changedChildren = new HashSet<>();
 
-	Diff(DatasetDescriptor descriptor, DiffType type) {
-		this.descriptor = descriptor;
+	Diff(Dataset descriptor, DiffType type) {
+		this.dataset = descriptor;
 		this.type = type;
 	}
 
@@ -27,10 +27,10 @@ public class Diff implements Serializable {
 		return !changedChildren.isEmpty();
 	}
 
-	public DatasetDescriptor getDescriptor() {
+	public Dataset getDataset() {
 		if (changed != null)
 			return changed;
-		return descriptor;
+		return dataset;
 	}
 
 	@Override
@@ -38,12 +38,11 @@ public class Diff implements Serializable {
 		if (!(obj instanceof Diff))
 			return false;
 		Diff diff = (Diff) obj;
-		return getDescriptor().getRefId().equals(
-				diff.getDescriptor().getRefId());
+		return getDataset().getRefId().equals(diff.getDataset().getRefId());
 	}
-	
+
 	public Diff copy() {
-		Diff diff = new Diff(descriptor, type);
+		Diff diff = new Diff(dataset, type);
 		diff.changed = changed;
 		return diff;
 	}

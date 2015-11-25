@@ -11,7 +11,7 @@ import org.openlca.app.rcp.ImageManager;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Images;
 import org.openlca.cloud.api.RepositoryClient;
-import org.openlca.cloud.model.data.DatasetDescriptor;
+import org.openlca.cloud.model.data.Dataset;
 import org.openlca.core.model.ModelType;
 
 class RepositoryLabel {
@@ -27,7 +27,7 @@ class RepositoryLabel {
 			return null;
 		if (element instanceof ModelTypeElement)
 			return null;
-		Diff diff = getDiff(CloudUtil.toDescriptor(element));
+		Diff diff = getDiff(CloudUtil.toDataset(element));
 		if (diff.type != DiffType.NEW)
 			return null;
 		ImageType imageType = null;
@@ -68,7 +68,7 @@ class RepositoryLabel {
 	}
 
 	private static boolean isNew(INavigationElement<?> element) {
-		Diff diff = getDiff(CloudUtil.toDescriptor(element));
+		Diff diff = getDiff(CloudUtil.toDataset(element));
 		if (element instanceof DatabaseElement)
 			return false;
 		if (element instanceof GroupElement)
@@ -80,9 +80,9 @@ class RepositoryLabel {
 
 	private static boolean hasChanged(INavigationElement<?> element) {
 		if (element instanceof CategoryElement)
-			return hasChanged(CloudUtil.toDescriptor(element));
+			return hasChanged(CloudUtil.toDataset(element));
 		if (element instanceof ModelElement)
-			return hasChanged(CloudUtil.toDescriptor(element));
+			return hasChanged(CloudUtil.toDataset(element));
 		if (element instanceof ModelTypeElement)
 			return hasChanged(((ModelTypeElement) element).getContent());
 		for (INavigationElement<?> child : element.getChildren())
@@ -91,8 +91,8 @@ class RepositoryLabel {
 		return false;
 	}
 
-	private static boolean hasChanged(DatasetDescriptor descriptor) {
-		Diff diff = getDiff(descriptor);
+	private static boolean hasChanged(Dataset dataset) {
+		Diff diff = getDiff(dataset);
 		return diff.hasChanged() || diff.childrenHaveChanged();
 	}
 
@@ -101,9 +101,9 @@ class RepositoryLabel {
 		return index.hasChanged(type);
 	}
 
-	private static Diff getDiff(DatasetDescriptor descriptor) {
+	private static Diff getDiff(Dataset dataset) {
 		DiffIndex index = Database.getDiffIndex();
-		return index.get(descriptor.getRefId());
+		return index.get(dataset.getRefId());
 	}
 
 }

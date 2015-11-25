@@ -2,7 +2,7 @@ package org.openlca.app.db;
 
 import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.cloud.index.DiffType;
-import org.openlca.cloud.model.data.DatasetDescriptor;
+import org.openlca.cloud.model.data.Dataset;
 
 public class IndexUpdater {
 
@@ -33,49 +33,49 @@ public class IndexUpdater {
 		disabled = false;
 	}
 
-	public void insert(DatasetDescriptor descriptor) {
+	public void insert(Dataset dataset) {
 		DiffIndex index = getIndex();
 		if (index == null)
 			return;
-		insert(descriptor, index);
+		insert(dataset, index);
 		if (inTransaction)
 			return;
 		index.commit();
 	}
 
-	private void insert(DatasetDescriptor descriptor, DiffIndex index) {
-		index.add(descriptor);
-		index.update(descriptor, DiffType.NEW);
+	private void insert(Dataset dataset, DiffIndex index) {
+		index.add(dataset);
+		index.update(dataset, DiffType.NEW);
 	}
 
-	public void update(DatasetDescriptor descriptor) {
+	public void update(Dataset dataset) {
 		DiffIndex index = getIndex();
 		if (index == null)
 			return;
-		update(descriptor, index);
+		update(dataset, index);
 		if (inTransaction)
 			return;
 		index.commit();
 	}
 
-	private void update(DatasetDescriptor descriptor, DiffIndex index) {
-		DiffType previousType = index.get(descriptor.getRefId()).type;
+	private void update(Dataset dataset, DiffIndex index) {
+		DiffType previousType = index.get(dataset.getRefId()).type;
 		if (previousType != DiffType.NEW)
-			index.update(descriptor, DiffType.CHANGED);
+			index.update(dataset, DiffType.CHANGED);
 	}
 
-	public void delete(DatasetDescriptor descriptor) {
+	public void delete(Dataset dataset) {
 		DiffIndex index = getIndex();
 		if (index == null)
 			return;
-		delete(descriptor, index);
+		delete(dataset, index);
 		if (inTransaction)
 			return;
 		index.commit();
 	}
 
-	private void delete(DatasetDescriptor descriptor, DiffIndex index) {
-		index.update(descriptor, DiffType.DELETED);
+	private void delete(Dataset dataset, DiffIndex index) {
+		index.update(dataset, DiffType.DELETED);
 	}
 
 	private DiffIndex getIndex() {

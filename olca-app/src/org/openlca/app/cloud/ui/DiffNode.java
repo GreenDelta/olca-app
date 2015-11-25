@@ -34,7 +34,7 @@ public class DiffNode {
 		if (isModelTypeNode())
 			return null;
 		DiffResult result = (DiffResult) content;
-		return result.getDescriptor().getType();
+		return result.getDataset().getType();
 	}
 
 }

@@ -23,8 +23,9 @@ import org.openlca.app.util.Error;
 import org.openlca.app.util.Info;
 import org.openlca.cloud.api.CommitInvocation;
 import org.openlca.cloud.api.RepositoryClient;
-import org.openlca.cloud.model.data.DatasetDescriptor;
+import org.openlca.cloud.model.data.Dataset;
 import org.openlca.cloud.util.WebRequests.WebRequestException;
+import org.openlca.core.model.ModelType;
 
 public class CommitAction extends Action implements INavigationAction {
 
@@ -116,17 +117,17 @@ public class CommitAction extends Action implements INavigationAction {
 				error = e;
 			}
 		}
-		
+
 		private void indexCommit() {
 			for (DiffResult change : changes) {
-				DatasetDescriptor descriptor = change.getDescriptor();
-				DiffType before = index.get(descriptor.getRefId()).type;
+				Dataset dataset = change.getDataset();
+				DiffType before = index.get(dataset.getRefId()).type;
 				if (before == DiffType.DELETED)
-					index.remove(descriptor.getRefId());
+					index.remove(dataset.getRefId());
 				else
-					index.update(descriptor, DiffType.NO_DIFF);
+					index.update(dataset, DiffType.NO_DIFF);
 			}
-			index.commit();			
+			index.commit();
 		}
 
 		private void afterCommit() {
@@ -163,14 +164,14 @@ public class CommitAction extends Action implements INavigationAction {
 				CommitInvocation commit) {
 			for (DiffResult change : changes)
 				if (change.getType() == DiffResponse.DELETE_FROM_REMOTE) {
-					DatasetDescriptor descriptor = change.getDescriptor();
-					descriptor.setFullPath(change.local.descriptor
-							.getFullPath());
-					commit.putForRemoval(descriptor);
-				} else
-					commit.put(Database.createRootDao(
-							change.getDescriptor().getType()).getForRefId(
-							change.getDescriptor().getRefId()));
+					Dataset dataset = change.getDataset();
+					dataset.setFullPath(change.local.dataset.getFullPath());
+					commit.putForRemoval(dataset);
+				} else {
+					ModelType type = change.getDataset().getType();
+					String refId = change.getDataset().getRefId();
+					commit.put(Database.createRootDao(type).getForRefId(refId));
+				}
 		}
 	}
 

@@ -24,7 +24,7 @@ import org.openlca.app.util.Error;
 import org.openlca.app.util.UI;
 import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.api.RepositoryConfig;
-import org.openlca.cloud.model.data.DatasetDescriptor;
+import org.openlca.cloud.model.data.Dataset;
 import org.openlca.cloud.util.WebRequests.WebRequestException;
 
 public class ConnectAction extends Action implements INavigationAction {
@@ -89,24 +89,23 @@ public class ConnectAction extends Action implements INavigationAction {
 	private void indexDatabase() {
 		INavigationElement<?> elem = Navigator.findElement(Database
 				.getActiveConfiguration());
-		List<DatasetDescriptor> descriptors = collectDescriptors(elem);
+		List<Dataset> datasets = collectDatasets(elem);
 		DiffIndex index = Database.getDiffIndex();
-		for (DatasetDescriptor descriptor : descriptors)
-			index.add(descriptor);
-		for (DatasetDescriptor descriptor : descriptors)
-			index.update(descriptor, DiffType.NEW);
+		for (Dataset dataset : datasets)
+			index.add(dataset);
+		for (Dataset dataset : datasets)
+			index.update(dataset, DiffType.NEW);
 		index.commit();
 	}
 
-	private List<DatasetDescriptor> collectDescriptors(
-			INavigationElement<?> element) {
-		List<DatasetDescriptor> descriptor = new ArrayList<>();
+	private List<Dataset> collectDatasets(INavigationElement<?> element) {
+		List<Dataset> dataset = new ArrayList<>();
 		if (element instanceof ModelElement
 				|| element instanceof CategoryElement)
-			descriptor.add(CloudUtil.toDescriptor(element));
+			dataset.add(CloudUtil.toDataset(element));
 		for (INavigationElement<?> child : element.getChildren())
-			descriptor.addAll(collectDescriptors(child));
-		return descriptor;
+			dataset.addAll(collectDatasets(child));
+		return dataset;
 	}
 
 	private class InputDialog extends Dialog {

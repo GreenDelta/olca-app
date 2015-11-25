@@ -25,8 +25,8 @@ import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Info;
 import org.openlca.cloud.api.RepositoryClient;
-import org.openlca.cloud.model.data.CommitDescriptor;
-import org.openlca.cloud.model.data.DatasetDescriptor;
+import org.openlca.cloud.model.data.Commit;
+import org.openlca.cloud.model.data.Dataset;
 import org.openlca.cloud.model.data.FetchRequestData;
 import org.openlca.cloud.util.WebRequests.WebRequestException;
 
@@ -51,7 +51,7 @@ public class FetchAction extends Action implements INavigationAction {
 
 	private class Runner {
 
-		private List<CommitDescriptor> commits;
+		private List<Commit> commits;
 		private List<DiffResult> differences;
 		private WebRequestException error;
 		private DiffNode root;
@@ -108,18 +108,18 @@ public class FetchAction extends Action implements INavigationAction {
 		}
 
 		private void fetchData() {
-			List<DatasetDescriptor> toFetch = new ArrayList<>();
-			Map<DatasetDescriptor, JsonObject> mergedData = new HashMap<>();
+			List<Dataset> toFetch = new ArrayList<>();
+			Map<Dataset, JsonObject> mergedData = new HashMap<>();
 			for (DiffResult result : differences) {
-				DatasetDescriptor descriptor = result.getDescriptor();
+				Dataset dataset = result.getDataset();
 				switch (result.getType()) {
 				case MODIFY_IN_LOCAL:
 				case ADD_TO_LOCAL:
 				case DELETE_FROM_LOCAL:
-					toFetch.add(descriptor);
+					toFetch.add(dataset);
 					break;
 				case CONFLICT:
-					mergedData.put(descriptor, result.getMergedData());
+					mergedData.put(dataset, result.getMergedData());
 					break;
 				default:
 					break;
