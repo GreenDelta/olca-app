@@ -12,7 +12,7 @@ import org.openlca.app.results.ContributionTablePage;
 import org.openlca.app.results.FlowImpactPage;
 import org.openlca.app.results.GroupPage;
 import org.openlca.app.results.ImpactTreePage;
-import org.openlca.app.results.ImpactTreePage.FlowWithProcessDescriptor;
+import org.openlca.app.results.ImpactTreePage.FlowWithProcess;
 import org.openlca.app.results.LocationContributionPage;
 import org.openlca.app.results.NwResultPage;
 import org.openlca.app.results.ResultEditorInput;
@@ -133,7 +133,7 @@ public class AnalyzeEditor extends FormEditor {
 	}
 
 	private double getImpactFactor(ImpactCategoryDescriptor impactCategory,
-			FlowWithProcessDescriptor descriptor) {
+			FlowWithProcess descriptor) {
 		int row = result.result.impactIndex.getIndex(impactCategory.getId());
 		int col = result.result.flowIndex.getIndex(descriptor.flow.getId());
 		return Math.abs(result.result.impactFactors.getEntry(row, col));

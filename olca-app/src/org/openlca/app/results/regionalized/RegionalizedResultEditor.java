@@ -16,7 +16,7 @@ import org.openlca.app.results.ContributionTablePage;
 import org.openlca.app.results.FlowImpactPage;
 import org.openlca.app.results.GroupPage;
 import org.openlca.app.results.ImpactTreePage;
-import org.openlca.app.results.ImpactTreePage.FlowWithProcessDescriptor;
+import org.openlca.app.results.ImpactTreePage.FlowWithProcess;
 import org.openlca.app.results.LocationContributionPage;
 import org.openlca.app.results.NwResultPage;
 import org.openlca.app.results.ResultEditorInput;
@@ -138,7 +138,7 @@ public class RegionalizedResultEditor extends FormEditor {
 	}
 
 	private double getImpactFactor(ImpactCategoryDescriptor category,
-			FlowWithProcessDescriptor descriptor) {
+			FlowWithProcess descriptor) {
 		if (descriptor.process.getLocation() == null)
 			return _getImpactFactor(category, descriptor);
 		Map<FlowDescriptor, Double> impactFactors = getImpactFactors(
@@ -149,7 +149,7 @@ public class RegionalizedResultEditor extends FormEditor {
 	}
 
 	private double _getImpactFactor(ImpactCategoryDescriptor category,
-			FlowWithProcessDescriptor descriptor) {
+			FlowWithProcess descriptor) {
 		FullResult result = this.result.getRegionalizedResult().result;
 		int row = result.impactIndex.getIndex(category.getId());
 		int col = result.flowIndex.getIndex(descriptor.flow.getId());

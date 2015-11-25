@@ -62,7 +62,7 @@ public class ImpactTreePage extends FormPage {
 	private TreeViewer viewer;
 	private ImpactCategoryDescriptor impactCategory;
 	private boolean filterZeroes;
-	private double cutOff = 0;
+	private int cutOff = 10;
 
 	public ImpactTreePage(FormEditor editor, FullResultProvider result,
 			ImpactFactorProvider impactFactors) {
@@ -85,6 +85,7 @@ public class ImpactTreePage extends FormPage {
 		createImpactContributionTable(client);
 		form.reflow(true);
 		categoryViewer.selectFirst();
+		spinner.setSelection(2);
 	}
 
 	private void createSelectionAndFilter(Composite parent) {
@@ -118,7 +119,7 @@ public class ImpactTreePage extends FormPage {
 	private void createCutOffFilter(Composite parent) {
 		UI.formLabel(parent, toolkit, Messages.Cutoff);
 		spinner = new Spinner(parent, SWT.BORDER);
-		spinner.setValues(0, 0, 100, 0, 1, 10);
+		spinner.setValues(cutOff, 0, 100, 0, 1, 10);
 		toolkit.adapt(spinner);
 		toolkit.createLabel(parent, "%");
 		Controls.onSelect(spinner, (e) -> {
@@ -164,7 +165,7 @@ public class ImpactTreePage extends FormPage {
 				return null;
 			if (element instanceof ProcessDescriptor)
 				return Images.getIcon(ModelType.PROCESS);
-			if (element instanceof FlowWithProcessDescriptor)
+			if (element instanceof FlowWithProcess)
 				return Images.getIcon(ModelType.FLOW);
 			return null;
 		}
@@ -174,8 +175,8 @@ public class ImpactTreePage extends FormPage {
 			String column = COLUMN_LABELS[columnIndex];
 			if (element instanceof ProcessDescriptor)
 				return getProcessText((ProcessDescriptor) element, column);
-			if (element instanceof FlowWithProcessDescriptor)
-				return getFlowText((FlowWithProcessDescriptor) element, column);
+			if (element instanceof FlowWithProcess)
+				return getFlowText((FlowWithProcess) element, column);
 			return null;
 		}
 
@@ -197,8 +198,7 @@ public class ImpactTreePage extends FormPage {
 			return null;
 		}
 
-		private String getFlowText(FlowWithProcessDescriptor descriptor,
-				String column) {
+		private String getFlowText(FlowWithProcess descriptor, String column) {
 			switch (column) {
 			case COLUMN_NAME:
 				return descriptor.flow.getName();
@@ -221,16 +221,16 @@ public class ImpactTreePage extends FormPage {
 
 	}
 
-	private double getAmount(FlowWithProcessDescriptor d) {
+	private double getAmount(FlowWithProcess d) {
 		FlowResult r = result.getSingleFlowResult(d.process, d.flow);
 		return r.value;
 	}
 
-	private double getFactor(FlowWithProcessDescriptor descriptor) {
+	private double getFactor(FlowWithProcess descriptor) {
 		return impactFactors.get(impactCategory, descriptor);
 	}
 
-	private double getResult(FlowWithProcessDescriptor descriptor) {
+	private double getResult(FlowWithProcess descriptor) {
 		double factor = getFactor(descriptor);
 		double amount = getAmount(descriptor);
 		return factor * amount;
@@ -271,9 +271,9 @@ public class ImpactTreePage extends FormPage {
 			if (!(parentElement instanceof ProcessDescriptor))
 				return null;
 			ProcessDescriptor process = (ProcessDescriptor) parentElement;
-			List<FlowWithProcessDescriptor> list = new ArrayList<>();
+			List<FlowWithProcess> list = new ArrayList<>();
 			for (FlowDescriptor flow : result.getFlowDescriptors())
-				list.add(new FlowWithProcessDescriptor(process, flow));
+				list.add(new FlowWithProcess(process, flow));
 			return list.toArray();
 		}
 
@@ -291,13 +291,12 @@ public class ImpactTreePage extends FormPage {
 
 	}
 
-	public class FlowWithProcessDescriptor {
+	public class FlowWithProcess {
 
 		public final ProcessDescriptor process;
 		public final FlowDescriptor flow;
 
-		private FlowWithProcessDescriptor(ProcessDescriptor process,
-				FlowDescriptor flow) {
+		private FlowWithProcess(ProcessDescriptor process, FlowDescriptor flow) {
 			this.process = process;
 			this.flow = flow;
 		}
@@ -309,15 +308,37 @@ public class ImpactTreePage extends FormPage {
 				Object element) {
 			if (cutOff == 0d)
 				return true;
-			if (element instanceof FlowWithProcessDescriptor) {
-				FlowWithProcessDescriptor descriptor = (FlowWithProcessDescriptor) element;
-				return getResult(descriptor) != 0d;
-			}
 			if (element instanceof ProcessDescriptor) {
-				ProcessDescriptor descriptor = (ProcessDescriptor) element;
-				return getResult(descriptor) != 0d;
+				double c = getUpstreamContribution((ProcessDescriptor) element);
+				return c * 100 > cutOff;
+			}
+			if (element instanceof FlowWithProcess) {
+				double c = getUpstreamContribution((FlowWithProcess) element);
+				return c * 100 > cutOff;
 			}
 			return true;
+		}
+
+		private double getUpstreamContribution(ProcessDescriptor process) {
+			if (process == null)
+				return 0;
+			double total = result.getTotalImpactResult(impactCategory).value;
+			if (total == 0)
+				return 0;
+			double val = getResult(process);
+			double c = val / Math.abs(total);
+			return c > 1 ? 1 : c;
+		}
+
+		private double getUpstreamContribution(FlowWithProcess descriptor) {
+			if (descriptor.process == null || descriptor.flow == null)
+				return 0;
+			double total = result.getTotalImpactResult(impactCategory).value;
+			if (total == 0)
+				return 0;
+			double val = getResult(descriptor);
+			double c = val / Math.abs(total);
+			return c > 1 ? 1 : c;
 		}
 	}
 
@@ -328,8 +349,8 @@ public class ImpactTreePage extends FormPage {
 				Object element) {
 			if (!filterZeroes)
 				return true;
-			if (element instanceof FlowWithProcessDescriptor) {
-				FlowWithProcessDescriptor descriptor = (FlowWithProcessDescriptor) element;
+			if (element instanceof FlowWithProcess) {
+				FlowWithProcess descriptor = (FlowWithProcess) element;
 				double inventory = result.getSingleFlowResult(
 						descriptor.process, descriptor.flow).value;
 				if (inventory == 0d)
@@ -347,7 +368,7 @@ public class ImpactTreePage extends FormPage {
 	public interface ImpactFactorProvider {
 
 		double get(ImpactCategoryDescriptor impactCategory,
-				FlowWithProcessDescriptor flowWithProcess);
+				FlowWithProcess flowWithProcess);
 
 	}
 
