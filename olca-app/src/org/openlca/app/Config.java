@@ -13,7 +13,7 @@ public final class Config {
 	 * The version that is shown in the application to the user. Note that this
 	 * can be another version then the internal build version.
 	 */
-	public static final String VERSION = "1.5.0alpha1";
+	public static final String VERSION = "1.5.0alpha3";
 
 	/**
 	 * The name of the application that is shown to the user.
@@ -26,7 +26,7 @@ public final class Config {
 	 * "openLCA-data", but it can be renamed in development versions (so that
 	 * the users can run multiple versions of openLCA in parallel).
 	 */
-	public static final String WORK_SPACE_FOLDER_NAME = "openLCA-data-1.5";
+	public static final String WORK_SPACE_FOLDER_NAME = "openLCA-data-1.5-alpha3";
 
 	/**
 	 * Indicates if the workspace folder should be located in the user dir. If
