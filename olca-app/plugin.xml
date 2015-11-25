@@ -274,7 +274,7 @@
             name="%Flows">
       </wizard>
       <wizard
-            class="org.openlca.app.editors.lcia_methods.ImpactMethodWizard"
+            class="org.openlca.app.wizards.ImpactMethodWizard"
             icon="icons/LCIA_obj_new.gif"
             id="wizards.new.impactmethod"
             name="%LCIAMethods">
