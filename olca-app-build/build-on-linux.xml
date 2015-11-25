@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="project" default="main">
+
+	<tstamp />
+	<property name="buildId" value="openlca_${DSTAMP}" />
+	<property name="product" value="/olca-app/openLCA.product" />
+
+	<!-- 
+		We assume that the runtime project is located next to this build project.
+		If this is not the case, adopt the platform_path varaible.		
+	 -->
+	<property name="platform_path" value="${basedir}/../olca-app-runtime/platform" />
+
+	<!-- Provides for example a version in openlca_version -->
+	<property file="build.properties" />
+
+	<target name="main" depends="compile">
+		<mkdir dir="${basedir}/packages" />
+		<delete>
+			<fileset dir="${basedir}/packages" includes="*.exe,*.zip">
+			</fileset>
+		</delete>
+		<ant antfile="${basedir}/buildWinZips.xml" />
+		<eclipse.refreshLocal resource="olca-app-build" depth="infinite" />
+	</target>
+
+	<!--
+	PDE needs the following properties to be defined:
+	   builder: the location with the build and property script (build.properties) of the PDE build
+	   baseLocation: the target/compile platform with pre-compiled plugins and features
+	   buildDirectory: the directory where the compilation results are stored
+	   product: the product configuration
+	   buildId: the identifier of the build
+	   pluginPath (optional): a path to pre-compiled plugins which are required to compile and run the product
+	-->
+	<target name="compile" depends="prepareBuildDir">
+		<property name="builder" value="${basedir}" />
+		<property name="baseLocation" value="${platform_path}" />
+		<property name="buildDirectory" value="${basedir}/sources" />
+		<property name="pluginPath" value="${platform_path}" />
+		<ant antfile="${eclipse.pdebuild.scripts}/productBuild/productBuild.xml" />
+		<mkdir dir="${basedir}/builds" />
+		<move todir="${basedir}/builds">
+			<fileset dir="${buildDirectory}/${buildId}" includes="*.zip" />
+		</move>
+		<delete dir="${buildDirectory}" />
+	</target>
+
+	<target name="clean">
+		<delete dir="${buildDirectory}" />
+	</target>
+
+	<target name="prepareBuildDir">
+		<delete failonerror="false">
+			<fileset dir="${basedir}/builds" includes="*.zip" />
+		</delete>
+		<delete dir="${basedir}/sources" />
+		<mkdir dir="${basedir}/sources" />
+		<mkdir dir="${basedir}/sources/plugins" />
+		<copy todir="${basedir}/sources/plugins">
+			<fileset dir="${basedir}/..">
+				<include name="olca-app/**" />
+			</fileset>
+		</copy>
+	</target>
+
+</project>
