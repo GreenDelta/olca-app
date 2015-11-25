@@ -143,6 +143,8 @@ public class RegionalizedResultEditor extends FormEditor {
 			return _getImpactFactor(category, descriptor);
 		Map<FlowDescriptor, Double> impactFactors = getImpactFactors(
 				category.getId(), descriptor.process.getLocation());
+		if (!impactFactors.containsKey(descriptor.flow))
+			return 0d;
 		return impactFactors.get(descriptor.flow);
 	}
 

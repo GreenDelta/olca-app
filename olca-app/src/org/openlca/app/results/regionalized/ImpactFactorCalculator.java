@@ -11,9 +11,14 @@ import org.openlca.expressions.FormulaInterpreter;
 import org.openlca.expressions.InterpreterException;
 import org.openlca.expressions.Scope;
 import org.openlca.geo.parameter.ParameterSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Strings;
 
 public class ImpactFactorCalculator {
 
+	private Logger log = LoggerFactory.getLogger(getClass());
 	private ParameterSet parameterSet;
 
 	private Map<FlowDescriptor, Double> result;
@@ -51,13 +56,15 @@ public class ImpactFactorCalculator {
 		try {
 			return scope.eval(factor.getFormula());
 		} catch (InterpreterException e) {
-			e.printStackTrace();
+			log.error("Error evaluating formula " + factor.getFormula(), e);
 		}
 		return 0;
 	}
 
 	private boolean isParametrized(ImpactFactor factor) {
 		try {
+			if (Strings.isNullOrEmpty(factor.getFormula()))
+				return false;
 			Double.parseDouble(factor.getFormula());
 			return false;
 		} catch (NumberFormatException e) {
