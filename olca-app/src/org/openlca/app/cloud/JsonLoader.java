@@ -27,7 +27,7 @@ public class JsonLoader {
 		CategorizedEntity entity = load(result.local.getDataset());
 		if (entity == null)
 			return null;
-		return JsonExport.toJson(entity);
+		return JsonExport.toJson(entity, Database.get());
 	}
 
 	private CategorizedEntity load(Dataset dataset) {
