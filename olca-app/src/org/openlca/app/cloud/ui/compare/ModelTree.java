@@ -200,7 +200,9 @@ class ModelTree extends AbstractViewer<JsonNode, TreeViewer> {
 					return node.key;
 			if (element.isJsonObject()) {
 				JsonObject object = element.getAsJsonObject();
-				if (!JsonUtil.isReference(object))
+				JsonElement parent = local ? node.parent.getLocalElement()
+						: node.parent.getRemoteElement();
+				if (!JsonUtil.isReference(parent, object))
 					return node.key;
 				return node.key + ": "
 						+ getValue(node, object.get("name").getAsString());

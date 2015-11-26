@@ -43,17 +43,12 @@ public class JsonLoader {
 		try {
 			JsonObject json = client.getDataset(dataset.getType(),
 					dataset.getRefId());
-			if (isImpactMethod(json))
+			if (JsonUtil.isType(json, ImpactMethod.class))
 				appendImpactMethodObjects(json);
 			return json;
 		} catch (WebRequestException e) {
 			return null;
 		}
-	}
-
-	private boolean isImpactMethod(JsonObject json) {
-		String type = JsonUtil.getType(json);
-		return ImpactMethod.class.getSimpleName().equals(type);
 	}
 
 	private void appendImpactMethodObjects(JsonObject json) {

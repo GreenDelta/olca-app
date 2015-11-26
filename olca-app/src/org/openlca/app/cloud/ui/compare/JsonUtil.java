@@ -7,6 +7,8 @@ import java.util.Set;
 import java.util.Stack;
 
 import org.openlca.core.model.Exchange;
+import org.openlca.core.model.Unit;
+import org.openlca.core.model.UnitGroup;
 
 import com.google.common.reflect.Parameter;
 import com.google.gson.JsonArray;
@@ -118,7 +120,7 @@ public class JsonUtil {
 		return e1.getAsString().equals(e2.getAsString());
 	}
 
-	static boolean isReference(JsonElement element) {
+	static boolean isReference(JsonElement parent, JsonElement element) {
 		if (element == null)
 			return false;
 		if (!element.isJsonObject())
@@ -126,13 +128,13 @@ public class JsonUtil {
 		JsonObject object = element.getAsJsonObject();
 		if (object.get("@id") == null)
 			return false;
-		JsonElement type = object.get("@type");
-		if (type == null)
-			return false;
-		if (type.getAsString().equals(Parameter.class.getSimpleName()))
+		if (isType(object, Parameter.class))
 			if (!isGlobalParameter(object))
 				return false;
-		if (type.getAsString().equals(Exchange.class.getSimpleName()))
+		if (isType(object, Exchange.class))
+			return false;
+		if (isType(object, Unit.class))
+			if (isType(parent, UnitGroup.class))
 			return false;
 		return true;
 	}
@@ -165,6 +167,11 @@ public class JsonUtil {
 		if (type == null)
 			return null;
 		return type.getAsString();
+	}
+
+	public static boolean isType(JsonElement element, Class<?> clazz) {
+		String type = JsonUtil.getType(element);
+		return clazz.getSimpleName().equals(type);
 	}
 
 	public static JsonElement deepCopy(JsonElement element) {
@@ -215,6 +222,8 @@ public class JsonUtil {
 	private static int find(JsonElement element, JsonArray array,
 			String... fields) {
 		if (fields == null)
+			return -1;
+		if (!element.isJsonObject())
 			return -1;
 		JsonObject object = element.getAsJsonObject();
 		String[] values = getValues(object, fields);

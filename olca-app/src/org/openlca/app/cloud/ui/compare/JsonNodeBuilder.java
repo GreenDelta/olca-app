@@ -84,7 +84,9 @@ public class JsonNodeBuilder {
 			JsonElement remote = forLocal ? otherValue : value;
 			String key = Integer.toString(counter++);
 			JsonNode childNode = JsonNode.create(node, key, local, remote);
-			if (!JsonUtil.isReference(value))
+			JsonElement parent = forLocal ? node.parent.getLocalElement()
+					: node.parent.getRemoteElement();
+			if (!JsonUtil.isReference(parent, value))
 				build(childNode, local, remote);
 			node.children.add(childNode);
 		}
@@ -98,9 +100,9 @@ public class JsonNodeBuilder {
 				remoteValue);
 		parent.children.add(childNode);
 		if (localValue == null) {
-			if (JsonUtil.isReference(remoteValue))
+			if (JsonUtil.isReference(parent.getRemoteElement(), remoteValue))
 				return;
-		} else if (JsonUtil.isReference(localValue))
+		} else if (JsonUtil.isReference(parent.getLocalElement(), localValue))
 			return;
 		build(childNode, localValue, remoteValue);
 	}

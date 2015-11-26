@@ -15,25 +15,31 @@ class NodeSorter implements Comparator<JsonNode> {
 
 	@Override
 	public int compare(JsonNode n1, JsonNode n2) {
-		int i1 = toInt(n1.getElement());
-		int i2 = toInt(n2.getElement());
+		int i1 = toInt(n1);
+		int i2 = toInt(n2);
 		if (i1 == i2)
 			return n1.key.compareTo(n2.key);
 		return i1 - i2;
 	}
 
-	private int toInt(JsonElement element) {
+	private int toInt(JsonNode node) {
+		JsonElement element = node.getElement();
 		if (element == null)
 			return 0;
 		if (element.isJsonNull())
 			return 1;
 		if (element.isJsonPrimitive())
 			return 1;
-		if (element.isJsonObject())
-			if (JsonUtil.isReference(element.getAsJsonObject()))
+		if (element.isJsonObject()) {
+			JsonNode parentNode = node.parent;
+			if (parentNode.getElement().isJsonArray())
+				parentNode = parentNode.parent;
+			JsonElement parent = parentNode.getElement();
+			if (JsonUtil.isReference(parent, element))
 				return 1;
 			else
 				return 2;
+		}
 		return 3;
 	}
 }
