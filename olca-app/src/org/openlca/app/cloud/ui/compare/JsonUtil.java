@@ -7,6 +7,8 @@ import java.util.Set;
 import java.util.Stack;
 
 import org.openlca.core.model.Exchange;
+import org.openlca.core.model.ImpactCategory;
+import org.openlca.core.model.NwSet;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
 
@@ -135,6 +137,10 @@ public class JsonUtil {
 			return false;
 		if (isType(object, Unit.class))
 			if (isType(parent, UnitGroup.class))
+				return false;
+		if (isType(object, ImpactCategory.class))
+			return false;
+		if (isType(object, NwSet.class))
 			return false;
 		return true;
 	}
