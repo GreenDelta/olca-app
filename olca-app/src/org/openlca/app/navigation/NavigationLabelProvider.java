@@ -47,7 +47,7 @@ public class NavigationLabelProvider extends ColumnLabelProvider implements
 			return null;
 		INavigationElement<?> elem = (INavigationElement<?>) obj;
 		Image withOverlay = null;
-		if (!indicateRepositoryState)
+		if (indicateRepositoryState)
 			withOverlay = RepositoryLabel.getWithOverlay(elem);
 		if (withOverlay != null)
 			return withOverlay;
