@@ -271,6 +271,10 @@ public class JsonUtil {
 	}
 
 	private static boolean equal(String[] a1, String[] a2) {
+		if (a1 == null && a2 == null)
+			return true;
+		if (a1 == null || a2 == null)
+			return false;
 		if (a1.length != a2.length)
 			return false;
 		for (int i = 0; i < a1.length; i++)
