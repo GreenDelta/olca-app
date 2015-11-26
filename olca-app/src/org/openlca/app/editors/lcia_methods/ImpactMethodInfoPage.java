@@ -28,6 +28,8 @@ import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ImpactMethod;
+import org.openlca.core.model.NwFactor;
+import org.openlca.core.model.NwSet;
 import org.openlca.util.Strings;
 
 class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
@@ -48,8 +50,7 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
 		ScrolledForm form = UI.formHeader(managedForm,
-				Messages.ImpactAssessmentMethod
-						+ ": " + getModel().getName());
+				Messages.ImpactAssessmentMethod + ": " + getModel().getName());
 		if (FeatureFlag.SHOW_REFRESH_BUTTONS.isEnabled())
 			Editors.addRefresh(form, editor);
 		toolkit = managedForm.getToolkit();
@@ -77,21 +78,20 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 
 	private void bindModifySupport() {
 		ModifySupport<ImpactCategory> support = new ModifySupport<>(viewer);
-		support.bind(NAME, ImpactCategory::getName,
-				(category, text) -> {
-					category.setName(text);
-					fireCategoryChange();
-				});
-		support.bind(DESCRIPTION, ImpactCategory::getDescription,
-				(category, text) -> {
-					category.setDescription(text);
-					fireCategoryChange();
-				});
-		support.bind(REFERENCE_UNIT, ImpactCategory::getReferenceUnit,
-				(category, text) -> {
-					category.setReferenceUnit(text);
-					fireCategoryChange();
-				});
+		support.bind(NAME, ImpactCategory::getName, (category, text) -> {
+			category.setName(text);
+			fireCategoryChange();
+		});
+		support.bind(DESCRIPTION, ImpactCategory::getDescription, (category,
+				text) -> {
+			category.setDescription(text);
+			fireCategoryChange();
+		});
+		support.bind(REFERENCE_UNIT, ImpactCategory::getReferenceUnit, (
+				category, text) -> {
+			category.setReferenceUnit(text);
+			fireCategoryChange();
+		});
 	}
 
 	private List<ImpactCategory> getCategories(boolean sorted) {
@@ -134,6 +134,11 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 		List<ImpactCategory> categories = Viewers.getAllSelected(viewer);
 		for (ImpactCategory category : categories) {
 			method.getImpactCategories().remove(category);
+			for (NwSet set : method.getNwSets()) {
+				NwFactor factor = set.getFactor(category);
+				if (factor != null)
+					set.getFactors().remove(factor);
+			}
 		}
 		viewer.setInput(method.getImpactCategories());
 		fireCategoryChange();
