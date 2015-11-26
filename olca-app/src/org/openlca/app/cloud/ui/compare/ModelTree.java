@@ -180,6 +180,11 @@ class ModelTree extends AbstractViewer<JsonNode, TreeViewer> {
 			if (!(obj instanceof JsonNode))
 				return null;
 			JsonNode node = (JsonNode) obj;
+			String text = getText(node, local);
+			return adjustMultiline(node, text, local);
+		}
+
+		private String getText(JsonNode node, boolean local) {
 			JsonElement element = local ? node.getLocalElement() : node
 					.getRemoteElement();
 			if (element == null)
@@ -190,12 +195,12 @@ class ModelTree extends AbstractViewer<JsonNode, TreeViewer> {
 				else if (isEmptyElement(node.parent))
 					return null;
 				else
-					return node.key + ": " + getValue(node, null);
+					return node.key + ": " + getValue(node, null, local);
 			if (element.isJsonNull())
-				return node.key + ": " + getValue(node, null);
+				return node.key + ": " + getValue(node, null, local);
 			if (element.isJsonArray())
 				if (element.getAsJsonArray().size() == 0)
-					return node.key + ": " + getValue(node, null);
+					return node.key + ": " + getValue(node, null, local);
 				else
 					return node.key;
 			if (element.isJsonObject()) {
@@ -204,13 +209,15 @@ class ModelTree extends AbstractViewer<JsonNode, TreeViewer> {
 						: node.parent.getRemoteElement();
 				if (!JsonUtil.isReference(parent, object))
 					return node.key;
-				return node.key + ": "
-						+ getValue(node, object.get("name").getAsString());
+				String value = getValue(node, object.get("name").getAsString(),
+						local);
+				return node.key + ": " + value;
 			}
-			return node.key + ": " + getValue(node, element.getAsString());
+			String value = getValue(node, element.getAsString(), local);
+			return node.key + ": " + value;
 		}
 
-		private String getValue(JsonNode node, String value) {
+		private String getValue(JsonNode node, String value, boolean local) {
 			JsonElement parent = null;
 			if (node.parent != null)
 				parent = local ? node.parent.getLocalElement() : node.parent
@@ -222,6 +229,27 @@ class ModelTree extends AbstractViewer<JsonNode, TreeViewer> {
 			if (value != null)
 				return value;
 			return "null";
+		}
+
+		private String adjustMultiline(JsonNode node, String value,
+				boolean local) {
+			String otherValue = getText(node, !local);
+			int count1 = countLines(value);
+			int count2 = countLines(otherValue);
+			if (count2 > count1)
+				for (int i = 1; i <= (count2 - count1); i++)
+					value += "\n";
+			return value;
+		}
+
+		private int countLines(String value) {
+			if (value == null)
+				return 0;
+			int index = -1;
+			int count = 0;
+			while ((index = value.indexOf("\n", index + 1)) != -1)
+				count++;
+			return count;
 		}
 
 		private boolean isEmptyArrayElement(JsonNode node) {

@@ -105,7 +105,7 @@ class DiffEditor extends Composite {
 		Composite container = new Composite(this, SWT.BORDER);
 		GridLayout layout = UI.gridLayout(container, 2, 0, 0);
 		layout.makeColumnsEqualWidth = true;
-		UI.gridData(container, true, true);
+		UI.gridData(container, true, true).widthHint = 1;
 		addChildrenToList(root);
 		localTree = createTreePart(container, "#Local model", root, true);
 		remoteTree = createTreePart(container, "#Remote model", root, false);
