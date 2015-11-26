@@ -12,6 +12,7 @@ import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterScope;
 import org.openlca.core.model.ProcessType;
+import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.RiskLevel;
 import org.openlca.core.model.SocialAspect;
 import org.openlca.core.model.Uncertainty;
@@ -35,6 +36,7 @@ class EnumUtil {
 		put(Process.class, "processTyp", ProcessType.class);
 		put(Process.class, "defaultAllocationMethod", AllocationMethod.class);
 		put(AllocationFactor.class, "allocationType", AllocationMethod.class);
+		put(ProjectVariant.class, "allocationMethod", AllocationMethod.class);
 	}
 
 	private static void put(Class<?> clazz, String property,
