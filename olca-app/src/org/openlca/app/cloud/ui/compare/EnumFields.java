@@ -5,10 +5,12 @@ import java.util.Map;
 
 import org.openlca.core.model.AllocationFactor;
 import org.openlca.core.model.AllocationMethod;
+import org.openlca.core.model.Category;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyType;
 import org.openlca.core.model.FlowType;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterScope;
 import org.openlca.core.model.ProcessType;
@@ -37,6 +39,7 @@ class EnumFields {
 		put(Process.class, "defaultAllocationMethod", AllocationMethod.class);
 		put(AllocationFactor.class, "allocationType", AllocationMethod.class);
 		put(ProjectVariant.class, "allocationMethod", AllocationMethod.class);
+		put(Category.class, "modelType", ModelType.class);
 	}
 
 	private static void put(Class<?> clazz, String property,
