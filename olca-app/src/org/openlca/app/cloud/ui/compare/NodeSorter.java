@@ -18,8 +18,17 @@ class NodeSorter implements Comparator<JsonNode> {
 		int i1 = toInt(n1);
 		int i2 = toInt(n2);
 		if (i1 == i2)
-			return n1.key.compareTo(n2.key);
+			return compare(n1.key, n2.key);
 		return i1 - i2;
+	}
+
+	private int compare(String key1, String key2) {
+		try {
+			return Integer.compare(Integer.parseInt(key1),
+					Integer.parseInt(key2));
+		} catch (NumberFormatException e) {
+			return key1.compareTo(key2);
+		}
 	}
 
 	private int toInt(JsonNode node) {
