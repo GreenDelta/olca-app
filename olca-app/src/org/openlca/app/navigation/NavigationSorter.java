@@ -22,6 +22,10 @@ public class NavigationSorter extends ViewerSorter {
 			return compare((ModelTypeElement) e1, (ModelTypeElement) e2);
 		String name1 = getLabel(viewer, e1);
 		String name2 = getLabel(viewer, e2);
+		if (e1 instanceof DatabaseElement && name1.contains(" "))
+			name1 = name1.substring(0, name1.indexOf(" "));
+		if (e2 instanceof DatabaseElement && name2.contains(" "))
+			name2 = name2.substring(0, name2.indexOf(" "));
 		return getComparator().compare(name1, name2);
 	}
 
