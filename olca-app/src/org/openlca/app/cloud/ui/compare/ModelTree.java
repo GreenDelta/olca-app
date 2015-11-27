@@ -1,5 +1,7 @@
 package org.openlca.app.cloud.ui.compare;
 
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.eclipse.jface.viewers.IBaseLabelProvider;
@@ -24,6 +26,7 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.AbstractViewer;
+import org.openlca.jsonld.Dates;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -175,6 +178,8 @@ class ModelTree extends AbstractViewer<JsonNode, TreeViewer> {
 	private class LabelProvider extends org.eclipse.jface.viewers.LabelProvider
 			implements IColorProvider {
 
+		private DateFormat dateFormatter = DateFormat.getDateTimeInstance();
+
 		@Override
 		public String getText(Object obj) {
 			if (!(obj instanceof JsonNode))
@@ -185,46 +190,75 @@ class ModelTree extends AbstractViewer<JsonNode, TreeViewer> {
 		}
 
 		private String getText(JsonNode node, boolean local) {
-			JsonElement element = local ? node.getLocalElement() : node
-					.getRemoteElement();
-			if (element == null)
-				if (isEmptyArrayElement(node))
-					return null;
-				else if (isEmptyArrayElement(node.parent))
-					return null;
-				else if (isEmptyElement(node.parent))
-					return null;
-				else
-					return node.key + ": " + getValue(node, null, local);
-			if (element.isJsonNull())
-				return node.key + ": " + getValue(node, null, local);
+			JsonElement element = node.getElement(local);
+			if (element == null || element.isJsonNull())
+				return getNullText(node, local);
 			if (element.isJsonArray())
-				if (element.getAsJsonArray().size() == 0)
-					return node.key + ": " + getValue(node, null, local);
-				else
-					return node.key;
-			if (element.isJsonObject()) {
-				JsonObject object = element.getAsJsonObject();
-				JsonElement parent = local ? node.parent.getLocalElement()
-						: node.parent.getRemoteElement();
-				if (!JsonUtil.isReference(parent, object))
-					return node.key;
-				String value = getValue(node, object.get("name").getAsString(),
-						local);
-				return node.key + ": " + value;
-			}
+				return getArrayText(node, local);
+			if (element.isJsonObject())
+				return getObjectText(node, local);
 			String value = getValue(node, element.getAsString(), local);
 			return node.key + ": " + value;
+		}
+
+		private String getNullText(JsonNode node, boolean local) {
+			if (isEmptyArrayElement(node))
+				return null;
+			else if (isEmptyArrayElement(node.parent))
+				return null;
+			else if (isEmptyElement(node.parent))
+				return null;
+			return node.key + ": " + getNullValue(node, local);
+		}
+
+		private boolean isEmptyArrayElement(JsonNode node) {
+			JsonElement element = node.getElement(local);
+			if (element != null)
+				return false;
+			if (node.parent != null && node.parent.getElement() != null)
+				return node.parent.getElement().isJsonArray();
+			return false;
+		}
+
+		private boolean isEmptyElement(JsonNode node) {
+			JsonElement element = node.getElement(local);
+			if (element != null)
+				return false;
+			return true;
+		}
+
+		private String getArrayText(JsonNode node, boolean local) {
+			JsonElement element = node.getElement(local);
+			if (element.getAsJsonArray().size() == 0)
+				return node.key + ": " + getNullValue(node, local);
+			return node.key;
+		}
+
+		private String getObjectText(JsonNode node, boolean local) {
+			JsonObject element = node.getElement(local).getAsJsonObject();
+			JsonElement parent = node.parent.getElement(local);
+			if (!JsonUtil.isReference(parent, element))
+				return node.key;
+			String value = getValue(node, element.get("name").getAsString(),
+					local);
+			return node.key + ": " + value;
+		}
+
+		private String getNullValue(JsonNode node, boolean local) {
+			return getValue(node, null, local);
 		}
 
 		private String getValue(JsonNode node, String value, boolean local) {
 			JsonElement parent = null;
 			if (node.parent != null)
-				parent = local ? node.parent.getLocalElement() : node.parent
-						.getRemoteElement();
-			if (EnumUtil.isEnum(parent, node.key)) {
-				Object enumValue = EnumUtil.getEnum(parent, node.key, value);
+				parent = node.parent.getElement(local);
+			if (EnumFields.isEnum(parent, node.key)) {
+				Object enumValue = EnumFields.getEnum(parent, node.key, value);
 				value = Labels.getEnumText(enumValue);
+			} else if (DateFields.isTimestamp(parent, node.key)) {
+				Date date = Dates.fromString(value);
+				if (date != null)
+					value = dateFormatter.format(date);
 			}
 			if (value != null)
 				return value;
@@ -250,24 +284,6 @@ class ModelTree extends AbstractViewer<JsonNode, TreeViewer> {
 			while ((index = value.indexOf("\n", index + 1)) != -1)
 				count++;
 			return count;
-		}
-
-		private boolean isEmptyArrayElement(JsonNode node) {
-			JsonElement element = local ? node.getLocalElement() : node
-					.getRemoteElement();
-			if (element != null)
-				return false;
-			if (node.parent != null && node.parent.getElement() != null)
-				return node.parent.getElement().isJsonArray();
-			return false;
-		}
-
-		private boolean isEmptyElement(JsonNode node) {
-			JsonElement element = local ? node.getLocalElement() : node
-					.getRemoteElement();
-			if (element != null)
-				return false;
-			return true;
 		}
 
 		@Override

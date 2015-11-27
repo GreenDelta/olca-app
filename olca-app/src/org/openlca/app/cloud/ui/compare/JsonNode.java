@@ -37,6 +37,12 @@ public class JsonNode {
 		return remoteElement;
 	}
 
+	JsonElement getElement(boolean local) {
+		if (local)
+			return localElement;
+		return remoteElement;
+	}
+
 	public JsonElement getLocalElement() {
 		return localElement;
 	}

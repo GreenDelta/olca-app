@@ -21,7 +21,7 @@ import org.openlca.jsonld.Enums;
 
 import com.google.gson.JsonElement;
 
-class EnumUtil {
+class EnumFields {
 
 	private static Map<String, Map<String, Class<? extends Enum<?>>>> enums = new HashMap<>();
 

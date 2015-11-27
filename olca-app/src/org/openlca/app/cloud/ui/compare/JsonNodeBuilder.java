@@ -84,8 +84,7 @@ public class JsonNodeBuilder {
 			JsonElement remote = forLocal ? otherValue : value;
 			String key = Integer.toString(counter++);
 			JsonNode childNode = JsonNode.create(node, key, local, remote);
-			JsonElement parent = forLocal ? node.parent.getLocalElement()
-					: node.parent.getRemoteElement();
+			JsonElement parent = node.parent.getElement(forLocal);
 			if (!JsonUtil.isReference(parent, value))
 				build(childNode, local, remote);
 			node.children.add(childNode);
