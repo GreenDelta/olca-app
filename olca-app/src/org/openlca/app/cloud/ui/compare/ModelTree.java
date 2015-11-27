@@ -261,7 +261,12 @@ class ModelTree extends AbstractViewer<JsonNode, TreeViewer> {
 					value = dateFormatter.format(date);
 			}
 			if (value != null)
-				return value;
+				if (value.equalsIgnoreCase("true"))
+					return "Yes";
+				else if (value.equalsIgnoreCase("false"))
+					return "No";
+				else
+					return value;
 			return "null";
 		}
 
