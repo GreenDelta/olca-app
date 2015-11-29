@@ -1,19 +1,30 @@
-package org.openlca.app.cloud.ui.compare;
+package org.openlca.app.cloud.ui.compare.json;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Set;
+
+import org.openlca.app.cloud.ui.compare.json.JsonUtil.ElementFinder;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-public class JsonNodeBuilder {
+public abstract class JsonNodeBuilder implements Comparator<JsonNode> {
+
+	private ElementFinder elementFinder;
+
+	public JsonNodeBuilder(ElementFinder elementFinder) {
+		this.elementFinder = elementFinder;
+	}
 
 	public JsonNode build(JsonElement localJson, JsonElement remoteJson) {
-		JsonNode node = JsonNode.create(null, null, localJson, remoteJson);
+		JsonNode node = JsonNode.create(null, null, localJson, remoteJson,
+				elementFinder);
 		build(node, localJson, remoteJson);
-		new NodeSorter().sort(node);
+		sort(node);
 		return node;
 	}
 
@@ -75,35 +86,47 @@ public class JsonNodeBuilder {
 			if (!forLocal && added.contains(count++))
 				continue;
 			JsonElement otherValue = null;
-			int index = JsonUtil.find(node.key, value, otherArray);
+			int index = elementFinder.find(node.property, value, otherArray);
 			if (forLocal && index != -1) {
 				otherValue = otherArray.get(index);
 				added.add(index);
 			}
 			JsonElement local = forLocal ? value : otherValue;
 			JsonElement remote = forLocal ? otherValue : value;
-			String key = Integer.toString(counter++);
-			JsonNode childNode = JsonNode.create(node, key, local, remote);
+			String property = Integer.toString(counter++);
+			JsonNode childNode = JsonNode.create(node, property, local, remote,
+					elementFinder);
 			JsonElement parent = node.parent.getElement(forLocal);
-			if (!JsonUtil.isReference(parent, value))
+			if (!skipChildren(parent, value))
 				build(childNode, local, remote);
 			node.children.add(childNode);
 		}
 	}
 
-	private void build(JsonNode parent, String key, JsonElement localValue,
+	private void build(JsonNode parent, String property, JsonElement localValue,
 			JsonElement remoteValue) {
-		if (!JsonUtil.displayElement(key))
+		if (skip(parent.getElement(), property))
 			return;
-		JsonNode childNode = JsonNode.create(parent, key, localValue,
-				remoteValue);
+		JsonNode childNode = JsonNode.create(parent, property, localValue,
+				remoteValue, elementFinder);
 		parent.children.add(childNode);
 		if (localValue == null) {
-			if (JsonUtil.isReference(parent.getRemoteElement(), remoteValue))
+			if (skipChildren(parent.getRemoteElement(), remoteValue))
 				return;
-		} else if (JsonUtil.isReference(parent.getLocalElement(), localValue))
+		} else if (skipChildren(parent.getLocalElement(), localValue))
 			return;
 		build(childNode, localValue, remoteValue);
 	}
+
+	private void sort(JsonNode node) {
+		Collections.sort(node.children, this);
+		for (JsonNode child : node.children)
+			sort(child);
+	}
+
+	protected abstract boolean skip(JsonElement parent, String property);
+
+	protected abstract boolean skipChildren(JsonElement parent,
+			JsonElement element);
 
 }

@@ -3,7 +3,7 @@ package org.openlca.app.cloud;
 import java.util.List;
 
 import org.openlca.app.cloud.ui.DiffResult;
-import org.openlca.app.cloud.ui.compare.JsonUtil;
+import org.openlca.app.cloud.ui.compare.json.JsonUtil;
 import org.openlca.app.db.Database;
 import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.model.data.Dataset;
@@ -55,7 +55,8 @@ public class JsonLoader {
 		try {
 			JsonObject json = client.getDataset(dataset.getType(),
 					dataset.getRefId());
-			if (JsonUtil.isType(json, ImpactMethod.class)) {
+			String type = JsonUtil.getString(json, "@type");
+			if (ImpactMethod.class.getSimpleName().equals(type)) {
 				replaceReferences(json, "impactCategories",
 						ModelType.IMPACT_CATEGORY);
 				replaceReferences(json, "nwSets", ModelType.NW_SET);

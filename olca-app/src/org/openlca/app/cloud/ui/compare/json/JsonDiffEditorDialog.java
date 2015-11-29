@@ -1,4 +1,4 @@
-package org.openlca.app.cloud.ui.compare;
+package org.openlca.app.cloud.ui.compare.json;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.graphics.Point;
@@ -9,27 +9,32 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.util.UI;
 
-public class DiffEditorDialog extends FormDialog {
+public class JsonDiffEditorDialog extends FormDialog {
 
 	public final static int KEEP_LOCAL_MODEL = 2;
 	public final static int FETCH_REMOTE_MODEL = 3;
-	private DiffEditor editor;
+	private JsonDiffEditor editor;
 	private JsonNode root;
 	private boolean editMode;
+	private IJsonNodeLabelProvider labelProvider;
 
-	public static DiffEditorDialog forEditing(JsonNode root) {
-		DiffEditorDialog dialog = new DiffEditorDialog(root);
+	public static JsonDiffEditorDialog forEditing(JsonNode root,
+			IJsonNodeLabelProvider labelProvider) {
+		JsonDiffEditorDialog dialog = new JsonDiffEditorDialog(root);
+		dialog.labelProvider = labelProvider;
 		dialog.editMode = true;
 		return dialog;
 	}
 
-	public static DiffEditorDialog forViewing(JsonNode root) {
-		DiffEditorDialog dialog = new DiffEditorDialog(root);
+	public static JsonDiffEditorDialog forViewing(JsonNode root,
+			IJsonNodeLabelProvider labelProvider) {
+		JsonDiffEditorDialog dialog = new JsonDiffEditorDialog(root);
+		dialog.labelProvider = labelProvider;
 		dialog.editMode = false;
 		return dialog;
 	}
 
-	private DiffEditorDialog(JsonNode root) {
+	private JsonDiffEditorDialog(JsonNode root) {
 		super(UI.shell());
 		this.root = root;
 		setBlockOnOpen(true);
@@ -49,9 +54,10 @@ public class DiffEditorDialog extends FormDialog {
 		toolkit.paintBordersFor(body);
 		UI.gridData(body, true, true);
 		if (editMode)
-			editor = DiffEditor.forEditing(body, toolkit, root);
+			editor = JsonDiffEditor.forEditing(body, toolkit);
 		else
-			editor = DiffEditor.forViewing(body, toolkit, root);
+			editor = JsonDiffEditor.forViewing(body, toolkit);
+		editor.initialize(root, labelProvider);
 		UI.gridData(editor, true, true);
 		form.reflow(true);
 	}

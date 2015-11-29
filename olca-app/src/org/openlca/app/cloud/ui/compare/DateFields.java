@@ -11,7 +11,7 @@ import org.openlca.core.model.Project;
 
 import com.google.gson.JsonElement;
 
-public class DateFields {
+class DateFields {
 
 	private static Map<String, Set<String>> timestampFields = new HashMap<>();
 
@@ -33,7 +33,7 @@ public class DateFields {
 	}
 
 	static boolean isTimestamp(JsonElement element, String property) {
-		String type = JsonUtil.getType(element);
+		String type = ModelUtil.getType(element);
 		if (type == null)
 			return false;
 		if (!timestampFields.containsKey(type))

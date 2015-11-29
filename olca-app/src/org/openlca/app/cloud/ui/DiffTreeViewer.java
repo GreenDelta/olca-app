@@ -19,10 +19,11 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Tree;
 import org.openlca.app.cloud.ui.DiffResult.DiffResponse;
-import org.openlca.app.cloud.ui.compare.DiffEditorDialog;
-import org.openlca.app.cloud.ui.compare.JsonNode;
-import org.openlca.app.cloud.ui.compare.JsonNodeBuilder;
-import org.openlca.app.cloud.ui.compare.JsonUtil;
+import org.openlca.app.cloud.ui.compare.ModelLabelProvider;
+import org.openlca.app.cloud.ui.compare.ModelNodeBuilder;
+import org.openlca.app.cloud.ui.compare.json.JsonDiffEditorDialog;
+import org.openlca.app.cloud.ui.compare.json.JsonNode;
+import org.openlca.app.cloud.ui.compare.json.JsonUtil;
 import org.openlca.app.navigation.ModelTypeComparison;
 import org.openlca.app.rcp.ImageManager;
 import org.openlca.app.rcp.ImageType;
@@ -91,34 +92,34 @@ class DiffTreeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 	private void openDiffEditor(DiffNode selected) {
 		DiffData data = new DiffData();
 		data.result = (DiffResult) selected.content;
-		DiffEditorDialog dialog = prepareDialog(data);
+		JsonDiffEditorDialog dialog = prepareDialog(data);
 		int code = dialog.open();
 		if (code == IDialogConstants.CANCEL_ID)
 			return;
 		if (!data.result.isConflict())
 			return;
 		boolean localDiffersFromRemote = dialog.localDiffersFromRemote();
-		boolean keepLocalModel = code == DiffEditorDialog.KEEP_LOCAL_MODEL;
+		boolean keepLocalModel = code == JsonDiffEditorDialog.KEEP_LOCAL_MODEL;
 		updateResult(data, localDiffersFromRemote, keepLocalModel);
 		getViewer().refresh(selected);
 		if (onMerge != null)
 			onMerge.run();
 	}
 
-	private DiffEditorDialog prepareDialog(DiffData data) {
+	private JsonDiffEditorDialog prepareDialog(DiffData data) {
 		data.node = nodes.get(toKey(data.result.getDataset()));
 		if (data.node == null) {
 			data.local = getLocalJson.apply(data.result);
 			data.remote = getRemoteJson.apply(data.result);
-			data.node = new JsonNodeBuilder().build(data.local, data.remote);
+			data.node = new ModelNodeBuilder().build(data.local, data.remote);
 			nodes.put(toKey(data.result.getDataset()), data.node);
 		} else {
 			data.local = JsonUtil.toJsonObject(data.node.getLocalElement());
 			data.remote = JsonUtil.toJsonObject(data.node.getRemoteElement());
 		}
 		if (!data.result.isConflict())
-			return DiffEditorDialog.forViewing(data.node);
-		return DiffEditorDialog.forEditing(data.node);
+			return JsonDiffEditorDialog.forViewing(data.node, new ModelLabelProvider());
+		return JsonDiffEditorDialog.forEditing(data.node, new ModelLabelProvider());
 	}
 
 	private void updateResult(DiffData data, boolean localDiffersFromRemote,

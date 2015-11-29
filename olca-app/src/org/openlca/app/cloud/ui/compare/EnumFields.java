@@ -50,7 +50,7 @@ class EnumFields {
 	}
 
 	static boolean isEnum(JsonElement element, String property) {
-		String type = JsonUtil.getType(element);
+		String type = ModelUtil.getType(element);
 		if (type == null)
 			return false;
 		if (!enums.containsKey(type))
@@ -60,7 +60,7 @@ class EnumFields {
 
 	static <T extends Enum<T>> T getEnum(JsonElement element, String property,
 			String label) {
-		String type = JsonUtil.getType(element);
+		String type = ModelUtil.getType(element);
 		if (type == null)
 			return null;
 		Class<T> clazz = getEnumType(type, property);

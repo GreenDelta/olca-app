@@ -1,4 +1,4 @@
-package org.openlca.app.cloud.ui.compare;
+package org.openlca.app.cloud.ui.compare.json;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,51 +15,51 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.Info;
 import org.openlca.app.util.UI;
 
-class DiffEditor extends Composite {
+class JsonDiffEditor extends Composite {
 
 	private FormToolkit toolkit;
+	private JsonTree localTree;
+	private JsonTree remoteTree;
 	private JsonNode root;
-	private ModelTree localTree;
-	private ModelTree remoteTree;
 	private List<JsonNode> nodesAsList = new ArrayList<JsonNode>();
 	private boolean editMode;
 
-	static DiffEditor forEditing(Composite parent, JsonNode root) {
-		return forEditing(parent, null, root);
+	static JsonDiffEditor forEditing(Composite parent) {
+		return forEditing(parent, null);
 	}
 
-	static DiffEditor forEditing(Composite parent, FormToolkit toolkit,
-			JsonNode root) {
-		DiffEditor editor = new DiffEditor(parent, toolkit, root);
+	static JsonDiffEditor forEditing(Composite parent, FormToolkit toolkit) {
+		JsonDiffEditor editor = new JsonDiffEditor(parent, toolkit);
 		editor.editMode = true;
-		editor.initialize();
 		return editor;
 	}
 
-	static DiffEditor forViewing(Composite parent, JsonNode root) {
-		return forViewing(parent, null, root);
+	static JsonDiffEditor forViewing(Composite parent) {
+		return forViewing(parent, null);
 	}
 
-	static DiffEditor forViewing(Composite parent, FormToolkit toolkit,
-			JsonNode root) {
-		DiffEditor editor = new DiffEditor(parent, toolkit, root);
+	static JsonDiffEditor forViewing(Composite parent, FormToolkit toolkit) {
+		JsonDiffEditor editor = new JsonDiffEditor(parent, toolkit);
 		editor.editMode = false;
-		editor.initialize();
 		return editor;
 	}
 
-	private DiffEditor(Composite parent, FormToolkit toolkit, JsonNode root) {
+	private JsonDiffEditor(Composite parent, FormToolkit toolkit) {
 		super(parent, SWT.NONE);
 		this.toolkit = toolkit;
-		this.root = root;
 	}
 
-	private void initialize() {
+	public void initialize(JsonNode root, IJsonNodeLabelProvider labelProvider) {
+		this.root = root;
 		UI.gridLayout(this, 1, 0, 0);
 		if (editMode && root.getLocalElement() != null
 				&& root.getRemoteElement() != null)
 			createMenubar();
 		createTreeParts();
+		localTree.setLabelProvider(labelProvider);
+		remoteTree.setLabelProvider(labelProvider);
+		localTree.setInput(new JsonNode[] { root });
+		remoteTree.setInput(new JsonNode[] { root });
 		if (toolkit != null)
 			toolkit.adapt(this);
 	}
@@ -107,22 +107,20 @@ class DiffEditor extends Composite {
 		layout.makeColumnsEqualWidth = true;
 		UI.gridData(container, true, true).widthHint = 1;
 		addChildrenToList(root);
-		localTree = createTreePart(container, "#Local model", root, true);
-		remoteTree = createTreePart(container, "#Remote model", root, false);
+		localTree = createTreePart(container, "#Local model", true);
+		remoteTree = createTreePart(container, "#Remote model", false);
 		localTree.setCounterpart(remoteTree);
 		remoteTree.setCounterpart(localTree);
 		if (toolkit != null)
 			toolkit.adapt(container);
 	}
 
-	private ModelTree createTreePart(Composite container, String label,
-			JsonNode root, boolean local) {
+	private JsonTree createTreePart(Composite container, String label,
+			boolean local) {
 		Composite localComposite = UI.formComposite(container, toolkit);
 		UI.gridLayout(localComposite, 1, 0, 0);
 		UI.gridData(localComposite, true, true);
-		ModelTree tree = new ModelTree(localComposite, local);
-		tree.setInput(new JsonNode[] { root });
-		return tree;
+		return new JsonTree(localComposite, local);
 	}
 
 	private void addChildrenToList(JsonNode node) {

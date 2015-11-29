@@ -1,48 +1,55 @@
-package org.openlca.app.cloud.ui.compare;
+package org.openlca.app.cloud.ui.compare.json;
 
-import java.text.DateFormat;
-import java.util.Date;
 import java.util.List;
 
 import org.eclipse.jface.viewers.IBaseLabelProvider;
-import org.eclipse.jface.viewers.IColorProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.ITreeViewerListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StyledCellLabelProvider;
+import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.jface.viewers.StyledString.Styler;
 import org.eclipse.jface.viewers.TreeExpansionEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Tree;
 import org.openlca.app.util.Colors;
-import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.AbstractViewer;
-import org.openlca.jsonld.Dates;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-
-class ModelTree extends AbstractViewer<JsonNode, TreeViewer> {
+class JsonTree extends AbstractViewer<JsonNode, TreeViewer> {
 
 	private boolean local;
-	private ModelTree counterpart;
+	private JsonTree counterpart;
+	private IJsonNodeLabelProvider labelProvider;
 
-	ModelTree(Composite parent, boolean local) {
+	JsonTree(Composite parent, boolean local) {
 		super(parent);
 		this.local = local;
+		if (local)
+			getViewer().getTree().getVerticalBar().setVisible(false);
 	}
 
-	void setCounterpart(ModelTree counterpart) {
+	void setCounterpart(JsonTree counterpart) {
 		this.counterpart = counterpart;
+	}
+
+	@Override
+	protected IBaseLabelProvider getLabelProvider() {
+		return new LabelProvider();
+	}
+
+	public void setLabelProvider(IJsonNodeLabelProvider labelProvider) {
+		this.labelProvider = labelProvider;
 	}
 
 	@Override
@@ -57,14 +64,7 @@ class ModelTree extends AbstractViewer<JsonNode, TreeViewer> {
 		viewer.addTreeListener(new ExpansionListener());
 		Tree tree = viewer.getTree();
 		UI.gridData(tree, true, true);
-		if (local)
-			tree.getVerticalBar().setVisible(false);
 		return viewer;
-	}
-
-	@Override
-	protected IBaseLabelProvider getLabelProvider() {
-		return new LabelProvider();
 	}
 
 	private void updateOtherScrollBar() {
@@ -175,104 +175,38 @@ class ModelTree extends AbstractViewer<JsonNode, TreeViewer> {
 
 	}
 
-	private class LabelProvider extends org.eclipse.jface.viewers.LabelProvider
-			implements IColorProvider {
+	private class LabelProvider extends StyledCellLabelProvider {
 
-		private DateFormat dateFormatter = DateFormat.getDateTimeInstance();
+		private final PropertyStyle propertyStyle = new PropertyStyle();
+		private final DiffStyle diffStyle = new DiffStyle();
 
 		@Override
-		public String getText(Object obj) {
-			if (!(obj instanceof JsonNode))
-				return null;
-			JsonNode node = (JsonNode) obj;
-			String text = getText(node, local);
-			return adjustMultiline(node, text, local);
+		public void update(ViewerCell cell) {
+			Object element = cell.getElement();
+			if (!(element instanceof JsonNode))
+				return;
+			JsonNode node = (JsonNode) element;
+			StyledString styledString = getStyledText(node);
+			cell.setText(styledString.toString());
+			cell.setStyleRanges(styledString.getStyleRanges());
+			cell.setImage(labelProvider.getImage(node, local));
+			super.update(cell);
 		}
 
-		private String getText(JsonNode node, boolean local) {
-			JsonElement element = node.getElement(local);
-			if (element == null || element.isJsonNull())
-				return getNullText(node, local);
-			if (element.isJsonArray())
-				return getArrayText(node, local);
-			if (element.isJsonObject())
-				return getObjectText(node, local);
-			String value = getValue(node, element.getAsString(), local);
-			return node.key + ": " + value;
+		private StyledString getStyledText(JsonNode node) {
+			String text = labelProvider.getText(node, local);
+			if (text == null)
+				text = " ";
+			text = adjustMultiline(node, text);
+			StyledString styled = new StyledString(text);
+			propertyStyle.applyTo(styled);
+			if (!node.hasEqualValues())
+				diffStyle.applyTo(styled);
+			return styled;
 		}
 
-		private String getNullText(JsonNode node, boolean local) {
-			if (isEmptyArrayElement(node))
-				return null;
-			else if (isEmptyArrayElement(node.parent))
-				return null;
-			else if (isEmptyElement(node.parent))
-				return null;
-			return node.key + ": " + getNullValue(node, local);
-		}
-
-		private boolean isEmptyArrayElement(JsonNode node) {
-			JsonElement element = node.getElement(local);
-			if (element != null)
-				return false;
-			if (node.parent != null && node.parent.getElement() != null)
-				return node.parent.getElement().isJsonArray();
-			return false;
-		}
-
-		private boolean isEmptyElement(JsonNode node) {
-			JsonElement element = node.getElement(local);
-			if (element != null)
-				return false;
-			return true;
-		}
-
-		private String getArrayText(JsonNode node, boolean local) {
-			JsonElement element = node.getElement(local);
-			if (element.getAsJsonArray().size() == 0)
-				return node.key + ": " + getNullValue(node, local);
-			return node.key;
-		}
-
-		private String getObjectText(JsonNode node, boolean local) {
-			JsonObject element = node.getElement(local).getAsJsonObject();
-			JsonElement parent = node.parent.getElement(local);
-			if (!JsonUtil.isReference(parent, element))
-				return node.key;
-			String value = getValue(node, element.get("name").getAsString(),
-					local);
-			return node.key + ": " + value;
-		}
-
-		private String getNullValue(JsonNode node, boolean local) {
-			return getValue(node, null, local);
-		}
-
-		private String getValue(JsonNode node, String value, boolean local) {
-			JsonElement parent = null;
-			if (node.parent != null)
-				parent = node.parent.getElement(local);
-			if (EnumFields.isEnum(parent, node.key)) {
-				Object enumValue = EnumFields.getEnum(parent, node.key, value);
-				value = Labels.getEnumText(enumValue);
-			} else if (DateFields.isTimestamp(parent, node.key)) {
-				Date date = Dates.fromString(value);
-				if (date != null)
-					value = dateFormatter.format(date);
-			}
-			if (value != null)
-				if (value.equalsIgnoreCase("true"))
-					return "Yes";
-				else if (value.equalsIgnoreCase("false"))
-					return "No";
-				else
-					return value;
-			return "null";
-		}
-
-		private String adjustMultiline(JsonNode node, String value,
-				boolean local) {
-			String otherValue = getText(node, !local);
+		private String adjustMultiline(JsonNode node, String value) {
+			String otherValue = labelProvider.getText(node, !local);
 			int count1 = countLines(value);
 			int count2 = countLines(otherValue);
 			if (count2 > count1)
@@ -291,25 +225,53 @@ class ModelTree extends AbstractViewer<JsonNode, TreeViewer> {
 			return count;
 		}
 
-		@Override
-		public Color getForeground(Object object) {
-			return null;
-		}
+	}
+
+	private class PropertyStyle implements Style {
+
+		private Styler styler = new Styler() {
+			@Override
+			public void applyStyles(TextStyle textStyle) {
+				textStyle.foreground = Colors.getLinkBlue();
+			}
+		};
 
 		@Override
-		public Color getBackground(Object object) {
-			if (!(object instanceof JsonNode))
-				return null;
-			JsonNode node = (JsonNode) object;
-			if (node.hasEqualValues())
-				return null;
-			return Colors.getColor(255, 255, 128);
+		public void applyTo(StyledString styled) {
+			String text = styled.getString();
+			int index = text.indexOf(":");
+			if (index == -1)
+				styled.setStyle(0, text.length(), styler);
+			else
+				styled.setStyle(0, index + 1, styler);
 		}
 
+	}
+
+	private class DiffStyle implements Style {
+
+		private Styler styler = new Styler() {
+			@Override
+			public void applyStyles(TextStyle textStyle) {
+				textStyle.background = Colors.getColor(255, 255, 128);
+			}
+		};
+
 		@Override
-		public Image getImage(Object object) {
-			return null;
+		public void applyTo(StyledString styled) {
+			String text = styled.getString();
+			int index = styled.getString().indexOf(":");
+			if (index == -1)
+				styled.setStyle(0, text.length(), styler);
+			else
+				styled.setStyle(index + 2, text.length() - (index + 2), styler);
 		}
+
+	}
+
+	private interface Style {
+
+		void applyTo(StyledString value);
 
 	}
 
