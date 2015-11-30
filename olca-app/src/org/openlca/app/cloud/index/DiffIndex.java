@@ -135,6 +135,10 @@ public class DiffIndex {
 			index.put(parentId, parent);
 			parentId = parent.dataset.getCategoryRefId();
 		}
+		if (add)
+			updateChangedTopLevelElements(dataset, DiffType.CHANGED);
+		else
+			updateChangedTopLevelElements(dataset, DiffType.NO_DIFF);
 	}
 
 	public void commit() {
