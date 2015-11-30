@@ -22,7 +22,7 @@ public abstract class JsonNodeBuilder implements Comparator<JsonNode> {
 
 	public JsonNode build(JsonElement localJson, JsonElement remoteJson) {
 		JsonNode node = JsonNode.create(null, null, localJson, remoteJson,
-				elementFinder);
+				elementFinder, false);
 		build(node, localJson, remoteJson);
 		sort(node);
 		return node;
@@ -94,21 +94,22 @@ public abstract class JsonNodeBuilder implements Comparator<JsonNode> {
 			JsonElement local = forLocal ? value : otherValue;
 			JsonElement remote = forLocal ? otherValue : value;
 			String property = Integer.toString(counter++);
-			JsonNode childNode = JsonNode.create(node, property, local, remote,
-					elementFinder);
 			JsonElement parent = node.parent.getElement(forLocal);
+			JsonNode childNode = JsonNode.create(node, property, local, remote,
+					elementFinder, isReadOnly(parent, property));
 			if (!skipChildren(parent, value))
 				build(childNode, local, remote);
 			node.children.add(childNode);
 		}
 	}
 
-	private void build(JsonNode parent, String property, JsonElement localValue,
-			JsonElement remoteValue) {
+	private void build(JsonNode parent, String property,
+			JsonElement localValue, JsonElement remoteValue) {
 		if (skip(parent.getElement(), property))
 			return;
 		JsonNode childNode = JsonNode.create(parent, property, localValue,
-				remoteValue, elementFinder);
+				remoteValue, elementFinder,
+				isReadOnly(parent.getElement(), property));
 		parent.children.add(childNode);
 		if (localValue == null) {
 			if (skipChildren(parent.getRemoteElement(), remoteValue))
@@ -128,5 +129,7 @@ public abstract class JsonNodeBuilder implements Comparator<JsonNode> {
 
 	protected abstract boolean skipChildren(JsonElement parent,
 			JsonElement element);
+
+	protected abstract boolean isReadOnly(JsonElement parent, String property);
 
 }

@@ -2,9 +2,9 @@ package org.openlca.app.cloud.ui.compare.json;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Stack;
-import java.util.Map.Entry;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -83,7 +83,8 @@ public class JsonUtil {
 			return equal(property, e1.getAsJsonArray(), e2.getAsJsonArray(),
 					finder);
 		if (e1.isJsonObject() && e2.isJsonObject())
-			return equal(e1.getAsJsonObject(), e2.getAsJsonObject(), finder);
+			return equal(property, e1.getAsJsonObject(), e2.getAsJsonObject(),
+					finder);
 		return false;
 	}
 
@@ -105,11 +106,13 @@ public class JsonUtil {
 		return true;
 	}
 
-	private static boolean equal(JsonObject e1, JsonObject e2,
+	private static boolean equal(String property, JsonObject e1, JsonObject e2,
 			ElementFinder finder) {
 		Set<String> checked = new HashSet<>();
 		for (Entry<String, JsonElement> entry : e1.entrySet()) {
 			checked.add(entry.getKey());
+			if (finder.skipOnEqualsCheck(property, e1, entry.getKey()))
+				continue;
 			JsonElement element = entry.getValue();
 			JsonElement other = e2.get(entry.getKey());
 			if (!equal(entry.getKey(), element, other, finder))
@@ -117,6 +120,8 @@ public class JsonUtil {
 		}
 		for (Entry<String, JsonElement> entry : e2.entrySet()) {
 			if (checked.contains(entry.getKey()))
+				continue;
+			if (finder.skipOnEqualsCheck(property, e1, entry.getKey()))
 				continue;
 			JsonElement element = e1.get(entry.getKey());
 			JsonElement other = entry.getValue();
@@ -153,6 +158,34 @@ public class JsonUtil {
 	}
 
 	public static String getString(JsonElement element, String property) {
+		JsonElement value = getValue(element, property);
+		if (value == null)
+			return null;
+		return value.getAsString();
+	}
+
+	public static double getDouble(JsonElement element, String property) {
+		return getDouble(element, property, 0d);
+	}
+
+	public static Double getDouble(JsonElement element, String property,
+			Double defaultValue) {
+		JsonElement value = getValue(element, property);
+		if (!value.isJsonPrimitive())
+			return defaultValue;
+		JsonPrimitive primitive = value.getAsJsonPrimitive();
+		if (primitive.isNumber())
+			return primitive.getAsDouble();
+		if (!primitive.isString())
+			return defaultValue;
+		try {
+			return Double.parseDouble(primitive.getAsString());
+		} catch (NumberFormatException e) {
+			return defaultValue;
+		}
+	}
+
+	private static JsonElement getValue(JsonElement element, String property) {
 		if (element == null)
 			return null;
 		if (!element.isJsonObject())
@@ -161,11 +194,11 @@ public class JsonUtil {
 		if (property.contains(".")) {
 			String next = property.substring(0, property.indexOf('.'));
 			String rest = property.substring(property.indexOf('.') + 1);
-			return getString(object.get(next), rest);
+			return getValue(object.get(next), rest);
 		}
 		if (!object.has(property))
 			return null;
-		return object.get(property).getAsString();
+		return object.get(property);
 	}
 
 	public static JsonArray replace(int index, JsonArray original,
@@ -287,6 +320,8 @@ public class JsonUtil {
 	public static abstract class ElementFinder {
 
 		protected abstract String[] getComparisonFields(String property);
+
+		protected abstract boolean skipOnEqualsCheck(String parentProperty, JsonElement element, String property);
 
 		public int find(String property, JsonElement element, JsonArray array) {
 			return JsonUtil.find(element, array, getComparisonFields(property));

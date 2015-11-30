@@ -1,7 +1,9 @@
 package org.openlca.app.cloud.ui.compare;
 
-import org.openlca.app.cloud.ui.compare.json.JsonUtil;
+import static org.openlca.app.cloud.ui.compare.json.JsonUtil.getString;
+
 import org.openlca.app.cloud.ui.compare.json.JsonUtil.ElementFinder;
+import org.openlca.app.util.UncertaintyLabel;
 import org.openlca.core.model.AllocationFactor;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
@@ -16,10 +18,13 @@ import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
+import org.openlca.core.model.Project;
 import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.SocialAspect;
+import org.openlca.core.model.Uncertainty;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
+import org.openlca.jsonld.input.Uncertainties;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -27,11 +32,11 @@ import com.google.gson.JsonObject;
 class ModelUtil {
 
 	private static ElementFinder elementFinder = new ModelElementFinder();
-	
+
 	static ElementFinder getElementFinder() {
 		return elementFinder;
 	}
-	
+
 	static boolean isReference(JsonElement parent, JsonElement element) {
 		if (element == null)
 			return false;
@@ -57,36 +62,57 @@ class ModelUtil {
 		return true;
 	}
 
-	static String getObjectLabel(JsonElement parent, JsonObject e) {
-		if (e.has("name"))
-			return e.get("name").getAsString();
-		if (isType(parent, Flow.class) && isType(e, FlowPropertyFactor.class))
-			return JsonUtil.getString(e, "flowProperty.name");
-		if (isType(parent, Process.class) && isType(e, Exchange.class))
-			return JsonUtil.getString(e, "flow.name");
-		if (isType(parent, Process.class) && isType(e, SocialAspect.class))
-			return JsonUtil.getString(e, "socialIndicator.name");
-		if (isType(parent, ImpactCategory.class)
-				&& isType(e, ImpactFactor.class))
-			return JsonUtil.getString(e, "flow.name");
-		if (isType(parent, ProductSystem.class) && isType(e, Exchange.class))
-			return JsonUtil.getString(e, "flow.name");
-		if (isType(parent, NwSet.class) && isType(e, NwFactor.class))
-			return JsonUtil.getString(e, "impactCategory.name");
-		if (isType(parent, Process.class) && isType(e, AllocationFactor.class)) {
-			if (e.has("exchange"))
-				return JsonUtil.getString(e, "product.name") + " - "
-						+ JsonUtil.getString(e, "exchange.flow.name");
-			else
-				return JsonUtil.getString(e, "product.name");
-		}
-		if (isType(parent, ProductSystem.class) && isType(e, ProcessLink.class))
-			return JsonUtil.getString(e, "provider.name") + "/"
-					+ JsonUtil.getString(e, "providerOutput.flow.name")
-					+ " -> " + JsonUtil.getString(e, "recipient.name") + "/"
-					+ JsonUtil.getString(e, "recipientInput.flow.name");
-		System.out.println(getType(parent) + " - " + getType(e));
+	static String getObjectLabel(JsonElement parent, JsonObject o) {
+		if (isType(o, ProjectVariant.class))
+			return getProjectVariantLabel(o);
+		if (o.has("name"))
+			return o.get("name").getAsString();
+		if (isType(parent, Flow.class) && isType(o, FlowPropertyFactor.class))
+			return getString(o, "flowProperty.name");
+		if (isType(parent, Process.class) && isType(o, Exchange.class))
+			return getString(o, "flow.name");
+		if (isType(o, SocialAspect.class))
+			return getString(o, "socialIndicator.name");
+		if (isType(o, ImpactFactor.class))
+			return getString(o, "flow.name");
+		if (isType(parent, ProductSystem.class) && isType(o, Exchange.class))
+			return getString(o, "flow.name");
+		if (isType(o, NwFactor.class))
+			return getString(o, "impactCategory.name");
+		if (isType(o, AllocationFactor.class))
+			return getAllocationFactorLabel(o);
+		if (isType(o, ProcessLink.class))
+			return getProcessLinkLabel(o);
+		if (isType(o, Uncertainty.class))
+			return getUncertaintyLabel(o);
 		return null;
+	}
+
+	private static String getProjectVariantLabel(JsonObject o) {
+		String name = getString(o, "name");
+		String productSystem = getString(o, "productSystem.name");
+		return name + " - " + productSystem;
+	}
+
+	private static String getAllocationFactorLabel(JsonObject o) {
+		String product = getString(o, "product.name");
+		if (!o.has("exchange"))
+			return product;
+		String flow = getString(o, "exchange.flow.name");
+		return product + " - " + flow;
+	}
+
+	private static String getProcessLinkLabel(JsonObject o) {
+		String provider = getString(o, "provider.name");
+		String output = getString(o, "providerOutput.flow.name");
+		String recipient = getString(o, "recipient.name");
+		String input = getString(o, "recipientInput.flow.name");
+		return provider + "/" + output + " -> " + recipient + "/" + input;
+	}
+
+	private static String getUncertaintyLabel(JsonObject o) {
+		Uncertainty uncertainty = Uncertainties.read(o);
+		return UncertaintyLabel.get(uncertainty);
 	}
 
 	private static boolean isGlobalParameter(JsonObject parameter) {
@@ -127,6 +153,9 @@ class ModelUtil {
 			if (isType(parent, NwSet.class))
 				return false;
 		}
+		if (property.equals("productSystem"))
+			if (isType(parent, ProjectVariant.class))
+				return false;
 		if (property.equals("flowProperty"))
 			if (isType(parent, FlowPropertyFactor.class))
 				return false;
@@ -151,7 +180,19 @@ class ModelUtil {
 		if (property.equals("exchange"))
 			if (isType(parent, AllocationFactor.class))
 				return false;
+		if (property.equals("lastModificationDate"))
+			if (isType(parent, Project.class))
+				return false;
+		if (isType(parent, Uncertainty.class))
+			if (!property.contains("Formula"))
+				return false;
 		return true;
+	}
+
+	static boolean isReadOnly(JsonElement parent, String property) {
+		if (isType(parent, Uncertainty.class))
+			return true;
+		return false;
 	}
 
 	static String getType(JsonElement element) {
@@ -194,6 +235,21 @@ class ModelUtil {
 			if (propery.equals("parameterRedefs"))
 				return new String[] { "name", "context.@id" };
 			return new String[] { "@id" };
+		}
+
+		@Override
+		protected boolean skipOnEqualsCheck(String parentProperty,
+				JsonElement parent, String property) {
+			if ("@id".equals(property))
+				if ("referenceExchange".equals(parentProperty))
+					return true;
+				else if ("exchange".equals(parentProperty))
+					return true;
+				else if ("providerOutput".equals(parentProperty))
+					return true;
+				else if ("recipientInput".equals(parentProperty))
+					return true;
+			return false;
 		}
 	}
 

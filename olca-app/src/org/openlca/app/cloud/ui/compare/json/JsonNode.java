@@ -18,22 +18,26 @@ public class JsonNode {
 	private JsonElement remoteElement;
 	private JsonElement originalElement;
 	private ElementFinder elementFinder;
+	boolean readOnly;
 
 	static JsonNode create(JsonNode parent, String property, JsonElement local,
-			JsonElement remote, ElementFinder elementFinder) {
+			JsonElement remote, ElementFinder elementFinder, boolean readOnly) {
 		JsonElement original = local != null ? JsonUtil.deepCopy(local) : null;
-		return new JsonNode(parent, property, local, remote, original, elementFinder);
+		return new JsonNode(parent, property, local, remote, original,
+				elementFinder, readOnly);
 	}
 
-	private JsonNode(JsonNode parent, String property, JsonElement localElement,
-			JsonElement remoteElement, JsonElement originalElement,
-			ElementFinder elementFinder) {
+	private JsonNode(JsonNode parent, String property,
+			JsonElement localElement, JsonElement remoteElement,
+			JsonElement originalElement, ElementFinder elementFinder,
+			boolean readOnly) {
 		this.parent = parent;
 		this.property = property;
 		this.localElement = localElement;
 		this.remoteElement = remoteElement;
 		this.originalElement = originalElement;
 		this.elementFinder = elementFinder;
+		this.readOnly = readOnly;
 	}
 
 	public JsonElement getElement() {
@@ -57,7 +61,8 @@ public class JsonNode {
 	}
 
 	boolean hasEqualValues() {
-		return JsonUtil.equal(property, localElement, remoteElement, elementFinder);
+		return JsonUtil.equal(property, localElement, remoteElement,
+				elementFinder);
 	}
 
 	void reset() {
@@ -118,7 +123,8 @@ public class JsonNode {
 			JsonElement element = null;
 			if (localElement != null)
 				if (localElement.isJsonObject())
-					element = localElement.getAsJsonObject().get(child.property);
+					element = localElement.getAsJsonObject()
+							.get(child.property);
 				else if (localElement.isJsonArray()) {
 					JsonElement toFind = null;
 					if (isReset)

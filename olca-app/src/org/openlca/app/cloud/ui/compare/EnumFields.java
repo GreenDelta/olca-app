@@ -3,6 +3,7 @@ package org.openlca.app.cloud.ui.compare;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.openlca.app.cloud.ui.compare.json.JsonUtil;
 import org.openlca.core.model.AllocationFactor;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.Category;
@@ -56,6 +57,13 @@ class EnumFields {
 		if (!enums.containsKey(type))
 			return false;
 		return enums.get(type).containsKey(property);
+	}
+
+	static <T extends Enum<T>> T getEnum(JsonElement element, String property) {
+		if (!element.isJsonObject())
+			return null;
+		String value = JsonUtil.getString(element, property);
+		return getEnum(element, property, value);
 	}
 
 	static <T extends Enum<T>> T getEnum(JsonElement element, String property,

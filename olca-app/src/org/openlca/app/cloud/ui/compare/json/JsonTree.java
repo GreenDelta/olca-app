@@ -3,6 +3,7 @@ package org.openlca.app.cloud.ui.compare.json;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -19,8 +20,10 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Tree;
 import org.openlca.app.cloud.ui.compare.json.DiffMatchPatch.Diff;
@@ -185,6 +188,7 @@ class JsonTree extends AbstractViewer<JsonNode, TreeViewer> {
 
 		private final PropertyStyle propertyStyle = new PropertyStyle();
 		private final DiffStyle diffStyle = new DiffStyle();
+		private final ReadOnlyStyle readOnlyStyle = new ReadOnlyStyle();
 
 		@Override
 		public void update(ViewerCell cell) {
@@ -205,11 +209,13 @@ class JsonTree extends AbstractViewer<JsonNode, TreeViewer> {
 			text = adjustMultiline(node, text, otherText);
 			StyledString styled = new StyledString(text);
 			propertyStyle.applyTo(styled);
+			if (node.readOnly)
+				readOnlyStyle.applyTo(styled);
 			if (!node.hasEqualValues()) {
 				boolean highlightChanges = false;
 				if (node.getElement().isJsonPrimitive())
-					highlightChanges = JsonUtil.toJsonPrimitive(
-							node.getElement()).isString();
+					if (JsonUtil.toJsonPrimitive(node.getElement()).isString())
+						highlightChanges = true;
 				diffStyle.applyTo(styled, otherText, local, highlightChanges);
 			}
 			return styled;
@@ -237,6 +243,13 @@ class JsonTree extends AbstractViewer<JsonNode, TreeViewer> {
 			while ((index = value.indexOf("\n", index + 1)) != -1)
 				count++;
 			return count;
+		}
+
+		@Override
+		public void dispose() {
+			if (readOnlyStyle.font != null)
+				readOnlyStyle.font.dispose();
+			super.dispose();
 		}
 
 	}
@@ -304,6 +317,34 @@ class JsonTree extends AbstractViewer<JsonNode, TreeViewer> {
 				} else if (diff.operation == Operation.EQUAL)
 					index += diff.text.length();
 			}
+		}
+
+	}
+
+	private class ReadOnlyStyle {
+
+		private Font font;
+		private Styler styler = new Styler() {
+
+			@Override
+			public void applyStyles(TextStyle textStyle) {
+				textStyle.foreground = Colors.getGray();
+				textStyle.font = getFont();
+			}
+		};
+
+		private Font getFont() {
+			if (font != null)
+				return font;
+			FontDescriptor desc = FontDescriptor.createFrom(
+					Display.getCurrent().getSystemFont()).setStyle(SWT.ITALIC);
+			font = desc.createFont(Display.getCurrent());
+			return font;
+		}
+
+		private void applyTo(StyledString styled) {
+			String text = styled.getString();
+			styled.setStyle(0, text.length(), styler);
 		}
 
 	}

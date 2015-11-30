@@ -16,6 +16,7 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.NwFactor;
 import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.SocialAspect;
+import org.openlca.core.model.Uncertainty;
 
 import com.google.gson.JsonElement;
 
@@ -39,8 +40,8 @@ public class ModelLabelProvider implements IJsonNodeLabelProvider {
 			return null;
 		String type = ModelUtil.getType(parent);
 		String propertyLabel = PropertyLabels.get(type, property);
-		if (showKeyOnly(element, parent, isArrayElement))
-			return property;
+		if (showPropertyOnly(element, parent, isArrayElement))
+			return propertyLabel;
 		String value = getValue(element, parent);
 		String valueLabel = ValueLabels.get(property, element, parent, value);
 		return propertyLabel + ": " + valueLabel;
@@ -55,14 +56,18 @@ public class ModelLabelProvider implements IJsonNodeLabelProvider {
 		return false;
 	}
 
-	private boolean showKeyOnly(JsonElement element, JsonElement parent,
+	private boolean showPropertyOnly(JsonElement element, JsonElement parent,
 			boolean isArrayElement) {
 		if (element.isJsonArray())
 			if (element.getAsJsonArray().size() != 0)
 				return true;
 		if (!element.isJsonObject())
 			return false;
-		if (!isArrayElement && !ModelUtil.isReference(parent, element))
+		if (isArrayElement)
+			return false;
+		if (ModelUtil.isType(element, Uncertainty.class))
+			return false;
+		if (!ModelUtil.isReference(parent, element))
 			return true;
 		return false;
 	}
