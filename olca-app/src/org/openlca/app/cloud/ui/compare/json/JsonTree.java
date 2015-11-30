@@ -213,9 +213,11 @@ class JsonTree extends AbstractViewer<JsonNode, TreeViewer> {
 				readOnlyStyle.applyTo(styled);
 			if (!node.hasEqualValues()) {
 				boolean highlightChanges = false;
-				if (node.getElement().isJsonPrimitive())
-					if (JsonUtil.toJsonPrimitive(node.getElement()).isString())
-						highlightChanges = true;
+				if (otherText != null)
+					if (node.getElement().isJsonPrimitive())
+						if (JsonUtil.toJsonPrimitive(node.getElement())
+								.isString())
+							highlightChanges = true;
 				diffStyle.applyTo(styled, otherText, local, highlightChanges);
 			}
 			return styled;
@@ -225,8 +227,6 @@ class JsonTree extends AbstractViewer<JsonNode, TreeViewer> {
 				String otherValue) {
 			if (value == null)
 				value = " ";
-			if (otherValue == null)
-				otherValue = " ";
 			int count1 = countLines(value);
 			int count2 = countLines(otherValue);
 			if (count2 > count1)
