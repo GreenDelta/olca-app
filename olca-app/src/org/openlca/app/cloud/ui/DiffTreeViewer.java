@@ -39,21 +39,21 @@ import com.google.gson.JsonObject;
 
 class DiffTreeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 
-	private Function<DiffResult, JsonObject> getLocalJson;
-	private Function<DiffResult, JsonObject> getRemoteJson;
+	private Function<Dataset, JsonObject> getLocalJson;
+	private Function<Dataset, JsonObject> getRemoteJson;
 	private Map<String, JsonNode> nodes = new HashMap<>();
 	private Runnable onMerge;
 	private DiffNode root;
 	private boolean leftToRightCompare;
 
 	public DiffTreeViewer(Composite parent, boolean leftToRightCompare,
-			Function<DiffResult, JsonObject> getJson) {
+			Function<Dataset, JsonObject> getJson) {
 		this(parent, leftToRightCompare, getJson, getJson);
 	}
 
 	public DiffTreeViewer(Composite parent, boolean leftToRightCompare,
-			Function<DiffResult, JsonObject> getLocalJson,
-			Function<DiffResult, JsonObject> getRemoteJson) {
+			Function<Dataset, JsonObject> getLocalJson,
+			Function<Dataset, JsonObject> getRemoteJson) {
 		super(parent);
 		this.getLocalJson = getLocalJson;
 		this.getRemoteJson = getRemoteJson;
@@ -111,8 +111,10 @@ class DiffTreeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 	private JsonDiffEditorDialog prepareDialog(DiffData data) {
 		data.node = nodes.get(toKey(data.result.getDataset()));
 		if (data.node == null) {
-			data.local = getLocalJson.apply(data.result);
-			data.remote = getRemoteJson.apply(data.result);
+			if (data.result.local != null)
+				data.local = getLocalJson.apply(data.result.local.getDataset());
+			if (data.result.remote != null && !data.result.remote.isDeleted())
+				data.remote = getRemoteJson.apply(data.result.remote);
 			data.node = new ModelNodeBuilder().build(data.local, data.remote);
 			nodes.put(toKey(data.result.getDataset()), data.node);
 		} else {

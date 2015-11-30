@@ -2,7 +2,6 @@ package org.openlca.app.cloud;
 
 import java.util.List;
 
-import org.openlca.app.cloud.ui.DiffResult;
 import org.openlca.app.cloud.ui.compare.json.JsonUtil;
 import org.openlca.app.db.Database;
 import org.openlca.cloud.api.RepositoryClient;
@@ -26,10 +25,10 @@ public class JsonLoader {
 		this.client = client;
 	}
 
-	public JsonObject getLocalJson(DiffResult result) {
-		if (result.local == null)
+	public JsonObject getLocalJson(Dataset dataset) {
+		if (dataset == null)
 			return null;
-		CategorizedEntity entity = load(result.local.getDataset());
+		CategorizedEntity entity = load(dataset);
 		if (entity == null)
 			return null;
 		JsonObject json = JsonExport.toJson(entity, Database.get());
@@ -48,10 +47,9 @@ public class JsonLoader {
 		return Database.createRootDao(type).getForRefId(refId);
 	}
 
-	public JsonObject getRemoteJson(DiffResult result) {
-		if (result.remote != null && result.remote.isDeleted())
+	public JsonObject getRemoteJson(Dataset dataset) {
+		if (dataset == null)
 			return null;
-		Dataset dataset = result.getDataset();
 		try {
 			JsonObject json = client.getDataset(dataset.getType(),
 					dataset.getRefId());
