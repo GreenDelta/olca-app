@@ -73,7 +73,7 @@ public class CommitDialog extends FormDialog {
 		UI.gridLayout(composite, 1);
 		section.setClient(composite);
 		JsonLoader loader = CloudUtil.getJsonLoader(client);
-		viewer = new DiffTreeViewer(composite, loader::getLocalJson,
+		viewer = new DiffTreeViewer(composite, true, loader::getLocalJson,
 				loader::getRemoteJson);
 	}
 

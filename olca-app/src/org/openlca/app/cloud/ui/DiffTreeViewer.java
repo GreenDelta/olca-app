@@ -44,18 +44,20 @@ class DiffTreeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 	private Map<String, JsonNode> nodes = new HashMap<>();
 	private Runnable onMerge;
 	private DiffNode root;
+	private boolean leftToRightCompare;
 
-	public DiffTreeViewer(Composite parent,
+	public DiffTreeViewer(Composite parent, boolean leftToRightCompare,
 			Function<DiffResult, JsonObject> getJson) {
-		this(parent, getJson, getJson);
+		this(parent, leftToRightCompare, getJson, getJson);
 	}
 
-	public DiffTreeViewer(Composite parent,
+	public DiffTreeViewer(Composite parent, boolean leftToRightCompare,
 			Function<DiffResult, JsonObject> getLocalJson,
 			Function<DiffResult, JsonObject> getRemoteJson) {
 		super(parent);
 		this.getLocalJson = getLocalJson;
 		this.getRemoteJson = getRemoteJson;
+		this.leftToRightCompare = leftToRightCompare;
 	}
 
 	public void setOnMerge(Runnable onMerge) {
@@ -118,8 +120,10 @@ class DiffTreeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 			data.remote = JsonUtil.toJsonObject(data.node.getRemoteElement());
 		}
 		if (!data.result.isConflict())
-			return JsonDiffEditorDialog.forViewing(data.node, new ModelLabelProvider());
-		return JsonDiffEditorDialog.forEditing(data.node, new ModelLabelProvider());
+			return JsonDiffEditorDialog.forViewing(data.node,
+					new ModelLabelProvider(), leftToRightCompare);
+		return JsonDiffEditorDialog.forEditing(data.node,
+				new ModelLabelProvider(), leftToRightCompare);
 	}
 
 	private void updateResult(DiffData data, boolean localDiffersFromRemote,

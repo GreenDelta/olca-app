@@ -1,5 +1,6 @@
 package org.openlca.app.cloud.ui.compare.json;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.jface.viewers.IBaseLabelProvider;
@@ -17,10 +18,13 @@ import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Tree;
+import org.openlca.app.cloud.ui.compare.json.DiffMatchPatch.Diff;
+import org.openlca.app.cloud.ui.compare.json.DiffMatchPatch.Operation;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.viewers.Viewers;
@@ -29,12 +33,14 @@ import org.openlca.app.viewers.AbstractViewer;
 class JsonTree extends AbstractViewer<JsonNode, TreeViewer> {
 
 	private boolean local;
+	private boolean leftToRightCompare;
 	private JsonTree counterpart;
 	private IJsonNodeLabelProvider labelProvider;
 
-	JsonTree(Composite parent, boolean local) {
+	JsonTree(Composite parent, boolean local, boolean leftToRightCompare) {
 		super(parent);
 		this.local = local;
+		this.leftToRightCompare = leftToRightCompare;
 		if (local)
 			getViewer().getTree().getVerticalBar().setVisible(false);
 	}
@@ -195,18 +201,26 @@ class JsonTree extends AbstractViewer<JsonNode, TreeViewer> {
 
 		private StyledString getStyledText(JsonNode node) {
 			String text = labelProvider.getText(node, local);
-			if (text == null)
-				text = " ";
-			text = adjustMultiline(node, text);
+			String otherText = labelProvider.getText(node, !local);
+			text = adjustMultiline(node, text, otherText);
 			StyledString styled = new StyledString(text);
 			propertyStyle.applyTo(styled);
-			if (!node.hasEqualValues())
-				diffStyle.applyTo(styled);
+			if (!node.hasEqualValues()) {
+				boolean highlightChanges = false;
+				if (node.getElement().isJsonPrimitive())
+					highlightChanges = JsonUtil.toJsonPrimitive(
+							node.getElement()).isString();
+				diffStyle.applyTo(styled, otherText, local, highlightChanges);
+			}
 			return styled;
 		}
 
-		private String adjustMultiline(JsonNode node, String value) {
-			String otherValue = labelProvider.getText(node, !local);
+		private String adjustMultiline(JsonNode node, String value,
+				String otherValue) {
+			if (value == null)
+				value = " ";
+			if (otherValue == null)
+				otherValue = " ";
 			int count1 = countLines(value);
 			int count2 = countLines(otherValue);
 			if (count2 > count1)
@@ -227,7 +241,7 @@ class JsonTree extends AbstractViewer<JsonNode, TreeViewer> {
 
 	}
 
-	private class PropertyStyle implements Style {
+	private class PropertyStyle {
 
 		private Styler styler = new Styler() {
 			@Override
@@ -236,8 +250,7 @@ class JsonTree extends AbstractViewer<JsonNode, TreeViewer> {
 			}
 		};
 
-		@Override
-		public void applyTo(StyledString styled) {
+		private void applyTo(StyledString styled) {
 			String text = styled.getString();
 			int index = text.indexOf(":");
 			if (index == -1)
@@ -248,30 +261,68 @@ class JsonTree extends AbstractViewer<JsonNode, TreeViewer> {
 
 	}
 
-	private class DiffStyle implements Style {
+	private class DiffStyle {
 
-		private Styler styler = new Styler() {
-			@Override
-			public void applyStyles(TextStyle textStyle) {
-				textStyle.background = Colors.getColor(255, 255, 128);
-			}
-		};
+		private Styler deleteStyler = new DiffStyler(255, 230, 230, true);
+		private Styler insertStyler = new DiffStyler(230, 255, 230, false);
+		private Styler stringStyler = new DiffStyler(240, 240, 240, false);
+		private Styler fieldStyler = new DiffStyler(255, 255, 128, false);
 
-		@Override
-		public void applyTo(StyledString styled) {
+		private void applyTo(StyledString styled, String otherText,
+				boolean local, boolean highlightChanges) {
 			String text = styled.getString();
 			int index = styled.getString().indexOf(":");
+			Styler styler = highlightChanges ? stringStyler : fieldStyler;
 			if (index == -1)
 				styled.setStyle(0, text.length(), styler);
 			else
 				styled.setStyle(index + 2, text.length() - (index + 2), styler);
+			if (highlightChanges)
+				applySpecificDiffs(styled, otherText, local);
+		}
+
+		private void applySpecificDiffs(StyledString styled, String otherText,
+				boolean local) {
+			String text = styled.getString();
+			DiffMatchPatch dmp = new DiffMatchPatch();
+			LinkedList<Diff> diffs = null;
+			if (local && !leftToRightCompare || !local && leftToRightCompare)
+				diffs = dmp.diff_main(text, otherText);
+			else
+				diffs = dmp.diff_main(otherText, text);
+			dmp.diff_cleanupSemantic(diffs);
+			int index = 0;
+			boolean showDelete = leftToRightCompare ? !local : local;
+			boolean showInsert = leftToRightCompare ? local : !local;
+			for (Diff diff : diffs) {
+				if (showDelete && diff.operation == Operation.DELETE) {
+					styled.setStyle(index, diff.text.length(), deleteStyler);
+					index += diff.text.length();
+				} else if (showInsert && diff.operation == Operation.INSERT) {
+					styled.setStyle(index, diff.text.length(), insertStyler);
+					index += diff.text.length();
+				} else if (diff.operation == Operation.EQUAL)
+					index += diff.text.length();
+			}
 		}
 
 	}
 
-	private interface Style {
+	private class DiffStyler extends Styler {
 
-		void applyTo(StyledString value);
+		private final Color color;
+		private final boolean strikeout;
+
+		private DiffStyler(int r, int g, int b, boolean strikeout) {
+			color = Colors.getColor(r, g, b);
+			this.strikeout = strikeout;
+		}
+
+		@Override
+		public void applyStyles(TextStyle textStyle) {
+			textStyle.background = color;
+			textStyle.strikeout = strikeout;
+		}
 
 	}
 

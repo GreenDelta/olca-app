@@ -23,16 +23,23 @@ public class ModelLabelProvider implements IJsonNodeLabelProvider {
 
 	@Override
 	public String getText(JsonNode node, boolean local) {
-		return getText(node.property, node.getElement(local), getParent(node));
+		JsonElement parent = node.parent.getElement();
+		boolean isArrayElement = false;
+		if (parent.isJsonArray()) {
+			isArrayElement = true;
+			parent = node.parent.parent.getElement();
+		}
+		return getText(node.property, node.getElement(local), parent,
+				isArrayElement);
 	}
 
 	private String getText(String property, JsonElement element,
-			JsonElement parent) {
+			JsonElement parent, boolean isArrayElement) {
 		if (isFiller(element, parent))
 			return null;
 		String type = ModelUtil.getType(parent);
 		String propertyLabel = PropertyLabels.get(type, property);
-		if (showKeyOnly(element, parent))
+		if (showKeyOnly(element, parent, isArrayElement))
 			return property;
 		String value = getValue(element, parent);
 		String valueLabel = ValueLabels.get(property, element, parent, value);
@@ -48,13 +55,14 @@ public class ModelLabelProvider implements IJsonNodeLabelProvider {
 		return false;
 	}
 
-	private boolean showKeyOnly(JsonElement element, JsonElement parent) {
+	private boolean showKeyOnly(JsonElement element, JsonElement parent,
+			boolean isArrayElement) {
 		if (element.isJsonArray())
 			if (element.getAsJsonArray().size() != 0)
 				return true;
 		if (!element.isJsonObject())
 			return false;
-		if (!parent.isJsonArray() && !ModelUtil.isReference(parent, element))
+		if (!isArrayElement && !ModelUtil.isReference(parent, element))
 			return true;
 		return false;
 	}
@@ -77,7 +85,10 @@ public class ModelLabelProvider implements IJsonNodeLabelProvider {
 
 	@Override
 	public Image getImage(JsonNode node, boolean local) {
-		return getImage(node.property, node.getElement(local), getParent(node));
+		JsonElement parent = node.parent.getElement();
+		if (parent.isJsonArray())
+			parent = node.parent.parent.getElement();
+		return getImage(node.property, node.getElement(local), parent);
 	}
 
 	private Image getImage(String property, JsonElement element,
@@ -164,13 +175,6 @@ public class ModelLabelProvider implements IJsonNodeLabelProvider {
 		if (property.equals("factors"))
 			return getIcon(ModelType.IMPACT_CATEGORY);
 		return null;
-	}
-
-	private JsonElement getParent(JsonNode node) {
-		JsonElement parent = node.parent.getElement();
-		if (!parent.isJsonArray())
-			return parent;
-		return node.parent.parent.getElement();
 	}
 
 }

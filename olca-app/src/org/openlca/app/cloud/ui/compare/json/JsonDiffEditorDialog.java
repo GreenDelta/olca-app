@@ -16,21 +16,24 @@ public class JsonDiffEditorDialog extends FormDialog {
 	private JsonDiffEditor editor;
 	private JsonNode root;
 	private boolean editMode;
+	private boolean leftToRightCompare;
 	private IJsonNodeLabelProvider labelProvider;
 
 	public static JsonDiffEditorDialog forEditing(JsonNode root,
-			IJsonNodeLabelProvider labelProvider) {
+			IJsonNodeLabelProvider labelProvider, boolean leftToRightCompare) {
 		JsonDiffEditorDialog dialog = new JsonDiffEditorDialog(root);
 		dialog.labelProvider = labelProvider;
 		dialog.editMode = true;
+		dialog.leftToRightCompare = leftToRightCompare;
 		return dialog;
 	}
 
 	public static JsonDiffEditorDialog forViewing(JsonNode root,
-			IJsonNodeLabelProvider labelProvider) {
+			IJsonNodeLabelProvider labelProvider, boolean leftToRightCompare) {
 		JsonDiffEditorDialog dialog = new JsonDiffEditorDialog(root);
 		dialog.labelProvider = labelProvider;
 		dialog.editMode = false;
+		dialog.leftToRightCompare = leftToRightCompare;
 		return dialog;
 	}
 
@@ -57,7 +60,7 @@ public class JsonDiffEditorDialog extends FormDialog {
 			editor = JsonDiffEditor.forEditing(body, toolkit);
 		else
 			editor = JsonDiffEditor.forViewing(body, toolkit);
-		editor.initialize(root, labelProvider);
+		editor.initialize(root, labelProvider, leftToRightCompare);
 		UI.gridData(editor, true, true);
 		form.reflow(true);
 	}

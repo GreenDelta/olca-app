@@ -49,13 +49,13 @@ class JsonDiffEditor extends Composite {
 		this.toolkit = toolkit;
 	}
 
-	public void initialize(JsonNode root, IJsonNodeLabelProvider labelProvider) {
+	public void initialize(JsonNode root, IJsonNodeLabelProvider labelProvider, boolean leftToRightCompare) {
 		this.root = root;
 		UI.gridLayout(this, 1, 0, 0);
 		if (editMode && root.getLocalElement() != null
 				&& root.getRemoteElement() != null)
 			createMenubar();
-		createTreeParts();
+		createTreeParts(leftToRightCompare);
 		localTree.setLabelProvider(labelProvider);
 		remoteTree.setLabelProvider(labelProvider);
 		localTree.setInput(new JsonNode[] { root });
@@ -101,14 +101,14 @@ class JsonDiffEditor extends Composite {
 		return button;
 	}
 
-	private void createTreeParts() {
+	private void createTreeParts(boolean leftToRightCompare) {
 		Composite container = new Composite(this, SWT.BORDER);
 		GridLayout layout = UI.gridLayout(container, 2, 0, 0);
 		layout.makeColumnsEqualWidth = true;
 		UI.gridData(container, true, true).widthHint = 1;
 		addChildrenToList(root);
-		localTree = createTreePart(container, "#Local model", true);
-		remoteTree = createTreePart(container, "#Remote model", false);
+		localTree = createTreePart(container, "#Local model", true, leftToRightCompare);
+		remoteTree = createTreePart(container, "#Remote model", false, leftToRightCompare);
 		localTree.setCounterpart(remoteTree);
 		remoteTree.setCounterpart(localTree);
 		if (toolkit != null)
@@ -116,11 +116,11 @@ class JsonDiffEditor extends Composite {
 	}
 
 	private JsonTree createTreePart(Composite container, String label,
-			boolean local) {
+			boolean local, boolean leftToRightCompare) {
 		Composite localComposite = UI.formComposite(container, toolkit);
 		UI.gridLayout(localComposite, 1, 0, 0);
 		UI.gridData(localComposite, true, true);
-		return new JsonTree(localComposite, local);
+		return new JsonTree(localComposite, local, leftToRightCompare);
 	}
 
 	private void addChildrenToList(JsonNode node) {

@@ -50,12 +50,13 @@ public class DiffDialog extends FormDialog {
 		body.setLayout(new GridLayout());
 		toolkit.paintBordersFor(body);
 		UI.gridData(body, true, true);
-		viewer = new DiffTreeViewer(body, getLocalJson, getRemoteJson);
+		viewer = new DiffTreeViewer(body, false, getLocalJson, getRemoteJson);
 		form.reflow(true);
 		viewer.setInput(Collections.singletonList(rootNode));
-		viewer.setOnMerge(() -> getButton(OK).setEnabled(!viewer.hasConflicts()));
+		viewer.setOnMerge(() -> getButton(OK)
+				.setEnabled(!viewer.hasConflicts()));
 	}
-	
+
 	@Override
 	protected Button createButton(Composite parent, int id, String label,
 			boolean defaultButton) {
