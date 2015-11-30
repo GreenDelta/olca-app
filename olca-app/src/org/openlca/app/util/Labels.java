@@ -131,6 +131,8 @@ public class Labels {
 			return Labels.uncertaintyType((UncertaintyType) enumValue);
 		if (enumValue instanceof RiskLevel)
 			return Labels.riskLevel((RiskLevel) enumValue);
+		if (enumValue instanceof ModelType)
+			return Labels.modelTypeSingular((ModelType) enumValue);
 		if (enumValue != null)
 			return enumValue.toString();
 		return null;
@@ -301,6 +303,45 @@ public class Labels {
 			return Messages.Locations;
 		case PARAMETER:
 			return Messages.GlobalParameters;
+		case CATEGORY:
+			return Messages.Category;
+		default:
+			return Messages.Unknown;
+		}
+	}
+
+	public static String modelTypeSingular(ModelType o) {
+		if (o == null)
+			return null;
+		switch (o) {
+		case ACTOR:
+			return Messages.Actor;
+		case COST_CATEGORY:
+			return "#Cost category";
+		case CURRENCY:
+			return "#Currency";
+		case FLOW:
+			return Messages.Flow;
+		case FLOW_PROPERTY:
+			return Messages.FlowProperty;
+		case IMPACT_METHOD:
+			return Messages.ImpactAssessmentMethod;
+		case PROCESS:
+			return Messages.Process;
+		case PRODUCT_SYSTEM:
+			return Messages.ProductSystem;
+		case PROJECT:
+			return Messages.Project;
+		case SOCIAL_INDICATOR:
+			return Messages.SocialIndicator;
+		case SOURCE:
+			return Messages.Source;
+		case UNIT_GROUP:
+			return Messages.UnitGroup;
+		case LOCATION:
+			return Messages.Location;
+		case PARAMETER:
+			return "#Global parameter";
 		case CATEGORY:
 			return Messages.Category;
 		default:
