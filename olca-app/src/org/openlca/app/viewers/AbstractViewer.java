@@ -18,8 +18,10 @@ public abstract class AbstractViewer<T, V extends StructuredViewer> implements
 	private V viewer;
 	private boolean nullable;
 	private String nullText;
+	protected Object[] viewerParameters;
 
-	protected AbstractViewer(Composite parent) {
+	protected AbstractViewer(Composite parent, Object... viewerParameters) {
+		this.viewerParameters = viewerParameters;
 		viewer = createViewer(parent);
 	}
 
@@ -32,7 +34,7 @@ public abstract class AbstractViewer<T, V extends StructuredViewer> implements
 	protected V getViewer() {
 		return viewer;
 	}
-	
+
 	public void refresh() {
 		viewer.refresh();
 	}
