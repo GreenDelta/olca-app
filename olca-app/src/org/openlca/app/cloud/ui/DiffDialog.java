@@ -11,15 +11,14 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.cloud.JsonLoader;
-import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer.Direction;
 import org.openlca.app.cloud.ui.diff.DiffNode;
-import org.openlca.app.cloud.ui.diff.DiffTreeViewer;
+import org.openlca.app.cloud.ui.diff.FetchDiffViewer;
 import org.openlca.app.util.UI;
 
 public class DiffDialog extends FormDialog {
 
 	private DiffNode rootNode;
-	private DiffTreeViewer viewer;
+	private FetchDiffViewer viewer;
 	private JsonLoader loader;
 
 	public DiffDialog(DiffNode rootNode, JsonLoader loader) {
@@ -42,7 +41,7 @@ public class DiffDialog extends FormDialog {
 		body.setLayout(new GridLayout());
 		toolkit.paintBordersFor(body);
 		UI.gridData(body, true, true);
-		viewer = new DiffTreeViewer(body, Direction.RIGHT_TO_LEFT, loader);
+		viewer = new FetchDiffViewer(body, loader);
 		form.reflow(true);
 		viewer.setInput(Collections.singletonList(rootNode));
 		viewer.setOnMerge(() -> getButton(OK)

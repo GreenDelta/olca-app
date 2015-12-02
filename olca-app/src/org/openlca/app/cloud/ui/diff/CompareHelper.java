@@ -18,23 +18,25 @@ import org.openlca.cloud.model.data.Dataset;
 
 import com.google.gson.JsonObject;
 
-class MergeHelper {
+class CompareHelper {
 
 	private JsonLoader loader;
 	private Direction direction;
 	private Map<String, JsonNode> nodes = new HashMap<>();
 
-	MergeHelper(JsonLoader loader, Direction direction) {
+	CompareHelper(JsonLoader loader, Direction direction) {
 		this.loader = loader;
 		this.direction = direction;
 	}
 
-	boolean openDiffEditor(DiffNode selected) {
+	boolean openDiffEditor(DiffNode node) {
+		if (node == null || node.isModelTypeNode())
+			return false;
 		DiffData data = new DiffData();
-		data.result = (DiffResult) selected.content;
+		data.result = (DiffResult) node.content;
 		DiffEditorDialog dialog = prepareDialog(data);
-		dialog.setTitle(getTitle(selected));
-		dialog.setLogo(getLogo(selected));
+		dialog.setTitle(getTitle(node));
+		dialog.setLogo(getLogo(node));
 		int code = dialog.open();
 		if (code == IDialogConstants.CANCEL_ID)
 			return false;
@@ -48,15 +50,9 @@ class MergeHelper {
 
 	private DiffEditorDialog prepareDialog(DiffData data) {
 		data.node = nodes.get(toKey(data.result.getDataset()));
-		if (data.node == null) {
-			if (data.result.local != null)
-				data.local = loader
-						.getLocalJson(data.result.local.getDataset());
-			if (data.result.remote != null && !data.result.remote.isDeleted())
-				data.remote = loader.getRemoteJson(data.result.remote);
-			data.node = new ModelNodeBuilder().build(data.local, data.remote);
-			nodes.put(toKey(data.result.getDataset()), data.node);
-		} else {
+		if (data.node == null)
+			createNode(data);
+		else {
 			data.local = JsonUtil.toJsonObject(data.node.leftElement);
 			data.remote = JsonUtil.toJsonObject(data.node.rightElement);
 		}
@@ -66,6 +62,17 @@ class MergeHelper {
 					ModelUtil.getDependencyResolver(), direction);
 		return DiffEditorDialog.forEditing(data.node, new ModelLabelProvider(),
 				ModelUtil.getDependencyResolver(), direction);
+	}
+
+	private void createNode(DiffData data) {
+		if (data.result.local != null)
+			data.local = loader.getLocalJson(data.result.local.getDataset());
+		if (data.result.remote != null && !data.result.remote.isDeleted())
+			data.remote = loader.getRemoteJson(data.result.remote);
+		else if (direction == Direction.LEFT_TO_RIGHT)
+			data.remote = loader.getRemoteJson(data.result.getDataset());
+		data.node = new ModelNodeBuilder().build(data.local, data.remote);
+		nodes.put(toKey(data.result.getDataset()), data.node);
 	}
 
 	private void updateResult(DiffData data, boolean localDiffersFromRemote,
@@ -99,7 +106,7 @@ class MergeHelper {
 		if (node.isModelTypeNode())
 			return null;
 		DiffResult result = (DiffResult) node.content;
-		return result.getDataset().getFullPath();
+		return result.getDataset().getName();
 	}
 
 	private Image getLogo(DiffNode node) {

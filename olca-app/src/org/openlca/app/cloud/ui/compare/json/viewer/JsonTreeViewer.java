@@ -19,9 +19,8 @@ public class JsonTreeViewer extends AbstractViewer<JsonNode, TreeViewer> {
 	private Side side;
 	private Direction direction;
 
-	public JsonTreeViewer(Composite parent, Side side,
-			Direction direction) {
-		super(parent);
+	public JsonTreeViewer(Composite parent, Side side, Direction direction) {
+		super(parent, side);
 		this.side = side;
 		this.direction = direction;
 	}
@@ -38,8 +37,6 @@ public class JsonTreeViewer extends AbstractViewer<JsonNode, TreeViewer> {
 				new SelectionChangedListener(viewer));
 		ScrollBar vBar = getViewer().getTree().getVerticalBar();
 		vBar.addSelectionListener(new ScrollListener(viewer));
-		if (side == Side.LEFT)
-			vBar.setVisible(false);
 	}
 
 	public void setLabelProvider(IJsonNodeLabelProvider labelProvider) {
@@ -53,6 +50,8 @@ public class JsonTreeViewer extends AbstractViewer<JsonNode, TreeViewer> {
 				| SWT.HIDE_SELECTION | SWT.BORDER);
 		viewer.setContentProvider(new ContentProvider());
 		Tree tree = viewer.getTree();
+		if (viewerParameters[0] == Side.LEFT)
+			tree.getVerticalBar().setVisible(false);
 		UI.gridData(tree, true, true);
 		return viewer;
 	}
@@ -64,7 +63,7 @@ public class JsonTreeViewer extends AbstractViewer<JsonNode, TreeViewer> {
 	public static enum Side {
 
 		LEFT, RIGHT;
-		
+
 		public Side getOther() {
 			if (this == LEFT)
 				return RIGHT;

@@ -45,4 +45,10 @@ public class DiffNode {
 		return result.getType() != DiffResponse.NONE;
 	}
 
+	public DiffResult getContent() {
+		if (isModelTypeNode())
+			return null;
+		return (DiffResult) content;
+	}
+
 }

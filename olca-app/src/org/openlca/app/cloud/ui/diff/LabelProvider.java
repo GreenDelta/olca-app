@@ -36,8 +36,8 @@ class LabelProvider extends org.eclipse.jface.viewers.LabelProvider {
 		Dataset dataset = diff.getDataset();
 		ImageType image = null;
 		if (dataset.getType() == ModelType.CATEGORY)
-			image = Images.getImageType(dummyCategory(dataset
-					.getCategoryType()));
+			image = Images
+					.getImageType(dummyCategory(dataset.getCategoryType()));
 		else
 			image = Images.getImageType(dataset.getType());
 		ImageType overlay = getOverlay(diff);
@@ -79,4 +79,5 @@ class LabelProvider extends org.eclipse.jface.viewers.LabelProvider {
 		dummy.setModelType(type);
 		return dummy;
 	}
+
 }

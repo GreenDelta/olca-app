@@ -70,6 +70,7 @@ public class CommitAction extends Action implements INavigationAction {
 		private boolean noChanges = false;
 		private String message;
 		private List<DiffResult> changes;
+		private List<DiffResult> selected;
 		private WebRequestException error;
 
 		public void run() {
@@ -99,6 +100,7 @@ public class CommitAction extends Action implements INavigationAction {
 			if (dialog.open() != IDialogConstants.OK_ID)
 				return;
 			message = dialog.getMessage();
+			selected = dialog.getSelected();
 			App.runWithProgress("#Commiting changes", this::commit);
 			afterCommit();
 		}
@@ -110,7 +112,7 @@ public class CommitAction extends Action implements INavigationAction {
 					return;
 				CommitInvocation commit = client.createCommitInvocation();
 				commit.setCommitMessage(message);
-				putChanges(changes, commit);
+				putChanges(selected, commit);
 				client.execute(commit);
 				indexCommit();
 			} catch (WebRequestException e) {

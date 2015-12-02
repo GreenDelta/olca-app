@@ -1,6 +1,8 @@
 package org.openlca.app.cloud.ui;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
@@ -16,9 +18,9 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.cloud.JsonLoader;
-import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer.Direction;
+import org.openlca.app.cloud.ui.diff.CommitDiffViewer;
 import org.openlca.app.cloud.ui.diff.DiffNode;
-import org.openlca.app.cloud.ui.diff.DiffTreeViewer;
+import org.openlca.app.cloud.ui.diff.DiffResult;
 import org.openlca.app.util.UI;
 import org.openlca.cloud.api.RepositoryClient;
 
@@ -26,7 +28,7 @@ public class CommitDialog extends FormDialog {
 
 	private DiffNode node;
 	private String message;
-	private DiffTreeViewer viewer;
+	private CommitDiffViewer viewer;
 	private RepositoryClient client;
 
 	public CommitDialog(DiffNode node, RepositoryClient client) {
@@ -76,23 +78,29 @@ public class CommitDialog extends FormDialog {
 		UI.gridLayout(comp, 1);
 		section.setClient(comp);
 		JsonLoader loader = CloudUtil.getJsonLoader(client);
-		viewer = new DiffTreeViewer(comp, Direction.LEFT_TO_RIGHT, loader);
-	}
-
-	@Override
-	protected void okPressed() {
-		super.okPressed();
+		viewer = new CommitDiffViewer(comp, loader);
+//		viewer.getViewer().addCheckStateListener((e) -> {
+//			getButton(IDialogConstants.OK_ID).setEnabled(viewer.hasChecked());
+//		});
 	}
 
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
 		createButton(parent, IDialogConstants.CANCEL_ID,
 				IDialogConstants.CANCEL_LABEL, false);
-		createButton(parent, IDialogConstants.OK_ID, "#Commit", true);
+		createButton(parent, IDialogConstants.OK_ID, "#Commit", true)
+				.setEnabled(false);
 	}
 
 	public String getMessage() {
 		return message;
+	}
+
+	public List<DiffResult> getSelected() {
+		List<DiffResult> selected = new ArrayList<>();
+		for (DiffNode node : viewer.getChecked())
+			selected.add(node.getContent());
+		return selected;
 	}
 
 }

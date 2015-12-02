@@ -47,14 +47,15 @@ class DiffEditor extends Composite {
 			IDependencyResolver dependencyResolver, Direction direction) {
 		this.root = root;
 		UI.gridLayout(this, 1, 0, 0);
-		MenuBar menuBar = null;
+		MenuBar menu = null;
 		if (editMode && root.leftElement != null && root.rightElement != null)
-			menuBar = new MenuBar(this, dependencyResolver);
+			menu = new MenuBar(this, dependencyResolver);
 		createTreeParts(direction);
-		rightTree.getViewer().addSelectionChangedListener(
-				menuBar::updateButtons);
-		menuBar.initActions(root, leftTree, rightTree, dependencyResolver);
-		menuBar.updateButtons(null);
+		rightTree.getViewer().addSelectionChangedListener(menu::updateButtons);
+		if (menu != null) {
+			menu.initActions(root, leftTree, rightTree, dependencyResolver);
+			menu.updateButtons(null);
+		}
 		leftTree.setLabelProvider(labelProvider);
 		rightTree.setLabelProvider(labelProvider);
 		leftTree.setInput(new JsonNode[] { root });
@@ -62,7 +63,8 @@ class DiffEditor extends Composite {
 		if (toolkit == null)
 			return;
 		toolkit.adapt(this);
-		menuBar.apply(toolkit);
+		if (menu != null)
+			menu.apply(toolkit);
 	}
 
 	private void createTreeParts(Direction direction) {
@@ -84,6 +86,7 @@ class DiffEditor extends Composite {
 		Composite composite = UI.formComposite(container, toolkit);
 		UI.gridLayout(composite, 1, 0, 0);
 		UI.gridData(composite, true, true);
+		UI.formLabel(composite, toolkit, label);
 		return new JsonTreeViewer(composite, side, direction);
 	}
 

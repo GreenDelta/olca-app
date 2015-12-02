@@ -49,20 +49,20 @@ public abstract class JsonNodeBuilder implements Comparator<JsonNode> {
 	private void build(JsonNode node, JsonObject left, JsonObject right) {
 		Set<String> added = new HashSet<>();
 		if (left != null)
-			buildChildren(node, left, right, added, true);
+			buildChildren(node, left, right, added, Side.LEFT);
 		if (right != null)
-			buildChildren(node, right, left, added, false);
+			buildChildren(node, right, left, added, Side.RIGHT);
 	}
 
 	private void buildChildren(JsonNode node, JsonObject json,
-			JsonObject other, Set<String> added, boolean forLocal) {
+			JsonObject other, Set<String> added, Side side) {
 		for (Entry<String, JsonElement> child : json.entrySet()) {
-			if (!forLocal && added.contains(child.getKey()))
+			if (side == Side.RIGHT && added.contains(child.getKey()))
 				continue;
 			JsonElement otherValue = null;
 			if (other != null)
 				otherValue = other.get(child.getKey());
-			if (forLocal) {
+			if (side == Side.LEFT) {
 				build(node, child.getKey(), child.getValue(), otherValue);
 				added.add(child.getKey());
 			} else
