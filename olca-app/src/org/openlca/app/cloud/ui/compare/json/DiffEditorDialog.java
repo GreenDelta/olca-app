@@ -1,43 +1,53 @@
 package org.openlca.app.cloud.ui.compare.json;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer.Direction;
+import org.openlca.app.cloud.ui.compare.json.viewer.label.IJsonNodeLabelProvider;
 import org.openlca.app.util.UI;
 
-public class JsonDiffEditorDialog extends FormDialog {
+public class DiffEditorDialog extends FormDialog {
 
 	public final static int KEEP_LOCAL_MODEL = 2;
 	public final static int FETCH_REMOTE_MODEL = 3;
-	private JsonDiffEditor editor;
+	private DiffEditor editor;
 	private JsonNode root;
 	private boolean editMode;
-	private boolean leftToRightCompare;
+	private Direction direction;
 	private IJsonNodeLabelProvider labelProvider;
+	private IDependencyResolver dependencyResolver;
+	private String title;
+	private Image logo;
 
-	public static JsonDiffEditorDialog forEditing(JsonNode root,
-			IJsonNodeLabelProvider labelProvider, boolean leftToRightCompare) {
-		JsonDiffEditorDialog dialog = new JsonDiffEditorDialog(root);
+	public static DiffEditorDialog forEditing(JsonNode root,
+			IJsonNodeLabelProvider labelProvider,
+			IDependencyResolver dependencyResolver, Direction direction) {
+		DiffEditorDialog dialog = new DiffEditorDialog(root);
 		dialog.labelProvider = labelProvider;
+		dialog.dependencyResolver = dependencyResolver;
 		dialog.editMode = true;
-		dialog.leftToRightCompare = leftToRightCompare;
+		dialog.direction = direction;
 		return dialog;
 	}
 
-	public static JsonDiffEditorDialog forViewing(JsonNode root,
-			IJsonNodeLabelProvider labelProvider, boolean leftToRightCompare) {
-		JsonDiffEditorDialog dialog = new JsonDiffEditorDialog(root);
+	public static DiffEditorDialog forViewing(JsonNode root,
+			IJsonNodeLabelProvider labelProvider,
+			IDependencyResolver dependencyResolver, Direction direction) {
+		DiffEditorDialog dialog = new DiffEditorDialog(root);
 		dialog.labelProvider = labelProvider;
+		dialog.dependencyResolver = dependencyResolver;
 		dialog.editMode = false;
-		dialog.leftToRightCompare = leftToRightCompare;
+		dialog.direction = direction;
 		return dialog;
 	}
 
-	private JsonDiffEditorDialog(JsonNode root) {
+	private DiffEditorDialog(JsonNode root) {
 		super(UI.shell());
 		this.root = root;
 		setBlockOnOpen(true);
@@ -48,33 +58,46 @@ public class JsonDiffEditorDialog extends FormDialog {
 		return new Point(1000, 600);
 	}
 
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public void setLogo(Image logo) {
+		this.logo = logo;
+	}
+
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		ScrolledForm form = UI.formHeader(mform, "#Diff");
+		String title = "#Diff";
+		if (this.title != null)
+			title += ": " + this.title;
+		ScrolledForm form = UI.formHeader(mform, title);
+		if (logo != null)
+			form.setImage(logo);
 		FormToolkit toolkit = mform.getToolkit();
 		Composite body = form.getBody();
 		UI.gridLayout(body, 1, 0, 0);
 		toolkit.paintBordersFor(body);
 		UI.gridData(body, true, true);
 		if (editMode)
-			editor = JsonDiffEditor.forEditing(body, toolkit);
+			editor = DiffEditor.forEditing(body, toolkit);
 		else
-			editor = JsonDiffEditor.forViewing(body, toolkit);
-		editor.initialize(root, labelProvider, leftToRightCompare);
+			editor = DiffEditor.forViewing(body, toolkit);
+		editor.initialize(root, labelProvider, dependencyResolver, direction);
 		UI.gridData(editor, true, true);
 		form.reflow(true);
 	}
 
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
-		boolean hasLocal = root.getLocalElement() != null;
-		boolean hasRemote = root.getRemoteElement() != null;
+		boolean hasLeft = root.leftElement != null;
+		boolean hasRight = root.rightElement != null;
 		if (!editMode)
 			createButton(parent, IDialogConstants.OK_ID, "#Close", true);
-		else if (hasLocal && hasRemote)
+		else if (hasLeft && hasRight)
 			createButton(parent, IDialogConstants.OK_ID, "#Mark as merged",
 					true);
-		else if (hasLocal) {
+		else if (hasLeft) {
 			createButton(parent, KEEP_LOCAL_MODEL, "#Keep model deleted", true);
 			createButton(parent, FETCH_REMOTE_MODEL, "#Fetch remote model",
 					true);
@@ -85,7 +108,7 @@ public class JsonDiffEditorDialog extends FormDialog {
 		}
 	}
 
-	public boolean localDiffersFromRemote() {
+	public boolean leftDiffersFromRight() {
 		return !editor.getRootNode().hasEqualValues();
 	}
 

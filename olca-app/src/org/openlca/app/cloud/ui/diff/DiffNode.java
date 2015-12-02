@@ -1,8 +1,9 @@
-package org.openlca.app.cloud.ui;
+package org.openlca.app.cloud.ui.diff;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openlca.app.cloud.ui.diff.DiffResult.DiffResponse;
 import org.openlca.core.model.ModelType;
 
 public class DiffNode {
@@ -30,11 +31,18 @@ public class DiffNode {
 		return getModelType() != ModelType.CATEGORY;
 	}
 
-	private ModelType getModelType() {
+	ModelType getModelType() {
 		if (isModelTypeNode())
 			return null;
 		DiffResult result = (DiffResult) content;
 		return result.getDataset().getType();
+	}
+
+	boolean hasChanged() {
+		if (isModelTypeNode())
+			return false;
+		DiffResult result = (DiffResult) content;
+		return result.getType() != DiffResponse.NONE;
 	}
 
 }

@@ -1,4 +1,4 @@
-package org.openlca.app.cloud.ui;
+package org.openlca.app.cloud.ui.diff;
 
 import java.util.HashMap;
 import java.util.List;
@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.cloud.index.DiffIndex;
-import org.openlca.app.cloud.ui.DiffResult.DiffResponse;
+import org.openlca.app.cloud.ui.diff.DiffResult.DiffResponse;
 import org.openlca.cloud.model.data.Dataset;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.IDatabase;
@@ -28,25 +28,32 @@ public class DiffNodeBuilder {
 	}
 
 	public DiffNode build(List<DiffResult> diffs) {
+		if (!init(diffs))
+			return null;
+		DiffNode root = new DiffNode(null, database);
+		nodes.put("", root);
+		for (DiffResult result : this.diffs.values())
+			build(result);
+		return root;
+	}
+
+	private boolean init(List<DiffResult> diffs) {
 		for (DiffResult result : diffs)
 			if (result.getType() != DiffResponse.NONE)
 				this.diffs.put(result.getDataset().getRefId(), result);
-		if (this.diffs.size() == 0)
-			return null;
 		nodes.clear();
-		DiffNode root = new DiffNode(null, database);
-		nodes.put("", root);
-		for (DiffResult result : this.diffs.values()) {
-			if (nodes.containsKey(result.getDataset().getRefId()))
-				continue;
-			if (!result.getDataset().getType().isCategorized())
-				continue;
-			DiffNode parent = getOrCreateParentNode(result);
-			DiffNode node = new DiffNode(parent, result);
-			parent.children.add(node);
-			nodes.put(result.getDataset().getRefId(), node);
-		}
-		return root;
+		return this.diffs.size() != 0;
+	}
+
+	private void build(DiffResult result) {
+		if (nodes.containsKey(result.getDataset().getRefId()))
+			return;
+		if (!result.getDataset().getType().isCategorized())
+			return;
+		DiffNode parent = getOrCreateParentNode(result);
+		DiffNode node = new DiffNode(parent, result);
+		parent.children.add(node);
+		nodes.put(result.getDataset().getRefId(), node);
 	}
 
 	private DiffNode getOrCreateParentNode(DiffResult result) {

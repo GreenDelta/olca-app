@@ -1,4 +1,4 @@
-package org.openlca.app.cloud.ui;
+package org.openlca.app.cloud.ui.commits;
 
 import java.util.List;
 

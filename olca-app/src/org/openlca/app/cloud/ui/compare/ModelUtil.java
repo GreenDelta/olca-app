@@ -2,6 +2,11 @@ package org.openlca.app.cloud.ui.compare;
 
 import static org.openlca.app.cloud.ui.compare.json.JsonUtil.getString;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.openlca.app.cloud.ui.compare.json.IDependencyResolver;
+import org.openlca.app.cloud.ui.compare.json.JsonNode;
 import org.openlca.app.cloud.ui.compare.json.JsonUtil.ElementFinder;
 import org.openlca.app.util.UncertaintyLabel;
 import org.openlca.core.model.AllocationFactor;
@@ -21,6 +26,7 @@ import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.Project;
 import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.SocialAspect;
+import org.openlca.core.model.SocialIndicator;
 import org.openlca.core.model.Uncertainty;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
@@ -29,12 +35,17 @@ import org.openlca.jsonld.input.Uncertainties;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-class ModelUtil {
+public class ModelUtil {
 
 	private static ElementFinder elementFinder = new ModelElementFinder();
+	private static IDependencyResolver dependencyResolver = new ModelDependencyResolver();
 
-	static ElementFinder getElementFinder() {
+	public static ElementFinder getElementFinder() {
 		return elementFinder;
+	}
+
+	public static IDependencyResolver getDependencyResolver() {
+		return dependencyResolver;
 	}
 
 	static boolean isReference(JsonElement parent, JsonElement element) {
@@ -189,9 +200,23 @@ class ModelUtil {
 		return true;
 	}
 
-	static boolean isReadOnly(JsonElement parent, String property) {
-		if (isType(parent, Uncertainty.class))
+	static boolean isReadOnly(JsonNode node, String property) {
+		if (node.parent != null && node.parent.readOnly)
 			return true;
+		JsonElement element = node.getElement();
+		if (isType(element, Uncertainty.class))
+			return true;
+		if (!element.isJsonArray())
+			return false;
+		// array elements
+		JsonElement parent = node.parent.getElement();
+		if (isType(parent, ProductSystem.class))
+			if ("processes".equals(property))
+				return true;
+			else if ("processLinks".equals(property))
+				return true;
+			else if ("parameterRedefs".equals(property))
+				return true;
 		return false;
 	}
 
@@ -251,6 +276,43 @@ class ModelUtil {
 					return true;
 			return false;
 		}
+	}
+
+	private static class ModelDependencyResolver implements IDependencyResolver {
+
+		private static final Map<String, Map<String, String>> dependencies = new HashMap<>();
+
+		static {
+			put(Exchange.class, "flowProperty", "unit");
+			put(ImpactFactor.class, "flowProperty", "unit");
+			put(SocialIndicator.class, "activityQuantity", "activityUnit");
+			put(ProductSystem.class, "referenceProcess", "referenceExchange");
+			put(ProductSystem.class, "referenceExchange", "targetFlowProperty");
+			put(ProductSystem.class, "targetFlowProperty", "targetUnit");
+			put(ProductSystem.class, "processes", "processLinks");
+			put(ProductSystem.class, "processes", "parameterRedefs");
+			put(ProductSystem.class, "processLinks", "parameterRedefs");
+		}
+
+		private static void put(Class<?> clazz, String from, String to) {
+			Map<String, String> map = dependencies.get(clazz.getSimpleName());
+			if (map == null)
+				dependencies.put(clazz.getSimpleName(), map = new HashMap<>());
+			map.put(from, to);
+			map.put(to, from);
+		}
+
+		@Override
+		public String resolve(JsonElement parent, String property) {
+			String type = getType(parent);
+			if (type == null)
+				return null;
+			Map<String, String> map = dependencies.get(type);
+			if (map == null)
+				return null;
+			return map.get(property);
+		}
+
 	}
 
 }

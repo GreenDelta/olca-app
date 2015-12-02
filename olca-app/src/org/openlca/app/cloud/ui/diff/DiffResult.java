@@ -1,4 +1,4 @@
-package org.openlca.app.cloud.ui;
+package org.openlca.app.cloud.ui.diff;
 
 import org.openlca.app.cloud.index.Diff;
 import org.openlca.app.cloud.index.DiffType;
@@ -37,34 +37,17 @@ public class DiffResult {
 		return local.getDataset();
 	}
 
-	public JsonObject getMergedData() {
-		return mergedData;
-	}
-
-	public boolean overwriteLocalChanges() {
-		return overwriteLocalChanges;
-	}
-
-	public boolean overwriteRemoteChanges() {
-		return overwriteRemoteChanges;
-	}
-
-	void setMergedData(JsonObject mergedData) {
-		this.mergedData = mergedData;
-	}
-
-	void setOverwriteLocalChanges(boolean overwriteLocalChanges) {
-		this.overwriteLocalChanges = overwriteLocalChanges;
-	}
-
-	void setOverwriteRemoteChanges(boolean overwriteRemoteChanges) {
-		this.overwriteRemoteChanges = overwriteRemoteChanges;
-	}
-
-	void reset() {
-		overwriteLocalChanges = false;
-		overwriteRemoteChanges = false;
-		mergedData = null;
+	private Dataset toDataset(FetchRequestData data) {
+		Dataset dataset = new Dataset();
+		dataset.setCategoryType(data.getCategoryType());
+		dataset.setCategoryRefId(data.getCategoryRefId());
+		dataset.setFullPath(data.getFullPath());
+		dataset.setType(data.getType());
+		dataset.setRefId(data.getRefId());
+		dataset.setName(data.getName());
+		dataset.setLastChange(data.getLastChange());
+		dataset.setVersion(data.getVersion());
+		return dataset;
 	}
 
 	public DiffResponse getType() {
@@ -72,22 +55,30 @@ public class DiffResult {
 		if (remote == null && local == null)
 			return DiffResponse.NONE;
 		if (remote == null)
-			switch (local.type) {
-			case NEW:
-				return DiffResponse.ADD_TO_REMOTE;
-			case DELETED:
-				return DiffResponse.DELETE_FROM_REMOTE;
-			case CHANGED:
-				return DiffResponse.MODIFY_IN_REMOTE;
-			default:
-				return DiffResponse.NONE;
-			}
+			return getTypeFromLocal();
 		if (local == null || local.type == null)
 			if (remote.isDeleted())
 				return DiffResponse.NONE;
 			else
 				return DiffResponse.ADD_TO_LOCAL;
 		// remote & local can not be null anymore
+		return getTypeMixed();
+	}
+
+	private DiffResponse getTypeFromLocal() {
+		switch (local.type) {
+		case NEW:
+			return DiffResponse.ADD_TO_REMOTE;
+		case DELETED:
+			return DiffResponse.DELETE_FROM_REMOTE;
+		case CHANGED:
+			return DiffResponse.MODIFY_IN_REMOTE;
+		default:
+			return DiffResponse.NONE;
+		}
+	}
+
+	private DiffResponse getTypeMixed() {
 		switch (local.type) {
 		case NO_DIFF:
 			if (remote.isDeleted())
@@ -132,6 +123,36 @@ public class DiffResult {
 		return null;
 	}
 
+	public JsonObject getMergedData() {
+		return mergedData;
+	}
+
+	public boolean overwriteLocalChanges() {
+		return overwriteLocalChanges;
+	}
+
+	public boolean overwriteRemoteChanges() {
+		return overwriteRemoteChanges;
+	}
+
+	void setMergedData(JsonObject mergedData) {
+		this.mergedData = mergedData;
+	}
+
+	void setOverwriteLocalChanges(boolean overwriteLocalChanges) {
+		this.overwriteLocalChanges = overwriteLocalChanges;
+	}
+
+	void setOverwriteRemoteChanges(boolean overwriteRemoteChanges) {
+		this.overwriteRemoteChanges = overwriteRemoteChanges;
+	}
+
+	void reset() {
+		overwriteLocalChanges = false;
+		overwriteRemoteChanges = false;
+		mergedData = null;
+	}
+
 	@Override
 	public String toString() {
 		String l = "null";
@@ -142,19 +163,6 @@ public class DiffResult {
 		String text = "model: {" + l + "}, diff: {" + local.type
 				+ "}, result: {" + getType() + "}";
 		return text;
-	}
-
-	private Dataset toDataset(FetchRequestData data) {
-		Dataset dataset = new Dataset();
-		dataset.setCategoryType(data.getCategoryType());
-		dataset.setCategoryRefId(data.getCategoryRefId());
-		dataset.setFullPath(data.getFullPath());
-		dataset.setType(data.getType());
-		dataset.setRefId(data.getRefId());
-		dataset.setName(data.getName());
-		dataset.setLastChange(data.getLastChange());
-		dataset.setVersion(data.getVersion());
-		return dataset;
 	}
 
 	public static enum DiffResponse {

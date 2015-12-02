@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openlca.app.cloud.ui.compare.json.JsonUtil.ElementFinder;
+import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer.Side;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -13,78 +14,66 @@ public class JsonNode {
 
 	public String property;
 	public JsonNode parent;
+	public JsonElement leftElement;
+	public JsonElement rightElement;
+	public boolean readOnly;
 	public List<JsonNode> children = new ArrayList<>();
-	private JsonElement localElement;
-	private JsonElement remoteElement;
-	private JsonElement originalElement;
+	JsonElement originalElement;
 	private ElementFinder elementFinder;
-	boolean readOnly;
 
-	static JsonNode create(JsonNode parent, String property, JsonElement local,
-			JsonElement remote, ElementFinder elementFinder, boolean readOnly) {
-		JsonElement original = local != null ? JsonUtil.deepCopy(local) : null;
-		return new JsonNode(parent, property, local, remote, original,
+	static JsonNode create(JsonNode parent, String property, JsonElement left,
+			JsonElement right, ElementFinder elementFinder, boolean readOnly) {
+		JsonElement original = left != null ? JsonUtil.deepCopy(left) : null;
+		return new JsonNode(parent, property, left, right, original,
 				elementFinder, readOnly);
 	}
 
-	private JsonNode(JsonNode parent, String property,
-			JsonElement localElement, JsonElement remoteElement,
-			JsonElement originalElement, ElementFinder elementFinder,
-			boolean readOnly) {
+	private JsonNode(JsonNode parent, String property, JsonElement leftElement,
+			JsonElement rightElement, JsonElement originalElement,
+			ElementFinder elementFinder, boolean readOnly) {
 		this.parent = parent;
 		this.property = property;
-		this.localElement = localElement;
-		this.remoteElement = remoteElement;
+		this.leftElement = leftElement;
+		this.rightElement = rightElement;
 		this.originalElement = originalElement;
 		this.elementFinder = elementFinder;
 		this.readOnly = readOnly;
 	}
 
 	public JsonElement getElement() {
-		if (localElement != null)
-			return localElement;
-		return remoteElement;
+		if (leftElement != null)
+			return leftElement;
+		return rightElement;
 	}
 
-	public JsonElement getElement(boolean local) {
-		if (local)
-			return localElement;
-		return remoteElement;
+	public JsonElement getElement(Side side) {
+		if (side == Side.LEFT)
+			return leftElement;
+		return rightElement;
 	}
 
-	public JsonElement getLocalElement() {
-		return localElement;
-	}
-
-	public JsonElement getRemoteElement() {
-		return remoteElement;
-	}
-
-	boolean hasEqualValues() {
-		return JsonUtil.equal(property, localElement, remoteElement,
+	public boolean hasEqualValues() {
+		return JsonUtil.equal(property, leftElement, rightElement,
 				elementFinder);
 	}
 
-	void reset() {
-		setValue(originalElement, true);
+	boolean hadDifferences() {
+		return !JsonUtil.equal(property, leftElement, originalElement,
+				elementFinder);
 	}
 
-	void copyRemoteValue() {
-		setValue(remoteElement, false);
-	}
-
-	private void setValue(JsonElement toSet, boolean isReset) {
-		if (parent.localElement == null)
+	void setValue(JsonElement toSet, boolean leftToRight) {
+		if (parent.leftElement == null)
 			return;
-		JsonElement current = this.localElement;
-		this.localElement = toSet;
+		JsonElement current = this.leftElement;
+		this.leftElement = toSet;
 		if (parent != null)
 			updateParent(toSet, current);
-		updateChildren(isReset);
+		updateChildren(leftToRight);
 	}
 
 	private void updateParent(JsonElement toSet, JsonElement current) {
-		JsonElement parentElement = parent.localElement;
+		JsonElement parentElement = parent.leftElement;
 		if (parentElement.isJsonObject())
 			updateParent(parentElement.getAsJsonObject(), toSet, current);
 		else if (parentElement.isJsonArray())
@@ -98,7 +87,7 @@ public class JsonNode {
 
 	private void updateParent(JsonArray parentElement, JsonElement toSet,
 			JsonElement current) {
-		JsonObject arrayParent = parent.parent.localElement.getAsJsonObject();
+		JsonObject arrayParent = parent.parent.leftElement.getAsJsonObject();
 		JsonArray array = parentElement.getAsJsonArray();
 		if (toSet == null) {
 			// remove
@@ -112,32 +101,37 @@ public class JsonNode {
 			else
 				array = JsonUtil.replace(index, array, toSet);
 		}
-		parent.localElement = array;
+		parent.leftElement = array;
 		arrayParent.add(parent.property, array);
 	}
 
-	private void updateChildren(boolean isReset) {
+	private void updateChildren(boolean leftToRight) {
 		if (children.isEmpty())
 			return;
 		for (JsonNode child : children) {
-			JsonElement element = null;
-			if (localElement != null)
-				if (localElement.isJsonObject())
-					element = localElement.getAsJsonObject()
-							.get(child.property);
-				else if (localElement.isJsonArray()) {
-					JsonElement toFind = null;
-					if (isReset)
-						toFind = child.originalElement;
-					else
-						toFind = child.remoteElement;
-					int index = elementFinder.find(property, toFind,
-							localElement.getAsJsonArray());
-					if (index != -1)
-						element = localElement.getAsJsonArray().get(index);
-				}
-			child.localElement = element;
-			child.updateChildren(isReset);
+			JsonElement element = getElement(child, leftToRight);
+			child.leftElement = element;
+			child.updateChildren(leftToRight);
 		}
 	}
+
+	private JsonElement getElement(JsonNode node, boolean leftToRight) {
+		if (leftElement == null)
+			return null;
+		if (leftElement.isJsonObject())
+			return leftElement.getAsJsonObject().get(node.property);
+		if (!leftElement.isJsonArray())
+			return null;
+		JsonElement toFind = null;
+		if (leftToRight)
+			toFind = node.originalElement;
+		else
+			toFind = node.rightElement;
+		int index = elementFinder.find(property, toFind,
+				leftElement.getAsJsonArray());
+		if (index == -1)
+			return null;
+		return leftElement.getAsJsonArray().get(index);
+	}
+
 }

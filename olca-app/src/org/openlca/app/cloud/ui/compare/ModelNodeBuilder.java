@@ -23,10 +23,10 @@ public class ModelNodeBuilder extends JsonNodeBuilder implements
 	protected boolean skipChildren(JsonElement parent, JsonElement element) {
 		return ModelUtil.isReference(parent, element);
 	}
-	
+
 	@Override
-	protected boolean isReadOnly(JsonElement parent, String property) {
-		return ModelUtil.isReadOnly(parent, property);
+	protected boolean isReadOnly(JsonNode node, String property) {
+		return ModelUtil.isReadOnly(node, property);
 	}
 
 	@Override

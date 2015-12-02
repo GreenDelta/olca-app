@@ -4,9 +4,10 @@ import static org.openlca.app.util.Images.getCategoryIcon;
 import static org.openlca.app.util.Images.getIcon;
 
 import org.eclipse.swt.graphics.Image;
-import org.openlca.app.cloud.ui.compare.json.IJsonNodeLabelProvider;
 import org.openlca.app.cloud.ui.compare.json.JsonNode;
 import org.openlca.app.cloud.ui.compare.json.JsonUtil;
+import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer.Side;
+import org.openlca.app.cloud.ui.compare.json.viewer.label.IJsonNodeLabelProvider;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowPropertyFactor;
@@ -23,14 +24,14 @@ import com.google.gson.JsonElement;
 public class ModelLabelProvider implements IJsonNodeLabelProvider {
 
 	@Override
-	public String getText(JsonNode node, boolean local) {
+	public String getText(JsonNode node, Side side) {
 		JsonElement parent = node.parent.getElement();
 		boolean isArrayElement = false;
 		if (parent.isJsonArray()) {
 			isArrayElement = true;
 			parent = node.parent.parent.getElement();
 		}
-		return getText(node.property, node.getElement(local), parent,
+		return getText(node.property, node.getElement(side), parent,
 				isArrayElement);
 	}
 
@@ -89,11 +90,11 @@ public class ModelLabelProvider implements IJsonNodeLabelProvider {
 	}
 
 	@Override
-	public Image getImage(JsonNode node, boolean local) {
+	public Image getImage(JsonNode node, Side side) {
 		JsonElement parent = node.parent.getElement();
 		if (parent.isJsonArray())
 			parent = node.parent.parent.getElement();
-		return getImage(node.property, node.getElement(local), parent);
+		return getImage(node.property, node.getElement(side), parent);
 	}
 
 	private Image getImage(String property, JsonElement element,

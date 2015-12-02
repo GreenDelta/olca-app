@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.openlca.app.cloud.ui.compare.json.JsonUtil.ElementFinder;
+import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer.Side;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -20,38 +21,37 @@ public abstract class JsonNodeBuilder implements Comparator<JsonNode> {
 		this.elementFinder = elementFinder;
 	}
 
-	public JsonNode build(JsonElement localJson, JsonElement remoteJson) {
-		JsonNode node = JsonNode.create(null, null, localJson, remoteJson,
+	public JsonNode build(JsonElement leftJson, JsonElement rightJson) {
+		JsonNode node = JsonNode.create(null, null, leftJson, rightJson,
 				elementFinder, false);
-		build(node, localJson, remoteJson);
+		build(node, leftJson, rightJson);
 		sort(node);
 		return node;
 	}
 
-	private void build(JsonNode node, JsonElement local, JsonElement remote) {
-		if (local != null)
-			build(node, local, remote, true);
-		else if (remote != null)
-			build(node, local, remote, false);
+	private void build(JsonNode node, JsonElement left, JsonElement right) {
+		if (left != null)
+			build(node, left, right, Side.LEFT);
+		else if (right != null)
+			build(node, left, right, Side.RIGHT);
 	}
 
-	private void build(JsonNode node, JsonElement local, JsonElement remote,
-			boolean forLocal) {
-		JsonElement toCheck = forLocal ? local : remote;
+	private void build(JsonNode node, JsonElement left, JsonElement right,
+			Side side) {
+		JsonElement toCheck = side == Side.LEFT ? left : right;
 		if (toCheck.isJsonObject())
-			build(node, JsonUtil.toJsonObject(local),
-					JsonUtil.toJsonObject(remote));
+			build(node, JsonUtil.toJsonObject(left),
+					JsonUtil.toJsonObject(right));
 		if (toCheck.isJsonArray())
-			build(node, JsonUtil.toJsonArray(local),
-					JsonUtil.toJsonArray(remote));
+			build(node, JsonUtil.toJsonArray(left), JsonUtil.toJsonArray(right));
 	}
 
-	private void build(JsonNode node, JsonObject local, JsonObject remote) {
+	private void build(JsonNode node, JsonObject left, JsonObject right) {
 		Set<String> added = new HashSet<>();
-		if (local != null)
-			buildChildren(node, local, remote, added, true);
-		if (remote != null)
-			buildChildren(node, remote, local, added, false);
+		if (left != null)
+			buildChildren(node, left, right, added, true);
+		if (right != null)
+			buildChildren(node, right, left, added, false);
 	}
 
 	private void buildChildren(JsonNode node, JsonObject json,
@@ -70,53 +70,53 @@ public abstract class JsonNodeBuilder implements Comparator<JsonNode> {
 		}
 	}
 
-	private void build(JsonNode node, JsonArray local, JsonArray remote) {
+	private void build(JsonNode node, JsonArray left, JsonArray right) {
 		Set<Integer> added = new HashSet<>();
-		if (local != null)
-			buildChildren(node, local, remote, true, added);
-		if (remote != null)
-			buildChildren(node, remote, local, false, added);
+		if (left != null)
+			buildChildren(node, left, right, Side.LEFT, added);
+		if (right != null)
+			buildChildren(node, right, left, Side.RIGHT, added);
 	}
 
 	private void buildChildren(JsonNode node, JsonArray array,
-			JsonArray otherArray, boolean forLocal, Set<Integer> added) {
+			JsonArray otherArray, Side side, Set<Integer> added) {
 		int count = 0;
 		int counter = node.children.size() + 1;
 		for (JsonElement value : array) {
-			if (!forLocal && added.contains(count++))
+			if (side == Side.RIGHT && added.contains(count++))
 				continue;
 			JsonElement otherValue = null;
 			int index = elementFinder.find(node.property, value, otherArray);
-			if (forLocal && index != -1) {
+			if (side == Side.LEFT && index != -1) {
 				otherValue = otherArray.get(index);
 				added.add(index);
 			}
-			JsonElement local = forLocal ? value : otherValue;
-			JsonElement remote = forLocal ? otherValue : value;
+			JsonElement left = side == Side.LEFT ? value : otherValue;
+			JsonElement right = side == Side.LEFT ? otherValue : value;
 			String property = Integer.toString(counter++);
-			JsonElement parent = node.parent.getElement(forLocal);
-			JsonNode childNode = JsonNode.create(node, property, local, remote,
-					elementFinder, isReadOnly(parent, property));
+			JsonElement parent = node.parent.getElement(side);
+			JsonNode childNode = JsonNode.create(node, property, left, right,
+					elementFinder, isReadOnly(node, node.property));
 			if (!skipChildren(parent, value))
-				build(childNode, local, remote);
+				build(childNode, left, right);
 			node.children.add(childNode);
 		}
 	}
 
-	private void build(JsonNode parent, String property,
-			JsonElement localValue, JsonElement remoteValue) {
+	private JsonNode build(JsonNode parent, String property,
+			JsonElement leftValue, JsonElement rightValue) {
 		if (skip(parent.getElement(), property))
-			return;
-		JsonNode childNode = JsonNode.create(parent, property, localValue,
-				remoteValue, elementFinder,
-				isReadOnly(parent.getElement(), property));
+			return null;
+		JsonNode childNode = JsonNode.create(parent, property, leftValue,
+				rightValue, elementFinder, isReadOnly(parent, property));
 		parent.children.add(childNode);
-		if (localValue == null) {
-			if (skipChildren(parent.getRemoteElement(), remoteValue))
-				return;
-		} else if (skipChildren(parent.getLocalElement(), localValue))
-			return;
-		build(childNode, localValue, remoteValue);
+		if (leftValue == null) {
+			if (skipChildren(parent.leftElement, rightValue))
+				return childNode;
+		} else if (skipChildren(parent.rightElement, leftValue))
+			return childNode;
+		build(childNode, leftValue, rightValue);
+		return childNode;
 	}
 
 	private void sort(JsonNode node) {
@@ -130,6 +130,6 @@ public abstract class JsonNodeBuilder implements Comparator<JsonNode> {
 	protected abstract boolean skipChildren(JsonElement parent,
 			JsonElement element);
 
-	protected abstract boolean isReadOnly(JsonElement parent, String property);
+	protected abstract boolean isReadOnly(JsonNode node, String property);
 
 }

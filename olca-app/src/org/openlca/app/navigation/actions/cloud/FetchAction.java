@@ -12,11 +12,11 @@ import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.cloud.JsonLoader;
 import org.openlca.app.cloud.index.Diff;
 import org.openlca.app.cloud.index.DiffIndex;
-import org.openlca.app.cloud.ui.CommitEntryDialog;
 import org.openlca.app.cloud.ui.DiffDialog;
-import org.openlca.app.cloud.ui.DiffNode;
-import org.openlca.app.cloud.ui.DiffNodeBuilder;
-import org.openlca.app.cloud.ui.DiffResult;
+import org.openlca.app.cloud.ui.commits.CommitEntryDialog;
+import org.openlca.app.cloud.ui.diff.DiffNode;
+import org.openlca.app.cloud.ui.diff.DiffNodeBuilder;
+import org.openlca.app.cloud.ui.diff.DiffResult;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
@@ -98,8 +98,7 @@ public class FetchAction extends Action implements INavigationAction {
 				return;
 			if (root != null) {
 				JsonLoader loader = CloudUtil.getJsonLoader(client);
-				DiffDialog dialog = new DiffDialog(root, loader::getLocalJson,
-						loader::getRemoteJson);
+				DiffDialog dialog = new DiffDialog(root, loader);
 				if (dialog.open() != IDialogConstants.OK_ID)
 					return;
 			}

@@ -9,8 +9,8 @@ import java.util.List;
 
 import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.cloud.index.DiffType;
-import org.openlca.app.cloud.ui.DiffResult;
-import org.openlca.app.cloud.ui.DiffResult.DiffResponse;
+import org.openlca.app.cloud.ui.diff.DiffResult;
+import org.openlca.app.cloud.ui.diff.DiffResult.DiffResponse;
 import org.openlca.cloud.model.data.Dataset;
 
 class FetchIndexHelper {

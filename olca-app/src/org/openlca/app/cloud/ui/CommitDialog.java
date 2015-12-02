@@ -16,6 +16,9 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.cloud.JsonLoader;
+import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer.Direction;
+import org.openlca.app.cloud.ui.diff.DiffNode;
+import org.openlca.app.cloud.ui.diff.DiffTreeViewer;
 import org.openlca.app.util.UI;
 import org.openlca.cloud.api.RepositoryClient;
 
@@ -68,13 +71,12 @@ public class CommitDialog extends FormDialog {
 	private void createModelViewer(Composite parent, FormToolkit toolkit) {
 		Section section = UI.section(parent, toolkit, "#Files");
 		UI.gridData(section, true, true);
-		Composite composite = toolkit.createComposite(section);
-		UI.gridData(composite, true, true);
-		UI.gridLayout(composite, 1);
-		section.setClient(composite);
+		Composite comp = toolkit.createComposite(section);
+		UI.gridData(comp, true, true);
+		UI.gridLayout(comp, 1);
+		section.setClient(comp);
 		JsonLoader loader = CloudUtil.getJsonLoader(client);
-		viewer = new DiffTreeViewer(composite, true, loader::getLocalJson,
-				loader::getRemoteJson);
+		viewer = new DiffTreeViewer(comp, Direction.LEFT_TO_RIGHT, loader);
 	}
 
 	@Override
