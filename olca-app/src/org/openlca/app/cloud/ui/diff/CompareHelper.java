@@ -106,7 +106,7 @@ class CompareHelper {
 		if (node.isModelTypeNode())
 			return null;
 		DiffResult result = (DiffResult) node.content;
-		return result.getDataset().getName();
+		return result.getDataset().getFullPath();
 	}
 
 	private Image getLogo(DiffNode node) {

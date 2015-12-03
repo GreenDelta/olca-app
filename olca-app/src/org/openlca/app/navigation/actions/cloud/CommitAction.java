@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jface.action.Action;
@@ -18,6 +19,8 @@ import org.openlca.app.cloud.ui.diff.DiffNode;
 import org.openlca.app.cloud.ui.diff.DiffNodeBuilder;
 import org.openlca.app.cloud.ui.diff.DiffResult;
 import org.openlca.app.cloud.ui.diff.DiffResult.DiffResponse;
+import org.openlca.app.cloud.ui.library.LibraryResultDialog;
+import org.openlca.app.cloud.ui.preferences.CloudPreference;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.CategoryElement;
 import org.openlca.app.navigation.INavigationElement;
@@ -91,9 +94,11 @@ public class CommitAction extends Action implements INavigationAction {
 
 		private boolean upToDate = true;
 		private boolean noChanges = false;
+		private boolean canceled = false;
 		private String message;
 		private List<DiffResult> changes;
 		private List<DiffResult> selected;
+		private Map<Dataset, String> checkResult;
 		private WebRequestException error;
 
 		public void run() {
@@ -128,8 +133,37 @@ public class CommitAction extends Action implements INavigationAction {
 				return;
 			message = dialog.getMessage();
 			selected = dialog.getSelected();
+			doLibraryCheck();
+			if (canceled)
+				return;
 			App.runWithProgress("#Commiting changes", this::commit);
 			afterCommit();
+		}
+
+		private void doLibraryCheck() {
+			if (!CloudPreference.doCheckAgainstLibraries())
+				return;
+			App.runWithProgress("#Checking against libraries",
+					this::checkAgainstLibraries);
+			if (!canContinue())
+				return;
+			if (checkResult == null)
+				return;
+			LibraryResultDialog libraryDialog = new LibraryResultDialog(
+					checkResult);
+			if (libraryDialog.open() != IDialogConstants.OK_ID)
+				canceled = true;
+		}
+
+		private void checkAgainstLibraries() {
+			Set<Dataset> datasets = new HashSet<>();
+			for (DiffResult result : selected)
+				datasets.add(result.getDataset());
+			try {
+				checkResult = client.performLibraryCheck(datasets);
+			} catch (WebRequestException e) {
+				error = e;
+			}
 		}
 
 		private void commit() {

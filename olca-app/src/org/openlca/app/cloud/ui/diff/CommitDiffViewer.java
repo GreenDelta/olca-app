@@ -21,8 +21,9 @@ public class CommitDiffViewer extends DiffTreeViewer {
 	}
 
 	public void setInitialSelection(Set<String> initialSelection) {
-		List<DiffNode> elements = matchInitialSelection(initialSelection, root);
-		DiffNode[] array = elements.toArray(new DiffNode[elements.size()]);
+		// TODO this is very inefficient, find a better way
+		selected = matchInitialSelection(initialSelection, root);
+		DiffNode[] array = selected.toArray(new DiffNode[selected.size()]);
 		getViewer().setCheckedElements(array);
 		for (DiffNode node : array)
 			getViewer().reveal(node);

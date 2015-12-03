@@ -16,7 +16,6 @@ import org.openlca.cloud.model.data.Commit;
 public class CommitEntryDialog extends FormDialog {
 
 	private final List<Commit> commits;
-	private CommitEntryViewer viewer;
 	private RepositoryClient client;
 
 	public CommitEntryDialog(List<Commit> commits, RepositoryClient client) {
@@ -39,13 +38,9 @@ public class CommitEntryDialog extends FormDialog {
 		body.setLayout(new GridLayout());
 		toolkit.paintBordersFor(body);
 		UI.gridData(body, true, true);
-		createCommitViewer(body, toolkit);
+		CommitEntryViewer viewer = new CommitEntryViewer(body, client);
 		form.reflow(true);
 		viewer.setInput(commits);
-	}
-
-	private void createCommitViewer(Composite parent, FormToolkit toolkit) {
-		viewer = new CommitEntryViewer(parent, client);
 	}
 
 }

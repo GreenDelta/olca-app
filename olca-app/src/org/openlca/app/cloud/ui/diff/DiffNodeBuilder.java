@@ -50,16 +50,10 @@ public class DiffNodeBuilder {
 			return;
 		if (!result.getDataset().getType().isCategorized())
 			return;
-		DiffNode parent = getOrCreateParentNode(result);
+		DiffNode parent = getOrCreateParentNode(result.getDataset());
 		DiffNode node = new DiffNode(parent, result);
 		parent.children.add(node);
 		nodes.put(result.getDataset().getRefId(), node);
-	}
-
-	private DiffNode getOrCreateParentNode(DiffResult result) {
-		if (result.remote != null)
-			return getOrCreateParentNode(result.remote);
-		return getOrCreateParentNode(result.local.getDataset());
 	}
 
 	private DiffNode getOrCreateParentNode(Dataset dataset) {
