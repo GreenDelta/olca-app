@@ -2,7 +2,6 @@ package org.openlca.app.cloud.ui.commits;
 
 import java.util.List;
 
-import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -43,12 +42,6 @@ public class CommitEntryDialog extends FormDialog {
 		createCommitViewer(body, toolkit);
 		form.reflow(true);
 		viewer.setInput(commits);
-	}
-
-	@Override
-	protected void createButtonsForButtonBar(Composite parent) {
-		createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL,
-				true);
 	}
 
 	private void createCommitViewer(Composite parent, FormToolkit toolkit) {

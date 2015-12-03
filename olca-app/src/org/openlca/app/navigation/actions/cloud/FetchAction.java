@@ -77,7 +77,8 @@ public class FetchAction extends Action implements INavigationAction {
 				return;
 			}
 			CommitEntryDialog dialog = new CommitEntryDialog(commits, client);
-			dialog.open();
+			if (dialog.open() != IDialogConstants.OK_ID)
+				return;
 			App.runWithProgress("#Fetching changes", this::requestFetch);
 			showDifferences();
 		}
