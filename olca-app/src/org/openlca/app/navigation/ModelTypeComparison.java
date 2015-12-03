@@ -17,9 +17,9 @@ public class ModelTypeComparison {
 		ModelType[] order = new ModelType[] { ModelType.PROJECT,
 				ModelType.PRODUCT_SYSTEM, ModelType.IMPACT_METHOD,
 				ModelType.PARAMETER, ModelType.PROCESS, ModelType.FLOW,
-				ModelType.COST_CATEGORY, ModelType.SOCIAL_INDICATOR,
-				ModelType.FLOW_PROPERTY, ModelType.UNIT_GROUP,
-				ModelType.SOURCE, ModelType.ACTOR, ModelType.LOCATION };
+				ModelType.SOCIAL_INDICATOR, ModelType.FLOW_PROPERTY,
+				ModelType.UNIT_GROUP, ModelType.SOURCE, ModelType.ACTOR,
+				ModelType.LOCATION };
 		for (int i = 0; i < order.length; i++)
 			typeOrder.put(order[i], i);
 	}

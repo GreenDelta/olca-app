@@ -42,12 +42,6 @@ public enum ImageType {
 
 	COST_CALC_ICON("cost_calc_icon.png"),
 
-	COST_CATEGORY_ICON("cost_category.png"),
-
-	COST_CATEGORY_ICON_NEW("cost_category_new.png"),
-
-	COST_CATEGORY_CATEGORY_ICON("folder_cost_category.png"),
-
 	CURRENCY_ICON("currency.png"),
 
 	CURRENCY_ICON_NEW("currency_new.png"),
@@ -177,7 +171,7 @@ public enum ImageType {
 	LINK_16_BLUE("16x16_link_blue.png"),
 
 	LOAD_ICON("load_obj.gif"),
-	
+
 	LOCATION_ICON("location.png"),
 
 	LOCATION_ICON_NEW("location_new.png"),
@@ -335,7 +329,7 @@ public enum ImageType {
 	ZIP_ICON("zip.gif"),
 
 	// repository overlays
-	
+
 	OVERLAY_ADDED("repo/added.png"),
 
 	OVERLAY_DELETED("repo/deleted.png"),
@@ -361,7 +355,7 @@ public enum ImageType {
 	COPY_SELECTED_CHANGE("repo/diff/copy_selected.png"),
 
 	COPY_ALL_CHANGES("repo/diff/copy_all.png"),
-	
+
 	NEXT_CHANGE("repo/diff/next_change.png"),
 
 	PREVIOUS_CHANGE("repo/diff/previous_change.png"),

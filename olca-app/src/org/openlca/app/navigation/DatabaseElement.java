@@ -29,7 +29,6 @@ public class DatabaseElement extends NavigationElement<IDatabaseConfiguration> {
 		list.add(new GroupElement(this, g("#Inventory",
 				ModelType.PROCESS,
 				ModelType.FLOW,
-				ModelType.COST_CATEGORY,
 				ModelType.SOCIAL_INDICATOR)));
 		list.add(new GroupElement(this, g("#Background data",
 				ModelType.FLOW_PROPERTY,

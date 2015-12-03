@@ -238,7 +238,7 @@ public class Labels {
 			return null;
 		}
 	}
-	
+
 	public static String riskLevel(RiskLevel rl) {
 		if (rl == null)
 			return Messages.Unknown;
@@ -277,8 +277,6 @@ public class Labels {
 		switch (o) {
 		case ACTOR:
 			return Messages.Actors;
-		case COST_CATEGORY:
-			return "#Cost categories";
 		case CURRENCY:
 			return "#Currencies";
 		case FLOW:
@@ -316,8 +314,6 @@ public class Labels {
 		switch (o) {
 		case ACTOR:
 			return Messages.Actor;
-		case COST_CATEGORY:
-			return "#Cost category";
 		case CURRENCY:
 			return "#Currency";
 		case FLOW:
