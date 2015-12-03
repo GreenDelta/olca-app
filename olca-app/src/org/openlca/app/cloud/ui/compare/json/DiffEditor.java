@@ -51,8 +51,9 @@ class DiffEditor extends Composite {
 		if (editMode && root.leftElement != null && root.rightElement != null)
 			menu = new MenuBar(this, dependencyResolver);
 		createTreeParts(direction);
-		rightTree.getViewer().addSelectionChangedListener(menu::updateButtons);
 		if (menu != null) {
+			rightTree.getViewer().addSelectionChangedListener(
+					menu::updateButtons);
 			menu.initActions(root, leftTree, rightTree, dependencyResolver);
 			menu.updateButtons(null);
 		}

@@ -2,7 +2,9 @@ package org.openlca.app.cloud.ui;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
@@ -30,12 +32,17 @@ public class CommitDialog extends FormDialog {
 	private String message;
 	private CommitDiffViewer viewer;
 	private RepositoryClient client;
+	private Set<String> initialSelection = new HashSet<>();
 
 	public CommitDialog(DiffNode node, RepositoryClient client) {
 		super(UI.shell());
 		this.node = node;
 		this.client = client;
 		setBlockOnOpen(true);
+	}
+
+	public void setInitialSelection(Set<String> initialSelection) {
+		this.initialSelection = initialSelection;
 	}
 
 	@Override
@@ -56,6 +63,7 @@ public class CommitDialog extends FormDialog {
 		createModelViewer(body, toolkit);
 		form.reflow(true);
 		viewer.setInput(Collections.singleton(node));
+		viewer.setInitialSelection(initialSelection);
 	}
 
 	private void createCommitMessage(Composite parent, FormToolkit toolkit) {
@@ -67,7 +75,10 @@ public class CommitDialog extends FormDialog {
 				| SWT.V_SCROLL | SWT.WRAP | SWT.MULTI);
 		GridData gd = UI.gridData(commitText, true, false);
 		gd.heightHint = 150;
-		commitText.addModifyListener((event) -> message = commitText.getText());
+		commitText.addModifyListener((event) -> {
+			message = commitText.getText();
+			updateButton();
+		});
 	}
 
 	private void createModelViewer(Composite parent, FormToolkit toolkit) {
@@ -79,9 +90,14 @@ public class CommitDialog extends FormDialog {
 		section.setClient(comp);
 		JsonLoader loader = CloudUtil.getJsonLoader(client);
 		viewer = new CommitDiffViewer(comp, loader);
-//		viewer.getViewer().addCheckStateListener((e) -> {
-//			getButton(IDialogConstants.OK_ID).setEnabled(viewer.hasChecked());
-//		});
+		viewer.getViewer().addCheckStateListener((e) -> updateButton());
+	}
+
+	private void updateButton() {
+		boolean enabled = viewer.hasChecked();
+		if (message == null || message.isEmpty())
+			enabled = false;
+		getButton(IDialogConstants.OK_ID).setEnabled(enabled);
 	}
 
 	@Override

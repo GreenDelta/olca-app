@@ -2,6 +2,7 @@ package org.openlca.app.cloud.ui.diff;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -17,6 +18,28 @@ public class CommitDiffViewer extends DiffTreeViewer {
 
 	public CommitDiffViewer(Composite parent, JsonLoader jsonLoader) {
 		super(parent, jsonLoader, Direction.LEFT_TO_RIGHT);
+	}
+
+	public void setInitialSelection(Set<String> initialSelection) {
+		List<DiffNode> elements = matchInitialSelection(initialSelection, root);
+		DiffNode[] array = elements.toArray(new DiffNode[elements.size()]);
+		getViewer().setCheckedElements(array);
+		for (DiffNode node : array)
+			getViewer().reveal(node);
+	}
+
+	private List<DiffNode> matchInitialSelection(Set<String> refIds,
+			DiffNode node) {
+		List<DiffNode> elements = new ArrayList<>();
+		for (DiffNode child : node.children) {
+			if (!child.isModelTypeNode() && child.hasChanged()) {
+				String refId = child.getContent().getDataset().getRefId();
+				if (refIds.contains(refId))
+					elements.add(child);
+			}
+			elements.addAll(matchInitialSelection(refIds, child));
+		}
+		return elements;
 	}
 
 	@Override
@@ -36,6 +59,11 @@ public class CommitDiffViewer extends DiffTreeViewer {
 				selected.remove(node);
 		});
 		return viewer;
+	}
+
+	@Override
+	public CheckboxTreeViewer getViewer() {
+		return (CheckboxTreeViewer) super.getViewer();
 	}
 
 	private boolean isCheckable(DiffNode node) {

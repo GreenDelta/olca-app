@@ -1,7 +1,10 @@
 package org.openlca.app.navigation.actions.cloud;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -9,14 +12,16 @@ import org.openlca.app.App;
 import org.openlca.app.cloud.index.Diff;
 import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.cloud.index.DiffType;
+import org.openlca.app.cloud.index.DiffUtil;
 import org.openlca.app.cloud.ui.CommitDialog;
 import org.openlca.app.cloud.ui.diff.DiffNode;
 import org.openlca.app.cloud.ui.diff.DiffNodeBuilder;
 import org.openlca.app.cloud.ui.diff.DiffResult;
 import org.openlca.app.cloud.ui.diff.DiffResult.DiffResponse;
 import org.openlca.app.db.Database;
-import org.openlca.app.navigation.DatabaseElement;
+import org.openlca.app.navigation.CategoryElement;
 import org.openlca.app.navigation.INavigationElement;
+import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.util.Error;
@@ -31,6 +36,7 @@ public class CommitAction extends Action implements INavigationAction {
 
 	private DiffIndex index;
 	private RepositoryClient client;
+	private List<INavigationElement<?>> selection;
 
 	public CommitAction() {
 		setText("#Commit...");
@@ -50,18 +56,35 @@ public class CommitAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean accept(INavigationElement<?> element) {
-		while (!(element instanceof DatabaseElement))
-			element = element.getParent();
-		client = Database.getRepositoryClient();
-		if (client == null)
+		if (!Database.isConnected())
 			return false;
 		index = Database.getDiffIndex();
+		client = Database.getRepositoryClient();
+		selection = Collections.singletonList(element);
 		return true;
 	}
 
 	@Override
 	public boolean accept(List<INavigationElement<?>> elements) {
-		return accept(elements.get(0));
+		if (!Database.isConnected())
+			return false;
+		index = Database.getDiffIndex();
+		client = Database.getRepositoryClient();
+		selection = elements;
+		return true;
+	}
+
+	private Set<String> toRefIdList(INavigationElement<?> element) {
+		if (!DiffUtil.hasChanged(element))
+			return Collections.emptySet();
+		Set<String> refIds = new HashSet<>();
+		if (element instanceof CategoryElement)
+			refIds.add(((CategoryElement) element).getContent().getRefId());
+		if (element instanceof ModelElement)
+			refIds.add(((ModelElement) element).getContent().getRefId());
+		for (INavigationElement<?> child : element.getChildren())
+			refIds.addAll(toRefIdList(child));
+		return refIds;
 	}
 
 	private class Runner {
@@ -97,6 +120,10 @@ public class CommitAction extends Action implements INavigationAction {
 			}
 			CommitDialog dialog = new CommitDialog(node, client);
 			dialog.setBlockOnOpen(true);
+			Set<String> refIds = new HashSet<>();
+			for (INavigationElement<?> element : selection)
+				refIds.addAll(toRefIdList(element));
+			dialog.setInitialSelection(refIds);
 			if (dialog.open() != IDialogConstants.OK_ID)
 				return;
 			message = dialog.getMessage();
@@ -121,7 +148,7 @@ public class CommitAction extends Action implements INavigationAction {
 		}
 
 		private void indexCommit() {
-			for (DiffResult change : changes) {
+			for (DiffResult change : selected) {
 				Dataset dataset = change.getDataset();
 				DiffType before = index.get(dataset.getRefId()).type;
 				if (before == DiffType.DELETED)

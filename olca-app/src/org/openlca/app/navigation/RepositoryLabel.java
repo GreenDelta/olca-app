@@ -3,16 +3,14 @@ package org.openlca.app.navigation;
 import org.eclipse.swt.graphics.Image;
 import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.cloud.index.Diff;
-import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.cloud.index.DiffType;
+import org.openlca.app.cloud.index.DiffUtil;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.rcp.ImageManager;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Images;
 import org.openlca.cloud.api.RepositoryClient;
-import org.openlca.cloud.model.data.Dataset;
-import org.openlca.core.model.ModelType;
 
 class RepositoryLabel {
 
@@ -27,7 +25,7 @@ class RepositoryLabel {
 			return null;
 		if (element instanceof ModelTypeElement)
 			return null;
-		Diff diff = getDiff(CloudUtil.toDataset(element));
+		Diff diff = DiffUtil.getDiff(CloudUtil.toDataset(element));
 		if (diff.type != DiffType.NEW)
 			return null;
 		ImageType imageType = null;
@@ -59,16 +57,16 @@ class RepositoryLabel {
 		RepositoryClient client = Database.getRepositoryClient();
 		if (client == null)
 			return null;
-		boolean hasChanged = hasChanged(element);
+		boolean hasChanged = DiffUtil.hasChanged(element);
 		if (!hasChanged)
 			return null;
 		if (element instanceof ModelElement && isNew(element))
 			return null;
 		return CHANGED_STATE;
 	}
-
+	
 	private static boolean isNew(INavigationElement<?> element) {
-		Diff diff = getDiff(CloudUtil.toDataset(element));
+		Diff diff = DiffUtil.getDiff(CloudUtil.toDataset(element));
 		if (element instanceof DatabaseElement)
 			return false;
 		if (element instanceof GroupElement)
@@ -76,34 +74,6 @@ class RepositoryLabel {
 		if (element instanceof ModelTypeElement)
 			return false;
 		return diff.type == DiffType.NEW;
-	}
-
-	private static boolean hasChanged(INavigationElement<?> element) {
-		if (element instanceof CategoryElement)
-			return hasChanged(CloudUtil.toDataset(element));
-		if (element instanceof ModelElement)
-			return hasChanged(CloudUtil.toDataset(element));
-		if (element instanceof ModelTypeElement)
-			return hasChanged(((ModelTypeElement) element).getContent());
-		for (INavigationElement<?> child : element.getChildren())
-			if (hasChanged(child))
-				return true;
-		return false;
-	}
-
-	private static boolean hasChanged(Dataset dataset) {
-		Diff diff = getDiff(dataset);
-		return diff.hasChanged() || diff.childrenHaveChanged();
-	}
-
-	private static boolean hasChanged(ModelType type) {
-		DiffIndex index = Database.getDiffIndex();
-		return index.hasChanged(type);
-	}
-
-	private static Diff getDiff(Dataset dataset) {
-		DiffIndex index = Database.getDiffIndex();
-		return index.get(dataset.getRefId());
 	}
 
 }
