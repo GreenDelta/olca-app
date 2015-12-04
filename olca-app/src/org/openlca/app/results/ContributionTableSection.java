@@ -15,7 +15,7 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
-import org.openlca.app.viewers.combo.CostCategoryViewer;
+import org.openlca.app.viewers.combo.CostResultViewer;
 import org.openlca.app.viewers.combo.FlowViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
 import org.openlca.core.model.ModelType;
@@ -128,7 +128,7 @@ public class ContributionTableSection {
 	}
 
 	private void createCostViewer(Composite header) {
-		CostCategoryViewer viewer = new CostCategoryViewer(header);
+		CostResultViewer viewer = new CostResultViewer(header);
 		Set<CostCategoryDescriptor> set = provider.getCostDescriptors();
 		CostCategoryDescriptor[] costs = set.toArray(
 				new CostCategoryDescriptor[set.size()]);
