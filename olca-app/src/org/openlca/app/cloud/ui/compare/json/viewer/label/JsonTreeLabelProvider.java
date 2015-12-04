@@ -66,7 +66,7 @@ public class JsonTreeLabelProvider extends StyledCellLabelProvider {
 	private String adjustMultiline(JsonNode node, String value,
 			String otherValue) {
 		if (value == null)
-			value = " ";
+			value = "";
 		int count1 = countLines(value);
 		int count2 = countLines(otherValue);
 		if (count2 > count1)

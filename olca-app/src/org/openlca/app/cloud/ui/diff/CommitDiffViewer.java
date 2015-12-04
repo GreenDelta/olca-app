@@ -1,6 +1,7 @@
 package org.openlca.app.cloud.ui.diff;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -8,6 +9,8 @@ import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeItem;
 import org.openlca.app.cloud.JsonLoader;
 import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer.Direction;
 import org.openlca.app.cloud.ui.diff.DiffResult.DiffResponse;
@@ -21,16 +24,40 @@ public class CommitDiffViewer extends DiffTreeViewer {
 	}
 
 	public void setInitialSelection(Set<String> initialSelection) {
-		// TODO this is very inefficient, find a better way
-		selected = matchInitialSelection(initialSelection, root);
-		DiffNode[] array = selected.toArray(new DiffNode[selected.size()]);
-		getViewer().setCheckedElements(array);
-		for (DiffNode node : array)
+		selected = findNodes(initialSelection, root);
+		Set<String> expanded = new HashSet<>();
+		Tree tree = getViewer().getTree();
+		for (DiffNode node : selected) {
+			if (!node.isModelNode())
+				continue;
+			String cId = node.getContent().getDataset().getCategoryRefId();
+			if (expanded.contains(cId))
+				continue;
+			expanded.add(cId);
 			getViewer().reveal(node);
+		}
+		tree.setRedraw(false);
+		setChecked(initialSelection, tree.getItems());
+		tree.setRedraw(true);
 	}
 
-	private List<DiffNode> matchInitialSelection(Set<String> refIds,
-			DiffNode node) {
+	// can't use setChecked(Object[]) for performance reasons. Original
+	// reveals path internally for all elements, which is unnecessary
+	// because this is already done in a more efficient way in
+	// setInitialSelection
+	private void setChecked(Set<String> refIds, TreeItem[] items) {
+		for (TreeItem item : items) {
+			DiffNode node = (DiffNode) item.getData();
+			if (node != null && !node.isModelTypeNode()) {
+				String refId = node.getContent().getDataset().getRefId();
+				if (refIds.contains(refId))
+					item.setChecked(true);
+			}
+			setChecked(refIds, item.getItems());
+		}
+	}
+
+	private List<DiffNode> findNodes(Set<String> refIds, DiffNode node) {
 		List<DiffNode> elements = new ArrayList<>();
 		for (DiffNode child : node.children) {
 			if (!child.isModelTypeNode() && child.hasChanged()) {
@@ -38,7 +65,7 @@ public class CommitDiffViewer extends DiffTreeViewer {
 				if (refIds.contains(refId))
 					elements.add(child);
 			}
-			elements.addAll(matchInitialSelection(refIds, child));
+			elements.addAll(findNodes(refIds, child));
 		}
 		return elements;
 	}

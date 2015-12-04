@@ -373,6 +373,11 @@
             class="org.openlca.app.preferencepages.ConfigPage"
             name="%Configuration">
       </page>
+      <page
+            class="org.openlca.app.cloud.ui.preferences.CloudPreferencePage"
+            id="preferencepages.cloud"
+            name="#Cloud ">
+      </page>
    </extension>
    <extension
          point="org.eclipse.ui.menus">
@@ -559,6 +564,9 @@
       </initializer>
       <initializer
             class="org.openlca.app.ilcd_network.Preference">
+      </initializer>
+      <initializer
+            class="org.openlca.app.cloud.ui.preferences.CloudPreference">
       </initializer>
    </extension>
    
