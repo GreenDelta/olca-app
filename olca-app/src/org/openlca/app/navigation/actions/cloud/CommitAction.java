@@ -13,7 +13,6 @@ import org.openlca.app.App;
 import org.openlca.app.cloud.index.Diff;
 import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.cloud.index.DiffType;
-import org.openlca.app.cloud.index.DiffUtil;
 import org.openlca.app.cloud.ui.CommitDialog;
 import org.openlca.app.cloud.ui.diff.DiffNode;
 import org.openlca.app.cloud.ui.diff.DiffNodeBuilder;
@@ -22,9 +21,7 @@ import org.openlca.app.cloud.ui.diff.DiffResult.DiffResponse;
 import org.openlca.app.cloud.ui.library.LibraryResultDialog;
 import org.openlca.app.cloud.ui.preferences.CloudPreference;
 import org.openlca.app.db.Database;
-import org.openlca.app.navigation.CategoryElement;
 import org.openlca.app.navigation.INavigationElement;
-import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.util.Error;
@@ -77,19 +74,6 @@ public class CommitAction extends Action implements INavigationAction {
 		return true;
 	}
 
-	private Set<String> toRefIdList(INavigationElement<?> element) {
-		if (!DiffUtil.hasChanged(element))
-			return Collections.emptySet();
-		Set<String> refIds = new HashSet<>();
-		if (element instanceof CategoryElement)
-			refIds.add(((CategoryElement) element).getContent().getRefId());
-		if (element instanceof ModelElement)
-			refIds.add(((ModelElement) element).getContent().getRefId());
-		for (INavigationElement<?> child : element.getChildren())
-			refIds.addAll(toRefIdList(child));
-		return refIds;
-	}
-
 	private class Runner {
 
 		private boolean upToDate = true;
@@ -125,9 +109,8 @@ public class CommitAction extends Action implements INavigationAction {
 			}
 			CommitDialog dialog = new CommitDialog(node, client);
 			dialog.setBlockOnOpen(true);
-			Set<String> refIds = new HashSet<>();
-			for (INavigationElement<?> element : selection)
-				refIds.addAll(toRefIdList(element));
+			Set<String> refIds = new RefIdListBuilder(selection, changes, index)
+					.build();
 			dialog.setInitialSelection(refIds);
 			if (dialog.open() != IDialogConstants.OK_ID)
 				return;
@@ -147,7 +130,7 @@ public class CommitAction extends Action implements INavigationAction {
 					this::checkAgainstLibraries);
 			if (!canContinue())
 				return;
-			if (checkResult == null)
+			if (checkResult == null || checkResult.isEmpty())
 				return;
 			LibraryResultDialog libraryDialog = new LibraryResultDialog(
 					checkResult);
@@ -182,6 +165,7 @@ public class CommitAction extends Action implements INavigationAction {
 		}
 
 		private void indexCommit() {
+			orderResults();
 			for (DiffResult change : selected) {
 				Dataset dataset = change.getDataset();
 				DiffType before = index.get(dataset.getRefId()).type;
@@ -191,6 +175,26 @@ public class CommitAction extends Action implements INavigationAction {
 					index.update(dataset, DiffType.NO_DIFF);
 			}
 			index.commit();
+		}
+
+		// must order diffs by length of path, so when removing from index,
+		// parent updating always works
+		private void orderResults() {
+			Collections.sort(selected, (d1, d2) -> {
+				int depth1 = 0;
+				String path = d1.getDataset().getFullPath();
+				while (path.contains("/")) {
+					path = path.substring(path.indexOf("/") + 1);
+					depth1++;
+				}
+				int depth2 = 0;
+				path = d2.getDataset().getFullPath();
+				while (path.contains("/")) {
+					path = path.substring(path.indexOf("/") + 1);
+					depth2++;
+				}
+				return Integer.compare(depth2, depth1);
+			});
 		}
 
 		private void afterCommit() {
@@ -236,6 +240,7 @@ public class CommitAction extends Action implements INavigationAction {
 					commit.put(Database.createRootDao(type).getForRefId(refId));
 				}
 		}
+
 	}
 
 }

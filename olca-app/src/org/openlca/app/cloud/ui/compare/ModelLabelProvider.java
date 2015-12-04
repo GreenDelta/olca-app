@@ -25,43 +25,46 @@ public class ModelLabelProvider implements IJsonNodeLabelProvider {
 
 	@Override
 	public String getText(JsonNode node, Side side) {
+		JsonElement element = node.getElement(side);
+		JsonElement otherElement = node.getElement(side.getOther());
 		JsonElement parent = node.parent.getElement();
 		boolean isArrayElement = false;
 		if (parent.isJsonArray()) {
 			isArrayElement = true;
 			parent = node.parent.parent.getElement();
 		}
-		return getText(node.property, node.getElement(side), parent,
-				isArrayElement);
-	}
-
-	private String getText(String property, JsonElement element,
-			JsonElement parent, boolean isArrayElement) {
-		if (isFiller(element, parent))
+		if (isFiller(element, node.parent.getElement(side)))
 			return null;
 		String type = ModelUtil.getType(parent);
-		String propertyLabel = PropertyLabels.get(type, property);
-		if (showPropertyOnly(element, parent, isArrayElement))
+		String propertyLabel = PropertyLabels.get(type, node.property);
+		if (showPropertyOnly(element, otherElement, parent, isArrayElement))
 			return propertyLabel;
 		String value = getValue(element, parent);
-		String valueLabel = ValueLabels.get(property, element, parent, value);
+		String valueLabel = ValueLabels.get(node.property, element, parent,
+				value);
 		return propertyLabel + ": " + valueLabel;
 	}
 
 	private boolean isFiller(JsonElement element, JsonElement parent) {
-		if (element == null)
+		if (parent == null)
 			return true;
-		if (element.isJsonNull())
-			if (!parent.isJsonObject())
+		if (parent.isJsonNull())
+			return true;
+		if (parent.isJsonArray())
+			if (parent.getAsJsonArray().size() == 0)
 				return true;
 		return false;
 	}
 
-	private boolean showPropertyOnly(JsonElement element, JsonElement parent,
-			boolean isArrayElement) {
-		if (element.isJsonArray())
-			if (element.getAsJsonArray().size() != 0)
+	private boolean showPropertyOnly(JsonElement element,
+			JsonElement otherElement, JsonElement parent, boolean isArrayElement) {
+		if (element == null || element.isJsonNull())
+			if (otherElement.isJsonArray())
 				return true;
+			else
+				return false;
+		if (element.isJsonArray())
+			return true;
 		if (!element.isJsonObject())
 			return false;
 		if (isArrayElement)
@@ -73,17 +76,13 @@ public class ModelLabelProvider implements IJsonNodeLabelProvider {
 		return false;
 	}
 
-	private boolean isNullValue(JsonElement element) {
-		if (element == null)
-			return true;
-		if (!element.isJsonArray())
-			return false;
-		return element.getAsJsonArray().size() == 0;
-	}
-
 	private String getValue(JsonElement element, JsonElement parent) {
-		if (isNullValue(element))
-			return null;
+		if (element == null)
+			return "";
+		if (element.isJsonArray() && element.getAsJsonArray().size() == 0)
+			return "";
+		if (element.isJsonNull())
+			return "";
 		if (!element.isJsonObject())
 			return element.getAsString();
 		return ModelUtil.getObjectLabel(parent, element.getAsJsonObject());

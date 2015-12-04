@@ -7,6 +7,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.window.Window;
 import org.openlca.app.Messages;
+import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.CategoryElement;
 import org.openlca.app.navigation.INavigationElement;
@@ -86,6 +87,8 @@ public class CreateCategoryAction extends Action implements INavigationAction {
 			category.setCategory(parent);
 			parent.getChildCategories().add(category);
 			dao.update(parent);
+			// have to add to diff index manually here
+			Database.getIndexUpdater().insert(CloudUtil.toDataset(category));
 		}
 	}
 

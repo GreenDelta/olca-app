@@ -12,17 +12,15 @@ import org.openlca.cloud.model.data.Commit;
 
 class CommitEntryViewer extends AbstractViewer<Commit, TreeViewer> {
 
-	private RepositoryClient client;
-
-	public CommitEntryViewer(Composite parent, RepositoryClient client) {
-		super(parent);
-		this.client = client;
+	CommitEntryViewer(Composite parent, RepositoryClient client) {
+		super(parent, client);
 	}
 
 	@Override
 	protected TreeViewer createViewer(Composite parent) {
 		TreeViewer viewer = new TreeViewer(parent, SWT.BORDER);
-		viewer.setContentProvider(new ContentProvider(client));
+		viewer.setContentProvider(new ContentProvider(
+				(RepositoryClient) viewerParameters[0]));
 		viewer.setLabelProvider(getLabelProvider());
 		Tree tree = viewer.getTree();
 		UI.gridData(tree, true, true);

@@ -31,6 +31,8 @@ public class CommitDiffViewer extends DiffTreeViewer {
 			if (!node.isModelNode())
 				continue;
 			String cId = node.getContent().getDataset().getCategoryRefId();
+			if (cId == null)
+				cId = node.getModelType().name();
 			if (expanded.contains(cId))
 				continue;
 			expanded.add(cId);

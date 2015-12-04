@@ -32,6 +32,8 @@ class DiffStyle {
 	private void applySpecificDiffs(StyledString styled, String otherText,
 			Side side, Direction direction) {
 		String text = styled.getString();
+		if (text.isEmpty())
+			return;
 		LinkedList<Diff> diffs = getDiffs(text, otherText, side, direction);
 		boolean showDelete = doShowDelete(side, direction);
 		boolean showInsert = doShowInsert(side, direction);
@@ -54,7 +56,7 @@ class DiffStyle {
 		DiffMatchPatch dmp = new DiffMatchPatch();
 		if (side == Side.LEFT && direction == Direction.RIGHT_TO_LEFT)
 			diffs = dmp.diff_main(text, otherText);
-		if (side == Side.RIGHT && direction == Direction.LEFT_TO_RIGHT)
+		else if (side == Side.RIGHT && direction == Direction.LEFT_TO_RIGHT)
 			diffs = dmp.diff_main(text, otherText);
 		else
 			diffs = dmp.diff_main(otherText, text);
