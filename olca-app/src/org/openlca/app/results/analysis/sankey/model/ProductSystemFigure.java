@@ -18,8 +18,8 @@ import org.openlca.app.Messages;
 import org.openlca.app.results.analysis.sankey.actions.SankeySelectionAction;
 import org.openlca.app.results.analysis.sankey.layout.GraphLayoutManager;
 import org.openlca.app.util.Colors;
+import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.Numbers;
-import org.openlca.core.model.descriptors.CostCategoryDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 
@@ -100,9 +100,9 @@ public class ProductSystemFigure extends Figure {
 			ImpactCategoryDescriptor impact = (ImpactCategoryDescriptor) selection;
 			return Messages.ImpactCategory + ": " + impact.getName();
 		}
-		if (selection instanceof CostCategoryDescriptor) {
-			CostCategoryDescriptor cost = (CostCategoryDescriptor) selection;
-			return Messages.CostCategory + ": " + cost.getName();
+		if (selection instanceof CostResultDescriptor) {
+			CostResultDescriptor cost = (CostResultDescriptor) selection;
+			return "#Cost result: " + cost.getName();
 		}
 		return Messages.NoAnalysisOptionsSet;
 	}

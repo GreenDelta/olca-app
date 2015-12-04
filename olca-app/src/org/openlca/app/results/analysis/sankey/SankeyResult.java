@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.ToDoubleFunction;
 
+import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.core.matrix.LongIndex;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.descriptors.CostCategoryDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -103,10 +103,16 @@ class SankeyResult {
 			ImpactCategoryDescriptor i = (ImpactCategoryDescriptor) selection;
 			upstreamResults = vec(p -> results.getUpstreamImpactResult(p, i).value);
 			directResults = vec(p -> results.getSingleImpactResult(p, i).value);
-		} else if (selection instanceof CostCategoryDescriptor) {
-			CostCategoryDescriptor c = (CostCategoryDescriptor) selection;
-			upstreamResults = vec(p -> results.getUpstreamCostResult(p, c).value);
-			directResults = vec(p -> results.getSingleCostResult(p, c).value);
+		} else if (selection instanceof CostResultDescriptor) {
+			CostResultDescriptor c = (CostResultDescriptor) selection;
+			upstreamResults = vec(p -> {
+				double v = results.getUpstreamCostResult(p);
+				return c.forAddedValue ? -v : v;
+			});
+			directResults = vec(p -> {
+				double v = results.getSingleCostResult(p);
+				return c.forAddedValue ? -v : v;
+			});
 		} else {
 			directResults = upstreamResults = new double[processIndex.size()];
 		}

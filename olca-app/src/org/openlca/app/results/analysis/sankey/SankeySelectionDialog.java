@@ -11,8 +11,8 @@ import org.openlca.app.Messages;
 import org.openlca.app.components.ResultTypeSelection;
 import org.openlca.app.components.ResultTypeSelection.EventHandler;
 import org.openlca.app.db.Cache;
+import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.UI;
-import org.openlca.core.model.descriptors.CostCategoryDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.FullResultProvider;
@@ -82,8 +82,9 @@ public class SankeySelectionDialog extends FormDialog implements EventHandler {
 	}
 
 	@Override
-	public void costCategorySelected(CostCategoryDescriptor cost) {
+	public void costResultSelected(CostResultDescriptor cost) {
 		this.selection = cost;
+
 	}
 
 }

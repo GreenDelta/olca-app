@@ -29,6 +29,7 @@ import org.openlca.app.components.ResultTypeSelection.EventHandler;
 import org.openlca.app.db.Cache;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
@@ -36,7 +37,6 @@ import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.matrix.LongPair;
 import org.openlca.core.model.descriptors.BaseDescriptor;
-import org.openlca.core.model.descriptors.CostCategoryDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -136,9 +136,9 @@ public class ContributionTreePage extends FormPage {
 		}
 
 		@Override
-		public void costCategorySelected(CostCategoryDescriptor cost) {
+		public void costResultSelected(CostResultDescriptor cost) {
 			selection = cost;
-			UpstreamTree model = result.getTree(cost);
+			UpstreamTree model = result.getCostTree();
 			tree.setInput(model);
 		}
 	}
@@ -234,7 +234,7 @@ public class ContributionTreePage extends FormPage {
 			} else if (selection instanceof ImpactCategoryDescriptor) {
 				ImpactCategoryDescriptor impact = (ImpactCategoryDescriptor) selection;
 				return impact.getReferenceUnit();
-			} else if (selection instanceof CostCategoryDescriptor) {
+			} else if (selection instanceof CostResultDescriptor) {
 				return Labels.getReferenceCurrencyCode();
 			}
 			return null;

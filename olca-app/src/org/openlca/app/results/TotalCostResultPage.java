@@ -14,12 +14,12 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
-import org.openlca.core.model.descriptors.CostCategoryDescriptor;
 import org.openlca.core.results.SimpleResultProvider;
 
 public class TotalCostResultPage extends FormPage {
@@ -38,7 +38,7 @@ public class TotalCostResultPage extends FormPage {
 		Composite body = UI.formBody(form, tk);
 		TableViewer table = createTable(body, tk);
 		form.reflow(true);
-		table.setInput(result.getCostDescriptors());
+		table.setInput(CostResultDescriptor.all());
 	}
 
 	private TableViewer createTable(Composite body, FormToolkit tk) {
@@ -67,14 +67,15 @@ public class TotalCostResultPage extends FormPage {
 
 		@Override
 		public String getColumnText(Object element, int col) {
-			if (!(element instanceof CostCategoryDescriptor))
+			if (!(element instanceof CostResultDescriptor))
 				return null;
-			CostCategoryDescriptor d = (CostCategoryDescriptor) element;
+			CostResultDescriptor d = (CostResultDescriptor) element;
 			switch (col) {
 			case 0:
 				return d.getId() == 0 ? Messages.Other : d.getName();
 			case 1:
-				double val = result.getTotalCostResult(d).value;
+				double val = result.getTotalCostResult();
+				val = d.forAddedValue ? -val : val;
 				return Numbers.format(val);
 			case 2:
 				return Labels.getReferenceCurrencyCode();

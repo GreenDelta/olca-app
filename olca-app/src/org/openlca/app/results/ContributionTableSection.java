@@ -12,6 +12,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
 import org.openlca.app.util.Controls;
+import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
@@ -19,7 +20,6 @@ import org.openlca.app.viewers.combo.CostResultViewer;
 import org.openlca.app.viewers.combo.FlowViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.CostCategoryDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -63,7 +63,7 @@ public class ContributionTableSection {
 	public static ContributionTableSection forCosts(
 			ContributionResultProvider<?> provider) {
 		ContributionTableSection section = new ContributionTableSection(
-				provider, ModelType.COST_CATEGORY);
+				provider, ModelType.CURRENCY);
 		section.sectionTitle = "#Added values";
 		section.selectionName = Messages.CostCategory;
 		return section;
@@ -99,7 +99,7 @@ public class ContributionTableSection {
 		case IMPACT_CATEGORY:
 			createImpactViewer(header);
 			break;
-		case COST_CATEGORY:
+		case CURRENCY:
 			createCostViewer(header);
 			break;
 		default:
@@ -129,9 +129,8 @@ public class ContributionTableSection {
 
 	private void createCostViewer(Composite header) {
 		CostResultViewer viewer = new CostResultViewer(header);
-		Set<CostCategoryDescriptor> set = provider.getCostDescriptors();
-		CostCategoryDescriptor[] costs = set.toArray(
-				new CostCategoryDescriptor[set.size()]);
+		CostResultDescriptor[] costs = CostResultDescriptor.all()
+				.toArray(new CostResultDescriptor[2]);
 		viewer.setInput(costs);
 		viewer.addSelectionChangedListener((selection) -> refreshValues());
 		this.itemViewer = viewer;
@@ -162,10 +161,12 @@ public class ContributionTableSection {
 			ImpactCategoryDescriptor impact = (ImpactCategoryDescriptor) selected;
 			unit = impact.getReferenceUnit();
 			items = provider.getProcessContributions(impact).contributions;
-		} else if (selected instanceof CostCategoryDescriptor) {
-			CostCategoryDescriptor cost = (CostCategoryDescriptor) selected;
+		} else if (selected instanceof CostResultDescriptor) {
+			CostResultDescriptor cost = (CostResultDescriptor) selected;
 			unit = Labels.getReferenceCurrencyCode();
-			items = provider.getProcessContributions(cost).contributions;
+			items = provider.getProcessCostContributions().contributions;
+			if (cost.forAddedValue)
+				items.forEach(it -> it.amount = -it.amount);
 		}
 		setTableData(items, unit);
 	}
