@@ -30,6 +30,7 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.CostResultDescriptor;
+import org.openlca.app.util.CostResults;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
@@ -139,6 +140,8 @@ public class ContributionTreePage extends FormPage {
 		public void costResultSelected(CostResultDescriptor cost) {
 			selection = cost;
 			UpstreamTree model = result.getCostTree();
+			if (cost.forAddedValue)
+				CostResults.forAddedValues(model);
 			tree.setInput(model);
 		}
 	}
@@ -241,8 +244,7 @@ public class ContributionTreePage extends FormPage {
 		}
 
 		private double getTotalAmount() {
-			return ((UpstreamTree) tree.getInput()).getRoot()
-					.getAmount();
+			return ((UpstreamTree) tree.getInput()).getRoot().getAmount();
 		}
 
 		private double getContribution(UpstreamTreeNode node) {
