@@ -7,12 +7,9 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -29,7 +26,6 @@ import org.openlca.app.util.Actions;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
-import org.openlca.app.util.UncertaintyLabel;
 import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
@@ -48,7 +44,6 @@ import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
-import org.openlca.io.CategoryPath;
 
 /**
  * The table for the display and editing of inputs or outputs of process
@@ -59,8 +54,8 @@ import org.openlca.io.CategoryPath;
 class ExchangeTable {
 
 	private final boolean forInputs;
-	private boolean showFormulas = true;
 	private final ProcessEditor editor;
+
 	private IDatabase database = Database.get();
 	private EntityCache cache = Cache.getEntityCache();
 
@@ -75,6 +70,7 @@ class ExchangeTable {
 	private final String AVOIDED_PRODUCT = Messages.AvoidedProduct;
 
 	private TableViewer viewer;
+	private ExchangeLabel label;
 
 	public static ExchangeTable forInputs(Section section, FormToolkit toolkit,
 			ProcessEditor editor) {
@@ -100,10 +96,10 @@ class ExchangeTable {
 		Composite composite = UI.sectionClient(section, toolkit);
 		UI.gridLayout(composite, 1);
 		viewer = Tables.createViewer(composite, getColumns());
-		ExchangeLabel label = new ExchangeLabel();
-		viewer.setLabelProvider(label);
+		label = new ExchangeLabel(editor, forInputs);
+		viewer.setLabelProvider(label.asColumnLabel());
 		bindModifiers();
-		Tables.addDropSupport(viewer, (droppedModels) -> add(droppedModels));
+		Tables.addDropSupport(viewer, this::add);
 		viewer.addFilter(new Filter());
 		bindActions(section, viewer);
 		bindDoubleClick(viewer);
@@ -118,17 +114,16 @@ class ExchangeTable {
 	}
 
 	private void bindModifiers() {
-		ModifySupport<Exchange> support = new ModifySupport<>(viewer);
-		support.bind(AMOUNT, new AmountModifier());
-		support.bind(UNIT, new UnitCell(editor));
-		support.bind(COSTS, new CostCellEditor(viewer, editor));
-		support.bind(PEDIGREE, new PedigreeCellEditor(viewer, editor));
-		support.bind(UNCERTAINTY,
-				new UncertaintyCellEditor(viewer.getTable(), editor));
+		ModifySupport<Exchange> ms = new ModifySupport<>(viewer);
+		ms.bind(AMOUNT, new AmountModifier());
+		ms.bind(UNIT, new UnitCell(editor));
+		ms.bind(COSTS, new CostCellEditor(viewer, editor));
+		ms.bind(PEDIGREE, new PedigreeCellEditor(viewer, editor));
+		ms.bind(UNCERTAINTY, new UncertaintyCellEditor(viewer.getTable(), editor));
 		if (forInputs)
-			support.bind(DEFAULT_PROVIDER, new ProviderModifier());
+			ms.bind(DEFAULT_PROVIDER, new ProviderModifier());
 		if (!forInputs)
-			support.bind(AVOIDED_PRODUCT, new AvoidedProductModifier());
+			ms.bind(AVOIDED_PRODUCT, new AvoidedProductModifier());
 	}
 
 	private void bindActions(Section section, final TableViewer viewer) {
@@ -138,11 +133,11 @@ class ExchangeTable {
 		Action clipboard = TableClipboard.onCopy(viewer);
 		Actions.bind(section, add, remove, formulaSwitch);
 		Actions.bind(viewer, add, remove, clipboard);
-		Tables.onDeletePressed(viewer, (e) -> onRemove());
+		Tables.onDeletePressed(viewer, e -> onRemove());
 	}
 
 	private void bindDoubleClick(final TableViewer viewer) {
-		Tables.onDoubleClick(viewer, (e) -> {
+		Tables.onDoubleClick(viewer, e -> {
 			TableItem item = Tables.getItem(viewer, e);
 			if (item == null) {
 				onAdd();
@@ -175,7 +170,7 @@ class ExchangeTable {
 		List<Exchange> selection = Viewers.getAllSelected(viewer);
 		if (!Exchanges.canRemove(process, selection))
 			return;
-		selection.forEach((e) -> process.getExchanges().remove(e));
+		selection.forEach(e -> process.getExchanges().remove(e));
 		viewer.setInput(process.getExchanges());
 		editor.setDirty(true);
 		editor.postEvent(editor.EXCHANGES_CHANGED, this);
@@ -202,109 +197,6 @@ class ExchangeTable {
 		viewer.setInput(process.getExchanges());
 		editor.setDirty(true);
 		editor.postEvent(editor.EXCHANGES_CHANGED, this);
-	}
-
-	private class ExchangeLabel extends LabelProvider implements
-			ITableLabelProvider {
-
-		@Override
-		public Image getColumnImage(Object element, int col) {
-			if (!(element instanceof Exchange))
-				return null;
-			Exchange exchange = (Exchange) element;
-			if (col == 0)
-				return getFlowTypeIcon(exchange);
-			if (!forInputs && col == 6)
-				return getAvoidedCheck(exchange);
-			return null;
-		}
-
-		private Image getAvoidedCheck(Exchange exchange) {
-			if (exchange.getFlow() == null)
-				return null;
-			if (exchange.getFlow().getFlowType() != FlowType.PRODUCT_FLOW)
-				return null;
-			Process process = editor.getModel();
-			if (Objects.equals(process.getQuantitativeReference(), exchange))
-				return null;
-			else
-				return exchange.isAvoidedProduct() ? ImageType.CHECK_TRUE.get()
-						: ImageType.CHECK_FALSE.get();
-		}
-
-		private Image getFlowTypeIcon(Exchange exchange) {
-			if (exchange == null)
-				return null;
-			Flow flow = exchange.getFlow();
-			if (flow == null || flow.getFlowType() == null)
-				return null;
-			switch (flow.getFlowType()) {
-			case ELEMENTARY_FLOW:
-				return ImageType.FLOW_SUBSTANCE.get();
-			case PRODUCT_FLOW:
-				return ImageType.FLOW_PRODUCT.get();
-			case WASTE_FLOW:
-				return ImageType.FLOW_WASTE.get();
-			default:
-				return null;
-			}
-		}
-
-		@Override
-		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof Exchange))
-				return null;
-			Exchange exchange = (Exchange) obj;
-			switch (col) {
-			case 0:
-				return Labels.getDisplayName(exchange.getFlow());
-			case 1:
-				return CategoryPath.getShort(exchange.getFlow().getCategory());
-			case 2:
-				return getAmountText(exchange);
-			case 3:
-				return Labels.getDisplayName(exchange.getUnit());
-			case 4:
-				return getCostValue(exchange);
-			case 5:
-				return UncertaintyLabel.get(exchange.getUncertainty());
-			case 6:
-				if (forInputs)
-					return getDefaultProvider(exchange);
-				else
-					return null;
-			case 7:
-				return exchange.getPedigreeUncertainty();
-			}
-			return null;
-		}
-
-		private String getDefaultProvider(Exchange exchange) {
-			if (exchange.getDefaultProviderId() == 0)
-				return null;
-			ProcessDescriptor descriptor = cache.get(ProcessDescriptor.class,
-					exchange.getDefaultProviderId());
-			if (descriptor == null)
-				return null;
-			return Labels.getDisplayName(descriptor);
-		}
-
-		private String getAmountText(Exchange exchange) {
-			if (!showFormulas || exchange.getAmountFormula() == null)
-				return Double.toString(exchange.getAmountValue());
-			else
-				return exchange.getAmountFormula();
-		}
-
-		private String getCostValue(Exchange exchange) {
-			if (exchange == null || exchange.costValue == null)
-				return null;
-			String s = exchange.costValue.toString();
-			if (exchange.currency == null)
-				return s;
-			else
-				return s + " " + exchange.currency.code;
-		}
 	}
 
 	private class AmountModifier extends TextCellModifier<Exchange> {
@@ -432,6 +324,8 @@ class ExchangeTable {
 
 	private class FormulaSwitchAction extends Action {
 
+		private boolean showFormulas = true;
+
 		public FormulaSwitchAction() {
 			setImageDescriptor(ImageType.NUMBER_ICON.getDescriptor());
 			setText(Messages.ShowValues);
@@ -447,6 +341,7 @@ class ExchangeTable {
 				setImageDescriptor(ImageType.FORMULA_ICON.getDescriptor());
 				setText(Messages.ShowFormulas);
 			}
+			label.showFormulas = showFormulas;
 			viewer.refresh();
 		}
 	}
