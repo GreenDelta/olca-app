@@ -92,8 +92,10 @@ class CostDialog extends FormDialog {
 		currency = exchange.currency;
 		if (currency == null)
 			currency = dao.getReferenceCurrency();
-		if (currency != null)
+		if (currency != null) {
 			combo.setSelection(new StructuredSelection(currency));
+			exchange.currency = currency;
+		}
 	}
 
 	private void createCostsRow(Composite body, FormToolkit tk) {
