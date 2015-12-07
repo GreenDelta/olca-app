@@ -107,11 +107,11 @@ class SankeyResult {
 			CostResultDescriptor c = (CostResultDescriptor) selection;
 			upstreamResults = vec(p -> {
 				double v = results.getUpstreamCostResult(p);
-				return c.forAddedValue ? -v : v;
+				return c.forAddedValue && v != 0 ? -v : v;
 			});
 			directResults = vec(p -> {
 				double v = results.getSingleCostResult(p);
-				return c.forAddedValue ? -v : v;
+				return c.forAddedValue && v != 0 ? -v : v;
 			});
 		} else {
 			directResults = upstreamResults = new double[processIndex.size()];
