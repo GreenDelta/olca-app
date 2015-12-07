@@ -5,6 +5,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Queue;
 
+import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.core.results.ContributionItem;
+import org.openlca.core.results.ContributionSet;
 import org.openlca.core.results.SimpleResultProvider;
 import org.openlca.core.results.UpstreamTree;
 import org.openlca.core.results.UpstreamTreeNode;
@@ -44,6 +47,17 @@ public class CostResults {
 			double val = node.getAmount();
 			if (val != 0)
 				node.setAmount(-val);
+		}
+	}
+
+	public static void forAddedValues(ContributionSet<ProcessDescriptor> set) {
+		if (set == null || set.contributions == null)
+			return;
+		for (ContributionItem<?> item : set.contributions) {
+			if (item.amount != 0)
+				item.amount = -item.amount;
+			if (item.share != 0)
+				item.share = -item.share;
 		}
 	}
 

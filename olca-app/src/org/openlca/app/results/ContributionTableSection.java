@@ -26,6 +26,7 @@ import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.ContributionItem;
 import org.openlca.core.results.ContributionResultProvider;
+import org.openlca.core.results.ContributionSet;
 import org.openlca.core.results.Contributions;
 
 /**
@@ -65,8 +66,8 @@ public class ContributionTableSection {
 			ContributionResultProvider<?> provider) {
 		ContributionTableSection section = new ContributionTableSection(
 				provider, ModelType.CURRENCY);
-		section.sectionTitle = "#Added values";
-		section.selectionName = Messages.CostCategory;
+		section.sectionTitle = "#Costs/Added values";
+		section.selectionName = "#Costs";
 		return section;
 	}
 
@@ -133,7 +134,7 @@ public class ContributionTableSection {
 		CostResultDescriptor[] costs = CostResults.getDescriptors(provider)
 				.toArray(new CostResultDescriptor[2]);
 		viewer.setInput(costs);
-		viewer.addSelectionChangedListener((selection) -> refreshValues());
+		viewer.addSelectionChangedListener(selection -> refreshValues());
 		this.itemViewer = viewer;
 	}
 
@@ -165,9 +166,11 @@ public class ContributionTableSection {
 		} else if (selected instanceof CostResultDescriptor) {
 			CostResultDescriptor cost = (CostResultDescriptor) selected;
 			unit = Labels.getReferenceCurrencyCode();
-			items = provider.getProcessCostContributions().contributions;
+			ContributionSet<ProcessDescriptor> set = provider
+					.getProcessCostContributions();
 			if (cost.forAddedValue)
-				items.forEach(it -> it.amount = -it.amount);
+				CostResults.forAddedValues(set);
+			items = set.contributions;
 		}
 		setTableData(items, unit);
 	}
