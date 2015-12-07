@@ -10,6 +10,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.Messages;
 import org.openlca.app.util.CostResultDescriptor;
+import org.openlca.app.util.CostResults;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.app.viewers.combo.CostResultViewer;
 import org.openlca.app.viewers.combo.FlowViewer;
@@ -19,6 +20,7 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.IResultProvider;
+import org.openlca.core.results.SimpleResultProvider;
 
 /**
  * Two combo boxes showing flows and impact categories. The impact categories
@@ -46,8 +48,9 @@ public class ResultTypeSelection {
 		selection.flows = result.getFlowDescriptors();
 		if (result.hasImpactResults())
 			selection.impacts = result.getImpactDescriptors();
-		if (result.hasCostResults())
-			selection.costs = CostResultDescriptor.all();
+		if (result.hasCostResults() && (result instanceof SimpleResultProvider))
+			selection.costs = CostResults.getDescriptors(
+					(SimpleResultProvider<?>) result);
 		return new Dispatch(selection);
 	}
 

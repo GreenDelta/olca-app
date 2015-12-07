@@ -13,6 +13,7 @@ import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.CostResultDescriptor;
+import org.openlca.app.util.CostResults;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
@@ -129,7 +130,7 @@ public class ContributionTableSection {
 
 	private void createCostViewer(Composite header) {
 		CostResultViewer viewer = new CostResultViewer(header);
-		CostResultDescriptor[] costs = CostResultDescriptor.all()
+		CostResultDescriptor[] costs = CostResults.getDescriptors(provider)
 				.toArray(new CostResultDescriptor[2]);
 		viewer.setInput(costs);
 		viewer.addSelectionChangedListener((selection) -> refreshValues());

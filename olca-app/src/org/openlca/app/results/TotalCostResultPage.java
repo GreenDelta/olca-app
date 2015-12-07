@@ -15,6 +15,7 @@ import org.openlca.app.Messages;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.CostResultDescriptor;
+import org.openlca.app.util.CostResults;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
@@ -33,16 +34,16 @@ public class TotalCostResultPage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		ScrolledForm form = UI.formHeader(mform, "#Added values");
+		ScrolledForm form = UI.formHeader(mform, "#Costs/Added values");
 		FormToolkit tk = mform.getToolkit();
 		Composite body = UI.formBody(form, tk);
 		TableViewer table = createTable(body, tk);
 		form.reflow(true);
-		table.setInput(CostResultDescriptor.all());
+		table.setInput(CostResults.getDescriptors(result));
 	}
 
 	private TableViewer createTable(Composite body, FormToolkit tk) {
-		Section section = UI.section(body, tk, "#Added values");
+		Section section = UI.section(body, tk, "#Costs/Added values");
 		UI.gridData(section, true, true);
 		Composite composite = tk.createComposite(section);
 		section.setClient(composite);
@@ -72,7 +73,7 @@ public class TotalCostResultPage extends FormPage {
 			CostResultDescriptor d = (CostResultDescriptor) element;
 			switch (col) {
 			case 0:
-				return d.getId() == 0 ? Messages.Other : d.getName();
+				return d.getName();
 			case 1:
 				double val = result.getTotalCostResult();
 				val = d.forAddedValue ? -val : val;

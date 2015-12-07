@@ -1,8 +1,5 @@
 package org.openlca.app.util;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 
@@ -18,16 +15,6 @@ public class CostResultDescriptor extends BaseDescriptor {
 
 	public CostResultDescriptor() {
 		setType(ModelType.CURRENCY);
-	}
-
-	public static List<CostResultDescriptor> all() {
-		CostResultDescriptor d1 = new CostResultDescriptor();
-		d1.forAddedValue = false;
-		d1.setName("#Net-costs");
-		CostResultDescriptor d2 = new CostResultDescriptor();
-		d2.forAddedValue = true;
-		d2.setName("#Added value");
-		return Arrays.asList(d1, d2);
 	}
 
 }

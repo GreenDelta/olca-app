@@ -63,7 +63,7 @@ class ExchangeTable {
 	private final String CATEGORY = Messages.Category;
 	private final String AMOUNT = Messages.Amount;
 	private final String UNIT = Messages.Unit;
-	private final String COSTS = "#Costs";
+	private final String COSTS;
 	private final String PEDIGREE = Messages.PedigreeUncertainty;
 	private final String DEFAULT_PROVIDER = Messages.DefaultProvider;
 	private final String UNCERTAINTY = Messages.Uncertainty;
@@ -88,6 +88,7 @@ class ExchangeTable {
 
 	private ExchangeTable(boolean forInputs, ProcessEditor editor) {
 		this.forInputs = forInputs;
+		this.COSTS = forInputs ? "#Costs" : "#Costs/Revenues";
 		this.editor = editor;
 		editor.getParameterSupport().afterEvaluation(() -> viewer.refresh());
 	}
