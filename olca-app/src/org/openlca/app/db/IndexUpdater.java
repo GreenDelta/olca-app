@@ -33,18 +33,18 @@ public class IndexUpdater {
 		disabled = false;
 	}
 
-	public void insert(Dataset dataset) {
+	public void insert(Dataset dataset, long localId) {
 		DiffIndex index = getIndex();
 		if (index == null)
 			return;
-		insert(dataset, index);
+		insert(dataset, localId, index);
 		if (inTransaction)
 			return;
 		index.commit();
 	}
 
-	private void insert(Dataset dataset, DiffIndex index) {
-		index.add(dataset);
+	private void insert(Dataset dataset, long localId, DiffIndex index) {
+		index.add(dataset, localId);
 		index.update(dataset, DiffType.NEW);
 	}
 

@@ -5,17 +5,28 @@ import static org.openlca.app.cloud.index.DiffType.DELETED;
 import static org.openlca.app.cloud.index.DiffType.NEW;
 import static org.openlca.app.cloud.index.DiffType.NO_DIFF;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.cloud.index.DiffType;
 import org.openlca.app.cloud.ui.diff.DiffResult;
 import org.openlca.app.cloud.ui.diff.DiffResult.DiffResponse;
+import org.openlca.app.db.Database;
 import org.openlca.cloud.model.data.Dataset;
+import org.openlca.core.database.CategorizedEntityDao;
+import org.openlca.core.database.Daos;
+import org.openlca.core.database.IDatabase;
+import org.openlca.core.model.ModelType;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
 class FetchIndexHelper {
 
 	private DiffIndex index;
+	private Map<String, Long> localIds = new HashMap<>();
 
 	private FetchIndexHelper(DiffIndex index) {
 		this.index = index;
@@ -23,12 +34,45 @@ class FetchIndexHelper {
 
 	static void index(List<DiffResult> changed, DiffIndex index) {
 		FetchIndexHelper helper = new FetchIndexHelper(index);
+		helper.localIds = getLocalIds(changed);
 		for (DiffResult diff : changed)
 			helper.index(diff);
 		index.commit();
 	}
 
-	void index(DiffResult diff) {
+	private static Map<String, Long> getLocalIds(List<DiffResult> changed) {
+		Map<ModelType, Set<String>> refIds = groupRefIdsByModelType(changed);
+		Map<String, Long> refIdToLocalId = new HashMap<>();
+		IDatabase db = Database.get();
+		for (ModelType type : refIds.keySet()) {
+			CategorizedEntityDao<?, ? extends CategorizedDescriptor> dao = Daos
+					.createCategorizedDao(db, type);
+			List<? extends CategorizedDescriptor> descriptors = dao
+					.getDescriptorsForRefIds(refIds.get(type));
+			for (CategorizedDescriptor descriptor : descriptors)
+				refIdToLocalId.put(descriptor.getRefId(), descriptor.getId());
+		}
+		return refIdToLocalId;
+	}
+
+	private static Map<ModelType, Set<String>> groupRefIdsByModelType(
+			List<DiffResult> changed) {
+		Map<ModelType, Set<String>> refIds = new HashMap<>();
+		for (DiffResult result : changed) {
+			if (result.getType() != DiffResponse.ADD_TO_LOCAL)
+				continue;
+			ModelType mType = result.getDataset().getType();
+			if (!mType.isCategorized())
+				continue;
+			Set<String> ids = refIds.get(mType);
+			if (ids == null)
+				refIds.put(mType, ids = new HashSet<>());
+			ids.add(result.getDataset().getRefId());
+		}
+		return refIds;
+	}
+
+	private void index(DiffResult diff) {
 		Dataset dataset = diff.getDataset();
 		if (!dataset.getType().isCategorized())
 			return;
@@ -44,7 +88,7 @@ class FetchIndexHelper {
 			index.update(dataset, NO_DIFF);
 			break;
 		case ADD_TO_LOCAL:
-			index.add(dataset);
+			index.add(dataset, localIds.get(dataset.getRefId()));
 			break;
 		case DELETE_FROM_LOCAL:
 			index.remove(dataset.getRefId());
@@ -82,7 +126,7 @@ class FetchIndexHelper {
 	private void indexOverwritten(DiffResult diff) {
 		Dataset dataset = diff.getDataset();
 		if (diff.remote.isDeleted()) {
-			index.add(dataset);
+			index.add(dataset, localIds.get(dataset.getRefId()));
 			index.update(dataset, NEW);
 		} else {
 			DiffType previousType = index.get(dataset.getRefId()).type;

@@ -88,7 +88,7 @@ public class CreateCategoryAction extends Action implements INavigationAction {
 			parent.getChildCategories().add(category);
 			dao.update(parent);
 			// have to add to diff index manually here
-			Database.getIndexUpdater().insert(CloudUtil.toDataset(category));
+			Database.getIndexUpdater().insert(CloudUtil.toDataset(category), category.getId());
 		}
 	}
 

@@ -1,6 +1,5 @@
 package org.openlca.app.navigation.actions.cloud;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
@@ -14,6 +13,7 @@ import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.cloud.index.DiffType;
 import org.openlca.app.db.Database;
+import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.navigation.CategoryElement;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
@@ -87,25 +87,26 @@ public class ConnectAction extends Action implements INavigationAction {
 	}
 
 	private void indexDatabase() {
-		INavigationElement<?> elem = Navigator.findElement(Database
-				.getActiveConfiguration());
-		List<Dataset> datasets = collectDatasets(elem);
+		IDatabaseConfiguration db = Database.getActiveConfiguration();
+		INavigationElement<?> element = Navigator.findElement(db);
 		DiffIndex index = Database.getDiffIndex();
-		for (Dataset dataset : datasets)
-			index.add(dataset);
-		for (Dataset dataset : datasets)
-			index.update(dataset, DiffType.NEW);
+		indexElement(index, element);
 		index.commit();
 	}
 
-	private List<Dataset> collectDatasets(INavigationElement<?> element) {
-		List<Dataset> dataset = new ArrayList<>();
-		if (element instanceof ModelElement
-				|| element instanceof CategoryElement)
-			dataset.add(CloudUtil.toDataset(element));
+	private void indexElement(DiffIndex index, INavigationElement<?> element) {
+		long id = 0;
+		if (element instanceof CategoryElement)
+			id = ((CategoryElement) element).getContent().getId();
+		if (element instanceof ModelElement)
+			id = ((ModelElement) element).getContent().getId();
+		if (id != 0l) {
+			Dataset dataset = CloudUtil.toDataset(element);
+			index.add(dataset, id);
+			index.update(dataset, DiffType.NEW);
+		}
 		for (INavigationElement<?> child : element.getChildren())
-			dataset.addAll(collectDatasets(child));
-		return dataset;
+			indexElement(index, child);
 	}
 
 	private class InputDialog extends Dialog {

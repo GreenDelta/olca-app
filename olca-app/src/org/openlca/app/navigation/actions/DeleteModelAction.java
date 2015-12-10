@@ -86,10 +86,10 @@ public class DeleteModelAction extends Action implements INavigationAction {
 		elements = null;
 	}
 
-	private boolean isUsed(BaseDescriptor descriptor) {
-		IUseSearch<BaseDescriptor> search = IUseSearch.FACTORY.createFor(
-				descriptor.getModelType(), Database.get());
-		List<BaseDescriptor> descriptors = search.findUses(descriptor);
+	private boolean isUsed(CategorizedDescriptor descriptor) {
+		IUseSearch<CategorizedDescriptor> search = IUseSearch.FACTORY
+				.createFor(descriptor.getModelType(), Database.get());
+		List<CategorizedDescriptor> descriptors = search.findUses(descriptor);
 		if (descriptors.isEmpty())
 			return false;
 		Error.showBox(Messages.CannotDelete, Messages.CannotDeleteMessage);

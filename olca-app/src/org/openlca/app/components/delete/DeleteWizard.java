@@ -10,6 +10,7 @@ import org.eclipse.ui.PlatformUI;
 import org.openlca.app.Messages;
 import org.openlca.core.database.usage.IUseSearch;
 import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +20,7 @@ import org.slf4j.LoggerFactory;
  * @see ProblemWizard
  * 
  */
-public class DeleteWizard<T extends BaseDescriptor> extends ProblemWizard {
+public class DeleteWizard<T extends CategorizedDescriptor> extends ProblemWizard {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 

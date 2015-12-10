@@ -17,7 +17,7 @@ class DatabaseListener implements IDatabaseListener {
 		if (!(object instanceof CategorizedEntity))
 			return;
 		CategorizedEntity entity = (CategorizedEntity) object;
-		indexUpdater.insert(CloudUtil.toDataset(entity));
+		indexUpdater.insert(CloudUtil.toDataset(entity), entity.getId());
 	}
 
 	@Override

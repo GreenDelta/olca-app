@@ -46,11 +46,12 @@ public class DiffIndex {
 			db.close();
 	}
 
-	public void add(Dataset dataset) {
+	public void add(Dataset dataset, long localId) {
 		Diff diff = index.get(dataset.getRefId());
 		if (diff != null)
 			return;
 		diff = new Diff(dataset, DiffType.NO_DIFF);
+		diff.localId = localId;
 		index.put(dataset.getRefId(), diff);
 	}
 

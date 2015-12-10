@@ -9,6 +9,7 @@ import org.openlca.cloud.model.data.Dataset;
 public class Diff implements Serializable {
 
 	private static final long serialVersionUID = 252758475629265830L;
+	public long localId;
 	public Dataset dataset;
 	public Dataset changed;
 	public DiffType type;
@@ -44,6 +45,7 @@ public class Diff implements Serializable {
 	public Diff copy() {
 		Diff diff = new Diff(dataset, type);
 		diff.changed = changed;
+		diff.localId = localId;
 		return diff;
 	}
 
