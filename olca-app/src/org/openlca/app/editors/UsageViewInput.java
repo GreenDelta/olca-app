@@ -6,7 +6,7 @@ import org.eclipse.ui.IPersistableElement;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Labels;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
 /**
  * Input for the usage view. Contains the descriptor of the model which usages
@@ -14,15 +14,15 @@ import org.openlca.core.model.descriptors.BaseDescriptor;
  */
 class UsageViewInput implements IEditorInput {
 
-	private BaseDescriptor descriptor;
+	private CategorizedDescriptor descriptor;
 	private IDatabase database;
 
-	public UsageViewInput(BaseDescriptor descriptor, IDatabase database) {
+	public UsageViewInput(CategorizedDescriptor descriptor, IDatabase database) {
 		this.descriptor = descriptor;
 		this.database = database;
 	}
 
-	public BaseDescriptor getDescriptor() {
+	public CategorizedDescriptor getDescriptor() {
 		return descriptor;
 	}
 

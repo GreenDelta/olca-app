@@ -10,14 +10,14 @@ import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
 /**
  * Opens a view with the usages of a model in other entities.
  */
 public class OpenUsageAction extends Action implements INavigationAction {
 
-	private BaseDescriptor descriptor;
+	private CategorizedDescriptor descriptor;
 
 	private EnumSet<ModelType> types = EnumSet.of(
 			ModelType.ACTOR,
@@ -34,7 +34,7 @@ public class OpenUsageAction extends Action implements INavigationAction {
 		setImageDescriptor(ImageType.LINK_16_BLUE.getDescriptor());
 	}
 
-	public void setDescriptor(BaseDescriptor descriptor) {
+	public void setDescriptor(CategorizedDescriptor descriptor) {
 		this.descriptor = descriptor;
 	}
 

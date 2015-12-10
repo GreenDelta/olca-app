@@ -27,6 +27,7 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.usage.IUseSearch;
 import org.openlca.core.model.descriptors.ActorDescriptor;
 import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.FlowPropertyDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
@@ -48,10 +49,10 @@ public class UsageView extends FormEditor {
 	public static String ID = "editors.usage";
 
 	private Logger log = LoggerFactory.getLogger(getClass());
-	private BaseDescriptor model;
+	private CategorizedDescriptor model;
 	private IDatabase database;
 
-	public static void open(BaseDescriptor descriptor) {
+	public static void open(CategorizedDescriptor descriptor) {
 		if (descriptor == null)
 			return;
 		UsageViewInput input = new UsageViewInput(descriptor, Database.get());
@@ -109,7 +110,7 @@ public class UsageView extends FormEditor {
 			log.trace("page completed, set data");
 			registerFunction();
 			try {
-				List<BaseDescriptor> list = runSearch();
+				List<CategorizedDescriptor> list = runSearch();
 				Gson gson = new Gson();
 				String json = gson.toJson(list);
 				String function = "setData(" + json + ")";
@@ -119,7 +120,7 @@ public class UsageView extends FormEditor {
 			}
 		}
 
-		private List<BaseDescriptor> runSearch() {
+		private List<CategorizedDescriptor> runSearch() {
 			if (model == null || model.getModelType() == null)
 				return Collections.emptyList();
 			return IUseSearch.FACTORY.createFor(model.getModelType(), database)
