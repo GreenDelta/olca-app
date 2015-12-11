@@ -9,12 +9,15 @@ import java.util.Date;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.window.Window;
 import org.openlca.app.App;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.rcp.ImageType;
+import org.openlca.app.util.UI;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.Process;
@@ -66,17 +69,24 @@ public class XNexusIndexExportAction extends Action implements
 		File file = FileChooser.forExport("*.json", defaultName);
 		if (file == null)
 			return;
-		App.run("Export Nexus index", new Runner(file, db));
+		InputDialog dialog = new InputDialog(UI.shell(), "System model name",
+				"Please specify a system model if relevant (optional)", "", null);
+		if (dialog.open() != Window.OK)
+			return;
+		String systemModel = dialog.getValue();
+		App.run("Export Nexus index", new Runner(file, db, systemModel));
 	}
 
 	private class Runner implements Runnable {
 
 		private File file;
 		private IDatabase db;
+		private String systemModel;
 
-		public Runner(File file, IDatabase db) {
+		public Runner(File file, IDatabase db, String systemModel) {
 			this.file = file;
 			this.db = db;
+			this.systemModel = systemModel;
 		}
 
 		@Override
@@ -89,6 +99,7 @@ public class XNexusIndexExportAction extends Action implements
 					log.trace("index process {}", descriptor);
 					Process process = dao.getForId(descriptor.getId());
 					IndexEntry entry = new IndexEntry(process);
+					entry.systemModel = systemModel;
 					entries.add(entry);
 				}
 				writeEntries(entries);
@@ -103,7 +114,6 @@ public class XNexusIndexExportAction extends Action implements
 					OutputStreamWriter writer = new OutputStreamWriter(out,
 							"utf-8");
 					BufferedWriter buffer = new BufferedWriter(writer)) {
-
 				Gson gson = new GsonBuilder().setDateFormat(
 						"yyyy-MM-dd'T'HH:mm:ssZ").create();
 				gson.toJson(entries, buffer);
@@ -125,6 +135,7 @@ public class XNexusIndexExportAction extends Action implements
 		private String documentor;
 		private String generator;
 		private String reviewer;
+		private String systemModel;
 		private Date created;
 		private Date validityTimeStart;
 		private Date validityTimeEnd;
