@@ -8,7 +8,6 @@ import org.openlca.core.model.Actor;
 import org.openlca.core.model.AllocationFactor;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Category;
-import org.openlca.core.model.CostCategory;
 import org.openlca.core.model.Currency;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
@@ -71,7 +70,6 @@ class PropertyLabels {
 		putUnitLabels();
 		putFlowPropertyLabels();
 		putSocialIndicatorLabels();
-		putCostCategoryLabels();
 		putFlowLabels();
 		putFlowPropertyFactorsLabels();
 		putProcessLabels();
@@ -175,11 +173,6 @@ class PropertyLabels {
 		put(clazz, "activityVariable", Messages.ActivityVariable);
 		put(clazz, "activityQuantity", "Activity quantity"); // "#
 		put(clazz, "activityUnit", "Activity unit"); // "#
-	}
-
-	private static void putCostCategoryLabels() {
-		Class<?> clazz = CostCategory.class;
-		putBasicLabels(clazz);
 	}
 
 	private static void putFlowLabels() {

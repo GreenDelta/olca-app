@@ -9,16 +9,18 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.Messages;
+import org.openlca.app.util.CostResultDescriptor;
+import org.openlca.app.util.CostResults;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
-import org.openlca.app.viewers.combo.CostCategoryViewer;
+import org.openlca.app.viewers.combo.CostResultViewer;
 import org.openlca.app.viewers.combo.FlowViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.CostCategoryDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.IResultProvider;
+import org.openlca.core.results.SimpleResultProvider;
 
 /**
  * Two combo boxes showing flows and impact categories. The impact categories
@@ -33,21 +35,22 @@ public class ResultTypeSelection {
 	private EntityCache cache;
 	private Collection<FlowDescriptor> flows;
 	private Collection<ImpactCategoryDescriptor> impacts;
-	private Collection<CostCategoryDescriptor> costs;
+	private Collection<CostResultDescriptor> costs;
 	private Object initialSelection;
 	private EventHandler eventHandler;
 
 	private FlowViewer flowCombo;
 	private ImpactCategoryViewer impactCombo;
-	private CostCategoryViewer costCombo;
+	private CostResultViewer costCombo;
 
 	public static Dispatch on(IResultProvider result, EntityCache cache) {
 		ResultTypeSelection selection = new ResultTypeSelection(cache);
 		selection.flows = result.getFlowDescriptors();
 		if (result.hasImpactResults())
 			selection.impacts = result.getImpactDescriptors();
-		if (result.hasCostResults())
-			selection.costs = result.getCostDescriptors();
+		if (result.hasCostResults() && (result instanceof SimpleResultProvider))
+			selection.costs = CostResults.getDescriptors(
+					(SimpleResultProvider<?>) result);
 		return new Dispatch(selection);
 	}
 
@@ -62,7 +65,7 @@ public class ResultTypeSelection {
 			selectFlow(o);
 		else if (o instanceof ImpactCategoryDescriptor)
 			selectImpact(o);
-		else if (o instanceof CostCategoryDescriptor)
+		else if (o instanceof CostResultDescriptor)
 			selectCost(o);
 	}
 
@@ -72,7 +75,7 @@ public class ResultTypeSelection {
 			return flowCombo.getSelected();
 		case IMPACT_CATEGORY:
 			return impactCombo.getSelected();
-		case COST_CATEGORY:
+		case CURRENCY:
 			return costCombo.getSelected();
 		default:
 			return null;
@@ -104,9 +107,9 @@ public class ResultTypeSelection {
 	}
 
 	private void selectCost(Object o) {
-		resultType = ModelType.COST_CATEGORY;
+		resultType = ModelType.CURRENCY;
 		if (costCombo != null) {
-			costCombo.select((CostCategoryDescriptor) o);
+			costCombo.select((CostResultDescriptor) o);
 			costCombo.setEnabled(true);
 		}
 		if (flowCombo != null)
@@ -159,18 +162,18 @@ public class ResultTypeSelection {
 	}
 
 	private void initCostCombo(FormToolkit toolkit, Composite section) {
-		boolean enabled = getType(initialSelection) == ModelType.COST_CATEGORY;
+		boolean enabled = getType(initialSelection) == ModelType.CURRENCY;
 		Button check = toolkit.createButton(section, Messages.CostCategory,
 				SWT.RADIO);
 		check.setSelection(enabled);
-		costCombo = new CostCategoryViewer(section);
+		costCombo = new CostResultViewer(section);
 		costCombo.setEnabled(enabled);
 		costCombo.setInput(costs);
 		costCombo.selectFirst();
 		costCombo.addSelectionChangedListener((val) -> fireSelection());
 		if (enabled)
-			costCombo.select((CostCategoryDescriptor) initialSelection);
-		new ResultTypeCheck(costCombo, check, ModelType.COST_CATEGORY);
+			costCombo.select((CostResultDescriptor) initialSelection);
+		new ResultTypeCheck(costCombo, check, ModelType.CURRENCY);
 	}
 
 	private void fireSelection() {
@@ -183,8 +186,8 @@ public class ResultTypeSelection {
 		case IMPACT_CATEGORY:
 			eventHandler.impactCategorySelected(impactCombo.getSelected());
 			break;
-		case COST_CATEGORY:
-			eventHandler.costCategorySelected(costCombo.getSelected());
+		case CURRENCY:
+			eventHandler.costResultSelected(costCombo.getSelected());
 			break;
 		default:
 			break;
@@ -196,8 +199,8 @@ public class ResultTypeSelection {
 			return ModelType.FLOW;
 		else if (o instanceof ImpactCategoryDescriptor)
 			return ModelType.IMPACT_CATEGORY;
-		else if (o instanceof CostCategoryDescriptor)
-			return ModelType.COST_CATEGORY;
+		else if (o instanceof CostResultDescriptor)
+			return ModelType.CURRENCY;
 		else
 			return ModelType.UNKNOWN;
 	}
@@ -241,7 +244,7 @@ public class ResultTypeSelection {
 
 		void impactCategorySelected(ImpactCategoryDescriptor impact);
 
-		void costCategorySelected(CostCategoryDescriptor cost);
+		void costResultSelected(CostResultDescriptor cost);
 
 	}
 

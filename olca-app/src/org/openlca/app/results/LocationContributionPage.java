@@ -25,13 +25,13 @@ import org.openlca.app.rcp.ImageType;
 import org.openlca.app.rcp.html.HtmlPage;
 import org.openlca.app.rcp.html.HtmlView;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
-import org.openlca.core.model.descriptors.CostCategoryDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -183,7 +183,7 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 		}
 
 		@Override
-		public void costCategorySelected(CostCategoryDescriptor cost) {
+		public void costResultSelected(CostResultDescriptor cost) {
 		}
 
 		private void setData(ContributionSet<Location> set,

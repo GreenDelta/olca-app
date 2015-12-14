@@ -97,8 +97,6 @@ public class CreateModelAction extends Action implements INavigationAction {
 		switch (type) {
 		case ACTOR:
 			return Messages.NewActor;
-		case COST_CATEGORY:
-			return "#New cost category";
 		case CURRENCY:
 			return "#New currency";
 		case FLOW:
@@ -157,8 +155,6 @@ public class CreateModelAction extends Action implements INavigationAction {
 			return ImageType.LOCATION_ICON_NEW.getDescriptor();
 		case PARAMETER:
 			return ImageType.PARAMETER_ICON_NEW.getDescriptor();
-		case COST_CATEGORY:
-			return ImageType.COST_CATEGORY_ICON_NEW.getDescriptor();
 		case CURRENCY:
 			return ImageType.CURRENCY_ICON_NEW.getDescriptor();
 		default:

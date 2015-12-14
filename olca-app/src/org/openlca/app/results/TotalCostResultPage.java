@@ -14,12 +14,13 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.CostResultDescriptor;
+import org.openlca.app.util.CostResults;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
-import org.openlca.core.model.descriptors.CostCategoryDescriptor;
 import org.openlca.core.results.SimpleResultProvider;
 
 public class TotalCostResultPage extends FormPage {
@@ -33,16 +34,16 @@ public class TotalCostResultPage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		ScrolledForm form = UI.formHeader(mform, "#Added values");
+		ScrolledForm form = UI.formHeader(mform, "#Costs/Added values");
 		FormToolkit tk = mform.getToolkit();
 		Composite body = UI.formBody(form, tk);
 		TableViewer table = createTable(body, tk);
 		form.reflow(true);
-		table.setInput(result.getCostDescriptors());
+		table.setInput(CostResults.getDescriptors(result));
 	}
 
 	private TableViewer createTable(Composite body, FormToolkit tk) {
-		Section section = UI.section(body, tk, "#Added values");
+		Section section = UI.section(body, tk, "#Costs/Added values");
 		UI.gridData(section, true, true);
 		Composite composite = tk.createComposite(section);
 		section.setClient(composite);
@@ -67,14 +68,15 @@ public class TotalCostResultPage extends FormPage {
 
 		@Override
 		public String getColumnText(Object element, int col) {
-			if (!(element instanceof CostCategoryDescriptor))
+			if (!(element instanceof CostResultDescriptor))
 				return null;
-			CostCategoryDescriptor d = (CostCategoryDescriptor) element;
+			CostResultDescriptor d = (CostResultDescriptor) element;
 			switch (col) {
 			case 0:
-				return d.getId() == 0 ? Messages.Other : d.getName();
+				return d.getName();
 			case 1:
-				double val = result.getTotalCostResult(d).value;
+				double val = result.getTotalCostResult();
+				val = d.forAddedValue ? -val : val;
 				return Numbers.format(val);
 			case 2:
 				return Labels.getReferenceCurrencyCode();

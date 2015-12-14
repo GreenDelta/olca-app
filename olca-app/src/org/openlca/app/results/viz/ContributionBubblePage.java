@@ -13,10 +13,10 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.rcp.html.HtmlPage;
 import org.openlca.app.rcp.html.HtmlView;
 import org.openlca.app.results.viz.BubbleChartDataSet.Item;
+import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.matrix.FlowIndex;
-import org.openlca.core.model.descriptors.CostCategoryDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -99,13 +99,12 @@ public class ContributionBubblePage extends FormPage implements HtmlPage {
 		}
 
 		@Override
-		public void costCategorySelected(CostCategoryDescriptor cost) {
-			ContributionSet<ProcessDescriptor> set = result
-					.getProcessContributions(cost);
+		public void costResultSelected(CostResultDescriptor cost) {
+			ContributionSet<ProcessDescriptor> set = result.getProcessCostContributions();
 			BubbleChartDataSet dataSet = new BubbleChartDataSet();
 			dataSet.setRefName(Labels.getDisplayName(cost));
 			dataSet.setRefUnit(Labels.getReferenceCurrencyCode());
-			dataSet.setTotalAmount(result.getTotalCostResult(cost).value);
+			dataSet.setTotalAmount(result.getTotalCostResult());
 			setItems(set, dataSet);
 			setResultData(dataSet);
 		}

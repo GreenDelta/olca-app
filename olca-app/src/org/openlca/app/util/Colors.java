@@ -22,6 +22,7 @@ public class Colors {
 	private static HashMap<RGB, Color> createdColors = new HashMap<>();
 
 	private static Display display;
+
 	static {
 		display = PlatformUI.getWorkbench().getDisplay();
 		PlatformUI.getWorkbench().addWorkbenchListener(new ShutDown());
@@ -47,11 +48,11 @@ public class Colors {
 	}
 
 	public static Color getWhite() {
-		return display.getSystemColor(SWT.COLOR_WHITE);
+		return getSystemColor(SWT.COLOR_WHITE);
 	}
 
 	public static Color getDarkGray() {
-		return display.getSystemColor(SWT.COLOR_DARK_GRAY);
+		return getSystemColor(SWT.COLOR_DARK_GRAY);
 	}
 
 	public static Color getLinkBlue() {
@@ -63,7 +64,11 @@ public class Colors {
 	}
 
 	public static Color getBlack() {
-		return display.getSystemColor(SWT.COLOR_BLACK);
+		return getSystemColor(SWT.COLOR_BLACK);
+	}
+
+	public static Color getSystemColor(int swtConstant) {
+		return display.getSystemColor(swtConstant);
 	}
 
 	private static class ShutDown implements IWorkbenchListener {

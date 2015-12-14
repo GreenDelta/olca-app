@@ -17,13 +17,10 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.viewers.Viewers;
-import org.openlca.core.database.CostCategoryDao;
 import org.openlca.core.database.CurrencyDao;
-import org.openlca.core.model.CostCategory;
 import org.openlca.core.model.Currency;
 import org.openlca.core.model.Exchange;
 import org.openlca.util.Strings;
@@ -35,7 +32,6 @@ class CostDialog extends FormDialog {
 	private Logger log = LoggerFactory.getLogger(getClass());
 
 	private Exchange exchange;
-	private ComboViewer categoryCombo;
 	private ComboViewer currencyCombo;
 	private Text priceText;
 	private Label currencyLabel;
@@ -62,39 +58,10 @@ class CostDialog extends FormDialog {
 		UI.formHeader(mform, "#Price");
 		Composite body = UI.formBody(mform.getForm(), tk);
 		UI.gridLayout(body, 3);
-		createCategoryRow(body, tk);
 		createCurrencyRow(body, tk);
 		createCostsRow(body, tk);
 		createCostsPerUnitRow(body, tk);
 		updateCurrencyLabels();
-	}
-
-	private void createCategoryRow(Composite body, FormToolkit tk) {
-		Combo widget = UI.formCombo(body, tk, Messages.CostCategory);
-		categoryCombo = new ComboViewer(widget);
-		categoryCombo.setLabelProvider(new LabelProvider() {
-			@Override
-			public String getText(Object obj) {
-				if (!(obj instanceof CostCategory))
-					return super.getText(obj);
-				return ((CostCategory) obj).getName();
-			}
-		});
-		setCategoryContent(categoryCombo);
-		categoryCombo.addSelectionChangedListener(
-				e -> exchange.costCategory = Viewers.getFirst(e.getSelection()));
-		UI.formLabel(body, tk, "");
-	}
-
-	private void setCategoryContent(ComboViewer combo) {
-		combo.setContentProvider(ArrayContentProvider.getInstance());
-		CostCategoryDao dao = new CostCategoryDao(Database.get());
-		List<CostCategory> all = dao.getAll();
-		Collections.sort(all,
-				(c1, c2) -> Strings.compare(c1.getName(), c2.getName()));
-		combo.setInput(all);
-		if (exchange.costCategory != null)
-			combo.setSelection(new StructuredSelection(exchange.costCategory));
 	}
 
 	private void createCurrencyRow(Composite body, FormToolkit tk) {
@@ -125,8 +92,10 @@ class CostDialog extends FormDialog {
 		currency = exchange.currency;
 		if (currency == null)
 			currency = dao.getReferenceCurrency();
-		if (currency != null)
+		if (currency != null) {
 			combo.setSelection(new StructuredSelection(currency));
+			exchange.currency = currency;
+		}
 	}
 
 	private void createCostsRow(Composite body, FormToolkit tk) {
