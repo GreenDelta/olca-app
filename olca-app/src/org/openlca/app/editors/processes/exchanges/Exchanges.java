@@ -10,7 +10,7 @@ import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
 class Exchanges {
 
@@ -49,7 +49,7 @@ class Exchanges {
 			return false;
 		ExchangeUseSearch search = new ExchangeUseSearch(Database.get(),
 				process);
-		List<BaseDescriptor> list = search.findUses(products);
+		List<CategorizedDescriptor> list = search.findUses(products);
 		if (list.isEmpty())
 			return false;
 		org.openlca.app.util.Error.showBox("@Cannot remove exchanges",

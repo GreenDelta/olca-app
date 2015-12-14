@@ -29,6 +29,7 @@ import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.FlowPropertyDescriptor;
 
 class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
@@ -125,7 +126,7 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 		}
 		FlowPropertyFactorUseSearch search = new FlowPropertyFactorUseSearch(
 				flow, Database.get());
-		List<BaseDescriptor> list = search.findUses(fac);
+		List<CategorizedDescriptor> list = search.findUses(fac);
 		if (!list.isEmpty()) {
 			Error.showBox("@Cannot delete flow property",
 					"@The given flow property is used in processes or LCIA methods.");
@@ -256,12 +257,12 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 				}
 			}
 		}
-		
+
 		@Override
 		public boolean affectsOtherElements() {
 			return true;
 		}
-		
+
 	}
 
 }
