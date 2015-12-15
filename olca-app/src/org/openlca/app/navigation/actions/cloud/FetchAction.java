@@ -58,7 +58,17 @@ public class FetchAction extends Action implements INavigationAction {
 
 		public void run() {
 			App.runWithProgress("#Fetching commits", this::fetchCommits);
-			showCommitEntries();
+			boolean doContinue = showCommitEntries();
+			if (!doContinue)
+				return;
+			App.runWithProgress("#Fetching changes", this::requestFetch);
+			doContinue = showDifferences();
+			if (!doContinue)
+				return;
+			App.runWithProgress("#Fetching data", this::fetchData);
+			if (error != null)
+				return;
+			Navigator.refresh(Navigator.getNavigationRoot());
 		}
 
 		private void fetchCommits() {
@@ -69,18 +79,17 @@ public class FetchAction extends Action implements INavigationAction {
 			}
 		}
 
-		private void showCommitEntries() {
+		private boolean showCommitEntries() {
 			if (error != null)
-				return;
+				return false;
 			if (commits.isEmpty()) {
 				showNoChangesBox();
-				return;
+				return false;
 			}
 			CommitEntryDialog dialog = new CommitEntryDialog(commits, client);
 			if (dialog.open() != IDialogConstants.OK_ID)
-				return;
-			App.runWithProgress("#Fetching changes", this::requestFetch);
-			showDifferences();
+				return false;
+			return true;
 		}
 
 		private void requestFetch() {
@@ -94,17 +103,16 @@ public class FetchAction extends Action implements INavigationAction {
 			}
 		}
 
-		private void showDifferences() {
+		private boolean showDifferences() {
 			if (error != null)
-				return;
+				return false;
 			if (root != null) {
 				JsonLoader loader = CloudUtil.getJsonLoader(client);
 				DiffDialog dialog = new DiffDialog(root, loader);
 				if (dialog.open() != IDialogConstants.OK_ID)
-					return;
+					return false;
 			}
-			App.runWithProgress("#Fetching data", this::fetchData);
-			afterFetchData();
+			return true;
 		}
 
 		private void fetchData() {
@@ -133,12 +141,6 @@ public class FetchAction extends Action implements INavigationAction {
 			} catch (WebRequestException e) {
 				error = e;
 			}
-		}
-
-		private void afterFetchData() {
-			if (error != null)
-				return;
-			Navigator.refresh(Navigator.getNavigationRoot());
 		}
 
 		private void showNoChangesBox() {

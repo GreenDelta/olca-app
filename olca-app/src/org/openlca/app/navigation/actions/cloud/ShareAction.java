@@ -19,7 +19,7 @@ public class ShareAction extends Action implements INavigationAction {
 
 	private RepositoryClient client;
 	private Exception error;
-	
+
 	@Override
 	public String getText() {
 		return "#Share repository...";
@@ -32,18 +32,21 @@ public class ShareAction extends Action implements INavigationAction {
 				null, null);
 		if (dialog.open() != IDialogConstants.OK_ID)
 			return;
-		String username = dialog.getValue();		
-		App.runWithProgress("#Sharing repository", () -> {
-			String name = client.getConfig().getRepositoryName();
-			try {
-				client.shareRepositoryWith(name, username);
-			} catch (WebRequestException e) {
-				error = e;
-			}
-		});
+		String username = dialog.getValue();
+		App.runWithProgress("#Sharing repository",
+				() -> shareRepository(username));
 		if (error != null) {
 			Error.showBox(error.getMessage());
 			error = null;
+		}
+	}
+
+	private void shareRepository(String username) {
+		String name = client.getConfig().getRepositoryName();
+		try {
+			client.shareRepositoryWith(name, username);
+		} catch (WebRequestException e) {
+			error = e;
 		}
 	}
 

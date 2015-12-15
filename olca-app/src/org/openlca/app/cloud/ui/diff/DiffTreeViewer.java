@@ -30,7 +30,7 @@ abstract class DiffTreeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 		Tree tree = viewer.getTree();
 		UI.gridData(tree, true, true);
 	}
-
+	
 	@Override
 	public void setInput(Collection<DiffNode> collection) {
 		root = collection.iterator().next();

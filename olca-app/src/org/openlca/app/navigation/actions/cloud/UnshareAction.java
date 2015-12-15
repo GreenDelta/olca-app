@@ -35,17 +35,20 @@ public class UnshareAction extends Action implements INavigationAction {
 		if (dialog.open() != IDialogConstants.OK_ID)
 			return;
 		String username = dialog.getValue();
-		App.runWithProgress("#Unsharing repository", () -> {
-			String name = client.getConfig().getRepositoryName();
-			try {
-				client.unshareRepositoryWith(name, username);
-			} catch (WebRequestException e) {
-				error = e;
-			}
-		});
+		App.runWithProgress("#Unsharing repository",
+				() -> unshareRepository(username));
 		if (error != null) {
 			Error.showBox(error.getMessage());
 			error = null;
+		}
+	}
+
+	private void unshareRepository(String username) {
+		String name = client.getConfig().getRepositoryName();
+		try {
+			client.unshareRepositoryWith(name, username);
+		} catch (WebRequestException e) {
+			error = e;
 		}
 	}
 
