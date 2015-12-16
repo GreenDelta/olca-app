@@ -26,14 +26,14 @@ public final class Config {
 	 * "openLCA-data", but it can be renamed in development versions (so that
 	 * the users can run multiple versions of openLCA in parallel).
 	 */
-	public static final String WORK_SPACE_FOLDER_NAME = "openLCA-data-1.5-alpha4";
+	public static final String WORK_SPACE_FOLDER_NAME = "openLCA-data-1.4";
 
 	/**
 	 * Indicates if the workspace folder should be located in the user dir. If
 	 * false the workspace will be created in the installation directory of
 	 * openLCA
 	 */
-	public static final boolean WORK_SPACE_IN_USER_DIR = false;
+	public static final boolean WORK_SPACE_IN_USER_DIR = true;
 
 	/**
 	 * The name of default folder where the local databases are stored. This
