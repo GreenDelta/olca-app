@@ -1,0 +1,4 @@
+# this folder must contain the database templates which can be generated with
+# the olca-refdata project (cd olca-refdata & mvn package)
+
+*.zolca
