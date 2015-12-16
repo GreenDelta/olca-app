@@ -47,21 +47,15 @@ public class KmlUtil {
 		}
 	}
 
-	public static String prettyFormat(String kml) {
+	public static String prettyFormat(String kml) throws Exception {
 		if (kml == null)
 			return null;
-		try {
-			SAXBuilder builder = new SAXBuilder();
-			Document doc = builder.build(new StringReader(kml));
-			XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
-			StringWriter writer = new StringWriter();
-			outputter.output(doc, writer);
-			return writer.toString();
-		} catch (Exception e) {
-			Logger log = LoggerFactory.getLogger(KmlUtil.class);
-			log.error("failed to format XML", e);
-			return kml;
-		}
+		SAXBuilder builder = new SAXBuilder();
+		Document doc = builder.build(new StringReader(kml));
+		XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
+		StringWriter writer = new StringWriter();
+		outputter.output(doc, writer);
+		return writer.toString();
 	}
 
 	public static String getDisplayText(byte[] kmz) {

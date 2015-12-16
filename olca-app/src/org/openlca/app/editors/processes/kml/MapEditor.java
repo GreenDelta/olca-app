@@ -1,5 +1,7 @@
 package org.openlca.app.editors.processes.kml;
 
+import java.util.function.Consumer;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.BrowserFunction;
@@ -9,6 +11,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.openlca.app.Messages;
 import org.openlca.app.rcp.html.HtmlPage;
 import org.openlca.app.rcp.html.HtmlView;
+import org.openlca.app.util.Info;
 import org.openlca.app.util.UI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,24 +26,16 @@ public class MapEditor implements HtmlPage {
 	private EditorHandler handler;
 	private boolean editOnly;
 
-	public static void open(String name, String kml, EditorHandler handler) {
-		MapEditor editor = new MapEditor(name, kml, false, handler);
+	public static void open(String name, String kml, EditorHandler saveHandler) {
+		MapEditor editor = new MapEditor(name, kml, false, saveHandler);
 		editor.openShell();
 	}
 
-	/**
-	 * Opens the map editor. Only the update button is available. 'Save as'
-	 * button and name input are not shown
-	 */
-	public static void openForEditingOnly(String kml, EditorHandler handler) {
-		MapEditor editor = new MapEditor(null, kml, true, handler);
-		editor.openShell();
-	}
-
-	private MapEditor(String name, String kml, boolean editOnly, EditorHandler handler) {
+	private MapEditor(String name, String kml, boolean editOnly,
+			EditorHandler saveHandler) {
 		this.kml = kml;
 		this.editOnly = editOnly;
-		this.handler = handler;
+		this.handler = saveHandler;
 		Shell parent = UI.shell();
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
 		shell.setLayout(new FillLayout());
@@ -67,7 +62,7 @@ public class MapEditor implements HtmlPage {
 	@Override
 	public void onLoaded() {
 		new LocationSaveFunction(browser, handler, this::close);
-		new KmlPrettifyFunction(browser);
+		new KmlPrettifyFunction(browser, null);
 		if (kml == null)
 			kml = "";
 		try {
@@ -78,12 +73,13 @@ public class MapEditor implements HtmlPage {
 		}
 	}
 
-	public static class LocationSaveFunction extends BrowserFunction {
+	private class LocationSaveFunction extends BrowserFunction {
 
 		private EditorHandler handler;
 		private Runnable callback;
 
-		public LocationSaveFunction(Browser browser, EditorHandler handler, Runnable callback) {
+		public LocationSaveFunction(Browser browser, EditorHandler handler, 
+				Runnable callback) {
 			super(browser, "doSave");
 			this.handler = handler;
 			this.callback = callback;
@@ -97,6 +93,11 @@ public class MapEditor implements HtmlPage {
 			Boolean overwrite = getArg(args, 1);
 			if (overwrite == null)
 				return null;
+			boolean isValid = (Boolean) browser.evaluate("return isValidKml()");
+			if (!isValid) {
+				Info.showBox("The kml you provided is not valid, please check your input");
+				return null;
+			}
 			handler.contentSaved(kml, overwrite, callback);
 			return null;
 		}
@@ -112,8 +113,12 @@ public class MapEditor implements HtmlPage {
 
 	public static class KmlPrettifyFunction extends BrowserFunction {
 
-		public KmlPrettifyFunction(Browser browser) {
+		private Consumer<Boolean> validHandler;
+
+		public KmlPrettifyFunction(Browser browser,
+				Consumer<Boolean> validHandler) {
 			super(browser, "prettifyKML");
+			this.validHandler = validHandler;
 		}
 
 		@Override
@@ -121,7 +126,17 @@ public class MapEditor implements HtmlPage {
 			String kml = getArg(arguments, 0);
 			if (kml == null || kml.isEmpty())
 				return null;
-			return KmlUtil.prettyFormat(kml);
+			try {
+				String result = KmlUtil.prettyFormat(kml);
+				if (result != null)
+					if (validHandler != null)
+						validHandler.accept(true);
+				return result;
+			} catch (Exception e) {
+				if (validHandler != null)
+					validHandler.accept(false);
+				return null;
+			}
 		}
 
 		@SuppressWarnings("unchecked")

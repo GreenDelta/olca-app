@@ -1,5 +1,6 @@
 package org.openlca.app.editors.locations;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.widgets.Composite;
@@ -15,6 +16,7 @@ import org.openlca.app.editors.processes.kml.KmlUtil;
 import org.openlca.app.editors.processes.kml.MapEditor.KmlPrettifyFunction;
 import org.openlca.app.rcp.html.HtmlPage;
 import org.openlca.app.rcp.html.HtmlView;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.Location;
 import org.slf4j.Logger;
@@ -26,6 +28,7 @@ public class LocationInfoPage extends ModelPage<Location> implements HtmlPage {
 	private FormToolkit toolkit;
 	private Browser browser;
 	private String kml;
+	private boolean isValidKml;
 
 	LocationInfoPage(LocationEditor editor) {
 		super(editor, "LocationInfoPage", Messages.GeneralInformation);
@@ -62,6 +65,7 @@ public class LocationInfoPage extends ModelPage<Location> implements HtmlPage {
 		section.setText(Messages.KmlEditor);
 		Composite composite = toolkit.createComposite(section);
 		section.setClient(composite);
+		Actions.bind(section, new ClearAction());
 		UI.gridLayout(composite, 1);
 		UI.gridData(composite, true, true);
 		browser = UI.createBrowser(composite, this);
@@ -77,10 +81,16 @@ public class LocationInfoPage extends ModelPage<Location> implements HtmlPage {
 		return kml;
 	}
 
+	boolean isValidKml() {
+		return isValidKml;
+	}
+
 	@Override
 	public void onLoaded() {
 		new KmlChangedFunction(browser);
-		new KmlPrettifyFunction(browser);
+		new KmlPrettifyFunction(browser, (value) -> {
+			isValidKml = value;
+		});
 		kml = KmlUtil.toKml(getModel().getKmz());
 		if (kml == null)
 			kml = "";
@@ -102,6 +112,7 @@ public class LocationInfoPage extends ModelPage<Location> implements HtmlPage {
 		@Override
 		public Object function(Object[] arguments) {
 			kml = getArg(arguments, 0);
+			isValidKml = (Boolean) browser.evaluate("return isValidKml()");
 			getEditor().setDirty(true);
 			return null;
 		}
@@ -112,6 +123,19 @@ public class LocationInfoPage extends ModelPage<Location> implements HtmlPage {
 				return null;
 			return (T) args[index];
 		}
+	}
+	
+	private class ClearAction extends Action {
+		
+		private ClearAction() {
+			super("#Clear data");
+		}
+		
+		@Override
+		public void run() {
+			browser.evaluate("onDestroyFeatures()");
+		}
+		
 	}
 
 }
