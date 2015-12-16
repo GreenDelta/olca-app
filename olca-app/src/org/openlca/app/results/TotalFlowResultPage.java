@@ -55,11 +55,13 @@ public class TotalFlowResultPage extends FormPage {
 		Composite body = UI.formBody(form, toolkit);
 		TableViewer inputViewer = createSectionAndViewer(body, true);
 		TableViewer outputViewer = createSectionAndViewer(body, false);
-		new TotalRequirementsSection(result).create(body, toolkit);
+		TotalRequirementsSection reqSection = new TotalRequirementsSection(result);
+		reqSection.create(body, toolkit);
 		form.reflow(true);
 		Collection<FlowDescriptor> flows = result.getFlowDescriptors();
 		inputViewer.setInput(flows);
 		outputViewer.setInput(flows);
+		reqSection.fill();
 	}
 
 	private TableViewer createSectionAndViewer(Composite parent, boolean input) {

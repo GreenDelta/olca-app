@@ -43,6 +43,8 @@ class TotalRequirementsSection {
 	private SimpleResultProvider<?> result;
 	private Costs costs;
 
+	private TableViewer table;
+
 	TotalRequirementsSection(SimpleResultProvider<?> result) {
 		this.result = result;
 		if (!result.hasCostResults())
@@ -58,11 +60,10 @@ class TotalRequirementsSection {
 		UI.gridData(section, true, true);
 		Composite comp = UI.sectionClient(section, tk);
 		UI.gridLayout(comp, 1);
-		TableViewer table = Tables.createViewer(comp, columnLables());
+		table = Tables.createViewer(comp, columnLables());
 		Tables.bindColumnWidths(table, columnWidths());
 		Label label = new Label();
 		table.setLabelProvider(label);
-		table.setInput(createItems());
 		Viewers.sortByLabels(table, label, 0, 1, 3);
 		Viewers.sortByDouble(table, (Item i) -> i.amount, 2);
 		Actions.bind(table, TableClipboard.onCopy(table));
@@ -72,6 +73,12 @@ class TotalRequirementsSection {
 				App.openEditor(cache.get(ProcessDescriptor.class, item.processId));
 			}
 		});
+	}
+
+	void fill() {
+		if (table == null)
+			return;
+		table.setInput(createItems());
 	}
 
 	private String[] columnLables() {
@@ -174,8 +181,10 @@ class TotalRequirementsSection {
 				return;
 			ContributionResultProvider<?> crp = (ContributionResultProvider<?>) result;
 			double[] vals = crp.result.singleCostResults;
-			if (vals.length > idx && idx >= 0)
-				costValue = costs == Costs.NET_COSTS ? vals[idx] : -vals[idx];
+			if (vals.length > idx && idx >= 0) {
+				double v = vals[idx];
+				costValue = costs == Costs.NET_COSTS ? v : v != 0 ? -v : 0;
+			}
 		}
 
 	}
