@@ -7,6 +7,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.lcia_methods.ShapeFileUtils;
 import org.openlca.app.editors.processes.kml.KmlUtil;
+import org.openlca.app.util.Info;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
@@ -36,6 +37,10 @@ public class LocationEditor extends ModelEditor<Location> {
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
+		if (!infoPage.isValidKml()) {
+			Info.showBox("Kml editor", "The provided kml is invalid, please check your input");
+			return;
+		}
 		String kml = infoPage.getKml();
 		if (kml == null)
 			getModel().setKmz(null);
