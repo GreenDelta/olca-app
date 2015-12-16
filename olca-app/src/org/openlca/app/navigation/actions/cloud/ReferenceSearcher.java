@@ -57,12 +57,6 @@ class ReferenceSearcher {
 		Set<Long> useSearchIds = new HashSet<>();
 		if (toCheck.containsKey(DiffType.NEW))
 			refSearchIds.addAll(toCheck.get(DiffType.NEW));
-		if (toCheck.containsKey(DiffType.DELETED))
-			useSearchIds.addAll(toCheck.get(DiffType.DELETED));
-		if (toCheck.containsKey(DiffType.CHANGED)) {
-			refSearchIds.addAll(toCheck.get(DiffType.CHANGED));
-			useSearchIds.addAll(toCheck.get(DiffType.CHANGED));
-		}
 		List<CategorizedDescriptor> results = new ArrayList<>();
 		IReferenceSearch<?> refSearch = IReferenceSearch.FACTORY.createFor(
 				type, database, true);
