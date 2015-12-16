@@ -14,6 +14,7 @@ import org.openlca.app.cloud.index.Diff;
 import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.cloud.index.DiffType;
 import org.openlca.app.cloud.ui.CommitDialog;
+import org.openlca.app.cloud.ui.ReferencesResultDialog;
 import org.openlca.app.cloud.ui.diff.DiffNode;
 import org.openlca.app.cloud.ui.diff.DiffNodeBuilder;
 import org.openlca.app.cloud.ui.diff.DiffResult;
@@ -30,10 +31,12 @@ import org.openlca.cloud.api.CommitInvocation;
 import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.model.data.Dataset;
 import org.openlca.cloud.util.WebRequests.WebRequestException;
+import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ModelType;
 
 public class CommitAction extends Action implements INavigationAction {
 
+	private IDatabase database;
 	private DiffIndex index;
 	private RepositoryClient client;
 	private List<INavigationElement<?>> selection;
@@ -48,9 +51,9 @@ public class CommitAction extends Action implements INavigationAction {
 		runner.run();
 		if (runner.error != null)
 			Error.showBox(runner.error.getMessage());
-		if (!runner.upToDate)
+		else if (!runner.upToDate)
 			Error.showBox("#Rejected - not up to date. Please fetch the latest changes from the repository first");
-		if (runner.noChanges)
+		else if (runner.noChanges)
 			Info.showBox("#No changes in local db");
 	}
 
@@ -60,6 +63,7 @@ public class CommitAction extends Action implements INavigationAction {
 			return false;
 		index = Database.getDiffIndex();
 		client = Database.getRepositoryClient();
+		database = Database.get();
 		selection = Collections.singletonList(element);
 		return true;
 	}
@@ -70,42 +74,70 @@ public class CommitAction extends Action implements INavigationAction {
 			return false;
 		index = Database.getDiffIndex();
 		client = Database.getRepositoryClient();
+		database = Database.get();
 		selection = elements;
 		return true;
 	}
 
 	private class Runner {
 
-		private boolean upToDate = true;
-		private boolean noChanges = false;
-		private boolean canceled = false;
+		private boolean upToDate;
+		private boolean noChanges;
 		private String message;
 		private List<DiffResult> changes;
 		private List<DiffResult> selected;
+		private List<DiffResult> references;
 		private Map<Dataset, String> checkResult;
 		private WebRequestException error;
 
 		public void run() {
 			App.runWithProgress("#Comparing with repository",
 					this::getDifferences);
-			openCommitDialog();
+			if (!upToDate)
+				return;
+			boolean doContinue = openCommitDialog();
+			if (!doContinue)
+				return;
+			App.runWithProgress("#Searching for referenced changes",
+					this::searchForReferences);
+			doContinue = showReferences();
+			if (!doContinue)
+				return;
+			if (CloudPreference.doCheckAgainstLibraries()) {
+				App.runWithProgress("#Checking against libraries",
+						this::checkAgainstLibraries);
+				doContinue = openLibraryResultDialog();
+			}
+			if (!doContinue)
+				return;
+			App.runWithProgress("#Commiting changes", this::commit);
+			if (!upToDate)
+				return;
+			Navigator.refresh(Navigator.getNavigationRoot());
 		}
 
 		private void getDifferences() {
 			checkUpToDate(client);
-			if (!canContinue())
+			if (!upToDate)
 				return;
 			changes = createDifferences(index, index.getChanged());
 		}
 
-		private void openCommitDialog() {
-			if (!canContinue())
-				return;
+		private void checkUpToDate(RepositoryClient client) {
+			try {
+				upToDate = client.requestCommit();
+			} catch (WebRequestException e) {
+				error = e;
+				upToDate = false;
+			}
+		}
+
+		private boolean openCommitDialog() {
 			DiffNode node = new DiffNodeBuilder(Database.get(),
 					Database.getDiffIndex()).build(changes);
 			if (node == null) {
 				noChanges = true;
-				return;
+				return false;
 			}
 			CommitDialog dialog = new CommitDialog(node, client);
 			dialog.setBlockOnOpen(true);
@@ -113,29 +145,41 @@ public class CommitAction extends Action implements INavigationAction {
 					.build();
 			dialog.setInitialSelection(refIds);
 			if (dialog.open() != IDialogConstants.OK_ID)
-				return;
+				return false;
 			message = dialog.getMessage();
 			selected = dialog.getSelected();
-			doLibraryCheck();
-			if (canceled)
-				return;
-			App.runWithProgress("#Commiting changes", this::commit);
-			afterCommit();
+			return true;
 		}
 
-		private void doLibraryCheck() {
-			if (!CloudPreference.doCheckAgainstLibraries())
-				return;
-			App.runWithProgress("#Checking against libraries",
-					this::checkAgainstLibraries);
-			if (!canContinue())
-				return;
+		private void searchForReferences() {
+			ReferenceSearcher searcher = new ReferenceSearcher(database, index);
+			references = searcher.run(selected);
+		}
+
+		private boolean showReferences() {
+			if (error != null)
+				return false;
+			if (references == null || references.isEmpty())
+				return true;
+			DiffNode node = new DiffNodeBuilder(Database.get(),
+					Database.getDiffIndex()).build(references);
+			ReferencesResultDialog dialog = new ReferencesResultDialog(node,
+					client);
+			if (dialog.open() != IDialogConstants.OK_ID)
+				return false;
+			return true;
+		}
+
+		private boolean openLibraryResultDialog() {
+			if (error != null)
+				return false;
 			if (checkResult == null || checkResult.isEmpty())
-				return;
+				return true;
 			LibraryResultDialog libraryDialog = new LibraryResultDialog(
 					checkResult);
 			if (libraryDialog.open() != IDialogConstants.OK_ID)
-				canceled = true;
+				return false;
+			return true;
 		}
 
 		private void checkAgainstLibraries() {
@@ -152,7 +196,7 @@ public class CommitAction extends Action implements INavigationAction {
 		private void commit() {
 			try {
 				checkUpToDate(client);
-				if (!canContinue())
+				if (!upToDate || error != null)
 					return;
 				CommitInvocation commit = client.createCommitInvocation();
 				commit.setCommitMessage(message);
@@ -197,34 +241,12 @@ public class CommitAction extends Action implements INavigationAction {
 			});
 		}
 
-		private void afterCommit() {
-			if (!canContinue())
-				return;
-			Navigator.refresh(Navigator.getNavigationRoot());
-		}
-
 		private List<DiffResult> createDifferences(DiffIndex index,
 				List<Diff> changes) {
 			List<DiffResult> differences = new ArrayList<>();
 			for (Diff diff : changes)
 				differences.add(new DiffResult(diff));
 			return differences;
-		}
-
-		private void checkUpToDate(RepositoryClient client) {
-			try {
-				upToDate = client.requestCommit();
-			} catch (WebRequestException e) {
-				error = e;
-			}
-		}
-
-		private boolean canContinue() {
-			if (error != null)
-				return false;
-			if (!upToDate)
-				return false;
-			return true;
 		}
 
 		private void putChanges(List<DiffResult> changes,
