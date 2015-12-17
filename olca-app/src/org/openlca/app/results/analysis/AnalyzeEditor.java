@@ -22,8 +22,10 @@ import org.openlca.app.results.analysis.sankey.SankeyDiagram;
 import org.openlca.app.results.viz.ContributionBubblePage;
 import org.openlca.app.results.viz.ProcessTreemapPage;
 import org.openlca.core.math.CalculationSetup;
+import org.openlca.core.matrix.FlowIndex;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
+import org.openlca.core.results.FullResult;
 import org.openlca.core.results.FullResultProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -131,9 +133,18 @@ public class AnalyzeEditor extends FormEditor {
 
 	private double getImpactFactor(ImpactCategoryDescriptor impactCategory,
 			FlowWithProcess descriptor) {
-		int row = result.result.impactIndex.getIndex(impactCategory.getId());
-		int col = result.result.flowIndex.getIndex(descriptor.flow.getId());
-		return Math.abs(result.result.impactFactors.getEntry(row, col));
+		FullResult fr = result.result;
+		FlowIndex flowIdx = fr.flowIndex;
+		int row = fr.impactIndex.getIndex(impactCategory.getId());
+		int col = flowIdx.getIndex(descriptor.flow.getId());
+		double value = fr.impactFactors.getEntry(row, col);
+		if (flowIdx.isInput(descriptor.flow.getId())) {
+			// characterization factors for input flows are negative in the
+			// matrix. A simple abs() is not correct because the original
+			// characterization factor maybe was already negative (-(-(f))).
+			value = -value;
+		}
+		return value;
 	}
 
 }

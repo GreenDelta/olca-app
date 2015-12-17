@@ -183,7 +183,7 @@ public class ContributionTableSection {
 		Contributions.sortDescending(items);
 		List<ContributionItem<?>> tableData = new ArrayList<>();
 		for (ContributionItem<?> item : items) {
-			if (Math.abs(cutOff) < 1e-5 || item.share >= cutOff)
+			if (Math.abs(cutOff) < 1e-5 || Math.abs(item.share) >= cutOff)
 				tableData.add(item);
 		}
 		table.setInput(tableData, unit);

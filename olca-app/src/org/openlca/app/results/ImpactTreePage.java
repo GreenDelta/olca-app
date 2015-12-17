@@ -55,13 +55,13 @@ public class ImpactTreePage extends FormPage {
 
 	private final FullResultProvider result;
 	private final ImpactFactorProvider impactFactors;
+
 	private FormToolkit toolkit;
 	private ImpactCategoryViewer categoryViewer;
-	private Button filterZeroButton;
 	private Spinner spinner;
 	private TreeViewer viewer;
 	private ImpactCategoryDescriptor impactCategory;
-	private boolean filterZeroes;
+	private boolean filterZeroes = true;
 	private int cutOff = 10;
 
 	public ImpactTreePage(FormEditor editor, FullResultProvider result,
@@ -108,10 +108,10 @@ public class ImpactTreePage extends FormPage {
 	}
 
 	private void createNoImpactFilter(Composite parent) {
-		filterZeroButton = UI.formCheckBox(parent, toolkit,
-				"#Exclude zero entries");
-		Controls.onSelect(filterZeroButton, (event) -> {
-			filterZeroes = filterZeroButton.getSelection();
+		Button button = UI.formCheckBox(parent, toolkit, "#Exclude zero entries");
+		button.setSelection(filterZeroes);
+		Controls.onSelect(button, event -> {
+			filterZeroes = button.getSelection();
 			viewer.refresh();
 		});
 	}
@@ -304,17 +304,12 @@ public class ImpactTreePage extends FormPage {
 
 	public class CutOffFilter extends ViewerFilter {
 		@Override
-		public boolean select(Viewer viewer, Object parentElement,
-				Object element) {
+		public boolean select(Viewer viewer, Object parent, Object element) {
 			if (cutOff == 0d)
 				return true;
 			if (element instanceof ProcessDescriptor) {
 				double c = getUpstreamContribution((ProcessDescriptor) element);
-				return c * 100 > cutOff;
-			}
-			if (element instanceof FlowWithProcess) {
-				double c = getUpstreamContribution((FlowWithProcess) element);
-				return c * 100 > cutOff;
+				return Math.abs(c * 100) > cutOff;
 			}
 			return true;
 		}
@@ -330,23 +325,12 @@ public class ImpactTreePage extends FormPage {
 			return c > 1 ? 1 : c;
 		}
 
-		private double getUpstreamContribution(FlowWithProcess descriptor) {
-			if (descriptor.process == null || descriptor.flow == null)
-				return 0;
-			double total = result.getTotalImpactResult(impactCategory).value;
-			if (total == 0)
-				return 0;
-			double val = getResult(descriptor);
-			double c = val / Math.abs(total);
-			return c > 1 ? 1 : c;
-		}
 	}
 
 	public class ZeroFilter extends ViewerFilter {
 
 		@Override
-		public boolean select(Viewer viewer, Object parentElement,
-				Object element) {
+		public boolean select(Viewer viewer, Object parent, Object element) {
 			if (!filterZeroes)
 				return true;
 			if (element instanceof FlowWithProcess) {
