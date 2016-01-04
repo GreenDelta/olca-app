@@ -44,6 +44,14 @@ License: http://www.apache.org/licenses/LICENSE-2.0.txt (APL 2.0)
 Homepage: http://getbootstrap.com/
 License: https://github.com/twbs/bootstrap/blob/master/LICENSE (MIT)
  
+= Chart.js =
+Homepage: http://www.chartjs.org/
+License: https://github.com/nnnick/Chart.js/blob/master/LICENSE.md (MIT) 
+
+= Codemirror =
+Homepage: https://codemirror.net/
+License: https://codemirror.net/LICENSE (MIT)
+ 
 = D3 =
 Homepage: http://d3js.org/
 License: https://github.com/mbostock/d3/blob/master/LICENSE (BSD)
@@ -51,6 +59,10 @@ License: https://github.com/mbostock/d3/blob/master/LICENSE (BSD)
 = Eclipse =
 Homepage: http://eclipse.org/
 License: http://www.eclipse.org/legal/epl-v10.html (EPL 1.0)
+
+= GeoTools = 
+Homepage: http://geotools.org/
+License: http://www.gnu.org/licenses/lgpl.html (LGPL)
 
 = GNU Trove = 
 Homepage: http://trove.starlight-systems.com/
@@ -60,13 +72,37 @@ License: http://trove.starlight-systems.com/license (LGPL)
 Homepage: https://github.com/google/gson
 License: https://github.com/google/gson/blob/master/LICENSE (APL 2.0)
 
+= Guava =
+Homepage: https://github.com/google/guava
+License: https://github.com/google/guava/blob/master/COPYING (APL 2.0)
+
+= Jersey =
+Homepage: https://jersey.java.net/
+License: https://jersey.java.net/license.html (CDDL 1.1)
+
 = JDOM =
 Homepage: http://www.jdom.org
 License: https://github.com/hunterhacker/jdom/blob/master/LICENSE.txt (BSD style)
 
+= jQuery =
+Homepage: https://jquery.com/
+License: https://github.com/jquery/jquery/blob/master/LICENSE.txt (MIT)
+
+= Jython = 
+Homepage: http://www.jython.org/
+License: http://www.jython.org/license.html (PSF License v2)
+
+= MapDB =
+Homepage: http://www.mapdb.org/
+License: https://github.com/jankotek/mapdb/blob/master/license.txt (APL 2.0)
+
 = OpenBLAS =
 Homepage: http://www.openblas.net/
 License: https://github.com/xianyi/OpenBLAS/blob/develop/LICENSE (BSD)
+
+= OpenLayers =
+Homepage: http://openlayers.org/
+License: https://github.com/openlayers/ol3/blob/master/LICENSE.md (BSD)
 
 = SLF4J = 
 Homepage: http://www.slf4j.org/
@@ -75,3 +111,7 @@ License: http://www.slf4j.org/license.html (MIT)
 = Silk Icons =
 Homepage: http://www.famfamfam.com/lab/icons/silk/
 License: http://creativecommons.org/licenses/by/2.5/ (CC 2.5)
+
+= SuperCSV =
+Homepage: http://super-csv.github.io/super-csv/index.html
+License: http://super-csv.github.io/super-csv/license.html (APL 2.0)
