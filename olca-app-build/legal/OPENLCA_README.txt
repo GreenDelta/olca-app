@@ -32,91 +32,46 @@ systems from http://www.oracle.com/technetwork/java/javase/downloads/index.html.
 
 == Third Party Content ==
 
-= AngularJS = 
-AngularJS is licensed under the MIT license 
-(https://github.com/angular/angular.js/blob/master/LICENSE). Original
-binaries and source code are available from the AngularJS project 
-(http://angularjs.org/).
+= AngularJS =
+Homepage: http://angularjs.org/
+License: https://github.com/angular/angular.js/blob/master/LICENSE (MIT) 
 
 = Apache Projects =
-The Content includes software developed by the Apache Software 
-Foundation (http://www.apache.org). This software is licensed under 
-the Apache License v2.0 which can be found at 
-http://www.apache.org/licenses/LICENSE-2.0.txt. Original binaries and 
-source code are available from the respective project web-sites of the 
-Apache Software Foundation.    
+Homepage: http://www.apache.org/
+License: http://www.apache.org/licenses/LICENSE-2.0.txt (APL 2.0)
 
-= Bootstrap = 
-Bootstrap is licensed under the Apache License v2.0 
-(https://github.com/twitter/bootstrap/blob/master/LICENSE). Original 
-binaries and source code are available from the Bootstrap project 
-site (http://twitter.github.com/bootstrap/).
+= Bootstrap =
+Homepage: http://getbootstrap.com/
+License: https://github.com/twbs/bootstrap/blob/master/LICENSE (MIT)
+ 
+= D3 =
+Homepage: http://d3js.org/
+License: https://github.com/mbostock/d3/blob/master/LICENSE (BSD)
 
-= D3.js =
-D3.js is licensed under the BSD license 
-(https://github.com/mbostock/d3/blob/master/LICENSE). Original 
-binaries and source code are available from the D3.js project 
-site (http://d3js.org/).
-
-= Eclipse Rich Client Platform =
-The openLCA application is built on top of the Eclipse Rich Client 
-Platform and, therefore, includes plug-ins that are made available by 
-the Eclipse Foundation and are licensed under the Eclipse Public 
-License Version 1.0 ("EPL"). A copy of the EPL is available at 
-http://www.eclipse.org/legal/epl-v10.html. These plug-ins can again 
-contain third party content which is indicated in the legal 
-information of the respective plug-ins (see the plug-in details in the 
-application). Original binaries and source code are available from the 
-Eclipse website (http://eclipse.org).
+= Eclipse =
+Homepage: http://eclipse.org/
+License: http://www.eclipse.org/legal/epl-v10.html (EPL 1.0)
 
 = GNU Trove = 
-GNU Trove is licensed under the Lesser GNU Public License 
-(LGPL, http://trove.starlight-systems.com/license). Original binaries and 
-source code are available from the GNU Trove website 
-(http://trove.starlight-systems.com/).
+Homepage: http://trove.starlight-systems.com/
+License: http://trove.starlight-systems.com/license (LGPL)
 
-= Google Gson = 
-Google Gson is licensed under the Apache 2 license. Original binaries and 
-source code are available from the Google Gson project website 
-(http://code.google.com/p/google-gson/).
+= Gson = 
+Homepage: https://github.com/google/gson
+License: https://github.com/google/gson/blob/master/LICENSE (APL 2.0)
 
 = JDOM =
-JDOM is licensed under the JDOM License (BSD style). The license,  
-original binaries, and sources are available from the JDOM website 
-http://www.jdom.org.
-
-= MySQL Connector/J =
-The MySQL Connector/J is licensed under the General Public License v2 
-(GPL v2) with a FOSS Exception. The GPL v2 is available at 
-http://www.gnu.org/licenses/old-licenses/gpl-2.0.html and the FOSS 
-exception at http://www.mysql.com/about/legal/licensing/foss-exception.
-Original binaries and source are available from the MySQL website 
-http://dev.mysql.com.
-
-= ojAlgo =
-ojAlgo is licensed under the MIT license (http://ojalgo.org/license.html). 
-Original binaries and source code are available from the ojAlgo website
-(http://ojalgo.org).
+Homepage: http://www.jdom.org
+License: https://github.com/hunterhacker/jdom/blob/master/LICENSE.txt (BSD style)
 
 = OpenBLAS =
-OpenBLAS is based on GotoBLAS2 1.13 BSD version and is itself licensed under 
-the revised BSD license. The license and source code are available from the
-OpenBLAS Git repository (https://github.com/xianyi/OpenBLAS).
-
-= TrueZIP =
-TrueZIP is licensed under the Eclipse Public License Version 1.0 ("EPL",
-http://truezip.java.net/license.html). Original binaries and source code 
-are available from the TrueZIP website (http://truezip.java.net/).
+Homepage: http://www.openblas.net/
+License: https://github.com/xianyi/OpenBLAS/blob/develop/LICENSE (BSD)
 
 = SLF4J = 
-SLF4J is licensed under the MIT license (http://www.slf4j.org/license.html).
-Original binaries and source code are available from the SLF4J website 
-(http://www.slf4j.org/).
+Homepage: http://www.slf4j.org/
+License: http://www.slf4j.org/license.html (MIT)
 
 = Silk Icons =
-The Silk icon set is licensed under the Creative Commons Attribution 
-2.5 License (http://creativecommons.org/licenses/by/2.5/legalcode) and 
-is available from the following website: 
-http://www.famfamfam.com/lab/icons/silk. 
-
-
+Homepage: http://www.famfamfam.com/lab/icons/silk/
+License: http://creativecommons.org/licenses/by/2.5/ (CC 2.5)
