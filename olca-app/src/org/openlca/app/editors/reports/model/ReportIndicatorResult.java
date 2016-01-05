@@ -3,12 +3,12 @@ package org.openlca.app.editors.reports.model;
 import java.util.ArrayList;
 import java.util.List;
 
-class ReportResult {
+class ReportIndicatorResult {
 
 	final int indicatorId;
 	final List<VariantResult> variantResults = new ArrayList<>();
 
-	public ReportResult(int indicatorId) {
+	public ReportIndicatorResult(int indicatorId) {
 		this.indicatorId = indicatorId;
 	}
 

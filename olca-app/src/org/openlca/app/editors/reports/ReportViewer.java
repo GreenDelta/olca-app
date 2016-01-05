@@ -142,6 +142,7 @@ public class ReportViewer extends FormEditor {
 		public void onLoaded() {
 			Gson gson = new Gson();
 			String json = gson.toJson(report);
+			System.out.println(json);
 			String messages = Messages.asJson();
 			String command = "setData(" + json + ", " + messages + ")";
 			try {

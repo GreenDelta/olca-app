@@ -7,10 +7,13 @@ import java.util.TreeSet;
 import org.openlca.app.App;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
-import org.openlca.app.editors.reports.model.ReportResult.Contribution;
-import org.openlca.app.editors.reports.model.ReportResult.VariantResult;
+import org.openlca.app.editors.reports.model.ReportIndicatorResult.Contribution;
+import org.openlca.app.editors.reports.model.ReportIndicatorResult.VariantResult;
+import org.openlca.app.util.Numbers;
+import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.math.ProjectCalculator;
 import org.openlca.core.matrix.NwSetTable;
+import org.openlca.core.model.Currency;
 import org.openlca.core.model.Project;
 import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
@@ -39,12 +42,15 @@ public class ReportCalculator implements Runnable {
 		if (project == null || report == null)
 			return;
 		report.results.clear();
+		report.addedValues.clear();
+		report.netCosts.clear();
 		if (project.getImpactMethodId() == null)
 			return;
 		ProjectResultProvider projectResult = calcProject(project);
 		if (projectResult == null)
 			return;
 		appendResults(projectResult);
+		appendCostResults(projectResult);
 		if (project.getNwSetId() != null)
 			appendNwFactors();
 	}
@@ -86,7 +92,7 @@ public class ReportCalculator implements Runnable {
 
 	private void appendResults(ProjectResultProvider result) {
 		for (ImpactCategoryDescriptor impact : result.getImpactDescriptors()) {
-			ReportResult repResult = initReportResult(impact);
+			ReportIndicatorResult repResult = initReportResult(impact);
 			if (repResult == null)
 				continue; // should not add this indicator
 			report.results.add(repResult);
@@ -105,12 +111,12 @@ public class ReportCalculator implements Runnable {
 		}
 	}
 
-	private ReportResult initReportResult(ImpactCategoryDescriptor impact) {
+	private ReportIndicatorResult initReportResult(ImpactCategoryDescriptor impact) {
 		for (ReportIndicator indicator : report.indicators) {
 			if (!indicator.displayed)
 				continue;
 			if (Objects.equals(impact, indicator.descriptor))
-				return new ReportResult(indicator.id);
+				return new ReportIndicatorResult(indicator.id);
 		}
 		return null;
 	}
@@ -170,6 +176,38 @@ public class ReportCalculator implements Runnable {
 			con.amount = (double) 0;
 			con.rest = false;
 			con.processId = id;
+		}
+	}
+
+	private void appendCostResults(ProjectResultProvider result) {
+		if (result == null)
+			return;
+		String currency = getCurrency();
+		for (ProjectVariant var : result.getVariants()) {
+			double costs = result.getResult(var).getTotalCostResult();
+			report.netCosts.add(cost(var, costs, currency));
+			double addedValue = costs == 0 ? 0 : -costs;
+			report.addedValues.add(cost(var, addedValue, currency));
+		}
+	}
+
+	private ReportCostResult cost(ProjectVariant var, double val, String cu) {
+		ReportCostResult r = new ReportCostResult();
+		r.variant = var.getName();
+		r.value = Numbers.decimalFormat(val, 2) + " " + cu;
+		return r;
+	}
+
+	private String getCurrency() {
+		try {
+			CurrencyDao dao = new CurrencyDao(Database.get());
+			Currency c = dao.getReferenceCurrency();
+			if (c == null)
+				return "?";
+			return c.code != null ? c.code : c.getName();
+		} catch (Exception e) {
+			log.error("failed to load default currency", e);
+			return "?";
 		}
 	}
 }
