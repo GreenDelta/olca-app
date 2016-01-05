@@ -1,5 +1,7 @@
 package org.openlca.app.editors.reports.model;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
@@ -22,6 +24,7 @@ import org.openlca.core.results.ContributionItem;
 import org.openlca.core.results.ContributionSet;
 import org.openlca.core.results.ImpactResult;
 import org.openlca.core.results.ProjectResultProvider;
+import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -189,6 +192,11 @@ public class ReportCalculator implements Runnable {
 			double addedValue = costs == 0 ? 0 : -costs;
 			report.addedValues.add(cost(var, addedValue, currency));
 		}
+		Comparator<ReportCostResult> c = (r1, r2) -> {
+			return Strings.compare(r1.variant, r2.variant);
+		};
+		Collections.sort(report.netCosts, c);
+		Collections.sort(report.addedValues, c);
 	}
 
 	private ReportCostResult cost(ProjectVariant var, double val, String cu) {

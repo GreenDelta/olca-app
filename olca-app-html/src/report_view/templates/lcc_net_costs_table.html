@@ -1,0 +1,16 @@
+<div class="table-responsive">
+	<table class="table table-hover reportTable">
+		<thead>
+			<tr>
+				<th>{{Messages.Variant}}</th>
+				<th>#Net-costs</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr data-ng-repeat="r in report.netCosts">
+				<td>{{r.variant}}</td>
+				<td>{{r.value}}</td>
+			</tr>			
+		</tbody>
+	</table>	
+</div>

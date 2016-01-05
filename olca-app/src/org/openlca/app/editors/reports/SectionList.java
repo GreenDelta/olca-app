@@ -14,7 +14,6 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
-import org.openlca.app.editors.DataBinding;
 import org.openlca.app.editors.projects.ProjectEditor;
 import org.openlca.app.editors.reports.model.Report;
 import org.openlca.app.editors.reports.model.ReportComponent;
@@ -29,7 +28,6 @@ class SectionList {
 
 	private Report report;
 	private ProjectEditor editor;
-	private DataBinding binding;
 	private Composite parent;
 	private FormToolkit toolkit;
 	private ScrolledForm form;
@@ -39,7 +37,6 @@ class SectionList {
 	SectionList(ProjectEditor editor, Composite parent, ScrolledForm form,
 			FormToolkit toolkit) {
 		this.editor = editor;
-		this.binding = new DataBinding(editor);
 		report = editor.getReport();
 		this.parent = parent;
 		this.toolkit = toolkit;
@@ -100,17 +97,33 @@ class SectionList {
 
 		private void createUi() {
 			ui = UI.section(parent, toolkit, model.title);
-			Composite composite = UI.sectionClient(ui, toolkit);
-			titleText = UI.formText(composite, toolkit, Messages.Section);
-			binding.onString(() -> model, "title", titleText);
-			titleText.addModifyListener((e) -> {
-				ui.setText(titleText.getText());
-			});
-			descriptionText = UI.formMultiText(composite, toolkit,
-					Messages.Text);
-			binding.onString(() -> model, "text", descriptionText);
-			createComponentViewer(composite);
+			Composite comp = UI.sectionClient(ui, toolkit);
+			createTitleText(comp);
+			createDescriptionText(comp);
+			createComponentViewer(comp);
 			createActions();
+		}
+
+		private void createTitleText(Composite comp) {
+			titleText = UI.formText(comp, toolkit, Messages.Section);
+			if (model.title != null)
+				titleText.setText(model.title);
+			titleText.addModifyListener(e -> {
+				String t = titleText.getText();
+				model.title = t;
+				ui.setText(t);
+				editor.setDirty(true);
+			});
+		}
+
+		private void createDescriptionText(Composite comp) {
+			descriptionText = UI.formMultiText(comp, toolkit, Messages.Text);
+			if (model.text != null)
+				descriptionText.setText(model.text);
+			descriptionText.addModifyListener(e -> {
+				model.text = descriptionText.getText();
+				editor.setDirty(true);
+			});
 		}
 
 		private void createComponentViewer(Composite composite) {
@@ -127,8 +140,8 @@ class SectionList {
 					model.componentId = null;
 				else
 					model.componentId = c.getId();
-					editor.setDirty(true);
-				});
+				editor.setDirty(true);
+			});
 			if (model.componentId != null)
 				componentViewer.setSelection(new StructuredSelection(
 						ReportComponent.getForId(model.componentId)));
@@ -223,6 +236,10 @@ class SectionList {
 				return Messages.RelativeLciaResultsRadarChart;
 			case SINGLE_SCORE_BAR_CHART:
 				return Messages.SingleScoreBarChart;
+			case LCC_ADDED_VALUES_TABLE:
+				return "#LCC: Added values table";
+			case LCC_NET_COSTS_TABLE:
+				return "#LCC: Net-costs table";
 			default:
 				return Messages.Unknown;
 			}

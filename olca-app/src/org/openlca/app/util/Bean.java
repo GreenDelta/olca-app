@@ -58,6 +58,7 @@ public class Bean {
 			} else
 				return method.invoke(bean);
 		}
+
 		return null;
 	}
 
