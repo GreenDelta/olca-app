@@ -7,8 +7,10 @@ import java.util.List;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
@@ -86,7 +88,10 @@ class TotalRequirementsSection {
 			s = "#Total net-costs: " + asCosts(v);
 		else
 			s = "#Total added value: " + asCosts(v == 0 ? 0 : -v);
-		tk.createLabel(comp, s);
+		Control label = tk.createLabel(comp, s);
+		Font font = UI.boldFont(label);
+		label.setFont(font);
+		label.addDisposeListener(e -> font.dispose());
 	}
 
 	void fill() {
