@@ -100,6 +100,8 @@ public class Formulas {
 			if (e.getAmountFormula() != null)
 				e.setAmountValue(eval(e.getAmountFormula(), s));
 			eval(e.getUncertainty(), s);
+			if (e.costFormula != null)
+				e.costValue = eval(e.costFormula, s);
 		}
 	}
 

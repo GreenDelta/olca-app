@@ -27,7 +27,7 @@ public class GlobalParameterInfoPage extends ModelPage<Parameter> {
 
 	GlobalParameterInfoPage(GlobalParameterEditor editor) {
 		super(editor, "GlobalParameterInfoPage", Messages.GeneralInformation);
-		support.doEvaluation(this::evalFormulas);
+		support.onEvaluation(this::evalFormulas);
 		parameters = new ParameterDao(Database.get()).getGlobalParameters();
 		for (int i = 0; i < parameters.size(); i++)
 			if (parameters.get(i).getName().equals(getModel().getName()))

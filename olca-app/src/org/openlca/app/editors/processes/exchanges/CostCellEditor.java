@@ -14,6 +14,7 @@ class CostCellEditor extends DialogCellEditor {
 	private ProcessEditor editor;
 	private Exchange exchange;
 	private Double oldValue;
+	private String oldFormula;
 	private Currency oldCurrency;
 
 	CostCellEditor(TableViewer viewer, ProcessEditor editor) {
@@ -26,6 +27,7 @@ class CostCellEditor extends DialogCellEditor {
 		if (obj instanceof Exchange) {
 			exchange = (Exchange) obj;
 			oldValue = exchange.costValue;
+			oldFormula = exchange.costFormula;
 			oldCurrency = exchange.currency;
 			super.doSetValue(oldValue);
 		} else {
@@ -36,7 +38,7 @@ class CostCellEditor extends DialogCellEditor {
 
 	@Override
 	protected Object openDialogBox(Control window) {
-		CostDialog.open(exchange);
+		CostDialog.open(editor.getModel(), exchange);
 		if (valuesChanged()) {
 			updateContents(exchange.costValue);
 			editor.setDirty(true);
@@ -46,6 +48,7 @@ class CostCellEditor extends DialogCellEditor {
 
 	private boolean valuesChanged() {
 		return !Objects.equals(oldValue, exchange.costValue)
+				|| !Objects.equals(oldFormula, exchange.costFormula)
 				|| !Objects.equals(oldCurrency, exchange.currency);
 	}
 

@@ -54,7 +54,7 @@ public class GlobalParametersEditor extends FormEditor implements IEditor {
 			ParameterDao dao = new ParameterDao(Database.get());
 			parameters = dao.getGlobalParameters();
 			support = new ParameterChangeSupport();
-			support.doEvaluation(this::evalFormulas);
+			support.onEvaluation(this::evalFormulas);
 		} catch (Exception e) {
 			log.error("failed to load global parameters", e);
 			parameters = new ArrayList<>();

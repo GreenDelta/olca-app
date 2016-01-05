@@ -43,7 +43,7 @@ public class ImpactMethodEditor extends ModelEditor<ImpactMethod>implements
 		super.init(site, input);
 		// evalFormulas() takes quite long; we skip this for LCIA methods
 		parameterSupport = new ParameterChangeSupport();
-		parameterSupport.doEvaluation(this::evalFormulas);
+		parameterSupport.onEvaluation(this::evalFormulas);
 	}
 
 	private void evalFormulas() {

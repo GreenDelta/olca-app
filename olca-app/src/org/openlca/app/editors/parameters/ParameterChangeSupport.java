@@ -12,7 +12,7 @@ public class ParameterChangeSupport {
 	private List<Runnable> evaluators = new ArrayList<>();
 	private List<Runnable> observers = new ArrayList<>();
 
-	public void doEvaluation(Runnable fn) {
+	public void onEvaluation(Runnable fn) {
 		if (fn != null)
 			evaluators.add(fn);
 	}

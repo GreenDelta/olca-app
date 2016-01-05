@@ -18,19 +18,19 @@ import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.db.Database;
+import org.openlca.app.editors.parameters.Formulas;
+import org.openlca.app.util.Colors;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.model.Currency;
 import org.openlca.core.model.Exchange;
+import org.openlca.core.model.Process;
 import org.openlca.util.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class CostDialog extends FormDialog {
 
-	private Logger log = LoggerFactory.getLogger(getClass());
-
+	private Process process;
 	private Exchange exchange;
 	private ComboViewer currencyCombo;
 	private Text priceText;
@@ -40,16 +40,17 @@ class CostDialog extends FormDialog {
 
 	private Currency currency;
 
-	public static int open(Exchange exchange) {
+	public static int open(Process process, Exchange exchange) {
 		if (exchange == null)
 			return CANCEL;
-		CostDialog d = new CostDialog(exchange);
+		CostDialog d = new CostDialog(process, exchange);
 		return d.open();
 	}
 
-	private CostDialog(Exchange exchange) {
+	private CostDialog(Process process, Exchange exchange) {
 		super(UI.shell());
 		this.exchange = exchange;
+		this.process = process;
 	}
 
 	@Override
@@ -101,18 +102,40 @@ class CostDialog extends FormDialog {
 	private void createCostsRow(Composite body, FormToolkit tk) {
 		priceText = UI.formText(body, tk, "#Costs");
 		currencyLabel = UI.formLabel(body, tk, "");
-		if (exchange.costValue != null)
+		if (exchange.costFormula != null)
+			priceText.setText(exchange.costFormula);
+		else if (exchange.costValue != null)
 			priceText.setText(Double.toString(exchange.costValue));
 		priceText.addModifyListener(e -> {
 			try {
-				double price = Double.parseDouble(priceText.getText());
-				exchange.costValue = price;
-				double perUnit = price / exchange.getAmountValue();
-				pricePerUnitText.setText(Double.toString(perUnit));
+				exchange.costValue = Double.parseDouble(priceText.getText());
+				exchange.costFormula = null;
+				clearFormulaError();
 			} catch (Exception ex) {
-				log.trace("not a number (exchange price)", ex);
+				setFormula();
 			}
+			double price = exchange.costValue != null ? exchange.costValue : 0;
+			double perUnit = price / exchange.getAmountValue();
+			pricePerUnitText.setText(Double.toString(perUnit));
 		});
+	}
+
+	private void setFormula() {
+		exchange.costFormula = priceText.getText();
+		List<String> errors = Formulas.eval(Database.get(), process);
+		if (errors == null || errors.isEmpty())
+			clearFormulaError();
+		else {
+			priceText.setBackground(Colors.getErrorColor());
+			priceText.setToolTipText(errors.get(0));
+		}
+	}
+
+	private void clearFormulaError() {
+		if (priceText == null)
+			return;
+		priceText.setBackground(Colors.getWhite());
+		priceText.setToolTipText("");
 	}
 
 	private void createCostsPerUnitRow(Composite body, FormToolkit tk) {

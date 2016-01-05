@@ -127,7 +127,12 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider {
 	private String getCostValue(Exchange exchange) {
 		if (exchange == null || exchange.costValue == null)
 			return null;
-		String s = exchange.costValue.toString();
+		String s;
+		if (showFormulas && exchange.costFormula != null) {
+			s = exchange.costFormula;
+		} else {
+			s = exchange.costValue.toString();
+		}
 		if (exchange.currency == null)
 			return s;
 		else

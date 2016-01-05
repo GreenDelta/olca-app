@@ -44,7 +44,7 @@ public class ProcessEditor extends ModelEditor<Process>implements IEditor {
 			p.setDocumentation(new ProcessDocumentation());
 		evalFormulas();
 		parameterSupport = new ParameterChangeSupport();
-		parameterSupport.doEvaluation(this::evalFormulas);
+		parameterSupport.onEvaluation(this::evalFormulas);
 	}
 
 	private void evalFormulas() {
