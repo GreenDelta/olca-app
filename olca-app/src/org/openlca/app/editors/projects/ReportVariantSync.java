@@ -26,23 +26,23 @@ class ReportVariantSync {
 		if (report == null || variant == null)
 			return;
 		TreeSet<Integer> existingIds = new TreeSet<>();
-		for (ReportVariant var : report.getVariants())
-			existingIds.add(var.getId());
+		for (ReportVariant var : report.variants)
+			existingIds.add(var.id);
 		int newId = 0;
 		while (existingIds.contains(newId))
 			newId++;
 		ReportVariant var = new ReportVariant(newId);
-		var.setName(variant.getName());
-		report.getVariants().add(var);
+		var.name = variant.getName();
+		report.variants.add(var);
 		addParameterValues(newId, report);
 	}
 
 	private void addParameterValues(int newId, Report report) {
-		for (ReportParameter parameter : report.getParameters()) {
-			if (parameter.getRedef() == null)
+		for (ReportParameter parameter : report.parameters) {
+			if (parameter.redef == null)
 				parameter.putValue(newId, 0);
 			else
-				parameter.putValue(newId, parameter.getRedef().getValue());
+				parameter.putValue(newId, parameter.redef.getValue());
 		}
 	}
 
@@ -54,9 +54,9 @@ class ReportVariantSync {
 			ReportVariant var = findReportVariant(variant);
 			if (var == null)
 				continue;
-			report.getVariants().remove(var);
-			for (ReportParameter parameter : report.getParameters())
-				parameter.removeValue(var.getId());
+			report.variants.remove(var);
+			for (ReportParameter parameter : report.parameters)
+				parameter.removeValue(var.id);
 		}
 	}
 
@@ -68,26 +68,26 @@ class ReportVariantSync {
 	public void updateName(ProjectVariant variant, String newName) {
 		ReportVariant var = findReportVariant(variant);
 		if (var != null)
-			var.setName(newName);
+			var.name = newName;
 		variant.setName(newName);
 	}
 
 	public void updateDescription(ProjectVariant variant, String description) {
 		ReportVariant var = findReportVariant(variant);
 		if (var != null)
-			var.setDescription(description);
+			var.description = description;
 	}
 
 	public String getDescription(ProjectVariant variant) {
 		ReportVariant var = findReportVariant(variant);
-		return var == null ? null : var.getDescription();
+		return var == null ? null : var.description;
 	}
 
 	private ReportVariant findReportVariant(ProjectVariant variant) {
 		if (editor.getReport() == null || variant == null)
 			return null;
-		for (ReportVariant reportVariant : editor.getReport().getVariants()) {
-			if (Objects.equals(variant.getName(), reportVariant.getName()))
+		for (ReportVariant reportVariant : editor.getReport().variants) {
+			if (Objects.equals(variant.getName(), reportVariant.name))
 				return reportVariant;
 		}
 		return null;

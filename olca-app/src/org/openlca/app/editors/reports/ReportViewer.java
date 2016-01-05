@@ -107,7 +107,7 @@ public class ReportViewer extends FormEditor {
 
 		@Override
 		public String getName() {
-			String name = report.getTitle() != null ? report.getTitle()
+			String name = report.title != null ? report.title
 					: Messages.Report;
 			return Strings.cut(name, 75);
 		}
@@ -119,7 +119,7 @@ public class ReportViewer extends FormEditor {
 
 		@Override
 		public String getToolTipText() {
-			return report.getTitle() != null ? report.getTitle()
+			return report.title != null ? report.title
 					: Messages.Report;
 		}
 	}

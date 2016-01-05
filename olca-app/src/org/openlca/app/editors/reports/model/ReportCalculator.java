@@ -38,7 +38,7 @@ public class ReportCalculator implements Runnable {
 	public void run() {
 		if (project == null || report == null)
 			return;
-		report.getResults().clear();
+		report.results.clear();
 		if (project.getImpactMethodId() == null)
 			return;
 		ProjectResultProvider projectResult = calcProject(project);
@@ -64,19 +64,19 @@ public class ReportCalculator implements Runnable {
 		try {
 			NwSetTable table = NwSetTable.build(Database.get(),
 					project.getNwSetId());
-			report.setWithNormalisation(table.hasNormalisationFactors());
-			report.setWithWeighting(table.hasWeightingFactors());
-			for (ReportIndicator indicator : report.getIndicators()) {
-				if (indicator.getDescriptor() == null)
+			report.withNormalisation = table.hasNormalisationFactors();
+			report.withWeighting = table.hasWeightingFactors();
+			for (ReportIndicator indicator : report.indicators) {
+				if (indicator.descriptor == null)
 					continue;
-				long categoryId = indicator.getDescriptor().getId();
+				long categoryId = indicator.descriptor.getId();
 				if (table.hasNormalisationFactors()) {
 					double nf = table.getNormalisationFactor(categoryId);
-					indicator.setNormalisationFactor(nf);
+					indicator.normalisationFactor = nf;
 				}
 				if (table.hasWeightingFactors()) {
 					double wf = table.getWeightingFactor(categoryId);
-					indicator.setWeightingFactor(wf);
+					indicator.weightingFactor = wf;
 				}
 			}
 		} catch (Exception e) {
@@ -89,14 +89,14 @@ public class ReportCalculator implements Runnable {
 			ReportResult repResult = initReportResult(impact);
 			if (repResult == null)
 				continue; // should not add this indicator
-			report.getResults().add(repResult);
+			report.results.add(repResult);
 			for (ProjectVariant variant : result.getVariants()) {
 				VariantResult varResult = new VariantResult();
-				repResult.getVariantResults().add(varResult);
-				varResult.setVariant(variant.getName());
+				repResult.variantResults.add(varResult);
+				varResult.variant = variant.getName();
 				ImpactResult impactResult = result.getTotalImpactResult(
 						variant, impact);
-				varResult.setTotalAmount(impactResult.value);
+				varResult.totalAmount = impactResult.value;
 				ContributionSet<ProcessDescriptor> set = result
 						.getResult(variant)
 						.getProcessContributions(impact);
@@ -106,11 +106,11 @@ public class ReportCalculator implements Runnable {
 	}
 
 	private ReportResult initReportResult(ImpactCategoryDescriptor impact) {
-		for (ReportIndicator indicator : report.getIndicators()) {
-			if (!indicator.isDisplayed())
+		for (ReportIndicator indicator : report.indicators) {
+			if (!indicator.displayed)
 				continue;
-			if (Objects.equals(impact, indicator.getDescriptor()))
-				return new ReportResult(indicator.getId());
+			if (Objects.equals(impact, indicator.descriptor))
+				return new ReportResult(indicator.id);
 		}
 		return null;
 	}
@@ -118,17 +118,17 @@ public class ReportCalculator implements Runnable {
 	private void appendProcessContributions(
 			ContributionSet<ProcessDescriptor> set, VariantResult varResult) {
 		Contribution rest = new Contribution();
-		varResult.getContributions().add(rest);
-		rest.setRest(true);
-		rest.setProcessId(-1);
-		rest.setAmount(0);
+		varResult.contributions.add(rest);
+		rest.rest = true;
+		rest.processId = (long) -1;
+		rest.amount = (double) 0;
 		Set<Long> ids = getContributionProcessIds();
 		Set<Long> foundIds = new TreeSet<>();
 		for (ContributionItem<ProcessDescriptor> item : set.contributions) {
 			if (item.item == null)
 				continue;
 			if (!ids.contains(item.item.getId()))
-				rest.setAmount(rest.getAmount() + item.amount);
+				rest.amount = rest.amount + item.amount;
 			else {
 				foundIds.add(item.item.getId());
 				addContribution(varResult, item);
@@ -140,18 +140,18 @@ public class ReportCalculator implements Runnable {
 	private void addContribution(VariantResult varResult,
 			ContributionItem<ProcessDescriptor> item) {
 		Contribution con = new Contribution();
-		varResult.getContributions().add(con);
-		con.setAmount(item.amount);
-		con.setRest(false);
-		con.setProcessId(item.item.getId());
+		varResult.contributions.add(con);
+		con.amount = item.amount;
+		con.rest = false;
+		con.processId = item.item.getId();
 	}
 
 	private Set<Long> getContributionProcessIds() {
 		Set<Long> ids = new TreeSet<>();
-		for (ReportProcess process : report.getProcesses()) {
-			if (process.getDescriptor() == null)
+		for (ReportProcess process : report.processes) {
+			if (process.descriptor == null)
 				continue;
-			ids.add(process.getDescriptor().getId());
+			ids.add(process.descriptor.getId());
 		}
 		return ids;
 	}
@@ -166,10 +166,10 @@ public class ReportCalculator implements Runnable {
 		notFound.removeAll(foundIds);
 		for (long id : notFound) {
 			Contribution con = new Contribution();
-			varResult.getContributions().add(con);
-			con.setAmount(0);
-			con.setRest(false);
-			con.setProcessId(id);
+			varResult.contributions.add(con);
+			con.amount = (double) 0;
+			con.rest = false;
+			con.processId = id;
 		}
 	}
 }

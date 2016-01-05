@@ -44,8 +44,8 @@ class SectionList {
 		this.parent = parent;
 		this.toolkit = toolkit;
 		this.form = form;
-		report.getSections().sort((s1, s2) -> s1.getIndex() - s2.getIndex());
-		report.getSections().forEach((model) -> sections.add(new Sec(model)));
+		report.sections.sort((s1, s2) -> s1.index - s2.index);
+		report.sections.forEach((model) -> sections.add(new Sec(model)));
 	}
 
 	private void swap(int i, int j) {
@@ -55,17 +55,17 @@ class SectionList {
 		ReportSection model2 = sec2.model;
 		sec1.setModel(model2);
 		sec2.setModel(model1);
-		model1.setIndex(j);
-		model2.setIndex(i);
-		report.getSections().sort((s1, s2) -> s1.getIndex() - s2.getIndex());
+		model1.index = j;
+		model2.index = i;
+		report.sections.sort((s1, s2) -> s1.index - s2.index);
 	}
 
 	void addNew() {
 		ReportSection model = new ReportSection();
-		model.setIndex(report.getSections().size());
-		report.getSections().add(model);
-		model.setTitle(Messages.NewSection);
-		model.setText("");
+		model.index = report.sections.size();
+		report.sections.add(model);
+		model.title = Messages.NewSection;
+		model.text = "";
 		Sec section = new Sec(model);
 		sections.add(section);
 		form.reflow(true);
@@ -88,10 +88,10 @@ class SectionList {
 
 		void setModel(ReportSection model) {
 			this.model = model;
-			String title = model.getTitle() != null ? model.getTitle() : "";
-			String text = model.getText() != null ? model.getText() : "";
+			String title = model.title != null ? model.title : "";
+			String text = model.text != null ? model.text : "";
 			ReportComponent component = ReportComponent.getForId(
-					model.getComponentId());
+					model.componentId);
 			ui.setText(title);
 			titleText.setText(title);
 			descriptionText.setText(text);
@@ -99,7 +99,7 @@ class SectionList {
 		}
 
 		private void createUi() {
-			ui = UI.section(parent, toolkit, model.getTitle());
+			ui = UI.section(parent, toolkit, model.title);
 			Composite composite = UI.sectionClient(ui, toolkit);
 			titleText = UI.formText(composite, toolkit, Messages.Section);
 			binding.onString(() -> model, "title", titleText);
@@ -124,14 +124,14 @@ class SectionList {
 			componentViewer.addSelectionChangedListener((evt) -> {
 				ReportComponent c = Viewers.getFirst(evt.getSelection());
 				if (c == null || c == ReportComponent.NONE)
-					model.setComponentId(null);
-					else
-						model.setComponentId(c.getId());
+					model.componentId = null;
+				else
+					model.componentId = c.getId();
 					editor.setDirty(true);
 				});
-			if (model.getComponentId() != null)
+			if (model.componentId != null)
 				componentViewer.setSelection(new StructuredSelection(
-						ReportComponent.getForId(model.getComponentId())));
+						ReportComponent.getForId(model.componentId)));
 		}
 
 		private void createActions() {
@@ -155,26 +155,26 @@ class SectionList {
 					Messages.DeleteReportSectionQuestion);
 			if (!b)
 				return;
-			report.getSections().remove(model);
+			report.sections.remove(model);
 			sections.remove(this);
 			ui.dispose();
-			for (int i = model.getIndex(); i < sections.size(); i++) {
+			for (int i = model.index; i < sections.size(); i++) {
 				Sec sec = sections.get(i);
-				sec.model.setIndex(i);
+				sec.model.index = i;
 			}
 			form.reflow(true);
 			editor.setDirty(true);
 		}
 
 		private void moveUp() {
-			int i = model.getIndex();
+			int i = model.index;
 			if (i <= 0)
 				return;
 			swap(i, i - 1);
 		}
 
 		private void moveDown() {
-			int i = model.getIndex();
+			int i = model.index;
 			if (i >= (sections.size() - 1))
 				return;
 			swap(i, i + 1);

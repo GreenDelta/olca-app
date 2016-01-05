@@ -57,21 +57,21 @@ class ProcessContributionSection {
 		Report report = editor.getReport();
 		if (report == null)
 			return;
-		report.getProcesses().sort((p1, p2) ->
-				Strings.compare(p1.getReportName(), p2.getReportName()));
-		viewer.setInput(report.getProcesses());
+		report.processes.sort(
+				(p1, p2) -> Strings.compare(p1.reportName, p2.reportName));
+		viewer.setInput(report.processes);
 	}
 
 	private void bindModifySupport() {
 		ModifySupport<ReportProcess> support = new ModifySupport<>(viewer);
-		support.bind(Messages.ReportName, ReportProcess::getReportName,
+		support.bind(Messages.ReportName, p -> p.reportName,
 				(p, text) -> {
-					p.setReportName(text);
+					p.reportName = text;
 					editor.setDirty(true);
 				});
-		support.bind(Messages.Description, ReportProcess::getReportDescription,
+		support.bind(Messages.Description, p -> p.reportDescription,
 				(p, text) -> {
-					p.setReportDescription(text);
+					p.reportDescription = text;
 					editor.setDirty(true);
 				});
 	}
@@ -86,12 +86,12 @@ class ProcessContributionSection {
 			TableItem item = Tables.getItem(viewer, event);
 			if (item == null)
 				onAdd();
-				else {
-					ReportProcess process = Viewers.getFirstSelected(viewer);
-					if (process != null)
-						App.openEditor(process.getDescriptor());
-				}
-			});
+			else {
+				ReportProcess process = Viewers.getFirstSelected(viewer);
+				if (process != null)
+					App.openEditor(process.descriptor);
+			}
+		});
 		Tables.onDeletePressed(viewer, (e) -> onRemove());
 	}
 
@@ -104,8 +104,8 @@ class ProcessContributionSection {
 			return;
 		ProcessDescriptor descriptor = (ProcessDescriptor) d;
 		ReportProcess process = new ReportProcess(descriptor);
-		report.getProcesses().add(process);
-		viewer.setInput(report.getProcesses());
+		report.processes.add(process);
+		viewer.setInput(report.processes);
 		editor.setDirty(true);
 	}
 
@@ -116,8 +116,8 @@ class ProcessContributionSection {
 		List<ReportProcess> selected = Viewers.getAllSelected(viewer);
 		if (selected == null || selected.isEmpty())
 			return;
-		report.getProcesses().removeAll(selected);
-		viewer.setInput(report.getProcesses());
+		report.processes.removeAll(selected);
+		viewer.setInput(report.processes);
 		editor.setDirty(true);
 	}
 
@@ -139,11 +139,11 @@ class ProcessContributionSection {
 			ReportProcess process = (ReportProcess) element;
 			switch (col) {
 			case 0:
-				return Labels.getDisplayName(process.getDescriptor());
+				return Labels.getDisplayName(process.descriptor);
 			case 1:
-				return process.getReportName();
+				return process.reportName;
 			case 2:
-				return process.getReportDescription();
+				return process.reportDescription;
 			default:
 				return null;
 			}

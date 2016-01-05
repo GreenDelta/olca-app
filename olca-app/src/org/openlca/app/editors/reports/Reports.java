@@ -43,12 +43,12 @@ public final class Reports {
 		Report report = new Report();
 		createDefaultSections(report);
 		if (project == null) {
-			report.setTitle("No project");
+			report.title = "No project";
 			return report;
 		}
 		createReportVariants(project, report);
 		createReportIndicators(project, report, database);
-		report.setTitle(Messages.ResultsOfProject + " " + project.getName());
+		report.title = Messages.ResultsOfProject + " " + project.getName();
 		return report;
 	}
 
@@ -58,19 +58,19 @@ public final class Reports {
 		int id = 0;
 		for (ProjectVariant projectVar : project.getVariants()) {
 			ReportVariant reportVar = new ReportVariant(id++);
-			reportVar.setName(projectVar.getName());
-			report.getVariants().add(reportVar);
+			reportVar.name = projectVar.getName();
+			report.variants.add(reportVar);
 			for (ParameterRedef redef : projectVar.getParameterRedefs()) {
 				ReportParameter param = findOrCreateParameter(redef, report);
-				param.putValue(reportVar.getId(), redef.getValue());
+				param.putValue(reportVar.id, redef.getValue());
 			}
 		}
 	}
 
 	private static ReportParameter findOrCreateParameter(ParameterRedef redef,
 			Report report) {
-		for (ReportParameter parameter : report.getParameters()) {
-			ParameterRedef reportRedef = parameter.getRedef();
+		for (ReportParameter parameter : report.parameters) {
+			ParameterRedef reportRedef = parameter.redef;
 			if (reportRedef == null)
 				continue;
 			if (Objects.equals(redef.getName(), reportRedef.getName())
@@ -79,9 +79,9 @@ public final class Reports {
 				return parameter;
 		}
 		ReportParameter parameter = new ReportParameter();
-		report.getParameters().add(parameter);
-		parameter.setName(redef.getName());
-		parameter.setRedef(redef);
+		report.parameters.add(parameter);
+		parameter.name = redef.getName();
+		parameter.redef = redef;
 		return parameter;
 	}
 
@@ -95,10 +95,10 @@ public final class Reports {
 		int id = 0;
 		for (ImpactCategoryDescriptor descriptor : descriptors) {
 			ReportIndicator indicator = new ReportIndicator(id++);
-			report.getIndicators().add(indicator);
-			indicator.setDescriptor(descriptor);
-			indicator.setReportName(descriptor.getName());
-			indicator.setDisplayed(true);
+			report.indicators.add(indicator);
+			indicator.descriptor = descriptor;
+			indicator.reportName = descriptor.getName();
+			indicator.displayed = true;
 		}
 	}
 
@@ -150,7 +150,7 @@ public final class Reports {
 	}
 
 	private static void createDefaultSections(Report report) {
-		report.getSections().add(createIntroSection(0));
+		report.sections.add(createIntroSection(0));
 		ReportComponent[] components = {
 				ReportComponent.VARIANT_DESCRIPTION_TABLE,
 				ReportComponent.INDICATOR_DESCRIPTION_TABLE,
@@ -165,7 +165,7 @@ public final class Reports {
 					.getResourceAsStream("default_sections.properties"));
 			int idx = 1;
 			for (ReportComponent component : components) {
-				report.getSections().add(createSection(idx, props, component));
+				report.sections.add(createSection(idx, props, component));
 				idx++;
 			}
 		} catch (Exception e) {
@@ -176,8 +176,8 @@ public final class Reports {
 
 	private static ReportSection createIntroSection(int idx) {
 		ReportSection section = new ReportSection();
-		section.setIndex(idx);
-		section.setTitle("Introduction");
+		section.index = idx;
+		section.title = "Introduction";
 		String text = "In the following the results of the project are shown. "
 				+ "This is a default template for the report of the project results. "
 				+ "You can configure this template via the project editor by \n"
@@ -192,17 +192,17 @@ public final class Reports {
 				+ "Note that you can also use HTML elements to format the section texts. "
 				+ "Additionally, you can export this report as an HTML page using "
 				+ "the export button in the toolbar of the report view.";
-		section.setText(text);
+		section.text = text;
 		return section;
 	}
 
 	private static ReportSection createSection(int idx, Properties props,
 			ReportComponent component) {
 		ReportSection section = new ReportSection();
-		section.setIndex(idx);
-		section.setTitle(props.getProperty(component.name() + ".title"));
-		section.setText(props.getProperty(component.name() + ".text"));
-		section.setComponentId(component.getId());
+		section.index = idx;
+		section.title = props.getProperty(component.name() + ".title");
+		section.text = props.getProperty(component.name() + ".text");
+		section.componentId = component.getId();
 		return section;
 	}
 }

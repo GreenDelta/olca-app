@@ -35,7 +35,7 @@ class ReportParameterSync {
 						report);
 				if (varRedef == null || reportVariant == null)
 					continue;
-				param.putValue(reportVariant.getId(), varRedef.getValue());
+				param.putValue(reportVariant.id, varRedef.getValue());
 			}
 		}
 	}
@@ -56,9 +56,9 @@ class ReportParameterSync {
 
 	private ReportParameter initParam(ParameterRedef redef, Report report) {
 		ReportParameter param = new ReportParameter();
-		report.getParameters().add(param);
-		param.setName(redef.getName());
-		param.setRedef(redef);
+		report.parameters.add(param);
+		param.name = redef.getName();
+		param.redef = redef;
 		return param;
 	}
 
@@ -75,26 +75,26 @@ class ReportParameterSync {
 
 	public String getName(ParameterRedef redef) {
 		ReportParameter param = getReportParameter(redef);
-		return param == null ? null : param.getName();
+		return param == null ? null : param.name;
 	}
 
 	public void setName(String name, ParameterRedef redef) {
 		ReportParameter param = getReportParameter(redef);
 		if (param == null)
 			return;
-		param.setName(name);
+		param.name = name;
 	}
 
 	public String getDescription(ParameterRedef redef) {
 		ReportParameter param = getReportParameter(redef);
-		return param == null ? null : param.getDescription();
+		return param == null ? null : param.description;
 	}
 
 	public void setDescription(String description, ParameterRedef redef) {
 		ReportParameter param = getReportParameter(redef);
 		if (param == null)
 			return;
-		param.setDescription(description);
+		param.description = description;
 	}
 
 	public void parameterAdded(ParameterRedef redef) {
@@ -105,11 +105,11 @@ class ReportParameterSync {
 		if (param != null)
 			return;
 		param = new ReportParameter();
-		report.getParameters().add(param);
-		param.setName(redef.getName());
-		param.setRedef(redef);
-		for (ReportVariant variant : report.getVariants())
-			param.putValue(variant.getId(), redef.getValue());
+		report.parameters.add(param);
+		param.name = redef.getName();
+		param.redef = redef;
+		for (ReportVariant variant : report.variants)
+			param.putValue(variant.id, redef.getValue());
 	}
 
 	public void parameterRemoved(ParameterRedef redef) {
@@ -118,7 +118,7 @@ class ReportParameterSync {
 			return;
 		ReportParameter param = getReportParameter(redef);
 		if (param != null)
-			report.getParameters().remove(param);
+			report.parameters.remove(param);
 	}
 
 	public void valueChanged(ParameterRedef redef, ProjectVariant variant,
@@ -128,15 +128,15 @@ class ReportParameterSync {
 		ReportVariant reportVariant = getReportVariant(variant, report);
 		if (reportVariant == null || parameter == null)
 			return;
-		parameter.putValue(reportVariant.getId(), value);
+		parameter.putValue(reportVariant.id, value);
 	}
 
 	private ReportVariant getReportVariant(ProjectVariant projectVariant,
 			Report report) {
 		if (projectVariant == null || report == null)
 			return null;
-		for (ReportVariant reportVariant : report.getVariants()) {
-			if (Objects.equals(reportVariant.getName(),
+		for (ReportVariant reportVariant : report.variants) {
+			if (Objects.equals(reportVariant.name,
 					projectVariant.getName()))
 				return reportVariant;
 		}
@@ -147,8 +147,8 @@ class ReportParameterSync {
 		Report report = editor.getReport();
 		if (report == null || redef == null)
 			return null;
-		for (ReportParameter param : report.getParameters()) {
-			if (equal(param.getRedef(), redef))
+		for (ReportParameter param : report.parameters) {
+			if (equal(param.redef, redef))
 				return param;
 		}
 		return null;

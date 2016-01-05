@@ -7,68 +7,16 @@ import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
  */
 public class ReportIndicator {
 
-	private final int id;
-	private ImpactCategoryDescriptor descriptor;
-	private String reportName;
-	private String reportDescription;
-	private boolean displayed;
-	private Double normalisationFactor;
-	private Double weightingFactor;
+	public final int id;
+	public ImpactCategoryDescriptor descriptor;
+	public String reportName;
+	public String reportDescription;
+	public boolean displayed;
+	public Double normalisationFactor;
+	public Double weightingFactor;
 
 	public ReportIndicator(int id) {
 		this.id = id;
-	}
-
-	public int getId() {
-		return id;
-	}
-
-	public ImpactCategoryDescriptor getDescriptor() {
-		return descriptor;
-	}
-
-	public void setDescriptor(ImpactCategoryDescriptor descriptor) {
-		this.descriptor = descriptor;
-	}
-
-	public String getReportName() {
-		return reportName;
-	}
-
-	public void setReportName(String reportName) {
-		this.reportName = reportName;
-	}
-
-	public String getReportDescription() {
-		return reportDescription;
-	}
-
-	public void setReportDescription(String reportDescription) {
-		this.reportDescription = reportDescription;
-	}
-
-	public boolean isDisplayed() {
-		return displayed;
-	}
-
-	public void setDisplayed(boolean displayed) {
-		this.displayed = displayed;
-	}
-
-	public void setNormalisationFactor(Double normalisationFactor) {
-		this.normalisationFactor = normalisationFactor;
-	}
-
-	public Double getNormalisationFactor() {
-		return normalisationFactor;
-	}
-
-	public void setWeightingFactor(Double weightingFactor) {
-		this.weightingFactor = weightingFactor;
-	}
-
-	public Double getWeightingFactor() {
-		return weightingFactor;
 	}
 
 }

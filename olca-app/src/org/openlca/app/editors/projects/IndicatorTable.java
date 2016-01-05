@@ -49,7 +49,7 @@ class IndicatorTable {
 		modifySupport.bind(Messages.ReportName, new NameModifier());
 		modifySupport.bind(Messages.Description, new DescriptionModifier());
 		if (editor.getReport() != null)
-			viewer.setInput(editor.getReport().getIndicators());
+			viewer.setInput(editor.getReport().indicators);
 		Actions.bind(viewer, TableClipboard.onCopy(viewer));
 	}
 
@@ -57,14 +57,14 @@ class IndicatorTable {
 		Report report = editor.getReport();
 		if (report == null)
 			return;
-		report.getIndicators().clear();
+		report.indicators.clear();
 		if (method == null) {
 			viewer.setInput(null);
 			return;
 		}
 		List<ReportIndicator> indicators = createReportIndicators(method);
-		report.getIndicators().addAll(indicators);
-		viewer.setInput(report.getIndicators());
+		report.indicators.addAll(indicators);
+		viewer.setInput(report.indicators);
 	}
 
 	private List<ReportIndicator> createReportIndicators(
@@ -77,12 +77,12 @@ class IndicatorTable {
 		for (ImpactCategoryDescriptor descriptor : descriptors) {
 			ReportIndicator reportIndicator = new ReportIndicator(id++);
 			indicators.add(reportIndicator);
-			reportIndicator.setDescriptor(descriptor);
-			reportIndicator.setReportName(descriptor.getName());
-			reportIndicator.setDisplayed(true);
+			reportIndicator.descriptor = descriptor;
+			reportIndicator.reportName = descriptor.getName();
+			reportIndicator.displayed = true;
 		}
 		indicators.sort((r1, r2) -> Strings.compare(
-				r1.getDescriptor().getName(), r2.getDescriptor().getName()));
+				r1.descriptor.getName(), r2.descriptor.getName()));
 		return indicators;
 	}
 
@@ -95,7 +95,7 @@ class IndicatorTable {
 			if (!(element instanceof ReportIndicator))
 				return null;
 			ReportIndicator indicator = (ReportIndicator) element;
-			return indicator.isDisplayed() ?
+			return indicator.displayed ?
 					ImageType.CHECK_TRUE.get() : ImageType.CHECK_FALSE.get();
 		}
 
@@ -106,11 +106,11 @@ class IndicatorTable {
 			ReportIndicator indicator = (ReportIndicator) element;
 			switch (col) {
 			case 0:
-				return Labels.getDisplayName(indicator.getDescriptor());
+				return Labels.getDisplayName(indicator.descriptor);
 			case 2:
-				return indicator.getReportName();
+				return indicator.reportName;
 			case 3:
-				return indicator.getReportDescription();
+				return indicator.reportDescription;
 			default:
 				return null;
 			}
@@ -120,14 +120,14 @@ class IndicatorTable {
 	private class DisplayModifier extends CheckBoxCellModifier<ReportIndicator> {
 		@Override
 		protected boolean isChecked(ReportIndicator indicator) {
-			return indicator.isDisplayed();
+			return indicator.displayed;
 		}
 
 		@Override
 		protected void setChecked(ReportIndicator indicator, boolean value) {
-			if (value == indicator.isDisplayed())
+			if (value == indicator.displayed)
 				return;
-			indicator.setDisplayed(value);
+			indicator.displayed = value;
 			editor.setDirty(true);
 		}
 	}
@@ -135,14 +135,14 @@ class IndicatorTable {
 	private class NameModifier extends TextCellModifier<ReportIndicator> {
 		@Override
 		protected String getText(ReportIndicator indicator) {
-			return indicator.getReportName();
+			return indicator.reportName;
 		}
 
 		@Override
 		protected void setText(ReportIndicator indicator, String text) {
-			if (Objects.equals(indicator.getReportName(), text))
+			if (Objects.equals(indicator.reportName, text))
 				return;
-			indicator.setReportName(text);
+			indicator.reportName = text;
 			editor.setDirty(true);
 		}
 	}
@@ -150,14 +150,14 @@ class IndicatorTable {
 	private class DescriptionModifier extends TextCellModifier<ReportIndicator> {
 		@Override
 		protected String getText(ReportIndicator indicator) {
-			return indicator.getReportDescription();
+			return indicator.reportDescription;
 		}
 
 		@Override
 		protected void setText(ReportIndicator indicator, String text) {
-			if (Objects.equals(indicator.getReportDescription(), text))
+			if (Objects.equals(indicator.reportDescription, text))
 				return;
-			indicator.setReportDescription(text);
+			indicator.reportDescription = text;
 			editor.setDirty(true);
 		}
 	}

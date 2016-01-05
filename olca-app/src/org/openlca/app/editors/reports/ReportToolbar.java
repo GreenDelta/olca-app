@@ -90,7 +90,7 @@ public class ReportToolbar extends EditorActionBarContributor {
 						reportLine = line.replace(CALL_HOOK, call);
 					reportLines.add(reportLine);
 				}
-				writeReport(report.getTitle(), reportLines, targetDir);
+				writeReport(report.title, reportLines, targetDir);
 			} catch (Exception e) {
 				log.error("failed to export report", e);
 			}
