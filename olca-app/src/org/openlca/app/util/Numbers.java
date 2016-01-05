@@ -37,11 +37,11 @@ public class Numbers {
 	}
 
 	public static String decimalFormat(double number, int decimals) {
-		String pattern = "#";
+		String pattern = "0";
 		if (decimals > 0)
 			pattern += ".";
 		for (int i = 1; i <= decimals; i++)
-			pattern += "#";
+			pattern += "0";
 		return apply(getFormat(pattern), number);
 	}
 

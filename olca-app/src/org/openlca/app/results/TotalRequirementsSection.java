@@ -42,6 +42,7 @@ class TotalRequirementsSection {
 	private EntityCache cache = Cache.getEntityCache();
 	private SimpleResultProvider<?> result;
 	private Costs costs;
+	private String currencySymbol;
 
 	private TableViewer table;
 
@@ -73,6 +74,19 @@ class TotalRequirementsSection {
 				App.openEditor(cache.get(ProcessDescriptor.class, item.processId));
 			}
 		});
+		createCostSum(comp, tk);
+	}
+
+	private void createCostSum(Composite comp, FormToolkit tk) {
+		if (costs == Costs.NONE)
+			return;
+		double v = result.getTotalCostResult();
+		String s;
+		if (costs == Costs.NET_COSTS)
+			s = "#Total net-costs: " + asCosts(v);
+		else
+			s = "#Total added value: " + asCosts(v == 0 ? 0 : -v);
+		tk.createLabel(comp, s);
 	}
 
 	void fill() {
@@ -128,6 +142,19 @@ class TotalRequirementsSection {
 		for (Item item : items) {
 			item.costShare = item.costValue / max;
 		}
+	}
+
+	private String asCosts(double value) {
+		if (currencySymbol == null) {
+			try {
+				CurrencyDao dao = new CurrencyDao(Database.get());
+				Currency ref = dao.getReferenceCurrency();
+				currencySymbol = ref.code != null ? ref.code : ref.getName();
+			} catch (Exception e) {
+				currencySymbol = "?";
+			}
+		}
+		return Numbers.decimalFormat(value, 2) + " " + currencySymbol;
 	}
 
 	private enum Costs {
@@ -191,7 +218,6 @@ class TotalRequirementsSection {
 
 	private class Label extends BaseLabelProvider implements ITableLabelProvider {
 
-		private String currencySymbol;
 		private ContributionImage costImage = new ContributionImage(
 				UI.shell().getDisplay());
 
@@ -232,23 +258,10 @@ class TotalRequirementsSection {
 			case 3:
 				return item.unit;
 			case 4:
-				return Numbers.format(item.costValue) + " " + getCurrency();
+				return asCosts(item.costValue);
 			default:
 				return null;
 			}
-		}
-
-		private String getCurrency() {
-			if (currencySymbol != null)
-				return currencySymbol;
-			try {
-				CurrencyDao dao = new CurrencyDao(Database.get());
-				Currency ref = dao.getReferenceCurrency();
-				currencySymbol = ref.code != null ? ref.code : ref.getName();
-			} catch (Exception e) {
-				currencySymbol = "?";
-			}
-			return currencySymbol;
 		}
 
 	}
