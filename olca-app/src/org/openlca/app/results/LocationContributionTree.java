@@ -16,8 +16,9 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.openlca.app.Messages;
 import org.openlca.app.components.ContributionImage;
-import org.openlca.app.results.LocationContributionPage.TreeInputElement;
+import org.openlca.app.results.LocationContributionPage.TreeItem;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.trees.TreeClipboard;
@@ -62,7 +63,7 @@ class LocationContributionTree {
 		Actions.bind(viewer, TreeClipboard.onCopy(viewer));
 	}
 
-	public void setInput(List<TreeInputElement> contributions, String unit) {
+	public void setInput(List<TreeItem> contributions, String unit) {
 		this.unit = unit;
 		viewer.setInput(contributions);
 	}
@@ -74,15 +75,15 @@ class LocationContributionTree {
 		public Object[] getElements(Object obj) {
 			if (obj == null)
 				return new Object[0];
-			List<TreeInputElement> element = List.class.cast(obj);
-			return element.toArray(new TreeInputElement[element.size()]);
+			List<TreeItem> items = List.class.cast(obj);
+			return items.toArray(new TreeItem[items.size()]);
 		}
 
 		@Override
 		public Object[] getChildren(Object parent) {
-			if (!(parent instanceof TreeInputElement))
+			if (!(parent instanceof TreeItem))
 				return new Object[0];
-			TreeInputElement e = (TreeInputElement) parent;
+			TreeItem e = (TreeItem) parent;
 			List<ContributionItem<ProcessDescriptor>> items = e.processContributions;
 			return items.toArray(new ContributionItem[items.size()]);
 		}
@@ -94,9 +95,9 @@ class LocationContributionTree {
 
 		@Override
 		public boolean hasChildren(Object obj) {
-			if (!(obj instanceof TreeInputElement))
+			if (!(obj instanceof TreeItem))
 				return false;
-			TreeInputElement element = (TreeInputElement) obj;
+			TreeItem element = (TreeItem) obj;
 			return element.processContributions.size() > 0;
 		}
 
@@ -127,19 +128,19 @@ class LocationContributionTree {
 			if (col != 0)
 				return null;
 			ContributionItem<?> item = null;
-			if (obj instanceof TreeInputElement) {
-				TreeInputElement element = (TreeInputElement) obj;
+			if (obj instanceof TreeItem) {
+				TreeItem element = (TreeItem) obj;
 				item = element.contribution;
 			} else
 				item = ContributionItem.class.cast(obj);
 			return image.getForTable(item.share);
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
+		@SuppressWarnings("unchecked")
 		public String getColumnText(Object obj, int col) {
-			if (obj instanceof TreeInputElement) {
-				TreeInputElement e = (TreeInputElement) obj;
+			if (obj instanceof TreeItem) {
+				TreeItem e = (TreeItem) obj;
 				return getLocationColumnText(e.contribution, col);
 			}
 			ContributionItem<ProcessDescriptor> item = ContributionItem.class
@@ -152,7 +153,7 @@ class LocationContributionTree {
 			switch (col) {
 			case LOCATION_COL:
 				return contribution.item == null ? Messages.Other
-						: contribution.item.getName();
+						: Labels.getDisplayName(contribution.item);
 			case PROCESS_COL:
 				return "";
 			case AMOUNT_COL:
@@ -171,7 +172,7 @@ class LocationContributionTree {
 				return "";
 			case PROCESS_COL:
 				return contribution.item == null ? Messages.Other
-						: contribution.item.getName();
+						: Labels.getDisplayName(contribution.item);
 			case AMOUNT_COL:
 				return Numbers.format(contribution.amount);
 			case UNIT_COL:
