@@ -55,7 +55,7 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private ContributionResultProvider<?> result;
 	private Browser browser;
-	private LocationContributionTable table;
+	private LocationContributionTree tree;
 	private LocationContribution calculator;
 	private ResultTypeSelection flowImpactSelection;
 	private TreeInputBuilder inputBuilder;
@@ -95,7 +95,7 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 		FormToolkit toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		createCombos(body, toolkit);
-		createTable(body, toolkit);
+		createTree(body, toolkit);
 		if (showMap)
 			createBrowser(body, toolkit);
 		form.reflow(true);
@@ -110,13 +110,12 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 				.create(composite, toolkit);
 	}
 
-	private void createTable(Composite body, FormToolkit toolkit) {
-		Section section = UI.section(body, toolkit,
-				Messages.ResultContributions);
+	private void createTree(Composite body, FormToolkit tk) {
+		Section section = UI.section(body, tk, Messages.ResultContributions);
 		UI.gridData(section, true, true);
-		Composite composite = UI.sectionClient(section, toolkit);
+		Composite composite = UI.sectionClient(section, tk);
 		UI.gridLayout(composite, 1);
-		table = new LocationContributionTable(composite, showMap);
+		tree = new LocationContributionTree(composite, showMap);
 	}
 
 	private void createBrowser(Composite body, FormToolkit toolkit) {
@@ -164,7 +163,7 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 
 		@Override
 		public void flowSelected(FlowDescriptor flow) {
-			if (table == null || calculator == null || flow == null)
+			if (tree == null || calculator == null || flow == null)
 				return;
 			String unit = Labels.getRefUnit(flow, result.cache);
 			ContributionSet<Location> set = calculator.calculate(flow);
@@ -174,7 +173,7 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 
 		@Override
 		public void impactCategorySelected(ImpactCategoryDescriptor impact) {
-			if (table == null || calculator == null || impact == null)
+			if (tree == null || calculator == null || impact == null)
 				return;
 			String unit = impact.getReferenceUnit();
 			ContributionSet<Location> set = calculator.calculate(impact);
@@ -191,7 +190,7 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 			Contributions.sortDescending(set.contributions);
 			List<TreeInputElement> items = inputBuilder.build(set, descriptor,
 					total);
-			table.setInput(items, unit);
+			tree.setInput(items, unit);
 			if (showMap)
 				renderMap(set.contributions);
 		}
@@ -231,7 +230,7 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 			for (ContributionItem<Location> contribution : set.contributions)
 				elements.add(new TreeInputElement(contribution));
 			Contributions.calculate(processIndex.keySet(), total,
-					(loc) -> {
+					loc -> {
 						TreeInputElement elem = getInputFor(elements, loc);
 						List<ProcessDescriptor> list = processIndex.get(loc);
 						double amount = 0;
@@ -242,10 +241,9 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 							item.item = p;
 							item.amount = amount;
 							item.share = amount / total;
-							elem.getProcessContributions().add(item);
+							elem.processContributions.add(item);
 						}
-						Contributions
-								.sortDescending(elem.getProcessContributions());
+						Contributions.sortDescending(elem.processContributions);
 						return amount;
 					});
 			return elements;
@@ -263,13 +261,10 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 		private TreeInputElement getInputFor(List<TreeInputElement> elements,
 				Location location) {
 			for (TreeInputElement element : elements) {
-				Location other = element.getContribution().item;
-				if (other == null)
-					if (location == null)
-						return element;
-					else
-						continue;
+				Location other = element.contribution.item;
 				if (other.equals(location))
+					return element;
+				if (other == null && location == null)
 					return element;
 			}
 			return null;
@@ -279,19 +274,11 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 
 	class TreeInputElement {
 
-		private ContributionItem<Location> contribution;
-		private List<ContributionItem<ProcessDescriptor>> processContributions = new ArrayList<>();
+		final ContributionItem<Location> contribution;
+		final List<ContributionItem<ProcessDescriptor>> processContributions = new ArrayList<>();
 
 		private TreeInputElement(ContributionItem<Location> contribution) {
 			this.contribution = contribution;
-		}
-
-		public List<ContributionItem<ProcessDescriptor>> getProcessContributions() {
-			return processContributions;
-		}
-
-		public ContributionItem<Location> getContribution() {
-			return contribution;
 		}
 
 	}
