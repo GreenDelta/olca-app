@@ -235,13 +235,14 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 						List<ProcessDescriptor> list = processIndex.get(loc);
 						double amount = 0;
 						for (ProcessDescriptor p : list) {
-							amount += getSingleResult(p, descriptor);
+							double r = getSingleResult(p, descriptor);
 							ContributionItem<ProcessDescriptor> item = new ContributionItem<>();
 							item.rest = p == null;
 							item.item = p;
-							item.amount = amount;
-							item.share = amount / total;
+							item.amount = r;
+							item.share = r / total;
 							elem.processContributions.add(item);
+							amount += r;
 						}
 						Contributions.sortDescending(elem.processContributions);
 						return amount;
