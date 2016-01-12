@@ -108,7 +108,9 @@ public class ImpactTreePage extends FormPage {
 	}
 
 	private void createNoImpactFilter(Composite parent) {
-		Button button = UI.formCheckBox(parent, toolkit, "#Exclude zero entries");
+		Button button = UI.formCheckBox(parent, toolkit,
+				"#Exclude zero entries");
+		UI.gridData(button, false, false);
 		button.setSelection(filterZeroes);
 		Controls.onSelect(button, event -> {
 			filterZeroes = button.getSelection();
@@ -257,12 +259,8 @@ public class ImpactTreePage extends FormPage {
 			if (!(inputElement instanceof ImpactCategoryDescriptor))
 				return null;
 			List<ProcessDescriptor> descriptors = new ArrayList<>();
-			for (ProcessDescriptor process : result.getProcessDescriptors()) {
-				double value = result.getSingleImpactResult(process,
-						impactCategory).value;
-				if (value != 0)
-					descriptors.add(process);
-			}
+			for (ProcessDescriptor process : result.getProcessDescriptors())
+				descriptors.add(process);
 			return descriptors.toArray();
 		}
 
@@ -305,7 +303,7 @@ public class ImpactTreePage extends FormPage {
 	public class CutOffFilter extends ViewerFilter {
 		@Override
 		public boolean select(Viewer viewer, Object parent, Object element) {
-			if (cutOff == 0d)
+			if (cutOff == 0)
 				return true;
 			if (element instanceof ProcessDescriptor) {
 				double c = getUpstreamContribution((ProcessDescriptor) element);
