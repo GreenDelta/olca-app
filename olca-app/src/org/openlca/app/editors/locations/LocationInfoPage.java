@@ -12,8 +12,8 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
+import org.openlca.app.editors.processes.kml.KmlPrettifyFunction;
 import org.openlca.app.editors.processes.kml.KmlUtil;
-import org.openlca.app.editors.processes.kml.MapEditor.KmlPrettifyFunction;
 import org.openlca.app.rcp.html.HtmlPage;
 import org.openlca.app.rcp.html.HtmlView;
 import org.openlca.app.util.Actions;
@@ -28,7 +28,7 @@ public class LocationInfoPage extends ModelPage<Location> implements HtmlPage {
 	private FormToolkit toolkit;
 	private Browser browser;
 	private String kml;
-	private boolean isValidKml;
+	private boolean isValidKml = true;
 
 	LocationInfoPage(LocationEditor editor) {
 		super(editor, "LocationInfoPage", Messages.GeneralInformation);

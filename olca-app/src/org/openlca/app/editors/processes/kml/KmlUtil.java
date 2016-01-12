@@ -4,6 +4,9 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -12,6 +15,7 @@ import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
+import org.openlca.geo.kml.FeatureType;
 import org.openlca.util.BinUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,34 +78,91 @@ public class KmlUtil {
 	}
 
 	private static String getDisplayText(Element root) {
-		String type = null;
-		if (contains(root, "Polygon"))
-			type = "Polygon";
-		else if (contains(root, "LineString"))
-			type = "Line";
-		else if (contains(root, "Point"))
-			type = "Point";
+		FeatureType type = null;
+		int polygons = count(root, "Polygon");
+		int lines = count(root, "LineString");
+		int points = count(root, "Point");
+		if (polygons > 1)
+			type = FeatureType.MULTI_POLYGON;
+		else if (polygons > 0)
+			type = FeatureType.POLYGON;
+		else if (lines > 1)
+			type = FeatureType.MULTI_LINE;
+		else if (lines > 0)
+			type = FeatureType.LINE;
+		else if (points > 1)
+			type = FeatureType.MULTI_POINT;
+		else if (points > 0)
+			type = FeatureType.POINT;
 		if (type == null)
-			return "unknown shape";
-		else
-			return type + getCoordinates(root);
+			return getLabel(type);
+		List<Element> elements = findElements(root, "coordinates");
+		if (elements.size() == 0)
+			return "";
+		return getLabel(type) + " [" + getCoordinates(elements, type) + "]";
 	}
 
-	private static String getCoordinates(Element root) {
-		Element element = findElement(root, "coordinates");
-		if (element == null)
+	private static String getLabel(FeatureType type) {
+		switch (type) {
+		case POINT:
+			return "#Point";
+		case LINE:
+			return "#Line";
+		case POLYGON:
+			return "#Polygon";
+		case MULTI_POINT:
+			return "#MultiPoint";
+		case MULTI_LINE:
+			return "#MultiLine";
+		case MULTI_POLYGON:
+			return "#MultiPolygon";
+		default:
+			return "unsupported shape";
+		}
+	}
+
+	private static String getCoordinates(List<Element> elements,
+			FeatureType type) {
+		String[] first = null;
+		String[] last = null;
+		int count = 0;
+		for (Element element : elements) {
+			String text = element.getTextTrim();
+			if (text == null || text.isEmpty())
+				continue;
+			String[] parts = text.split(" ");
+			if (parts.length == 0)
+				continue;
+			if (first == null)
+				first = parts;
+			else
+				last = parts;
+			count++;
+		}
+		if (first == null || first.length == 0)
 			return "";
-		String text = element.getTextTrim();
-		if (text == null || text.isEmpty())
+		String coords = getCoordinates(first, type);
+		if (last == null || last.length == 0)
+			return coords;
+		coords += " ";
+		if (count > 2)
+			coords += "... ";
+		coords += getCoordinates(last, type);
+		return coords;
+	}
+
+	private static String getCoordinates(String[] parts, FeatureType type) {
+		if (parts == null || parts.length == 0)
 			return "";
-		String[] parts = text.split(" ");
-		if (parts.length == 0)
+		String first = formatCoordinate(parts[0]);
+		if (type == FeatureType.POINT || type == FeatureType.MULTI_POINT)
+			return first;
+		if (parts.length < 2)
 			return "";
-		if (parts.length == 1)
-			return " [" + formatCoordinate(parts[0]) + "]";
-		else
-			return " [" + formatCoordinate(parts[0]) + " ... "
-					+ formatCoordinate(parts[parts.length - 1]) + "]";
+		String last = formatCoordinate(parts[parts.length - 1]);
+		if (parts.length == 2)
+			return first + " " + last;
+		return first + " .. " + last;
 	}
 
 	private static String formatCoordinate(String part) {
@@ -119,21 +180,19 @@ public class KmlUtil {
 		}
 	}
 
-	private static boolean contains(Element root, String name) {
-		return findElement(root, name) != null;
+	private static int count(Element root, String name) {
+		return findElements(root, name).size();
 	}
 
-	private static Element findElement(Element root, String name) {
+	private static List<Element> findElements(Element root, String name) {
 		if (root == null || name == null)
-			return null;
+			return Collections.emptyList();
 		if (Objects.equals(name, root.getName()))
-			return root;
-		for (Element child : root.getChildren()) {
-			Element found = findElement(child, name);
-			if (found != null)
-				return found;
-		}
-		return null;
+			return Collections.singletonList(root);
+		List<Element> elements = new ArrayList<>();
+		for (Element child : root.getChildren())
+			elements.addAll(findElements(child, name));
+		return elements;
 	}
 
 }

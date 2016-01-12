@@ -2,6 +2,8 @@ package org.openlca.app.editors.processes.kml;
 
 public interface EditorHandler {
 
-	void contentSaved(String kml, boolean overwrite, Runnable callback);
+	boolean contentSaved(String kml);
+
+	void openModel();
 
 }
