@@ -15,7 +15,7 @@ import org.openlca.app.Messages;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Cache;
 import org.openlca.app.rcp.ImageType;
-import org.openlca.app.results.ContributionChartSection;
+import org.openlca.app.results.contributions.ContributionChartSection;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.InformationPopup;
 import org.openlca.app.util.Labels;

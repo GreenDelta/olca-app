@@ -1,4 +1,4 @@
-package org.openlca.app.results;
+package org.openlca.app.results.grouping;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,6 +14,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
+import org.openlca.app.results.contributions.ContributionChart;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AbstractComboViewer;

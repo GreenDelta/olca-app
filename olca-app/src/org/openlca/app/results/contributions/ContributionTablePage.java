@@ -1,4 +1,4 @@
-package org.openlca.app.results;
+package org.openlca.app.results.contributions;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;

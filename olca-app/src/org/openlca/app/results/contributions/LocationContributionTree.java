@@ -1,4 +1,4 @@
-package org.openlca.app.results;
+package org.openlca.app.results.contributions;
 
 import java.util.List;
 
@@ -16,7 +16,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.openlca.app.Messages;
 import org.openlca.app.components.ContributionImage;
-import org.openlca.app.results.LocationContributionPage.TreeItem;
+import org.openlca.app.results.contributions.LocationContributionPage.TreeItem;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;

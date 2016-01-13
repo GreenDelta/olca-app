@@ -12,21 +12,21 @@ import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.preferencepages.FeatureFlag;
-import org.openlca.app.results.ContributionTablePage;
 import org.openlca.app.results.FlowImpactPage;
-import org.openlca.app.results.GroupPage;
-import org.openlca.app.results.ImpactTreePage;
-import org.openlca.app.results.ImpactTreePage.FlowWithProcess;
-import org.openlca.app.results.LocationContributionPage;
+import org.openlca.app.results.AnalyzeInfoPage;
 import org.openlca.app.results.NwResultPage;
 import org.openlca.app.results.ResultEditorInput;
+import org.openlca.app.results.SunBurstView;
 import org.openlca.app.results.TotalFlowResultPage;
 import org.openlca.app.results.TotalImpactResultPage;
-import org.openlca.app.results.analysis.AnalyzeInfoPage;
-import org.openlca.app.results.analysis.ContributionTreePage;
-import org.openlca.app.results.analysis.ProcessResultPage;
-import org.openlca.app.results.analysis.SunBurstView;
 import org.openlca.app.results.analysis.sankey.SankeyDiagram;
+import org.openlca.app.results.contributions.ContributionTablePage;
+import org.openlca.app.results.contributions.ContributionTreePage;
+import org.openlca.app.results.contributions.ImpactTreePage;
+import org.openlca.app.results.contributions.LocationContributionPage;
+import org.openlca.app.results.contributions.ProcessResultPage;
+import org.openlca.app.results.contributions.ImpactTreePage.FlowWithProcess;
+import org.openlca.app.results.grouping.GroupPage;
 import org.openlca.app.results.viz.ContributionBubblePage;
 import org.openlca.app.results.viz.ProcessTreemapPage;
 import org.openlca.core.database.ImpactCategoryDao;
@@ -79,31 +79,31 @@ public class RegionalizedResultEditor extends FormEditor {
 	@Override
 	protected void addPages() {
 		try {
-			FullResultProvider regioRresult = this.result
+			FullResultProvider regioResult = this.result
 					.getRegionalizedResult();
-			if (regioRresult != null) {
-				addPage(new AnalyzeInfoPage(this, regioRresult, setup));
-				addPage(new TotalFlowResultPage(this, regioRresult));
-				if (regioRresult.hasImpactResults())
-					addPage(new TotalImpactResultPage(this, regioRresult));
-				if (regioRresult.hasImpactResults() && setup.nwSet != null)
-					addPage(new NwResultPage(this, regioRresult, setup));
-				addPage(new ContributionTablePage(this, regioRresult));
+			if (regioResult != null) {
+				addPage(new AnalyzeInfoPage(this, regioResult, setup));
+				addPage(new TotalFlowResultPage(this, regioResult));
+				if (regioResult.hasImpactResults())
+					addPage(new TotalImpactResultPage(this, regioResult));
+				if (regioResult.hasImpactResults() && setup.nwSet != null)
+					addPage(new NwResultPage(this, regioResult, setup));
+				addPage(new ContributionTablePage(this, regioResult));
 				addPage(new KmlResultView(this, this.result));
-				addPage(new LocationContributionPage(this, regioRresult, false));
-				addPage(new ProcessResultPage(this, regioRresult, setup));
-				if (regioRresult.hasImpactResults())
-					addPage(new FlowImpactPage(this, regioRresult));
-				addPage(new ContributionTreePage(this, regioRresult));
-				addPage(new ImpactTreePage(this, regioRresult,
+				addPage(new LocationContributionPage(this, regioResult, false));
+				addPage(new ProcessResultPage(this, regioResult, setup));
+				if (regioResult.hasImpactResults())
+					addPage(new FlowImpactPage(this, regioResult));
+				addPage(new ContributionTreePage(this, regioResult));
+				addPage(new ImpactTreePage(this, regioResult,
 						this::getImpactFactor));
-				addPage(new GroupPage(this, regioRresult));
+				addPage(new GroupPage(this, regioResult));
 				if (FeatureFlag.EXPERIMENTAL_VISUALISATIONS.isEnabled()) {
-					addPage(new ProcessTreemapPage(this, regioRresult));
-					addPage(new ContributionBubblePage(this, regioRresult));
-					addPage(new SunBurstView(this, regioRresult));
+					addPage(new ProcessTreemapPage(this, regioResult));
+					addPage(new ContributionBubblePage(this, regioResult));
+					addPage(new SunBurstView(this, regioResult));
 				}
-				diagram = new SankeyDiagram(setup, regioRresult);
+				diagram = new SankeyDiagram(setup, regioResult);
 				diagramIndex = addPage(diagram, getEditorInput());
 				setPageText(diagramIndex, Messages.SankeyDiagram);
 			} else {

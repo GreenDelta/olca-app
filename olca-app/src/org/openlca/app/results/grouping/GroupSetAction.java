@@ -1,4 +1,4 @@
-package org.openlca.app.results;
+package org.openlca.app.results.grouping;
 
 import java.util.Arrays;
 import java.util.List;

@@ -1,4 +1,4 @@
-package org.openlca.app.results;
+package org.openlca.app.results.contributions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +10,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
+import org.openlca.app.results.ImageExportAction;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;

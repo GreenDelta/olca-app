@@ -1,4 +1,4 @@
-package org.openlca.app.results.analysis;
+package org.openlca.app.results.contributions;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;

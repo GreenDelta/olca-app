@@ -1,4 +1,4 @@
-package org.openlca.app.results;
+package org.openlca.app.results.contributions;
 
 import java.util.ArrayList;
 import java.util.List;

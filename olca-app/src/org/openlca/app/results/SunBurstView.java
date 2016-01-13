@@ -1,4 +1,4 @@
-package org.openlca.app.results.analysis;
+package org.openlca.app.results;
 
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.widgets.Composite;
