@@ -12,11 +12,14 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.Event;
 import org.openlca.app.Messages;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.NwSet;
+
+import com.google.common.eventbus.Subscribe;
 
 class ImpactNwPage extends ModelPage<ImpactMethod> {
 
@@ -51,7 +54,15 @@ class ImpactNwPage extends ModelPage<ImpactMethod> {
 		setViewer.selectFirst();
 		body.setFocus();
 		form.reflow(true);
+		editor.getEventBus().register(this);
 		editor.onSaved(() -> updateInput());
+	}
+	
+	@Subscribe
+	public void refresh(Event event) {
+		if (!event.match(editor.IMPACT_CATEGORY_CHANGE))
+			return;
+		factorViewer.refresh();
 	}
 
 	private SashForm createSash(Composite client) {

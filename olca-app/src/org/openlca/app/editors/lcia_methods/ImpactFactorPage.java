@@ -133,6 +133,7 @@ class ImpactFactorPage extends ModelPage<ImpactMethod> {
 			if (!event.match(editor.IMPACT_CATEGORY_CHANGE))
 				return;
 			categoryViewer.setInput(getDescriptorList());
+			factorTable.refresh();
 		}
 	}
 

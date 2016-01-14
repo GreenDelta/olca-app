@@ -101,6 +101,9 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 		createTree(body, toolkit);
 		if (showMap)
 			createBrowser(body, toolkit);
+		if (result.getFlowDescriptors().size() > 0)
+			combos.selectWithEvent(result.getFlowDescriptors().iterator()
+					.next());
 		form.reflow(true);
 	}
 
@@ -258,25 +261,31 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 			List<TreeItem> items = new ArrayList<>();
 			for (ContributionItem<Location> contribution : set.contributions)
 				items.add(new TreeItem(contribution));
-			Contributions.calculate(processIndex.keySet(), total, location -> {
-				TreeItem elem = getItem(items, location);
-				if (elem == null)
-					return 0;
-				List<ProcessDescriptor> list = processIndex.get(location);
-				double amount = 0;
-				for (ProcessDescriptor p : list) {
-					double r = getSingleResult(p, descriptor);
-					ContributionItem<ProcessDescriptor> item = new ContributionItem<>();
-					item.rest = p == null;
-					item.item = p;
-					item.amount = r;
-					item.share = r / total;
-					elem.processContributions.add(item);
-					amount += r;
-				}
-				Contributions.sortDescending(elem.processContributions);
-				return amount;
-			});
+			Contributions
+					.calculate(
+							processIndex.keySet(),
+							total,
+							location -> {
+								TreeItem elem = getItem(items, location);
+								if (elem == null)
+									return 0;
+								List<ProcessDescriptor> list = processIndex
+										.get(location);
+								double amount = 0;
+								for (ProcessDescriptor p : list) {
+									double r = getSingleResult(p, descriptor);
+									ContributionItem<ProcessDescriptor> item = new ContributionItem<>();
+									item.rest = p == null;
+									item.item = p;
+									item.amount = r;
+									item.share = r / total;
+									elem.processContributions.add(item);
+									amount += r;
+								}
+								Contributions
+										.sortDescending(elem.processContributions);
+								return amount;
+							});
 			return items;
 		}
 

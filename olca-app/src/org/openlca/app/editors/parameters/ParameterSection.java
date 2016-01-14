@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.eclipse.jface.action.Action;
@@ -28,6 +29,7 @@ import org.openlca.app.util.UncertaintyLabel;
 import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
+import org.openlca.app.viewers.table.modify.ComboBoxCellModifier;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.model.Parameter;
@@ -49,39 +51,61 @@ public class ParameterSection {
 	private final String FORMULA = Messages.Formula;
 	private final String UNCERTAINTY = Messages.Uncertainty;
 	private final String DESCRIPTION = Messages.Description;
+	private final String EXTERNAL_SOURCE = Messages.ExternalSource;
 
 	private boolean forInputParameters = true;
 	private ParameterChangeSupport support;
 	private IEditor editor;
 	private Supplier<List<Parameter>> supplier;
 	private ParameterScope scope;
+	private Function<Parameter, String[]> externalSourceSupplier;
 
 	public static ParameterSection forInputParameters(IEditor editor,
 			ParameterChangeSupport support, Composite body,
-			FormToolkit toolkit) {
-		return new ParameterSection(editor, support, body, toolkit, true);
+			FormToolkit toolkit, Function<Parameter, String[]> sourceSupplier) {
+		return new ParameterSection(editor, support, body, toolkit,
+				sourceSupplier, true);
+	}
+
+	public static ParameterSection forInputParameters(IEditor editor,
+			ParameterChangeSupport support, Composite body, FormToolkit toolkit) {
+		return new ParameterSection(editor, support, body, toolkit, null, true);
 	}
 
 	public static ParameterSection forDependentParameters(IEditor editor,
-			ParameterChangeSupport support, Composite body,
-			FormToolkit toolkit) {
-		return new ParameterSection(editor, support, body, toolkit, false);
+			ParameterChangeSupport support, Composite body, FormToolkit toolkit) {
+		return new ParameterSection(editor, support, body, toolkit, null, false);
 	}
 
 	private ParameterSection(IEditor editor, ParameterChangeSupport support,
-			Composite body, FormToolkit toolkit, boolean forInputParams) {
-		forInputParameters = forInputParams;
+			Composite body, FormToolkit toolkit,
+			Function<Parameter, String[]> sourceSupplier,
+			boolean forInputParameters) {
+		this.forInputParameters = forInputParameters;
+		this.externalSourceSupplier = sourceSupplier;
 		this.editor = editor;
 		this.support = support;
-		String[] props = {};
-		if (forInputParams)
-			props = new String[] { NAME, VALUE, UNCERTAINTY, DESCRIPTION };
-		else
-			props = new String[] { NAME, FORMULA, VALUE, DESCRIPTION };
+		String[] props = getProperties();
 		createComponents(body, toolkit, props);
 		createCellModifiers();
 		addDoubleClickHandler();
 		support.afterEvaluation(this::setInput);
+	}
+
+	private String[] getProperties() {
+		if (forInputParameters)
+			if (externalSourceSupplier != null)
+				return new String[] { NAME, VALUE, UNCERTAINTY, DESCRIPTION,
+						EXTERNAL_SOURCE };
+			else
+				return new String[] { NAME, VALUE, UNCERTAINTY, DESCRIPTION };
+		else {
+			if (externalSourceSupplier != null)
+				return new String[] { NAME, FORMULA, VALUE, DESCRIPTION,
+						EXTERNAL_SOURCE };
+			else
+				return new String[] { NAME, FORMULA, VALUE, DESCRIPTION };
+		}
 	}
 
 	public void setSupplier(Supplier<List<Parameter>> supplier,
@@ -110,11 +134,16 @@ public class ParameterSection {
 		ParameterLabelProvider label = new ParameterLabelProvider();
 		viewer.setLabelProvider(label);
 		addSorters(viewer, label);
-		if (forInputParameters)
-			Tables.bindColumnWidths(viewer, 0.3, 0.3, 0.2, 0.2);
+		bindColumnWidths(viewer);
+		bindActions(section);
+	}
+
+	private void bindColumnWidths(TableViewer viewer) {
+		if (externalSourceSupplier != null)
+			Tables.bindColumnWidths(viewer, 0.25, 0.25, 0.15, 0.15, 0.2);
 		else
 			Tables.bindColumnWidths(viewer, 0.3, 0.3, 0.2, 0.2);
-		bindActions(section);
+
 	}
 
 	private void addSorters(TableViewer table, ParameterLabelProvider label) {
@@ -147,6 +176,8 @@ public class ParameterSection {
 					new UncertaintyCellEditor(viewer.getTable(), editor));
 		} else
 			modifySupport.bind(FORMULA, new FormulaModifier());
+		if (externalSourceSupplier != null)
+			modifySupport.bind(EXTERNAL_SOURCE, new ExternalSourceModifier());
 	}
 
 	private void fillInitialInput() {
@@ -201,9 +232,8 @@ public class ParameterSection {
 	private void onPaste(String text) {
 		if (supplier == null)
 			return;
-		List<Parameter> params = forInputParameters
-				? Clipboard.readInputParams(text)
-				: Clipboard.readCalculatedParams(text);
+		List<Parameter> params = forInputParameters ? Clipboard
+				.readInputParams(text) : Clipboard.readCalculatedParams(text);
 		for (Parameter param : params) {
 			param.setScope(scope);
 			supplier.get().add(param);
@@ -247,6 +277,8 @@ public class ParameterSection {
 					return Double.toString(parameter.getValue());
 			case 3:
 				return parameter.getDescription();
+			case 4:
+				return parameter.getExternalSource();
 			default:
 				return null;
 			}
@@ -291,8 +323,8 @@ public class ParameterSection {
 				editor.setDirty(true);
 				support.evaluate();
 			} catch (Exception e) {
-				Dialog.showError(viewer.getTable().getShell(), text
-						+ " " + Messages.IsNotValidNumber);
+				Dialog.showError(viewer.getTable().getShell(), text + " "
+						+ Messages.IsNotValidNumber);
 			}
 		}
 	}
@@ -329,6 +361,31 @@ public class ParameterSection {
 				editor.setDirty(true);
 			}
 		}
+	}
+
+	private class ExternalSourceModifier extends
+			ComboBoxCellModifier<Parameter, String> {
+
+		@Override
+		protected String[] getItems(Parameter element) {
+			return externalSourceSupplier.apply(element);
+		}
+
+		@Override
+		protected String getItem(Parameter element) {
+			return element.getExternalSource();
+		}
+
+		@Override
+		protected String getText(String value) {
+			return value;
+		}
+
+		@Override
+		protected void setItem(Parameter element, String item) {
+			element.setExternalSource(item);
+		}
+
 	}
 
 }

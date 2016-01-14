@@ -57,7 +57,11 @@ class ImpactFactorTable {
 
 	public ImpactFactorTable(ImpactMethodEditor editor) {
 		this.editor = editor;
-		editor.getParameterSupport().afterEvaluation(() -> viewer.refresh());
+		editor.getParameterSupport().afterEvaluation(this::refresh);
+	}
+	
+	void refresh() {
+		viewer.refresh();
 	}
 
 	public void render(Composite parent, Section section) {
