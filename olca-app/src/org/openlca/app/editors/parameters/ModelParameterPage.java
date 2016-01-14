@@ -2,7 +2,6 @@ package org.openlca.app.editors.parameters;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.eclipse.jface.action.Action;
@@ -20,7 +19,7 @@ import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.lcia_methods.ImpactMethodEditor;
-import org.openlca.app.editors.lcia_methods.ShapeFileUtils;
+import org.openlca.app.editors.lcia_methods.ImpactMethodSourceHandler;
 import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
@@ -31,7 +30,6 @@ import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ParameterDao;
-import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterScope;
 import org.openlca.util.Strings;
@@ -49,7 +47,7 @@ public class ModelParameterPage extends FormPage {
 	private ModelEditor<?> editor;
 	private Supplier<List<Parameter>> supplier;
 	private ParameterScope scope;
-	private Function<Parameter, String[]> externalSourceSupplier;
+	private SourceHandler sourceHandler;
 
 	public ModelParameterPage(ProcessEditor editor) {
 		super(editor, ID, Messages.Parameters);
@@ -65,11 +63,7 @@ public class ModelParameterPage extends FormPage {
 		this.editor = editor;
 		this.supplier = () -> editor.getModel().getParameters();
 		this.scope = ParameterScope.IMPACT_METHOD;
-		this.externalSourceSupplier = (parameter) -> {
-			ImpactMethod method = editor.getModel();
-			List<String> names = ShapeFileUtils.getShapeFiles(method);
-			return names.toArray(new String[names.size()]);
-		};
+		this.sourceHandler = new ImpactMethodSourceHandler(editor);
 	}
 
 	@Override
@@ -80,7 +74,7 @@ public class ModelParameterPage extends FormPage {
 		try {
 			createGlobalParamterSection(body);
 			ParameterSection.forInputParameters(editor, support, body, toolkit,
-					externalSourceSupplier).setSupplier(supplier, scope);
+					sourceHandler).setSupplier(supplier, scope);
 			ParameterSection.forDependentParameters(editor, support, body,
 					toolkit).setSupplier(supplier, scope);
 			body.setFocus();

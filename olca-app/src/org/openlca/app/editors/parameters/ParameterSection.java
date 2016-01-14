@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.eclipse.jface.action.Action;
@@ -24,6 +23,7 @@ import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Dialog;
 import org.openlca.app.util.Error;
+import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.UncertaintyLabel;
 import org.openlca.app.util.tables.TableClipboard;
@@ -58,13 +58,13 @@ public class ParameterSection {
 	private IEditor editor;
 	private Supplier<List<Parameter>> supplier;
 	private ParameterScope scope;
-	private Function<Parameter, String[]> externalSourceSupplier;
+	private SourceHandler sourceHandler;
 
 	public static ParameterSection forInputParameters(IEditor editor,
 			ParameterChangeSupport support, Composite body,
-			FormToolkit toolkit, Function<Parameter, String[]> sourceSupplier) {
+			FormToolkit toolkit, SourceHandler sourceHandler) {
 		return new ParameterSection(editor, support, body, toolkit,
-				sourceSupplier, true);
+				sourceHandler, true);
 	}
 
 	public static ParameterSection forInputParameters(IEditor editor,
@@ -78,11 +78,10 @@ public class ParameterSection {
 	}
 
 	private ParameterSection(IEditor editor, ParameterChangeSupport support,
-			Composite body, FormToolkit toolkit,
-			Function<Parameter, String[]> sourceSupplier,
+			Composite body, FormToolkit toolkit, SourceHandler sourceHandler,
 			boolean forInputParameters) {
 		this.forInputParameters = forInputParameters;
-		this.externalSourceSupplier = sourceSupplier;
+		this.sourceHandler = sourceHandler;
 		this.editor = editor;
 		this.support = support;
 		String[] props = getProperties();
@@ -94,13 +93,13 @@ public class ParameterSection {
 
 	private String[] getProperties() {
 		if (forInputParameters)
-			if (externalSourceSupplier != null)
+			if (sourceHandler != null)
 				return new String[] { NAME, VALUE, UNCERTAINTY, DESCRIPTION,
 						EXTERNAL_SOURCE };
 			else
 				return new String[] { NAME, VALUE, UNCERTAINTY, DESCRIPTION };
 		else {
-			if (externalSourceSupplier != null)
+			if (sourceHandler != null)
 				return new String[] { NAME, FORMULA, VALUE, DESCRIPTION,
 						EXTERNAL_SOURCE };
 			else
@@ -139,7 +138,7 @@ public class ParameterSection {
 	}
 
 	private void bindColumnWidths(TableViewer viewer) {
-		if (externalSourceSupplier != null)
+		if (sourceHandler != null)
 			Tables.bindColumnWidths(viewer, 0.25, 0.25, 0.15, 0.15, 0.2);
 		else
 			Tables.bindColumnWidths(viewer, 0.3, 0.3, 0.2, 0.2);
@@ -176,7 +175,7 @@ public class ParameterSection {
 					new UncertaintyCellEditor(viewer.getTable(), editor));
 		} else
 			modifySupport.bind(FORMULA, new FormulaModifier());
-		if (externalSourceSupplier != null)
+		if (sourceHandler != null)
 			modifySupport.bind(EXTERNAL_SOURCE, new ExternalSourceModifier());
 	}
 
@@ -368,7 +367,7 @@ public class ParameterSection {
 
 		@Override
 		protected String[] getItems(Parameter element) {
-			return externalSourceSupplier.apply(element);
+			return sourceHandler.getSources(element);
 		}
 
 		@Override
@@ -383,7 +382,11 @@ public class ParameterSection {
 
 		@Override
 		protected void setItem(Parameter element, String item) {
+			if (!Question.ask("#External source change",
+					"#Values will be recalculated, do you want to proceed?"))
+				return;
 			element.setExternalSource(item);
+			sourceHandler.sourceChanged(element, item);
 		}
 
 	}

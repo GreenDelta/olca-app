@@ -199,7 +199,7 @@ public class ShapeFileUtils {
 		}
 	}
 
-	static List<ShapeFileParameter> getParameters(ImpactMethod method,
+	public static List<ShapeFileParameter> getParameters(ImpactMethod method,
 			String shapeFileName) throws IOException {
 		File folder = getFolder(method);
 		File paramFile = new File(folder, shapeFileName + ".gisolca");
