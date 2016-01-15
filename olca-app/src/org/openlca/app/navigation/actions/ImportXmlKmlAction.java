@@ -11,13 +11,14 @@ import org.eclipse.ui.wizards.IWizardDescriptor;
 import org.openlca.app.editors.locations.KmzImportWizard;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelTypeElement;
+import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ModelType;
 
 public class ImportXmlKmlAction extends Action implements INavigationAction {
 
 	public ImportXmlKmlAction() {
-		setText("#Import XML (EcoSpold2 format) geography data");
+		setText("#Import EcoSpold2 geographies");
 	}
 
 	@Override
@@ -37,15 +38,16 @@ public class ImportXmlKmlAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		IWizardDescriptor descriptor = PlatformUI.getWorkbench().getImportWizardRegistry()
-				.findWizard(KmzImportWizard.ID);
+		IWizardDescriptor descriptor = PlatformUI.getWorkbench()
+				.getImportWizardRegistry().findWizard(KmzImportWizard.ID);
 		if (descriptor == null)
 			return;
 		try {
 			IWizard wizard = descriptor.createWizard();
 			WizardDialog dialog = new WizardDialog(UI.shell(), wizard);
 			dialog.setTitle(wizard.getWindowTitle());
-			dialog.open();
+			if (dialog.open() == WizardDialog.OK)
+				Navigator.refresh(Navigator.findElement(ModelType.LOCATION));
 		} catch (CoreException e1) {
 			e1.printStackTrace();
 		}
