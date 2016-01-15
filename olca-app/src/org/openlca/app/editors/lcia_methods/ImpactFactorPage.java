@@ -42,8 +42,7 @@ class ImpactFactorPage extends ModelPage<ImpactMethod> {
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
 		ScrolledForm form = UI.formHeader(managedForm,
-				Messages.ImpactAssessmentMethod
-						+ ": " + getModel().getName());
+				Messages.ImpactAssessmentMethod + ": " + getModel().getName());
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		Section section = UI.section(body, toolkit, Messages.ImpactFactors);
@@ -64,9 +63,11 @@ class ImpactFactorPage extends ModelPage<ImpactMethod> {
 		ImpactCategoryDescriptor descriptor = categoryViewer.getSelected();
 		if (descriptor == null)
 			return;
+		categoryViewer.setInput(getDescriptorList());
+		categoryViewer.select(descriptor);
 		for (ImpactCategory cat : editor.getModel().getImpactCategories()) {
 			if (equal(descriptor, cat)) {
-				factorTable.setImpactCategory(cat, false);
+				categoryViewer.select(Descriptors.toDescriptor(cat));
 				break;
 			}
 		}
@@ -99,16 +100,15 @@ class ImpactFactorPage extends ModelPage<ImpactMethod> {
 			return true;
 		if (descriptor == null || category == null)
 			return false;
-		if (category.getId() != 0L)
+		if (category.getId() != 0L && descriptor.getId() != 0L)
 			return descriptor.getId() == category.getId();
 		// new impact categories have an ID of 0. Thus, we take also other
 		// attributes to check equality
-		if (category.getRefId() != null)
+		if (category.getRefId() != null && descriptor.getRefId() != null)
 			return Objects.equals(category.getRefId(), descriptor.getRefId());
-		else
-			return Objects.equals(category.getName(), descriptor.getName())
-					&& Objects.equals(category.getReferenceUnit(),
-							descriptor.getReferenceUnit());
+		return Objects.equals(category.getName(), descriptor.getName())
+				&& Objects.equals(category.getReferenceUnit(),
+						descriptor.getReferenceUnit());
 	}
 
 	private class CategoryChange implements
