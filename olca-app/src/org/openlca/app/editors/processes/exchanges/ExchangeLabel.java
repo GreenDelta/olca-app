@@ -2,6 +2,7 @@ package org.openlca.app.editors.processes.exchanges;
 
 import java.util.Objects;
 
+import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -102,6 +103,8 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider {
 				return null;
 		case 7:
 			return exchange.getPedigreeUncertainty();
+		case 8:
+			return exchange.description;
 		}
 		return null;
 	}
@@ -139,7 +142,7 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider {
 			return s + " " + exchange.currency.code;
 	}
 
-	ColumnLabelProvider asColumnLabel() {
+	CellLabelProvider asColumnLabel() {
 		return new ColumnLabel();
 	}
 
@@ -167,10 +170,12 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider {
 			Exchange e = (Exchange) obj;
 			if (e.getFlow() == null)
 				return;
-			if (!e.isInput() && e.getFlow().getFlowType() == FlowType.PRODUCT_FLOW)
+			if (!e.isInput()
+					&& e.getFlow().getFlowType() == FlowType.PRODUCT_FLOW)
 				cell.setForeground(Colors.getSystemColor(SWT.COLOR_DARK_GREEN));
 			else
-				cell.setForeground(Colors.getSystemColor(SWT.COLOR_DARK_MAGENTA));
+				cell.setForeground(Colors
+						.getSystemColor(SWT.COLOR_DARK_MAGENTA));
 		}
 	}
 
