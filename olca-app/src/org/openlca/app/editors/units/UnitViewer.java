@@ -12,13 +12,16 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableItem;
 import org.openlca.app.Messages;
+import org.openlca.app.db.Database;
 import org.openlca.app.rcp.ImageType;
+import org.openlca.app.util.Error;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.viewers.table.AbstractTableViewer;
 import org.openlca.app.viewers.table.modify.CheckBoxCellModifier;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
+import org.openlca.core.database.usage.UnitUseSearch;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
 
@@ -78,8 +81,17 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 	protected void onRemove() {
 		UnitGroup group = editor.getModel();
 		for (Unit unit : getAllSelected()) {
-			if (Objects.equals(group.getReferenceUnit(), unit))
+			if (Objects.equals(group.getReferenceUnit(), unit)) {
+				Error.showBox("@Cannot delete reference unit",
+						"@The reference unit of a unit group cannot be deleted.");
 				continue;
+			}
+			UnitUseSearch usage = new UnitUseSearch(Database.get());
+			if (!usage.findUses(unit).isEmpty()) {
+				Error.showBox("@Cannot delete unit",
+						"@The given unit is used in processes, impact methods or social indicators.");
+				continue;
+			}
 			group.getUnits().remove(unit);
 		}
 		setInput(group.getUnits());

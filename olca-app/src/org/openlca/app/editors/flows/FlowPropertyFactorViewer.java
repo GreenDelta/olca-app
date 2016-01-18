@@ -129,7 +129,7 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 		List<CategorizedDescriptor> list = search.findUses(fac);
 		if (!list.isEmpty()) {
 			Error.showBox("@Cannot delete flow property",
-					"@The given flow property is used in processes or LCIA methods.");
+					"@The given flow property is used in processes or impact methods.");
 			return;
 		}
 		flow.getFlowPropertyFactors().remove(fac);
