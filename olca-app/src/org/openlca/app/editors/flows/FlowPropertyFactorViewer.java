@@ -48,11 +48,10 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 			FlowEditor editor) {
 		super(parent);
 		ModifySupport<FlowPropertyFactor> ms = getModifySupport();
-		ms.bind(CONVERSION_FACTOR, new DoubleModifier<>(editor,
-				"conversionFactor"));
+		this.editor = editor;
+		ms.bind(CONVERSION_FACTOR, new ConversionModifier());
 		ms.bind(IS_REFERENCE, new ReferenceModifier());
 		this.cache = cache;
-		this.editor = editor;
 		Tables.bindColumnWidths(getViewer(), 0.2, 0.2, 0.2, 0.2, 0.2);
 		addDoubleClickHandler();
 	}
@@ -216,6 +215,20 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 		}
 	}
 
+	private class ConversionModifier extends DoubleModifier<FlowPropertyFactor> {
+
+		private ConversionModifier() {
+			super(editor, "conversionFactor");
+		}
+
+		@Override
+		public boolean canModify(FlowPropertyFactor element) {
+			if (element == null)
+				return false;
+			return !element.equals(editor.getModel().getReferenceFactor());
+		}
+	}
+
 	private class ReferenceModifier extends
 			CheckBoxCellModifier<FlowPropertyFactor> {
 
@@ -228,13 +241,18 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 		@Override
 		protected void setChecked(FlowPropertyFactor element, boolean value) {
 			Flow flow = editor.getModel();
-			if (value) {
-				if (!Objects.equals(flow.getReferenceFlowProperty(),
-						element.getFlowProperty())) {
-					flow.setReferenceFlowProperty(element.getFlowProperty());
-					editor.setDirty(true);
-				}
+			if (!value)
+				return;
+			if (Objects.equals(flow.getReferenceFlowProperty(),
+					element.getFlowProperty()))
+				return;
+			flow.setReferenceFlowProperty(element.getFlowProperty());
+			double f = element.getConversionFactor();
+			for (FlowPropertyFactor fpFactor : flow.getFlowPropertyFactors()) {
+				double factor = fpFactor.getConversionFactor() / f;
+				fpFactor.setConversionFactor(factor);
 			}
+			editor.setDirty(true);
 		}
 
 		@Override

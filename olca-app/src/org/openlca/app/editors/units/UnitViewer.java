@@ -45,8 +45,7 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 		ms.bind(NAME, new StringModifier<>(editor, "name"));
 		ms.bind(DESCRIPTION, new StringModifier<>(editor, "description"));
 		ms.bind(SYNONYMS, new StringModifier<>(editor, "synonyms"));
-		ms.bind(CONVERSION_FACTOR, new DoubleModifier<>(editor,
-				"conversionFactor"));
+		ms.bind(CONVERSION_FACTOR, new ConversionModifier());
 		ms.bind(IS_REFERENCE, new ReferenceModifier());
 		getViewer().refresh(true);
 		Tables.bindColumnWidths(getViewer(), 0.25, 0.15, 0.15, 0.15, 0.15, 0.15);
@@ -169,6 +168,20 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 			return null;
 		}
 
+	}
+
+	private class ConversionModifier extends DoubleModifier<Unit> {
+
+		private ConversionModifier() {
+			super(editor, "conversionFactor");
+		}
+
+		@Override
+		public boolean canModify(Unit element) {
+			if (element == null)
+				return false;
+			return !element.equals(editor.getModel().getReferenceUnit());
+		}
 	}
 
 	private class ReferenceModifier extends CheckBoxCellModifier<Unit> {
