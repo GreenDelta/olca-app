@@ -53,6 +53,7 @@ class FlowInfoPage extends ModelPage<Flow> {
 				Messages.AdditionalInformation);
 		createText(Messages.CASNumber, "casNumber", composite);
 		createText(Messages.Formula, "formula", composite);
+		createText(Messages.Synonyms, "synonyms", composite);
 		createLocationViewer(composite);
 	}
 
