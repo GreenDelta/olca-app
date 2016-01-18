@@ -21,7 +21,6 @@ import org.openlca.app.components.UncertaintyCellEditor;
 import org.openlca.app.editors.IEditor;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
-import org.openlca.app.util.Dialog;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
@@ -32,6 +31,8 @@ import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.table.modify.ComboBoxCellModifier;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
+import org.openlca.app.viewers.table.modify.field.DoubleModifier;
+import org.openlca.app.viewers.table.modify.field.StringModifier;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterScope;
 import org.openlca.util.Strings;
@@ -166,17 +167,19 @@ public class ParameterSection {
 	}
 
 	private void createCellModifiers() {
-		ModifySupport<Parameter> modifySupport = new ModifySupport<>(viewer);
-		modifySupport.bind(NAME, new NameModifier());
-		modifySupport.bind(DESCRIPTION, new DescriptionModifier());
+		ModifySupport<Parameter> ms = new ModifySupport<>(viewer);
+		ms.bind(NAME, new NameModifier());
+		ms.bind(DESCRIPTION, new StringModifier<>(editor, "description"));
 		if (forInputParameters) {
-			modifySupport.bind(VALUE, new ValueModifier());
-			modifySupport.bind(UNCERTAINTY,
-					new UncertaintyCellEditor(viewer.getTable(), editor));
+			ms.bind(VALUE, new DoubleModifier<>(editor, "value",
+					(elem) -> support.evaluate()));
+			ms.bind(UNCERTAINTY, new UncertaintyCellEditor(viewer.getTable(),
+					editor));
 		} else
-			modifySupport.bind(FORMULA, new FormulaModifier());
+			ms.bind(FORMULA, new StringModifier<>(editor, "formula",
+					(elem) -> support.evaluate()));
 		if (sourceHandler != null)
-			modifySupport.bind(EXTERNAL_SOURCE, new ExternalSourceModifier());
+			ms.bind(EXTERNAL_SOURCE, new ExternalSourceModifier());
 	}
 
 	private void fillInitialInput() {
@@ -305,60 +308,6 @@ public class ParameterSection {
 			param.setName(name);
 			editor.setDirty(true);
 			support.evaluate();
-		}
-	}
-
-	private class ValueModifier extends TextCellModifier<Parameter> {
-		@Override
-		protected String getText(Parameter param) {
-			return Double.toString(param.getValue());
-		}
-
-		@Override
-		protected void setText(Parameter param, String text) {
-			try {
-				double d = Double.parseDouble(text);
-				param.setValue(d);
-				editor.setDirty(true);
-				support.evaluate();
-			} catch (Exception e) {
-				Dialog.showError(viewer.getTable().getShell(), text + " "
-						+ Messages.IsNotValidNumber);
-			}
-		}
-	}
-
-	private class FormulaModifier extends TextCellModifier<Parameter> {
-		@Override
-		protected String getText(Parameter param) {
-			return param.getFormula();
-		}
-
-		@Override
-		protected void setText(Parameter param, String formula) {
-			try {
-				param.setFormula(formula);
-				editor.setDirty(true);
-				support.evaluate();
-			} catch (Exception e) {
-				Error.showBox(Messages.InvalidFormula,
-						Strings.cut(e.getMessage(), 75));
-			}
-		}
-	}
-
-	private class DescriptionModifier extends TextCellModifier<Parameter> {
-		@Override
-		protected String getText(Parameter param) {
-			return param.getDescription();
-		}
-
-		@Override
-		protected void setText(Parameter param, String text) {
-			if (!Objects.equals(text, param.getDescription())) {
-				param.setDescription(text);
-				editor.setDirty(true);
-			}
 		}
 	}
 

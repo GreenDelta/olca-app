@@ -19,7 +19,6 @@ import org.openlca.app.components.UncertaintyCellEditor;
 import org.openlca.app.db.Cache;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
-import org.openlca.app.util.Dialog;
 import org.openlca.app.util.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UncertaintyLabel;
@@ -27,7 +26,7 @@ import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.table.modify.ModifySupport;
-import org.openlca.app.viewers.table.modify.TextCellModifier;
+import org.openlca.app.viewers.table.modify.field.DoubleModifier;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.ProductSystem;
@@ -65,7 +64,7 @@ class ParameterRedefTable {
 		viewer.setLabelProvider(new LabelProvider());
 		ModifySupport<ParameterRedef> modifySupport = new ModifySupport<>(
 				viewer);
-		modifySupport.bind(AMOUNT, new AmountModifier());
+		modifySupport.bind(AMOUNT, new DoubleModifier<>(editor, "value"));
 		modifySupport.bind(UNCERTAINTY,
 				new UncertaintyCellEditor(viewer.getTable(), editor));
 		Tables.bindColumnWidths(viewer, 0.3, 0.3, 0.2, 0.2);
@@ -129,25 +128,6 @@ class ParameterRedefTable {
 			systemRedefs.remove(redef);
 		viewer.setInput(systemRedefs);
 		editor.setDirty(true);
-	}
-
-	private class AmountModifier extends TextCellModifier<ParameterRedef> {
-
-		protected String getText(ParameterRedef redef) {
-			return Double.toString(redef.getValue());
-		}
-
-		@Override
-		protected void setText(ParameterRedef redef, String text) {
-			try {
-				double val = Double.parseDouble(text);
-				redef.setValue(val);
-				editor.setDirty(true);
-			} catch (Exception e) {
-				Dialog.showError(viewer.getTable().getShell(), text
-						+ " " + Messages.IsNotValidNumber);
-			}
-		}
 	}
 
 	private class LabelProvider extends org.eclipse.jface.viewers.LabelProvider

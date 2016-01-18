@@ -21,7 +21,8 @@ import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.viewers.table.AbstractTableViewer;
 import org.openlca.app.viewers.table.modify.CheckBoxCellModifier;
-import org.openlca.app.viewers.table.modify.TextCellModifier;
+import org.openlca.app.viewers.table.modify.ModifySupport;
+import org.openlca.app.viewers.table.modify.field.DoubleModifier;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.database.usage.FlowPropertyFactorUseSearch;
 import org.openlca.core.model.Flow;
@@ -46,9 +47,10 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 	public FlowPropertyFactorViewer(Composite parent, EntityCache cache,
 			FlowEditor editor) {
 		super(parent);
-		getModifySupport().bind(CONVERSION_FACTOR,
-				new ConversionFactorModifier());
-		getModifySupport().bind(IS_REFERENCE, new ReferenceModifier());
+		ModifySupport<FlowPropertyFactor> ms = getModifySupport();
+		ms.bind(CONVERSION_FACTOR, new DoubleModifier<>(editor,
+				"conversionFactor"));
+		ms.bind(IS_REFERENCE, new ReferenceModifier());
 		this.cache = cache;
 		this.editor = editor;
 		Tables.bindColumnWidths(getViewer(), 0.2, 0.2, 0.2, 0.2, 0.2);
@@ -214,36 +216,13 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 		}
 	}
 
-	private class ConversionFactorModifier extends
-			TextCellModifier<FlowPropertyFactor> {
-
-		@Override
-		protected String getText(FlowPropertyFactor element) {
-			return Double.toString(element.getConversionFactor());
-		}
-
-		@Override
-		protected void setText(FlowPropertyFactor element, String text) {
-			try {
-				double value = Double.parseDouble(text);
-				if (value != element.getConversionFactor()) {
-					element.setConversionFactor(value);
-					editor.setDirty(true);
-				}
-			} catch (NumberFormatException e) {
-
-			}
-		}
-	}
-
 	private class ReferenceModifier extends
 			CheckBoxCellModifier<FlowPropertyFactor> {
 
 		@Override
 		protected boolean isChecked(FlowPropertyFactor element) {
 			Flow flow = editor.getModel();
-			return flow != null
-					&& Objects.equals(flow.getReferenceFactor(), element);
+			return Objects.equals(flow.getReferenceFactor(), element);
 		}
 
 		@Override

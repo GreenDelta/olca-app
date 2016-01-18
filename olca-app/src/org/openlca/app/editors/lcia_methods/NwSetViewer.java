@@ -1,6 +1,5 @@
 package org.openlca.app.editors.lcia_methods;
 
-import java.util.Objects;
 import java.util.UUID;
 
 import org.eclipse.jface.viewers.IBaseLabelProvider;
@@ -12,7 +11,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.openlca.app.Messages;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.viewers.table.AbstractTableViewer;
-import org.openlca.app.viewers.table.modify.TextCellModifier;
+import org.openlca.app.viewers.table.modify.field.StringModifier;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.NwSet;
 
@@ -26,8 +25,9 @@ class NwSetViewer extends AbstractTableViewer<NwSet> {
 	public NwSetViewer(Composite parent, ImpactMethodEditor editor) {
 		super(parent);
 		this.editor = editor;
-		getModifySupport().bind(NAME, new NameModifier());
-		getModifySupport().bind(UNIT, new UnitModifier());
+		getModifySupport().bind(NAME, new StringModifier<>(editor, "name"));
+		getModifySupport().bind(UNIT,
+				new StringModifier<>(editor, "weightedScoreUnit"));
 		Tables.onDoubleClick(getViewer(), (event) -> {
 			TableItem item = Tables.getItem(getViewer(), event);
 			if (item == null)
@@ -98,35 +98,4 @@ class NwSetViewer extends AbstractTableViewer<NwSet> {
 
 	}
 
-	private class NameModifier extends TextCellModifier<NwSet> {
-
-		@Override
-		protected String getText(NwSet element) {
-			return element.getName();
-		}
-
-		@Override
-		protected void setText(NwSet element, String text) {
-			if (!Objects.equals(text, element.getName())) {
-				element.setName(text);
-				editor.setDirty(true);
-			}
-		}
-	}
-
-	private class UnitModifier extends TextCellModifier<NwSet> {
-
-		@Override
-		protected String getText(NwSet element) {
-			return element.getWeightedScoreUnit();
-		}
-
-		@Override
-		protected void setText(NwSet element, String text) {
-			if (!Objects.equals(text, element.getWeightedScoreUnit())) {
-				element.setWeightedScoreUnit(text);
-				editor.setDirty(true);
-			}
-		}
-	}
 }

@@ -20,7 +20,9 @@ import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.viewers.table.AbstractTableViewer;
 import org.openlca.app.viewers.table.modify.CheckBoxCellModifier;
-import org.openlca.app.viewers.table.modify.TextCellModifier;
+import org.openlca.app.viewers.table.modify.ModifySupport;
+import org.openlca.app.viewers.table.modify.field.DoubleModifier;
+import org.openlca.app.viewers.table.modify.field.StringModifier;
 import org.openlca.core.database.usage.UnitUseSearch;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
@@ -39,12 +41,13 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 	public UnitViewer(Composite parent, UnitGroupEditor editor) {
 		super(parent);
 		this.editor = editor;
-		getModifySupport().bind(NAME, new NameModifier());
-		getModifySupport().bind(DESCRIPTION, new DescriptionModifier());
-		getModifySupport().bind(SYNONYMS, new SynonymsModifier());
-		getModifySupport().bind(CONVERSION_FACTOR,
-				new ConversionFactorModifier());
-		getModifySupport().bind(IS_REFERENCE, new ReferenceModifier());
+		ModifySupport<Unit> ms = getModifySupport();
+		ms.bind(NAME, new StringModifier<>(editor, "name"));
+		ms.bind(DESCRIPTION, new StringModifier<>(editor, "description"));
+		ms.bind(SYNONYMS, new StringModifier<>(editor, "synonyms"));
+		ms.bind(CONVERSION_FACTOR, new DoubleModifier<>(editor,
+				"conversionFactor"));
+		ms.bind(IS_REFERENCE, new ReferenceModifier());
 		getViewer().refresh(true);
 		Tables.bindColumnWidths(getViewer(), 0.25, 0.15, 0.15, 0.15, 0.15, 0.15);
 		Tables.onDoubleClick(getViewer(), (event) -> {
@@ -168,82 +171,12 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 
 	}
 
-	private class NameModifier extends TextCellModifier<Unit> {
-
-		@Override
-		protected String getText(Unit element) {
-			return element.getName();
-		}
-
-		@Override
-		protected void setText(Unit element, String text) {
-			if (!Objects.equals(text, element.getName())) {
-				element.setName(text);
-				editor.setDirty(true);
-			}
-		}
-
-	}
-
-	private class DescriptionModifier extends TextCellModifier<Unit> {
-
-		@Override
-		protected String getText(Unit element) {
-			return element.getDescription();
-		}
-
-		@Override
-		protected void setText(Unit element, String text) {
-			if (!Objects.equals(text, element.getDescription())) {
-				element.setDescription(text);
-				editor.setDirty(true);
-			}
-		}
-	}
-
-	private class SynonymsModifier extends TextCellModifier<Unit> {
-
-		@Override
-		protected String getText(Unit element) {
-			return element.getSynonyms();
-		}
-
-		@Override
-		protected void setText(Unit element, String text) {
-			if (!Objects.equals(text, element.getSynonyms())) {
-				element.setSynonyms(text);
-				editor.setDirty(true);
-			}
-		}
-	}
-
-	private class ConversionFactorModifier extends TextCellModifier<Unit> {
-
-		@Override
-		protected String getText(Unit element) {
-			return Double.toString(element.getConversionFactor());
-		}
-
-		@Override
-		protected void setText(Unit element, String text) {
-			try {
-				double value = Double.parseDouble(text);
-				if (value != element.getConversionFactor()) {
-					element.setConversionFactor(Double.parseDouble(text));
-					editor.setDirty(true);
-				}
-			} catch (NumberFormatException e) {
-			}
-		}
-	}
-
 	private class ReferenceModifier extends CheckBoxCellModifier<Unit> {
 
 		@Override
 		protected boolean isChecked(Unit element) {
 			UnitGroup group = editor.getModel();
-			return group != null
-					&& Objects.equals(group.getReferenceUnit(), element);
+			return Objects.equals(group.getReferenceUnit(), element);
 		}
 
 		@Override

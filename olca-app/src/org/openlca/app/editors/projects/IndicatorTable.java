@@ -2,7 +2,6 @@ package org.openlca.app.editors.projects;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -21,7 +20,7 @@ import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.viewers.table.modify.CheckBoxCellModifier;
 import org.openlca.app.viewers.table.modify.ModifySupport;
-import org.openlca.app.viewers.table.modify.TextCellModifier;
+import org.openlca.app.viewers.table.modify.field.StringModifier;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
@@ -43,11 +42,11 @@ class IndicatorTable {
 		UI.gridData(viewer.getTable(), true, false).heightHint = 150;
 		Label label = new Label();
 		viewer.setLabelProvider(label);
-		ModifySupport<ReportIndicator> modifySupport = new ModifySupport<>(
-				viewer);
-		modifySupport.bind(Messages.Display, new DisplayModifier());
-		modifySupport.bind(Messages.ReportName, new NameModifier());
-		modifySupport.bind(Messages.Description, new DescriptionModifier());
+		ModifySupport<ReportIndicator> ms = new ModifySupport<>(viewer);
+		ms.bind(Messages.Display, new DisplayModifier());
+		ms.bind(Messages.ReportName, new StringModifier<>(editor, "reportName"));
+		ms.bind(Messages.Description, new StringModifier<>(editor,
+				"reportDescription"));
 		if (editor.getReport() != null)
 			viewer.setInput(editor.getReport().indicators);
 		Actions.bind(viewer, TableClipboard.onCopy(viewer));
@@ -81,8 +80,8 @@ class IndicatorTable {
 			reportIndicator.reportName = descriptor.getName();
 			reportIndicator.displayed = true;
 		}
-		indicators.sort((r1, r2) -> Strings.compare(
-				r1.descriptor.getName(), r2.descriptor.getName()));
+		indicators.sort((r1, r2) -> Strings.compare(r1.descriptor.getName(),
+				r2.descriptor.getName()));
 		return indicators;
 	}
 
@@ -95,8 +94,8 @@ class IndicatorTable {
 			if (!(element instanceof ReportIndicator))
 				return null;
 			ReportIndicator indicator = (ReportIndicator) element;
-			return indicator.displayed ?
-					ImageType.CHECK_TRUE.get() : ImageType.CHECK_FALSE.get();
+			return indicator.displayed ? ImageType.CHECK_TRUE.get()
+					: ImageType.CHECK_FALSE.get();
 		}
 
 		@Override
@@ -132,33 +131,4 @@ class IndicatorTable {
 		}
 	}
 
-	private class NameModifier extends TextCellModifier<ReportIndicator> {
-		@Override
-		protected String getText(ReportIndicator indicator) {
-			return indicator.reportName;
-		}
-
-		@Override
-		protected void setText(ReportIndicator indicator, String text) {
-			if (Objects.equals(indicator.reportName, text))
-				return;
-			indicator.reportName = text;
-			editor.setDirty(true);
-		}
-	}
-
-	private class DescriptionModifier extends TextCellModifier<ReportIndicator> {
-		@Override
-		protected String getText(ReportIndicator indicator) {
-			return indicator.reportDescription;
-		}
-
-		@Override
-		protected void setText(ReportIndicator indicator, String text) {
-			if (Objects.equals(indicator.reportDescription, text))
-				return;
-			indicator.reportDescription = text;
-			editor.setDirty(true);
-		}
-	}
 }

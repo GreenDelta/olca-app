@@ -33,6 +33,7 @@ import org.openlca.app.viewers.table.modify.CheckBoxCellModifier;
 import org.openlca.app.viewers.table.modify.ComboBoxCellModifier;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
+import org.openlca.app.viewers.table.modify.field.StringModifier;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
@@ -67,6 +68,7 @@ class ExchangeTable {
 	private final String PEDIGREE = Messages.PedigreeUncertainty;
 	private final String DEFAULT_PROVIDER = Messages.DefaultProvider;
 	private final String UNCERTAINTY = Messages.Uncertainty;
+	private final String DESCRIPTION = Messages.Description;
 	private final String AVOIDED_PRODUCT = Messages.AvoidedProduct;
 
 	private TableViewer viewer;
@@ -104,8 +106,8 @@ class ExchangeTable {
 		viewer.addFilter(new Filter());
 		bindActions(section, viewer);
 		bindDoubleClick(viewer);
-		Tables.bindColumnWidths(viewer, 0.2, 0.15, 0.1, 0.1, 0.1, 0.1, 0.1,
-				0.1);
+		Tables.bindColumnWidths(viewer, 0.2, 0.15, 0.1, 0.09, 0.09, 0.09, 0.09,
+				0.09, 0.05);
 		Viewers.sortByLabels(viewer, label, 0, 1, 2, 3, 5, 6, 7);
 		Viewers.sortByDouble(viewer, (Exchange e) -> e.getAmountValue(), 4);
 	}
@@ -120,7 +122,9 @@ class ExchangeTable {
 		ms.bind(UNIT, new UnitCell(editor));
 		ms.bind(COSTS, new CostCellEditor(viewer, editor));
 		ms.bind(PEDIGREE, new PedigreeCellEditor(viewer, editor));
-		ms.bind(UNCERTAINTY, new UncertaintyCellEditor(viewer.getTable(), editor));
+		ms.bind(UNCERTAINTY, new UncertaintyCellEditor(viewer.getTable(),
+				editor));
+		ms.bind(DESCRIPTION, new StringModifier<>(editor, "description"));
 		if (forInputs)
 			ms.bind(DEFAULT_PROVIDER, new ProviderModifier());
 		if (!forInputs)
@@ -153,10 +157,10 @@ class ExchangeTable {
 	private String[] getColumns() {
 		if (forInputs)
 			return new String[] { FLOW, CATEGORY, AMOUNT, UNIT, COSTS,
-					UNCERTAINTY, DEFAULT_PROVIDER, PEDIGREE };
+					UNCERTAINTY, DEFAULT_PROVIDER, PEDIGREE, DESCRIPTION };
 		else
 			return new String[] { FLOW, CATEGORY, AMOUNT, UNIT, COSTS,
-					UNCERTAINTY, AVOIDED_PRODUCT, PEDIGREE };
+					UNCERTAINTY, AVOIDED_PRODUCT, PEDIGREE, DESCRIPTION };
 	}
 
 	private void onAdd() {
@@ -229,7 +233,8 @@ class ExchangeTable {
 		}
 	}
 
-	private class ProviderModifier extends ComboBoxCellModifier<Exchange, ProcessDescriptor> {
+	private class ProviderModifier extends
+			ComboBoxCellModifier<Exchange, ProcessDescriptor> {
 
 		@Override
 		public boolean canModify(Exchange element) {
@@ -280,8 +285,8 @@ class ExchangeTable {
 		}
 	}
 
-	private class AvoidedProductModifier
-			extends CheckBoxCellModifier<Exchange> {
+	private class AvoidedProductModifier extends CheckBoxCellModifier<Exchange> {
+		
 		@Override
 		public boolean canModify(Exchange e) {
 			Process process = editor.getModel();

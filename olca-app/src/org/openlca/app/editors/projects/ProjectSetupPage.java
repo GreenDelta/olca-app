@@ -33,7 +33,6 @@ import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Editors;
-import org.openlca.app.util.Error;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.TableClipboard;
@@ -42,6 +41,7 @@ import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.table.modify.ComboBoxCellModifier;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
+import org.openlca.app.viewers.table.modify.field.DoubleModifier;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ProductSystemDao;
 import org.openlca.core.model.AllocationMethod;
@@ -154,13 +154,13 @@ class ProjectSetupPage extends ModelPage<Project> {
 				Messages.Unit, Messages.Description };
 		variantViewer = Tables.createViewer(composite, properties);
 		variantViewer.setLabelProvider(new VariantLabelProvider());
-		Tables.bindColumnWidths(variantViewer,
-				0.15, 0.15, 0.15, 0.15, 0.125, 0.125, 0.15);
+		Tables.bindColumnWidths(variantViewer, 0.15, 0.15, 0.15, 0.15, 0.125,
+				0.125, 0.15);
 		ModifySupport<ProjectVariant> support = new ModifySupport<>(
 				variantViewer);
 		support.bind(Messages.Name, new VariantNameEditor());
 		support.bind(Messages.AllocationMethod, new VariantAllocationEditor());
-		support.bind(Messages.Amount, new VariantAmountEditor());
+		support.bind(Messages.Amount, new DoubleModifier<>(editor, "amount"));
 		support.bind(Messages.Unit, new VariantUnitEditor());
 		support.bind(Messages.Description, new VariantDescriptionEditor());
 		addVariantActions(variantViewer, section);
@@ -271,25 +271,6 @@ class ProjectSetupPage extends ModelPage<Project> {
 				return;
 			variantSync.updateDescription(variant, text);
 			editor.setDirty(true);
-		}
-	}
-
-	private class VariantAmountEditor extends TextCellModifier<ProjectVariant> {
-		@Override
-		protected String getText(ProjectVariant variant) {
-			return Double.toString(variant.getAmount());
-		}
-
-		@Override
-		protected void setText(ProjectVariant variant, String text) {
-			try {
-				double val = Double.parseDouble(text);
-				variant.setAmount(val);
-				editor.setDirty(true);
-			} catch (Exception e) {
-				Error.showBox(Messages.InvalidNumber, text + " "
-						+ Messages.IsNotValidNumber);
-			}
 		}
 	}
 

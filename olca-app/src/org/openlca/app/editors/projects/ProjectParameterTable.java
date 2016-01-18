@@ -403,6 +403,7 @@ class ProjectParameterTable {
 	}
 
 	private class NameModifier extends TextCellModifier<ParameterRedef> {
+
 		@Override
 		protected String getText(ParameterRedef redef) {
 			return reportSync.getName(redef);
