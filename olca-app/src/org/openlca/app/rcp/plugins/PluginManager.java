@@ -33,7 +33,8 @@ import com.google.gson.GsonBuilder;
 
 public class PluginManager extends FormDialog implements HtmlPage {
 
-	private final static Gson mapper = new GsonBuilder().serializeNulls().create();
+	private final static Gson mapper = new GsonBuilder().serializeNulls()
+			.create();
 	private final static PluginService service = new PluginService();
 	private final static BundleService bundleService = new BundleService();
 	private static Map<String, Plugin> plugins;
@@ -144,11 +145,9 @@ public class PluginManager extends FormDialog implements HtmlPage {
 			Info.showBox("The file you selected isn't a valid openLCA plugin");
 			return;
 		}
-		App.runWithProgress("Installing " + plugin.getFullDisplayName(),
-				() -> {
-					service.copyLocalFile(file.toPath(), plugin);
-					refresh();
-				});
+		App.run("Installing " + plugin.getFullDisplayName(), () -> {
+			service.copyLocalFile(file.toPath(), plugin);
+		}, this::refresh);
 	}
 
 	private Plugin getPlugin(File jar, Collection<Plugin> plugins) {
