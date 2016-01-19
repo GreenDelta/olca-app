@@ -40,7 +40,7 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 		for (ModelType type : ModelType.values())
 			if (type.isCategorized())
 				types.add(type);
-		page = new ModelSelectionPage(
+		page = ModelSelectionPage.forFile("zip",
 				types.toArray(new ModelType[types.size()]));
 		addPage(page);
 	}
@@ -53,12 +53,11 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 		List<BaseDescriptor> models = page.getSelectedModels();
 		if (models == null || models.isEmpty())
 			return true;
-		File exportDir = page.getExportDestination();
-		if (exportDir == null)
+		File target = page.getExportDestination();
+		if (target == null)
 			return false;
-		File file = new File(exportDir, db.getName() + ".zip");
 		try {
-			Export export = new Export(file, models, db);
+			Export export = new Export(target, models, db);
 			getContainer().run(true, true, export);
 			return true;
 		} catch (Exception e) {

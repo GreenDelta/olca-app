@@ -4,17 +4,20 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IExportWizard;
 import org.eclipse.ui.IWorkbench;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
-import org.openlca.core.database.IDatabase;
+import org.openlca.app.preferencepages.IoPreference;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.ilcd.util.IlcdConfig;
 import org.openlca.io.ilcd.ILCDExport;
+import org.openlca.io.ilcd.output.ExportConfig;
 
 /**
  * Wizard for exporting processes, flows, flow properties and unit group to the
@@ -30,12 +33,10 @@ public class ILCDExportWizard extends Wizard implements IExportWizard {
 
 	@Override
 	public void addPages() {
-		ModelType[] types = {
-				ModelType.IMPACT_METHOD, ModelType.PROCESS, ModelType.FLOW,
-				ModelType.FLOW_PROPERTY, ModelType.UNIT_GROUP, ModelType.ACTOR,
-				ModelType.SOURCE
-		};
-		exportPage = new ModelSelectionPage(types);
+		ModelType[] types = { ModelType.IMPACT_METHOD, ModelType.PROCESS,
+				ModelType.FLOW, ModelType.FLOW_PROPERTY, ModelType.UNIT_GROUP,
+				ModelType.ACTOR, ModelType.SOURCE };
+		exportPage = ModelSelectionPage.forFile("zip", types);
 		addPage(exportPage);
 	}
 
@@ -46,45 +47,49 @@ public class ILCDExportWizard extends Wizard implements IExportWizard {
 
 	@Override
 	public boolean performFinish() {
-		IDatabase database = Database.get();
-		if (database == null)
-			return false;
-		File targetDir = exportPage.getExportDestination();
-		if (targetDir == null || !targetDir.isDirectory())
+		File target = exportPage.getExportDestination();
+		if (target == null)
 			return false;
 		List<BaseDescriptor> descriptors = exportPage.getSelectedModels();
-
 		boolean errorOccured = false;
+		ExportConfig config = createConfig(target);
 		try {
-			getContainer().run(true, true, monitor -> {
-				monitor.beginTask(Messages.Export, descriptors.size());
-				int worked = 0;
-				ILCDExport export = new ILCDExport(targetDir);
-				for (BaseDescriptor descriptor : descriptors) {
-					if (monitor.isCanceled())
-						break;
-					monitor.setTaskName(descriptor.getName());
-					try {
-						Object component = database.createDao(
-								descriptor.getModelType().getModelClass())
-								.getForId(descriptor.getId());
-						if (component instanceof CategorizedEntity)
-							export.export((CategorizedEntity) component,
-									database);
-					} catch (Exception e) {
-						throw new InvocationTargetException(e);
-					} finally {
-						monitor.worked(++worked);
-					}
-				}
-				export.close();
-			});
-
+			getContainer().run(true, true,
+					monitor -> runExport(monitor, config, descriptors));
 		} catch (Exception e) {
 			errorOccured = true;
 		}
-
 		return !errorOccured;
+	}
+
+	private void runExport(IProgressMonitor monitor, ExportConfig config,
+			List<BaseDescriptor> descriptors) throws InvocationTargetException {
+		monitor.beginTask(Messages.Export, descriptors.size());
+		int worked = 0;
+		ILCDExport export = new ILCDExport(config);
+		for (BaseDescriptor descriptor : descriptors) {
+			if (monitor.isCanceled())
+				break;
+			monitor.setTaskName(descriptor.getName());
+			try {
+				Object component = config.db.createDao(
+						descriptor.getModelType().getModelClass()).getForId(
+						descriptor.getId());
+				if (component instanceof CategorizedEntity)
+					export.export((CategorizedEntity) component);
+			} catch (Exception e) {
+				throw new InvocationTargetException(e);
+			} finally {
+				monitor.worked(++worked);
+			}
+		}
+		export.close();
+	}
+
+	private ExportConfig createConfig(File targetDir) {
+		ExportConfig config = new ExportConfig(Database.get(), targetDir);
+		config.ilcdConfig = new IlcdConfig(IoPreference.getIlcdLanguage());
+		return config;
 	}
 
 }

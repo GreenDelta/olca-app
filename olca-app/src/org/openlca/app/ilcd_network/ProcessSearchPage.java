@@ -20,6 +20,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 import org.openlca.app.Messages;
+import org.openlca.app.preferencepages.IoPreference;
 import org.openlca.app.util.Dialog;
 import org.openlca.app.util.UI;
 import org.openlca.ilcd.descriptors.DescriptorList;
@@ -94,7 +95,7 @@ public class ProcessSearchPage extends WizardPage {
 
 	private void runSearch(String term) {
 		try {
-			NetworkClient client = Preference.createClient();
+			NetworkClient client = IoPreference.createClient();
 			client.connect();
 			DescriptorList result = client.search(Process.class, term);
 			if (result != null && result.getDescriptors() != null) {

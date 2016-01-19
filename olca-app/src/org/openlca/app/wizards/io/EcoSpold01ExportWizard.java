@@ -39,7 +39,7 @@ public class EcoSpold01ExportWizard extends Wizard implements IExportWizard {
 
 	@Override
 	public void addPages() {
-		modelPage = new ModelSelectionPage(type);
+		modelPage = ModelSelectionPage.forDirectory(type);
 		addPage(modelPage);
 		if (FeatureFlag.ECOSPOLD1_EXPORT_CONFIG.isEnabled()) {
 			configPage = new Es1ExportConfigPage();

@@ -31,31 +31,36 @@ public class FileChooser {
 	}
 
 	private static String openDialog(Shell shell, String extension,
-			String defaultName, int flag, int swtFlag) {
+			String defaultName, String filterPath, int flag, int swtFlag) {
 		switch (flag) {
 		case FILE_DIALOG:
-			return openFileDialog(shell, extension, defaultName, swtFlag);
+			return openFileDialog(shell, extension, defaultName, filterPath,
+					swtFlag);
 		case DIRECTORY_DIALOG:
-			return openDirectoryDialog(shell, swtFlag);
+			return openDirectoryDialog(shell, filterPath, swtFlag);
 		default:
 			return null;
 		}
 	}
 
-	private static String openDirectoryDialog(Shell shell, int swtFlag) {
+	private static String openDirectoryDialog(Shell shell, String filterPath,
+			int swtFlag) {
 		DirectoryDialog dialog = new DirectoryDialog(shell, swtFlag);
 		dialog.setText(Messages.SelectADirectory);
+		if (filterPath != null)
+			dialog.setFilterPath(filterPath);
 		return dialog.open();
 	}
 
 	private static String openFileDialog(Shell shell, String extension,
-			String defaultName, int swtFlag) {
+			String defaultName, String filterPath, int swtFlag) {
 		FileDialog dialog = new FileDialog(shell, swtFlag);
 		dialog.setText(getDialogText(swtFlag));
-		if (extension != null) {
+		if (extension != null)
 			dialog.setFilterExtensions(new String[] { extension });
-		}
 		dialog.setFileName(defaultName);
+		if (filterPath != null)
+			dialog.setFilterPath(filterPath);
 		return dialog.open();
 	}
 
@@ -76,7 +81,16 @@ public class FileChooser {
 	 * should be used
 	 */
 	public static File forExport(int flag) {
-		return forExport(null, null, flag);
+		return forExport(flag, null);
+	}
+
+	/**
+	 * Selects a file/directory for an export. Returns null if the user
+	 * cancelled the dialog. Flag indicates if a file or a directory dialog
+	 * should be used
+	 */
+	public static File forExport(int flag, String filterPath) {
+		return forExport(null, null, filterPath, flag);
 	}
 
 	/**
@@ -84,7 +98,16 @@ public class FileChooser {
 	 * dialog.
 	 */
 	public static File forExport(String extension, String defaultName) {
-		return forExport(extension, defaultName, FILE_DIALOG);
+		return forExport(extension, defaultName, null);
+	}
+
+	/**
+	 * Selects a file for an export. Returns null if the user cancelled the
+	 * dialog.
+	 */
+	public static File forExport(String extension, String defaultName,
+			String filterPath) {
+		return forExport(extension, defaultName, filterPath, FILE_DIALOG);
 	}
 
 	/**
@@ -92,11 +115,13 @@ public class FileChooser {
 	 * dialog. Optional defaultName sets the default file name for save dialogs.
 	 * Flag indicates if a file or a directory dialog should be used.
 	 */
-	private static File forExport(String extension, String defaultName, int flag) {
+	private static File forExport(String extension, String defaultName,
+			String filterPath, int flag) {
 		Shell shell = UI.shell();
 		if (shell == null)
 			return null;
-		String path = openDialog(shell, extension, defaultName, flag, SWT.SAVE);
+		String path = openDialog(shell, extension, defaultName, filterPath,
+				flag, SWT.SAVE);
 		if (path == null)
 			return null;
 		return selectForPath(path);
@@ -108,15 +133,7 @@ public class FileChooser {
 	 * be opened
 	 */
 	public static File forImport(int flag) {
-		return forImport(null, flag);
-	}
-
-	/**
-	 * Selects a file/directory for an import. Returns null if the user
-	 * cancelled the dialog.
-	 */
-	public static File forImport(String extension) {
-		return forImport(extension, FILE_DIALOG);
+		return forImport(flag, null);
 	}
 
 	/**
@@ -124,11 +141,37 @@ public class FileChooser {
 	 * cancelled the dialog. flag indicates if a file or directory dialog should
 	 * be opened
 	 */
-	private static File forImport(String extension, int flag) {
+	public static File forImport(int flag, String filterPath) {
+		return forImport(null, filterPath, flag);
+	}
+
+	/**
+	 * Selects a file/directory for an import. Returns null if the user
+	 * cancelled the dialog.
+	 */
+	public static File forImport(String extension) {
+		return forImport(extension, null);
+	}
+
+	/**
+	 * Selects a file/directory for an import. Returns null if the user
+	 * cancelled the dialog.
+	 */
+	public static File forImport(String extension, String filterPath) {
+		return forImport(extension, filterPath, FILE_DIALOG);
+	}
+
+	/**
+	 * Selects a file/directory for an import. Returns null if the user
+	 * cancelled the dialog. flag indicates if a file or directory dialog should
+	 * be opened
+	 */
+	private static File forImport(String extension, String filterPath, int flag) {
 		Shell shell = UI.shell();
 		if (shell == null)
 			return null;
-		String path = openDialog(shell, extension, null, flag, SWT.OPEN);
+		String path = openDialog(shell, extension, null, filterPath, flag,
+				SWT.OPEN);
 		if (path == null)
 			return null;
 		File file = new File(path);

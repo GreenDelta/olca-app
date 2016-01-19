@@ -6,6 +6,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.openlca.app.Messages;
+import org.openlca.app.preferencepages.IoPreference;
+import org.openlca.app.preferencepages.IoPreferencePage;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 
@@ -34,13 +36,13 @@ public class ConnectionText {
 		UI.gridData(button, false, false).widthHint = 60;
 		button.setText(Messages.Change);
 		Controls.onSelect(button, (e) -> {
-			PreferencePage.open(text.getShell());
+			IoPreferencePage.open(text.getShell());
 			initConnectionText();
 		});
 	}
 
 	private void initConnectionText() {
-		String txt = Preference.getUser() + " @ " + Preference.getUrl();
+		String txt = IoPreference.getIlcdUser() + " @ " + IoPreference.getIlcdUrl();
 		text.setText(txt);
 	}
 }

@@ -12,8 +12,11 @@ import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
+import org.openlca.app.preferencepages.IoPreference;
 import org.openlca.app.rcp.ImageType;
+import org.openlca.ilcd.util.IlcdConfig;
 import org.openlca.io.ilcd.ILCDImport;
+import org.openlca.io.ilcd.input.ImportConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,11 +72,16 @@ public class ILCDImportWizard extends Wizard implements IImportWizard {
 		getContainer().run(true, true, (monitor) -> {
 			monitor.beginTask(Messages.Import, IProgressMonitor.UNKNOWN);
 			ImportHandler handler = new ImportHandler(monitor);
-			ILCDImport iImport = new ILCDImport(zip, Database.get());
-			if (App.runsInDevMode())
-				iImport.setImportFlows(true);
+			ILCDImport iImport = new ILCDImport(createConfig(zip));
 			handler.run(iImport);
 		});
 	}
 
+	private ImportConfig createConfig(File zip) {
+		ImportConfig config = new ImportConfig(zip, Database.get());
+		if (App.runsInDevMode())
+			config.importFlows = true;
+		config.ilcdConfig = new IlcdConfig(IoPreference.getIlcdLanguage());
+		return config;
+	}
 }

@@ -12,13 +12,16 @@ import org.eclipse.ui.IWorkbench;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
+import org.openlca.app.preferencepages.IoPreference;
 import org.openlca.app.rcp.RcpActivator;
 import org.openlca.core.database.IDatabase;
 import org.openlca.ilcd.descriptors.ProcessDescriptor;
 import org.openlca.ilcd.io.DataStoreException;
 import org.openlca.ilcd.io.NetworkClient;
 import org.openlca.ilcd.processes.Process;
+import org.openlca.ilcd.util.IlcdConfig;
 import org.openlca.ilcd.util.ProcessBag;
+import org.openlca.io.ilcd.input.ImportConfig;
 import org.openlca.io.ilcd.input.ProcessImport;
 import org.openlca.io.ilcd.input.SystemImport;
 import org.slf4j.Logger;
@@ -54,9 +57,11 @@ public class ImportWizard extends Wizard implements IImportWizard {
 
 	private void tryImport() throws DataStoreException,
 			InvocationTargetException, InterruptedException {
-		final List<ProcessDescriptor> processes = processSearchPage
+		List<ProcessDescriptor> processes = processSearchPage
 				.getSelectedProcesses();
-		final NetworkClient client = Preference.createClient();
+		NetworkClient client = IoPreference.createClient();
+		ImportConfig config = new ImportConfig(client, database);
+		config.ilcdConfig = new IlcdConfig(IoPreference.getIlcdLanguage());
 		client.connect();
 		getContainer().run(true, true, new IRunnableWithProgress() {
 			@Override
@@ -65,7 +70,7 @@ public class ImportWizard extends Wizard implements IImportWizard {
 				monitor.beginTask(Messages.ILCD_RunImport,
 						IProgressMonitor.UNKNOWN);
 				try {
-					importProcesses(processes, client, database);
+					importProcesses(processes, config);
 				} catch (Exception e) {
 					throw new InvocationTargetException(e);
 				}
@@ -75,18 +80,17 @@ public class ImportWizard extends Wizard implements IImportWizard {
 	}
 
 	private void importProcesses(List<ProcessDescriptor> descriptors,
-			NetworkClient client, IDatabase database) throws Exception {
+			ImportConfig config) throws Exception {
 		for (ProcessDescriptor descriptor : descriptors) {
-			Process process = client.get(Process.class, descriptor.getUuid());
+			Process process = config.store.get(Process.class,
+					descriptor.getUuid());
 			if (process != null) {
-				ProcessBag bag = new ProcessBag(process);
+				ProcessBag bag = new ProcessBag(process, config.ilcdConfig);
 				if (bag.hasProductModel()) {
-					SystemImport systemImport = new SystemImport(client,
-							database);
+					SystemImport systemImport = new SystemImport(config);
 					systemImport.run(process);
 				} else {
-					ProcessImport processImport = new ProcessImport(client,
-							database);
+					ProcessImport processImport = new ProcessImport(config);
 					processImport.run(process);
 				}
 			}

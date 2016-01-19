@@ -14,11 +14,11 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.openlca.app.Messages;
 import org.openlca.app.Preferences;
+import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.navigation.NavigationContentProvider;
@@ -39,8 +39,32 @@ class ModelSelectionPage extends WizardPage {
 	private File exportDestination;
 	private List<BaseDescriptor> selectedComponents = new ArrayList<>();
 	private CheckboxTreeViewer viewer;
+	private boolean targetIsDir;
+	private String fileExtension;
 
-	public ModelSelectionPage(ModelType... types) {
+	public static ModelSelectionPage forDirectory(ModelType... types) {
+		ModelSelectionPage page = new ModelSelectionPage(types);
+		page.targetIsDir = true;
+		return page;
+	}
+
+	/**
+	 * For the file extension please use only the extension, e.g. zip instead of
+	 * *.zip
+	 * 
+	 * @param extension
+	 * @param types
+	 * @return
+	 */
+	public static ModelSelectionPage forFile(String extension,
+			ModelType... types) {
+		ModelSelectionPage page = new ModelSelectionPage(types);
+		page.targetIsDir = false;
+		page.fileExtension = extension;
+		return page;
+	}
+
+	private ModelSelectionPage(ModelType... types) {
 		super(ModelSelectionPage.class.getCanonicalName());
 		this.types = types;
 		setPageComplete(false);
@@ -105,53 +129,63 @@ class ModelSelectionPage extends WizardPage {
 		bodyLayout.marginWidth = 10;
 		bodyLayout.verticalSpacing = 10;
 		body.setLayout(bodyLayout);
-		createChooseDirectoryComposite(body);
+		createChooseTargetComposite(body);
 		Composite viewerComposite = createViewerComposite(body);
 		createViewer(viewerComposite);
 		setControl(body);
 		checkCompletion();
 	}
 
-	private void createChooseDirectoryComposite(final Composite body) {
+	private void createChooseTargetComposite(final Composite body) {
 		Composite composite = new Composite(body, SWT.NONE);
 		GridLayout layout = UI.gridLayout(composite, 3);
 		layout.marginHeight = 0;
 		layout.marginWidth = 5;
 		UI.gridData(composite, true, false);
-		new Label(composite, SWT.NONE).setText(Messages.ToDirectory);
-		Text text = createDirectoryText(composite);
+		String label = targetIsDir ? Messages.ToDirectory : "#To file:";
+		new Label(composite, SWT.NONE).setText(label);
+		Text text = createTargetText(composite);
 		text.setEditable(false);
 		text.setBackground(Colors.getWhite());
 		Button button = new Button(composite, SWT.NONE);
 		button.setText(Messages.Browse);
-		Controls.onSelect(button, (e) -> selectDirectory(text));
+		Controls.onSelect(button, (e) -> selectTarget(text));
 	}
 
-	private Text createDirectoryText(Composite composite) {
+	private Text createTargetText(Composite composite) {
 		Text text = new Text(composite, SWT.BORDER);
-		String lastDir = Preferences.get(Preferences.LAST_EXPORT_FOLDER);
-		if (lastDir != null && new File(lastDir).exists()) {
-			text.setText(lastDir);
-			exportDestination = new File(lastDir);
-		} else {
-			lastDir = null;
-		}
 		UI.gridData(text, true, false);
+		String lastDir = Preferences.get(Preferences.LAST_EXPORT_FOLDER);
+		if (lastDir == null || !new File(lastDir).exists())
+			return text;
+		String path = lastDir;
+		if (!targetIsDir)
+			path += File.separator + defaultName();
+		text.setText(path);
+		exportDestination = new File(path);
 		return text;
 	}
 
-	private void selectDirectory(Text text) {
-		DirectoryDialog dialog = new DirectoryDialog(UI.shell());
+	private String defaultName() {
+		return Database.get().getName() + "." + fileExtension;
+	}
+
+	private void selectTarget(Text text) {
 		String dir = Preferences.get(Preferences.LAST_EXPORT_FOLDER);
-		if (dir != null && new File(dir).exists())
-			dialog.setFilterPath(dir);
-		String path = dialog.open();
-		if (path != null) {
-			text.setText(path);
-			Preferences.set(Preferences.LAST_EXPORT_FOLDER, path);
-			exportDestination = new File(path);
-			checkCompletion();
-		}
+		if (targetIsDir)
+			exportDestination = FileChooser.forExport(
+					FileChooser.DIRECTORY_DIALOG, dir);
+		else
+			exportDestination = FileChooser.forExport(fileExtension,
+					defaultName(), dir);
+		if (exportDestination == null)
+			return;
+		String path = exportDestination.getAbsolutePath();
+		text.setText(path);
+		if (!targetIsDir)
+			path = exportDestination.getParentFile().getAbsolutePath();
+		Preferences.set(Preferences.LAST_EXPORT_FOLDER, path);
+		checkCompletion();
 	}
 
 	private Composite createViewerComposite(final Composite body) {
@@ -169,8 +203,8 @@ class ModelSelectionPage extends WizardPage {
 	}
 
 	private void createViewer(Composite composite) {
-		viewer = new CheckboxTreeViewer(composite, SWT.VIRTUAL
-				| SWT.MULTI | SWT.BORDER);
+		viewer = new CheckboxTreeViewer(composite, SWT.VIRTUAL | SWT.MULTI
+				| SWT.BORDER);
 		viewer.setUseHashlookup(true);
 		viewer.getTree().setLayoutData(
 				new GridData(SWT.FILL, SWT.FILL, true, true));

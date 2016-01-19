@@ -351,9 +351,9 @@
             name="Experimental features">
       </page>
       <page
-            class="org.openlca.app.ilcd_network.PreferencePage"
-            id="preferencepages.ilcdnetwork"
-            name="%ILCDNetwork">
+            class="org.openlca.app.preferencepages.IoPreferencePage"
+            id="org.openlca.io.IoPreferencePage"
+            name="%ImportExport">
       </page>
       <page
             id="preferencepages.config"
@@ -550,7 +550,7 @@
             class="org.openlca.app.Preferences">
       </initializer>
       <initializer
-            class="org.openlca.app.ilcd_network.Preference">
+            class="org.openlca.app.preferencepages.IoPreference">
       </initializer>
       <initializer
             class="org.openlca.app.cloud.ui.preferences.CloudPreference">

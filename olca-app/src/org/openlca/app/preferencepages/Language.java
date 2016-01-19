@@ -53,4 +53,8 @@ public enum Language {
 		return displayName;
 	}
 
+	public static Language getApplicationLanguage() {
+		return ConfigIniFile.read().getLanguage();
+	}
+
 }
