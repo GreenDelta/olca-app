@@ -22,6 +22,7 @@ import org.eclipse.ui.forms.HyperlinkSettings;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.rcp.browser.BrowserFactory;
@@ -350,6 +351,25 @@ public class UI {
 		gridData.verticalAlignment = SWT.TOP;
 		gridData.verticalIndent = 2;
 		return labelWidget;
+	}
+
+	public static Hyperlink formLink(Composite parent, String label) {
+		return formLink(parent, null, label);
+	}
+
+	public static Hyperlink formLink(Composite parent, FormToolkit toolkit,
+			String label) {
+		Hyperlink linkWidget = null;
+		if (toolkit != null)
+			linkWidget = toolkit.createHyperlink(parent, label, SWT.NONE);
+		else {
+			linkWidget = new Hyperlink(parent, SWT.NONE);
+			linkWidget.setText(label);
+		}
+		GridData gridData = gridData(linkWidget, false, false);
+		gridData.verticalAlignment = SWT.TOP;
+		gridData.verticalIndent = 2;
+		return linkWidget;
 	}
 
 }

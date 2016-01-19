@@ -90,7 +90,9 @@ class CalculationWizard extends Wizard {
 		try {
 			Calculation calculation = new Calculation(setup, type);
 			getContainer().run(true, true, calculation);
-			return calculation.done;
+			if (calculation.outOfMemory)
+				OOMError.show();
+			return calculation.done && !calculation.outOfMemory;
 		} catch (Exception e) {
 			log.error("Calculation failed", e);
 			return false;
@@ -127,6 +129,7 @@ class CalculationWizard extends Wizard {
 		private CalculationSetup setup;
 		private CalculationType type;
 		private boolean done;
+		private boolean outOfMemory;
 
 		public Calculation(CalculationSetup setup, CalculationType type) {
 			this.setup = setup;
@@ -136,24 +139,29 @@ class CalculationWizard extends Wizard {
 		@Override
 		public void run(IProgressMonitor monitor)
 				throws InvocationTargetException, InterruptedException {
+			outOfMemory = false;
 			monitor.beginTask(Messages.RunCalculation, IProgressMonitor.UNKNOWN);
 			int size = productSystem.getProcesses().size();
 			log.trace("calculate a {} x {} system", size, size);
-			switch (type) {
-			case ANALYSIS:
-				analyse();
-				break;
-			case MONTE_CARLO:
-				simulate();
-				break;
-			case QUICK:
-				solve();
-				break;
-			case REGIONALIZED:
-				calcRegionalized();
-				break;
-			default:
-				break;
+			try {
+				switch (type) {
+				case ANALYSIS:
+					analyse();
+					break;
+				case MONTE_CARLO:
+					simulate();
+					break;
+				case QUICK:
+					solve();
+					break;
+				case REGIONALIZED:
+					calcRegionalized();
+					break;
+				default:
+					break;
+				}
+			} catch (OutOfMemoryError e) {
+				outOfMemory = true;
 			}
 			monitor.done();
 		}
@@ -223,7 +231,7 @@ class CalculationWizard extends Wizard {
 					.createParameterTable(database, setup, inventory);
 			FormulaInterpreter interpreter = parameterTable.createInterpreter();
 			InventoryMatrix inventoryMatrix = inventory.createMatrix(
-					solver.getMatrixFactory(), interpreter);
+					solver.getMatrixFactory(), interpreter); 
 			ImpactMatrix impactMatrix = null;
 			ImpactTable impactTable = null;
 			if (setup.impactMethod != null) {
