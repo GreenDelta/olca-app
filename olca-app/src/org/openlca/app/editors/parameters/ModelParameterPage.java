@@ -109,11 +109,8 @@ public class ModelParameterPage extends FormPage {
 					support.evaluate();
 					editor.setDirty(true);
 				});
-		Action edit = Actions
-				.create(Messages.Edit, ImageType.EDIT_16.getDescriptor(),
-						GlobalParametersEditor::open);
-		Actions.bind(table, copy, refresh, edit);
-		Actions.bind(section, refresh, edit);
+		Actions.bind(table, copy, refresh);
+		Actions.bind(section, refresh);
 	}
 
 	private void setGlobalTableInput(TableViewer table) {

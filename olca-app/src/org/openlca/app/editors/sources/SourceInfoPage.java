@@ -41,6 +41,7 @@ class SourceInfoPage extends ModelPage<Source> {
 	private FormToolkit toolkit;
 	private ImageHyperlink fileLink;
 	private ImageHyperlink deleteLink;
+	private ScrolledForm form;
 
 	SourceInfoPage(SourceEditor editor) {
 		super(editor, "SourceInfoPage", Messages.GeneralInformation);
@@ -48,8 +49,8 @@ class SourceInfoPage extends ModelPage<Source> {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, Messages.Source + ": "
-				+ getModel().getName());
+		form = UI.formHeader(managedForm);
+		updateFormTitle();
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		InfoSection infoSection = new InfoSection(getEditor());
@@ -57,6 +58,13 @@ class SourceInfoPage extends ModelPage<Source> {
 		createAdditionalInfo(body);
 		body.setFocus();
 		form.reflow(true);
+	}
+
+	@Override
+	protected void updateFormTitle() {
+		if (form == null)
+			return;
+		form.setText(Messages.Source + ": " + getModel().getName());
 	}
 
 	protected void createAdditionalInfo(Composite body) {

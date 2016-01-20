@@ -43,6 +43,7 @@ public class CurrencyEditor extends ModelEditor<Currency> {
 
 		private CurrencyTable table;
 		private CurrencyEditor editor;
+		private ScrolledForm form;
 
 		private Page() {
 			super(CurrencyEditor.this, "CurrencyPage",
@@ -51,10 +52,10 @@ public class CurrencyEditor extends ModelEditor<Currency> {
 		}
 
 		@Override
-		protected void createFormContent(IManagedForm mform) {
-			ScrolledForm form = UI.formHeader(mform, Messages.CostCategory + ":"
-					+ getModel().getName());
-			FormToolkit tk = mform.getToolkit();
+		protected void createFormContent(IManagedForm managedForm) {
+			form = UI.formHeader(managedForm);
+			updateFormTitle();
+			FormToolkit tk = managedForm.getToolkit();
 			Composite body = UI.formBody(form, tk);
 			InfoSection infoSection = new InfoSection(getEditor());
 			infoSection.render(body, tk);
@@ -63,6 +64,13 @@ public class CurrencyEditor extends ModelEditor<Currency> {
 			table.create(body, tk);
 			body.setFocus();
 			form.reflow(true);
+		}
+
+		@Override
+		protected void updateFormTitle() {
+			if (form == null)
+				return;
+			form.setText(Messages.CostCategory + ": " + getModel().getName());
 		}
 
 		private void createAdditionalInfo(Composite body, FormToolkit tk) {

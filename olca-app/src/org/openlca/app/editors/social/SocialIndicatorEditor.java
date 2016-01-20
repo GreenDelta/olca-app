@@ -46,6 +46,7 @@ public class SocialIndicatorEditor extends ModelEditor<SocialIndicator> {
 		private SocialIndicatorEditor editor;
 		private FlowPropertyViewer quantityCombo;
 		private UnitViewer unitCombo;
+		private ScrolledForm form;
 
 		Page() {
 			super(SocialIndicatorEditor.this, "SocialIndicatorPage",
@@ -55,8 +56,8 @@ public class SocialIndicatorEditor extends ModelEditor<SocialIndicator> {
 
 		@Override
 		protected void createFormContent(IManagedForm managedForm) {
-			ScrolledForm form = UI.formHeader(managedForm,
-					Messages.SocialIndicator + ": " + getModel().getName());
+			form = UI.formHeader(managedForm);
+			updateFormTitle();
 			FormToolkit toolkit = managedForm.getToolkit();
 			Composite body = UI.formBody(form, toolkit);
 			InfoSection infoSection = new InfoSection(getEditor());
@@ -65,6 +66,13 @@ public class SocialIndicatorEditor extends ModelEditor<SocialIndicator> {
 			createActivitySection(toolkit, body);
 			body.setFocus();
 			form.reflow(true);
+		}
+
+		@Override
+		protected void updateFormTitle() {
+			if (form == null)
+				return;
+			form.setText(Messages.SocialIndicator + ": " + getModel().getName());
 		}
 
 		private void createAdditionalInfo(Composite body, FormToolkit tk) {

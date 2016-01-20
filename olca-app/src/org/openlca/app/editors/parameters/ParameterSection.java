@@ -18,13 +18,14 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.components.UncertaintyCellEditor;
-import org.openlca.app.editors.IEditor;
+import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.UncertaintyLabel;
+import org.openlca.app.util.Warning;
 import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
@@ -33,6 +34,7 @@ import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.app.viewers.table.modify.field.DoubleModifier;
 import org.openlca.app.viewers.table.modify.field.StringModifier;
+import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterScope;
 import org.openlca.util.Strings;
@@ -56,29 +58,29 @@ public class ParameterSection {
 
 	private boolean forInputParameters = true;
 	private ParameterChangeSupport support;
-	private IEditor editor;
+	private ModelEditor<? extends CategorizedEntity> editor;
 	private Supplier<List<Parameter>> supplier;
 	private ParameterScope scope;
 	private SourceHandler sourceHandler;
 
-	public static ParameterSection forInputParameters(IEditor editor,
+	public static ParameterSection forInputParameters(ModelEditor<? extends CategorizedEntity> editor,
 			ParameterChangeSupport support, Composite body,
 			FormToolkit toolkit, SourceHandler sourceHandler) {
 		return new ParameterSection(editor, support, body, toolkit,
 				sourceHandler, true);
 	}
 
-	public static ParameterSection forInputParameters(IEditor editor,
+	public static ParameterSection forInputParameters(ModelEditor<? extends CategorizedEntity> editor,
 			ParameterChangeSupport support, Composite body, FormToolkit toolkit) {
 		return new ParameterSection(editor, support, body, toolkit, null, true);
 	}
 
-	public static ParameterSection forDependentParameters(IEditor editor,
+	public static ParameterSection forDependentParameters(ModelEditor<? extends CategorizedEntity> editor,
 			ParameterChangeSupport support, Composite body, FormToolkit toolkit) {
 		return new ParameterSection(editor, support, body, toolkit, null, false);
 	}
 
-	private ParameterSection(IEditor editor, ParameterChangeSupport support,
+	private ParameterSection(ModelEditor<? extends CategorizedEntity> editor, ParameterChangeSupport support,
 			Composite body, FormToolkit toolkit, SourceHandler sourceHandler,
 			boolean forInputParameters) {
 		this.forInputParameters = forInputParameters;
@@ -205,9 +207,13 @@ public class ParameterSection {
 		if (supplier == null)
 			return;
 		List<Parameter> params = supplier.get();
+		int count = params.size();
+		String name = "p_" + count++;
+		while (exists(name))
+			name = "p_" + count++;
 		Parameter p = new Parameter();
 		p.setRefId(UUID.randomUUID().toString());
-		p.setName("p_" + params.size());
+		p.setName(name);
 		p.setScope(scope);
 		p.setInputParameter(forInputParameters);
 		p.setValue(1.0);
@@ -216,6 +222,13 @@ public class ParameterSection {
 		params.add(p);
 		setInput();
 		editor.setDirty(true);
+	}
+
+	private boolean exists(String name) {
+		for (Parameter parameter : supplier.get())
+			if (Strings.nullOrEqual(name, parameter.getName()))
+				return true;
+		return false;
 	}
 
 	private void onRemove() {
@@ -234,12 +247,20 @@ public class ParameterSection {
 	private void onPaste(String text) {
 		if (supplier == null)
 			return;
-		List<Parameter> params = forInputParameters ? Clipboard
-				.readInputParams(text) : Clipboard.readCalculatedParams(text);
+		List<Parameter> params = forInputParameters ?
+				Clipboard.readInputParams(text) : Clipboard.readCalculatedParams(text);
+		boolean skipped = false;
 		for (Parameter param : params) {
+			String name = param.getName();
+			if (!Parameter.isValidName(name) || exists(name)) {
+				skipped = true;
+				continue;
+			}
 			param.setScope(scope);
 			supplier.get().add(param);
 		}
+		if (skipped)
+			Warning.showBox("#Some parameters were not added because their names were either invalid or a parameter with the same name already existed.");
 		setInput();
 		editor.setDirty(true);
 		support.evaluate();
@@ -303,6 +324,11 @@ public class ParameterSection {
 			if (!Parameter.isValidName(name)) {
 				Error.showBox(Messages.InvalidParameterName, name + " "
 						+ Messages.IsNotValidParameterName);
+				return;
+			}
+			if (exists(name)) {
+				Error.showBox(Messages.InvalidParameterName,
+						"#A parameter with the same name already exists");
 				return;
 			}
 			param.setName(name);

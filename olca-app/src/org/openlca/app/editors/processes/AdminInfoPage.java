@@ -13,6 +13,7 @@ import org.openlca.core.model.Process;
 class AdminInfoPage extends ModelPage<Process> {
 
 	private FormToolkit toolkit;
+	private ScrolledForm form;
 
 	AdminInfoPage(ProcessEditor editor) {
 		super(editor, "ProcessInfoPage", Messages.AdministrativeInformation);
@@ -20,13 +21,20 @@ class AdminInfoPage extends ModelPage<Process> {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, Messages.Process + ": "
-				+ getModel().getName());
+		form = UI.formHeader(managedForm);
+		updateFormTitle();
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		createAdminInfoSection(body);
 		body.setFocus();
 		form.reflow(true);
+	}
+
+	@Override
+	protected void updateFormTitle() {
+		if (form == null)
+			return;
+		form.setText(Messages.Process + ": " + getModel().getName());
 	}
 
 	private void createAdminInfoSection(Composite parent) {

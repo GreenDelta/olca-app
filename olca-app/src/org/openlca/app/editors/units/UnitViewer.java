@@ -21,8 +21,10 @@ import org.openlca.app.util.tables.Tables;
 import org.openlca.app.viewers.table.AbstractTableViewer;
 import org.openlca.app.viewers.table.modify.CheckBoxCellModifier;
 import org.openlca.app.viewers.table.modify.ModifySupport;
+import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.app.viewers.table.modify.field.DoubleModifier;
 import org.openlca.app.viewers.table.modify.field.StringModifier;
+import org.openlca.core.database.UnitDao;
 import org.openlca.core.database.usage.UnitUseSearch;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
@@ -42,7 +44,7 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 		super(parent);
 		this.editor = editor;
 		ModifySupport<Unit> ms = getModifySupport();
-		ms.bind(NAME, new StringModifier<>(editor, "name"));
+		ms.bind(NAME, new NameModifier());
 		ms.bind(DESCRIPTION, new StringModifier<>(editor, "description"));
 		ms.bind(SYNONYMS, new StringModifier<>(editor, "synonyms"));
 		ms.bind(CONVERSION_FACTOR, new ConversionModifier());
@@ -69,11 +71,16 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 
 	@OnAdd
 	protected void onCreate() {
+		UnitDao dao = new UnitDao(Database.get());
 		Unit unit = new Unit();
-		unit.setName("new unit");
+		String name = "new unit";
+		UnitGroup group = editor.getModel();
+		int i = 2;
+		while (!dao.getForName(name).isEmpty() || group.getUnit(name) != null)
+			name = "new unit " + i++;
+		unit.setName(name);
 		unit.setRefId(UUID.randomUUID().toString());
 		unit.setConversionFactor(1d);
-		UnitGroup group = editor.getModel();
 		group.getUnits().add(unit);
 		setInput(group.getUnits());
 		editor.setDirty(true);
@@ -166,6 +173,26 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 				return boldFont;
 			}
 			return null;
+		}
+
+	}
+
+	private class NameModifier extends TextCellModifier<Unit> {
+
+		@Override
+		protected String getText(Unit element) {
+			return element.getName();
+		}
+
+		@Override
+		protected void setText(Unit element, String text) {
+			if (Objects.equals(element.getName(), text))
+				return;
+			if (!new UnitDao(Database.get()).getForName(text).isEmpty() || editor.getModel().getUnit(text) != null) {
+				Error.showBox("A unit with the name '" + text + "' already exists");
+				return;
+			}
+			element.setName(text);
 		}
 
 	}

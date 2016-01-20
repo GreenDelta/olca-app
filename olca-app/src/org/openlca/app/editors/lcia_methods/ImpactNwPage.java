@@ -27,6 +27,7 @@ class ImpactNwPage extends ModelPage<ImpactMethod> {
 	private NwFactorViewer factorViewer;
 	private ImpactMethodEditor editor;
 	private NwSetViewer setViewer;
+	private ScrolledForm form;
 
 	ImpactNwPage(ImpactMethodEditor editor) {
 		super(editor, "ImpactNormalizationWeightingPage",
@@ -36,9 +37,8 @@ class ImpactNwPage extends ModelPage<ImpactMethod> {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm,
-				Messages.ImpactAssessmentMethod
-						+ ": " + getModel().getName());
+		form = UI.formHeader(managedForm);
+		updateFormTitle();
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		Section section = UI.section(body, toolkit,
@@ -57,7 +57,14 @@ class ImpactNwPage extends ModelPage<ImpactMethod> {
 		editor.getEventBus().register(this);
 		editor.onSaved(() -> updateInput());
 	}
-	
+
+	@Override
+	protected void updateFormTitle() {
+		if (form == null)
+			return;
+		form.setText(Messages.ImpactAssessmentMethod + ": " + getModel().getName());
+	}
+
 	@Subscribe
 	public void refresh(Event event) {
 		if (!event.match(editor.IMPACT_CATEGORY_CHANGE))

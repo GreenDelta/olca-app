@@ -34,7 +34,10 @@ public abstract class ModelPage<T extends CategorizedEntity> extends FormPage {
 	public ModelPage(ModelEditor<T> editor, String id, String title) {
 		super(editor, id, title);
 		this.binding = new DataBinding(editor);
+		editor.onSaved(this::updateFormTitle);
 	}
+
+	protected abstract void updateFormTitle();
 
 	@SuppressWarnings("unchecked")
 	@Override

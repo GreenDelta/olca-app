@@ -17,6 +17,7 @@ class ProcessModelingPage extends ModelPage<Process> {
 
 	private FormToolkit toolkit;
 	private ProcessEditor editor;
+	private ScrolledForm form;
 
 	ProcessModelingPage(ProcessEditor editor) {
 		super(editor, "ProcessInfoPage",
@@ -26,8 +27,8 @@ class ProcessModelingPage extends ModelPage<Process> {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, Messages.Process + ": "
-				+ getModel().getName());
+		form = UI.formHeader(managedForm);
+		updateFormTitle();
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		createModelingSection(body);
@@ -36,6 +37,13 @@ class ProcessModelingPage extends ModelPage<Process> {
 		createSourcesSection(body);
 		body.setFocus();
 		form.reflow(true);
+	}
+
+	@Override
+	protected void updateFormTitle() {
+		if (form == null)
+			return;
+		form.setText(Messages.Process + ": " + getModel().getName());
 	}
 
 	private void createModelingSection(Composite parent) {

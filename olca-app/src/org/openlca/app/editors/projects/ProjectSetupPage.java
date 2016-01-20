@@ -70,6 +70,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 	private TableViewer variantViewer;
 	private ProjectParameterTable parameterTable;
 	private ReportVariantSync variantSync;
+	private ScrolledForm form;
 
 	ProjectSetupPage(ProjectEditor editor) {
 		super(editor, "ProjectSetupPage", Messages.ProjectSetup);
@@ -85,8 +86,8 @@ class ProjectSetupPage extends ModelPage<Project> {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, Messages.Project + ": "
-				+ getModel().getName());
+		form = UI.formHeader(managedForm);
+		updateFormTitle();
 		if (FeatureFlag.SHOW_REFRESH_BUTTONS.isEnabled())
 			Editors.addRefresh(form, editor);
 		toolkit = managedForm.getToolkit();
@@ -101,6 +102,13 @@ class ProjectSetupPage extends ModelPage<Project> {
 		new ProcessContributionSection(editor).create(body, toolkit);
 		body.setFocus();
 		form.reflow(true);
+	}
+
+	@Override
+	protected void updateFormTitle() {
+		if (form == null)
+			return;
+		form.setText(Messages.Project + ": " + getModel().getName());
 	}
 
 	private void initialInput() {

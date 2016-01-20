@@ -20,6 +20,7 @@ class UnitGroupInfoPage extends ModelPage<UnitGroup> {
 
 	private FormToolkit toolkit;
 	private UnitGroupEditor editor;
+	private ScrolledForm form;
 
 	UnitGroupInfoPage(UnitGroupEditor editor) {
 		super(editor, "UnitGroupInfoPage", Messages.GeneralInformation);
@@ -28,8 +29,8 @@ class UnitGroupInfoPage extends ModelPage<UnitGroup> {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, Messages.UnitGroup
-				+ ": " + getModel().getName());
+		form = UI.formHeader(managedForm);
+		updateFormTitle();
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		InfoSection infoSection = new InfoSection(getEditor());
@@ -37,6 +38,13 @@ class UnitGroupInfoPage extends ModelPage<UnitGroup> {
 		createAdditionalInfo(infoSection, body);
 		body.setFocus();
 		form.reflow(true);
+	}
+
+	@Override
+	protected void updateFormTitle() {
+		if (form == null)
+			return;
+		form.setText(Messages.UnitGroup + ": " + getModel().getName());
 	}
 
 	protected void createAdditionalInfo(InfoSection infoSection, Composite body) {

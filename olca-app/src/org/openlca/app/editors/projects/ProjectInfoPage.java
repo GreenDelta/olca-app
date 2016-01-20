@@ -13,6 +13,7 @@ import org.openlca.core.model.Project;
 class ProjectInfoPage extends ModelPage<Project> {
 
 	private FormToolkit toolkit;
+	private ScrolledForm form;
 
 	public ProjectInfoPage(ProjectEditor editor) {
 		super(editor, "ProjectInfoPage", Messages.GeneralInformation);
@@ -20,13 +21,20 @@ class ProjectInfoPage extends ModelPage<Project> {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, Messages.Project + ": "
-				+ getModel().getName());
+		form = UI.formHeader(managedForm);
+		updateFormTitle();
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		createGoalAndScopeSection(body);
 		createTimeInfoSection(body);
 		form.reflow(true);
+	}
+
+	@Override
+	protected void updateFormTitle() {
+		if (form == null)
+			return;
+		form.setText(Messages.Project + ": " + getModel().getName());
 	}
 
 	private void createGoalAndScopeSection(Composite parent) {

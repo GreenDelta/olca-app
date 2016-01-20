@@ -49,7 +49,8 @@ public class GlobalParameterInfoPage extends ModelPage<Parameter> {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		form = UI.formHeader(managedForm, Messages.Parameter + ": " + getModel().getName());
+		form = UI.formHeader(managedForm);
+		updateFormTitle();
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		InfoSection infoSection = new InfoSection(getEditor());
@@ -57,6 +58,13 @@ public class GlobalParameterInfoPage extends ModelPage<Parameter> {
 		createAdditionalInfo(body);
 		body.setFocus();
 		form.reflow(true);
+	}
+
+	@Override
+	protected void updateFormTitle() {
+		if (form == null)
+			return;
+		form.setText(Messages.Parameter + ": " + getModel().getName());
 	}
 
 	private void createAdditionalInfo(Composite body) {

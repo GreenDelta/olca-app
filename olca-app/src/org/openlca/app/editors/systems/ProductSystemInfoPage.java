@@ -33,6 +33,7 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 	private FlowPropertyFactorViewer propertyViewer;
 	private UnitViewer unitViewer;
 	private Text targetAmountText;
+	private ScrolledForm form;
 
 	ProductSystemInfoPage(ProductSystemEditor editor) {
 		super(editor, "ProductSystemInfoPage", Messages.GeneralInformation);
@@ -40,8 +41,8 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, Messages.ProductSystem
-				+ ": " + getModel().getName());
+		form = UI.formHeader(managedForm);
+		updateFormTitle();
 		if (FeatureFlag.SHOW_REFRESH_BUTTONS.isEnabled())
 			Editors.addRefresh(form, getEditor());
 		toolkit = managedForm.getToolkit();
@@ -52,6 +53,13 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 		createAdditionalInfo(body);
 		body.setFocus();
 		form.reflow(true);
+	}
+
+	@Override
+	protected void updateFormTitle() {
+		if (form == null)
+			return;
+		form.setText(Messages.ProductSystem + ": " + getModel().getName());
 	}
 
 	private void createAdditionalInfo(Composite body) {

@@ -24,7 +24,6 @@ import org.openlca.app.devtools.python.PythonEditor;
 import org.openlca.app.devtools.sql.SqlEditor;
 import org.openlca.app.editors.LogFileEditor;
 import org.openlca.app.editors.StartPage;
-import org.openlca.app.editors.parameters.GlobalParametersEditor;
 import org.openlca.app.rcp.browser.MozillaConfigView;
 import org.openlca.app.rcp.plugins.PluginManager;
 import org.openlca.app.util.Actions;
@@ -89,8 +88,6 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		menu.add(closeAction);
 		menu.add(closeAllAction);
 		menu.add(new Separator());
-		menu.add(Actions.create(Messages.GlobalParameters, ImageType.FORMULA_ICON.getDescriptor(),
-				() -> GlobalParametersEditor.open()));
 		menu.add(preferencesAction);
 		menu.add(new OpenPluginManagerAction());
 		menu.add(new Separator());

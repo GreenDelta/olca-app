@@ -138,13 +138,19 @@ public class UI {
 		return data;
 	}
 
+	/** Creates a nice form header and returns the form. */
+	public static ScrolledForm formHeader(IManagedForm managedForm) {
+		return formHeader(managedForm, null);
+	}
+
 	/** Creates a nice form header with the given title and returns the form. */
 	public static ScrolledForm formHeader(IManagedForm managedForm, String title) {
 		ScrolledForm form = managedForm.getForm();
 		FormToolkit toolkit = managedForm.getToolkit();
 		toolkit.getHyperlinkGroup().setHyperlinkUnderlineMode(
 				HyperlinkSettings.UNDERLINE_HOVER);
-		form.setText(title);
+		if (title != null)
+			form.setText(title);
 		toolkit.decorateFormHeading(form.getForm());
 		return form;
 	}

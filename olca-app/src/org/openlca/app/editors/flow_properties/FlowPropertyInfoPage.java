@@ -18,6 +18,7 @@ import org.openlca.core.model.FlowProperty;
 class FlowPropertyInfoPage extends ModelPage<FlowProperty> {
 
 	private FormToolkit toolkit;
+	private ScrolledForm form;
 
 	FlowPropertyInfoPage(FlowPropertyEditor editor) {
 		super(editor, "FlowPropertyInfoPage", Messages.GeneralInformation);
@@ -25,8 +26,8 @@ class FlowPropertyInfoPage extends ModelPage<FlowProperty> {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, Messages.FlowProperty
-				+ ": " + getModel().getName());
+		form = UI.formHeader(managedForm);
+		updateFormTitle();
 		if (FeatureFlag.SHOW_REFRESH_BUTTONS.isEnabled())
 			Editors.addRefresh(form, getEditor());
 		toolkit = managedForm.getToolkit();
@@ -36,6 +37,13 @@ class FlowPropertyInfoPage extends ModelPage<FlowProperty> {
 		createAdditionalInfo(infoSection);
 		body.setFocus();
 		form.reflow(true);
+	}
+
+	@Override
+	protected void updateFormTitle() {
+		if (form == null)
+			return;
+		form.setText(Messages.FlowProperty + ": " + getModel().getName());
 	}
 
 	private void createAdditionalInfo(InfoSection infoSection) {

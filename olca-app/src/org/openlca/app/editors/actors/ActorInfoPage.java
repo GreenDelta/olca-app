@@ -13,6 +13,7 @@ import org.openlca.core.model.Actor;
 class ActorInfoPage extends ModelPage<Actor> {
 
 	private FormToolkit toolkit;
+	private ScrolledForm form;
 
 	ActorInfoPage(ActorEditor editor) {
 		super(editor, "ActorInfoPage", Messages.GeneralInformation);
@@ -20,8 +21,8 @@ class ActorInfoPage extends ModelPage<Actor> {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, Messages.Actor + ": "
-				+ getModel().getName());
+		form = UI.formHeader(managedForm);
+		updateFormTitle();
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		InfoSection infoSection = new InfoSection(getEditor());
@@ -29,6 +30,13 @@ class ActorInfoPage extends ModelPage<Actor> {
 		createAdditionalInfo(body);
 		body.setFocus();
 		form.reflow(true);
+	}
+
+	@Override
+	protected void updateFormTitle() {
+		if (form == null)
+			return;
+		form.setText(Messages.Actor + ": " + getModel().getName());
 	}
 
 	private void createAdditionalInfo(Composite body) {

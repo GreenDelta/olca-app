@@ -190,14 +190,14 @@ class ShapeFilePage extends FormPage {
 		}
 
 		private void render() {
-			section = UI.section(body, toolkit, "Parameters of " + shapeFile);
+			section = UI.section(body, toolkit, "#Parameters of " + shapeFile);
 			Composite composite = UI.sectionClient(section, toolkit);
 			parameterTable = new ShapeFileParameterTable(shapeFile, composite);
 			Action delete = Actions.onRemove(() -> {
 				delete();
 				removeExternalSourceReferences();
 			});
-			Action update = new Action("Update") {
+			Action update = new Action("#Update") {
 
 				@Override
 				public ImageDescriptor getImageDescriptor() {
@@ -278,7 +278,7 @@ class ShapeFilePage extends FormPage {
 								continue;
 							parameter
 									.setValue((param.getMin() + param.getMax())
-											/ 2);
+									/ 2);
 							parameter.setUncertainty(Uncertainty.uniform(
 									param.getMin(), param.getMax()));
 						}
@@ -351,8 +351,8 @@ class ShapeFilePage extends FormPage {
 
 		public ShowMapAction(ShapeFileSection section) {
 			this.section = section;
-			setToolTipText("Show in map");
-			setText("Show in map");
+			setToolTipText("#Show in map");
+			setText("#Show in map");
 			setImageDescriptor(ImageType.LCIA_ICON.getDescriptor());
 		}
 
@@ -375,8 +375,8 @@ class ShapeFilePage extends FormPage {
 
 		public AddParamAction(ShapeFileSection section) {
 			this.section = section;
-			setToolTipText("Add to method parameters");
-			setText("Add to method parameters");
+			setToolTipText("#Add to method parameters");
+			setText("#Add to method parameters");
 			setImageDescriptor(ImageType.ADD_ICON.getDescriptor());
 		}
 
@@ -386,15 +386,20 @@ class ShapeFilePage extends FormPage {
 			if (param == null)
 				return;
 			if (exists(param)) {
-				Info.showBox("Parameter already added",
-						"The selected parameter was already added "
+				Info.showBox("#Parameter already added",
+						"#The selected parameter was already added "
 								+ "in this LCIA method");
 				return;
 			}
 			if (otherExists(param)) {
-				Error.showBox("Parameter with same name exists",
-						"An other parameter with the same name already exists "
+				Error.showBox("#Parameter with same name exists",
+						"#An other parameter with the same name already exists "
 								+ "in this LCIA method");
+				return;
+			}
+			if (!Parameter.isValidName(param.getName())) {
+				Error.showBox(Messages.InvalidParameterName, param.getName() + " "
+						+ Messages.IsNotValidParameterName);
 				return;
 			}
 			addParam(param);
@@ -406,7 +411,7 @@ class ShapeFilePage extends FormPage {
 			ShapeFileParameter param = Viewers
 					.getFirstSelected(section.parameterTable.viewer);
 			if (param == null) {
-				Error.showBox("No parameter selected", "There is no shapefile "
+				Error.showBox("#No parameter selected", "#There is no shapefile "
 						+ "parameter selected that could be added as "
 						+ "method parameter");
 				return null;
