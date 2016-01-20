@@ -4,7 +4,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
@@ -63,19 +62,14 @@ public class ImportWizard extends Wizard implements IImportWizard {
 		ImportConfig config = new ImportConfig(client, database);
 		config.ilcdConfig = new IlcdConfig(IoPreference.getIlcdLanguage());
 		client.connect();
-		getContainer().run(true, true, new IRunnableWithProgress() {
-			@Override
-			public void run(IProgressMonitor monitor)
-					throws InvocationTargetException, InterruptedException {
-				monitor.beginTask(Messages.ILCD_RunImport,
-						IProgressMonitor.UNKNOWN);
-				try {
-					importProcesses(processes, config);
-				} catch (Exception e) {
-					throw new InvocationTargetException(e);
-				}
-				monitor.done();
+		getContainer().run(true, true, monitor -> {
+			monitor.beginTask(Messages.ILCD_RunImport, IProgressMonitor.UNKNOWN);
+			try {
+				importProcesses(processes, config);
+			} catch (Exception e) {
+				throw new InvocationTargetException(e);
 			}
+			monitor.done();
 		});
 	}
 

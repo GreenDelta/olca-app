@@ -140,7 +140,8 @@ class CostDialog extends FormDialog {
 
 	private void createCostsPerUnitRow(Composite body, FormToolkit tk) {
 		pricePerUnitText = UI.formText(body, tk, "#Costs per unit");
-		pricePerUnitText.setEnabled(false);
+		pricePerUnitText.setEditable(false);
+		pricePerUnitText.setBackground(Colors.getColor(225, 225, 225));
 		currencyPerUnitLabel = UI.formLabel(body, tk, "");
 		if (exchange.costValue != null) {
 			double perUnit = exchange.costValue / exchange.getAmountValue();
