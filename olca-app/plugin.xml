@@ -173,7 +173,11 @@
             name="Report Viewer"
             contributorClass="org.openlca.app.editors.reports.ReportToolbar">
       </editor> 
-      
+      <editor
+            id="editors.LogFileEditor"
+            class="org.openlca.app.editors.LogFileEditor"
+            name="Log file">
+      </editor>       
       <!-- other --> 
       <editor
             class="org.openlca.app.rcp.browser.MozillaConfigView"

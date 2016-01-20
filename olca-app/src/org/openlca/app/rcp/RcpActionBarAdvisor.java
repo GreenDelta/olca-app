@@ -22,12 +22,15 @@ import org.openlca.app.Messages;
 import org.openlca.app.devtools.js.JavaScriptEditor;
 import org.openlca.app.devtools.python.PythonEditor;
 import org.openlca.app.devtools.sql.SqlEditor;
+import org.openlca.app.editors.LogFileEditor;
 import org.openlca.app.editors.StartPage;
 import org.openlca.app.editors.parameters.GlobalParametersEditor;
 import org.openlca.app.rcp.browser.MozillaConfigView;
 import org.openlca.app.rcp.plugins.PluginManager;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.DefaultInput;
 import org.openlca.app.util.Desktop;
+import org.openlca.app.util.Editors;
 
 public class RcpActionBarAdvisor extends ActionBarAdvisor {
 
@@ -72,6 +75,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		HelpAction helpAction = new HelpAction();
 		helpMenu.add(helpAction);
 		helpMenu.add(new Separator());
+		helpMenu.add(new OpenLogAction());
 		helpMenu.add(aboutAction);
 		menuBar.add(helpMenu);
 	}
@@ -167,13 +171,25 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 
 	private class OpenPluginManagerAction extends Action {
 		public OpenPluginManagerAction() {
-			setText("Manage plugins");
-			setToolTipText("Opens the openLCA Plugin Manager");
+			setText("#Manage plugins");
+			setToolTipText("#Opens the openLCA Plugin Manager");
 		}
 
 		@Override
 		public void run() {
 			new PluginManager().open();
+		}
+	}
+
+	private class OpenLogAction extends Action {
+		public OpenLogAction() {
+			setText("#Open log file");
+			setToolTipText("Opens the openLCA log file");
+		}
+
+		@Override
+		public void run() {
+			Editors.open(new DefaultInput(LogFileEditor.ID), LogFileEditor.ID);
 		}
 	}
 }

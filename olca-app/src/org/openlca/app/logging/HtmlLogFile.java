@@ -2,6 +2,10 @@ package org.openlca.app.logging;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import org.apache.log4j.HTMLLayout;
 import org.apache.log4j.Level;
@@ -13,12 +17,14 @@ import org.eclipse.core.runtime.Platform;
 /**
  * The configuration of the HTML log file.
  */
-class HtmlLogFile {
+public class HtmlLogFile {
+
+	private static final String FILENAME = "log.html";
 
 	private HtmlLogFile() {
 	}
 
-	public static void create(Logger logger) {
+	static void create(Logger logger) {
 		try {
 			File logFile = createLogFile();
 			WriterAppender appender = createAppender(logFile);
@@ -33,7 +39,7 @@ class HtmlLogFile {
 		if (!workspaceDir.exists()) {
 			workspaceDir.mkdirs();
 		}
-		return new File(workspaceDir, "log.html");
+		return new File(workspaceDir, FILENAME);
 	}
 
 	private static WriterAppender createAppender(File logFile)
@@ -46,4 +52,20 @@ class HtmlLogFile {
 		return app;
 	}
 
+	public static List<File> getAllFiles() {
+		File workspaceDir = Platform.getLocation().toFile();
+		if (!workspaceDir.exists())
+			workspaceDir.mkdirs();
+		List<File> files = new ArrayList<>();
+		for (File file : workspaceDir.listFiles())
+			if (file.getName().startsWith(FILENAME))
+				files.add(file);
+		Collections.sort(files, new Comparator<File>() {
+			@Override
+			public int compare(File o1, File o2) {
+				return o1.getName().compareTo(o2.getName());
+			}
+		});
+		return files;
+	}
 }
