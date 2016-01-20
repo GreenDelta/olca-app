@@ -143,10 +143,27 @@ public class UsageView extends FormEditor {
 		private void registerFunction() {
 			new BrowserFunction(browser, "openModel") {
 				@Override
-				public Object function(Object[] arguments) {
-					openModel(arguments);
+				public Object function(Object[] args) {
+					openModel(args);
 					return null;
 				}
+			};
+			new BrowserFunction(browser, "getLabel") {
+				@Override
+				public Object function(Object[] args) {
+					String json = args[0].toString();
+					BaseDescriptor descriptor = getDescriptor(json);
+					return Labels.getDisplayName(descriptor);
+				}
+			};
+			new BrowserFunction(browser, "getTypeLabel") {
+				public Object function(Object[] args) {
+					String json = args[0].toString();
+					BaseDescriptor descriptor = getDescriptor(json);
+					return Labels.modelTypeSingular(descriptor.getModelType());
+
+				}
+
 			};
 		}
 
