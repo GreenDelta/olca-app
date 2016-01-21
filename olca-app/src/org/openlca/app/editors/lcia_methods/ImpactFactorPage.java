@@ -32,6 +32,7 @@ class ImpactFactorPage extends ModelPage<ImpactMethod> {
 	private FormToolkit toolkit;
 	private ImpactFactorTable factorTable;
 	private ImpactCategoryViewer categoryViewer;
+	private ScrolledForm form;
 
 	ImpactFactorPage(ImpactMethodEditor editor) {
 		super(editor, "ImpactFactorsPage", Messages.ImpactFactors);
@@ -41,8 +42,8 @@ class ImpactFactorPage extends ModelPage<ImpactMethod> {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm,
-				Messages.ImpactAssessmentMethod + ": " + getModel().getName());
+		form = UI.formHeader(managedForm);
+		updateFormTitle();
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		Section section = UI.section(body, toolkit, Messages.ImpactFactors);
@@ -55,6 +56,13 @@ class ImpactFactorPage extends ModelPage<ImpactMethod> {
 		factorTable.render(client, section);
 		categoryViewer.selectFirst();
 		form.reflow(true);
+	}
+
+	@Override
+	protected void updateFormTitle() {
+		if (form == null)
+			return;
+		form.setText(Messages.ImpactAssessmentMethod + ": " + getModel().getName());
 	}
 
 	private void onSaved() {

@@ -41,6 +41,7 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 	private TableViewer viewer;
 	private FormToolkit toolkit;
 	private ImpactMethodEditor editor;
+	private ScrolledForm form;
 
 	ImpactMethodInfoPage(ImpactMethodEditor editor) {
 		super(editor, "ImpactMethodInfoPage", Messages.GeneralInformation);
@@ -49,8 +50,8 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm,
-				Messages.ImpactAssessmentMethod + ": " + getModel().getName());
+		form = UI.formHeader(managedForm);
+		updateFormTitle();
 		if (FeatureFlag.SHOW_REFRESH_BUTTONS.isEnabled())
 			Editors.addRefresh(form, editor);
 		toolkit = managedForm.getToolkit();
@@ -60,6 +61,13 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 		createImpactCategoryViewer(body);
 		body.setFocus();
 		form.reflow(true);
+	}
+
+	@Override
+	protected void updateFormTitle() {
+		if (form == null)
+			return;
+		form.setText(Messages.ImpactAssessmentMethod + ": " + getModel().getName());
 	}
 
 	private void createImpactCategoryViewer(Composite body) {

@@ -20,6 +20,7 @@ class FlowPropertiesPage extends ModelPage<Flow> {
 
 	private FormToolkit toolkit;
 	private FlowEditor editor;
+	private ScrolledForm form;
 
 	FlowPropertiesPage(FlowEditor editor) {
 		super(editor, "FlowPropertiesPage", Messages.FlowProperties);
@@ -28,8 +29,8 @@ class FlowPropertiesPage extends ModelPage<Flow> {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, Messages.Flow + ": "
-				+ getModel().getName());
+		form = UI.formHeader(managedForm);
+		updateFormTitle();
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		Section section = UI.section(body, toolkit, Messages.FlowProperties);
@@ -42,6 +43,13 @@ class FlowPropertiesPage extends ModelPage<Flow> {
 		editor.onSaved(() -> viewer.setInput(getModel()));
 		body.setFocus();
 		form.reflow(true);
+	}
+
+	@Override
+	protected void updateFormTitle() {
+		if (form == null)
+			return;
+		form.setText(Messages.Flow + ": " + getModel().getName());
 	}
 
 	private void setInitialInput(FlowPropertyFactorViewer viewer) {

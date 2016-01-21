@@ -89,6 +89,7 @@ public abstract class ModelEditor<T extends CategorizedEntity> extends
 			model.setVersion(version.getValue());
 			model = dao.update(model);
 			doAfterUpdate();
+			setPartName(model.getName());
 			monitor.done();
 		} catch (Exception e) {
 			log.error("failed to update " + modelClass.getSimpleName());

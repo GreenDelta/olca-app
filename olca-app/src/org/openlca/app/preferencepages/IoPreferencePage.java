@@ -15,6 +15,7 @@ import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
@@ -38,30 +39,38 @@ public class IoPreferencePage extends PreferencePage implements
 		Composite comp = new Composite(parent, SWT.NONE);
 		UI.gridLayout(comp, 1);
 		UI.gridData(comp, true, true);
-		createIlcdNetworkContents(UI.formComposite(comp));
+		createIlcdNetworkContents(comp);
 		UI.horizontalSeparator(comp);
-		createIlcdOtherContents(UI.formComposite(comp));
+		createIlcdOtherContents(comp);
 		return comp;
 	}
 
 	private void createIlcdNetworkContents(Composite parent) {
+		Group section = new Group(parent, SWT.SHADOW_OUT);
+		section.setText("#ILCD Network settings");
 		StringFieldEditor urlEditor = new StringFieldEditor(
-				IoPreference.ILCD_URL, Messages.URL, parent);
+				IoPreference.ILCD_URL, Messages.URL, section);
 		addField(urlEditor);
 		StringFieldEditor userEditor = new StringFieldEditor(
-				IoPreference.ILCD_USER, Messages.User, parent);
+				IoPreference.ILCD_USER, Messages.User, section);
 		addField(userEditor);
 		StringFieldEditor passwordEditor = new StringFieldEditor(
-				IoPreference.ILCD_PASSWORD, Messages.Password, parent);
-		passwordEditor.getTextControl(parent).setEchoChar('*');
+				IoPreference.ILCD_PASSWORD, Messages.Password, section);
+		passwordEditor.getTextControl(section).setEchoChar('*');
 		addField(passwordEditor);
+		UI.gridLayout(section, 2);
+		UI.gridData(section, true, false);
 	}
 
 	private void createIlcdOtherContents(Composite parent) {
+		Group section = new Group(parent, SWT.SHADOW_OUT);
+		section.setText("#ILCD other settings");
 		ComboFieldEditor langEditor = new ComboFieldEditor(
 				IoPreference.ILCD_LANG, Messages.Language, getLanguages(),
-				parent);
+				section);
 		addField(langEditor);
+		UI.gridLayout(section, 2);
+		UI.gridData(section, true, false);
 	}
 
 	private String[][] getLanguages() {
@@ -106,7 +115,7 @@ public class IoPreferencePage extends PreferencePage implements
 		NetworkClient client = new NetworkClient(url, user, password);
 		testConnection(client);
 	}
-	
+
 	@Override
 	public boolean performOk() {
 		for (FieldEditor editor : editors)

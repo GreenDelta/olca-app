@@ -29,6 +29,7 @@ public class LocationInfoPage extends ModelPage<Location> implements HtmlPage {
 	private Browser browser;
 	private String kml;
 	private boolean isValidKml = true;
+	private ScrolledForm form;
 
 	LocationInfoPage(LocationEditor editor) {
 		super(editor, "LocationInfoPage", Messages.GeneralInformation);
@@ -36,8 +37,8 @@ public class LocationInfoPage extends ModelPage<Location> implements HtmlPage {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, Messages.Location + ": "
-				+ getModel().getName());
+		form = UI.formHeader(managedForm);
+		updateFormTitle();
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		InfoSection infoSection = new InfoSection(getEditor());
@@ -46,6 +47,13 @@ public class LocationInfoPage extends ModelPage<Location> implements HtmlPage {
 		createMapEditorArea(body);
 		body.setFocus();
 		form.reflow(true);
+	}
+
+	@Override
+	protected void updateFormTitle() {
+		if (form == null)
+			return;
+		form.setText(Messages.Location + ": " + getModel().getName());
 	}
 
 	private void createAdditionalInfo(Composite body) {
@@ -124,18 +132,18 @@ public class LocationInfoPage extends ModelPage<Location> implements HtmlPage {
 			return (T) args[index];
 		}
 	}
-	
+
 	private class ClearAction extends Action {
-		
+
 		private ClearAction() {
 			super("#Clear data");
 		}
-		
+
 		@Override
 		public void run() {
 			browser.evaluate("onDestroyFeatures()");
 		}
-		
+
 	}
 
 }

@@ -8,7 +8,7 @@ import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.UI;
-import org.openlca.core.database.BaseDao;
+import org.openlca.core.database.ParameterDao;
 import org.openlca.core.model.Parameter;
 
 public class ParameterWizard extends AbstractWizard<Parameter> {
@@ -17,8 +17,8 @@ public class ParameterWizard extends AbstractWizard<Parameter> {
 	private Button dependentButton;
 
 	@Override
-	protected BaseDao<Parameter> createDao() {
-		return Database.createDao(Parameter.class);
+	protected ParameterDao createDao() {
+		return new ParameterDao(Database.get());
 	}
 
 	@Override
@@ -60,6 +60,26 @@ public class ParameterWizard extends AbstractWizard<Parameter> {
 			parameter.setDescription(getModelDescription());
 			parameter.setInputParameter(!dependentButton.getSelection());
 			return parameter;
+		}
+
+		@Override
+		protected void checkInput() {
+			super.checkInput();
+			if (!isPageComplete())
+				return;
+			String name = getModelName();
+			if (createDao().existsGlobal(name)) {
+				setErrorMessage("#A parameter with the same name already exists");
+				setPageComplete(false);
+				return;
+			}
+			if (!Parameter.isValidName(name)) {
+				setErrorMessage(name + " " + Messages.IsNotValidParameterName);
+				setPageComplete(false);
+				return;
+			}
+			setErrorMessage(null);
+			setPageComplete(true);
 		}
 
 	}

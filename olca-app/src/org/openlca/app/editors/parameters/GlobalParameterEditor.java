@@ -1,8 +1,11 @@
 package org.openlca.app.editors.parameters;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.openlca.app.Messages;
+import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.util.Error;
+import org.openlca.core.database.ParameterDao;
 import org.openlca.core.model.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,10 +31,22 @@ public class GlobalParameterEditor extends ModelEditor<Parameter> {
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
-		if (infoPage.hasErrors())
+		if (infoPage.hasErrors()) {
 			Error.showBox("#Can not save parameter, because formula contains errors");
-		else
-			super.doSave(monitor);
+			return;
+		}
+		String name = getModel().getName();
+		if (!Parameter.isValidName(name)) {
+			Error.showBox(Messages.InvalidParameterName,
+					name + " " + Messages.IsNotValidParameterName);
+			return;
+		}
+		if (new ParameterDao(Database.get()).existsGlobal(name)) {
+			Error.showBox(Messages.InvalidParameterName,
+					"#A parameter with the same name already exists");
+			return;
+		}
+		super.doSave(monitor);
 	}
 
 }

@@ -103,7 +103,7 @@ class FlowUseSection {
 		}
 		List<ProcessDescriptor> list = dao.getDescriptors(firstIds);
 		list.sort((d1, d2) -> {
-			return Strings.compare(d1.getName(), d2.getName());
+			return Strings.compare(Labels.getDisplayName(d1), Labels.getDisplayName(d2));
 		});
 		return list;
 	}

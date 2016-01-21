@@ -3,6 +3,7 @@ package org.openlca.app.components;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -14,8 +15,8 @@ public class UncertaintyShell {
 
 	public static void show(final NumberGenerator fun) {
 
-		final Display display = new Display();
-		final Shell shell = new Shell(display);
+		final Display display = Display.getCurrent();
+		final Shell shell = new Shell(display, SWT.APPLICATION_MODAL | SWT.SHELL_TRIM);
 		shell.setText(Messages.TestDistribution);
 		shell.setLayout(new FillLayout());
 		final StatisticsCanvas canvas = new StatisticsCanvas(shell);
@@ -28,7 +29,7 @@ public class UncertaintyShell {
 				final List<Double> values = new ArrayList<>();
 				for (int i = 0; i < 1000; i++) {
 					values.add(fun.next());
-					if (!display.isDisposed())
+					if (!shell.isDisposed())
 						display.syncExec(new Runnable() {
 							public void run() {
 								if (shell.isDisposed())
@@ -41,12 +42,5 @@ public class UncertaintyShell {
 					display.wake();
 			}
 		}.start();
-
-		while (!shell.isDisposed()) {
-			if (!display.readAndDispatch())
-				display.sleep();
-		}
-		display.dispose();
-
 	}
 }

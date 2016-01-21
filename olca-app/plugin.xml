@@ -121,13 +121,6 @@
             id="editors.currency"
             name="#Currency">
       </editor>
-      <editor
-           class="org.openlca.app.editors.parameters.GlobalParametersEditor"
-           default="false"
-           icon="icons/formula_16.png"
-           id="editors.GlobalParameterEditor"
-           name="Global parameters">
-      </editor>
       
       <!-- result views -->
       <editor
@@ -173,7 +166,11 @@
             name="Report Viewer"
             contributorClass="org.openlca.app.editors.reports.ReportToolbar">
       </editor> 
-      
+      <editor
+            id="editors.LogFileEditor"
+            class="org.openlca.app.editors.LogFileEditor"
+            name="Log file">
+      </editor>       
       <!-- other --> 
       <editor
             class="org.openlca.app.rcp.browser.MozillaConfigView"

@@ -6,8 +6,8 @@
     <link href="libs/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
     <style type="text/css">
         .selectedPage {
-        	color: black;
-        	font-weight: bold;
+            color: black;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -159,6 +159,16 @@
                 return 'images/actor_obj.gif';
             if (descriptor.type === 'SOURCE')
                 return 'images/source_obj.gif';
+            if (descriptor.type === 'PRODUCT_SYSTEM')
+                return 'images/system_obj.gif';
+            if (descriptor.type === 'PARAMETER')
+                return 'images/formula_16.png';
+            if (descriptor.type === 'LOCATION')
+                return 'images/location.png';
+            if (descriptor.type === 'SOCIAL_INDICATOR')
+                return 'images/indicator.png';
+            if (descriptor.type === 'CURRENCY')
+                return 'images/currency_obj.png';        
         }
     </script>
 

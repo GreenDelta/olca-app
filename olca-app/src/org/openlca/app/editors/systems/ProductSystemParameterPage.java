@@ -14,6 +14,7 @@ public class ProductSystemParameterPage extends ModelPage<ProductSystem> {
 
 	private ProductSystemEditor editor;
 	private ParameterRedefTable table;
+	private ScrolledForm form;
 
 	public ProductSystemParameterPage(ProductSystemEditor editor) {
 		super(editor, "ProductSystemParameterPage", Messages.Parameters);
@@ -23,8 +24,8 @@ public class ProductSystemParameterPage extends ModelPage<ProductSystem> {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, Messages.ProductSystem
-				+ ": " + editor.getModel().getName());
+		form = UI.formHeader(managedForm);
+		updateFormTitle();
 		FormToolkit toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		Section section = UI.section(body, toolkit, Messages.Parameters);
@@ -33,6 +34,13 @@ public class ProductSystemParameterPage extends ModelPage<ProductSystem> {
 		table = new ParameterRedefTable(editor);
 		table.create(toolkit, composite);
 		table.bindActions(section);
+	}
+
+	@Override
+	protected void updateFormTitle() {
+		if (form == null)
+			return;
+		form.setText(Messages.ProductSystem + ": " + getModel().getName());
 	}
 
 	void refreshBindings() {

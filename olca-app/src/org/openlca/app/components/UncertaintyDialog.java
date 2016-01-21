@@ -11,7 +11,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
@@ -91,11 +90,7 @@ public class UncertaintyDialog extends Dialog {
 			return;
 		try {
 			final NumberGenerator generator = makeGenerator();
-			App.run(Messages.Test, new Runnable() {
-				public void run() {
-					UncertaintyShell.show(generator);
-				}
-			});
+			UncertaintyShell.show(generator);
 		} catch (Exception e) {
 			log.error("failed to run uncertainty test");
 		}

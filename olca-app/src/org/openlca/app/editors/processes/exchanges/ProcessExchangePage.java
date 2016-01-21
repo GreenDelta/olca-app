@@ -22,6 +22,7 @@ public class ProcessExchangePage extends ModelPage<Process> {
 
 	private ProcessEditor editor;
 	private FormToolkit toolkit;
+	private ScrolledForm form;
 
 	public ProcessExchangePage(ProcessEditor editor) {
 		super(editor, "ProcessExchangePage", Messages.InputsOutputs);
@@ -30,8 +31,8 @@ public class ProcessExchangePage extends ModelPage<Process> {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, Messages.Process + ": "
-				+ getModel().getName());
+		form = UI.formHeader(managedForm);
+		updateFormTitle();
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		SashForm sash = new SashForm(body, SWT.VERTICAL);
@@ -48,6 +49,13 @@ public class ProcessExchangePage extends ModelPage<Process> {
 			inputTable.setInput(getModel());
 			outputTable.setInput(getModel());
 		});
+	}
+
+	@Override
+	protected void updateFormTitle() {
+		if (form == null)
+			return;
+		form.setText(Messages.Process + ": " + getModel().getName());
 	}
 
 	private void sortExchanges() {

@@ -34,6 +34,7 @@ public class SocialAspectsPage extends ModelPage<Process> {
 
 	private TreeViewer tree;
 	private TreeModel treeModel = new TreeModel();
+	private ScrolledForm form;
 
 	public SocialAspectsPage(ProcessEditor editor) {
 		super(editor, "SocialAspectsPage", Messages.SocialAspects);
@@ -41,14 +42,22 @@ public class SocialAspectsPage extends ModelPage<Process> {
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm mform) {
+	protected void createFormContent(IManagedForm managedForm) {
 		for (SocialAspect a : getModel().socialAspects)
 			treeModel.addAspect(a);
-		ScrolledForm form = UI.formHeader(mform, Messages.SocialAspects);
-		FormToolkit tk = mform.getToolkit();
+		form = UI.formHeader(managedForm);
+		updateFormTitle();
+		FormToolkit tk = managedForm.getToolkit();
 		Composite body = UI.formBody(form, tk);
 		createEntrySection(tk, body);
 		form.reflow(true);
+	}
+
+	@Override
+	protected void updateFormTitle() {
+		if (form == null)
+			return;
+		form.setText(Messages.SocialAspects + ": " + getModel().getName());
 	}
 
 	private void createEntrySection(FormToolkit tk, Composite body) {
