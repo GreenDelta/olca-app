@@ -231,7 +231,7 @@ class CalculationWizard extends Wizard {
 					.createParameterTable(database, setup, inventory);
 			FormulaInterpreter interpreter = parameterTable.createInterpreter();
 			InventoryMatrix inventoryMatrix = inventory.createMatrix(
-					solver.getMatrixFactory(), interpreter); 
+					solver.getMatrixFactory(), interpreter);
 			ImpactMatrix impactMatrix = null;
 			ImpactTable impactTable = null;
 			if (setup.impactMethod != null) {
@@ -250,11 +250,9 @@ class CalculationWizard extends Wizard {
 			RegionalizedResult result = calculate(baseResult, regioSetup,
 					interpreter, impactTable);
 			RegionalizedResultProvider resultProvider = new RegionalizedResultProvider();
-			resultProvider.setBaseResult(new FullResultProvider(result
-					.getBaseResult(), Cache.getEntityCache()));
-			resultProvider.setRegionalizedResult(new FullResultProvider(result
-					.getRegionalizedResult(), Cache.getEntityCache()));
-			resultProvider.setKmlData(regioSetup.getKmlData());
+			resultProvider.result = new FullResultProvider(
+					result.regionalizedResult, Cache.getEntityCache());
+			resultProvider.kmlData = regioSetup.getKmlData();
 			ResultEditorInput input = getEditorInput(resultProvider, setup,
 					regioSetup.getParameterSet());
 			Editors.open(input, RegionalizedResultEditor.ID);

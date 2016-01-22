@@ -48,8 +48,7 @@ class KmlResultView extends FormPage implements HtmlPage {
 
 	@Override
 	public void onLoaded() {
-		Set<FlowDescriptor> flowDescriptors = result.getRegionalizedResult()
-				.getFlowDescriptors();
+		Set<FlowDescriptor> flowDescriptors = result.result.getFlowDescriptors();
 		if (flowDescriptors.isEmpty())
 			return;
 		FlowDescriptor flow = flowDescriptors.iterator().next();
@@ -64,7 +63,7 @@ class KmlResultView extends FormPage implements HtmlPage {
 		Composite composite = toolkit.createComposite(body);
 		UI.gridLayout(composite, 2);
 		flowImpactSelection = ResultTypeSelection
-				.on(result.getRegionalizedResult(), Cache.getEntityCache())
+				.on(result.result, Cache.getEntityCache())
 				.withEventHandler(new KmlSelectionHandler(result))
 				.create(composite, toolkit);
 		browser = UI.createBrowser(body, this);
@@ -106,9 +105,9 @@ class KmlResultView extends FormPage implements HtmlPage {
 			Double maximum = null;
 			for (LocationResult result : results)
 				if (maximum == null)
-					maximum = result.getTotalAmount();
+					maximum = result.amount;
 				else
-					maximum = Math.max(maximum, result.getTotalAmount());
+					maximum = Math.max(maximum, result.amount);
 			if (maximum == null)
 				return 0;
 			return maximum;
@@ -117,11 +116,11 @@ class KmlResultView extends FormPage implements HtmlPage {
 		private void sendToView(LocationResult result) {
 			if (result == null)
 				return;
-			if (result.getTotalAmount() == 0d)
+			if (result.amount == 0d)
 				return;
 			Map<String, Object> item = new HashMap<String, Object>();
-			item.put("kml", result.getKmlFeature().getKml());
-			item.put("amount", result.getTotalAmount());
+			item.put("kml", result.kmlFeature.kml);
+			item.put("amount", result.amount);
 			delayedJobs.add(App.runInUI("Setting item", () -> evaluate(item)));
 		}
 

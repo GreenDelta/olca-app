@@ -58,7 +58,8 @@ public class EvaluateLocationsJob implements IRunnableWithProgress {
 		List<Parameter> parameters = getShapeFileParameters();
 		if (parameters.size() == 0)
 			return Collections.emptyList();
-		parameterCalculator = new ParameterCalculator(parameters, shapeFileRepository, parameterRepository);
+		parameterCalculator = new ParameterCalculator(parameters,
+				shapeFileRepository, parameterRepository);
 		locationDao = new LocationDao(Database.get());
 		return locationDao.getDescriptors();
 	}

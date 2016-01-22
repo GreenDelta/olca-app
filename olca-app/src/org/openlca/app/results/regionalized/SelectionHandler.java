@@ -28,7 +28,7 @@ abstract class SelectionHandler implements EventHandler {
 
 	@Override
 	public void flowSelected(FlowDescriptor flow) {
-		ContributionResultProvider<?> provider = result.getRegionalizedResult();
+		ContributionResultProvider<?> provider = result.result;
 		Set<ProcessDescriptor> processes = provider.getProcessDescriptors();
 		Map<Long, Double> results = new HashMap<>();
 		for (ProcessDescriptor process : processes) {
@@ -40,7 +40,7 @@ abstract class SelectionHandler implements EventHandler {
 
 	@Override
 	public void impactCategorySelected(ImpactCategoryDescriptor impact) {
-		ContributionResultProvider<?> provider = result.getRegionalizedResult();
+		ContributionResultProvider<?> provider = result.result;
 		Set<ProcessDescriptor> processes = provider.getProcessDescriptors();
 		Map<Long, Double> results = new HashMap<>();
 		for (ProcessDescriptor process : processes) {
@@ -52,7 +52,7 @@ abstract class SelectionHandler implements EventHandler {
 
 	@Override
 	public void costResultSelected(CostResultDescriptor cost) {
-		ContributionResultProvider<?> provider = result.getRegionalizedResult();
+		ContributionResultProvider<?> provider = result.result;
 		Set<ProcessDescriptor> processes = provider.getProcessDescriptors();
 		Map<Long, Double> results = new HashMap<>();
 		for (ProcessDescriptor process : processes) {
@@ -64,13 +64,13 @@ abstract class SelectionHandler implements EventHandler {
 	}
 
 	private List<LocationResult> getResultData(Map<Long, Double> results) {
-		List<KmlLoadResult> kmlData = result.getKmlData();
+		List<KmlLoadResult> kmlData = result.kmlData;
 		List<LocationResult> locationResults = new ArrayList<>();
 		for (KmlLoadResult data : kmlData) {
-			LocationResult result = new LocationResult(data.getKmlFeature(),
-					data.getLocationId());
-			for (LongPair processProduct : data.getProcessProducts())
-				result.addAmount(results.get(processProduct.getFirst()));
+			LocationResult result = new LocationResult(data.kmlFeature,
+					data.locationId);
+			for (LongPair product : data.processProducts)
+				result.amount += results.get(product.getFirst());
 			locationResults.add(result);
 		}
 		return locationResults;

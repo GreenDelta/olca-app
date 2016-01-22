@@ -4,29 +4,13 @@ import org.openlca.geo.kml.KmlFeature;
 
 class LocationResult {
 
-	private KmlFeature kmlFeature;
-	private long locationId;
-	private double totalAmount;
+	final KmlFeature kmlFeature;
+	final long locationId;
+	double amount;
 
 	LocationResult(KmlFeature feature, long locationId) {
 		this.kmlFeature = feature;
 		this.locationId = locationId;
-	}
-
-	public void addAmount(double amount) {
-		totalAmount += amount;
-	}
-
-	public double getTotalAmount() {
-		return totalAmount;
-	}
-
-	public KmlFeature getKmlFeature() {
-		return kmlFeature;
-	}
-
-	public long getLocationId() {
-		return locationId;
 	}
 
 }
