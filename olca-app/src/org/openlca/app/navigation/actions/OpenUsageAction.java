@@ -31,7 +31,7 @@ public class OpenUsageAction extends Action implements INavigationAction {
 
 	public OpenUsageAction() {
 		setText(Messages.Usage);
-		setImageDescriptor(ImageType.LINK_16_BLUE.getDescriptor());
+		setImageDescriptor(ImageType.LINK.getDescriptor());
 	}
 
 	public void setDescriptor(CategorizedDescriptor descriptor) {

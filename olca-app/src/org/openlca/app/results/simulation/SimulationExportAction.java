@@ -23,7 +23,7 @@ class SimulationExportAction extends Action {
 			CalculationSetup setup) {
 		setId("SimulationResultExport");
 		setToolTipText(Messages.ExportResultsToExcel);
-		setImageDescriptor(ImageType.FILE_EXCEL_SMALL.getDescriptor());
+		setImageDescriptor(ImageType.FILE_EXCEL.getDescriptor());
 		this.result = result;
 		this.setup = setup;
 	}

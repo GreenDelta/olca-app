@@ -174,7 +174,7 @@ public class StartPage extends FormEditor {
 
 		@Override
 		public ImageDescriptor getImageDescriptor() {
-			return ImageType.LOGO_32_32.getDescriptor();
+			return ImageType.LOGO.getDescriptor();
 		}
 
 		@Override

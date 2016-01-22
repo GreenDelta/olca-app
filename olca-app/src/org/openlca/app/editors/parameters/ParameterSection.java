@@ -274,7 +274,7 @@ public class ParameterSection {
 				return null;
 			Parameter parameter = (Parameter) element;
 			if (parameter.getExternalSource() != null)
-				return ImageType.LCIA_ICON.get(); // currently the only external
+				return ImageType.IMPACT_METHOD.get(); // currently the only external
 			// sources are shape files
 			else
 				return null;

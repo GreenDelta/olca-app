@@ -68,7 +68,7 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider {
 			return null;
 		switch (flow.getFlowType()) {
 		case ELEMENTARY_FLOW:
-			return ImageType.FLOW_SUBSTANCE.get();
+			return ImageType.FLOW_ELEMENTARY.get();
 		case PRODUCT_FLOW:
 			return ImageType.FLOW_PRODUCT.get();
 		case WASTE_FLOW:

@@ -19,7 +19,7 @@ class LabelProvider extends BaseLabelProvider implements
 	@Override
 	public Image getImage(Object element) {
 		if (element instanceof Commit)
-			return ImageManager.getImage(ImageType.COMMIT_ICON);
+			return ImageManager.getImage(ImageType.COMMIT);
 		if (!(element instanceof FetchRequestData))
 			return null;
 		FetchRequestData data = (FetchRequestData) element;

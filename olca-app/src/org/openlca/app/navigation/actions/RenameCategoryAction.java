@@ -29,7 +29,7 @@ public class RenameCategoryAction extends Action implements INavigationAction {
 
 	public RenameCategoryAction() {
 		setText(Messages.Rename);
-		setImageDescriptor(ImageType.CHANGE_ICON.getDescriptor());
+		setImageDescriptor(ImageType.CHANGE.getDescriptor());
 	}
 
 	@Override

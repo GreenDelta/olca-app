@@ -28,7 +28,7 @@ public class ImageExportAction extends Action {
 	public ImageExportAction(Composite composite) {
 		setId("ImageExportAction#composite");
 		setToolTipText(Messages.SaveAsImage);
-		setImageDescriptor(ImageType.SAVE_AS_IMAGE_ICON.getDescriptor());
+		setImageDescriptor(ImageType.SAVE_AS_IMAGE.getDescriptor());
 		this.composite = composite;
 	}
 

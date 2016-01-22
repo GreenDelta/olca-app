@@ -25,7 +25,7 @@ class BuildSupplyChainMenuAction extends EditorAction {
 	BuildSupplyChainMenuAction() {
 		setId(ActionIds.BUILD_SUPPLY_CHAIN_MENU);
 		setText(Messages.BuildSupplyChain);
-		setImageDescriptor(ImageType.BUILD_SUPPLY_CHAIN_ICON.getDescriptor());
+		setImageDescriptor(ImageType.BUILD_SUPPLY_CHAIN.getDescriptor());
 		setMenuCreator(new MenuCreator());
 	}
 

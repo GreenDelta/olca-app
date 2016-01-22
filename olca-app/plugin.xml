@@ -12,7 +12,7 @@
 			default="false"
 			id="olca.StartPage"
 			name="%Welcome"
-			icon="icons/home_16.gif">      
+			icon="icons/home.png">      
       </editor>
       
       <!-- developer tools -->
@@ -21,14 +21,14 @@
       		default="false"
       		id="SqlEditor"
       		name="SQL"
-      		icon="icons/sql_16.gif">
+      		icon="icons/sql.gif">
       </editor>
       <editor
       		class="org.openlca.app.devtools.js.JavaScriptEditor"
       		default="false"
       		id="JavaScriptEditor"
       		name="JavaScript"
-      		icon="icons/javascript_16.gif"
+      		icon="icons/javascript.gif"
       		contributorClass="org.openlca.app.devtools.Toolbar">
       </editor>
        <editor
@@ -36,7 +36,7 @@
       		default="false"
       		id="PythonEditor"
       		name="Python"
-      		icon="icons/python_16.gif"
+      		icon="icons/python.gif"
       		contributorClass="org.openlca.app.devtools.Toolbar">
       </editor>      
       
@@ -44,49 +44,49 @@
       <editor
             class="org.openlca.app.editors.actors.ActorEditor"
             default="false"
-            icon="icons/actor_obj.png"
+            icon="icons/model/actor.png"
             id="editors.actor"
             name="%ActorEditor">
       </editor>
       <editor
             class="org.openlca.app.editors.sources.SourceEditor"
             default="false"
-            icon="icons/source_obj.png"
+            icon="icons/model/source.png"
             id="editors.source"
             name="%SourceEditor">
       </editor>
       <editor
             class="org.openlca.app.editors.units.UnitGroupEditor"
             default="false"
-            icon="icons/unitgroup_obj.gif"
+            icon="icons/model/unit_group.png"
             id="editors.unitgroup"
             name="%UnitGroupEditor">
       </editor>
       <editor
             class="org.openlca.app.editors.flow_properties.FlowPropertyEditor"
             default="false"
-            icon="icons/flowprop_obj.gif"
+            icon="icons/model/flow_property.png"
             id="editors.flowproperty"
             name="%FlowPropertyEditor">
       </editor>
       <editor
             class="org.openlca.app.editors.flows.FlowEditor"
             default="false"
-            icon="icons/flow_obj.gif"
+            icon="icons/model/flow.png"
             id="editors.flow"
             name="%FlowEditor">
       </editor>
       <editor
             class="org.openlca.app.editors.lcia_methods.ImpactMethodEditor"
             default="false"
-            icon="icons/LCIA_obj.gif"
+            icon="icons/model/impact_method.png"
             id="editors.impactmethod"
             name="%ImpactMethodEditor">
       </editor>
       <editor
             class="org.openlca.app.editors.processes.ProcessEditor"
             default="false"
-            icon="icons/proc_obj.gif"
+            icon="icons/model/process.png"
             id="editors.process"
             name="%ProcessEditor"
             contributorClass="org.openlca.app.editors.processes.ProcessToolbar">
@@ -94,7 +94,7 @@
       <editor
             class="org.openlca.app.editors.projects.ProjectEditor"
             default="false"
-            icon="icons/project_obj.png"
+            icon="icons/model/project.png"
             id="editors.project"
             name="%ProjectEditor"
             contributorClass="org.openlca.app.editors.projects.ProjectEditorActions">
@@ -102,7 +102,7 @@
       <editor
             class="org.openlca.app.editors.systems.ProductSystemEditor"
             default="false"
-            icon="icons/model.gif"
+            icon="icons/model/product_system.png"
             id="editors.productsystem"
             name="%ProductSystemEditor" 
             contributorClass="org.openlca.app.editors.systems.ProductSystemActions">
@@ -110,14 +110,14 @@
       <editor
             class="org.openlca.app.editors.social.SocialIndicatorEditor"
             default="false"
-            icon="icons/indicator_obj.png"
+            icon="icons/model/social_indicator.png"
             id="editors.socialindicator"
             name="#Social indicator">
       </editor>
       <editor
             class="org.openlca.app.editors.costs.CurrencyEditor"
             default="false"
-            icon="icons/currency.png"
+            icon="icons/model/currency.png"
             id="editors.currency"
             name="#Currency">
       </editor>
@@ -126,7 +126,7 @@
       <editor
             class="org.openlca.app.results.quick.QuickResultEditor"
             default="false"
-            icon="icons/expression_obj.gif"
+            icon="icons/expression.gif"
             id="QuickResultEditor"
             name="Quick results"
             contributorClass="org.openlca.app.results.quick.QuickResultActions">
@@ -142,27 +142,27 @@
       <editor
             class="org.openlca.app.results.analysis.AnalyzeEditor"
             default="false"
-            icon="icons/analyze.gif"
+            icon="icons/analysis.png"
             id="editors.analyze"
             name="Analyze viewer">
       </editor>
       <editor
             class="org.openlca.app.results.simulation.SimulationEditor"
             default="false"
-            icon="icons/simulate_16.png"
+            icon="icons/calculation/simulate.png"
             id="SimulationEditor"
             name="Simulation Editor">
       </editor> 
       <editor
             id="RegionalizedResultEditor"
             class="org.openlca.app.results.regionalized.RegionalizedResultEditor"
-            icon="icons/LCIA_obj.gif"
+            icon="icons/model/impact_method.png"
             name="Regionalized LCIA result">
       </editor>   
       <editor
             id="ReportViewer"
             class="org.openlca.app.editors.reports.ReportViewer"
-            icon="icons/project_obj.png"
+            icon="icons/model/project.png"
             name="Report Viewer"
             contributorClass="org.openlca.app.editors.reports.ReportToolbar">
       </editor> 
@@ -175,28 +175,28 @@
       <editor
             class="org.openlca.app.rcp.browser.MozillaConfigView"
             default="false"
-            icon="icons/firefox_16.png"
+            icon="icons/firefox.png"
             id="olca.MozillaConfigView"
             name="Browser configuration">
       </editor>
       <editor
             class="org.openlca.app.editors.UsageView"
             default="false"
-            icon="icons/16x16_link_blue.png"
+            icon="icons/link.png"
             id="editors.usage"
             name="%Usage">
       </editor>
       <editor
             class="org.openlca.app.editors.graphical.ProductSystemGraphEditor"
             default="false"
-            icon="icons/model.gif"
+            icon="icons/model/product_system.png"
             id="editors.productsystem.graphical"
             name="Product system graphical editor">
       </editor>  
       <editor
             id="SearchResultView"
             class="org.openlca.app.SearchResultView"
-            icon="icons/search_obj.png"
+            icon="icons/search.png"
             default="false"
             name="Search result view">
       </editor> 
@@ -204,7 +204,7 @@
 	  <editor
             class="org.openlca.app.editors.locations.LocationEditor"
             default="false"
-            icon="icons/location.png"
+            icon="icons/model/location.png"
             id="editors.location"
             name="Location editor">
       </editor>	  
@@ -212,7 +212,7 @@
 	  <editor
             class="org.openlca.app.editors.parameters.GlobalParameterEditor"
             default="false"
-            icon="icons/formula_16.png"
+            icon="icons/model/parameter.png"
             id="editors.parameter"
             name="Global parameter editor">
       </editor>	  
@@ -223,79 +223,79 @@
          point="org.eclipse.ui.newWizards">
       <wizard
             class="org.openlca.app.wizards.ActorWizard"
-            icon="icons/actor_obj_new.png"
+            icon="icons/wizard/actor.png"
             id="wizards.new.actor"
             name="%Actors">
       </wizard>
       <wizard
             class="org.openlca.app.wizards.SourceWizard"
-            icon="icons/source_obj_new.png"
+            icon="icons/wizard/source.png"
             id="wizards.new.source"
             name="%Sources">
       </wizard>
       <wizard
             class="org.openlca.app.wizards.LocationWizard"
-            icon="icons/location_new.png"
+            icon="icons/wizard/location.png"
             id="wizards.new.location"
             name="Locations wizard">
       </wizard>
       <wizard
             class="org.openlca.app.wizards.ParameterWizard"
-            icon="icons/actor_obj_new.png"
+            icon="icons/wizard/parameter.png"
             id="wizards.new.parameter"
             name="Global parameters wizard">
       </wizard>
       <wizard
             class="org.openlca.app.wizards.UnitGroupWizard"
-            icon="icons/unitgroup_obj_new.gif"
+            icon="icons/wizard/unit_group.png"
             id="wizards.new.unitgroup"
             name="%UnitGroups">
       </wizard>
       <wizard
             class="org.openlca.app.wizards.FlowPropertyWizard"
-            icon="icons/flowprop_obj_new.gif"
+            icon="icons/wizard/flow_property.png"
             id="wizards.new.flowproperty"
             name="%FlowProperties">
       </wizard>
       <wizard
             class="org.openlca.app.wizards.FlowWizard"
-            icon="icons/flow_obj_new.gif"
+            icon="icons/wizard/flow.png"
             id="wizards.new.flow"
             name="%Flows">
       </wizard>
       <wizard
             class="org.openlca.app.wizards.ImpactMethodWizard"
-            icon="icons/LCIA_obj_new.gif"
+            icon="icons/wizard/impact_method.png"
             id="wizards.new.impactmethod"
             name="%LCIAMethods">
       </wizard>
       <wizard
             class="org.openlca.app.wizards.ProcessWizard"
-            icon="icons/proc_obj_new.gif"
+            icon="icons/wizard/process.png"
             id="wizards.new.process"
             name="%Processes">
       </wizard>
       <wizard
             class="org.openlca.app.wizards.ProjectWizard"
-            icon="icons/project_obj_new.png"
+            icon="icons/wizard/project.png"
             id="wizards.new.project"
             name="%Projects">
       </wizard>
       <wizard
             class="org.openlca.app.wizards.ProductSystemWizard"
-            icon="icons/chart_organisation_new.png"
+            icon="icons/wizard/product_system.png"
             id="wizards.new.productsystem"
             name="%ProductSystems">
       </wizard>
       <wizard
             class="org.openlca.app.wizards.SocialIndicatorWizard"
-            icon="icons/indicator_obj_new.png"
+            icon="icons/wizard/social_indicator.png"
             id="wizards.new.socialindicator"
             name="#Social indicator">
       </wizard>
       <wizard
             class="org.openlca.app.wizards.CurrencyWizard"
-            icon="icons/currency_new.png"
+            icon="icons/wizard/currency.png"
             id="wizards.new.currency"
             name="#Currency">
       </wizard>
@@ -400,7 +400,7 @@
          </property>
          <property
                name="introBrandingImage"
-               value="product:icons/logo_glowing.png" />
+               value="product:icons/logo/glowing.png" />
          <property
                name="introBrandingImageText"
                value="openLCA" />
@@ -568,7 +568,7 @@
       <wizard
             category="import.category.file"
             class="org.openlca.app.wizards.io.EcoSpold01ImportWizard"
-            icon="icons/xml.png"
+            icon="icons/file/xml.gif"
             id="wizard.import.ecospold1"
             name="%EcoSpold">
          <description>
@@ -578,7 +578,7 @@
       <wizard
             category="import.category.file"
             class="org.openlca.app.wizards.io.EcoSpold2ImportWizard"
-            icon="icons/xml.png"
+            icon="icons/file/xml.gif"
             id="wizard.import.ecospold2"
             name="EcoSpold 2">
          <description>
@@ -588,7 +588,7 @@
       <wizard
             category="import.category.file"
             class="org.openlca.app.wizards.io.ILCDImportWizard"
-            icon="icons/ilcd16.png"
+            icon="icons/wizard/ilcd.png"
             id="wizard.import.ilcd"
             name="ILCD">
          <description>
@@ -598,14 +598,14 @@
        <wizard
             category="import.category.file"
             class="org.openlca.app.wizards.io.ExcelImportWizard"
-            icon="icons/file_excel_16.png"
+            icon="icons/file/excel.png"
             id="wizard.import.excel"
             name="Excel">
       </wizard>
        <wizard
             category="import.category.ilcdnetwork"
             class="org.openlca.app.ilcd_network.ImportWizard"
-            icon="icons/network16.png"
+            icon="icons/wizard/network.png"
             id="wizard.import.ilcdnetwork"
             name="%ILCDNetworkImport">
          <description>
@@ -614,20 +614,20 @@
       </wizard>
       <wizard
            class="org.openlca.app.wizards.io.DbImportWizard"
-           icon="icons/logo_16_32bit.png"
+           icon="icons/logo/16_32bit.png"
            id="wizard.import.db"
            name="Database Import">
       </wizard>
       <wizard
       		class="org.openlca.app.wizards.io.JsonImportWizard"
-      		icon="icons/logo_16_32bit.png"
+      		icon="icons/logo/16_32bit.png"
             id="wizard.import.json"
             name="JSON-LD">
       </wizard>
   	  <wizard
 	       category="import.category.file"
 		   class="org.openlca.app.wizards.io.SimaProCsvImportWizard"
-		   icon="icons/simaPro.png"
+		   icon="icons/simapro.png"
 		   id="wizard.import.csv"
 		   name="SimaPro CSV">
 		   <description>Import SimaPro CSV files.</description>
@@ -667,21 +667,21 @@
       <wizard
             category="export.category.ecospold"
             class="org.openlca.app.wizards.io.EcoSpold01ExportProcessWizard"
-            icon="icons/xml.png"
+            icon="icons/file/xml.gif"
             id="wizard.export.ecospold.process"
             name="%Processes">
        </wizard>
        <wizard
             category="export.category.excel"
             class="org.openlca.app.wizards.io.ExcelExportWizard"
-            icon="icons/file_excel_16.png"
+            icon="icons/file/excel.png"
             id="wizard.export.excel.process"
             name="%Processes">
        </wizard>
        <wizard
             category="export.category.ecospold"
             class="org.openlca.app.wizards.io.EcoSpold2ExportWizard"
-            icon="icons/xml.png"
+            icon="icons/file/xml.gif"
             id="wizard.export.ecospold.process"
             name="EcoSpold 2">
          <description>
@@ -691,28 +691,28 @@
       <wizard
             category="export.category.ecospold"
             class="org.openlca.app.wizards.io.EcoSpold01ExportMethodWizard"
-            icon="icons/xml.png"
+            icon="icons/file/xml.gif"
             id="wizard.export.ecospold.impactmethod"
             name="%ImpactMethods">
       </wizard>
       <wizard
             category="export.category.ilcd"
             class="org.openlca.app.wizards.io.ILCDExportWizard"
-            icon="icons/ilcd16.png"
+            icon="icons/wizard/ilcd.png"
             id="wizard.export.source"
             name="@ILCD Zip-File">
       </wizard>
       <wizard
             category="export.category.ilcd"
             class="org.openlca.app.ilcd_network.ExportWizard"
-            icon="icons/network16.png"
+            icon="icons/wizard/network.png"
             id="org.openlca.ilcd.network.ExportWizard"
             name="%ILCDNetworkExport">
       </wizard>
       <wizard
       		category="openlca.export.category"
       		class="org.openlca.app.wizards.io.JsonExportWizard"
-      		icon="icons/logo_16_32bit.png"
+      		icon="icons/logo/16_32bit.png"
       		id="org.openlca.app.wizards.io.JsonExportWizard"
       		name="JSON-LD">
       </wizard>

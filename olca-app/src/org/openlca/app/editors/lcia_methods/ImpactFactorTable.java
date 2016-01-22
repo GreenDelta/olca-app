@@ -308,7 +308,7 @@ class ImpactFactorTable {
 
 	private class FormulaSwitchAction extends Action {
 		public FormulaSwitchAction() {
-			setImageDescriptor(ImageType.NUMBER_ICON.getDescriptor());
+			setImageDescriptor(ImageType.NUMBER.getDescriptor());
 			setText(Messages.ShowValues);
 		}
 
@@ -316,10 +316,10 @@ class ImpactFactorTable {
 		public void run() {
 			showFormulas = !showFormulas;
 			if (showFormulas) {
-				setImageDescriptor(ImageType.NUMBER_ICON.getDescriptor());
+				setImageDescriptor(ImageType.NUMBER.getDescriptor());
 				setText(Messages.ShowValues);
 			} else {
-				setImageDescriptor(ImageType.FORMULA_ICON.getDescriptor());
+				setImageDescriptor(ImageType.FORMULA.getDescriptor());
 				setText(Messages.ShowFormulas);
 			}
 			viewer.refresh();

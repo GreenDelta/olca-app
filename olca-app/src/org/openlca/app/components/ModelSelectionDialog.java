@@ -168,11 +168,11 @@ public class ModelSelectionDialog extends FormDialog {
 	private void addSectionActions(Section section) {
 		Action expand = Actions.create(
 				Messages.ExpandAll,
-				ImageType.EXPAND_ICON.getDescriptor(),
+				ImageType.EXPAND.getDescriptor(),
 				viewer::expandAll);
 		Action collapse = Actions.create(
 				Messages.CollapseAll,
-				ImageType.COLLAPSE_ICON.getDescriptor(),
+				ImageType.COLLAPSE.getDescriptor(),
 				viewer::collapseAll);
 		Actions.bind(section, expand, collapse);
 	}

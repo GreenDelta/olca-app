@@ -43,7 +43,7 @@ class UsageViewInput implements IEditorInput {
 
 	@Override
 	public ImageDescriptor getImageDescriptor() {
-		return ImageType.LINK_16_BLUE.getDescriptor();
+		return ImageType.LINK.getDescriptor();
 	}
 
 	@Override

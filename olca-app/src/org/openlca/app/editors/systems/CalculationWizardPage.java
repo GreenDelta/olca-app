@@ -35,6 +35,7 @@ class CalculationWizardPage extends WizardPage {
 	private ImpactMethodViewer methodViewer;
 	private NwSetComboViewer nwViewer;
 	private Text iterationText;
+	private Button calcCosts;
 	private int iterationCount = 100;
 	private CalculationType type = CalculationType.QUICK;
 	private ProductSystem productSystem;
@@ -44,13 +45,13 @@ class CalculationWizardPage extends WizardPage {
 		this.productSystem = system;
 		setTitle(Messages.CalculationProperties);
 		setDescription(Messages.CalculationWizardDescription);
-		setImageDescriptor(ImageType.WIZ_CALCULATION.getDescriptor());
+		setImageDescriptor(ImageType.CALCULATION_WIZARD.getDescriptor());
 		setPageComplete(true);
 	}
 
 	public CalculationSetup getSetup() {
 		CalculationSetup setUp = new CalculationSetup(productSystem);
-		setUp.withCosts = true; // TODO: make it editable
+		setUp.withCosts = calcCosts.getSelection();
 		setUp.allocationMethod = allocationViewer.getSelected();
 		setUp.impactMethod = methodViewer.getSelected();
 		NwSetDescriptor set = nwViewer.getSelected();
@@ -79,6 +80,7 @@ class CalculationWizardPage extends WizardPage {
 		UI.gridLayout(typePanel, 2).horizontalSpacing = 15;
 		createRadios(typePanel);
 		createIterationText(typePanel);
+		createOptions(typePanel);
 		loadDefaults();
 	}
 
@@ -98,6 +100,12 @@ class CalculationWizardPage extends WizardPage {
 						+ Messages.IsNotValidNumber);
 			}
 		});
+	}
+	
+	private void createOptions(Composite parent) {
+		calcCosts = new Button(parent, SWT.CHECK);
+		calcCosts.setSelection(true);
+		calcCosts.setText("#Include cost calculation");
 	}
 
 	private void createRadios(Composite parent) {

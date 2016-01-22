@@ -40,7 +40,7 @@ class SimulationInput implements IEditorInput {
 
 	@Override
 	public ImageDescriptor getImageDescriptor() {
-		return ImageType.SIMULATE_16.getDescriptor();
+		return ImageType.SIMULATE.getDescriptor();
 	}
 
 	@Override

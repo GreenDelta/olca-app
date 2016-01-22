@@ -176,7 +176,7 @@ public class GroupPage extends FormPage {
 	private class AddGroupAction extends Action {
 
 		public AddGroupAction() {
-			setImageDescriptor(ImageType.ADD_ICON.getDescriptor());
+			setImageDescriptor(ImageType.ADD.getDescriptor());
 			setToolTipText(Messages.Add);
 		}
 
@@ -200,7 +200,7 @@ public class GroupPage extends FormPage {
 	private class DeleteGroupAction extends Action {
 
 		public DeleteGroupAction() {
-			setImageDescriptor(ImageType.DELETE_ICON.getDescriptor());
+			setImageDescriptor(ImageType.DELETE.getDescriptor());
 			setText(Messages.Delete);
 		}
 
@@ -309,7 +309,7 @@ public class GroupPage extends FormPage {
 		@Override
 		public Image getImage(Object element) {
 			if (element instanceof ProcessGrouping)
-				return ImageType.FOLDER_ICON_BLUE.get();
+				return ImageType.FOLDER_BLUE.get();
 			return ImageType.FLOW_PRODUCT.get();
 		}
 

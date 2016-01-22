@@ -29,7 +29,7 @@ public class DatabaseRenameAction extends Action implements INavigationAction {
 
 	public DatabaseRenameAction() {
 		setText(Messages.Rename);
-		setImageDescriptor(ImageType.CHANGE_ICON.getDescriptor());
+		setImageDescriptor(ImageType.CHANGE.getDescriptor());
 	}
 
 	@Override

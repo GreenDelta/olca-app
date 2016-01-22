@@ -52,7 +52,7 @@ public class NavigationLabelProvider extends ColumnLabelProvider implements
 		if (withOverlay != null)
 			return withOverlay;
 		if (elem instanceof GroupElement)
-			return ImageType.FOLDER_SMALL.get();
+			return ImageType.FOLDER.get();
 		Object content = (elem).getContent();
 		if (content instanceof IDatabaseConfiguration)
 			return getDatabaseImage((IDatabaseConfiguration) content);
@@ -73,9 +73,9 @@ public class NavigationLabelProvider extends ColumnLabelProvider implements
 
 	private Image getDatabaseImage(IDatabaseConfiguration config) {
 		if (Database.isActive(config))
-			return ImageType.DB_ICON.get();
+			return ImageType.DATABASE.get();
 		else
-			return ImageType.DB_ICON_DIS.get();
+			return ImageType.DATABASE_DISABLED.get();
 	}
 
 	@Override

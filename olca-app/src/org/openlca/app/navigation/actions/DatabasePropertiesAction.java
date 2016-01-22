@@ -20,7 +20,7 @@ public class DatabasePropertiesAction extends Action implements
 
 	public DatabasePropertiesAction() {
 		setText(Messages.Properties);
-		setImageDescriptor(ImageType.INFO_ICON.getDescriptor());
+		setImageDescriptor(ImageType.INFO.getDescriptor());
 	}
 
 	@Override

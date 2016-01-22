@@ -12,7 +12,7 @@ class ShowOutlineAction extends EditorAction {
 	ShowOutlineAction() {
 		setId(ActionIds.SHOW_OUTLINE);
 		setText(Messages.ShowOutline);
-		setImageDescriptor(ImageType.OUTLINE_ICON.getDescriptor());
+		setImageDescriptor(ImageType.OUTLINE.getDescriptor());
 	}
 
 	@Override

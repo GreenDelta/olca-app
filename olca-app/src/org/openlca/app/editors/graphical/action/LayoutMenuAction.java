@@ -23,7 +23,7 @@ class LayoutMenuAction extends Action {
 	LayoutMenuAction() {
 		setId(ActionIds.LAYOUT_MENU);
 		setText(Messages.Layout);
-		setImageDescriptor(ImageType.LAYOUT_ICON.getDescriptor());
+		setImageDescriptor(ImageType.LAYOUT.getDescriptor());
 		setMenuCreator(new MenuCreator());
 	}
 

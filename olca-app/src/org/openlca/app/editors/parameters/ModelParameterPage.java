@@ -104,7 +104,7 @@ public class ModelParameterPage extends FormPage {
 	private void bindGlobalParamActions(Section section, TableViewer table) {
 		Action copy = TableClipboard.onCopy(table);
 		Action refresh = Actions.create(Messages.Reload,
-				ImageType.REFRESH_ICON.getDescriptor(), () -> {
+				ImageType.REFRESH.getDescriptor(), () -> {
 					setGlobalTableInput(table);
 					support.evaluate();
 					editor.setDirty(true);

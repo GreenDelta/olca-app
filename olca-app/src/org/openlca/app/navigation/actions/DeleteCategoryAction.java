@@ -25,7 +25,7 @@ public class DeleteCategoryAction extends Action implements INavigationAction {
 
 	public DeleteCategoryAction() {
 		setText(Messages.Remove);
-		setImageDescriptor(ImageType.DELETE_ICON.getDescriptor());
+		setImageDescriptor(ImageType.DELETE.getDescriptor());
 	}
 
 	@Override

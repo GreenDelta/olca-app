@@ -307,7 +307,7 @@ class ProjectParameterTable {
 			ParameterRedef redef = (ParameterRedef) element;
 			BaseDescriptor model = getModel(redef);
 			if (model == null)
-				return ImageType.FORMULA_ICON.get();
+				return ImageType.FORMULA.get();
 			else
 				return Images.getIcon(model);
 		}

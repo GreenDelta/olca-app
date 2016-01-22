@@ -51,7 +51,7 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 		super("ProductSystemWizardPage");
 		setTitle(Messages.NewProductSystem);
 		setMessage(Messages.CreatesANewProductSystem);
-		setImageDescriptor(ImageType.NEW_WIZ_PRODUCT_SYSTEM.getDescriptor());
+		setImageDescriptor(ImageType.PRODUCT_SYSTEM_WIZARD.getDescriptor());
 		setPageComplete(false);
 		setWithDescription(false);
 	}

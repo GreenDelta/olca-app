@@ -356,7 +356,7 @@ public class ParameterRedefDialog extends FormDialog {
 		@Override
 		public Image getImage(Object element) {
 			if (element instanceof ParameterNode)
-				return ImageType.FORMULA_ICON.get();
+				return ImageType.FORMULA.get();
 			if (element instanceof ModelNode) {
 				ModelNode node = (ModelNode) element;
 				return Images.getIcon(node.model);

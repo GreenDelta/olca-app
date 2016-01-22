@@ -83,7 +83,7 @@ public class AnalyzeInfoPage extends FormPage {
 		toolkit.createLabel(composite, "");
 		Button button = toolkit.createButton(composite, Messages.ExportToExcel,
 				SWT.NONE);
-		button.setImage(ImageType.FILE_EXCEL_SMALL.get());
+		button.setImage(ImageType.FILE_EXCEL.get());
 		Controls.onSelect(button, (e) -> tryExport());
 	}
 

@@ -54,7 +54,7 @@ public class ResultEditorInput implements IEditorInput {
 
 	@Override
 	public ImageDescriptor getImageDescriptor() {
-		return ImageType.CHART_ICON.getDescriptor();
+		return ImageType.CHART.getDescriptor();
 	}
 
 	@Override

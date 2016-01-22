@@ -47,7 +47,7 @@ class ProcessWizardPage extends AbstractWizardPage<Process> {
 		super("ProcessWizardPage");
 		setTitle(Messages.NewProcess);
 		setMessage(Messages.NewProcess);
-		setImageDescriptor(ImageType.NEW_WIZ_PROCESS.getDescriptor());
+		setImageDescriptor(ImageType.PROCESS_WIZARD.getDescriptor());
 		setPageComplete(false);
 	}
 

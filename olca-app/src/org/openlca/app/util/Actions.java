@@ -46,9 +46,9 @@ public class Actions {
 			{
 				setText(Messages.CreateNew);
 				setImageDescriptor(ImageManager
-						.getImageDescriptor(ImageType.ADD_ICON));
+						.getImageDescriptor(ImageType.ADD));
 				setDisabledImageDescriptor(ImageManager
-						.getImageDescriptor(ImageType.ADD_ICON_DISABLED));
+						.getImageDescriptor(ImageType.ADD_DISABLED));
 			}
 
 			@Override
@@ -62,7 +62,7 @@ public class Actions {
 		return new Action() {
 			{
 				setText(Messages.CalculateResults);
-				setImageDescriptor(ImageType.CALCULATE_ICON.getDescriptor());
+				setImageDescriptor(ImageType.CALCULATE.getDescriptor());
 			}
 
 			@Override
@@ -77,9 +77,9 @@ public class Actions {
 			{
 				setText(Messages.RemoveSelected);
 				setImageDescriptor(ImageManager
-						.getImageDescriptor(ImageType.DELETE_ICON));
+						.getImageDescriptor(ImageType.DELETE));
 				setDisabledImageDescriptor(ImageManager
-						.getImageDescriptor(ImageType.DELETE_ICON_DISABLED));
+						.getImageDescriptor(ImageType.DELETE_DISABLED));
 			}
 
 			@Override

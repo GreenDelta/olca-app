@@ -110,7 +110,7 @@ public class SearchResultView extends FormEditor {
 
 		@Override
 		public ImageDescriptor getImageDescriptor() {
-			return ImageType.SEARCH_ICON.getDescriptor();
+			return ImageType.SEARCH.getDescriptor();
 		}
 
 		@Override

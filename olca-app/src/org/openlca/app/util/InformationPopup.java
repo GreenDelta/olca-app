@@ -15,7 +15,7 @@ public class InformationPopup extends Popup {
 	public InformationPopup(String title, String message) {
 		super(title, message);
 		defaultTitle(Messages.Notification);
-		popupShellImage(ImageType.INFO_ICON);
+		popupShellImage(ImageType.INFO);
 	}
 
 	public static void show(final String message) {

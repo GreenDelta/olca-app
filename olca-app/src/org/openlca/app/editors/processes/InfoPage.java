@@ -95,7 +95,7 @@ class InfoPage extends ModelPage<Process> {
 		toolkit.createLabel(container, "");
 		Button button = toolkit.createButton(container,
 				Messages.CreateProductSystem, SWT.NONE);
-		button.setImage(ImageType.PRODUCT_SYSTEM_ICON_NEW.get());
+		button.setImage(ImageType.getNewImage(ImageType.PRODUCT_SYSTEM));
 		Controls.onSelect(button, (e) -> {
 			SystemCreation.run(getModel());
 		});

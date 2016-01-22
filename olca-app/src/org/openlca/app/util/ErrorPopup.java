@@ -27,7 +27,7 @@ public class ErrorPopup extends Popup {
 	public ErrorPopup(String title, String message) {
 		super(title, message);
 		defaultTitle(Messages.ErrorPopupTitle);
-		popupShellImage(ImageType.ERROR_ICON);
+		popupShellImage(ImageType.ERROR);
 	}
 
 	@Override

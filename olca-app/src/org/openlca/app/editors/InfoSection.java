@@ -164,12 +164,12 @@ public class InfoSection {
 		private void configureLink() {
 			if (type == MAJOR) {
 				tooltip = Messages.UpdateMajorVersion;
-				hoverIcon = ImageType.UP_16.get();
-				icon = ImageType.UP_DIS_16.get();
+				hoverIcon = ImageType.UP.get();
+				icon = ImageType.UP_DISABLED.get();
 			} else {
 				tooltip = Messages.UpdateMinorVersion;
-				hoverIcon = ImageType.UP_DOUBLE_16.get();
-				icon = ImageType.UP_DOUBLE_DIS_16.get();
+				hoverIcon = ImageType.UP_DOUBLE.get();
+				icon = ImageType.UP_DOUBLE_DISABLED.get();
 			}
 			link.setToolTipText(tooltip);
 			link.setActiveImage(hoverIcon);

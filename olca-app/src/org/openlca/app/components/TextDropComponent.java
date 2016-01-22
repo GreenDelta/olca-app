@@ -124,7 +124,7 @@ public final class TextDropComponent extends Composite {
 	private void createRemoveButton() {
 		removeButton = toolkit.createButton(this, "", SWT.PUSH);
 		removeButton.setLayoutData(new TableWrapData());
-		removeButton.setImage(ImageType.DELETE_ICON.get());
+		removeButton.setImage(ImageType.DELETE.get());
 		removeButton
 				.setToolTipText(Messages.RemoveObject);
 		if (content == null)

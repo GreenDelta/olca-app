@@ -334,7 +334,7 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 
 		public RefreshMapAction() {
 			setToolTipText(Messages.Reload);
-			setImageDescriptor(ImageType.REFRESH_ICON.getDescriptor());
+			setImageDescriptor(ImageType.REFRESH.getDescriptor());
 		}
 
 		@Override

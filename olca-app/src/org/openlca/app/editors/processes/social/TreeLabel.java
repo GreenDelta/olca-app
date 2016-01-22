@@ -13,14 +13,14 @@ class TreeLabel extends BaseLabelProvider implements ITableLabelProvider {
 	@Override
 	public Image getColumnImage(Object obj, int col) {
 		if (obj instanceof CategoryNode)
-			return col == 0 ? ImageType.INDICATOR_CATEGORY_ICON.get() : null;
+			return col == 0 ? ImageType.SOCIAL_INDICATOR_CATEGORY.get() : null;
 		if (!(obj instanceof SocialAspect))
 			return null;
 		if (col == 0)
-			return ImageType.INDICATOR_ICON.get();
+			return ImageType.SOCIAL_INDICATOR.get();
 		SocialAspect a = (SocialAspect) obj;
 		if (col == 6 && a.source != null)
-			return ImageType.SOURCE_ICON.get();
+			return ImageType.SOURCE.get();
 		else
 			return null;
 	}

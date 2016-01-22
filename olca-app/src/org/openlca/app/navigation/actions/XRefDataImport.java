@@ -17,7 +17,7 @@ import org.openlca.io.refdata.RefDataImport;
 public class XRefDataImport extends Action implements INavigationAction {
 
 	public XRefDataImport() {
-		setImageDescriptor(ImageType.EXTENSION_ICON.getDescriptor());
+		setImageDescriptor(ImageType.EXTENSION.getDescriptor());
 		setText("Import reference data");
 	}
 

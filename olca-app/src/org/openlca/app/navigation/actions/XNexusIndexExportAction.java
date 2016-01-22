@@ -38,7 +38,7 @@ public class XNexusIndexExportAction extends Action implements
 	private Logger log = LoggerFactory.getLogger(getClass());
 
 	public XNexusIndexExportAction() {
-		setImageDescriptor(ImageType.EXTENSION_ICON.getDescriptor());
+		setImageDescriptor(ImageType.EXTENSION.getDescriptor());
 		setText("Export Nexus Index");
 	}
 

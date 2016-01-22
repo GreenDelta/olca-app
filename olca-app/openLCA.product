@@ -30,7 +30,7 @@ en
       </vmArgsMac>
    </launcherArgs>
 
-   <windowImages i16="/olca-app/icons/logo_16_32bit.png" i32="/olca-app/icons/logo_32_32bit.png" i48="/olca-app/icons/logo_48_32bit.png" i64="/olca-app/icons/logo_64.png" i128="/olca-app/icons/logo_128.png"/>
+   <windowImages i16="/olca-app/icons/logo/16_32bit.png" i32="/olca-app/icons/logo/32_32bit.png" i48="/olca-app/icons/logo/48_32bit.png" i64="/olca-app/icons/logo/64.png" i128="/olca-app/icons/logo/128.png"/>
 
    <splash
       location="olca-app"
@@ -38,16 +38,16 @@ en
       startupMessageRect="7,500,445,20"
       startupForegroundColor="000000" />
    <launcher name="openLCA">
-      <macosx icon="/olca-app/icons/logo.icns"/>
+      <macosx icon="/olca-app/icons/logo/logo.icns"/>
       <solaris/>
       <win useIco="false">
          <bmp
-            winSmallHigh="/olca-app/icons/logo_16_32bit.bmp"
-            winSmallLow="/olca-app/icons/logo_16_8bit.bmp"
-            winMediumHigh="/olca-app/icons/logo_32_32bit.bmp"
-            winMediumLow="/olca-app/icons/logo_32_8bit.bmp"
-            winLargeHigh="/olca-app/icons/logo_48_32bit.bmp"
-            winLargeLow="/olca-app/icons/logo_48_8bit.bmp"/>
+            winSmallHigh="/olca-app/icons/logo/16_32bit.bmp"
+            winSmallLow="/olca-app/icons/logo/16_8bit.bmp"
+            winMediumHigh="/olca-app/icons/logo/32_32bit.bmp"
+            winMediumLow="/olca-app/icons/logo/32_8bit.bmp"
+            winLargeHigh="/olca-app/icons/logo/48_32bit.bmp"
+            winLargeLow="/olca-app/icons/logo/48_8bit.bmp"/>
       </win>
    </launcher>
 

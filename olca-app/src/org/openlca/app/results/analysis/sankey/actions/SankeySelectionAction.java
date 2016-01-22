@@ -25,7 +25,7 @@ public class SankeySelectionAction extends Action {
 
 	@Override
 	public ImageDescriptor getImageDescriptor() {
-		return ImageType.SANKEY_OPTIONS_ICON.getDescriptor();
+		return ImageType.SANKEY_OPTIONS.getDescriptor();
 	}
 
 	public void setSankeyDiagram(SankeyDiagram sankeyDiagram) {

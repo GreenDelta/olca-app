@@ -22,7 +22,7 @@ public class DatabaseCloseAction extends Action implements INavigationAction {
 
 	public DatabaseCloseAction() {
 		setText(Messages.CloseDatabase);
-		setImageDescriptor(ImageType.DISCONNECT_ICON.getDescriptor());
+		setImageDescriptor(ImageType.DISCONNECT.getDescriptor());
 	}
 
 	@Override

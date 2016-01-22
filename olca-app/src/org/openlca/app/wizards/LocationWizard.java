@@ -33,7 +33,7 @@ public class LocationWizard extends AbstractWizard<Location> {
 			setTitle(Messages.NewLocation);
 			setMessage(Messages.CreatesANewLocation);
 			// TODO change icon
-			setImageDescriptor(ImageType.NEW_WIZ_ACTOR.getDescriptor());
+			setImageDescriptor(ImageType.LOCATION_WIZARD.getDescriptor());
 			setPageComplete(false);
 		}
 

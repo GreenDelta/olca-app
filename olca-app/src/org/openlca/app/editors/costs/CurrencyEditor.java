@@ -107,7 +107,7 @@ public class CurrencyEditor extends ModelEditor<Currency> {
 				return;
 			ImageHyperlink link = tk.createImageHyperlink(comp, SWT.TOP);
 			link.setText(ref.getName());
-			link.setImage(ImageType.COST_CALC_ICON.get());
+			link.setImage(ImageType.CALCULATE_COSTS.get());
 			link.addHyperlinkListener(new HyperlinkAdapter() {
 				@Override
 				public void linkActivated(HyperlinkEvent e) {
@@ -120,7 +120,7 @@ public class CurrencyEditor extends ModelEditor<Currency> {
 			UI.formLabel(comp, tk, "");
 			Button button = tk.createButton(comp, "#Set as reference currency",
 					SWT.NONE);
-			button.setImage(ImageType.COST_CALC_ICON.get());
+			button.setImage(ImageType.CALCULATE_COSTS.get());
 			Controls.onSelect(button, e -> {
 				RefCurrencyUpdate.run(getModel());
 			});
