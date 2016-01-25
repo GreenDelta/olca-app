@@ -21,38 +21,28 @@ public class ImpactFactorCalculator {
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private ParameterSet parameterSet;
 
-	private Map<FlowDescriptor, Double> result;
-	private Scope scope;
-
 	public ImpactFactorCalculator(ParameterSet parameterSet) {
 		this.parameterSet = parameterSet;
 	}
 
 	public Map<FlowDescriptor, Double> calculate(ImpactCategory category,
 			long locationId) {
-		setup(locationId);
-		for (ImpactFactor factor : category.getImpactFactors())
-			put(factor);
+		Map<FlowDescriptor, Double> result = new HashMap<>();
+		Map<String, Double> parameters = parameterSet.get(locationId);
+		Scope scope = new FormulaInterpreter().getGlobalScope();
+		for (String name : parameters.keySet())
+			scope.bind(name, Double.toString(parameters.get(name)));
+		for (ImpactFactor factor : category.getImpactFactors()) {
+			FlowDescriptor flow = Descriptors.toDescriptor(factor.getFlow());
+			if (!isParametrized(factor))
+				result.put(flow, factor.getValue());
+			else
+				result.put(flow, eval(factor, scope));
+		}
 		return result;
 	}
 
-	private void setup(long locationId) {
-		scope = new FormulaInterpreter().createScope(1);
-		Map<String, Double> parameters = parameterSet.getFor(locationId);
-		for (String name : parameters.keySet())
-			scope.bind(name, Double.toString(parameters.get(name)));
-		result = new HashMap<>();
-	}
-
-	private void put(ImpactFactor factor) {
-		FlowDescriptor flow = Descriptors.toDescriptor(factor.getFlow());
-		if (!isParametrized(factor))
-			result.put(flow, factor.getValue());
-		else
-			result.put(flow, calculate(factor));
-	}
-
-	private double calculate(ImpactFactor factor) {
+	private double eval(ImpactFactor factor, Scope scope) {
 		try {
 			return scope.eval(factor.getFormula());
 		} catch (InterpreterException e) {
@@ -71,5 +61,4 @@ public class ImpactFactorCalculator {
 			return true;
 		}
 	}
-
 }

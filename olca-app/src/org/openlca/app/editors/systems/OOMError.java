@@ -12,7 +12,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.components.HyperlinkListener;
 import org.openlca.app.util.UI;
 
-public class OOMError {
+class OOMError {
 
 	public static void show() {
 		OOMErrorDialog dialog = new OOMErrorDialog();
@@ -41,7 +41,9 @@ public class OOMError {
 
 		@Override
 		protected void createFormContent(IManagedForm mform) {
-			String message = "#openLCA could not allocate enough physical memory to perform the calculation. Please adjust your memory settings under 'File/Preferences' -> Configuration";
+			String message = "#openLCA could not allocate enough physical memory "
+					+ "to perform the calculation. Please adjust your memory "
+					+ "settings under 'File/Preferences' -> Configuration";
 			FormToolkit toolkit = mform.getToolkit();
 			mform.getForm().setText("#Out of memory");
 			Composite comp = UI.formBody(mform.getForm(), mform.getToolkit());

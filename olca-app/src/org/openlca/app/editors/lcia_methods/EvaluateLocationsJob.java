@@ -15,19 +15,19 @@ import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.descriptors.LocationDescriptor;
 import org.openlca.geo.kml.KmlFeature;
+import org.openlca.geo.parameter.ParameterCache;
 import org.openlca.geo.parameter.ParameterCalculator;
-import org.openlca.geo.parameter.ParameterRepository;
-import org.openlca.geo.parameter.ShapeFileRepository;
+import org.openlca.geo.parameter.ShapeFileFolder;
 import org.python.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class EvaluateLocationsJob implements IRunnableWithProgress {
+class EvaluateLocationsJob implements IRunnableWithProgress {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private ImpactMethod method;
-	private ShapeFileRepository shapeFileRepository;
-	private ParameterRepository parameterRepository;
+	private ShapeFileFolder shapeFileFolder;
+	private ParameterCache parameterCache;
 	private ParameterCalculator parameterCalculator;
 	private LocationDao locationDao;
 	private IProgressMonitor monitor;
@@ -50,16 +50,16 @@ public class EvaluateLocationsJob implements IRunnableWithProgress {
 
 	private List<LocationDescriptor> init() {
 		beginTask("#Initializing");
-		shapeFileRepository = new ShapeFileRepository(ShapeFileUtils.getFolder(method));
-		shapeFiles = shapeFileRepository.getShapeFiles();
+		shapeFileFolder = new ShapeFileFolder(ShapeFileUtils.getFolder(method));
+		shapeFiles = shapeFileFolder.getShapeFiles();
 		if (shapeFiles.size() == 0)
 			return Collections.emptyList();
-		parameterRepository = new ParameterRepository(shapeFileRepository);
+		parameterCache = new ParameterCache(shapeFileFolder);
 		List<Parameter> parameters = getShapeFileParameters();
 		if (parameters.size() == 0)
 			return Collections.emptyList();
 		parameterCalculator = new ParameterCalculator(parameters,
-				shapeFileRepository, parameterRepository);
+				shapeFileFolder);
 		locationDao = new LocationDao(Database.get());
 		return locationDao.getDescriptors();
 	}
@@ -67,7 +67,7 @@ public class EvaluateLocationsJob implements IRunnableWithProgress {
 	private void evaluate(LocationDescriptor location) {
 		subTask(location.getName());
 		for (String shapeFile : ShapeFileUtils.getShapeFiles(method))
-			parameterRepository.remove(location.getId(), shapeFile);
+			parameterCache.remove(location.getId(), shapeFile);
 		KmlFeature feature = getKmlFeature(location);
 		if (feature != null)
 			parameterCalculator.calculate(location.getId(), feature);

@@ -14,7 +14,7 @@ import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.ContributionResultProvider;
 import org.openlca.geo.RegionalizedResultProvider;
-import org.openlca.geo.kml.KmlLoadResult;
+import org.openlca.geo.kml.LocationKml;
 
 abstract class SelectionHandler implements EventHandler {
 
@@ -64,16 +64,15 @@ abstract class SelectionHandler implements EventHandler {
 	}
 
 	private List<LocationResult> getResultData(Map<Long, Double> results) {
-		List<KmlLoadResult> kmlData = result.kmlData;
-		List<LocationResult> locationResults = new ArrayList<>();
-		for (KmlLoadResult data : kmlData) {
+		List<LocationResult> list = new ArrayList<>();
+		for (LocationKml data : result.kmlData) {
 			LocationResult result = new LocationResult(data.kmlFeature,
 					data.locationId);
 			for (LongPair product : data.processProducts)
 				result.amount += results.get(product.getFirst());
-			locationResults.add(result);
+			list.add(result);
 		}
-		return locationResults;
+		return list;
 	}
 
 }

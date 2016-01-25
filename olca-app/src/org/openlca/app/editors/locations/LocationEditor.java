@@ -11,8 +11,8 @@ import org.openlca.app.util.Info;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
-import org.openlca.geo.parameter.ParameterRepository;
-import org.openlca.geo.parameter.ShapeFileRepository;
+import org.openlca.geo.parameter.ParameterCache;
+import org.openlca.geo.parameter.ShapeFileFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,11 +54,11 @@ public class LocationEditor extends ModelEditor<Location> {
 		ImpactMethodDao methodDao = new ImpactMethodDao(Database.get());
 		List<ImpactMethodDescriptor> descriptors = methodDao.getDescriptors();
 		for (ImpactMethodDescriptor method : descriptors) {
-			ShapeFileRepository repo = new ShapeFileRepository(
+			ShapeFileFolder folder = new ShapeFileFolder(
 					ShapeFileUtils.getFolder(method));
-			ParameterRepository pRepo = new ParameterRepository(repo);
+			ParameterCache cache = new ParameterCache(folder);
 			for (String shapeFile : ShapeFileUtils.getShapeFiles(method))
-				pRepo.remove(getModel().getId(), shapeFile);
+				cache.remove(getModel().getId(), shapeFile);
 		}
 	}
 

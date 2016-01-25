@@ -104,7 +104,7 @@ public class ProductSystemActions extends EditorActionBarContributor {
 								system, Cache.getMatrixCache());
 						IMatrixFactory<?> factory = App.getSolver()
 								.getMatrixFactory();
-						IMatrix matrix = inventory.getTechnologyMatrix()
+						IMatrix matrix = inventory.technologyMatrix
 								.createRealMatrix(factory);
 						matrix = new MatrixRowSorter(matrix, factory).run();
 						new MatrixImageExport(matrix, file).run();
