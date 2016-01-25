@@ -28,7 +28,7 @@ class UnitGroupWizardPage extends AbstractWizardPage<UnitGroup> {
 		super("UnitGroupWizardPage");
 		setTitle(Messages.NewUnitGroup);
 		setMessage(Messages.CreatesANewUnitGroup);
-		setImageDescriptor(ImageType.NEW_WIZ_UNIT.getDescriptor());
+		setImageDescriptor(ImageType.UNIT_GROUP_WIZARD.getDescriptor());
 		setPageComplete(false);
 	}
 

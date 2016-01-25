@@ -150,15 +150,15 @@ class SectionList {
 		private void createActions() {
 			Action up = Actions.create(
 					Messages.MoveUp,
-					ImageType.UP_16.getDescriptor(),
+					ImageType.UP.getDescriptor(),
 					() -> moveUp());
 			Action down = Actions.create(
 					Messages.MoveDown,
-					ImageType.DOWN_16.getDescriptor(),
+					ImageType.DOWN.getDescriptor(),
 					() -> moveDown());
 			Action delete = Actions.create(
 					Messages.DeleteSection,
-					ImageType.DELETE_ICON.getDescriptor(),
+					ImageType.DELETE.getDescriptor(),
 					() -> delete());
 			Actions.bind(ui, up, down, delete);
 		}

@@ -67,9 +67,9 @@ class FlowUseSection {
 		this.toolkit = toolkit;
 		App.runInUI("Render usage links", () -> {
 			renderLinks(Messages.ConsumedBy, recipients,
-					ImageType.INPUT_ICON.get());
+					ImageType.INPUT.get());
 			renderLinks(Messages.ProducedBy, providers,
-					ImageType.OUTPUT_ICON.get());
+					ImageType.OUTPUT.get());
 		});
 	}
 

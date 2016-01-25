@@ -15,7 +15,7 @@ import org.openlca.io.refdata.RefDataExport;
 public class XRefDataExport extends Action implements INavigationAction {
 
 	public XRefDataExport() {
-		setImageDescriptor(ImageType.EXTENSION_ICON.getDescriptor());
+		setImageDescriptor(ImageType.EXTENSION.getDescriptor());
 		setText("Export reference data");
 	}
 

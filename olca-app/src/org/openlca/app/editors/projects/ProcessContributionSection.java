@@ -127,7 +127,7 @@ class ProcessContributionSection {
 		@Override
 		public Image getColumnImage(Object element, int col) {
 			if (col == 0)
-				return ImageType.PROCESS_ICON.get();
+				return ImageType.PROCESS.get();
 			else
 				return null;
 		}

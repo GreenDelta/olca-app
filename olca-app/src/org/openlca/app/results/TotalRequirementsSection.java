@@ -238,9 +238,9 @@ class TotalRequirementsSection {
 				return null;
 			switch (col) {
 			case 0:
-				return ImageType.PROCESS_ICON.get();
+				return ImageType.PROCESS.get();
 			case 1:
-				return ImageType.FLOW_ICON.get();
+				return ImageType.FLOW.get();
 			case 4:
 				return costImage.getForTable(((Item) obj).costShare);
 			default:

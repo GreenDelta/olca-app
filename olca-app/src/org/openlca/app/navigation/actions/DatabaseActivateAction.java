@@ -34,7 +34,7 @@ public class DatabaseActivateAction extends Action implements INavigationAction 
 
 	public DatabaseActivateAction() {
 		setText(Messages.OpenDatabase);
-		setImageDescriptor(ImageType.CONNECT_ICON.getDescriptor());
+		setImageDescriptor(ImageType.CONNECT.getDescriptor());
 	}
 
 	public DatabaseActivateAction(IDatabaseConfiguration config) {

@@ -132,7 +132,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 		Button button = toolkit.createButton(composite, Messages.Calculate,
 				SWT.NONE);
 		UI.gridData(button, false, false).widthHint = 100;
-		button.setImage(ImageType.CALCULATE_ICON.get());
+		button.setImage(ImageType.CALCULATE.get());
 		Controls.onSelect(button, (e) -> {
 			Calculation.run(getModel());
 		});
@@ -142,7 +142,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 		Button button = toolkit.createButton(composite, Messages.Report,
 				SWT.NONE);
 		UI.gridData(button, false, false).widthHint = 100;
-		button.setImage(ImageType.PROJECT_ICON.get());
+		button.setImage(ImageType.PROJECT.get());
 		Controls.onSelect(button, (e) -> {
 			App.run(Messages.Calculate,
 					new ReportCalculator(getModel(), editor.getReport()),

@@ -20,7 +20,7 @@ public class DatabaseImportAction extends Action implements INavigationAction {
 
 	public DatabaseImportAction() {
 		setText(Messages.ImportDatabase);
-		setImageDescriptor(ImageType.DB_IO.getDescriptor());
+		setImageDescriptor(ImageType.DATABASE_IO.getDescriptor());
 	}
 
 	@Override

@@ -97,7 +97,7 @@ class SourceInfoPage extends ModelPage<Source> {
 
 	private void createDeleteLink(Composite composite) {
 		deleteLink = toolkit.createImageHyperlink(composite, SWT.TOP);
-		deleteLink.setImage(ImageType.DELETE_ICON_DISABLED.get());
+		deleteLink.setImage(ImageType.DELETE_DISABLED.get());
 		deleteLink.addMouseTrackListener(new DeleteFileVisibility());
 		deleteLink.setVisible(false);
 		deleteLink.setToolTipText(Messages.Delete);
@@ -214,14 +214,14 @@ class SourceInfoPage extends ModelPage<Source> {
 		@Override
 		public void mouseEnter(MouseEvent e) {
 			if (e.widget == deleteLink)
-				deleteLink.setImage(ImageType.DELETE_ICON.get());
+				deleteLink.setImage(ImageType.DELETE.get());
 			deleteLink.setVisible(getModel().getExternalFile() != null);
 		}
 
 		@Override
 		public void mouseExit(MouseEvent e) {
 			if (e.widget == deleteLink)
-				deleteLink.setImage(ImageType.DELETE_ICON_DISABLED.get());
+				deleteLink.setImage(ImageType.DELETE_DISABLED.get());
 			deleteLink.setVisible(false);
 		}
 	}

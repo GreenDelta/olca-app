@@ -30,7 +30,7 @@ class SaveImageAction extends Action {
 	SaveImageAction() {
 		setId(ActionIds.SAVE_IMAGE);
 		setText(Messages.SaveAsImage);
-		setImageDescriptor(ImageType.SAVE_AS_IMAGE_ICON.getDescriptor());
+		setImageDescriptor(ImageType.SAVE_AS_IMAGE.getDescriptor());
 	}
 
 	void setEditor(ProductSystemGraphEditor editor) {

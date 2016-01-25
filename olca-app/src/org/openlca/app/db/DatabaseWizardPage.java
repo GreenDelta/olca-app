@@ -33,7 +33,7 @@ class DatabaseWizardPage extends WizardPage {
 
 	public DatabaseWizardPage() {
 		super("database-wizard-page", Messages.NewDatabase,
-				ImageType.NEW_WIZ_DATABASE.getDescriptor());
+				ImageType.DATABASE_WIZARD.getDescriptor());
 		setDescription(Messages.CreateANewDatabase);
 		setPageComplete(false);
 	}

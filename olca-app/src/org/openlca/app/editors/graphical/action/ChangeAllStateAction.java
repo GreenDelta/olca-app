@@ -18,11 +18,11 @@ class ChangeAllStateAction extends Action {
 		if (type == MINIMIZE) {
 			setId(ActionIds.MINIMIZE_ALL);
 			setText(Messages.MinimizeAll);
-			setImageDescriptor(ImageType.MINIMIZE_ICON.getDescriptor());
+			setImageDescriptor(ImageType.MINIMIZE.getDescriptor());
 		} else if (type == MAXIMIZE) {
 			setId(ActionIds.MAXIMIZE_ALL);
 			setText(Messages.MaximizeAll);
-			setImageDescriptor(ImageType.MAXIMIZE_ICON.getDescriptor());
+			setImageDescriptor(ImageType.MAXIMIZE.getDescriptor());
 		}
 		this.type = type;
 	}

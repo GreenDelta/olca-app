@@ -48,7 +48,7 @@ public class ReportEditorPage extends FormPage {
 		UI.formLabel(composite, "");
 		Button addButton = toolkit.createButton(composite, Messages.AddSection,
 				SWT.NONE);
-		addButton.setImage(ImageType.ADD_ICON.get());
+		addButton.setImage(ImageType.ADD.get());
 		Controls.onSelect(addButton, (e) -> {
 			sectionList.addNew();
 		});

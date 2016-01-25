@@ -83,7 +83,7 @@ public class SearchText extends WorkbenchWindowControlContribution {
 	private class SearchAction extends Action {
 		public SearchAction() {
 			setText(Messages.Search);
-			setImageDescriptor(ImageType.SEARCH_ICON.getDescriptor());
+			setImageDescriptor(ImageType.SEARCH.getDescriptor());
 		}
 
 		@Override
@@ -103,7 +103,7 @@ public class SearchText extends WorkbenchWindowControlContribution {
 
 		public DropDownAction() {
 			setText(Messages.Search);
-			setImageDescriptor(ImageType.SEARCH_ICON.getDescriptor());
+			setImageDescriptor(ImageType.SEARCH.getDescriptor());
 			setMenuCreator(this);
 		}
 
@@ -161,7 +161,7 @@ public class SearchText extends WorkbenchWindowControlContribution {
 				final ModelType type) {
 			Image image = null;
 			if (type == null)
-				image = ImageType.SEARCH_ICON.get();
+				image = ImageType.SEARCH.get();
 			else
 				image = Images.getIcon(type);
 			MenuItem item = new MenuItem(menu, SWT.NONE);
@@ -174,7 +174,7 @@ public class SearchText extends WorkbenchWindowControlContribution {
 			setText(text);
 			ImageDescriptor imageDescriptor = null;
 			if (type == null)
-				imageDescriptor = ImageType.SEARCH_ICON.getDescriptor();
+				imageDescriptor = ImageType.SEARCH.getDescriptor();
 			else
 				imageDescriptor = Images.getIconDescriptor(type);
 			setImageDescriptor(imageDescriptor);

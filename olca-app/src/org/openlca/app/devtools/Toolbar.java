@@ -11,7 +11,7 @@ public class Toolbar extends EditorActionBarContributor {
 
 	@Override
 	public void contributeToToolBar(IToolBarManager manager) {
-		manager.add(Actions.create("Run", ImageType.RUN_SMALL.getDescriptor(),
+		manager.add(Actions.create("Run", ImageType.RUN.getDescriptor(),
 				() -> {
 					FormEditor editor = Editors.getActive();
 					if (!(editor instanceof IScriptEditor))

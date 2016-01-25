@@ -132,31 +132,31 @@ public class CreateModelAction extends Action implements INavigationAction {
 			return null;
 		switch (type) {
 		case ACTOR:
-			return ImageType.ACTOR_ICON_NEW.getDescriptor();
+			return ImageType.getNewDescriptor(ImageType.ACTOR);
 		case FLOW:
-			return ImageType.FLOW_ICON_NEW.getDescriptor();
+			return ImageType.getNewDescriptor(ImageType.FLOW);
 		case FLOW_PROPERTY:
-			return ImageType.FLOW_PROPERTY_ICON_NEW.getDescriptor();
+			return ImageType.getNewDescriptor(ImageType.FLOW_PROPERTY);
 		case IMPACT_METHOD:
-			return ImageType.LCIA_ICON_NEW.getDescriptor();
+			return ImageType.getNewDescriptor(ImageType.IMPACT_METHOD);
 		case PROCESS:
-			return ImageType.PROCESS_ICON_NEW.getDescriptor();
+			return ImageType.getNewDescriptor(ImageType.PROCESS);
 		case PRODUCT_SYSTEM:
-			return ImageType.PRODUCT_SYSTEM_ICON_NEW.getDescriptor();
+			return ImageType.getNewDescriptor(ImageType.PRODUCT_SYSTEM);
 		case PROJECT:
-			return ImageType.PROJECT_ICON_NEW.getDescriptor();
+			return ImageType.getNewDescriptor(ImageType.PROJECT);
 		case SOURCE:
-			return ImageType.SOURCE_ICON_NEW.getDescriptor();
+			return ImageType.getNewDescriptor(ImageType.SOURCE);
 		case UNIT_GROUP:
-			return ImageType.UNIT_GROUP_ICON_NEW.getDescriptor();
+			return ImageType.getNewDescriptor(ImageType.UNIT_GROUP);
 		case SOCIAL_INDICATOR:
-			return ImageType.INDICATOR_ICON_NEW.getDescriptor();
+			return ImageType.getNewDescriptor(ImageType.SOCIAL_INDICATOR);
 		case LOCATION:
-			return ImageType.LOCATION_ICON_NEW.getDescriptor();
+			return ImageType.getNewDescriptor(ImageType.LOCATION);
 		case PARAMETER:
-			return ImageType.PARAMETER_ICON_NEW.getDescriptor();
+			return ImageType.getNewDescriptor(ImageType.PARAMETER);
 		case CURRENCY:
-			return ImageType.CURRENCY_ICON_NEW.getDescriptor();
+			return ImageType.getNewDescriptor(ImageType.CURRENCY);
 		default:
 			return null;
 		}

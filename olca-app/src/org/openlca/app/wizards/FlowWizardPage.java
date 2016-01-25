@@ -26,7 +26,7 @@ class FlowWizardPage extends AbstractWizardPage<Flow> {
 		super("FlowWizardPage");
 		setTitle(Messages.NewFlow);
 		setMessage(Messages.CreatesANewFlow);
-		setImageDescriptor(ImageType.NEW_WIZ_FLOW.getDescriptor());
+		setImageDescriptor(ImageType.FLOW_WIZARD.getDescriptor());
 		setPageComplete(false);
 	}
 

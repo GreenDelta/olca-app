@@ -43,8 +43,7 @@ public class ProcessToolbar extends EditorActionBarContributor {
 	private class MakeSystemAction extends Action {
 
 		public MakeSystemAction() {
-			setImageDescriptor(ImageType.PRODUCT_SYSTEM_ICON_NEW
-					.getDescriptor());
+			setImageDescriptor(ImageType.getNewDescriptor(ImageType.PRODUCT_SYSTEM));
 			setToolTipText(Messages.CreateProductSystem);
 		}
 
@@ -60,7 +59,7 @@ public class ProcessToolbar extends EditorActionBarContributor {
 	private class ExcelExportAction extends Action {
 
 		public ExcelExportAction() {
-			setImageDescriptor(ImageType.FILE_EXCEL_SMALL.getDescriptor());
+			setImageDescriptor(ImageType.FILE_EXCEL.getDescriptor());
 			setToolTipText(Messages.ExportToExcel);
 		}
 

@@ -64,7 +64,7 @@ public class DeleteModelAction extends Action implements INavigationAction {
 
 	@Override
 	public ImageDescriptor getImageDescriptor() {
-		return ImageType.DELETE_ICON.getDescriptor();
+		return ImageType.DELETE.getDescriptor();
 	}
 
 	@Override

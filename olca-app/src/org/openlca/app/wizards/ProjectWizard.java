@@ -33,7 +33,7 @@ public class ProjectWizard extends AbstractWizard<Project> {
 			super("ProjectWizardPage");
 			setTitle(Messages.NewProject);
 			setMessage(Messages.CreatesANewProject);
-			setImageDescriptor(ImageType.NEW_WIZ_PROJECT.getDescriptor());
+			setImageDescriptor(ImageType.PROJECT_WIZARD.getDescriptor());
 			setPageComplete(false);
 		}
 

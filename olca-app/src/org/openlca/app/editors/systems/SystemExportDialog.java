@@ -45,7 +45,7 @@ public class SystemExportDialog extends WizardDialog {
 
 			protected SystemExportWizardPage() {
 				super("SystemExportWizardPage");
-				setImageDescriptor(ImageType.FILE_EXCEL_SMALL.getDescriptor());
+				setImageDescriptor(ImageType.FILE_EXCEL.getDescriptor());
 				setTitle(Messages.ProductSystemExcelExport);
 				setDescription(Messages.ProductSystemExcelExportMessage);
 				setPageComplete(false);

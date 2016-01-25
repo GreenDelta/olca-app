@@ -69,7 +69,7 @@ public class SocialAspectsPage extends ModelPage<Process> {
 		Trees.onDoubleClick(tree, (e) -> editAspect());
 		Action add = Actions.onAdd(this::addIndicator);
 		Action edit = Actions.create(Messages.Edit,
-				ImageType.EDIT_16.getDescriptor(), this::editAspect);
+				ImageType.EDIT.getDescriptor(), this::editAspect);
 		Action delete = Actions.onRemove(this::deleteAspect);
 		Actions.bind(section, add, edit, delete);
 		Actions.bind(tree, add, edit, delete);

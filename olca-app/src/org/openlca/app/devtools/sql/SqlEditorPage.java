@@ -67,7 +67,7 @@ public class SqlEditorPage extends FormPage {
 		RunAction() {
 			setToolTipText("Run SQL statement");
 			setText("Run SQL statement");
-			setImageDescriptor(ImageType.RUN_SMALL.getDescriptor());
+			setImageDescriptor(ImageType.RUN.getDescriptor());
 		}
 
 		@Override

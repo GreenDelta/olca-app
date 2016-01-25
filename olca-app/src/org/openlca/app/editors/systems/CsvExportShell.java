@@ -51,7 +51,7 @@ public class CsvExportShell extends Shell {
 
 	public CsvExportShell(Shell parent, ProductSystem system) {
 		super(parent, SWT.SHELL_TRIM);
-		setImage(ImageType.MATRIX_ICON.get());
+		setImage(ImageType.FILE_CSV.get());
 		setLayout(new FillLayout(SWT.HORIZONTAL));
 		setText(Messages.MatrixExport);
 		setSize(450, 450);

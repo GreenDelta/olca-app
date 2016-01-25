@@ -14,6 +14,7 @@ import org.openlca.core.model.Location;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.Process;
+import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.Project;
 import org.openlca.core.model.RootEntity;
@@ -99,34 +100,34 @@ public class Images {
 			return null;
 		switch (type) {
 		case ACTOR:
-			return ImageType.ACTOR_ICON;
+			return ImageType.ACTOR;
 		case FLOW:
-			return ImageType.FLOW_ICON;
+			return ImageType.FLOW;
 		case FLOW_PROPERTY:
-			return ImageType.FLOW_PROPERTY_ICON;
+			return ImageType.FLOW_PROPERTY;
 		case IMPACT_METHOD:
-			return ImageType.LCIA_ICON;
+			return ImageType.IMPACT_METHOD;
 		case IMPACT_CATEGORY:
-			return ImageType.LCIA_CATEGORY_ICON;
+			return ImageType.IMPACT_METHOD_CATEGORY;
 		case PROCESS:
-			return ImageType.PROCESS_ICON;
+			return ImageType.PROCESS;
 		case PRODUCT_SYSTEM:
-			return ImageType.PRODUCT_SYSTEM_ICON;
+			return ImageType.PRODUCT_SYSTEM;
 		case PROJECT:
-			return ImageType.PROJECT_ICON;
+			return ImageType.PROJECT;
 		case SOURCE:
-			return ImageType.SOURCE_ICON;
+			return ImageType.SOURCE;
 		case SOCIAL_INDICATOR:
-			return ImageType.INDICATOR_ICON;
+			return ImageType.SOCIAL_INDICATOR;
 		case LOCATION:
-			return ImageType.LOCATION_ICON;
+			return ImageType.LOCATION;
 		case PARAMETER:
-			return ImageType.FORMULA_ICON;
+			return ImageType.FORMULA;
 		case CURRENCY:
-			return ImageType.CURRENCY_ICON;
+			return ImageType.CURRENCY;
 		case UNIT_GROUP:
 		case UNIT:
-			return ImageType.UNIT_GROUP_ICON;
+			return ImageType.UNIT_GROUP;
 		default:
 			return null;
 		}
@@ -137,11 +138,24 @@ public class Images {
 			return null;
 		switch (type) {
 		case ELEMENTARY_FLOW:
-			return ImageType.FLOW_SUBSTANCE;
+			return ImageType.FLOW_ELEMENTARY;
 		case PRODUCT_FLOW:
 			return ImageType.FLOW_PRODUCT;
 		case WASTE_FLOW:
 			return ImageType.FLOW_WASTE;
+		default:
+			return null;
+		}
+	}
+	
+	public static ImageType getImageType(ProcessType type) {
+		if (type == null)
+			return null;
+		switch (type) {
+		case UNIT_PROCESS:
+			return ImageType.PROCESS;
+		case LCI_RESULT:
+			return ImageType.PROCESS_SYSTEM;
 		default:
 			return null;
 		}
@@ -158,33 +172,33 @@ public class Images {
 			return null;
 		switch (modelType) {
 		case ACTOR:
-			return ImageType.ACTOR_CATEGORY_ICON;
+			return ImageType.ACTOR_CATEGORY;
 		case FLOW:
-			return ImageType.FLOW_CATEGORY_ICON;
+			return ImageType.FLOW_CATEGORY;
 		case FLOW_PROPERTY:
-			return ImageType.FLOW_PROPERTY_CATEGORY_ICON;
+			return ImageType.FLOW_PROPERTY_CATEGORY;
 		case IMPACT_METHOD:
-			return ImageType.LCIA_CATEGORY_ICON;
+			return ImageType.IMPACT_METHOD_CATEGORY;
 		case PROCESS:
-			return ImageType.PROCESS_CATEGORY_ICON;
+			return ImageType.PROCESS_CATEGORY;
 		case PRODUCT_SYSTEM:
-			return ImageType.PRODUCT_SYSTEM_CATEGORY_ICON;
+			return ImageType.PRODUCT_SYSTEM_CATEGORY;
 		case PROJECT:
-			return ImageType.PROJECT_CATEGORY_ICON;
+			return ImageType.PROJECT_CATEGORY;
 		case SOURCE:
-			return ImageType.SOURCE_CATEGORY_ICON;
+			return ImageType.SOURCE_CATEGORY;
 		case SOCIAL_INDICATOR:
-			return ImageType.INDICATOR_CATEGORY_ICON;
+			return ImageType.SOCIAL_INDICATOR_CATEGORY;
 		case UNIT_GROUP:
-			return ImageType.UNIT_GROUP_CATEGORY_ICON;
+			return ImageType.UNIT_GROUP_CATEGORY;
 		case LOCATION:
-			return ImageType.LOCATION_CATEGORY_ICON;
+			return ImageType.LOCATION_CATEGORY;
 		case PARAMETER:
-			return ImageType.PARAMETER_CATEGORY_ICON;
+			return ImageType.PARAMETER_CATEGORY;
 		case CURRENCY:
-			return ImageType.CURRENCY_CATEGORY_ICON;
+			return ImageType.CURRENCY_CATEGORY;
 		default:
-			return ImageType.FOLDER_SMALL;
+			return ImageType.FOLDER;
 		}
 	}
 

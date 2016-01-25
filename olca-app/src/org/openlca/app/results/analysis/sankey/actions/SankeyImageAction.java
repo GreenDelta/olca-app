@@ -38,7 +38,7 @@ public class SankeyImageAction extends Action {
 
 	@Override
 	public ImageDescriptor getImageDescriptor() {
-		return ImageType.SAVE_AS_IMAGE_ICON.getDescriptor();
+		return ImageType.SAVE_AS_IMAGE.getDescriptor();
 	}
 
 	public void setSankeyDiagram(SankeyDiagram sankeyDiagram) {

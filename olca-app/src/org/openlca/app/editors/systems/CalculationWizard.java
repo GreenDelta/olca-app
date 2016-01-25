@@ -69,7 +69,6 @@ class CalculationWizard extends Wizard {
 	@Override
 	public boolean performFinish() {
 		CalculationSetup setup = calculationPage.getSetup();
-		setup.withCosts = true;
 		CalculationType type = calculationPage.getCalculationType();
 		saveDefaults(setup, type);
 		try {

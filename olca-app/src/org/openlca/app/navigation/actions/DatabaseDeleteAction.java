@@ -36,9 +36,8 @@ public class DatabaseDeleteAction extends Action implements INavigationAction {
 	private List<IDatabaseConfiguration> configs;
 
 	public DatabaseDeleteAction() {
-		setImageDescriptor(ImageType.DELETE_ICON.getDescriptor());
-		setDisabledImageDescriptor(ImageType.DELETE_ICON_DISABLED
-				.getDescriptor());
+		setImageDescriptor(ImageType.DELETE.getDescriptor());
+		setDisabledImageDescriptor(ImageType.DELETE_DISABLED.getDescriptor());
 	}
 
 	@Override

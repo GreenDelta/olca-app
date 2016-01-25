@@ -32,7 +32,7 @@ public class ActorWizard extends AbstractWizard<Actor> {
 			super("ActorWizardPage");
 			setTitle(Messages.NewActor);
 			setMessage(Messages.CreatesANewActor);
-			setImageDescriptor(ImageType.NEW_WIZ_ACTOR.getDescriptor());
+			setImageDescriptor(ImageType.ACTOR_WIZARD.getDescriptor());
 			setPageComplete(false);
 		}
 

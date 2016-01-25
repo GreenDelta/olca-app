@@ -18,11 +18,11 @@ class MassExpansionAction extends Action {
 		if (type == EXPAND) {
 			setId(ActionIds.EXPAND_ALL);
 			setText(Messages.ExpandAll);
-			setImageDescriptor(ImageType.EXPAND_ICON.getDescriptor());
+			setImageDescriptor(ImageType.EXPAND.getDescriptor());
 		} else if (type == COLLAPSE) {
 			setId(ActionIds.COLLAPSE_ALL);
 			setText(Messages.CollapseAll);
-			setImageDescriptor(ImageType.COLLAPSE_ICON.getDescriptor());
+			setImageDescriptor(ImageType.COLLAPSE.getDescriptor());
 		}
 		this.type = type;
 	}

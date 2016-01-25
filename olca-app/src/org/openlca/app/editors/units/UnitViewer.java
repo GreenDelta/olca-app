@@ -121,7 +121,7 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 		@Override
 		public Image getColumnImage(Object element, int column) {
 			if (column == 0)
-				return ImageType.UNIT_GROUP_ICON.get();
+				return ImageType.UNIT_GROUP.get();
 			if (column != 5)
 				return null;
 			UnitGroup group = editor.getModel();

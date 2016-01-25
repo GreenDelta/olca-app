@@ -127,9 +127,9 @@ public class ProblemsPage extends WizardPage {
 			Image image = null;
 			if (element instanceof Problem) {
 				if (((Problem) element).getType() == Problem.ERROR) {
-					image = ImageType.ERROR_ICON.get();
+					image = ImageType.ERROR.get();
 				} else if (((Problem) element).getType() == Problem.WARNING) {
-					image = ImageType.WARNING_ICON.get();
+					image = ImageType.WARNING.get();
 				}
 			}
 			return image;

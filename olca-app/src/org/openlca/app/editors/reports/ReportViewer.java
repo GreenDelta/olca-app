@@ -102,7 +102,7 @@ public class ReportViewer extends FormEditor {
 
 		@Override
 		public ImageDescriptor getImageDescriptor() {
-			return ImageType.PROJECT_ICON.getDescriptor();
+			return ImageType.PROJECT.getDescriptor();
 		}
 
 		@Override

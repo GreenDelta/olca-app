@@ -24,13 +24,13 @@ class FileLabelProvider extends LabelProvider {
 			return ImageType
 					.getPlatformImage(ISharedImages.IMG_OBJ_FOLDER);
 		if (hasExtension(file, ".xml"))
-			return ImageType.XML_ICON.get();
+			return ImageType.FILE_XML.get();
 		if (hasExtension(file, ".zip"))
-			return ImageType.ZIP_ICON.get();
+			return ImageType.FILE_ZIP.get();
 		if (hasExtension(file, ".xls") || hasExtension(file, ".xlsx"))
-			return ImageType.FILE_EXCEL_SMALL.get();
+			return ImageType.FILE_EXCEL.get();
 		else
-			return ImageType.FILE_SMALL.get();
+			return ImageType.FILE.get();
 	}
 
 	private boolean hasExtension(File file, String extension) {

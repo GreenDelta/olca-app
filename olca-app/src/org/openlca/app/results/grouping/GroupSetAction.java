@@ -36,7 +36,7 @@ class GroupSetAction extends Action {
 	public GroupSetAction(GroupPage page) {
 		this.page = page;
 		setToolTipText(Messages.Open);
-		setImageDescriptor(ImageType.FOLDER_ICON_OPEN.getDescriptor());
+		setImageDescriptor(ImageType.FOLDER_OPEN.getDescriptor());
 	}
 
 	@Override

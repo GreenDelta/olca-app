@@ -32,7 +32,7 @@ public class SourceWizard extends AbstractWizard<Source> {
 			super("SourceWizardPage");
 			setTitle(Messages.NewSource);
 			setMessage(Messages.CreatesANewSource);
-			setImageDescriptor(ImageType.NEW_WIZ_SOURCE.getDescriptor());
+			setImageDescriptor(ImageType.SOURCE_WIZARD.getDescriptor());
 			setPageComplete(false);
 		}
 

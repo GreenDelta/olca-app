@@ -89,7 +89,7 @@ class ShapeFilePage extends FormPage {
 		UI.formLabel(composite, toolkit, "");
 		Button importButton = toolkit.createButton(composite, Messages.Import,
 				SWT.NONE);
-		importButton.setImage(ImageType.IMPORT_ICON.get());
+		importButton.setImage(ImageType.IMPORT.get());
 		Controls.onSelect(importButton, (e) -> {
 			File file = FileChooser.forImport("*.shp");
 			if (file != null)
@@ -98,7 +98,7 @@ class ShapeFilePage extends FormPage {
 		UI.formLabel(composite, toolkit, "");
 		Button evaluateButton = toolkit.createButton(composite,
 				Messages.EvaluateLocations, SWT.NONE);
-		evaluateButton.setImage(ImageType.EXPRESSION_ICON.get());
+		evaluateButton.setImage(ImageType.EXPRESSION.get());
 		Controls.onSelect(evaluateButton, (e) -> {
 			try {
 				new ProgressMonitorDialog(UI.shell()).run(true, true,
@@ -114,7 +114,7 @@ class ShapeFilePage extends FormPage {
 		ImageHyperlink link = toolkit.createImageHyperlink(composite, SWT.TOP);
 		File folder = ShapeFileUtils.getFolder(method);
 		link.setText(Strings.cut(folder.getAbsolutePath(), 75));
-		link.setImage(ImageType.FOLDER_SMALL.get());
+		link.setImage(ImageType.FOLDER.get());
 		link.setForeground(Colors.getLinkBlue());
 		link.setToolTipText(folder.getAbsolutePath());
 		link.addHyperlinkListener(new HyperlinkAdapter() {
@@ -202,7 +202,7 @@ class ShapeFilePage extends FormPage {
 				@Override
 				public ImageDescriptor getImageDescriptor() {
 					return ImageManager
-							.getImageDescriptor(ImageType.REFRESH_ICON);
+							.getImageDescriptor(ImageType.REFRESH);
 
 				}
 
@@ -321,7 +321,7 @@ class ShapeFilePage extends FormPage {
 			@Override
 			public Image getColumnImage(Object o, int i) {
 				if (i == 0)
-					return ImageType.FORMULA_ICON.get();
+					return ImageType.FORMULA.get();
 				else
 					return null;
 			}
@@ -353,7 +353,7 @@ class ShapeFilePage extends FormPage {
 			this.section = section;
 			setToolTipText("#Show in map");
 			setText("#Show in map");
-			setImageDescriptor(ImageType.LCIA_ICON.getDescriptor());
+			setImageDescriptor(ImageType.IMPACT_METHOD.getDescriptor());
 		}
 
 		@Override
@@ -377,7 +377,7 @@ class ShapeFilePage extends FormPage {
 			this.section = section;
 			setToolTipText("#Add to method parameters");
 			setText("#Add to method parameters");
-			setImageDescriptor(ImageType.ADD_ICON.getDescriptor());
+			setImageDescriptor(ImageType.ADD.getDescriptor());
 		}
 
 		@Override

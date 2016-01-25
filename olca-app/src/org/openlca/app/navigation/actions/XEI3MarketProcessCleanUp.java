@@ -14,7 +14,7 @@ public class XEI3MarketProcessCleanUp extends Action implements
 		INavigationAction {
 
 	public XEI3MarketProcessCleanUp() {
-		setImageDescriptor(ImageType.EXTENSION_ICON.getDescriptor());
+		setImageDescriptor(ImageType.EXTENSION.getDescriptor());
 		setText("Merge EI3 market processes");
 	}
 

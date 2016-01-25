@@ -30,7 +30,7 @@ public class ProjectResultActions extends EditorActionBarContributor {
 	@Override
 	public void contributeToToolBar(IToolBarManager toolBarManager) {
 		toolBarManager.add(new Action(Messages.ExportToExcel,
-				ImageType.FILE_EXCEL_SMALL.getDescriptor()) {
+				ImageType.FILE_EXCEL.getDescriptor()) {
 			@Override
 			public void run() {
 				runExport();

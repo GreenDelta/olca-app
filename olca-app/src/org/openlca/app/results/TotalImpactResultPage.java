@@ -80,7 +80,7 @@ public class TotalImpactResultPage extends FormPage {
 		public Image getColumnImage(Object element, int col) {
 			if (col != 0)
 				return null;
-			return ImageType.LCIA_CATEGORY_ICON.get();
+			return ImageType.IMPACT_METHOD_CATEGORY.get();
 		}
 
 		@Override

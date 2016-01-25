@@ -23,7 +23,7 @@ public class ImportAction extends Action implements INavigationAction {
 
 	public ImportAction() {
 		setText(Messages.Import);
-		setImageDescriptor(ImageType.IMPORT_ICON.getDescriptor());
+		setImageDescriptor(ImageType.IMPORT.getDescriptor());
 	}
 
 	@Override

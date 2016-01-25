@@ -15,7 +15,7 @@ public class DatabaseCreateAction extends Action implements INavigationAction {
 
 	public DatabaseCreateAction() {
 		setText(Messages.NewDatabase);
-		setImageDescriptor(ImageType.NEW_DB_ICON.getDescriptor());
+		setImageDescriptor(ImageType.getNewDescriptor(ImageType.DATABASE));
 	}
 
 	@Override

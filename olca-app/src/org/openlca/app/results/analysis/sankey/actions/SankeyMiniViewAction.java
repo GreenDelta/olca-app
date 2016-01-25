@@ -39,7 +39,7 @@ public class SankeyMiniViewAction extends Action {
 	public SankeyMiniViewAction(SankeyDiagram diagram) {
 		setId(ActionIds.OPEN_MINIATURE_VIEW);
 		setText(Messages.OpenMiniatureView);
-		setImageDescriptor(ImageType.MINI_VIEW_ICON.getDescriptor());
+		setImageDescriptor(ImageType.MINIATURE_VIEW.getDescriptor());
 		this.diagram = diagram;
 	}
 

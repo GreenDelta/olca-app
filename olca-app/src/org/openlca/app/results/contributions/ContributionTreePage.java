@@ -112,7 +112,7 @@ public class ContributionTreePage extends FormPage {
 		mm.add(new OpenEditorAction());
 		mm.add(TreeClipboard.onCopy(tree));
 		mm.add(Actions.create(Messages.ExpandAll,
-				ImageType.EXPAND_ICON.getDescriptor(), () -> {
+				ImageType.EXPAND.getDescriptor(), () -> {
 					tree.expandAll();
 				}));
 		Menu menu = mm.createContextMenu(tree.getControl());
@@ -282,7 +282,7 @@ public class ContributionTreePage extends FormPage {
 
 		public OpenEditorAction() {
 			setText(Messages.Open);
-			setImageDescriptor(ImageType.PROCESS_ICON.getDescriptor());
+			setImageDescriptor(ImageType.PROCESS.getDescriptor());
 		}
 
 		@Override

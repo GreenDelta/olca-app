@@ -14,7 +14,7 @@ public class WarningPopup extends Popup {
 	public WarningPopup(String title, String message) {
 		super(title, message);
 		defaultTitle("Warning");
-		popupShellImage(ImageType.WARNING_ICON);
+		popupShellImage(ImageType.WARNING);
 	}
 
 	public static void show(final String message) {

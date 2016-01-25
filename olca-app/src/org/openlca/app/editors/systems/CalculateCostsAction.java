@@ -10,7 +10,7 @@ public class CalculateCostsAction extends Action {
 
 	public CalculateCostsAction() {
 		setToolTipText(Messages.CalculateCosts);
-		setImageDescriptor(ImageType.COST_CALC_ICON.getDescriptor());
+		setImageDescriptor(ImageType.CALCULATE_COSTS.getDescriptor());
 	}
 
 	public void setActiveEditor(ProductSystemEditor editor) {

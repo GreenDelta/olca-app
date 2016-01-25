@@ -26,7 +26,7 @@ class FlowPropertyWizardPage extends AbstractWizardPage<FlowProperty> {
 		super("FlowPropertyWizardPage");
 		setTitle(Messages.NewFlowProperty);
 		setMessage(Messages.CreatesANewFlowProperty);
-		setImageDescriptor(ImageType.NEW_WIZ_PROPERTY.getDescriptor());
+		setImageDescriptor(ImageType.FLOW_PROPERTY_WIZARD.getDescriptor());
 		setPageComplete(false);
 	}
 

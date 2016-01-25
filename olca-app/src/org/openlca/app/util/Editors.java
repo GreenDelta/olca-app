@@ -36,7 +36,7 @@ public class Editors {
 			return;
 		CategorizedEntity model = editor.getModel();
 		Action refresh = Actions.create(Messages.Reload,
-				ImageType.REFRESH_ICON.getDescriptor(), () -> {
+				ImageType.REFRESH.getDescriptor(), () -> {
 					App.closeEditor(model);
 					App.openEditor(model);
 				});

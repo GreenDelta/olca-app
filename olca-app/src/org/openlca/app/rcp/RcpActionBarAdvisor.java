@@ -109,7 +109,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		createDeveloperMenu(windowMenu);
 		windowMenu.add(new FormulaConsoleAction());
 		if (MozillaConfigView.canShow()) {
-			windowMenu.add(Actions.create(Messages.BrowserConfiguration, ImageType.FIREFOX_ICON.getDescriptor(),
+			windowMenu.add(Actions.create(Messages.BrowserConfiguration, ImageType.FIREFOX.getDescriptor(),
 					MozillaConfigView::open));
 		}
 		menuBar.add(windowMenu);
@@ -119,9 +119,9 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		windowMenu.add(new Separator());
 		MenuManager devMenu = new MenuManager(Messages.DeveloperTools);
 		windowMenu.add(devMenu);
-		devMenu.add(Actions.create("SQL", ImageType.SQL_ICON.getDescriptor(), SqlEditor::open));
-		devMenu.add(Actions.create("JavaScript", ImageType.JAVASCRIPT_ICON.getDescriptor(), JavaScriptEditor::open));
-		devMenu.add(Actions.create("Python", ImageType.PYTHON_ICON.getDescriptor(), PythonEditor::open));
+		devMenu.add(Actions.create("SQL", ImageType.SQL.getDescriptor(), SqlEditor::open));
+		devMenu.add(Actions.create("JavaScript", ImageType.JAVASCRIPT.getDescriptor(), JavaScriptEditor::open));
+		devMenu.add(Actions.create("Python", ImageType.PYTHON.getDescriptor(), PythonEditor::open));
 		windowMenu.add(new Separator());
 	}
 
@@ -145,7 +145,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		public HelpAction() {
 			setText(Messages.OnlineHelp);
 			setToolTipText(Messages.OnlineHelp);
-			setImageDescriptor(ImageType.HELP_ICON.getDescriptor());
+			setImageDescriptor(ImageType.HELP.getDescriptor());
 		}
 
 		@Override
@@ -156,7 +156,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 
 	private class HomeAction extends Action {
 		public HomeAction() {
-			setImageDescriptor(ImageType.HOME_ICON.getDescriptor());
+			setImageDescriptor(ImageType.HOME.getDescriptor());
 			setText(Messages.Home);
 		}
 

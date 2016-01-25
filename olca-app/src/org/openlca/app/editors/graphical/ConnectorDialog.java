@@ -403,11 +403,11 @@ public class ConnectorDialog extends Dialog {
 				return null;
 			case 3:
 				if (process.isAlreadyExisting())
-					return ImageType.ACCEPT_ICON.get();
+					return ImageType.ACCEPT.get();
 				return null; // just show a - (getColumnText)
 			case 4:
 				if (process.isAlreadyConnectedToExchange())
-					return ImageType.ACCEPT_ICON.get();
+					return ImageType.ACCEPT.get();
 				return null; // just show a - (getColumnText)
 			default:
 				return null;

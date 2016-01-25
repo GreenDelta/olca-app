@@ -8,361 +8,295 @@ import com.google.common.io.Files;
 
 public enum ImageType {
 
-	ACCEPT_ICON("accept.png"),
+	ACCEPT("graphical/accept.png"),
 
-	ACTOR_CATEGORY_ICON("folder_user.png"),
+	ACTOR("model/actor.png"),
 
-	ACTOR_ICON("actor_obj.png"),
+	ACTOR_CATEGORY("category/actor.png"),
 
-	ACTOR_ICON_NEW("actor_obj_new.png"),
+	ACTOR_WIZARD("wizard/actor.png"),
 
-	ADD_ICON("add.png"),
+	ADD("add.png"),
 
-	ADD_ICON_DISABLED("add_dis.png"),
+	ADD_DISABLED("add_disabled.png"),
 
-	ANALYZE_DISABLED_ICON("analyze_dis.gif"),
+	BACKGROUND_DATA_GROUP("model/background_data_group.png"),
 
-	ANALYZE_ICON("analyze.gif"),
+	BUILD_SUPPLY_CHAIN("graphical/build_supply_chain.gif"),
 
-	BUILD_SUPPLY_CHAIN_ICON("chain_complete.gif"),
+	CALCULATE("calculation/calculate.png"),
 
-	CALCULATE_ICON("calculate.gif"),
+	CALCULATE_COSTS("calculation/calculate_costs.png"),
 
-	CHANGE_ICON("change.gif"),
+	CALCULATION_WIZARD("wizard/calculation.gif"),
 
-	CHANGE_ICON_DISABLED("change_dis.gif"),
+	CHANGE("change.gif"),
 
-	CHART_ICON("chart.png"),
+	CHART("chart.png"),
 
 	CHECK_FALSE("check_false.gif"),
 
 	CHECK_TRUE("check_true.gif"),
 
-	CONNECT_ICON("connect.png"),
+	COLLAPSE("collapse.png"),
 
-	COST_CALC_ICON("cost_calc_icon.png"),
+	COMMIT("cloud/commit.png"),
 
-	CURRENCY_ICON("currency.png"),
+	CONNECT("connect.png"),
 
-	CURRENCY_ICON_NEW("currency_new.png"),
+	COPY_ALL_CHANGES("cloud/copy_all.png"),
 
-	CURRENCY_CATEGORY_ICON("folder_currency.png"),
+	COPY_SELECTED_CHANGE("cloud/copy_selected.png"),
 
-	DB_ICON("db_obj.gif"),
+	CURRENCY("model/currency.png"),
 
-	DB_ICON_DIS("db_obj_dis.png"),
+	CURRENCY_CATEGORY("category/currency.png"),
 
-	DB_IO("db_io_16.gif"),
+	CURRENCY_WIZARD("wizard/currency.png"),
 
-	DB_WIZARD("db_wizard.gif"),
+	DATABASE("model/database.png"),
 
-	DELETE_ICON("delete.gif"),
+	DATABASE_DISABLED("model/database_disabled.png"),
 
-	DELETE_ICON_DISABLED("delete_dis.gif"),
+	DATABASE_IO("database_io.gif"),
 
-	DENY_ICON("deny.png"),
+	DATABASE_WIZARD("wizard/database.png"),
 
-	DISCONNECT_ICON("disconnect.png"),
+	DELETE("delete.gif"),
 
-	DOWN_16("down_16.png"),
+	DELETE_DISABLED("delete_disabled.gif"),
 
-	DOWN_DIS_16("down_dis_16.png"),
+	DISCONNECT("disconnect.png"),
 
-	EDIT_16("edit_16.png"),
+	DOWN("down.png"),
 
-	ERROR_ICON("error.gif"),
+	EDIT("edit.png"),
 
-	EXCHANGE_BG_LEFT("left.jpg"),
+	ERROR("error.png"),
 
-	EXCHANGE_BG_MIDDLE("middle.jpg"),
+	EXCHANGE_BG_LEFT("graphical/exchange_bg_left.jpg"),
 
-	EXCHANGE_BG_RIGHT("right.jpg"),
+	EXCHANGE_BG_MIDDLE("graphical/exchange_bg_middle.jpg"),
 
-	EXPAND_ICON("expandall.gif"),
+	EXCHANGE_BG_RIGHT("graphical/exchange_bg_right.jpg"),
 
-	EXPORT_ICON("export_wiz_16x16.gif"),
+	EXPAND("expand.png"),
 
-	EXPRESSION_ICON("expression_obj.gif"),
+	EXPORT("io/export.png"),
 
-	EXPRESSION_ICON_DIS("expression_obj_dis.gif"),
+	EXPRESSION("expression.gif"),
 
-	EXTENSION_ICON("extension_16.gif"),
+	EXTENSION("extension.gif"),
 
-	FILE_SMALL("file_16.gif"),
+	FILE("file.gif"),
 
-	FILE_EXCEL_SMALL("file_excel_16.png"),
+	FILE_CSV("file/csv.gif"),
 
-	FILE_IMAGE_SMALL("file_image_16.png"),
+	FILE_EXCEL("file/excel.png"),
 
-	FILE_MARKUP_SMALL("file_markup_16.png"),
+	FILE_IMAGE("file/image.png"),
 
-	FILE_PDF_SMALL("file_pdf_16.png"),
+	FILE_MARKUP("file/markup.png"),
 
-	FILE_POWERPOINT_SMALL("file_powerpoint_16.png"),
+	FILE_PDF("file/pdf.png"),
 
-	FILE_WORD_SMALL("file_word_16.png"),
+	FILE_POWERPOINT("file/powerpoint.png"),
 
-	FIREFOX_ICON("firefox_16.png"),
+	FILE_WORD("file/word.png"),
 
-	FLOW_CATEGORY_ICON("folder_flow.png"),
+	FILE_XML("file/xml.png"),
 
-	FLOW_ICON("flow_obj.gif"),
+	FILE_ZIP("file/zip.gif"),
 
-	FLOW_ICON_NEW("flow_obj_new.gif"),
+	FIREFOX("firefox.png"),
 
-	FLOW_PRODUCT("flow_product_16.png"),
+	FLOW("model/flow.png"),
 
-	FLOW_PROPERTY_CATEGORY_ICON("folder_fp.png"),
+	FLOW_CATEGORY("category/flow.png"),
 
-	FLOW_PROPERTY_ICON("flowprop_obj.gif"),
+	FLOW_ELEMENTARY("model/flow_elementary.png"),
 
-	FLOW_PROPERTY_ICON_NEW("flowprop_obj_new.gif"),
+	FLOW_PRODUCT("model/flow_product.png"),
 
-	FLOW_SUBSTANCE("flow_substance_16.png"),
+	FLOW_PROPERTY("model/flow_property.png"),
 
-	FLOW_WASTE("flow_waste_16.png"),
+	FLOW_PROPERTY_CATEGORY("category/flow_property.png"),
 
-	FOLDER_SMALL("folder_16.gif"),
+	FLOW_PROPERTY_WIZARD("wizard/flow_property.png"),
 
-	COLLAPSE_ICON("collapse_all.png"),
+	FLOW_WASTE("model/flow_waste.png"),
 
-	FOLDER_EXPR("folder_expr.png"),
+	FLOW_WIZARD("wizard/flow.png"),
 
-	FOLDER_ICON_BLUE("16x16_folder_blue.png"),
+	FOLDER("folder.gif"),
 
-	FOLDER_ICON_OPEN("16x16_folder_open.gif"),
+	FOLDER_BLUE("folder_blue.png"),
 
-	FORMULA_ICON("formula_16.png"),
+	FOLDER_OPEN("folder_open.gif"),
 
-	HIDE_ICON("hide.gif"),
+	FORMULA("formula.png"),
 
-	HOME_ICON("home_16.gif"),
+	HELP("help.gif"),
 
-	ILCD_ICON("ilcd16.png"),
+	HOME("home.png"),
 
-	IMPORT_ICON("import_wiz_16x16.gif"),
+	IMPACT_METHOD("model/impact_method.png"),
 
-	IMPORT_ZIP_WIZARD("import_zip_wizard.png"),
+	IMPACT_METHOD_CATEGORY("category/impact_method.png"),
 
-	INDICATOR_ICON("indicator_obj.png"),
+	IMPACT_METHOD_WIZARD("wizard/impact_method.png"),
 
-	INDICATOR_ICON_NEW("indicator_obj_new.png"),
+	IMPORT("import.png"),
 
-	INDICATOR_CATEGORY_ICON("folder_indicator.png"),
+	IMPORT_ZIP_WIZARD("wizard/zip.png"),
 
-	HELP_ICON("help_16x16.gif"),
+	INFO("info.gif"),
 
-	INFO_ICON("info_tsk.gif"),
+	INPUT("model/input.png"),
 
-	INPUT_ICON("input_16.png"),
+	INVENTORY_GROUP("model/inventory_group.png"),
 
-	JAVASCRIPT_ICON("javascript_16.gif"),
+	JAVASCRIPT("javascript.gif"),
 
-	LAYOUT_ICON("layout.gif"),
+	LAYOUT("graphical/layout.gif"),
 
-	LCIA_CATEGORY_ICON("folder_wa.png"),
+	LINK("link.png"),
 
-	LCIA_CATEGORY_ICON_DIS("folder_wa_dis.png"),
+	LOCATION("model/location.png"),
 
-	LCIA_ICON("LCIA_obj.gif"),
+	LOCATION_CATEGORY("category/location.png"),
 
-	LCIA_ICON_NEW("LCIA_obj_new.gif"),
+	LOCATION_WIZARD("wizard/location.png"),
 
-	LINK_16_BLUE("16x16_link_blue.png"),
+	LOGO("plugin/logo_32_32bit.png"),
 
-	LOAD_ICON("load_obj.gif"),
+	MAXIMIZE("graphical/maxmize.gif"),
 
-	LOCATION_ICON("location.png"),
+	MINIATURE_VIEW("graphical/miniature_view.gif"),
 
-	LOCATION_ICON_NEW("location_new.png"),
+	MINIMIZE("graphical/minimize.gif"),
 
-	LOCATION_CATEGORY_ICON("folder_location.png"),
+	MINUS("graphical/minus.gif"),
 
-	LOGO_128_32("logo_128_32bit.png"),
+	MODELS_GROUP("model/models_group.png"),
 
-	LOGO_16_32("logo_16_32bit.png"),
+	NEXT_CHANGE("cloud/next_change.png"),
 
-	LOGO_255_32("logo_255_32bit.png"),
+	NEW_WIZARD("wizard/new.png"),
 
-	LOGO_32_32("logo_32_32bit.png"),
+	NUMBER("number.png"),
 
-	LOGO_64_32("logo_64_32bit.png"),
+	OK("ok.png"),
 
-	MATRIX_ICON("table_16.gif"),
+	OUTLINE("graphical/outline.gif"),
 
-	MAXIMIZE_ICON("maxAll.gif"),
+	OUTPUT("model/output.png"),
 
-	MINI_VIEW_ICON("miniview.gif"),
+	OVERLAY_ADDED("overlay/cloud/added.png"),
 
-	MINIMIZE_ICON("minAll.gif"),
+	OVERLAY_ADD_TO_LOCAL("overlay/cloud/add_local.png"),
 
-	MINUS_ICON("del_stat.gif"),
+	OVERLAY_ADD_TO_REMOTE("overlay/cloud/add_remote.png"),
 
-	MODEL_ICON("model.gif"),
+	OVERLAY_CONFLICT("overlay/cloud/conflict.png"),
 
-	NEW_DB_ICON("db_obj_new.gif"),
+	OVERLAY_DELETED("overlay/cloud/deleted.png"),
 
-	NEW_WIZ_ACTOR("new_wiz_actor.png"),
+	OVERLAY_DELETE_FROM_LOCAL("overlay/cloud/delete_local.png"),
 
-	NEW_WIZ_DATABASE("new_wiz_database.gif"),
+	OVERLAY_DELETE_FROM_REMOTE("overlay/cloud/delete_remote.png"),
 
-	NEW_WIZ_FLOW("new_wiz_flow.png"),
+	OVERLAY_MERGED("overlay/cloud/merged.png"),
 
-	NEW_WIZ_METHOD("new_wiz_method.gif"),
+	OVERLAY_MODIFY_IN_LOCAL("overlay/cloud/modify_local.png"),
 
-	NEW_WIZ_PROCESS("new_wiz_process.png"),
+	OVERLAY_MODIFY_IN_REMOTE("overlay/cloud/modify_remote.png"),
 
-	NEW_WIZ_PRODUCT_SYSTEM("new_wiz_product_system.png"),
+	OVERLAY_NEW("overlay/new.png"),
 
-	NEW_WIZ_PROJECT("new_wiz_project.png"),
+	PARAMETER("model/parameter.png"),
 
-	NEW_WIZ_PROPERTY("new_wiz_property.png"),
+	PARAMETER_CATEGORY("category/parameter.png"),
 
-	NEW_WIZ_SOURCE("new_wiz_source.gif"),
+	PARAMETER_WIZARD("wizard/parameter.png"),
 
-	NEW_WIZ_UNIT("new_wiz_unit.png"),
+	PLUS("graphical/plus.gif"),
 
-	NEW_WIZARD("new_wiz.png"),
+	PREVIOUS_CHANGE("cloud/previous_change.png"),
 
-	NOT_OK_ICON("not_ok_16.png"),
+	PROCESS("model/process.png"),
 
-	NUMBER_ICON("number_16.png"),
+	PROCESS_BG("graphical/process_bg.jpg"),
 
-	OK_CHECK_ICON("ok_check_16.png"),
+	PROCESS_BG_LCI("graphical/process_bg_lci.jpg"),
 
-	OUTLINE_ICON("outline_co.gif"),
+	PROCESS_BG_MARKED("graphical/process_bg_marked.jpg"),
 
-	OUTPUT_ICON("output_16.png"),
+	PROCESS_CATEGORY("category/process.png"),
 
-	PARAMETER_ICON_NEW("formula_16_new.png"),
+	PROCESS_SYSTEM("model/process_system.png"),
 
-	PARAMETER_CATEGORY_ICON("folder_parameter.png"),
+	PROCESS_WIZARD("wizard/process.png"),
 
-	PLUS_ICON("add_stat.gif"),
+	PRODUCT_SYSTEM("model/product_system.png"),
 
-	PROCESS_BG("process_bg.jpg"),
+	PRODUCT_SYSTEM_CATEGORY("category/product_system.png"),
 
-	PROCESS_BG_LCI("process_bg_lci.jpg"),
+	PRODUCT_SYSTEM_WIZARD("wizard/product_system.png"),
 
-	PROCESS_BG_MARKED("process_bg_marked.jpg"),
+	PROJECT("model/project.png"),
 
-	PROCESS_CATEGORY_ICON("folder_process.png"),
+	PROJECT_CATEGORY("category/project.png"),
 
-	PROCESS_CONNECTED("connected.png"),
+	PROJECT_WIZARD("wizard/project.png"),
 
-	PROCESS_EXISTING("existing.png"),
+	PYTHON("python.gif"),
 
-	PROCESS_ICON("proc_obj.gif"),
+	REFRESH("refresh.png"),
 
-	PROCESS_ICON_NEW("proc_obj_new.gif"),
+	RESET_ALL_CHANGES("cloud/reset_all.png"),
 
-	PRODUCT_SYSTEM_CATEGORY_ICON("folder_prodsystem.png"),
+	RESET_SELECTED_CHANGE("cloud/reset_selected.png"),
 
-	PRODUCT_SYSTEM_ICON("system_obj.gif"),
+	RUN("run.gif"),
 
-	PRODUCT_SYSTEM_ICON_NEW("chart_organisation_new.png"),
+	SANKEY_OPTIONS("graphical/sankey_options.gif"),
 
-	PROJECT_CATEGORY_ICON("folder_proj.png"),
+	SAVE_AS_IMAGE("save_as_image.png"),
 
-	PROJECT_ICON("project_obj.png"),
+	SEARCH("search.png"),
 
-	PROJECT_ICON_NEW("project_obj_new.png"),
+	SIMULATE("calculation/simulate.png"),
 
-	PYTHON_ICON("python_16.gif"),
+	SOCIAL_INDICATOR("model/social_indicator.png"),
 
-	REFRESH_ICON("refresh_16.png"),
+	SOCIAL_INDICATOR_CATEGORY("category/social_indicator.png"),
 
-	RUN_SMALL("run_16.gif"),
+	SOCIAL_INDICATOR_WIZARD("wizard/social_indicator.png"),
 
-	SANKEY_OPTIONS_ICON("sankey_options.gif"),
+	SOURCE("model/source.png"),
 
-	SAVE_AS_IMAGE_ICON("image_save.png"),
+	SOURCE_CATEGORY("category/source.png"),
 
-	SEARCH_ICON("search_obj.png"),
+	SOURCE_WIZARD("wizard/source.png"),
 
-	SIMULATE_16("simulate_16.png"),
+	SQL("sql.gif"),
 
-	SINGLE_SCORE_ICON("singlescore.png"),
+	UNIT_GROUP("model/unit_group.png"),
 
-	SOURCE_CATEGORY_ICON("folder_source.png"),
+	UNIT_GROUP_CATEGORY("category/unit_group.png"),
 
-	SOURCE_ICON("source_obj.png"),
+	UNIT_GROUP_WIZARD("wizard/unit_group.png"),
 
-	SOURCE_ICON_NEW("source_obj_new.png"),
+	UP("up.png"),
 
-	SP_ICON("sp.png"),
+	UP_DISABLED("up_disabled.png"),
 
-	SQL_ICON("sql_16.gif"),
+	UP_DOUBLE("up_double.png"),
 
-	SWITCH_ICON("switch_view_mode.gif"),
+	UP_DOUBLE_DISABLED("up_double_disabled.png"),
 
-	TABLE_ICON("table.png"),
-
-	TEXT_SIZE_BIG("text_allcaps_24.png"),
-
-	TEXT_SIZE_MEDIUM("text_allcaps_20.png"),
-
-	TEXT_SIZE_SMALL("text_allcaps_16.png"),
-
-	UP_16("up_16.png"),
-
-	UP_DIS_16("up_dis_16.png"),
-
-	UP_DOUBLE_16("up_double_16.png"),
-
-	UP_DOUBLE_DIS_16("up_double_dis_16.png"),
-
-	UNIT_GROUP_CATEGORY_ICON("folder_unit.png"),
-
-	UNIT_GROUP_ICON("unitgroup_obj.gif"),
-
-	UNIT_GROUP_ICON_NEW("unitgroup_obj_new.gif"),
-
-	UNSELECT_ICON("unselectAll.gif"),
-
-	WARNING_ICON("warning.gif"),
-
-	WIZ_CALCULATION("wiz_calculation.gif"),
-
-	XML_ICON("xml_16.gif"),
-
-	ZIP_ICON("zip.gif"),
-
-	// repository overlays
-
-	OVERLAY_ADDED("repo/added.png"),
-
-	OVERLAY_DELETED("repo/deleted.png"),
-
-	OVERLAY_ADD_TO_LOCAL("repo/add_local.png"),
-
-	OVERLAY_ADD_TO_REMOTE("repo/add_remote.png"),
-
-	OVERLAY_DELETE_FROM_LOCAL("repo/delete_local.png"),
-
-	OVERLAY_DELETE_FROM_REMOTE("repo/delete_remote.png"),
-
-	OVERLAY_MODIFY_IN_LOCAL("repo/modify_local.png"),
-
-	OVERLAY_MODIFY_IN_REMOTE("repo/modify_remote.png"),
-
-	OVERLAY_CONFLICT("repo/conflict.png"),
-
-	OVERLAY_MERGED("repo/merged.png"),
-
-	COMMIT_ICON("repo/commit.png"),
-
-	COPY_SELECTED_CHANGE("repo/diff/copy_selected.png"),
-
-	COPY_ALL_CHANGES("repo/diff/copy_all.png"),
-
-	NEXT_CHANGE("repo/diff/next_change.png"),
-
-	PREVIOUS_CHANGE("repo/diff/previous_change.png"),
-
-	RESET_SELECTED_CHANGE("repo/diff/reset_selected.png"),
-
-	RESET_ALL_CHANGES("repo/diff/reset_all.png");
+	WARNING("warning.png");
 
 	private final String fileName;
 
@@ -388,38 +322,38 @@ public enum ImageType {
 
 	public static ImageType forFile(String fileName) {
 		if (fileName == null)
-			return FILE_SMALL;
+			return FILE;
 		String extension = Files.getFileExtension(fileName);
 		if (extension == null)
-			return FILE_SMALL;
+			return FILE;
 		switch (extension) {
 		case "pdf":
-			return FILE_PDF_SMALL;
+			return FILE_PDF;
 		case "doc":
 		case "docx":
 		case "odt":
-			return FILE_WORD_SMALL;
+			return FILE_WORD;
 		case "xls":
 		case "xlsx":
 		case "ods":
 		case "csv":
-			return FILE_EXCEL_SMALL;
+			return FILE_EXCEL;
 		case "png":
 		case "jpg":
 		case "gif":
-			return FILE_IMAGE_SMALL;
+			return FILE_IMAGE;
 		case "ppt":
 		case "pptx":
 		case "odp":
-			return FILE_POWERPOINT_SMALL;
+			return FILE_POWERPOINT;
 		case "xml":
 		case "html":
 		case "spold":
 		case "htm":
 		case "xhtml":
-			return FILE_MARKUP_SMALL;
+			return FILE_MARKUP;
 		default:
-			return FILE_SMALL;
+			return FILE;
 		}
 	}
 
@@ -439,4 +373,14 @@ public enum ImageType {
 	public static Image getPlatformImage(String name) {
 		return PlatformUI.getWorkbench().getSharedImages().getImage(name);
 	}
+
+	public static Image getNewImage(ImageType type) {
+		return ImageManager.getImageWithOverlay(type, OVERLAY_NEW);
+	}
+
+	public static ImageDescriptor getNewDescriptor(ImageType type) {
+		// TODO fix this, it does not work
+		return ImageManager.getImageDescriptorWithOverlay(type, OVERLAY_NEW);
+	}
+
 }

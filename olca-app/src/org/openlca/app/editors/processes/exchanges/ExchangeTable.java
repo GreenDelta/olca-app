@@ -333,7 +333,7 @@ class ExchangeTable {
 		private boolean showFormulas = true;
 
 		public FormulaSwitchAction() {
-			setImageDescriptor(ImageType.NUMBER_ICON.getDescriptor());
+			setImageDescriptor(ImageType.NUMBER.getDescriptor());
 			setText(Messages.ShowValues);
 		}
 
@@ -341,10 +341,10 @@ class ExchangeTable {
 		public void run() {
 			showFormulas = !showFormulas;
 			if (showFormulas) {
-				setImageDescriptor(ImageType.NUMBER_ICON.getDescriptor());
+				setImageDescriptor(ImageType.NUMBER.getDescriptor());
 				setText(Messages.ShowValues);
 			} else {
-				setImageDescriptor(ImageType.FORMULA_ICON.getDescriptor());
+				setImageDescriptor(ImageType.FORMULA.getDescriptor());
 				setText(Messages.ShowFormulas);
 			}
 			label.showFormulas = showFormulas;

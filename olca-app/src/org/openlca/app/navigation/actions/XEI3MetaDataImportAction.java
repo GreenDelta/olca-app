@@ -25,7 +25,7 @@ public class XEI3MetaDataImportAction extends Action implements
 		INavigationAction {
 
 	public XEI3MetaDataImportAction() {
-		setImageDescriptor(ImageType.EXTENSION_ICON.getDescriptor());
+		setImageDescriptor(ImageType.EXTENSION.getDescriptor());
 		setText("Import ecoinvent 3 meta data");
 	}
 

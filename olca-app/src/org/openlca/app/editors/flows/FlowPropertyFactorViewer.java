@@ -158,7 +158,7 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 		@Override
 		public Image getColumnImage(Object element, int column) {
 			if (column == 0)
-				return ImageType.FLOW_PROPERTY_ICON.get();
+				return ImageType.FLOW_PROPERTY.get();
 			if (column != 4)
 				return null;
 			Flow flow = editor.getModel();

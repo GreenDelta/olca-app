@@ -27,7 +27,7 @@ public class XParameterCheckAction extends Action implements INavigationAction {
 	private Logger log = LoggerFactory.getLogger(getClass());
 
 	public XParameterCheckAction() {
-		setImageDescriptor(ImageType.EXTENSION_ICON.getDescriptor());
+		setImageDescriptor(ImageType.EXTENSION.getDescriptor());
 		setText("Check Parameters");
 	}
 

@@ -14,7 +14,7 @@ public class EditAction extends Action {
 	private Logger log = LoggerFactory.getLogger(getClass());
 
 	public EditAction() {
-		setImageDescriptor(ImageType.PRODUCT_SYSTEM_ICON.getDescriptor());
+		setImageDescriptor(ImageType.PRODUCT_SYSTEM.getDescriptor());
 		setText(Messages.OpenInEditor);
 	}
 

@@ -23,7 +23,7 @@ public class ExportAction extends Action implements INavigationAction {
 
 	public ExportAction() {
 		setText(Messages.Export);
-		setImageDescriptor(ImageType.EXPORT_ICON.getDescriptor());
+		setImageDescriptor(ImageType.EXPORT.getDescriptor());
 	}
 
 	@Override

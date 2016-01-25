@@ -24,7 +24,7 @@ public class Popup {
 
 	private String message;
 	private String title;
-	private ImageType imageType = ImageType.INFO_ICON;
+	private ImageType imageType = ImageType.INFO;
 	private String defaultTitle = "Popup";
 
 	public Popup() {

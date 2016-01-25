@@ -27,7 +27,7 @@ class ProcessExpander extends ImageFigure {
 	ProcessExpander(ProcessNode node, Side side) {
 		this.node = node;
 		this.side = side;
-		setImage(ImageType.PLUS_ICON.get());
+		setImage(ImageType.PLUS.get());
 		setVisible(shouldBeVisible());
 		addMouseListener(new ExpansionListener());
 	}
@@ -48,7 +48,7 @@ class ProcessExpander extends ImageFigure {
 		createNecessaryNodes();
 		showLinksAndNodes();
 		expanded = true;
-		setImage(ImageType.MINUS_ICON.get());
+		setImage(ImageType.MINUS.get());
 	}
 
 	private List<ProcessNode> getNodesToShow() {
@@ -123,7 +123,7 @@ class ProcessExpander extends ImageFigure {
 			node.getParent().remove(otherNode);
 		}
 		expanded = false;
-		setImage(ImageType.PLUS_ICON.get());
+		setImage(ImageType.PLUS.get());
 		isCollapsing = false;
 	}
 
@@ -162,9 +162,9 @@ class ProcessExpander extends ImageFigure {
 	void refresh() {
 		setVisible(shouldBeVisible());
 		if (expanded)
-			setImage(ImageType.MINUS_ICON.get());
+			setImage(ImageType.MINUS.get());
 		else
-			setImage(ImageType.PLUS_ICON.get());
+			setImage(ImageType.PLUS.get());
 	}
 
 	boolean isExpanded() {

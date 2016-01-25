@@ -38,7 +38,7 @@ public class ParameterWizard extends AbstractWizard<Parameter> {
 			setTitle(Messages.NewParameter);
 			setMessage(Messages.CreatesANewParameter);
 			// TODO change icon
-			setImageDescriptor(ImageType.NEW_WIZ_ACTOR.getDescriptor());
+			setImageDescriptor(ImageType.PARAMETER_WIZARD.getDescriptor());
 			setPageComplete(false);
 		}
 

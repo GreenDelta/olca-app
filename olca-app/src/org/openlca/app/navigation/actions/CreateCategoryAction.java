@@ -34,7 +34,7 @@ public class CreateCategoryAction extends Action implements INavigationAction {
 
 	public CreateCategoryAction() {
 		setText(Messages.AddNewChildCategory);
-		setImageDescriptor(ImageType.ADD_ICON.getDescriptor());
+		setImageDescriptor(ImageType.ADD.getDescriptor());
 	}
 
 	@Override

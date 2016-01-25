@@ -52,7 +52,7 @@ public class ReportToolbar extends EditorActionBarContributor {
 		private final String CALL_HOOK = "//{{set_data_call}}";
 
 		public ExportAction() {
-			setImageDescriptor(ImageType.EXPORT_ICON.getDescriptor());
+			setImageDescriptor(ImageType.EXPORT.getDescriptor());
 			setToolTipText(Messages.ExportReport);
 		}
 
