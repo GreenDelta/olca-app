@@ -49,7 +49,11 @@ class AllocationSync {
 		if (products.size() < 2)
 			return;
 		List<F> physFactors = calcFactors(AllocationMethod.PHYSICAL, products);
-		List<F> ecoFactors = calcFactors(AllocationMethod.ECONOMIC, products);
+		List<F> ecoFactors;
+		if (canCalculateFromCosts(products))
+			ecoFactors = calculateFromCosts(products);
+		else
+			ecoFactors = calcFactors(AllocationMethod.ECONOMIC, products);
 		setNewValues(physFactors, AllocationMethod.PHYSICAL);
 		setNewValues(ecoFactors, AllocationMethod.ECONOMIC);
 		setNewCausalValues(physFactors);
@@ -242,6 +246,32 @@ class AllocationSync {
 			return true;
 		else
 			return false;
+	}
+
+	private boolean canCalculateFromCosts(List<Exchange> products) {
+		for (Exchange product : products) {
+			if (product.costValue == null)
+				return false;
+		}
+		return true;
+	}
+
+	private List<F> calculateFromCosts(List<Exchange> products) {
+		List<F> factors = new ArrayList<>();
+		double total = 0;
+		for (Exchange product : products) {
+			double val = product.costValue == null ? 0 : product.costValue;
+			if (product.currency != null) {
+				val *= product.currency.conversionFactor;
+			}
+			factors.add(new F(product, val));
+			total += val;
+		}
+		if (total == 0)
+			return factors;
+		for (F f : factors)
+			f.value = f.value / total;
+		return factors;
 	}
 
 	/** Simple internal class that represents an allocation factor. */
