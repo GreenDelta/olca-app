@@ -104,7 +104,7 @@ public enum ImageType {
 
 	FILE_WORD("file/word.png"),
 
-	FILE_XML("file/xml.png"),
+	FILE_XML("file/xml.gif"),
 
 	FILE_ZIP("file/zip.gif"),
 
