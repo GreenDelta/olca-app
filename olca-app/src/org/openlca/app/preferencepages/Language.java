@@ -19,6 +19,8 @@ public enum Language {
 
 	ITALIAN("Italian", "it"),
 
+	PORTUGUESE("Portuguese", "pt"),
+
 	SPANISH("Spanish", "es");
 
 	private String code;
