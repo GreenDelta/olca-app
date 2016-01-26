@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.openlca.core.model.AllocationFactor;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.Exchange;
@@ -23,12 +22,21 @@ class AllocationSync {
 		this.process = process;
 	}
 
+	/**
+	 * Adds or removes allocation factors if required. New allocation factors
+	 * are initialized with a default value. Values of existing allocation
+	 * factors are not changed.
+	 */
 	public static void updateFactors(Process process) {
 		if (process == null)
 			return;
 		new AllocationSync(process).doUpdate();
 	}
 
+	/**
+	 * Calculates default allocation factors from the flow properties or costs
+	 * of the exchanges. It also calls updateFactors internally.
+	 */
 	public static void calculateDefaults(Process process) {
 		if (process == null)
 			return;
@@ -40,37 +48,29 @@ class AllocationSync {
 		List<Exchange> products = Processes.getOutputProducts(process);
 		if (products.size() < 2)
 			return;
-		List<Pair<Exchange, Double>> physFactors = calcFactors(
-				AllocationMethod.PHYSICAL, products);
-		List<Pair<Exchange, Double>> ecoFactors = calcFactors(
-				AllocationMethod.ECONOMIC, products);
+		List<F> physFactors = calcFactors(AllocationMethod.PHYSICAL, products);
+		List<F> ecoFactors = calcFactors(AllocationMethod.ECONOMIC, products);
 		setNewValues(physFactors, AllocationMethod.PHYSICAL);
 		setNewValues(ecoFactors, AllocationMethod.ECONOMIC);
 		setNewCausalValues(physFactors);
 	}
 
-	private void setNewValues(List<Pair<Exchange, Double>> newFactors,
-			AllocationMethod method) {
-		for (Pair<Exchange, Double> ecoFactor : newFactors) {
-			Exchange product = ecoFactor.getKey();
-			double value = ecoFactor.getValue();
-			AllocationFactor factor = getFactor(product, method);
+	private void setNewValues(List<F> factors, AllocationMethod method) {
+		for (F f : factors) {
+			AllocationFactor factor = getFactor(f.product, method);
 			if (factor == null)
 				continue;
-			factor.setValue(value);
+			factor.setValue(f.value);
 		}
 	}
 
-	private void setNewCausalValues(List<Pair<Exchange, Double>> physFactors) {
-		for (Pair<Exchange, Double> physFactor : physFactors) {
-			Exchange product = physFactor.getKey();
-			double value = physFactor.getValue();
-			for (Exchange exchange : Processes.getNonOutputProducts(process)) {
-				AllocationFactor causalFactor = getCausalFactor(product,
-						exchange);
-				if (causalFactor == null)
+	private void setNewCausalValues(List<F> factors) {
+		for (F f : factors) {
+			for (Exchange e : Processes.getNonOutputProducts(process)) {
+				AllocationFactor factor = getCausalFactor(f.product, e);
+				if (factor == null)
 					continue;
-				causalFactor.setValue(value);
+				factor.setValue(f.value);
 			}
 		}
 	}
@@ -108,7 +108,7 @@ class AllocationSync {
 			createIfAbsent(product, AllocationMethod.PHYSICAL);
 			createIfAbsent(product, AllocationMethod.ECONOMIC);
 			for (Exchange exchange : Processes.getNonOutputProducts(process)) {
-				createIfAbsent(product, exchange);
+				createCausalIfAbsent(product, exchange);
 			}
 		}
 	}
@@ -121,16 +121,15 @@ class AllocationSync {
 		factor = new AllocationFactor();
 		factor.setAllocationType(method);
 		factor.setProductId(product.getFlow().getId());
-		setValue(product, factor);
+		factor.setValue(getInitialValue(product));
 		process.getAllocationFactors().add(factor);
 	}
 
-	private void setValue(Exchange product, AllocationFactor factor) {
-		double value = 0d;
-		if (firstInit
-				&& Objects.equals(product, process.getQuantitativeReference()))
-			value = 1;
-		factor.setValue(value);
+	private double getInitialValue(Exchange product) {
+		if (firstInit && Objects.equals(product, process.getQuantitativeReference()))
+			return 1;
+		else
+			return 0d;
 	}
 
 	/** For physical and economic allocation. */
@@ -145,7 +144,7 @@ class AllocationSync {
 	}
 
 	/** For causal allocation. */
-	private void createIfAbsent(Exchange product, Exchange exchange) {
+	private void createCausalIfAbsent(Exchange product, Exchange exchange) {
 		AllocationFactor factor = getCausalFactor(product, exchange);
 		if (factor != null)
 			return;
@@ -153,7 +152,7 @@ class AllocationSync {
 		factor.setAllocationType(AllocationMethod.CAUSAL);
 		factor.setExchange(exchange);
 		factor.setProductId(product.getFlow().getId());
-		setValue(product, factor);
+		factor.setValue(getInitialValue(product));
 		process.getAllocationFactors().add(factor);
 	}
 
@@ -168,12 +167,11 @@ class AllocationSync {
 		return null;
 	}
 
-	private List<Pair<Exchange, Double>> calcFactors(AllocationMethod method,
-			List<Exchange> products) {
+	private List<F> calcFactors(AllocationMethod method, List<Exchange> products) {
 		FlowProperty commonProp = getCommonProperty(products, method);
 		if (commonProp == null && method != AllocationMethod.PHYSICAL)
 			commonProp = getCommonProperty(products, AllocationMethod.PHYSICAL);
-		List<Pair<Exchange, Double>> amounts = new ArrayList<>();
+		List<F> factors = new ArrayList<>();
 		double totalAmount = 0;
 		for (Exchange product : products) {
 			double refAmount = getRefAmount(product);
@@ -185,9 +183,13 @@ class AllocationSync {
 					amount = refAmount * factor.getConversionFactor();
 			}
 			totalAmount += amount;
-			amounts.add(Pair.of(product, amount));
+			factors.add(new F(product, amount));
 		}
-		return makeRelative(amounts, totalAmount);
+		if (totalAmount == 0)
+			return factors;
+		for (F f : factors)
+			f.value = f.value / totalAmount;
+		return factors;
 	}
 
 	private double getRefAmount(Exchange exchange) {
@@ -201,19 +203,6 @@ class AllocationSync {
 		if (propFactor == 0)
 			return 0;
 		return amount * unitFactor / propFactor;
-	}
-
-	private List<Pair<Exchange, Double>> makeRelative(
-			List<Pair<Exchange, Double>> amounts, double totalAmount) {
-		if (totalAmount == 0)
-			return amounts;
-		// pair is immutable, so we create a new list here
-		List<Pair<Exchange, Double>> relatives = new ArrayList<>();
-		for (Pair<Exchange, Double> pair : amounts) {
-			double amount = pair.getValue();
-			relatives.add(Pair.of(pair.getKey(), amount / totalAmount));
-		}
-		return relatives;
 	}
 
 	private FlowProperty getCommonProperty(List<Exchange> products,
@@ -253,6 +242,17 @@ class AllocationSync {
 			return true;
 		else
 			return false;
+	}
+
+	/** Simple internal class that represents an allocation factor. */
+	private class F {
+		final Exchange product;
+		double value;
+
+		F(Exchange product, double value) {
+			this.product = product;
+			this.value = value;
+		}
 	}
 
 }

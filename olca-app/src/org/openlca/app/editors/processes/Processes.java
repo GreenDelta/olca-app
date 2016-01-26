@@ -27,6 +27,7 @@ class Processes {
 		return products;
 	}
 
+	/** Get all exchanges that are not an output product. */
 	static List<Exchange> getNonOutputProducts(Process process) {
 		if (process == null)
 			return Collections.emptyList();

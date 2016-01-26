@@ -13,7 +13,6 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.results.AnalyzeInfoPage;
-import org.openlca.app.results.FlowImpactPage;
 import org.openlca.app.results.NwResultPage;
 import org.openlca.app.results.ResultEditorInput;
 import org.openlca.app.results.SunBurstView;
@@ -90,11 +89,10 @@ public class RegionalizedResultEditor extends FormEditor {
 			addPage(new KmlResultView(this, this.result));
 			addPage(new LocationContributionPage(this, regioResult, false));
 			addPage(new ProcessResultPage(this, regioResult, setup));
-			if (regioResult.hasImpactResults())
-				addPage(new FlowImpactPage(this, regioResult));
+			// if (regioResult.hasImpactResults())
+			// addPage(new FlowImpactPage(this, regioResult));
 			addPage(new ContributionTreePage(this, regioResult));
-			addPage(new ImpactTreePage(this, regioResult,
-					this::getImpactFactor));
+			addPage(new ImpactTreePage(this, regioResult, this::getImpactFactor));
 			addPage(new GroupPage(this, regioResult));
 			if (FeatureFlag.EXPERIMENTAL_VISUALISATIONS.isEnabled()) {
 				addPage(new ProcessTreemapPage(this, regioResult));
