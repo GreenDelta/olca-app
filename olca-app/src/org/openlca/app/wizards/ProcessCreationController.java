@@ -11,6 +11,7 @@ import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessDocumentation;
+import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
@@ -74,6 +75,7 @@ class ProcessCreationController {
 			process.setName(name);
 			process.setDescription(description);
 			process.setLastChange(System.currentTimeMillis());
+			process.setProcessType(ProcessType.UNIT_PROCESS);
 			Flow flow = getFlow();
 			addQuantitativeReference(process, flow);
 			ProcessDocumentation doc = new ProcessDocumentation();

@@ -5,7 +5,6 @@ import java.util.UUID;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
-import org.openlca.app.rcp.ImageType;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.model.Actor;
 
@@ -32,7 +31,6 @@ public class ActorWizard extends AbstractWizard<Actor> {
 			super("ActorWizardPage");
 			setTitle(Messages.NewActor);
 			setMessage(Messages.CreatesANewActor);
-			setImageDescriptor(ImageType.ACTOR_WIZARD.getDescriptor());
 			setPageComplete(false);
 		}
 

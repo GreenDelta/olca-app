@@ -21,7 +21,7 @@ import org.openlca.app.components.UncertaintyCellEditor;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.processes.ProcessEditor;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Labels;
@@ -333,7 +333,7 @@ class ExchangeTable {
 		private boolean showFormulas = true;
 
 		public FormulaSwitchAction() {
-			setImageDescriptor(ImageType.NUMBER.getDescriptor());
+			setImageDescriptor(Icon.NUMBER.descriptor());
 			setText(Messages.ShowValues);
 		}
 
@@ -341,10 +341,10 @@ class ExchangeTable {
 		public void run() {
 			showFormulas = !showFormulas;
 			if (showFormulas) {
-				setImageDescriptor(ImageType.NUMBER.getDescriptor());
+				setImageDescriptor(Icon.NUMBER.descriptor());
 				setText(Messages.ShowValues);
 			} else {
-				setImageDescriptor(ImageType.FORMULA.getDescriptor());
+				setImageDescriptor(Icon.FORMULA.descriptor());
 				setText(Messages.ShowFormulas);
 			}
 			label.showFormulas = showFormulas;

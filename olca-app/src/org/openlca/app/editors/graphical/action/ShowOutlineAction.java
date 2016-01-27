@@ -5,14 +5,14 @@ import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.openlca.app.Messages;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 
 class ShowOutlineAction extends EditorAction {
 
 	ShowOutlineAction() {
 		setId(ActionIds.SHOW_OUTLINE);
 		setText(Messages.ShowOutline);
-		setImageDescriptor(ImageType.OUTLINE.getDescriptor());
+		setImageDescriptor(Icon.OUTLINE.descriptor());
 	}
 
 	@Override

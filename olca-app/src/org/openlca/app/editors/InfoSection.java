@@ -18,9 +18,9 @@ import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.openlca.app.EventHandler;
 import org.openlca.app.Messages;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Colors;
-import org.openlca.app.util.Images;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Category;
@@ -114,7 +114,7 @@ public class InfoSection {
 			Hyperlink link = null;
 			if (current.getCategory() == null) {
 				link = new ImageHyperlink(breadcrumb, SWT.NONE);
-				((ImageHyperlink) link).setImage(Images.getIcon(current));
+				((ImageHyperlink) link).setImage(Images.get(current));
 			} else {
 				new Label(breadcrumb, SWT.NONE).setText(" > ");
 				link = new Hyperlink(breadcrumb, SWT.NONE);
@@ -164,12 +164,12 @@ public class InfoSection {
 		private void configureLink() {
 			if (type == MAJOR) {
 				tooltip = Messages.UpdateMajorVersion;
-				hoverIcon = ImageType.UP.get();
-				icon = ImageType.UP_DISABLED.get();
+				hoverIcon = Icon.UP.get();
+				icon = Icon.UP_DISABLED.get();
 			} else {
 				tooltip = Messages.UpdateMinorVersion;
-				hoverIcon = ImageType.UP_DOUBLE.get();
-				icon = ImageType.UP_DOUBLE_DISABLED.get();
+				hoverIcon = Icon.UP_DOUBLE.get();
+				icon = Icon.UP_DOUBLE_DISABLED.get();
 			}
 			link.setToolTipText(tooltip);
 			link.setActiveImage(hoverIcon);

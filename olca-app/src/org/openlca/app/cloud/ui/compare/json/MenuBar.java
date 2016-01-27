@@ -12,8 +12,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer;
-import org.openlca.app.rcp.ImageManager;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.viewers.Viewers;
@@ -42,22 +41,22 @@ class MenuBar extends Composite {
 	}
 
 	private void createButtons() {
-		copySelectionButton = createButton(ImageType.COPY_SELECTED_CHANGE,
+		copySelectionButton = createButton(Icon.COPY_SELECTED_CHANGE,
 				"#Copy selection from right to left");
-		copyAllButton = createButton(ImageType.COPY_ALL_CHANGES,
+		copyAllButton = createButton(Icon.COPY_ALL_CHANGES,
 				"#Copy all from right to left");
-		resetSelectionButton = createButton(ImageType.RESET_SELECTED_CHANGE,
+		resetSelectionButton = createButton(Icon.RESET_SELECTED_CHANGE,
 				"#Reset selection");
-		resetAllButton = createButton(ImageType.RESET_ALL_CHANGES, "#Reset all");
-		nextChangeButton = createButton(ImageType.NEXT_CHANGE, "#Select next");
-		previousChangeButton = createButton(ImageType.PREVIOUS_CHANGE,
+		resetAllButton = createButton(Icon.RESET_ALL_CHANGES, "#Reset all");
+		nextChangeButton = createButton(Icon.NEXT_CHANGE, "#Select next");
+		previousChangeButton = createButton(Icon.PREVIOUS_CHANGE,
 				"#Select previous");
 	}
 
-	private Button createButton(ImageType imageType, String tooltipText) {
+	private Button createButton(Icon icon, String tooltipText) {
 		Button button = new Button(this, SWT.FLAT | SWT.NO_FOCUS
 				| SWT.HIDE_SELECTION);
-		button.setImage(ImageManager.getImage(imageType));
+		button.setImage(icon.get());
 		button.setToolTipText(tooltipText);
 		button.setData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
 		return button;

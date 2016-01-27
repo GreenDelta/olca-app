@@ -15,7 +15,7 @@ import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.Question;
 import org.openlca.core.database.IDatabase;
@@ -34,7 +34,7 @@ public class DatabaseActivateAction extends Action implements INavigationAction 
 
 	public DatabaseActivateAction() {
 		setText(Messages.OpenDatabase);
-		setImageDescriptor(ImageType.CONNECT.getDescriptor());
+		setImageDescriptor(Icon.CONNECT.descriptor());
 	}
 
 	public DatabaseActivateAction(IDatabaseConfiguration config) {

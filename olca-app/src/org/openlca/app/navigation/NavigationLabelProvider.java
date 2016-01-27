@@ -8,15 +8,14 @@ import org.eclipse.ui.navigator.ICommonContentExtensionSite;
 import org.eclipse.ui.navigator.ICommonLabelProvider;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.IDatabaseConfiguration;
-import org.openlca.app.rcp.ImageType;
-import org.openlca.app.util.Images;
+import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 
-public class NavigationLabelProvider extends ColumnLabelProvider implements
-		ICommonLabelProvider {
+public class NavigationLabelProvider extends ColumnLabelProvider implements ICommonLabelProvider {
 
 	private boolean indicateRepositoryState;
 
@@ -51,17 +50,17 @@ public class NavigationLabelProvider extends ColumnLabelProvider implements
 			withOverlay = RepositoryLabel.getWithOverlay(elem);
 		if (withOverlay != null)
 			return withOverlay;
-		if (elem instanceof GroupElement)
-			return ImageType.FOLDER.get();
 		Object content = (elem).getContent();
 		if (content instanceof IDatabaseConfiguration)
 			return getDatabaseImage((IDatabaseConfiguration) content);
+		if (content instanceof Group)
+			return Images.get((Group) content);
 		if (content instanceof ModelType)
-			return Images.getIcon(dummyCategory((ModelType) content));
+			return Images.get(dummyCategory((ModelType) content));
 		if (content instanceof Category)
-			return Images.getIcon((Category) content);
+			return Images.get((Category) content);
 		if (content instanceof BaseDescriptor)
-			return Images.getIcon(((BaseDescriptor) content).getModelType());
+			return Images.get((BaseDescriptor) content);
 		return null;
 	}
 
@@ -73,9 +72,9 @@ public class NavigationLabelProvider extends ColumnLabelProvider implements
 
 	private Image getDatabaseImage(IDatabaseConfiguration config) {
 		if (Database.isActive(config))
-			return ImageType.DATABASE.get();
+			return Icon.DATABASE.get();
 		else
-			return ImageType.DATABASE_DISABLED.get();
+			return Icon.DATABASE_DISABLED.get();
 	}
 
 	@Override
@@ -87,8 +86,7 @@ public class NavigationLabelProvider extends ColumnLabelProvider implements
 		if (baseText == null)
 			return null;
 		if (elem instanceof DatabaseElement) {
-			IDatabaseConfiguration config = ((DatabaseElement) elem)
-					.getContent();
+			IDatabaseConfiguration config = ((DatabaseElement) elem).getContent();
 			String repoText = RepositoryLabel.getRepositoryText(config);
 			if (repoText != null)
 				baseText += repoText;

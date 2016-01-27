@@ -25,6 +25,7 @@ import org.openlca.app.devtools.sql.SqlEditor;
 import org.openlca.app.editors.LogFileEditor;
 import org.openlca.app.editors.StartPage;
 import org.openlca.app.rcp.browser.MozillaConfigView;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.plugins.PluginManager;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.DefaultInput;
@@ -109,7 +110,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		createDeveloperMenu(windowMenu);
 		windowMenu.add(new FormulaConsoleAction());
 		if (MozillaConfigView.canShow()) {
-			windowMenu.add(Actions.create(Messages.BrowserConfiguration, ImageType.FIREFOX.getDescriptor(),
+			windowMenu.add(Actions.create(Messages.BrowserConfiguration, Icon.FIREFOX.descriptor(),
 					MozillaConfigView::open));
 		}
 		menuBar.add(windowMenu);
@@ -119,9 +120,9 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		windowMenu.add(new Separator());
 		MenuManager devMenu = new MenuManager(Messages.DeveloperTools);
 		windowMenu.add(devMenu);
-		devMenu.add(Actions.create("SQL", ImageType.SQL.getDescriptor(), SqlEditor::open));
-		devMenu.add(Actions.create("JavaScript", ImageType.JAVASCRIPT.getDescriptor(), JavaScriptEditor::open));
-		devMenu.add(Actions.create("Python", ImageType.PYTHON.getDescriptor(), PythonEditor::open));
+		devMenu.add(Actions.create("SQL", Icon.SQL.descriptor(), SqlEditor::open));
+		devMenu.add(Actions.create("JavaScript", Icon.JAVASCRIPT.descriptor(), JavaScriptEditor::open));
+		devMenu.add(Actions.create("Python", Icon.PYTHON.descriptor(), PythonEditor::open));
 		windowMenu.add(new Separator());
 	}
 
@@ -145,7 +146,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		public HelpAction() {
 			setText(Messages.OnlineHelp);
 			setToolTipText(Messages.OnlineHelp);
-			setImageDescriptor(ImageType.HELP.getDescriptor());
+			setImageDescriptor(Icon.HELP.descriptor());
 		}
 
 		@Override
@@ -156,7 +157,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 
 	private class HomeAction extends Action {
 		public HomeAction() {
-			setImageDescriptor(ImageType.HOME.getDescriptor());
+			setImageDescriptor(Icon.HOME.descriptor());
 			setText(Messages.Home);
 		}
 

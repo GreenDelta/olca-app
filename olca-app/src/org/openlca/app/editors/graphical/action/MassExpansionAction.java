@@ -3,7 +3,7 @@ package org.openlca.app.editors.graphical.action;
 import org.eclipse.jface.action.Action;
 import org.openlca.app.Messages;
 import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Question;
 
 class MassExpansionAction extends Action {
@@ -18,11 +18,11 @@ class MassExpansionAction extends Action {
 		if (type == EXPAND) {
 			setId(ActionIds.EXPAND_ALL);
 			setText(Messages.ExpandAll);
-			setImageDescriptor(ImageType.EXPAND.getDescriptor());
+			setImageDescriptor(Icon.EXPAND.descriptor());
 		} else if (type == COLLAPSE) {
 			setId(ActionIds.COLLAPSE_ALL);
 			setText(Messages.CollapseAll);
-			setImageDescriptor(ImageType.COLLAPSE.getDescriptor());
+			setImageDescriptor(Icon.COLLAPSE.descriptor());
 		}
 		this.type = type;
 	}

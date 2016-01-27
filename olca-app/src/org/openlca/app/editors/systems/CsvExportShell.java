@@ -17,9 +17,10 @@ import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.components.FileSelection;
 import org.openlca.app.db.Cache;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Dialog;
+import org.openlca.app.util.FileType;
 import org.openlca.app.util.InformationPopup;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ProductSystem;
@@ -51,7 +52,7 @@ public class CsvExportShell extends Shell {
 
 	public CsvExportShell(Shell parent, ProductSystem system) {
 		super(parent, SWT.SHELL_TRIM);
-		setImage(ImageType.FILE_CSV.get());
+		setImage(Images.get(FileType.CSV));
 		setLayout(new FillLayout(SWT.HORIZONTAL));
 		setText(Messages.MatrixExport);
 		setSize(450, 450);

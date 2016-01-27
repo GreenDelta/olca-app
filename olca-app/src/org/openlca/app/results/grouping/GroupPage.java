@@ -34,12 +34,14 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.viewers.Viewers;
+import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessGroup;
 import org.openlca.core.model.ProcessGroupSet;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -176,7 +178,7 @@ public class GroupPage extends FormPage {
 	private class AddGroupAction extends Action {
 
 		public AddGroupAction() {
-			setImageDescriptor(ImageType.ADD.getDescriptor());
+			setImageDescriptor(Icon.ADD.descriptor());
 			setToolTipText(Messages.Add);
 		}
 
@@ -200,7 +202,7 @@ public class GroupPage extends FormPage {
 	private class DeleteGroupAction extends Action {
 
 		public DeleteGroupAction() {
-			setImageDescriptor(ImageType.DELETE.getDescriptor());
+			setImageDescriptor(Icon.DELETE.descriptor());
 			setText(Messages.Delete);
 		}
 
@@ -309,8 +311,8 @@ public class GroupPage extends FormPage {
 		@Override
 		public Image getImage(Object element) {
 			if (element instanceof ProcessGrouping)
-				return ImageType.FOLDER_BLUE.get();
-			return ImageType.FLOW_PRODUCT.get();
+				return Icon.FOLDER_BLUE.get();
+			return Images.get(FlowType.PRODUCT_FLOW);
 		}
 
 		@Override
@@ -376,8 +378,7 @@ public class GroupPage extends FormPage {
 		public SaveGroupSetAction(GroupPage page) {
 			this.page = page;
 			setToolTipText(Messages.Save);
-			ImageDescriptor image = ImageType
-					.getPlatformDescriptor(ISharedImages.IMG_ETOOL_SAVE_EDIT);
+			ImageDescriptor image = Images.platformDescriptor(ISharedImages.IMG_ETOOL_SAVE_EDIT);
 			setImageDescriptor(image);
 		}
 

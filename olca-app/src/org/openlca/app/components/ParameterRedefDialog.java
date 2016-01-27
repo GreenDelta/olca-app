@@ -32,13 +32,13 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
-import org.openlca.app.rcp.ImageType;
-import org.openlca.app.util.Images;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
@@ -356,10 +356,10 @@ public class ParameterRedefDialog extends FormDialog {
 		@Override
 		public Image getImage(Object element) {
 			if (element instanceof ParameterNode)
-				return ImageType.FORMULA.get();
+				return Images.get(ModelType.PARAMETER); 
 			if (element instanceof ModelNode) {
 				ModelNode node = (ModelNode) element;
-				return Images.getIcon(node.model);
+				return Images.get(node.model);
 			}
 			return null;
 		}

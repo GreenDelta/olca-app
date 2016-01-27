@@ -11,9 +11,11 @@ import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.preferencepages.FeatureFlag;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Editors;
+import org.openlca.app.util.FileType;
 import org.openlca.app.util.UI;
 import org.openlca.core.math.DataStructures;
 import org.openlca.core.math.IMatrix;
@@ -60,7 +62,7 @@ public class ProductSystemActions extends EditorActionBarContributor {
 
 	private class CsvExportAction extends Action {
 		public CsvExportAction() {
-			setImageDescriptor(ImageType.FILE_CSV.getDescriptor());
+			setImageDescriptor(Images.descriptor(FileType.CSV));
 			setText(Messages.ExportAsMatrix);
 		}
 
@@ -74,7 +76,7 @@ public class ProductSystemActions extends EditorActionBarContributor {
 
 	private class ExcelExportAction extends Action {
 		public ExcelExportAction() {
-			setImageDescriptor(ImageType.FILE_EXCEL.getDescriptor());
+			setImageDescriptor(Images.descriptor(FileType.EXCEL));
 			setText(Messages.ExportAsMatrix);
 		}
 
@@ -87,7 +89,7 @@ public class ProductSystemActions extends EditorActionBarContributor {
 
 	private class MatrixImageExportAction extends Action {
 		public MatrixImageExportAction() {
-			setImageDescriptor(ImageType.SAVE_AS_IMAGE.getDescriptor());
+			setImageDescriptor(Icon.SAVE_AS_IMAGE.descriptor());
 			setText(Messages.SaveAsImage);
 		}
 

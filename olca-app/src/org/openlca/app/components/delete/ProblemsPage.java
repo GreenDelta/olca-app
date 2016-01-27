@@ -20,7 +20,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.Messages;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.UIFactory;
 
 /**
@@ -127,9 +127,9 @@ public class ProblemsPage extends WizardPage {
 			Image image = null;
 			if (element instanceof Problem) {
 				if (((Problem) element).getType() == Problem.ERROR) {
-					image = ImageType.ERROR.get();
+					image = Icon.ERROR.get();
 				} else if (((Problem) element).getType() == Problem.WARNING) {
-					image = ImageType.WARNING.get();
+					image = Icon.WARNING.get();
 				}
 			}
 			return image;

@@ -5,13 +5,15 @@ import java.util.Objects;
 import org.openlca.core.model.ModelType;
 import org.openlca.util.Strings;
 
-class Group {
+public class Group {
 
 	public final String label;
+	public final GroupType type;
 	public final ModelType[] types;
 
-	public Group(String label, ModelType... types) {
+	Group(String label, GroupType type, ModelType... types) {
 		this.label = label;
+		this.type = type;
 		this.types = types;
 	}
 

@@ -28,7 +28,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.editors.graphical.GraphicalViewerConfigurator;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 
@@ -43,7 +43,7 @@ class OpenMiniatureViewAction extends EditorAction {
 	OpenMiniatureViewAction() {
 		setId(ActionIds.OPEN_MINIATURE_VIEW);
 		setText(Messages.OpenMiniatureView);
-		setImageDescriptor(ImageType.MINIATURE_VIEW.getDescriptor());
+		setImageDescriptor(Icon.MINIATURE_VIEW.descriptor());
 	}
 
 	@Override

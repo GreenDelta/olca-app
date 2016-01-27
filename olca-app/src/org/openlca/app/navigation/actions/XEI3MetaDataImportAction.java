@@ -10,7 +10,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ModelType;
 import org.openlca.io.ecospold2.input.IsicCategoryTreeSync;
@@ -25,7 +25,7 @@ public class XEI3MetaDataImportAction extends Action implements
 		INavigationAction {
 
 	public XEI3MetaDataImportAction() {
-		setImageDescriptor(ImageType.EXTENSION.getDescriptor());
+		setImageDescriptor(Icon.EXTENSION.descriptor());
 		setText("Import ecoinvent 3 meta data");
 	}
 

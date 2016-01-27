@@ -18,9 +18,10 @@ import org.openlca.app.Messages;
 import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.components.UncertaintyCellEditor;
 import org.openlca.app.db.Database;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Error;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.UncertaintyLabel;
 import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
@@ -59,14 +60,13 @@ class ImpactFactorTable {
 		this.editor = editor;
 		editor.getParameterSupport().afterEvaluation(this::refresh);
 	}
-	
+
 	void refresh() {
 		viewer.refresh();
 	}
 
 	public void render(Composite parent, Section section) {
-		viewer = Tables.createViewer(parent, new String[] { FLOW, CATEGORY,
-				FLOW_PROPERTY, UNIT, FACTOR, UNCERTAINTY });
+		viewer = Tables.createViewer(parent, new String[] { FLOW, CATEGORY, FLOW_PROPERTY, UNIT, FACTOR, UNCERTAINTY });
 		FactorLabelProvider label = new FactorLabelProvider();
 		Viewers.sortByLabels(viewer, label, 0, 1, 2, 3, 5);
 		Viewers.sortByDouble(viewer, (ImpactFactor f) -> f.getValue(), 4);
@@ -76,8 +76,7 @@ class ImpactFactorTable {
 		support.bind(FLOW_PROPERTY, new FlowPropertyModifier());
 		support.bind(UNIT, new UnitModifier());
 		support.bind(FACTOR, new ValueModifier());
-		support.bind(UNCERTAINTY, new UncertaintyCellEditor(viewer.getTable(),
-				editor));
+		support.bind(UNCERTAINTY, new UncertaintyCellEditor(viewer.getTable(), editor));
 		bindActions(viewer, section);
 	}
 
@@ -115,8 +114,7 @@ class ImpactFactorTable {
 		Actions.bind(section, add, remove, formulaSwitch);
 		Actions.bind(viewer, add, remove, copy);
 		Tables.onDeletePressed(viewer, (e) -> onRemove());
-		Tables.addDropSupport(viewer,
-				(descriptors) -> createFactors(descriptors));
+		Tables.addDropSupport(viewer, (descriptors) -> createFactors(descriptors));
 		Tables.onDoubleClick(viewer, (event) -> {
 			TableItem item = Tables.getItem(viewer, event);
 			if (item == null)
@@ -127,8 +125,7 @@ class ImpactFactorTable {
 	private void onAdd() {
 		if (category == null)
 			return;
-		BaseDescriptor[] descriptors = ModelSelectionDialog
-				.multiSelect((ModelType.FLOW));
+		BaseDescriptor[] descriptors = ModelSelectionDialog.multiSelect((ModelType.FLOW));
 		if (descriptors != null)
 			createFactors(Arrays.asList(descriptors));
 	}
@@ -137,16 +134,13 @@ class ImpactFactorTable {
 		if (descriptors == null || descriptors.isEmpty())
 			return;
 		for (BaseDescriptor descriptor : descriptors) {
-			if (descriptors == null
-					|| descriptor.getModelType() != ModelType.FLOW)
+			if (descriptors == null || descriptor.getModelType() != ModelType.FLOW)
 				continue;
-			Flow flow = database.createDao(Flow.class).getForId(
-					descriptor.getId());
+			Flow flow = database.createDao(Flow.class).getForId(descriptor.getId());
 			ImpactFactor factor = new ImpactFactor();
 			factor.setFlow(flow);
 			factor.setFlowPropertyFactor(flow.getReferenceFactor());
-			factor.setUnit(flow.getReferenceFactor().getFlowProperty()
-					.getUnitGroup().getReferenceUnit());
+			factor.setUnit(flow.getReferenceFactor().getFlowProperty().getUnitGroup().getReferenceUnit());
 			factor.setValue(1d);
 			category.getImpactFactors().add(factor);
 		}
@@ -164,12 +158,16 @@ class ImpactFactorTable {
 		editor.setDirty(true);
 	}
 
-	private class FactorLabelProvider extends LabelProvider implements
-			ITableLabelProvider {
+	private class FactorLabelProvider extends LabelProvider implements ITableLabelProvider {
 
 		@Override
-		public Image getColumnImage(Object element, int column) {
-			return null;
+		public Image getColumnImage(Object o, int column) {
+			if (column != 0)
+				return null;
+			if (!(o instanceof ImpactFactor))
+				return null;
+			ImpactFactor f = (ImpactFactor) o;
+			return Images.get(f.getFlow());
 		}
 
 		@Override
@@ -210,14 +208,12 @@ class ImpactFactorTable {
 
 	}
 
-	private class FlowPropertyModifier extends
-			ComboBoxCellModifier<ImpactFactor, FlowProperty> {
+	private class FlowPropertyModifier extends ComboBoxCellModifier<ImpactFactor, FlowProperty> {
 
 		@Override
 		protected FlowProperty[] getItems(ImpactFactor element) {
 			List<FlowProperty> items = new ArrayList<>();
-			for (FlowPropertyFactor factor : element.getFlow()
-					.getFlowPropertyFactors())
+			for (FlowPropertyFactor factor : element.getFlow().getFlowPropertyFactors())
 				items.add(factor.getFlowProperty());
 			return items.toArray(new FlowProperty[items.size()]);
 		}
@@ -234,8 +230,7 @@ class ImpactFactorTable {
 
 		@Override
 		protected void setItem(ImpactFactor element, FlowProperty item) {
-			if (!Objects.equals(item, element.getFlowPropertyFactor()
-					.getFlowProperty())) {
+			if (!Objects.equals(item, element.getFlowPropertyFactor().getFlowProperty())) {
 				FlowPropertyFactor factor = element.getFlow().getFactor(item);
 				element.setFlowPropertyFactor(factor);
 				editor.setDirty(true);
@@ -243,14 +238,12 @@ class ImpactFactorTable {
 		}
 	}
 
-	private class UnitModifier
-			extends ComboBoxCellModifier<ImpactFactor, Unit> {
+	private class UnitModifier extends ComboBoxCellModifier<ImpactFactor, Unit> {
 
 		@Override
 		protected Unit[] getItems(ImpactFactor element) {
 			List<Unit> items = new ArrayList<>();
-			for (Unit unit : element.getFlowPropertyFactor().getFlowProperty()
-					.getUnitGroup().getUnits())
+			for (Unit unit : element.getFlowPropertyFactor().getFlowProperty().getUnitGroup().getUnits())
 				items.add(unit);
 			return items.toArray(new Unit[items.size()]);
 		}
@@ -299,8 +292,7 @@ class ImpactFactorTable {
 					editor.setDirty(true);
 					editor.getParameterSupport().evaluate();
 				} catch (Exception ex) {
-					Error.showBox(Messages.InvalidFormula, text
-							+ " " + Messages.IsInvalidFormula);
+					Error.showBox(Messages.InvalidFormula, text + " " + Messages.IsInvalidFormula);
 				}
 			}
 		}
@@ -308,7 +300,7 @@ class ImpactFactorTable {
 
 	private class FormulaSwitchAction extends Action {
 		public FormulaSwitchAction() {
-			setImageDescriptor(ImageType.NUMBER.getDescriptor());
+			setImageDescriptor(Icon.NUMBER.descriptor());
 			setText(Messages.ShowValues);
 		}
 
@@ -316,10 +308,10 @@ class ImpactFactorTable {
 		public void run() {
 			showFormulas = !showFormulas;
 			if (showFormulas) {
-				setImageDescriptor(ImageType.NUMBER.getDescriptor());
+				setImageDescriptor(Icon.NUMBER.descriptor());
 				setText(Messages.ShowValues);
 			} else {
-				setImageDescriptor(ImageType.FORMULA.getDescriptor());
+				setImageDescriptor(Icon.FORMULA.descriptor());
 				setText(Messages.ShowFormulas);
 			}
 			viewer.refresh();

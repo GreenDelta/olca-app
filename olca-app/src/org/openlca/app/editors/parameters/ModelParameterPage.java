@@ -21,7 +21,7 @@ import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.lcia_methods.ImpactMethodEditor;
 import org.openlca.app.editors.lcia_methods.ImpactMethodSourceHandler;
 import org.openlca.app.editors.processes.ProcessEditor;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.UncertaintyLabel;
@@ -104,7 +104,7 @@ public class ModelParameterPage extends FormPage {
 	private void bindGlobalParamActions(Section section, TableViewer table) {
 		Action copy = TableClipboard.onCopy(table);
 		Action refresh = Actions.create(Messages.Reload,
-				ImageType.REFRESH.getDescriptor(), () -> {
+				Icon.REFRESH.descriptor(), () -> {
 					setGlobalTableInput(table);
 					support.evaluate();
 					editor.setDirty(true);

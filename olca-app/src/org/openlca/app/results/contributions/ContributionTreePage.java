@@ -27,16 +27,18 @@ import org.openlca.app.components.ContributionImage;
 import org.openlca.app.components.ResultTypeSelection;
 import org.openlca.app.components.ResultTypeSelection.EventHandler;
 import org.openlca.app.db.Cache;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.CostResults;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.matrix.LongPair;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
@@ -112,7 +114,7 @@ public class ContributionTreePage extends FormPage {
 		mm.add(new OpenEditorAction());
 		mm.add(TreeClipboard.onCopy(tree));
 		mm.add(Actions.create(Messages.ExpandAll,
-				ImageType.EXPAND.getDescriptor(), () -> {
+				Icon.EXPAND.descriptor(), () -> {
 					tree.expandAll();
 				}));
 		Menu menu = mm.createContextMenu(tree.getControl());
@@ -282,7 +284,7 @@ public class ContributionTreePage extends FormPage {
 
 		public OpenEditorAction() {
 			setText(Messages.Open);
-			setImageDescriptor(ImageType.PROCESS.getDescriptor());
+			setImageDescriptor(Images.descriptor(ModelType.PROCESS));
 		}
 
 		@Override

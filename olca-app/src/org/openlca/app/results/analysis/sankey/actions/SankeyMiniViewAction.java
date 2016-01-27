@@ -27,7 +27,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.editors.graphical.action.ActionIds;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.results.analysis.sankey.SankeyDiagram;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
@@ -39,7 +39,7 @@ public class SankeyMiniViewAction extends Action {
 	public SankeyMiniViewAction(SankeyDiagram diagram) {
 		setId(ActionIds.OPEN_MINIATURE_VIEW);
 		setText(Messages.OpenMiniatureView);
-		setImageDescriptor(ImageType.MINIATURE_VIEW.getDescriptor());
+		setImageDescriptor(Icon.MINIATURE_VIEW.descriptor());
 		this.diagram = diagram;
 	}
 

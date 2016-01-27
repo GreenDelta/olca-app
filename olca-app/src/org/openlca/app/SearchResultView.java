@@ -21,10 +21,10 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.db.Cache;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Editors;
-import org.openlca.app.util.Images;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.Category;
@@ -50,8 +50,7 @@ public class SearchResultView extends FormEditor {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public void init(IEditorSite site, IEditorInput input)
-			throws PartInitException {
+	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);
 		if (!(input instanceof Input)) {
 			term = "";
@@ -110,7 +109,7 @@ public class SearchResultView extends FormEditor {
 
 		@Override
 		public ImageDescriptor getImageDescriptor() {
-			return ImageType.SEARCH.getDescriptor();
+			return Icon.SEARCH.descriptor();
 		}
 
 		@Override
@@ -131,15 +130,13 @@ public class SearchResultView extends FormEditor {
 
 	private class Page extends FormPage {
 		public Page() {
-			super(SearchResultView.this, "SearchResultView.Page",
-					Messages.SearchResults);
+			super(SearchResultView.this, "SearchResultView.Page", Messages.SearchResults);
 		}
 
 		@Override
 		protected void createFormContent(IManagedForm managedForm) {
 			ScrolledForm form = UI.formHeader(managedForm,
-					Messages.SearchResults + ": " + term + " (" + results.size()
-							+ Messages.Results + ")");
+					Messages.SearchResults + ": " + term + " (" + results.size() + Messages.Results + ")");
 			FormToolkit toolkit = managedForm.getToolkit();
 			Composite body = UI.formBody(form, toolkit);
 			UI.gridLayout(body, 1).verticalSpacing = 5;
@@ -157,10 +154,9 @@ public class SearchResultView extends FormEditor {
 				Composite composite = toolkit.createComposite(body);
 				UI.gridData(composite, true, false);
 				UI.gridLayout(composite, 1).verticalSpacing = 3;
-				ImageHyperlink link = toolkit.createImageHyperlink(composite,
-						SWT.CENTER);
+				ImageHyperlink link = toolkit.createImageHyperlink(composite, SWT.CENTER);
 				link.setText(Labels.getDisplayName(descriptor));
-				link.setImage(Images.getIcon(descriptor.getModelType()));
+				link.setImage(Images.get(descriptor));
 				link.setForeground(Colors.getLinkBlue());
 				link.setData(descriptor);
 				link.addHyperlinkListener(click);
@@ -169,27 +165,22 @@ public class SearchResultView extends FormEditor {
 			}
 		}
 
-		private void renderDescription(FormToolkit toolkit,
-				BaseDescriptor descriptor, Composite composite) {
-			String description = Strings.cut(
-					Labels.getDisplayInfoText(descriptor), 400);
+		private void renderDescription(FormToolkit toolkit, BaseDescriptor descriptor, Composite composite) {
+			String description = Strings.cut(Labels.getDisplayInfoText(descriptor), 400);
 			if (description != null && !description.isEmpty()) {
-				Label descriptionLabel = toolkit.createLabel(composite,
-						description, SWT.WRAP);
+				Label descriptionLabel = toolkit.createLabel(composite, description, SWT.WRAP);
 				UI.gridData(descriptionLabel, false, false).widthHint = 600;
 			}
 		}
 
-		private void renderCategory(FormToolkit toolkit,
-				BaseDescriptor descriptor, Composite composite) {
+		private void renderCategory(FormToolkit toolkit, BaseDescriptor descriptor, Composite composite) {
 			if (!(descriptor instanceof CategorizedDescriptor))
 				return;
 			CategorizedDescriptor cd = (CategorizedDescriptor) descriptor;
 			Long categoryId = cd.getCategory();
 			if (categoryId == null)
 				return;
-			Category cat = Cache.getEntityCache().get(Category.class,
-					categoryId);
+			Category cat = Cache.getEntityCache().get(Category.class, categoryId);
 			if (cat == null)
 				return;
 			String catPath = CategoryPath.getFull(cat);

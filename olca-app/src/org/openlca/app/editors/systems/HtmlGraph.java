@@ -132,7 +132,10 @@ class HtmlGraph extends FormPage implements HtmlPage {
 	}
 
 	private class Link {
+		// fields are used in html/js
+		@SuppressWarnings("unused")
 		int source;
+		@SuppressWarnings("unused")
 		int target;
 	}
 

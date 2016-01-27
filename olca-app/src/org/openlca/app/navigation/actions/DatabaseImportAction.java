@@ -13,14 +13,14 @@ import org.openlca.app.db.Database;
 import org.openlca.app.db.DerbyConfiguration;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.zeroturnaround.zip.ZipUtil;
 
 public class DatabaseImportAction extends Action implements INavigationAction {
 
 	public DatabaseImportAction() {
 		setText(Messages.ImportDatabase);
-		setImageDescriptor(ImageType.DATABASE_IO.getDescriptor());
+		setImageDescriptor(Icon.DATABASE_IO.descriptor());
 	}
 
 	@Override

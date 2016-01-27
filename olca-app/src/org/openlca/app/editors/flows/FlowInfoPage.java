@@ -12,7 +12,7 @@ import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.util.Editors;
-import org.openlca.app.util.Images;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.LocationViewer;
 import org.openlca.core.model.Flow;
@@ -55,7 +55,7 @@ class FlowInfoPage extends ModelPage<Flow> {
 		createCheckBox(Messages.InfrastructureFlow, "infrastructureFlow",
 				infoSection.getContainer());
 		createReadOnly(Messages.FlowType,
-				Images.getIcon(getModel().getFlowType()), "flowType",
+				Images.get(getModel()), "flowType",
 				infoSection.getContainer());
 		Composite composite = UI.formSection(body, toolkit,
 				Messages.AdditionalInformation);

@@ -12,8 +12,8 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
-import org.openlca.app.rcp.ImageManager;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.rcp.images.Images;
 
 /**
  * Factory methods for some standard actions, ready for Java 8, e.g.:
@@ -45,10 +45,8 @@ public class Actions {
 		return new Action() {
 			{
 				setText(Messages.CreateNew);
-				setImageDescriptor(ImageManager
-						.getImageDescriptor(ImageType.ADD));
-				setDisabledImageDescriptor(ImageManager
-						.getImageDescriptor(ImageType.ADD_DISABLED));
+				setImageDescriptor(Icon.ADD.descriptor());
+				setDisabledImageDescriptor(Icon.ADD_DISABLED.descriptor());
 			}
 
 			@Override
@@ -62,7 +60,7 @@ public class Actions {
 		return new Action() {
 			{
 				setText(Messages.CalculateResults);
-				setImageDescriptor(ImageType.CALCULATE.getDescriptor());
+				setImageDescriptor(Icon.CALCULATE.descriptor());
 			}
 
 			@Override
@@ -76,10 +74,8 @@ public class Actions {
 		return new Action() {
 			{
 				setText(Messages.RemoveSelected);
-				setImageDescriptor(ImageManager
-						.getImageDescriptor(ImageType.DELETE));
-				setDisabledImageDescriptor(ImageManager
-						.getImageDescriptor(ImageType.DELETE_DISABLED));
+				setImageDescriptor(Icon.DELETE.descriptor());
+				setDisabledImageDescriptor(Icon.DELETE_DISABLED.descriptor());
 			}
 
 			@Override
@@ -94,11 +90,9 @@ public class Actions {
 			{
 				setText(Messages.Save);
 				setToolTipText(Messages.Save);
-				ImageDescriptor image = ImageType
-						.getPlatformDescriptor(ISharedImages.IMG_ETOOL_SAVE_EDIT);
+				ImageDescriptor image = Images.platformDescriptor(ISharedImages.IMG_ETOOL_SAVE_EDIT);
 				setImageDescriptor(image);
-				ImageDescriptor imageDis = ImageType
-						.getPlatformDescriptor(ISharedImages.IMG_ETOOL_SAVE_EDIT_DISABLED);
+				ImageDescriptor imageDis = Images.platformDescriptor(ISharedImages.IMG_ETOOL_SAVE_EDIT_DISABLED);
 				setDisabledImageDescriptor(imageDis);
 			}
 

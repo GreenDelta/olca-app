@@ -1,13 +1,11 @@
 package org.openlca.app.cloud.ui.compare;
 
-import static org.openlca.app.util.Images.getCategoryIcon;
-import static org.openlca.app.util.Images.getIcon;
-
 import org.eclipse.swt.graphics.Image;
 import org.openlca.app.cloud.ui.compare.json.JsonNode;
 import org.openlca.app.cloud.ui.compare.json.JsonUtil;
 import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer.Side;
 import org.openlca.app.cloud.ui.compare.json.viewer.label.IJsonNodeLabelProvider;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowPropertyFactor;
@@ -119,7 +117,7 @@ public class ModelLabelProvider implements IJsonNodeLabelProvider {
 			if (mType == ModelType.UNKNOWN)
 				continue;
 			if (mType.getModelClass().getSimpleName().equals(type))
-				return getCategoryIcon(mType);
+				return Images.getForCategory(mType);
 		}
 		return null;
 	}
@@ -130,18 +128,18 @@ public class ModelLabelProvider implements IJsonNodeLabelProvider {
 			if (mType == ModelType.UNKNOWN)
 				continue;
 			if (mType.getModelClass().getSimpleName().equals(type))
-				return getIcon(mType);
+				return Images.get(mType);
 		}
 		if (type.equals(FlowPropertyFactor.class.getSimpleName()))
-			return getIcon(ModelType.FLOW_PROPERTY);
+			return Images.get(ModelType.FLOW_PROPERTY);
 		if (type.equals(ImpactFactor.class.getSimpleName()))
-			return getIcon(ModelType.FLOW);
+			return Images.get(ModelType.FLOW);
 		if (type.equals(SocialAspect.class.getSimpleName()))
-			return getIcon(ModelType.SOCIAL_INDICATOR);
+			return Images.get(ModelType.SOCIAL_INDICATOR);
 		if (type.equals(ParameterRedef.class.getSimpleName()))
-			return getIcon(ModelType.PARAMETER);
+			return Images.get(ModelType.PARAMETER);
 		if (type.equals(NwFactor.class.getSimpleName()))
-			return getIcon(ModelType.IMPACT_CATEGORY);
+			return Images.get(ModelType.IMPACT_CATEGORY);
 		if (type.equals(Exchange.class.getSimpleName())) {
 			String flowType = JsonUtil.getString(element, "flow.flowType");
 			return getFlowTypeImage(flowType);
@@ -152,33 +150,33 @@ public class ModelLabelProvider implements IJsonNodeLabelProvider {
 	private Image getFlowTypeImage(String type) {
 		for (FlowType fType : FlowType.values())
 			if (fType.name().equals(type))
-				return getIcon(fType);
-		return getIcon(ModelType.FLOW);
+				return Images.get(fType);
+		return Images.get(ModelType.FLOW);
 	}
 
 	private Image getArrayImage(String property) {
 		if (property.equals("units"))
-			return getIcon(ModelType.UNIT);
+			return Images.get(ModelType.UNIT);
 		if (property.equals("flowProperties"))
-			return getIcon(ModelType.FLOW_PROPERTY);
+			return Images.get(ModelType.FLOW_PROPERTY);
 		if (property.equals("flowPropertyFactors"))
-			return getIcon(ModelType.FLOW_PROPERTY);
+			return Images.get(ModelType.FLOW_PROPERTY);
 		if (property.equals("inputs") || property.equals("outputs"))
-			return getIcon(ModelType.FLOW);
+			return Images.get(ModelType.FLOW);
 		if (property.equals("parameters"))
-			return getIcon(ModelType.PARAMETER);
+			return Images.get(ModelType.PARAMETER);
 		if (property.equals("parameterRedefs"))
-			return getIcon(ModelType.PARAMETER);
+			return Images.get(ModelType.PARAMETER);
 		if (property.equals("socialAspects"))
-			return getIcon(ModelType.SOCIAL_INDICATOR);
+			return Images.get(ModelType.SOCIAL_INDICATOR);
 		if (property.equals("processes"))
-			return getIcon(ModelType.PROCESS);
+			return Images.get(ModelType.PROCESS);
 		if (property.equals("impactFactors"))
-			return getIcon(ModelType.FLOW);
+			return Images.get(ModelType.FLOW);
 		if (property.equals("nwSets"))
-			return getIcon(ModelType.NW_SET);
+			return Images.get(ModelType.NW_SET);
 		if (property.equals("factors"))
-			return getIcon(ModelType.IMPACT_CATEGORY);
+			return Images.get(ModelType.IMPACT_CATEGORY);
 		return null;
 	}
 

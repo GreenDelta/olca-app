@@ -3,8 +3,9 @@ package org.openlca.app.editors.processes.social;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.SocialAspect;
 import org.openlca.core.model.SocialIndicator;
 
@@ -13,14 +14,14 @@ class TreeLabel extends BaseLabelProvider implements ITableLabelProvider {
 	@Override
 	public Image getColumnImage(Object obj, int col) {
 		if (obj instanceof CategoryNode)
-			return col == 0 ? ImageType.SOCIAL_INDICATOR_CATEGORY.get() : null;
+			return col == 0 ? Images.getForCategory(ModelType.SOCIAL_INDICATOR) : null;
 		if (!(obj instanceof SocialAspect))
 			return null;
 		if (col == 0)
-			return ImageType.SOCIAL_INDICATOR.get();
+			return Images.get(ModelType.SOCIAL_INDICATOR);
 		SocialAspect a = (SocialAspect) obj;
 		if (col == 6 && a.source != null)
-			return ImageType.SOURCE.get();
+			return Images.get(ModelType.SOURCE);
 		else
 			return null;
 	}

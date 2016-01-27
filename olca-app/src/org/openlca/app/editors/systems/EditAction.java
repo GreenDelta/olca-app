@@ -4,8 +4,9 @@ import org.eclipse.jface.action.Action;
 import org.openlca.app.Messages;
 import org.openlca.app.editors.graphical.GraphicalEditorInput;
 import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
-import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Editors;
+import org.openlca.app.rcp.images.Images;
+import org.openlca.core.model.ModelType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +15,7 @@ public class EditAction extends Action {
 	private Logger log = LoggerFactory.getLogger(getClass());
 
 	public EditAction() {
-		setImageDescriptor(ImageType.PRODUCT_SYSTEM.getDescriptor());
+		setImageDescriptor(Images.descriptor(ModelType.PRODUCT_SYSTEM));
 		setText(Messages.OpenInEditor);
 	}
 

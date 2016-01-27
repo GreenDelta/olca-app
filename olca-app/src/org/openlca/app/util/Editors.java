@@ -14,7 +14,7 @@ import org.eclipse.ui.progress.UIJob;
 import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.editors.ModelEditor;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.core.model.CategorizedEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +36,7 @@ public class Editors {
 			return;
 		CategorizedEntity model = editor.getModel();
 		Action refresh = Actions.create(Messages.Reload,
-				ImageType.REFRESH.getDescriptor(), () -> {
+				Icon.REFRESH.descriptor(), () -> {
 					App.closeEditor(model);
 					App.openEditor(model);
 				});

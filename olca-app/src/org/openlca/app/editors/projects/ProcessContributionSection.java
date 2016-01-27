@@ -16,8 +16,8 @@ import org.openlca.app.Messages;
 import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.editors.reports.model.Report;
 import org.openlca.app.editors.reports.model.ReportProcess;
-import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.TableClipboard;
@@ -39,12 +39,10 @@ class ProcessContributionSection {
 	}
 
 	void create(Composite body, FormToolkit toolkit) {
-		Section section = UI.section(body, toolkit,
-				Messages.ProcessContributions);
+		Section section = UI.section(body, toolkit, Messages.ProcessContributions);
 		Composite composite = UI.sectionClient(section, toolkit);
 		UI.gridLayout(composite, 1);
-		String[] properties = { Messages.Process, Messages.ReportName,
-				Messages.Description };
+		String[] properties = { Messages.Process, Messages.ReportName, Messages.Description };
 		viewer = Tables.createViewer(composite, properties);
 		viewer.setLabelProvider(new Label());
 		Tables.bindColumnWidths(viewer, 0.3, 0.3, 0.4);
@@ -57,23 +55,20 @@ class ProcessContributionSection {
 		Report report = editor.getReport();
 		if (report == null)
 			return;
-		report.processes.sort(
-				(p1, p2) -> Strings.compare(p1.reportName, p2.reportName));
+		report.processes.sort((p1, p2) -> Strings.compare(p1.reportName, p2.reportName));
 		viewer.setInput(report.processes);
 	}
 
 	private void bindModifySupport() {
 		ModifySupport<ReportProcess> support = new ModifySupport<>(viewer);
-		support.bind(Messages.ReportName, p -> p.reportName,
-				(p, text) -> {
-					p.reportName = text;
-					editor.setDirty(true);
-				});
-		support.bind(Messages.Description, p -> p.reportDescription,
-				(p, text) -> {
-					p.reportDescription = text;
-					editor.setDirty(true);
-				});
+		support.bind(Messages.ReportName, p -> p.reportName, (p, text) -> {
+			p.reportName = text;
+			editor.setDirty(true);
+		});
+		support.bind(Messages.Description, p -> p.reportDescription, (p, text) -> {
+			p.reportDescription = text;
+			editor.setDirty(true);
+		});
 	}
 
 	private void bindActions(TableViewer viewer, Section section) {
@@ -121,15 +116,16 @@ class ProcessContributionSection {
 		editor.setDirty(true);
 	}
 
-	private class Label extends BaseLabelProvider implements
-			ITableLabelProvider {
+	private class Label extends BaseLabelProvider implements ITableLabelProvider {
 
 		@Override
 		public Image getColumnImage(Object element, int col) {
-			if (col == 0)
-				return ImageType.PROCESS.get();
-			else
+			if (col != 0)
 				return null;
+			if (!(element instanceof ReportProcess))
+				return null;
+			ReportProcess process = (ReportProcess) element;
+			return Images.get(process.descriptor);
 		}
 
 		@Override

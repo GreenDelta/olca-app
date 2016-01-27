@@ -8,10 +8,11 @@ import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.Messages;
-import org.openlca.app.util.Images;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Location;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.io.CategoryPath;
 import org.openlca.util.Strings;
@@ -132,10 +133,12 @@ public class FlowViewer extends AbstractComboViewer<FlowDescriptor> {
 
 		@Override
 		public Image getColumnImage(Object element, int col) {
-			if (col != 0 && col != 3)
+			if (col == 1)
 				return null;
+			if (col == 2)
+				return Images.get(ModelType.LOCATION); 
 			FlowDescriptor flow = (FlowDescriptor) element;
-			return Images.getIcon(flow.getFlowType());
+			return Images.get(flow);
 		}
 
 		@Override

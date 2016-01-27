@@ -14,7 +14,7 @@ import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.Process;
@@ -38,7 +38,7 @@ public class XNexusIndexExportAction extends Action implements
 	private Logger log = LoggerFactory.getLogger(getClass());
 
 	public XNexusIndexExportAction() {
-		setImageDescriptor(ImageType.EXTENSION.getDescriptor());
+		setImageDescriptor(Icon.EXTENSION.descriptor());
 		setText("Export Nexus Index");
 	}
 

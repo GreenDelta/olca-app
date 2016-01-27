@@ -7,10 +7,11 @@ import org.openlca.app.cloud.index.DiffType;
 import org.openlca.app.cloud.index.DiffUtil;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.IDatabaseConfiguration;
-import org.openlca.app.rcp.ImageManager;
-import org.openlca.app.rcp.ImageType;
-import org.openlca.app.util.Images;
+import org.openlca.app.rcp.images.Images;
+import org.openlca.app.rcp.images.Overlay;
 import org.openlca.cloud.api.RepositoryClient;
+import org.openlca.core.model.Category;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
 class RepositoryLabel {
 
@@ -28,15 +29,14 @@ class RepositoryLabel {
 		Diff diff = DiffUtil.getDiff(CloudUtil.toDataset(element));
 		if (diff.type != DiffType.NEW)
 			return null;
-		ImageType imageType = null;
-		if (element instanceof CategoryElement)
-			imageType = Images.getImageType(((CategoryElement) element)
-					.getContent());
-		else if (element instanceof ModelElement)
-			imageType = Images.getImageType(((ModelElement) element)
-					.getContent().getModelType());
-		return ImageManager.getImageWithOverlay(imageType,
-				ImageType.OVERLAY_ADDED);
+		if (element instanceof CategoryElement) {
+			Category category = ((CategoryElement) element).getContent();
+			return Images.getForCategory(category.getModelType(), Overlay.ADDED);
+		} else if (element instanceof ModelElement) {
+			CategorizedDescriptor model = ((ModelElement) element).getContent();
+			return Images.get(model.getModelType(), Overlay.ADDED);
+		}
+		return null;
 	}
 
 	static String getRepositoryText(IDatabaseConfiguration config) {
@@ -45,8 +45,7 @@ class RepositoryLabel {
 		RepositoryClient client = Database.getRepositoryClient();
 		if (client == null)
 			return null;
-		return " [" + client.getConfig().getServerUrl() + " "
-				+ client.getConfig().getRepositoryId() + "]";
+		return " [" + client.getConfig().getServerUrl() + " " + client.getConfig().getRepositoryId() + "]";
 	}
 
 	static String getStateIndicator(INavigationElement<?> element) {
@@ -64,7 +63,7 @@ class RepositoryLabel {
 			return null;
 		return CHANGED_STATE;
 	}
-	
+
 	private static boolean isNew(INavigationElement<?> element) {
 		Diff diff = DiffUtil.getDiff(CloudUtil.toDataset(element));
 		if (element instanceof DatabaseElement)

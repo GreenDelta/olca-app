@@ -16,7 +16,7 @@ import org.eclipse.ui.PlatformUI;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Question;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.derby.DerbyDatabase;
@@ -40,8 +40,8 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 	public void init(IWorkbench iWorkbench,
 			IStructuredSelection iStructuredSelection) {
 		setWindowTitle(Messages.DatabaseImport);
-		setDefaultPageImageDescriptor(ImageType.IMPORT_ZIP_WIZARD
-				.getDescriptor());
+		setDefaultPageImageDescriptor(Icon.IMPORT_ZIP_WIZARD
+				.descriptor());
 		setNeedsProgressMonitor(true);
 	}
 

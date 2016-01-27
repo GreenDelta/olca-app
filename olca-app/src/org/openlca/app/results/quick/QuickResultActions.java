@@ -9,8 +9,9 @@ import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Cache;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Editors;
+import org.openlca.app.util.FileType;
 import org.openlca.app.util.InformationPopup;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.results.ContributionResultProvider;
@@ -30,7 +31,7 @@ public class QuickResultActions extends EditorActionBarContributor {
 		private Logger log = LoggerFactory.getLogger(getClass());
 
 		public ExcelExport() {
-			setImageDescriptor(ImageType.FILE_EXCEL.getDescriptor());
+			setImageDescriptor(Images.descriptor(FileType.EXCEL));
 			setText(Messages.ExportToExcel);
 			setToolTipText(Messages.ExportToExcel);
 		}

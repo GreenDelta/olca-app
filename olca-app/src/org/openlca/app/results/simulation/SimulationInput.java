@@ -4,7 +4,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
 import org.openlca.app.Messages;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 
 /**
  * The editor input for the Monte-Carlo-Simulation.
@@ -40,7 +40,7 @@ class SimulationInput implements IEditorInput {
 
 	@Override
 	public ImageDescriptor getImageDescriptor() {
-		return ImageType.SIMULATE.getDescriptor();
+		return Icon.SIMULATE.descriptor();
 	}
 
 	@Override

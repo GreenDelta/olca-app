@@ -18,7 +18,7 @@ import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +30,7 @@ class SaveImageAction extends Action {
 	SaveImageAction() {
 		setId(ActionIds.SAVE_IMAGE);
 		setText(Messages.SaveAsImage);
-		setImageDescriptor(ImageType.SAVE_AS_IMAGE.getDescriptor());
+		setImageDescriptor(Icon.SAVE_AS_IMAGE.descriptor());
 	}
 
 	void setEditor(ProductSystemGraphEditor editor) {

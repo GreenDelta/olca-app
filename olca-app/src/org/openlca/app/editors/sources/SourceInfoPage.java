@@ -21,10 +21,12 @@ import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Desktop;
+import org.openlca.app.util.FileType;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Info;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
@@ -97,7 +99,7 @@ class SourceInfoPage extends ModelPage<Source> {
 
 	private void createDeleteLink(Composite composite) {
 		deleteLink = toolkit.createImageHyperlink(composite, SWT.TOP);
-		deleteLink.setImage(ImageType.DELETE_DISABLED.get());
+		deleteLink.setImage(Icon.DELETE_DISABLED.get());
 		deleteLink.addMouseTrackListener(new DeleteFileVisibility());
 		deleteLink.setVisible(false);
 		deleteLink.setToolTipText(Messages.Delete);
@@ -113,7 +115,7 @@ class SourceInfoPage extends ModelPage<Source> {
 		if (file != null) {
 			fileLink.setText(file);
 			fileLink.setToolTipText(Messages.Open);
-			fileLink.setImage(ImageType.forFile(file).get());
+			fileLink.setImage(Images.get(FileType.forName(file)));
 		}
 	}
 
@@ -159,7 +161,7 @@ class SourceInfoPage extends ModelPage<Source> {
 		} else {
 			fileLink.setToolTipText(Messages.Open);
 			fileLink.setText(file);
-			fileLink.setImage(ImageType.forFile(file).get());
+			fileLink.setImage(Images.get(FileType.forName(file)));
 		}
 		fileLink.getParent().getParent().layout();
 	}
@@ -214,14 +216,14 @@ class SourceInfoPage extends ModelPage<Source> {
 		@Override
 		public void mouseEnter(MouseEvent e) {
 			if (e.widget == deleteLink)
-				deleteLink.setImage(ImageType.DELETE.get());
+				deleteLink.setImage(Icon.DELETE.get());
 			deleteLink.setVisible(getModel().getExternalFile() != null);
 		}
 
 		@Override
 		public void mouseExit(MouseEvent e) {
 			if (e.widget == deleteLink)
-				deleteLink.setImage(ImageType.DELETE_DISABLED.get());
+				deleteLink.setImage(Icon.DELETE_DISABLED.get());
 			deleteLink.setVisible(false);
 		}
 	}

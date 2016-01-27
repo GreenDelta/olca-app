@@ -19,7 +19,7 @@ import org.openlca.app.db.MySQLConfiguration;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.UI;
 import org.slf4j.Logger;
@@ -36,8 +36,8 @@ public class DatabaseDeleteAction extends Action implements INavigationAction {
 	private List<IDatabaseConfiguration> configs;
 
 	public DatabaseDeleteAction() {
-		setImageDescriptor(ImageType.DELETE.getDescriptor());
-		setDisabledImageDescriptor(ImageType.DELETE_DISABLED.getDescriptor());
+		setImageDescriptor(Icon.DELETE.descriptor());
+		setDisabledImageDescriptor(Icon.DELETE_DISABLED.descriptor());
 	}
 
 	@Override

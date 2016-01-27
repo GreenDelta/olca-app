@@ -6,7 +6,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
-import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.ParameterDao;
 import org.openlca.core.model.Parameter;
@@ -37,8 +36,6 @@ public class ParameterWizard extends AbstractWizard<Parameter> {
 			super("ParameterWizardPage");
 			setTitle(Messages.NewParameter);
 			setMessage(Messages.CreatesANewParameter);
-			// TODO change icon
-			setImageDescriptor(ImageType.PARAMETER_WIZARD.getDescriptor());
 			setPageComplete(false);
 		}
 

@@ -14,13 +14,14 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
-import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.ImpactResult;
 import org.openlca.core.results.SimpleResultProvider;
@@ -80,7 +81,7 @@ public class TotalImpactResultPage extends FormPage {
 		public Image getColumnImage(Object element, int col) {
 			if (col != 0)
 				return null;
-			return ImageType.IMPACT_METHOD_CATEGORY.get();
+			return Images.get(ModelType.IMPACT_CATEGORY); 
 		}
 
 		@Override

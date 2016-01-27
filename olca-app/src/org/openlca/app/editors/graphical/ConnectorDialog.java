@@ -34,7 +34,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.model.ExchangeNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.FlowDao;
@@ -391,23 +391,23 @@ public class ConnectorDialog extends Dialog {
 			switch (columnIndex) {
 			case 1:
 				if (process.doCreate())
-					return ImageType.CHECK_TRUE.get();
+					return Icon.CHECK_TRUE.get();
 				if (!process.isAlreadyExisting())
-					return ImageType.CHECK_FALSE.get();
+					return Icon.CHECK_FALSE.get();
 				return null;
 			case 2:
 				if (process.doConnect())
-					return ImageType.CHECK_TRUE.get();
+					return Icon.CHECK_TRUE.get();
 				if (canBeConnected(process))
-					return ImageType.CHECK_FALSE.get();
+					return Icon.CHECK_FALSE.get();
 				return null;
 			case 3:
 				if (process.isAlreadyExisting())
-					return ImageType.ACCEPT.get();
+					return Icon.ACCEPT.get();
 				return null; // just show a - (getColumnText)
 			case 4:
 				if (process.isAlreadyConnectedToExchange())
-					return ImageType.ACCEPT.get();
+					return Icon.ACCEPT.get();
 				return null; // just show a - (getColumnText)
 			default:
 				return null;

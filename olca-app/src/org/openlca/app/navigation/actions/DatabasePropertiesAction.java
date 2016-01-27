@@ -8,7 +8,7 @@ import org.openlca.app.db.DatabasePropertiesDialog;
 import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 
 /**
  * Shows the database properties in a window.
@@ -20,7 +20,7 @@ public class DatabasePropertiesAction extends Action implements
 
 	public DatabasePropertiesAction() {
 		setText(Messages.Properties);
-		setImageDescriptor(ImageType.INFO.getDescriptor());
+		setImageDescriptor(Icon.INFO.descriptor());
 	}
 
 	@Override

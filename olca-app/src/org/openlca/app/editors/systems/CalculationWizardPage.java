@@ -9,7 +9,7 @@ import org.eclipse.swt.widgets.Text;
 import org.openlca.app.Messages;
 import org.openlca.app.Preferences;
 import org.openlca.app.db.Database;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.UI;
@@ -45,7 +45,7 @@ class CalculationWizardPage extends WizardPage {
 		this.productSystem = system;
 		setTitle(Messages.CalculationProperties);
 		setDescription(Messages.CalculationWizardDescription);
-		setImageDescriptor(ImageType.CALCULATION_WIZARD.getDescriptor());
+		setImageDescriptor(Icon.CALCULATION_WIZARD.descriptor());
 		setPageComplete(true);
 	}
 

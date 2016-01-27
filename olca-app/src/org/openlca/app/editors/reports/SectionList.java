@@ -18,7 +18,7 @@ import org.openlca.app.editors.projects.ProjectEditor;
 import org.openlca.app.editors.reports.model.Report;
 import org.openlca.app.editors.reports.model.ReportComponent;
 import org.openlca.app.editors.reports.model.ReportSection;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
@@ -150,15 +150,15 @@ class SectionList {
 		private void createActions() {
 			Action up = Actions.create(
 					Messages.MoveUp,
-					ImageType.UP.getDescriptor(),
+					Icon.UP.descriptor(),
 					() -> moveUp());
 			Action down = Actions.create(
 					Messages.MoveDown,
-					ImageType.DOWN.getDescriptor(),
+					Icon.DOWN.descriptor(),
 					() -> moveDown());
 			Action delete = Actions.create(
 					Messages.DeleteSection,
-					ImageType.DELETE.getDescriptor(),
+					Icon.DELETE.descriptor(),
 					() -> delete());
 			Actions.bind(ui, up, down, delete);
 		}

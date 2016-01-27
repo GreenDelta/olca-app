@@ -7,14 +7,14 @@ import org.openlca.app.App;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.io.ecospold2.input.MarketProcessCleanUp;
 
 public class XEI3MarketProcessCleanUp extends Action implements
 		INavigationAction {
 
 	public XEI3MarketProcessCleanUp() {
-		setImageDescriptor(ImageType.EXTENSION.getDescriptor());
+		setImageDescriptor(Icon.EXTENSION.descriptor());
 		setText("Merge EI3 market processes");
 	}
 

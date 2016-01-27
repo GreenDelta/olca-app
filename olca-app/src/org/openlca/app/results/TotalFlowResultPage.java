@@ -20,7 +20,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
 import org.openlca.app.util.Actions;
-import org.openlca.app.util.Images;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
@@ -100,7 +100,7 @@ public class TotalFlowResultPage extends FormPage {
 			if (!(obj instanceof FlowDescriptor))
 				return null;
 			FlowDescriptor flow = (FlowDescriptor) obj;
-			return Images.getIcon(flow.getFlowType());
+			return Images.get(flow);
 		}
 
 		@Override

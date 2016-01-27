@@ -16,7 +16,7 @@ import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.processes.ProcessEditor;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.trees.Trees;
@@ -69,7 +69,7 @@ public class SocialAspectsPage extends ModelPage<Process> {
 		Trees.onDoubleClick(tree, (e) -> editAspect());
 		Action add = Actions.onAdd(this::addIndicator);
 		Action edit = Actions.create(Messages.Edit,
-				ImageType.EDIT.getDescriptor(), this::editAspect);
+				Icon.EDIT.descriptor(), this::editAspect);
 		Action delete = Actions.onRemove(this::deleteAspect);
 		Actions.bind(section, add, edit, delete);
 		Actions.bind(tree, add, edit, delete);
@@ -95,6 +95,7 @@ public class SocialAspectsPage extends ModelPage<Process> {
 		tree = new TreeViewer(comp, SWT.FULL_SELECTION
 				| SWT.MULTI | SWT.BORDER);
 		Tree t = tree.getTree();
+		t.setLinesVisible(true);
 		for (int i = 0; i < headers.length; i++) {
 			TreeColumn c = new TreeColumn(t, SWT.NULL);
 			c.setText(headers[i]);

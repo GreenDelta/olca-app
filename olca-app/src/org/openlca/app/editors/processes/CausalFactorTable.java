@@ -19,7 +19,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.util.Actions;
-import org.openlca.app.util.Images;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
@@ -175,7 +175,7 @@ class CausalFactorTable {
 			Exchange exchange = (Exchange) element;
 			if (exchange.getFlow() == null)
 				return null;
-			return Images.getIcon(exchange.getFlow().getFlowType());
+			return Images.get(exchange.getFlow());
 		}
 
 		@Override

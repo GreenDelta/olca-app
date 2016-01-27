@@ -10,7 +10,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.openlca.app.Messages;
 import org.openlca.app.editors.graphical.model.ProcessNode;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.core.model.ProcessType;
 
@@ -25,7 +25,7 @@ class BuildSupplyChainMenuAction extends EditorAction {
 	BuildSupplyChainMenuAction() {
 		setId(ActionIds.BUILD_SUPPLY_CHAIN_MENU);
 		setText(Messages.BuildSupplyChain);
-		setImageDescriptor(ImageType.BUILD_SUPPLY_CHAIN.getDescriptor());
+		setImageDescriptor(Icon.BUILD_SUPPLY_CHAIN.descriptor());
 		setMenuCreator(new MenuCreator());
 	}
 

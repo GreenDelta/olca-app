@@ -11,7 +11,7 @@ import org.openlca.app.Messages;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.preferencepages.FeatureFlag;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.UI;
@@ -101,7 +101,7 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 		toolkit.createLabel(composite, "");
 		Button button = toolkit.createButton(composite, Messages.Calculate,
 				SWT.NONE);
-		button.setImage(ImageType.CALCULATE.get());
+		button.setImage(Icon.CALCULATE.get());
 		Controls.onSelect(button, (e) -> CalculationWizard.open(getModel()));
 	}
 

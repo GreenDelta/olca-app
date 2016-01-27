@@ -9,7 +9,7 @@ import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.openlca.app.Messages;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +27,7 @@ public class ErrorPopup extends Popup {
 	public ErrorPopup(String title, String message) {
 		super(title, message);
 		defaultTitle(Messages.ErrorPopupTitle);
-		popupShellImage(ImageType.ERROR);
+		popupShellImage(Icon.ERROR);
 	}
 
 	@Override

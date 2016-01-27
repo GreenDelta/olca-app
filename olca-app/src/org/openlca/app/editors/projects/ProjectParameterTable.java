@@ -23,9 +23,8 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.components.ParameterRedefDialog;
 import org.openlca.app.db.Cache;
-import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
-import org.openlca.app.util.Images;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.TableClipboard;
@@ -34,6 +33,7 @@ import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.database.EntityCache;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.Project;
 import org.openlca.core.model.ProjectVariant;
@@ -307,9 +307,9 @@ class ProjectParameterTable {
 			ParameterRedef redef = (ParameterRedef) element;
 			BaseDescriptor model = getModel(redef);
 			if (model == null)
-				return ImageType.FORMULA.get();
+				return Images.get(ModelType.PARAMETER); 
 			else
-				return Images.getIcon(model);
+				return Images.get(model);
 		}
 
 		@Override

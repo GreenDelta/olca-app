@@ -6,7 +6,7 @@ import org.eclipse.jface.action.Action;
 import org.openlca.app.Messages;
 import org.openlca.app.db.DatabaseWizard;
 import org.openlca.app.navigation.INavigationElement;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Images;
 
 /**
  * Opens the wizard for creating a new database.
@@ -15,7 +15,7 @@ public class DatabaseCreateAction extends Action implements INavigationAction {
 
 	public DatabaseCreateAction() {
 		setText(Messages.NewDatabase);
-		setImageDescriptor(ImageType.getNewDescriptor(ImageType.DATABASE));
+		setImageDescriptor(Images.newDatabase());
 	}
 
 	@Override

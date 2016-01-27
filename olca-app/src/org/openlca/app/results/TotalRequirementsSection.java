@@ -18,8 +18,8 @@ import org.openlca.app.Messages;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
-import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
@@ -31,6 +31,7 @@ import org.openlca.core.database.EntityCache;
 import org.openlca.core.matrix.LongPair;
 import org.openlca.core.matrix.ProductIndex;
 import org.openlca.core.model.Currency;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.ContributionResultProvider;
@@ -238,9 +239,9 @@ class TotalRequirementsSection {
 				return null;
 			switch (col) {
 			case 0:
-				return ImageType.PROCESS.get();
+				return Images.get(ModelType.PROCESS);
 			case 1:
-				return ImageType.FLOW.get();
+				return Images.get(ModelType.FLOW);
 			case 4:
 				return costImage.getForTable(((Item) obj).costShare);
 			default:

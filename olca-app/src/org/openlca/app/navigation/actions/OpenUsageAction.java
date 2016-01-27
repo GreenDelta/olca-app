@@ -8,7 +8,7 @@ import org.openlca.app.Messages;
 import org.openlca.app.editors.UsageView;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
@@ -31,7 +31,7 @@ public class OpenUsageAction extends Action implements INavigationAction {
 
 	public OpenUsageAction() {
 		setText(Messages.Usage);
-		setImageDescriptor(ImageType.LINK.getDescriptor());
+		setImageDescriptor(Icon.LINK.descriptor());
 	}
 
 	public void setDescriptor(CategorizedDescriptor descriptor) {

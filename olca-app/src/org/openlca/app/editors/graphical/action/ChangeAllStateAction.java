@@ -7,7 +7,7 @@ import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
 import org.openlca.app.editors.graphical.command.ChangeStateCommand;
 import org.openlca.app.editors.graphical.command.CommandFactory;
 import org.openlca.app.editors.graphical.model.ProcessNode;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 
 class ChangeAllStateAction extends Action {
 
@@ -18,11 +18,11 @@ class ChangeAllStateAction extends Action {
 		if (type == MINIMIZE) {
 			setId(ActionIds.MINIMIZE_ALL);
 			setText(Messages.MinimizeAll);
-			setImageDescriptor(ImageType.MINIMIZE.getDescriptor());
+			setImageDescriptor(Icon.MINIMIZE.descriptor());
 		} else if (type == MAXIMIZE) {
 			setId(ActionIds.MAXIMIZE_ALL);
 			setText(Messages.MaximizeAll);
-			setImageDescriptor(ImageType.MAXIMIZE.getDescriptor());
+			setImageDescriptor(Icon.MAXIMIZE.descriptor());
 		}
 		this.type = type;
 	}

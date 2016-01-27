@@ -11,9 +11,12 @@ import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Images;
+import org.openlca.app.rcp.images.Overlay;
 import org.openlca.app.util.Editors;
+import org.openlca.app.util.FileType;
 import org.openlca.app.util.InformationPopup;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.Descriptors;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -43,7 +46,7 @@ public class ProcessToolbar extends EditorActionBarContributor {
 	private class MakeSystemAction extends Action {
 
 		public MakeSystemAction() {
-			setImageDescriptor(ImageType.getNewDescriptor(ImageType.PRODUCT_SYSTEM));
+			setImageDescriptor(Images.descriptor(ModelType.PRODUCT_SYSTEM, Overlay.NEW));
 			setToolTipText(Messages.CreateProductSystem);
 		}
 
@@ -59,7 +62,7 @@ public class ProcessToolbar extends EditorActionBarContributor {
 	private class ExcelExportAction extends Action {
 
 		public ExcelExportAction() {
-			setImageDescriptor(ImageType.FILE_EXCEL.getDescriptor());
+			setImageDescriptor(Images.descriptor(FileType.EXCEL));
 			setToolTipText(Messages.ExportToExcel);
 		}
 

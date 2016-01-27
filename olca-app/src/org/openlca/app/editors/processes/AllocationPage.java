@@ -15,10 +15,11 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Event;
 import org.openlca.app.Messages;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Error;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
@@ -30,6 +31,7 @@ import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.model.AllocationFactor;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.Exchange;
+import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -118,7 +120,7 @@ class AllocationPage extends FormPage {
 		UI.formLabel(composite, toolkit, "");
 		Button button = toolkit.createButton(composite,
 				Messages.CalculateDefaultValues, SWT.NONE);
-		button.setImage(ImageType.CALCULATE.get());
+		button.setImage(Icon.CALCULATE.get());
 		Controls.onSelect(button, (e) -> {
 			AllocationSync.calculateDefaults(process());
 			factorViewer.refresh();
@@ -212,7 +214,7 @@ class AllocationPage extends FormPage {
 		@Override
 		public Image getColumnImage(Object element, int col) {
 			if (col == 0)
-				return ImageType.FLOW_PRODUCT.get();
+				return Images.get(FlowType.PRODUCT_FLOW);
 			return null;
 		}
 	}

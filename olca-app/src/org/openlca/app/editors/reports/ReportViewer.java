@@ -15,11 +15,12 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.Messages;
 import org.openlca.app.editors.reports.model.Report;
-import org.openlca.app.rcp.ImageType;
 import org.openlca.app.rcp.html.HtmlPage;
 import org.openlca.app.rcp.html.HtmlView;
 import org.openlca.app.util.Editors;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.UI;
+import org.openlca.core.model.ModelType;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,7 +103,7 @@ public class ReportViewer extends FormEditor {
 
 		@Override
 		public ImageDescriptor getImageDescriptor() {
-			return ImageType.PROJECT.getDescriptor();
+			return Images.descriptor(ModelType.PROJECT);
 		}
 
 		@Override

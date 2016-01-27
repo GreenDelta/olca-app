@@ -8,7 +8,7 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.swt.graphics.Color;
 import org.openlca.app.Messages;
 import org.openlca.app.editors.graphical.layout.GraphAnimation;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
@@ -63,12 +63,12 @@ class ExchangeFigure extends Label {
 			int y = getLocation().y;
 			int width = getSize().width;
 			int margin = 5;
-			graphics.drawImage(ImageType.EXCHANGE_BG_LEFT.get(), new Point(x,
+			graphics.drawImage(Icon.EXCHANGE_BG_LEFT.get(), new Point(x,
 					y + 2));
 			for (int i = margin; i < width - margin; i++)
-				graphics.drawImage((ImageType.EXCHANGE_BG_MIDDLE.get()),
+				graphics.drawImage((Icon.EXCHANGE_BG_MIDDLE.get()),
 						new Point(x + i, y + 2));
-			graphics.drawImage(ImageType.EXCHANGE_BG_RIGHT.get(), new Point(x
+			graphics.drawImage(Icon.EXCHANGE_BG_RIGHT.get(), new Point(x
 					+ width - margin, y + 2));
 		}
 		super.paintFigure(graphics);

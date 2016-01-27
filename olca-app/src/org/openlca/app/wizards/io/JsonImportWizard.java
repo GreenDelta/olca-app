@@ -13,7 +13,7 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.preferencepages.FeatureFlag;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.jsonld.ZipStore;
 import org.openlca.jsonld.input.JsonImport;
 import org.openlca.jsonld.input.UpdateMode;
@@ -28,8 +28,8 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
 		setNeedsProgressMonitor(true);
 		setWindowTitle("openLCA JSON-LD");
-		setDefaultPageImageDescriptor(ImageType.IMPORT_ZIP_WIZARD
-				.getDescriptor());
+		setDefaultPageImageDescriptor(Icon.IMPORT_ZIP_WIZARD
+				.descriptor());
 	}
 
 	@Override

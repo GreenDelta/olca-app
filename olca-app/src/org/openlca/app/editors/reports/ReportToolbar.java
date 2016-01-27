@@ -14,10 +14,10 @@ import org.eclipse.ui.part.EditorActionBarContributor;
 import org.openlca.app.Messages;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.editors.reports.model.Report;
-import org.openlca.app.rcp.ImageType;
 import org.openlca.app.rcp.RcpActivator;
 import org.openlca.app.rcp.html.HtmlFolder;
 import org.openlca.app.rcp.html.HtmlView;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Editors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +52,7 @@ public class ReportToolbar extends EditorActionBarContributor {
 		private final String CALL_HOOK = "//{{set_data_call}}";
 
 		public ExportAction() {
-			setImageDescriptor(ImageType.EXPORT.getDescriptor());
+			setImageDescriptor(Icon.EXPORT.descriptor());
 			setToolTipText(Messages.ExportReport);
 		}
 

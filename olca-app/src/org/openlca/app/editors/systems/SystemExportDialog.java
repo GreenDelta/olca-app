@@ -18,7 +18,8 @@ import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.components.FileSelection;
 import org.openlca.app.db.Cache;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.FileType;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AllocationMethodViewer;
 import org.openlca.app.viewers.combo.ImpactMethodViewer;
@@ -45,7 +46,7 @@ public class SystemExportDialog extends WizardDialog {
 
 			protected SystemExportWizardPage() {
 				super("SystemExportWizardPage");
-				setImageDescriptor(ImageType.FILE_EXCEL.getDescriptor());
+				setImageDescriptor(Images.descriptor(FileType.EXCEL));
 				setTitle(Messages.ProductSystemExcelExport);
 				setDescription(Messages.ProductSystemExcelExportMessage);
 				setPageComplete(false);

@@ -384,7 +384,7 @@
             name="openLCA">
          <property
                name="windowImages"
-               value="icons/logo_16_32bit.png,icons/logo_32_32bit.png,icons/logo_48_32bit.png,icons/logo_64.png,icons/logo_128.png">
+               value="icons/logo/16_32bit.png,icons/logo/32_32bit.png,icons/logo/48_32bit.png,icons/logo/64.png,icons/logo/128.png">
          </property>
          <property
                name="aboutText"
@@ -568,7 +568,7 @@
       <wizard
             category="import.category.file"
             class="org.openlca.app.wizards.io.EcoSpold01ImportWizard"
-            icon="icons/file/xml.gif"
+            icon="icons/file/xml.png"
             id="wizard.import.ecospold1"
             name="%EcoSpold">
          <description>
@@ -578,7 +578,7 @@
       <wizard
             category="import.category.file"
             class="org.openlca.app.wizards.io.EcoSpold2ImportWizard"
-            icon="icons/file/xml.gif"
+            icon="icons/file/xml.png"
             id="wizard.import.ecospold2"
             name="EcoSpold 2">
          <description>
@@ -667,7 +667,7 @@
       <wizard
             category="export.category.ecospold"
             class="org.openlca.app.wizards.io.EcoSpold01ExportProcessWizard"
-            icon="icons/file/xml.gif"
+            icon="icons/file/xml.png"
             id="wizard.export.ecospold.process"
             name="%Processes">
        </wizard>
@@ -681,7 +681,7 @@
        <wizard
             category="export.category.ecospold"
             class="org.openlca.app.wizards.io.EcoSpold2ExportWizard"
-            icon="icons/file/xml.gif"
+            icon="icons/file/xml.png"
             id="wizard.export.ecospold.process"
             name="EcoSpold 2">
          <description>
@@ -691,7 +691,7 @@
       <wizard
             category="export.category.ecospold"
             class="org.openlca.app.wizards.io.EcoSpold01ExportMethodWizard"
-            icon="icons/file/xml.gif"
+            icon="icons/file/xml.png"
             id="wizard.export.ecospold.impactmethod"
             name="%ImpactMethods">
       </wizard>

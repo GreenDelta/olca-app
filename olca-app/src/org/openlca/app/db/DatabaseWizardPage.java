@@ -11,7 +11,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.openlca.app.Messages;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.DbUtils;
@@ -33,7 +33,7 @@ class DatabaseWizardPage extends WizardPage {
 
 	public DatabaseWizardPage() {
 		super("database-wizard-page", Messages.NewDatabase,
-				ImageType.DATABASE_WIZARD.getDescriptor());
+				Icon.DATABASE_WIZARD.descriptor());
 		setDescription(Messages.CreateANewDatabase);
 		setPageComplete(false);
 	}

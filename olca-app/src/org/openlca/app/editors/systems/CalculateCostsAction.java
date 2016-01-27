@@ -2,7 +2,7 @@ package org.openlca.app.editors.systems;
 
 import org.eclipse.jface.action.Action;
 import org.openlca.app.Messages;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 
 public class CalculateCostsAction extends Action {
 
@@ -10,7 +10,7 @@ public class CalculateCostsAction extends Action {
 
 	public CalculateCostsAction() {
 		setToolTipText(Messages.CalculateCosts);
-		setImageDescriptor(ImageType.CALCULATE_COSTS.getDescriptor());
+		setImageDescriptor(Icon.CALCULATE_COSTS.descriptor());
 	}
 
 	public void setActiveEditor(ProductSystemEditor editor) {

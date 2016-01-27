@@ -5,7 +5,7 @@ import java.util.Objects;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
-import org.openlca.app.util.Images;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 
@@ -43,9 +43,9 @@ public final class GraphicalEditorInput implements IEditorInput {
 
 	@Override
 	public ImageDescriptor getImageDescriptor() {
-		if (descriptor == null || descriptor.getModelType() == null)
+		if (descriptor == null)
 			return null;
-		return Images.getIconDescriptor(descriptor.getModelType());
+		return Images.descriptor(descriptor);
 	}
 
 	@Override

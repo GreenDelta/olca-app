@@ -6,35 +6,30 @@ import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.openlca.app.cloud.CloudUtil;
-import org.openlca.app.rcp.ImageManager;
-import org.openlca.app.rcp.ImageType;
-import org.openlca.app.util.Images;
+import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.rcp.images.Images;
+import org.openlca.app.rcp.images.Overlay;
 import org.openlca.cloud.model.data.Commit;
 import org.openlca.cloud.model.data.FetchRequestData;
 import org.openlca.core.model.ModelType;
 
-class LabelProvider extends BaseLabelProvider implements
-		ILabelProvider {
+class LabelProvider extends BaseLabelProvider implements ILabelProvider {
 
 	@Override
 	public Image getImage(Object element) {
 		if (element instanceof Commit)
-			return ImageManager.getImage(ImageType.COMMIT);
+			return Icon.COMMIT.get();
 		if (!(element instanceof FetchRequestData))
 			return null;
 		FetchRequestData data = (FetchRequestData) element;
-		ImageType imageType = null;
-		if (data.getType() == ModelType.CATEGORY)
-			imageType = Images.getCategoryImageType(data.getCategoryType());
-		else
-			imageType = Images.getImageType(data.getType());
+		Overlay overlay = null;
 		if (data.isAdded())
-			return ImageManager.getImageWithOverlay(imageType,
-					ImageType.OVERLAY_ADDED);
+			overlay = Overlay.ADDED;
 		else if (data.isDeleted())
-			return ImageManager.getImageWithOverlay(imageType,
-					ImageType.OVERLAY_DELETED);
-		return ImageManager.getImage(imageType);
+			overlay = Overlay.DELETED;
+		if (data.getType() == ModelType.CATEGORY)
+			return Images.getForCategory(data.getCategoryType(), overlay);
+		return Images.get(data.getType(), overlay);
 	}
 
 	@Override
@@ -42,8 +37,7 @@ class LabelProvider extends BaseLabelProvider implements
 		if (element instanceof Commit)
 			return getCommitText((Commit) element);
 		if (element instanceof FetchRequestData)
-			return CloudUtil
-					.getFileReferenceText((FetchRequestData) element);
+			return CloudUtil.getFileReferenceText((FetchRequestData) element);
 		return null;
 	}
 
@@ -77,8 +71,7 @@ class LabelProvider extends BaseLabelProvider implements
 		int months = getDifference(today, cal, Calendar.MONTH, 12);
 		if (days < 365 && months > 0)
 			return timeText(months, "month");
-		int years = Calendar.getInstance().get(Calendar.YEAR)
-				- cal.get(Calendar.YEAR);
+		int years = Calendar.getInstance().get(Calendar.YEAR) - cal.get(Calendar.YEAR);
 		return timeText(years, "year");
 	}
 

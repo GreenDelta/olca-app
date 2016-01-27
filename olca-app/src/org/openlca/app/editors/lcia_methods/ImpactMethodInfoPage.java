@@ -21,6 +21,7 @@ import org.openlca.app.editors.ModelPage;
 import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Editors;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
@@ -28,6 +29,7 @@ import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ImpactMethod;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.NwFactor;
 import org.openlca.core.model.NwSet;
 import org.openlca.util.Strings;
@@ -162,6 +164,8 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 
 		@Override
 		public Image getColumnImage(Object element, int column) {
+			if (column == 0)
+				return Images.get(ModelType.IMPACT_CATEGORY); 
 			return null;
 		}
 

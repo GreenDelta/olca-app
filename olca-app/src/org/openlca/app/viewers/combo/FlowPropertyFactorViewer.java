@@ -7,7 +7,7 @@ import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.openlca.app.util.Images;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.ModelType;
@@ -40,7 +40,7 @@ public class FlowPropertyFactorViewer extends
 
 		@Override
 		public Image getImage(Object element) {
-			return Images.getIcon(ModelType.FLOW_PROPERTY);
+			return Images.get(ModelType.FLOW_PROPERTY);
 		}
 
 		@Override

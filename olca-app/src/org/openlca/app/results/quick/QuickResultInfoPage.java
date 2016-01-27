@@ -14,9 +14,10 @@ import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Cache;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.results.contributions.ContributionChartSection;
 import org.openlca.app.util.Controls;
+import org.openlca.app.util.FileType;
 import org.openlca.app.util.InformationPopup;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
@@ -86,7 +87,7 @@ public class QuickResultInfoPage extends FormPage {
 		toolkit.createLabel(composite, "");
 		Button button = toolkit.createButton(composite, Messages.ExportToExcel,
 				SWT.NONE);
-		button.setImage(ImageType.FILE_EXCEL.get());
+		button.setImage(Images.get(FileType.EXCEL));
 		Controls.onSelect(button, (e) -> tryExport());
 	}
 

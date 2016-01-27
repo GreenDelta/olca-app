@@ -12,8 +12,8 @@ import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.ISharedImages;
 import org.openlca.app.Messages;
-import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.UI;
 
 final class TreeClipboard {
@@ -31,8 +31,7 @@ final class TreeClipboard {
 				copy(tree);
 			}
 		});
-		ImageDescriptor image = ImageType.getPlatformDescriptor(
-				ISharedImages.IMG_TOOL_COPY);
+		ImageDescriptor image = Images.platformDescriptor(ISharedImages.IMG_TOOL_COPY);
 		return Actions.create(Messages.Copy, image, () -> copy(tree));
 	}
 

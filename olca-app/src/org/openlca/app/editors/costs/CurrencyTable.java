@@ -13,11 +13,13 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.App;
 import org.openlca.app.db.Database;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.model.Currency;
+import org.openlca.core.model.ModelType;
 import org.openlca.util.Strings;
 
 class CurrencyTable {
@@ -68,6 +70,8 @@ class CurrencyTable {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
+			if (col == 0)
+				return Images.get(ModelType.CURRENCY);
 			return null;
 		}
 

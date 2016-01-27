@@ -35,7 +35,7 @@ import org.openlca.app.editors.graphical.command.ChangeStateCommand;
 import org.openlca.app.editors.graphical.command.CommandFactory;
 import org.openlca.app.editors.graphical.layout.GraphAnimation;
 import org.openlca.app.editors.graphical.model.ProcessExpander.Side;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.ProcessType;
 
@@ -163,11 +163,11 @@ class ProcessFigure extends Figure {
 	private void paintTop(Graphics graphics) {
 		Image file = null;
 		if (node.isMarked())
-			file = ImageType.PROCESS_BG_MARKED.get();
+			file = Icon.PROCESS_BG_MARKED.get();
 		else if (node.getProcess().getProcessType() == ProcessType.LCI_RESULT)
-			file = ImageType.PROCESS_BG_LCI.get();
+			file = Icon.PROCESS_BG_LCI.get();
 		else
-			file = ImageType.PROCESS_BG.get();
+			file = Icon.PROCESS_BG.get();
 
 		int x = getLocation().x;
 		int y = getLocation().y;

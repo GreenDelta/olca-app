@@ -29,10 +29,11 @@ import org.openlca.app.editors.reports.ReportViewer;
 import org.openlca.app.editors.reports.Reports;
 import org.openlca.app.editors.reports.model.ReportCalculator;
 import org.openlca.app.preferencepages.FeatureFlag;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Editors;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.TableClipboard;
@@ -47,6 +48,7 @@ import org.openlca.core.database.ProductSystemDao;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowPropertyFactor;
+import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.ProductSystem;
@@ -132,7 +134,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 		Button button = toolkit.createButton(composite, Messages.Calculate,
 				SWT.NONE);
 		UI.gridData(button, false, false).widthHint = 100;
-		button.setImage(ImageType.CALCULATE.get());
+		button.setImage(Icon.CALCULATE.get());
 		Controls.onSelect(button, (e) -> {
 			Calculation.run(getModel());
 		});
@@ -142,7 +144,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 		Button button = toolkit.createButton(composite, Messages.Report,
 				SWT.NONE);
 		UI.gridData(button, false, false).widthHint = 100;
-		button.setImage(ImageType.PROJECT.get());
+		button.setImage(Images.get(ModelType.PROJECT));
 		Controls.onSelect(button, (e) -> {
 			App.run(Messages.Calculate,
 					new ReportCalculator(getModel(), editor.getReport()),
@@ -350,6 +352,12 @@ class ProjectSetupPage extends ModelPage<Project> {
 
 		@Override
 		public Image getColumnImage(Object element, int columnIndex) {
+			if (columnIndex == 1)
+				return Images.get(ModelType.PRODUCT_SYSTEM);
+			if (columnIndex == 3)
+				return Images.get(FlowType.PRODUCT_FLOW);
+			if (columnIndex == 5)
+				return Images.get(ModelType.UNIT);
 			return null;
 		}
 

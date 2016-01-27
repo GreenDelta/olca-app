@@ -15,8 +15,9 @@ import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.db.Database;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Error;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.viewers.table.AbstractTableViewer;
@@ -158,15 +159,17 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 		@Override
 		public Image getColumnImage(Object element, int column) {
 			if (column == 0)
-				return ImageType.FLOW_PROPERTY.get();
+				return Images.get(ModelType.FLOW_PROPERTY);
+			if (column == 2)
+				return Images.get(ModelType.UNIT_GROUP);
 			if (column != 4)
 				return null;
 			Flow flow = editor.getModel();
 			FlowPropertyFactor refFactor = flow != null ? flow
 					.getReferenceFactor() : null;
 			if (refFactor != null && refFactor.equals(element))
-				return ImageType.CHECK_TRUE.get();
-			return ImageType.CHECK_FALSE.get();
+				return Icon.CHECK_TRUE.get();
+			return Icon.CHECK_FALSE.get();
 		}
 
 		@Override

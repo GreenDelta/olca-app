@@ -11,13 +11,13 @@ import org.openlca.app.db.Database;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.io.refdata.RefDataImport;
 
 public class XRefDataImport extends Action implements INavigationAction {
 
 	public XRefDataImport() {
-		setImageDescriptor(ImageType.EXTENSION.getDescriptor());
+		setImageDescriptor(Icon.EXTENSION.descriptor());
 		setText("Import reference data");
 	}
 

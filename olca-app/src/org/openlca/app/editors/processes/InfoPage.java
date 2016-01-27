@@ -28,7 +28,8 @@ import org.openlca.app.editors.processes.kml.EditorHandler;
 import org.openlca.app.editors.processes.kml.KmlUtil;
 import org.openlca.app.editors.processes.kml.MapEditor;
 import org.openlca.app.preferencepages.FeatureFlag;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Images;
+import org.openlca.app.rcp.images.Overlay;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.UI;
@@ -36,6 +37,7 @@ import org.openlca.app.viewers.combo.ExchangeViewer;
 import org.openlca.app.viewers.combo.LocationViewer;
 import org.openlca.core.database.LocationDao;
 import org.openlca.core.model.Location;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.util.KeyGen;
 
@@ -95,7 +97,7 @@ class InfoPage extends ModelPage<Process> {
 		toolkit.createLabel(container, "");
 		Button button = toolkit.createButton(container,
 				Messages.CreateProductSystem, SWT.NONE);
-		button.setImage(ImageType.getNewImage(ImageType.PRODUCT_SYSTEM));
+		button.setImage(Images.get(ModelType.PRODUCT_SYSTEM, Overlay.NEW));
 		Controls.onSelect(button, (e) -> {
 			SystemCreation.run(getModel());
 		});

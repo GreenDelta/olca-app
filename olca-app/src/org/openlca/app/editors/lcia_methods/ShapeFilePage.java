@@ -31,18 +31,19 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.editors.parameters.ModelParameterPage;
-import org.openlca.app.rcp.ImageManager;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Error;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Info;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.model.ImpactMethod;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterScope;
 import org.openlca.core.model.Uncertainty;
@@ -89,7 +90,7 @@ class ShapeFilePage extends FormPage {
 		UI.formLabel(composite, toolkit, "");
 		Button importButton = toolkit.createButton(composite, Messages.Import,
 				SWT.NONE);
-		importButton.setImage(ImageType.IMPORT.get());
+		importButton.setImage(Icon.IMPORT.get());
 		Controls.onSelect(importButton, (e) -> {
 			File file = FileChooser.forImport("*.shp");
 			if (file != null)
@@ -98,7 +99,7 @@ class ShapeFilePage extends FormPage {
 		UI.formLabel(composite, toolkit, "");
 		Button evaluateButton = toolkit.createButton(composite,
 				Messages.EvaluateLocations, SWT.NONE);
-		evaluateButton.setImage(ImageType.EXPRESSION.get());
+		evaluateButton.setImage(Icon.EXPRESSION.get());
 		Controls.onSelect(evaluateButton, (e) -> {
 			try {
 				new ProgressMonitorDialog(UI.shell()).run(true, true,
@@ -114,7 +115,7 @@ class ShapeFilePage extends FormPage {
 		ImageHyperlink link = toolkit.createImageHyperlink(composite, SWT.TOP);
 		File folder = ShapeFileUtils.getFolder(method);
 		link.setText(Strings.cut(folder.getAbsolutePath(), 75));
-		link.setImage(ImageType.FOLDER.get());
+		link.setImage(Icon.FOLDER.get());
 		link.setForeground(Colors.getLinkBlue());
 		link.setToolTipText(folder.getAbsolutePath());
 		link.addHyperlinkListener(new HyperlinkAdapter() {
@@ -201,8 +202,7 @@ class ShapeFilePage extends FormPage {
 
 				@Override
 				public ImageDescriptor getImageDescriptor() {
-					return ImageManager
-							.getImageDescriptor(ImageType.REFRESH);
+					return Icon.REFRESH.descriptor();
 
 				}
 
@@ -321,7 +321,7 @@ class ShapeFilePage extends FormPage {
 			@Override
 			public Image getColumnImage(Object o, int i) {
 				if (i == 0)
-					return ImageType.FORMULA.get();
+					return Images.get(ModelType.PARAMETER); 
 				else
 					return null;
 			}
@@ -353,7 +353,7 @@ class ShapeFilePage extends FormPage {
 			this.section = section;
 			setToolTipText("#Show in map");
 			setText("#Show in map");
-			setImageDescriptor(ImageType.IMPACT_METHOD.getDescriptor());
+			setImageDescriptor(Images.descriptor(ModelType.IMPACT_METHOD));
 		}
 
 		@Override
@@ -377,7 +377,7 @@ class ShapeFilePage extends FormPage {
 			this.section = section;
 			setToolTipText("#Add to method parameters");
 			setText("#Add to method parameters");
-			setImageDescriptor(ImageType.ADD.getDescriptor());
+			setImageDescriptor(Icon.ADD.descriptor());
 		}
 
 		@Override

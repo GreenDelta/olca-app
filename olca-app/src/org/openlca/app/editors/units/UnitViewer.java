@@ -13,7 +13,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableItem;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
@@ -120,15 +120,13 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 
 		@Override
 		public Image getColumnImage(Object element, int column) {
-			if (column == 0)
-				return ImageType.UNIT_GROUP.get();
 			if (column != 5)
 				return null;
 			UnitGroup group = editor.getModel();
 			Unit refUnit = group != null ? group.getReferenceUnit() : null;
 			if (refUnit != null && refUnit.equals(element))
-				return ImageType.CHECK_TRUE.get();
-			return ImageType.CHECK_FALSE.get();
+				return Icon.CHECK_TRUE.get();
+			return Icon.CHECK_FALSE.get();
 		}
 
 		@Override

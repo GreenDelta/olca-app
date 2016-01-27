@@ -18,7 +18,7 @@ import org.eclipse.swt.graphics.ImageLoader;
 import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.components.FileChooser;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.results.analysis.sankey.SankeyDiagram;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +38,7 @@ public class SankeyImageAction extends Action {
 
 	@Override
 	public ImageDescriptor getImageDescriptor() {
-		return ImageType.SAVE_AS_IMAGE.getDescriptor();
+		return Icon.SAVE_AS_IMAGE.descriptor();
 	}
 
 	public void setSankeyDiagram(SankeyDiagram sankeyDiagram) {

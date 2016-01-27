@@ -13,7 +13,8 @@ import org.openlca.app.navigation.CategoryElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelTypeElement;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Images;
+import org.openlca.app.rcp.images.Overlay;
 import org.openlca.app.util.UI;
 import org.openlca.app.wizards.INewModelWizard;
 import org.openlca.core.model.Category;
@@ -130,36 +131,7 @@ public class CreateModelAction extends Action implements INavigationAction {
 	public ImageDescriptor getImageDescriptor() {
 		if (type == null)
 			return null;
-		switch (type) {
-		case ACTOR:
-			return ImageType.getNewDescriptor(ImageType.ACTOR);
-		case FLOW:
-			return ImageType.getNewDescriptor(ImageType.FLOW);
-		case FLOW_PROPERTY:
-			return ImageType.getNewDescriptor(ImageType.FLOW_PROPERTY);
-		case IMPACT_METHOD:
-			return ImageType.getNewDescriptor(ImageType.IMPACT_METHOD);
-		case PROCESS:
-			return ImageType.getNewDescriptor(ImageType.PROCESS);
-		case PRODUCT_SYSTEM:
-			return ImageType.getNewDescriptor(ImageType.PRODUCT_SYSTEM);
-		case PROJECT:
-			return ImageType.getNewDescriptor(ImageType.PROJECT);
-		case SOURCE:
-			return ImageType.getNewDescriptor(ImageType.SOURCE);
-		case UNIT_GROUP:
-			return ImageType.getNewDescriptor(ImageType.UNIT_GROUP);
-		case SOCIAL_INDICATOR:
-			return ImageType.getNewDescriptor(ImageType.SOCIAL_INDICATOR);
-		case LOCATION:
-			return ImageType.getNewDescriptor(ImageType.LOCATION);
-		case PARAMETER:
-			return ImageType.getNewDescriptor(ImageType.PARAMETER);
-		case CURRENCY:
-			return ImageType.getNewDescriptor(ImageType.CURRENCY);
-		default:
-			return null;
-		}
+		return Images.descriptor(type, Overlay.NEW);
 	}
 
 }

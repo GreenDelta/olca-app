@@ -13,7 +13,7 @@ import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.ModelTypeElement;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +23,7 @@ public class ImportAction extends Action implements INavigationAction {
 
 	public ImportAction() {
 		setText(Messages.Import);
-		setImageDescriptor(ImageType.IMPORT.getDescriptor());
+		setImageDescriptor(Icon.IMPORT.descriptor());
 	}
 
 	@Override

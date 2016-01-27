@@ -4,7 +4,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.window.Window;
 import org.openlca.app.Messages;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.results.analysis.sankey.SankeyDiagram;
 import org.openlca.app.results.analysis.sankey.SankeySelectionDialog;
 import org.openlca.core.results.FullResultProvider;
@@ -25,7 +25,7 @@ public class SankeySelectionAction extends Action {
 
 	@Override
 	public ImageDescriptor getImageDescriptor() {
-		return ImageType.SANKEY_OPTIONS.getDescriptor();
+		return Icon.SANKEY_OPTIONS.descriptor();
 	}
 
 	public void setSankeyDiagram(SankeyDiagram sankeyDiagram) {

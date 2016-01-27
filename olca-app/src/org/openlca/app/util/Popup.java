@@ -13,7 +13,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.progress.UIJob;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.util.Strings;
 
 /**
@@ -24,7 +24,7 @@ public class Popup {
 
 	private String message;
 	private String title;
-	private ImageType imageType = ImageType.INFO;
+	private Icon icon = Icon.INFO;
 	private String defaultTitle = "Popup";
 
 	public Popup() {
@@ -59,8 +59,8 @@ public class Popup {
 		return this;
 	}
 
-	public Popup popupShellImage(ImageType imageType) {
-		this.imageType = imageType;
+	public Popup popupShellImage(Icon icon) {
+		this.icon = icon;
 		return this;
 	}
 
@@ -69,7 +69,7 @@ public class Popup {
 	}
 
 	public Image getPopupShellImage() {
-		return imageType.get();
+		return icon.get();
 	}
 
 	protected void createLabel(Composite composite) {

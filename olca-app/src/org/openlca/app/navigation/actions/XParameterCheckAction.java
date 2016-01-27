@@ -10,7 +10,7 @@ import org.openlca.app.App;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Question;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.NativeSql;
@@ -27,7 +27,7 @@ public class XParameterCheckAction extends Action implements INavigationAction {
 	private Logger log = LoggerFactory.getLogger(getClass());
 
 	public XParameterCheckAction() {
-		setImageDescriptor(ImageType.EXTENSION.getDescriptor());
+		setImageDescriptor(Icon.EXTENSION.descriptor());
 		setText("Check Parameters");
 	}
 

@@ -13,7 +13,7 @@ import org.openlca.app.cloud.ui.compare.json.DiffEditorDialog;
 import org.openlca.app.cloud.ui.compare.json.JsonNode;
 import org.openlca.app.cloud.ui.compare.json.JsonUtil;
 import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer.Direction;
-import org.openlca.app.util.Images;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.cloud.model.data.Dataset;
 
 import com.google.gson.JsonObject;
@@ -113,9 +113,9 @@ class CompareHelper {
 		if (node.isModelTypeNode())
 			return null;
 		if (node.isModelNode())
-			return Images.getIcon(node.getModelType());
+			return Images.get(node.getModelType());
 		DiffResult result = (DiffResult) node.content;
-		return Images.getCategoryIcon(result.getDataset().getCategoryType());
+		return Images.getForCategory(result.getDataset().getCategoryType());
 	}
 
 	private String toKey(Dataset dataset) {

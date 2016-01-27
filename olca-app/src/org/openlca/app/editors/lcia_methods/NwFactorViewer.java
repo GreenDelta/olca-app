@@ -9,9 +9,11 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.Messages;
 import org.openlca.app.editors.lcia_methods.NwFactorViewer.Wrapper;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.viewers.table.AbstractTableViewer;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.model.ImpactCategory;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.NwFactor;
 import org.openlca.core.model.NwSet;
 
@@ -75,6 +77,8 @@ class NwFactorViewer extends AbstractTableViewer<Wrapper> {
 
 		@Override
 		public Image getColumnImage(Object element, int column) {
+			if (column == 0)
+				return Images.get(ModelType.IMPACT_CATEGORY); 
 			return null;
 		}
 

@@ -9,8 +9,9 @@ import org.openlca.app.App;
 import org.openlca.app.Messages;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Cache;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Editors;
+import org.openlca.app.util.FileType;
 import org.openlca.app.util.InformationPopup;
 import org.openlca.core.model.Project;
 import org.openlca.core.results.ProjectResultProvider;
@@ -29,8 +30,7 @@ public class ProjectResultActions extends EditorActionBarContributor {
 
 	@Override
 	public void contributeToToolBar(IToolBarManager toolBarManager) {
-		toolBarManager.add(new Action(Messages.ExportToExcel,
-				ImageType.FILE_EXCEL.getDescriptor()) {
+		toolBarManager.add(new Action(Messages.ExportToExcel, Images.descriptor(FileType.EXCEL)) {
 			@Override
 			public void run() {
 				runExport();

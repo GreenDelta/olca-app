@@ -1,6 +1,6 @@
 package org.openlca.app.util;
 
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 
 /**
  * A pop-up for warning messages.
@@ -14,7 +14,7 @@ public class WarningPopup extends Popup {
 	public WarningPopup(String title, String message) {
 		super(title, message);
 		defaultTitle("Warning");
-		popupShellImage(ImageType.WARNING);
+		popupShellImage(Icon.WARNING);
 	}
 
 	public static void show(final String message) {

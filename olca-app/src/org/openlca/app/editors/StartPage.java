@@ -15,11 +15,11 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.Config;
 import org.openlca.app.Messages;
 import org.openlca.app.navigation.actions.DatabaseImportAction;
-import org.openlca.app.rcp.ImageType;
 import org.openlca.app.rcp.RcpActivator;
 import org.openlca.app.rcp.html.HtmlFolder;
 import org.openlca.app.rcp.html.HtmlPage;
 import org.openlca.app.rcp.html.HtmlView;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Desktop;
 import org.openlca.app.util.EclipseCommandLine;
 import org.openlca.app.util.Editors;
@@ -174,7 +174,7 @@ public class StartPage extends FormEditor {
 
 		@Override
 		public ImageDescriptor getImageDescriptor() {
-			return ImageType.LOGO.getDescriptor();
+			return Icon.LOGO.descriptor();
 		}
 
 		@Override

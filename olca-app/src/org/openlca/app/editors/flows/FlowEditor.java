@@ -1,5 +1,8 @@
 package org.openlca.app.editors.flows;
 
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorSite;
+import org.eclipse.ui.PartInitException;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.core.model.Flow;
 import org.slf4j.Logger;
@@ -14,6 +17,11 @@ public class FlowEditor extends ModelEditor<Flow> {
 		super(Flow.class);
 	}
 
+	@Override
+	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
+		super.init(site, input);
+	}
+	
 	@Override
 	protected void addPages() {
 		try {

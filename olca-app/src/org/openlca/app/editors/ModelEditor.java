@@ -17,6 +17,7 @@ import org.openlca.app.Messages;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.BaseDao;
@@ -30,8 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.eventbus.EventBus;
 
-public abstract class ModelEditor<T extends CategorizedEntity> extends
-		FormEditor implements IEditor {
+public abstract class ModelEditor<T extends CategorizedEntity> extends FormEditor implements IEditor {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private boolean dirty;
@@ -62,34 +62,31 @@ public abstract class ModelEditor<T extends CategorizedEntity> extends
 	}
 
 	@Override
-	public void init(IEditorSite site, IEditorInput input)
-			throws PartInitException {
+	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);
 		log.trace("open " + modelClass.getSimpleName() + " editor {}", input);
+		ModelEditorInput i = (ModelEditorInput) input;
 		setPartName(input.getName());
+		setTitleImage(Images.get(i.getDescriptor()));
 		try {
 			dao = new BaseDao<>(modelClass, Database.get());
-			ModelEditorInput i = (ModelEditorInput) input;
 			model = dao.getForId(i.getDescriptor().getId());
 			eventBus.register(this);
 		} catch (Exception e) {
-			log.error("failed to load " + modelClass.getSimpleName()
-					+ " from editor input", e);
+			log.error("failed to load " + modelClass.getSimpleName() + " from editor input", e);
 		}
 	}
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
 		try {
-			monitor.beginTask(Messages.Save + " " + modelClass.getSimpleName()
-					+ "...", IProgressMonitor.UNKNOWN);
+			monitor.beginTask(Messages.Save + " " + modelClass.getSimpleName() + "...", IProgressMonitor.UNKNOWN);
 			model.setLastChange(System.currentTimeMillis());
 			Version version = new Version(model.getVersion());
 			version.incUpdate();
 			model.setVersion(version.getValue());
 			model = dao.update(model);
 			doAfterUpdate();
-			setPartName(model.getName());
 			monitor.done();
 		} catch (Exception e) {
 			log.error("failed to update " + modelClass.getSimpleName());
@@ -110,7 +107,7 @@ public abstract class ModelEditor<T extends CategorizedEntity> extends
 		EntityCache cache = Cache.getEntityCache();
 		cache.refresh(descriptor.getClass(), descriptor.getId());
 		cache.invalidate(modelClass, model.getId());
-		this.setPartName(Labels.getDisplayName(descriptor));
+		this.setPartName(Labels.getDisplayName(model));
 		Cache.evict(descriptor);
 		for (EventHandler handler : savedHandlers)
 			handler.handleEvent();
@@ -138,8 +135,7 @@ public abstract class ModelEditor<T extends CategorizedEntity> extends
 	@Override
 	@SuppressWarnings("unchecked")
 	public void doSaveAs() {
-		InputDialog diag = new InputDialog(UI.shell(), Messages.SaveAs,
-				Messages.SaveAs, model.getName() + " - Copy",
+		InputDialog diag = new InputDialog(UI.shell(), Messages.SaveAs, Messages.SaveAs, model.getName() + " - Copy",
 				(name) -> {
 					if (Strings.nullOrEmpty(name))
 						return Messages.NameCannotBeEmpty;

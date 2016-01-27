@@ -23,9 +23,9 @@ import org.openlca.app.components.ResultTypeSelection;
 import org.openlca.app.components.ResultTypeSelection.EventHandler;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
-import org.openlca.app.rcp.ImageType;
 import org.openlca.app.rcp.html.HtmlPage;
 import org.openlca.app.rcp.html.HtmlView;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.Labels;
@@ -334,7 +334,7 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 
 		public RefreshMapAction() {
 			setToolTipText(Messages.Reload);
-			setImageDescriptor(ImageType.REFRESH.getDescriptor());
+			setImageDescriptor(Icon.REFRESH.descriptor());
 		}
 
 		@Override

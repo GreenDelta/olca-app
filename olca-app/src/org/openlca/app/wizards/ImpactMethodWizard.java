@@ -1,5 +1,8 @@
 package org.openlca.app.wizards;
 
+import java.util.UUID;
+
+import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.core.database.BaseDao;
@@ -19,7 +22,31 @@ public class ImpactMethodWizard extends AbstractWizard<ImpactMethod> {
 
 	@Override
 	protected AbstractWizardPage<ImpactMethod> createPage() {
-		return new ImpactMethodWizardPage();
+		return new Page();
 	}
 
+	private class Page extends AbstractWizardPage<ImpactMethod> {
+
+		public Page() {
+			super("LCIAMethodWizardPage");
+			setTitle(Messages.NewImpactMethod);
+			setMessage(Messages.CreatesANewImpactMethod);
+			setPageComplete(false);
+		}
+
+		@Override
+		protected void createContents(final Composite container) {
+		}
+
+		@Override
+		public ImpactMethod createModel() {
+			ImpactMethod method = new ImpactMethod();
+			method.setRefId(UUID.randomUUID().toString());
+			method.setName(getModelName());
+			method.setDescription(getModelDescription());
+			return method;
+		}
+
+	}
+	
 }

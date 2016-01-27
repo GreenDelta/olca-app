@@ -5,7 +5,6 @@ import java.util.UUID;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
-import org.openlca.app.rcp.ImageType;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.model.Location;
 
@@ -32,8 +31,6 @@ public class LocationWizard extends AbstractWizard<Location> {
 			super("LocationWizardPage");
 			setTitle(Messages.NewLocation);
 			setMessage(Messages.CreatesANewLocation);
-			// TODO change icon
-			setImageDescriptor(ImageType.LOCATION_WIZARD.getDescriptor());
 			setPageComplete(false);
 		}
 

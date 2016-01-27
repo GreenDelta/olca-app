@@ -13,7 +13,7 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.preferencepages.IoPreference;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.ilcd.util.IlcdConfig;
 import org.openlca.io.ilcd.ILCDImport;
 import org.openlca.io.ilcd.input.ImportConfig;
@@ -37,8 +37,8 @@ public class ILCDImportWizard extends Wizard implements IImportWizard {
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
 		setWindowTitle(Messages.ImportILCD);
-		setDefaultPageImageDescriptor(ImageType.IMPORT_ZIP_WIZARD
-				.getDescriptor());
+		setDefaultPageImageDescriptor(Icon.IMPORT_ZIP_WIZARD
+				.descriptor());
 	}
 
 	@Override

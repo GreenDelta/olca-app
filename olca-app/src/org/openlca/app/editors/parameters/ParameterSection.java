@@ -19,9 +19,9 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.components.UncertaintyCellEditor;
 import org.openlca.app.editors.ModelEditor;
-import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Error;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.UncertaintyLabel;
@@ -35,6 +35,7 @@ import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.app.viewers.table.modify.field.DoubleModifier;
 import org.openlca.app.viewers.table.modify.field.StringModifier;
 import org.openlca.core.model.CategorizedEntity;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterScope;
 import org.openlca.util.Strings;
@@ -273,11 +274,10 @@ public class ParameterSection {
 			if (col != 0 || !(element instanceof Parameter))
 				return null;
 			Parameter parameter = (Parameter) element;
-			if (parameter.getExternalSource() != null)
-				return ImageType.IMPACT_METHOD.get(); // currently the only external
-			// sources are shape files
-			else
+			if (parameter.getExternalSource() == null)
 				return null;
+			// currently the only external sources are shape files
+			return Images.get(ModelType.IMPACT_METHOD); 
 		}
 
 		@Override

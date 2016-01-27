@@ -11,14 +11,15 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.openlca.app.db.Cache;
 import org.openlca.app.editors.processes.ProcessEditor;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Colors;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UncertaintyLabel;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.Exchange;
-import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowType;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.io.CategoryPath;
@@ -41,8 +42,12 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider {
 			return null;
 		Exchange exchange = (Exchange) element;
 		if (col == 0)
-			return getFlowTypeIcon(exchange);
-		if (!forInputs && col == 6)
+			return Images.get(exchange.getFlow());
+		if (col == 3)
+			return Images.get(ModelType.UNIT); 
+		if (col == 6 && forInputs && exchange.getDefaultProviderId() != 0l)
+			return Images.get(ModelType.PROCESS); 
+		if (col == 6 && !forInputs)
 			return getAvoidedCheck(exchange);
 		return null;
 	}
@@ -56,26 +61,7 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider {
 		if (Objects.equals(process.getQuantitativeReference(), exchange))
 			return null;
 		else
-			return exchange.isAvoidedProduct() ? ImageType.CHECK_TRUE.get()
-					: ImageType.CHECK_FALSE.get();
-	}
-
-	private Image getFlowTypeIcon(Exchange exchange) {
-		if (exchange == null)
-			return null;
-		Flow flow = exchange.getFlow();
-		if (flow == null || flow.getFlowType() == null)
-			return null;
-		switch (flow.getFlowType()) {
-		case ELEMENTARY_FLOW:
-			return ImageType.FLOW_ELEMENTARY.get();
-		case PRODUCT_FLOW:
-			return ImageType.FLOW_PRODUCT.get();
-		case WASTE_FLOW:
-			return ImageType.FLOW_WASTE.get();
-		default:
-			return null;
-		}
+			return exchange.isAvoidedProduct() ? Icon.CHECK_TRUE.get() : Icon.CHECK_FALSE.get();
 	}
 
 	@Override
@@ -113,8 +99,7 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider {
 		if (exchange.getDefaultProviderId() == 0)
 			return null;
 		EntityCache cache = Cache.getEntityCache();
-		ProcessDescriptor descriptor = cache.get(ProcessDescriptor.class,
-				exchange.getDefaultProviderId());
+		ProcessDescriptor descriptor = cache.get(ProcessDescriptor.class, exchange.getDefaultProviderId());
 		if (descriptor == null)
 			return null;
 		return Labels.getDisplayName(descriptor);
@@ -170,12 +155,10 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider {
 			Exchange e = (Exchange) obj;
 			if (e.getFlow() == null)
 				return;
-			if (!e.isInput()
-					&& e.getFlow().getFlowType() == FlowType.PRODUCT_FLOW)
+			if (!e.isInput() && e.getFlow().getFlowType() == FlowType.PRODUCT_FLOW)
 				cell.setForeground(Colors.getSystemColor(SWT.COLOR_DARK_GREEN));
 			else
-				cell.setForeground(Colors
-						.getSystemColor(SWT.COLOR_DARK_MAGENTA));
+				cell.setForeground(Colors.getSystemColor(SWT.COLOR_DARK_MAGENTA));
 		}
 	}
 

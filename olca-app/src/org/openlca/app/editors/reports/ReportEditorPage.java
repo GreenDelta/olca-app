@@ -12,7 +12,7 @@ import org.openlca.app.Messages;
 import org.openlca.app.editors.DataBinding;
 import org.openlca.app.editors.projects.ProjectEditor;
 import org.openlca.app.editors.reports.model.Report;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 
@@ -48,7 +48,7 @@ public class ReportEditorPage extends FormPage {
 		UI.formLabel(composite, "");
 		Button addButton = toolkit.createButton(composite, Messages.AddSection,
 				SWT.NONE);
-		addButton.setImage(ImageType.ADD.get());
+		addButton.setImage(Icon.ADD.get());
 		Controls.onSelect(addButton, (e) -> {
 			sectionList.addNew();
 		});

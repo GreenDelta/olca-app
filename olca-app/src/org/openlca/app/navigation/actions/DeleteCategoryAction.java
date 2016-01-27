@@ -8,7 +8,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.navigation.CategoryElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Question;
 import org.openlca.core.database.BaseDao;
@@ -25,7 +25,7 @@ public class DeleteCategoryAction extends Action implements INavigationAction {
 
 	public DeleteCategoryAction() {
 		setText(Messages.Remove);
-		setImageDescriptor(ImageType.DELETE.getDescriptor());
+		setImageDescriptor(Icon.DELETE.descriptor());
 	}
 
 	@Override

@@ -17,7 +17,7 @@ import org.openlca.app.App;
 import org.openlca.app.components.TextDropComponent;
 import org.openlca.app.util.Bean;
 import org.openlca.app.util.Colors;
-import org.openlca.app.util.Images;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.UIFactory;
 import org.openlca.core.model.CategorizedEntity;
@@ -65,7 +65,7 @@ public abstract class ModelPage<T extends CategorizedEntity> extends FormPage {
 			new Label(parent, SWT.NONE).setText(label);
 			ImageHyperlink link = new ImageHyperlink(parent, SWT.TOP);
 			link.setText(entity.getName());
-			link.setImage(Images.getIcon(entity));
+			link.setImage(Images.get(entity));
 			link.addHyperlinkListener(new ModelLinkClickedListener(entity));
 			link.setForeground(Colors.getLinkBlue());
 			return link;

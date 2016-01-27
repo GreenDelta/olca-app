@@ -29,7 +29,7 @@ import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.ModelTextFilter;
 import org.openlca.app.navigation.NavigationTree;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ModelType;
@@ -168,11 +168,11 @@ public class ModelSelectionDialog extends FormDialog {
 	private void addSectionActions(Section section) {
 		Action expand = Actions.create(
 				Messages.ExpandAll,
-				ImageType.EXPAND.getDescriptor(),
+				Icon.EXPAND.descriptor(),
 				viewer::expandAll);
 		Action collapse = Actions.create(
 				Messages.CollapseAll,
-				ImageType.COLLAPSE.getDescriptor(),
+				Icon.COLLAPSE.descriptor(),
 				viewer::collapseAll);
 		Actions.bind(section, expand, collapse);
 	}

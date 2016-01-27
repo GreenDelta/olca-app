@@ -10,7 +10,7 @@ import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Editors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +22,7 @@ public class DatabaseCloseAction extends Action implements INavigationAction {
 
 	public DatabaseCloseAction() {
 		setText(Messages.CloseDatabase);
-		setImageDescriptor(ImageType.DISCONNECT.getDescriptor());
+		setImageDescriptor(Icon.DISCONNECT.descriptor());
 	}
 
 	@Override

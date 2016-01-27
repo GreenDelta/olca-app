@@ -2,7 +2,9 @@ package org.openlca.app.viewers;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.swt.graphics.Image;
-import org.openlca.app.util.Images;
+import org.openlca.app.navigation.Group;
+import org.openlca.app.navigation.GroupType;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.Exchange;
@@ -25,13 +27,19 @@ public class BaseLabelProvider extends ColumnLabelProvider {
 	@Override
 	public Image getImage(Object element) {
 		if (element instanceof RootEntity)
-			return Images.getIcon((RootEntity) element);
+			return Images.get((RootEntity) element);
 		if (element instanceof BaseDescriptor)
-			return Images.getIcon(((BaseDescriptor) element).getModelType());
+			return Images.get((BaseDescriptor) element);
 		if (element instanceof Exchange)
-			return Images.getIcon(((Exchange) element).getFlow().getFlowType());
+			return Images.get(((Exchange) element).getFlow());
 		if (element instanceof FlowType)
-			return Images.getIcon((FlowType) element);
+			return Images.get((FlowType) element);
+		if (element instanceof ProcessType)
+			return Images.get((ProcessType) element);
+		if (element instanceof Group)
+			return Images.get((Group) element);
+		if (element instanceof GroupType)
+			return Images.get((GroupType) element);
 		return null;
 	}
 
@@ -46,8 +54,7 @@ public class BaseLabelProvider extends ColumnLabelProvider {
 		if (element instanceof Exchange)
 			return getModelLabel(((Exchange) element).getFlow());
 		if (element instanceof FlowPropertyFactor)
-			return getModelLabel(((FlowPropertyFactor) element)
-					.getFlowProperty());
+			return getModelLabel(((FlowPropertyFactor) element).getFlowProperty());
 		if (element instanceof Unit)
 			return ((Unit) element).getName();
 		if (element instanceof Location)

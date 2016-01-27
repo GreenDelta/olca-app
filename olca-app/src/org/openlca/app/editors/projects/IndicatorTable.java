@@ -12,8 +12,9 @@ import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.reports.model.Report;
 import org.openlca.app.editors.reports.model.ReportIndicator;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.TableClipboard;
@@ -22,6 +23,7 @@ import org.openlca.app.viewers.table.modify.CheckBoxCellModifier;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.field.StringModifier;
 import org.openlca.core.database.ImpactMethodDao;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.util.Strings;
@@ -89,13 +91,15 @@ class IndicatorTable {
 
 		@Override
 		public Image getColumnImage(Object element, int col) {
+			if (col == 0)
+				return Images.get(ModelType.IMPACT_CATEGORY); 
 			if (col != 1)
 				return null;
 			if (!(element instanceof ReportIndicator))
 				return null;
 			ReportIndicator indicator = (ReportIndicator) element;
-			return indicator.displayed ? ImageType.CHECK_TRUE.get()
-					: ImageType.CHECK_FALSE.get();
+			return indicator.displayed ? Icon.CHECK_TRUE.get()
+					: Icon.CHECK_FALSE.get();
 		}
 
 		@Override

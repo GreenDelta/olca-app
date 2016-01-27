@@ -5,7 +5,7 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IWorkbench;
 import org.openlca.app.App;
 import org.openlca.app.db.Cache;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Category;
@@ -24,7 +24,7 @@ public abstract class AbstractWizard<T extends CategorizedEntity> extends
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
 		setWindowTitle(getTitle());
-		setDefaultPageImageDescriptor(ImageType.NEW_WIZARD.getDescriptor());
+		setDefaultPageImageDescriptor(Images.wizard(category.getModelType()));
 	}
 
 	public AbstractWizardPage<T> getPage() {

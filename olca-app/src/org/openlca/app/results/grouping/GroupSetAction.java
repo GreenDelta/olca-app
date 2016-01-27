@@ -17,7 +17,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
-import org.openlca.app.rcp.ImageType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ProcessGroupSet;
 import org.openlca.util.Strings;
@@ -36,7 +36,7 @@ class GroupSetAction extends Action {
 	public GroupSetAction(GroupPage page) {
 		this.page = page;
 		setToolTipText(Messages.Open);
-		setImageDescriptor(ImageType.FOLDER_OPEN.getDescriptor());
+		setImageDescriptor(Icon.FOLDER_OPEN.descriptor());
 	}
 
 	@Override

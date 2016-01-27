@@ -24,9 +24,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Item;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.FlowProperty;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
 import org.openlca.io.UnitMapping;
@@ -342,6 +344,10 @@ public abstract class UnitMappingPage extends WizardPage {
 
 		@Override
 		public Image getColumnImage(Object element, int column) {
+			if (column == 1)
+				return Images.get(ModelType.FLOW_PROPERTY);
+			if (column == 2)
+				return Images.get(ModelType.UNIT_GROUP);
 			return null;
 		}
 

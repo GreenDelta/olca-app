@@ -25,7 +25,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Messages;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
-import org.openlca.app.util.Images;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
@@ -34,7 +34,6 @@ import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.Location;
-import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -49,9 +48,8 @@ public class ImpactTreePage extends FormPage {
 	private final static String COLUMN_AMOUNT = "#Inventory result";
 	private final static String COLUMN_FACTOR = "#Impact factor";
 	private final static String COLUMN_IMPACT_RESULT = "#Impact result";
-	private final static String[] COLUMN_LABELS = { COLUMN_NAME,
-			COLUMN_LOCATION, COLUMN_CATEGORY, COLUMN_AMOUNT, COLUMN_FACTOR,
-			COLUMN_IMPACT_RESULT };
+	private final static String[] COLUMN_LABELS = { COLUMN_NAME, COLUMN_LOCATION, COLUMN_CATEGORY, COLUMN_AMOUNT,
+			COLUMN_FACTOR, COLUMN_IMPACT_RESULT };
 
 	private final FullResultProvider result;
 	private final ImpactFactorProvider impactFactors;
@@ -64,8 +62,7 @@ public class ImpactTreePage extends FormPage {
 	private boolean filterZeroes = true;
 	private int cutOff = 10;
 
-	public ImpactTreePage(FormEditor editor, FullResultProvider result,
-			ImpactFactorProvider impactFactors) {
+	public ImpactTreePage(FormEditor editor, FullResultProvider result, ImpactFactorProvider impactFactors) {
 		super(editor, "ImpactTreePage", "#Impact analysis");
 		this.result = result;
 		this.impactFactors = impactFactors;
@@ -108,8 +105,7 @@ public class ImpactTreePage extends FormPage {
 	}
 
 	private void createNoImpactFilter(Composite parent) {
-		Button button = UI.formCheckBox(parent, toolkit,
-				"#Exclude zero entries");
+		Button button = UI.formCheckBox(parent, toolkit, "#Exclude zero entries");
 		UI.gridData(button, false, false);
 		button.setSelection(filterZeroes);
 		Controls.onSelect(button, event -> {
@@ -131,8 +127,7 @@ public class ImpactTreePage extends FormPage {
 	}
 
 	private void createImpactContributionTable(Composite parent) {
-		viewer = new TreeViewer(parent, SWT.FULL_SELECTION | SWT.MULTI
-				| SWT.BORDER);
+		viewer = new TreeViewer(parent, SWT.FULL_SELECTION | SWT.MULTI | SWT.BORDER);
 		LabelProvider labelProvider = new LabelProvider();
 		viewer.setLabelProvider(labelProvider);
 		viewer.setContentProvider(new ContentProvider());
@@ -158,17 +153,16 @@ public class ImpactTreePage extends FormPage {
 		Viewers.sortByDouble(viewer, p, 4, 5, 6);
 	}
 
-	private class LabelProvider extends BaseLabelProvider implements
-			ITableLabelProvider {
+	private class LabelProvider extends BaseLabelProvider implements ITableLabelProvider {
 
 		@Override
 		public Image getColumnImage(Object element, int columnIndex) {
 			if (columnIndex > 0)
 				return null;
 			if (element instanceof ProcessDescriptor)
-				return Images.getIcon(ModelType.PROCESS);
+				return Images.get((ProcessDescriptor) element);
 			if (element instanceof FlowWithProcess)
-				return Images.getIcon(ModelType.FLOW);
+				return Images.get(((FlowWithProcess) element).flow);
 			return null;
 		}
 
@@ -182,8 +176,7 @@ public class ImpactTreePage extends FormPage {
 			return null;
 		}
 
-		private String getProcessText(ProcessDescriptor descriptor,
-				String column) {
+		private String getProcessText(ProcessDescriptor descriptor, String column) {
 			switch (column) {
 			case COLUMN_NAME:
 				return descriptor.getName();
@@ -191,8 +184,7 @@ public class ImpactTreePage extends FormPage {
 				EntityCache cache = result.cache;
 				if (descriptor.getLocation() == null)
 					return null;
-				Location location = cache.get(Location.class,
-						descriptor.getLocation());
+				Location location = cache.get(Location.class, descriptor.getLocation());
 				return location.getName();
 			case COLUMN_IMPACT_RESULT:
 				return Numbers.format(getResult(descriptor));
@@ -205,8 +197,7 @@ public class ImpactTreePage extends FormPage {
 			case COLUMN_NAME:
 				return descriptor.flow.getName();
 			case COLUMN_CATEGORY:
-				return toString(Labels.getFlowCategory(descriptor.flow,
-						result.cache));
+				return toString(Labels.getFlowCategory(descriptor.flow, result.cache));
 			case COLUMN_AMOUNT:
 				return Numbers.format(getAmount(descriptor));
 			case COLUMN_FACTOR:
@@ -333,8 +324,7 @@ public class ImpactTreePage extends FormPage {
 				return true;
 			if (element instanceof FlowWithProcess) {
 				FlowWithProcess descriptor = (FlowWithProcess) element;
-				double inventory = result.getSingleFlowResult(
-						descriptor.process, descriptor.flow).value;
+				double inventory = result.getSingleFlowResult(descriptor.process, descriptor.flow).value;
 				if (inventory == 0d)
 					return false;
 				return getResult(descriptor) != 0d;
@@ -349,8 +339,7 @@ public class ImpactTreePage extends FormPage {
 
 	public interface ImpactFactorProvider {
 
-		double get(ImpactCategoryDescriptor impactCategory,
-				FlowWithProcess flowWithProcess);
+		double get(ImpactCategoryDescriptor impactCategory, FlowWithProcess flowWithProcess);
 
 	}
 

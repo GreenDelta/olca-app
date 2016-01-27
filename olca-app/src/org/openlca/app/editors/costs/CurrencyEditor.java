@@ -15,10 +15,11 @@ import org.openlca.app.Messages;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.ModelPage;
-import org.openlca.app.rcp.ImageType;
 import org.openlca.app.util.Controls;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.Currency;
+import org.openlca.core.model.ModelType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -107,7 +108,7 @@ public class CurrencyEditor extends ModelEditor<Currency> {
 				return;
 			ImageHyperlink link = tk.createImageHyperlink(comp, SWT.TOP);
 			link.setText(ref.getName());
-			link.setImage(ImageType.CALCULATE_COSTS.get());
+			link.setImage(Images.get(ModelType.CURRENCY));
 			link.addHyperlinkListener(new HyperlinkAdapter() {
 				@Override
 				public void linkActivated(HyperlinkEvent e) {
@@ -120,7 +121,7 @@ public class CurrencyEditor extends ModelEditor<Currency> {
 			UI.formLabel(comp, tk, "");
 			Button button = tk.createButton(comp, "#Set as reference currency",
 					SWT.NONE);
-			button.setImage(ImageType.CALCULATE_COSTS.get());
+			button.setImage(Images.get(ModelType.CURRENCY));
 			Controls.onSelect(button, e -> {
 				RefCurrencyUpdate.run(getModel());
 			});

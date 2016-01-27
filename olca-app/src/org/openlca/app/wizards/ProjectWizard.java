@@ -6,7 +6,6 @@ import java.util.UUID;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.Messages;
 import org.openlca.app.db.Database;
-import org.openlca.app.rcp.ImageType;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.model.Project;
 
@@ -33,7 +32,6 @@ public class ProjectWizard extends AbstractWizard<Project> {
 			super("ProjectWizardPage");
 			setTitle(Messages.NewProject);
 			setMessage(Messages.CreatesANewProject);
-			setImageDescriptor(ImageType.PROJECT_WIZARD.getDescriptor());
 			setPageComplete(false);
 		}
 
