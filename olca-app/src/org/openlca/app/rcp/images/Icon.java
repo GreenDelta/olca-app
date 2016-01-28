@@ -5,98 +5,98 @@ import org.eclipse.swt.graphics.Image;
 
 public enum Icon {
 
-	ACCEPT("graphical/accept.png"), // //
-	ADD("add.png"), // //
-	ADD_DISABLED("add_disabled.png"), // //
+	ACCEPT("graphical/accept.png"),
+	ADD("add.png"),
+	ADD_DISABLED("add_disabled.png"),
 
-	BUILD_SUPPLY_CHAIN("graphical/build_supply_chain.gif"), // //
+	BUILD_SUPPLY_CHAIN("graphical/build_supply_chain.gif"),
 
-	CALCULATE("calculation/calculate.png"), //
-	CALCULATE_COSTS("calculation/calculate_costs.png"), //
-	CALCULATION_WIZARD("wizard/calculation.gif"), //
-	CHANGE("change.gif"), //
-	CHART("chart.png"), //
-	CHECK_FALSE("check_false.gif"), //
-	CHECK_TRUE("check_true.gif"), //
-	COLLAPSE("collapse.png"), //
-	COMMIT("cloud/commit.png"), //
-	CONNECT("connect.png"), //
-	COPY_ALL_CHANGES("cloud/copy_all.png"), //
-	COPY_SELECTED_CHANGE("cloud/copy_selected.png"), //
+	CALCULATE("calculation/calculate.png"),
+	CALCULATE_COSTS("calculation/calculate_costs.png"),
+	CALCULATION_WIZARD("wizard/calculation.gif"),
+	CHANGE("change.gif"),
+	CHART("chart.png"),
+	CHECK_FALSE("check_false.gif"),
+	CHECK_TRUE("check_true.gif"),
+	COLLAPSE("collapse.png"),
+	COMMIT("cloud/commit.png"),
+	CONNECT("connect.png"),
+	COPY_ALL_CHANGES("cloud/copy_all.png"),
+	COPY_SELECTED_CHANGE("cloud/copy_selected.png"),
 
-	DATABASE("model/database.png"), //
-	DATABASE_DISABLED("model/database_disabled.png"), //
-	DATABASE_IO("database_io.png"), //
-	DATABASE_WIZARD("wizard/database.png"), //
-	DELETE("delete.png"), //
-	DELETE_DISABLED("delete_disabled.png"), //
-	DISCONNECT("disconnect.png"), //
-	DOWN("down.png"), //
+	DATABASE("model/database.png"),
+	DATABASE_DISABLED("model/database_disabled.png"),
+	DATABASE_IO("database_io.png"),
+	DATABASE_WIZARD("wizard/database.png"),
+	DELETE("delete.png"),
+	DELETE_DISABLED("delete_disabled.png"),
+	DISCONNECT("disconnect.png"),
+	DOWN("down.png"),
 
-	EDIT("edit.png"), //
-	ERROR("error.png"), //
-	EXCHANGE_BG_LEFT("graphical/exchange_bg_left.jpg"), //
-	EXCHANGE_BG_MIDDLE("graphical/exchange_bg_middle.jpg"), //
-	EXCHANGE_BG_RIGHT("graphical/exchange_bg_right.jpg"), //
-	EXPAND("expand.png"), //
-	EXPORT("io/export.png"), //
-	EXPRESSION("expression.gif"), //
-	EXTENSION("extension.gif"), //
+	EDIT("edit.png"),
+	ERROR("error.png"),
+	EXCHANGE_BG_LEFT("graphical/exchange_bg_left.jpg"),
+	EXCHANGE_BG_MIDDLE("graphical/exchange_bg_middle.jpg"),
+	EXCHANGE_BG_RIGHT("graphical/exchange_bg_right.jpg"),
+	EXPAND("expand.png"),
+	EXPORT("io/export.png"),
+	EXPRESSION("expression.gif"),
+	EXTENSION("extension.gif"),
 
-	FIREFOX("firefox.png"), //
-	FOLDER("folder.png"), //
-	FOLDER_BLUE("folder_blue.png"), //
-	FOLDER_OPEN("folder_open.png"), //
-	FORMULA("formula.png"), //
+	FIREFOX("firefox.png"),
+	FOLDER("folder.png"),
+	FOLDER_BLUE("folder_blue.png"),
+	FOLDER_OPEN("folder_open.png"),
+	FORMULA("formula.png"),
 
-	HELP("help.png"), //
-	HOME("home.png"), //
+	HELP("help.png"),
+	HOME("home.png"),
 
-	IMPORT("import.png"), //
-	IMPORT_ZIP_WIZARD("wizard/zip.png"), //
-	INFO("info.png"), //
-	INPUT("model/input.png"), //
+	IMPORT("import.png"),
+	IMPORT_ZIP_WIZARD("wizard/zip.png"),
+	INFO("info.png"),
+	INPUT("model/input.png"),
 
-	JAVASCRIPT("javascript.gif"), //
+	JAVASCRIPT("javascript.gif"),
 
-	LAYOUT("graphical/layout.gif"), //
-	LINK("link.png"), //
-	LOGO("plugin/logo_32_32bit.png"), //
+	LAYOUT("graphical/layout.gif"),
+	LINK("link.png"),
+	LOGO("plugin/logo_32_32bit.png"),
 
-	MAXIMIZE("graphical/maximize.png"), //
-	MINIATURE_VIEW("graphical/miniature_view.gif"), //
-	MINIMIZE("graphical/minimize.png"), //
-	MINUS("graphical/minus.gif"), //
+	MAXIMIZE("graphical/maximize.png"),
+	MINIATURE_VIEW("graphical/miniature_view.gif"),
+	MINIMIZE("graphical/minimize.png"),
+	MINUS("graphical/minus.gif"),
 
-	NEXT_CHANGE("cloud/next_change.png"), //
-	NEW_WIZARD("wizard/new.png"), //
-	NUMBER("number.png"), //
+	NEXT_CHANGE("cloud/next_change.png"),
+	NEW_WIZARD("wizard/new.png"),
+	NUMBER("number.png"),
 
-	OUTLINE("graphical/outline.gif"), //
-	OUTPUT("model/output.png"), //
+	OUTLINE("graphical/outline.gif"),
+	OUTPUT("model/output.png"),
 
-	PLUS("graphical/plus.gif"), //
-	PREVIOUS_CHANGE("cloud/previous_change.png"), //
-	PROCESS_BG("graphical/process_bg.jpg"), //
-	PROCESS_BG_LCI("graphical/process_bg_lci.jpg"), //
-	PROCESS_BG_MARKED("graphical/process_bg_marked.jpg"), //
-	PYTHON("python.gif"), //
+	PLUS("graphical/plus.gif"),
+	PREVIOUS_CHANGE("cloud/previous_change.png"),
+	PROCESS_BG("graphical/process_bg.jpg"),
+	PROCESS_BG_LCI("graphical/process_bg_lci.jpg"),
+	PROCESS_BG_MARKED("graphical/process_bg_marked.jpg"),
+	PYTHON("python.gif"),
 
-	REFRESH("refresh.png"), //
-	RESET_ALL_CHANGES("cloud/reset_all.png"), //
-	RESET_SELECTED_CHANGE("cloud/reset_selected.png"), //
-	RUN("run.gif"), //
+	REFRESH("refresh.png"),
+	RESET_ALL_CHANGES("cloud/reset_all.png"),
+	RESET_SELECTED_CHANGE("cloud/reset_selected.png"),
+	RUN("run.gif"),
 
-	SANKEY_OPTIONS("graphical/sankey_options.gif"), //
-	SAVE_AS_IMAGE("save_as_image.png"), //
-	SEARCH("search.png"), //
-	SIMULATE("calculation/simulate.png"), //
-	SQL("sql.gif"), //
+	SANKEY_OPTIONS("graphical/sankey_options.gif"),
+	SAVE_AS_IMAGE("save_as_image.png"),
+	SEARCH("search.png"),
+	SIMULATE("calculation/simulate.png"),
+	SQL("sql.gif"),
 
-	UP("up.png"), //
-	UP_DISABLED("up_disabled.png"), //
-	UP_DOUBLE("up_double.png"), //
-	UP_DOUBLE_DISABLED("up_double_disabled.png"), //
+	UP("up.png"),
+	UP_DISABLED("up_disabled.png"),
+	UP_DOUBLE("up_double.png"),
+	UP_DOUBLE_DISABLED("up_double_disabled.png"),
 
 	WARNING("warning.png");
 
