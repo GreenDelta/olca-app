@@ -10,7 +10,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
@@ -37,7 +37,7 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
-	private final String EMPTY_REFERENCEPROCESS_ERROR = Messages.NoReferenceProcessSelected;
+	private final String EMPTY_REFERENCEPROCESS_ERROR = M.NoReferenceProcessSelected;
 
 	private Button addSupplyChainButton;
 	private TreeViewer processTree;
@@ -48,8 +48,8 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 
 	public ProductSystemWizardPage() {
 		super("ProductSystemWizardPage");
-		setTitle(Messages.NewProductSystem);
-		setMessage(Messages.CreatesANewProductSystem);
+		setTitle(M.NewProductSystem);
+		setMessage(M.CreatesANewProductSystem);
 		setPageComplete(false);
 		setWithDescription(false);
 	}
@@ -102,7 +102,7 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 
 	@Override
 	protected void createContents(Composite composite) {
-		filterText = UI.formText(composite, Messages.ReferenceProcess);
+		filterText = UI.formText(composite, M.ReferenceProcess);
 		UI.formLabel(composite, "");
 		createProcessTree(composite);
 		createOptions(composite);
@@ -146,10 +146,10 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 
 	private void createOptions(Composite composite) {
 		addSupplyChainButton = UIFactory.createButton(composite,
-				Messages.AddConnectedProcesses);
+				M.AddConnectedProcesses);
 		addSupplyChainButton.setSelection(true);
 		useSystemProcesses = UIFactory.createButton(composite,
-				Messages.ConnectWithSystemProcessesIfPossible);
+				M.ConnectWithSystemProcessesIfPossible);
 		useSystemProcesses.setSelection(true);
 		Controls.onSelect(addSupplyChainButton, (e) -> {
 			useSystemProcesses.setEnabled(addSupplyChainButton.getSelection());
@@ -160,7 +160,7 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 	}
 
 	private void createCutoffText(Composite composite) {
-		Text text = UI.formText(composite, Messages.Cutoff);
+		Text text = UI.formText(composite, M.Cutoff);
 		text.setText("0.0");
 		text.addModifyListener(e -> {
 			String s = text.getText();

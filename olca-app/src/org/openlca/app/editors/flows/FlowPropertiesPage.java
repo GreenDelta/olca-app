@@ -7,7 +7,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.util.UI;
@@ -23,7 +23,7 @@ class FlowPropertiesPage extends ModelPage<Flow> {
 	private ScrolledForm form;
 
 	FlowPropertiesPage(FlowEditor editor) {
-		super(editor, "FlowPropertiesPage", Messages.FlowProperties);
+		super(editor, "FlowPropertiesPage", M.FlowProperties);
 		this.editor = editor;
 	}
 
@@ -33,7 +33,7 @@ class FlowPropertiesPage extends ModelPage<Flow> {
 		updateFormTitle();
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
-		Section section = UI.section(body, toolkit, Messages.FlowProperties);
+		Section section = UI.section(body, toolkit, M.FlowProperties);
 		UI.gridData(section, true, true);
 		Composite client = UI.sectionClient(section, toolkit);
 		FlowPropertyFactorViewer viewer = new FlowPropertyFactorViewer(client,
@@ -49,7 +49,7 @@ class FlowPropertiesPage extends ModelPage<Flow> {
 	protected void updateFormTitle() {
 		if (form == null)
 			return;
-		form.setText(Messages.Flow + ": " + getModel().getName());
+		form.setText(M.Flow + ": " + getModel().getName());
 	}
 
 	private void setInitialInput(FlowPropertyFactorViewer viewer) {

@@ -12,7 +12,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableItem;
 import org.openlca.app.App;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Icon;
@@ -36,11 +36,11 @@ import org.openlca.core.model.descriptors.FlowPropertyDescriptor;
 
 class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 
-	private static final String NAME = Messages.Name;
-	private static final String CONVERSION_FACTOR = Messages.ConversionFactor;
-	private static final String REFERENCE_UNIT = Messages.ReferenceUnit;
-	private static final String FORMULA = Messages.Formula;
-	private static final String IS_REFERENCE = Messages.IsReference;
+	private static final String NAME = M.Name;
+	private static final String CONVERSION_FACTOR = M.ConversionFactor;
+	private static final String REFERENCE_UNIT = M.ReferenceUnit;
+	private static final String FORMULA = M.Formula;
+	private static final String IS_REFERENCE = M.IsReference;
 
 	private final EntityCache cache;
 	private final FlowEditor editor;

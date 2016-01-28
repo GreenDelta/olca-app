@@ -114,7 +114,7 @@ public class SearchResultView extends FormEditor {
 
 		@Override
 		public String getName() {
-			return Messages.SearchResults + ": " + term;
+			return M.SearchResults + ": " + term;
 		}
 
 		@Override
@@ -130,13 +130,13 @@ public class SearchResultView extends FormEditor {
 
 	private class Page extends FormPage {
 		public Page() {
-			super(SearchResultView.this, "SearchResultView.Page", Messages.SearchResults);
+			super(SearchResultView.this, "SearchResultView.Page", M.SearchResults);
 		}
 
 		@Override
 		protected void createFormContent(IManagedForm managedForm) {
 			ScrolledForm form = UI.formHeader(managedForm,
-					Messages.SearchResults + ": " + term + " (" + results.size() + Messages.Results + ")");
+					M.SearchResults + ": " + term + " (" + results.size() + M.Results + ")");
 			FormToolkit toolkit = managedForm.getToolkit();
 			Composite body = UI.formBody(form, toolkit);
 			UI.gridLayout(body, 1).verticalSpacing = 5;

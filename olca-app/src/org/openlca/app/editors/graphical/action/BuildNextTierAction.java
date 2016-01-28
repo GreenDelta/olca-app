@@ -6,7 +6,7 @@ import java.util.Set;
 
 import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.action.Action;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.command.CommandFactory;
 import org.openlca.app.editors.graphical.command.CommandUtil;
@@ -34,7 +34,7 @@ class BuildNextTierAction extends Action implements IBuildAction {
 
 	BuildNextTierAction() {
 		setId(ActionIds.BUILD_NEXT_TIER);
-		setText(Messages.BuildNextTier);
+		setText(M.BuildNextTier);
 		flowDao = new FlowDao(Database.get());
 		processDao = new ProcessDao(Database.get());
 		exchangeDao = new BaseDao<>(Exchange.class, Database.get());

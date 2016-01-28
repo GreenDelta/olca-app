@@ -13,7 +13,7 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
@@ -39,7 +39,7 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 	@Override
 	public void init(IWorkbench iWorkbench,
 			IStructuredSelection iStructuredSelection) {
-		setWindowTitle(Messages.DatabaseImport);
+		setWindowTitle(M.DatabaseImport);
 		setDefaultPageImageDescriptor(Icon.IMPORT_ZIP_WIZARD
 				.descriptor());
 		setNeedsProgressMonitor(true);
@@ -48,8 +48,8 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 	@Override
 	public boolean performFinish() {
 		if (Database.get() == null) {
-			org.openlca.app.util.Error.showBox(Messages.NoDatabaseOpened,
-					Messages.DBImportNoTarget);
+			org.openlca.app.util.Error.showBox(M.NoDatabaseOpened,
+					M.DBImportNoTarget);
 			return true;
 		}
 		try {
@@ -77,22 +77,22 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 		if (state == VersionState.CURRENT)
 			return true;
 		if (state == null || state == VersionState.ERROR) {
-			org.openlca.app.util.Error.showBox(Messages.ConnectionFailed,
-					Messages.DBImportNoTargetConnectionFailedMessage);
+			org.openlca.app.util.Error.showBox(M.ConnectionFailed,
+					M.DBImportNoTargetConnectionFailedMessage);
 			return false;
 		}
 		if (state == VersionState.NEWER) {
 			org.openlca.app.util.Error
 					.showBox(
-							Messages.VersionNewer,
-							Messages.DBImportVersionNewerMessage);
+							M.VersionNewer,
+							M.DBImportVersionNewerMessage);
 			return false;
 		}
 		if (config.getMode() == config.FILE_MODE)
 			return true;
 		return Question
-				.ask(Messages.UpdateDatabase,
-						Messages.DBImportUpdateDatabaseQuestion);
+				.ask(M.UpdateDatabase,
+						M.DBImportUpdateDatabaseQuestion);
 	}
 
 	private ConnectionDispatch createConnection(DbImportPage.ImportConfig config)
@@ -126,18 +126,18 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 				throws InvocationTargetException, OperationCanceledException {
 			try {
 				Database.getIndexUpdater().beginTransaction();
-				monitor.beginTask(Messages.ImportDatabase,
+				monitor.beginTask(M.ImportDatabase,
 						IProgressMonitor.UNKNOWN);
 				if (sourceState == VersionState.OLDER) {
-					monitor.subTask(Messages.UpdateDatabase);
+					monitor.subTask(M.UpdateDatabase);
 					Upgrades.runUpgrades(sourceDatabase);
 				}
-				monitor.subTask(Messages.ImportData + "...");
+				monitor.subTask(M.ImportData + "...");
 				DatabaseImport dbImport = new DatabaseImport(sourceDatabase,
 						Database.get());
 				log.trace("run data import");
 				dbImport.run();
-				monitor.subTask(Messages.CloseDatabase);
+				monitor.subTask(M.CloseDatabase);
 				connectionDispatch.close();
 				monitor.done();
 			} catch (Exception e) {

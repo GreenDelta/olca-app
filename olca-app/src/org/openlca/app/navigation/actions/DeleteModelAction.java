@@ -8,7 +8,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.osgi.util.NLS;
 import org.openlca.app.App;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
@@ -59,7 +59,7 @@ public class DeleteModelAction extends Action implements INavigationAction {
 
 	@Override
 	public String getText() {
-		return Messages.Delete;
+		return M.Delete;
 	}
 
 	@Override
@@ -92,7 +92,7 @@ public class DeleteModelAction extends Action implements INavigationAction {
 		List<CategorizedDescriptor> descriptors = search.findUses(descriptor);
 		if (descriptors.isEmpty())
 			return false;
-		Error.showBox(Messages.CannotDelete, Messages.CannotDeleteMessage);
+		Error.showBox(M.CannotDelete, M.CannotDeleteMessage);
 		return true;
 	}
 
@@ -118,7 +118,7 @@ public class DeleteModelAction extends Action implements INavigationAction {
 		if (descriptor == null)
 			return false;
 		String name = Labels.getDisplayName(descriptor);
-		String message = NLS.bind(Messages.DoYouReallyWantToDelete, name);
-		return Question.ask(Messages.Delete, message);
+		String message = NLS.bind(M.DoYouReallyWantToDelete, name);
+		return Question.ask(M.Delete, message);
 	}
 }

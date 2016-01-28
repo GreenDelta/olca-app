@@ -20,7 +20,7 @@ import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
 import org.openlca.app.Event;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
@@ -53,7 +53,7 @@ class InfoPage extends ModelPage<Process> {
 	private LocationViewer locationViewer;
 
 	InfoPage(ProcessEditor editor) {
-		super(editor, "ProcessInfoPage", Messages.GeneralInformation);
+		super(editor, "ProcessInfoPage", M.GeneralInformation);
 		this.editor = editor;
 		editor.getEventBus().register(this);
 	}
@@ -75,7 +75,7 @@ class InfoPage extends ModelPage<Process> {
 		Composite body = UI.formBody(form, toolkit);
 		InfoSection infoSection = new InfoSection(getEditor());
 		infoSection.render(body, toolkit);
-		createCheckBox(Messages.InfrastructureProcess, "infrastructureProcess",
+		createCheckBox(M.InfrastructureProcess, "infrastructureProcess",
 				infoSection.getContainer());
 		createSystemButton(infoSection.getContainer());
 		createQuanRefSection(body);
@@ -90,13 +90,13 @@ class InfoPage extends ModelPage<Process> {
 	protected void updateFormTitle() {
 		if (form == null)
 			return;
-		form.setText(Messages.Process + ": " + getModel().getName());
+		form.setText(M.Process + ": " + getModel().getName());
 	}
 
 	private void createSystemButton(Composite container) {
 		toolkit.createLabel(container, "");
 		Button button = toolkit.createButton(container,
-				Messages.CreateProductSystem, SWT.NONE);
+				M.CreateProductSystem, SWT.NONE);
 		button.setImage(Images.get(ModelType.PRODUCT_SYSTEM, Overlay.NEW));
 		Controls.onSelect(button, (e) -> {
 			SystemCreation.run(getModel());
@@ -105,8 +105,8 @@ class InfoPage extends ModelPage<Process> {
 
 	private void createQuanRefSection(Composite body) {
 		Composite composite = UI.formSection(body, toolkit,
-				Messages.QuantitativeReference);
-		UI.formLabel(composite, toolkit, Messages.QuantitativeReference);
+				M.QuantitativeReference);
+		UI.formLabel(composite, toolkit, M.QuantitativeReference);
 		quanRefViewer = new ExchangeViewer(composite, ExchangeViewer.OUTPUTS,
 				ExchangeViewer.PRODUCTS);
 		quanRefViewer.setInput(getModel());
@@ -120,21 +120,21 @@ class InfoPage extends ModelPage<Process> {
 
 	private void createTechnologySection(Composite body) {
 		Composite composite = UI
-				.formSection(body, toolkit, Messages.Technology);
-		createMultiText(Messages.Description, "documentation.technology",
+				.formSection(body, toolkit, M.Technology);
+		createMultiText(M.Description, "documentation.technology",
 				composite);
 	}
 
 	private void createTimeSection(Composite body) {
-		Composite composite = UI.formSection(body, toolkit, Messages.Time);
-		createDate(Messages.StartDate, "documentation.validFrom", composite);
-		createDate(Messages.EndDate, "documentation.validUntil", composite);
-		createMultiText(Messages.Description, "documentation.time", composite);
+		Composite composite = UI.formSection(body, toolkit, M.Time);
+		createDate(M.StartDate, "documentation.validFrom", composite);
+		createDate(M.EndDate, "documentation.validUntil", composite);
+		createMultiText(M.Description, "documentation.time", composite);
 	}
 
 	private void createGeographySection(Composite body) {
-		Composite composite = UI.formSection(body, toolkit, Messages.Geography);
-		toolkit.createLabel(composite, Messages.Location);
+		Composite composite = UI.formSection(body, toolkit, M.Geography);
+		toolkit.createLabel(composite, M.Location);
 		locationViewer = new LocationViewer(composite);
 		locationViewer.setNullable(true);
 		locationViewer.setInput(Database.get());
@@ -142,7 +142,7 @@ class InfoPage extends ModelPage<Process> {
 		locationViewer.addSelectionChangedListener((s) -> kmlLink
 				.setText(getKmlDisplayText()));
 		createKmlSection(composite);
-		createMultiText(Messages.Description, "documentation.geography",
+		createMultiText(M.Description, "documentation.geography",
 				composite);
 	}
 

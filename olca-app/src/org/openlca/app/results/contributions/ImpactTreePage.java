@@ -22,7 +22,7 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.rcp.images.Images;
@@ -115,7 +115,7 @@ public class ImpactTreePage extends FormPage {
 	}
 
 	private void createCutOffFilter(Composite parent) {
-		UI.formLabel(parent, toolkit, Messages.Cutoff);
+		UI.formLabel(parent, toolkit, M.Cutoff);
 		spinner = new Spinner(parent, SWT.BORDER);
 		spinner.setValues(cutOff, 0, 100, 0, 1, 10);
 		toolkit.adapt(spinner);

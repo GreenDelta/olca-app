@@ -17,7 +17,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.util.Actions;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
@@ -140,10 +140,10 @@ class CausalFactorTable {
 
 	private String[] getColumnTitles() {
 		String[] titles = new String[columns.length + 4];
-		titles[0] = Messages.Flow;
-		titles[1] = Messages.Direction;
-		titles[2] = Messages.Category;
-		titles[3] = Messages.Amount;
+		titles[0] = M.Flow;
+		titles[1] = M.Direction;
+		titles[2] = M.Category;
+		titles[3] = M.Amount;
 		for (int i = 0; i < columns.length; i++)
 			titles[i + 4] = columns[i].getTitle();
 		return titles;
@@ -189,7 +189,7 @@ class CausalFactorTable {
 			case 0:
 				return Labels.getDisplayName(exchange.getFlow());
 			case 1:
-				return exchange.isInput() ? Messages.Input : Messages.Output;
+				return exchange.isInput() ? M.Input : M.Output;
 			case 2:
 				return CategoryPath.getShort(exchange.getFlow().getCategory());
 			case 3:

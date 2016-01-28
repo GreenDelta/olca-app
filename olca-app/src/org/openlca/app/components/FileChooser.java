@@ -7,7 +7,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.util.UI;
 
 /**
@@ -22,9 +22,9 @@ public class FileChooser {
 	private static String getDialogText(int swtFlag) {
 		switch (swtFlag) {
 		case SWT.OPEN:
-			return Messages.Import;
+			return M.Import;
 		case SWT.SAVE:
-			return Messages.SelectTheExportFile;
+			return M.SelectTheExportFile;
 		default:
 			return "";
 		}
@@ -46,7 +46,7 @@ public class FileChooser {
 	private static String openDirectoryDialog(Shell shell, String filterPath,
 			int swtFlag) {
 		DirectoryDialog dialog = new DirectoryDialog(shell, swtFlag);
-		dialog.setText(Messages.SelectADirectory);
+		dialog.setText(M.SelectADirectory);
 		if (filterPath != null)
 			dialog.setFilterPath(filterPath);
 		return dialog.open();
@@ -69,7 +69,7 @@ public class FileChooser {
 		if (!file.exists() || file.isDirectory())
 			return file;
 		boolean write = MessageDialog.openQuestion(UI.shell(),
-				Messages.FileAlreadyExists, Messages.OverwriteFileQuestion);
+				M.FileAlreadyExists, M.OverwriteFileQuestion);
 		if (write)
 			return file;
 		return null;

@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.gef.commands.Command;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.editors.graphical.model.ConnectionLink;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.core.model.ProcessLink;
@@ -49,7 +49,7 @@ public class DeleteLinkCommand extends Command {
 
 	@Override
 	public String getLabel() {
-		return Messages.DeleteProcesslink;
+		return M.DeleteProcesslink;
 	}
 
 	@Override

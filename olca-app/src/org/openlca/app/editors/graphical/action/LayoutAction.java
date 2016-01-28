@@ -2,7 +2,7 @@ package org.openlca.app.editors.graphical.action;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.osgi.util.NLS;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.editors.graphical.command.CommandFactory;
 import org.openlca.app.editors.graphical.command.LayoutCommand;
 import org.openlca.app.editors.graphical.layout.GraphLayoutManager;
@@ -15,7 +15,7 @@ class LayoutAction extends Action {
 	private GraphLayoutType layoutType;
 
 	LayoutAction(GraphLayoutType layoutType) {
-		setText(NLS.bind(Messages.LayoutAs,
+		setText(NLS.bind(M.LayoutAs,
 				layoutType.getDisplayName()));
 		switch (layoutType) {
 		case TREE_LAYOUT:

@@ -1,6 +1,6 @@
 package org.openlca.app.editors.systems;
 
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.editors.IEditor;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.graphical.GraphicalEditorInput;
@@ -33,7 +33,7 @@ public class ProductSystemEditor extends ModelEditor<ProductSystem> implements
 			BaseDescriptor descriptor = getEditorInput().getDescriptor();
 			GraphicalEditorInput gInput = new GraphicalEditorInput(descriptor);
 			int gIdx = addPage(new ProductSystemGraphEditor(this), gInput);
-			setPageText(gIdx, Messages.ModelGraph);
+			setPageText(gIdx, M.ModelGraph);
 			if (FeatureFlag.EXPERIMENTAL_VISUALISATIONS.isEnabled()) {
 				addPage(new StatisticsPage(this));
 				addPage(new HtmlGraph(this, getModel()));

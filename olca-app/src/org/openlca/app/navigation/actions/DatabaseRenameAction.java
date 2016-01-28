@@ -6,7 +6,7 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.window.Window;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.db.DerbyConfiguration;
@@ -28,7 +28,7 @@ public class DatabaseRenameAction extends Action implements INavigationAction {
 	private DerbyConfiguration config;
 
 	public DatabaseRenameAction() {
-		setText(Messages.Rename);
+		setText(M.Rename);
 		setImageDescriptor(Icon.CHANGE.descriptor());
 	}
 
@@ -56,8 +56,8 @@ public class DatabaseRenameAction extends Action implements INavigationAction {
 		if (config == null)
 			return;
 		InputDialog dialog = new InputDialog(UI.shell(),
-				Messages.Rename,
-				Messages.PleaseEnterANewName,
+				M.Rename,
+				M.PleaseEnterANewName,
 				config.getName(), null);
 		if (dialog.open() != Window.OK)
 			return;
@@ -65,7 +65,7 @@ public class DatabaseRenameAction extends Action implements INavigationAction {
 		if (!DbUtils.isValidName(newName) || Database.getConfigurations()
 				.nameExists(newName.trim())) {
 			org.openlca.app.util.Error
-					.showBox(Messages.DatabaseRenameError);
+					.showBox(M.DatabaseRenameError);
 			return;
 		}
 		doRename(newName);

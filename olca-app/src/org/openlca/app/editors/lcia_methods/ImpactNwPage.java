@@ -13,7 +13,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Event;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ImpactMethod;
@@ -31,7 +31,7 @@ class ImpactNwPage extends ModelPage<ImpactMethod> {
 
 	ImpactNwPage(ImpactMethodEditor editor) {
 		super(editor, "ImpactNormalizationWeightingPage",
-				Messages.NormalizationWeighting);
+				M.NormalizationWeighting);
 		this.editor = editor;
 	}
 
@@ -42,7 +42,7 @@ class ImpactNwPage extends ModelPage<ImpactMethod> {
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		Section section = UI.section(body, toolkit,
-				Messages.NormalizationWeightingSets);
+				M.NormalizationWeightingSets);
 		UI.gridData(section, true, true);
 		Composite client = toolkit.createComposite(section);
 		section.setClient(client);
@@ -62,7 +62,7 @@ class ImpactNwPage extends ModelPage<ImpactMethod> {
 	protected void updateFormTitle() {
 		if (form == null)
 			return;
-		form.setText(Messages.ImpactAssessmentMethod + ": " + getModel().getName());
+		form.setText(M.ImpactAssessmentMethod + ": " + getModel().getName());
 	}
 
 	@Subscribe

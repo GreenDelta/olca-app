@@ -4,7 +4,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.util.UI;
@@ -16,7 +16,7 @@ class ActorInfoPage extends ModelPage<Actor> {
 	private ScrolledForm form;
 
 	ActorInfoPage(ActorEditor editor) {
-		super(editor, "ActorInfoPage", Messages.GeneralInformation);
+		super(editor, "ActorInfoPage", M.GeneralInformation);
 	}
 
 	@Override
@@ -36,20 +36,20 @@ class ActorInfoPage extends ModelPage<Actor> {
 	protected void updateFormTitle() {
 		if (form == null)
 			return;
-		form.setText(Messages.Actor + ": " + getModel().getName());
+		form.setText(M.Actor + ": " + getModel().getName());
 	}
 
 	private void createAdditionalInfo(Composite body) {
 		Composite composite = UI.formSection(body, toolkit,
-				Messages.AdditionalInformation);
-		createText(Messages.Address, "address", composite);
-		createText(Messages.City, "city", composite);
-		createText(Messages.Country, "country", composite);
-		createText(Messages.Email, "email", composite);
-		createText(Messages.Telefax, "telefax", composite);
-		createText(Messages.Telephone, "telephone", composite);
-		createText(Messages.Website, "website", composite);
-		createText(Messages.ZipCode, "zipCode", composite);
+				M.AdditionalInformation);
+		createText(M.Address, "address", composite);
+		createText(M.City, "city", composite);
+		createText(M.Country, "country", composite);
+		createText(M.Email, "email", composite);
+		createText(M.Telefax, "telefax", composite);
+		createText(M.Telephone, "telephone", composite);
+		createText(M.Website, "website", composite);
+		createText(M.ZipCode, "zipCode", composite);
 	}
 
 }

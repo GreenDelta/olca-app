@@ -2,7 +2,7 @@ package org.openlca.app.viewers.combo;
 
 import org.eclipse.nebula.widgets.tablecombo.TableCombo;
 import org.eclipse.swt.widgets.Composite;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.core.model.AllocationMethod;
 
 public class AllocationMethodViewer extends
@@ -10,7 +10,7 @@ public class AllocationMethodViewer extends
 
 	public AllocationMethodViewer(Composite parent, AllocationMethod[] values) {
 		super(parent);
-		setNullText(Messages.None);
+		setNullText(M.None);
 		setInput(values);
 	}
 

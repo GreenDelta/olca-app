@@ -9,7 +9,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.IMessage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
@@ -26,7 +26,7 @@ public class GlobalParameterInfoPage extends ModelPage<Parameter> {
 	private boolean hasErrors;
 
 	GlobalParameterInfoPage(GlobalParameterEditor editor) {
-		super(editor, "GlobalParameterInfoPage", Messages.GeneralInformation);
+		super(editor, "GlobalParameterInfoPage", M.GeneralInformation);
 		support.onEvaluation(this::evalFormulas);
 		parameters = new ParameterDao(Database.get()).getGlobalParameters();
 		for (int i = 0; i < parameters.size(); i++)
@@ -64,12 +64,12 @@ public class GlobalParameterInfoPage extends ModelPage<Parameter> {
 	protected void updateFormTitle() {
 		if (form == null)
 			return;
-		form.setText(Messages.Parameter + ": " + getModel().getName());
+		form.setText(M.Parameter + ": " + getModel().getName());
 	}
 
 	private void createAdditionalInfo(Composite body) {
-		Composite composite = UI.formSection(body, toolkit, Messages.AdditionalInformation);
-		UI.formLabel(composite, toolkit, Messages.Type);
+		Composite composite = UI.formSection(body, toolkit, M.AdditionalInformation);
+		UI.formLabel(composite, toolkit, M.Type);
 		UI.formLabel(composite, toolkit, getModel().isInputParameter() ? "#Input parameter" : "#Dependent parameter");
 		if (getModel().isInputParameter())
 			createValueSection(composite);
@@ -78,12 +78,12 @@ public class GlobalParameterInfoPage extends ModelPage<Parameter> {
 	}
 
 	private void createValueSection(Composite parent) {
-		createDoubleText(Messages.Value, "value", parent);
+		createDoubleText(M.Value, "value", parent);
 	}
 
 	private void createFormulaSection(Composite parent) {
-		Text formulaText = createText(Messages.Formula, "formula", parent);
-		UI.formLabel(parent, toolkit, Messages.Value);
+		Text formulaText = createText(M.Formula, "formula", parent);
+		UI.formLabel(parent, toolkit, M.Value);
 		Label valueLabel = UI.formLabel(parent, toolkit, Double.toString(getModel().getValue()));
 		formulaText.addModifyListener((event) -> {
 			support.evaluate();

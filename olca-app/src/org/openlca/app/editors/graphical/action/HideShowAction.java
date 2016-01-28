@@ -4,7 +4,7 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.ui.parts.TreeViewer;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
 import org.openlca.app.editors.graphical.command.CommandFactory;
 import org.openlca.app.editors.graphical.outline.ProcessTreeEditPart;
@@ -22,10 +22,10 @@ class HideShowAction extends Action {
 	HideShowAction(int type) {
 		if (type == SHOW) {
 			setId(ActionIds.SHOW);
-			setText(Messages.Show);
+			setText(M.Show);
 		} else if (type == HIDE) {
 			setId(ActionIds.HIDE);
-			setText(Messages.Hide);
+			setText(M.Hide);
 		}
 		this.type = type;
 	}

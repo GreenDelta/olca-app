@@ -4,7 +4,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ModelType;
@@ -16,7 +16,7 @@ class AdminInfoPage extends ModelPage<Process> {
 	private ScrolledForm form;
 
 	AdminInfoPage(ProcessEditor editor) {
-		super(editor, "ProcessInfoPage", Messages.AdministrativeInformation);
+		super(editor, "ProcessInfoPage", M.AdministrativeInformation);
 	}
 
 	@Override
@@ -34,28 +34,28 @@ class AdminInfoPage extends ModelPage<Process> {
 	protected void updateFormTitle() {
 		if (form == null)
 			return;
-		form.setText(Messages.Process + ": " + getModel().getName());
+		form.setText(M.Process + ": " + getModel().getName());
 	}
 
 	private void createAdminInfoSection(Composite parent) {
 		Composite composite = UI.formSection(parent, toolkit,
-				Messages.AdministrativeInformation);
-		createMultiText(Messages.IntendedApplication,
+				M.AdministrativeInformation);
+		createMultiText(M.IntendedApplication,
 				"documentation.intendedApplication", composite);
-		createDropComponent(Messages.DataSetOwner,
+		createDropComponent(M.DataSetOwner,
 				"documentation.dataSetOwner", ModelType.ACTOR, composite);
-		createDropComponent(Messages.DataGenerator,
+		createDropComponent(M.DataGenerator,
 				"documentation.dataGenerator", ModelType.ACTOR, composite);
-		createDropComponent(Messages.DataDocumentor,
+		createDropComponent(M.DataDocumentor,
 				"documentation.dataDocumentor", ModelType.ACTOR, composite);
-		createDropComponent(Messages.Publication, "documentation.publication",
+		createDropComponent(M.Publication, "documentation.publication",
 				ModelType.SOURCE, composite);
-		createMultiText(Messages.AccessAndUseRestrictions,
+		createMultiText(M.AccessAndUseRestrictions,
 				"documentation.restrictions", composite);
-		createMultiText(Messages.Project, "documentation.project", composite);
-		createReadOnly(Messages.CreationDate, "documentation.creationDate",
+		createMultiText(M.Project, "documentation.project", composite);
+		createReadOnly(M.CreationDate, "documentation.creationDate",
 				composite);
-		createCheckBox(Messages.Copyright, "documentation.copyright", composite);
+		createCheckBox(M.Copyright, "documentation.copyright", composite);
 	}
 
 }

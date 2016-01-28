@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.ParameterDao;
@@ -22,7 +22,7 @@ public class ParameterWizard extends AbstractWizard<Parameter> {
 
 	@Override
 	protected String getTitle() {
-		return Messages.NewParameter;
+		return M.NewParameter;
 	}
 
 	@Override
@@ -34,8 +34,8 @@ public class ParameterWizard extends AbstractWizard<Parameter> {
 
 		public ParameterWizardPage() {
 			super("ParameterWizardPage");
-			setTitle(Messages.NewParameter);
-			setMessage(Messages.CreatesANewParameter);
+			setTitle(M.NewParameter);
+			setMessage(M.CreatesANewParameter);
 			setPageComplete(false);
 		}
 
@@ -71,7 +71,7 @@ public class ParameterWizard extends AbstractWizard<Parameter> {
 				return;
 			}
 			if (!Parameter.isValidName(name)) {
-				setErrorMessage(name + " " + Messages.IsNotValidParameterName);
+				setErrorMessage(name + " " + M.IsNotValidParameterName);
 				setPageComplete(false);
 				return;
 			}

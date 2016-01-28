@@ -4,7 +4,7 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.ui.part.EditorActionBarContributor;
 import org.openlca.app.App;
 import org.openlca.app.Config;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.reports.ReportViewer;
 import org.openlca.app.editors.reports.Reports;
@@ -44,7 +44,7 @@ public class ProjectEditorActions extends EditorActionBarContributor {
 	}
 
 	private void calculateReport(Project project, Report report) {
-		App.run(Messages.Calculate,
+		App.run(M.Calculate,
 				new ReportCalculator(project, report),
 				() -> {
 					Reports.save(project, report, Database.get());
@@ -60,7 +60,7 @@ public class ProjectEditorActions extends EditorActionBarContributor {
 		}
 		Project project = editor.getModel();
 		if (project.getVariants().isEmpty()) {
-			Dialog.showError(UI.shell(), Messages.NoProjectVaraintsAreDefined);
+			Dialog.showError(UI.shell(), M.NoProjectVaraintsAreDefined);
 			return null;
 		}
 		return editor;

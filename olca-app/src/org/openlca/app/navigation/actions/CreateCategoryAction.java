@@ -6,7 +6,7 @@ import java.util.UUID;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.window.Window;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.CategoryElement;
@@ -33,7 +33,7 @@ public class CreateCategoryAction extends Action implements INavigationAction {
 	private ModelType modelType;
 
 	public CreateCategoryAction() {
-		setText(Messages.AddNewChildCategory);
+		setText(M.AddNewChildCategory);
 		setImageDescriptor(Icon.ADD.descriptor());
 	}
 
@@ -105,9 +105,9 @@ public class CreateCategoryAction extends Action implements INavigationAction {
 	}
 
 	private String getDialogValue() {
-		InputDialog dialog = new InputDialog(UI.shell(), Messages.NewCategory,
-				Messages.PleaseEnterTheNameOfTheNewCategory,
-				Messages.NewCategory, null);
+		InputDialog dialog = new InputDialog(UI.shell(), M.NewCategory,
+				M.PleaseEnterTheNameOfTheNewCategory,
+				M.NewCategory, null);
 		int rc = dialog.open();
 		if (rc == Window.OK)
 			return dialog.getValue();

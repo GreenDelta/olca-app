@@ -7,7 +7,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.openlca.app.App;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.Preferences;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
@@ -49,7 +49,7 @@ class CalculationWizard extends Wizard {
 	public CalculationWizard(ProductSystem productSystem) {
 		this.productSystem = productSystem;
 		setNeedsProgressMonitor(true);
-		setWindowTitle(Messages.CalculationProperties);
+		setWindowTitle(M.CalculationProperties);
 	}
 
 	public static void open(ProductSystem productSystem) {
@@ -123,7 +123,7 @@ class CalculationWizard extends Wizard {
 		public void run(IProgressMonitor monitor)
 				throws InvocationTargetException, InterruptedException {
 			outOfMemory = false;
-			monitor.beginTask(Messages.RunCalculation, IProgressMonitor.UNKNOWN);
+			monitor.beginTask(M.RunCalculation, IProgressMonitor.UNKNOWN);
 			int size = productSystem.getProcesses().size();
 			log.trace("calculate a {} x {} system", size, size);
 			try {

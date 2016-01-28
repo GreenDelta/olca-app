@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.openlca.app.App;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
@@ -29,7 +29,7 @@ public class DatabaseExportAction extends Action implements INavigationAction {
 	private DatabaseElement element;
 
 	public DatabaseExportAction() {
-		setText(Messages.ExportDatabase);
+		setText(M.ExportDatabase);
 		setImageDescriptor(Icon.DATABASE_IO.descriptor());
 	}
 
@@ -65,7 +65,7 @@ public class DatabaseExportAction extends Action implements INavigationAction {
 			log.trace("delete existing file {}", zip);
 			boolean deleted = zip.delete();
 			if (!deleted) {
-				org.openlca.app.util.Error.showBox(Messages.CouldNotOverwriteFile
+				org.openlca.app.util.Error.showBox(M.CouldNotOverwriteFile
 						+ ": " + zip.getName());
 				return;
 			}
@@ -73,7 +73,7 @@ public class DatabaseExportAction extends Action implements INavigationAction {
 		if (active)
 			Editors.closeAll();
 		log.trace("run database export to file {}", zip);
-		App.run(Messages.ExportDatabase,
+		App.run(M.ExportDatabase,
 				() -> realExport(config, zip, active),
 				() -> updateUI(zip, active));
 	}
@@ -99,7 +99,7 @@ public class DatabaseExportAction extends Action implements INavigationAction {
 	private void updateUI(final File zip, final boolean active) {
 		if (active)
 			Navigator.refresh();
-		InformationPopup.show(Messages.ExportDone, Messages.DatabaseWasExportedToFile
+		InformationPopup.show(M.ExportDone, M.DatabaseWasExportedToFile
 				+ ": " + zip.getName());
 	}
 }

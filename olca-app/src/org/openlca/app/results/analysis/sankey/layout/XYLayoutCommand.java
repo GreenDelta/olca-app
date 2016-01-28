@@ -3,7 +3,7 @@ package org.openlca.app.results.analysis.sankey.layout;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.commands.Command;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.results.analysis.sankey.model.ProcessFigure;
 import org.openlca.app.results.analysis.sankey.model.ProcessNode;
 
@@ -75,7 +75,7 @@ public class XYLayoutCommand extends Command {
 
 	@Override
 	public String getLabel() {
-		return Messages.Move;
+		return M.Move;
 	}
 
 	@Override

@@ -3,7 +3,7 @@ package org.openlca.app.cloud.ui.compare;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.core.model.Actor;
 import org.openlca.core.model.AllocationFactor;
 import org.openlca.core.model.CategorizedEntity;
@@ -91,86 +91,86 @@ class PropertyLabels {
 	}
 
 	private static void putBasicLabels(Class<?> clazz) {
-		put(clazz, "name", Messages.Name);
-		put(clazz, "description", Messages.Description);
+		put(clazz, "name", M.Name);
+		put(clazz, "description", M.Description);
 		if (CategorizedEntity.class.isAssignableFrom(clazz))
-			put(clazz, "category", Messages.Category);
+			put(clazz, "category", M.Category);
 	}
 
 	private static void putCategoryLabels() {
 		Class<?> clazz = Category.class;
 		put(clazz, "modelType", "Model type"); // "#
-		put(clazz, "name", Messages.Name);
-		put(clazz, "category", Messages.Category);
+		put(clazz, "name", M.Name);
+		put(clazz, "category", M.Category);
 	}
 
 	private static void putLocationLabels() {
 		Class<?> clazz = Location.class;
 		putBasicLabels(clazz);
-		put(clazz, "code", Messages.Code);
-		put(clazz, "longitude", Messages.Longitude);
-		put(clazz, "latitude", Messages.Latitude);
+		put(clazz, "code", M.Code);
+		put(clazz, "longitude", M.Longitude);
+		put(clazz, "latitude", M.Latitude);
 		put(clazz, "geometry", "Geography"); // "#
 	}
 
 	private static void putCurrencyLabels() {
 		Class<?> clazz = Currency.class;
 		putBasicLabels(clazz);
-		put(clazz, "code", Messages.Code);
-		put(clazz, "conversionFactor", Messages.ConversionFactor);
+		put(clazz, "code", M.Code);
+		put(clazz, "conversionFactor", M.ConversionFactor);
 		put(clazz, "referenceCurrency", "Reference currency"); // "#
 	}
 
 	private static void putActorLabels() {
 		Class<?> clazz = Actor.class;
 		putBasicLabels(clazz);
-		put(clazz, "address", Messages.Address);
-		put(clazz, "city", Messages.City);
-		put(clazz, "country", Messages.Country);
-		put(clazz, "email", Messages.Email);
-		put(clazz, "telefax", Messages.Telefax);
-		put(clazz, "telephone", Messages.Telephone);
-		put(clazz, "website", Messages.Website);
-		put(clazz, "zipCode", Messages.ZipCode);
+		put(clazz, "address", M.Address);
+		put(clazz, "city", M.City);
+		put(clazz, "country", M.Country);
+		put(clazz, "email", M.Email);
+		put(clazz, "telefax", M.Telefax);
+		put(clazz, "telephone", M.Telephone);
+		put(clazz, "website", M.Website);
+		put(clazz, "zipCode", M.ZipCode);
 	}
 
 	private static void putSourceLabels() {
 		Class<?> clazz = Source.class;
 		putBasicLabels(clazz);
-		put(clazz, "doi", Messages.Doi);
-		put(clazz, "textReference", Messages.TextReference);
-		put(clazz, "year", Messages.Year);
+		put(clazz, "doi", M.Doi);
+		put(clazz, "textReference", M.TextReference);
+		put(clazz, "year", M.Year);
 		put(clazz, "externalFile", "File"); // "#
 	}
 
 	private static void putUnitGroupLabels() {
 		Class<?> clazz = UnitGroup.class;
 		putBasicLabels(clazz);
-		put(clazz, "defaultFlowProperty", Messages.DefaultFlowProperty);
-		put(clazz, "units", Messages.Units);
+		put(clazz, "defaultFlowProperty", M.DefaultFlowProperty);
+		put(clazz, "units", M.Units);
 	}
 
 	private static void putUnitLabels() {
 		Class<?> clazz = Unit.class;
 		putBasicLabels(clazz);
-		put(clazz, "conversionFactor", Messages.ConversionFactor);
-		put(clazz, "referenceUnit", Messages.ReferenceUnit);
-		put(clazz, "synonyms", Messages.Synonyms);
+		put(clazz, "conversionFactor", M.ConversionFactor);
+		put(clazz, "referenceUnit", M.ReferenceUnit);
+		put(clazz, "synonyms", M.Synonyms);
 	}
 
 	private static void putFlowPropertyLabels() {
 		Class<?> clazz = FlowProperty.class;
 		putBasicLabels(clazz);
-		put(clazz, "unitGroup", Messages.UnitGroup);
-		put(clazz, "flowPropertyType", Messages.FlowPropertyType);
+		put(clazz, "unitGroup", M.UnitGroup);
+		put(clazz, "flowPropertyType", M.FlowPropertyType);
 	}
 
 	private static void putSocialIndicatorLabels() {
 		Class<?> clazz = SocialIndicator.class;
 		putBasicLabels(clazz);
-		put(clazz, "unitOfMeasurement", Messages.UnitOfMeasurement);
-		put(clazz, "evaluationScheme", Messages.EvaluationScheme);
-		put(clazz, "activityVariable", Messages.ActivityVariable);
+		put(clazz, "unitOfMeasurement", M.UnitOfMeasurement);
+		put(clazz, "evaluationScheme", M.EvaluationScheme);
+		put(clazz, "activityVariable", M.ActivityVariable);
 		put(clazz, "activityQuantity", "Activity quantity"); // "#
 		put(clazz, "activityUnit", "Activity unit"); // "#
 	}
@@ -178,212 +178,212 @@ class PropertyLabels {
 	private static void putFlowLabels() {
 		Class<?> clazz = Flow.class;
 		putBasicLabels(clazz);
-		put(clazz, "flowType", Messages.FlowType);
-		put(clazz, "location", Messages.Location);
-		put(clazz, "infrastructureFlow", Messages.InfrastructureFlow);
-		put(clazz, "cas", Messages.CASNumber);
-		put(clazz, "formula", Messages.Formula);
-		put(clazz, "flowProperties", Messages.FlowProperties);
+		put(clazz, "flowType", M.FlowType);
+		put(clazz, "location", M.Location);
+		put(clazz, "infrastructureFlow", M.InfrastructureFlow);
+		put(clazz, "cas", M.CASNumber);
+		put(clazz, "formula", M.Formula);
+		put(clazz, "flowProperties", M.FlowProperties);
 	}
 
 	private static void putFlowPropertyFactorsLabels() {
 		Class<?> clazz = FlowPropertyFactor.class;
-		put(clazz, "flowProperty", Messages.FlowProperty);
-		put(clazz, "conversionFactor", Messages.ConversionFactor);
-		put(clazz, "referenceFlowProperty", Messages.ReferenceFlowProperty);
+		put(clazz, "flowProperty", M.FlowProperty);
+		put(clazz, "conversionFactor", M.ConversionFactor);
+		put(clazz, "referenceFlowProperty", M.ReferenceFlowProperty);
 	}
 
 	private static void putProcessLabels() {
 		Class<?> clazz = Process.class;
 		putBasicLabels(clazz);
-		put(clazz, "processType", Messages.ProcessType);
-		put(clazz, "location", Messages.Location);
-		put(clazz, "infrastructureProcess", Messages.InfrastructureProcess);
-		put(clazz, "defaultAllocationMethod", Messages.AllocationMethod);
+		put(clazz, "processType", M.ProcessType);
+		put(clazz, "location", M.Location);
+		put(clazz, "infrastructureProcess", M.InfrastructureProcess);
+		put(clazz, "defaultAllocationMethod", M.AllocationMethod);
 		put(clazz, "processDocumentation", "Process documentation"); // "#
-		put(clazz, "inputs", Messages.Inputs);
-		put(clazz, "outputs", Messages.Outputs);
+		put(clazz, "inputs", M.Inputs);
+		put(clazz, "outputs", M.Outputs);
 		put(clazz, "allocationFactors", "Allocation factors"); // "#
-		put(clazz, "parameters", Messages.Parameters);
-		put(clazz, "socialAspects", Messages.SocialAspects);
+		put(clazz, "parameters", M.Parameters);
+		put(clazz, "socialAspects", M.SocialAspects);
 	}
 
 	private static void putProcessDocumentationLabels() {
 		Class<?> clazz = ProcessDocumentation.class;
-		put(clazz, "creationDate", Messages.CreationDate);
-		put(clazz, "validFrom", Messages.StartDate);
-		put(clazz, "validUntil", Messages.EndDate);
+		put(clazz, "creationDate", M.CreationDate);
+		put(clazz, "validFrom", M.StartDate);
+		put(clazz, "validUntil", M.EndDate);
 		put(clazz, "timeDescription", "Time description"); // "#
 		put(clazz, "geographyDescription", "Geography description"); // "#
 		put(clazz, "technologyDescription", "Technology description"); // "#
-		put(clazz, "intendedApplication", Messages.IntendedApplication);
-		put(clazz, "dataSetOwner", Messages.DataSetOwner);
-		put(clazz, "dataGenerator", Messages.DataGenerator);
-		put(clazz, "dataDocumentor", Messages.DataDocumentor);
-		put(clazz, "publication", Messages.Publication);
-		put(clazz, "restrictionsDescription", Messages.AccessAndUseRestrictions);
-		put(clazz, "projectDescription", Messages.Project);
-		put(clazz, "inventoryMethodDescription", Messages.LCIMethod);
-		put(clazz, "modelingConstantsDescription", Messages.ModelingConstants);
-		put(clazz, "completenessDescription", Messages.DataCompleteness);
-		put(clazz, "dataSelectionDescription", Messages.DataSelection);
-		put(clazz, "dataTreatmentDescription", Messages.DataTreatment);
-		put(clazz, "samplingDescription", Messages.SamplingProcedure);
-		put(clazz, "dataCollectionDescription", Messages.DataCollectionPeriod);
-		put(clazz, "reviewer", Messages.Reviewer);
-		put(clazz, "reviewDetails", Messages.DataSetOtherEvaluation);
-		put(clazz, "copyright", Messages.Copyright);
-		put(clazz, "sources", Messages.Sources);
+		put(clazz, "intendedApplication", M.IntendedApplication);
+		put(clazz, "dataSetOwner", M.DataSetOwner);
+		put(clazz, "dataGenerator", M.DataGenerator);
+		put(clazz, "dataDocumentor", M.DataDocumentor);
+		put(clazz, "publication", M.Publication);
+		put(clazz, "restrictionsDescription", M.AccessAndUseRestrictions);
+		put(clazz, "projectDescription", M.Project);
+		put(clazz, "inventoryMethodDescription", M.LCIMethod);
+		put(clazz, "modelingConstantsDescription", M.ModelingConstants);
+		put(clazz, "completenessDescription", M.DataCompleteness);
+		put(clazz, "dataSelectionDescription", M.DataSelection);
+		put(clazz, "dataTreatmentDescription", M.DataTreatment);
+		put(clazz, "samplingDescription", M.SamplingProcedure);
+		put(clazz, "dataCollectionDescription", M.DataCollectionPeriod);
+		put(clazz, "reviewer", M.Reviewer);
+		put(clazz, "reviewDetails", M.DataSetOtherEvaluation);
+		put(clazz, "copyright", M.Copyright);
+		put(clazz, "sources", M.Sources);
 	}
 
 	private static void putExchangeLabels() {
 		Class<?> clazz = Exchange.class;
-		put(clazz, "flow", Messages.Flow);
-		put(clazz, "flowProperty", Messages.FlowProperty);
-		put(clazz, "unit", Messages.Unit);
-		put(clazz, "amount", Messages.Amount);
-		put(clazz, "quantitativeReference", Messages.QuantitativeReference);
-		put(clazz, "avoidedProduct", Messages.AvoidedProduct);
-		put(clazz, "defaultProvider", Messages.DefaultProvider);
-		put(clazz, "pedigreeUncertainty", Messages.PedigreeUncertainty);
-		put(clazz, "costCategory", Messages.CostCategory);
+		put(clazz, "flow", M.Flow);
+		put(clazz, "flowProperty", M.FlowProperty);
+		put(clazz, "unit", M.Unit);
+		put(clazz, "amount", M.Amount);
+		put(clazz, "quantitativeReference", M.QuantitativeReference);
+		put(clazz, "avoidedProduct", M.AvoidedProduct);
+		put(clazz, "defaultProvider", M.DefaultProvider);
+		put(clazz, "pedigreeUncertainty", M.PedigreeUncertainty);
+		put(clazz, "costCategory", M.CostCategory);
 		put(clazz, "costFormula", "Cost formula"); // "#
 		put(clazz, "costValue", "Cost value"); // "#
 		put(clazz, "currency", "Currency"); // "#
-		put(clazz, "uncertainty", Messages.Uncertainty);
+		put(clazz, "uncertainty", M.Uncertainty);
 	}
 
 	private static void putUncertaintyLabels() {
 		Class<?> clazz = Uncertainty.class;
-		put(clazz, "distributionType", Messages.UncertaintyDistribution);
+		put(clazz, "distributionType", M.UncertaintyDistribution);
 		put(clazz, "meanFormula", "Mean (formula)"); // "#
-		put(clazz, "mean", Messages.Mean);
+		put(clazz, "mean", M.Mean);
 		put(clazz, "sdFormula", "Standard deviation (formula)"); // "#
-		put(clazz, "sd", Messages.StandardDeviation);
+		put(clazz, "sd", M.StandardDeviation);
 		put(clazz, "geomMeanFormula", "Geometric mean (formula)"); // "#
-		put(clazz, "geomMean", Messages.GeometricMean);
+		put(clazz, "geomMean", M.GeometricMean);
 		put(clazz, "geomSdFormula", "Geometric standard deviation (formula)"); // "#
-		put(clazz, "geomSd", Messages.GeometricStandardDeviation);
+		put(clazz, "geomSd", M.GeometricStandardDeviation);
 		put(clazz, "minimumFormula", "Minimum (formula)"); // "#
-		put(clazz, "minimum", Messages.Minimum);
+		put(clazz, "minimum", M.Minimum);
 		put(clazz, "modeFormula", "Mode (formula)"); // "#
-		put(clazz, "mode", Messages.Mode);
+		put(clazz, "mode", M.Mode);
 		put(clazz, "maximumFormula", "Maximum (formula)"); // "#
-		put(clazz, "maximum", Messages.Maximum);
+		put(clazz, "maximum", M.Maximum);
 	}
 
 	private static void putAllocationFactorLabels() {
 		Class<?> clazz = AllocationFactor.class;
-		put(clazz, "allocationType", Messages.AllocationMethod);
-		put(clazz, "product", Messages.Product);
+		put(clazz, "allocationType", M.AllocationMethod);
+		put(clazz, "product", M.Product);
 		put(clazz, "exchange", "Input/Output"); // "#
-		put(clazz, "value", Messages.Value);
+		put(clazz, "value", M.Value);
 	}
 
 	private static void putParameterLabels() {
 		Class<?> clazz = Parameter.class;
 		putBasicLabels(clazz);
-		put(clazz, "flowProperty", Messages.FlowProperty);
-		put(clazz, "conversionFactor", Messages.ConversionFactor);
-		put(clazz, "inputParameter", Messages.Type);
-		put(clazz, "formula", Messages.Formula);
-		put(clazz, "value", Messages.Value);
+		put(clazz, "flowProperty", M.FlowProperty);
+		put(clazz, "conversionFactor", M.ConversionFactor);
+		put(clazz, "inputParameter", M.Type);
+		put(clazz, "formula", M.Formula);
+		put(clazz, "value", M.Value);
 	}
 
 	private static void putSocialAspectLabels() {
 		Class<?> clazz = SocialAspect.class;
-		put(clazz, "socialIndicator", Messages.SocialIndicator);
-		put(clazz, "rawAmount", Messages.RawValue);
-		put(clazz, "riskLevel", Messages.RiskLevel);
-		put(clazz, "activityValue", Messages.ActivityVariable);
-		put(clazz, "quality", Messages.DataQuality);
-		put(clazz, "comment", Messages.Comment);
-		put(clazz, "source", Messages.Source);
+		put(clazz, "socialIndicator", M.SocialIndicator);
+		put(clazz, "rawAmount", M.RawValue);
+		put(clazz, "riskLevel", M.RiskLevel);
+		put(clazz, "activityValue", M.ActivityVariable);
+		put(clazz, "quality", M.DataQuality);
+		put(clazz, "comment", M.Comment);
+		put(clazz, "source", M.Source);
 	}
 
 	private static void putImpactMethodLabels() {
 		Class<?> clazz = ImpactMethod.class;
 		putBasicLabels(clazz);
-		put(clazz, "impactCategories", Messages.ImpactCategories);
-		put(clazz, "nwSets", Messages.NormalizationWeightingSets);
-		put(clazz, "parameters", Messages.Parameters);
+		put(clazz, "impactCategories", M.ImpactCategories);
+		put(clazz, "nwSets", M.NormalizationWeightingSets);
+		put(clazz, "parameters", M.Parameters);
 	}
 
 	private static void putImpactCategoryLabels() {
 		Class<?> clazz = ImpactCategory.class;
 		putBasicLabels(clazz);
-		put(clazz, "referenceUnitName", Messages.ReferenceUnit);
-		put(clazz, "impactFactors", Messages.ImpactFactors);
+		put(clazz, "referenceUnitName", M.ReferenceUnit);
+		put(clazz, "impactFactors", M.ImpactFactors);
 	}
 
 	private static void putImpactFactorLabels() {
 		Class<?> clazz = ImpactFactor.class;
-		put(clazz, "flow", Messages.Flow);
-		put(clazz, "flowProperty", Messages.FlowProperty);
-		put(clazz, "unit", Messages.Unit);
-		put(clazz, "formula", Messages.Formula);
-		put(clazz, "value", Messages.Value);
-		put(clazz, "uncertainty", Messages.Uncertainty);
+		put(clazz, "flow", M.Flow);
+		put(clazz, "flowProperty", M.FlowProperty);
+		put(clazz, "unit", M.Unit);
+		put(clazz, "formula", M.Formula);
+		put(clazz, "value", M.Value);
+		put(clazz, "uncertainty", M.Uncertainty);
 	}
 
 	private static void putNwSetLabels() {
 		Class<?> clazz = NwSet.class;
 		putBasicLabels(clazz);
-		put(clazz, "weightedScoreUnit", Messages.ReferenceUnit);
+		put(clazz, "weightedScoreUnit", M.ReferenceUnit);
 		put(clazz, "factors", "Factors"); // "#
 	}
 
 	private static void putNwFactorLabels() {
 		Class<?> clazz = NwFactor.class;
-		put(clazz, "impactCategory", Messages.ImpactCategory);
-		put(clazz, "normalisationFactor", Messages.NormalizationFactor);
-		put(clazz, "weightingFactor", Messages.WeightingFactor);
+		put(clazz, "impactCategory", M.ImpactCategory);
+		put(clazz, "normalisationFactor", M.NormalizationFactor);
+		put(clazz, "weightingFactor", M.WeightingFactor);
 	}
 
 	private static void putProductSystemLabels() {
 		Class<?> clazz = ProductSystem.class;
 		putBasicLabels(clazz);
-		put(clazz, "referenceProcess", Messages.Process);
-		put(clazz, "referenceExchange", Messages.Product);
-		put(clazz, "targetFlowProperty", Messages.FlowProperty);
-		put(clazz, "targetUnit", Messages.Unit);
-		put(clazz, "targetAmount", Messages.TargetAmount);
-		put(clazz, "processes", Messages.Processes);
+		put(clazz, "referenceProcess", M.Process);
+		put(clazz, "referenceExchange", M.Product);
+		put(clazz, "targetFlowProperty", M.FlowProperty);
+		put(clazz, "targetUnit", M.Unit);
+		put(clazz, "targetAmount", M.TargetAmount);
+		put(clazz, "processes", M.Processes);
 		put(clazz, "processLinks", "Process links"); // "#
-		put(clazz, "parameterRedefs", Messages.Parameters);
+		put(clazz, "parameterRedefs", M.Parameters);
 	}
 
 	private static void putParameterRedefLabels() {
 		Class<?> clazz = ParameterRedef.class;
-		put(clazz, "context", Messages.Context);
-		put(clazz, "name", Messages.Name);
-		put(clazz, "value", Messages.Value);
-		put(clazz, "uncertainty", Messages.Uncertainty);
+		put(clazz, "context", M.Context);
+		put(clazz, "name", M.Name);
+		put(clazz, "value", M.Value);
+		put(clazz, "uncertainty", M.Uncertainty);
 	}
 
 	private static void putProjectLabels() {
 		Class<?> clazz = Project.class;
 		putBasicLabels(clazz);
-		put(clazz, "functionalUnit", Messages.FunctionalUnit);
-		put(clazz, "goal", Messages.Goal);
-		put(clazz, "author", Messages.Author);
-		put(clazz, "creationDate", Messages.CreationDate);
-		put(clazz, "lastModificationDate", Messages.LastModificationDate);
-		put(clazz, "impactMethod", Messages.ImpactAssessmentMethod);
-		put(clazz, "nwSet", Messages.NormalizationAndWeightingSet);
-		put(clazz, "variants", Messages.Variants);
+		put(clazz, "functionalUnit", M.FunctionalUnit);
+		put(clazz, "goal", M.Goal);
+		put(clazz, "author", M.Author);
+		put(clazz, "creationDate", M.CreationDate);
+		put(clazz, "lastModificationDate", M.LastModificationDate);
+		put(clazz, "impactMethod", M.ImpactAssessmentMethod);
+		put(clazz, "nwSet", M.NormalizationAndWeightingSet);
+		put(clazz, "variants", M.Variants);
 	}
 
 	private static void putProjectVariantLabels() {
 		Class<?> clazz = ProjectVariant.class;
-		put(clazz, "name", Messages.Name);
-		put(clazz, "productSystem", Messages.ProductSystem);
-		put(clazz, "flowProperty", Messages.FlowProperty);
-		put(clazz, "unit", Messages.Unit);
-		put(clazz, "amount", Messages.Amount);
-		put(clazz, "allocationMethod", Messages.AllocationMethod);
-		put(clazz, "description", Messages.Description);
-		put(clazz, "parameterRedefs", Messages.Parameters);
+		put(clazz, "name", M.Name);
+		put(clazz, "productSystem", M.ProductSystem);
+		put(clazz, "flowProperty", M.FlowProperty);
+		put(clazz, "unit", M.Unit);
+		put(clazz, "amount", M.Amount);
+		put(clazz, "allocationMethod", M.AllocationMethod);
+		put(clazz, "description", M.Description);
+		put(clazz, "parameterRedefs", M.Parameters);
 	}
 
 	private static void put(Class<?> clazz, String property, String label) {

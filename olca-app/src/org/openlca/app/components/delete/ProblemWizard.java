@@ -14,7 +14,7 @@ import java.lang.reflect.InvocationTargetException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.Wizard;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 
 /**
  * Wizard for displaying problems
@@ -111,7 +111,7 @@ public class ProblemWizard extends Wizard {
 					public void run(final IProgressMonitor monitor)
 							throws InvocationTargetException,
 							InterruptedException {
-						monitor.beginTask(Messages.SolvingProblems,
+						monitor.beginTask(M.SolvingProblems,
 								problems.length);
 						// for each problem
 						for (final Problem problem : problems) {

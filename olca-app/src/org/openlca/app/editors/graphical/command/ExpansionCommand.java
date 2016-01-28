@@ -1,7 +1,7 @@
 package org.openlca.app.editors.graphical.command;
 
 import org.eclipse.gef.commands.Command;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 
 public class ExpansionCommand extends Command {
@@ -56,9 +56,9 @@ public class ExpansionCommand extends Command {
 	@Override
 	public String getLabel() {
 		if (type == EXPAND)
-			return Messages.Expand;
+			return M.Expand;
 		else if (type == COLLAPSE)
-			return Messages.Collapse;
+			return M.Collapse;
 		return null;
 	}
 

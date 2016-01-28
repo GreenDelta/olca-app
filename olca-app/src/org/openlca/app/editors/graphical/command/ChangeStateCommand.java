@@ -1,7 +1,7 @@
 package org.openlca.app.editors.graphical.command;
 
 import org.eclipse.gef.commands.Command;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 
 public class ChangeStateCommand extends Command {
@@ -38,14 +38,14 @@ public class ChangeStateCommand extends Command {
 	public String getLabel() {
 		if (node.isMinimized())
 			if (initiallyMinimized)
-				return Messages.Maximize;
+				return M.Maximize;
 			else
-				return Messages.Minimize;
+				return M.Minimize;
 		else {
 			if (initiallyMinimized)
-				return Messages.Minimize;
+				return M.Minimize;
 			else
-				return Messages.Maximize;
+				return M.Maximize;
 		}
 	}
 

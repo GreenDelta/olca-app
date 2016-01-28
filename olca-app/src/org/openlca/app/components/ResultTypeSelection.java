@@ -8,7 +8,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.CostResults;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
@@ -132,7 +132,7 @@ public class ResultTypeSelection {
 
 	private void initFlowCombo(FormToolkit toolkit, Composite section) {
 		boolean enabled = getType(initialSelection) == ModelType.FLOW;
-		Button check = toolkit.createButton(section, Messages.Flow, SWT.RADIO);
+		Button check = toolkit.createButton(section, M.Flow, SWT.RADIO);
 		check.setSelection(enabled);
 		flowCombo = new FlowViewer(section, cache);
 		flowCombo.setEnabled(enabled);
@@ -148,7 +148,7 @@ public class ResultTypeSelection {
 
 	private void initImpactCombo(FormToolkit toolkit, Composite section) {
 		boolean enabled = getType(initialSelection) == ModelType.IMPACT_CATEGORY;
-		Button check = toolkit.createButton(section, Messages.ImpactCategory,
+		Button check = toolkit.createButton(section, M.ImpactCategory,
 				SWT.RADIO);
 		check.setSelection(enabled);
 		impactCombo = new ImpactCategoryViewer(section);
@@ -163,7 +163,7 @@ public class ResultTypeSelection {
 
 	private void initCostCombo(FormToolkit toolkit, Composite section) {
 		boolean enabled = getType(initialSelection) == ModelType.CURRENCY;
-		Button check = toolkit.createButton(section, Messages.CostCategory,
+		Button check = toolkit.createButton(section, M.CostCategory,
 				SWT.RADIO);
 		check.setSelection(enabled);
 		costCombo = new CostResultViewer(section);

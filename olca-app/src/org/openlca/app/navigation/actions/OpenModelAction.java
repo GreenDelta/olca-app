@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.openlca.app.App;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
 
@@ -36,7 +36,7 @@ public class OpenModelAction extends Action implements INavigationAction {
 
 	@Override
 	public String getText() {
-		return Messages.OpenInEditor;
+		return M.OpenInEditor;
 	}
 
 	@Override

@@ -7,7 +7,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.preferencepages.FeatureFlag;
@@ -36,7 +36,7 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 	private ScrolledForm form;
 
 	ProductSystemInfoPage(ProductSystemEditor editor) {
-		super(editor, "ProductSystemInfoPage", Messages.GeneralInformation);
+		super(editor, "ProductSystemInfoPage", M.GeneralInformation);
 	}
 
 	@Override
@@ -59,23 +59,23 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 	protected void updateFormTitle() {
 		if (form == null)
 			return;
-		form.setText(Messages.ProductSystem + ": " + getModel().getName());
+		form.setText(M.ProductSystem + ": " + getModel().getName());
 	}
 
 	private void createAdditionalInfo(Composite body) {
 		Composite composite = UI.formSection(body, toolkit,
-				Messages.Reference);
+				M.Reference);
 
-		createLink(Messages.Process, "referenceProcess", composite);
+		createLink(M.Process, "referenceProcess", composite);
 
-		toolkit.createLabel(composite, Messages.Product);
+		toolkit.createLabel(composite, M.Product);
 		productViewer = new ExchangeViewer(composite, ExchangeViewer.OUTPUTS,
 				ExchangeViewer.PRODUCTS);
 
-		toolkit.createLabel(composite, Messages.FlowProperty);
+		toolkit.createLabel(composite, M.FlowProperty);
 		propertyViewer = new FlowPropertyFactorViewer(composite);
 
-		toolkit.createLabel(composite, Messages.Unit);
+		toolkit.createLabel(composite, M.Unit);
 		unitViewer = new UnitViewer(composite);
 
 		productViewer.addSelectionChangedListener(new ProductChangedListener(
@@ -92,14 +92,14 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 		getBinding().onModel(() -> getModel(), "targetUnit", unitViewer);
 
 		targetAmountText = UI.formText(composite,
-				getManagedForm().getToolkit(), Messages.TargetAmount);
+				getManagedForm().getToolkit(), M.TargetAmount);
 		getBinding().onDouble(() -> getModel(), "targetAmount",
 				targetAmountText);
 	}
 
 	private void addCalculationButton(Composite composite) {
 		toolkit.createLabel(composite, "");
-		Button button = toolkit.createButton(composite, Messages.Calculate,
+		Button button = toolkit.createButton(composite, M.Calculate,
 				SWT.NONE);
 		button.setImage(Icon.CALCULATE.get());
 		Controls.onSelect(button, (e) -> CalculationWizard.open(getModel()));

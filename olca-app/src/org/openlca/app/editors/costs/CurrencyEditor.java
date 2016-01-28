@@ -11,7 +11,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.ModelPage;
@@ -48,7 +48,7 @@ public class CurrencyEditor extends ModelEditor<Currency> {
 
 		private Page() {
 			super(CurrencyEditor.this, "CurrencyPage",
-					Messages.GeneralInformation);
+					M.GeneralInformation);
 			editor = CurrencyEditor.this;
 		}
 
@@ -71,12 +71,12 @@ public class CurrencyEditor extends ModelEditor<Currency> {
 		protected void updateFormTitle() {
 			if (form == null)
 				return;
-			form.setText(Messages.CostCategory + ": " + getModel().getName());
+			form.setText(M.CostCategory + ": " + getModel().getName());
 		}
 
 		private void createAdditionalInfo(Composite body, FormToolkit tk) {
 			Composite comp = UI.formSection(body, tk,
-					Messages.AdditionalInformation);
+					M.AdditionalInformation);
 			Text codeText = UI.formText(comp, tk, "#Currency code");
 			if (getModel().code != null)
 				codeText.setText(getModel().code);

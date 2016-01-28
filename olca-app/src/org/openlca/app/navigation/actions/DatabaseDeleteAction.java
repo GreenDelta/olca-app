@@ -10,7 +10,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.osgi.util.NLS;
 import org.openlca.app.App;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.db.DerbyConfiguration;
@@ -64,7 +64,7 @@ public class DatabaseDeleteAction extends Action implements INavigationAction {
 
 	@Override
 	public String getText() {
-		return Messages.DeleteDatabase;
+		return M.DeleteDatabase;
 	}
 
 	@Override
@@ -74,7 +74,7 @@ public class DatabaseDeleteAction extends Action implements INavigationAction {
 		if (createMessageDialog().open() != MessageDialog.OK)
 			return;
 		checkCloseEditors();
-		App.run(Messages.DeleteDatabase, () -> doDelete(), Navigator::refresh);
+		App.run(M.DeleteDatabase, () -> doDelete(), Navigator::refresh);
 	}
 
 	private void checkCloseEditors() {
@@ -111,10 +111,10 @@ public class DatabaseDeleteAction extends Action implements INavigationAction {
 	private MessageDialog createMessageDialog() {
 		String name = configs.size() == 1 ? configs.get(0).getName()
 				: "the selected databases";
-		return new MessageDialog(UI.shell(), Messages.Delete, null, NLS.bind(
-				Messages.DoYouReallyWantToDelete, name),
-				MessageDialog.QUESTION, new String[] { Messages.Yes,
-						Messages.No, }, MessageDialog.CANCEL);
+		return new MessageDialog(UI.shell(), M.Delete, null, NLS.bind(
+				M.DoYouReallyWantToDelete, name),
+				MessageDialog.QUESTION, new String[] { M.Yes,
+						M.No, }, MessageDialog.CANCEL);
 	}
 
 }

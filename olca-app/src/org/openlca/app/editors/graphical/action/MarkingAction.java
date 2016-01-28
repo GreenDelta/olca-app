@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.viewers.ISelection;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.editors.graphical.command.CommandFactory;
 import org.openlca.app.editors.graphical.command.MarkingCommand;
 import org.openlca.app.editors.graphical.model.ProcessNode;
@@ -20,10 +20,10 @@ class MarkingAction extends EditorAction {
 	MarkingAction(int type) {
 		if (type == MARK) {
 			setId(ActionIds.MARK);
-			setText(Messages.Mark);
+			setText(M.Mark);
 		} else if (type == UNMARK) {
 			setId(ActionIds.UNMARK);
-			setText(Messages.Unmark);
+			setText(M.Unmark);
 		}
 		this.type = type;
 	}

@@ -8,7 +8,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.window.Window;
 import org.openlca.app.App;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.db.DerbyConfiguration;
@@ -29,7 +29,7 @@ public class DatabaseCopyAction extends Action implements INavigationAction {
 	private DerbyConfiguration config;
 
 	public DatabaseCopyAction() {
-		setText(Messages.Copy);
+		setText(M.Copy);
 	}
 
 	@Override
@@ -56,8 +56,8 @@ public class DatabaseCopyAction extends Action implements INavigationAction {
 		if (config == null)
 			return;
 		InputDialog dialog = new InputDialog(UI.shell(),
-				Messages.Copy,
-				Messages.PleaseEnterAName,
+				M.Copy,
+				M.PleaseEnterAName,
 				config.getName(), null);
 		if (dialog.open() != Window.OK)
 			return;
@@ -65,7 +65,7 @@ public class DatabaseCopyAction extends Action implements INavigationAction {
 		if (!DbUtils.isValidName(newName) || Database.getConfigurations()
 				.nameExists(newName.trim())) {
 			org.openlca.app.util.Error
-					.showBox(Messages.NewDatabase_InvalidName);
+					.showBox(M.NewDatabase_InvalidName);
 			return;
 		}
 		App.runInUI("Copy database", () -> doCopy(newName));

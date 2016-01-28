@@ -8,7 +8,7 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
 import org.openlca.app.App;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
@@ -33,7 +33,7 @@ public class EcoSpold2ImportWizard extends Wizard implements IImportWizard {
 
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		setWindowTitle(Messages.ImportEcoSpold02DataSets);
+		setWindowTitle(M.ImportEcoSpold02DataSets);
 		setDefaultPageImageDescriptor(Icon.IMPORT_ZIP_WIZARD
 				.descriptor());
 	}
@@ -46,7 +46,7 @@ public class EcoSpold2ImportWizard extends Wizard implements IImportWizard {
 		try {
 			Database.getIndexUpdater().beginTransaction();
 			getContainer().run(true, true, (monitor) -> {
-				monitor.beginTask(Messages.Import, IProgressMonitor.UNKNOWN);
+				monitor.beginTask(M.Import, IProgressMonitor.UNKNOWN);
 				ImportHandler handler = new ImportHandler(monitor);
 				handler.run(pi);
 			});

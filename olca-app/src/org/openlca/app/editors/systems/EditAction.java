@@ -1,7 +1,7 @@
 package org.openlca.app.editors.systems;
 
 import org.eclipse.jface.action.Action;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphicalEditorInput;
 import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
 import org.openlca.app.util.Editors;
@@ -16,7 +16,7 @@ public class EditAction extends Action {
 
 	public EditAction() {
 		setImageDescriptor(Images.descriptor(ModelType.PRODUCT_SYSTEM));
-		setText(Messages.OpenInEditor);
+		setText(M.OpenInEditor);
 	}
 
 	@Override

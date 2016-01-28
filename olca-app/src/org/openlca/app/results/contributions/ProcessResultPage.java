@@ -24,7 +24,7 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.db.Cache;
 import org.openlca.app.util.Controls;
@@ -67,18 +67,18 @@ public class ProcessResultPage extends FormPage {
 	private double impactCutOff = 0.01;
 
 	private final static String[] EXCHANGE_COLUMN_LABELS = {
-			Messages.Contribution,
-			Messages.Flow, Messages.UpstreamTotal, Messages.DirectContribution,
-			Messages.Unit };
+			M.Contribution,
+			M.Flow, M.UpstreamTotal, M.DirectContribution,
+			M.Unit };
 	private final static String[] IMPACT_COLUMN_LABELS = {
-			Messages.Contribution,
-			Messages.ImpactCategory, Messages.UpstreamTotal,
-			Messages.DirectImpact, Messages.Unit };
+			M.Contribution,
+			M.ImpactCategory, M.UpstreamTotal,
+			M.DirectImpact, M.Unit };
 
 	public ProcessResultPage(FormEditor editor, FullResultProvider result,
 			CalculationSetup setup) {
 		super(editor, ProcessResultPage.class.getName(),
-				Messages.ProcessResults);
+				M.ProcessResults);
 		this.setup = setup;
 		this.result = result;
 		this.flowResult = new ResultProvider(result);
@@ -94,7 +94,7 @@ public class ProcessResultPage extends FormPage {
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
 		toolkit = managedForm.getToolkit();
-		ScrolledForm form = UI.formHeader(managedForm, Messages.ProcessResults);
+		ScrolledForm form = UI.formHeader(managedForm, M.ProcessResults);
 		Composite body = UI.formBody(form, toolkit);
 		createFlowSection(body);
 		if (result.hasImpactResults())
@@ -128,7 +128,7 @@ public class ProcessResultPage extends FormPage {
 	}
 
 	private void createFlowSection(Composite parent) {
-		Section section = UI.section(parent, toolkit, Messages.FlowResults);
+		Section section = UI.section(parent, toolkit, M.FlowResults);
 		UI.gridData(section, true, true);
 		Composite composite = toolkit.createComposite(section);
 		section.setClient(composite);
@@ -137,7 +137,7 @@ public class ProcessResultPage extends FormPage {
 		Composite container = new Composite(composite, SWT.NONE);
 		UI.gridData(container, true, false);
 		UI.gridLayout(container, 5);
-		UI.formLabel(container, toolkit, Messages.Process);
+		UI.formLabel(container, toolkit, M.Process);
 		flowProcessViewer = new ProcessViewer(container, cache);
 		flowProcessViewer.setInput(setup.productSystem);
 		flowProcessViewer.addSelectionChangedListener((selection) -> {
@@ -146,7 +146,7 @@ public class ProcessResultPage extends FormPage {
 			outputTable.refresh();
 		});
 
-		UI.formLabel(container, toolkit, Messages.Cutoff);
+		UI.formLabel(container, toolkit, M.Cutoff);
 		flowSpinner = new Spinner(container, SWT.BORDER);
 		flowSpinner.setValues(1, 0, 10000, 2, 1, 100);
 		toolkit.adapt(flowSpinner);
@@ -160,8 +160,8 @@ public class ProcessResultPage extends FormPage {
 		Composite resultContainer = new Composite(composite, SWT.NONE);
 		resultContainer.setLayout(new GridLayout(2, true));
 		UI.gridData(resultContainer, true, true);
-		UI.formLabel(resultContainer, Messages.Inputs);
-		UI.formLabel(resultContainer, Messages.Outputs);
+		UI.formLabel(resultContainer, M.Inputs);
+		UI.formLabel(resultContainer, M.Outputs);
 		inputTable = createFlowTable(resultContainer);
 		outputTable = createFlowTable(resultContainer);
 	}
@@ -183,7 +183,7 @@ public class ProcessResultPage extends FormPage {
 
 	private void createImpactSection(Composite parent) {
 		Section section = UI.section(parent, toolkit,
-				Messages.ImpactAssessmentResults);
+				M.ImpactAssessmentResults);
 		UI.gridData(section, true, true);
 		Composite composite = toolkit.createComposite(section);
 		section.setClient(composite);
@@ -192,14 +192,14 @@ public class ProcessResultPage extends FormPage {
 		Composite container = new Composite(composite, SWT.NONE);
 		UI.gridLayout(container, 5);
 		UI.gridData(container, true, false);
-		UI.formLabel(container, toolkit, Messages.Process);
+		UI.formLabel(container, toolkit, M.Process);
 		impactProcessCombo = new ProcessViewer(container, cache);
 		impactProcessCombo.setInput(setup.productSystem);
 		impactProcessCombo.addSelectionChangedListener((selection) -> {
 			impactResult.setProcess(selection);
 			impactTable.refresh();
 		});
-		UI.formLabel(container, toolkit, Messages.Cutoff);
+		UI.formLabel(container, toolkit, M.Cutoff);
 		impactSpinner = new Spinner(container, SWT.BORDER);
 		impactSpinner.setValues(1, 0, 10000, 2, 1, 100);
 		toolkit.adapt(impactSpinner);

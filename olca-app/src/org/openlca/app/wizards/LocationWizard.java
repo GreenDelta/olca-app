@@ -3,7 +3,7 @@ package org.openlca.app.wizards;
 import java.util.UUID;
 
 import org.eclipse.swt.widgets.Composite;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.model.Location;
@@ -17,7 +17,7 @@ public class LocationWizard extends AbstractWizard<Location> {
 
 	@Override
 	protected String getTitle() {
-		return Messages.NewLocation;
+		return M.NewLocation;
 	}
 
 	@Override
@@ -29,8 +29,8 @@ public class LocationWizard extends AbstractWizard<Location> {
 
 		public LocationWizardPage() {
 			super("LocationWizardPage");
-			setTitle(Messages.NewLocation);
-			setMessage(Messages.CreatesANewLocation);
+			setTitle(M.NewLocation);
+			setMessage(M.CreatesANewLocation);
 			setPageComplete(false);
 		}
 

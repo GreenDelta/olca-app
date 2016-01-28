@@ -1,6 +1,6 @@
 package org.openlca.app.util;
 
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.rcp.images.Icon;
 
 /**
@@ -14,7 +14,7 @@ public class InformationPopup extends Popup {
 
 	public InformationPopup(String title, String message) {
 		super(title, message);
-		defaultTitle(Messages.Notification);
+		defaultTitle(M.Notification);
 		popupShellImage(Icon.INFO);
 	}
 

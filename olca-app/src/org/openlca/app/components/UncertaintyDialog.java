@@ -11,7 +11,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Error;
@@ -66,7 +66,7 @@ public class UncertaintyDialog extends Dialog {
 		toolkit.adapt(parent);
 		createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL,
 				true);
-		createButton(parent, IDialogConstants.HELP_ID, Messages.Test, false);
+		createButton(parent, IDialogConstants.HELP_ID, M.Test, false);
 		createButton(parent, IDialogConstants.CANCEL_ID,
 				IDialogConstants.CANCEL_LABEL, false);
 		getShell().pack();
@@ -121,7 +121,7 @@ public class UncertaintyDialog extends Dialog {
 
 	@Override
 	protected Control createDialogArea(Composite root) {
-		getShell().setText(Messages.Uncertainty);
+		getShell().setText(M.Uncertainty);
 		toolkit.adapt(root);
 		Composite area = (Composite) super.createDialogArea(root);
 		toolkit.adapt(area);
@@ -141,7 +141,7 @@ public class UncertaintyDialog extends Dialog {
 		UI.gridData(comboComposite, true, false);
 		UI.gridLayout(comboComposite, 2);
 		combo = UI.formCombo(comboComposite, toolkit,
-				Messages.UncertaintyDistribution);
+				M.UncertaintyDistribution);
 		String[] items = new String[types.length];
 		int idx = 0;
 		for (int i = 0; i < items.length; i++) {
@@ -203,7 +203,7 @@ public class UncertaintyDialog extends Dialog {
 				createTextFields();
 			else {
 				Label label = toolkit.createLabel(composite,
-						Messages.NoDistribution);
+						M.NoDistribution);
 				label.setForeground(Colors.getDarkGray());
 			}
 		}
@@ -250,17 +250,17 @@ public class UncertaintyDialog extends Dialog {
 		private String[] getLabels() {
 			switch (_uncertainty.getDistributionType()) {
 			case LOG_NORMAL:
-				return new String[] { Messages.GeometricMean,
-						Messages.GeometricStandardDeviation };
+				return new String[] { M.GeometricMean,
+						M.GeometricStandardDeviation };
 			case NONE:
 				return new String[0];
 			case NORMAL:
-				return new String[] { Messages.Mean, Messages.StandardDeviation };
+				return new String[] { M.Mean, M.StandardDeviation };
 			case TRIANGLE:
-				return new String[] { Messages.Minimum, Messages.Mode,
-						Messages.Maximum };
+				return new String[] { M.Minimum, M.Mode,
+						M.Maximum };
 			case UNIFORM:
-				return new String[] { Messages.Minimum, Messages.Maximum };
+				return new String[] { M.Minimum, M.Maximum };
 			default:
 				return new String[0];
 			}
@@ -344,7 +344,7 @@ public class UncertaintyDialog extends Dialog {
 				return true;
 			} catch (Exception e) {
 				if (interpreterScope == null)
-					Error.showBox(s + " " + Messages.IsNotValidNumber);
+					Error.showBox(s + " " + M.IsNotValidNumber);
 				return false;
 			}
 		}
@@ -356,7 +356,7 @@ public class UncertaintyDialog extends Dialog {
 				interpreterScope.eval(s);
 				return true;
 			} catch (Exception e) {
-				Error.showBox(Messages.FormulaEvaluationFailed + ": " + s);
+				Error.showBox(M.FormulaEvaluationFailed + ": " + s);
 				return false;
 			}
 		}

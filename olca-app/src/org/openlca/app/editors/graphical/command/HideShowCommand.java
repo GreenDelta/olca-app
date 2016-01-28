@@ -1,7 +1,7 @@
 package org.openlca.app.editors.graphical.command;
 
 import org.eclipse.gef.commands.Command;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.editors.graphical.model.ConnectionLink;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
@@ -55,9 +55,9 @@ public class HideShowCommand extends Command {
 	@Override
 	public String getLabel() {
 		if (type == SHOW)
-			return Messages.Show;
+			return M.Show;
 		else if (type == HIDE)
-			return Messages.Hide;
+			return M.Hide;
 		return null;
 	}
 

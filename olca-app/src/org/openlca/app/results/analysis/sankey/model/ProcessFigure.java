@@ -13,7 +13,7 @@ import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 import org.openlca.app.FaviColor;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.results.analysis.sankey.ProcessMouseClick;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Labels;
@@ -77,9 +77,9 @@ public class ProcessFigure extends Figure {
 		String name = Strings.cut(processNode.getName(), 30);
 		g.drawText(name, loc.x + 5, loc.y + 5);
 		g.setFont(normalFont);
-		g.drawText(Messages.DirectContribution + ":", loc.x + 5, loc.y + 35);
+		g.drawText(M.DirectContribution + ":", loc.x + 5, loc.y + 35);
 		g.drawText(single, loc.x + 5, loc.y + 50);
-		g.drawText(Messages.UpstreamTotal + ":", loc.x + 5, loc.y + 80);
+		g.drawText(M.UpstreamTotal + ":", loc.x + 5, loc.y + 80);
 		g.drawText(total, loc.x + 5, loc.y + 95);
 		g.setForegroundColor(black);
 	}

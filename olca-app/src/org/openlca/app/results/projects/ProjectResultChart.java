@@ -26,7 +26,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.FaviColor;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.components.charts.ChartViewer;
 import org.openlca.app.db.Cache;
 import org.openlca.app.util.Labels;
@@ -96,7 +96,7 @@ public class ProjectResultChart extends Composite {
 
 	private Axis yAxis(ChartWithAxes chart, Axis xAxis,
 			BaseDescriptor reference) {
-		String title = Messages.Results;
+		String title = M.Results;
 		String unit = null;
 		if (reference instanceof FlowDescriptor) {
 			FlowDescriptor flow = (FlowDescriptor) reference;
@@ -157,7 +157,7 @@ public class ProjectResultChart extends Composite {
 		NumberDataSet dataSet = NumberDataSetImpl.create(values);
 		BarSeries barSeries = (BarSeries) BarSeriesImpl.create();
 		barSeries.setDataSet(dataSet);
-		barSeries.setSeriesIdentifier(Messages.ImpactCategories);
+		barSeries.setSeriesIdentifier(M.ImpactCategories);
 		SeriesDefinition definition = SeriesDefinitionImpl.create();
 		definition.getSeries().add(barSeries);
 		yAxis.getSeriesDefinitions().add(definition);

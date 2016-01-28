@@ -11,7 +11,7 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Cache;
 import org.openlca.app.rcp.images.Images;
@@ -33,13 +33,13 @@ public class QuickResultInfoPage extends FormPage {
 	private FormToolkit toolkit;
 
 	public QuickResultInfoPage(QuickResultEditor editor) {
-		super(editor, "QuickResultInfoPage", Messages.GeneralInformation);
+		super(editor, "QuickResultInfoPage", M.GeneralInformation);
 		this.editor = editor;
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, Messages.ResultsOf + " "
+		ScrolledForm form = UI.formHeader(managedForm, M.ResultsOf + " "
 				+ Labels.getDisplayName(editor.getSetup().productSystem));
 		this.toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
@@ -63,29 +63,29 @@ public class QuickResultInfoPage extends FormPage {
 			return;
 		ProductSystem system = setup.productSystem;
 		Composite composite = UI.formSection(body, toolkit,
-				Messages.GeneralInformation);
+				M.GeneralInformation);
 		String sysText = Labels.getDisplayName(system);
-		createText(composite, Messages.ProductSystem, sysText);
+		createText(composite, M.ProductSystem, sysText);
 		String allocText = Labels.getEnumText(setup.allocationMethod);
-		createText(composite, Messages.AllocationMethod, allocText);
+		createText(composite, M.AllocationMethod, allocText);
 		String targetText = system.getTargetAmount() + " "
 				+ system.getTargetUnit().getName() + " "
 				+ system.getReferenceExchange().getFlow().getName();
-		createText(composite, Messages.TargetAmount, targetText);
+		createText(composite, M.TargetAmount, targetText);
 		ImpactMethodDescriptor method = setup.impactMethod;
 		if (method != null)
-			createText(composite, Messages.ImpactAssessmentMethod,
+			createText(composite, M.ImpactAssessmentMethod,
 					method.getName());
 		NwSetDescriptor nwSet = setup.nwSet;
 		if (nwSet != null)
-			createText(composite, Messages.NormalizationAndWeightingSet,
+			createText(composite, M.NormalizationAndWeightingSet,
 					nwSet.getName());
 		createExportButton(composite);
 	}
 
 	private void createExportButton(Composite composite) {
 		toolkit.createLabel(composite, "");
-		Button button = toolkit.createButton(composite, Messages.ExportToExcel,
+		Button button = toolkit.createButton(composite, M.ExportToExcel,
 				SWT.NONE);
 		button.setImage(Images.get(FileType.EXCEL));
 		Controls.onSelect(button, (e) -> tryExport());
@@ -99,11 +99,11 @@ public class QuickResultInfoPage extends FormPage {
 		QuickResultExport export = new QuickResultExport(
 				editor.getSetup(), editor.getResult(), Cache.getEntityCache());
 		export.setExportFile(exportFile);
-		App.run(Messages.Export, export, new Runnable() {
+		App.run(M.Export, export, new Runnable() {
 			@Override
 			public void run() {
 				if (export.doneWithSuccess()) {
-					InformationPopup.show(Messages.ExportDone);
+					InformationPopup.show(M.ExportDone);
 				}
 			}
 		});

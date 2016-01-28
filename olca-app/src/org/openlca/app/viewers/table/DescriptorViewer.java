@@ -5,7 +5,7 @@ import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.descriptors.BaseDescriptor;
@@ -23,7 +23,7 @@ public class DescriptorViewer extends AbstractTableViewer<BaseDescriptor> {
 
 	@Override
 	protected String[] getColumnHeaders() {
-		return new String[] { Messages.Name, Messages.Description };
+		return new String[] { M.Name, M.Description };
 	}
 
 	private class DescriptorLabelProvider extends BaseLabelProvider implements ITableLabelProvider {

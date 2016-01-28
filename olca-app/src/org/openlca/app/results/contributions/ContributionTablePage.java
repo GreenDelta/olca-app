@@ -6,7 +6,7 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.util.UI;
 import org.openlca.core.results.ContributionResultProvider;
 
@@ -16,14 +16,14 @@ public class ContributionTablePage extends FormPage {
 
 	public ContributionTablePage(FormEditor editor,
 			ContributionResultProvider<?> result) {
-		super(editor, "ProcessContributionPage", Messages.ProcessContributions);
+		super(editor, "ProcessContributionPage", M.ProcessContributions);
 		this.result = result;
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
 		ScrolledForm form = UI.formHeader(managedForm,
-				Messages.ProcessContributions);
+				M.ProcessContributions);
 		FormToolkit toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		createSections(form, toolkit, body);

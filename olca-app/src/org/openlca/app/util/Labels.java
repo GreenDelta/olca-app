@@ -1,7 +1,7 @@
 package org.openlca.app.util;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.core.database.CurrencyDao;
@@ -144,20 +144,20 @@ public class Labels {
 	 */
 	public static String uncertaintyType(UncertaintyType type) {
 		if (type == null)
-			return Messages.NoDistribution;
+			return M.NoDistribution;
 		switch (type) {
 		case LOG_NORMAL:
-			return Messages.LogNormalDistribution;
+			return M.LogNormalDistribution;
 		case NONE:
-			return Messages.NoDistribution;
+			return M.NoDistribution;
 		case NORMAL:
-			return Messages.NormalDistribution;
+			return M.NormalDistribution;
 		case TRIANGLE:
-			return Messages.TriangleDistribution;
+			return M.TriangleDistribution;
 		case UNIFORM:
-			return Messages.UniformDistribution;
+			return M.UniformDistribution;
 		default:
-			return Messages.NoDistribution;
+			return M.NoDistribution;
 		}
 	}
 
@@ -172,11 +172,11 @@ public class Labels {
 			return null;
 		switch (type) {
 		case ELEMENTARY_FLOW:
-			return Messages.ElementaryFlow;
+			return M.ElementaryFlow;
 		case PRODUCT_FLOW:
-			return Messages.Product;
+			return M.Product;
 		case WASTE_FLOW:
-			return Messages.Waste;
+			return M.Waste;
 		default:
 			return null;
 		}
@@ -193,9 +193,9 @@ public class Labels {
 			return null;
 		switch (processType) {
 		case LCI_RESULT:
-			return Messages.SystemProcess;
+			return M.SystemProcess;
 		case UNIT_PROCESS:
-			return Messages.UnitProcess;
+			return M.UnitProcess;
 		default:
 			return null;
 		}
@@ -206,17 +206,17 @@ public class Labels {
 			return null;
 		switch (allocationMethod) {
 		case CAUSAL:
-			return Messages.Causal;
+			return M.Causal;
 		case ECONOMIC:
-			return Messages.Economic;
+			return M.Economic;
 		case NONE:
-			return Messages.None;
+			return M.None;
 		case PHYSICAL:
-			return Messages.Physical;
+			return M.Physical;
 		case USE_DEFAULT:
-			return Messages.AsDefinedInProcesses;
+			return M.AsDefinedInProcesses;
 		default:
-			return Messages.None;
+			return M.None;
 		}
 	}
 
@@ -231,9 +231,9 @@ public class Labels {
 			return null;
 		switch (type) {
 		case ECONOMIC:
-			return Messages.Economic;
+			return M.Economic;
 		case PHYSICAL:
-			return Messages.Physical;
+			return M.Physical;
 		default:
 			return null;
 		}
@@ -241,7 +241,7 @@ public class Labels {
 
 	public static String riskLevel(RiskLevel rl) {
 		if (rl == null)
-			return Messages.Unknown;
+			return M.Unknown;
 		// "# TODO: these values should be translated
 		switch (rl) {
 		case HIGH_OPPORTUNITY:
@@ -267,7 +267,7 @@ public class Labels {
 		case NOT_APPLICABLE:
 			return "Not applicable";
 		default:
-			return Messages.Unknown;
+			return M.Unknown;
 		}
 	}
 
@@ -276,35 +276,35 @@ public class Labels {
 			return null;
 		switch (o) {
 		case ACTOR:
-			return Messages.Actors;
+			return M.Actors;
 		case CURRENCY:
 			return "#Currencies";
 		case FLOW:
-			return Messages.Flows;
+			return M.Flows;
 		case FLOW_PROPERTY:
-			return Messages.FlowProperties;
+			return M.FlowProperties;
 		case IMPACT_METHOD:
-			return Messages.ImpactAssessmentMethods;
+			return M.ImpactAssessmentMethods;
 		case PROCESS:
-			return Messages.Processes;
+			return M.Processes;
 		case PRODUCT_SYSTEM:
-			return Messages.ProductSystems;
+			return M.ProductSystems;
 		case PROJECT:
-			return Messages.Projects;
+			return M.Projects;
 		case SOCIAL_INDICATOR:
-			return Messages.SocialIndicators;
+			return M.SocialIndicators;
 		case SOURCE:
-			return Messages.Sources;
+			return M.Sources;
 		case UNIT_GROUP:
-			return Messages.UnitGroups;
+			return M.UnitGroups;
 		case LOCATION:
-			return Messages.Locations;
+			return M.Locations;
 		case PARAMETER:
-			return Messages.GlobalParameters;
+			return M.GlobalParameters;
 		case CATEGORY:
-			return Messages.Category;
+			return M.Category;
 		default:
-			return Messages.Unknown;
+			return M.Unknown;
 		}
 	}
 
@@ -313,35 +313,35 @@ public class Labels {
 			return null;
 		switch (o) {
 		case ACTOR:
-			return Messages.Actor;
+			return M.Actor;
 		case CURRENCY:
 			return "#Currency";
 		case FLOW:
-			return Messages.Flow;
+			return M.Flow;
 		case FLOW_PROPERTY:
-			return Messages.FlowProperty;
+			return M.FlowProperty;
 		case IMPACT_METHOD:
-			return Messages.ImpactAssessmentMethod;
+			return M.ImpactAssessmentMethod;
 		case PROCESS:
-			return Messages.Process;
+			return M.Process;
 		case PRODUCT_SYSTEM:
-			return Messages.ProductSystem;
+			return M.ProductSystem;
 		case PROJECT:
-			return Messages.Project;
+			return M.Project;
 		case SOCIAL_INDICATOR:
-			return Messages.SocialIndicator;
+			return M.SocialIndicator;
 		case SOURCE:
-			return Messages.Source;
+			return M.Source;
 		case UNIT_GROUP:
-			return Messages.UnitGroup;
+			return M.UnitGroup;
 		case LOCATION:
-			return Messages.Location;
+			return M.Location;
 		case PARAMETER:
 			return "#Global parameter";
 		case CATEGORY:
-			return Messages.Category;
+			return M.Category;
 		default:
-			return Messages.Unknown;
+			return M.Unknown;
 		}
 	}
 

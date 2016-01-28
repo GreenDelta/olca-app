@@ -30,7 +30,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.editors.graphical.command.ChangeStateCommand;
 import org.openlca.app.editors.graphical.command.CommandFactory;
 import org.openlca.app.editors.graphical.layout.GraphAnimation;
@@ -197,9 +197,9 @@ class ProcessFigure extends Figure {
 					+ margin), new Point(x + width / 2, y + height - margin));
 
 		graphics.setForegroundColor(TEXT_COLOR);
-		graphics.drawText(Messages.Inputs, new Point(x + width / 6, y
+		graphics.drawText(M.Inputs, new Point(x + width / 6, y
 				+ MINIMUM_HEIGHT + MARGIN_HEIGHT));
-		graphics.drawText(Messages.Outputs, new Point(x + 2 * width / 3, y
+		graphics.drawText(M.Outputs, new Point(x + 2 * width / 3, y
 				+ MINIMUM_HEIGHT + MARGIN_HEIGHT));
 		graphics.setForegroundColor(ColorConstants.black);
 	}

@@ -13,7 +13,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.editors.projects.ProjectEditor;
 import org.openlca.app.editors.reports.model.Report;
 import org.openlca.app.editors.reports.model.ReportComponent;
@@ -61,7 +61,7 @@ class SectionList {
 		ReportSection model = new ReportSection();
 		model.index = report.sections.size();
 		report.sections.add(model);
-		model.title = Messages.NewSection;
+		model.title = M.NewSection;
 		model.text = "";
 		Sec section = new Sec(model);
 		sections.add(section);
@@ -105,7 +105,7 @@ class SectionList {
 		}
 
 		private void createTitleText(Composite comp) {
-			titleText = UI.formText(comp, toolkit, Messages.Section);
+			titleText = UI.formText(comp, toolkit, M.Section);
 			if (model.title != null)
 				titleText.setText(model.title);
 			titleText.addModifyListener(e -> {
@@ -117,7 +117,7 @@ class SectionList {
 		}
 
 		private void createDescriptionText(Composite comp) {
-			descriptionText = UI.formMultiText(comp, toolkit, Messages.Text);
+			descriptionText = UI.formMultiText(comp, toolkit, M.Text);
 			if (model.text != null)
 				descriptionText.setText(model.text);
 			descriptionText.addModifyListener(e -> {
@@ -127,7 +127,7 @@ class SectionList {
 		}
 
 		private void createComponentViewer(Composite composite) {
-			UI.formLabel(composite, toolkit, Messages.Component);
+			UI.formLabel(composite, toolkit, M.Component);
 			componentViewer = new ComboViewer(composite);
 			UI.gridData(componentViewer.getControl(), false, false).widthHint = 250;
 			componentViewer.setContentProvider(ArrayContentProvider
@@ -149,23 +149,23 @@ class SectionList {
 
 		private void createActions() {
 			Action up = Actions.create(
-					Messages.MoveUp,
+					M.MoveUp,
 					Icon.UP.descriptor(),
 					() -> moveUp());
 			Action down = Actions.create(
-					Messages.MoveDown,
+					M.MoveDown,
 					Icon.DOWN.descriptor(),
 					() -> moveDown());
 			Action delete = Actions.create(
-					Messages.DeleteSection,
+					M.DeleteSection,
 					Icon.DELETE.descriptor(),
 					() -> delete());
 			Actions.bind(ui, up, down, delete);
 		}
 
 		private void delete() {
-			boolean b = Question.ask(Messages.DeleteSection,
-					Messages.DeleteReportSectionQuestion);
+			boolean b = Question.ask(M.DeleteSection,
+					M.DeleteReportSectionQuestion);
 			if (!b)
 				return;
 			report.sections.remove(model);
@@ -207,41 +207,41 @@ class SectionList {
 		private String getLabel(ReportComponent component) {
 			switch (component) {
 			case NONE:
-				return Messages.None;
+				return M.None;
 			case VARIANT_DESCRIPTION_TABLE:
-				return Messages.VariantDescriptionTable;
+				return M.VariantDescriptionTable;
 			case INDICATOR_DESCRIPTION_TABLE:
-				return Messages.LciaCategoryDescriptionTable;
+				return M.LciaCategoryDescriptionTable;
 			case PARAMETER_DESCRIPTION_TABLE:
-				return Messages.ParameterDescriptionTable;
+				return M.ParameterDescriptionTable;
 			case PARAMETER_VALUE_TABLE:
-				return Messages.ParameterValueTable;
+				return M.ParameterValueTable;
 			case IMPACT_RESULT_TABLE:
-				return Messages.LciaResultTable;
+				return M.LciaResultTable;
 			case PROCESS_CONTRIBUTION_CHART:
-				return Messages.ProcessContributionChart;
+				return M.ProcessContributionChart;
 			case NORMALISATION_RESULT_TABLE:
-				return Messages.NormalisationResultTable;
+				return M.NormalisationResultTable;
 			case SINGLE_SCORE_TABLE:
-				return Messages.SingleScoreTable;
+				return M.SingleScoreTable;
 			case INDICATOR_BAR_CHART:
-				return Messages.IndicatorBarChart;
+				return M.IndicatorBarChart;
 			case NORMALISATION_BAR_CHART:
-				return Messages.NormalisationBarChart;
+				return M.NormalisationBarChart;
 			case NORMALISATION_RADAR_CHART:
-				return Messages.NormalisationRadarChart;
+				return M.NormalisationRadarChart;
 			case RELATIVE_INDICATOR_BAR_CHART:
-				return Messages.RelativeLciaResultsBarChart;
+				return M.RelativeLciaResultsBarChart;
 			case RELATIVE_INDICATOR_RADAR_CHART:
-				return Messages.RelativeLciaResultsRadarChart;
+				return M.RelativeLciaResultsRadarChart;
 			case SINGLE_SCORE_BAR_CHART:
-				return Messages.SingleScoreBarChart;
+				return M.SingleScoreBarChart;
 			case LCC_ADDED_VALUES_TABLE:
 				return "#LCC: Added values table";
 			case LCC_NET_COSTS_TABLE:
 				return "#LCC: Net-costs table";
 			default:
-				return Messages.Unknown;
+				return M.Unknown;
 			}
 		}
 	}

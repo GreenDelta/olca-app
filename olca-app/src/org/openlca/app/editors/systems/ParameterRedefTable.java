@@ -13,7 +13,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.components.ParameterRedefDialog;
 import org.openlca.app.components.UncertaintyCellEditor;
 import org.openlca.app.db.Cache;
@@ -47,10 +47,10 @@ class ParameterRedefTable {
 
 	private ProductSystemEditor editor;
 
-	private final String PARAMETER = Messages.Parameter;
-	private final String CONTEXT = Messages.Context;
-	private final String AMOUNT = Messages.Amount;
-	private final String UNCERTAINTY = Messages.Uncertainty;
+	private final String PARAMETER = M.Parameter;
+	private final String CONTEXT = M.Context;
+	private final String AMOUNT = M.Amount;
+	private final String UNCERTAINTY = M.Uncertainty;
 
 	private TableViewer viewer;
 

@@ -4,7 +4,7 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.commands.Command;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 
 public class XYLayoutCommand extends Command {
@@ -71,9 +71,9 @@ public class XYLayoutCommand extends Command {
 	@Override
 	public String getLabel() {
 		if (type == MOVE)
-			return Messages.Move;
+			return M.Move;
 		else if (type == RESIZE)
-			return Messages.Resize;
+			return M.Resize;
 		return null;
 	}
 

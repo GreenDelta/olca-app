@@ -8,7 +8,7 @@ import org.eclipse.nebula.jface.tablecomboviewer.TableComboViewer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.results.ImageExportAction;
 import org.openlca.app.util.Actions;
@@ -46,8 +46,8 @@ public class ContributionChartSection {
 			ContributionResultProvider<?> provider) {
 		ContributionChartSection section = new ContributionChartSection(
 				provider, true);
-		section.sectionTitle = Messages.FlowContributions;
-		section.selectionName = Messages.Flow;
+		section.sectionTitle = M.FlowContributions;
+		section.selectionName = M.Flow;
 		return section;
 	}
 
@@ -55,8 +55,8 @@ public class ContributionChartSection {
 			ContributionResultProvider<?> provider) {
 		ContributionChartSection section = new ContributionChartSection(
 				provider, false);
-		section.sectionTitle = Messages.ImpactContributions;
-		section.selectionName = Messages.ImpactCategory;
+		section.sectionTitle = M.ImpactContributions;
+		section.selectionName = M.ImpactCategory;
 		return section;
 	}
 

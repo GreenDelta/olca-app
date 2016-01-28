@@ -1,7 +1,7 @@
 package org.openlca.app.editors.graphical.command;
 
 import org.eclipse.gef.commands.Command;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.editors.graphical.model.ConnectionLink;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
@@ -68,7 +68,7 @@ public class CreateLinkCommand extends Command {
 
 	@Override
 	public String getLabel() {
-		return Messages.CreateProcesslink;
+		return M.CreateProcesslink;
 	}
 
 	@Override

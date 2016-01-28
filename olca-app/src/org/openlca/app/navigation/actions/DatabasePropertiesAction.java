@@ -3,7 +3,7 @@ package org.openlca.app.navigation.actions;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.DatabasePropertiesDialog;
 import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.navigation.DatabaseElement;
@@ -19,7 +19,7 @@ public class DatabasePropertiesAction extends Action implements
 	private IDatabaseConfiguration config;
 
 	public DatabasePropertiesAction() {
-		setText(Messages.Properties);
+		setText(M.Properties);
 		setImageDescriptor(Icon.INFO.descriptor());
 	}
 

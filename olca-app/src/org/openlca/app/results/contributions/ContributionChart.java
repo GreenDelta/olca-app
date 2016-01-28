@@ -18,7 +18,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.openlca.app.FaviColor;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.components.charts.ChartCanvas;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Labels;
@@ -119,7 +119,7 @@ public class ContributionChart {
 		else if (content instanceof ProcessGrouping)
 			text = ((ProcessGrouping) content).name;
 		else if (item.rest)
-			text = Messages.Other;
+			text = M.Other;
 		return number + ": " + text;
 	}
 

@@ -7,7 +7,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.UI;
@@ -24,7 +24,7 @@ public class DatabaseWizard extends Wizard {
 
 	public DatabaseWizard() {
 		setNeedsProgressMonitor(true);
-		setWindowTitle(Messages.NewDatabase);
+		setWindowTitle(M.NewDatabase);
 	}
 
 	@Override
@@ -73,7 +73,7 @@ public class DatabaseWizard extends Wizard {
 		@Override
 		public void run(IProgressMonitor monitor)
 				throws InvocationTargetException, InterruptedException {
-			monitor.beginTask(Messages.CreateDatabase,
+			monitor.beginTask(M.CreateDatabase,
 					IProgressMonitor.UNKNOWN);
 			try {
 				Database.close();

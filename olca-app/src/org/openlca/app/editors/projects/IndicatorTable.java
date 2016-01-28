@@ -8,7 +8,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.reports.model.Report;
 import org.openlca.app.editors.reports.model.ReportIndicator;
@@ -38,16 +38,16 @@ class IndicatorTable {
 	}
 
 	public void render(Composite parent) {
-		viewer = Tables.createViewer(parent, Messages.ImpactCategory,
-				Messages.Display, Messages.ReportName, Messages.Description);
+		viewer = Tables.createViewer(parent, M.ImpactCategory,
+				M.Display, M.ReportName, M.Description);
 		Tables.bindColumnWidths(viewer, 0.3, 0.1, 0.2, 0.4);
 		UI.gridData(viewer.getTable(), true, false).heightHint = 150;
 		Label label = new Label();
 		viewer.setLabelProvider(label);
 		ModifySupport<ReportIndicator> ms = new ModifySupport<>(viewer);
-		ms.bind(Messages.Display, new DisplayModifier());
-		ms.bind(Messages.ReportName, new StringModifier<>(editor, "reportName"));
-		ms.bind(Messages.Description, new StringModifier<>(editor,
+		ms.bind(M.Display, new DisplayModifier());
+		ms.bind(M.ReportName, new StringModifier<>(editor, "reportName"));
+		ms.bind(M.Description, new StringModifier<>(editor,
 				"reportDescription"));
 		if (editor.getReport() != null)
 			viewer.setInput(editor.getReport().indicators);

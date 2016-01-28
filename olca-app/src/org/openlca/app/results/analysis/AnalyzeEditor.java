@@ -5,7 +5,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.results.FlowImpactPage;
@@ -67,7 +67,7 @@ public class AnalyzeEditor extends FormEditor {
 				FullResultProvider.class);
 		setup = Cache.getAppCache().remove(setupKey, CalculationSetup.class);
 		ProductSystem system = setup.productSystem;
-		String name = Messages.AnalysisResultOf + " " + system.getName();
+		String name = M.AnalysisResultOf + " " + system.getName();
 		setPartName(name);
 		this.result = result;
 	}
@@ -97,7 +97,7 @@ public class AnalyzeEditor extends FormEditor {
 			}
 			diagram = new SankeyDiagram(setup, result);
 			diagramIndex = addPage(diagram, getEditorInput());
-			setPageText(diagramIndex, Messages.SankeyDiagram);
+			setPageText(diagramIndex, M.SankeyDiagram);
 		} catch (final PartInitException e) {
 			log.error("Add pages failed", e);
 		}

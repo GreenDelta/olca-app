@@ -12,7 +12,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.results.contributions.ContributionChart;
 import org.openlca.app.util.Labels;
@@ -90,7 +90,7 @@ class GroupResultSection {
 	}
 
 	public void render(Composite body, FormToolkit toolkit) {
-		Section section = UI.section(body, toolkit, Messages.Results);
+		Section section = UI.section(body, toolkit, M.Results);
 		UI.gridData(section, true, true);
 		Composite client = UI.sectionClient(section, toolkit);
 		UI.gridLayout(client, 1);
@@ -116,7 +116,7 @@ class GroupResultSection {
 	}
 
 	private void createFlowViewer(FormToolkit toolkit, Composite parent) {
-		Button flowsCheck = toolkit.createButton(parent, Messages.Flows,
+		Button flowsCheck = toolkit.createButton(parent, M.Flows,
 				SWT.RADIO);
 		flowsCheck.setSelection(true);
 		flowViewer = new FlowViewer(parent, cache);
@@ -130,7 +130,7 @@ class GroupResultSection {
 
 	private void createImpact(FormToolkit toolkit, Composite parent) {
 		Button impactCheck = toolkit.createButton(parent,
-				Messages.ImpactCategories, SWT.RADIO);
+				M.ImpactCategories, SWT.RADIO);
 		impactViewer = new ImpactCategoryViewer(parent);
 		impactViewer.setEnabled(false);
 		Set<ImpactCategoryDescriptor> impacts = result.getImpactDescriptors();

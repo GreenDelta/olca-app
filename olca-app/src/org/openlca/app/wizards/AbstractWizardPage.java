@@ -3,14 +3,14 @@ package org.openlca.app.wizards;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.util.UIFactory;
 import org.openlca.core.model.RootEntity;
 
 public abstract class AbstractWizardPage<T extends RootEntity> extends
 		WizardPage {
 
-	private final String EMPTY_NAME_ERROR = Messages.PleaseEnterAName;
+	private final String EMPTY_NAME_ERROR = M.PleaseEnterAName;
 	private Text descriptionText;
 	protected Text nameText;
 	private boolean withDescription = true;
@@ -28,11 +28,11 @@ public abstract class AbstractWizardPage<T extends RootEntity> extends
 		setErrorMessage(EMPTY_NAME_ERROR);
 		Composite container = UIFactory.createContainer(parent);
 		setControl(container);
-		nameText = UIFactory.createTextWithLabel(container, Messages.Name,
+		nameText = UIFactory.createTextWithLabel(container, M.Name,
 				false);
 		if (withDescription)
 			descriptionText = UIFactory.createTextWithLabel(container,
-					Messages.Description, true);
+					M.Description, true);
 		createContents(container);
 		initModifyListeners();
 	}

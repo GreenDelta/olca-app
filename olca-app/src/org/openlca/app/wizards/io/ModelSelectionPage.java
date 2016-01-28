@@ -16,7 +16,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.Preferences;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
@@ -82,10 +82,10 @@ class ModelSelectionPage extends WizardPage {
 	private void createTexts() {
 		// TODO: change labels to 'Select data sets etc.'
 		String typeName = getTypeName();
-		String title = Messages.bind(Messages.Select, typeName);
+		String title = M.bind(M.Select, typeName);
 		setTitle(title);
-		String descr = Messages.SelectObjectPage_Description;
-		descr = Messages.bind(descr, typeName);
+		String descr = M.SelectObjectPage_Description;
+		descr = M.bind(descr, typeName);
 		setDescription(descr);
 	}
 
@@ -96,21 +96,21 @@ class ModelSelectionPage extends WizardPage {
 		ModelType type = types[0];
 		switch (type) {
 		case PROCESS:
-			return Messages.Processes;
+			return M.Processes;
 		case IMPACT_METHOD:
-			return Messages.ImpactAssessmentMethods;
+			return M.ImpactAssessmentMethods;
 		case FLOW:
-			return Messages.Flows;
+			return M.Flows;
 		case FLOW_PROPERTY:
-			return Messages.FlowProperties;
+			return M.FlowProperties;
 		case UNIT_GROUP:
-			return Messages.UnitGroups;
+			return M.UnitGroups;
 		case ACTOR:
-			return Messages.Actors;
+			return M.Actors;
 		case SOURCE:
-			return Messages.Sources;
+			return M.Sources;
 		case PRODUCT_SYSTEM:
-			return Messages.ProductSystems;
+			return M.ProductSystems;
 		default:
 			return "unknown";
 		}
@@ -142,13 +142,13 @@ class ModelSelectionPage extends WizardPage {
 		layout.marginHeight = 0;
 		layout.marginWidth = 5;
 		UI.gridData(composite, true, false);
-		String label = targetIsDir ? Messages.ToDirectory : "#To file:";
+		String label = targetIsDir ? M.ToDirectory : "#To file:";
 		new Label(composite, SWT.NONE).setText(label);
 		Text text = createTargetText(composite);
 		text.setEditable(false);
 		text.setBackground(Colors.getWhite());
 		Button button = new Button(composite, SWT.NONE);
-		button.setText(Messages.Browse);
+		button.setText(M.Browse);
 		Controls.onSelect(button, (e) -> selectTarget(text));
 	}
 

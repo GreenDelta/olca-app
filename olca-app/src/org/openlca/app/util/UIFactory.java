@@ -19,7 +19,7 @@ import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.components.TextDropComponent;
 import org.openlca.app.viewers.BaseLabelProvider;
 import org.openlca.app.viewers.BaseNameSorter;
@@ -86,7 +86,7 @@ public final class UIFactory {
 	public static Section createCategorySection(final Composite parent,
 			final FormToolkit toolkit) {
 		// category label + section composite
-		toolkit.createLabel(parent, Messages.Category, SWT.NONE);
+		toolkit.createLabel(parent, M.Category, SWT.NONE);
 		final Composite categoryComposite = toolkit.createComposite(parent,
 				SWT.NONE);
 		categoryComposite.setLayout(new GridLayout());

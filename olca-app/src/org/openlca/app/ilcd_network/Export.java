@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.preferencepages.IoPreference;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ModelType;
@@ -61,7 +61,7 @@ public class Export implements IRunnableWithProgress {
 
 	private void beginTask(IProgressMonitor monitor) {
 		this.monitor = monitor;
-		String taskName = Messages.ILCDNetworkExport;
+		String taskName = M.ILCDNetworkExport;
 		monitor.beginTask(taskName, descriptors.size() + 1);
 		log.info(taskName);
 	}

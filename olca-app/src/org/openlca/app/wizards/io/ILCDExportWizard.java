@@ -9,7 +9,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IExportWizard;
 import org.eclipse.ui.IWorkbench;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.preferencepages.IoPreference;
 import org.openlca.core.model.CategorizedEntity;
@@ -42,7 +42,7 @@ public class ILCDExportWizard extends Wizard implements IExportWizard {
 
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		setWindowTitle(Messages.ExportILCD);
+		setWindowTitle(M.ExportILCD);
 	}
 
 	@Override
@@ -64,7 +64,7 @@ public class ILCDExportWizard extends Wizard implements IExportWizard {
 
 	private void runExport(IProgressMonitor monitor, ExportConfig config,
 			List<BaseDescriptor> descriptors) throws InvocationTargetException {
-		monitor.beginTask(Messages.Export, descriptors.size());
+		monitor.beginTask(M.Export, descriptors.size());
 		int worked = 0;
 		ILCDExport export = new ILCDExport(config);
 		for (BaseDescriptor descriptor : descriptors) {

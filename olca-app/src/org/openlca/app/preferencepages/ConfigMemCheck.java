@@ -1,6 +1,6 @@
 package org.openlca.app.preferencepages;
 
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.util.OS;
 
 /**
@@ -22,23 +22,23 @@ class ConfigMemCheck {
 	 */
 	public static int parseAndCheck(String value) {
 		if (value == null || value.trim().isEmpty())
-			return showError(Messages.EmptyValueMessage);
+			return showError(M.EmptyValueMessage);
 		try {
 			int val = Integer.parseInt(value);
 			if (val < 256)
-				return showError(Messages.MemoryToLowMessage);
+				return showError(M.MemoryToLowMessage);
 			if (val > 1280 && isX86() && OS.getCurrent() == OS.Windows)
-				return showError(Messages.MemoryToHighMessage);
+				return showError(M.MemoryToHighMessage);
 			else
 				return val;
 		} catch (Exception e) {
-			return showError(Messages.NotAnIntegerNumber);
+			return showError(M.NotAnIntegerNumber);
 		}
 	}
 
 	private static int showError(String message) {
 		org.openlca.app.util.Error
-				.showBox(Messages.InvalidMemoryValue, message);
+				.showBox(M.InvalidMemoryValue, message);
 		return -1;
 	}
 

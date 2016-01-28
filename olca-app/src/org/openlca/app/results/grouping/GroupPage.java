@@ -32,7 +32,7 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
@@ -67,7 +67,7 @@ public class GroupPage extends FormPage {
 	private Section groupingSection;
 
 	public GroupPage(FormEditor editor, ContributionResultProvider<?> result) {
-		super(editor, "analysis.GroupPage", Messages.Grouping);
+		super(editor, "analysis.GroupPage", M.Grouping);
 		this.result = result;
 		initGroups(result);
 	}
@@ -75,7 +75,7 @@ public class GroupPage extends FormPage {
 	private void initGroups(ContributionResultProvider<?> result) {
 		groups = new ArrayList<>();
 		ProcessGrouping restGroup = new ProcessGrouping();
-		restGroup.name = Messages.Other;
+		restGroup.name = M.Other;
 		restGroup.rest = true;
 		for (ProcessDescriptor p : result.getProcessDescriptors())
 			restGroup.processes.add(p);
@@ -90,7 +90,7 @@ public class GroupPage extends FormPage {
 		for (ProcessDescriptor p : result.getProcessDescriptors())
 			processes.add(p);
 		List<ProcessGrouping> newGroups = ProcessGrouping.applyOn(processes,
-				groupSet, Messages.Other);
+				groupSet, M.Other);
 		groups.clear();
 		groups.addAll(newGroups);
 		updateViewers();
@@ -113,15 +113,15 @@ public class GroupPage extends FormPage {
 		if (groupingSection == null)
 			return;
 		if (groupSet == null)
-			groupingSection.setText(Messages.Groups);
+			groupingSection.setText(M.Groups);
 		else
-			groupingSection.setText(Messages.Groups + " (" + groupSet.getName()
+			groupingSection.setText(M.Groups + " (" + groupSet.getName()
 					+ ")");
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, Messages.Grouping);
+		ScrolledForm form = UI.formHeader(managedForm, M.Grouping);
 		FormToolkit toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		createGroupingSection(toolkit, body);
@@ -131,7 +131,7 @@ public class GroupPage extends FormPage {
 	}
 
 	private void createGroupingSection(FormToolkit toolkit, Composite body) {
-		groupingSection = UI.section(body, toolkit, Messages.Groups);
+		groupingSection = UI.section(body, toolkit, M.Groups);
 		Composite composite = UI.sectionClient(groupingSection, toolkit);
 		UI.gridLayout(composite, 2);
 		Actions.bind(groupingSection, new AddGroupAction(),
@@ -169,7 +169,7 @@ public class GroupPage extends FormPage {
 		Menu menu = new Menu(processViewer.getTable());
 		processViewer.getTable().setMenu(menu);
 		MenuItem item = new MenuItem(menu, SWT.CASCADE);
-		item.setText(Messages.Move);
+		item.setText(M.Move);
 		groupMoveMenu = new Menu(item);
 		item.setMenu(groupMoveMenu);
 		groupMoveMenu.addListener(SWT.Show, new MenuGroupListener());
@@ -179,12 +179,12 @@ public class GroupPage extends FormPage {
 
 		public AddGroupAction() {
 			setImageDescriptor(Icon.ADD.descriptor());
-			setToolTipText(Messages.Add);
+			setToolTipText(M.Add);
 		}
 
 		@Override
 		public void run() {
-			String m = Messages.PleaseEnterAName;
+			String m = M.PleaseEnterAName;
 			InputDialog dialog = new InputDialog(getSite().getShell(), m, m,
 					"", null);
 			int code = dialog.open();
@@ -203,7 +203,7 @@ public class GroupPage extends FormPage {
 
 		public DeleteGroupAction() {
 			setImageDescriptor(Icon.DELETE.descriptor());
-			setText(Messages.Delete);
+			setText(M.Delete);
 		}
 
 		@Override
@@ -377,7 +377,7 @@ public class GroupPage extends FormPage {
 
 		public SaveGroupSetAction(GroupPage page) {
 			this.page = page;
-			setToolTipText(Messages.Save);
+			setToolTipText(M.Save);
 			ImageDescriptor image = Images.platformDescriptor(ISharedImages.IMG_ETOOL_SAVE_EDIT);
 			setImageDescriptor(image);
 		}
@@ -407,8 +407,8 @@ public class GroupPage extends FormPage {
 
 		private ProcessGroupSet createGroupSet() throws Exception {
 			Shell shell = page.getEditorSite().getShell();
-			InputDialog dialog = new InputDialog(shell, Messages.SaveAs,
-					Messages.PleaseEnterAName, "", null);
+			InputDialog dialog = new InputDialog(shell, M.SaveAs,
+					M.PleaseEnterAName, "", null);
 			int code = dialog.open();
 			if (code == Window.CANCEL)
 				return null;
@@ -420,8 +420,8 @@ public class GroupPage extends FormPage {
 
 		private void updateExisting(ProcessGroupSet groupSet) {
 			try {
-				boolean b = Question.ask(Messages.SaveChanges,
-						Messages.SaveChangesQuestion);
+				boolean b = Question.ask(M.SaveChanges,
+						M.SaveChangesQuestion);
 				if (b)
 					setAndSaveGroups(groupSet);
 			} catch (Exception e) {

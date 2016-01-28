@@ -29,7 +29,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.model.ExchangeNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
@@ -45,11 +45,11 @@ import org.openlca.core.model.descriptors.ProcessDescriptor;
 public class ConnectorDialog extends Dialog {
 
 	private interface LABELS {
-		String NAME = Messages.Name;
-		String CREATE = Messages.Add;
-		String CONNECT = Messages.Connect;
-		String EXISTS = Messages.AlreadyPresent;
-		String CONNECTED = Messages.AlreadyConnected;
+		String NAME = M.Name;
+		String CREATE = M.Add;
+		String CONNECT = M.Connect;
+		String EXISTS = M.AlreadyPresent;
+		String CONNECTED = M.AlreadyConnected;
 		String[] ALL = new String[] { NAME, CREATE, CONNECT, EXISTS, CONNECTED };
 	}
 
@@ -116,8 +116,8 @@ public class ConnectorDialog extends Dialog {
 				.createSection(container, ExpandableComposite.TITLE_BAR
 						| ExpandableComposite.FOCUS_TITLE);
 		selectObjectSection
-				.setText(selectProvider ? Messages.SelectProviders
-						: Messages.SelectRecipients);
+				.setText(selectProvider ? M.SelectProviders
+						: M.SelectRecipients);
 		Composite composite = toolkit.createComposite(selectObjectSection,
 				SWT.NONE);
 		GridLayout gridLayout = new GridLayout();

@@ -37,7 +37,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.ISharedImages;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.UI;
 import org.slf4j.Logger;
@@ -210,7 +210,7 @@ public class ChartViewer extends Composite implements PaintListener,
 
 		@Override
 		public String getText() {
-			return Messages.SaveAsImage;
+			return M.SaveAsImage;
 		}
 
 		@Override
@@ -218,7 +218,7 @@ public class ChartViewer extends Composite implements PaintListener,
 			final ImageLoader loader = new ImageLoader();
 			loader.data = new ImageData[] { image.getImageData() };
 			final FileDialog dialog = new FileDialog(UI.shell(), SWT.SAVE);
-			dialog.setText(Messages.SaveAsImage);
+			dialog.setText(M.SaveAsImage);
 			dialog.setFileName("chart.png");
 			dialog.setFilterExtensions(new String[] { "*.png" });
 			dialog.setFilterNames(new String[] { "*.png (Portable Network Graphics (PNG)" });
@@ -228,8 +228,8 @@ public class ChartViewer extends Composite implements PaintListener,
 				boolean write = false;
 				if (file.exists()) {
 					write = MessageDialog.openQuestion(UI.shell(),
-							Messages.FileAlreadyExists,
-							Messages.OverwriteFileQuestion);
+							M.FileAlreadyExists,
+							M.OverwriteFileQuestion);
 				} else {
 					write = true;
 				}

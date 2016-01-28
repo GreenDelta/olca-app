@@ -24,7 +24,7 @@ import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.ModelTextFilter;
@@ -94,11 +94,11 @@ public class ModelSelectionDialog extends FormDialog {
 		Composite body = UI.formBody(form.getForm(), tk);
 		UI.gridLayout(body, 1);
 		Label filterLabel = UI.formLabel(body, form.getToolkit(),
-				Messages.Filter);
+				M.Filter);
 		boldLabelFont = UI.boldFont(filterLabel);
 		filterLabel.setFont(boldLabelFont);
 		filterText = UI.formText(body, SWT.SEARCH);
-		Section section = UI.section(body, tk, Messages.Content);
+		Section section = UI.section(body, tk, M.Content);
 		addSectionActions(section);
 		UI.gridData(section, true, true);
 		Composite composite = UI.sectionClient(section, tk);
@@ -111,29 +111,29 @@ public class ModelSelectionDialog extends FormDialog {
 			return "unknown?";
 		switch (modelType) {
 		case ACTOR:
-			return multiSelection ? Messages.Actors : Messages.Actor;
+			return multiSelection ? M.Actors : M.Actor;
 		case FLOW:
-			return multiSelection ? Messages.Flows : Messages.Flow;
+			return multiSelection ? M.Flows : M.Flow;
 		case FLOW_PROPERTY:
-			return multiSelection ? Messages.FlowProperties
-					: Messages.FlowProperty;
+			return multiSelection ? M.FlowProperties
+					: M.FlowProperty;
 		case IMPACT_METHOD:
-			return multiSelection ? Messages.ImpactAssessmentMethods
-					: Messages.ImpactAssessmentMethod;
+			return multiSelection ? M.ImpactAssessmentMethods
+					: M.ImpactAssessmentMethod;
 		case PROCESS:
-			return multiSelection ? Messages.Processes : Messages.Process;
+			return multiSelection ? M.Processes : M.Process;
 		case PRODUCT_SYSTEM:
-			return multiSelection ? Messages.ProductSystems
-					: Messages.ProductSystem;
+			return multiSelection ? M.ProductSystems
+					: M.ProductSystem;
 		case PROJECT:
-			return multiSelection ? Messages.Projects : Messages.Project;
+			return multiSelection ? M.Projects : M.Project;
 		case SOCIAL_INDICATOR:
-			return multiSelection ? Messages.SocialIndicators
-					: Messages.SocialIndicator;
+			return multiSelection ? M.SocialIndicators
+					: M.SocialIndicator;
 		case SOURCE:
-			return multiSelection ? Messages.Sources : Messages.Source;
+			return multiSelection ? M.Sources : M.Source;
 		case UNIT_GROUP:
-			return multiSelection ? Messages.UnitGroups : Messages.UnitGroup;
+			return multiSelection ? M.UnitGroups : M.UnitGroup;
 		default:
 			return "unknown?";
 		}
@@ -167,11 +167,11 @@ public class ModelSelectionDialog extends FormDialog {
 
 	private void addSectionActions(Section section) {
 		Action expand = Actions.create(
-				Messages.ExpandAll,
+				M.ExpandAll,
 				Icon.EXPAND.descriptor(),
 				viewer::expandAll);
 		Action collapse = Actions.create(
-				Messages.CollapseAll,
+				M.CollapseAll,
 				Icon.COLLAPSE.descriptor(),
 				viewer::collapseAll);
 		Actions.bind(section, expand, collapse);

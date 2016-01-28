@@ -20,7 +20,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.dialogs.PreferencesUtil;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.rcp.RcpActivator;
 import org.openlca.app.util.Dialog;
 import org.openlca.app.util.UI;
@@ -49,13 +49,13 @@ public class IoPreferencePage extends PreferencePage implements
 		Group section = new Group(parent, SWT.SHADOW_OUT);
 		section.setText("#ILCD Network settings");
 		StringFieldEditor urlEditor = new StringFieldEditor(
-				IoPreference.ILCD_URL, Messages.URL, section);
+				IoPreference.ILCD_URL, M.URL, section);
 		addField(urlEditor);
 		StringFieldEditor userEditor = new StringFieldEditor(
-				IoPreference.ILCD_USER, Messages.User, section);
+				IoPreference.ILCD_USER, M.User, section);
 		addField(userEditor);
 		StringFieldEditor passwordEditor = new StringFieldEditor(
-				IoPreference.ILCD_PASSWORD, Messages.Password, section);
+				IoPreference.ILCD_PASSWORD, M.Password, section);
 		passwordEditor.getTextControl(section).setEchoChar('*');
 		addField(passwordEditor);
 		UI.gridLayout(section, 2);
@@ -66,7 +66,7 @@ public class IoPreferencePage extends PreferencePage implements
 		Group section = new Group(parent, SWT.SHADOW_OUT);
 		section.setText("#ILCD other settings");
 		ComboFieldEditor langEditor = new ComboFieldEditor(
-				IoPreference.ILCD_LANG, Messages.Language, getLanguages(),
+				IoPreference.ILCD_LANG, M.Language, getLanguages(),
 				section);
 		addField(langEditor);
 		UI.gridLayout(section, 2);
@@ -101,7 +101,7 @@ public class IoPreferencePage extends PreferencePage implements
 	@Override
 	public void createControl(Composite parent) {
 		super.createControl(parent);
-		getApplyButton().setText(Messages.Test);
+		getApplyButton().setText(M.Test);
 		setImageDescriptor(RcpActivator.imageDescriptorFromPlugin(
 				RcpActivator.PLUGIN_ID, "icons/network16.png"));
 	}
@@ -136,7 +136,7 @@ public class IoPreferencePage extends PreferencePage implements
 			client.connect();
 			checkAuthentication(client.getAuthentication());
 		} catch (Exception e) {
-			Dialog.showError(getShell(), Messages.ILCD_CONNECTION_FAILED_MSG
+			Dialog.showError(getShell(), M.ILCD_CONNECTION_FAILED_MSG
 					+ " (" + e.getMessage() + ")");
 		}
 	}
@@ -144,13 +144,13 @@ public class IoPreferencePage extends PreferencePage implements
 	private void checkAuthentication(Authentication authentication) {
 		if (!authentication.isAuthenticated())
 			Dialog.showError(getShell(),
-					Messages.ILCD_AUTHENTICATION_FAILED_MSG);
+					M.ILCD_AUTHENTICATION_FAILED_MSG);
 		else if (!authentication.isReadAllowed()
 				|| !authentication.isExportAllowed())
 			Dialog.showWarning(getShell(),
-					Messages.ILCD_NO_READ_OR_WRITE_ACCESS_MSG);
+					M.ILCD_NO_READ_OR_WRITE_ACCESS_MSG);
 		else
-			Dialog.showInfo(getShell(), Messages.ILCD_CONNECTION_WORKS_MSG);
+			Dialog.showInfo(getShell(), M.ILCD_CONNECTION_WORKS_MSG);
 	}
 
 	@Override

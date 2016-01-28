@@ -6,7 +6,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.handlers.IHandlerService;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.CategoryElement;
 import org.openlca.app.navigation.DatabaseElement;
@@ -22,7 +22,7 @@ public class ImportAction extends Action implements INavigationAction {
 	private Logger log = LoggerFactory.getLogger(getClass());
 
 	public ImportAction() {
-		setText(Messages.Import);
+		setText(M.Import);
 		setImageDescriptor(Icon.IMPORT.descriptor());
 	}
 

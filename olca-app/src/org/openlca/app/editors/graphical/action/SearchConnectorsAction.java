@@ -12,7 +12,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.editors.graphical.ConnectorDialog;
 import org.openlca.app.editors.graphical.command.CommandFactory;
 import org.openlca.app.editors.graphical.command.CommandUtil;
@@ -32,8 +32,8 @@ class SearchConnectorsAction extends EditorAction {
 	private Menu menu;
 
 	public SearchConnectorsAction(int type) {
-		super(type == PROVIDER ? Messages.SearchProvidersFor
-				: Messages.SearchRecipientsFor,
+		super(type == PROVIDER ? M.SearchProvidersFor
+				: M.SearchRecipientsFor,
 				IAction.AS_DROP_DOWN_MENU);
 		if (type == PROVIDER)
 			setId(ActionIds.SEARCH_PROVIDERS);

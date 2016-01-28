@@ -15,7 +15,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.openlca.app.App;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.components.FileSelection;
 import org.openlca.app.db.Cache;
 import org.openlca.app.rcp.images.Images;
@@ -47,8 +47,8 @@ public class SystemExportDialog extends WizardDialog {
 			protected SystemExportWizardPage() {
 				super("SystemExportWizardPage");
 				setImageDescriptor(Images.descriptor(FileType.EXCEL));
-				setTitle(Messages.ProductSystemExcelExport);
-				setDescription(Messages.ProductSystemExcelExportMessage);
+				setTitle(M.ProductSystemExcelExport);
+				setDescription(M.ProductSystemExcelExportMessage);
 				setPageComplete(false);
 			}
 
@@ -65,15 +65,15 @@ public class SystemExportDialog extends WizardDialog {
 				Composite composite = new Composite(parent, SWT.NONE);
 				UI.gridLayout(composite, 1);
 
-				Group methodGroup = createGroup(Messages.Methods, composite, 1);
-				UI.formLabel(methodGroup, Messages.AllocationMethod);
+				Group methodGroup = createGroup(M.Methods, composite, 1);
+				UI.formLabel(methodGroup, M.AllocationMethod);
 				allocationMethodViewer = new AllocationMethodViewer(
 						methodGroup, AllocationMethod.values());
-				UI.formLabel(methodGroup, Messages.ImpactAssessmentMethod);
+				UI.formLabel(methodGroup, M.ImpactAssessmentMethod);
 				impactMethodViewer = new ImpactMethodViewer(methodGroup);
 				impactMethodViewer.setInput(database);
 
-				Group fileGroup = createGroup(Messages.ExportDirectory,
+				Group fileGroup = createGroup(M.ExportDirectory,
 						composite, 1);
 				directorySelection = new FileSelection(fileGroup);
 				directorySelection.setSelectDirectory(true);
@@ -136,7 +136,7 @@ public class SystemExportDialog extends WizardDialog {
 					public void run(IProgressMonitor monitor)
 							throws InvocationTargetException,
 							InterruptedException {
-						monitor.beginTask(Messages.Export,
+						monitor.beginTask(M.Export,
 								IProgressMonitor.UNKNOWN);
 						SystemExportConfig conf = new SystemExportConfig(
 								productSystem, database, App.getSolver()

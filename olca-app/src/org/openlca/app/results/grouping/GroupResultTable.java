@@ -12,7 +12,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
@@ -27,9 +27,9 @@ class GroupResultTable {
 	private final int AMOUNT_COL = 1;
 	private final int UNIT_COL = 2;
 
-	private final String GROUP = Messages.Group;
-	private final String AMOUNT = Messages.Amount;
-	private final String UNIT = Messages.Unit;
+	private final String GROUP = M.Group;
+	private final String AMOUNT = M.Amount;
+	private final String UNIT = M.Unit;
 
 	private TableViewer viewer;
 	private String unit;

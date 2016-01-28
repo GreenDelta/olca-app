@@ -22,7 +22,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Item;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.tables.Tables;
@@ -47,11 +47,11 @@ public abstract class UnitMappingPage extends WizardPage {
 
 	private IDatabase database = Database.get();
 
-	private final String CONVERSION_FACTOR = Messages.ConversionFactor;
-	private final String FLOW_PROPERTY = Messages.FlowProperty;
-	private final String REFERENCE_UNIT = Messages.ReferenceUnit;
-	private final String UNIT = Messages.Unit;
-	private final String FORMULA = Messages.Formula;
+	private final String CONVERSION_FACTOR = M.ConversionFactor;
+	private final String FLOW_PROPERTY = M.FlowProperty;
+	private final String REFERENCE_UNIT = M.ReferenceUnit;
+	private final String UNIT = M.Unit;
+	private final String FORMULA = M.Formula;
 
 	private final String[] PROPERTIES = new String[] { UNIT, FLOW_PROPERTY,
 			REFERENCE_UNIT, CONVERSION_FACTOR, FORMULA };
@@ -69,8 +69,8 @@ public abstract class UnitMappingPage extends WizardPage {
 
 	public UnitMappingPage() {
 		super("UnitMappingPage");
-		setTitle(Messages.AssignUnits);
-		setDescription(Messages.UnitMappingPage_Description);
+		setTitle(M.AssignUnits);
+		setDescription(M.UnitMappingPage_Description);
 		setPageComplete(false);
 	}
 
@@ -101,7 +101,7 @@ public abstract class UnitMappingPage extends WizardPage {
 								throws InvocationTargetException,
 								InterruptedException {
 							monitor.beginTask(
-									Messages.SearchingForUnits,
+									M.SearchingForUnits,
 									IProgressMonitor.UNKNOWN);
 							String[] names = checkFiles(files);
 							for (String s : names)

@@ -3,7 +3,7 @@ package org.openlca.app.wizards;
 import java.util.UUID;
 
 import org.eclipse.swt.widgets.Composite;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.model.ImpactMethod;
@@ -12,7 +12,7 @@ public class ImpactMethodWizard extends AbstractWizard<ImpactMethod> {
 
 	@Override
 	protected String getTitle() {
-		return Messages.NewImpactMethod;
+		return M.NewImpactMethod;
 	}
 
 	@Override
@@ -29,8 +29,8 @@ public class ImpactMethodWizard extends AbstractWizard<ImpactMethod> {
 
 		public Page() {
 			super("LCIAMethodWizardPage");
-			setTitle(Messages.NewImpactMethod);
-			setMessage(Messages.CreatesANewImpactMethod);
+			setTitle(M.NewImpactMethod);
+			setMessage(M.CreatesANewImpactMethod);
 			setPageComplete(false);
 		}
 

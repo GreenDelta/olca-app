@@ -6,7 +6,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.ui.part.EditorActionBarContributor;
 import org.openlca.app.App;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Cache;
 import org.openlca.app.rcp.images.Images;
@@ -30,7 +30,7 @@ public class ProjectResultActions extends EditorActionBarContributor {
 
 	@Override
 	public void contributeToToolBar(IToolBarManager toolBarManager) {
-		toolBarManager.add(new Action(Messages.ExportToExcel, Images.descriptor(FileType.EXCEL)) {
+		toolBarManager.add(new Action(M.ExportToExcel, Images.descriptor(FileType.EXCEL)) {
 			@Override
 			public void run() {
 				runExport();
@@ -58,7 +58,7 @@ public class ProjectResultActions extends EditorActionBarContributor {
 
 	private void tryRun(final ProjectResultExport export,
 			final ProjectResultProvider result) {
-		App.run(Messages.ExportResults, new Runnable() {
+		App.run(M.ExportResults, new Runnable() {
 			public void run() {
 				try {
 					export.run(result);
@@ -71,7 +71,7 @@ public class ProjectResultActions extends EditorActionBarContributor {
 		}, new Runnable() {
 			public void run() {
 				if (!failed)
-					InformationPopup.show(Messages.ExportDone);
+					InformationPopup.show(M.ExportDone);
 			}
 		});
 	}

@@ -2,7 +2,7 @@ package org.openlca.app.editors.graphical.command;
 
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.commands.Command;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 
 public class DeleteProcessCommand extends Command {
@@ -37,7 +37,7 @@ public class DeleteProcessCommand extends Command {
 
 	@Override
 	public String getLabel() {
-		return Messages.DeleteProcess;
+		return M.DeleteProcess;
 	}
 
 	@Override

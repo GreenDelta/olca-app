@@ -11,7 +11,7 @@ import org.apache.commons.io.FileUtils;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.ui.part.EditorActionBarContributor;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.editors.reports.model.Report;
 import org.openlca.app.rcp.RcpActivator;
@@ -53,7 +53,7 @@ public class ReportToolbar extends EditorActionBarContributor {
 
 		public ExportAction() {
 			setImageDescriptor(Icon.EXPORT.descriptor());
-			setToolTipText(Messages.ExportReport);
+			setToolTipText(M.ExportReport);
 		}
 
 		@Override
@@ -75,7 +75,7 @@ public class ReportToolbar extends EditorActionBarContributor {
 			try {
 				copyLibs(targetDir, htmlFolder);
 				String json = new Gson().toJson(report);
-				String messages = Messages.asJson();
+				String messages = M.asJson();
 				String call = "$(window).load( function() { setData(" + json
 						+ ", " + messages + ")});";
 				File template = HtmlFolder.getFile(RcpActivator.getDefault()

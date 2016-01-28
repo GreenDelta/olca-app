@@ -16,7 +16,7 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.html.HtmlPage;
 import org.openlca.app.rcp.html.HtmlView;
@@ -97,7 +97,7 @@ public class UsageView extends FormEditor {
 		private Browser browser;
 
 		public Page() {
-			super(UsageView.this, "UsageView.Page", Messages.Usage);
+			super(UsageView.this, "UsageView.Page", M.Usage);
 		}
 
 		@Override
@@ -131,7 +131,7 @@ public class UsageView extends FormEditor {
 		protected void createFormContent(IManagedForm managedForm) {
 			if (model == null)
 				return;
-			ScrolledForm form = UI.formHeader(managedForm, Messages.UsageOf
+			ScrolledForm form = UI.formHeader(managedForm, M.UsageOf
 					+ ": " + Labels.getDisplayName(model));
 			FormToolkit toolkit = managedForm.getToolkit();
 			Composite body = UI.formBody(form, toolkit);

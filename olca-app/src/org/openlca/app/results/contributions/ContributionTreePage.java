@@ -22,7 +22,7 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.components.ResultTypeSelection;
 import org.openlca.app.components.ResultTypeSelection.EventHandler;
@@ -54,13 +54,13 @@ public class ContributionTreePage extends FormPage {
 	private TreeViewer tree;
 	private Object selection;
 
-	private static final String[] HEADERS = { Messages.Contribution,
-			Messages.Process, Messages.Amount, Messages.Unit };
+	private static final String[] HEADERS = { M.Contribution,
+			M.Process, M.Amount, M.Unit };
 
 	public ContributionTreePage(FormEditor editor,
 			FullResultProvider result) {
 		super(editor, "analysis.ContributionTreePage",
-				Messages.ContributionTree);
+				M.ContributionTree);
 		this.result = result;
 		Iterator<FlowDescriptor> it = result.getFlowDescriptors().iterator();
 		if (it.hasNext())
@@ -71,7 +71,7 @@ public class ContributionTreePage extends FormPage {
 	protected void createFormContent(IManagedForm managedForm) {
 		FormToolkit toolkit = managedForm.getToolkit();
 		ScrolledForm form = UI.formHeader(managedForm,
-				Messages.ContributionTree);
+				M.ContributionTree);
 		Composite body = UI.formBody(form, toolkit);
 		Composite composite = toolkit.createComposite(body);
 		UI.gridLayout(composite, 2);
@@ -113,7 +113,7 @@ public class ContributionTreePage extends FormPage {
 		MenuManager mm = new MenuManager();
 		mm.add(new OpenEditorAction());
 		mm.add(TreeClipboard.onCopy(tree));
-		mm.add(Actions.create(Messages.ExpandAll,
+		mm.add(Actions.create(M.ExpandAll,
 				Icon.EXPAND.descriptor(), () -> {
 					tree.expandAll();
 				}));
@@ -283,7 +283,7 @@ public class ContributionTreePage extends FormPage {
 	private class OpenEditorAction extends Action {
 
 		public OpenEditorAction() {
-			setText(Messages.Open);
+			setText(M.Open);
 			setImageDescriptor(Images.descriptor(ModelType.PROCESS));
 		}
 

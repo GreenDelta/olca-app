@@ -16,7 +16,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.components.UncertaintyCellEditor;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.util.Actions;
@@ -50,12 +50,12 @@ public class ParameterSection {
 
 	private TableViewer viewer;
 
-	private final String NAME = Messages.Name;
-	private final String VALUE = Messages.Value;
-	private final String FORMULA = Messages.Formula;
-	private final String UNCERTAINTY = Messages.Uncertainty;
-	private final String DESCRIPTION = Messages.Description;
-	private final String EXTERNAL_SOURCE = Messages.ExternalSource;
+	private final String NAME = M.Name;
+	private final String VALUE = M.Value;
+	private final String FORMULA = M.Formula;
+	private final String UNCERTAINTY = M.Uncertainty;
+	private final String DESCRIPTION = M.Description;
+	private final String EXTERNAL_SOURCE = M.ExternalSource;
 
 	private boolean forInputParameters = true;
 	private ParameterChangeSupport support;
@@ -128,8 +128,8 @@ public class ParameterSection {
 
 	private void createComponents(Composite body, FormToolkit toolkit,
 			String[] properties) {
-		String title = forInputParameters ? Messages.InputParameters
-				: Messages.DependentParameters;
+		String title = forInputParameters ? M.InputParameters
+				: M.DependentParameters;
 		Section section = UI.section(body, toolkit, title);
 		UI.gridData(section, true, true);
 		Composite parent = UI.sectionClient(section, toolkit);
@@ -322,12 +322,12 @@ public class ParameterSection {
 				return;
 			String name = text.trim();
 			if (!Parameter.isValidName(name)) {
-				Error.showBox(Messages.InvalidParameterName, name + " "
-						+ Messages.IsNotValidParameterName);
+				Error.showBox(M.InvalidParameterName, name + " "
+						+ M.IsNotValidParameterName);
 				return;
 			}
 			if (exists(name)) {
-				Error.showBox(Messages.InvalidParameterName,
+				Error.showBox(M.InvalidParameterName,
 						"#A parameter with the same name already exists");
 				return;
 			}

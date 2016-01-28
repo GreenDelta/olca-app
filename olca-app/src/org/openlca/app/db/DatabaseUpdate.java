@@ -3,7 +3,7 @@ package org.openlca.app.db;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.openlca.app.App;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.Question;
 import org.openlca.core.database.IDatabase;
@@ -32,12 +32,12 @@ public class DatabaseUpdate implements Runnable {
 
 	private void handleVersionState() {
 		if (state == null || state == VersionState.ERROR) {
-			error(Messages.DatabaseVersionCheckFailed);
+			error(M.DatabaseVersionCheckFailed);
 			return;
 		}
 		switch (state) {
 		case NEWER:
-			error(Messages.DatabaseNeedsUpdate);
+			error(M.DatabaseNeedsUpdate);
 			break;
 		case OLDER:
 			askRunUpdates();
@@ -51,20 +51,20 @@ public class DatabaseUpdate implements Runnable {
 	}
 
 	private void error(String message) {
-		org.openlca.app.util.Error.showBox(Messages.CouldNotOpenDatabase,
+		org.openlca.app.util.Error.showBox(M.CouldNotOpenDatabase,
 				message);
 		closeDatabase();
 	}
 
 	private void askRunUpdates() {
-		boolean doIt = Question.ask(Messages.UpdateDatabase,
-				Messages.UpdateDatabaseQuestion);
+		boolean doIt = Question.ask(M.UpdateDatabase,
+				M.UpdateDatabaseQuestion);
 		if (!doIt) {
 			closeDatabase();
 			return;
 		}
 		AtomicBoolean failed = new AtomicBoolean(false);
-		App.run(Messages.UpdateDatabase, () -> runUpdate(failed),
+		App.run(M.UpdateDatabase, () -> runUpdate(failed),
 				() -> handleError(failed));
 	}
 

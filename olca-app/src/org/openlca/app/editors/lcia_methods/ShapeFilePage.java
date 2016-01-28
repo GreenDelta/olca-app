@@ -28,7 +28,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.editors.parameters.ModelParameterPage;
 import org.openlca.app.rcp.images.Icon;
@@ -88,7 +88,7 @@ class ShapeFilePage extends FormPage {
 		Composite composite = UI.formSection(body, toolkit, "Files");
 		createFolderLink(composite);
 		UI.formLabel(composite, toolkit, "");
-		Button importButton = toolkit.createButton(composite, Messages.Import,
+		Button importButton = toolkit.createButton(composite, M.Import,
 				SWT.NONE);
 		importButton.setImage(Icon.IMPORT.get());
 		Controls.onSelect(importButton, (e) -> {
@@ -98,7 +98,7 @@ class ShapeFilePage extends FormPage {
 		});
 		UI.formLabel(composite, toolkit, "");
 		Button evaluateButton = toolkit.createButton(composite,
-				Messages.EvaluateLocations, SWT.NONE);
+				M.EvaluateLocations, SWT.NONE);
 		evaluateButton.setImage(Icon.EXPRESSION.get());
 		Controls.onSelect(evaluateButton, (e) -> {
 			try {
@@ -297,8 +297,8 @@ class ShapeFilePage extends FormPage {
 
 	private class ShapeFileParameterTable {
 
-		private String[] columns = { Messages.Name, Messages.Minimum,
-				Messages.Maximum };
+		private String[] columns = { M.Name, M.Minimum,
+				M.Maximum };
 		private TableViewer viewer;
 		private List<ShapeFileParameter> params;
 
@@ -398,8 +398,8 @@ class ShapeFilePage extends FormPage {
 				return;
 			}
 			if (!Parameter.isValidName(param.getName())) {
-				Error.showBox(Messages.InvalidParameterName, param.getName() + " "
-						+ Messages.IsNotValidParameterName);
+				Error.showBox(M.InvalidParameterName, param.getName() + " "
+						+ M.IsNotValidParameterName);
 				return;
 			}
 			addParam(param);

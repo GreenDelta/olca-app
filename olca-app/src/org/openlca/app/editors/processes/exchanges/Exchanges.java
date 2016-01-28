@@ -3,7 +3,7 @@ package org.openlca.app.editors.processes.exchanges;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.core.database.usage.ExchangeUseSearch;
 import org.openlca.core.model.Exchange;
@@ -30,8 +30,8 @@ class Exchanges {
 		if (process.getQuantitativeReference() == null)
 			return false;
 		if (exchanges.contains(process.getQuantitativeReference())) {
-			org.openlca.app.util.Error.showBox(Messages.CannotDeleteRefFlow,
-					Messages.CannotDeleteRefFlowMessage);
+			org.openlca.app.util.Error.showBox(M.CannotDeleteRefFlow,
+					M.CannotDeleteRefFlowMessage);
 			return true;
 		}
 		return false;

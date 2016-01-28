@@ -3,7 +3,7 @@ package org.openlca.app.wizards;
 import java.util.UUID;
 
 import org.eclipse.swt.widgets.Composite;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.model.SocialIndicator;
@@ -17,7 +17,7 @@ public class SocialIndicatorWizard extends AbstractWizard<SocialIndicator> {
 
 	@Override
 	protected String getTitle() {
-		return Messages.NewSocialIndicator;
+		return M.NewSocialIndicator;
 	}
 
 	@Override
@@ -29,7 +29,7 @@ public class SocialIndicatorWizard extends AbstractWizard<SocialIndicator> {
 
 		public Page() {
 			super("SocialIndicatorWizardPage");
-			setTitle(Messages.NewSocialIndicator);
+			setTitle(M.NewSocialIndicator);
 			setPageComplete(false);
 		}
 

@@ -13,7 +13,7 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.Config;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.navigation.actions.DatabaseImportAction;
 import org.openlca.app.rcp.RcpActivator;
 import org.openlca.app.rcp.html.HtmlFolder;
@@ -64,7 +64,7 @@ public class StartPage extends FormEditor {
 		private Browser browser;
 
 		public Page() {
-			super(StartPage.this, "olca.StartPage.Page", Messages.Welcome);
+			super(StartPage.this, "olca.StartPage.Page", M.Welcome);
 		}
 
 		@Override
@@ -89,7 +89,7 @@ public class StartPage extends FormEditor {
 		public void onLoaded() {
 			new ImportDatabaseCallback(browser);
 			new OpenUrlCallback(browser);
-			String version = Messages.Version + " " + Config.VERSION + " ("
+			String version = M.Version + " " + Config.VERSION + " ("
 					+ OS.getCurrent() + " " + getArch() + ")";
 			String json = "{'version' : '" + version + "' }";
 			String command = "setData(" + json + ")";
@@ -179,7 +179,7 @@ public class StartPage extends FormEditor {
 
 		@Override
 		public String getName() {
-			return Messages.Welcome;
+			return M.Welcome;
 		}
 
 		@Override
@@ -189,7 +189,7 @@ public class StartPage extends FormEditor {
 
 		@Override
 		public String getToolTipText() {
-			return Messages.Welcome;
+			return M.Welcome;
 		}
 
 		@Override

@@ -4,14 +4,14 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.rcp.images.Icon;
 
 class ShowOutlineAction extends EditorAction {
 
 	ShowOutlineAction() {
 		setId(ActionIds.SHOW_OUTLINE);
-		setText(Messages.ShowOutline);
+		setText(M.ShowOutline);
 		setImageDescriptor(Icon.OUTLINE.descriptor());
 	}
 

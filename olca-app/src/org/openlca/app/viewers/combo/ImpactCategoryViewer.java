@@ -9,7 +9,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.ModelType;
@@ -20,7 +20,7 @@ public class ImpactCategoryViewer extends
 		AbstractComboViewer<ImpactCategoryDescriptor> {
 
 	private static final String[] COLUMN_HEADERS = new String[] {
-			Messages.Name, Messages.Unit };
+			M.Name, M.Unit };
 	private static final int[] COLUMN_BOUNDS_PERCENTAGES = new int[] { 80, 20 };
 
 	public ImpactCategoryViewer(Composite parent) {

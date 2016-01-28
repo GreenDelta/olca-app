@@ -3,7 +3,7 @@ package org.openlca.app.results.simulation;
 import org.eclipse.jface.operation.ModalContext;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.util.Controls;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +25,7 @@ class SimulationControl {
 		monitor = new SimulationMonitor();
 		Controls.onSelect(button, (e) -> {
 			if (!monitor.isRunning()) {
-				button.setText(Messages.Cancel);
+				button.setText(M.Cancel);
 				startProgress();
 			} else {
 				monitor.setCanceled(true);

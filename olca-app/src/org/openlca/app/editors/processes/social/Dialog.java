@@ -8,7 +8,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.components.TextDropComponent;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.UI;
@@ -47,7 +47,7 @@ class Dialog extends FormDialog {
 		FormToolkit tk = mform.getToolkit();
 		String title = aspect.indicator.getName();
 		if (title == null)
-			title = Messages.SocialAspect;
+			title = M.SocialAspect;
 		UI.formHeader(mform, title);
 		Composite body = UI.formBody(mform.getForm(), tk);
 		UI.gridLayout(body, 3);
@@ -60,7 +60,7 @@ class Dialog extends FormDialog {
 	}
 
 	private void amountRow(Composite body, FormToolkit tk) {
-		Text t = UI.formText(body, tk, Messages.RawValue);
+		Text t = UI.formText(body, tk, M.RawValue);
 		if (aspect.rawAmount != null)
 			t.setText(aspect.rawAmount);
 		t.addModifyListener((e) -> {
@@ -73,7 +73,7 @@ class Dialog extends FormDialog {
 	}
 
 	private void activityRow(Composite body, FormToolkit tk) {
-		String label = Messages.ActivityVariable;
+		String label = M.ActivityVariable;
 		if (aspect.indicator.activityVariable != null)
 			label += " (" + aspect.indicator.activityVariable + ")";
 		Text t = UI.formText(body, tk, label);
@@ -93,7 +93,7 @@ class Dialog extends FormDialog {
 
 	private void sourceRow(Composite body, FormToolkit tk) {
 		TextDropComponent drop = UIFactory.createDropComponent(body,
-				Messages.Source, tk, ModelType.SOURCE);
+				M.Source, tk, ModelType.SOURCE);
 		if (aspect.source != null)
 			drop.setContent(Descriptors.toDescriptor(aspect.source));
 		drop.setHandler((d) -> {
@@ -108,7 +108,7 @@ class Dialog extends FormDialog {
 	}
 
 	private void commentRow(Composite body, FormToolkit tk) {
-		Text t = UI.formMultiText(body, tk, Messages.Comment);
+		Text t = UI.formMultiText(body, tk, M.Comment);
 		if (aspect.comment != null)
 			t.setText(aspect.comment);
 		t.addModifyListener((e) -> {
@@ -118,7 +118,7 @@ class Dialog extends FormDialog {
 	}
 
 	private void qualityRow(Composite body, FormToolkit tk) {
-		UI.formLabel(body, tk, Messages.DataQuality);
+		UI.formLabel(body, tk, M.DataQuality);
 		new QualityPanel(aspect).create(body, tk);
 		UI.formLabel(body, tk, "");
 	}

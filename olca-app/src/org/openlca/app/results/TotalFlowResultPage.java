@@ -17,7 +17,7 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.util.Actions;
 import org.openlca.app.rcp.images.Images;
@@ -44,13 +44,13 @@ public class TotalFlowResultPage extends FormPage {
 	private SimpleResultProvider<?> result;
 
 	public TotalFlowResultPage(FormEditor editor, SimpleResultProvider<?> result) {
-		super(editor, "InventoryPage", Messages.InventoryResults);
+		super(editor, "InventoryPage", M.InventoryResults);
 		this.result = result;
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		ScrolledForm form = UI.formHeader(mform, Messages.InventoryResults);
+		ScrolledForm form = UI.formHeader(mform, M.InventoryResults);
 		toolkit = mform.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		TableViewer inputViewer = createSectionAndViewer(body, true);
@@ -65,14 +65,14 @@ public class TotalFlowResultPage extends FormPage {
 	}
 
 	private TableViewer createSectionAndViewer(Composite parent, boolean input) {
-		Section section = UI.section(parent, toolkit, input ? Messages.Inputs
-				: Messages.Outputs);
+		Section section = UI.section(parent, toolkit, input ? M.Inputs
+				: M.Outputs);
 		UI.gridData(section, true, true);
 		Composite composite = UI.sectionClient(section, toolkit);
 		UI.gridLayout(composite, 1);
 		TableViewer viewer = Tables.createViewer(composite, new String[] {
-				Messages.Flow, Messages.Category, Messages.SubCategory,
-				Messages.Unit, Messages.Amount });
+				M.Flow, M.Category, M.SubCategory,
+				M.Unit, M.Amount });
 		Label label = new Label();
 		viewer.setLabelProvider(label);
 		viewer.setFilters(new ViewerFilter[] { new InputOutputFilter(input) });

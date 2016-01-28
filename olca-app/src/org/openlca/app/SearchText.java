@@ -60,12 +60,12 @@ public class SearchText extends WorkbenchWindowControlContribution {
 
 	private void doSearch() {
 		if (Database.get() == null) {
-			InformationPopup.show(Messages.NeedOpenDatabase);
+			InformationPopup.show(M.NeedOpenDatabase);
 			return;
 		}
 		final String term = text.getText();
 		final Search search = new Search(Database.get(), text.getText());
-		App.run(Messages.Searching, search, new Runnable() {
+		App.run(M.Searching, search, new Runnable() {
 			public void run() {
 				SearchResultView.show(term, search.getResult());
 			}
@@ -74,7 +74,7 @@ public class SearchText extends WorkbenchWindowControlContribution {
 
 	private class SearchAction extends Action {
 		public SearchAction() {
-			setText(Messages.Search);
+			setText(M.Search);
 			setImageDescriptor(Icon.SEARCH.descriptor());
 		}
 

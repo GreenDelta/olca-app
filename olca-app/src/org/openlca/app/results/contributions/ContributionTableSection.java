@@ -9,7 +9,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.CostResultDescriptor;
@@ -48,8 +48,8 @@ public class ContributionTableSection {
 			ContributionResultProvider<?> provider) {
 		ContributionTableSection section = new ContributionTableSection(
 				provider, ModelType.FLOW);
-		section.sectionTitle = Messages.FlowContributions;
-		section.selectionName = Messages.Flow;
+		section.sectionTitle = M.FlowContributions;
+		section.selectionName = M.Flow;
 		return section;
 	}
 
@@ -57,8 +57,8 @@ public class ContributionTableSection {
 			ContributionResultProvider<?> provider) {
 		ContributionTableSection section = new ContributionTableSection(
 				provider, ModelType.IMPACT_CATEGORY);
-		section.sectionTitle = Messages.ImpactContributions;
-		section.selectionName = Messages.ImpactCategory;
+		section.sectionTitle = M.ImpactContributions;
+		section.selectionName = M.ImpactCategory;
 		return section;
 	}
 
@@ -139,7 +139,7 @@ public class ContributionTableSection {
 	}
 
 	private void createSpinner(FormToolkit toolkit, Composite header) {
-		toolkit.createLabel(header, Messages.Cutoff);
+		toolkit.createLabel(header, M.Cutoff);
 		spinner = new Spinner(header, SWT.BORDER);
 		spinner.setValues(2, 0, 100, 0, 1, 10);
 		toolkit.adapt(spinner);

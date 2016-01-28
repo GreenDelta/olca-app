@@ -11,7 +11,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelPage;
@@ -37,7 +37,7 @@ public class SocialAspectsPage extends ModelPage<Process> {
 	private ScrolledForm form;
 
 	public SocialAspectsPage(ProcessEditor editor) {
-		super(editor, "SocialAspectsPage", Messages.SocialAspects);
+		super(editor, "SocialAspectsPage", M.SocialAspects);
 		this.editor = editor;
 	}
 
@@ -57,18 +57,18 @@ public class SocialAspectsPage extends ModelPage<Process> {
 	protected void updateFormTitle() {
 		if (form == null)
 			return;
-		form.setText(Messages.SocialAspects + ": " + getModel().getName());
+		form.setText(M.SocialAspects + ": " + getModel().getName());
 	}
 
 	private void createEntrySection(FormToolkit tk, Composite body) {
-		Section section = UI.section(body, tk, Messages.SocialAssessment);
+		Section section = UI.section(body, tk, M.SocialAssessment);
 		Composite comp = UI.sectionClient(section, tk);
 		UI.gridData(section, true, true);
 		UI.gridLayout(comp, 1);
 		createTree(comp);
 		Trees.onDoubleClick(tree, (e) -> editAspect());
 		Action add = Actions.onAdd(this::addIndicator);
-		Action edit = Actions.create(Messages.Edit,
+		Action edit = Actions.create(M.Edit,
 				Icon.EDIT.descriptor(), this::editAspect);
 		Action delete = Actions.onRemove(this::deleteAspect);
 		Actions.bind(section, add, edit, delete);
@@ -89,9 +89,9 @@ public class SocialAspectsPage extends ModelPage<Process> {
 	}
 
 	private void createTree(Composite comp) {
-		String[] headers = { Messages.Name, Messages.RawValue,
-				Messages.RiskLevel, Messages.ActivityVariable,
-				Messages.DataQuality, Messages.Comment, Messages.Source };
+		String[] headers = { M.Name, M.RawValue,
+				M.RiskLevel, M.ActivityVariable,
+				M.DataQuality, M.Comment, M.Source };
 		tree = new TreeViewer(comp, SWT.FULL_SELECTION
 				| SWT.MULTI | SWT.BORDER);
 		Tree t = tree.getTree();

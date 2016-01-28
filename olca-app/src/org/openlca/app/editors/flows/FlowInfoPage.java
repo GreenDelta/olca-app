@@ -6,7 +6,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
@@ -23,7 +23,7 @@ class FlowInfoPage extends ModelPage<Flow> {
 	private ScrolledForm form;
 
 	FlowInfoPage(FlowEditor editor) {
-		super(editor, "FlowInfoPage", Messages.GeneralInformation);
+		super(editor, "FlowInfoPage", M.GeneralInformation);
 	}
 
 	@Override
@@ -48,25 +48,25 @@ class FlowInfoPage extends ModelPage<Flow> {
 	protected void updateFormTitle() {
 		if (form == null)
 			return;
-		form.setText(Messages.Flow + ": " + getModel().getName());
+		form.setText(M.Flow + ": " + getModel().getName());
 	}
 
 	private void createAdditionalInfo(InfoSection infoSection, Composite body) {
-		createCheckBox(Messages.InfrastructureFlow, "infrastructureFlow",
+		createCheckBox(M.InfrastructureFlow, "infrastructureFlow",
 				infoSection.getContainer());
-		createReadOnly(Messages.FlowType,
+		createReadOnly(M.FlowType,
 				Images.get(getModel()), "flowType",
 				infoSection.getContainer());
 		Composite composite = UI.formSection(body, toolkit,
-				Messages.AdditionalInformation);
-		createText(Messages.CASNumber, "casNumber", composite);
-		createText(Messages.Formula, "formula", composite);
-		createText(Messages.Synonyms, "synonyms", composite);
+				M.AdditionalInformation);
+		createText(M.CASNumber, "casNumber", composite);
+		createText(M.Formula, "formula", composite);
+		createText(M.Synonyms, "synonyms", composite);
 		createLocationViewer(composite);
 	}
 
 	private void createLocationViewer(Composite composite) {
-		new Label(composite, SWT.NONE).setText(Messages.Location);
+		new Label(composite, SWT.NONE).setText(M.Location);
 		LocationViewer viewer = new LocationViewer(composite);
 		viewer.setNullable(true);
 		viewer.setInput(Database.get());

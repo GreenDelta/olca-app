@@ -13,7 +13,7 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.util.Actions;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Numbers;
@@ -28,21 +28,21 @@ import org.openlca.core.results.SimpleResultProvider;
 
 public class TotalImpactResultPage extends FormPage {
 
-	private final String IMPACT_CATEGORY = Messages.ImpactCategory;
-	private final String RESULT = Messages.Result;
-	private final String REFERENCE_UNIT = Messages.ReferenceUnit;
+	private final String IMPACT_CATEGORY = M.ImpactCategory;
+	private final String RESULT = M.Result;
+	private final String REFERENCE_UNIT = M.ReferenceUnit;
 
 	private FormToolkit toolkit;
 	private SimpleResultProvider<?> result;
 
 	public TotalImpactResultPage(FormEditor editor, SimpleResultProvider<?> result) {
-		super(editor, "ImpactResultPage", Messages.LCIAResult);
+		super(editor, "ImpactResultPage", M.LCIAResult);
 		this.result = result;
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		ScrolledForm form = UI.formHeader(mform, Messages.LCIAResult);
+		ScrolledForm form = UI.formHeader(mform, M.LCIAResult);
 		toolkit = mform.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		TableViewer impactViewer = createSectionAndViewer(body);
@@ -51,7 +51,7 @@ public class TotalImpactResultPage extends FormPage {
 	}
 
 	private TableViewer createSectionAndViewer(Composite parent) {
-		Section section = UI.section(parent, toolkit, Messages.LCIAResult);
+		Section section = UI.section(parent, toolkit, M.LCIAResult);
 		UI.gridData(section, true, true);
 		Composite composite = toolkit.createComposite(section);
 		section.setClient(composite);

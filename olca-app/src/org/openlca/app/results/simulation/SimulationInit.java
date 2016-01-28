@@ -5,7 +5,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.openlca.app.App;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.util.Editors;
 import org.openlca.core.math.CalculationSetup;
@@ -38,12 +38,12 @@ public class SimulationInit {
 	private class InitJob extends Job {
 
 		public InitJob() {
-			super(Messages.InitializeSimulation);
+			super(M.InitializeSimulation);
 		}
 
 		@Override
 		public IStatus run(IProgressMonitor monitor) {
-			monitor.beginTask(Messages.InitializeSimulation, IProgressMonitor.UNKNOWN);
+			monitor.beginTask(M.InitializeSimulation, IProgressMonitor.UNKNOWN);
 			try {
 				Simulator solver = new Simulator(setup, matrixCache,
 						App.getSolver());

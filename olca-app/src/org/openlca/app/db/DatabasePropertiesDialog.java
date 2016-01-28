@@ -11,7 +11,7 @@ import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.util.Desktop;
 import org.openlca.app.util.UI;
 import org.openlca.util.Strings;
@@ -30,7 +30,7 @@ public class DatabasePropertiesDialog extends FormDialog {
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
 		FormToolkit toolkit = managedForm.getToolkit();
-		ScrolledForm form = UI.formHeader(managedForm, Messages.Properties);
+		ScrolledForm form = UI.formHeader(managedForm, M.Properties);
 		Composite body = UI.formBody(form, toolkit);
 		Composite content = UI.formComposite(body, toolkit);
 		if (config instanceof DerbyConfiguration) {
@@ -44,28 +44,28 @@ public class DatabasePropertiesDialog extends FormDialog {
 
 	private void renderMysqlConfiguration(MySQLConfiguration conf,
 			Composite parent, FormToolkit toolkit) {
-		UI.formText(parent, toolkit, Messages.Type, SWT.READ_ONLY).setText(
-				Messages.RemoteDatabase);
-		UI.formText(parent, toolkit, Messages.Name, SWT.READ_ONLY).setText(
+		UI.formText(parent, toolkit, M.Type, SWT.READ_ONLY).setText(
+				M.RemoteDatabase);
+		UI.formText(parent, toolkit, M.Name, SWT.READ_ONLY).setText(
 				conf.getName());
-		UI.formText(parent, toolkit, Messages.Host, SWT.READ_ONLY).setText(
+		UI.formText(parent, toolkit, M.Host, SWT.READ_ONLY).setText(
 				conf.getHost());
-		UI.formText(parent, toolkit, Messages.Port, SWT.READ_ONLY).setText(
+		UI.formText(parent, toolkit, M.Port, SWT.READ_ONLY).setText(
 				Integer.toString(conf.getPort()));
-		UI.formText(parent, toolkit, Messages.User, SWT.READ_ONLY).setText(
+		UI.formText(parent, toolkit, M.User, SWT.READ_ONLY).setText(
 				conf.getUser());
 		boolean withPassword = Strings.notEmpty(conf.getPassword());
-		UI.formText(parent, toolkit, Messages.WithPassword, SWT.READ_ONLY)
+		UI.formText(parent, toolkit, M.WithPassword, SWT.READ_ONLY)
 				.setText(Boolean.toString(withPassword));
 	}
 
 	private void renderDerbyConfig(DerbyConfiguration conf, Composite parent,
 			FormToolkit toolkit) {
-		UI.formText(parent, toolkit, Messages.Type, SWT.READ_ONLY).setText(
-				Messages.LocalDatabase);
-		UI.formText(parent, toolkit, Messages.Name, SWT.READ_ONLY).setText(
+		UI.formText(parent, toolkit, M.Type, SWT.READ_ONLY).setText(
+				M.LocalDatabase);
+		UI.formText(parent, toolkit, M.Name, SWT.READ_ONLY).setText(
 				conf.getName());
-		UI.formLabel(parent, toolkit, Messages.Folder);
+		UI.formLabel(parent, toolkit, M.Folder);
 		renderFolderLink(conf, parent, toolkit);
 	}
 

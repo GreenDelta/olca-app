@@ -4,7 +4,7 @@ import java.util.Calendar;
 import java.util.UUID;
 
 import org.eclipse.swt.widgets.Composite;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.model.Project;
@@ -13,7 +13,7 @@ public class ProjectWizard extends AbstractWizard<Project> {
 
 	@Override
 	protected String getTitle() {
-		return Messages.NewProject;
+		return M.NewProject;
 	}
 
 	@Override
@@ -30,8 +30,8 @@ public class ProjectWizard extends AbstractWizard<Project> {
 
 		public ProjectWizardPage() {
 			super("ProjectWizardPage");
-			setTitle(Messages.NewProject);
-			setMessage(Messages.CreatesANewProject);
+			setTitle(M.NewProject);
+			setMessage(M.CreatesANewProject);
 			setPageComplete(false);
 		}
 

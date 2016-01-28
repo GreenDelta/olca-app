@@ -3,7 +3,7 @@ package org.openlca.app.wizards;
 import java.util.UUID;
 
 import org.eclipse.swt.widgets.Composite;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.UI;
@@ -31,7 +31,7 @@ public class FlowWizard extends AbstractWizard<Flow> {
 
 	@Override
 	protected String getTitle() {
-		return Messages.NewFlow;
+		return M.NewFlow;
 	}
 	
 	private class Page extends AbstractWizardPage<Flow> {
@@ -41,8 +41,8 @@ public class FlowWizard extends AbstractWizard<Flow> {
 
 		public Page() {
 			super("FlowWizardPage");
-			setTitle(Messages.NewFlow);
-			setMessage(Messages.CreatesANewFlow);
+			setTitle(M.NewFlow);
+			setMessage(M.CreatesANewFlow);
 			setPageComplete(false);
 		}
 
@@ -51,7 +51,7 @@ public class FlowWizard extends AbstractWizard<Flow> {
 			super.checkInput();
 			if (getErrorMessage() == null) {
 				if (referenceFlowPropertyViewer.getSelected() == null) {
-					setErrorMessage(Messages.NoReferenceFlowPropertySelected);
+					setErrorMessage(M.NoReferenceFlowPropertySelected);
 				}
 			}
 			setPageComplete(getErrorMessage() == null);
@@ -59,11 +59,11 @@ public class FlowWizard extends AbstractWizard<Flow> {
 
 		@Override
 		protected void createContents(final Composite container) {
-			UI.formLabel(container, Messages.FlowType);
+			UI.formLabel(container, M.FlowType);
 			flowTypeViewer = new FlowTypeViewer(container);
 			flowTypeViewer.select(FlowType.ELEMENTARY_FLOW);
 
-			UI.formLabel(container, Messages.ReferenceFlowProperty);
+			UI.formLabel(container, M.ReferenceFlowProperty);
 			referenceFlowPropertyViewer = new FlowPropertyViewer(container);
 			referenceFlowPropertyViewer.setInput(Database.get());
 		}
@@ -98,7 +98,7 @@ public class FlowWizard extends AbstractWizard<Flow> {
 				factor.setFlowProperty(flowProp);
 				flow.getFlowPropertyFactors().add(factor);
 			} catch (Exception e) {
-				setErrorMessage(Messages.FailedToLoadFlowProperty);
+				setErrorMessage(M.FailedToLoadFlowProperty);
 				Logger log = LoggerFactory.getLogger(getClass());
 				log.error("Failed to load flow property", e);
 			}

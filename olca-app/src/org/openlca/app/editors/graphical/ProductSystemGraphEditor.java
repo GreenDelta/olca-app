@@ -20,7 +20,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.openlca.app.EventHandler;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.editors.graphical.layout.GraphLayoutType;
 import org.openlca.app.editors.graphical.layout.NodeLayoutStore;
@@ -102,8 +102,8 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 	public boolean promptSaveIfNecessary() throws Exception {
 		if (!isDirty())
 			return true;
-		String question = Messages.SystemSaveProceedQuestion;
-		if (Question.ask(Messages.Save + "?", question)) {
+		String question = M.SystemSaveProceedQuestion;
+		if (Question.ask(M.Save + "?", question)) {
 			new ProgressMonitorDialog(UI.shell()).run(false, false,
 					new IRunnableWithProgress() {
 
@@ -202,7 +202,7 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 	}
 
 	public void updateModel(final IProgressMonitor monitor) {
-		monitor.beginTask(Messages.UpdatingProductSystem,
+		monitor.beginTask(M.UpdatingProductSystem,
 				IProgressMonitor.UNKNOWN);
 		systemEditor.updateModel();
 		monitor.done();

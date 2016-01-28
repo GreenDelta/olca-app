@@ -15,7 +15,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageLoader;
 import org.openlca.app.App;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
 import org.openlca.app.rcp.images.Icon;
@@ -29,7 +29,7 @@ class SaveImageAction extends Action {
 
 	SaveImageAction() {
 		setId(ActionIds.SAVE_IMAGE);
-		setText(Messages.SaveAsImage);
+		setText(M.SaveAsImage);
 		setImageDescriptor(Icon.SAVE_AS_IMAGE.descriptor());
 	}
 
@@ -44,7 +44,7 @@ class SaveImageAction extends Action {
 		File file = FileChooser.forExport("*.png", "graph.png");
 		if (file == null)
 			return;
-		App.run(Messages.SaveAsImage, new Runner(file));
+		App.run(M.SaveAsImage, new Runner(file));
 	}
 
 	private class Runner implements Runnable {

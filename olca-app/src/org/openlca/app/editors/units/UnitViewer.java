@@ -11,7 +11,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableItem;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Error;
@@ -31,12 +31,12 @@ import org.openlca.core.model.UnitGroup;
 
 class UnitViewer extends AbstractTableViewer<Unit> {
 
-	private static final String CONVERSION_FACTOR = Messages.ConversionFactor;
-	private static final String DESCRIPTION = Messages.Description;
-	private static final String FORMULA = Messages.Formula;
-	private static final String IS_REFERENCE = Messages.IsReference;
-	private static final String NAME = Messages.Name;
-	private static final String SYNONYMS = Messages.Synonyms;
+	private static final String CONVERSION_FACTOR = M.ConversionFactor;
+	private static final String DESCRIPTION = M.Description;
+	private static final String FORMULA = M.Formula;
+	private static final String IS_REFERENCE = M.IsReference;
+	private static final String NAME = M.Name;
+	private static final String SYNONYMS = M.Synonyms;
 
 	private final UnitGroupEditor editor;
 

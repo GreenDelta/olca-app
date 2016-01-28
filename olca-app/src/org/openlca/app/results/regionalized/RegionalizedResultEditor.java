@@ -8,7 +8,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.preferencepages.FeatureFlag;
@@ -101,7 +101,7 @@ public class RegionalizedResultEditor extends FormEditor {
 			}
 			diagram = new SankeyDiagram(setup, regioResult);
 			diagramIndex = addPage(diagram, getEditorInput());
-			setPageText(diagramIndex, Messages.SankeyDiagram);
+			setPageText(diagramIndex, M.SankeyDiagram);
 		} catch (Exception e) {
 			log.error("failed to add pages", e);
 		}

@@ -12,7 +12,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.editors.reports.model.Report;
 import org.openlca.app.editors.reports.model.ReportProcess;
@@ -39,10 +39,10 @@ class ProcessContributionSection {
 	}
 
 	void create(Composite body, FormToolkit toolkit) {
-		Section section = UI.section(body, toolkit, Messages.ProcessContributions);
+		Section section = UI.section(body, toolkit, M.ProcessContributions);
 		Composite composite = UI.sectionClient(section, toolkit);
 		UI.gridLayout(composite, 1);
-		String[] properties = { Messages.Process, Messages.ReportName, Messages.Description };
+		String[] properties = { M.Process, M.ReportName, M.Description };
 		viewer = Tables.createViewer(composite, properties);
 		viewer.setLabelProvider(new Label());
 		Tables.bindColumnWidths(viewer, 0.3, 0.3, 0.4);
@@ -61,11 +61,11 @@ class ProcessContributionSection {
 
 	private void bindModifySupport() {
 		ModifySupport<ReportProcess> support = new ModifySupport<>(viewer);
-		support.bind(Messages.ReportName, p -> p.reportName, (p, text) -> {
+		support.bind(M.ReportName, p -> p.reportName, (p, text) -> {
 			p.reportName = text;
 			editor.setDirty(true);
 		});
-		support.bind(Messages.Description, p -> p.reportDescription, (p, text) -> {
+		support.bind(M.Description, p -> p.reportDescription, (p, text) -> {
 			p.reportDescription = text;
 			editor.setDirty(true);
 		});

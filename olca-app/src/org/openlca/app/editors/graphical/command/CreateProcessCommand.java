@@ -1,7 +1,7 @@
 package org.openlca.app.editors.graphical.command;
 
 import org.eclipse.gef.commands.Command;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -42,7 +42,7 @@ public class CreateProcessCommand extends Command {
 
 	@Override
 	public String getLabel() {
-		return Messages.CreateProcess;
+		return M.CreateProcess;
 	}
 
 	@Override

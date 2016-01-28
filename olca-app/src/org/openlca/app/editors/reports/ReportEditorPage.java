@@ -8,7 +8,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.editors.DataBinding;
 import org.openlca.app.editors.projects.ProjectEditor;
 import org.openlca.app.editors.reports.model.Report;
@@ -26,7 +26,7 @@ public class ReportEditorPage extends FormPage {
 	private SectionList sectionList;
 
 	public ReportEditorPage(ProjectEditor editor, Report report) {
-		super(editor, "ReportInfoPage", Messages.ReportSections);
+		super(editor, "ReportInfoPage", M.ReportSections);
 		this.editor = editor;
 		this.report = report;
 		this.binding = new DataBinding(editor);
@@ -34,7 +34,7 @@ public class ReportEditorPage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, Messages.ReportSections);
+		ScrolledForm form = UI.formHeader(managedForm, M.ReportSections);
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		createInfoSection(body);
@@ -46,7 +46,7 @@ public class ReportEditorPage extends FormPage {
 	private void createAddButton(Composite body) {
 		Composite composite = UI.formComposite(body, toolkit);
 		UI.formLabel(composite, "");
-		Button addButton = toolkit.createButton(composite, Messages.AddSection,
+		Button addButton = toolkit.createButton(composite, M.AddSection,
 				SWT.NONE);
 		addButton.setImage(Icon.ADD.get());
 		Controls.onSelect(addButton, (e) -> {
@@ -56,8 +56,8 @@ public class ReportEditorPage extends FormPage {
 
 	private void createInfoSection(Composite body) {
 		Composite composite = UI.formSection(body, toolkit,
-				Messages.GeneralInformation);
-		Text titleText = UI.formText(composite, toolkit, Messages.Title);
+				M.GeneralInformation);
+		Text titleText = UI.formText(composite, toolkit, M.Title);
 		binding.onString(() -> report, "title", titleText);
 	}
 

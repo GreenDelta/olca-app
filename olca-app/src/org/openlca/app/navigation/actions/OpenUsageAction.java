@@ -4,7 +4,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.editors.UsageView;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
@@ -30,7 +30,7 @@ public class OpenUsageAction extends Action implements INavigationAction {
 			ModelType.PRODUCT_SYSTEM);
 
 	public OpenUsageAction() {
-		setText(Messages.Usage);
+		setText(M.Usage);
 		setImageDescriptor(Icon.LINK.descriptor());
 	}
 

@@ -14,7 +14,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Event;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
@@ -47,7 +47,7 @@ class AllocationPage extends FormPage {
 	private CausalFactorTable causalFactorTable;
 
 	public AllocationPage(ProcessEditor editor) {
-		super(editor, "process.AllocationPage", Messages.Allocation);
+		super(editor, "process.AllocationPage", M.Allocation);
 		this.editor = editor;
 		editor.getEventBus().register(this);
 		editor.onSaved(() -> setTableInputs());
@@ -57,14 +57,14 @@ class AllocationPage extends FormPage {
 		try {
 			double val = Double.parseDouble(text);
 			if (val < -0.0001 || val > 1.0001) {
-				Error.showBox(Messages.InvalidAllocationFactor,
-						Messages.InvalidAllocationFactorMessage);
+				Error.showBox(M.InvalidAllocationFactor,
+						M.InvalidAllocationFactorMessage);
 				return null;
 			}
 			return val;
 		} catch (Exception e) {
-			Error.showBox(Messages.InvalidNumber, text + " "
-					+ Messages.IsNotValidNumber);
+			Error.showBox(M.InvalidNumber, text + " "
+					+ M.IsNotValidNumber);
 			return null;
 		}
 	}
@@ -87,7 +87,7 @@ class AllocationPage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, Messages.Allocation);
+		ScrolledForm form = UI.formHeader(managedForm, M.Allocation);
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		Composite composite = UI.formComposite(body, toolkit);
@@ -100,7 +100,7 @@ class AllocationPage extends FormPage {
 	}
 
 	private void createDefaultCombo(Composite composite) {
-		UI.formLabel(composite, toolkit, Messages.DefaultMethod);
+		UI.formLabel(composite, toolkit, M.DefaultMethod);
 		AllocationMethod[] methods = { AllocationMethod.NONE,
 				AllocationMethod.CAUSAL, AllocationMethod.ECONOMIC,
 				AllocationMethod.PHYSICAL, };
@@ -119,7 +119,7 @@ class AllocationPage extends FormPage {
 	private void createCalcButton(Composite composite) {
 		UI.formLabel(composite, toolkit, "");
 		Button button = toolkit.createButton(composite,
-				Messages.CalculateDefaultValues, SWT.NONE);
+				M.CalculateDefaultValues, SWT.NONE);
 		button.setImage(Icon.CALCULATE.get());
 		Controls.onSelect(button, (e) -> {
 			AllocationSync.calculateDefaults(process());
@@ -131,27 +131,27 @@ class AllocationPage extends FormPage {
 
 	private void createPhysicalEconomicSection(Composite body) {
 		Section section = UI.section(body, toolkit,
-				Messages.PhysicalAndEconomicAllocation);
+				M.PhysicalAndEconomicAllocation);
 		Composite composite = UI.sectionClient(section, toolkit);
 		UI.gridLayout(composite, 1);
-		String[] colNames = { Messages.Product, Messages.Physical,
-				Messages.Economic };
+		String[] colNames = { M.Product, M.Physical,
+				M.Economic };
 		factorViewer = Tables.createViewer(composite, colNames);
 		Tables.bindColumnWidths(factorViewer, 0.3, 0.3, 0.3);
 		factorViewer.setLabelProvider(new FactorLabel());
 		factorViewer.setInput(Processes.getOutputProducts(process()));
 		ModifySupport<Exchange> modifySupport = new ModifySupport<>(
 				factorViewer);
-		modifySupport.bind(Messages.Physical, new ValueModifier(
+		modifySupport.bind(M.Physical, new ValueModifier(
 				AllocationMethod.PHYSICAL));
-		modifySupport.bind(Messages.Economic, new ValueModifier(
+		modifySupport.bind(M.Economic, new ValueModifier(
 				AllocationMethod.ECONOMIC));
 		Action copy = TableClipboard.onCopy(factorViewer);
 		Actions.bind(factorViewer, copy);
 	}
 
 	private void createCausalSection(Composite body) {
-		Section section = UI.section(body, toolkit, Messages.CausalAllocation);
+		Section section = UI.section(body, toolkit, M.CausalAllocation);
 		UI.gridData(section, true, true);
 		causalFactorTable = new CausalFactorTable(editor);
 		causalFactorTable.render(section, toolkit);

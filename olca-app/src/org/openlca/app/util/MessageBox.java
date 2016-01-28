@@ -7,7 +7,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.progress.UIJob;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 
 /**
  * A helper class for opening message boxes in the UI thread. The methods can be
@@ -26,13 +26,13 @@ class MessageBox {
 		String title = null;
 		switch (type) {
 		case ERROR:
-			title = Messages.Error;
+			title = M.Error;
 			break;
 		case WARNING:
-			title = Messages.Warning;
+			title = M.Warning;
 			break;
 		case INFO:
-			title = Messages.Information;
+			title = M.Information;
 			break;
 		default:
 			break;

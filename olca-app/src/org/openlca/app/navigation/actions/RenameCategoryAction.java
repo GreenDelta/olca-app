@@ -5,7 +5,7 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.window.Window;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.CategoryElement;
 import org.openlca.app.navigation.INavigationElement;
@@ -28,7 +28,7 @@ public class RenameCategoryAction extends Action implements INavigationAction {
 	private INavigationElement<?> element;
 
 	public RenameCategoryAction() {
-		setText(Messages.Rename);
+		setText(M.Rename);
 		setImageDescriptor(Icon.CHANGE.descriptor());
 	}
 
@@ -49,13 +49,13 @@ public class RenameCategoryAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		InputDialog dialog = new InputDialog(UI.shell(), Messages.Rename,
-				Messages.PleaseEnterANewName, category.getName(), null);
+		InputDialog dialog = new InputDialog(UI.shell(), M.Rename,
+				M.PleaseEnterANewName, category.getName(), null);
 		if (dialog.open() != Window.OK)
 			return;
 		String newName = dialog.getValue();
 		if (newName == null || newName.trim().isEmpty()) {
-			Error.showBox(Messages.NameCannotBeEmpty);
+			Error.showBox(M.NameCannotBeEmpty);
 			return;
 		}
 		doUpdate(newName);

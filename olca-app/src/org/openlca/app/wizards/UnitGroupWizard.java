@@ -9,7 +9,7 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.UIFactory;
 import org.openlca.core.database.BaseDao;
@@ -23,7 +23,7 @@ public class UnitGroupWizard extends AbstractWizard<UnitGroup> {
 
 	@Override
 	protected String getTitle() {
-		return Messages.NewUnitGroup;
+		return M.NewUnitGroup;
 	}
 
 	@Override
@@ -43,15 +43,15 @@ public class UnitGroupWizard extends AbstractWizard<UnitGroup> {
 
 		public Page() {
 			super("UnitGroupWizardPage");
-			setTitle(Messages.NewUnitGroup);
-			setMessage(Messages.CreatesANewUnitGroup);
+			setTitle(M.NewUnitGroup);
+			setMessage(M.CreatesANewUnitGroup);
 			setPageComplete(false);
 		}
 
 		@Override
 		protected void createContents(final Composite container) {
 			referenceUnitText = UIFactory.createTextWithLabel(container,
-					Messages.ReferenceUnit, false);
+					M.ReferenceUnit, false);
 		}
 
 		@Override
@@ -78,11 +78,11 @@ public class UnitGroupWizard extends AbstractWizard<UnitGroup> {
 		private void checkUnit() {
 			String refUnitName = referenceUnitText.getText().trim();
 			if (refUnitName.length() == 0)
-				failCheck(Messages.ReferenceUnitIsEmptyOrInvalid);
+				failCheck(M.ReferenceUnitIsEmptyOrInvalid);
 			else {
 				UnitGroup unitGroup = findGroupWithUnit(refUnitName);
 				if (unitGroup != null)
-					failCheck(NLS.bind(Messages.UnitAlreadyExistsInUnitGroup,
+					failCheck(NLS.bind(M.UnitAlreadyExistsInUnitGroup,
 							unitGroup.getName()));
 				else
 					setPageComplete(true);

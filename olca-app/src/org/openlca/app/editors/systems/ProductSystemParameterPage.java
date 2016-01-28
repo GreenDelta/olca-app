@@ -5,7 +5,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ProductSystem;
@@ -17,7 +17,7 @@ public class ProductSystemParameterPage extends ModelPage<ProductSystem> {
 	private ScrolledForm form;
 
 	public ProductSystemParameterPage(ProductSystemEditor editor) {
-		super(editor, "ProductSystemParameterPage", Messages.Parameters);
+		super(editor, "ProductSystemParameterPage", M.Parameters);
 		this.editor = editor;
 		editor.onSaved(() -> refreshBindings());
 	}
@@ -28,7 +28,7 @@ public class ProductSystemParameterPage extends ModelPage<ProductSystem> {
 		updateFormTitle();
 		FormToolkit toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
-		Section section = UI.section(body, toolkit, Messages.Parameters);
+		Section section = UI.section(body, toolkit, M.Parameters);
 		UI.gridData(section, true, true);
 		Composite composite = UI.sectionClient(section, toolkit);
 		table = new ParameterRedefTable(editor);
@@ -40,7 +40,7 @@ public class ProductSystemParameterPage extends ModelPage<ProductSystem> {
 	protected void updateFormTitle() {
 		if (form == null)
 			return;
-		form.setText(Messages.ProductSystem + ": " + getModel().getName());
+		form.setText(M.ProductSystem + ": " + getModel().getName());
 	}
 
 	void refreshBindings() {

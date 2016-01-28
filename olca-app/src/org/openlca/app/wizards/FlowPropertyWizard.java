@@ -3,7 +3,7 @@ package org.openlca.app.wizards;
 import java.util.UUID;
 
 import org.eclipse.swt.widgets.Composite;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.UI;
@@ -20,7 +20,7 @@ public class FlowPropertyWizard extends AbstractWizard<FlowProperty> {
 
 	@Override
 	protected String getTitle() {
-		return Messages.NewFlowProperty;
+		return M.NewFlowProperty;
 	}
 
 	@Override
@@ -41,8 +41,8 @@ public class FlowPropertyWizard extends AbstractWizard<FlowProperty> {
 
 		public Page() {
 			super("FlowPropertyWizardPage");
-			setTitle(Messages.NewFlowProperty);
-			setMessage(Messages.CreatesANewFlowProperty);
+			setTitle(M.NewFlowProperty);
+			setMessage(M.CreatesANewFlowProperty);
 			setPageComplete(false);
 		}
 
@@ -51,7 +51,7 @@ public class FlowPropertyWizard extends AbstractWizard<FlowProperty> {
 			super.checkInput();
 			if (getErrorMessage() == null) {
 				if (unitGroupComboViewer.getSelected() == null) {
-					setErrorMessage(Messages.NoUnitGroupSelected);
+					setErrorMessage(M.NoUnitGroupSelected);
 				}
 			}
 			setPageComplete(getErrorMessage() == null);
@@ -59,10 +59,10 @@ public class FlowPropertyWizard extends AbstractWizard<FlowProperty> {
 
 		@Override
 		protected void createContents(final Composite container) {
-			UI.formLabel(container, Messages.FlowPropertyType);
+			UI.formLabel(container, M.FlowPropertyType);
 			flowPropertyTypeViewer = new FlowPropertyTypeViewer(container);
 			flowPropertyTypeViewer.select(FlowPropertyType.PHYSICAL);
-			UI.formLabel(container, Messages.UnitGroup);
+			UI.formLabel(container, M.UnitGroup);
 			unitGroupComboViewer = new UnitGroupViewer(container);
 			unitGroupComboViewer.setInput(Database.get());
 		}

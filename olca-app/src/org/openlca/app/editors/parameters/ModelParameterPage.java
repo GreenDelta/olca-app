@@ -15,7 +15,7 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.lcia_methods.ImpactMethodEditor;
@@ -50,7 +50,7 @@ public class ModelParameterPage extends FormPage {
 	private SourceHandler sourceHandler;
 
 	public ModelParameterPage(ProcessEditor editor) {
-		super(editor, ID, Messages.Parameters);
+		super(editor, ID, M.Parameters);
 		this.support = editor.getParameterSupport();
 		this.editor = editor;
 		this.supplier = () -> editor.getModel().getParameters();
@@ -58,7 +58,7 @@ public class ModelParameterPage extends FormPage {
 	}
 
 	public ModelParameterPage(ImpactMethodEditor editor) {
-		super(editor, ID, Messages.Parameters);
+		super(editor, ID, M.Parameters);
 		this.support = editor.getParameterSupport();
 		this.editor = editor;
 		this.supplier = () -> editor.getModel().getParameters();
@@ -68,7 +68,7 @@ public class ModelParameterPage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, Messages.Parameters);
+		ScrolledForm form = UI.formHeader(managedForm, M.Parameters);
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		try {
@@ -85,11 +85,11 @@ public class ModelParameterPage extends FormPage {
 	}
 
 	private void createGlobalParamterSection(Composite body) {
-		Section section = UI.section(body, toolkit, Messages.GlobalParameters);
+		Section section = UI.section(body, toolkit, M.GlobalParameters);
 		Composite client = UI.sectionClient(section, toolkit);
 		UI.gridLayout(client, 1);
-		String[] columns = { Messages.Name, Messages.Value,
-				Messages.Uncertainty, Messages.Description };
+		String[] columns = { M.Name, M.Value,
+				M.Uncertainty, M.Description };
 		TableViewer table = Tables.createViewer(client, columns);
 		ParameterLabel label = new ParameterLabel();
 		table.setLabelProvider(label);
@@ -103,7 +103,7 @@ public class ModelParameterPage extends FormPage {
 
 	private void bindGlobalParamActions(Section section, TableViewer table) {
 		Action copy = TableClipboard.onCopy(table);
-		Action refresh = Actions.create(Messages.Reload,
+		Action refresh = Actions.create(M.Reload,
 				Icon.REFRESH.descriptor(), () -> {
 					setGlobalTableInput(table);
 					support.evaluate();

@@ -7,7 +7,7 @@ import java.util.List;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.ui.PlatformUI;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.core.database.usage.IUseSearch;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
@@ -32,7 +32,7 @@ public class DeleteWizard<T extends CategorizedDescriptor> extends ProblemWizard
 		this.search = search;
 		initializeProblems();
 		setNeedsProgressMonitor(true);
-		setWindowTitle(Messages.Delete);
+		setWindowTitle(M.Delete);
 	}
 
 	private void initializeProblems() {
@@ -51,7 +51,7 @@ public class DeleteWizard<T extends CategorizedDescriptor> extends ProblemWizard
 		@Override
 		public void run(IProgressMonitor monitor)
 				throws InvocationTargetException, InterruptedException {
-			monitor.beginTask(Messages.AnalyzingForProblems,
+			monitor.beginTask(M.AnalyzingForProblems,
 					IProgressMonitor.UNKNOWN);
 			List<Problem> problems = new ArrayList<>();
 			for (BaseDescriptor descriptor : search.findUses(model))

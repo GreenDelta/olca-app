@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.Preferences;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.UI;
@@ -45,8 +45,8 @@ public class FileImportPage extends WizardPage {
 
 	public FileImportPage(String[] fileExtensions, boolean multi) {
 		super("FileImportPage");
-		setTitle(Messages.SelectImportFiles);
-		setDescription(Messages.FileImportPage_Description);
+		setTitle(M.SelectImportFiles);
+		setDescription(M.FileImportPage_Description);
 		if (fileExtensions != null) {
 			for (String extension : fileExtensions)
 				this.fileExtensions.add(extension.toLowerCase());
@@ -90,14 +90,14 @@ public class FileImportPage extends WizardPage {
 				true, false));
 
 		new Label(chooseDirectoryComposite, SWT.NONE)
-				.setText(Messages.FromDirectory);
+				.setText(M.FromDirectory);
 
 		createDirectoryText(chooseDirectoryComposite);
 
 		// create button to open directory dialog
 		final Button chooseDirectoryButton = new Button(
 				chooseDirectoryComposite, SWT.NONE);
-		chooseDirectoryButton.setText(Messages.ChooseDirectory);
+		chooseDirectoryButton.setText(M.ChooseDirectory);
 		chooseDirectoryButton.addSelectionListener(new DirectorySelection());
 
 		new Label(body, SWT.SEPARATOR | SWT.HORIZONTAL)

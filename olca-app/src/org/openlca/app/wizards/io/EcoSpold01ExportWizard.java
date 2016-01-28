@@ -7,7 +7,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IExportWizard;
 import org.eclipse.ui.IWorkbench;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.core.database.ImpactMethodDao;
@@ -50,7 +50,7 @@ public class EcoSpold01ExportWizard extends Wizard implements IExportWizard {
 	@Override
 	public void init(final IWorkbench workbench,
 			final IStructuredSelection selection) {
-		setWindowTitle(Messages.ExportEcoSpold);
+		setWindowTitle(M.ExportEcoSpold);
 	}
 
 	@Override
@@ -62,8 +62,8 @@ public class EcoSpold01ExportWizard extends Wizard implements IExportWizard {
 				modelPage.getExportDestination(), config)) {
 			getContainer().run(true, true, (monitor) -> {
 				int size = models.size();
-				monitor.beginTask(Messages.ExportingProcesses, size + 1);
-				monitor.subTask(Messages.CreatingEcoSpoldFolder);
+				monitor.beginTask(M.ExportingProcesses, size + 1);
+				monitor.subTask(M.CreatingEcoSpoldFolder);
 				monitor.worked(1);
 				doExport(models, monitor, export);
 				monitor.done();

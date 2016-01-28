@@ -3,7 +3,7 @@ package org.openlca.app.wizards;
 import java.util.UUID;
 
 import org.eclipse.swt.widgets.Composite;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.model.Source;
@@ -12,7 +12,7 @@ public class SourceWizard extends AbstractWizard<Source> {
 
 	@Override
 	protected String getTitle() {
-		return Messages.NewSource;
+		return M.NewSource;
 	}
 
 	@Override
@@ -29,8 +29,8 @@ public class SourceWizard extends AbstractWizard<Source> {
 
 		public SourceWizardPage() {
 			super("SourceWizardPage");
-			setTitle(Messages.NewSource);
-			setMessage(Messages.CreatesANewSource);
+			setTitle(M.NewSource);
+			setMessage(M.CreatesANewSource);
 			setPageComplete(false);
 		}
 

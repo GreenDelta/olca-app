@@ -14,7 +14,7 @@ import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 import org.openlca.app.FaviColor;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.results.analysis.sankey.actions.SankeySelectionAction;
 import org.openlca.app.results.analysis.sankey.layout.GraphLayoutManager;
 import org.openlca.app.util.Colors;
@@ -60,10 +60,10 @@ public class ProductSystemFigure extends Figure {
 
 		Object selection = productSystemNode.getSelection();
 		double cutoffValue = productSystemNode.getCutoff() * 100;
-		String cutoffText = Messages.Cutoff + ": "
+		String cutoffText = M.Cutoff + ": "
 				+ Numbers.format(cutoffValue, 3) + "%";
 		if (selection != null) {
-			graphics.drawText(Messages.ProductSystem + ": "
+			graphics.drawText(M.ProductSystem + ": "
 					+ productSystemNode.getProductSystem().getName(),
 					new Point(5, 5));
 			String label = selectionLabel(selection);
@@ -71,8 +71,8 @@ public class ProductSystemFigure extends Figure {
 			graphics.drawText(cutoffText, new Point(5, 60));
 
 		} else {
-			graphics.drawText(Messages.NoAnalysisOptionsSet, new Point(5, 5));
-			graphics.drawText(Messages.ClickHereToChangeDisplay, new Point(5,
+			graphics.drawText(M.NoAnalysisOptionsSet, new Point(5, 5));
+			graphics.drawText(M.ClickHereToChangeDisplay, new Point(5,
 					30));
 		}
 
@@ -94,17 +94,17 @@ public class ProductSystemFigure extends Figure {
 	private String selectionLabel(Object selection) {
 		if (selection instanceof FlowDescriptor) {
 			FlowDescriptor flow = (FlowDescriptor) selection;
-			return Messages.Flow + ": " + flow.getName();
+			return M.Flow + ": " + flow.getName();
 		}
 		if (selection instanceof ImpactCategoryDescriptor) {
 			ImpactCategoryDescriptor impact = (ImpactCategoryDescriptor) selection;
-			return Messages.ImpactCategory + ": " + impact.getName();
+			return M.ImpactCategory + ": " + impact.getName();
 		}
 		if (selection instanceof CostResultDescriptor) {
 			CostResultDescriptor cost = (CostResultDescriptor) selection;
 			return "#Cost result: " + cost.getName();
 		}
-		return Messages.NoAnalysisOptionsSet;
+		return M.NoAnalysisOptionsSet;
 	}
 
 	private void drawColorScale(Graphics graphics) {
@@ -118,7 +118,7 @@ public class ProductSystemFigure extends Figure {
 		}
 
 		// draw percentage texts
-		graphics.drawText(Messages.Sankey_ScaleDescription, x + 35, y + 22);
+		graphics.drawText(M.Sankey_ScaleDescription, x + 35, y + 22);
 		graphics.drawLine(x, y, x + 300, y);
 		for (int i = 0; i <= 20; i++) {
 			int height = 0;

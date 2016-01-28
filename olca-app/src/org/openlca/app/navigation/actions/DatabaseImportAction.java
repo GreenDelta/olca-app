@@ -7,7 +7,7 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.openlca.app.App;
 import org.openlca.app.Config;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DerbyConfiguration;
@@ -19,7 +19,7 @@ import org.zeroturnaround.zip.ZipUtil;
 public class DatabaseImportAction extends Action implements INavigationAction {
 
 	public DatabaseImportAction() {
-		setText(Messages.ImportDatabase);
+		setText(M.ImportDatabase);
 		setImageDescriptor(Icon.DATABASE_IO.descriptor());
 	}
 
@@ -64,7 +64,7 @@ public class DatabaseImportAction extends Action implements INavigationAction {
 	}
 
 	private void realImport(File dbFolder, String dbName, File zip) {
-		App.run(Messages.ImportDatabase, () -> {
+		App.run(M.ImportDatabase, () -> {
 			File folder = new File(dbFolder, dbName);
 			folder.mkdirs();
 			ZipUtil.unpack(zip, folder);

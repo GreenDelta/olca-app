@@ -7,7 +7,7 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.editors.lcia_methods.NwFactorViewer.Wrapper;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.viewers.table.AbstractTableViewer;
@@ -19,9 +19,9 @@ import org.openlca.core.model.NwSet;
 
 class NwFactorViewer extends AbstractTableViewer<Wrapper> {
 
-	private static final String IMPACT_CATEGORY = Messages.ImpactCategory;
-	private static final String NORMALIZATION = Messages.NormalizationFactor;
-	private static final String WEIGHTING = Messages.WeightingFactor;
+	private static final String IMPACT_CATEGORY = M.ImpactCategory;
+	private static final String NORMALIZATION = M.NormalizationFactor;
+	private static final String WEIGHTING = M.WeightingFactor;
 
 	private NwSet set;
 	private final ImpactMethodEditor editor;

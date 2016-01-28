@@ -4,7 +4,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.preferencepages.FeatureFlag;
@@ -21,7 +21,7 @@ class FlowPropertyInfoPage extends ModelPage<FlowProperty> {
 	private ScrolledForm form;
 
 	FlowPropertyInfoPage(FlowPropertyEditor editor) {
-		super(editor, "FlowPropertyInfoPage", Messages.GeneralInformation);
+		super(editor, "FlowPropertyInfoPage", M.GeneralInformation);
 	}
 
 	@Override
@@ -43,12 +43,12 @@ class FlowPropertyInfoPage extends ModelPage<FlowProperty> {
 	protected void updateFormTitle() {
 		if (form == null)
 			return;
-		form.setText(Messages.FlowProperty + ": " + getModel().getName());
+		form.setText(M.FlowProperty + ": " + getModel().getName());
 	}
 
 	private void createAdditionalInfo(InfoSection infoSection) {
-		createLink(Messages.UnitGroup, "unitGroup", infoSection.getContainer());
-		createReadOnly(Messages.FlowPropertyType, "flowPropertyType",
+		createLink(M.UnitGroup, "unitGroup", infoSection.getContainer());
+		createReadOnly(M.FlowPropertyType, "flowPropertyType",
 				infoSection.getContainer());
 	}
 }

@@ -12,7 +12,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
@@ -33,8 +33,8 @@ class ContributionTable extends TableViewer {
 	private final int AMOUNT = 2;
 	private final int UNIT = 3;
 
-	private String[] columnLabels = { Messages.Contribution, Messages.Process,
-			Messages.Amount, Messages.Unit };
+	private String[] columnLabels = { M.Contribution, M.Process,
+			M.Amount, M.Unit };
 
 	private String unit;
 

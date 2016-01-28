@@ -20,7 +20,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.components.ParameterRedefDialog;
 import org.openlca.app.db.Cache;
 import org.openlca.app.util.Actions;
@@ -45,10 +45,10 @@ import org.openlca.util.Strings;
 class ProjectParameterTable {
 
 	private final int LABEL_COLS = 4;
-	private final String PARAMETER = Messages.Parameter;
-	private final String CONTEXT = Messages.Context;
-	private final String NAME = Messages.ReportName;
-	private final String DESCRIPTION = Messages.Description;
+	private final String PARAMETER = M.Parameter;
+	private final String CONTEXT = M.Context;
+	private final String NAME = M.ReportName;
+	private final String DESCRIPTION = M.Description;
 
 	private ProjectEditor editor;
 	private ReportParameterSync reportSync;
@@ -396,8 +396,8 @@ class ProjectParameterTable {
 				reportSync.valueChanged(redef, variant, d);
 				editor.setDirty(true);
 			} catch (Exception e) {
-				org.openlca.app.util.Error.showBox(Messages.InvalidNumber, text
-						+ " " + Messages.IsNotValidNumber);
+				org.openlca.app.util.Error.showBox(M.InvalidNumber, text
+						+ " " + M.IsNotValidNumber);
 			}
 		}
 	}

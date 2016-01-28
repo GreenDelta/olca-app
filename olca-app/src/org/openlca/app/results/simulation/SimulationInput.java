@@ -3,7 +3,7 @@ package org.openlca.app.results.simulation;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.rcp.images.Icon;
 
 /**
@@ -45,7 +45,7 @@ class SimulationInput implements IEditorInput {
 
 	@Override
 	public String getName() {
-		return Messages.MonteCarloSimulation;
+		return M.MonteCarloSimulation;
 	}
 
 	@Override

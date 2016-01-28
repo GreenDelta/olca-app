@@ -18,7 +18,7 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.components.ResultTypeSelection;
 import org.openlca.app.components.ResultTypeSelection.EventHandler;
 import org.openlca.app.db.Cache;
@@ -71,7 +71,7 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 
 	public LocationContributionPage(FormEditor editor,
 			ContributionResultProvider<?> result, boolean showMap) {
-		super(editor, "analysis.MapPage", Messages.Locations);
+		super(editor, "analysis.MapPage", M.Locations);
 		this.showMap = showMap;
 		this.result = result;
 		this.inputBuilder = new TreeInputBuilder(result);
@@ -94,7 +94,7 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, Messages.Locations);
+		ScrolledForm form = UI.formHeader(managedForm, M.Locations);
 		FormToolkit toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		createCombos(body, toolkit);
@@ -117,7 +117,7 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 	}
 
 	private void createTree(Composite body, FormToolkit tk) {
-		Section section = UI.section(body, tk, Messages.ResultContributions);
+		Section section = UI.section(body, tk, M.ResultContributions);
 		UI.gridData(section, true, true);
 		Composite composite = UI.sectionClient(section, tk);
 		UI.gridLayout(composite, 1);
@@ -125,7 +125,7 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 	}
 
 	private void createBrowser(Composite body, FormToolkit toolkit) {
-		Section section = UI.section(body, toolkit, Messages.Map + " (beta)");
+		Section section = UI.section(body, toolkit, M.Map + " (beta)");
 		Actions.bind(section, new RefreshMapAction());
 		GridData gridData = UI.gridData(section, true, false);
 		gridData.widthHint = 800;
@@ -333,7 +333,7 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 	private class RefreshMapAction extends Action {
 
 		public RefreshMapAction() {
-			setToolTipText(Messages.Reload);
+			setToolTipText(M.Reload);
 			setImageDescriptor(Icon.REFRESH.descriptor());
 		}
 

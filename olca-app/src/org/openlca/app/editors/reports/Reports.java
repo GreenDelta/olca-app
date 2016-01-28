@@ -10,7 +10,7 @@ import java.util.Objects;
 import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.editors.reports.model.Report;
 import org.openlca.app.editors.reports.model.ReportComponent;
@@ -48,7 +48,7 @@ public final class Reports {
 		}
 		createReportVariants(project, report);
 		createReportIndicators(project, report, database);
-		report.title = Messages.ResultsOfProject + " " + project.getName();
+		report.title = M.ResultsOfProject + " " + project.getName();
 		return report;
 	}
 

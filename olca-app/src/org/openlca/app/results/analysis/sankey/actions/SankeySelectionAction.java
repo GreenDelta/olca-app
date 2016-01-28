@@ -3,7 +3,7 @@ package org.openlca.app.results.analysis.sankey.actions;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.window.Window;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.results.analysis.sankey.SankeyDiagram;
 import org.openlca.app.results.analysis.sankey.SankeySelectionDialog;
@@ -20,7 +20,7 @@ public class SankeySelectionAction extends Action {
 
 	@Override
 	public String getText() {
-		return Messages.SetSankeyDiagramOptions;
+		return M.SetSankeyDiagramOptions;
 	}
 
 	@Override

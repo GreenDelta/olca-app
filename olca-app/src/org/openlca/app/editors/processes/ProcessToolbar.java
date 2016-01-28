@@ -8,7 +8,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.ui.part.EditorActionBarContributor;
 import org.openlca.app.App;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Images;
@@ -47,7 +47,7 @@ public class ProcessToolbar extends EditorActionBarContributor {
 
 		public MakeSystemAction() {
 			setImageDescriptor(Images.descriptor(ModelType.PRODUCT_SYSTEM, Overlay.NEW));
-			setToolTipText(Messages.CreateProductSystem);
+			setToolTipText(M.CreateProductSystem);
 		}
 
 		@Override
@@ -63,7 +63,7 @@ public class ProcessToolbar extends EditorActionBarContributor {
 
 		public ExcelExportAction() {
 			setImageDescriptor(Images.descriptor(FileType.EXCEL));
-			setToolTipText(Messages.ExportToExcel);
+			setToolTipText(M.ExportToExcel);
 		}
 
 		@Override
@@ -77,8 +77,8 @@ public class ProcessToolbar extends EditorActionBarContributor {
 			List<ProcessDescriptor> list = Arrays.asList(
 					Descriptors.toDescriptor(process));
 			ExcelExport export = new ExcelExport(dir, Database.get(), list);
-			App.run(Messages.ExportProcess, export, () -> {
-				InformationPopup.show(Messages.ExportDone);
+			App.run(M.ExportProcess, export, () -> {
+				InformationPopup.show(M.ExportDone);
 			});
 		}
 	}

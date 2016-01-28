@@ -10,7 +10,7 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.ui.actions.ActionFactory;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.editors.graphical.action.ActionIds;
 
 class MenuProvider extends ContextMenuProvider {
@@ -51,7 +51,7 @@ class MenuProvider extends ContextMenuProvider {
 		menu.appendToGroup(GEFActionConstants.GROUP_UNDO,
 				registry.getAction(ActionFactory.REDO.getId()));
 		IAction deleteAction = registry.getAction(ActionFactory.DELETE.getId());
-		deleteAction.setText(Messages.Delete);
+		deleteAction.setText(M.Delete);
 		menu.appendToGroup(GEFActionConstants.GROUP_EDIT, deleteAction);
 	}
 

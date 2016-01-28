@@ -1,7 +1,7 @@
 package org.openlca.app.editors.graphical.command;
 
 import org.eclipse.gef.commands.Command;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 
 public class MarkingCommand extends Command {
@@ -36,9 +36,9 @@ public class MarkingCommand extends Command {
 	@Override
 	public String getLabel() {
 		if (node.isMarked())
-			return Messages.Unmark;
+			return M.Unmark;
 		else
-			return Messages.Mark;
+			return M.Mark;
 	}
 
 	@Override

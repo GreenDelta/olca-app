@@ -14,7 +14,7 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
@@ -51,7 +51,7 @@ public class SimulationPage extends FormPage {
 	private ImpactCategoryViewer impactViewer;
 
 	public SimulationPage(SimulationEditor editor) {
-		super(editor, "SimulationPage", Messages.MonteCarloSimulation);
+		super(editor, "SimulationPage", M.MonteCarloSimulation);
 		this.editor = editor;
 		SimulationResult result = editor.getSimulator().getResult();
 		this.result = new SimulationResultProvider<>(result,
@@ -62,7 +62,7 @@ public class SimulationPage extends FormPage {
 	protected void createFormContent(IManagedForm managedForm) {
 		form = managedForm.getForm();
 		FormToolkit toolkit = managedForm.getToolkit();
-		form.setText(Messages.MonteCarloSimulation);
+		form.setText(M.MonteCarloSimulation);
 		toolkit.decorateFormHeading(form.getForm());
 		Composite body = UI.formBody(form, toolkit);
 		createSettingsSection(toolkit, body);
@@ -72,14 +72,14 @@ public class SimulationPage extends FormPage {
 	}
 
 	private void createSettingsSection(FormToolkit toolkit, Composite body) {
-		Composite settings = UI.formSection(body, toolkit, Messages.Settings);
+		Composite settings = UI.formSection(body, toolkit, M.Settings);
 		Text systemText = UI
-				.formText(settings, toolkit, Messages.ProductSystem);
-		Text processText = UI.formText(settings, toolkit, Messages.Process);
+				.formText(settings, toolkit, M.ProductSystem);
+		Text processText = UI.formText(settings, toolkit, M.Process);
 		Text qRefText = UI.formText(settings, toolkit,
-				Messages.QuantitativeReference);
+				M.QuantitativeReference);
 		Text simCountText = UI.formText(settings, toolkit,
-				Messages.NumberOfSimulations);
+				M.NumberOfSimulations);
 		if (editor.getSetup() != null) {
 			CalculationSetup setup = editor.getSetup();
 			systemText.setText(setup.productSystem.getName());
@@ -112,13 +112,13 @@ public class SimulationPage extends FormPage {
 	}
 
 	private void createProgressSection(FormToolkit toolkit, Composite body) {
-		progressSection = UI.section(body, toolkit, Messages.Progress);
+		progressSection = UI.section(body, toolkit, M.Progress);
 		Composite composite = UI.sectionClient(progressSection, toolkit);
 		progressBar = new ProgressBar(composite, SWT.SMOOTH);
 		progressBar.setMaximum(editor.getSetup().numberOfRuns);
 		UI.gridWidth(progressBar, 470);
 		final Button progressButton = toolkit.createButton(composite,
-				Messages.Start, SWT.NONE);
+				M.Start, SWT.NONE);
 		UI.gridWidth(progressButton, 70);
 		new SimulationControl(progressButton, editor, this);
 	}
@@ -126,7 +126,7 @@ public class SimulationPage extends FormPage {
 	private void createResultSection(FormToolkit toolkit, Composite body) {
 		if (result == null)
 			return;
-		Section section = UI.section(body, toolkit, Messages.Results);
+		Section section = UI.section(body, toolkit, M.Results);
 		SimulationExportAction exportAction = new SimulationExportAction(
 				result, editor.getSetup());
 		Actions.bind(section, exportAction);
@@ -140,7 +140,7 @@ public class SimulationPage extends FormPage {
 
 	private void initImpactCheckViewer(FormToolkit toolkit, Composite section) {
 		Button impactCheck = toolkit.createButton(section,
-				Messages.ImpactCategories, SWT.RADIO);
+				M.ImpactCategories, SWT.RADIO);
 		impactViewer = new ImpactCategoryViewer(section);
 		impactViewer.setEnabled(false);
 		Set<ImpactCategoryDescriptor> impacts = result.getImpactDescriptors();
@@ -151,7 +151,7 @@ public class SimulationPage extends FormPage {
 	}
 
 	private void initFlowCheckViewer(FormToolkit toolkit, Composite section) {
-		Button flowsCheck = toolkit.createButton(section, Messages.Flows,
+		Button flowsCheck = toolkit.createButton(section, M.Flows,
 				SWT.RADIO);
 		flowsCheck.setSelection(true);
 		flowViewer = new FlowViewer(section, result.cache);

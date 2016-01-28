@@ -3,7 +3,7 @@ package org.openlca.app.cloud.ui.compare;
 import java.text.DateFormat;
 import java.util.Date;
 
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Parameter;
@@ -59,8 +59,8 @@ class ValueLabels {
 
 	private static String getInputValue(String value) {
 		if (value.equalsIgnoreCase("true"))
-			return Messages.Input;
-		return Messages.Output;
+			return M.Input;
+		return M.Output;
 	}
 
 }

@@ -5,7 +5,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelEditor;
@@ -50,7 +50,7 @@ public class SocialIndicatorEditor extends ModelEditor<SocialIndicator> {
 
 		Page() {
 			super(SocialIndicatorEditor.this, "SocialIndicatorPage",
-					Messages.GeneralInformation);
+					M.GeneralInformation);
 			editor = SocialIndicatorEditor.this;
 		}
 
@@ -72,20 +72,20 @@ public class SocialIndicatorEditor extends ModelEditor<SocialIndicator> {
 		protected void updateFormTitle() {
 			if (form == null)
 				return;
-			form.setText(Messages.SocialIndicator + ": " + getModel().getName());
+			form.setText(M.SocialIndicator + ": " + getModel().getName());
 		}
 
 		private void createAdditionalInfo(Composite body, FormToolkit tk) {
 			Composite comp = UI.formSection(body, tk,
-					Messages.AdditionalInformation);
-			Text ut = UI.formText(comp, tk, Messages.UnitOfMeasurement);
+					M.AdditionalInformation);
+			Text ut = UI.formText(comp, tk, M.UnitOfMeasurement);
 			if (getModel().unitOfMeasurement != null)
 				ut.setText(getModel().unitOfMeasurement);
 			ut.addModifyListener((e) -> {
 				getModel().unitOfMeasurement = ut.getText();
 				editor.setDirty(true);
 			});
-			Text et = UI.formMultiText(comp, tk, Messages.EvaluationScheme);
+			Text et = UI.formMultiText(comp, tk, M.EvaluationScheme);
 			if (getModel().evaluationScheme != null)
 				et.setText(getModel().evaluationScheme);
 			et.addModifyListener((e) -> {
@@ -96,8 +96,8 @@ public class SocialIndicatorEditor extends ModelEditor<SocialIndicator> {
 
 		private void createActivitySection(FormToolkit tk, Composite body) {
 			Composite comp = UI.formSection(body, tk,
-					Messages.ActivityVariable);
-			Text t = UI.formText(comp, tk, Messages.Name);
+					M.ActivityVariable);
+			Text t = UI.formText(comp, tk, M.Name);
 			if (getModel().activityVariable != null)
 				t.setText(getModel().activityVariable);
 			t.addModifyListener((e) -> {
@@ -109,7 +109,7 @@ public class SocialIndicatorEditor extends ModelEditor<SocialIndicator> {
 		}
 
 		private void createQuantityCombo(FormToolkit tk, Composite comp) {
-			UI.formLabel(comp, tk, Messages.Quantity);
+			UI.formLabel(comp, tk, M.Quantity);
 			quantityCombo = new FlowPropertyViewer(comp);
 			quantityCombo.setInput(Database.get());
 			FlowProperty aq = getModel().activityQuantity;
@@ -121,7 +121,7 @@ public class SocialIndicatorEditor extends ModelEditor<SocialIndicator> {
 		}
 
 		private void createUnitCombo(FormToolkit tk, Composite comp) {
-			UI.formLabel(comp, tk, Messages.Unit);
+			UI.formLabel(comp, tk, M.Unit);
 			unitCombo = new UnitViewer(comp);
 			FlowProperty fp = getModel().activityQuantity;
 			if (fp != null && fp.getUnitGroup() != null)

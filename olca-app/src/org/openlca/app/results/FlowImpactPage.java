@@ -18,7 +18,7 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.db.Cache;
 import org.openlca.app.util.Actions;
@@ -41,9 +41,9 @@ import org.openlca.core.results.Contributions;
  */
 public class FlowImpactPage extends FormPage {
 
-	private final static String[] COLUMN_LABELS = { Messages.Contribution,
-			Messages.Flow, Messages.Category, Messages.SubCategory,
-			Messages.Amount, Messages.Unit };
+	private final static String[] COLUMN_LABELS = { M.Contribution,
+			M.Flow, M.Category, M.SubCategory,
+			M.Amount, M.Unit };
 
 	private ContributionResultProvider<?> result;
 	private ImpactCategoryViewer impactCombo;
@@ -53,7 +53,7 @@ public class FlowImpactPage extends FormPage {
 
 	public FlowImpactPage(FormEditor editor,
 			ContributionResultProvider<?> result) {
-		super(editor, "FlowImpactPage", Messages.FlowContributions);
+		super(editor, "FlowImpactPage", M.FlowContributions);
 		this.result = result;
 	}
 
@@ -61,7 +61,7 @@ public class FlowImpactPage extends FormPage {
 	protected void createFormContent(IManagedForm managedForm) {
 		FormToolkit toolkit = managedForm.getToolkit();
 		ScrolledForm form = UI.formHeader(managedForm,
-				Messages.FlowContributions);
+				M.FlowContributions);
 		Composite body = UI.formBody(form, toolkit);
 		Composite composite = toolkit.createComposite(body);
 		UI.gridLayout(composite, 1);
@@ -76,9 +76,9 @@ public class FlowImpactPage extends FormPage {
 		Composite composite = toolkit.createComposite(parent);
 		UI.gridData(composite, true, false);
 		UI.gridLayout(composite, 5);
-		UI.formLabel(composite, toolkit, Messages.ImpactCategory);
+		UI.formLabel(composite, toolkit, M.ImpactCategory);
 		createImpactViewer(composite);
-		UI.formLabel(composite, toolkit, Messages.Cutoff);
+		UI.formLabel(composite, toolkit, M.Cutoff);
 		spinner = new Spinner(composite, SWT.BORDER);
 		spinner.setValues(1, 0, 100, 0, 1, 10);
 		toolkit.adapt(spinner);

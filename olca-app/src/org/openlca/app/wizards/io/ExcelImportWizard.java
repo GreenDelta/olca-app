@@ -9,7 +9,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
@@ -22,7 +22,7 @@ public class ExcelImportWizard extends Wizard implements IImportWizard {
 
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		setWindowTitle(Messages.ProcessExcelImportDescription);
+		setWindowTitle(M.ProcessExcelImportDescription);
 		setDefaultPageImageDescriptor(Icon.IMPORT_ZIP_WIZARD
 				.descriptor());
 		setNeedsProgressMonitor(true);
@@ -57,7 +57,7 @@ public class ExcelImportWizard extends Wizard implements IImportWizard {
 			@Override
 			public void run(IProgressMonitor monitor)
 					throws InvocationTargetException, InterruptedException {
-				monitor.beginTask(Messages.Import, files.length);
+				monitor.beginTask(M.Import, files.length);
 				for (File file : files) {
 					monitor.subTask(file.getName());
 					ExcelImport importer = new ExcelImport(file, Database.get());

@@ -1,7 +1,7 @@
 package org.openlca.app.editors.parameters;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.util.Error;
@@ -37,12 +37,12 @@ public class GlobalParameterEditor extends ModelEditor<Parameter> {
 		}
 		String name = getModel().getName();
 		if (!Parameter.isValidName(name)) {
-			Error.showBox(Messages.InvalidParameterName,
-					name + " " + Messages.IsNotValidParameterName);
+			Error.showBox(M.InvalidParameterName,
+					name + " " + M.IsNotValidParameterName);
 			return;
 		}
 		if (new ParameterDao(Database.get()).existsGlobal(name)) {
-			Error.showBox(Messages.InvalidParameterName,
+			Error.showBox(M.InvalidParameterName,
 					"#A parameter with the same name already exists");
 			return;
 		}

@@ -9,7 +9,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.util.UI;
@@ -25,7 +25,7 @@ public class ProcessExchangePage extends ModelPage<Process> {
 	private ScrolledForm form;
 
 	public ProcessExchangePage(ProcessEditor editor) {
-		super(editor, "ProcessExchangePage", Messages.InputsOutputs);
+		super(editor, "ProcessExchangePage", M.InputsOutputs);
 		this.editor = editor;
 	}
 
@@ -55,7 +55,7 @@ public class ProcessExchangePage extends ModelPage<Process> {
 	protected void updateFormTitle() {
 		if (form == null)
 			return;
-		form.setText(Messages.Process + ": " + getModel().getName());
+		form.setText(M.Process + ": " + getModel().getName());
 	}
 
 	private void sortExchanges() {
@@ -74,7 +74,7 @@ public class ProcessExchangePage extends ModelPage<Process> {
 	}
 
 	private ExchangeTable createTable(Composite body, boolean forInputs) {
-		String title = forInputs ? Messages.Inputs : Messages.Outputs;
+		String title = forInputs ? M.Inputs : M.Outputs;
 		Section section = UI.section(body, toolkit, title);
 		UI.gridData(section, true, true);
 		if (forInputs)

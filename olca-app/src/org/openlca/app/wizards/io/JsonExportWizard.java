@@ -11,7 +11,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IExportWizard;
 import org.eclipse.ui.IWorkbench;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Callback.Message;
@@ -83,7 +83,7 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 		@Override
 		public void run(IProgressMonitor monitor)
 				throws InvocationTargetException, InterruptedException {
-			monitor.beginTask(Messages.Export, models.size());
+			monitor.beginTask(M.Export, models.size());
 			try (ZipStore store = ZipStore.open(zipFile)) {
 				doExport(monitor, store);
 				monitor.done();

@@ -14,7 +14,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
@@ -103,10 +103,10 @@ class TotalRequirementsSection {
 
 	private String[] columnLables() {
 		List<String> b = new ArrayList<>();
-		b.add(Messages.Process);
-		b.add(Messages.Product);
-		b.add(Messages.Amount);
-		b.add(Messages.Unit);
+		b.add(M.Process);
+		b.add(M.Product);
+		b.add(M.Amount);
+		b.add(M.Unit);
 		if (costs == Costs.ADDED_VALUE)
 			b.add("#Added value");
 		else if (costs == Costs.NET_COSTS)

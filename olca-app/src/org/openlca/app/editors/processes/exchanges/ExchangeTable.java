@@ -15,7 +15,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.components.UncertaintyCellEditor;
 import org.openlca.app.db.Cache;
@@ -60,16 +60,16 @@ class ExchangeTable {
 	private IDatabase database = Database.get();
 	private EntityCache cache = Cache.getEntityCache();
 
-	private final String FLOW = Messages.Flow;
-	private final String CATEGORY = Messages.Category;
-	private final String AMOUNT = Messages.Amount;
-	private final String UNIT = Messages.Unit;
+	private final String FLOW = M.Flow;
+	private final String CATEGORY = M.Category;
+	private final String AMOUNT = M.Amount;
+	private final String UNIT = M.Unit;
 	private final String COSTS;
-	private final String PEDIGREE = Messages.PedigreeUncertainty;
-	private final String DEFAULT_PROVIDER = Messages.DefaultProvider;
-	private final String UNCERTAINTY = Messages.Uncertainty;
-	private final String DESCRIPTION = Messages.Description;
-	private final String AVOIDED_PRODUCT = Messages.AvoidedProduct;
+	private final String PEDIGREE = M.PedigreeUncertainty;
+	private final String DEFAULT_PROVIDER = M.DefaultProvider;
+	private final String UNCERTAINTY = M.Uncertainty;
+	private final String DESCRIPTION = M.Description;
+	private final String AVOIDED_PRODUCT = M.AvoidedProduct;
 
 	private TableViewer viewer;
 	private ExchangeLabel label;
@@ -226,8 +226,8 @@ class ExchangeTable {
 					editor.setDirty(true);
 					editor.getParameterSupport().evaluate();
 				} catch (Exception ex) {
-					Error.showBox(Messages.InvalidFormula, text + " "
-							+ Messages.IsInvalidFormula);
+					Error.showBox(M.InvalidFormula, text + " "
+							+ M.IsInvalidFormula);
 				}
 			}
 		}
@@ -271,7 +271,7 @@ class ExchangeTable {
 		@Override
 		protected String getText(ProcessDescriptor value) {
 			if (value == null)
-				return Messages.None;
+				return M.None;
 			return Labels.getDisplayName(value);
 		}
 
@@ -334,7 +334,7 @@ class ExchangeTable {
 
 		public FormulaSwitchAction() {
 			setImageDescriptor(Icon.NUMBER.descriptor());
-			setText(Messages.ShowValues);
+			setText(M.ShowValues);
 		}
 
 		@Override
@@ -342,10 +342,10 @@ class ExchangeTable {
 			showFormulas = !showFormulas;
 			if (showFormulas) {
 				setImageDescriptor(Icon.NUMBER.descriptor());
-				setText(Messages.ShowValues);
+				setText(M.ShowValues);
 			} else {
 				setImageDescriptor(Icon.FORMULA.descriptor());
-				setText(Messages.ShowFormulas);
+				setText(M.ShowFormulas);
 			}
 			label.showFormulas = showFormulas;
 			viewer.refresh();

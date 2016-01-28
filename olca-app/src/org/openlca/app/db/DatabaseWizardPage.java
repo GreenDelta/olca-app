@@ -10,7 +10,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
@@ -32,9 +32,9 @@ class DatabaseWizardPage extends WizardPage {
 	private Composite stackComposite;
 
 	public DatabaseWizardPage() {
-		super("database-wizard-page", Messages.NewDatabase,
+		super("database-wizard-page", M.NewDatabase,
 				Icon.DATABASE_WIZARD.descriptor());
-		setDescription(Messages.CreateANewDatabase);
+		setDescription(M.CreateANewDatabase);
 		setPageComplete(false);
 	}
 
@@ -46,23 +46,23 @@ class DatabaseWizardPage extends WizardPage {
 		header.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		setControl(header);
 		UI.gridLayout(header, 2);
-		nameText = UI.formText(header, Messages.DatabaseName);
+		nameText = UI.formText(header, M.DatabaseName);
 		nameText.addModifyListener((e) -> validateInput());
 		createTypeRadios(header);
 		createStackComposite(root);
 	}
 
 	private void createTypeRadios(Composite headerComposite) {
-		UI.formLabel(headerComposite, Messages.DatabaseType);
+		UI.formLabel(headerComposite, M.DatabaseType);
 		Composite radioGroup = new Composite(headerComposite, SWT.NONE);
 		radioGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		UI.gridLayout(radioGroup, 2, 10, 0);
 		buttonLocal = new Button(radioGroup, SWT.RADIO);
-		buttonLocal.setText(Messages.Local);
+		buttonLocal.setText(M.Local);
 		buttonLocal.setSelection(true);
 		Controls.onSelect(buttonLocal, (e) -> typeChanged());
 		buttonRemote = new Button(radioGroup, SWT.RADIO);
-		buttonRemote.setText(Messages.Remote);
+		buttonRemote.setText(M.Remote);
 		Controls.onSelect(buttonRemote, (e) -> typeChanged());
 	}
 
@@ -96,20 +96,20 @@ class DatabaseWizardPage extends WizardPage {
 		localComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
 				false));
 		UI.gridLayout(localComposite, 2);
-		UI.formLabel(localComposite, Messages.DatabaseContent);
+		UI.formLabel(localComposite, M.DatabaseContent);
 		createContentRadios(localComposite);
 	}
 
 	private void createRemoteComposite(Composite stackComposite) {
 		remoteComposite = new Composite(stackComposite, SWT.NONE);
 		UI.gridLayout(remoteComposite, 2);
-		hostText = UI.formText(remoteComposite, Messages.Host);
+		hostText = UI.formText(remoteComposite, M.Host);
 		hostText.addModifyListener((e) -> validateInput());
-		portText = UI.formText(remoteComposite, Messages.Port);
+		portText = UI.formText(remoteComposite, M.Port);
 		portText.addModifyListener((e) -> validateInput());
-		userText = UI.formText(remoteComposite, Messages.User);
+		userText = UI.formText(remoteComposite, M.User);
 		userText.addModifyListener((e) -> validateInput());
-		passwordText = UI.formText(remoteComposite, Messages.Password);
+		passwordText = UI.formText(remoteComposite, M.Password);
 	}
 
 	private void createContentRadios(Composite composite) {
@@ -128,11 +128,11 @@ class DatabaseWizardPage extends WizardPage {
 			return null;
 		switch (content) {
 		case EMPTY:
-			return Messages.EmptyDatabase;
+			return M.EmptyDatabase;
 		case UNITS:
-			return Messages.UnitsAndFlowProperties;
+			return M.UnitsAndFlowProperties;
 		case FLOWS:
-			return Messages.CompleteReferenceData;
+			return M.CompleteReferenceData;
 		default:
 			return null;
 		}
@@ -148,11 +148,11 @@ class DatabaseWizardPage extends WizardPage {
 			return;
 		}
 		if (hostText.getText().isEmpty()) {
-			error(Messages.PleaseSpecifyHost);
+			error(M.PleaseSpecifyHost);
 			return;
 		}
 		if (userText.getText().isEmpty()) {
-			error(Messages.PleaseSpecifyUser);
+			error(M.PleaseSpecifyUser);
 			return;
 		}
 		valid = validatePort(portText.getText());
@@ -164,24 +164,24 @@ class DatabaseWizardPage extends WizardPage {
 
 	private boolean validatePort(String port) {
 		if (port.isEmpty())
-			error(Messages.PleaseSpecifyPortNumber);
+			error(M.PleaseSpecifyPortNumber);
 		else
 			try {
 				Integer.parseInt(port);
 				return true;
 			} catch (NumberFormatException e) {
-				error(Messages.PleaseSpecifyPortNumber);
+				error(M.PleaseSpecifyPortNumber);
 			}
 		return false;
 	}
 
 	private boolean validateName(String name) {
 		if (name == null || name.length() < 4)
-			error(Messages.NewDatabase_NameToShort);
+			error(M.NewDatabase_NameToShort);
 		else if (!DbUtils.isValidName(name))
-			error(Messages.NewDatabase_InvalidName);
+			error(M.NewDatabase_InvalidName);
 		else if (Database.getConfigurations().nameExists(name))
-			error(Messages.NewDatabase_AlreadyExists);
+			error(M.NewDatabase_AlreadyExists);
 		else
 			return true;
 		return false;

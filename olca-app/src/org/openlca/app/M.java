@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
-public class Messages extends NLS {
+public class M extends NLS {
 
 	public static String AccessAndUseRestrictions;
 	public static String ActivityVariable;
@@ -642,17 +642,17 @@ public class Messages extends NLS {
 	private static Map<String, String> map;
 
 	static {
-		NLS.initializeMessages("org.openlca.app.messages", Messages.class);
+		NLS.initializeMessages("org.openlca.app.messages", M.class);
 	}
 
-	private Messages() {
+	private M() {
 	}
 
 	public static Map<String, String> getMap() {
 		if (map == null)
 			map = new HashMap<>();
 		try {
-			for (Field field : Messages.class.getDeclaredFields()) {
+			for (Field field : M.class.getDeclaredFields()) {
 				if (!Objects.equals(field.getType(), String.class))
 					continue;
 				if (!Modifier.isStatic(field.getModifiers()))
@@ -663,7 +663,7 @@ public class Messages extends NLS {
 				map.put(field.getName(), val);
 			}
 		} catch (Exception e) {
-			Logger log = LoggerFactory.getLogger(Messages.class);
+			Logger log = LoggerFactory.getLogger(M.class);
 			log.error("failed to get messages as map", e);
 		}
 		return map;
@@ -674,7 +674,7 @@ public class Messages extends NLS {
 			Gson gson = new Gson();
 			return gson.toJson(getMap());
 		} catch (Exception e) {
-			Logger log = LoggerFactory.getLogger(Messages.class);
+			Logger log = LoggerFactory.getLogger(M.class);
 			log.error("failed to get messages as JSON string", e);
 			return "{}";
 		}

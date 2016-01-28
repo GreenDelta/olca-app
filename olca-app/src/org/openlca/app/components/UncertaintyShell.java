@@ -7,7 +7,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.results.simulation.StatisticsCanvas;
 import org.openlca.core.math.NumberGenerator;
 
@@ -17,7 +17,7 @@ public class UncertaintyShell {
 
 		final Display display = Display.getCurrent();
 		final Shell shell = new Shell(display, SWT.APPLICATION_MODAL | SWT.SHELL_TRIM);
-		shell.setText(Messages.TestDistribution);
+		shell.setText(M.TestDistribution);
 		shell.setLayout(new FillLayout());
 		final StatisticsCanvas canvas = new StatisticsCanvas(shell);
 		shell.pack();

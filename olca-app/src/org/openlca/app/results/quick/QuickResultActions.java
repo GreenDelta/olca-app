@@ -6,7 +6,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.ui.part.EditorActionBarContributor;
 import org.openlca.app.App;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Cache;
 import org.openlca.app.rcp.images.Images;
@@ -32,8 +32,8 @@ public class QuickResultActions extends EditorActionBarContributor {
 
 		public ExcelExport() {
 			setImageDescriptor(Images.descriptor(FileType.EXCEL));
-			setText(Messages.ExportToExcel);
-			setToolTipText(Messages.ExportToExcel);
+			setText(M.ExportToExcel);
+			setToolTipText(M.ExportToExcel);
 		}
 
 		@Override
@@ -59,9 +59,9 @@ public class QuickResultActions extends EditorActionBarContributor {
 			QuickResultExport export = new QuickResultExport(
 					setup, result, Cache.getEntityCache());
 			export.setExportFile(file);
-			App.run(Messages.ExportResults, export, () -> {
+			App.run(M.ExportResults, export, () -> {
 				if (export.doneWithSuccess())
-					InformationPopup.show(Messages.ExportDone);
+					InformationPopup.show(M.ExportDone);
 			});
 		}
 	}

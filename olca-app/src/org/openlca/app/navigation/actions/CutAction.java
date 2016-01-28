@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.navigation.CopyPaste;
 import org.openlca.app.navigation.INavigationElement;
 
@@ -36,7 +36,7 @@ public class CutAction extends Action implements INavigationAction {
 	
 	@Override
 	public String getText() {
-		return Messages.Cut;
+		return M.Cut;
 	}
 	
 }

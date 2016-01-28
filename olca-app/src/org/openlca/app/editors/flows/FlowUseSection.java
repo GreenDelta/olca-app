@@ -14,7 +14,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.editors.UsageView;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Colors;
@@ -61,14 +61,14 @@ class FlowUseSection {
 		Set<Long> providers = dao.getProviders(flow.getId());
 		if (recipients.isEmpty() && providers.isEmpty())
 			return;
-		Section section = UI.section(body, toolkit, Messages.UsedInProcesses);
+		Section section = UI.section(body, toolkit, M.UsedInProcesses);
 		section.setExpanded(false);
 		parent = UI.sectionClient(section, toolkit);
 		this.toolkit = toolkit;
 		App.runInUI("Render usage links", () -> {
-			renderLinks(Messages.ConsumedBy, recipients,
+			renderLinks(M.ConsumedBy, recipients,
 					Icon.INPUT.get());
-			renderLinks(Messages.ProducedBy, providers,
+			renderLinks(M.ProducedBy, providers,
 					Icon.OUTPUT.get());
 		});
 	}

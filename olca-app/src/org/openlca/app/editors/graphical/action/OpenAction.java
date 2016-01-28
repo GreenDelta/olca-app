@@ -1,7 +1,7 @@
 package org.openlca.app.editors.graphical.action;
 
 import org.eclipse.jface.viewers.ISelection;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.editors.ModelEditorInput;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.processes.ProcessEditor;
@@ -13,7 +13,7 @@ class OpenAction extends EditorAction {
 
 	OpenAction() {
 		setId(ActionIds.OPEN);
-		setText(Messages.OpenInEditor);
+		setText(M.OpenInEditor);
 	}
 
 	@Override

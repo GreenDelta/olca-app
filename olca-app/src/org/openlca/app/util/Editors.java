@@ -12,7 +12,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.progress.UIJob;
 import org.openlca.app.App;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.core.model.CategorizedEntity;
@@ -35,7 +35,7 @@ public class Editors {
 		if (form == null || editor == null)
 			return;
 		CategorizedEntity model = editor.getModel();
-		Action refresh = Actions.create(Messages.Reload,
+		Action refresh = Actions.create(M.Reload,
 				Icon.REFRESH.descriptor(), () -> {
 					App.closeEditor(model);
 					App.openEditor(model);
@@ -94,7 +94,7 @@ public class Editors {
 		private String editorId;
 
 		public OpenInUIJob(IEditorInput input, String editorId) {
-			super(Messages.OpenEditor);
+			super(M.OpenEditor);
 			this.input = input;
 			this.editorId = editorId;
 		}

@@ -13,7 +13,7 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.openlca.app.App;
 import org.openlca.app.Event;
 import org.openlca.app.EventHandler;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
@@ -80,7 +80,7 @@ public abstract class ModelEditor<T extends CategorizedEntity> extends FormEdito
 	@Override
 	public void doSave(IProgressMonitor monitor) {
 		try {
-			monitor.beginTask(Messages.Save + " " + modelClass.getSimpleName() + "...", IProgressMonitor.UNKNOWN);
+			monitor.beginTask(M.Save + " " + modelClass.getSimpleName() + "...", IProgressMonitor.UNKNOWN);
 			model.setLastChange(System.currentTimeMillis());
 			Version version = new Version(model.getVersion());
 			version.incUpdate();
@@ -135,10 +135,10 @@ public abstract class ModelEditor<T extends CategorizedEntity> extends FormEdito
 	@Override
 	@SuppressWarnings("unchecked")
 	public void doSaveAs() {
-		InputDialog diag = new InputDialog(UI.shell(), Messages.SaveAs, Messages.SaveAs, model.getName() + " - Copy",
+		InputDialog diag = new InputDialog(UI.shell(), M.SaveAs, M.SaveAs, model.getName() + " - Copy",
 				(name) -> {
 					if (Strings.nullOrEmpty(name))
-						return Messages.NameCannotBeEmpty;
+						return M.NameCannotBeEmpty;
 					if (Strings.nullOrEqual(name, model.getName()))
 						return "#The name should be different";
 					return null;

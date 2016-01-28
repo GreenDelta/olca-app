@@ -14,7 +14,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.components.UncertaintyCellEditor;
 import org.openlca.app.db.Database;
@@ -43,12 +43,12 @@ import org.openlca.util.Strings;
 
 class ImpactFactorTable {
 
-	private final String FLOW = Messages.Flow;
-	private final String CATEGORY = Messages.Category;
-	private final String FLOW_PROPERTY = Messages.FlowProperty;
-	private final String UNIT = Messages.Unit;
-	private final String FACTOR = Messages.Factor;
-	private final String UNCERTAINTY = Messages.Uncertainty;
+	private final String FLOW = M.Flow;
+	private final String CATEGORY = M.Category;
+	private final String FLOW_PROPERTY = M.FlowProperty;
+	private final String UNIT = M.Unit;
+	private final String FACTOR = M.Factor;
+	private final String UNCERTAINTY = M.Uncertainty;
 
 	private boolean showFormulas = true;
 	private IDatabase database = Database.get();
@@ -292,7 +292,7 @@ class ImpactFactorTable {
 					editor.setDirty(true);
 					editor.getParameterSupport().evaluate();
 				} catch (Exception ex) {
-					Error.showBox(Messages.InvalidFormula, text + " " + Messages.IsInvalidFormula);
+					Error.showBox(M.InvalidFormula, text + " " + M.IsInvalidFormula);
 				}
 			}
 		}
@@ -301,7 +301,7 @@ class ImpactFactorTable {
 	private class FormulaSwitchAction extends Action {
 		public FormulaSwitchAction() {
 			setImageDescriptor(Icon.NUMBER.descriptor());
-			setText(Messages.ShowValues);
+			setText(M.ShowValues);
 		}
 
 		@Override
@@ -309,10 +309,10 @@ class ImpactFactorTable {
 			showFormulas = !showFormulas;
 			if (showFormulas) {
 				setImageDescriptor(Icon.NUMBER.descriptor());
-				setText(Messages.ShowValues);
+				setText(M.ShowValues);
 			} else {
 				setImageDescriptor(Icon.FORMULA.descriptor());
-				setText(Messages.ShowFormulas);
+				setText(M.ShowFormulas);
 			}
 			viewer.refresh();
 		}

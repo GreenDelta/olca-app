@@ -15,7 +15,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.preferencepages.FeatureFlag;
@@ -36,9 +36,9 @@ import org.openlca.util.Strings;
 
 class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 
-	private final String NAME = Messages.Name;
-	private final String DESCRIPTION = Messages.Description;
-	private final String REFERENCE_UNIT = Messages.ReferenceUnit;
+	private final String NAME = M.Name;
+	private final String DESCRIPTION = M.Description;
+	private final String REFERENCE_UNIT = M.ReferenceUnit;
 
 	private TableViewer viewer;
 	private FormToolkit toolkit;
@@ -46,7 +46,7 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 	private ScrolledForm form;
 
 	ImpactMethodInfoPage(ImpactMethodEditor editor) {
-		super(editor, "ImpactMethodInfoPage", Messages.GeneralInformation);
+		super(editor, "ImpactMethodInfoPage", M.GeneralInformation);
 		this.editor = editor;
 	}
 
@@ -69,11 +69,11 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 	protected void updateFormTitle() {
 		if (form == null)
 			return;
-		form.setText(Messages.ImpactAssessmentMethod + ": " + getModel().getName());
+		form.setText(M.ImpactAssessmentMethod + ": " + getModel().getName());
 	}
 
 	private void createImpactCategoryViewer(Composite body) {
-		Section section = UI.section(body, toolkit, Messages.ImpactCategories);
+		Section section = UI.section(body, toolkit, M.ImpactCategories);
 		UI.gridData(section, true, true);
 		Composite client = UI.sectionClient(section, toolkit);
 		String[] properties = { NAME, DESCRIPTION, REFERENCE_UNIT };
@@ -133,7 +133,7 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 		ImpactMethod method = editor.getModel();
 		ImpactCategory category = new ImpactCategory();
 		category.setRefId(UUID.randomUUID().toString());
-		category.setName(Messages.NewImpactCategory);
+		category.setName(M.NewImpactCategory);
 		method.getImpactCategories().add(category);
 		viewer.setInput(method.getImpactCategories());
 		fireCategoryChange();

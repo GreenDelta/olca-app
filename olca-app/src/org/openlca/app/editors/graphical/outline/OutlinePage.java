@@ -20,7 +20,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.editors.graphical.action.ActionFactory;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 
@@ -73,7 +73,7 @@ public class OutlinePage extends ContentOutlinePage {
 	public void createControl(Composite parent) {
 		sash = new SashForm(parent, SWT.VERTICAL);
 		new Label(sash, SWT.BORDER_SOLID)
-				.setText(Messages.FilterByName);
+				.setText(M.FilterByName);
 		searchText = new Text(sash, SWT.BORDER_SOLID);
 		searchText.addPaintListener(new SearchPaintListener());
 		getViewer().createControl(sash);

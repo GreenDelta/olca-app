@@ -18,7 +18,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.PedigreeMatrix;
@@ -38,7 +38,7 @@ class PedigreeShell extends Shell {
 		this.exchange = exchange;
 		setLayout(new FillLayout(SWT.HORIZONTAL));
 		create();
-		setText(Messages.PedigreeMatrix);
+		setText(M.PedigreeMatrix);
 		setSize(830, 600);
 		colors = PedigreeShellData.getColors(parent.getDisplay());
 		// pack();
@@ -94,7 +94,7 @@ class PedigreeShell extends Shell {
 	}
 
 	private void createContentHeader(Composite composite) {
-		toolkit.createLabel(composite, Messages.IndicatorScore);
+		toolkit.createLabel(composite, M.IndicatorScore);
 		for (int i = 1; i < 6; i++) {
 			Label label = toolkit.createLabel(composite, Integer.toString(i));
 			label.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true,
@@ -129,7 +129,7 @@ class PedigreeShell extends Shell {
 		UI.gridData(header, true, false);
 		toolkit.paintBordersFor(header);
 		toolkit.createLabel(header,
-				Messages.PedigreeMatrixMessage);
+				M.PedigreeMatrixMessage);
 	}
 
 	private void createSeparator(Composite root) {
@@ -143,7 +143,7 @@ class PedigreeShell extends Shell {
 		UI.gridLayout(composite, 7);
 		UI.gridData(composite, true, false);
 		toolkit.paintBordersFor(composite);
-		toolkit.createLabel(composite, Messages.BaseUncertainty + ": ");
+		toolkit.createLabel(composite, M.BaseUncertainty + ": ");
 		baseUncertaintyText = toolkit.createText(composite, "1.0");
 		UI.gridData(baseUncertaintyText, false, false).widthHint = 80;
 		baseUncertaintyText.addModifyListener((e) -> calculateSigmaG());
@@ -155,17 +155,17 @@ class PedigreeShell extends Shell {
 	}
 
 	private void createButtons(Composite composite) {
-		Button okBtn = toolkit.createButton(composite, Messages.OK, SWT.NONE);
+		Button okBtn = toolkit.createButton(composite, M.OK, SWT.NONE);
 		UI.gridData(okBtn, false, false).widthHint = 60;
 		okBtn.addSelectionListener(PedigreeFinishHandler.forOk(this, exchange));
 		if (exchange.getPedigreeUncertainty() != null) {
-			Button deleteBtn = toolkit.createButton(composite, Messages.Delete,
+			Button deleteBtn = toolkit.createButton(composite, M.Delete,
 					SWT.NONE);
 			UI.gridData(deleteBtn, false, false).widthHint = 60;
 			deleteBtn.addSelectionListener(PedigreeFinishHandler.forDelete(
 					this, exchange));
 		}
-		Button cancelBtn = toolkit.createButton(composite, Messages.Cancel,
+		Button cancelBtn = toolkit.createButton(composite, M.Cancel,
 				SWT.NONE);
 		cancelBtn.addSelectionListener(PedigreeFinishHandler.forCancel(this));
 		UI.gridData(cancelBtn, false, false).widthHint = 60;
@@ -183,7 +183,7 @@ class PedigreeShell extends Shell {
 			baseUncertaintyText.setToolTipText(null);
 		} catch (Exception e) {
 			baseUncertaintyText.setBackground(colors[4]);
-			baseUncertaintyText.setToolTipText(Messages.InvalidValue);
+			baseUncertaintyText.setToolTipText(M.InvalidValue);
 		}
 	}
 

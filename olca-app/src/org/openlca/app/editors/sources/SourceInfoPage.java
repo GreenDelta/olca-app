@@ -15,7 +15,7 @@ import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
@@ -46,7 +46,7 @@ class SourceInfoPage extends ModelPage<Source> {
 	private ScrolledForm form;
 
 	SourceInfoPage(SourceEditor editor) {
-		super(editor, "SourceInfoPage", Messages.GeneralInformation);
+		super(editor, "SourceInfoPage", M.GeneralInformation);
 	}
 
 	@Override
@@ -66,22 +66,22 @@ class SourceInfoPage extends ModelPage<Source> {
 	protected void updateFormTitle() {
 		if (form == null)
 			return;
-		form.setText(Messages.Source + ": " + getModel().getName());
+		form.setText(M.Source + ": " + getModel().getName());
 	}
 
 	protected void createAdditionalInfo(Composite body) {
 		Composite composite = UI.formSection(body, toolkit,
-				Messages.AdditionalInformation);
-		createText(Messages.Doi, "doi", composite);
-		createText(Messages.TextReference, "textReference", composite);
+				M.AdditionalInformation);
+		createText(M.Doi, "doi", composite);
+		createText(M.TextReference, "textReference", composite);
 		Text text = UI.formText(composite, getManagedForm().getToolkit(),
-				Messages.Year);
+				M.Year);
 		getBinding().onShort(() -> getModel(), "year", text);
 		createFileSection(composite);
 	}
 
 	private void createFileSection(Composite parent) {
-		UI.formLabel(parent, Messages.File);
+		UI.formLabel(parent, M.File);
 		Composite composite = toolkit.createComposite(parent);
 		GridLayout layout = new GridLayout();
 		layout.marginWidth = 0;
@@ -90,7 +90,7 @@ class SourceInfoPage extends ModelPage<Source> {
 		layout.numColumns = 3;
 		composite.setLayout(layout);
 		composite.addMouseTrackListener(new DeleteFileVisibility());
-		Button browseButton = toolkit.createButton(composite, Messages.Browse,
+		Button browseButton = toolkit.createButton(composite, M.Browse,
 				SWT.NONE);
 		Controls.onSelect(browseButton, (e) -> selectFile());
 		createFileLink(composite);
@@ -102,7 +102,7 @@ class SourceInfoPage extends ModelPage<Source> {
 		deleteLink.setImage(Icon.DELETE_DISABLED.get());
 		deleteLink.addMouseTrackListener(new DeleteFileVisibility());
 		deleteLink.setVisible(false);
-		deleteLink.setToolTipText(Messages.Delete);
+		deleteLink.setToolTipText(M.Delete);
 		deleteLink.addHyperlinkListener(new DeleteFileListener());
 	}
 
@@ -114,7 +114,7 @@ class SourceInfoPage extends ModelPage<Source> {
 		String file = getModel().getExternalFile();
 		if (file != null) {
 			fileLink.setText(file);
-			fileLink.setToolTipText(Messages.Open);
+			fileLink.setToolTipText(M.Open);
 			fileLink.setImage(Images.get(FileType.forName(file)));
 		}
 	}
@@ -128,8 +128,8 @@ class SourceInfoPage extends ModelPage<Source> {
 		File dbFile = new File(dir, fileName);
 		if (dbFile.exists()) {
 			boolean doIt = Question
-					.ask(Messages.OverwriteFile,
-							Messages.SourceFileOverwriteFileQuestion);
+					.ask(M.OverwriteFile,
+							M.SourceFileOverwriteFileQuestion);
 			if (!doIt)
 				return;
 		}
@@ -159,7 +159,7 @@ class SourceInfoPage extends ModelPage<Source> {
 			fileLink.setToolTipText("");
 			fileLink.setImage(null);
 		} else {
-			fileLink.setToolTipText(Messages.Open);
+			fileLink.setToolTipText(M.Open);
 			fileLink.setText(file);
 			fileLink.setImage(Images.get(FileType.forName(file)));
 		}
@@ -185,7 +185,7 @@ class SourceInfoPage extends ModelPage<Source> {
 				log.trace("open file {}", file);
 				Desktop.browse(file.toURI().toString());
 			} else {
-				Info.showBox(Messages.FileDoesNotExist);
+				Info.showBox(M.FileDoesNotExist);
 			}
 		}
 	}
@@ -196,8 +196,8 @@ class SourceInfoPage extends ModelPage<Source> {
 			if (getModel().getExternalFile() == null)
 				return;
 			File file = getDatabaseFile();
-			boolean doIt = Question.ask(Messages.DeleteFile,
-					Messages.SourceFileDeleteQuestion);
+			boolean doIt = Question.ask(M.DeleteFile,
+					M.SourceFileDeleteQuestion);
 			if (!doIt)
 				return;
 			try {

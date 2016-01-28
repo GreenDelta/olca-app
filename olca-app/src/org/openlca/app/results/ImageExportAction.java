@@ -10,7 +10,7 @@ import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.rcp.images.Icon;
 import org.slf4j.Logger;
@@ -27,7 +27,7 @@ public class ImageExportAction extends Action {
 
 	public ImageExportAction(Composite composite) {
 		setId("ImageExportAction#composite");
-		setToolTipText(Messages.SaveAsImage);
+		setToolTipText(M.SaveAsImage);
 		setImageDescriptor(Icon.SAVE_AS_IMAGE.descriptor());
 		this.composite = composite;
 	}

@@ -5,7 +5,7 @@ import java.util.List;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.core.model.Parameter;
 
 /**
@@ -17,7 +17,7 @@ public class FormulaTextCellEditor extends AutoCompleteTextCellEditor {
 
 	public FormulaTextCellEditor(TableViewer viewer, int column,
 			List<Parameter> parameters) {
-		super(viewer, column, Messages.SelectTheParameterYouWantToReferTo);
+		super(viewer, column, M.SelectTheParameterYouWantToReferTo);
 		this.parameters = parameters;
 	}
 

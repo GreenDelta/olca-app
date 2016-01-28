@@ -15,7 +15,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.UI;
@@ -35,7 +35,7 @@ class GroupSetAction extends Action {
 
 	public GroupSetAction(GroupPage page) {
 		this.page = page;
-		setToolTipText(Messages.Open);
+		setToolTipText(M.Open);
 		setImageDescriptor(Icon.FOLDER_OPEN.descriptor());
 	}
 
@@ -80,14 +80,14 @@ class GroupSetAction extends Action {
 
 		@Override
 		protected Control createDialogArea(Composite root) {
-			getShell().setText(Messages.Open);
+			getShell().setText(M.Open);
 			toolkit.adapt(root);
 			Composite area = (Composite) super.createDialogArea(root);
 			toolkit.adapt(area);
 			Composite container = toolkit.createComposite(area);
 			UI.gridData(container, true, true);
 			UI.gridLayout(container, 2);
-			combo = UI.formCombo(container, toolkit, Messages.Grouping);
+			combo = UI.formCombo(container, toolkit, M.Grouping);
 			UI.gridData(combo, false, false).widthHint = 250;
 			combo.addSelectionListener(this);
 			getShell().pack();

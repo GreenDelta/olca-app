@@ -25,7 +25,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.ui.forms.widgets.TableWrapData;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.core.model.RootEntity;
 
 /**
@@ -113,7 +113,7 @@ public final class FancyToolTip extends DefaultToolTip {
 			twd_textField.grabVertical = true;
 			twd_textField.grabHorizontal = true;
 			textField.setLayoutData(twd_textField);
-			final String nullText = Messages.NoDescription;
+			final String nullText = M.NoDescription;
 			textField.setText(descriptor.getDescription() != null ? descriptor
 					.getDescription() : nullText);
 		}

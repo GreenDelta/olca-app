@@ -9,7 +9,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.ui.PlatformUI;
 import org.openlca.app.App;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.navigation.DatabaseElement;
@@ -33,7 +33,7 @@ public class DatabaseActivateAction extends Action implements INavigationAction 
 	private IDatabaseConfiguration config;
 
 	public DatabaseActivateAction() {
-		setText(Messages.OpenDatabase);
+		setText(M.OpenDatabase);
 		setImageDescriptor(Icon.CONNECT.descriptor());
 	}
 
@@ -84,7 +84,7 @@ public class DatabaseActivateAction extends Action implements INavigationAction 
 		public void run(IProgressMonitor monitor)
 				throws InvocationTargetException, InterruptedException {
 			try {
-				monitor.beginTask(Messages.OpenDatabase, IProgressMonitor.UNKNOWN);
+				monitor.beginTask(M.OpenDatabase, IProgressMonitor.UNKNOWN);
 				Database.close();
 				IDatabase database = Database.activate(config);
 				versionState = Upgrades.checkVersion(database);
@@ -109,7 +109,7 @@ public class DatabaseActivateAction extends Action implements INavigationAction 
 				return;
 			VersionState state = activation.versionState;
 			if (state == null || state == VersionState.ERROR) {
-				error(Messages.DatabaseVersionCheckFailed);
+				error(M.DatabaseVersionCheckFailed);
 				return;
 			}
 			handleVersionState(state);
@@ -118,7 +118,7 @@ public class DatabaseActivateAction extends Action implements INavigationAction 
 		private void handleVersionState(VersionState state) {
 			switch (state) {
 			case NEWER:
-				error(Messages.DatabaseNeedsUpdate);
+				error(M.DatabaseNeedsUpdate);
 				break;
 			case OLDER:
 				askRunUpdates();
@@ -132,7 +132,7 @@ public class DatabaseActivateAction extends Action implements INavigationAction 
 		}
 
 		private void error(String message) {
-			org.openlca.app.util.Error.showBox(Messages.CouldNotOpenDatabase,
+			org.openlca.app.util.Error.showBox(M.CouldNotOpenDatabase,
 					message);
 			closeDatabase();
 		}
@@ -140,14 +140,14 @@ public class DatabaseActivateAction extends Action implements INavigationAction 
 		private void askRunUpdates() {
 			IDatabase db = Database.get();
 			boolean doIt = Question
-					.ask(Messages.UpdateDatabase,
-							Messages.UpdateDatabaseQuestion);
+					.ask(M.UpdateDatabase,
+							M.UpdateDatabaseQuestion);
 			if (!doIt) {
 				closeDatabase();
 				return;
 			}
 			AtomicBoolean failed = new AtomicBoolean(false);
-			App.run(Messages.UpdateDatabase,
+			App.run(M.UpdateDatabase,
 					() -> runUpdate(db, failed),
 					() -> {
 						if (failed.get())

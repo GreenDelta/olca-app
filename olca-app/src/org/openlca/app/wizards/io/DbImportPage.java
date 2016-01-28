@@ -12,7 +12,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseList;
@@ -34,8 +34,8 @@ class DbImportPage extends WizardPage {
 		super("DbImportPage");
 		config = new ImportConfig();
 		config.setMode(config.EXISTING_MODE);
-		setTitle(Messages.DatabaseImport);
-		setDescription(Messages.DatabaseImportDescription);
+		setTitle(M.DatabaseImport);
+		setDescription(M.DatabaseImportDescription);
 		setPageComplete(false);
 	}
 

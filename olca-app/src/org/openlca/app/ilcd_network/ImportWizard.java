@@ -8,7 +8,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.preferencepages.IoPreference;
@@ -63,7 +63,7 @@ public class ImportWizard extends Wizard implements IImportWizard {
 		config.ilcdConfig = new IlcdConfig(IoPreference.getIlcdLanguage());
 		client.connect();
 		getContainer().run(true, true, monitor -> {
-			monitor.beginTask(Messages.ILCD_RunImport, IProgressMonitor.UNKNOWN);
+			monitor.beginTask(M.ILCD_RunImport, IProgressMonitor.UNKNOWN);
 			try {
 				importProcesses(processes, config);
 			} catch (Exception e) {
@@ -93,7 +93,7 @@ public class ImportWizard extends Wizard implements IImportWizard {
 
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		setWindowTitle(Messages.ILCD_NetworkImport);
+		setWindowTitle(M.ILCD_NetworkImport);
 		setDefaultPageImageDescriptor(RcpActivator.imageDescriptorFromPlugin(
 				RcpActivator.PLUGIN_ID, "/icons/network_wiz.png"));
 		setNeedsProgressMonitor(true);

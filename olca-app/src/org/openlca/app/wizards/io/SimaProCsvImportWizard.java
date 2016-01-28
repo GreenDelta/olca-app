@@ -9,7 +9,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
@@ -29,7 +29,7 @@ public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
 
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		setWindowTitle(Messages.SimaProCSVImport);
+		setWindowTitle(M.SimaProCSVImport);
 		setDefaultPageImageDescriptor(Icon.IMPORT_ZIP_WIZARD
 				.descriptor());
 	}
@@ -48,7 +48,7 @@ public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
 				@Override
 				public void run(final IProgressMonitor monitor)
 						throws InvocationTargetException, InterruptedException {
-					monitor.beginTask(Messages.Import, IProgressMonitor.UNKNOWN);
+					monitor.beginTask(M.Import, IProgressMonitor.UNKNOWN);
 					ImportHandler handler = new ImportHandler(monitor);
 					handler.run(importer);
 				}

@@ -6,7 +6,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.ui.part.EditorActionBarContributor;
 import org.openlca.app.App;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
@@ -63,7 +63,7 @@ public class ProductSystemActions extends EditorActionBarContributor {
 	private class CsvExportAction extends Action {
 		public CsvExportAction() {
 			setImageDescriptor(Images.descriptor(FileType.CSV));
-			setText(Messages.ExportAsMatrix);
+			setText(M.ExportAsMatrix);
 		}
 
 		@Override
@@ -77,7 +77,7 @@ public class ProductSystemActions extends EditorActionBarContributor {
 	private class ExcelExportAction extends Action {
 		public ExcelExportAction() {
 			setImageDescriptor(Images.descriptor(FileType.EXCEL));
-			setText(Messages.ExportAsMatrix);
+			setText(M.ExportAsMatrix);
 		}
 
 		@Override
@@ -90,7 +90,7 @@ public class ProductSystemActions extends EditorActionBarContributor {
 	private class MatrixImageExportAction extends Action {
 		public MatrixImageExportAction() {
 			setImageDescriptor(Icon.SAVE_AS_IMAGE.descriptor());
-			setText(Messages.SaveAsImage);
+			setText(M.SaveAsImage);
 		}
 
 		@Override
@@ -99,7 +99,7 @@ public class ProductSystemActions extends EditorActionBarContributor {
 			final File file = FileChooser.forExport("*.png", "matrix.png");
 			if (system == null || file == null)
 				return;
-			App.run(Messages.ImageExport, new Runnable() {
+			App.run(M.ImageExport, new Runnable() {
 				public void run() {
 					try {
 						Inventory inventory = DataStructures.createInventory(

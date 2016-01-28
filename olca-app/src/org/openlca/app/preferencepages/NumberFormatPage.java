@@ -8,7 +8,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.Preferences;
 import org.openlca.app.editors.DataBinding;
 import org.openlca.app.util.Numbers;
@@ -44,10 +44,10 @@ public class NumberFormatPage extends PreferencePage implements
 	protected Control createContents(Composite body) {
 		Composite parent = UI.formComposite(body);
 		Label description = new Label(parent, SWT.NONE);
-		description.setText(Messages.NumberFormatPage_Description);
+		description.setText(M.NumberFormatPage_Description);
 		UI.gridData(description, false, false).horizontalSpan = 2;
 		numberText = UI.formText(parent,
-				Messages.NumberOfDecimalPlaces);
+				M.NumberOfDecimalPlaces);
 		UI.gridData(numberText, false, false).widthHint = 80;
 		new DataBinding().onInt(() -> this, "accuracy", numberText);
 		createExample(parent);
@@ -56,7 +56,7 @@ public class NumberFormatPage extends PreferencePage implements
 
 	private void createExample(Composite parent) {
 		Label exampleLabel = new Label(parent, SWT.NONE);
-		exampleLabel.setText(Messages.Example);
+		exampleLabel.setText(M.Example);
 		UI.gridData(exampleLabel, false, false).horizontalSpan = 2;
 		new Label(parent, SWT.NONE).setText(Double.toString(sampleVal) + " ->");
 		sampleLabel = new Label(parent, SWT.NONE);

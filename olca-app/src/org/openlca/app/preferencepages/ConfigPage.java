@@ -13,7 +13,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.openlca.app.Config;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
@@ -35,7 +35,7 @@ public class ConfigPage extends PreferencePage implements
 
 	@Override
 	public String getTitle() {
-		return Messages.Configuration;
+		return M.Configuration;
 	}
 
 	@Override
@@ -58,23 +58,23 @@ public class ConfigPage extends PreferencePage implements
 		UI.gridLayout(composite, 2);
 		UI.gridData(composite, true, false);
 		createLanguageCombo(composite);
-		memoryText = UI.formText(composite, Messages.MaximumMemoryUsage);
+		memoryText = UI.formText(composite, M.MaximumMemoryUsage);
 		memoryText.setText(Integer.toString(iniFile.getMaxMemory()));
 		memoryText.addModifyListener((e) -> setDirty());
-		browserCheck = UI.formCheckBox(composite, Messages.UseBrowserFeatures);
+		browserCheck = UI.formCheckBox(composite, M.UseBrowserFeatures);
 		browserCheck.setSelection(browserEnabled);
 		Controls.onSelect(browserCheck, (e) -> {
 			browserEnabled = browserCheck.getSelection();
 			setDirty();
 		});
 		new Label(composite, SWT.NONE);
-		createNoteComposite(composite.getFont(), composite, Messages.Note
-				+ ": ", Messages.SelectLanguageNoteMessage);
+		createNoteComposite(composite.getFont(), composite, M.Note
+				+ ": ", M.SelectLanguageNoteMessage);
 		return body;
 	}
 
 	private void createLanguageCombo(Composite composite) {
-		UI.formLabel(composite, Messages.Language);
+		UI.formLabel(composite, M.Language);
 		languageCombo = new Combo(composite, SWT.READ_ONLY);
 		UI.gridData(languageCombo, true, false);
 		initComboValues();
@@ -158,8 +158,8 @@ public class ConfigPage extends PreferencePage implements
 	public boolean performOk() {
 		if (!isDirty)
 			return true;
-		if (Question.ask(Messages.SaveChangesQuestion,
-				Messages.SaveChangesQuestion)) {
+		if (Question.ask(M.SaveChangesQuestion,
+				M.SaveChangesQuestion)) {
 			performApply();
 		}
 		return true;

@@ -7,7 +7,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.Category;
@@ -20,7 +20,7 @@ import org.openlca.util.Strings;
 public class FlowViewer extends AbstractComboViewer<FlowDescriptor> {
 
 	private static final String[] COLUMN_HEADERS = new String[] {
-			Messages.Name, Messages.Category, Messages.Location, " " };
+			M.Name, M.Category, M.Location, " " };
 	private static final int[] COLUMN_BOUNDS_PERCENTAGES = new int[] { 30, 30,
 			10, 30 };
 

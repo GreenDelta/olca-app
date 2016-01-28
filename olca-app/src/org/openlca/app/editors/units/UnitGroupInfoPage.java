@@ -7,7 +7,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.util.UI;
@@ -23,7 +23,7 @@ class UnitGroupInfoPage extends ModelPage<UnitGroup> {
 	private ScrolledForm form;
 
 	UnitGroupInfoPage(UnitGroupEditor editor) {
-		super(editor, "UnitGroupInfoPage", Messages.GeneralInformation);
+		super(editor, "UnitGroupInfoPage", M.GeneralInformation);
 		this.editor = editor;
 	}
 
@@ -44,15 +44,15 @@ class UnitGroupInfoPage extends ModelPage<UnitGroup> {
 	protected void updateFormTitle() {
 		if (form == null)
 			return;
-		form.setText(Messages.UnitGroup + ": " + getModel().getName());
+		form.setText(M.UnitGroup + ": " + getModel().getName());
 	}
 
 	protected void createAdditionalInfo(InfoSection infoSection, Composite body) {
-		createDropComponent(Messages.DefaultFlowProperty,
+		createDropComponent(M.DefaultFlowProperty,
 				"defaultFlowProperty", ModelType.FLOW_PROPERTY,
 				infoSection.getContainer());
 		Section section = UI.section(body, toolkit,
-				Messages.Units);
+				M.Units);
 		UI.gridData(section, true, true);
 		Composite client = UI.sectionClient(section, toolkit);
 		UnitViewer unitViewer = new UnitViewer(client, editor);

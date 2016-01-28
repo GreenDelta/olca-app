@@ -7,7 +7,7 @@ import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.components.ResultTypeSelection;
 import org.openlca.app.components.ResultTypeSelection.EventHandler;
 import org.openlca.app.db.Cache;
@@ -32,7 +32,7 @@ public class SankeySelectionDialog extends FormDialog implements EventHandler {
 	protected void createFormContent(final IManagedForm mform) {
 		FormToolkit toolkit = mform.getToolkit();
 		ScrolledForm form = UI.formHeader(mform,
-				Messages.SettingsForTheSankeyDiagram);
+				M.SettingsForTheSankeyDiagram);
 		Composite body = UI.formBody(form, toolkit);
 		UI.gridLayout(body, 2);
 		ResultTypeSelection.on(result, Cache.getEntityCache())
@@ -42,7 +42,7 @@ public class SankeySelectionDialog extends FormDialog implements EventHandler {
 	}
 
 	private void createCutoffSpinner(FormToolkit toolkit, Composite composite) {
-		toolkit.createLabel(composite, Messages.Cutoff);
+		toolkit.createLabel(composite, M.Cutoff);
 		Spinner spinner = new Spinner(composite, SWT.BORDER);
 		spinner.setIncrement(100);
 		spinner.setMinimum(0);

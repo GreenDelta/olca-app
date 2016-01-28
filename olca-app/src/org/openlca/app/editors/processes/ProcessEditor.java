@@ -5,7 +5,7 @@ import java.util.List;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.IEditor;
 import org.openlca.app.editors.ModelEditor;
@@ -55,7 +55,7 @@ public class ProcessEditor extends ModelEditor<Process>implements IEditor {
 			if (errors.size() > 1)
 				message += " (" + (errors.size() - 1) + " more)";
 			org.openlca.app.util.Error.showBox(
-					Messages.FormulaEvaluationFailed, message);
+					M.FormulaEvaluationFailed, message);
 		}
 	}
 

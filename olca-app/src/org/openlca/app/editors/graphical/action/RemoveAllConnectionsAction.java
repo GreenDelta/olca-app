@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.viewers.ISelection;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.editors.graphical.command.CommandFactory;
 import org.openlca.app.editors.graphical.model.ConnectionLink;
 import org.openlca.app.editors.graphical.model.ProcessNode;
@@ -19,7 +19,7 @@ class RemoveAllConnectionsAction extends EditorAction {
 
 	RemoveAllConnectionsAction() {
 		setId(ActionIds.REMOVE_ALL_CONNECTIONS);
-		setText(Messages.RemoveConnections);
+		setText(M.RemoveConnections);
 	}
 
 	@Override

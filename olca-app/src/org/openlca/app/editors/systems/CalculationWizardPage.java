@@ -6,7 +6,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.Preferences;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Icon;
@@ -43,8 +43,8 @@ class CalculationWizardPage extends WizardPage {
 	public CalculationWizardPage(ProductSystem system) {
 		super(CalculationWizardPage.class.getCanonicalName());
 		this.productSystem = system;
-		setTitle(Messages.CalculationProperties);
-		setDescription(Messages.CalculationWizardDescription);
+		setTitle(M.CalculationProperties);
+		setDescription(M.CalculationWizardDescription);
 		setImageDescriptor(Icon.CALCULATION_WIZARD.descriptor());
 		setPageComplete(true);
 	}
@@ -72,10 +72,10 @@ class CalculationWizardPage extends WizardPage {
 		UI.gridLayout(body, 2).verticalSpacing = 12;
 		createAllocationViewer(body);
 		createMethodComboViewer(body);
-		UI.formLabel(body, Messages.NormalizationAndWeightingSet);
+		UI.formLabel(body, M.NormalizationAndWeightingSet);
 		nwViewer = new NwSetComboViewer(body);
 		nwViewer.setDatabase(Database.get());
-		UI.formLabel(body, Messages.CalculationType);
+		UI.formLabel(body, M.CalculationType);
 		Composite typePanel = new Composite(body, SWT.NONE);
 		UI.gridLayout(typePanel, 2).horizontalSpacing = 15;
 		createRadios(typePanel);
@@ -85,7 +85,7 @@ class CalculationWizardPage extends WizardPage {
 	}
 
 	private void createIterationText(Composite typePanel) {
-		Label label = UI.formLabel(typePanel, Messages.NumberOfIterations);
+		Label label = UI.formLabel(typePanel, M.NumberOfIterations);
 		UI.gridData(label, false, false).horizontalIndent = 16;
 		iterationText = new Text(typePanel, SWT.BORDER);
 		UI.gridData(iterationText, false, false).widthHint = 80;
@@ -96,8 +96,8 @@ class CalculationWizardPage extends WizardPage {
 			try {
 				iterationCount = Integer.parseInt(text);
 			} catch (Exception e2) {
-				Error.showBox(Messages.InvalidNumber, text + " "
-						+ Messages.IsNotValidNumber);
+				Error.showBox(M.InvalidNumber, text + " "
+						+ M.IsNotValidNumber);
 			}
 		});
 	}
@@ -131,20 +131,20 @@ class CalculationWizardPage extends WizardPage {
 	private String getLabel(CalculationType type) {
 		switch (type) {
 		case ANALYSIS:
-			return Messages.Analysis;
+			return M.Analysis;
 		case MONTE_CARLO:
-			return Messages.MonteCarloSimulation;
+			return M.MonteCarloSimulation;
 		case QUICK:
-			return Messages.QuickResults;
+			return M.QuickResults;
 		case REGIONALIZED:
-			return Messages.RegionalizedLCIA;
+			return M.RegionalizedLCIA;
 		default:
-			return Messages.Unknown;
+			return M.Unknown;
 		}
 	}
 
 	private void createAllocationViewer(Composite parent) {
-		UI.formLabel(parent, Messages.AllocationMethod);
+		UI.formLabel(parent, M.AllocationMethod);
 		allocationViewer = new AllocationMethodViewer(parent,
 				AllocationMethod.values());
 		allocationViewer.setNullable(false);
@@ -152,7 +152,7 @@ class CalculationWizardPage extends WizardPage {
 	}
 
 	private void createMethodComboViewer(Composite parent) {
-		UI.formLabel(parent, Messages.ImpactAssessmentMethod);
+		UI.formLabel(parent, M.ImpactAssessmentMethod);
 		methodViewer = new ImpactMethodViewer(parent);
 		methodViewer.setInput(Database.get());
 		methodViewer.addSelectionChangedListener((selection) -> nwViewer

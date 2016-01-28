@@ -18,7 +18,7 @@ import org.eclipse.ui.actions.ContributionItemFactory;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 import org.openlca.app.Config;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.devtools.js.JavaScriptEditor;
 import org.openlca.app.devtools.python.PythonEditor;
 import org.openlca.app.devtools.sql.SqlEditor;
@@ -71,7 +71,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	}
 
 	private void fillHelpMenu(IMenuManager menuBar) {
-		MenuManager helpMenu = new MenuManager(Messages.Help, IWorkbenchActionConstants.M_HELP);
+		MenuManager helpMenu = new MenuManager(M.Help, IWorkbenchActionConstants.M_HELP);
 		HelpAction helpAction = new HelpAction();
 		helpMenu.add(helpAction);
 		helpMenu.add(new Separator());
@@ -81,7 +81,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	}
 
 	private void fillFileMenu(IMenuManager menuBar) {
-		MenuManager menu = new MenuManager(Messages.File, IWorkbenchActionConstants.M_FILE);
+		MenuManager menu = new MenuManager(M.File, IWorkbenchActionConstants.M_FILE);
 		menu.add(saveAction);
 		menu.add(saveAsAction);
 		menu.add(saveAllAction);
@@ -100,17 +100,17 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	}
 
 	private void fillWindowMenu(IMenuManager menuBar) {
-		MenuManager windowMenu = new MenuManager(Messages.Window, IWorkbenchActionConstants.M_WINDOW);
-		MenuManager viewMenu = new MenuManager(Messages.Showviews);
+		MenuManager windowMenu = new MenuManager(M.Window, IWorkbenchActionConstants.M_WINDOW);
+		MenuManager viewMenu = new MenuManager(M.Showviews);
 		viewMenu.add(showViews);
 		windowMenu.add(viewMenu);
-		MenuManager perspectivesMenu = new MenuManager(Messages.Showperspectives);
+		MenuManager perspectivesMenu = new MenuManager(M.Showperspectives);
 		perspectivesMenu.add(showPerspectives);
 		windowMenu.add(perspectivesMenu);
 		createDeveloperMenu(windowMenu);
 		windowMenu.add(new FormulaConsoleAction());
 		if (MozillaConfigView.canShow()) {
-			windowMenu.add(Actions.create(Messages.BrowserConfiguration, Icon.FIREFOX.descriptor(),
+			windowMenu.add(Actions.create(M.BrowserConfiguration, Icon.FIREFOX.descriptor(),
 					MozillaConfigView::open));
 		}
 		menuBar.add(windowMenu);
@@ -118,7 +118,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 
 	private void createDeveloperMenu(MenuManager windowMenu) {
 		windowMenu.add(new Separator());
-		MenuManager devMenu = new MenuManager(Messages.DeveloperTools);
+		MenuManager devMenu = new MenuManager(M.DeveloperTools);
 		windowMenu.add(devMenu);
 		devMenu.add(Actions.create("SQL", Icon.SQL.descriptor(), SqlEditor::open));
 		devMenu.add(Actions.create("JavaScript", Icon.JAVASCRIPT.descriptor(), JavaScriptEditor::open));
@@ -144,8 +144,8 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 
 	private class HelpAction extends Action {
 		public HelpAction() {
-			setText(Messages.OnlineHelp);
-			setToolTipText(Messages.OnlineHelp);
+			setText(M.OnlineHelp);
+			setToolTipText(M.OnlineHelp);
 			setImageDescriptor(Icon.HELP.descriptor());
 		}
 
@@ -158,7 +158,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	private class HomeAction extends Action {
 		public HomeAction() {
 			setImageDescriptor(Icon.HOME.descriptor());
-			setText(Messages.Home);
+			setText(M.Home);
 		}
 
 		@Override

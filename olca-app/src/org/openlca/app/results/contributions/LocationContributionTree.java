@@ -14,7 +14,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.results.contributions.LocationContributionPage.TreeItem;
 import org.openlca.app.util.Actions;
@@ -38,8 +38,8 @@ class LocationContributionTree {
 	private final int AMOUNT_COL = 2;
 	private final int UNIT_COL = 3;
 
-	private String[] COLUMN_LABELS = { Messages.Location, Messages.Process,
-			Messages.Amount, Messages.Unit };
+	private String[] COLUMN_LABELS = { M.Location, M.Process,
+			M.Amount, M.Unit };
 
 	private TreeViewer viewer;
 	private String unit;
@@ -152,7 +152,7 @@ class LocationContributionTree {
 				ContributionItem<Location> contribution, int col) {
 			switch (col) {
 			case LOCATION_COL:
-				return contribution.item == null ? Messages.Other
+				return contribution.item == null ? M.Other
 						: Labels.getDisplayName(contribution.item);
 			case PROCESS_COL:
 				return "";
@@ -171,7 +171,7 @@ class LocationContributionTree {
 			case LOCATION_COL:
 				return "";
 			case PROCESS_COL:
-				return contribution.item == null ? Messages.Other
+				return contribution.item == null ? M.Other
 						: Labels.getDisplayName(contribution.item);
 			case AMOUNT_COL:
 				return Numbers.format(contribution.amount);

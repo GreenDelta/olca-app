@@ -5,7 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.openlca.app.App;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.preferencepages.FeatureFlag;
@@ -88,7 +88,7 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 		public void run(IProgressMonitor monitor)
 				throws InvocationTargetException, InterruptedException {
 			try {
-				monitor.beginTask(Messages.CreatingProductSystem,
+				monitor.beginTask(M.CreatingProductSystem,
 						IProgressMonitor.UNKNOWN);
 				ProductSystemBuilder builder = new ProductSystemBuilder(cache,
 						preferSystemProcesses);
@@ -104,7 +104,7 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 
 	@Override
 	protected String getTitle() {
-		return Messages.NewProductSystem;
+		return M.NewProductSystem;
 	}
 
 	@Override

@@ -8,7 +8,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ui.IWorkbenchWizard;
 import org.eclipse.ui.PlatformUI;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.navigation.CategoryElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelTypeElement;
@@ -94,36 +94,36 @@ public class CreateModelAction extends Action implements INavigationAction {
 	@Override
 	public String getText() {
 		if (type == null)
-			return Messages.Unknown + "?";
+			return M.Unknown + "?";
 		switch (type) {
 		case ACTOR:
-			return Messages.NewActor;
+			return M.NewActor;
 		case CURRENCY:
 			return "#New currency";
 		case FLOW:
-			return Messages.NewFlow;
+			return M.NewFlow;
 		case FLOW_PROPERTY:
-			return Messages.NewFlowProperty;
+			return M.NewFlowProperty;
 		case IMPACT_METHOD:
-			return Messages.NewLCIAMethod;
+			return M.NewLCIAMethod;
 		case PROCESS:
-			return Messages.NewProcess;
+			return M.NewProcess;
 		case PRODUCT_SYSTEM:
-			return Messages.NewProductSystem;
+			return M.NewProductSystem;
 		case PROJECT:
-			return Messages.NewProject;
+			return M.NewProject;
 		case SOCIAL_INDICATOR:
-			return Messages.NewSocialIndicator;
+			return M.NewSocialIndicator;
 		case SOURCE:
-			return Messages.NewSource;
+			return M.NewSource;
 		case UNIT_GROUP:
-			return Messages.NewUnitGroup;
+			return M.NewUnitGroup;
 		case LOCATION:
-			return Messages.NewLocation;
+			return M.NewLocation;
 		case PARAMETER:
-			return Messages.NewParameter;
+			return M.NewParameter;
 		default:
-			return Messages.Unknown + "?";
+			return M.Unknown + "?";
 		}
 	}
 

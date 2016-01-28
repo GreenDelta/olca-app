@@ -11,7 +11,7 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 
@@ -44,7 +44,7 @@ public class Actions {
 	public static Action onAdd(final Runnable runnable) {
 		return new Action() {
 			{
-				setText(Messages.CreateNew);
+				setText(M.CreateNew);
 				setImageDescriptor(Icon.ADD.descriptor());
 				setDisabledImageDescriptor(Icon.ADD_DISABLED.descriptor());
 			}
@@ -59,7 +59,7 @@ public class Actions {
 	public static Action onCalculate(final Runnable runnable) {
 		return new Action() {
 			{
-				setText(Messages.CalculateResults);
+				setText(M.CalculateResults);
 				setImageDescriptor(Icon.CALCULATE.descriptor());
 			}
 
@@ -73,7 +73,7 @@ public class Actions {
 	public static Action onRemove(final Runnable runnable) {
 		return new Action() {
 			{
-				setText(Messages.RemoveSelected);
+				setText(M.RemoveSelected);
 				setImageDescriptor(Icon.DELETE.descriptor());
 				setDisabledImageDescriptor(Icon.DELETE_DISABLED.descriptor());
 			}
@@ -88,8 +88,8 @@ public class Actions {
 	public static Action onSave(final Runnable runnable) {
 		return new Action() {
 			{
-				setText(Messages.Save);
-				setToolTipText(Messages.Save);
+				setText(M.Save);
+				setToolTipText(M.Save);
 				ImageDescriptor image = Images.platformDescriptor(ISharedImages.IMG_ETOOL_SAVE_EDIT);
 				setImageDescriptor(image);
 				ImageDescriptor imageDis = Images.platformDescriptor(ISharedImages.IMG_ETOOL_SAVE_EDIT_DISABLED);

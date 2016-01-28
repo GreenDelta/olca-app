@@ -13,7 +13,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.editors.graphical.layout.GraphLayoutManager;
 import org.openlca.app.editors.graphical.layout.GraphLayoutType;
 import org.openlca.app.editors.graphical.model.ConnectionLink;
@@ -132,21 +132,21 @@ public class CommandFactory {
 			List<ProcessDescriptor> processesToCreate,
 			List<ConnectionInput> newConnections, ProductSystemNode model) {
 		return createMassCreationCommand(processesToCreate, newConnections,
-				model, Messages.BuildNextTier);
+				model, M.BuildNextTier);
 	}
 
 	public static MassCreationCommand createConnectProvidersCommand(
 			List<ProcessDescriptor> processesToCreate,
 			List<ConnectionInput> newConnections, ProductSystemNode model) {
 		return createMassCreationCommand(processesToCreate, newConnections,
-				model, Messages.ConnectProviders);
+				model, M.ConnectProviders);
 	}
 
 	public static MassCreationCommand createConnectRecipientsCommand(
 			List<ProcessDescriptor> processesToCreate,
 			List<ConnectionInput> newConnections, ProductSystemNode model) {
 		return createMassCreationCommand(processesToCreate, newConnections,
-				model, Messages.ConnectRecipients);
+				model, M.ConnectRecipients);
 	}
 
 	private static MassCreationCommand createMassCreationCommand(

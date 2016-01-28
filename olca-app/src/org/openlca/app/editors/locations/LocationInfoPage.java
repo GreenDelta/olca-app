@@ -9,7 +9,7 @@ import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.processes.kml.KmlPrettifyFunction;
@@ -32,7 +32,7 @@ public class LocationInfoPage extends ModelPage<Location> implements HtmlPage {
 	private ScrolledForm form;
 
 	LocationInfoPage(LocationEditor editor) {
-		super(editor, "LocationInfoPage", Messages.GeneralInformation);
+		super(editor, "LocationInfoPage", M.GeneralInformation);
 	}
 
 	@Override
@@ -53,15 +53,15 @@ public class LocationInfoPage extends ModelPage<Location> implements HtmlPage {
 	protected void updateFormTitle() {
 		if (form == null)
 			return;
-		form.setText(Messages.Location + ": " + getModel().getName());
+		form.setText(M.Location + ": " + getModel().getName());
 	}
 
 	private void createAdditionalInfo(Composite body) {
 		Composite composite = UI.formSection(body, toolkit,
-				Messages.AdditionalInformation);
-		createText(Messages.Code, "code", composite);
-		createDoubleText(Messages.Longitude, "longitude", composite);
-		createDoubleText(Messages.Latitude, "latitude", composite);
+				M.AdditionalInformation);
+		createText(M.Code, "code", composite);
+		createDoubleText(M.Longitude, "longitude", composite);
+		createDoubleText(M.Latitude, "latitude", composite);
 	}
 
 	private void createMapEditorArea(Composite body) {
@@ -70,7 +70,7 @@ public class LocationInfoPage extends ModelPage<Location> implements HtmlPage {
 						| ExpandableComposite.EXPANDED
 						| ExpandableComposite.TWISTIE);
 		UI.gridData(section, true, true);
-		section.setText(Messages.KmlEditor);
+		section.setText(M.KmlEditor);
 		Composite composite = toolkit.createComposite(section);
 		section.setClient(composite);
 		Actions.bind(section, new ClearAction());

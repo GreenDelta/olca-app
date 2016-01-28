@@ -11,7 +11,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IExportWizard;
 import org.eclipse.ui.IWorkbench;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
@@ -27,7 +27,7 @@ public class ExcelExportWizard extends Wizard implements IExportWizard {
 
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		setWindowTitle(Messages.ExcelExport);
+		setWindowTitle(M.ExcelExport);
 		setNeedsProgressMonitor(true);
 	}
 
@@ -56,7 +56,7 @@ public class ExcelExportWizard extends Wizard implements IExportWizard {
 				@Override
 				public void run(IProgressMonitor monitor)
 						throws InvocationTargetException, InterruptedException {
-					monitor.beginTask(Messages.Export,
+					monitor.beginTask(M.Export,
 							IProgressMonitor.UNKNOWN);
 					export.run();
 					monitor.done();

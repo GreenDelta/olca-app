@@ -14,7 +14,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.App;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.components.FileSelection;
 import org.openlca.app.db.Cache;
 import org.openlca.app.rcp.images.Images;
@@ -36,13 +36,13 @@ public class CsvExportShell extends Shell {
 
 	private String[] columnSeparators = { ",", ";", "\t" };
 	private String[] columnSeparatorNames = {
-			Messages.Comma + " (,)",
-			Messages.Semicolon + " (;)",
-			Messages.Tab + " (\\t)" };
+			M.Comma + " (,)",
+			M.Semicolon + " (;)",
+			M.Tab + " (\\t)" };
 	private String[] decimalSeparators = { ".", "," };
 	private String[] decimalSeparatorNames = {
-			Messages.Dot + " (.)",
-			Messages.Comma + " (,)" };
+			M.Dot + " (.)",
+			M.Comma + " (,)" };
 
 	private Combo pointCombo;
 	private Combo columnCombo;
@@ -54,7 +54,7 @@ public class CsvExportShell extends Shell {
 		super(parent, SWT.SHELL_TRIM);
 		setImage(Images.get(FileType.CSV));
 		setLayout(new FillLayout(SWT.HORIZONTAL));
-		setText(Messages.MatrixExport);
+		setText(M.MatrixExport);
 		setSize(450, 450);
 		createContents();
 		data = new CsvMatrixExportData();
@@ -68,18 +68,18 @@ public class CsvExportShell extends Shell {
 		Composite composite = toolkit.createComposite(this, SWT.NONE);
 		toolkit.paintBordersFor(composite);
 		UI.gridLayout(composite, 1);
-		Group formatGroup = createGroup(Messages.CSVFormat, composite, 2);
-		pointCombo = createCombo(Messages.DecimalSeparator, formatGroup,
+		Group formatGroup = createGroup(M.CSVFormat, composite, 2);
+		pointCombo = createCombo(M.DecimalSeparator, formatGroup,
 				decimalSeparatorNames);
-		columnCombo = createCombo(Messages.ColumnSeparator, formatGroup,
+		columnCombo = createCombo(M.ColumnSeparator, formatGroup,
 				columnSeparatorNames);
-		Group fileGroup = createGroup(Messages.MatrixFiles, composite, 1);
+		Group fileGroup = createGroup(M.MatrixFiles, composite, 1);
 		techSelection = new FileSelection(fileGroup, toolkit,
-				Messages.TexchnologyMatrix);
+				M.TexchnologyMatrix);
 		techSelection.setDefaultFileName("technology_matrix.csv");
 		techSelection.setFilter("*.csv");
 		enviSelection = new FileSelection(fileGroup, toolkit,
-				Messages.InterventionMatrix);
+				M.InterventionMatrix);
 		enviSelection.setDefaultFileName("intervention_matrix.csv");
 		enviSelection.setFilter("*.csv");
 		createButtons(composite);
@@ -110,11 +110,11 @@ public class CsvExportShell extends Shell {
 				false));
 		toolkit.paintBordersFor(composite);
 		UI.gridLayout(composite, 2);
-		Button ok = toolkit.createButton(composite, Messages.OK, SWT.NONE);
+		Button ok = toolkit.createButton(composite, M.OK, SWT.NONE);
 		ok.setData("_method", "ok");
 		Controls.onSelect(ok, (e) -> buttonPressed(e));
 		UI.gridData(ok, false, false).widthHint = 80;
-		Button cancel = toolkit.createButton(composite, Messages.Cancel,
+		Button cancel = toolkit.createButton(composite, M.Cancel,
 				SWT.NONE);
 		cancel.setData("_method", "cancel");
 		Controls.onSelect(cancel, (e) -> buttonPressed(e));
@@ -145,7 +145,7 @@ public class CsvExportShell extends Shell {
 		File enviFile = enviSelection.getFile();
 		File techFile = techSelection.getFile();
 		if (enviFile == null || techFile == null) {
-			Dialog.showError(this, Messages.NoExportFilesSelected);
+			Dialog.showError(this, M.NoExportFilesSelected);
 			return;
 		}
 		data.setInterventionFile(enviFile);
@@ -157,9 +157,9 @@ public class CsvExportShell extends Shell {
 		String column = idx >= 0 ? columnSeparators[idx] : columnCombo
 				.getText();
 		data.setColumnSeperator(column);
-		App.run(Messages.ExportMatrix,
+		App.run(M.ExportMatrix,
 				new CsvMatrixExport(data),
-				() -> InformationPopup.show(Messages.ExportDone));
+				() -> InformationPopup.show(M.ExportDone));
 		this.dispose();
 	}
 

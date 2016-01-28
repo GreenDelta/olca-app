@@ -20,7 +20,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
 import org.openlca.app.Config;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.InfoSection;
@@ -75,7 +75,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 	private ScrolledForm form;
 
 	ProjectSetupPage(ProjectEditor editor) {
-		super(editor, "ProjectSetupPage", Messages.ProjectSetup);
+		super(editor, "ProjectSetupPage", M.ProjectSetup);
 		this.editor = editor;
 		project = editor.getModel();
 		variantSync = new ReportVariantSync(editor);
@@ -110,7 +110,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 	protected void updateFormTitle() {
 		if (form == null)
 			return;
-		form.setText(Messages.Project + ": " + getModel().getName());
+		form.setText(M.Project + ": " + getModel().getName());
 	}
 
 	private void initialInput() {
@@ -131,7 +131,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 	}
 
 	private void createCalculationButton(Composite composite) {
-		Button button = toolkit.createButton(composite, Messages.Calculate,
+		Button button = toolkit.createButton(composite, M.Calculate,
 				SWT.NONE);
 		UI.gridData(button, false, false).widthHint = 100;
 		button.setImage(Icon.CALCULATE.get());
@@ -141,12 +141,12 @@ class ProjectSetupPage extends ModelPage<Project> {
 	}
 
 	private void createReportButton(Composite composite) {
-		Button button = toolkit.createButton(composite, Messages.Report,
+		Button button = toolkit.createButton(composite, M.Report,
 				SWT.NONE);
 		UI.gridData(button, false, false).widthHint = 100;
 		button.setImage(Images.get(ModelType.PROJECT));
 		Controls.onSelect(button, (e) -> {
-			App.run(Messages.Calculate,
+			App.run(M.Calculate,
 					new ReportCalculator(getModel(), editor.getReport()),
 					() -> {
 						Reports.save(getModel(), editor.getReport(), database);
@@ -156,29 +156,29 @@ class ProjectSetupPage extends ModelPage<Project> {
 	}
 
 	private void createVariantsSection(Composite body) {
-		Section section = UI.section(body, toolkit, Messages.Variants);
+		Section section = UI.section(body, toolkit, M.Variants);
 		Composite composite = UI.sectionClient(section, toolkit);
 		UI.gridLayout(composite, 1);
-		String[] properties = { Messages.Name, Messages.ProductSystem,
-				Messages.AllocationMethod, Messages.Flow, Messages.Amount,
-				Messages.Unit, Messages.Description };
+		String[] properties = { M.Name, M.ProductSystem,
+				M.AllocationMethod, M.Flow, M.Amount,
+				M.Unit, M.Description };
 		variantViewer = Tables.createViewer(composite, properties);
 		variantViewer.setLabelProvider(new VariantLabelProvider());
 		Tables.bindColumnWidths(variantViewer, 0.15, 0.15, 0.15, 0.15, 0.125,
 				0.125, 0.15);
 		ModifySupport<ProjectVariant> support = new ModifySupport<>(
 				variantViewer);
-		support.bind(Messages.Name, new VariantNameEditor());
-		support.bind(Messages.AllocationMethod, new VariantAllocationEditor());
-		support.bind(Messages.Amount, new DoubleModifier<>(editor, "amount"));
-		support.bind(Messages.Unit, new VariantUnitEditor());
-		support.bind(Messages.Description, new VariantDescriptionEditor());
+		support.bind(M.Name, new VariantNameEditor());
+		support.bind(M.AllocationMethod, new VariantAllocationEditor());
+		support.bind(M.Amount, new DoubleModifier<>(editor, "amount"));
+		support.bind(M.Unit, new VariantUnitEditor());
+		support.bind(M.Description, new VariantDescriptionEditor());
 		addVariantActions(variantViewer, section);
 		UI.gridData(variantViewer.getTable(), true, true).minimumHeight = 150;
 	}
 
 	private void createParameterSection(Composite body) {
-		Section section = UI.section(body, toolkit, Messages.Parameters);
+		Section section = UI.section(body, toolkit, M.Parameters);
 		parameterTable = new ProjectParameterTable(editor);
 		parameterTable.render(section, toolkit);
 	}
@@ -225,7 +225,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 	private ProjectVariant createVariant(ProductSystem system, int i) {
 		ProjectVariant variant = new ProjectVariant();
 		variant.setProductSystem(system);
-		variant.setName(Messages.Variant + i);
+		variant.setName(M.Variant + i);
 		variant.setAllocationMethod(AllocationMethod.NONE);
 		variant.setAmount(system.getTargetAmount());
 		variant.setFlowPropertyFactor(system.getTargetFlowPropertyFactor());

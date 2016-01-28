@@ -8,7 +8,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
@@ -24,7 +24,7 @@ class BuildSupplyChainMenuAction extends EditorAction {
 
 	BuildSupplyChainMenuAction() {
 		setId(ActionIds.BUILD_SUPPLY_CHAIN_MENU);
-		setText(Messages.BuildSupplyChain);
+		setText(M.BuildSupplyChain);
 		setImageDescriptor(Icon.BUILD_SUPPLY_CHAIN.descriptor());
 		setMenuCreator(new MenuCreator());
 	}
@@ -42,7 +42,7 @@ class BuildSupplyChainMenuAction extends EditorAction {
 
 		private void createSelectTypeItem(Menu menu, final ProcessType type) {
 			MenuItem treeItem = new MenuItem(menu, SWT.RADIO);
-			treeItem.setText(Messages.bind(Messages.Prefer,
+			treeItem.setText(M.bind(M.Prefer,
 					getDisplayName(type)));
 			Controls.onSelect(treeItem, (e) -> {
 				supplyChainAction.setPreferredType(type);
@@ -54,9 +54,9 @@ class BuildSupplyChainMenuAction extends EditorAction {
 		private String getDisplayName(ProcessType type) {
 			switch (type) {
 			case UNIT_PROCESS:
-				return Messages.UnitProcess;
+				return M.UnitProcess;
 			case LCI_RESULT:
-				return Messages.SystemProcess;
+				return M.SystemProcess;
 			}
 			return "";
 		}

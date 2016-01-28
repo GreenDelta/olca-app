@@ -9,7 +9,7 @@ import java.util.Set;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.viewers.ISelection;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.editors.graphical.model.ConnectionLink;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
@@ -29,7 +29,7 @@ class RemoveSupplyChainAction extends EditorAction {
 
 	RemoveSupplyChainAction() {
 		setId(ActionIds.REMOVE_SUPPLY_CHAIN);
-		setText(Messages.RemoveSupplyChain);
+		setText(M.RemoveSupplyChain);
 	}
 
 	@Override
@@ -108,7 +108,7 @@ class RemoveSupplyChainAction extends EditorAction {
 
 		@Override
 		public String getLabel() {
-			return Messages.RemoveSupplyChain;
+			return M.RemoveSupplyChain;
 		}
 
 		@Override

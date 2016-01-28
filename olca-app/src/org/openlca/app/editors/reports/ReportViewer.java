@@ -13,7 +13,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.editors.reports.model.Report;
 import org.openlca.app.rcp.html.HtmlPage;
 import org.openlca.app.rcp.html.HtmlView;
@@ -109,7 +109,7 @@ public class ReportViewer extends FormEditor {
 		@Override
 		public String getName() {
 			String name = report.title != null ? report.title
-					: Messages.Report;
+					: M.Report;
 			return Strings.cut(name, 75);
 		}
 
@@ -121,7 +121,7 @@ public class ReportViewer extends FormEditor {
 		@Override
 		public String getToolTipText() {
 			return report.title != null ? report.title
-					: Messages.Report;
+					: M.Report;
 		}
 	}
 
@@ -131,7 +131,7 @@ public class ReportViewer extends FormEditor {
 
 		public Page() {
 			super(ReportViewer.this, "olca.ReportPreview.Page",
-					Messages.ReportView);
+					M.ReportView);
 		}
 
 		@Override
@@ -144,7 +144,7 @@ public class ReportViewer extends FormEditor {
 			Gson gson = new Gson();
 			String json = gson.toJson(report);
 			System.out.println(json);
-			String messages = Messages.asJson();
+			String messages = M.asJson();
 			String command = "setData(" + json + ", " + messages + ")";
 			try {
 				browser.evaluate(command);

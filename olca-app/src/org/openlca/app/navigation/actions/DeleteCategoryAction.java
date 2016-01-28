@@ -3,7 +3,7 @@ package org.openlca.app.navigation.actions;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.CategoryElement;
 import org.openlca.app.navigation.INavigationElement;
@@ -24,7 +24,7 @@ public class DeleteCategoryAction extends Action implements INavigationAction {
 	private CategoryElement categoryElement;
 
 	public DeleteCategoryAction() {
-		setText(Messages.Remove);
+		setText(M.Remove);
 		setImageDescriptor(Icon.DELETE.descriptor());
 	}
 
@@ -45,11 +45,11 @@ public class DeleteCategoryAction extends Action implements INavigationAction {
 		if (categoryElement == null)
 			return;
 		if (categoryElement.getChildren().size() != 0) {
-			Error.showBox(Messages.CategoryNotEmpty);
+			Error.showBox(M.CategoryNotEmpty);
 			return;
 		}
-		boolean b = Question.ask(Messages.Delete,
-				Messages.DeleteCategoryQuestion);
+		boolean b = Question.ask(M.Delete,
+				M.DeleteCategoryQuestion);
 		if (!b)
 			return;
 		delete();

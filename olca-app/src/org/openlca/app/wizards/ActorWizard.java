@@ -3,7 +3,7 @@ package org.openlca.app.wizards;
 import java.util.UUID;
 
 import org.eclipse.swt.widgets.Composite;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.model.Actor;
@@ -17,7 +17,7 @@ public class ActorWizard extends AbstractWizard<Actor> {
 
 	@Override
 	protected String getTitle() {
-		return Messages.NewActor;
+		return M.NewActor;
 	}
 
 	@Override
@@ -29,8 +29,8 @@ public class ActorWizard extends AbstractWizard<Actor> {
 
 		public ActorWizardPage() {
 			super("ActorWizardPage");
-			setTitle(Messages.NewActor);
-			setMessage(Messages.CreatesANewActor);
+			setTitle(M.NewActor);
+			setMessage(M.CreatesANewActor);
 			setPageComplete(false);
 		}
 

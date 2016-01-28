@@ -3,7 +3,7 @@ package org.openlca.app.navigation.actions;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.DatabaseWizard;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.rcp.images.Images;
@@ -14,7 +14,7 @@ import org.openlca.app.rcp.images.Images;
 public class DatabaseCreateAction extends Action implements INavigationAction {
 
 	public DatabaseCreateAction() {
-		setText(Messages.NewDatabase);
+		setText(M.NewDatabase);
 		setImageDescriptor(Images.newDatabase());
 	}
 

@@ -8,7 +8,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableItem;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.viewers.table.AbstractTableViewer;
 import org.openlca.app.viewers.table.modify.field.StringModifier;
@@ -17,8 +17,8 @@ import org.openlca.core.model.NwSet;
 
 class NwSetViewer extends AbstractTableViewer<NwSet> {
 
-	private static final String NAME = Messages.NormalizationAndWeightingSet;
-	private static final String UNIT = Messages.ReferenceUnit;
+	private static final String NAME = M.NormalizationAndWeightingSet;
+	private static final String UNIT = M.ReferenceUnit;
 
 	private ImpactMethodEditor editor;
 

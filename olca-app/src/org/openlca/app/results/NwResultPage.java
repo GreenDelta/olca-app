@@ -13,7 +13,7 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.Actions;
@@ -47,7 +47,7 @@ public class NwResultPage extends FormPage {
 
 	public NwResultPage(FormEditor editor, SimpleResultProvider<?> result,
 			CalculationSetup setup) {
-		super(editor, "NwResultPage", Messages.NormalizationWeighting);
+		super(editor, "NwResultPage", M.NormalizationWeighting);
 		this.result = result;
 		this.setup = setup;
 	}
@@ -55,7 +55,7 @@ public class NwResultPage extends FormPage {
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
 		ScrolledForm form = UI.formHeader(managedForm,
-				Messages.NormalizationWeighting);
+				M.NormalizationWeighting);
 		toolkit = managedForm.getToolkit();
 		body = UI.formBody(form, toolkit);
 		nwSetTable = loadNwSetTable();
@@ -73,19 +73,19 @@ public class NwResultPage extends FormPage {
 	private void createNormalisationSection() {
 		List<ImpactResult> results = nwSetTable.applyNormalisation(result
 				.getTotalImpactResults());
-		createTable(Messages.Normalization, results, false);
+		createTable(M.Normalization, results, false);
 	}
 
 	private void createWeightingSection() {
 		List<ImpactResult> results = nwSetTable.applyWeighting(result
 				.getTotalImpactResults());
-		createTable(Messages.Weighting, results, true);
+		createTable(M.Weighting, results, true);
 	}
 
 	private void createSingleScoreSection() {
 		List<ImpactResult> results = nwSetTable.applyBoth(result
 				.getTotalImpactResults());
-		createTable(Messages.SingleScore, results, true);
+		createTable(M.SingleScore, results, true);
 	}
 
 	private void createTable(String title, List<ImpactResult> results,
@@ -93,11 +93,11 @@ public class NwResultPage extends FormPage {
 		String[] columns;
 		double[] colWidths;
 		if (withUnit) {
-			columns = new String[] { Messages.ImpactCategory, Messages.Amount,
-					Messages.Unit };
+			columns = new String[] { M.ImpactCategory, M.Amount,
+					M.Unit };
 			colWidths = new double[] { 0.5, 0.25, 0.25 };
 		} else {
-			columns = new String[] { Messages.ImpactCategory, Messages.Amount };
+			columns = new String[] { M.ImpactCategory, M.Amount };
 			colWidths = new double[] { 0.5, 0.25 };
 		}
 		Composite composite = UI.formSection(body, toolkit, title);

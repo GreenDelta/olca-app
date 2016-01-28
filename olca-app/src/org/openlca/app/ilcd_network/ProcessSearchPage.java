@@ -19,7 +19,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.preferencepages.IoPreference;
 import org.openlca.app.util.Dialog;
 import org.openlca.app.util.UI;
@@ -38,8 +38,8 @@ public class ProcessSearchPage extends WizardPage {
 
 	public ProcessSearchPage() {
 		super("ILCD-ProcessSearchPage");
-		setTitle(Messages.Search);
-		setDescription(Messages.ILCD_SearchPageDescription);
+		setTitle(M.Search);
+		setDescription(M.ILCD_SearchPageDescription);
 		setPageComplete(false);
 	}
 
@@ -57,12 +57,12 @@ public class ProcessSearchPage extends WizardPage {
 		composite.setLayout(new GridLayout(3, false));
 		UI.gridData(composite, true, false);
 		new ConnectionText(composite);
-		new Label(composite, SWT.NONE).setText(Messages.Process);
+		new Label(composite, SWT.NONE).setText(M.Process);
 		text = new Text(composite, SWT.BORDER);
 		UI.gridData(text, true, false);
 		SearchAction action = new SearchAction();
 		text.addTraverseListener(action);
-		createButton(composite, Messages.Search, action);
+		createButton(composite, M.Search, action);
 	}
 
 	private void createButton(Composite parent, String text,
@@ -103,7 +103,7 @@ public class ProcessSearchPage extends WizardPage {
 			}
 		} catch (Exception e) {
 			Dialog.showError(getShell(),
-					Messages.ILCD_SearchFailedMessage + e.getMessage());
+					M.ILCD_SearchFailedMessage + e.getMessage());
 		}
 	}
 

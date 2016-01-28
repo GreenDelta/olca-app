@@ -16,7 +16,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.openlca.app.EventHandler;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Colors;
@@ -46,15 +46,15 @@ public class InfoSection {
 	}
 
 	public void render(Composite body, FormToolkit toolkit) {
-		container = UI.formSection(body, toolkit, Messages.GeneralInformation);
-		Text nameText = UI.formText(container, toolkit, Messages.Name);
+		container = UI.formSection(body, toolkit, M.GeneralInformation);
+		Text nameText = UI.formText(container, toolkit, M.Name);
 		binding.onString(() -> editor.getModel(), "name", nameText);
 		Text descriptionText = UI.formMultiText(container, toolkit,
-				Messages.Description);
+				M.Description);
 		binding.onString(() -> editor.getModel(), "description",
 				descriptionText);
 		if (entity.getCategory() != null) {
-			new Label(container, SWT.NONE).setText(Messages.Category);
+			new Label(container, SWT.NONE).setText(M.Category);
 			createBreadcrumb(container);
 		}
 		createVersionText(toolkit);
@@ -66,7 +66,7 @@ public class InfoSection {
 	}
 
 	private void createVersionText(FormToolkit toolkit) {
-		UI.formLabel(container, toolkit, Messages.Version);
+		UI.formLabel(container, toolkit, M.Version);
 		Composite composite = toolkit.createComposite(container);
 		GridLayout layout = UI.gridLayout(composite, 3);
 		layout.marginWidth = 0;
@@ -87,7 +87,7 @@ public class InfoSection {
 	private void createDateText(FormToolkit toolkit) {
 		final SimpleDateFormat format = new SimpleDateFormat(
 				"yyyy-MM-dd'T'HH:mm:ssZ");
-		UI.formLabel(container, toolkit, Messages.LastChange);
+		UI.formLabel(container, toolkit, M.LastChange);
 		final Label text = UI.formLabel(container, toolkit, "");
 		if (entity.getLastChange() != 0)
 			text.setText(format.format(new Date(entity.getLastChange())));
@@ -163,11 +163,11 @@ public class InfoSection {
 
 		private void configureLink() {
 			if (type == MAJOR) {
-				tooltip = Messages.UpdateMajorVersion;
+				tooltip = M.UpdateMajorVersion;
 				hoverIcon = Icon.UP.get();
 				icon = Icon.UP_DISABLED.get();
 			} else {
-				tooltip = Messages.UpdateMinorVersion;
+				tooltip = M.UpdateMinorVersion;
 				hoverIcon = Icon.UP_DOUBLE.get();
 				icon = Icon.UP_DOUBLE_DISABLED.get();
 			}

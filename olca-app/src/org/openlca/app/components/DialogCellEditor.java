@@ -32,7 +32,7 @@ import org.eclipse.swt.widgets.Layout;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.Hyperlink;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.util.Colors;
 
 /**
@@ -174,7 +174,7 @@ public abstract class DialogCellEditor extends CellEditor {
 
 	protected Hyperlink createLink(Composite parent) {
 		Hyperlink link = new Hyperlink(parent, SWT.NONE);
-		link.setText(Messages.Edit);
+		link.setText(M.Edit);
 		link.setBackground(Colors.getWhite());
 		link.setForeground(Colors.getLinkBlue());
 		return link;

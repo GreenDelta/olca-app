@@ -2,7 +2,7 @@ package org.openlca.app.editors.graphical.action;
 
 import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.action.Action;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
 import org.openlca.app.editors.graphical.command.ChangeStateCommand;
 import org.openlca.app.editors.graphical.command.CommandFactory;
@@ -17,11 +17,11 @@ class ChangeAllStateAction extends Action {
 	ChangeAllStateAction(int type) {
 		if (type == MINIMIZE) {
 			setId(ActionIds.MINIMIZE_ALL);
-			setText(Messages.MinimizeAll);
+			setText(M.MinimizeAll);
 			setImageDescriptor(Icon.MINIMIZE.descriptor());
 		} else if (type == MAXIMIZE) {
 			setId(ActionIds.MAXIMIZE_ALL);
-			setText(Messages.MaximizeAll);
+			setText(M.MaximizeAll);
 			setImageDescriptor(Icon.MAXIMIZE.descriptor());
 		}
 		this.type = type;

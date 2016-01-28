@@ -4,7 +4,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ModelType;
@@ -16,7 +16,7 @@ class ProjectInfoPage extends ModelPage<Project> {
 	private ScrolledForm form;
 
 	public ProjectInfoPage(ProjectEditor editor) {
-		super(editor, "ProjectInfoPage", Messages.GeneralInformation);
+		super(editor, "ProjectInfoPage", M.GeneralInformation);
 	}
 
 	@Override
@@ -34,25 +34,25 @@ class ProjectInfoPage extends ModelPage<Project> {
 	protected void updateFormTitle() {
 		if (form == null)
 			return;
-		form.setText(Messages.Project + ": " + getModel().getName());
+		form.setText(M.Project + ": " + getModel().getName());
 	}
 
 	private void createGoalAndScopeSection(Composite parent) {
 		Composite composite = UI.formSection(parent, toolkit,
-				Messages.GoalAndScope);
+				M.GoalAndScope);
 
-		createMultiText(Messages.Goal, "goal", composite);
-		createMultiText(Messages.FunctionalUnit, "functionalUnit", composite);
+		createMultiText(M.Goal, "goal", composite);
+		createMultiText(M.FunctionalUnit, "functionalUnit", composite);
 	}
 
 	private void createTimeInfoSection(Composite parent) {
 		Composite composite = UI.formSection(parent, toolkit,
-				Messages.TimeAndAuthor);
+				M.TimeAndAuthor);
 
-		createReadOnly(Messages.CreationDate, "creationDate", composite);
-		createReadOnly(Messages.LastModificationDate, "lastModificationDate",
+		createReadOnly(M.CreationDate, "creationDate", composite);
+		createReadOnly(M.LastModificationDate, "lastModificationDate",
 				composite);
-		createDropComponent(Messages.Author, "author", ModelType.ACTOR,
+		createDropComponent(M.Author, "author", ModelType.ACTOR,
 				composite);
 	}
 

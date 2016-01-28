@@ -9,7 +9,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelTextFilter;
@@ -34,7 +34,7 @@ public class ProcessWizard extends AbstractWizard<Process> {
 
 	@Override
 	protected String getTitle() {
-		return Messages.NewProcess;
+		return M.NewProcess;
 	}
 
 	@Override
@@ -62,8 +62,8 @@ public class ProcessWizard extends AbstractWizard<Process> {
 
 		protected Page() {
 			super("ProcessWizardPage");
-			setTitle(Messages.NewProcess);
-			setMessage(Messages.NewProcess);
+			setTitle(M.NewProcess);
+			setMessage(M.NewProcess);
 			setPageComplete(false);
 		}
 
@@ -71,7 +71,7 @@ public class ProcessWizard extends AbstractWizard<Process> {
 		protected void checkInput() {
 			super.checkInput();
 			boolean createFlow = createRefFlowCheck.getSelection();
-			String err = Messages.NoQuantitativeReferenceSelected;
+			String err = M.NoQuantitativeReferenceSelected;
 			if (createFlow) {
 				if (flowPropertyViewer.getSelected() == null)
 					setErrorMessage(err);
@@ -87,7 +87,7 @@ public class ProcessWizard extends AbstractWizard<Process> {
 		protected void createContents(Composite container) {
 			new Label(container, SWT.NONE);
 			createRefFlowCheck(container);
-			filterText = UI.formText(container, Messages.QuantitativeReference);
+			filterText = UI.formText(container, M.QuantitativeReference);
 			createLabelStack(container);
 			contentStack = new Composite(container, SWT.NONE);
 			UI.gridData(contentStack, true, true).heightHint = 200;
@@ -102,7 +102,7 @@ public class ProcessWizard extends AbstractWizard<Process> {
 
 		private void createRefFlowCheck(Composite container) {
 			createRefFlowCheck = new Button(container, SWT.CHECK);
-			createRefFlowCheck.setText(Messages.CreateANewProductFlowForTheProcess);
+			createRefFlowCheck.setText(M.CreateANewProductFlowForTheProcess);
 			Controls.onSelect(createRefFlowCheck, (e) -> {
 				boolean createFlow = createRefFlowCheck.getSelection();
 				StackLayout labelLayout = (StackLayout) labelStack.getLayout();
@@ -130,7 +130,7 @@ public class ProcessWizard extends AbstractWizard<Process> {
 			labelStack.setLayout(new StackLayout());
 			selectFlowLabel = new Label(labelStack, SWT.NONE);
 			selectFlowPropertyLabel = new Label(labelStack, SWT.NONE);
-			selectFlowPropertyLabel.setText(Messages.ReferenceFlowProperty);
+			selectFlowPropertyLabel.setText(M.ReferenceFlowProperty);
 		}
 
 		private GridLayout gridLayout() {

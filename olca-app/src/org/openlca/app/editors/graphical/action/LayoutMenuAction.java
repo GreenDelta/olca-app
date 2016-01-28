@@ -6,7 +6,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
 import org.openlca.app.editors.graphical.layout.GraphLayoutType;
 import org.openlca.app.rcp.images.Icon;
@@ -22,7 +22,7 @@ class LayoutMenuAction extends Action {
 
 	LayoutMenuAction() {
 		setId(ActionIds.LAYOUT_MENU);
-		setText(Messages.Layout);
+		setText(M.Layout);
 		setImageDescriptor(Icon.LAYOUT.descriptor());
 		setMenuCreator(new MenuCreator());
 	}
@@ -47,7 +47,7 @@ class LayoutMenuAction extends Action {
 			new MenuItem(menu, SWT.SEPARATOR);
 
 			final MenuItem routedCheck = new MenuItem(menu, SWT.CHECK);
-			routedCheck.setText(Messages.Route);
+			routedCheck.setText(M.Route);
 			routedCheck.setSelection(editor.isRouted());
 			Controls.onSelect(routedCheck, (e) -> {
 				editor.setRouted(routedCheck.getSelection());

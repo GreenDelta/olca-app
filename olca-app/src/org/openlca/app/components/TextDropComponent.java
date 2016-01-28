@@ -14,7 +14,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.TableWrapData;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
@@ -95,7 +95,7 @@ public final class TextDropComponent extends Composite {
 
 	private void createAddButton() {
 		Button addButton = toolkit.createButton(this, "", SWT.PUSH);
-		addButton.setToolTipText(Messages.TextDropComponent_ToolTipText);
+		addButton.setToolTipText(M.TextDropComponent_ToolTipText);
 		addButton.setLayoutData(new TableWrapData());
 		addButton.setImage(Images.get(modelType));
 		addButton.addMouseListener(new MouseAdapter() {
@@ -126,7 +126,7 @@ public final class TextDropComponent extends Composite {
 		removeButton.setLayoutData(new TableWrapData());
 		removeButton.setImage(Icon.DELETE.get());
 		removeButton
-				.setToolTipText(Messages.RemoveObject);
+				.setToolTipText(M.RemoveObject);
 		if (content == null)
 			removeButton.setEnabled(false);
 		removeButton.addMouseListener(new MouseAdapter() {

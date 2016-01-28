@@ -5,7 +5,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.util.UI;
@@ -21,7 +21,7 @@ class ProcessModelingPage extends ModelPage<Process> {
 
 	ProcessModelingPage(ProcessEditor editor) {
 		super(editor, "ProcessInfoPage",
-				Messages.ModelingAndValidation);
+				M.ModelingAndValidation);
 		this.editor = editor;
 	}
 
@@ -43,48 +43,48 @@ class ProcessModelingPage extends ModelPage<Process> {
 	protected void updateFormTitle() {
 		if (form == null)
 			return;
-		form.setText(Messages.Process + ": " + getModel().getName());
+		form.setText(M.Process + ": " + getModel().getName());
 	}
 
 	private void createModelingSection(Composite parent) {
 		Composite composite = UI.formSection(parent, toolkit,
-				Messages.ModelingAndValidation);
+				M.ModelingAndValidation);
 		getManagedForm().getToolkit().createLabel(composite,
-				Messages.ProcessType);
+				M.ProcessType);
 		ProcessTypeViewer typeViewer = new ProcessTypeViewer(composite);
 		getBinding().onModel(() -> getModel(), "processType", typeViewer);
-		createMultiText(Messages.LCIMethod, "documentation.inventoryMethod",
+		createMultiText(M.LCIMethod, "documentation.inventoryMethod",
 				composite);
-		createMultiText(Messages.ModelingConstants,
+		createMultiText(M.ModelingConstants,
 				"documentation.modelingConstants", composite);
-		createMultiText(Messages.DataCompleteness,
+		createMultiText(M.DataCompleteness,
 				"documentation.completeness", composite);
-		createMultiText(Messages.DataSelection, "documentation.dataSelection",
+		createMultiText(M.DataSelection, "documentation.dataSelection",
 				composite);
-		createMultiText(Messages.DataTreatment, "documentation.dataTreatment",
+		createMultiText(M.DataTreatment, "documentation.dataTreatment",
 				composite);
 	}
 
 	private void createDataSourceSection(Composite parent) {
 		Composite composite = UI.formSection(parent, toolkit,
-				Messages.DataSourceInformation);
-		createMultiText(Messages.SamplingProcedure, "documentation.sampling", composite);
-		createMultiText(Messages.DataCollectionPeriod,
+				M.DataSourceInformation);
+		createMultiText(M.SamplingProcedure, "documentation.sampling", composite);
+		createMultiText(M.DataCollectionPeriod,
 				"documentation.dataCollectionPeriod", composite);
 	}
 
 	private void createEvaluationSection(Composite parent) {
 		Composite composite = UI.formSection(parent, toolkit,
-				Messages.ProcessEvaluationAndValidation);
-		createDropComponent(Messages.Reviewer, "documentation.reviewer",
+				M.ProcessEvaluationAndValidation);
+		createDropComponent(M.Reviewer, "documentation.reviewer",
 				ModelType.ACTOR, composite);
-		createMultiText(Messages.DataSetOtherEvaluation,
+		createMultiText(M.DataSetOtherEvaluation,
 				"documentation.reviewDetails", composite);
 	}
 
 	private void createSourcesSection(Composite parent) {
 		Section section = UI.section(parent, toolkit,
-				Messages.Sources);
+				M.Sources);
 		Composite composite = toolkit.createComposite(section);
 		UI.gridLayout(composite, 1);
 		UI.gridData(composite, true, true);

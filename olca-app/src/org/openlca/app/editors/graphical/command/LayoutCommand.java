@@ -6,7 +6,7 @@ import java.util.Map;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.commands.Command;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.editors.graphical.layout.GraphLayoutManager;
 import org.openlca.app.editors.graphical.layout.GraphLayoutType;
 import org.openlca.app.editors.graphical.model.ProcessNode;
@@ -50,7 +50,7 @@ public class LayoutCommand extends Command {
 
 	@Override
 	public String getLabel() {
-		return Messages.Layout + ": " + type.getDisplayName();
+		return M.Layout + ": " + type.getDisplayName();
 	}
 
 	@Override

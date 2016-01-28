@@ -1,13 +1,13 @@
 package org.openlca.app.editors.graphical.layout;
 
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 
 
 public enum GraphLayoutType {
 
-	MINIMAL_TREE_LAYOUT(Messages.MinimalTree),
+	MINIMAL_TREE_LAYOUT(M.MinimalTree),
 
-	TREE_LAYOUT(Messages.Tree);
+	TREE_LAYOUT(M.Tree);
 
 	private String displayName;
 

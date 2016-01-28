@@ -5,7 +5,7 @@ import java.util.Objects;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.openlca.app.Messages;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.ImpactMethodViewer;
@@ -30,7 +30,7 @@ class ImpactSection {
 
 	public void render(Composite body, FormToolkit toolkit) {
 		Composite composite = UI
-				.formSection(body, toolkit, Messages.LCIAMethod);
+				.formSection(body, toolkit, M.LCIAMethod);
 		UI.gridLayout(composite, 1);
 		Composite form = UI.formComposite(composite, toolkit);
 		UI.gridData(form, true, false);
@@ -43,11 +43,11 @@ class ImpactSection {
 	}
 
 	private void createViewers(FormToolkit toolkit, Composite composite) {
-		UI.formLabel(composite, toolkit, Messages.LCIAMethod);
+		UI.formLabel(composite, toolkit, M.LCIAMethod);
 		methodViewer = new ImpactMethodViewer(composite);
 		methodViewer.setNullable(true);
 		methodViewer.setInput(Database.get());
-		UI.formLabel(composite, toolkit, Messages.NormalizationAndWeightingSet);
+		UI.formLabel(composite, toolkit, M.NormalizationAndWeightingSet);
 		nwViewer = new NwSetComboViewer(composite);
 		nwViewer.setNullable(true);
 		nwViewer.setDatabase(Database.get());
