@@ -12,6 +12,8 @@ import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbench;
@@ -24,6 +26,7 @@ import org.openlca.app.App;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.navigation.actions.DatabaseActivateAction;
+import org.openlca.app.util.Colors;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 
@@ -38,6 +41,13 @@ public class Navigator extends CommonNavigator {
 	protected Object getInitialInput() {
 		root = new NavigationRoot();
 		return root;
+	}
+	
+	@Override
+	protected CommonViewer createCommonViewer(Composite aParent) {
+		CommonViewer viewer = super.createCommonViewer(aParent);
+		viewer.getTree().setBackground(Colors.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
+		return viewer;
 	}
 
 	@Override
