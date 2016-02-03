@@ -1,5 +1,6 @@
 package org.openlca.app.editors.lcia_methods;
 
+import org.openlca.app.M;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,7 +42,7 @@ class EvaluateLocationsJob implements IRunnableWithProgress {
 	public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 		this.monitor = monitor;
 		List<LocationDescriptor> locations = init();
-		beginTask("#Evaluating locations", locations.size());
+		beginTask(M.EvaluatingLocations, locations.size());
 		for (LocationDescriptor location : locations)
 			if (!isCanceled())
 				evaluate(location);
@@ -49,7 +50,7 @@ class EvaluateLocationsJob implements IRunnableWithProgress {
 	}
 
 	private List<LocationDescriptor> init() {
-		beginTask("#Initializing");
+		beginTask(M.Initializing);
 		shapeFileFolder = new ShapeFileFolder(ShapeFileUtils.getFolder(method));
 		shapeFiles = shapeFileFolder.getShapeFiles();
 		if (shapeFiles.size() == 0)

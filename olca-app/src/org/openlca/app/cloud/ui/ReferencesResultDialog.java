@@ -1,5 +1,6 @@
 package org.openlca.app.cloud.ui;
 
+import org.openlca.app.M;
 import java.util.Collections;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -38,7 +39,7 @@ public class ReferencesResultDialog extends FormDialog {
 	@Override
 	protected void createFormContent(IManagedForm mform) {
 		ScrolledForm form = UI.formHeader(mform,
-				"#Referenced changes that need to be committed as well");
+				M.CommitReferenceNotice);
 		FormToolkit toolkit = mform.getToolkit();
 		Composite body = form.getBody();
 		body.setLayout(new GridLayout());
@@ -58,7 +59,7 @@ public class ReferencesResultDialog extends FormDialog {
 	protected void createButtonsForButtonBar(Composite parent) {
 		createButton(parent, IDialogConstants.CANCEL_ID,
 				IDialogConstants.CANCEL_LABEL, false);
-		createButton(parent, IDialogConstants.OK_ID, "#Accept && commit", true);
+		createButton(parent, IDialogConstants.OK_ID, M.AcceptCommit, true);
 	}
 
 }

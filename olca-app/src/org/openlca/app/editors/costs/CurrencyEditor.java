@@ -77,7 +77,7 @@ public class CurrencyEditor extends ModelEditor<Currency> {
 		private void createAdditionalInfo(Composite body, FormToolkit tk) {
 			Composite comp = UI.formSection(body, tk,
 					M.AdditionalInformation);
-			Text codeText = UI.formText(comp, tk, "#Currency code");
+			Text codeText = UI.formText(comp, tk, M.CurrencyCode);
 			if (getModel().code != null)
 				codeText.setText(getModel().code);
 			codeText.addModifyListener(e -> {
@@ -85,7 +85,7 @@ public class CurrencyEditor extends ModelEditor<Currency> {
 				table.refresh();
 				editor.setDirty(true);
 			});
-			Text factorText = UI.formText(comp, tk, "#Conversion factor");
+			Text factorText = UI.formText(comp, tk, M.ConversionFactor);
 			factorText.setText(Double.toString(getModel().conversionFactor));
 			factorText.addModifyListener(e -> {
 				try {
@@ -102,7 +102,7 @@ public class CurrencyEditor extends ModelEditor<Currency> {
 		}
 
 		private void createRefLink(Composite comp, FormToolkit tk) {
-			UI.formLabel(comp, tk, "#Reference currency");
+			UI.formLabel(comp, tk, M.ReferenceCurrency);
 			Currency ref = getModel().referenceCurrency;
 			if (ref == null || ref.getName() == null)
 				return;
@@ -119,7 +119,7 @@ public class CurrencyEditor extends ModelEditor<Currency> {
 
 		private void createRefButton(Composite comp, FormToolkit tk) {
 			UI.formLabel(comp, tk, "");
-			Button button = tk.createButton(comp, "#Set as reference currency",
+			Button button = tk.createButton(comp, M.SetAsReferenceCurrency,
 					SWT.NONE);
 			button.setImage(Images.get(ModelType.CURRENCY));
 			Controls.onSelect(button, e -> {

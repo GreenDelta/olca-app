@@ -102,7 +102,8 @@ public class ProductSystemFigure extends Figure {
 		}
 		if (selection instanceof CostResultDescriptor) {
 			CostResultDescriptor cost = (CostResultDescriptor) selection;
-			return "#Cost result: " + cost.getName();
+			String m = M.CostResult;
+			return m + ": " + cost.getName();
 		}
 		return M.NoAnalysisOptionsSet;
 	}

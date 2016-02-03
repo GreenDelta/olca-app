@@ -1,8 +1,5 @@
 package org.openlca.app.editors.systems;
 
-import gnu.trove.list.linked.TLongLinkedList;
-import gnu.trove.set.hash.TLongHashSet;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +12,7 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.rcp.html.HtmlPage;
 import org.openlca.app.rcp.html.HtmlView;
@@ -31,6 +29,9 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
+import gnu.trove.list.linked.TLongLinkedList;
+import gnu.trove.set.hash.TLongHashSet;
+
 class HtmlGraph extends FormPage implements HtmlPage {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
@@ -39,7 +40,7 @@ class HtmlGraph extends FormPage implements HtmlPage {
 	private Browser browser;
 
 	public HtmlGraph(FormEditor editor, ProductSystem productSystem) {
-		super(editor, "system.HtmlGraph", "HTML Graph");
+		super(editor, "system.HtmlGraph", M.HTMLGraph);
 		this.productSystem = productSystem;
 	}
 

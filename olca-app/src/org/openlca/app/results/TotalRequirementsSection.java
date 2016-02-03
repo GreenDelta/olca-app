@@ -60,7 +60,7 @@ class TotalRequirementsSection {
 	}
 
 	void create(Composite body, FormToolkit tk) {
-		Section section = UI.section(body, tk, "#Total requirements");
+		Section section = UI.section(body, tk, M.TotalRequirements);
 		UI.gridData(section, true, true);
 		Composite comp = UI.sectionClient(section, tk);
 		UI.gridLayout(comp, 1);
@@ -85,11 +85,16 @@ class TotalRequirementsSection {
 			return;
 		double v = result.getTotalCostResult();
 		String s;
-		if (costs == Costs.NET_COSTS)
-			s = "#Total net-costs: " + asCosts(v);
-		else
-			s = "#Total added value: " + asCosts(v == 0 ? 0 : -v);
-		Control label = tk.createLabel(comp, s);
+		String c;
+		if (costs == Costs.NET_COSTS) {
+			s = M.TotalNetcosts;
+			c = asCosts(v);
+		} else {
+			s = M.TotalAddedValue;
+			c = asCosts(v == 0 ? 0 : -v);
+		}
+		
+		Control label = tk.createLabel(comp, s + ": " + c);
 		Font font = UI.boldFont(label);
 		label.setFont(font);
 		label.addDisposeListener(e -> font.dispose());
@@ -108,9 +113,9 @@ class TotalRequirementsSection {
 		b.add(M.Amount);
 		b.add(M.Unit);
 		if (costs == Costs.ADDED_VALUE)
-			b.add("#Added value");
+			b.add(M.AddedValue);
 		else if (costs == Costs.NET_COSTS)
-			b.add("#Net costs");
+			b.add(M.NetCosts);
 		return b.toArray(new String[b.size()]);
 	}
 

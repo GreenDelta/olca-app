@@ -169,8 +169,8 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 
 	private class OpenPluginManagerAction extends Action {
 		public OpenPluginManagerAction() {
-			setText("#Manage plugins");
-			setToolTipText("#Opens the openLCA Plugin Manager");
+			setText(M.ManagePlugins);
+			setToolTipText(M.OpenPluginManager);
 		}
 
 		@Override
@@ -181,7 +181,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 
 	private class OpenLogAction extends Action {
 		public OpenLogAction() {
-			setText("#Open log file");
+			setText(M.OpenLogFile);
 			setToolTipText("Opens the openLCA log file");
 		}
 

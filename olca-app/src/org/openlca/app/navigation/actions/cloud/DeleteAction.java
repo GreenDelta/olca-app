@@ -1,5 +1,6 @@
 package org.openlca.app.navigation.actions.cloud;
 
+import org.openlca.app.M;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
@@ -21,12 +22,12 @@ public class DeleteAction extends Action implements INavigationAction {
 
 	@Override
 	public String getText() {
-		return "#Delete repository";
+		return M.DeleteRepository;
 	}
 
 	@Override
 	public void run() {
-		App.runWithProgress("#Deleting repository", () -> {
+		App.runWithProgress(M.DeletingRepository, () -> {
 			String name = client.getConfig().getRepositoryName();
 			try {
 				client.deleteRepository(name);

@@ -1,5 +1,6 @@
 package org.openlca.app.rcp;
 
+import org.openlca.app.M;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
@@ -45,12 +46,12 @@ class MissingLibraryMessage {
 		@Override
 		protected void createFormContent(IManagedForm mform) {
 			super.createFormContent(mform);
-			getShell().setText("#Enable jblas library");
-			UI.formHeader(mform, "#Enable jblas library");
+			getShell().setText(M.EnableJblasLibrary);
+			UI.formHeader(mform, M.EnableJblasLibrary);
 			Composite body = UI.formBody(mform.getForm(), mform.getToolkit());
 			UI.gridLayout(body, 1);
 			createMessage(mform, body);
-			Button check = mform.getToolkit().createButton(body, "#Do not show this message again", SWT.CHECK);
+			Button check = mform.getToolkit().createButton(body, M.DoNotShowThisMessageAgain, SWT.CHECK);
 			Controls.onSelect(check, (e) -> {
 				Preferences.getStore().setValue("hide.vscpp10message", check.getSelection());
 			});
@@ -59,17 +60,8 @@ class MissingLibraryMessage {
 		private void createMessage(IManagedForm mform, Composite body) {
 			Label label = new Label(body, SWT.WRAP);
 			mform.getToolkit().adapt(label, true, true);
-			String message = getMessage();
-			label.setText(message);
+			label.setText(M.LibgfortanInfo);
 			UI.gridData(label, true, false);
-		}
-
-		private String getMessage() {
-			String message = "#openLCA uses the jblas library for improved calculation performance. It requires the package libgfortran3 to be installed on "
-					+ "Linux which seems to be not the case on your "
-					+ "system. We recommend to install this package if you want "
-					+ "to use the improved calculation features of openLCA. If you are running an Ubuntu system try installing the package with \"apt-get install libgfortran3\"";
-			return message;
 		}
 
 		@Override

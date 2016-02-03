@@ -1,5 +1,6 @@
 package org.openlca.app.navigation.actions;
 
+import org.openlca.app.M;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
@@ -18,7 +19,7 @@ import org.openlca.core.model.ModelType;
 public class ImportKmlAction extends Action implements INavigationAction {
 
 	public ImportKmlAction() {
-		setText("#Import KML geographies");
+		setText(M.ImportKMLGeographies);
 	}
 
 	@Override

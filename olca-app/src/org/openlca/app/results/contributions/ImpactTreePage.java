@@ -42,12 +42,12 @@ import org.openlca.core.results.FullResultProvider;
 
 public class ImpactTreePage extends FormPage {
 
-	private final static String COLUMN_NAME = "#Process/Flow name";
-	private final static String COLUMN_LOCATION = "#Location";
-	private final static String COLUMN_CATEGORY = "#Flow category";
-	private final static String COLUMN_AMOUNT = "#Inventory result";
-	private final static String COLUMN_FACTOR = "#Impact factor";
-	private final static String COLUMN_IMPACT_RESULT = "#Impact result";
+	private final static String COLUMN_NAME = M.ProcessFlowName;
+	private final static String COLUMN_LOCATION = M.Location;
+	private final static String COLUMN_CATEGORY = M.FlowCategory;
+	private final static String COLUMN_AMOUNT = M.InventoryResult;
+	private final static String COLUMN_FACTOR = M.ImpactFactor;
+	private final static String COLUMN_IMPACT_RESULT = M.ImpactResult;
 	private final static String[] COLUMN_LABELS = { COLUMN_NAME, COLUMN_LOCATION, COLUMN_CATEGORY, COLUMN_AMOUNT,
 			COLUMN_FACTOR, COLUMN_IMPACT_RESULT };
 
@@ -63,17 +63,17 @@ public class ImpactTreePage extends FormPage {
 	private int cutOff = 10;
 
 	public ImpactTreePage(FormEditor editor, FullResultProvider result, ImpactFactorProvider impactFactors) {
-		super(editor, "ImpactTreePage", "#Impact analysis");
+		super(editor, "ImpactTreePage", M.ImpactAnalysis);
 		this.result = result;
 		this.impactFactors = impactFactors;
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, "#Impact analysis");
+		ScrolledForm form = UI.formHeader(managedForm, M.ImpactAnalysis);
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
-		Section section = UI.section(body, toolkit, "#Impact analysis");
+		Section section = UI.section(body, toolkit, M.ImpactAnalysis);
 		UI.gridData(section, true, true);
 		Composite client = toolkit.createComposite(section);
 		section.setClient(client);
@@ -89,7 +89,7 @@ public class ImpactTreePage extends FormPage {
 		Composite container = new Composite(parent, SWT.NONE);
 		UI.gridLayout(container, 7);
 		UI.gridData(container, true, false);
-		UI.formLabel(container, "#Impact category");
+		UI.formLabel(container, M.ImpactCategory);
 		createCategorySelection(container);
 		createCutOffFilter(container);
 		createNoImpactFilter(container);
@@ -105,7 +105,7 @@ public class ImpactTreePage extends FormPage {
 	}
 
 	private void createNoImpactFilter(Composite parent) {
-		Button button = UI.formCheckBox(parent, toolkit, "#Exclude zero entries");
+		Button button = UI.formCheckBox(parent, toolkit, M.ExcludeZeroEntries);
 		UI.gridData(button, false, false);
 		button.setSelection(filterZeroes);
 		Controls.onSelect(button, event -> {
@@ -168,41 +168,40 @@ public class ImpactTreePage extends FormPage {
 
 		@Override
 		public String getColumnText(Object element, int columnIndex) {
-			String column = COLUMN_LABELS[columnIndex];
 			if (element instanceof ProcessDescriptor)
-				return getProcessText((ProcessDescriptor) element, column);
+				return getProcessText((ProcessDescriptor) element, columnIndex);
 			if (element instanceof FlowWithProcess)
-				return getFlowText((FlowWithProcess) element, column);
+				return getFlowText((FlowWithProcess) element, columnIndex);
 			return null;
 		}
 
-		private String getProcessText(ProcessDescriptor descriptor, String column) {
-			switch (column) {
-			case COLUMN_NAME:
+		private String getProcessText(ProcessDescriptor descriptor, int columnIndex) {
+			switch (columnIndex) {
+			case 0:
 				return descriptor.getName();
-			case COLUMN_LOCATION:
+			case 1:
 				EntityCache cache = result.cache;
 				if (descriptor.getLocation() == null)
 					return null;
 				Location location = cache.get(Location.class, descriptor.getLocation());
 				return location.getName();
-			case COLUMN_IMPACT_RESULT:
+			case 5:
 				return Numbers.format(getResult(descriptor));
 			}
 			return null;
 		}
 
-		private String getFlowText(FlowWithProcess descriptor, String column) {
-			switch (column) {
-			case COLUMN_NAME:
+		private String getFlowText(FlowWithProcess descriptor, int columnIndex) {
+			switch (columnIndex) {
+			case 0:
 				return descriptor.flow.getName();
-			case COLUMN_CATEGORY:
+			case 2:
 				return toString(Labels.getFlowCategory(descriptor.flow, result.cache));
-			case COLUMN_AMOUNT:
+			case 3:
 				return Numbers.format(getAmount(descriptor));
-			case COLUMN_FACTOR:
+			case 4:
 				return Numbers.format(getFactor(descriptor));
-			case COLUMN_IMPACT_RESULT:
+			case 5:
 				return Numbers.format(getResult(descriptor));
 			}
 			return null;

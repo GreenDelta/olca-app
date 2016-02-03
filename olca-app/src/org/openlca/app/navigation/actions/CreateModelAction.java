@@ -99,7 +99,7 @@ public class CreateModelAction extends Action implements INavigationAction {
 		case ACTOR:
 			return M.NewActor;
 		case CURRENCY:
-			return "#New currency";
+			return M.NewCurrency;
 		case FLOW:
 			return M.NewFlow;
 		case FLOW_PROPERTY:

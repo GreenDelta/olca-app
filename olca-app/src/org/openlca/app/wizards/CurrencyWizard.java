@@ -1,5 +1,6 @@
 package org.openlca.app.wizards;
 
+import org.openlca.app.M;
 import java.util.UUID;
 
 import org.eclipse.swt.widgets.Composite;
@@ -19,7 +20,7 @@ public class CurrencyWizard extends AbstractWizard<Currency> {
 
 	@Override
 	protected String getTitle() {
-		return "#New currency";
+		return M.NewCurrency;
 	}
 
 	@Override
@@ -31,7 +32,7 @@ public class CurrencyWizard extends AbstractWizard<Currency> {
 
 		Page() {
 			super("CurrencyWizardPage");
-			setTitle("#New currency");
+			setTitle(M.NewCurrency);
 			setPageComplete(false);
 		}
 

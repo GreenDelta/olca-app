@@ -112,14 +112,14 @@
             default="false"
             icon="icons/model/social_indicator.png"
             id="editors.socialindicator"
-            name="#Social indicator">
+            name="Social indicator">
       </editor>
       <editor
             class="org.openlca.app.editors.costs.CurrencyEditor"
             default="false"
             icon="icons/model/currency.png"
             id="editors.currency"
-            name="#Currency">
+            name="Currency">
       </editor>
       
       <!-- result views -->
@@ -163,7 +163,7 @@
             id="ReportViewer"
             class="org.openlca.app.editors.reports.ReportViewer"
             icon="icons/model/project.png"
-            name="Report Viewer"
+            name="%ReportViewer"
             contributorClass="org.openlca.app.editors.reports.ReportToolbar">
       </editor> 
       <editor
@@ -291,13 +291,13 @@
             class="org.openlca.app.wizards.SocialIndicatorWizard"
             icon="icons/wizard/social_indicator.png"
             id="wizards.new.socialindicator"
-            name="#Social indicator">
+            name="Social indicator">
       </wizard>
       <wizard
             class="org.openlca.app.wizards.CurrencyWizard"
             icon="icons/wizard/currency.png"
             id="wizards.new.currency"
-            name="#Currency">
+            name="Currency">
       </wizard>
    </extension>   
    
@@ -360,7 +360,7 @@
       <page
             class="org.openlca.app.cloud.ui.preferences.CloudPreferencePage"
             id="preferencepages.cloud"
-            name="#Cloud ">
+            name="Cloud ">
       </page>
    </extension>
    <extension

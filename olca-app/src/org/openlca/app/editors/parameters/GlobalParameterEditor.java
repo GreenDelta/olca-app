@@ -32,7 +32,7 @@ public class GlobalParameterEditor extends ModelEditor<Parameter> {
 	@Override
 	public void doSave(IProgressMonitor monitor) {
 		if (infoPage.hasErrors()) {
-			Error.showBox("#Can not save parameter, because formula contains errors");
+			Error.showBox(M.CanNotSaveParameter);
 			return;
 		}
 		String name = getModel().getName();
@@ -43,7 +43,7 @@ public class GlobalParameterEditor extends ModelEditor<Parameter> {
 		}
 		if (new ParameterDao(Database.get()).existsGlobal(name)) {
 			Error.showBox(M.InvalidParameterName,
-					"#A parameter with the same name already exists");
+					M.ParameterWithSameNameExists);
 			return;
 		}
 		super.doSave(monitor);

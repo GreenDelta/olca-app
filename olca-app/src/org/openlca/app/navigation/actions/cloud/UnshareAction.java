@@ -1,5 +1,6 @@
 package org.openlca.app.navigation.actions.cloud;
 
+import org.openlca.app.M;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
@@ -22,20 +23,20 @@ public class UnshareAction extends Action implements INavigationAction {
 
 	@Override
 	public String getText() {
-		return "#Unshare repository...";
+		return M.UnshareRepository;
 	}
 
 	@Override
 	public void run() {
 		InputDialog dialog = new InputDialog(
 				UI.shell(),
-				"#Unshare repository",
-				"#Specify the user you don't want to share the repository with anymore",
+				M.UnshareRepository,
+				M.UnshareDescription,
 				null, null);
 		if (dialog.open() != IDialogConstants.OK_ID)
 			return;
 		String username = dialog.getValue();
-		App.runWithProgress("#Unsharing repository",
+		App.runWithProgress(M.UnsharingRepository,
 				() -> unshareRepository(username));
 		if (error != null) {
 			Error.showBox(error.getMessage());

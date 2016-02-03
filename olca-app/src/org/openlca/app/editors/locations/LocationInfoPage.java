@@ -136,7 +136,7 @@ public class LocationInfoPage extends ModelPage<Location> implements HtmlPage {
 	private class ClearAction extends Action {
 
 		private ClearAction() {
-			super("#Clear data");
+			super(M.ClearData);
 		}
 
 		@Override

@@ -99,7 +99,7 @@ class PropertyLabels {
 
 	private static void putCategoryLabels() {
 		Class<?> clazz = Category.class;
-		put(clazz, "modelType", "Model type"); // "#
+		put(clazz, "modelType", M.ModelType); 
 		put(clazz, "name", M.Name);
 		put(clazz, "category", M.Category);
 	}
@@ -110,7 +110,7 @@ class PropertyLabels {
 		put(clazz, "code", M.Code);
 		put(clazz, "longitude", M.Longitude);
 		put(clazz, "latitude", M.Latitude);
-		put(clazz, "geometry", "Geography"); // "#
+		put(clazz, "geometry", M.Geometry); 
 	}
 
 	private static void putCurrencyLabels() {
@@ -118,7 +118,7 @@ class PropertyLabels {
 		putBasicLabels(clazz);
 		put(clazz, "code", M.Code);
 		put(clazz, "conversionFactor", M.ConversionFactor);
-		put(clazz, "referenceCurrency", "Reference currency"); // "#
+		put(clazz, "referenceCurrency", M.ReferenceCurrency); 
 	}
 
 	private static void putActorLabels() {
@@ -140,7 +140,7 @@ class PropertyLabels {
 		put(clazz, "doi", M.Doi);
 		put(clazz, "textReference", M.TextReference);
 		put(clazz, "year", M.Year);
-		put(clazz, "externalFile", "File"); // "#
+		put(clazz, "externalFile", M.ExternalFile);
 	}
 
 	private static void putUnitGroupLabels() {
@@ -171,8 +171,8 @@ class PropertyLabels {
 		put(clazz, "unitOfMeasurement", M.UnitOfMeasurement);
 		put(clazz, "evaluationScheme", M.EvaluationScheme);
 		put(clazz, "activityVariable", M.ActivityVariable);
-		put(clazz, "activityQuantity", "Activity quantity"); // "#
-		put(clazz, "activityUnit", "Activity unit"); // "#
+		put(clazz, "activityQuantity", M.ActivityQuantity); 
+		put(clazz, "activityUnit", M.ActivityUnit);
 	}
 
 	private static void putFlowLabels() {
@@ -200,10 +200,10 @@ class PropertyLabels {
 		put(clazz, "location", M.Location);
 		put(clazz, "infrastructureProcess", M.InfrastructureProcess);
 		put(clazz, "defaultAllocationMethod", M.AllocationMethod);
-		put(clazz, "processDocumentation", "Process documentation"); // "#
+		put(clazz, "processDocumentation", M.ProcessDocumentation);
 		put(clazz, "inputs", M.Inputs);
 		put(clazz, "outputs", M.Outputs);
-		put(clazz, "allocationFactors", "Allocation factors"); // "#
+		put(clazz, "allocationFactors", M.AllocationFactors);
 		put(clazz, "parameters", M.Parameters);
 		put(clazz, "socialAspects", M.SocialAspects);
 	}
@@ -213,9 +213,9 @@ class PropertyLabels {
 		put(clazz, "creationDate", M.CreationDate);
 		put(clazz, "validFrom", M.StartDate);
 		put(clazz, "validUntil", M.EndDate);
-		put(clazz, "timeDescription", "Time description"); // "#
-		put(clazz, "geographyDescription", "Geography description"); // "#
-		put(clazz, "technologyDescription", "Technology description"); // "#
+		put(clazz, "timeDescription", M.TimeDescription); 
+		put(clazz, "geographyDescription", M.GeographyDescription);
+		put(clazz, "technologyDescription", M.TechnologyDescription);
 		put(clazz, "intendedApplication", M.IntendedApplication);
 		put(clazz, "dataSetOwner", M.DataSetOwner);
 		put(clazz, "dataGenerator", M.DataGenerator);
@@ -247,28 +247,28 @@ class PropertyLabels {
 		put(clazz, "defaultProvider", M.DefaultProvider);
 		put(clazz, "pedigreeUncertainty", M.PedigreeUncertainty);
 		put(clazz, "costCategory", M.CostCategory);
-		put(clazz, "costFormula", "Cost formula"); // "#
-		put(clazz, "costValue", "Cost value"); // "#
-		put(clazz, "currency", "Currency"); // "#
+		put(clazz, "costFormula", M.CostFormula); 
+		put(clazz, "costValue", M.CostValue);
+		put(clazz, "currency", M.Currency);
 		put(clazz, "uncertainty", M.Uncertainty);
 	}
 
 	private static void putUncertaintyLabels() {
 		Class<?> clazz = Uncertainty.class;
 		put(clazz, "distributionType", M.UncertaintyDistribution);
-		put(clazz, "meanFormula", "Mean (formula)"); // "#
+		put(clazz, "meanFormula", M.MeanFormula); 
 		put(clazz, "mean", M.Mean);
-		put(clazz, "sdFormula", "Standard deviation (formula)"); // "#
+		put(clazz, "sdFormula", M.StandardDeviationFormula);
 		put(clazz, "sd", M.StandardDeviation);
-		put(clazz, "geomMeanFormula", "Geometric mean (formula)"); // "#
+		put(clazz, "geomMeanFormula", M.GeometricMeanFormula); 
 		put(clazz, "geomMean", M.GeometricMean);
-		put(clazz, "geomSdFormula", "Geometric standard deviation (formula)"); // "#
+		put(clazz, "geomSdFormula", M.GeometricStandardDeviationFormula);
 		put(clazz, "geomSd", M.GeometricStandardDeviation);
-		put(clazz, "minimumFormula", "Minimum (formula)"); // "#
+		put(clazz, "minimumFormula", M.MinimumFormula); 
 		put(clazz, "minimum", M.Minimum);
-		put(clazz, "modeFormula", "Mode (formula)"); // "#
+		put(clazz, "modeFormula", M.ModeFormula);
 		put(clazz, "mode", M.Mode);
-		put(clazz, "maximumFormula", "Maximum (formula)"); // "#
+		put(clazz, "maximumFormula", M.MaximumFormula);
 		put(clazz, "maximum", M.Maximum);
 	}
 
@@ -276,7 +276,7 @@ class PropertyLabels {
 		Class<?> clazz = AllocationFactor.class;
 		put(clazz, "allocationType", M.AllocationMethod);
 		put(clazz, "product", M.Product);
-		put(clazz, "exchange", "Input/Output"); // "#
+		put(clazz, "exchange", M.InputOutput);
 		put(clazz, "value", M.Value);
 	}
 
@@ -330,7 +330,7 @@ class PropertyLabels {
 		Class<?> clazz = NwSet.class;
 		putBasicLabels(clazz);
 		put(clazz, "weightedScoreUnit", M.ReferenceUnit);
-		put(clazz, "factors", "Factors"); // "#
+		put(clazz, "factors", M.Factors);
 	}
 
 	private static void putNwFactorLabels() {
@@ -349,7 +349,7 @@ class PropertyLabels {
 		put(clazz, "targetUnit", M.Unit);
 		put(clazz, "targetAmount", M.TargetAmount);
 		put(clazz, "processes", M.Processes);
-		put(clazz, "processLinks", "Process links"); // "#
+		put(clazz, "processLinks", M.ProcessLinks);
 		put(clazz, "parameterRedefs", M.Parameters);
 	}
 

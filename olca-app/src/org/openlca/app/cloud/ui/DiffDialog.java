@@ -1,5 +1,6 @@
 package org.openlca.app.cloud.ui;
 
+import org.openlca.app.M;
 import java.util.Collections;
 
 import org.eclipse.swt.graphics.Point;
@@ -35,7 +36,7 @@ public class DiffDialog extends FormDialog {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		ScrolledForm form = UI.formHeader(mform, "#Diff");
+		ScrolledForm form = UI.formHeader(mform, M.Diff);
 		FormToolkit toolkit = mform.getToolkit();
 		Composite body = form.getBody();
 		body.setLayout(new GridLayout());

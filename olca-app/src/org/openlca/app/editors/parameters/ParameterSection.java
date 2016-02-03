@@ -261,7 +261,7 @@ public class ParameterSection {
 			supplier.get().add(param);
 		}
 		if (skipped)
-			Warning.showBox("#Some parameters were not added because their names were either invalid or a parameter with the same name already existed.");
+			Warning.showBox(M.SomeParametersWereNotAdded);
 		setInput();
 		editor.setDirty(true);
 		support.evaluate();
@@ -328,7 +328,7 @@ public class ParameterSection {
 			}
 			if (exists(name)) {
 				Error.showBox(M.InvalidParameterName,
-						"#A parameter with the same name already exists");
+						M.ParameterWithSameNameExists);
 				return;
 			}
 			param.setName(name);
@@ -357,8 +357,8 @@ public class ParameterSection {
 
 		@Override
 		protected void setItem(Parameter element, String item) {
-			if (!Question.ask("#External source change",
-					"#Values will be recalculated, do you want to proceed?"))
+			if (!Question.ask(M.ExternalSourceChange,
+					M.RecalculateQuestion))
 				return;
 			element.setExternalSource(item);
 			sourceHandler.sourceChanged(element, item);

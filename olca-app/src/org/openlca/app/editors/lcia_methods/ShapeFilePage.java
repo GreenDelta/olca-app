@@ -191,14 +191,14 @@ class ShapeFilePage extends FormPage {
 		}
 
 		private void render() {
-			section = UI.section(body, toolkit, "#Parameters of " + shapeFile);
+			section = UI.section(body, toolkit, M.Parameters + " - " + shapeFile);
 			Composite composite = UI.sectionClient(section, toolkit);
 			parameterTable = new ShapeFileParameterTable(shapeFile, composite);
 			Action delete = Actions.onRemove(() -> {
 				delete();
 				removeExternalSourceReferences();
 			});
-			Action update = new Action("#Update") {
+			Action update = new Action(M.Update) {
 
 				@Override
 				public ImageDescriptor getImageDescriptor() {
@@ -236,8 +236,8 @@ class ShapeFilePage extends FormPage {
 
 		private void delete(boolean force) {
 			boolean del = force
-					|| Question.ask("@Delete " + shapeFile + "?", "Do you "
-							+ "really want to delete " + shapeFile + "?");
+					|| Question.ask(M.DeleteShapeFile, "Do you "
+							+ "really want to delete the selected shape file?");
 			if (!del)
 				return;
 			ShapeFileUtils.deleteFile(method, shapeFile);
@@ -278,7 +278,7 @@ class ShapeFilePage extends FormPage {
 								continue;
 							parameter
 									.setValue((param.getMin() + param.getMax())
-									/ 2);
+											/ 2);
 							parameter.setUncertainty(Uncertainty.uniform(
 									param.getMin(), param.getMax()));
 						}
@@ -321,7 +321,7 @@ class ShapeFilePage extends FormPage {
 			@Override
 			public Image getColumnImage(Object o, int i) {
 				if (i == 0)
-					return Images.get(ModelType.PARAMETER); 
+					return Images.get(ModelType.PARAMETER);
 				else
 					return null;
 			}
@@ -351,8 +351,8 @@ class ShapeFilePage extends FormPage {
 
 		public ShowMapAction(ShapeFileSection section) {
 			this.section = section;
-			setToolTipText("#Show in map");
-			setText("#Show in map");
+			setToolTipText(M.ShowInMap);
+			setText(M.ShowInMap);
 			setImageDescriptor(Images.descriptor(ModelType.IMPACT_METHOD));
 		}
 
@@ -375,8 +375,8 @@ class ShapeFilePage extends FormPage {
 
 		public AddParamAction(ShapeFileSection section) {
 			this.section = section;
-			setToolTipText("#Add to method parameters");
-			setText("#Add to method parameters");
+			setToolTipText(M.AddToMethodParameters);
+			setText(M.AddToMethodParameters);
 			setImageDescriptor(Icon.ADD.descriptor());
 		}
 
@@ -386,15 +386,13 @@ class ShapeFilePage extends FormPage {
 			if (param == null)
 				return;
 			if (exists(param)) {
-				Info.showBox("#Parameter already added",
-						"#The selected parameter was already added "
-								+ "in this LCIA method");
+				Info.showBox(M.ParameterAlreadyAdded,
+						M.SelectedParameterWasAlreadyAdded);
 				return;
 			}
 			if (otherExists(param)) {
-				Error.showBox("#Parameter with same name exists",
-						"#An other parameter with the same name already exists "
-								+ "in this LCIA method");
+				Error.showBox(M.ParameterWithSameNameExists,
+						M.ParameterWithSameNameExistsInMethod);
 				return;
 			}
 			if (!Parameter.isValidName(param.getName())) {
@@ -411,9 +409,7 @@ class ShapeFilePage extends FormPage {
 			ShapeFileParameter param = Viewers
 					.getFirstSelected(section.parameterTable.viewer);
 			if (param == null) {
-				Error.showBox("#No parameter selected", "#There is no shapefile "
-						+ "parameter selected that could be added as "
-						+ "method parameter");
+				Error.showBox(M.NoParameterSelected, M.ThereIsNoShapefileParameterSelectedThatCouldBeAddedAsMethodParameter);
 				return null;
 			}
 			return param;

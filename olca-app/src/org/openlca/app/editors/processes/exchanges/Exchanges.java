@@ -52,9 +52,8 @@ class Exchanges {
 		List<CategorizedDescriptor> list = search.findUses(products);
 		if (list.isEmpty())
 			return false;
-		org.openlca.app.util.Error.showBox("@Cannot remove exchanges",
-				"@One or more of the selected exchanges are used already in a "
-						+ "product system and therefore cannot be deleted.");
+		org.openlca.app.util.Error.showBox(M.CannotRemoveExchanges,
+				M.ExchangesAreUsed);
 		return true;
 	}
 

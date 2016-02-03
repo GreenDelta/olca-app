@@ -1,5 +1,6 @@
 package org.openlca.app.navigation.actions.cloud;
 
+import org.openlca.app.M;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
@@ -22,18 +23,18 @@ public class ShareAction extends Action implements INavigationAction {
 
 	@Override
 	public String getText() {
-		return "#Share repository...";
+		return M.ShareRepository;
 	}
 
 	@Override
 	public void run() {
-		InputDialog dialog = new InputDialog(UI.shell(), "#Share repository",
-				"#Specify the user you want to share the repository with",
+		InputDialog dialog = new InputDialog(UI.shell(), M.ShareRepository,
+				M.ShareDescription,
 				null, null);
 		if (dialog.open() != IDialogConstants.OK_ID)
 			return;
 		String username = dialog.getValue();
-		App.runWithProgress("#Sharing repository",
+		App.runWithProgress(M.SharingRepository,
 				() -> shareRepository(username));
 		if (error != null) {
 			Error.showBox(error.getMessage());

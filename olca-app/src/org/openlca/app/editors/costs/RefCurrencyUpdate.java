@@ -1,5 +1,6 @@
 package org.openlca.app.editors.costs;
 
+import org.openlca.app.M;
 import java.util.Objects;
 
 import org.eclipse.ui.IEditorPart;
@@ -34,13 +35,12 @@ class RefCurrencyUpdate implements Runnable {
 			return;
 		if (Objects.equals(c, c.referenceCurrency))
 			return;
-		boolean b = Question.ask("#Set as reference currency?",
-				"#Do you want to set this currency as the reference "
-						+ "currency of the database?");
+		boolean b = Question.ask(M.SetAsReferenceCurrency,
+				M.SetReferenceCurrencyQuestion);
 		if (!b)
 			return;
 		closeEditors();
-		App.run("#Update reference currency...",
+		App.run(M.UpdateReferenceCurrency,
 				new RefCurrencyUpdate(c), () -> {
 					CurrencyDescriptor d = Descriptors.toDescriptor(c);
 					App.openEditor(d);

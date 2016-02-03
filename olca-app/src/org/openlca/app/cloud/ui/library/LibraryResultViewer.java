@@ -1,5 +1,6 @@
 package org.openlca.app.cloud.ui.library;
 
+import org.openlca.app.M;
 import java.util.Map.Entry;
 
 import org.eclipse.jface.viewers.IBaseLabelProvider;
@@ -25,7 +26,7 @@ class LibraryResultViewer extends AbstractTableViewer<Entry<Dataset, String>> {
 
 	@Override
 	protected String[] getColumnHeaders() {
-		return new String[] { "#Data set", "#Library" };
+		return new String[] { M.DataSet, M.Library };
 	}
 
 	@Override

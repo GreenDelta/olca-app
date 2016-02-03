@@ -122,16 +122,16 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 			return;
 		Flow flow = editor.getModel();
 		if (fac.equals(flow.getReferenceFactor())) {
-			Error.showBox("@Cannot delete reference flow property",
-					"@The reference flow property of a flow cannot be deleted.");
+			Error.showBox(M.CannotDeleteReferenceFlowProperty,
+					M.ReferenceFlowPropertyCannotBeDeleted);
 			return;
 		}
 		FlowPropertyFactorUseSearch search = new FlowPropertyFactorUseSearch(
 				flow, Database.get());
 		List<CategorizedDescriptor> list = search.findUses(fac);
 		if (!list.isEmpty()) {
-			Error.showBox("@Cannot delete flow property",
-					"@The given flow property is used in processes or impact methods.");
+			Error.showBox(M.CannotDeleteFlowProperty,
+					M.FlowPropertyIsUsed);
 			return;
 		}
 		flow.getFlowPropertyFactors().remove(fac);

@@ -1,5 +1,6 @@
 package org.openlca.app.cloud.ui.library;
 
+import org.openlca.app.M;
 import java.util.Map;
 
 import org.eclipse.swt.SWT;
@@ -36,13 +37,13 @@ public class LibraryResultDialog extends FormDialog {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		ScrolledForm form = UI.formHeader(mform, "#Library data sets");
+		ScrolledForm form = UI.formHeader(mform, M.LibraryDataSets);
 		FormToolkit toolkit = mform.getToolkit();
 		Composite body = form.getBody();
 		body.setLayout(new GridLayout());
 		toolkit.paintBordersFor(body);
 		UI.gridData(body, true, true);
-		String description = "#The following data sets were recognized as library data sets. Please be careful when commiting this data since it might violate licence restrictions.";
+		String description = M.RecognizedLibraryDatasetsDescription;
 		Label label = toolkit.createLabel(body, description, SWT.WRAP);
 		UI.gridData(label, true, false).widthHint = 750;
 		LibraryResultViewer viewer = new LibraryResultViewer(body);

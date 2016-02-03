@@ -264,10 +264,10 @@ class InfoPage extends ModelPage<Process> {
 				UI.gridLayout(body, 1);
 				UI.gridData(body, true, true);
 				UI.formLabel(body,
-						"#Please enter a name and the code of the new location");
+						M.EnterLocationNameAndCode);
 				Composite container = UI.formComposite(body);
 				UI.gridData(container, true, true);
-				final Text nameText = UI.formText(container, "#Name");
+				final Text nameText = UI.formText(container, M.Name);
 				nameText.addModifyListener(new ModifyListener() {
 
 					@Override
@@ -276,7 +276,7 @@ class InfoPage extends ModelPage<Process> {
 						updateButtons();
 					}
 				});
-				final Text codeText = UI.formText(container, "#Code");
+				final Text codeText = UI.formText(container, M.Code);
 				codeText.addModifyListener(new ModifyListener() {
 
 					@Override

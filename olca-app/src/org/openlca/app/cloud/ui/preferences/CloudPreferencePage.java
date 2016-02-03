@@ -1,5 +1,6 @@
 package org.openlca.app.cloud.ui.preferences;
 
+import org.openlca.app.M;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.swt.widgets.Composite;
@@ -19,7 +20,7 @@ public class CloudPreferencePage extends FieldEditorPreferencePage implements
 		Composite parent = getFieldEditorParent();
 		BooleanFieldEditor checkAgainstLibraries = new BooleanFieldEditor(
 				CloudPreference.CHECK_AGAINST_LIBRARIES,
-				"#Check against libraries", parent);
+				M.CheckAgainstLibraries, parent);
 		addField(checkAgainstLibraries);
 	}
 

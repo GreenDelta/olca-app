@@ -105,7 +105,7 @@ class CalculationWizardPage extends WizardPage {
 	private void createOptions(Composite parent) {
 		calcCosts = new Button(parent, SWT.CHECK);
 		calcCosts.setSelection(true);
-		calcCosts.setText("#Include cost calculation");
+		calcCosts.setText(M.IncludeCostCalculation);
 	}
 
 	private void createRadios(Composite parent) {

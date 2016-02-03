@@ -237,9 +237,9 @@ class SectionList {
 			case SINGLE_SCORE_BAR_CHART:
 				return M.SingleScoreBarChart;
 			case LCC_ADDED_VALUES_TABLE:
-				return "#LCC: Added values table";
+				return M.LCCAddedValuesTable;
 			case LCC_NET_COSTS_TABLE:
-				return "#LCC: Net-costs table";
+				return M.LCCNetcostsTable;
 			default:
 				return M.Unknown;
 			}

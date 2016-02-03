@@ -47,7 +47,7 @@ public class IoPreferencePage extends PreferencePage implements
 
 	private void createIlcdNetworkContents(Composite parent) {
 		Group section = new Group(parent, SWT.SHADOW_OUT);
-		section.setText("#ILCD Network settings");
+		section.setText(M.ILCDNetworkSettings);
 		StringFieldEditor urlEditor = new StringFieldEditor(
 				IoPreference.ILCD_URL, M.URL, section);
 		addField(urlEditor);
@@ -64,7 +64,7 @@ public class IoPreferencePage extends PreferencePage implements
 
 	private void createIlcdOtherContents(Composite parent) {
 		Group section = new Group(parent, SWT.SHADOW_OUT);
-		section.setText("#ILCD other settings");
+		section.setText(M.ILCDOtherSettings);
 		ComboFieldEditor langEditor = new ComboFieldEditor(
 				IoPreference.ILCD_LANG, M.Language, getLanguages(),
 				section);

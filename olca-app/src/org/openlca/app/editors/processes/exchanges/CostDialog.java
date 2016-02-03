@@ -1,5 +1,6 @@
 package org.openlca.app.editors.processes.exchanges;
 
+import org.openlca.app.M;
 import java.util.Collections;
 import java.util.List;
 
@@ -56,7 +57,7 @@ class CostDialog extends FormDialog {
 	@Override
 	protected void createFormContent(IManagedForm mform) {
 		FormToolkit tk = mform.getToolkit();
-		UI.formHeader(mform, "#Price");
+		UI.formHeader(mform, M.Price);
 		Composite body = UI.formBody(mform.getForm(), tk);
 		UI.gridLayout(body, 3);
 		createCurrencyRow(body, tk);
@@ -66,7 +67,7 @@ class CostDialog extends FormDialog {
 	}
 
 	private void createCurrencyRow(Composite body, FormToolkit tk) {
-		Combo widget = UI.formCombo(body, tk, "#Currency");
+		Combo widget = UI.formCombo(body, tk, M.Currency);
 		currencyCombo = new ComboViewer(widget);
 		currencyCombo.setLabelProvider(new LabelProvider() {
 			@Override
@@ -100,7 +101,7 @@ class CostDialog extends FormDialog {
 	}
 
 	private void createCostsRow(Composite body, FormToolkit tk) {
-		priceText = UI.formText(body, tk, "#Costs");
+		priceText = UI.formText(body, tk, M.Costs);
 		currencyLabel = UI.formLabel(body, tk, "");
 		if (exchange.costFormula != null)
 			priceText.setText(exchange.costFormula);
@@ -139,7 +140,7 @@ class CostDialog extends FormDialog {
 	}
 
 	private void createCostsPerUnitRow(Composite body, FormToolkit tk) {
-		pricePerUnitText = UI.formText(body, tk, "#Costs per unit");
+		pricePerUnitText = UI.formText(body, tk, M.CostsPerUnit);
 		pricePerUnitText.setEditable(false);
 		pricePerUnitText.setBackground(Colors.getColor(225, 225, 225));
 		currencyPerUnitLabel = UI.formLabel(body, tk, "");
