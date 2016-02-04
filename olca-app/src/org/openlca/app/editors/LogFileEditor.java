@@ -1,5 +1,6 @@
 package org.openlca.app.editors;
 
+import org.openlca.app.M;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -54,7 +55,7 @@ public class LogFileEditor extends FormEditor {
 		private File file;
 
 		public LogFilePage(File file, int count) {
-			super(LogFileEditor.this, "org.openlca.app.editors.LogFileEditor", "#Log file " + count);
+			super(LogFileEditor.this, "org.openlca.app.editors.LogFileEditor", M.LogFile + count);
 			this.file = file;
 		}
 
@@ -62,7 +63,7 @@ public class LogFileEditor extends FormEditor {
 		protected void createFormContent(IManagedForm managedForm) {
 			ScrolledForm form = managedForm.getForm();
 			FormToolkit toolkit = managedForm.getToolkit();
-			UI.formHeader(managedForm, "#openLCA log");
+			UI.formHeader(managedForm, M.OpenLCALog);
 			Composite body = UI.formBody(form, toolkit);
 			Browser browser = UI.createBrowser(body);
 			UI.gridData(browser, true, true);

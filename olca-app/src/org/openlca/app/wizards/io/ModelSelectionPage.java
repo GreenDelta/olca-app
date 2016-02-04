@@ -92,7 +92,7 @@ class ModelSelectionPage extends WizardPage {
 	// TODO: this method can be removed if the labels are a bit more generic
 	private String getTypeName() {
 		if (types == null || types.length != 1)
-			return "@data sets";
+			return M.DataSets;
 		ModelType type = types[0];
 		switch (type) {
 		case PROCESS:
@@ -142,7 +142,7 @@ class ModelSelectionPage extends WizardPage {
 		layout.marginHeight = 0;
 		layout.marginWidth = 5;
 		UI.gridData(composite, true, false);
-		String label = targetIsDir ? M.ToDirectory : "#To file:";
+		String label = targetIsDir ? M.ToDirectory : M.ToFile;
 		new Label(composite, SWT.NONE).setText(label);
 		Text text = createTargetText(composite);
 		text.setEditable(false);

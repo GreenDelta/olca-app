@@ -1,5 +1,6 @@
 package org.openlca.app.navigation.actions.cloud;
 
+import org.openlca.app.M;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -42,7 +43,7 @@ public class CommitAction extends Action implements INavigationAction {
 	private List<INavigationElement<?>> selection;
 
 	public CommitAction() {
-		setText("#Commit...");
+		setText(M.Commit);
 	}
 
 	@Override
@@ -52,9 +53,9 @@ public class CommitAction extends Action implements INavigationAction {
 		if (runner.error != null)
 			Error.showBox(runner.error.getMessage());
 		else if (!runner.upToDate)
-			Error.showBox("#Rejected - not up to date. Please fetch the latest changes from the repository first");
+			Error.showBox(M.RejectMessage);
 		else if (runner.noChanges)
-			Info.showBox("#No changes in local db");
+			Info.showBox(M.NoChangesInLocalDb);
 	}
 
 	@Override
@@ -91,26 +92,26 @@ public class CommitAction extends Action implements INavigationAction {
 		private WebRequestException error;
 
 		public void run() {
-			App.runWithProgress("#Comparing with repository",
+			App.runWithProgress(M.ComparingWithRepository,
 					this::getDifferences);
 			if (!upToDate)
 				return;
 			boolean doContinue = openCommitDialog();
 			if (!doContinue)
 				return;
-			App.runWithProgress("#Searching for referenced changes",
+			App.runWithProgress(M.SearchingForReferencedChanges,
 					this::searchForReferences);
 			doContinue = showReferences();
 			if (!doContinue)
 				return;
 			if (CloudPreference.doCheckAgainstLibraries()) {
-				App.runWithProgress("#Checking against libraries",
+				App.runWithProgress(M.CheckingAgainstLibraries,
 						this::checkAgainstLibraries);
 				doContinue = openLibraryResultDialog();
 			}
 			if (!doContinue)
 				return;
-			App.runWithProgress("#Commiting changes", this::commit);
+			App.runWithProgress(M.CommitingChanges, this::commit);
 			if (!upToDate)
 				return;
 			Navigator.refresh(Navigator.getNavigationRoot());

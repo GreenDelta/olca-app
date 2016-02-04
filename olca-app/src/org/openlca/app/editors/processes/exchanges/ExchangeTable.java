@@ -90,7 +90,7 @@ class ExchangeTable {
 
 	private ExchangeTable(boolean forInputs, ProcessEditor editor) {
 		this.forInputs = forInputs;
-		this.COSTS = forInputs ? "#Costs" : "#Costs/Revenues";
+		this.COSTS = forInputs ? M.Costs : M.CostsRevenues;
 		this.editor = editor;
 		editor.getParameterSupport().afterEvaluation(() -> viewer.refresh());
 	}

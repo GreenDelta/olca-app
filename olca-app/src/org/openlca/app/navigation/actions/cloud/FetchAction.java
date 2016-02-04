@@ -1,5 +1,6 @@
 package org.openlca.app.navigation.actions.cloud;
 
+import org.openlca.app.M;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,7 +39,7 @@ public class FetchAction extends Action implements INavigationAction {
 	private DiffIndex index;
 
 	public FetchAction() {
-		setText("#Fetch...");
+		setText(M.Fetch);
 	}
 
 	@Override
@@ -57,15 +58,15 @@ public class FetchAction extends Action implements INavigationAction {
 		private DiffNode root;
 
 		public void run() {
-			App.runWithProgress("#Fetching commits", this::fetchCommits);
+			App.runWithProgress(M.FetchingCommits, this::fetchCommits);
 			boolean doContinue = showCommitEntries();
 			if (!doContinue)
 				return;
-			App.runWithProgress("#Fetching changes", this::requestFetch);
+			App.runWithProgress(M.FetchingChanges, this::requestFetch);
 			doContinue = showDifferences();
 			if (!doContinue)
 				return;
-			App.runWithProgress("#Fetching data", this::fetchData);
+			App.runWithProgress(M.FetchingData, this::fetchData);
 			if (error != null)
 				return;
 			Navigator.refresh(Navigator.getNavigationRoot());
@@ -144,7 +145,7 @@ public class FetchAction extends Action implements INavigationAction {
 		}
 
 		private void showNoChangesBox() {
-			Info.showBox("#Up to date - No changes fetched");
+			Info.showBox(M.UpToDate);
 		}
 
 		private List<DiffResult> createDifferences(

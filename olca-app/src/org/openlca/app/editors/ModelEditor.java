@@ -140,7 +140,7 @@ public abstract class ModelEditor<T extends CategorizedEntity> extends FormEdito
 					if (Strings.nullOrEmpty(name))
 						return M.NameCannotBeEmpty;
 					if (Strings.nullOrEqual(name, model.getName()))
-						return "#The name should be different";
+						return M.NameShouldBeDifferent;
 					return null;
 				});
 		if (diag.open() != Window.OK)

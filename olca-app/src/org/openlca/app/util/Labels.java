@@ -242,30 +242,29 @@ public class Labels {
 	public static String riskLevel(RiskLevel rl) {
 		if (rl == null)
 			return M.Unknown;
-		// "# TODO: these values should be translated
 		switch (rl) {
 		case HIGH_OPPORTUNITY:
-			return "High opportunity";
+			return M.HighOpportunity;
 		case MEDIUM_OPPORTUNITY:
-			return "Medium opportunity";
+			return M.MediumOpportunity;
 		case LOW_OPPORTUNITY:
-			return "Low opportunity";
+			return M.LowOpportunity;
 		case NO_RISK:
-			return "No risk";
+			return M.NoRisk;
 		case VERY_LOW_RISK:
-			return "Very low risk";
+			return M.VeryLowRisk;
 		case LOW_RISK:
-			return "Low risk";
+			return M.LowRisk;
 		case MEDIUM_RISK:
-			return "Medium risk";
+			return M.MediumRisk;
 		case HIGH_RISK:
-			return "High risk";
+			return M.HighRisk;
 		case VERY_HIGH_RISK:
-			return "Very high risk";
+			return M.VeryHighRisk;
 		case NO_DATA:
-			return "No data";
+			return M.NoData;
 		case NOT_APPLICABLE:
-			return "Not applicable";
+			return M.NotApplicable;
 		default:
 			return M.Unknown;
 		}
@@ -278,7 +277,7 @@ public class Labels {
 		case ACTOR:
 			return M.Actors;
 		case CURRENCY:
-			return "#Currencies";
+			return M.Currencies;
 		case FLOW:
 			return M.Flows;
 		case FLOW_PROPERTY:
@@ -315,7 +314,7 @@ public class Labels {
 		case ACTOR:
 			return M.Actor;
 		case CURRENCY:
-			return "#Currency";
+			return M.Currency;
 		case FLOW:
 			return M.Flow;
 		case FLOW_PROPERTY:
@@ -337,7 +336,7 @@ public class Labels {
 		case LOCATION:
 			return M.Location;
 		case PARAMETER:
-			return "#Global parameter";
+			return M.GlobalParameter;
 		case CATEGORY:
 			return M.Category;
 		default:

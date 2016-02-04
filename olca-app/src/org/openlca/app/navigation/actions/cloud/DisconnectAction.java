@@ -1,5 +1,6 @@
 package org.openlca.app.navigation.actions.cloud;
 
+import org.openlca.app.M;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
@@ -16,7 +17,7 @@ public class DisconnectAction extends Action implements INavigationAction {
 
 	@Override
 	public String getText() {
-		return "#Disconnect from repository";
+		return M.DisconnectFromRepository;
 	}
 
 	@Override

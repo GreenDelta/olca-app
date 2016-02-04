@@ -1,5 +1,6 @@
 package org.openlca.app.navigation.actions.cloud;
 
+import org.openlca.app.M;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
@@ -31,7 +32,7 @@ public class ConnectAction extends Action implements INavigationAction {
 
 	@Override
 	public String getText() {
-		return "#Connect to repository...";
+		return M.ConnectToRepository;
 	}
 
 	@Override
@@ -55,7 +56,7 @@ public class ConnectAction extends Action implements INavigationAction {
 			if (dialog.open() != Dialog.OK)
 				return;
 			RepositoryConfig config = dialog.createConfig();
-			String text = "#Connecting to repository " + config.getServerUrl()
+			String text = M.ConnectingToRepository + config.getServerUrl()
 					+ " " + config.getRepositoryId();
 			App.runWithProgress(text, () -> connect(config));
 		}
@@ -71,7 +72,7 @@ public class ConnectAction extends Action implements INavigationAction {
 				} else {
 					if (!client.hasAccess(config.getRepositoryId())) {
 						error = new Exception(
-								"#Repository does not exist or user does not have access to it");
+								M.NoAccessToRepository);
 						config.disconnect();
 						return;
 					}
@@ -123,20 +124,20 @@ public class ConnectAction extends Action implements INavigationAction {
 		@Override
 		protected Control createDialogArea(Composite parent) {
 			Composite container = UI.formComposite(parent);
-			Text serverText = UI.formText(container, "#Server url");
+			Text serverText = UI.formText(container, M.ServerUrl);
 			serverText.addModifyListener((event) -> {
 				serverUrl = serverText.getText();
 			});
-			Text usernameText = UI.formText(container, "#Username");
+			Text usernameText = UI.formText(container, M.Username);
 			usernameText.addModifyListener((event) -> {
 				username = usernameText.getText();
 			});
-			Text passwordText = UI.formText(container, "#Password",
+			Text passwordText = UI.formText(container, M.Password,
 					SWT.PASSWORD);
 			passwordText.addModifyListener((event) -> {
 				password = passwordText.getText();
 			});
-			Text repoText = UI.formText(container, "#Repository id");
+			Text repoText = UI.formText(container, M.RepositoryId);
 			repoText.addModifyListener((event) -> {
 				repositoryId = repoText.getText();
 			});

@@ -1,5 +1,6 @@
 package org.openlca.app.editors.systems;
 
+import org.openlca.app.M;
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
@@ -41,11 +42,9 @@ class OOMError {
 
 		@Override
 		protected void createFormContent(IManagedForm mform) {
-			String message = "#openLCA could not allocate enough physical memory "
-					+ "to perform the calculation. Please adjust your memory "
-					+ "settings under 'File/Preferences' -> Configuration";
+			String message = M.CouldNotAllocateMemoryError;
 			FormToolkit toolkit = mform.getToolkit();
-			mform.getForm().setText("#Out of memory");
+			mform.getForm().setText(M.OutOfMemory);
 			Composite comp = UI.formBody(mform.getForm(), mform.getToolkit());
 			UI.gridLayout(comp, 1);
 			Label label = toolkit.createLabel(comp, message, SWT.WRAP);

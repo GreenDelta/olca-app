@@ -1,5 +1,6 @@
 package org.openlca.app.editors.locations;
 
+import org.openlca.app.M;
 import java.io.File;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -39,12 +40,12 @@ public class KmzImportWizard extends Wizard implements IImportWizard {
 	}
 
 	private void runImport(IProgressMonitor monitor) {
-		monitor.beginTask("#Importing XML (EcoSpold2 format) data",
+		monitor.beginTask(M.ImportingXMLData,
 				IProgressMonitor.UNKNOWN);
 		File file = fileImportPage.getFiles()[0];
 		boolean wasValidFile = new GeoKmzImport(file, Database.get()).run();
 		if (!wasValidFile)
-			Info.showBox("#Could not find KML data in the file you provided. Is it compliant to the EcoSpold2 format? More information regarding the format can be found at http://www.ecoinvent.org/data-providers/how-to-submit-data/ecospold2");
+			Info.showBox(M.CouldNotFindKMLData);
 		monitor.done();
 	}
 

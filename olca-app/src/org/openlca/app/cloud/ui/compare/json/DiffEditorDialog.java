@@ -1,5 +1,6 @@
 package org.openlca.app.cloud.ui.compare.json;
 
+import org.openlca.app.M;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
@@ -68,7 +69,7 @@ public class DiffEditorDialog extends FormDialog {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		String title = "#Diff";
+		String title = M.Diff;
 		if (this.title != null)
 			title += ": " + this.title;
 		ScrolledForm form = UI.formHeader(mform, title);
@@ -93,17 +94,17 @@ public class DiffEditorDialog extends FormDialog {
 		boolean hasLeft = root.leftElement != null;
 		boolean hasRight = root.rightElement != null;
 		if (!editMode)
-			createButton(parent, IDialogConstants.OK_ID, "#Close", true);
+			createButton(parent, IDialogConstants.OK_ID, M.Close, true);
 		else if (hasLeft && hasRight)
-			createButton(parent, IDialogConstants.OK_ID, "#Mark as merged",
+			createButton(parent, IDialogConstants.OK_ID, M.MarkAsMerged,
 					true);
 		else if (hasLeft) {
-			createButton(parent, KEEP_LOCAL_MODEL, "#Keep model deleted", true);
-			createButton(parent, FETCH_REMOTE_MODEL, "#Fetch remote model",
+			createButton(parent, KEEP_LOCAL_MODEL, M.KeepModelDeleted, true);
+			createButton(parent, FETCH_REMOTE_MODEL, M.FetchRemoteModel,
 					true);
 		} else {
-			createButton(parent, KEEP_LOCAL_MODEL, "#Keep local model", true);
-			createButton(parent, FETCH_REMOTE_MODEL, "#Delete local model",
+			createButton(parent, KEEP_LOCAL_MODEL, M.KeepLocalModel, true);
+			createButton(parent, FETCH_REMOTE_MODEL, M.DeleteLocalModel,
 					true);
 		}
 	}

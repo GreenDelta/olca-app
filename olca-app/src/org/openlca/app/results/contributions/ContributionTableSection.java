@@ -66,8 +66,8 @@ public class ContributionTableSection {
 			ContributionResultProvider<?> provider) {
 		ContributionTableSection section = new ContributionTableSection(
 				provider, ModelType.CURRENCY);
-		section.sectionTitle = "#Costs/Added values";
-		section.selectionName = "#Costs";
+		section.sectionTitle = M.CostsAddedValues;
+		section.selectionName = M.Costs;
 		return section;
 	}
 

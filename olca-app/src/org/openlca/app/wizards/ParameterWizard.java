@@ -41,11 +41,11 @@ public class ParameterWizard extends AbstractWizard<Parameter> {
 
 		@Override
 		protected void createContents(Composite container) {
-			UI.formLabel(container, "#Type");
+			UI.formLabel(container, M.Type);
 			Composite formulaValueSwitcher = UI.formComposite(container);
 			UI.gridLayout(formulaValueSwitcher, 4);
-			inputButton = UI.formRadio(formulaValueSwitcher, "#Input parameter");
-			dependentButton = UI.formRadio(formulaValueSwitcher, "#Dependent parameter");
+			inputButton = UI.formRadio(formulaValueSwitcher, M.InputParameter);
+			dependentButton = UI.formRadio(formulaValueSwitcher, M.DependentParameter);
 			inputButton.setSelection(true);
 		}
 
@@ -66,7 +66,7 @@ public class ParameterWizard extends AbstractWizard<Parameter> {
 				return;
 			String name = getModelName();
 			if (createDao().existsGlobal(name)) {
-				setErrorMessage("#A parameter with the same name already exists");
+				setErrorMessage(M.ParameterWithSameNameExists);
 				setPageComplete(false);
 				return;
 			}

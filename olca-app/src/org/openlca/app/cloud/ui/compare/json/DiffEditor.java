@@ -1,5 +1,6 @@
 package org.openlca.app.cloud.ui.compare.json;
 
+import org.openlca.app.M;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -73,8 +74,8 @@ class DiffEditor extends Composite {
 		GridLayout layout = UI.gridLayout(comp, 2, 0, 0);
 		layout.makeColumnsEqualWidth = true;
 		UI.gridData(comp, true, true).widthHint = 1;
-		leftTree = createTree(comp, "#Local model", Side.LEFT, direction);
-		rightTree = createTree(comp, "#Remote model", Side.RIGHT, direction);
+		leftTree = createTree(comp, M.LocalModel, Side.LEFT, direction);
+		rightTree = createTree(comp, M.RemoteModel, Side.RIGHT, direction);
 		leftTree.setCounterpart(rightTree);
 		rightTree.setCounterpart(leftTree);
 		// one listener is enough since trees are synced

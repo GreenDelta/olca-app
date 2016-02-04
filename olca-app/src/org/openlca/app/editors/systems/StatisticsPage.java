@@ -84,7 +84,7 @@ public class StatisticsPage extends FormPage implements HtmlPage {
 
 	private void calculate() {
 		Statistics[] stats = new Statistics[1];
-		App.run("@Calculate statistics",
+		App.run(M.CalculateStatistics,
 				() -> {
 					stats[0] = Statistics.calculate(system,
 							Cache.getEntityCache());

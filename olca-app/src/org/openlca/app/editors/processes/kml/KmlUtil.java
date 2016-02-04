@@ -1,5 +1,6 @@
 package org.openlca.app.editors.processes.kml;
 
+import org.openlca.app.M;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.text.DecimalFormat;
@@ -105,17 +106,17 @@ public class KmlUtil {
 	private static String getLabel(FeatureType type) {
 		switch (type) {
 		case POINT:
-			return "#Point";
+			return M.Point;
 		case LINE:
-			return "#Line";
+			return M.Line;
 		case POLYGON:
-			return "#Polygon";
+			return M.Polygon;
 		case MULTI_POINT:
-			return "#MultiPoint";
+			return M.MultiPoint;
 		case MULTI_LINE:
-			return "#MultiLine";
+			return M.MultiLine;
 		case MULTI_POLYGON:
-			return "#MultiPolygon";
+			return M.MultiPolygon;
 		default:
 			return "unsupported shape";
 		}

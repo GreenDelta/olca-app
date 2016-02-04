@@ -91,14 +91,14 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 		UnitGroup group = editor.getModel();
 		for (Unit unit : getAllSelected()) {
 			if (Objects.equals(group.getReferenceUnit(), unit)) {
-				Error.showBox("@Cannot delete reference unit",
-						"@The reference unit of a unit group cannot be deleted.");
+				Error.showBox(M.CannotDeleteReferenceUnit,
+						M.ReferenceUnitCannotBeDeleted);
 				continue;
 			}
 			UnitUseSearch usage = new UnitUseSearch(Database.get());
 			if (!usage.findUses(unit).isEmpty()) {
-				Error.showBox("@Cannot delete unit",
-						"@The given unit is used in processes, impact methods or social indicators.");
+				Error.showBox(M.CannotDeleteUnit,
+						M.UnitIsUsed);
 				continue;
 			}
 			group.getUnits().remove(unit);

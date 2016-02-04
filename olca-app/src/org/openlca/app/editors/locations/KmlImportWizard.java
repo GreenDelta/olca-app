@@ -1,5 +1,6 @@
 package org.openlca.app.editors.locations;
 
+import org.openlca.app.M;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -43,7 +44,7 @@ public class KmlImportWizard extends Wizard implements IImportWizard {
 
 	private void runImport(IProgressMonitor monitor)
 			throws InvocationTargetException {
-		monitor.beginTask("#Importing KML data", IProgressMonitor.UNKNOWN);
+		monitor.beginTask(M.ImportingKMLData, IProgressMonitor.UNKNOWN);
 		File file = fileImportPage.getFiles()[0];
 		try (InputStream stream = new FileInputStream(file)) {
 			MultiKmlImport parser = new MultiKmlImport(Database.get(), stream);

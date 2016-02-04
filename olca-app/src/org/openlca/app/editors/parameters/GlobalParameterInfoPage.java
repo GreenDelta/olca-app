@@ -40,7 +40,7 @@ public class GlobalParameterInfoPage extends ModelPage<Parameter> {
 		List<String> errors = Formulas.eval(parameters);
 		hasErrors = errors.size() > 0;
 		for (String error : errors)
-			form.getMessageManager().addMessage("invalidFormula", "#Invalid formula: " + error, null, IMessage.ERROR);
+			form.getMessageManager().addMessage("invalidFormula", M.InvalidFormula + ": " + error, null, IMessage.ERROR);
 	}
 
 	boolean hasErrors() {
@@ -70,7 +70,7 @@ public class GlobalParameterInfoPage extends ModelPage<Parameter> {
 	private void createAdditionalInfo(Composite body) {
 		Composite composite = UI.formSection(body, toolkit, M.AdditionalInformation);
 		UI.formLabel(composite, toolkit, M.Type);
-		UI.formLabel(composite, toolkit, getModel().isInputParameter() ? "#Input parameter" : "#Dependent parameter");
+		UI.formLabel(composite, toolkit, getModel().isInputParameter() ? M.InputParameter : M.DependentParameter);
 		if (getModel().isInputParameter())
 			createValueSection(composite);
 		else

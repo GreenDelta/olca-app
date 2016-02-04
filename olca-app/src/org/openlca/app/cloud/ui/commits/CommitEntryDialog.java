@@ -1,5 +1,6 @@
 package org.openlca.app.cloud.ui.commits;
 
+import org.openlca.app.M;
 import java.util.List;
 
 import org.eclipse.swt.graphics.Point;
@@ -32,7 +33,7 @@ public class CommitEntryDialog extends FormDialog {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		ScrolledForm form = UI.formHeader(mform, "#Fetched changes");
+		ScrolledForm form = UI.formHeader(mform, M.FetchedChanges);
 		FormToolkit toolkit = mform.getToolkit();
 		Composite body = form.getBody();
 		body.setLayout(new GridLayout());

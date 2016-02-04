@@ -1,5 +1,6 @@
 package org.openlca.app.cloud.ui;
 
+import org.openlca.app.M;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -53,7 +54,7 @@ public class CommitDialog extends FormDialog {
 	@Override
 	protected void createFormContent(IManagedForm mform) {
 		ScrolledForm form = UI.formHeader(mform,
-				"#Commit changes to repository");
+				M.CommitChangesToRepository);
 		FormToolkit toolkit = mform.getToolkit();
 		Composite body = form.getBody();
 		body.setLayout(new GridLayout());
@@ -67,7 +68,7 @@ public class CommitDialog extends FormDialog {
 	}
 
 	private void createCommitMessage(Composite parent, FormToolkit toolkit) {
-		Section section = UI.section(parent, toolkit, "#Commit message");
+		Section section = UI.section(parent, toolkit, M.CommitMessage);
 		Composite client = toolkit.createComposite(section);
 		client.setLayout(new GridLayout());
 		section.setClient(client);
@@ -82,7 +83,7 @@ public class CommitDialog extends FormDialog {
 	}
 
 	private void createModelViewer(Composite parent, FormToolkit toolkit) {
-		Section section = UI.section(parent, toolkit, "#Files");
+		Section section = UI.section(parent, toolkit, M.Files);
 		UI.gridData(section, true, true);
 		Composite comp = toolkit.createComposite(section);
 		UI.gridData(comp, true, true);
@@ -104,7 +105,7 @@ public class CommitDialog extends FormDialog {
 	protected void createButtonsForButtonBar(Composite parent) {
 		createButton(parent, IDialogConstants.CANCEL_ID,
 				IDialogConstants.CANCEL_LABEL, false);
-		createButton(parent, IDialogConstants.OK_ID, "#Commit", true)
+		createButton(parent, IDialogConstants.OK_ID, M.Commit, true)
 				.setEnabled(false);
 	}
 

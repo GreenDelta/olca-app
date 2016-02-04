@@ -1,5 +1,6 @@
 package org.openlca.app.util;
 
+import org.openlca.app.M;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.List;
@@ -26,10 +27,10 @@ public class CostResults {
 			SimpleResultProvider<?> result) {
 		CostResultDescriptor d1 = new CostResultDescriptor();
 		d1.forAddedValue = false;
-		d1.setName("#Net-costs");
+		d1.setName(M.Netcosts);
 		CostResultDescriptor d2 = new CostResultDescriptor();
 		d2.forAddedValue = true;
-		d2.setName("#Added value");
+		d2.setName(M.AddedValue);
 		if (result == null || result.getTotalCostResult() >= 0)
 			return Arrays.asList(d1, d2);
 		else

@@ -1,5 +1,6 @@
 package org.openlca.app.cloud.ui.compare.json;
 
+import org.openlca.app.M;
 import java.util.Collections;
 import java.util.List;
 
@@ -42,15 +43,15 @@ class MenuBar extends Composite {
 
 	private void createButtons() {
 		copySelectionButton = createButton(Icon.COPY_SELECTED_CHANGE,
-				"#Copy selection from right to left");
+				M.CopySelectionFromRightToLeft);
 		copyAllButton = createButton(Icon.COPY_ALL_CHANGES,
-				"#Copy all from right to left");
+				M.CopyAllFromRightToLeft);
 		resetSelectionButton = createButton(Icon.RESET_SELECTED_CHANGE,
-				"#Reset selection");
-		resetAllButton = createButton(Icon.RESET_ALL_CHANGES, "#Reset all");
-		nextChangeButton = createButton(Icon.NEXT_CHANGE, "#Select next");
+				M.ResetSelection);
+		resetAllButton = createButton(Icon.RESET_ALL_CHANGES, M.ResetAll);
+		nextChangeButton = createButton(Icon.NEXT_CHANGE, M.SelectNext);
 		previousChangeButton = createButton(Icon.PREVIOUS_CHANGE,
-				"#Select previous");
+				M.SelectPrevious);
 	}
 
 	private Button createButton(Icon icon, String tooltipText) {

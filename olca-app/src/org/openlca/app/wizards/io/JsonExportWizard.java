@@ -30,7 +30,7 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		setWindowTitle("@Export data sets");
+		setWindowTitle(M.ExportDataSets);
 		setNeedsProgressMonitor(true);
 	}
 

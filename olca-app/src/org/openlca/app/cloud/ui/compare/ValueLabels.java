@@ -48,8 +48,8 @@ class ValueLabels {
 
 	private static String getInputParameterValue(String value) {
 		if (value.equalsIgnoreCase("true"))
-			return "Input parameter"; // "#
-		return "Dependenant parameter"; // "#
+			return M.InputParameter; 
+		return M.DependenantParameter; 
 	}
 
 	private static boolean isInputField(String property, JsonElement parent) {
