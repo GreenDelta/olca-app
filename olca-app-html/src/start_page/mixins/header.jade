@@ -1,0 +1,14 @@
+mixin header()
+	header
+		.row
+			.left
+				img.app-logo(src='images/logo_start_page.png')
+			.center
+				h1!=msg.title
+				h2!=msg.subtitle
+		.row
+			.right
+				img.company-logo(src='images/greendelta-logo.png')
+			.center
+				p!=msg.subtext
+		.clear

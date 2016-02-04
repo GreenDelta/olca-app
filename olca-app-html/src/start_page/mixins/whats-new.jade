@@ -1,0 +1,15 @@
+mixin whats-new()
+	#whats-new.row
+		.left
+			.icon-container 
+				img.icon(src='images/whats-new.svg')
+				h3!=msg.whatsNew.title
+		.right
+			p!=msg.whatsNew.findOutMore
+		.center
+			p!=msg.whatsNew.description
+			ul
+				li!=msg.whatsNew.bulletpoint1
+				li!=msg.whatsNew.bulletpoint2
+				li!=msg.whatsNew.bulletpoint3
+		.clear

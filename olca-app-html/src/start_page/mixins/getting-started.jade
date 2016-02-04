@@ -1,0 +1,16 @@
+mixin getting-started()
+	#getting-started.row
+		.left
+			.icon-container 
+				img.icon(src='images/getting-started.svg')
+				h3!=msg.gettingStarted.title
+		.right
+			p!=msg.gettingStarted.explanatoryVideo
+			img.social-media-icon(src='images/youtube.svg')
+		.center
+			p!=msg.gettingStarted.description
+			ul
+				li!=msg.gettingStarted.bulletpoint1
+				li!=msg.gettingStarted.bulletpoint2
+			p!=msg.gettingStarted.note
+		.clear

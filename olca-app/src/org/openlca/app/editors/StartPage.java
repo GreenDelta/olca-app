@@ -12,7 +12,6 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.openlca.app.Config;
 import org.openlca.app.M;
 import org.openlca.app.navigation.actions.DatabaseImportAction;
 import org.openlca.app.rcp.RcpActivator;
@@ -24,7 +23,6 @@ import org.openlca.app.util.Desktop;
 import org.openlca.app.util.EclipseCommandLine;
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.UI;
-import org.openlca.util.OS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,15 +87,6 @@ public class StartPage extends FormEditor {
 		public void onLoaded() {
 			new ImportDatabaseCallback(browser);
 			new OpenUrlCallback(browser);
-			String version = M.Version + " " + Config.VERSION + " ("
-					+ OS.getCurrent() + " " + getArch() + ")";
-			String json = "{'version' : '" + version + "' }";
-			String command = "setData(" + json + ")";
-			try {
-				browser.evaluate(command);
-			} catch (Exception e) {
-				log.warn("failed to set report data to browser", e);
-			}
 		}
 
 		@Override
@@ -106,22 +95,6 @@ public class StartPage extends FormEditor {
 			Composite composite = form.getBody();
 			composite.setLayout(new FillLayout());
 			browser = UI.createBrowser(composite, this);
-		}
-
-		private String getArch() {
-			String osarch = System.getProperty("os.arch");
-			if (osarch == null)
-				return "";
-			switch (osarch) {
-			case "amd64":
-				return "64 bit";
-			case "x86":
-				return "32 bit";
-			case "i386":
-				return "32 bit";
-			default:
-				return osarch;
-			}
 		}
 
 	}

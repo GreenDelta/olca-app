@@ -1,0 +1,26 @@
+include mixins/header.jade
+include mixins/whats-new.jade
+include mixins/getting-started.jade
+include mixins/manuals.jade
+include mixins/community.jade
+
+<!DOCTYPE html>
+html(lang='en')
+	head
+		meta(content='text/html; charset=utf-8' http-equiv='content-type')
+		meta(name='viewport' content='initial-scale=1.0, user-scalable=no')
+		title='Welcome to openLCA'
+		link(rel='stylesheet' type='text/css' href='start_page.css')
+		script(src='libs/jquery.min.js')
+	body
+		+header
+		#main
+			+whats-new
+			+getting-started
+			+manuals
+			+community
+		script.
+			$('a').on('click', function() {
+				openUrl($(this).attr('href'));
+				return false;
+			});

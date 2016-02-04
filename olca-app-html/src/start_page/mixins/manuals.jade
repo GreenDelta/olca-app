@@ -1,0 +1,12 @@
+mixin manuals()
+	#manuals.row
+		.left
+			.icon-container 
+				img.icon(src='images/manuals.svg')
+				h3!=msg.manuals.title
+		.right
+			p!=msg.manuals.instructionalVideos
+			img.social-media-icon(src='images/youtube.svg')
+		.center
+			p!=msg.manuals.description
+		.clear

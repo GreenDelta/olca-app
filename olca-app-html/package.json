@@ -15,7 +15,10 @@
     "jade": "^1.9.2",
     "nib": "^1.1.0",
     "run-sequence": "^1.0.2",
-    "stylus": "^0.50.0"
+    "stylus": "^0.50.0",
+    "gulp-foreach": "~0.1.0",
+    "gulp-rename": "~1.2.2",
+    "gulp-load-plugins": "~1.2.0"
   },
   "dependencies": {
     "angular": "^1.4.3",

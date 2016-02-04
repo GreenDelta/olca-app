@@ -1,0 +1,102 @@
+$leftWidth=275px
+$rightWidth=275px
+$titleIconSize=48px
+
+html, body
+	width 100%
+	margin 0
+	padding 0
+	min-width 1200px
+
+body
+	background-color rgb(243, 243, 243)
+	font-family "Helvetica Neue",Helvetica,Arial,sans-serif
+	font-size 14px
+	color rgb(26, 26, 26)
+	line-height 1.42857143
+
+h1, h2, h3, h4, h5
+	margin 0
+	
+h1
+	font-size 36px
+	
+h2 
+	font-size 24px
+	font-weight normal
+
+header
+	padding 10px 30px 0 30px
+	background-image url('images/header.png')
+	border-bottom 1px solid rgb(212, 212, 212)
+	
+	h1
+		color rgb(252, 253, 254)
+
+	h2
+		color rgb(237, 238, 239)
+
+	& > *
+		height 100%
+		
+	& > .row:nth-of-type(2)
+		padding-top 1px
+
+	.app-logo
+		width 235px
+
+	.company-logo
+		height 24px
+		float right		
+		margin-top 50px
+
+.left
+	float left
+	width $leftWidth
+	
+.center
+	margin-left $leftWidth
+	margin-right $rightWidth
+	padding 0 30px
+
+.right
+	float right
+	width $rightWidth
+	
+.clear, .row
+	clear both
+	
+#whats-new
+	background-color rgb(238, 236, 225)
+
+#getting-started
+	background-color rgb(244, 243, 236)
+	
+#manuals
+	background-color rgb(249, 248, 245)
+	
+#community
+	background-color rgb(255, 255, 255)
+		
+#main
+
+	.row
+		padding 10px 30px
+
+	.social-media-icon
+		height 32px
+
+	.icon-container
+		padding 20px 0
+		display table
+		
+		.icon
+			height 48px
+			float left
+
+		h3
+			display table-cell
+			vertical-align middle
+			line-height 20px
+			font-size 20px
+			padding-left 20px

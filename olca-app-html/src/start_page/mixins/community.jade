@@ -1,0 +1,15 @@
+mixin community()
+	#community.row
+		.left
+			.icon-container 
+				img.icon(src='images/community.svg')
+				h3!=msg.community.title
+		.right
+			p!=msg.community.followUs
+			img.social-media-icon(src='images/twitter.svg')
+			p!=msg.community.becomeMember
+			img.social-media-icon(src='images/linkedin.svg')
+		.center
+			p!=msg.community.description
+			p!=msg.community.note
+		.clear
