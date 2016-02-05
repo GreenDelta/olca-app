@@ -33,7 +33,7 @@ import org.openlca.app.util.UIFactory;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 
-class ModelSelectionPage extends WizardPage {
+public class ModelSelectionPage extends WizardPage {
 
 	private ModelType[] types;
 	private File exportDestination;
@@ -116,7 +116,7 @@ class ModelSelectionPage extends WizardPage {
 		}
 	}
 
-	void checkCompletion() {
+	public void checkCompletion() {
 		setPageComplete(exportDestination != null
 				&& selectedComponents.size() > 0);
 	}

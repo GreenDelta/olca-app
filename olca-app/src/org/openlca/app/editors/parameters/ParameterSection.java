@@ -93,6 +93,7 @@ public class ParameterSection {
 		createCellModifiers();
 		addDoubleClickHandler();
 		support.afterEvaluation(this::setInput);
+		editor.onSaved(this::setInput);
 	}
 
 	private String[] getProperties() {
@@ -248,8 +249,8 @@ public class ParameterSection {
 	private void onPaste(String text) {
 		if (supplier == null)
 			return;
-		List<Parameter> params = forInputParameters ?
-				Clipboard.readInputParams(text) : Clipboard.readCalculatedParams(text);
+		List<Parameter> params = forInputParameters ? Clipboard.readInputParams(text)
+				: Clipboard.readCalculatedParams(text);
 		boolean skipped = false;
 		for (Parameter param : params) {
 			String name = param.getName();
@@ -277,7 +278,7 @@ public class ParameterSection {
 			if (parameter.getExternalSource() == null)
 				return null;
 			// currently the only external sources are shape files
-			return Images.get(ModelType.IMPACT_METHOD); 
+			return Images.get(ModelType.IMPACT_METHOD);
 		}
 
 		@Override

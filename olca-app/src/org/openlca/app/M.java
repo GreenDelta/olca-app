@@ -725,7 +725,7 @@ public class M extends NLS {
 	public static String Text;
 	public static String TextDropComponent_ToolTipText;
 	public static String TextReference;
-	public static String ThereIsNoShapefileParameterSelectedThatCouldBeAddedAsMethodParameter;
+	public static String NoShapefileParameterSelected;
 	public static String Time;
 	public static String TimeAndAuthor;
 	public static String TimeDescription;

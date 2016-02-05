@@ -58,7 +58,6 @@ import org.slf4j.LoggerFactory;
 class ShapeFilePage extends FormPage {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
-	private ImpactMethod method;
 	private FormToolkit toolkit;
 	private Composite body;
 	private ShapeFileSection[] sections;
@@ -67,7 +66,6 @@ class ShapeFilePage extends FormPage {
 
 	public ShapeFilePage(ImpactMethodEditor editor) {
 		super(editor, "ShapeFilePage", "Shape files (beta)");
-		this.method = editor.getModel();
 		this.editor = editor;
 	}
 
@@ -77,7 +75,7 @@ class ShapeFilePage extends FormPage {
 		toolkit = managedForm.getToolkit();
 		body = UI.formBody(form, toolkit);
 		createFileSection();
-		List<String> shapeFiles = ShapeFileUtils.getShapeFiles(method);
+		List<String> shapeFiles = ShapeFileUtils.getShapeFiles(method());
 		sections = new ShapeFileSection[shapeFiles.size()];
 		for (int i = 0; i < shapeFiles.size(); i++)
 			sections[i] = new ShapeFileSection(i, shapeFiles.get(i));
@@ -103,7 +101,7 @@ class ShapeFilePage extends FormPage {
 		Controls.onSelect(evaluateButton, (e) -> {
 			try {
 				new ProgressMonitorDialog(UI.shell()).run(true, true,
-						new EvaluateLocationsJob(method));
+						new EvaluateLocationsJob(method()));
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
@@ -113,7 +111,7 @@ class ShapeFilePage extends FormPage {
 	private void createFolderLink(Composite composite) {
 		UI.formLabel(composite, toolkit, "Location");
 		ImageHyperlink link = toolkit.createImageHyperlink(composite, SWT.TOP);
-		File folder = ShapeFileUtils.getFolder(method);
+		File folder = ShapeFileUtils.getFolder(method());
 		link.setText(Strings.cut(folder.getAbsolutePath(), 75));
 		link.setImage(Icon.FOLDER.get());
 		link.setForeground(Colors.getLinkBlue());
@@ -137,7 +135,7 @@ class ShapeFilePage extends FormPage {
 					+ file.getName() + " is not a valid shape file.");
 			return Collections.emptyList();
 		}
-		if (ShapeFileUtils.alreadyExists(method, file)) {
+		if (ShapeFileUtils.alreadyExists(method(), file)) {
 			org.openlca.app.util.Error
 					.showBox("File already exists", "A shape file with the given "
 							+ "name already exists for this method.");
@@ -152,15 +150,15 @@ class ShapeFilePage extends FormPage {
 	}
 
 	private List<ShapeFileParameter> runImport(File file) throws Exception {
-		String shapeFile = ShapeFileUtils.importFile(method, file);
-		List<ShapeFileParameter> params = ShapeFileUtils.getParameters(method,
+		String shapeFile = ShapeFileUtils.importFile(method(), file);
+		List<ShapeFileParameter> params = ShapeFileUtils.getParameters(method(),
 				shapeFile);
 		for (ShapeFileParameter parameter : params) {
 			if (!Parameter.isValidName(parameter.getName())) {
 				org.openlca.app.util.Error.showBox("Invalid parameter",
 						"The parameter name '" + parameter.getName()
 								+ "' is not supported");
-				ShapeFileUtils.deleteFile(method, shapeFile);
+				ShapeFileUtils.deleteFile(method(), shapeFile);
 				return Collections.emptyList();
 			}
 		}
@@ -175,6 +173,10 @@ class ShapeFilePage extends FormPage {
 		form.reflow(true);
 		editor.getParameterSupport().evaluate();
 		return params;
+	}
+
+	private ImpactMethod method() {
+		return editor.getModel();
 	}
 
 	private class ShapeFileSection {
@@ -240,7 +242,7 @@ class ShapeFilePage extends FormPage {
 							+ "really want to delete the selected shape file?");
 			if (!del)
 				return;
-			ShapeFileUtils.deleteFile(method, shapeFile);
+			ShapeFileUtils.deleteFile(method(), shapeFile);
 			section.dispose();
 			ShapeFileSection[] newSections = new ShapeFileSection[sections.length
 					- 1];
@@ -253,7 +255,7 @@ class ShapeFilePage extends FormPage {
 		}
 
 		private void removeExternalSourceReferences() {
-			for (Parameter parameter : method.getParameters())
+			for (Parameter parameter : method().getParameters())
 				if (parameter.isInputParameter())
 					if (shapeFile.equals(parameter.getExternalSource()))
 						parameter.setExternalSource(null);
@@ -266,7 +268,7 @@ class ShapeFilePage extends FormPage {
 		 */
 		private void updateExternalSourceReferences(Set<String> stillLinked,
 				Map<String, ShapeFileParameter> nameToParam) {
-			for (Parameter parameter : method.getParameters())
+			for (Parameter parameter : method().getParameters())
 				if (parameter.isInputParameter())
 					if (shapeFile.equals(parameter.getExternalSource()))
 						if (!stillLinked.contains(parameter.getName()))
@@ -287,7 +289,7 @@ class ShapeFilePage extends FormPage {
 
 		private Set<String> getReferencedParameters() {
 			Set<String> names = new HashSet<>();
-			for (Parameter parameter : method.getParameters())
+			for (Parameter parameter : method().getParameters())
 				if (parameter.isInputParameter())
 					if (shapeFile.equals(parameter.getExternalSource()))
 						names.add(parameter.getName());
@@ -307,7 +309,7 @@ class ShapeFilePage extends FormPage {
 			viewer.setLabelProvider(new ShapeFileParameterLabel());
 			Tables.bindColumnWidths(viewer, 0.4, 0.3, 0.3);
 			try {
-				params = ShapeFileUtils.getParameters(method, shapeFile);
+				params = ShapeFileUtils.getParameters(method(), shapeFile);
 				viewer.setInput(params);
 			} catch (Exception e) {
 				log.error("failed to read parameteres for shape file "
@@ -363,9 +365,9 @@ class ShapeFilePage extends FormPage {
 			ShapeFileParameter param = Viewers
 					.getFirstSelected(section.parameterTable.viewer);
 			if (param == null)
-				ShapeFileUtils.openFileInMap(method, section.shapeFile);
+				ShapeFileUtils.openFileInMap(method(), section.shapeFile);
 			else
-				ShapeFileUtils.openFileInMap(method, section.shapeFile, param);
+				ShapeFileUtils.openFileInMap(method(), section.shapeFile, param);
 		}
 	}
 
@@ -409,14 +411,14 @@ class ShapeFilePage extends FormPage {
 			ShapeFileParameter param = Viewers
 					.getFirstSelected(section.parameterTable.viewer);
 			if (param == null) {
-				Error.showBox(M.NoParameterSelected, M.ThereIsNoShapefileParameterSelectedThatCouldBeAddedAsMethodParameter);
+				Error.showBox(M.NoParameterSelected, M.NoShapefileParameterSelected);
 				return null;
 			}
 			return param;
 		}
 
 		private boolean exists(ShapeFileParameter param) {
-			for (Parameter realParam : method.getParameters()) {
+			for (Parameter realParam : method().getParameters()) {
 				if (Strings.nullOrEqual(param.getName(), realParam.getName())
 						&& Strings.nullOrEqual("SHAPE_FILE",
 								realParam.getSourceType())
@@ -428,7 +430,7 @@ class ShapeFilePage extends FormPage {
 		}
 
 		private boolean otherExists(ShapeFileParameter param) {
-			for (Parameter realParam : method.getParameters()) {
+			for (Parameter realParam : method().getParameters()) {
 				if (Strings.nullOrEqual(param.getName(), realParam.getName())
 						&& !Strings.nullOrEqual(section.shapeFile,
 								realParam.getExternalSource()))
@@ -449,7 +451,8 @@ class ShapeFilePage extends FormPage {
 					param.getMax()));
 			realParam.setScope(ParameterScope.IMPACT_METHOD);
 			realParam.setSourceType("SHAPE_FILE");
-			method.getParameters().add(realParam);
+			method().getParameters().add(realParam);
+			editor.setDirty(true);
 			editor.setActivePage(ModelParameterPage.ID);
 			editor.getParameterSupport().evaluate();
 		}

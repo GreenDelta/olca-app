@@ -12,12 +12,13 @@ import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.preferencepages.FeatureFlag;
-import org.openlca.app.results.AnalyzeInfoPage;
+import org.openlca.app.results.IResultEditor;
 import org.openlca.app.results.NwResultPage;
 import org.openlca.app.results.ResultEditorInput;
 import org.openlca.app.results.SunBurstView;
 import org.openlca.app.results.TotalFlowResultPage;
 import org.openlca.app.results.TotalImpactResultPage;
+import org.openlca.app.results.analysis.AnalyzeInfoPage;
 import org.openlca.app.results.analysis.sankey.SankeyDiagram;
 import org.openlca.app.results.contributions.ContributionTablePage;
 import org.openlca.app.results.contributions.ContributionTreePage;
@@ -41,7 +42,7 @@ import org.openlca.geo.parameter.ParameterSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RegionalizedResultEditor extends FormEditor {
+public class RegionalizedResultEditor extends FormEditor implements IResultEditor<FullResultProvider> {
 
 	public static String ID = "RegionalizedResultEditor";
 
@@ -54,6 +55,16 @@ public class RegionalizedResultEditor extends FormEditor {
 	private ImpactCategoryDao impactCategoryDao;
 	private Map<Long, ImpactCategory> impactCategories = new HashMap<>();
 	private Map<LongPair, Map<FlowDescriptor, Double>> factorsMap = new HashMap<>();
+
+	@Override
+	public CalculationSetup getSetup() {
+		return setup;
+	}
+
+	@Override
+	public FullResultProvider getResult() {
+		return result.result;
+	}
 
 	@Override
 	public void init(IEditorSite site, IEditorInput editorInput)

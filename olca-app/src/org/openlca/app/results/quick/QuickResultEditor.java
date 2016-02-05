@@ -8,6 +8,7 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.openlca.app.db.Cache;
 import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.results.FlowImpactPage;
+import org.openlca.app.results.IResultEditor;
 import org.openlca.app.results.NwResultPage;
 import org.openlca.app.results.ResultEditorInput;
 import org.openlca.app.results.TotalFlowResultPage;
@@ -22,7 +23,7 @@ import org.openlca.core.results.ContributionResultProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class QuickResultEditor extends FormEditor {
+public class QuickResultEditor extends FormEditor implements IResultEditor<ContributionResultProvider<?>> {
 
 	public static String ID = "QuickResultEditor";
 
@@ -46,11 +47,13 @@ public class QuickResultEditor extends FormEditor {
 		}
 	}
 
-	CalculationSetup getSetup() {
+	@Override
+	public CalculationSetup getSetup() {
 		return setup;
 	}
 
-	ContributionResultProvider<?> getResult() {
+	@Override
+	public ContributionResultProvider<?> getResult() {
 		return result;
 	}
 

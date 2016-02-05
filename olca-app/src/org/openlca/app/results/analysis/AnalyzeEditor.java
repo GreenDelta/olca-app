@@ -9,7 +9,7 @@ import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.results.FlowImpactPage;
-import org.openlca.app.results.AnalyzeInfoPage;
+import org.openlca.app.results.IResultEditor;
 import org.openlca.app.results.NwResultPage;
 import org.openlca.app.results.ResultEditorInput;
 import org.openlca.app.results.SunBurstView;
@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 /**
  * View for the analysis results of a product system.
  */
-public class AnalyzeEditor extends FormEditor {
+public class AnalyzeEditor extends FormEditor implements IResultEditor<FullResultProvider>{
 
 	public static final String ID = "editors.analyze";
 
@@ -48,10 +48,12 @@ public class AnalyzeEditor extends FormEditor {
 	private CalculationSetup setup;
 	private FullResultProvider result;
 
+	@Override
 	public CalculationSetup getSetup() {
 		return setup;
 	}
 
+	@Override
 	public FullResultProvider getResult() {
 		return result;
 	}

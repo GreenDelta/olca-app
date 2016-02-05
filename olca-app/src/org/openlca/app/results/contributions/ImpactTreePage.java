@@ -33,6 +33,7 @@ import org.openlca.app.util.trees.TreeClipboard;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
 import org.openlca.core.database.EntityCache;
+import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
@@ -40,16 +41,21 @@ import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.FlowResult;
 import org.openlca.core.results.FullResultProvider;
 
+import com.google.common.base.Strings;
+
 public class ImpactTreePage extends FormPage {
 
 	private final static String COLUMN_NAME = M.ProcessFlowName;
 	private final static String COLUMN_LOCATION = M.Location;
 	private final static String COLUMN_CATEGORY = M.FlowCategory;
 	private final static String COLUMN_AMOUNT = M.InventoryResult;
+	private final static String COLUMN_AMOUNT_UNIT = M.Unit;
 	private final static String COLUMN_FACTOR = M.ImpactFactor;
-	private final static String COLUMN_IMPACT_RESULT = M.ImpactResult;
+	private final static String COLUMN_FACTOR_UNIT = M.Unit;
+	private final static String COLUMN_RESULT = M.ImpactResult;
+	private final static String COLUMN_RESULT_UNIT = M.Unit;
 	private final static String[] COLUMN_LABELS = { COLUMN_NAME, COLUMN_LOCATION, COLUMN_CATEGORY, COLUMN_AMOUNT,
-			COLUMN_FACTOR, COLUMN_IMPACT_RESULT };
+			COLUMN_AMOUNT_UNIT, COLUMN_FACTOR, COLUMN_FACTOR_UNIT, COLUMN_RESULT, COLUMN_RESULT_UNIT };
 
 	private final FullResultProvider result;
 	private final ImpactFactorProvider impactFactors;
@@ -149,8 +155,8 @@ public class ImpactTreePage extends FormPage {
 	}
 
 	private void createColumnSorters(LabelProvider p) {
-		Viewers.sortByLabels(viewer, p, 0, 1, 2);
-		Viewers.sortByDouble(viewer, p, 4, 5, 6);
+		Viewers.sortByLabels(viewer, p, 0, 1, 2, 4, 6, 8);
+		Viewers.sortByDouble(viewer, p, 3, 5, 7);
 	}
 
 	private class LabelProvider extends BaseLabelProvider implements ITableLabelProvider {
@@ -185,8 +191,10 @@ public class ImpactTreePage extends FormPage {
 					return null;
 				Location location = cache.get(Location.class, descriptor.getLocation());
 				return location.getName();
-			case 5:
+			case 7:
 				return Numbers.format(getResult(descriptor));
+			case 8:
+				return impactCategory.getReferenceUnit();
 			}
 			return null;
 		}
@@ -200,14 +208,31 @@ public class ImpactTreePage extends FormPage {
 			case 3:
 				return Numbers.format(getAmount(descriptor));
 			case 4:
-				return Numbers.format(getFactor(descriptor));
+				return getReferenceUnit(descriptor.flow);
 			case 5:
+				return Numbers.format(getFactor(descriptor));
+			case 6:
+				return impactCategory.getReferenceUnit() + "/" + getReferenceUnit(descriptor.flow);
+			case 7:
 				return Numbers.format(getResult(descriptor));
+			case 8:
+				return impactCategory.getReferenceUnit();
 			}
 			return null;
 		}
 
+		private String getReferenceUnit(FlowDescriptor flow) {
+			FlowProperty property = result.cache.get(FlowProperty.class, flow.getRefFlowPropertyId());
+			return property.getUnitGroup().getReferenceUnit().getName();
+		}
+
 		private String toString(Pair<String, String> pair) {
+			if (Strings.isNullOrEmpty(pair.getLeft()) && Strings.isNullOrEmpty(pair.getRight()))
+				return "";
+			if (Strings.isNullOrEmpty(pair.getLeft()))
+				return pair.getRight();
+			if (Strings.isNullOrEmpty(pair.getRight()))
+				return pair.getLeft();
 			return pair.getLeft() + "/" + pair.getRight();
 		}
 

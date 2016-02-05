@@ -1,6 +1,4 @@
-package org.openlca.app.results;
-
-import java.io.File;
+package org.openlca.app.results.analysis;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
@@ -12,14 +10,11 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.openlca.app.App;
 import org.openlca.app.M;
-import org.openlca.app.components.FileChooser;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.results.contributions.ContributionChartSection;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.FileType;
-import org.openlca.app.util.InformationPopup;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.math.CalculationSetup;
@@ -27,7 +22,6 @@ import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.NwSetDescriptor;
 import org.openlca.core.results.FullResultProvider;
-import org.openlca.io.xls.results.AnalysisResultExport;
 
 /**
  * Overall information page of the analysis editor.
@@ -85,23 +79,7 @@ public class AnalyzeInfoPage extends FormPage {
 		Button button = toolkit.createButton(composite, M.ExportToExcel,
 				SWT.NONE);
 		button.setImage(Images.get(FileType.EXCEL));
-		Controls.onSelect(button, (e) -> tryExport());
-	}
-
-	private void tryExport() {
-		File file = FileChooser.forExport("*.xlsx", "analysis_result.xlsx");
-		if (file == null)
-			return;
-		AnalysisResultExport export = new AnalysisResultExport(setup, file,
-				result);
-		App.run(M.Export, export, new Runnable() {
-			@Override
-			public void run() {
-				if (export.doneWithSuccess()) {
-					InformationPopup.show(M.ExportDone);
-				}
-			}
-		});
+		Controls.onSelect(button, (e) -> new ExcelExport().run());
 	}
 
 	private void createText(Composite parent, String label, String val) {

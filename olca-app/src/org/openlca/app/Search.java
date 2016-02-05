@@ -6,17 +6,10 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.openlca.app.util.Labels;
-import org.openlca.core.database.ActorDao;
-import org.openlca.core.database.FlowDao;
-import org.openlca.core.database.FlowPropertyDao;
+import org.openlca.core.database.Daos;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.database.ImpactMethodDao;
-import org.openlca.core.database.ProcessDao;
-import org.openlca.core.database.ProductSystemDao;
-import org.openlca.core.database.ProjectDao;
-import org.openlca.core.database.RootEntityDao;
-import org.openlca.core.database.SourceDao;
-import org.openlca.core.database.UnitGroupDao;
+import org.openlca.core.database.ParameterDao;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,17 +40,18 @@ class Search implements Runnable {
 		log.trace("run search with term {}", rawTerm);
 		if (rawTerm.isEmpty())
 			return;
-		RootEntityDao<?, ?>[] daos = { new ProjectDao(database),
-				new ProductSystemDao(database), new ImpactMethodDao(database),
-				new ProcessDao(database), new FlowDao(database),
-				new FlowPropertyDao(database), new UnitGroupDao(database),
-				new SourceDao(database), new ActorDao(database) };
-		for (RootEntityDao<?, ?> dao : daos) {
-			List<?> descriptors = dao.getDescriptors();
+		for (ModelType type : ModelType.categorized()) {
+			List<?> descriptors = getDescriptors(type);
 			fetchResults(descriptors);
 		}
 		Collections.sort(result, new ResultComparator());
 		log.trace("{} results fetched and ranked", result.size());
+	}
+
+	private List<?> getDescriptors(ModelType type) {
+		if (type == ModelType.PARAMETER)
+			return new ParameterDao(database).getGlobalDescriptors();
+		return Daos.createRootDao(database, type).getDescriptors();
 	}
 
 	private void fetchResults(List<?> descriptors) {

@@ -2,7 +2,6 @@ package org.openlca.app.wizards.io;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -36,12 +35,7 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 
 	@Override
 	public void addPages() {
-		List<ModelType> types = new ArrayList<>();
-		for (ModelType type : ModelType.values())
-			if (type.isCategorized())
-				types.add(type);
-		page = ModelSelectionPage.forFile("zip",
-				types.toArray(new ModelType[types.size()]));
+		page = ModelSelectionPage.forFile("zip", ModelType.categorized());
 		addPage(page);
 	}
 

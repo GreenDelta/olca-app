@@ -37,14 +37,13 @@ public class NavigationTreeFilter extends ViewerFilter {
 		if (category == null)
 			return false;
 		ModelType type = category.getModelType();
-		return (type == ModelType.PROCESS || type == ModelType.PRODUCT_SYSTEM)
+		return (type.isOneOf(ModelType.PROCESS, ModelType.PRODUCT_SYSTEM))
 				&& hasModelChilds(element);
 	}
 
 	private boolean validModel(ModelElement element) {
 		BaseDescriptor model = element.getContent();
-		return model.getModelType() == ModelType.PROCESS
-				|| model.getModelType() == ModelType.PRODUCT_SYSTEM;
+		return model.getModelType().isOneOf(ModelType.PROCESS, ModelType.PRODUCT_SYSTEM);
 	}
 
 	private boolean hasModelChilds(INavigationElement<?> element) {

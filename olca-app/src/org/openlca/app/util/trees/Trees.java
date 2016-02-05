@@ -61,7 +61,7 @@ public class Trees {
 			final double... percents) {
 		if (tree == null || percents == null)
 			return;
-		tree.addControlListener(new ControlAdapter() {
+		tree.getParent().addControlListener(new ControlAdapter() {
 			@Override
 			public void controlResized(ControlEvent e) {
 				double width = tree.getSize().x - 25;

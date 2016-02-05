@@ -77,7 +77,7 @@ public class LocationInfoPage extends ModelPage<Location> implements HtmlPage {
 		UI.gridLayout(composite, 1);
 		UI.gridData(composite, true, true);
 		browser = UI.createBrowser(composite, this);
-		UI.gridData(browser, true, true);
+		UI.gridData(browser, true, true).minimumHeight = 360;
 	}
 
 	@Override

@@ -1,7 +1,5 @@
 package org.openlca.app.results.quick;
 
-import java.io.File;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -10,22 +8,17 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.openlca.app.App;
 import org.openlca.app.M;
-import org.openlca.app.components.FileChooser;
-import org.openlca.app.db.Cache;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.results.contributions.ContributionChartSection;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.FileType;
-import org.openlca.app.util.InformationPopup;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.NwSetDescriptor;
-import org.openlca.io.xls.results.QuickResultExport;
 
 public class QuickResultInfoPage extends FormPage {
 
@@ -88,25 +81,7 @@ public class QuickResultInfoPage extends FormPage {
 		Button button = toolkit.createButton(composite, M.ExportToExcel,
 				SWT.NONE);
 		button.setImage(Images.get(FileType.EXCEL));
-		Controls.onSelect(button, (e) -> tryExport());
-	}
-
-	private void tryExport() {
-		final File exportFile = FileChooser.forExport("*.xlsx",
-				"quick_result.xlsx");
-		if (exportFile == null)
-			return;
-		QuickResultExport export = new QuickResultExport(
-				editor.getSetup(), editor.getResult(), Cache.getEntityCache());
-		export.setExportFile(exportFile);
-		App.run(M.Export, export, new Runnable() {
-			@Override
-			public void run() {
-				if (export.doneWithSuccess()) {
-					InformationPopup.show(M.ExportDone);
-				}
-			}
-		});
+		Controls.onSelect(button, (e) -> new ExcelExport().run());
 	}
 
 	private void createText(Composite parent, String label, String val) {

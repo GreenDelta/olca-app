@@ -6,17 +6,21 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.openlca.app.M;
+import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.IEditor;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.parameters.Formulas;
 import org.openlca.app.editors.parameters.ModelParameterPage;
 import org.openlca.app.editors.parameters.ParameterChangeSupport;
+import org.openlca.core.database.EntityCache;
+import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ImpactMethod;
+import org.openlca.core.model.descriptors.Descriptors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ImpactMethodEditor extends ModelEditor<ImpactMethod>implements
+public class ImpactMethodEditor extends ModelEditor<ImpactMethod> implements
 		IEditor {
 
 	public static String ID = "editors.impactmethod";
@@ -68,6 +72,17 @@ public class ImpactMethodEditor extends ModelEditor<ImpactMethod>implements
 			addPage(new ShapeFilePage(this));
 		} catch (Exception e) {
 			log.error("failed to add page", e);
+		}
+	}
+
+	@Override
+	protected void doAfterUpdate() {
+		super.doAfterUpdate();
+		EntityCache cache = Cache.getEntityCache();
+		for (ImpactCategory category : getModel().getImpactCategories()) {
+			cache.refresh(ImpactCategory.class, category.getId());
+			cache.invalidate(ImpactCategory.class, category.getId());
+			Cache.evict(Descriptors.toDescriptor(category));
 		}
 	}
 

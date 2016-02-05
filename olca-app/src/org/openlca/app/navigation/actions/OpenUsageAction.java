@@ -1,6 +1,5 @@
 package org.openlca.app.navigation.actions;
 
-import java.util.EnumSet;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
@@ -18,16 +17,6 @@ import org.openlca.core.model.descriptors.CategorizedDescriptor;
 public class OpenUsageAction extends Action implements INavigationAction {
 
 	private CategorizedDescriptor descriptor;
-
-	private EnumSet<ModelType> types = EnumSet.of(
-			ModelType.ACTOR,
-			ModelType.SOURCE,
-			ModelType.UNIT_GROUP,
-			ModelType.FLOW_PROPERTY,
-			ModelType.FLOW,
-			ModelType.PROCESS,
-			ModelType.IMPACT_METHOD,
-			ModelType.PRODUCT_SYSTEM);
 
 	public OpenUsageAction() {
 		setText(M.Usage);
@@ -49,7 +38,10 @@ public class OpenUsageAction extends Action implements INavigationAction {
 			return false;
 		ModelElement element = (ModelElement) navigationElement;
 		descriptor = element.getContent();
-		return types.contains(descriptor.getModelType());
+		if (descriptor.getModelType() == ModelType.PARAMETER)
+			// exclude parameters, because they are not linked via id
+			return false; 
+		return descriptor.getModelType().isCategorized();
 	}
 
 	@Override

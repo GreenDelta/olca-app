@@ -101,7 +101,7 @@ public abstract class ModelEditor<T extends CategorizedEntity> extends FormEdito
 		model = dao.getForId(model.getId());
 	}
 
-	private void doAfterUpdate() {
+	protected void doAfterUpdate() {
 		setDirty(false);
 		BaseDescriptor descriptor = getEditorInput().getDescriptor();
 		EntityCache cache = Cache.getEntityCache();

@@ -71,9 +71,8 @@ public final class Cache {
 	}
 
 	private static boolean shouldEvictAll(ModelType type) {
-		return type == ModelType.UNIT || type == ModelType.UNIT_GROUP
-				|| type == ModelType.FLOW || type == ModelType.FLOW_PROPERTY
-				|| type == ModelType.CATEGORY;
+		return type != null && type.isOneOf(ModelType.UNIT, ModelType.UNIT_GROUP, ModelType.FLOW,
+				ModelType.FLOW_PROPERTY, ModelType.CATEGORY);
 	}
 
 	public static void evictAll() {

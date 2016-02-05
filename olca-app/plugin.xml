@@ -141,6 +141,7 @@
       </editor>
       <editor
             class="org.openlca.app.results.analysis.AnalyzeEditor"
+            contributorClass="org.openlca.app.results.analysis.AnalyzeResultActions"
             default="false"
             icon="icons/analysis.png"
             id="editors.analyze"
@@ -154,9 +155,10 @@
             name="Simulation Editor">
       </editor> 
       <editor
-            id="RegionalizedResultEditor"
             class="org.openlca.app.results.regionalized.RegionalizedResultEditor"
+            contributorClass="org.openlca.app.results.regionalized.RegionalizedResultActions"
             icon="icons/model/impact_method.png"
+            id="RegionalizedResultEditor"
             name="Regionalized LCIA result">
       </editor>   
       <editor
@@ -635,12 +637,12 @@
 	   <wizard
            class="org.openlca.app.editors.locations.KmzImportWizard"
            id="wizard.import.kmz"
-           name="KMZ import wizard">
+           name="EcoSpold2 geographies">
        </wizard>
 	   <wizard
            class="org.openlca.app.editors.locations.KmlImportWizard"
            id="wizard.import.kml"
-           name="KML import wizard">
+           name="KML geographies">
        </wizard>
    </extension>
    
