@@ -39,7 +39,7 @@ public enum Icon {
 	EXCHANGE_BG_MIDDLE("graphical/exchange_bg_middle.jpg"),
 	EXCHANGE_BG_RIGHT("graphical/exchange_bg_right.jpg"),
 	EXPAND("expand.png"),
-	EXPORT("io/export.png"),
+	EXPORT("export.png"),
 	EXPRESSION("expression.gif"),
 	EXTENSION("extension.gif"),
 
