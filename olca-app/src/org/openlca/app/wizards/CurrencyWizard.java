@@ -1,22 +1,17 @@
 package org.openlca.app.wizards;
 
-import org.openlca.app.M;
 import java.util.UUID;
 
 import org.eclipse.swt.widgets.Composite;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
-import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.model.Currency;
+import org.openlca.core.model.ModelType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class CurrencyWizard extends AbstractWizard<Currency> {
-
-	@Override
-	protected BaseDao<Currency> createDao() {
-		return Database.createDao(Currency.class);
-	}
 
 	@Override
 	protected String getTitle() {
@@ -26,6 +21,11 @@ public class CurrencyWizard extends AbstractWizard<Currency> {
 	@Override
 	protected AbstractWizardPage<Currency> createPage() {
 		return new Page();
+	}
+
+	@Override
+	protected ModelType getModelType() {
+		return ModelType.CURRENCY;
 	}
 
 	private class Page extends AbstractWizardPage<Currency> {

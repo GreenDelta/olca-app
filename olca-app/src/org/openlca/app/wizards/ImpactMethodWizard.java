@@ -4,9 +4,8 @@ import java.util.UUID;
 
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.M;
-import org.openlca.app.db.Database;
-import org.openlca.core.database.BaseDao;
 import org.openlca.core.model.ImpactMethod;
+import org.openlca.core.model.ModelType;
 
 public class ImpactMethodWizard extends AbstractWizard<ImpactMethod> {
 
@@ -16,13 +15,13 @@ public class ImpactMethodWizard extends AbstractWizard<ImpactMethod> {
 	}
 
 	@Override
-	protected BaseDao<ImpactMethod> createDao() {
-		return Database.createDao(ImpactMethod.class);
+	protected AbstractWizardPage<ImpactMethod> createPage() {
+		return new Page();
 	}
 
 	@Override
-	protected AbstractWizardPage<ImpactMethod> createPage() {
-		return new Page();
+	protected ModelType getModelType() {
+		return ModelType.IMPACT_METHOD;
 	}
 
 	private class Page extends AbstractWizardPage<ImpactMethod> {
@@ -48,5 +47,5 @@ public class ImpactMethodWizard extends AbstractWizard<ImpactMethod> {
 		}
 
 	}
-	
+
 }

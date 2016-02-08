@@ -5,8 +5,7 @@ import java.util.UUID;
 
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.M;
-import org.openlca.app.db.Database;
-import org.openlca.core.database.BaseDao;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Project;
 
 public class ProjectWizard extends AbstractWizard<Project> {
@@ -17,13 +16,13 @@ public class ProjectWizard extends AbstractWizard<Project> {
 	}
 
 	@Override
-	protected BaseDao<Project> createDao() {
-		return Database.createDao(Project.class);
+	protected AbstractWizardPage<Project> createPage() {
+		return new ProjectWizardPage();
 	}
 
 	@Override
-	protected AbstractWizardPage<Project> createPage() {
-		return new ProjectWizardPage();
+	protected ModelType getModelType() {
+		return ModelType.PROJECT;
 	}
 
 	private class ProjectWizardPage extends AbstractWizardPage<Project> {

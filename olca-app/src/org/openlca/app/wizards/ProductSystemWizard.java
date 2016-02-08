@@ -7,11 +7,10 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
-import org.openlca.app.db.Database;
 import org.openlca.app.preferencepages.FeatureFlag;
-import org.openlca.core.database.BaseDao;
 import org.openlca.core.matrix.ProductSystemBuilder;
 import org.openlca.core.matrix.cache.MatrixCache;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.Descriptors;
@@ -67,6 +66,11 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 		}
 	}
 
+	@Override
+	protected ModelType getModelType() {
+		return ModelType.PRODUCT_SYSTEM;
+	}
+
 	private class Runner implements IRunnableWithProgress {
 
 		private ProductSystem system;
@@ -105,11 +109,6 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 	@Override
 	protected String getTitle() {
 		return M.NewProductSystem;
-	}
-
-	@Override
-	protected BaseDao<ProductSystem> createDao() {
-		return Database.createDao(ProductSystem.class);
 	}
 
 	@Override

@@ -8,6 +8,7 @@ import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.ParameterDao;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Parameter;
 
 public class ParameterWizard extends AbstractWizard<Parameter> {
@@ -29,6 +30,12 @@ public class ParameterWizard extends AbstractWizard<Parameter> {
 	protected AbstractWizardPage<Parameter> createPage() {
 		return new ParameterWizardPage();
 	}
+	
+	@Override
+	protected ModelType getModelType() {
+		return ModelType.PARAMETER;
+	}
+
 
 	private class ParameterWizardPage extends AbstractWizardPage<Parameter> {
 

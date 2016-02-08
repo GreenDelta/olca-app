@@ -12,8 +12,8 @@ import org.eclipse.swt.widgets.Text;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.UIFactory;
-import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.Query;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
 import org.slf4j.Logger;
@@ -27,13 +27,13 @@ public class UnitGroupWizard extends AbstractWizard<UnitGroup> {
 	}
 
 	@Override
-	protected BaseDao<UnitGroup> createDao() {
-		return Database.createDao(UnitGroup.class);
+	protected AbstractWizardPage<UnitGroup> createPage() {
+		return new Page();
 	}
 
 	@Override
-	protected AbstractWizardPage<UnitGroup> createPage() {
-		return new Page();
+	protected ModelType getModelType() {
+		return ModelType.UNIT_GROUP;
 	}
 
 	private class Page extends AbstractWizardPage<UnitGroup> {
@@ -123,5 +123,5 @@ public class UnitGroupWizard extends AbstractWizard<UnitGroup> {
 		}
 
 	}
-	
+
 }

@@ -4,16 +4,10 @@ import java.util.UUID;
 
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.M;
-import org.openlca.app.db.Database;
-import org.openlca.core.database.BaseDao;
 import org.openlca.core.model.Actor;
+import org.openlca.core.model.ModelType;
 
 public class ActorWizard extends AbstractWizard<Actor> {
-
-	@Override
-	protected BaseDao<Actor> createDao() {
-		return Database.createDao(Actor.class);
-	}
 
 	@Override
 	protected String getTitle() {
@@ -23,6 +17,11 @@ public class ActorWizard extends AbstractWizard<Actor> {
 	@Override
 	protected AbstractWizardPage<Actor> createPage() {
 		return new ActorWizardPage();
+	}
+
+	@Override
+	protected ModelType getModelType() {
+		return ModelType.ACTOR;
 	}
 
 	private class ActorWizardPage extends AbstractWizardPage<Actor> {
