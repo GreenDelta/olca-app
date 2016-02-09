@@ -79,7 +79,9 @@ class CostDialog extends FormDialog {
 		});
 		setCurrencyContent(currencyCombo);
 		currencyCombo.addSelectionChangedListener(e -> {
-			exchange.currency = Viewers.getFirst(e.getSelection());
+			currency = Viewers.getFirst(e.getSelection());
+			exchange.currency = currency;
+			updateCurrencyLabels();
 		});
 		UI.formLabel(body, tk, "");
 	}
