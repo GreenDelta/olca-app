@@ -43,6 +43,8 @@ class CostCellEditor extends DialogCellEditor {
 			updateContents(exchange.costValue);
 			editor.setDirty(true);
 		}
+		if (exchange.costValue == null && exchange.costFormula == null)
+			exchange.currency = null;
 		return exchange.costValue;
 	}
 

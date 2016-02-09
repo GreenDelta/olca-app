@@ -1,6 +1,5 @@
 package org.openlca.app.editors.processes.exchanges;
 
-import org.openlca.app.M;
 import java.util.Collections;
 import java.util.List;
 
@@ -18,6 +17,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.parameters.Formulas;
 import org.openlca.app.util.Colors;
@@ -109,7 +109,11 @@ class CostDialog extends FormDialog {
 			priceText.setText(Double.toString(exchange.costValue));
 		priceText.addModifyListener(e -> {
 			try {
-				exchange.costValue = Double.parseDouble(priceText.getText());
+				String s = priceText.getText();
+				if (Strings.nullOrEmpty(s))
+					exchange.costValue = null;
+				else
+					exchange.costValue = Double.parseDouble(s);
 				exchange.costFormula = null;
 				clearFormulaError();
 			} catch (Exception ex) {
