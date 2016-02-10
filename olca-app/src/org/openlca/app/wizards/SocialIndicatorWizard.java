@@ -4,16 +4,10 @@ import java.util.UUID;
 
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.M;
-import org.openlca.app.db.Database;
-import org.openlca.core.database.BaseDao;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.SocialIndicator;
 
 public class SocialIndicatorWizard extends AbstractWizard<SocialIndicator> {
-
-	@Override
-	protected BaseDao<SocialIndicator> createDao() {
-		return Database.createDao(SocialIndicator.class);
-	}
 
 	@Override
 	protected String getTitle() {
@@ -23,6 +17,11 @@ public class SocialIndicatorWizard extends AbstractWizard<SocialIndicator> {
 	@Override
 	protected AbstractWizardPage<SocialIndicator> createPage() {
 		return new Page();
+	}
+
+	@Override
+	protected ModelType getModelType() {
+		return ModelType.SOCIAL_INDICATOR;
 	}
 
 	private class Page extends AbstractWizardPage<SocialIndicator> {

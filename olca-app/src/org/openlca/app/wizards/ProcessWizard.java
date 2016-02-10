@@ -21,7 +21,6 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.combo.FlowPropertyViewer;
-import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowType;
@@ -38,15 +37,15 @@ public class ProcessWizard extends AbstractWizard<Process> {
 	}
 
 	@Override
-	protected BaseDao<Process> createDao() {
-		return Database.createDao(Process.class);
-	}
-
-	@Override
 	protected AbstractWizardPage<Process> createPage() {
 		return new Page();
 	}
-	
+
+	@Override
+	protected ModelType getModelType() {
+		return ModelType.PROCESS;
+	}
+
 	private class Page extends AbstractWizardPage<Process> {
 
 		private Composite contentStack;
@@ -190,6 +189,5 @@ public class ProcessWizard extends AbstractWizard<Process> {
 			return db.createDao(Flow.class).getForId(flow.getId());
 		}
 	}
-
 
 }

@@ -9,9 +9,9 @@ import org.openlca.app.db.Database;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.FlowPropertyTypeViewer;
 import org.openlca.app.viewers.combo.UnitGroupViewer;
-import org.openlca.core.database.BaseDao;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyType;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.UnitGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,15 +24,15 @@ public class FlowPropertyWizard extends AbstractWizard<FlowProperty> {
 	}
 
 	@Override
-	protected BaseDao<FlowProperty> createDao() {
-		return Database.createDao(FlowProperty.class);
-	}
-
-	@Override
 	protected AbstractWizardPage<FlowProperty> createPage() {
 		return new Page();
 	}
-	
+
+	@Override
+	protected ModelType getModelType() {
+		return ModelType.FLOW_PROPERTY;
+	}
+
 	private class Page extends AbstractWizardPage<FlowProperty> {
 
 		private FlowPropertyTypeViewer flowPropertyTypeViewer;
@@ -92,6 +92,5 @@ public class FlowPropertyWizard extends AbstractWizard<FlowProperty> {
 		}
 
 	}
-
 
 }

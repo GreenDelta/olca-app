@@ -5,10 +5,12 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IWorkbench;
 import org.openlca.app.App;
 import org.openlca.app.db.Cache;
-import org.openlca.app.rcp.images.Images;
+import org.openlca.app.db.Database;
 import org.openlca.core.database.BaseDao;
+import org.openlca.core.database.Daos;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Category;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.Descriptors;
 import org.slf4j.Logger;
@@ -24,7 +26,6 @@ public abstract class AbstractWizard<T extends CategorizedEntity> extends
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
 		setWindowTitle(getTitle());
-		setDefaultPageImageDescriptor(Images.wizard(category.getModelType()));
 	}
 
 	public AbstractWizardPage<T> getPage() {
@@ -64,10 +65,15 @@ public abstract class AbstractWizard<T extends CategorizedEntity> extends
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	protected BaseDao<T> createDao() {
+		return (BaseDao<T>) Daos.createCategorizedDao(Database.get(), getModelType());
+	}
+
 	protected abstract String getTitle();
 
-	protected abstract BaseDao<T> createDao();
-
+	protected abstract ModelType getModelType();
+	
 	protected abstract AbstractWizardPage<T> createPage();
 
 }

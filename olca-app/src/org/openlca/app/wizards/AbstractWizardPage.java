@@ -4,10 +4,11 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.openlca.app.M;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.UIFactory;
-import org.openlca.core.model.RootEntity;
+import org.openlca.core.model.CategorizedEntity;
 
-public abstract class AbstractWizardPage<T extends RootEntity> extends
+public abstract class AbstractWizardPage<T extends CategorizedEntity> extends
 		WizardPage {
 
 	private final String EMPTY_NAME_ERROR = M.PleaseEnterAName;
@@ -24,6 +25,7 @@ public abstract class AbstractWizardPage<T extends RootEntity> extends
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public final void createControl(final Composite parent) {
 		setErrorMessage(EMPTY_NAME_ERROR);
 		Composite container = UIFactory.createContainer(parent);
@@ -35,6 +37,8 @@ public abstract class AbstractWizardPage<T extends RootEntity> extends
 					M.Description, true);
 		createContents(container);
 		initModifyListeners();
+		AbstractWizard<T> wizard = (AbstractWizard<T>) getWizard();
+		setImageDescriptor(Images.wizard(wizard.getModelType()));
 	}
 
 	protected abstract void createContents(Composite container);

@@ -9,20 +9,15 @@ import org.openlca.app.db.Database;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.FlowPropertyViewer;
 import org.openlca.app.viewers.combo.FlowTypeViewer;
-import org.openlca.core.database.BaseDao;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.FlowType;
+import org.openlca.core.model.ModelType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class FlowWizard extends AbstractWizard<Flow> {
-
-	@Override
-	protected BaseDao<Flow> createDao() {
-		return Database.createDao(Flow.class);
-	}
 
 	@Override
 	protected AbstractWizardPage<Flow> createPage() {
@@ -33,7 +28,12 @@ public class FlowWizard extends AbstractWizard<Flow> {
 	protected String getTitle() {
 		return M.NewFlow;
 	}
-	
+
+	@Override
+	protected ModelType getModelType() {
+		return ModelType.FLOW;
+	}
+
 	private class Page extends AbstractWizardPage<Flow> {
 
 		private FlowTypeViewer flowTypeViewer;

@@ -4,8 +4,7 @@ import java.util.UUID;
 
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.M;
-import org.openlca.app.db.Database;
-import org.openlca.core.database.BaseDao;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Source;
 
 public class SourceWizard extends AbstractWizard<Source> {
@@ -16,13 +15,13 @@ public class SourceWizard extends AbstractWizard<Source> {
 	}
 
 	@Override
-	protected BaseDao<Source> createDao() {
-		return Database.createDao(Source.class);
+	protected AbstractWizardPage<Source> createPage() {
+		return new SourceWizardPage();
 	}
 
 	@Override
-	protected AbstractWizardPage<Source> createPage() {
-		return new SourceWizardPage();
+	protected ModelType getModelType() {
+		return ModelType.SOURCE;
 	}
 
 	private class SourceWizardPage extends AbstractWizardPage<Source> {

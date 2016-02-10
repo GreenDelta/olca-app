@@ -4,16 +4,10 @@ import java.util.UUID;
 
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.M;
-import org.openlca.app.db.Database;
-import org.openlca.core.database.BaseDao;
 import org.openlca.core.model.Location;
+import org.openlca.core.model.ModelType;
 
 public class LocationWizard extends AbstractWizard<Location> {
-
-	@Override
-	protected BaseDao<Location> createDao() {
-		return Database.createDao(Location.class);
-	}
 
 	@Override
 	protected String getTitle() {
@@ -23,6 +17,11 @@ public class LocationWizard extends AbstractWizard<Location> {
 	@Override
 	protected AbstractWizardPage<Location> createPage() {
 		return new LocationWizardPage();
+	}
+
+	@Override
+	protected ModelType getModelType() {
+		return ModelType.LOCATION;
 	}
 
 	private class LocationWizardPage extends AbstractWizardPage<Location> {
