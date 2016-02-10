@@ -53,10 +53,10 @@ public class DatabaseImportAction extends Action implements INavigationAction {
 				.toLowerCase();
 		List<String> names = new ArrayList<>();
 		for (String existing : dbFolder.list())
-			names.add(existing);
+			names.add(existing.toLowerCase());
 		String name = proposal;
 		int count = 0;
-		while (names.contains(name)) {
+		while (names.contains(name.toLowerCase())) {
 			count++;
 			name = proposal + "_" + count;
 		}

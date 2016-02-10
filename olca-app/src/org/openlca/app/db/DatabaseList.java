@@ -71,12 +71,14 @@ public class DatabaseList {
 
 	/** Returns true if a database with the given name exists. */
 	public boolean nameExists(String name) {
+		if (name == null || name.isEmpty())
+			return false;
 		for (IDatabaseConfiguration config : localDatabases) {
-			if (Strings.nullOrEqual(config.getName(), name))
+			if (Strings.nullOrEqual(config.getName().toLowerCase(), name.toLowerCase()))
 				return true;
 		}
 		for (IDatabaseConfiguration config : remoteDatabases) {
-			if (Strings.nullOrEqual(config.getName(), name))
+			if (Strings.nullOrEqual(config.getName().toLowerCase(), name.toLowerCase()))
 				return true;
 		}
 		return false;
