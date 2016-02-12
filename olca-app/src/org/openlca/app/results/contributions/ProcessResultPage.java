@@ -37,7 +37,6 @@ import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.combo.ProcessViewer;
 import org.openlca.core.database.EntityCache;
-import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.matrix.FlowIndex;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
@@ -51,7 +50,6 @@ public class ProcessResultPage extends FormPage {
 
 	private EntityCache cache = Cache.getEntityCache();
 	private Map<Long, ProcessDescriptor> processDescriptors = new HashMap<>();
-	private CalculationSetup setup;
 	private FullResultProvider result;
 	private ResultProvider flowResult;
 	private ResultProvider impactResult;
@@ -78,11 +76,9 @@ public class ProcessResultPage extends FormPage {
 			M.ImpactCategory, M.UpstreamTotal,
 			M.DirectImpact, M.Unit };
 
-	public ProcessResultPage(FormEditor editor, FullResultProvider result,
-			CalculationSetup setup) {
+	public ProcessResultPage(FormEditor editor, FullResultProvider result) {
 		super(editor, ProcessResultPage.class.getName(),
 				M.ProcessResults);
-		this.setup = setup;
 		this.result = result;
 		for (ProcessDescriptor desc : result.getProcessDescriptors())
 			processDescriptors.put(desc.getId(), desc);
@@ -143,7 +139,7 @@ public class ProcessResultPage extends FormPage {
 		UI.gridLayout(container, 5);
 		UI.formLabel(container, toolkit, M.Process);
 		flowProcessViewer = new ProcessViewer(container, cache);
-		flowProcessViewer.setInput(setup.productSystem);
+		flowProcessViewer.setInput(result.getProcessDescriptors());
 		flowProcessViewer.addSelectionChangedListener((selection) -> {
 			flowResult.setProcess(selection);
 			inputTable.refresh();
@@ -198,7 +194,7 @@ public class ProcessResultPage extends FormPage {
 		UI.gridData(container, true, false);
 		UI.formLabel(container, toolkit, M.Process);
 		impactProcessCombo = new ProcessViewer(container, cache);
-		impactProcessCombo.setInput(setup.productSystem);
+		impactProcessCombo.setInput(result.getProcessDescriptors());
 		impactProcessCombo.addSelectionChangedListener((selection) -> {
 			impactResult.setProcess(selection);
 			impactTable.refresh();
