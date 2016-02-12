@@ -593,6 +593,7 @@ public class M extends NLS {
 	public static String Quantity;
 	public static String QuickResults;
 	public static String RawValue;
+	public static String ReallyDeleteShapeFile;
 	public static String RecalculateQuestion;
 	public static String RecalculateQuestionText;
 	public static String RecalculateQuestionTitle;

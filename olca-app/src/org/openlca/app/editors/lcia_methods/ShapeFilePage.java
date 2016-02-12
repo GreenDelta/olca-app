@@ -32,11 +32,11 @@ import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.editors.parameters.ModelParameterPage;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Error;
-import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Info;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
@@ -199,6 +199,7 @@ class ShapeFilePage extends FormPage {
 			Action delete = Actions.onRemove(() -> {
 				if (delete()) {
 					removeExternalSourceReferences();
+					save();
 				}
 			});
 			Action update = new Action(M.Update) {
@@ -225,6 +226,7 @@ class ShapeFilePage extends FormPage {
 							nameToParam.put(parameter.getName(), parameter);
 						}
 					updateExternalSourceReferences(stillLinked, nameToParam);
+					save();
 				}
 			};
 			ShowMapAction showAction = new ShowMapAction(this);
@@ -233,14 +235,22 @@ class ShapeFilePage extends FormPage {
 			Actions.bind(parameterTable.viewer, showAction, addAction);
 		}
 
+		private void save() {
+			ProgressMonitorDialog dialog = new ProgressMonitorDialog(UI.shell());
+			try {
+				dialog.run(true, false, (monitor) -> editor.doSave(monitor));
+			} catch (Exception e) {
+				log.error("Error automatically saving impact method", e);
+			}
+		}
+
 		private boolean delete() {
 			return delete(false);
 		}
 
 		private boolean delete(boolean force) {
 			boolean del = force
-					|| Question.ask(M.DeleteShapeFile, "Do you "
-							+ "really want to delete the selected shape file?");
+					|| Question.ask(M.DeleteShapeFile, M.ReallyDeleteShapeFile);
 			if (!del)
 				return false;
 			ShapeFileUtils.deleteFile(method(), shapeFile);
