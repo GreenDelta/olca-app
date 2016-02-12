@@ -90,9 +90,11 @@ class ProcessModelingPage extends ModelPage<Process> {
 		UI.gridData(composite, true, true);
 		section.setClient(composite);
 		SourceViewer viewer = new SourceViewer(composite, Database.get(),
-				editor);
+				editor, form);
 		viewer.setInput(getModel());
 		viewer.bindTo(section);
-		editor.onSaved(() -> viewer.setInput(getModel()));
+		editor.onSaved(() -> {
+			viewer.setInput(getModel());
+		});
 	}
 }

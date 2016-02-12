@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
 import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.util.tables.Tables;
@@ -21,12 +22,14 @@ class SourceViewer extends AbstractTableViewer<Source> {
 
 	private final ProcessEditor editor;
 	private final SourceDao sourceDao;
+	private final ScrolledForm form;
 
 	public SourceViewer(Composite parent, IDatabase database,
-			ProcessEditor editor) {
+			ProcessEditor editor, ScrolledForm form) {
 		super(parent);
 		this.sourceDao = new SourceDao(database);
 		this.editor = editor;
+		this.form = form;
 		addDoubleClickHandler();
 	}
 
@@ -63,6 +66,10 @@ class SourceViewer extends AbstractTableViewer<Source> {
 				continue;
 			add((SourceDescriptor) descriptor);
 		}
+		ProcessDocumentation doc = editor.getModel().getDocumentation();
+		setInput(doc.getSources());
+		form.reflow(true);
+		editor.setDirty(true);
 	}
 
 	private void add(SourceDescriptor descriptor) {
@@ -76,8 +83,6 @@ class SourceViewer extends AbstractTableViewer<Source> {
 		if (doc.getSources().contains(source))
 			return;
 		doc.getSources().add(source);
-		setInput(doc.getSources());
-		editor.setDirty(true);
 	}
 
 	@OnRemove
@@ -91,6 +96,7 @@ class SourceViewer extends AbstractTableViewer<Source> {
 		}
 		setInput(doc.getSources());
 		editor.setDirty(true);
+		form.reflow(true);
 	}
 
 	@OnDrop
