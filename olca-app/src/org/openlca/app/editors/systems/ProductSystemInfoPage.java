@@ -101,7 +101,7 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 		toolkit.createLabel(composite, "");
 		Button button = toolkit.createButton(composite, M.Calculate,
 				SWT.NONE);
-		button.setImage(Icon.CALCULATE.get());
+		button.setImage(Icon.RUN.get());
 		Controls.onSelect(button, (e) -> CalculationWizard.open(getModel()));
 	}
 

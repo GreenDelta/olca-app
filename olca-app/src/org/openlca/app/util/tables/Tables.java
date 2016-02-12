@@ -1,6 +1,8 @@
 package org.openlca.app.util.tables;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.function.Consumer;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -99,21 +101,12 @@ public class Tables {
 			final double... percents) {
 		if (table == null || percents == null)
 			return;
-		table.addControlListener(new ControlAdapter() {
-			@Override
-			public void controlResized(ControlEvent e) {
-				double width = table.getSize().x - 25;
-				if (width < 50)
-					return;
-				TableColumn[] columns = table.getColumns();
-				for (int i = 0; i < columns.length; i++) {
-					if (i >= percents.length)
-						break;
-					double colWidth = percents[i] * width;
-					columns[i].setWidth((int) colWidth);
-				}
-			}
-		});
+		TableResizeListener tableListener = new TableResizeListener(table, percents);
+		// see resize listener declaration for comment on why this is done
+		ColumnResizeListener columnListener = new ColumnResizeListener(tableListener);
+		for (TableColumn column : table.getColumns())
+			column.addControlListener(columnListener);
+		table.addControlListener(tableListener);
 	}
 
 	/** Add an event handler for double clicks on the given table viewer. */
@@ -174,5 +167,59 @@ public class Tables {
 			}
 		});
 	}
-	
+
+	// In order to be able to resize columns manually, we must know if a column
+	// was resized before, and in those cases, don't resize the columns
+	// automatically.
+	private static class ColumnResizeListener extends ControlAdapter {
+		private TableResizeListener depending;
+		private boolean enabled;
+
+		private ColumnResizeListener(TableResizeListener depending) {
+			this.depending = depending;
+		}
+
+		@Override
+		public void controlResized(ControlEvent e) {
+			if (!enabled)
+				return;
+			depending.enabled = false;
+			enabled = false;
+			Timer t = new Timer();
+			t.schedule(new TimerTask() {
+				@Override
+				public void run() {
+					depending.enabled = true;
+					enabled = true;
+				}
+			}, 100);
+		}
+	}
+
+	private static class TableResizeListener extends ControlAdapter {
+		private Table table;
+		private double[] percents;
+		private boolean enabled = true;
+
+		private TableResizeListener(Table table, double[] percents) {
+			this.table = table;
+			this.percents = percents;
+		}
+
+		@Override
+		public void controlResized(ControlEvent e) {
+			if (!enabled)
+				return;
+			double width = table.getSize().x - 25;
+			TableColumn[] columns = table.getColumns();
+			for (int i = 0; i < columns.length; i++) {
+				if (i >= percents.length)
+					break;
+				double colWidth = percents[i] * width;
+				columns[i].setWidth((int) colWidth);
+			}
+		}
+
+	}
+
 }

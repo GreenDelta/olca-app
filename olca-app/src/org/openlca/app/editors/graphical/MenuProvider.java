@@ -12,6 +12,7 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.ui.actions.ActionFactory;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.action.ActionIds;
+import org.openlca.app.rcp.images.Icon;
 
 class MenuProvider extends ContextMenuProvider {
 
@@ -46,12 +47,18 @@ class MenuProvider extends ContextMenuProvider {
 	/** Undo, Redo, and Delete */
 	private void addEditActions(final IMenuManager menu) {
 		GEFActionConstants.addStandardActionGroups(menu);
-		menu.appendToGroup(GEFActionConstants.GROUP_UNDO,
-				registry.getAction(ActionFactory.UNDO.getId()));
-		menu.appendToGroup(GEFActionConstants.GROUP_UNDO,
-				registry.getAction(ActionFactory.REDO.getId()));
+		IAction undoAction = registry.getAction(ActionFactory.UNDO.getId());
+		undoAction.setImageDescriptor(Icon.UNDO.descriptor());
+		undoAction.setImageDescriptor(Icon.UNDO_DISABLED.descriptor());
+		IAction redoAction = registry.getAction(ActionFactory.REDO.getId());
+		redoAction.setImageDescriptor(Icon.REDO.descriptor());
+		redoAction.setImageDescriptor(Icon.REDO_DISABLED.descriptor());
+		menu.appendToGroup(GEFActionConstants.GROUP_UNDO, undoAction);
+		menu.appendToGroup(GEFActionConstants.GROUP_UNDO, redoAction);
 		IAction deleteAction = registry.getAction(ActionFactory.DELETE.getId());
 		deleteAction.setText(M.Delete);
+		deleteAction.setImageDescriptor(Icon.DELETE.descriptor());
+		deleteAction.setImageDescriptor(Icon.DELETE_DISABLED.descriptor());
 		menu.appendToGroup(GEFActionConstants.GROUP_EDIT, deleteAction);
 	}
 

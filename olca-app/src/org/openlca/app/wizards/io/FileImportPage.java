@@ -182,7 +182,7 @@ public class FileImportPage extends WizardPage {
 		directoryText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
 				false));
 		directoryText.setEditable(false);
-		directoryText.setBackground(Colors.getColor(255, 255, 255));
+		directoryText.setBackground(Colors.get(255, 255, 255));
 	}
 
 	/** Get the selected files from the page. */

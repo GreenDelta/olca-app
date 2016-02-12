@@ -66,7 +66,7 @@ class QualityCell {
 		if (selected)
 			color = QualityLabelData.getColors()[score - 1];
 		else
-			color = Colors.getWhite();
+			color = Colors.white();
 		label.setBackground(color);
 		composite.setBackground(color);
 	}

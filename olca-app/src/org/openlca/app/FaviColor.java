@@ -58,7 +58,7 @@ public class FaviColor {
 	 * of the range of the pre-defined colors, a random color is returned.
 	 */
 	public static Color getForChart(int idx) {
-		return Colors.getColor(getRgbForChart(idx));
+		return Colors.get(getRgbForChart(idx));
 	}
 
 	/**

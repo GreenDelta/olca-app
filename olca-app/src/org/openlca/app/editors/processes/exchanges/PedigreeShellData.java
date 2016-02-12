@@ -35,11 +35,11 @@ class PedigreeShellData {
 
 	public static Color[] getColors(Display display) {
 		Color[] colors = new Color[5];
-		colors[0] = Colors.getColor(210, 230, 185);
-		colors[1] = Colors.getColor(233, 243, 199);
-		colors[2] = Colors.getColor(251, 242, 209);
-		colors[3] = Colors.getColor(246, 207, 191);
-		colors[4] = Colors.getColor(246, 182, 174);
+		colors[0] = Colors.get(210, 230, 185);
+		colors[1] = Colors.get(233, 243, 199);
+		colors[2] = Colors.get(251, 242, 209);
+		colors[3] = Colors.get(246, 207, 191);
+		colors[4] = Colors.get(246, 182, 174);
 		return colors;
 	}
 

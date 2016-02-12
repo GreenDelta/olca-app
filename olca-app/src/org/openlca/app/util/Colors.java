@@ -28,12 +28,12 @@ public class Colors {
 		PlatformUI.getWorkbench().addWorkbenchListener(new ShutDown());
 	}
 
-	public static Color getErrorColor() {
+	public static Color errorColor() {
 		RGB rgb = new RGB(255, 180, 180);
-		return getColor(rgb);
+		return get(rgb);
 	}
 
-	public static Color getColor(RGB rgb) {
+	public static Color get(RGB rgb) {
 		Color color = createdColors.get(rgb);
 		if (color == null || color.isDisposed()) {
 			color = new Color(display, rgb);
@@ -42,32 +42,32 @@ public class Colors {
 		return color;
 	}
 
-	public static Color getColor(int r, int g, int b) {
+	public static Color get(int r, int g, int b) {
 		RGB rgb = new RGB(r, g, b);
-		return getColor(rgb);
+		return get(rgb);
 	}
 
-	public static Color getWhite() {
-		return getSystemColor(SWT.COLOR_WHITE);
+	public static Color white() {
+		return systemColor(SWT.COLOR_WHITE);
 	}
 
-	public static Color getDarkGray() {
-		return getSystemColor(SWT.COLOR_DARK_GRAY);
+	public static Color darkGray() {
+		return systemColor(SWT.COLOR_DARK_GRAY);
 	}
 
-	public static Color getLinkBlue() {
-		return getColor(25, 76, 127);
+	public static Color linkBlue() {
+		return get(25, 76, 127);
 	}
 
-	public static Color getGray() {
-		return getColor(128, 128, 128);
+	public static Color gray() {
+		return get(128, 128, 128);
 	}
 
-	public static Color getBlack() {
-		return getSystemColor(SWT.COLOR_BLACK);
+	public static Color black() {
+		return systemColor(SWT.COLOR_BLACK);
 	}
 
-	public static Color getSystemColor(int swtConstant) {
+	public static Color systemColor(int swtConstant) {
 		return display.getSystemColor(swtConstant);
 	}
 

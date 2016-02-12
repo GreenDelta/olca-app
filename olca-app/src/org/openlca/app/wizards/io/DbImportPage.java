@@ -99,7 +99,7 @@ class DbImportPage extends WizardPage {
 		Composite composite = UI.formComposite(body);
 		UI.gridData(composite, true, false);
 		fileText = new Text(composite, SWT.READ_ONLY | SWT.BORDER);
-		fileText.setBackground(Colors.getWhite());
+		fileText.setBackground(Colors.white());
 		UI.gridData(fileText, true, false);
 		browseButton = new Button(composite, SWT.NONE);
 		browseButton.setText("Browse");

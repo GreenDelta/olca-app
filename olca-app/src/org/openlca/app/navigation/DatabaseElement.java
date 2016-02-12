@@ -26,11 +26,10 @@ public class DatabaseElement extends NavigationElement<IDatabaseConfiguration> {
 				ModelType.PROJECT,
 				ModelType.PRODUCT_SYSTEM,
 				ModelType.IMPACT_METHOD,
-				ModelType.PARAMETER)));
-		list.add(new GroupElement(this, g(M.Inventory, GroupType.INVENTORY,
 				ModelType.PROCESS,
 				ModelType.FLOW,
-				ModelType.SOCIAL_INDICATOR)));
+				ModelType.SOCIAL_INDICATOR, 
+				ModelType.PARAMETER)));
 		list.add(new GroupElement(this, g(M.BackgroundData, GroupType.BACKGROUND_DATA,
 				ModelType.FLOW_PROPERTY,
 				ModelType.UNIT_GROUP,

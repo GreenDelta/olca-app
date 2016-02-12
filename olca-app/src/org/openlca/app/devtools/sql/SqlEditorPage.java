@@ -227,7 +227,7 @@ public class SqlEditorPage extends FormPage {
 			styleRange.start = wordStart;
 			styleRange.length = length;
 			styleRange.fontStyle = SWT.BOLD;
-			styleRange.foreground = Colors.getColor(0, 0, 255);
+			styleRange.foreground = Colors.get(0, 0, 255);
 			text.setStyleRange(styleRange);
 		}
 

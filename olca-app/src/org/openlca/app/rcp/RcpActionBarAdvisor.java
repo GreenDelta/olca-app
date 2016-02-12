@@ -45,7 +45,6 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	private IWorkbenchAction saveAllAction;
 	private IWorkbenchAction saveAsAction;
 	private IContributionItem showViews;
-	private IContributionItem showPerspectives;
 
 	public RcpActionBarAdvisor(IActionBarConfigurer configurer) {
 		super(configurer);
@@ -104,9 +103,6 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		MenuManager viewMenu = new MenuManager(M.Showviews);
 		viewMenu.add(showViews);
 		windowMenu.add(viewMenu);
-		MenuManager perspectivesMenu = new MenuManager(M.Showperspectives);
-		perspectivesMenu.add(showPerspectives);
-		windowMenu.add(perspectivesMenu);
 		createDeveloperMenu(windowMenu);
 		windowMenu.add(new FormulaConsoleAction());
 		if (MozillaConfigView.canShow()) {
@@ -134,11 +130,13 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		closeAction = ActionFactory.CLOSE.create(window);
 		closeAllAction = ActionFactory.CLOSE_ALL.create(window);
 		preferencesAction = ActionFactory.PREFERENCES.create(window);
+		preferencesAction.setImageDescriptor(Icon.PREFERENCES.descriptor());
 		importAction = ActionFactory.IMPORT.create(window);
+		importAction.setImageDescriptor(Icon.IMPORT.descriptor());
 		exportAction = ActionFactory.EXPORT.create(window);
+		exportAction.setImageDescriptor(Icon.EXPORT.descriptor());
 		exitAction = ActionFactory.QUIT.create(window);
 		showViews = ContributionItemFactory.VIEWS_SHORTLIST.create(window);
-		showPerspectives = ContributionItemFactory.PERSPECTIVES_SHORTLIST.create(window);
 		aboutAction = ActionFactory.ABOUT.create(window);
 	}
 
@@ -171,6 +169,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		public OpenPluginManagerAction() {
 			setText(M.ManagePlugins);
 			setToolTipText(M.OpenPluginManager);
+			setImageDescriptor(Icon.MANAGE_PLUGINS.descriptor());
 		}
 
 		@Override

@@ -121,7 +121,7 @@ public class InfoSection {
 			}
 			link.setText(current.getName());
 			link.addHyperlinkListener(new CategoryLinkSelectionListener(current));
-			link.setForeground(Colors.getLinkBlue());
+			link.setForeground(Colors.linkBlue());
 		}
 	}
 

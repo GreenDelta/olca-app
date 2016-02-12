@@ -134,7 +134,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 		Button button = toolkit.createButton(composite, M.Calculate,
 				SWT.NONE);
 		UI.gridData(button, false, false).widthHint = 100;
-		button.setImage(Icon.CALCULATE.get());
+		button.setImage(Icon.RUN.get());
 		Controls.onSelect(button, (e) -> {
 			Calculation.run(getModel());
 		});

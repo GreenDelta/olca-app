@@ -141,7 +141,7 @@ public class LocationInfoPage extends ModelPage<Location> implements HtmlPage {
 
 		@Override
 		public void run() {
-			browser.evaluate("onDestroyFeatures()");
+			browser.evaluate("onClear()");
 		}
 
 	}

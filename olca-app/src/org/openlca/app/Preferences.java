@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 public final class Preferences extends AbstractPreferenceInitializer {
 
 	public static final String NUMBER_ACCURACY = "NUMBER_ACCURACY";
+	public static final String FORMAT_INPUT_VALUES = "FORMAT_INPUT_VALUES";
 	public static final String LAST_IMPORT_FOLDER = "LAST_IMPORT_FOLDER";
 	public static final String LAST_EXPORT_FOLDER = "LAST_EXPORT_FOLDER";
 
@@ -17,6 +18,7 @@ public final class Preferences extends AbstractPreferenceInitializer {
 	public void initializeDefaultPreferences() {
 		IPreferenceStore store = getStore();
 		store.setDefault(NUMBER_ACCURACY, 5);
+		store.setDefault(FORMAT_INPUT_VALUES, true);
 	}
 
 	public static void init() {
@@ -49,6 +51,17 @@ public final class Preferences extends AbstractPreferenceInitializer {
 		if (store == null)
 			return "";
 		return store.getString(key);
+	}
+
+	public static boolean is(String key) {
+		if (key == null)
+			return false;
+		IPreferenceStore store = getStore();
+		if (store == null)
+			return false;
+		if (!store.contains(key))
+			return false;
+		return store.getBoolean(key);
 	}
 
 }

@@ -27,6 +27,7 @@ public class ProcessTreemapPage extends FormPage implements HtmlPage {
 	private ContributionResultProvider<?> result;
 	private Browser browser;
 	private ResultTypeSelection flowImpactSelection;
+	private boolean loaded;
 
 	public ProcessTreemapPage(FormEditor editor,
 			ContributionResultProvider<?> result) {
@@ -41,6 +42,7 @@ public class ProcessTreemapPage extends FormPage implements HtmlPage {
 
 	@Override
 	public void onLoaded() {
+		loaded = true;
 		FlowIndex flowIndex = result.result.flowIndex;
 		long flowId = flowIndex.getFlowAt(0);
 		FlowDescriptor first = Cache.getEntityCache().get(FlowDescriptor.class,
@@ -86,6 +88,8 @@ public class ProcessTreemapPage extends FormPage implements HtmlPage {
 		}
 
 		private void setResultData(String result) {
+			if (!loaded)
+				return;
 			String command = "setData(" + result + ")";
 			try {
 				log.trace("set treemap result data");

@@ -60,7 +60,7 @@ public class Actions {
 		return new Action() {
 			{
 				setText(M.CalculateResults);
-				setImageDescriptor(Icon.CALCULATE.descriptor());
+				setImageDescriptor(Icon.RUN.descriptor());
 			}
 
 			@Override

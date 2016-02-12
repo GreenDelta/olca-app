@@ -3,7 +3,63 @@
 <plugin>
 
 	<extension-point id="org.openlca.app.editors.graphical.actions" name="org.openlca.app.editors.graphical.actions" schema="schema/org.openlca.app.editors.graphical.actions.exsd"/>
-	
+	<extension
+		point="org.eclipse.ui.commandImages">
+		<image
+			commandId="org.eclipse.ui.file.save"
+			icon="icons/save.png"
+			disabledIcon="icons/save_disabled.png">
+		</image>
+		<image
+			commandId="org.eclipse.ui.file.saveAs"
+			icon="icons/save_as.png"
+			disabledIcon="icons/save_as_disabled.png">
+		</image>
+		<image
+			commandId="org.eclipse.ui.file.saveAll"
+			icon="icons/save_all.png"
+			disabledIcon="icons/save_all_disabled.png">
+		</image>
+		<image
+			commandId="org.eclipse.ui.edit.undo"
+			icon="icons/save_all.png"
+			disabledIcon="icons/save_all_disabled.png">
+		</image>
+		<image
+			commandId="org.eclipse.ui.edit.redo"
+			icon="icons/save_all.png"
+			disabledIcon="icons/save_all_disabled.png">
+		</image>
+		<image
+			commandId="org.eclipse.ui.edit.delete"
+			icon="icons/delete.png"
+			disabledIcon="icons/delete_disabled.png">
+		</image>
+		<image
+			commandId="org.eclipse.ui.edit.copy"
+			icon="icons/copy.png">
+		</image>
+		<image
+			commandId="org.eclipse.ui.edit.cut"
+			icon="icons/cut.png">
+		</image>
+		<image
+			commandId="org.eclipse.ui.edit.paste"
+			icon="icons/paste.png">
+		</image>
+		<image
+			commandId="org.eclipse.ui.window.preferences"
+			icon="icons/preferences.png">
+		</image>
+		<image
+			commandId="org.eclipse.ui.file.import"
+			icon="icons/import.png">
+		</image>
+		<image
+			commandId="org.eclipse.ui.file.export"
+			icon="icons/export.png">
+		</image>
+	</extension>
 	<extension
          point="org.eclipse.ui.editors">
          
@@ -126,7 +182,7 @@
       <editor
             class="org.openlca.app.results.quick.QuickResultEditor"
             default="false"
-            icon="icons/expression.gif"
+            icon="icons/quick_calculation.png"
             id="QuickResultEditor"
             name="Quick results"
             contributorClass="org.openlca.app.results.quick.QuickResultActions">
@@ -326,7 +382,7 @@
       <view
             allowMultiple="false"
             class="org.openlca.app.navigation.Navigator"
-            icon="icons/categories.gif"
+            icon="icons/categories.png"
             id="views.navigation"
             name="%Navigation">
       </view>  
@@ -635,14 +691,16 @@
 		   <description>Import SimaPro CSV files.</description>
 	   </wizard>
 	   <wizard
-           class="org.openlca.app.editors.locations.KmzImportWizard"
-           id="wizard.import.kmz"
-           name="EcoSpold2 geographies">
+          class="org.openlca.app.editors.locations.KmzImportWizard"
+          icon="icons/file/xml.png"
+          id="wizard.import.kmz"
+          name="EcoSpold2 geographies">
        </wizard>
 	   <wizard
-           class="org.openlca.app.editors.locations.KmlImportWizard"
-           id="wizard.import.kml"
-           name="KML geographies">
+          class="org.openlca.app.editors.locations.KmlImportWizard"
+          icon="icons/file/xml.png"
+          id="wizard.import.kml"
+          name="KML geographies">
        </wizard>
    </extension>
    

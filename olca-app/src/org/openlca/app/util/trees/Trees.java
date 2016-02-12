@@ -1,6 +1,8 @@
 package org.openlca.app.util.trees;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.function.Consumer;
 
 import org.eclipse.jface.viewers.TreeViewer;
@@ -49,10 +51,6 @@ public class Trees {
 		});
 	}
 
-	public static void bindColumnWidths(TreeViewer viewer, double... percents) {
-		bindColumnWidths(viewer.getTree(), percents);
-	}
-
 	/**
 	 * Binds the given percentage values (values between 0 and 1) to the column
 	 * widths of the given tree
@@ -61,21 +59,11 @@ public class Trees {
 			final double... percents) {
 		if (tree == null || percents == null)
 			return;
-		tree.getParent().addControlListener(new ControlAdapter() {
-			@Override
-			public void controlResized(ControlEvent e) {
-				double width = tree.getSize().x - 25;
-				if (width < 50)
-					return;
-				TreeColumn[] columns = tree.getColumns();
-				for (int i = 0; i < columns.length; i++) {
-					if (i >= percents.length)
-						break;
-					double colWidth = percents[i] * width;
-					columns[i].setWidth((int) colWidth);
-				}
-			}
-		});
+		TreeResizeListener treeListener = new TreeResizeListener(tree, percents);		
+		ColumnResizeListener columnListener = new ColumnResizeListener(treeListener);
+		for (TreeColumn column : tree.getColumns())
+			column.addControlListener(columnListener);
+		tree.addControlListener(treeListener);
 	}
 
 	/** Add an event handler for double clicks on the given tree viewer. */
@@ -137,4 +125,57 @@ public class Trees {
 		});
 	}
 
+	// In order to be able to resize columns manually, we must know if a column
+	// was resized before, and in those cases, don't resize the columns
+	// automatically.
+	private static class ColumnResizeListener extends ControlAdapter {
+		private TreeResizeListener depending;
+		private boolean enabled;
+
+		private ColumnResizeListener(TreeResizeListener depending) {
+			this.depending = depending;
+		}
+
+		@Override
+		public void controlResized(ControlEvent e) {
+			if (!enabled)
+				return;
+			depending.enabled = false;
+			enabled = false;
+			Timer t = new Timer();
+			t.schedule(new TimerTask() {
+				@Override
+				public void run() {
+					depending.enabled = true;
+					enabled = true;
+				}
+			}, 100);
+		}
+	}
+
+	private static class TreeResizeListener extends ControlAdapter {
+		private Tree tree;
+		private double[] percents;
+		private boolean enabled = true;
+
+		private TreeResizeListener(Tree tree, double[] percents) {
+			this.tree = tree;
+			this.percents = percents;
+		}
+
+		@Override
+		public void controlResized(ControlEvent e) {
+			if (!enabled)
+				return;
+			double width = tree.getSize().x - 25;
+			TreeColumn[] columns = tree.getColumns();
+			for (int i = 0; i < columns.length; i++) {
+				if (i >= percents.length)
+					break;
+				double colWidth = percents[i] * width;
+				columns[i].setWidth((int) colWidth);
+			}
+		}
+
+	}
 }

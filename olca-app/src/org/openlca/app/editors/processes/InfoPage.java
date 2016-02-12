@@ -234,10 +234,15 @@ class InfoPage extends ModelPage<Process> {
 				location.setKmz(null);
 			return locationDao.insert(location);
 		}
+		
+		@Override
+		public boolean hasModel() {
+			return getModel().getLocation() != null;
+		}
 
 		@Override
 		public void openModel() {
-			if (getModel().getLocation() == null)
+			if (!hasModel())
 				return;
 			App.openEditor(getModel().getLocation());
 		}

@@ -52,7 +52,7 @@ public class ProcessFigure extends Figure {
 	private Color getColor() {
 		double contribution = processNode.getTotalContribution();
 		RGB rgb = FaviColor.getForContribution(contribution);
-		return Colors.getColor(rgb);
+		return Colors.get(rgb);
 	}
 
 	private void paintBody(Graphics g) {
@@ -73,7 +73,7 @@ public class ProcessFigure extends Figure {
 		Font boldFont = getBoldFont(normalFont);
 		g.setFont(boldFont);
 		Color black = g.getForegroundColor();
-		g.setForegroundColor(Colors.getWhite());
+		g.setForegroundColor(Colors.white());
 		String name = Strings.cut(processNode.getName(), 30);
 		g.drawText(name, loc.x + 5, loc.y + 5);
 		g.setFont(normalFont);

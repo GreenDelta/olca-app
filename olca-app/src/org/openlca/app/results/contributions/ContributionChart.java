@@ -130,10 +130,10 @@ public class ContributionChart {
 			image = new Image(Display.getCurrent(), 30, 15);
 			GC gc = new GC(image);
 			if (index != -1)
-				gc.setBackground(Colors.getColor(FaviColor
+				gc.setBackground(Colors.get(FaviColor
 						.getRgbForChart(index)));
 			else
-				gc.setBackground(Colors.getGray());
+				gc.setBackground(Colors.gray());
 			gc.fillRectangle(5, 5, 25, 5);
 			gc.dispose();
 			imageRegistry.put(key, image);

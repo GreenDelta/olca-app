@@ -16,6 +16,7 @@ import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.DbUtils;
@@ -30,6 +31,7 @@ public class DatabaseCopyAction extends Action implements INavigationAction {
 
 	public DatabaseCopyAction() {
 		setText(M.Copy);
+		setImageDescriptor(Icon.COPY.descriptor());
 	}
 
 	@Override

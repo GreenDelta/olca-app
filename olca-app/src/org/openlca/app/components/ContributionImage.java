@@ -46,7 +46,7 @@ public class ContributionImage {
 			image = new Image(display, 60, 15);
 			GC gc = new GC(image);
 			RGB color = FaviColor.getForContribution(c);
-			gc.setBackground(Colors.getColor(color));
+			gc.setBackground(Colors.get(color));
 			int width = Math.abs(contributionInt);
 			gc.fillRectangle(5, 5, width, 5);
 			gc.dispose();

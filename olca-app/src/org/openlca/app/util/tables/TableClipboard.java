@@ -12,10 +12,9 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.ui.ISharedImages;
 import org.openlca.app.M;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
-import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.UI;
 
 public final class TableClipboard {
@@ -49,7 +48,7 @@ public final class TableClipboard {
 				copy(table);
 			}
 		});
-		ImageDescriptor image = Images.platformDescriptor(ISharedImages.IMG_TOOL_COPY);
+		ImageDescriptor image = Icon.COPY.descriptor();
 		return Actions.create(M.Copy, image, () -> copy(table));
 	}
 
@@ -63,7 +62,7 @@ public final class TableClipboard {
 				paste(table, fn);
 			}
 		});
-		ImageDescriptor image = Images.platformDescriptor(ISharedImages.IMG_TOOL_PASTE);
+		ImageDescriptor image = Icon.PASTE.descriptor();
 		return Actions.create(M.Paste, image, () -> paste(table, fn));
 	}
 

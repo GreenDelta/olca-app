@@ -146,7 +146,7 @@ public class ModelSelectionPage extends WizardPage {
 		new Label(composite, SWT.NONE).setText(label);
 		Text text = createTargetText(composite);
 		text.setEditable(false);
-		text.setBackground(Colors.getWhite());
+		text.setBackground(Colors.white());
 		Button button = new Button(composite, SWT.NONE);
 		button.setText(M.Browse);
 		Controls.onSelect(button, (e) -> selectTarget(text));

@@ -5,5 +5,7 @@ public interface EditorHandler {
 	boolean contentSaved(String kml);
 
 	void openModel();
+	
+	boolean hasModel();
 
 }

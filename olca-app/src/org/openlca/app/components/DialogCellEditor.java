@@ -175,8 +175,8 @@ public abstract class DialogCellEditor extends CellEditor {
 	protected Hyperlink createLink(Composite parent) {
 		Hyperlink link = new Hyperlink(parent, SWT.NONE);
 		link.setText(M.Edit);
-		link.setBackground(Colors.getWhite());
-		link.setForeground(Colors.getLinkBlue());
+		link.setBackground(Colors.white());
+		link.setForeground(Colors.linkBlue());
 		return link;
 	}
 

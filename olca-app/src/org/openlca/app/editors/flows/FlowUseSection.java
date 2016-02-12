@@ -114,7 +114,7 @@ class FlowUseSection {
 		link.setText(Labels.getDisplayName(d));
 		link.setToolTipText(Labels.getDisplayInfoText(d));
 		link.setImage(image);
-		link.setForeground(Colors.getLinkBlue());
+		link.setForeground(Colors.linkBlue());
 		link.addHyperlinkListener(new HyperlinkAdapter() {
 			@Override
 			public void linkActivated(HyperlinkEvent evt) {
@@ -131,7 +131,7 @@ class FlowUseSection {
 		ImageHyperlink link = new ImageHyperlink(composite, SWT.TOP);
 		link.setText(rest + " more"); // TODO: @translate
 		link.setImage(image);
-		link.setForeground(Colors.getLinkBlue());
+		link.setForeground(Colors.linkBlue());
 		link.addHyperlinkListener(new HyperlinkAdapter() {
 			@Override
 			public void linkActivated(HyperlinkEvent evt) {

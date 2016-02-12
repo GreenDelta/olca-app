@@ -9,12 +9,14 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
+import org.openlca.app.Preferences;
 import org.openlca.app.db.Cache;
 import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.util.Colors;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Colors;
 import org.openlca.app.util.Labels;
+import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UncertaintyLabel;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.Exchange;
@@ -44,9 +46,9 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider {
 		if (col == 0)
 			return Images.get(exchange.getFlow());
 		if (col == 3)
-			return Images.get(ModelType.UNIT); 
+			return Images.get(ModelType.UNIT);
 		if (col == 6 && forInputs && exchange.getDefaultProviderId() != 0l)
-			return Images.get(ModelType.PROCESS); 
+			return Images.get(ModelType.PROCESS);
 		if (col == 6 && !forInputs)
 			return getAvoidedCheck(exchange);
 		return null;
@@ -107,7 +109,10 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider {
 
 	private String getAmountText(Exchange exchange) {
 		if (!showFormulas || exchange.getAmountFormula() == null)
-			return Double.toString(exchange.getAmountValue());
+			if (Preferences.is(Preferences.FORMAT_INPUT_VALUES))
+				return Numbers.format(exchange.getAmountValue());
+			else
+				return Double.toString(exchange.getAmountValue());
 		else
 			return exchange.getAmountFormula();
 	}
@@ -156,9 +161,9 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider {
 			if (e.getFlow() == null)
 				return;
 			if (!e.isInput() && e.getFlow().getFlowType() == FlowType.PRODUCT_FLOW)
-				cell.setForeground(Colors.getSystemColor(SWT.COLOR_DARK_GREEN));
+				cell.setForeground(Colors.systemColor(SWT.COLOR_DARK_GREEN));
 			else
-				cell.setForeground(Colors.getSystemColor(SWT.COLOR_DARK_MAGENTA));
+				cell.setForeground(Colors.systemColor(SWT.COLOR_DARK_MAGENTA));
 		}
 	}
 

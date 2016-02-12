@@ -32,7 +32,8 @@ public class ContributionBubblePage extends FormPage implements HtmlPage {
 	private ContributionResultProvider<?> result;
 	private Browser browser;
 	private ResultTypeSelection flowImpactSelection;
-
+	private boolean loaded;
+	
 	public ContributionBubblePage(FormEditor editor,
 			ContributionResultProvider<?> result) {
 		super(editor, "ContributionBubblePage",
@@ -47,6 +48,7 @@ public class ContributionBubblePage extends FormPage implements HtmlPage {
 
 	@Override
 	public void onLoaded() {
+		loaded = true;
 		FlowIndex flowIndex = result.result.flowIndex;
 		long flowId = flowIndex.getFlowAt(0);
 		FlowDescriptor first = Cache.getEntityCache().get(FlowDescriptor.class,
@@ -120,6 +122,8 @@ public class ContributionBubblePage extends FormPage implements HtmlPage {
 		}
 
 		private void setResultData(BubbleChartDataSet dataSet) {
+			if (!loaded)
+				return;
 			String command = "setData(" + dataSet.toJson() + ")";
 			try {
 				log.trace("set bubble result data for {}",

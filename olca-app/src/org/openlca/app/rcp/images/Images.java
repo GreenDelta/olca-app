@@ -299,7 +299,7 @@ public class Images {
 		case IMPACT_METHOD:
 			return ModelIcon.IMPACT_METHOD;
 		case IMPACT_CATEGORY:
-			return ModelIcon.IMPACT_METHOD_CATEGORY;
+			return ModelIcon.IMPACT_CATEGORY;
 		case PROCESS:
 			return ModelIcon.PROCESS;
 		case PRODUCT_SYSTEM:

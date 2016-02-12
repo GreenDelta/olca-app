@@ -14,6 +14,7 @@ import org.openlca.app.editors.graphical.model.ConnectionLink;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
 
@@ -30,6 +31,7 @@ class RemoveSupplyChainAction extends EditorAction {
 	RemoveSupplyChainAction() {
 		setId(ActionIds.REMOVE_SUPPLY_CHAIN);
 		setText(M.RemoveSupplyChain);
+		setImageDescriptor(Icon.REMOVE_SUPPLY_CHAIN.descriptor());
 	}
 
 	@Override

@@ -48,7 +48,7 @@
         <tags>EditorStack</tags>
       </children>
     </sharedElements>
-    <sharedElements xsi:type="basic:Part" xmi:id="_JzrAYOj5EeShcsoYIY1ylw" elementId="views.navigation" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Navigation" iconURI="platform:/plugin/olca-app/icons/categories.gif" closeable="true">
+    <sharedElements xsi:type="basic:Part" xmi:id="_JzrAYOj5EeShcsoYIY1ylw" elementId="views.navigation" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Navigation" iconURI="platform:/plugin/olca-app/icons/categories.png" closeable="true">
       <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xD;&#xA;&lt;view CommonNavigator.LINKING_ENABLED=&quot;0&quot;/>"/>
       <tags>View</tags>
       <tags>categoryTag:Other</tags>
@@ -228,7 +228,7 @@
     <tags>View</tags>
     <tags>categoryTag:General</tags>
   </descriptors>
-  <descriptors xmi:id="_JsYFkOj5EeShcsoYIY1ylw" elementId="views.navigation" label="Navigation" iconURI="platform:/plugin/olca-app/icons/categories.gif" category="org.eclipse.e4.secondaryDataStack" closeable="true" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView">
+  <descriptors xmi:id="_JsYFkOj5EeShcsoYIY1ylw" elementId="views.navigation" label="Navigation" iconURI="platform:/plugin/olca-app/icons/categories.png" category="org.eclipse.e4.secondaryDataStack" closeable="true" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView">
     <tags>View</tags>
     <tags>categoryTag:Other</tags>
   </descriptors>

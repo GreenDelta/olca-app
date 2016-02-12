@@ -30,6 +30,7 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.trees.TreeClipboard;
+import org.openlca.app.util.trees.Trees;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
 import org.openlca.core.database.EntityCache;
@@ -85,7 +86,7 @@ public class ImpactTreePage extends FormPage {
 		section.setClient(client);
 		UI.gridLayout(client, 1);
 		createSelectionAndFilter(client);
-		createImpactContributionTable(client);
+		createImpactContributionTree(client);
 		form.reflow(true);
 		categoryViewer.selectFirst();
 		spinner.setSelection(2);
@@ -132,7 +133,7 @@ public class ImpactTreePage extends FormPage {
 		});
 	}
 
-	private void createImpactContributionTable(Composite parent) {
+	private void createImpactContributionTree(Composite parent) {
 		viewer = new TreeViewer(parent, SWT.FULL_SELECTION | SWT.MULTI | SWT.BORDER);
 		LabelProvider labelProvider = new LabelProvider();
 		viewer.setLabelProvider(labelProvider);
@@ -152,6 +153,7 @@ public class ImpactTreePage extends FormPage {
 		UI.gridData(viewer.getTree(), true, true);
 		Actions.bind(viewer, TreeClipboard.onCopy(viewer));
 		createColumnSorters(labelProvider);
+		Trees.bindColumnWidths(viewer.getTree(), 0.25, 0.15, 0.15, 0.10, 0.05, 0.10, 0.05, 0.10, 0.05);
 	}
 
 	private void createColumnSorters(LabelProvider p) {

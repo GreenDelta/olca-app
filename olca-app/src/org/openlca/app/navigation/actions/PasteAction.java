@@ -3,9 +3,11 @@ package org.openlca.app.navigation.actions;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.openlca.app.M;
 import org.openlca.app.navigation.CopyPaste;
 import org.openlca.app.navigation.INavigationElement;
+import org.openlca.app.rcp.images.Icon;
 
 public class PasteAction extends Action implements INavigationAction {
 
@@ -34,6 +36,11 @@ public class PasteAction extends Action implements INavigationAction {
 	@Override
 	public String getText() {
 		return M.Paste;
+	}
+
+	@Override
+	public ImageDescriptor getImageDescriptor() {
+		return Icon.PASTE.descriptor();
 	}
 
 }

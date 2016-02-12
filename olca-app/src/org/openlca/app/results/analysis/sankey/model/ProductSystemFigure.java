@@ -113,7 +113,7 @@ public class ProductSystemFigure extends Figure {
 		int y = 140;
 		for (int i = -100; i < 100; i += 2) {
 			RGB rgb = FaviColor.getForContribution(i / 100d);
-			graphics.setBackgroundColor(Colors.getColor(rgb));
+			graphics.setBackgroundColor(Colors.get(rgb));
 			int posX = x + 3 * ((100 + i) / 2);
 			graphics.fillRectangle(new Rectangle(posX, y, 4, 20));
 		}

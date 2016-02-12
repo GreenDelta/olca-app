@@ -72,34 +72,26 @@
     </div>      
     <div class="container-fluid" style="margin: 20px" id="buttonBar">
         <div class="row pull-right">
+            <button id="openButton" class="btn btn-default btn-open">
+                Open in editor
+            </button>
+            <button class="btn btn-default" onclick="onClear()">
+                Clear
+            </button>
             <button id="saveAsButton" class="btn btn-primary btn-save">
                 Save as new location
             </button>
-            <button id="updateButton" class="btn btn-default btn-save">
-                Update location <span id="locationName"></span>
-            </button>
-            <button class="btn btn-default" onclick="onDestroyFeatures()">
-                Clear
-            </button>
-        </div>
-    </div>
-
-    <div id="errorBox" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-sm">
-            <div id="errorText" class="modal-content alert alert-danger">
-                Error; Geht noch nicht!
-            </div>
         </div>
     </div>
 
     <script>
-    			var TYPE_POLYGON = "Polygon";
-    			var TYPE_LINE = "Line";
-    			var TYPE_POINT = "Point";
-    			var currentType;
+          var TYPE_POLYGON = "Polygon";
+          var TYPE_LINE = "Line";
+          var TYPE_POINT = "Point";
+          var currentType;
           var map;
           var editLayer;
-       		var toolbar;
+          var toolbar;
           var textEditor;
           var format;
           var inTextEditor = false;
@@ -107,216 +99,194 @@
 
           $(document).ready(init());
           
-            function showTabContent(tab) {
-                var id = $(tab).attr("href");
-                $(".tab-pane").hide();
-                $(id).show();
-                if (id == "#textDiv") {
-                		inTextEditor = true;
-                		var kml = getKML(false);
-                		if (typeof(prettifyKML) === "function") 
-                			kml = prettifyKML(kml);
-                    textEditor.setValue(kml);
-                } else if (id == "#mapDiv") {
-                		inTextEditor = false;
-                    onDestroyFeatures()
-                    setKML(getKML(true))               
-                }
-            }
-
-            function init() {
-              textEditor = CodeMirror.fromTextArea($('#textDiv textarea')[0], {theme: 'solarized light', lineWrapping: true, lineNumbers: true});
-              textEditor.on('change', function() {
-                isValidKml();
-                if (typeof(kmlChanged) === "function") {
-                  kmlChanged(textEditor.getValue());
-                }
-              });
-              $('.nav-tabs a').click(function (e) {
-                e.preventDefault()
-                showTabContent(this);
-              });
-              var mapLayer = new OpenLayers.Layer.OSM();
-              editLayer = new OpenLayers.Layer.Vector( "Editable", {
-                styleMap: new OpenLayers.StyleMap({
-                    "default": new OpenLayers.Style({
+          function init() {
+            textEditor = CodeMirror.fromTextArea($('#textDiv textarea')[0], {theme: 'solarized light', lineWrapping: true, lineNumbers: true});
+            var mapLayer = new OpenLayers.Layer.OSM();
+            editLayer = new OpenLayers.Layer.Vector( "Editable", {
+              styleMap: new OpenLayers.StyleMap({
+                  "default": new OpenLayers.Style({
+                  pointRadius: 5,
+                      strokeColor: "#428bca",
+                      strokeOpacity: .7,
+                      strokeWidth: 2,
+                      fillColor: "#428bca",
+                      fillOpacity: .3,
+                      cursor: "pointer"
+                  }),
+                  "temporary": new OpenLayers.Style({
+                    pointRadius: 2,
+                      strokeColor: "#428bca",
+                      strokeOpacity: .9,
+                      strokeWidth: 2,
+                      fillColor: "#428bca",
+                      fillOpacity: .3,
+                      cursor: "pointer"
+                  }),
+                  "select": new OpenLayers.Style({
                     pointRadius: 5,
-                        strokeColor: "#428bca",
-                        strokeOpacity: .7,
-                        strokeWidth: 2,
-                        fillColor: "#428bca",
-                        fillOpacity: .3,
-                        cursor: "pointer"
-                    }),
-                    "temporary": new OpenLayers.Style({
-                      pointRadius: 2,
-                        strokeColor: "#428bca",
-                        strokeOpacity: .9,
-                        strokeWidth: 2,
-                        fillColor: "#428bca",
-                        fillOpacity: .3,
-                        cursor: "pointer"
-                    }),
-                    "select": new OpenLayers.Style({
-                      pointRadius: 5,
-                        strokeColor: "#d9534f",
-                        strokeOpacity: .7,
-                        strokeWidth: 2,
-                        fillColor: "#d9534f",
-                        fillOpacity: 0,
-                        graphicZIndex: 2,
-                        cursor: "pointer"
-                    })
-                })
-              } );
-							toolbar = new OpenLayers.Control.EditingToolbar(editLayer);
-              map = new OpenLayers.Map("mapDiv", {
-               controls: [
-                toolbar,
-                new OpenLayers.Control.PanZoomBar()]
-              });
-            
-              map.addLayers([mapLayer, editLayer]);
-              map.setCenter(new OpenLayers.LonLat(0,0) // Center of the map
-                  .transform(
-                    new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
-                    new OpenLayers.Projection("EPSG:900913") // to Spherical Mercator Projection
-                  ), 1 // Zoom level
-              );
-							format = new OpenLayers.Format.KML({
-                'maxDepth':10,
-                'internalProjection': map.baseLayer.projection,
-                'externalProjection': new OpenLayers.Projection("EPSG:4326")
-              });
-              $("#updateButton").on("click", function() {
-                onSave(true);
-              });
-              $("#saveAsButton").on("click", function() {
-                onSave(false);
-              });
-            }
+                      strokeColor: "#d9534f",
+                      strokeOpacity: .7,
+                      strokeWidth: 2,
+                      fillColor: "#d9534f",
+                      fillOpacity: 0,
+                      graphicZIndex: 2,
+                      cursor: "pointer"
+                  })
+              })
+            } );
+            toolbar = new OpenLayers.Control.EditingToolbar(editLayer);
+            map = new OpenLayers.Map("mapDiv", {
+             controls: [
+              toolbar,
+              new OpenLayers.Control.PanZoomBar()]
+            });
           
-            function onDestroyFeatures() {
-              if(!editLayer.features) {
-                return;
+            map.addLayers([mapLayer, editLayer]);
+            map.setCenter(new OpenLayers.LonLat(0,0) // Center of the map
+                .transform(
+                  new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
+                  new OpenLayers.Projection("EPSG:900913") // to Spherical Mercator Projection
+                ), 1 // Zoom level
+            );
+            format = new OpenLayers.Format.KML({
+              'maxDepth':10,
+              'internalProjection': map.baseLayer.projection,
+              'externalProjection': new OpenLayers.Projection("EPSG:4326")
+            });
+            $("#saveAsButton").on("click", function() {
+              onSaveAs();
+            });
+            $("#openButton").on("click", function() {
+              doOpenEditor();
+            });
+            textEditor.on('change', function() {
+              kmlChanged(textEditor.getValue());
+            });
+            $('.nav-tabs a').click(function (e) {
+              e.preventDefault()
+              showTabContent(this);
+            });
+          }
+
+          function showTabContent(tab) {
+              var id = $(tab).attr("href");
+              $(".tab-pane").hide();
+              $(id).show();
+              if (id == "#textDiv") {
+                  inTextEditor = true;
+                  var kml = getKML(false);
+                  if (kml && typeof(prettifyKML) === "function") 
+                    kml = prettifyKML(kml);
+                  textEditor.setValue(kml);
+              } else if (id == "#mapDiv") {
+                  inTextEditor = false;
+                  onDestroyFeatures()
+                  setKML(getKML(true))               
               }
-              editLayer.destroyFeatures();
-              editLayer.refresh({force:true});
-              currentType = null;
-            }
-            
-            function showError(message) {
-              $('#errorText').text(message);
-              $('#errorBox').modal('show'); 
-            }
-            
-            function onSave(overwrite) {        
-              var kml = getKML(inTextEditor);
-              kml = prettifyKML(kml);
-              if(typeof(doSave) == "function") {
-                  doSave(kml, overwrite);
-              } else {
-                showError("Save function not bound. KML test is: " + kml);
-                if (typeof(console) != "undefined") {
-                    console.log(kml);
-                }
-              }
-            }
-                          
-            function getKML(fromText) {
-            	if (fromText)
-            		return textEditor.getValue();
-              if(!editLayer.features || editLayer.features.length == 0) {
-                return "";
-              }
-              var kml = format.write(editLayer.features); // TODO use newer version of openLayers
-              return kml.replace(/earth\.google\.com\/kml\/2\.0/g, "earth.google.com/kml/2.1")
-            }
+          }
+        
+          function onDestroyFeatures() {
+            if(!editLayer.features) 
+              return;
+            editLayer.destroyFeatures();
+            editLayer.refresh({force:true});
+            currentType = null;
+          }
+          
+          function onClear() {
+            onDestroyFeatures();
+            textEditor.setValue('');
+          }
+
+          function onSaveAs() {        
+            var kml = getKML(inTextEditor);
+            kml = prettifyKML(kml);
+            doSave(kml);
+          }
                         
-            function setEditOnly(value) {
-              if (value) {
-                $('#saveAsButton').hide();
-                $('#updateButton').addClass('btn-primary');
-              } else {
-                $('#saveAsButton').addClass('btn-primary');
-                $('#updateButton').hide();
-              }
-            }         
-
-            function setEmbedded() {
-              $('#buttonBar').hide();
-            }   
-            
-            function setKML(kml) {
-              if (kml) {
-                var features = format.read(kml);
-                var valid = [];
-                for (var i = 0; i < features.length; i++) {
-                	var type = getFeatureType(features[i])
-                	if (currentType && currentType !== type) {
-	              		alert("Only multi geometries of the same type are supported")
-									} else {
-										currentType = type;
-                		valid.push(features[i]);
-									}
-                }
-                if (valid.length) {
-	                editLayer.addFeatures(valid);
-	                editLayer.refresh({force:true});
-	                map.zoomToExtent(editLayer.getDataExtent());            
-								}
-              }
-              if (listenersRegistered)
-              	return;
-              editLayer.events.register("beforefeatureadded", null, function(f) {
-              	var type = getFeatureType(f.feature);
-              	if (currentType && currentType !== type) {
-              		alert("Only multi geometries of the same type are supported")
-              		return false;
-              	}
-              	currentType = type;
-              });
-							editLayer.events.register("featureadded", null, function(f) {
-                isValidKml();
-                if (typeof(kmlChanged) === "function") {
-                  kmlChanged(getKML(false));
-                }
-							});
-              listenersRegistered = true;
+          function getKML(fromText) {
+            if (fromText)
+              return textEditor.getValue();
+            if(!editLayer.features || editLayer.features.length == 0) 
+              return "";
+            var kml = format.write(editLayer.features); // TODO use newer version of openLayers
+            return kml.replace(/earth\.google\.com\/kml\/2\.0/g, "earth.google.com/kml/2.1")
+          }
+                      
+          function setEmbedded() {
+            $('#buttonBar').hide();
+          }   
+          
+          function setOpenButtonVisible(value) {
+            if (value) {
+              $('#openButton').show()
+            } else {
+              $('#openButton').hide()              
             }
+          }
 
-            function getFeatureType(feature) {
-            	var id = feature.geometry.id;
-            	if (id.indexOf('Geometry_Polygon') !== -1)
-								return TYPE_POLYGON;
-            	if (id.indexOf('Geometry_Line') !== -1)
-								return TYPE_LINE;
-            	if (id.indexOf('Geometry_Point') !== -1)
-								return TYPE_POINT;
-							return null;
-            }
-            
-            function isValidKml() {
-            	var kml = getKML(inTextEditor);
-            	kml = prettifyKML(kml);
-            	var features = format.read(kml);
-            	if (inTextEditor) {
-            		var kml2 = format.write(features);
-            		kml2 = kml2.replace(/earth\.google\.com\/kml\/2\.0/g, "earth.google.com/kml/2.1")
-	            	kml2 = prettifyKML(kml2);
-            		if (kml !== kml2) 
-            			return false;
-            	}
-            	currentType = null;
+          function setKML(kml) {
+            if (kml) {
+              var features = format.read(kml);
+              var valid = [];
               for (var i = 0; i < features.length; i++) {
-              	var type = getFeatureType(features[i])
-              	if (currentType && currentType !== type) {
-              		return false;
-              	}
-              	currentType = type;
+                var type = getFeatureType(features[i])
+                if (currentType && currentType !== type) {
+                  alert("Only multi geometries of the same type are supported")
+                } else {
+                  currentType = type;
+                  valid.push(features[i]);
+                }
               }
-              return true;
+              if (valid.length) {
+                editLayer.addFeatures(valid);
+                editLayer.refresh({force:true});
+                map.zoomToExtent(editLayer.getDataExtent());            
+              }
             }
+            if (listenersRegistered)
+              return;
+            editLayer.events.register("beforefeatureadded", null, function(f) {
+              var type = getFeatureType(f.feature);
+              if (currentType && currentType !== type) {
+                alert("Only multi geometries of the same type are supported")
+                return false;
+              }
+              currentType = type;
+            });
+            editLayer.events.register("featureadded", null, function(f) {
+              if (typeof(kmlChanged) === "function") {
+                kmlChanged(getKML(false));
+              }
+            });
+            listenersRegistered = true;
+          }
+
+          function getFeatureType(feature) {
+            var id = feature.geometry.id;
+            if (id.indexOf('Geometry_Polygon') !== -1)
+              return TYPE_POLYGON;
+            if (id.indexOf('Geometry_Line') !== -1)
+              return TYPE_LINE;
+            if (id.indexOf('Geometry_Point') !== -1)
+              return TYPE_POINT;
+            return null;
+          }
+          
+          function isValidKml() {
+            var kml = getKML(inTextEditor);
+            var features = format.read(kml);
+            if (inTextEditor) 
+              return !kml || features.length > 0
+            currentType = null;
+            for (var i = 0; i < features.length; i++) {
+              var type = getFeatureType(features[i])
+              if (currentType && currentType !== type) 
+                return false;
+              currentType = type;
+            }
+            return true;
+          }
             
     </script>
 

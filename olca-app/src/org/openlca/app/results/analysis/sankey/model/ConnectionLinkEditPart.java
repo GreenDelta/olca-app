@@ -37,7 +37,7 @@ public class ConnectionLinkEditPart extends AbstractConnectionEditPart {
 		link.setFigure(conn);
 		conn.setTolerance(0);
 		RGB rgb = FaviColor.getForContribution(link.getRatio());
-		conn.setForegroundColor(Colors.getColor(rgb));
+		conn.setForegroundColor(Colors.get(rgb));
 		return conn;
 	}
 

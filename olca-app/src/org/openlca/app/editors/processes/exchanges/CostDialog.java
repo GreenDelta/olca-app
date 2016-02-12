@@ -133,7 +133,7 @@ class CostDialog extends FormDialog {
 		if (errors == null || errors.isEmpty())
 			clearFormulaError();
 		else {
-			priceText.setBackground(Colors.getErrorColor());
+			priceText.setBackground(Colors.errorColor());
 			priceText.setToolTipText(errors.get(0));
 		}
 	}
@@ -141,14 +141,14 @@ class CostDialog extends FormDialog {
 	private void clearFormulaError() {
 		if (priceText == null)
 			return;
-		priceText.setBackground(Colors.getWhite());
+		priceText.setBackground(Colors.white());
 		priceText.setToolTipText("");
 	}
 
 	private void createCostsPerUnitRow(Composite body, FormToolkit tk) {
 		pricePerUnitText = UI.formText(body, tk, M.CostsPerUnit);
 		pricePerUnitText.setEditable(false);
-		pricePerUnitText.setBackground(Colors.getColor(225, 225, 225));
+		pricePerUnitText.setBackground(Colors.get(225, 225, 225));
 		currencyPerUnitLabel = UI.formLabel(body, tk, "");
 		if (exchange.costValue != null) {
 			double perUnit = exchange.costValue / exchange.getAmountValue();

@@ -10,7 +10,7 @@ class PropertyStyle {
 	private Styler styler = new Styler() {
 		@Override
 		public void applyStyles(TextStyle textStyle) {
-			textStyle.foreground = Colors.getLinkBlue();
+			textStyle.foreground = Colors.linkBlue();
 		}
 	};
 

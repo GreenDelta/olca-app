@@ -114,7 +114,7 @@ class ShapeFilePage extends FormPage {
 		File folder = ShapeFileUtils.getFolder(method());
 		link.setText(Strings.cut(folder.getAbsolutePath(), 75));
 		link.setImage(Icon.FOLDER.get());
-		link.setForeground(Colors.getLinkBlue());
+		link.setForeground(Colors.linkBlue());
 		link.setToolTipText(folder.getAbsolutePath());
 		link.addHyperlinkListener(new HyperlinkAdapter() {
 			@Override
@@ -197,8 +197,9 @@ class ShapeFilePage extends FormPage {
 			Composite composite = UI.sectionClient(section, toolkit);
 			parameterTable = new ShapeFileParameterTable(shapeFile, composite);
 			Action delete = Actions.onRemove(() -> {
-				delete();
-				removeExternalSourceReferences();
+				if (delete()) {
+					removeExternalSourceReferences();
+				}
 			});
 			Action update = new Action(M.Update) {
 
@@ -232,16 +233,16 @@ class ShapeFilePage extends FormPage {
 			Actions.bind(parameterTable.viewer, showAction, addAction);
 		}
 
-		private void delete() {
-			delete(false);
+		private boolean delete() {
+			return delete(false);
 		}
 
-		private void delete(boolean force) {
+		private boolean delete(boolean force) {
 			boolean del = force
 					|| Question.ask(M.DeleteShapeFile, "Do you "
 							+ "really want to delete the selected shape file?");
 			if (!del)
-				return;
+				return false;
 			ShapeFileUtils.deleteFile(method(), shapeFile);
 			section.dispose();
 			ShapeFileSection[] newSections = new ShapeFileSection[sections.length
@@ -252,6 +253,7 @@ class ShapeFilePage extends FormPage {
 						newSections.length - index);
 			sections = newSections;
 			form.reflow(true);
+			return true;
 		}
 
 		private void removeExternalSourceReferences() {
@@ -260,6 +262,7 @@ class ShapeFilePage extends FormPage {
 					if (shapeFile.equals(parameter.getExternalSource()))
 						parameter.setExternalSource(null);
 			editor.getParameterSupport().evaluate();
+			editor.setDirty(true);
 		}
 
 		/*
@@ -355,7 +358,7 @@ class ShapeFilePage extends FormPage {
 			this.section = section;
 			setToolTipText(M.ShowInMap);
 			setText(M.ShowInMap);
-			setImageDescriptor(Images.descriptor(ModelType.IMPACT_METHOD));
+			setImageDescriptor(Icon.MAP.descriptor());
 		}
 
 		@Override

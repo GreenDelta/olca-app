@@ -124,11 +124,18 @@ public class DatabaseActivateAction extends Action implements INavigationAction 
 				askRunUpdates();
 				break;
 			case CURRENT:
-				Navigator.refresh();
+				refresh();
 				break;
 			default:
 				break;
 			}
+		}
+
+		private void refresh() {
+			Navigator.refresh();
+			INavigationElement<?> dbElem = Navigator.findElement(config);
+			INavigationElement<?> firstModelType = dbElem.getChildren().get(0).getChildren().get(0);
+			Navigator.getInstance().getCommonViewer().reveal(firstModelType);
 		}
 
 		private void error(String message) {
@@ -153,7 +160,7 @@ public class DatabaseActivateAction extends Action implements INavigationAction 
 						if (failed.get())
 							closeDatabase();
 						else {
-							Navigator.refresh();
+							refresh();
 						}
 					});
 		}
@@ -178,4 +185,5 @@ public class DatabaseActivateAction extends Action implements INavigationAction 
 			}
 		}
 	}
+
 }

@@ -120,7 +120,7 @@ class AllocationPage extends FormPage {
 		UI.formLabel(composite, toolkit, "");
 		Button button = toolkit.createButton(composite,
 				M.CalculateDefaultValues, SWT.NONE);
-		button.setImage(Icon.CALCULATE.get());
+		button.setImage(Icon.RUN.get());
 		Controls.onSelect(button, (e) -> {
 			AllocationSync.calculateDefaults(process());
 			factorViewer.refresh();

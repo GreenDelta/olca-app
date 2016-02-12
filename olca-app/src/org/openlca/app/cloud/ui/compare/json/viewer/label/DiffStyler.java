@@ -11,7 +11,7 @@ class DiffStyler extends Styler {
 	private final boolean strikeout;
 
 	DiffStyler(int r, int g, int b, boolean strikeout) {
-		color = Colors.getColor(r, g, b);
+		color = Colors.get(r, g, b);
 		this.strikeout = strikeout;
 	}
 

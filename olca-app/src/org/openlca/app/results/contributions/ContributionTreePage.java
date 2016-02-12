@@ -35,6 +35,7 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
+import org.openlca.app.util.trees.Trees;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.matrix.LongPair;
@@ -107,6 +108,7 @@ public class ContributionTreePage extends FormPage {
 		toolkit.adapt(tree.getTree(), false, false);
 		toolkit.paintBordersFor(tree.getTree());
 		createMenu();
+		Trees.bindColumnWidths(tree.getTree(), 0.20, 0.50, 0.20, 0.10);
 	}
 
 	private void createMenu() {

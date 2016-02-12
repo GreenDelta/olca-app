@@ -157,7 +157,7 @@ public class SearchResultView extends FormEditor {
 				ImageHyperlink link = toolkit.createImageHyperlink(composite, SWT.CENTER);
 				link.setText(Labels.getDisplayName(descriptor));
 				link.setImage(Images.get(descriptor));
-				link.setForeground(Colors.getLinkBlue());
+				link.setForeground(Colors.linkBlue());
 				link.setData(descriptor);
 				link.addHyperlinkListener(click);
 				renderCategory(toolkit, descriptor, composite);
@@ -185,7 +185,7 @@ public class SearchResultView extends FormEditor {
 				return;
 			String catPath = CategoryPath.getFull(cat);
 			Label label = toolkit.createLabel(composite, catPath);
-			label.setForeground(Colors.getColor(0, 128, 42));
+			label.setForeground(Colors.get(0, 128, 42));
 		}
 	}
 

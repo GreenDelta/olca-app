@@ -16,7 +16,7 @@ class ReadOnlyStyle {
 
 		@Override
 		public void applyStyles(TextStyle textStyle) {
-			textStyle.foreground = Colors.getGray();
+			textStyle.foreground = Colors.gray();
 			textStyle.font = getFont();
 		}
 	};

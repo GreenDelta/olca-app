@@ -39,6 +39,7 @@ public class M extends NLS {
 	public static String Analysis;
 	public static String AnalysisResultOf;
 	public static String AnalyzingForProblems;
+	public static String ApplyFormatToInputsOutputs;
 	public static String AsDefinedInProcesses;
 	public static String AssignUnits;
 	public static String Author;

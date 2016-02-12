@@ -204,7 +204,7 @@ public class UncertaintyDialog extends Dialog {
 			else {
 				Label label = toolkit.createLabel(composite,
 						M.NoDistribution);
-				label.setForeground(Colors.getDarkGray());
+				label.setForeground(Colors.darkGray());
 			}
 		}
 

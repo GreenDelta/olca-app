@@ -67,7 +67,7 @@ public abstract class ModelPage<T extends CategorizedEntity> extends FormPage {
 			link.setText(entity.getName());
 			link.setImage(Images.get(entity));
 			link.addHyperlinkListener(new ModelLinkClickedListener(entity));
-			link.setForeground(Colors.getLinkBlue());
+			link.setForeground(Colors.linkBlue());
 			return link;
 		} catch (Exception e) {
 			log.error("Could not get value of bean", e);

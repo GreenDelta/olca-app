@@ -358,10 +358,10 @@ public class DataBinding {
 			Short s = Short.parseShort(stringVal);
 			Bean.setValue(bean, property, s);
 			text.setToolTipText(null);
-			text.setBackground(Colors.getWhite());
+			text.setBackground(Colors.white());
 		} catch (NumberFormatException e) {
 			text.setToolTipText("" + stringVal + " is not a valid number");
-			text.setBackground(Colors.getErrorColor());
+			text.setBackground(Colors.errorColor());
 		} catch (Exception e) {
 			error("Cannot set bean value", e);
 		}
@@ -374,10 +374,10 @@ public class DataBinding {
 			Integer s = Integer.parseInt(stringVal);
 			Bean.setValue(bean, property, s);
 			text.setToolTipText(null);
-			text.setBackground(Colors.getWhite());
+			text.setBackground(Colors.white());
 		} catch (NumberFormatException e) {
 			text.setToolTipText("" + stringVal + " is not a valid number");
-			text.setBackground(Colors.getErrorColor());
+			text.setBackground(Colors.errorColor());
 		} catch (Exception e) {
 			error("Cannot set bean value", e);
 		}
@@ -390,10 +390,10 @@ public class DataBinding {
 			Double d = Double.parseDouble(stringVal);
 			Bean.setValue(bean, property, d);
 			text.setToolTipText(null);
-			text.setBackground(Colors.getWhite());
+			text.setBackground(Colors.white());
 		} catch (NumberFormatException e) {
 			text.setToolTipText("" + stringVal + " is not a valid number");
-			text.setBackground(Colors.getErrorColor());
+			text.setBackground(Colors.errorColor());
 		} catch (Exception e) {
 			error("Cannot set bean value", e);
 		}

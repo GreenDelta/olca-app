@@ -31,7 +31,8 @@ public class SunBurstView extends FormPage implements HtmlPage {
 	private FullResultProvider result;
 	private Browser browser;
 	private ResultTypeSelection flowImpactSelection;
-
+	private boolean loaded;
+	
 	public SunBurstView(FormEditor editor, FullResultProvider result) {
 		super(editor, "analysis.SunBurstView", "Sun burst");
 		this.result = result;
@@ -45,6 +46,7 @@ public class SunBurstView extends FormPage implements HtmlPage {
 
 	@Override
 	public void onLoaded() {
+		loaded = true;
 		App.run("Calculate result", () -> {
 			FlowDescriptor first = firstFlow();
 			if (first == null)
@@ -109,6 +111,8 @@ public class SunBurstView extends FormPage implements HtmlPage {
 		}
 
 		private void setResultData(UpstreamTree tree) {
+			if (!loaded)
+				return;
 			Gson gson = new Gson();
 			SunBurstTree model = SunBurstTree.create(tree,
 					Cache.getEntityCache());
