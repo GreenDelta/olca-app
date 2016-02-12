@@ -2,7 +2,9 @@ package org.openlca.app.results.contributions;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -48,6 +50,7 @@ import org.openlca.core.results.FullResultProvider;
 public class ProcessResultPage extends FormPage {
 
 	private EntityCache cache = Cache.getEntityCache();
+	private Map<Long, ProcessDescriptor> processDescriptors = new HashMap<>();
 	private CalculationSetup setup;
 	private FullResultProvider result;
 	private ResultProvider flowResult;
@@ -81,6 +84,8 @@ public class ProcessResultPage extends FormPage {
 				M.ProcessResults);
 		this.setup = setup;
 		this.result = result;
+		for (ProcessDescriptor desc : result.getProcessDescriptors())
+			processDescriptors.put(desc.getId(), desc);
 		this.flowResult = new ResultProvider(result);
 		this.impactResult = new ResultProvider(result);
 	}
@@ -106,8 +111,7 @@ public class ProcessResultPage extends FormPage {
 	private void setInputs() {
 		fillFlows(inputTable);
 		fillFlows(outputTable);
-		ProcessDescriptor p = cache.get(ProcessDescriptor.class,
-				result.result.productIndex.getRefProduct().getFirst());
+		ProcessDescriptor p = processDescriptors.get(result.result.productIndex.getRefProduct().getFirst());
 		flowProcessViewer.select(p);
 		if (result.hasImpactResults()) {
 			impactProcessCombo.select(p);

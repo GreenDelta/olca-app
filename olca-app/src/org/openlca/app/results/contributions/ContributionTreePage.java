@@ -1,6 +1,8 @@
 package org.openlca.app.results.contributions;
 
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
@@ -51,6 +53,7 @@ import org.openlca.core.results.UpstreamTreeNode;
 public class ContributionTreePage extends FormPage {
 
 	private EntityCache cache = Cache.getEntityCache();
+	private Map<Long, ProcessDescriptor> processDescriptors = new HashMap<>();
 	private FullResultProvider result;
 	private TreeViewer tree;
 	private Object selection;
@@ -63,6 +66,8 @@ public class ContributionTreePage extends FormPage {
 		super(editor, "analysis.ContributionTreePage",
 				M.ContributionTree);
 		this.result = result;
+		for (ProcessDescriptor desc : result.getProcessDescriptors())
+			processDescriptors.put(desc.getId(), desc);
 		Iterator<FlowDescriptor> it = result.getFlowDescriptors().iterator();
 		if (it.hasNext())
 			selection = it.next();
@@ -222,8 +227,7 @@ public class ContributionTreePage extends FormPage {
 				return Numbers.percent(getContribution(node));
 			case 1:
 				long processId = node.getProcessProduct().getFirst();
-				BaseDescriptor d = cache
-						.get(ProcessDescriptor.class, processId);
+				BaseDescriptor d = processDescriptors.get(processId);
 				return Labels.getDisplayName(d);
 			case 2:
 				return Numbers.format(getSingleAmount(node));
@@ -296,8 +300,7 @@ public class ContributionTreePage extends FormPage {
 				return;
 			UpstreamTreeNode node = (UpstreamTreeNode) selection;
 			LongPair processProduct = node.getProcessProduct();
-			ProcessDescriptor process = Cache.getEntityCache().get(
-					ProcessDescriptor.class, processProduct.getFirst());
+			ProcessDescriptor process = processDescriptors.get(processProduct.getFirst());
 			if (process != null)
 				App.openEditor(process);
 		}

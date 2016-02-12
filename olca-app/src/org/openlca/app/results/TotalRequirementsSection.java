@@ -2,7 +2,9 @@ package org.openlca.app.results;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -18,8 +20,8 @@ import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
-import org.openlca.app.util.Actions;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
@@ -46,11 +48,14 @@ class TotalRequirementsSection {
 	private SimpleResultProvider<?> result;
 	private Costs costs;
 	private String currencySymbol;
+	private Map<Long, ProcessDescriptor> processDescriptors = new HashMap<>();
 
 	private TableViewer table;
 
 	TotalRequirementsSection(SimpleResultProvider<?> result) {
 		this.result = result;
+		for (ProcessDescriptor desc : result.getProcessDescriptors())
+			processDescriptors.put(desc.getId(), desc);
 		if (!result.hasCostResults())
 			costs = Costs.NONE;
 		else {
@@ -93,7 +98,7 @@ class TotalRequirementsSection {
 			s = M.TotalAddedValue;
 			c = asCosts(v == 0 ? 0 : -v);
 		}
-		
+
 		Control label = tk.createLabel(comp, s + ": " + c);
 		Font font = UI.boldFont(label);
 		label.setFont(font);
@@ -199,8 +204,7 @@ class TotalRequirementsSection {
 			LongPair lp = productIdx.getProductAt(idx);
 			if (lp == null)
 				return;
-			ProcessDescriptor process = cache.get(ProcessDescriptor.class,
-					lp.getFirst());
+			ProcessDescriptor process = processDescriptors.get(lp.getFirst());
 			if (process != null) {
 				this.processId = process.getId();
 				this.process = Labels.getDisplayName(process);

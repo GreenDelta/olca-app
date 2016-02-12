@@ -29,12 +29,10 @@ import org.eclipse.gef.ui.parts.GraphicalEditor;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.swt.SWT;
 import org.openlca.app.App;
-import org.openlca.app.db.Cache;
 import org.openlca.app.results.analysis.sankey.actions.SankeyMenu;
 import org.openlca.app.results.analysis.sankey.model.ConnectionLink;
 import org.openlca.app.results.analysis.sankey.model.ProcessNode;
 import org.openlca.app.results.analysis.sankey.model.ProductSystemNode;
-import org.openlca.core.database.EntityCache;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.matrix.ProcessLinkSearchMap;
 import org.openlca.core.model.ProcessLink;
@@ -49,7 +47,6 @@ public class SankeyDiagram extends GraphicalEditor implements
 
 	public static final String ID = "editor.ProductSystemSankeyDiagram";
 
-	private EntityCache cache = Cache.getEntityCache();
 	private SankeyResult sankeyResult;
 	private ProcessLinkSearchMap linkSearchMap;
 	private Map<ProcessLink, ConnectionLink> createdLinks = new HashMap<>();
@@ -122,18 +119,19 @@ public class SankeyDiagram extends GraphicalEditor implements
 	}
 
 	private void updateModel(double cutoff) {
+		Map<Long, ProcessDescriptor> descriptors = new HashMap<>();
+		for (ProcessDescriptor descriptor : result.getProcessDescriptors())
+			descriptors.put(descriptor.getId(), descriptor);
 		if (cutoff == 0) {
 			for (Long processId : productSystem.getProcesses()) {
-				systemNode.addChild(createNode(cache.get(
-						ProcessDescriptor.class, processId)));
+				systemNode.addChild(createNode(descriptors.get(processId)));
 			}
 		} else {
 			long refProcess = productSystem.getReferenceProcess().getId();
 			Set<Long> processesToDraw = SankeyProcessList.calculate(
 					sankeyResult, refProcess, cutoff, linkSearchMap);
 			for (final Long processId : processesToDraw) {
-				ProcessDescriptor process = cache.get(ProcessDescriptor.class,
-						processId);
+				ProcessDescriptor process = descriptors.get(processId);
 				ProcessNode node = createNode(process);
 				systemNode.addChild(node);
 			}
