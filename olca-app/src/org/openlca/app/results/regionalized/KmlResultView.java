@@ -35,6 +35,7 @@ class KmlResultView extends FormPage implements HtmlPage {
 	private Browser browser;
 	private ResultTypeSelection flowImpactSelection;
 	private boolean incompleteData = false;
+	private boolean loaded;
 
 	public KmlResultView(FormEditor editor, RegionalizedResultProvider result) {
 		super(editor, "KmlResultView", "Result map");
@@ -48,6 +49,7 @@ class KmlResultView extends FormPage implements HtmlPage {
 
 	@Override
 	public void onLoaded() {
+		loaded = true;
 		Set<FlowDescriptor> flowDescriptors = result.result.getFlowDescriptors();
 		if (flowDescriptors.isEmpty())
 			return;
@@ -93,6 +95,8 @@ class KmlResultView extends FormPage implements HtmlPage {
 
 		@Override
 		protected void processResultData(List<LocationResult> results) {
+			if (!loaded)
+				return;
 			delayedJobs.clear();
 			incompleteData = false;
 			double maximum = getMaximum(results);
