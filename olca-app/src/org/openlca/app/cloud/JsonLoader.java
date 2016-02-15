@@ -1,6 +1,8 @@
 package org.openlca.app.cloud;
 
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.Stack;
 
 import org.openlca.app.cloud.ui.compare.json.JsonUtil;
 import org.openlca.app.db.Database;
@@ -10,6 +12,7 @@ import org.openlca.cloud.util.WebRequests.WebRequestException;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.ModelType;
+import org.openlca.core.model.Process;
 import org.openlca.core.model.RootEntity;
 import org.openlca.jsonld.output.JsonExport;
 
@@ -37,6 +40,8 @@ public class JsonLoader {
 			replaceReferences(json, "impactCategories",
 					method.getImpactCategories());
 			replaceReferences(json, "nwSets", method.getNwSets());
+		} else if (entity instanceof Process) {
+			addInputOutputInfo(json);
 		}
 		return json;
 	}
@@ -55,9 +60,10 @@ public class JsonLoader {
 					dataset.getRefId());
 			String type = JsonUtil.getString(json, "@type");
 			if (ImpactMethod.class.getSimpleName().equals(type)) {
-				replaceReferences(json, "impactCategories",
-						ModelType.IMPACT_CATEGORY);
+				replaceReferences(json, "impactCategories", ModelType.IMPACT_CATEGORY);
 				replaceReferences(json, "nwSets", ModelType.NW_SET);
+			} else if (Process.class.getSimpleName().equals(type)) {
+				addInputOutputInfo(json);
 			}
 			return json;
 		} catch (WebRequestException e) {
@@ -90,6 +96,33 @@ public class JsonLoader {
 				// ignore
 			}
 		obj.add(field, replaced);
+	}
+
+	// exchanges are split into inputs and outputs - for easier identification
+	// the flag "input" (true/false) is added to each json object
+	private void addInputOutputInfo(JsonObject obj) {
+		Stack<JsonObject> elements = new Stack<>();
+		elements.push(obj);
+		JsonArray inputs = null;
+		JsonArray outputs = null;
+		while (!elements.isEmpty() && (inputs == null || outputs == null)) {
+			JsonObject next = elements.pop();
+			for (Entry<String, JsonElement> entry : next.entrySet()) {
+				if (entry.getKey().equals("inputs")) {
+					inputs = entry.getValue().getAsJsonArray();
+				} else if (entry.getKey().equals("outputs")) {
+					outputs = entry.getValue().getAsJsonArray();
+				}
+			}
+		}
+		for (JsonElement elem : inputs) {
+			JsonObject e = elem.getAsJsonObject();
+			e.addProperty("input", true);
+		}
+		for (JsonElement elem : outputs) {
+			JsonObject e = elem.getAsJsonObject();
+			e.addProperty("input", false);
+		}
 	}
 
 }

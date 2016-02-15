@@ -31,8 +31,9 @@ class ValueLabels {
 			return "null";
 		if (isInputParameterField(property, parent))
 			return getInputParameterValue(value);
-		if (isInputField(property, parent))
+		if (isInputField(property, parent)) {
 			return getInputValue(value);
+		}
 		if (value.equalsIgnoreCase("true"))
 			return "Yes";
 		if (value.equalsIgnoreCase("false"))
@@ -40,21 +41,18 @@ class ValueLabels {
 		return value;
 	}
 
-	private static boolean isInputParameterField(String property,
-			JsonElement parent) {
-		return ModelUtil.isType(parent, Parameter.class)
-				&& property.equals("inputParameter");
+	private static boolean isInputParameterField(String property, JsonElement parent) {
+		return ModelUtil.isType(parent, Parameter.class) && property.equals("inputParameter");
 	}
 
 	private static String getInputParameterValue(String value) {
 		if (value.equalsIgnoreCase("true"))
-			return M.InputParameter; 
-		return M.DependenantParameter; 
+			return M.InputParameter;
+		return M.DependenantParameter;
 	}
 
 	private static boolean isInputField(String property, JsonElement parent) {
-		return ModelUtil.isType(parent, Exchange.class)
-				&& property.equals("input");
+		return ModelUtil.isType(parent, Exchange.class)	&& property.equals("input");
 	}
 
 	private static String getInputValue(String value) {
