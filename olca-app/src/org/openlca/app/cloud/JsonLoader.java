@@ -1,8 +1,6 @@
 package org.openlca.app.cloud;
 
 import java.util.List;
-import java.util.Map.Entry;
-import java.util.Stack;
 
 import org.openlca.app.cloud.ui.compare.json.JsonUtil;
 import org.openlca.app.db.Database;
@@ -41,7 +39,7 @@ public class JsonLoader {
 					method.getImpactCategories());
 			replaceReferences(json, "nwSets", method.getNwSets());
 		} else if (entity instanceof Process) {
-			addInputOutputInfo(json);
+			splitExchanges(json);
 		}
 		return json;
 	}
@@ -63,7 +61,7 @@ public class JsonLoader {
 				replaceReferences(json, "impactCategories", ModelType.IMPACT_CATEGORY);
 				replaceReferences(json, "nwSets", ModelType.NW_SET);
 			} else if (Process.class.getSimpleName().equals(type)) {
-				addInputOutputInfo(json);
+				splitExchanges(json);
 			}
 			return json;
 		} catch (WebRequestException e) {
@@ -98,31 +96,21 @@ public class JsonLoader {
 		obj.add(field, replaced);
 	}
 
-	// exchanges are split into inputs and outputs - for easier identification
-	// the flag "input" (true/false) is added to each json object
-	private void addInputOutputInfo(JsonObject obj) {
-		Stack<JsonObject> elements = new Stack<>();
-		elements.push(obj);
-		JsonArray inputs = null;
-		JsonArray outputs = null;
-		while (!elements.isEmpty() && (inputs == null || outputs == null)) {
-			JsonObject next = elements.pop();
-			for (Entry<String, JsonElement> entry : next.entrySet()) {
-				if (entry.getKey().equals("inputs")) {
-					inputs = entry.getValue().getAsJsonArray();
-				} else if (entry.getKey().equals("outputs")) {
-					outputs = entry.getValue().getAsJsonArray();
-				}
-			}
-		}
-		for (JsonElement elem : inputs) {
+	private void splitExchanges(JsonObject obj) {
+		JsonArray exchanges = obj.getAsJsonArray("exchanges");
+		JsonArray inputs = new JsonArray();
+		JsonArray outputs = new JsonArray();
+		for (JsonElement elem : exchanges) {
 			JsonObject e = elem.getAsJsonObject();
-			e.addProperty("input", true);
+			JsonElement isInput = e.get("input");
+			if (isInput.isJsonPrimitive() && isInput.getAsBoolean())
+				inputs.add(e);
+			else
+				outputs.add(e);
 		}
-		for (JsonElement elem : outputs) {
-			JsonObject e = elem.getAsJsonObject();
-			e.addProperty("input", false);
-		}
+		obj.remove("exchanges");
+		obj.add("inputs", inputs);
+		obj.add("outputs", outputs);
 	}
 
 }
