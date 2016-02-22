@@ -63,7 +63,7 @@ public class MapEditor implements HtmlPage {
 			kml = "";
 		try {
 			browser.evaluate("setKML('" + kml + "')");
-			browser.evaluate("setUpdateButtonVisible(" + handler.hasModel() + ")");
+			browser.evaluate("setOpenButtonVisible(" + handler.hasModel() + ")");
 		} catch (Exception e) {
 			log.error("failed to set KML data", e);
 		}
