@@ -35,13 +35,11 @@ class QualityPanel {
 	}
 
 	private void initSelection() {
-		Map<PedigreeMatrixRow, Integer> map = null;
-		if (aspect.quality != null)
-			map = PedigreeMatrix.fromString(aspect.quality);
-		else
-			map = QualityLabelData.defaultSelection();
-		for (PedigreeMatrixRow key : map.keySet()) {
-			select(key, map.get(key), false);
+		if (aspect.quality == null)
+			return;
+		Map<PedigreeMatrixRow, Integer> m = PedigreeMatrix.fromString(aspect.quality);
+		for (PedigreeMatrixRow key : m.keySet()) {
+			select(key, m.get(key), false);
 		}
 	}
 
