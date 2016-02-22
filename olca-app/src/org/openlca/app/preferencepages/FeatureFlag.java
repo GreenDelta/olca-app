@@ -8,8 +8,6 @@ import org.openlca.app.Preferences;
  */
 public enum FeatureFlag {
 
-	PRODUCT_SYSTEM_CUTOFF("Enable cut-offs in product system creations"),
-	
 	// the refresh buttons work but currently get always the keyboard focus
 	// which looks a bit ugly
 	SHOW_REFRESH_BUTTONS("Show refresh buttons in editors"),
@@ -23,7 +21,7 @@ public enum FeatureFlag {
 	ECOSPOLD1_EXPORT_CONFIG("EcoSpold 1 export configuration"),
 
 	JSONLD_UPDATES("Enable flow updates in JSON-LD import"),
-	
+
 	REPOSITORIES("Enable repository feature");
 
 	private final String description;

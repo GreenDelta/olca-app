@@ -236,10 +236,19 @@ public class UI {
 		return composite;
 	}
 
+	/** Creates a simple check box with the given text. */
+	public static Button checkBox(Composite parent, String text) {
+		Button button = new Button(parent, SWT.CHECK);
+		button.setText(text);
+		return button;
+	}
+
+	/** Creates a label and check box as two separate components. */
 	public static Button formCheckBox(Composite parent, String label) {
 		return formCheckBox(parent, null, label);
 	}
 
+	/** Creates a label and check box as two separate components. */
 	public static Button formCheckBox(Composite parent, FormToolkit toolkit,
 			String label) {
 		formLabel(parent, label);

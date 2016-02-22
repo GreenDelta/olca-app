@@ -91,7 +91,7 @@ class CalculationWizardPage extends WizardPage {
 		UI.gridData(iterationText, false, false).widthHint = 80;
 		iterationText.setEnabled(false);
 		iterationText.setText(Integer.toString(iterationCount));
-		iterationText.addModifyListener((e) -> {
+		iterationText.addModifyListener(e -> {
 			String text = iterationText.getText();
 			try {
 				iterationCount = Integer.parseInt(text);

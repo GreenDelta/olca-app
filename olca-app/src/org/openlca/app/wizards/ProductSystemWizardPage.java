@@ -18,10 +18,8 @@ import org.openlca.app.navigation.ModelTextFilter;
 import org.openlca.app.navigation.NavigationTree;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.filters.EmptyCategoryFilter;
-import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
-import org.openlca.app.util.UIFactory;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.Exchange;
@@ -30,6 +28,7 @@ import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.Descriptors;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.python.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,12 +38,13 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 
 	private final String EMPTY_REFERENCEPROCESS_ERROR = M.NoReferenceProcessSelected;
 
-	private Button addSupplyChainButton;
+	private Button supplyChainCheck;
 	private TreeViewer processTree;
 	private Process refProcess;
-	private Button useSystemProcesses;
-	private double cutoff = 0;
+	private Button systemProcessesCheck;
 	private Text filterText;
+
+	Double cutoff;
 
 	public ProductSystemWizardPage() {
 		super("ProductSystemWizardPage");
@@ -59,7 +59,7 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 	}
 
 	public boolean addSupplyChain() {
-		return addSupplyChainButton.getSelection();
+		return supplyChainCheck.getSelection();
 	}
 
 	@Override
@@ -84,11 +84,7 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 	}
 
 	public boolean useSystemProcesses() {
-		return useSystemProcesses.getSelection();
-	}
-
-	public double getCutoff() {
-		return cutoff;
+		return systemProcessesCheck.getSelection();
 	}
 
 	@Override
@@ -144,26 +140,35 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 		}
 	}
 
-	private void createOptions(Composite composite) {
-		addSupplyChainButton = UIFactory.createButton(composite,
-				M.AddConnectedProcesses);
-		addSupplyChainButton.setSelection(true);
-		useSystemProcesses = UIFactory.createButton(composite,
+	private void createOptions(Composite comp) {
+		UI.formLabel(comp, "");
+		supplyChainCheck = UI.checkBox(comp, M.AddConnectedProcesses);
+		supplyChainCheck.setSelection(true);
+		UI.formLabel(comp, "");
+		systemProcessesCheck = UI.checkBox(comp,
 				M.ConnectWithSystemProcessesIfPossible);
-		useSystemProcesses.setSelection(true);
-		Controls.onSelect(addSupplyChainButton, (e) -> {
-			useSystemProcesses.setEnabled(addSupplyChainButton.getSelection());
+		systemProcessesCheck.setSelection(true);
+		Controls.onSelect(supplyChainCheck, e -> {
+			systemProcessesCheck.setEnabled(supplyChainCheck.getSelection());
 		});
-		if (FeatureFlag.PRODUCT_SYSTEM_CUTOFF.isEnabled()) {
-			createCutoffText(composite);
-		}
+		createCutoffText(comp);
 	}
 
-	private void createCutoffText(Composite composite) {
-		Text text = UI.formText(composite, M.Cutoff);
-		text.setText("0.0");
+	private void createCutoffText(Composite comp) {
+		UI.formLabel(comp, "");
+		Composite inner = new Composite(comp, SWT.NONE);
+		UI.gridLayout(inner, 2, 5, 0);
+		Button check = UI.checkBox(inner, M.Cutoff);
+		Text text = new Text(inner, SWT.BORDER);
+		text.setEnabled(false);
+		UI.gridData(text, true, false);
+		Controls.onSelect(check, e -> text.setEnabled(check.getSelection()));
 		text.addModifyListener(e -> {
 			String s = text.getText();
+			if (Strings.isNullOrEmpty(s)) {
+				cutoff = null;
+				return;
+			}
 			try {
 				cutoff = Double.parseDouble(s);
 				log.trace("Cutoff set to {}", cutoff);

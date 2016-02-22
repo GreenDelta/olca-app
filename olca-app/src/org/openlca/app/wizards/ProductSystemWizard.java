@@ -7,7 +7,6 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
-import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.core.matrix.ProductSystemBuilder;
 import org.openlca.core.matrix.cache.MatrixCache;
 import org.openlca.core.model.ModelType;
@@ -53,8 +52,7 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 			}
 			boolean preferSystems = page.useSystemProcesses();
 			Runner runner = new Runner(system, preferSystems);
-			if (FeatureFlag.PRODUCT_SYSTEM_CUTOFF.isEnabled())
-				runner.setCutoff(page.getCutoff());
+			runner.cutoff = page.cutoff;
 			getContainer().run(true, true, runner);
 			system = runner.system;
 			Cache.registerNew(Descriptors.toDescriptor(system));
@@ -82,10 +80,6 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 			this.system = system;
 			this.preferSystemProcesses = preferSystemProcesses;
 			this.cache = Cache.getMatrixCache();
-		}
-
-		public void setCutoff(double cutoff) {
-			this.cutoff = cutoff;
 		}
 
 		@Override
