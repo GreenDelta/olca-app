@@ -101,9 +101,11 @@ public class Tables {
 			final double... percents) {
 		if (table == null || percents == null)
 			return;
-		TableResizeListener tableListener = new TableResizeListener(table, percents);
+		TableResizeListener tableListener = new TableResizeListener(table,
+				percents);
 		// see resize listener declaration for comment on why this is done
-		ColumnResizeListener columnListener = new ColumnResizeListener(tableListener);
+		ColumnResizeListener columnListener = new ColumnResizeListener(
+				tableListener);
 		for (TableColumn column : table.getColumns())
 			column.addControlListener(columnListener);
 		table.addControlListener(tableListener);
@@ -173,7 +175,8 @@ public class Tables {
 	// automatically.
 	private static class ColumnResizeListener extends ControlAdapter {
 		private TableResizeListener depending;
-		private boolean enabled;
+		private boolean enabled = true;
+		private boolean initialized;
 
 		private ColumnResizeListener(TableResizeListener depending) {
 			this.depending = depending;
@@ -183,6 +186,10 @@ public class Tables {
 		public void controlResized(ControlEvent e) {
 			if (!enabled)
 				return;
+			if (!initialized) {
+				initialized = true;
+				return;
+			}
 			depending.enabled = false;
 			enabled = false;
 			Timer t = new Timer();

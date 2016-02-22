@@ -130,8 +130,10 @@ public class Trees {
 	// automatically.
 	private static class ColumnResizeListener extends ControlAdapter {
 		private TreeResizeListener depending;
-		private boolean enabled;
+		private boolean enabled = true;
+		private boolean initialized;
 
+		
 		private ColumnResizeListener(TreeResizeListener depending) {
 			this.depending = depending;
 		}
@@ -140,6 +142,10 @@ public class Trees {
 		public void controlResized(ControlEvent e) {
 			if (!enabled)
 				return;
+			if (!initialized) {
+				initialized = true;
+				return;
+			}
 			depending.enabled = false;
 			enabled = false;
 			Timer t = new Timer();

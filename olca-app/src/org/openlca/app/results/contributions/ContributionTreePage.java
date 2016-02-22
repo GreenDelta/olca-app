@@ -90,8 +90,6 @@ public class ContributionTreePage extends FormPage {
 		UI.gridData(treeContainer, true, true);
 		createTree(toolkit, treeContainer);
 		form.reflow(true);
-		for (TreeColumn column : tree.getTree().getColumns())
-			column.pack();
 		selector.selectWithEvent(selection);
 	}
 
