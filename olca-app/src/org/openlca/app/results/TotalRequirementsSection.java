@@ -9,7 +9,6 @@ import java.util.Map;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -100,9 +99,7 @@ class TotalRequirementsSection {
 		}
 
 		Control label = tk.createLabel(comp, s + ": " + c);
-		Font font = UI.boldFont(label);
-		label.setFont(font);
-		label.addDisposeListener(e -> font.dispose());
+		label.setFont(UI.boldFont());
 	}
 
 	void fill() {

@@ -16,8 +16,8 @@ import org.openlca.app.M;
 import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.util.Error;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Error;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.viewers.table.AbstractTableViewer;
@@ -148,14 +148,6 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 	private class FactorLabelProvider extends LabelProvider implements
 			ITableLabelProvider, ITableFontProvider {
 
-		private Font boldFont;
-
-		@Override
-		public void dispose() {
-			if (boldFont != null && !boldFont.isDisposed())
-				boldFont.dispose();
-		}
-
 		@Override
 		public Image getColumnImage(Object element, int column) {
 			if (column == 0)
@@ -210,9 +202,7 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 			FlowPropertyFactor refFactor = flow != null ? flow
 					.getReferenceFactor() : null;
 			if (refFactor != null && refFactor.equals(element)) {
-				if (boldFont == null)
-					boldFont = UI.boldFont(getViewer().getTable());
-				return boldFont;
+				return UI.boldFont();
 			}
 			return null;
 		}

@@ -1,10 +1,10 @@
 package org.openlca.app.navigation;
 
-import org.openlca.app.M;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.core.model.ModelType;
@@ -22,14 +22,13 @@ public class DatabaseElement extends NavigationElement<IDatabaseConfiguration> {
 		if (!Database.isActive(getContent()))
 			return Collections.emptyList();
 		List<INavigationElement<?>> list = new ArrayList<>();
-		list.add(new GroupElement(this, g(M.Models, GroupType.MODELS,
-				ModelType.PROJECT,
-				ModelType.PRODUCT_SYSTEM,
-				ModelType.IMPACT_METHOD,
-				ModelType.PROCESS,
-				ModelType.FLOW,
-				ModelType.SOCIAL_INDICATOR, 
-				ModelType.PARAMETER)));
+		list.add(new ModelTypeElement(this, ModelType.PROJECT));
+		list.add(new ModelTypeElement(this, ModelType.PRODUCT_SYSTEM));
+		list.add(new ModelTypeElement(this, ModelType.IMPACT_METHOD));
+		list.add(new ModelTypeElement(this, ModelType.PROCESS));
+		list.add(new ModelTypeElement(this, ModelType.FLOW));
+		list.add(new ModelTypeElement(this, ModelType.SOCIAL_INDICATOR));
+		list.add(new ModelTypeElement(this, ModelType.PARAMETER));
 		list.add(new GroupElement(this, g(M.BackgroundData, GroupType.BACKGROUND_DATA,
 				ModelType.FLOW_PROPERTY,
 				ModelType.UNIT_GROUP,

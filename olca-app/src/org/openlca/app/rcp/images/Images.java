@@ -277,8 +277,6 @@ public class Images {
 		switch (type) {
 		case BACKGROUND_DATA:
 			return ModelIcon.GROUP_BACKGROUND_DATA;
-		case INVENTORY:
-			return ModelIcon.GROUP_INVENTORY;
 		case MODELS:
 			return ModelIcon.GROUP_MODELS;
 		default:

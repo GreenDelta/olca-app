@@ -110,14 +110,6 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 	private class UnitLabelProvider extends LabelProvider implements
 			ITableLabelProvider, ITableFontProvider {
 
-		private Font boldFont;
-
-		@Override
-		public void dispose() {
-			if (boldFont != null && !boldFont.isDisposed())
-				boldFont.dispose();
-		}
-
 		@Override
 		public Image getColumnImage(Object element, int column) {
 			if (column != 5)
@@ -166,9 +158,7 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 			UnitGroup group = editor.getModel();
 			Unit refUnit = group != null ? group.getReferenceUnit() : null;
 			if (refUnit != null && refUnit.equals(element)) {
-				if (boldFont == null)
-					boldFont = UI.boldFont(getViewer().getTable());
-				return boldFont;
+				return UI.boldFont();
 			}
 			return null;
 		}

@@ -13,7 +13,6 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
@@ -42,7 +41,6 @@ public class ModelSelectionDialog extends FormDialog {
 	private TreeViewer viewer;
 	private Text filterText;
 	private BaseDescriptor[] selection;
-	private Font boldLabelFont;
 
 	public static BaseDescriptor select(ModelType type) {
 		ModelSelectionDialog dialog = new ModelSelectionDialog(UI.shell(),
@@ -72,13 +70,6 @@ public class ModelSelectionDialog extends FormDialog {
 	}
 
 	@Override
-	public boolean close() {
-		if (boldLabelFont != null && !boldLabelFont.isDisposed())
-			boldLabelFont.dispose();
-		return super.close();
-	}
-
-	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
 		createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL,
 				false);
@@ -93,10 +84,8 @@ public class ModelSelectionDialog extends FormDialog {
 		UI.formHeader(form, getTitle());
 		Composite body = UI.formBody(form.getForm(), tk);
 		UI.gridLayout(body, 1);
-		Label filterLabel = UI.formLabel(body, form.getToolkit(),
-				M.Filter);
-		boldLabelFont = UI.boldFont(filterLabel);
-		filterLabel.setFont(boldLabelFont);
+		Label filterLabel = UI.formLabel(body, form.getToolkit(), M.Filter);
+		filterLabel.setFont(UI.boldFont());
 		filterText = UI.formText(body, SWT.SEARCH);
 		Section section = UI.section(body, tk, M.Content);
 		addSectionActions(section);
