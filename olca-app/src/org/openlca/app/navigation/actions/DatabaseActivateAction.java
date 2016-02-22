@@ -72,7 +72,7 @@ public class DatabaseActivateAction extends Action implements INavigationAction 
 			ActivationCallback callback = new ActivationCallback(activation);
 			callback.run();
 		} catch (Exception e) {
-			log.error("Database activation failed");
+			log.error("Database activation failed", e);
 		}
 	}
 
@@ -134,7 +134,7 @@ public class DatabaseActivateAction extends Action implements INavigationAction 
 		private void refresh() {
 			Navigator.refresh();
 			INavigationElement<?> dbElem = Navigator.findElement(config);
-			INavigationElement<?> firstModelType = dbElem.getChildren().get(0).getChildren().get(0);
+			INavigationElement<?> firstModelType = dbElem.getChildren().get(0);
 			Navigator.getInstance().getCommonViewer().reveal(firstModelType);
 		}
 

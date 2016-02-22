@@ -108,8 +108,8 @@ class ExchangeTable {
 		bindDoubleClick(viewer);
 		Tables.bindColumnWidths(viewer, 0.2, 0.15, 0.1, 0.09, 0.09, 0.09, 0.09,
 				0.09, 0.05);
-		Viewers.sortByLabels(viewer, label, 0, 1, 2, 3, 5, 6, 7);
-		Viewers.sortByDouble(viewer, (Exchange e) -> e.getAmountValue(), 4);
+		Viewers.sortByLabels(viewer, label, 0, 1, 3, 4, 5, 6, 7, 8);
+		Viewers.sortByDouble(viewer, (Exchange e) -> e.getAmountValue(), 2);
 	}
 
 	void setInput(Process process) {
@@ -286,7 +286,7 @@ class ExchangeTable {
 	}
 
 	private class AvoidedProductModifier extends CheckBoxCellModifier<Exchange> {
-		
+
 		@Override
 		public boolean canModify(Exchange e) {
 			Process process = editor.getModel();

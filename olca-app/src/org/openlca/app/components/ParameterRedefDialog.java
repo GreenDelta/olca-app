@@ -18,7 +18,6 @@ import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
@@ -57,7 +56,6 @@ public class ParameterRedefDialog extends FormDialog {
 	private Text filterText;
 	private TreeViewer viewer;
 	private IStructuredSelection selection;
-	private Font boldLabelFont;
 
 	/**
 	 * Opens the dialog which contains all global parameters and parameters of
@@ -149,13 +147,6 @@ public class ParameterRedefDialog extends FormDialog {
 	}
 
 	@Override
-	public boolean close() {
-		if (boldLabelFont != null && !boldLabelFont.isDisposed())
-			boldLabelFont.dispose();
-		return super.close();
-	}
-
-	@Override
 	protected Point getInitialSize() {
 		// TODO: calculate from screen size
 		return new Point(600, 600);
@@ -191,9 +182,7 @@ public class ParameterRedefDialog extends FormDialog {
 		Composite body = UI.formBody(mform.getForm(), mform.getToolkit());
 		UI.gridLayout(body, 1);
 		Label filterLabel = UI.formLabel(body, toolkit, M.Filter);
-		boldLabelFont = UI.boldFont(filterLabel);
-		filterLabel.setFont(boldLabelFont);
-
+		filterLabel.setFont(UI.boldFont());
 		filterText = UI.formText(body, SWT.SEARCH);
 		filterText.addModifyListener(new ModifyListener() {
 			@Override
@@ -356,7 +345,7 @@ public class ParameterRedefDialog extends FormDialog {
 		@Override
 		public Image getImage(Object element) {
 			if (element instanceof ParameterNode)
-				return Images.get(ModelType.PARAMETER); 
+				return Images.get(ModelType.PARAMETER);
 			if (element instanceof ModelNode) {
 				ModelNode node = (ModelNode) element;
 				return Images.get(node.model);

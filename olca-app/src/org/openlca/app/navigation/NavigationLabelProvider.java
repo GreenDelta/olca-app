@@ -2,6 +2,7 @@ package org.openlca.app.navigation;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.navigator.ICommonContentExtensionSite;
@@ -11,11 +12,13 @@ import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
+import org.openlca.app.util.UI;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 
-public class NavigationLabelProvider extends ColumnLabelProvider implements ICommonLabelProvider {
+public class NavigationLabelProvider extends ColumnLabelProvider
+		implements ICommonLabelProvider {
 
 	private boolean indicateRepositoryState;
 
@@ -113,6 +116,16 @@ public class NavigationLabelProvider extends ColumnLabelProvider implements ICom
 			return Labels.getDisplayName((BaseDescriptor) content);
 		else
 			return null;
+	}
+
+	@Override
+	public Font getFont(Object elem) {
+		if (!(elem instanceof DatabaseElement))
+			return null;
+		DatabaseElement dbElem = (DatabaseElement) elem;
+		if (Database.isActive(dbElem.getContent()))
+			return UI.boldFont();
+		return null;
 	}
 
 	@Override
