@@ -35,7 +35,7 @@ class CalculationWizardPage extends WizardPage {
 	private ImpactMethodViewer methodViewer;
 	private NwSetComboViewer nwViewer;
 	private Text iterationText;
-	private Button calcCosts;
+	private Button costCheck;
 	private int iterationCount = 100;
 	private CalculationType type = CalculationType.QUICK;
 	private ProductSystem productSystem;
@@ -51,7 +51,7 @@ class CalculationWizardPage extends WizardPage {
 
 	public CalculationSetup getSetup() {
 		CalculationSetup setUp = new CalculationSetup(productSystem);
-		setUp.withCosts = calcCosts.getSelection();
+		setUp.withCosts = costCheck.getSelection();
 		setUp.allocationMethod = allocationViewer.getSelected();
 		setUp.impactMethod = methodViewer.getSelected();
 		NwSetDescriptor set = nwViewer.getSelected();
@@ -101,11 +101,11 @@ class CalculationWizardPage extends WizardPage {
 			}
 		});
 	}
-	
+
 	private void createOptions(Composite parent) {
-		calcCosts = new Button(parent, SWT.CHECK);
-		calcCosts.setSelection(true);
-		calcCosts.setText(M.IncludeCostCalculation);
+		costCheck = new Button(parent, SWT.CHECK);
+		costCheck.setSelection(false);
+		costCheck.setText(M.IncludeCostCalculation);
 	}
 
 	private void createRadios(Composite parent) {
@@ -115,7 +115,7 @@ class CalculationWizardPage extends WizardPage {
 			radio.setSelection(type == this.type);
 			radio.setText(getLabel(type));
 			UI.gridData(radio, false, false).horizontalSpan = 2;
-			Controls.onSelect(radio, (e) -> {
+			Controls.onSelect(radio, e -> {
 				CalculationWizardPage.this.type = type;
 				iterationText.setEnabled(type == CalculationType.MONTE_CARLO);
 			});

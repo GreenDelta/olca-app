@@ -69,7 +69,7 @@ public class ILCDImportWizard extends Wizard implements IImportWizard {
 	}
 
 	private void doRun(File zip) throws Exception {
-		getContainer().run(true, true, (monitor) -> {
+		getContainer().run(true, true, monitor -> {
 			monitor.beginTask(M.Import, IProgressMonitor.UNKNOWN);
 			ImportHandler handler = new ImportHandler(monitor);
 			ILCDImport iImport = new ILCDImport(createConfig(zip));
