@@ -236,12 +236,7 @@ class ShapeFilePage extends FormPage {
 		}
 
 		private void save() {
-			ProgressMonitorDialog dialog = new ProgressMonitorDialog(UI.shell());
-			try {
-				dialog.run(true, false, (monitor) -> editor.doSave(monitor));
-			} catch (Exception e) {
-				log.error("Error automatically saving impact method", e);
-			}
+			editor.doSave(null);
 		}
 
 		private boolean delete() {

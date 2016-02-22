@@ -31,7 +31,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.eventbus.EventBus;
 
-public abstract class ModelEditor<T extends CategorizedEntity> extends FormEditor implements IEditor {
+public abstract class ModelEditor<T extends CategorizedEntity> extends
+		FormEditor implements IEditor {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private boolean dirty;
@@ -62,7 +63,8 @@ public abstract class ModelEditor<T extends CategorizedEntity> extends FormEdito
 	}
 
 	@Override
-	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
+	public void init(IEditorSite site, IEditorInput input)
+			throws PartInitException {
 		super.init(site, input);
 		log.trace("open " + modelClass.getSimpleName() + " editor {}", input);
 		ModelEditorInput i = (ModelEditorInput) input;
@@ -73,21 +75,25 @@ public abstract class ModelEditor<T extends CategorizedEntity> extends FormEdito
 			model = dao.getForId(i.getDescriptor().getId());
 			eventBus.register(this);
 		} catch (Exception e) {
-			log.error("failed to load " + modelClass.getSimpleName() + " from editor input", e);
+			log.error("failed to load " + modelClass.getSimpleName()
+					+ " from editor input", e);
 		}
 	}
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
 		try {
-			monitor.beginTask(M.Save + " " + modelClass.getSimpleName() + "...", IProgressMonitor.UNKNOWN);
+			if (monitor != null)
+				monitor.beginTask(M.Save + " " + modelClass.getSimpleName()
+						+ "...", IProgressMonitor.UNKNOWN);
 			model.setLastChange(System.currentTimeMillis());
 			Version version = new Version(model.getVersion());
 			version.incUpdate();
 			model.setVersion(version.getValue());
 			model = dao.update(model);
 			doAfterUpdate();
-			monitor.done();
+			if (monitor != null)
+				monitor.done();
 		} catch (Exception e) {
 			log.error("failed to update " + modelClass.getSimpleName());
 		}
@@ -135,8 +141,8 @@ public abstract class ModelEditor<T extends CategorizedEntity> extends FormEdito
 	@Override
 	@SuppressWarnings("unchecked")
 	public void doSaveAs() {
-		InputDialog diag = new InputDialog(UI.shell(), M.SaveAs, M.SaveAs, model.getName() + " - Copy",
-				(name) -> {
+		InputDialog diag = new InputDialog(UI.shell(), M.SaveAs, M.SaveAs,
+				model.getName() + " - Copy", (name) -> {
 					if (Strings.nullOrEmpty(name))
 						return M.NameCannotBeEmpty;
 					if (Strings.nullOrEqual(name, model.getName()))
