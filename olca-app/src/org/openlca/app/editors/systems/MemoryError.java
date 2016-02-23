@@ -13,16 +13,16 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.components.HyperlinkListener;
 import org.openlca.app.util.UI;
 
-class OOMError {
+class MemoryError {
 
 	public static void show() {
-		OOMErrorDialog dialog = new OOMErrorDialog();
+		Dialog dialog = new Dialog();
 		dialog.open();
 	}
 
-	private static class OOMErrorDialog extends FormDialog {
+	private static class Dialog extends FormDialog {
 
-		public OOMErrorDialog() {
+		public Dialog() {
 			super(UI.shell());
 		}
 

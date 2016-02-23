@@ -15,9 +15,9 @@ import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.openlca.app.App;
 import org.openlca.app.components.TextDropComponent;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Bean;
 import org.openlca.app.util.Colors;
-import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.UIFactory;
 import org.openlca.core.model.CategorizedEntity;
@@ -55,23 +55,27 @@ public abstract class ModelPage<T extends CategorizedEntity> extends FormPage {
 
 	protected ImageHyperlink createLink(String label, String property,
 			Composite parent) {
+		new Label(parent, SWT.NONE).setText(label);
+		ImageHyperlink link = new ImageHyperlink(parent, SWT.TOP);
+		link.setForeground(Colors.linkBlue());
 		try {
 			Object value = Bean.getValue(getModel(), property);
-			if (!(value instanceof CategorizedEntity))
-				throw new IllegalArgumentException(
-						"Property for link must be CategorizedEntity");
-
+			if (value == null) {
+				link.setText("-");
+				return link;
+			}
+			if (!(value instanceof CategorizedEntity)) {
+				link.setText(value.toString());
+				return link;
+			}
 			CategorizedEntity entity = (CategorizedEntity) value;
-			new Label(parent, SWT.NONE).setText(label);
-			ImageHyperlink link = new ImageHyperlink(parent, SWT.TOP);
 			link.setText(entity.getName());
 			link.setImage(Images.get(entity));
 			link.addHyperlinkListener(new ModelLinkClickedListener(entity));
-			link.setForeground(Colors.linkBlue());
 			return link;
 		} catch (Exception e) {
-			log.error("Could not get value of bean", e);
-			return null;
+			log.error("Could not get value " + property + " of " + getModel(), e);
+			return link;
 		}
 	}
 

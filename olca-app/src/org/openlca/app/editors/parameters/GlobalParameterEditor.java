@@ -1,5 +1,7 @@
 package org.openlca.app.editors.parameters;
 
+import java.util.Objects;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
@@ -41,12 +43,25 @@ public class GlobalParameterEditor extends ModelEditor<Parameter> {
 					name + " " + M.IsNotValidParameterName);
 			return;
 		}
-		if (new ParameterDao(Database.get()).existsGlobal(name)) {
-			Error.showBox(M.InvalidParameterName,
-					M.ParameterWithSameNameExists);
+		if (otherGlobalExists(name)) {
+			Error.showBox(M.InvalidParameterName, M.ParameterWithSameNameExists);
 			return;
 		}
 		super.doSave(monitor);
+	}
+
+	private boolean otherGlobalExists(String name) {
+		ParameterDao dao = new ParameterDao(Database.get());
+		String n = name.trim();
+		for (Parameter global : dao.getGlobalParameters()) {
+			if (Objects.equals(getModel(), global))
+				continue;
+			if (global.getName() == null)
+				continue;
+			if (n.equalsIgnoreCase(global.getName().trim()))
+				return true;
+		}
+		return false;
 	}
 
 }
