@@ -1,5 +1,8 @@
 package org.openlca.app.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -8,12 +11,14 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.progress.UIJob;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.editors.ModelEditor;
+import org.openlca.app.editors.StartPage;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.core.model.CategorizedEntity;
 import org.slf4j.Logger;
@@ -35,8 +40,8 @@ public class Editors {
 		if (form == null || editor == null)
 			return;
 		CategorizedEntity model = editor.getModel();
-		Action refresh = Actions.create(M.Reload,
-				Icon.REFRESH.descriptor(), () -> {
+		Action refresh = Actions.create(M.Reload, Icon.REFRESH.descriptor(), 
+				() -> {
 					App.closeEditor(model);
 					App.openEditor(model);
 				});
@@ -45,20 +50,34 @@ public class Editors {
 		toolbar.update(true);
 	}
 
+	/**
+	 * Closes all editors (except StartPage)
+	 */
 	public static void closeAll() {
 		try {
-			PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-					.getActivePage().closeAllEditors(false);
+			if (StartPage.isOpen()) {
+				closeAllExceptStartPage();
+			} else {
+				getActivePage().closeAllEditors(false);
+			}
 		} catch (Exception e) {
 			log.error("Failed to close editors", e);
 		}
 	}
 
+	private static void closeAllExceptStartPage() {
+		List<IEditorReference> rest = new ArrayList<>();
+		for (IEditorReference editor : getReferences())
+			if (!StartPage.is(editor))
+				rest.add(editor);
+		IEditorReference[] restArray = rest.toArray(new IEditorReference[rest.size()]);
+		getActivePage().closeEditors(restArray, false);
+	}
+
 	@SuppressWarnings("unchecked")
 	public static <T extends IEditorPart> T getActive() {
 		try {
-			return (T) PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-					.getActivePage().getActiveEditor();
+			return (T) getActivePage().getActiveEditor();
 		} catch (ClassCastException e) {
 			log.error("Error getting active editor", e);
 			return null;
@@ -71,8 +90,7 @@ public class Editors {
 
 	public static void close(IEditorReference ref) {
 		try {
-			PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-					.getActivePage().closeEditor(ref.getEditor(false), true);
+			getActivePage().closeEditor(ref.getEditor(false), true);
 		} catch (Exception e) {
 			log.error("Failed to close an editor", e);
 		}
@@ -80,12 +98,15 @@ public class Editors {
 
 	public static IEditorReference[] getReferences() {
 		try {
-			return PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-					.getActivePage().getEditorReferences();
+			return getActivePage().getEditorReferences();
 		} catch (Exception e) {
 			log.error("Failed to get editor references", e);
 			return new IEditorReference[0];
 		}
+	}
+
+	private static IWorkbenchPage getActivePage() {
+		return PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 	}
 
 	private static class OpenInUIJob extends UIJob {
@@ -102,8 +123,7 @@ public class Editors {
 		@Override
 		public IStatus runInUIThread(IProgressMonitor monitor) {
 			try {
-				PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-						.getActivePage().openEditor(input, editorId);
+				getActivePage().openEditor(input, editorId);
 				return Status.OK_STATUS;
 			} catch (Exception e) {
 				log.error("Open editor " + editorId + " failed.", e);

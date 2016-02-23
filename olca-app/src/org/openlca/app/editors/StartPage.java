@@ -7,7 +7,9 @@ import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IPersistableElement;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
@@ -31,10 +33,28 @@ import org.slf4j.LoggerFactory;
 public class StartPage extends FormEditor {
 
 	public static String ID = "olca.StartPage";
-	private Logger log = LoggerFactory.getLogger(getClass());
+	private static Logger log = LoggerFactory.getLogger(StartPage.class);
 
 	public static void open() {
 		Editors.open(new StartPageInput(), ID);
+	}
+
+	public static boolean isOpen() {
+		IEditorReference[] editors = Editors.getReferences();
+		for (IEditorReference editor : editors)
+			if (is(editor))
+				return true;
+		return false;
+	}
+
+	public static boolean is(IEditorReference editor) {
+		try {
+			return editor.getEditorInput() instanceof StartPageInput;
+		} catch (PartInitException e) {
+			// only log debug, this is not important
+			log.debug("Error checking if start page is open", e);
+			return false;
+		}
 	}
 
 	@Override
