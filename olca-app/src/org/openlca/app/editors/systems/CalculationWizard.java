@@ -75,7 +75,7 @@ class CalculationWizard extends Wizard {
 			Calculation calculation = new Calculation(setup, type);
 			getContainer().run(true, true, calculation);
 			if (calculation.outOfMemory)
-				OOMError.show();
+				MemoryError.show();
 			return !calculation.outOfMemory;
 		} catch (Exception e) {
 			log.error("Calculation failed", e);
