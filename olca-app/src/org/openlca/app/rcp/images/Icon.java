@@ -27,7 +27,8 @@ public enum Icon {
 
 	DATABASE("model/database.png"),
 	DATABASE_DISABLED("model/database_disabled.png"),
-	DATABASE_IO("database_io.png"),
+	DATABASE_IMPORT("database_import.png"),
+	DATABASE_EXPORT("database_export.png"),
 	DATABASE_WIZARD("wizard/database.png"),
 	DELETE("delete.png"),
 	DELETE_DISABLED("delete_disabled.png"),

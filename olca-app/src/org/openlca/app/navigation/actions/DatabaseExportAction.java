@@ -30,7 +30,7 @@ public class DatabaseExportAction extends Action implements INavigationAction {
 
 	public DatabaseExportAction() {
 		setText(M.ExportDatabase);
-		setImageDescriptor(Icon.DATABASE_IO.descriptor());
+		setImageDescriptor(Icon.DATABASE_EXPORT.descriptor());
 	}
 
 	@Override
