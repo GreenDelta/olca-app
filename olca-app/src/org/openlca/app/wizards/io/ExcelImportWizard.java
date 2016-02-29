@@ -23,8 +23,7 @@ public class ExcelImportWizard extends Wizard implements IImportWizard {
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
 		setWindowTitle(M.ProcessExcelImportDescription);
-		setDefaultPageImageDescriptor(Icon.IMPORT_ZIP_WIZARD
-				.descriptor());
+		setDefaultPageImageDescriptor(Icon.IMPORT_ZIP_WIZARD.descriptor());
 		setNeedsProgressMonitor(true);
 	}
 

@@ -446,7 +446,7 @@
          </property>
          <property
                name="aboutText"
-               value="openLCA 1.5.0&#x0A;&#x0A;Copyright (c) 2007 - 2015 GreenDelta. All rights reserved.&#x0A;Visit http://openlca.org and http://greendelta.com&#x0A;&#x0A;This product includes software developed in the openLCA &#x0A;project and other open source software.">
+               value="openLCA 1.5.0&#x0D;&#x0A;&#x0D;&#x0A;Copyright (c) 2007 - 2016 GreenDelta. All rights reserved.&#x0D;&#x0A;Visit http://openlca.org and http://greendelta.com&#x0D;&#x0A;&#x0D;&#x0A;This product includes software developed in the openLCA &#x0D;&#x0A;project and other open source software.">
          </property>
          <property
                name="aboutImage"
@@ -626,17 +626,14 @@
       <wizard
             category="import.category.file"
             class="org.openlca.app.wizards.io.EcoSpold01ImportWizard"
-            icon="icons/file/xml.png"
+            icon="icons/file/xml_es1.png"
             id="wizard.import.ecospold1"
             name="%EcoSpold">
-         <description>
-            
-         </description>
       </wizard>
       <wizard
             category="import.category.file"
             class="org.openlca.app.wizards.io.EcoSpold2ImportWizard"
-            icon="icons/file/xml.png"
+            icon="icons/file/xml_es2.png"
             id="wizard.import.ecospold2"
             name="EcoSpold 2">
          <description>
@@ -646,12 +643,9 @@
       <wizard
             category="import.category.file"
             class="org.openlca.app.wizards.io.ILCDImportWizard"
-            icon="icons/wizard/ilcd.png"
+            icon="icons/file/ilcd.png"
             id="wizard.import.ilcd"
             name="ILCD">
-         <description>
-            
-         </description>
       </wizard>
        <wizard
             category="import.category.file"
@@ -666,9 +660,6 @@
             icon="icons/wizard/network.png"
             id="wizard.import.ilcdnetwork"
             name="%ILCDNetworkImport">
-         <description>
-            
-         </description>
       </wizard>
       <wizard
            class="org.openlca.app.wizards.io.DbImportWizard"
@@ -727,7 +718,7 @@
       <wizard
             category="export.category.ecospold"
             class="org.openlca.app.wizards.io.EcoSpold01ExportProcessWizard"
-            icon="icons/file/xml.png"
+            icon="icons/file/xml_es1.png"
             id="wizard.export.ecospold.process"
             name="%Processes">
        </wizard>
@@ -741,7 +732,7 @@
        <wizard
             category="export.category.ecospold"
             class="org.openlca.app.wizards.io.EcoSpold2ExportWizard"
-            icon="icons/file/xml.png"
+            icon="icons/file/xml_es2.png"
             id="wizard.export.ecospold.process"
             name="EcoSpold 2">
          <description>
@@ -751,16 +742,16 @@
       <wizard
             category="export.category.ecospold"
             class="org.openlca.app.wizards.io.EcoSpold01ExportMethodWizard"
-            icon="icons/file/xml.png"
+            icon="icons/file/xml_es1.png"
             id="wizard.export.ecospold.impactmethod"
             name="%ImpactMethods">
       </wizard>
       <wizard
             category="export.category.ilcd"
             class="org.openlca.app.wizards.io.ILCDExportWizard"
-            icon="icons/wizard/ilcd.png"
+            icon="icons/file/ilcd.png"
             id="wizard.export.source"
-            name="@ILCD Zip-File">
+            name="ILCD Zip-File">
       </wizard>
       <wizard
             category="export.category.ilcd"
