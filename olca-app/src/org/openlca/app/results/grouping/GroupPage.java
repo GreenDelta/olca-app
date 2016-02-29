@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.InputDialog;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -25,7 +24,6 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
@@ -35,8 +33,8 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.util.Actions;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
@@ -115,8 +113,7 @@ public class GroupPage extends FormPage {
 		if (groupSet == null)
 			groupingSection.setText(M.Groups);
 		else
-			groupingSection.setText(M.Groups + " (" + groupSet.getName()
-					+ ")");
+			groupingSection.setText(M.Groups + " (" + groupSet.getName() + ")");
 	}
 
 	@Override
@@ -152,7 +149,7 @@ public class GroupPage extends FormPage {
 		configureViewer(groupViewer);
 		groupViewer.setInput(groups);
 		Actions.bind(groupViewer, new DeleteGroupAction());
-		groupViewer.addSelectionChangedListener((e) -> {
+		groupViewer.addSelectionChangedListener(e -> {
 			ProcessGrouping g = Viewers.getFirst(e.getSelection());
 			if (g != null)
 				processViewer.setInput(g.processes);
@@ -378,8 +375,7 @@ public class GroupPage extends FormPage {
 		public SaveGroupSetAction(GroupPage page) {
 			this.page = page;
 			setToolTipText(M.Save);
-			ImageDescriptor image = Images.platformDescriptor(ISharedImages.IMG_ETOOL_SAVE_EDIT);
-			setImageDescriptor(image);
+			setImageDescriptor(Icon.SAVE.descriptor());
 		}
 
 		@Override

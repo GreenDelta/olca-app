@@ -32,6 +32,7 @@ import org.openlca.core.database.EntityCache;
 import org.openlca.core.matrix.LongPair;
 import org.openlca.core.matrix.ProductIndex;
 import org.openlca.core.model.Currency;
+import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -247,7 +248,7 @@ class TotalRequirementsSection {
 			case 0:
 				return Images.get(ModelType.PROCESS);
 			case 1:
-				return Images.get(ModelType.FLOW);
+				return Images.get(FlowType.PRODUCT_FLOW);
 			case 4:
 				return costImage.getForTable(((Item) obj).costShare);
 			default:

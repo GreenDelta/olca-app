@@ -49,9 +49,7 @@ public class ReportEditorPage extends FormPage {
 		Button addButton = toolkit.createButton(composite, M.AddSection,
 				SWT.NONE);
 		addButton.setImage(Icon.ADD.get());
-		Controls.onSelect(addButton, (e) -> {
-			sectionList.addNew();
-		});
+		Controls.onSelect(addButton, e -> sectionList.addNew());
 	}
 
 	private void createInfoSection(Composite body) {

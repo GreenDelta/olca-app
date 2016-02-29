@@ -64,8 +64,7 @@ public class ProjectResultPage extends FormPage {
 		Composite composite = UI.formSection(body, toolkit, M.Results);
 		UI.gridLayout(composite, 1);
 		tableViewer = Tables.createViewer(composite,
-				new String[] { M.Variant,
-						M.Amount, M.Unit });
+				new String[] { M.Variant, M.Amount, M.Unit });
 		tableViewer.setLabelProvider(new TableLabel());
 		Tables.bindColumnWidths(tableViewer, 0.4, 0.3, 0.3);
 		UI.gridData(tableViewer.getTable(), true, true).minimumHeight = 150;
