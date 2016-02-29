@@ -27,8 +27,6 @@ import org.openlca.app.results.contributions.ImpactTreePage.FlowWithProcess;
 import org.openlca.app.results.contributions.LocationContributionPage;
 import org.openlca.app.results.contributions.ProcessResultPage;
 import org.openlca.app.results.grouping.GroupPage;
-import org.openlca.app.results.viz.ContributionBubblePage;
-import org.openlca.app.results.viz.ProcessTreemapPage;
 import org.openlca.core.database.ImpactCategoryDao;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.matrix.LongPair;
@@ -106,8 +104,6 @@ public class RegionalizedResultEditor extends FormEditor implements IResultEdito
 			addPage(new ImpactTreePage(this, regioResult, this::getImpactFactor));
 			addPage(new GroupPage(this, regioResult));
 			if (FeatureFlag.EXPERIMENTAL_VISUALISATIONS.isEnabled()) {
-				addPage(new ProcessTreemapPage(this, regioResult));
-				addPage(new ContributionBubblePage(this, regioResult));
 				addPage(new SunBurstView(this, regioResult));
 			}
 			diagram = new SankeyDiagram(setup, regioResult);

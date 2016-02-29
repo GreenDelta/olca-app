@@ -63,9 +63,9 @@
 	<classpathentry exported="true" kind="lib" path="libs/olca-ecospold-2-1.5.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-eigen-1.5.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-formula-1.5.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-geo-1.5.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-ilcd-1.5.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-io-1.5.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-geo-1.5.0.jar" sourcepath="/olca-geo"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-ilcd-1.5.0.jar" sourcepath="/olca-ilcd"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-io-1.5.0.jar" sourcepath="/olca-io"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-jsonld-1.5.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-simapro-csv-1.5.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.antlr-3.2.0.v201206041011.jar"/>

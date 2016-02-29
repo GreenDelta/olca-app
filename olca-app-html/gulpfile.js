@@ -32,10 +32,9 @@ gulp.task('clean', function() {
 
 gulp.task('html_pages', function() {
 	return gulp.src([
-			'src/report_view/report_view.html', 
-			'src/start_page/*.html', 
-			'src/bubble_chart/bubble_chart.html', 
-			'src/devtools/*', 
+			'src/report_view/report_view.html',
+			'src/start_page/*.html',
+			'src/devtools/*',
 			'src/*.html'
 		])
 		.pipe(fileinclude({
@@ -122,7 +121,7 @@ var readMessages = function(file) {
 	}
 	return msg;
 };
-	
+
 gulp.task('start-page-templates', function() {
 	return gulp.src('./src/start_page/msg/*.properties')
 		.pipe(foreach(function(stream, f) {
