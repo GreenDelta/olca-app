@@ -11,7 +11,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
-import org.openlca.app.util.UIFactory;
+import org.openlca.app.util.UI;
 import org.openlca.core.database.Query;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Unit;
@@ -49,9 +49,8 @@ public class UnitGroupWizard extends AbstractWizard<UnitGroup> {
 		}
 
 		@Override
-		protected void createContents(final Composite container) {
-			referenceUnitText = UIFactory.createTextWithLabel(container,
-					M.ReferenceUnit, false);
+		protected void createContents(Composite container) {
+			referenceUnitText = UI.formText(container, M.ReferenceUnit);
 		}
 
 		@Override

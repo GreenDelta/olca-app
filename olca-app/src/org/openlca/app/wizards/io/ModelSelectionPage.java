@@ -29,7 +29,6 @@ import org.openlca.app.navigation.filters.ModelTypeFilter;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
-import org.openlca.app.util.UIFactory;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 
@@ -123,7 +122,7 @@ public class ModelSelectionPage extends WizardPage {
 
 	@Override
 	public void createControl(final Composite parent) {
-		Composite body = UIFactory.createContainer(parent);
+		Composite body = new Composite(parent, SWT.NULL);
 		GridLayout bodyLayout = new GridLayout(1, true);
 		bodyLayout.marginHeight = 10;
 		bodyLayout.marginWidth = 10;
