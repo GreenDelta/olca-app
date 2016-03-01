@@ -77,7 +77,7 @@ public class ProductSystemActions extends EditorActionBarContributor {
 	private class ExcelExportAction extends Action {
 		public ExcelExportAction() {
 			setImageDescriptor(Images.descriptor(FileType.EXCEL));
-			setText(M.ExportAsMatrix);
+			setText(M.ExcelExport);
 		}
 
 		@Override
