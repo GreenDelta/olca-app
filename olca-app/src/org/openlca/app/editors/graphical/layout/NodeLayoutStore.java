@@ -37,8 +37,8 @@ public final class NodeLayoutStore {
 		}
 	}
 
-	private static void writeAsJson(List<NodeLayoutInfo> layoutInfo,
-			File toFile) throws IOException {
+	private static void writeAsJson(List<NodeLayoutInfo> layoutInfo, File toFile)
+			throws IOException {
 		JsonWriter writer = new JsonWriter(new FileWriter(toFile));
 		writer.beginObject();
 		writer.name("nodes");
@@ -71,7 +71,8 @@ public final class NodeLayoutStore {
 		writer.endObject();
 	}
 
-	public static boolean loadLayout(ProductSystemNode node) {
+	public static boolean loadLayout(ProductSystemNode node)
+			throws NodeLayoutException {
 		if (node == null || node.getProductSystem() == null)
 			return false;
 		File file = getLayoutFile(node.getProductSystem());
@@ -88,11 +89,14 @@ public final class NodeLayoutStore {
 		}
 	}
 
-	private static void apply(NodeLayoutInfo layout, ProductSystemNode model) {
+	private static void apply(NodeLayoutInfo layout, ProductSystemNode model)
+			throws NodeLayoutException {
 		ProcessNode node = model.getProcessNode(layout.getId());
 		if (node == null) {
 			ProcessDescriptor descriptor = Cache.getEntityCache().get(
 					ProcessDescriptor.class, layout.getId());
+			if (descriptor == null)
+				throw new NodeLayoutException();
 			node = new ProcessNode(descriptor);
 			model.add(node);
 			node.apply(layout);
@@ -154,6 +158,12 @@ public final class NodeLayoutStore {
 			dir.mkdirs();
 		File layoutFile = new File(dir, "layout.json");
 		return layoutFile;
+	}
+
+	public static class NodeLayoutException extends Exception {
+
+		private static final long serialVersionUID = -6387346828566795215L;
+
 	}
 
 }
