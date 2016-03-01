@@ -12,5 +12,8 @@ mixin header()
 				a(href='http://www.greendelta.com')
 					img.company-logo(src='images/greendelta-logo.png')
 			.center
-				p!=msg.subtext
+				p!=msg.subtext.first
+					br
+					span!=msg.subtext.second
+				p!=msg.subtext.third
 		.clear

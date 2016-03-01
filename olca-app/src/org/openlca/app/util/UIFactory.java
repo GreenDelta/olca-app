@@ -4,9 +4,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Layout;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.components.TextDropComponent;
 import org.openlca.core.model.ModelType;
@@ -17,19 +15,6 @@ import org.openlca.core.model.ModelType;
 public final class UIFactory {
 
 	private UIFactory() {
-	}
-
-	/**
-	 * Creates a composite with a 2 column grid layout
-	 * 
-	 * @param parent
-	 *            The parent composite
-	 * @return A new composite
-	 */
-	public static Composite createContainer(final Composite parent) {
-		final Composite container = new Composite(parent, SWT.NULL);
-		container.setLayout(createGridLayout(2, false, 10));
-		return container;
 	}
 
 	/**
@@ -75,56 +60,6 @@ public final class UIFactory {
 		final GridLayout layout = new GridLayout(numColumns, makeColumnsEqual);
 		layout.verticalSpacing = vSpacing;
 		return layout;
-	}
-
-	/**
-	 * Creates a label and a text widget
-	 * 
-	 * @param parent
-	 *            The parent composite
-	 * @param labelText
-	 *            The text of the label
-	 * @param multiLine
-	 *            Indicates if the text widget is multi line
-	 * @return A new text widget
-	 */
-	public static Text createTextWithLabel(final Composite parent,
-			final String labelText, final boolean multiLine) {
-		return createTextWithLabel(parent, labelText, multiLine, SWT.NONE);
-	}
-
-	/**
-	 * Creates a label and a text widget
-	 * 
-	 * @param parent
-	 *            The parent composite
-	 * @param labelText
-	 *            The text of the label
-	 * @param multiLine
-	 *            Indicates if the text widget is multi line
-	 * @param style
-	 *            The style of the text widget
-	 * @return A new text widget
-	 */
-	public static Text createTextWithLabel(final Composite parent,
-			final String labelText, final boolean multiLine, final int style) {
-		final Label nameLabel = new Label(parent, style);
-		nameLabel.setText(labelText);
-		return createText(parent, multiLine);
-	}
-
-	public static Text createText(Composite parent, boolean multiLine) {
-		final Text text = new Text(parent, multiLine ? SWT.BORDER
-				| SWT.V_SCROLL | SWT.WRAP | SWT.MULTI : SWT.BORDER);
-		GridData gd_text = null;
-		if (multiLine) {
-			gd_text = new GridData(SWT.FILL, SWT.CENTER, true, false);
-			gd_text.heightHint = 75;
-		} else {
-			gd_text = new GridData(SWT.FILL, SWT.CENTER, true, false);
-		}
-		text.setLayoutData(gd_text);
-		return text;
 	}
 
 }

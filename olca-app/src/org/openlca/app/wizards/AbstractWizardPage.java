@@ -5,7 +5,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.openlca.app.M;
 import org.openlca.app.rcp.images.Images;
-import org.openlca.app.util.UIFactory;
+import org.openlca.app.util.UI;
 import org.openlca.core.model.CategorizedEntity;
 
 public abstract class AbstractWizardPage<T extends CategorizedEntity> extends
@@ -28,13 +28,11 @@ public abstract class AbstractWizardPage<T extends CategorizedEntity> extends
 	@SuppressWarnings("unchecked")
 	public final void createControl(final Composite parent) {
 		setErrorMessage(EMPTY_NAME_ERROR);
-		Composite container = UIFactory.createContainer(parent);
+		Composite container = UI.formComposite(parent);
 		setControl(container);
-		nameText = UIFactory.createTextWithLabel(container, M.Name,
-				false);
+		nameText = UI.formText(container, M.Name);
 		if (withDescription)
-			descriptionText = UIFactory.createTextWithLabel(container,
-					M.Description, true);
+			descriptionText = UI.formMultiText(container, M.Description);
 		createContents(container);
 		initModifyListeners();
 		AbstractWizard<T> wizard = (AbstractWizard<T>) getWizard();
