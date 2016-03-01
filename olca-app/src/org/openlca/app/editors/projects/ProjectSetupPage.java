@@ -30,10 +30,10 @@ import org.openlca.app.editors.reports.Reports;
 import org.openlca.app.editors.reports.model.ReportCalculator;
 import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Editors;
-import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.TableClipboard;
@@ -149,9 +149,9 @@ class ProjectSetupPage extends ModelPage<Project> {
 			App.run(M.Calculate,
 					new ReportCalculator(getModel(), editor.getReport()),
 					() -> {
-						Reports.save(getModel(), editor.getReport(), database);
-						ReportViewer.open(editor.getReport());
-					});
+				Reports.save(getModel(), editor.getReport(), database);
+				ReportViewer.open(editor.getReport());
+			});
 		});
 	}
 
@@ -202,7 +202,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 	}
 
 	private void addVariant() {
-		log.trace("add variabt");
+		log.trace("add variant");
 		BaseDescriptor d = ModelSelectionDialog
 				.select(ModelType.PRODUCT_SYSTEM);
 		if (d == null)

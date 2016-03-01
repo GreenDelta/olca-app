@@ -141,14 +141,11 @@ public class IoPreferencePage extends PreferencePage implements
 		}
 	}
 
-	private void checkAuthentication(Authentication authentication) {
-		if (!authentication.isAuthenticated())
-			Dialog.showError(getShell(),
-					M.ILCD_AUTHENTICATION_FAILED_MSG);
-		else if (!authentication.isReadAllowed()
-				|| !authentication.isExportAllowed())
-			Dialog.showWarning(getShell(),
-					M.ILCD_NO_READ_OR_WRITE_ACCESS_MSG);
+	private void checkAuthentication(Authentication auth) {
+		if (!auth.isAuthenticated())
+			Dialog.showError(getShell(), M.ILCD_AUTHENTICATION_FAILED_MSG);
+		else if (!auth.isReadAllowed() || !auth.isExportAllowed())
+			Dialog.showWarning(getShell(), M.ILCD_NO_READ_OR_WRITE_ACCESS_MSG);
 		else
 			Dialog.showInfo(getShell(), M.ILCD_CONNECTION_WORKS_MSG);
 	}

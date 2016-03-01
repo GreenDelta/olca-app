@@ -4,8 +4,6 @@ import org.openlca.app.rcp.RcpActivator;
 
 public enum HtmlView {
 
-	BUBBLE_CHART("bubble_chart.html"),
-
 	GMAP_HEATMAP("gmap_heatmap.html"),
 
 	GRAPH_VIEW("graph_view.html"),
@@ -25,8 +23,6 @@ public enum HtmlView {
 	START_PAGE("start_page.html"),
 
 	SUNBURST_CHART("sunburst_chart.html"),
-
-	TREEMAP("treemap.html"),
 
 	USAGES_VIEW("usages_view.html");
 

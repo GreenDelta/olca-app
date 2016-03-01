@@ -19,12 +19,10 @@ import org.openlca.app.results.contributions.ContributionTablePage;
 import org.openlca.app.results.contributions.ContributionTreePage;
 import org.openlca.app.results.contributions.FlowImpactPage;
 import org.openlca.app.results.contributions.ImpactTreePage;
+import org.openlca.app.results.contributions.ImpactTreePage.FlowWithProcess;
 import org.openlca.app.results.contributions.LocationContributionPage;
 import org.openlca.app.results.contributions.ProcessResultPage;
-import org.openlca.app.results.contributions.ImpactTreePage.FlowWithProcess;
 import org.openlca.app.results.grouping.GroupPage;
-import org.openlca.app.results.viz.ContributionBubblePage;
-import org.openlca.app.results.viz.ProcessTreemapPage;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.matrix.FlowIndex;
 import org.openlca.core.model.ProductSystem;
@@ -37,7 +35,7 @@ import org.slf4j.LoggerFactory;
 /**
  * View for the analysis results of a product system.
  */
-public class AnalyzeEditor extends FormEditor implements IResultEditor<FullResultProvider>{
+public class AnalyzeEditor extends FormEditor implements IResultEditor<FullResultProvider> {
 
 	public static final String ID = "editors.analyze";
 
@@ -93,8 +91,6 @@ public class AnalyzeEditor extends FormEditor implements IResultEditor<FullResul
 			addPage(new GroupPage(this, result));
 			addPage(new LocationContributionPage(this, result));
 			if (FeatureFlag.EXPERIMENTAL_VISUALISATIONS.isEnabled()) {
-				addPage(new ProcessTreemapPage(this, result));
-				addPage(new ContributionBubblePage(this, result));
 				addPage(new SunBurstView(this, result));
 			}
 			diagram = new SankeyDiagram(setup, result);
