@@ -1,6 +1,5 @@
 package org.openlca.app.editors.locations;
 
-import org.openlca.app.M;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -11,8 +10,11 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
+import org.openlca.app.navigation.Navigator;
 import org.openlca.app.wizards.io.FileImportPage;
+import org.openlca.core.model.ModelType;
 import org.openlca.geo.io.MultiKmlImport;
 
 public class KmlImportWizard extends Wizard implements IImportWizard {
@@ -35,6 +37,7 @@ public class KmlImportWizard extends Wizard implements IImportWizard {
 	public boolean performFinish() {
 		try {
 			getContainer().run(true, false, (monitor) -> runImport(monitor));
+			Navigator.refresh(Navigator.findElement(ModelType.LOCATION));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;

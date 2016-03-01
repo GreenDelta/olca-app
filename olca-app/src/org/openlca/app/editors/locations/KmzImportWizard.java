@@ -1,6 +1,5 @@
 package org.openlca.app.editors.locations;
 
-import org.openlca.app.M;
 import java.io.File;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -8,9 +7,12 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
+import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.Info;
 import org.openlca.app.wizards.io.FileImportPage;
+import org.openlca.core.model.ModelType;
 import org.openlca.io.refdata.GeoKmzImport;
 
 public class KmzImportWizard extends Wizard implements IImportWizard {
@@ -33,6 +35,7 @@ public class KmzImportWizard extends Wizard implements IImportWizard {
 	public boolean performFinish() {
 		try {
 			getContainer().run(true, false, (monitor) -> runImport(monitor));
+			Navigator.refresh(Navigator.findElement(ModelType.LOCATION));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
