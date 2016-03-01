@@ -657,7 +657,7 @@
        <wizard
             category="import.category.ilcdnetwork"
             class="org.openlca.app.ilcd_network.ImportWizard"
-            icon="icons/wizard/network.png"
+            icon="icons/network.png"
             id="wizard.import.ilcdnetwork"
             name="%ILCDNetworkImport">
       </wizard>
@@ -756,7 +756,7 @@
       <wizard
             category="export.category.ilcd"
             class="org.openlca.app.ilcd_network.ExportWizard"
-            icon="icons/wizard/network.png"
+            icon="icons/network.png"
             id="org.openlca.ilcd.network.ExportWizard"
             name="%ILCDNetworkExport">
       </wizard>

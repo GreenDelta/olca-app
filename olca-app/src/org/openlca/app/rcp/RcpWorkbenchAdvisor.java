@@ -62,9 +62,4 @@ public class RcpWorkbenchAdvisor extends WorkbenchAdvisor {
 			log.error("failed to patch workbench images", e);
 		}
 	}
-
-	@Override
-	public void postStartup() {
-		super.postStartup();
-	}
 }
