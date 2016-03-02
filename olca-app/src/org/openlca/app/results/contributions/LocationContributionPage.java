@@ -117,7 +117,7 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 	}
 
 	private void createTree(Composite body, FormToolkit tk) {
-		Section section = UI.section(body, tk, M.ResultContributions);
+		Section section = UI.section(body, tk, M.ContributionTreeLocations);
 		UI.gridData(section, true, true);
 		Composite composite = UI.sectionClient(section, tk);
 		UI.gridLayout(composite, 1);

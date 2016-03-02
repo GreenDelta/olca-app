@@ -46,7 +46,7 @@ public class ContributionChartSection {
 			ContributionResultProvider<?> provider) {
 		ContributionChartSection section = new ContributionChartSection(
 				provider, true);
-		section.sectionTitle = M.FlowContributions;
+		section.sectionTitle = M.DirectContributionsFlowResultsOverview;
 		section.selectionName = M.Flow;
 		return section;
 	}
@@ -55,7 +55,7 @@ public class ContributionChartSection {
 			ContributionResultProvider<?> provider) {
 		ContributionChartSection section = new ContributionChartSection(
 				provider, false);
-		section.sectionTitle = M.ImpactContributions;
+		section.sectionTitle = M.DirectContributionsImpactCategoryResultsOverview;
 		section.selectionName = M.ImpactCategory;
 		return section;
 	}

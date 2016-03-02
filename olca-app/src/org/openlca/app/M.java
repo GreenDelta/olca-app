@@ -119,6 +119,7 @@ public class M extends NLS {
 	public static String Context;
 	public static String Contribution;
 	public static String ContributionTree;
+	public static String ContributionTreeLocations;
 	public static String ConversionFactor;
 	public static String Copy;
 	public static String CopyAllFromRightToLeft;
@@ -216,7 +217,12 @@ public class M extends NLS {
 	public static String Description;
 	public static String DeveloperTools;
 	public static String Diff;
+	public static String Direct;
 	public static String DirectContribution;
+	public static String DirectContributionsFlowResults;
+	public static String DirectContributionsFlowResultsOverview;
+	public static String DirectContributionsImpactCategoryResults;
+	public static String DirectContributionsImpactCategoryResultsOverview;
 	public static String DirectImpact;
 	public static String Direction;
 	public static String DisconnectFromRepository;
@@ -290,6 +296,7 @@ public class M extends NLS {
 	public static String Flow;
 	public static String FlowCategory;
 	public static String FlowContributions;
+	public static String FlowContributionsToProcessResults;
 	public static String FlowProperties;
 	public static String FlowProperty;
 	public static String FlowPropertyIsUsed;
@@ -788,6 +795,7 @@ public class M extends NLS {
 	public static String UpdatePreferences;
 	public static String UpdateReferenceCurrency;
 	public static String UpdatingProductSystem;
+	public static String UpstreamInclDirect;
 	public static String UpstreamTotal;
 	public static String Usage;
 	public static String UsageOf;

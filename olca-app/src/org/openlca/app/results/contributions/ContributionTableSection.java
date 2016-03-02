@@ -48,7 +48,7 @@ public class ContributionTableSection {
 			ContributionResultProvider<?> provider) {
 		ContributionTableSection section = new ContributionTableSection(
 				provider, ModelType.FLOW);
-		section.sectionTitle = M.FlowContributions;
+		section.sectionTitle = M.DirectContributionsFlowResults;
 		section.selectionName = M.Flow;
 		return section;
 	}
@@ -57,7 +57,7 @@ public class ContributionTableSection {
 			ContributionResultProvider<?> provider) {
 		ContributionTableSection section = new ContributionTableSection(
 				provider, ModelType.IMPACT_CATEGORY);
-		section.sectionTitle = M.ImpactContributions;
+		section.sectionTitle = M.DirectContributionsImpactCategoryResults;
 		section.selectionName = M.ImpactCategory;
 		return section;
 	}

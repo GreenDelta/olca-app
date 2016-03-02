@@ -69,12 +69,12 @@ public class ProcessResultPage extends FormPage {
 
 	private final static String[] EXCHANGE_COLUMN_LABELS = {
 			M.Contribution,
-			M.Flow, M.UpstreamTotal, M.DirectContribution,
+			M.Flow, M.UpstreamInclDirect, M.Direct,
 			M.Unit };
 	private final static String[] IMPACT_COLUMN_LABELS = {
 			M.Contribution,
-			M.ImpactCategory, M.UpstreamTotal,
-			M.DirectImpact, M.Unit };
+			M.ImpactCategory, M.UpstreamInclDirect,
+			M.Direct, M.Unit };
 
 	public ProcessResultPage(FormEditor editor, FullResultProvider result) {
 		super(editor, ProcessResultPage.class.getName(),
@@ -128,7 +128,7 @@ public class ProcessResultPage extends FormPage {
 	}
 
 	private void createFlowSection(Composite parent) {
-		Section section = UI.section(parent, toolkit, M.FlowResults);
+		Section section = UI.section(parent, toolkit, M.FlowContributionsToProcessResults);
 		UI.gridData(section, true, true);
 		Composite composite = toolkit.createComposite(section);
 		section.setClient(composite);
