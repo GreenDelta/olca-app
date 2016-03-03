@@ -46,12 +46,14 @@ public class M extends NLS {
 	public static String AvoidedProduct;
 	public static String AvoidedProductFlow;
 	public static String AvoidedWasteFlow;
+
 	public static String BackgroundData;
 	public static String BaseUncertainty;
 	public static String Browse;
 	public static String BrowserConfiguration;
 	public static String BuildNextTier;
 	public static String BuildSupplyChain;
+
 	public static String CASNumber;
 	public static String CSVFormat;
 	public static String Calculate;
@@ -117,6 +119,7 @@ public class M extends NLS {
 	public static String Context;
 	public static String Contribution;
 	public static String ContributionTree;
+	public static String ContributionTreeLocations;
 	public static String ConversionFactor;
 	public static String Copy;
 	public static String CopyAllFromRightToLeft;
@@ -162,6 +165,7 @@ public class M extends NLS {
 	public static String Cut;
 	public static String CutOffForFirstLayerIn;
 	public static String Cutoff;
+
 	public static String DBImportNoTarget;
 	public static String DBImportNoTargetConnectionFailedMessage;
 	public static String DBImportUpdateDatabaseQuestion;
@@ -213,7 +217,12 @@ public class M extends NLS {
 	public static String Description;
 	public static String DeveloperTools;
 	public static String Diff;
+	public static String Direct;
 	public static String DirectContribution;
+	public static String DirectContributionsFlowResults;
+	public static String DirectContributionsFlowResultsOverview;
+	public static String DirectContributionsImpactCategoryResults;
+	public static String DirectContributionsImpactCategoryResultsOverview;
 	public static String DirectImpact;
 	public static String Direction;
 	public static String DisconnectFromRepository;
@@ -222,6 +231,7 @@ public class M extends NLS {
 	public static String DoYouReallyWantToDelete;
 	public static String Doi;
 	public static String Dot;
+
 	public static String EcoSpold2Export;
 	public static String EcoSpoldConfiguration;
 	public static String Economic;
@@ -265,6 +275,7 @@ public class M extends NLS {
 	public static String ExternalFile;
 	public static String ExternalSource;
 	public static String ExternalSourceChange;
+
 	public static String Factor;
 	public static String Factors;
 	public static String FailedToLoadFlowProperty;
@@ -285,6 +296,7 @@ public class M extends NLS {
 	public static String Flow;
 	public static String FlowCategory;
 	public static String FlowContributions;
+	public static String FlowContributionsToProcessResults;
 	public static String FlowProperties;
 	public static String FlowProperty;
 	public static String FlowPropertyIsUsed;
@@ -299,6 +311,7 @@ public class M extends NLS {
 	public static String FoundProblems;
 	public static String FromDirectory;
 	public static String FunctionalUnit;
+
 	public static String GeneralInformation;
 	public static String Geography;
 	public static String GeographyDescription;
@@ -316,6 +329,8 @@ public class M extends NLS {
 	public static String Group;
 	public static String Grouping;
 	public static String Groups;
+
+	public static String HTMLGraph;
 	public static String Help;
 	public static String Hide;
 	public static String HighOpportunity;
@@ -323,7 +338,7 @@ public class M extends NLS {
 	public static String Home;
 	public static String Host;
 	public static String Hourly;
-	public static String HTMLGraph;
+
 	public static String ILCDNetworkExport;
 	public static String ILCDNetworkExportDescription;
 	public static String ILCDNetworkSettings;
@@ -388,9 +403,11 @@ public class M extends NLS {
 	public static String IsNotValidNumber;
 	public static String IsNotValidParameterName;
 	public static String IsReference;
+
 	public static String KeepLocalModel;
 	public static String KeepModelDeleted;
 	public static String KmlEditor;
+
 	public static String LCCAddedValuesTable;
 	public static String LCCNetcostsTable;
 	public static String LCIAMethod;
@@ -418,6 +435,7 @@ public class M extends NLS {
 	public static String Longitude;
 	public static String LowOpportunity;
 	public static String LowRisk;
+
 	public static String ManagePlugins;
 	public static String Map;
 	public static String Mark;
@@ -456,6 +474,7 @@ public class M extends NLS {
 	public static String MultiLine;
 	public static String MultiPoint;
 	public static String MultiPolygon;
+
 	public static String Name;
 	public static String NameCannotBeEmpty;
 	public static String NameEmptyOrAlreadyExists;
@@ -502,6 +521,7 @@ public class M extends NLS {
 	public static String NoReferenceFlowPropertySelected;
 	public static String NoReferenceProcessSelected;
 	public static String NoRisk;
+	public static String NoShapefileParameterSelected;
 	public static String NoUnitGroupSelected;
 	public static String None;
 	public static String NormalDistribution;
@@ -521,6 +541,7 @@ public class M extends NLS {
 	public static String NumberOfDecimalPlaces;
 	public static String NumberOfIterations;
 	public static String NumberOfSimulations;
+
 	public static String OK;
 	public static String OnlineHelp;
 	public static String Open;
@@ -538,6 +559,7 @@ public class M extends NLS {
 	public static String Outputs;
 	public static String OverwriteFile;
 	public static String OverwriteFileQuestion;
+
 	public static String Parameter;
 	public static String ParameterAlreadyAdded;
 	public static String ParameterDescriptionTable;
@@ -589,9 +611,11 @@ public class M extends NLS {
 	public static String Projects;
 	public static String Properties;
 	public static String Publication;
+
 	public static String QuantitativeReference;
 	public static String Quantity;
 	public static String QuickResults;
+
 	public static String RawValue;
 	public static String ReallyDeleteShapeFile;
 	public static String RecalculateQuestion;
@@ -640,6 +664,7 @@ public class M extends NLS {
 	public static String RiskLevel;
 	public static String Route;
 	public static String RunCalculation;
+
 	public static String SamplingProcedure;
 	public static String SankeyDiagram;
 	public static String Sankey_ScaleDescription;
@@ -715,6 +740,7 @@ public class M extends NLS {
 	public static String Synonyms;
 	public static String SystemProcess;
 	public static String SystemSaveProceedQuestion;
+
 	public static String Tab;
 	public static String TargetAmount;
 	public static String Technology;
@@ -727,7 +753,6 @@ public class M extends NLS {
 	public static String Text;
 	public static String TextDropComponent_ToolTipText;
 	public static String TextReference;
-	public static String NoShapefileParameterSelected;
 	public static String Time;
 	public static String TimeAndAuthor;
 	public static String TimeDescription;
@@ -741,6 +766,7 @@ public class M extends NLS {
 	public static String Tree;
 	public static String TriangleDistribution;
 	public static String Type;
+
 	public static String URL;
 	public static String Uncertainty;
 	public static String UncertaintyDistribution;
@@ -769,6 +795,7 @@ public class M extends NLS {
 	public static String UpdatePreferences;
 	public static String UpdateReferenceCurrency;
 	public static String UpdatingProductSystem;
+	public static String UpstreamInclDirect;
 	public static String UpstreamTotal;
 	public static String Usage;
 	public static String UsageOf;
@@ -777,6 +804,7 @@ public class M extends NLS {
 	public static String User;
 	public static String UserFriendlyName;
 	public static String Username;
+
 	public static String Value;
 	public static String Variant;
 	public static String VariantDescriptionTable;
@@ -785,6 +813,7 @@ public class M extends NLS {
 	public static String VersionNewer;
 	public static String VeryHighRisk;
 	public static String VeryLowRisk;
+
 	public static String Warning;
 	public static String Waste;
 	public static String Website;
@@ -794,32 +823,11 @@ public class M extends NLS {
 	public static String Welcome;
 	public static String Window;
 	public static String WithPassword;
+
 	public static String Year;
 	public static String Yes;
+
 	public static String ZipCode;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 	private static Map<String, String> map;
 
