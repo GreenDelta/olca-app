@@ -93,12 +93,12 @@ gulp.task('plugin_manager_styles', function() {
 		.pipe(gulp.dest('src/plugin_manager/precompiled'));
 });
 
-var readMessages = function(file) {
+var readMessages = function(file, defaultMsg) {
 	var data = fs.readFileSync(file, 'utf8');
 	if (!data) {
 		return {};
 	}
-	var msg = {};
+	var msg = JSON.parse(JSON.stringify(defaultMsg));
 	var lines = data.split('\n');
 	for (var i = 0; i < lines.length; i++) {
 		var line = lines[i];
@@ -123,6 +123,7 @@ var readMessages = function(file) {
 };
 
 gulp.task('start-page-templates', function() {
+	var defaultMsg = readMessages(__dirname + '/src/start_page/msg/messages.properties', {});
 	return gulp.src('./src/start_page/msg/*.properties')
 		.pipe(foreach(function(stream, f) {
 			var file = f.path;
@@ -132,7 +133,7 @@ gulp.task('start-page-templates', function() {
 				var suffix = file.substring(dotIndex - 3, dotIndex);
 			}
 			var newName = 'start_page' + suffix + '.html';
-			var msg = readMessages(file);
+			var msg = readMessages(file, defaultMsg);
 			return gulp.src('./src/start_page/start_page.jade')
 				.pipe($.jade({
 					locals: {msg: msg}
