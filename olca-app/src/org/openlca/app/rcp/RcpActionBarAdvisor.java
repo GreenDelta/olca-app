@@ -124,9 +124,18 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 
 	@Override
 	protected void makeActions(final IWorkbenchWindow window) {
+		// save
 		saveAction = ActionFactory.SAVE.create(window);
+		saveAction.setImageDescriptor(Icon.SAVE.descriptor());
+		saveAction.setDisabledImageDescriptor(Icon.SAVE_DISABLED.descriptor());
+		// save as
 		saveAsAction = ActionFactory.SAVE_AS.create(window);
+		saveAsAction.setImageDescriptor(Icon.SAVE_AS.descriptor());
+		saveAsAction.setDisabledImageDescriptor(Icon.SAVE_AS_DISABLED.descriptor());
+		// save all
 		saveAllAction = ActionFactory.SAVE_ALL.create(window);
+		saveAllAction.setImageDescriptor(Icon.SAVE_ALL.descriptor());
+		saveAllAction.setDisabledImageDescriptor(Icon.SAVE_ALL_DISABLED.descriptor());
 		closeAction = ActionFactory.CLOSE.create(window);
 		closeAllAction = ActionFactory.CLOSE_ALL.create(window);
 		preferencesAction = ActionFactory.PREFERENCES.create(window);
