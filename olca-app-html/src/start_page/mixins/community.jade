@@ -6,8 +6,10 @@ mixin community()
 				h3!=msg.community.title
 		.right
 			p!=msg.community.socialMedia
-			img.social-media-icon(src='images/twitter.svg')
-			img.social-media-icon(src='images/linkedin.svg')
+			a(href='https://twitter.com/openlca')
+				img.social-media-icon(src='images/twitter.svg')
+			a(href='https://www.linkedin.com/groups/5060236/profile')
+				img.social-media-icon(src='images/linkedin.svg')
 		.center
 			p!=msg.community.description
 			p!=msg.community.note
