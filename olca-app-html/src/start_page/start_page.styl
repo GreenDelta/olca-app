@@ -26,7 +26,7 @@ h2
 	font-weight normal
 
 header
-	padding 10px 30px 0 30px
+	padding 10px 30px 1px 30px
 	background-color rgb(17, 88, 132)
 	color rgb(254, 247, 235)
 	
@@ -49,12 +49,15 @@ header
 		width 235px
 
 	.company-logo
+		background-image url('images/greendelta-logo.png')
+		display block
+		width 210px
 		height 24px
 		float right		
-		margin-top 65px
+		margin-top 50px
 
 		&:hover
-			content url('images/greendelta-logo-active.png')
+			background-image url('images/greendelta-logo-active.png')
 
 .left
 	float left
@@ -87,6 +90,9 @@ header
 
 	.social-media-icon
 		height 32px
+		
+		&:not(:last-of-type)
+			margin-right 20px
 
 	.icon-container
 		padding 20px 0

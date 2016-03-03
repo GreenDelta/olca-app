@@ -9,10 +9,9 @@ mixin header()
 				h2#version
 		.row
 			.right
-				a(href='http://www.greendelta.com')
-					img.company-logo(src='images/greendelta-logo.png')
+				a.company-logo(href='http://www.greendelta.com')
 			.center
-				p!=msg.subtext.first
+				span!=msg.subtext.first
 					br
 					span!=msg.subtext.second
 				p!=msg.subtext.third
