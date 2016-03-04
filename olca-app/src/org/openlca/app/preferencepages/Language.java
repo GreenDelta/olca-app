@@ -7,7 +7,11 @@ import java.util.Objects;
  */
 public enum Language {
 
+	// ARABIC("Arabic", "ar"),
+
 	BULGARIAN("Bulgarian", "bg"),
+
+	CATALAN("Catalan", "ca"),
 
 	CHINESE("Chinese", "zh"),
 
@@ -21,7 +25,9 @@ public enum Language {
 
 	PORTUGUESE("Portuguese", "pt"),
 
-	SPANISH("Spanish", "es");
+	SPANISH("Spanish", "es"),
+
+	TURKISH("Turkish", "tr");
 
 	private String code;
 	private String displayName;
