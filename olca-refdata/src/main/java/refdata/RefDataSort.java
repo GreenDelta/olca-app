@@ -41,7 +41,8 @@ public class RefDataSort {
 		List<String> raws = Files.readAllLines(file, utf8);
 		List<Line> lines = new ArrayList<>();
 		for (String raw : raws) {
-			lines.add(new Line(raw));
+			String s = stripByteOrderMark(raw, utf8);
+			lines.add(new Line(s));
 		}
 		lines.sort((line1, line2) -> line1.uuid.compareTo(line2.uuid));
 		List<String> sorted = new ArrayList<>();
@@ -49,6 +50,23 @@ public class RefDataSort {
 			sorted.add(line.rawLine);
 		}
 		Files.write(file, sorted, utf8, StandardOpenOption.CREATE);
+	}
+
+	/**
+	 * The first line of a file may starts with a byte-order-mark
+	 * (https://en.wikipedia.org/wiki/Byte_order_mark). When we sort the lines
+	 * this line may is not the first line anymore which will lead to errors in
+	 * the CSV import. Thus, we remove a byte-order-mark if the line starts with
+	 * this.
+	 */
+	private static String stripByteOrderMark(String raw, Charset utf8) {
+		byte[] bytes = raw.getBytes(utf8);
+		if (bytes.length < 3)
+			return raw;
+		if ((bytes[0] == (byte) 0xEF) && (bytes[1] == (byte) 0xBB) && (bytes[2] == (byte) 0xBF))
+			return new String(bytes, 3, bytes.length - 3, utf8);
+		else
+			return raw;
 	}
 
 	private static class Line {
@@ -60,6 +78,10 @@ public class RefDataSort {
 			uuid = rawLine.split(";")[0];
 			if (uuid.startsWith("\"") && uuid.endsWith("\"")) {
 				uuid = uuid.substring(1, uuid.length() - 1);
+			}
+			int length = uuid.length();
+			if (length != 36) {
+				System.out.println("  Invalid UUID: " + uuid);
 			}
 		}
 	}
