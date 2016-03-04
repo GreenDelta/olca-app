@@ -49,7 +49,8 @@ public class RefDataSort {
 		for (Line line : lines) {
 			sorted.add(line.rawLine);
 		}
-		Files.write(file, sorted, utf8, StandardOpenOption.CREATE);
+		Files.write(file, sorted, utf8, StandardOpenOption.CREATE,
+				StandardOpenOption.TRUNCATE_EXISTING);
 	}
 
 	/**
