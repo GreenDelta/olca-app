@@ -34,7 +34,7 @@ class PedigreeShell extends Shell {
 	private Text valueLabel;
 
 	public PedigreeShell(Shell parent, Exchange exchange) {
-		super(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
+		super(parent, SWT.TITLE | SWT.RESIZE | SWT.CLOSE | SWT.APPLICATION_MODAL);
 		this.exchange = exchange;
 		setLayout(new FillLayout(SWT.HORIZONTAL));
 		create();
