@@ -49,16 +49,16 @@ class MenuProvider extends ContextMenuProvider {
 		GEFActionConstants.addStandardActionGroups(menu);
 		IAction undoAction = registry.getAction(ActionFactory.UNDO.getId());
 		undoAction.setImageDescriptor(Icon.UNDO.descriptor());
-		undoAction.setImageDescriptor(Icon.UNDO_DISABLED.descriptor());
+		undoAction.setDisabledImageDescriptor(Icon.UNDO_DISABLED.descriptor());
 		IAction redoAction = registry.getAction(ActionFactory.REDO.getId());
 		redoAction.setImageDescriptor(Icon.REDO.descriptor());
-		redoAction.setImageDescriptor(Icon.REDO_DISABLED.descriptor());
+		redoAction.setDisabledImageDescriptor(Icon.REDO_DISABLED.descriptor());
 		menu.appendToGroup(GEFActionConstants.GROUP_UNDO, undoAction);
 		menu.appendToGroup(GEFActionConstants.GROUP_UNDO, redoAction);
 		IAction deleteAction = registry.getAction(ActionFactory.DELETE.getId());
 		deleteAction.setText(M.Delete);
 		deleteAction.setImageDescriptor(Icon.DELETE.descriptor());
-		deleteAction.setImageDescriptor(Icon.DELETE_DISABLED.descriptor());
+		deleteAction.setDisabledImageDescriptor(Icon.DELETE_DISABLED.descriptor());
 		menu.appendToGroup(GEFActionConstants.GROUP_EDIT, deleteAction);
 	}
 
