@@ -102,7 +102,8 @@ public class SankeyDiagram extends GraphicalEditor implements
 		node.setSingleContribution(sankeyResult
 				.getDirectContribution(processId));
 		node.setSingleResult(sankeyResult.getDirectResult(processId));
-		node.setTotalContribution(sankeyResult.getUpstreamContribution(processId));
+		node.setTotalContribution(sankeyResult
+				.getUpstreamContribution(processId));
 		node.setTotalResult(sankeyResult.getUpstreamResult(processId));
 		createdProcesses.put(process.getId(), node);
 		return node;
@@ -124,7 +125,10 @@ public class SankeyDiagram extends GraphicalEditor implements
 			descriptors.put(descriptor.getId(), descriptor);
 		if (cutoff == 0) {
 			for (Long processId : productSystem.getProcesses()) {
-				systemNode.addChild(createNode(descriptors.get(processId)));
+				ProcessDescriptor descriptor = descriptors.get(processId);
+				if (descriptor != null) {
+					systemNode.addChild(createNode(descriptor));
+				}
 			}
 		} else {
 			long refProcess = productSystem.getReferenceProcess().getId();
@@ -132,8 +136,9 @@ public class SankeyDiagram extends GraphicalEditor implements
 					sankeyResult, refProcess, cutoff, linkSearchMap);
 			for (final Long processId : processesToDraw) {
 				ProcessDescriptor process = descriptors.get(processId);
-				ProcessNode node = createNode(process);
-				systemNode.addChild(node);
+				if (process != null) {
+					systemNode.addChild(createNode(process));
+				}
 			}
 		}
 	}
@@ -260,8 +265,8 @@ public class SankeyDiagram extends GraphicalEditor implements
 	}
 
 	public double getProductSystemResult() {
-		return sankeyResult.getUpstreamResult(productSystem.getReferenceProcess()
-				.getId());
+		return sankeyResult.getUpstreamResult(productSystem
+				.getReferenceProcess().getId());
 	}
 
 	public double getZoom() {
@@ -289,17 +294,16 @@ public class SankeyDiagram extends GraphicalEditor implements
 	public void update(Object selection, double cutoff) {
 		if (selection == null || cutoff < 0d || cutoff > 1d)
 			return;
-		App.run("Calculate sankey results",
-				() -> sankeyResult.calculate(selection),
-				() -> {
-					systemNode = new ProductSystemNode(productSystem,
-							SankeyDiagram.this, selection, cutoff);
-					createdProcesses.clear();
-					createdLinks.clear();
-					updateModel(cutoff);
-					getGraphicalViewer().deselectAll();
-					getGraphicalViewer().setContents(systemNode);
-				});
+		App.run("Calculate sankey results", () -> sankeyResult
+				.calculate(selection), () -> {
+			systemNode = new ProductSystemNode(productSystem,
+					SankeyDiagram.this, selection, cutoff);
+			createdProcesses.clear();
+			createdLinks.clear();
+			updateModel(cutoff);
+			getGraphicalViewer().deselectAll();
+			getGraphicalViewer().setContents(systemNode);
+		});
 	}
 
 }
