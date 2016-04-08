@@ -18,6 +18,7 @@ import org.openlca.app.M;
 import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.cloud.index.DiffType;
+import org.openlca.app.cloud.ui.commits.HistoryView;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.navigation.CategoryElement;
@@ -65,30 +66,21 @@ public class ConnectAction extends Action implements INavigationAction {
 			String text = M.ConnectingToRepository + config.getServerUrl()
 					+ " " + config.getRepositoryId();
 			App.runWithProgress(text, () -> connect(config));
+			HistoryView.refresh();
 		}
 
 		private void connect(RepositoryConfig config) {
 			RepositoryClient client = new RepositoryClient(config);
 			try {
-				String owner = config.getRepositoryOwner();
-				String repositoryName = config.getRepositoryName();
-				if (owner.equals(config.getUsername())) {
-					if (!client.repositoryExists(repositoryName))
-						client.createRepository(repositoryName);
-				} else {
-					if (!client.hasAccess(config.getRepositoryId())) {
-						error = new Exception(
-								M.NoAccessToRepository);
-						config.disconnect();
-						return;
-					}
-				}
+				if (!client.hasAccess(config.getRepositoryId())) {
+					error = new Exception(M.NoAccessToRepository);				}
 			} catch (WebRequestException e) {
 				error = e;
-				config.disconnect();
-				return;
 			}
-			Database.connect(config);
+			if (error == null)
+				Database.connect(config);
+			else
+				config.disconnect();
 		}
 
 	}

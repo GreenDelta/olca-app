@@ -120,6 +120,8 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 	}
 
 	private ProductSystemNode createModel() {
+		if (getSystemEditor().getModel().getReferenceProcess() == null)
+			return new ProductSystemNode(this);
 		long referenceId = getSystemEditor().getModel().getReferenceProcess()
 				.getId();
 		ProductSystemNode productSystemNode = new ProductSystemNode(this);

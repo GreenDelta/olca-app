@@ -385,6 +385,12 @@
             icon="icons/categories.png"
             id="views.navigation"
             name="%Navigation">
+      </view>
+      <view
+            class="org.openlca.app.cloud.ui.commits.HistoryView"
+            id="views.cloud.history"
+            name="Commit history"
+            restorable="true">
       </view>  
    </extension>
    

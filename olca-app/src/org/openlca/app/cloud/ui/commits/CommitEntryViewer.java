@@ -1,5 +1,7 @@
 package org.openlca.app.cloud.ui.commits;
 
+import java.util.Collection;
+
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
@@ -30,6 +32,11 @@ class CommitEntryViewer extends AbstractViewer<Commit, TreeViewer> {
 	@Override
 	protected IBaseLabelProvider getLabelProvider() {
 		return new LabelProvider();
+	}
+
+	@Override
+	public void setInput(Collection<Commit> collection) {
+		super.setInput(collection);
 	}
 
 }

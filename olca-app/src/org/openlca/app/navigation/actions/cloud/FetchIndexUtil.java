@@ -61,26 +61,26 @@ class FetchIndexHelper {
 		for (DiffResult result : changed) {
 			if (result.getType() != DiffResponse.ADD_TO_LOCAL)
 				continue;
-			ModelType mType = result.getDataset().getType();
+			ModelType mType = result.getDataset().type;
 			if (!mType.isCategorized())
 				continue;
 			Set<String> ids = refIds.get(mType);
 			if (ids == null)
 				refIds.put(mType, ids = new HashSet<>());
-			ids.add(result.getDataset().getRefId());
+			ids.add(result.getDataset().refId);
 		}
 		return refIds;
 	}
 
 	private void index(DiffResult diff) {
 		Dataset dataset = diff.getDataset();
-		if (!dataset.getType().isCategorized())
+		if (!dataset.type.isCategorized())
 			return;
 		DiffResponse responseType = diff.getType();
 		switch (responseType) {
 		case NONE:
 			if (bothDeleted(diff))
-				index.remove(dataset.getRefId());
+				index.remove(dataset.refId);
 			else
 				index.update(dataset, NO_DIFF);
 			break;
@@ -88,10 +88,10 @@ class FetchIndexHelper {
 			index.update(dataset, NO_DIFF);
 			break;
 		case ADD_TO_LOCAL:
-			index.add(dataset, localIds.get(dataset.getRefId()));
+			index.add(dataset, localIds.get(dataset.refId));
 			break;
 		case DELETE_FROM_LOCAL:
-			index.remove(dataset.getRefId());
+			index.remove(dataset.refId);
 			break;
 		case CONFLICT:
 			indexConflict(diff);
@@ -126,10 +126,10 @@ class FetchIndexHelper {
 	private void indexOverwritten(DiffResult diff) {
 		Dataset dataset = diff.getDataset();
 		if (diff.remote.isDeleted()) {
-			index.add(dataset, localIds.get(dataset.getRefId()));
+			index.add(dataset, localIds.get(dataset.refId));
 			index.update(dataset, NEW);
 		} else {
-			DiffType previousType = index.get(dataset.getRefId()).type;
+			DiffType previousType = index.get(dataset.refId).type;
 			if (previousType != NEW)
 				index.update(dataset, CHANGED);
 		}
@@ -138,7 +138,7 @@ class FetchIndexHelper {
 	private void indexMerged(DiffResult diff) {
 		Dataset dataset = diff.getDataset();
 		if (diff.remote.isDeleted())
-			index.remove(dataset.getRefId());
+			index.remove(dataset.refId);
 		else
 			index.update(dataset, NO_DIFF);
 	}

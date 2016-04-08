@@ -1,9 +1,11 @@
 package org.openlca.app.navigation.actions.cloud;
 
 import org.openlca.app.M;
+
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
+import org.openlca.app.cloud.ui.commits.HistoryView;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
@@ -24,6 +26,7 @@ public class DisconnectAction extends Action implements INavigationAction {
 	public void run() {
 		Database.disconnect();
 		Navigator.refresh(Navigator.getNavigationRoot());
+		HistoryView.refresh();
 	}
 
 	@Override

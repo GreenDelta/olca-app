@@ -9,6 +9,7 @@ import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.window.Window;
 import org.openlca.app.App;
 import org.openlca.app.M;
+import org.openlca.app.cloud.ui.commits.HistoryView;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.db.DerbyConfiguration;
@@ -79,6 +80,7 @@ public class DatabaseCopyAction extends Action implements INavigationAction {
 			if (isActive) {
 				Editors.closeAll();
 				Database.close();
+				HistoryView.refresh();
 			}
 			File fromFolder = DatabaseDir.getRootFolder(config.getName());
 			File toFolder = DatabaseDir.getRootFolder(newName);

@@ -19,12 +19,12 @@ class ContentProvider implements ITreeContentProvider {
 	@Override
 	public Object[] getElements(Object inputElement) {
 		if (!(inputElement instanceof Object[]))
-			return null;
+			return new Object[0];
 		Object[] array = (Object[]) inputElement;
 		if (array.length == 0)
-			return null;
+			return new Object[0];
 		if (!(array[0] instanceof JsonNode))
-			return null;
+			return new Object[0];
 		return ((JsonNode) array[0]).children.toArray();
 	}
 

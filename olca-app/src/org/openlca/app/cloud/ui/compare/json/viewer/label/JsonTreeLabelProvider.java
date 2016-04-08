@@ -47,6 +47,8 @@ public class JsonTreeLabelProvider extends StyledCellLabelProvider {
 			readOnlyStyle.applyTo(styled);
 		if (node.hasEqualValues())
 			return styled;
+		if (direction == null)
+			return styled;
 		boolean highlightChanges = doHighlightChanges(node, otherText);
 		diffStyle.applyTo(styled, otherText, side, direction,
 				highlightChanges);

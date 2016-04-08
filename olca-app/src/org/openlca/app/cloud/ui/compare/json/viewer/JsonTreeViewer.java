@@ -60,6 +60,11 @@ public class JsonTreeViewer extends AbstractViewer<JsonNode, TreeViewer> {
 		return Viewers.getAllSelected(getViewer());
 	}
 
+	@Override
+	public void setInput(JsonNode[] input) {
+		super.setInput(input);
+	}
+
 	public static enum Side {
 
 		LEFT, RIGHT;

@@ -2,6 +2,7 @@ package org.openlca.app.cloud.ui.commits;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -42,14 +43,14 @@ class ContentProvider implements ITreeContentProvider {
 			return null;
 		Commit commit = (Commit) parentElement;
 		try {
-			List<FetchRequestData> references = client.getReferences(commit
-					.getId());
-			Collections.sort(references, (d1, d2) -> {
-				String r1 = CloudUtil.getFileReferenceText(d1)
-						.toLowerCase();
-				String r2 = CloudUtil.getFileReferenceText(d2)
-						.toLowerCase();
-				return Strings.compare(r1, r2);
+			List<FetchRequestData> references = client.getReferences(commit.id);
+			Collections.sort(references, new Comparator<FetchRequestData>() {
+				@Override
+				public int compare(FetchRequestData d1, FetchRequestData d2) {
+					String r1 = CloudUtil.getFileReferenceText(d1).toLowerCase();
+					String r2 = CloudUtil.getFileReferenceText(d2).toLowerCase();
+					return Strings.compare(r1, r2);
+				}
 			});
 			return filterNonCategorized(references).toArray();
 		} catch (WebRequestException e) {
@@ -63,7 +64,7 @@ class ContentProvider implements ITreeContentProvider {
 			List<FetchRequestData> references) {
 		List<FetchRequestData> filtered = new ArrayList<>();
 		for (FetchRequestData reference : references)
-			if (reference.getType().isCategorized())
+			if (reference.type.isCategorized())
 				filtered.add(reference);
 		return filtered;
 	}

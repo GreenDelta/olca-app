@@ -20,21 +20,19 @@ public class Sorter extends ViewerSorter {
 	}
 
 	private int compare(Viewer viewer, Dataset d1, Dataset d2) {
-		ModelType type1 = d1.getType();
+		ModelType type1 = d1.type;
 		if (type1 == ModelType.CATEGORY)
-			type1 = d1.getCategoryType();
-		ModelType type2 = d2.getType();
+			type1 = d1.categoryType;
+		ModelType type2 = d2.type;
 		if (type2 == ModelType.CATEGORY)
-			type2 = d2.getCategoryType();
+			type2 = d2.categoryType;
 		int c = ModelTypeComparison.compare(type1, type2);
 		if (c != 0)
 			return c;
-		if (d1.getType() == ModelType.CATEGORY
-				&& d2.getType() != ModelType.CATEGORY)
+		if (d1.type == ModelType.CATEGORY && d2.type != ModelType.CATEGORY)
 			return -1;
-		if (d1.getType() != ModelType.CATEGORY
-				&& d2.getType() == ModelType.CATEGORY)
+		if (d1.type != ModelType.CATEGORY && d2.type == ModelType.CATEGORY)
 			return 1;
-		return Strings.compare(d1.getFullPath(), d2.getFullPath());
+		return Strings.compare(d1.fullPath, d2.fullPath);
 	}
 }

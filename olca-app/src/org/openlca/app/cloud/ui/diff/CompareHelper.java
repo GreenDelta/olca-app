@@ -106,7 +106,7 @@ class CompareHelper {
 		if (node.isModelTypeNode())
 			return null;
 		DiffResult result = (DiffResult) node.content;
-		return result.getDataset().getFullPath();
+		return result.getDataset().fullPath;
 	}
 
 	private Image getLogo(DiffNode node) {
@@ -115,11 +115,11 @@ class CompareHelper {
 		if (node.isModelNode())
 			return Images.get(node.getModelType());
 		DiffResult result = (DiffResult) node.content;
-		return Images.getForCategory(result.getDataset().getCategoryType());
+		return Images.getForCategory(result.getDataset().categoryType);
 	}
 
 	private String toKey(Dataset dataset) {
-		return dataset.getType().name() + dataset.getRefId();
+		return dataset.type.name() + dataset.refId;
 	}
 
 	private class DiffData {

@@ -8,6 +8,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.openlca.app.M;
+import org.openlca.app.cloud.ui.commits.HistoryView;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.UI;
@@ -88,6 +89,7 @@ public class DatabaseWizard extends Wizard {
 				log.error("Create database failed", e);
 			}
 			Navigator.refresh();
+			HistoryView.refresh();
 			monitor.done();
 		}
 

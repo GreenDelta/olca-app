@@ -43,20 +43,20 @@ class RefIdListBuilder {
 		for (DiffResult result : changes)
 			if (result.getType() == DiffResponse.DELETE_FROM_REMOTE) {
 				if (findExistingParent(result.getDataset()) != null)
-					refIds.add(result.getDataset().getRefId());
+					refIds.add(result.getDataset().refId);
 			}
 		return refIds;
 	}
 
 	private INavigationElement<?> findExistingParent(Dataset dataset) {
-		if (dataset.getCategoryRefId() == null)
-			if (dataset.getType() == ModelType.CATEGORY)
-				return map.get(dataset.getCategoryType().name());
+		if (dataset.categoryRefId == null)
+			if (dataset.type == ModelType.CATEGORY)
+				return map.get(dataset.categoryType.name());
 			else
-				return map.get(dataset.getType().name());
-		Dataset parent = index.get(dataset.getCategoryRefId()).getDataset();
-		if (map.containsKey(parent.getRefId()))
-			return map.get(parent.getRefId());
+				return map.get(dataset.type.name());
+		Dataset parent = index.get(dataset.categoryRefId).getDataset();
+		if (map.containsKey(parent.refId))
+			return map.get(parent.refId);
 		return findExistingParent(parent);
 	}
 

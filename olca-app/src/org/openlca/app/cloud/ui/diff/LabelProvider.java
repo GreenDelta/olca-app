@@ -33,9 +33,9 @@ class LabelProvider extends org.eclipse.jface.viewers.LabelProvider {
 	private Image getImage(DiffResult diff) {
 		Dataset dataset = diff.getDataset();
 		Overlay overlay = getOverlay(diff);
-		if (dataset.getType() == ModelType.CATEGORY)
-			return Images.getForCategory(dataset.getCategoryType(), overlay);
-		return Images.get(dataset.getType(), overlay);
+		if (dataset.type == ModelType.CATEGORY)
+			return Images.getForCategory(dataset.categoryType, overlay);
+		return Images.get(dataset.type, overlay);
 	}
 
 	private Overlay getOverlay(DiffResult result) {

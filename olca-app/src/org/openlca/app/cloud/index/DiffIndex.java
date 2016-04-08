@@ -47,19 +47,19 @@ public class DiffIndex {
 	}
 
 	public void add(Dataset dataset, long localId) {
-		Diff diff = index.get(dataset.getRefId());
+		Diff diff = index.get(dataset.refId);
 		if (diff != null)
 			return;
 		diff = new Diff(dataset, DiffType.NO_DIFF);
 		diff.localId = localId;
-		index.put(dataset.getRefId(), diff);
+		index.put(dataset.refId, diff);
 	}
 
 	public void update(Dataset dataset, DiffType newType) {
-		Diff diff = index.get(dataset.getRefId());
+		Diff diff = index.get(dataset.refId);
 		if (diff.type == DiffType.NEW && newType == DiffType.DELETED) {
 			// user added something and then deleted it again
-			remove(dataset.getRefId());
+			remove(dataset.refId);
 			return;
 		}
 		updateDiff(diff, dataset, newType);
@@ -75,20 +75,20 @@ public class DiffIndex {
 			diff.changed = dataset;
 			updateParents(diff, true);
 		}
-		if (dataset.getCategoryRefId() == null)
+		if (dataset.categoryRefId == null)
 			updateChangedTopLevelElements(dataset, newType);
-		index.put(dataset.getRefId(), diff);
+		index.put(dataset.refId, diff);
 	}
 
 	private void updateChangedTopLevelElements(Dataset dataset, DiffType newType) {
-		String type = dataset.getCategoryType().name();
+		String type = dataset.categoryType.name();
 		Set<String> elements = changedTopLevelElements.get(type);
 		if (elements == null)
 			elements = new HashSet<>();
 		if (newType == DiffType.NO_DIFF)
-			elements.remove(dataset.getRefId());
+			elements.remove(dataset.refId);
 		else
-			elements.add(dataset.getRefId());
+			elements.add(dataset.refId);
 		if (elements.isEmpty())
 			changedTopLevelElements.remove(type);
 		else
@@ -126,15 +126,15 @@ public class DiffIndex {
 	}
 
 	private void updateParents(Dataset dataset, boolean add) {
-		String parentId = dataset.getCategoryRefId();
+		String parentId = dataset.categoryRefId;
 		while (parentId != null) {
 			Diff parent = index.get(parentId);
 			if (add)
-				parent.changedChildren.add(dataset.getRefId());
+				parent.changedChildren.add(dataset.refId);
 			else
-				parent.changedChildren.remove(dataset.getRefId());
+				parent.changedChildren.remove(dataset.refId);
 			index.put(parentId, parent);
-			parentId = parent.dataset.getCategoryRefId();
+			parentId = parent.dataset.categoryRefId;
 		}
 		if (add)
 			updateChangedTopLevelElements(dataset, DiffType.CHANGED);

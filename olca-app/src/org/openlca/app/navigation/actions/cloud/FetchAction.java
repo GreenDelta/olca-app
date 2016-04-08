@@ -1,6 +1,7 @@
 package org.openlca.app.navigation.actions.cloud;
 
 import org.openlca.app.M;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +16,7 @@ import org.openlca.app.cloud.index.Diff;
 import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.cloud.ui.DiffDialog;
 import org.openlca.app.cloud.ui.commits.CommitEntryDialog;
+import org.openlca.app.cloud.ui.commits.HistoryView;
 import org.openlca.app.cloud.ui.diff.DiffNode;
 import org.openlca.app.cloud.ui.diff.DiffNodeBuilder;
 import org.openlca.app.cloud.ui.diff.DiffResult;
@@ -48,6 +50,7 @@ public class FetchAction extends Action implements INavigationAction {
 		runner.run();
 		if (runner.error != null)
 			Error.showBox(runner.error.getMessage());
+		HistoryView.refresh();
 	}
 
 	private class Runner {
@@ -152,7 +155,7 @@ public class FetchAction extends Action implements INavigationAction {
 				List<FetchRequestData> remotes) {
 			List<DiffResult> differences = new ArrayList<>();
 			for (FetchRequestData identifier : remotes) {
-				Diff local = index.get(identifier.getRefId());
+				Diff local = index.get(identifier.refId);
 				differences.add(new DiffResult(identifier, local));
 			}
 			return differences;

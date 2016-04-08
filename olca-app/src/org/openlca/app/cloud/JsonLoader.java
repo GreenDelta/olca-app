@@ -45,8 +45,8 @@ public class JsonLoader {
 	}
 
 	private CategorizedEntity load(Dataset dataset) {
-		ModelType type = dataset.getType();
-		String refId = dataset.getRefId();
+		ModelType type = dataset.type;
+		String refId = dataset.refId;
 		return Database.createRootDao(type).getForRefId(refId);
 	}
 
@@ -54,8 +54,7 @@ public class JsonLoader {
 		if (dataset == null)
 			return null;
 		try {
-			JsonObject json = client.getDataset(dataset.getType(),
-					dataset.getRefId());
+			JsonObject json = client.getDataset(dataset.type, dataset.refId);
 			String type = JsonUtil.getString(json, "@type");
 			if (ImpactMethod.class.getSimpleName().equals(type)) {
 				replaceReferences(json, "impactCategories", ModelType.IMPACT_CATEGORY);

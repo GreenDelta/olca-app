@@ -39,14 +39,14 @@ public class DiffResult {
 
 	private Dataset toDataset(FetchRequestData data) {
 		Dataset dataset = new Dataset();
-		dataset.setCategoryType(data.getCategoryType());
-		dataset.setCategoryRefId(data.getCategoryRefId());
-		dataset.setFullPath(data.getFullPath());
-		dataset.setType(data.getType());
-		dataset.setRefId(data.getRefId());
-		dataset.setName(data.getName());
-		dataset.setLastChange(data.getLastChange());
-		dataset.setVersion(data.getVersion());
+		dataset.categoryType = data.categoryType;
+		dataset.categoryRefId = data.categoryRefId;
+		dataset.fullPath = data.fullPath;
+		dataset.type = data.type;
+		dataset.refId = data.refId;
+		dataset.name = data.name;
+		dataset.lastChange = data.lastChange;
+		dataset.version = data.version;
 		return dataset;
 	}
 
@@ -100,13 +100,13 @@ public class DiffResult {
 			return true;
 		if (localDeleted && remote.isDeleted())
 			return true;
-		if (remote.getType() != local.changed.getType())
+		if (remote.type != local.changed.type)
 			return true;
-		if (!remote.getRefId().equals(local.changed.getRefId()))
+		if (!remote.refId.equals(local.changed.refId))
 			return true;
-		if (!remote.getVersion().equals(local.changed.getVersion()))
+		if (!remote.version.equals(local.changed.version))
 			return true;
-		if (remote.getLastChange() != local.changed.getLastChange())
+		if (remote.lastChange != local.changed.lastChange)
 			return true;
 		return false;
 	}
@@ -117,9 +117,9 @@ public class DiffResult {
 
 	public String getDisplayName() {
 		if (local != null)
-			return local.getDataset().getName();
+			return local.getDataset().name;
 		if (remote != null)
-			return remote.getName();
+			return remote.name;
 		return null;
 	}
 
@@ -157,8 +157,8 @@ public class DiffResult {
 	public String toString() {
 		String l = "null";
 		if (local != null) {
-			l = "type: " + local.getDataset().getType();
-			l += ", name: " + local.getDataset().getName();
+			l = "type: " + local.getDataset().type;
+			l += ", name: " + local.getDataset().name;
 		}
 		String text = "model: {" + l + "}, diff: {" + local.type
 				+ "}, result: {" + getType() + "}";

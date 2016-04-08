@@ -35,7 +35,7 @@ public class DiffNode {
 		if (isModelTypeNode())
 			return null;
 		DiffResult result = (DiffResult) content;
-		return result.getDataset().getType();
+		return result.getDataset().type;
 	}
 
 	boolean hasChanged() {

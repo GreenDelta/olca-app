@@ -59,7 +59,7 @@ public class IndexUpdater {
 	}
 
 	private void update(Dataset dataset, DiffIndex index) {
-		DiffType previousType = index.get(dataset.getRefId()).type;
+		DiffType previousType = index.get(dataset.refId).type;
 		if (previousType != DiffType.NEW)
 			index.update(dataset, DiffType.CHANGED);
 	}

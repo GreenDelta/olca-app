@@ -1,5 +1,7 @@
 package org.openlca.app.cloud;
 
+import java.util.Calendar;
+
 import org.openlca.app.navigation.CategoryElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
@@ -35,14 +37,14 @@ public class CloudUtil {
 	public static Dataset toDataset(CategorizedDescriptor entity,
 			Category category) {
 		Dataset dataset = new Dataset();
-		dataset.setRefId(entity.getRefId());
-		dataset.setType(entity.getModelType());
-		dataset.setVersion(Version.asString(entity.getVersion()));
-		dataset.setLastChange(entity.getLastChange());
-		dataset.setName(entity.getName());
+		dataset.refId = entity.getRefId();
+		dataset.type = entity.getModelType();
+		dataset.version = Version.asString(entity.getVersion());
+		dataset.lastChange = entity.getLastChange();
+		dataset.name = entity.getName();
 		ModelType categoryType = null;
 		if (category != null) {
-			dataset.setCategoryRefId(category.getRefId());
+			dataset.categoryRefId = category.getRefId();
 			categoryType = category.getModelType();
 		} else {
 			if (entity.getModelType() == ModelType.CATEGORY)
@@ -50,8 +52,8 @@ public class CloudUtil {
 			else
 				categoryType = entity.getModelType();
 		}
-		dataset.setCategoryType(categoryType);
-		dataset.setFullPath(getFullPath(entity, category));
+		dataset.categoryType = categoryType;
+		dataset.fullPath = getFullPath(entity, category);
 		return dataset;
 	}
 
@@ -72,12 +74,56 @@ public class CloudUtil {
 	}
 
 	public static String getFileReferenceText(FetchRequestData reference) {
-		String modelType = Labels.modelType(reference.getCategoryType());
-		return modelType + "/" + reference.getFullPath();
+		String modelType = Labels.modelType(reference.categoryType);
+		return modelType + "/" + reference.fullPath;
 	}
 
 	public static JsonLoader getJsonLoader(RepositoryClient client) {
 		return new JsonLoader(client);
 	}
 
+	public static String formatCommitDate(long value) {
+		Calendar today = Calendar.getInstance();
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeInMillis(value);
+		if (cal.after(today))
+			return "In future";
+		int seconds = getDifference(today, cal, Calendar.SECOND, 60);
+		if (seconds < 60)
+			return timeText(seconds, "second");
+		int minutes = getDifference(today, cal, Calendar.MINUTE, 60);
+		if (minutes < 60)
+			return timeText(minutes, "minute");
+		int hours = getDifference(today, cal, Calendar.HOUR_OF_DAY, 24);
+		if (hours < 24)
+			return timeText(hours, "hour");
+		int days = getDifference(today, cal, Calendar.DAY_OF_MONTH, 365);
+		if (days < 7)
+			return timeText(days, "day");
+		if (days < 31)
+			return timeText(days / 7, "week");
+		int months = getDifference(today, cal, Calendar.MONTH, 12);
+		if (days < 365 && months > 0)
+			return timeText(months, "month");
+		int years = Calendar.getInstance().get(Calendar.YEAR) - cal.get(Calendar.YEAR);
+		return timeText(years, "year");
+	}
+
+	private static int getDifference(Calendar c1, Calendar c2, int type, int max) {
+		Calendar tmp = Calendar.getInstance();
+		tmp.setTime(c1.getTime());
+		int days = -1;
+		while (c2.before(tmp)) {
+			tmp.add(type, -1);
+			days++;
+			// more is not of interest here
+			if (days == max)
+				break;
+		}
+		return days;
+	}
+
+	private static String timeText(int value, String timeUnit) {
+		return value + " " + timeUnit + (value > 1 ? "s" : "") + " ago";
+	}
 }

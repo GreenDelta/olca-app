@@ -40,27 +40,27 @@ public class DiffNodeBuilder {
 	private boolean init(List<DiffResult> diffs) {
 		for (DiffResult result : diffs)
 			if (result.getType() != DiffResponse.NONE)
-				this.diffs.put(result.getDataset().getRefId(), result);
+				this.diffs.put(result.getDataset().refId, result);
 		nodes.clear();
 		return this.diffs.size() != 0;
 	}
 
 	private void build(DiffResult result) {
-		if (nodes.containsKey(result.getDataset().getRefId()))
+		if (nodes.containsKey(result.getDataset().refId))
 			return;
-		if (!result.getDataset().getType().isCategorized())
+		if (!result.getDataset().type.isCategorized())
 			return;
 		DiffNode parent = getOrCreateParentNode(result.getDataset());
 		DiffNode node = new DiffNode(parent, result);
 		parent.children.add(node);
-		nodes.put(result.getDataset().getRefId(), node);
+		nodes.put(result.getDataset().refId, node);
 	}
 
 	private DiffNode getOrCreateParentNode(Dataset dataset) {
-		String parentId = dataset.getCategoryRefId();
-		ModelType categoryType = dataset.getType();
+		String parentId = dataset.categoryRefId;
+		ModelType categoryType = dataset.type;
 		if (categoryType == ModelType.CATEGORY)
-			categoryType = dataset.getCategoryType();
+			categoryType = dataset.categoryType;
 		if (parentId == null)
 			return getOrCreateModelTypeNode(categoryType);
 		DiffNode categoryNode = nodes.get(parentId);
@@ -86,7 +86,7 @@ public class DiffNodeBuilder {
 		DiffNode parent = getOrCreateParentNode(result.getDataset());
 		DiffNode node = new DiffNode(parent, result);
 		parent.children.add(node);
-		nodes.put(result.getDataset().getRefId(), node);
+		nodes.put(result.getDataset().refId, node);
 		return node;
 	}
 

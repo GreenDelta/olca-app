@@ -41,11 +41,8 @@ import org.openlca.app.navigation.actions.XRefDataExport;
 import org.openlca.app.navigation.actions.XRefDataImport;
 import org.openlca.app.navigation.actions.cloud.CommitAction;
 import org.openlca.app.navigation.actions.cloud.ConnectAction;
-import org.openlca.app.navigation.actions.cloud.DeleteAction;
 import org.openlca.app.navigation.actions.cloud.DisconnectAction;
 import org.openlca.app.navigation.actions.cloud.FetchAction;
-import org.openlca.app.navigation.actions.cloud.ShareAction;
-import org.openlca.app.navigation.actions.cloud.UnshareAction;
 import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.util.viewers.Viewers;
 
@@ -92,17 +89,16 @@ public class NavigationActionProvider extends CommonActionProvider {
 	
 	private INavigationAction[][] cloudActions = new INavigationAction[][] {	
 		new INavigationAction[] { 
-			new CommitAction(), new FetchAction() 
+			new CommitAction(), 
+			new FetchAction() 
 		},
 		new INavigationAction[]	{ 
-			new ShareAction(), new UnshareAction() 
-		},
-		new INavigationAction[]	{ 
-			new ConnectAction(), new DeleteAction(), new DisconnectAction() 
+			new ConnectAction(), 
+			new DisconnectAction() 
 		}	
 	};
 	//@formatter:on
-	
+
 	@Override
 	public void fillContextMenu(IMenuManager menu) {
 		ActionContext con = getContext();
@@ -135,7 +131,7 @@ public class NavigationActionProvider extends CommonActionProvider {
 		menu.add(subMenu);
 		menu.add(new Separator());
 	}
-	
+
 	private INavigationAction[] getDatabaseActions() {
 		int count = App.runsInDevMode() ? 13 : 7;
 		INavigationAction[] actions = new INavigationAction[count];

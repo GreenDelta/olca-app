@@ -6,6 +6,7 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.openlca.app.App;
 import org.openlca.app.M;
+import org.openlca.app.cloud.ui.commits.HistoryView;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
@@ -99,6 +100,7 @@ public class DatabaseExportAction extends Action implements INavigationAction {
 	private void updateUI(final File zip, final boolean active) {
 		if (active)
 			Navigator.refresh();
+		HistoryView.refresh();
 		InformationPopup.show(M.ExportDone, M.DatabaseWasExportedToFile
 				+ ": " + zip.getName());
 	}

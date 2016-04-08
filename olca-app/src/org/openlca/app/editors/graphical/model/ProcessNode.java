@@ -130,13 +130,16 @@ public class ProcessNode extends Node {
 
 	@Override
 	public String getName() {
+		if (process == null)
+			return "";
 		String text = process.getName();
-		if (process.getLocation() != null)
-			text += " ["
-					+ Cache.getEntityCache()
-							.get(Location.class, process.getLocation())
-							.getCode() + "]";
-		return text;
+		if (process.getLocation() == null)
+			return text;
+		Location location = Cache.getEntityCache().get(Location.class,
+				process.getLocation());
+		if (location == null)
+			return text;
+		return text += " [" + location.getCode() + "]";
 	}
 
 	public ProcessDescriptor getProcess() {

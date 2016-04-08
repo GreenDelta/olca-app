@@ -1,6 +1,7 @@
 package org.openlca.app.navigation.actions.cloud;
 
 import org.openlca.app.M;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -16,6 +17,7 @@ import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.cloud.index.DiffType;
 import org.openlca.app.cloud.ui.CommitDialog;
 import org.openlca.app.cloud.ui.ReferencesResultDialog;
+import org.openlca.app.cloud.ui.commits.HistoryView;
 import org.openlca.app.cloud.ui.diff.DiffNode;
 import org.openlca.app.cloud.ui.diff.DiffNodeBuilder;
 import org.openlca.app.cloud.ui.diff.DiffResult;
@@ -56,6 +58,7 @@ public class CommitAction extends Action implements INavigationAction {
 			Error.showBox(M.RejectMessage);
 		else if (runner.noChanges)
 			Info.showBox(M.NoChangesInLocalDb);
+		HistoryView.refresh();
 	}
 
 	@Override
@@ -213,9 +216,9 @@ public class CommitAction extends Action implements INavigationAction {
 			orderResults();
 			for (DiffResult change : selected) {
 				Dataset dataset = change.getDataset();
-				DiffType before = index.get(dataset.getRefId()).type;
+				DiffType before = index.get(dataset.refId).type;
 				if (before == DiffType.DELETED)
-					index.remove(dataset.getRefId());
+					index.remove(dataset.refId);
 				else
 					index.update(dataset, DiffType.NO_DIFF);
 			}
@@ -227,13 +230,13 @@ public class CommitAction extends Action implements INavigationAction {
 		private void orderResults() {
 			Collections.sort(selected, (d1, d2) -> {
 				int depth1 = 0;
-				String path = d1.getDataset().getFullPath();
+				String path = d1.getDataset().fullPath;
 				while (path.contains("/")) {
 					path = path.substring(path.indexOf("/") + 1);
 					depth1++;
 				}
 				int depth2 = 0;
-				path = d2.getDataset().getFullPath();
+				path = d2.getDataset().fullPath;
 				while (path.contains("/")) {
 					path = path.substring(path.indexOf("/") + 1);
 					depth2++;
@@ -255,11 +258,11 @@ public class CommitAction extends Action implements INavigationAction {
 			for (DiffResult change : changes)
 				if (change.getType() == DiffResponse.DELETE_FROM_REMOTE) {
 					Dataset dataset = change.getDataset();
-					dataset.setFullPath(change.local.dataset.getFullPath());
+					dataset.fullPath = change.local.dataset.fullPath;
 					commit.putForRemoval(dataset);
 				} else {
-					ModelType type = change.getDataset().getType();
-					String refId = change.getDataset().getRefId();
+					ModelType type = change.getDataset().type;
+					String refId = change.getDataset().refId;
 					commit.put(Database.createRootDao(type).getForRefId(refId));
 				}
 		}

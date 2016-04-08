@@ -7,6 +7,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.window.Window;
 import org.openlca.app.M;
+import org.openlca.app.cloud.ui.commits.HistoryView;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.db.DerbyConfiguration;
@@ -88,9 +89,10 @@ public class DatabaseRenameAction extends Action implements INavigationAction {
 			Database.remove(config);
 			config.setName(newName);
 			Database.register(config);
-			if (isActive) 
+			if (isActive)
 				Database.activate(config);
 			Navigator.refresh();
+			HistoryView.refresh();
 		} catch (Exception e) {
 			log.error("failed to rename database", e);
 		}

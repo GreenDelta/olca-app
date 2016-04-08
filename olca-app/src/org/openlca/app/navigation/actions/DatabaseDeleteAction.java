@@ -11,6 +11,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.osgi.util.NLS;
 import org.openlca.app.App;
 import org.openlca.app.M;
+import org.openlca.app.cloud.ui.commits.HistoryView;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.db.DerbyConfiguration;
@@ -74,7 +75,10 @@ public class DatabaseDeleteAction extends Action implements INavigationAction {
 		if (createMessageDialog().open() != MessageDialog.OK)
 			return;
 		checkCloseEditors();
-		App.run(M.DeleteDatabase, () -> doDelete(), Navigator::refresh);
+		App.run(M.DeleteDatabase, () -> doDelete(), () -> {
+			Navigator.refresh();
+			HistoryView.refresh();
+		});
 	}
 
 	private void checkCloseEditors() {

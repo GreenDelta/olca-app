@@ -31,7 +31,7 @@ public abstract class AbstractViewer<T, V extends StructuredViewer> implements
 		return new BaseLabelProvider();
 	}
 
-	protected V getViewer() {
+	public V getViewer() {
 		return viewer;
 	}
 

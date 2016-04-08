@@ -30,7 +30,7 @@ public class CommitDiffViewer extends DiffTreeViewer {
 		for (DiffNode node : selected) {
 			if (!node.isModelNode())
 				continue;
-			String cId = node.getContent().getDataset().getCategoryRefId();
+			String cId = node.getContent().getDataset().categoryRefId;
 			if (cId == null)
 				cId = node.getModelType().name();
 			if (expanded.contains(cId))
@@ -51,7 +51,7 @@ public class CommitDiffViewer extends DiffTreeViewer {
 		for (TreeItem item : items) {
 			DiffNode node = (DiffNode) item.getData();
 			if (node != null && !node.isModelTypeNode()) {
-				String refId = node.getContent().getDataset().getRefId();
+				String refId = node.getContent().getDataset().refId;
 				if (refIds.contains(refId))
 					item.setChecked(true);
 			}
@@ -63,7 +63,7 @@ public class CommitDiffViewer extends DiffTreeViewer {
 		List<DiffNode> elements = new ArrayList<>();
 		for (DiffNode child : node.children) {
 			if (!child.isModelTypeNode() && child.hasChanged()) {
-				String refId = child.getContent().getDataset().getRefId();
+				String refId = child.getContent().getDataset().refId;
 				if (refIds.contains(refId))
 					elements.add(child);
 			}
