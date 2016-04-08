@@ -391,6 +391,12 @@
             id="views.cloud.history"
             name="Commit history"
             restorable="true">
+      </view>
+      <view
+            class="org.openlca.app.validation.ValidationView"
+            id="views.problems"
+            name="Problems"
+            restorable="true">
       </view>  
    </extension>
    
