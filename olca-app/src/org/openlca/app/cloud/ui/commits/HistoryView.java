@@ -1,8 +1,10 @@
 package org.openlca.app.cloud.ui.commits;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -144,7 +146,7 @@ public class HistoryView extends ViewPart {
 
 	}
 
-	private class HistoryViewer extends AbstractTableViewer<Commit> {
+	class HistoryViewer extends AbstractTableViewer<Commit> {
 
 		private Commit lastSelection;
 
@@ -160,6 +162,11 @@ public class HistoryView extends ViewPart {
 		@Override
 		protected String[] getColumnHeaders() {
 			return new String[] { "#Id", "#Message", "#Committer", "#Committed date" };
+		}
+
+		@Override
+		protected List<Action> getAdditionalActions() {
+			return Collections.singletonList(new CheckoutAction(this));
 		}
 
 	}

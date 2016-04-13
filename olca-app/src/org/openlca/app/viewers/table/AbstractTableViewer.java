@@ -7,6 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
@@ -97,11 +98,18 @@ public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 		}
 		// we have to create this array, because we do not want to have the copy
 		// action in the section menu
-		Action[] tableActions = new Action[actions.size() +1];
-		for(int i = 0; i < actions.size(); i++)
+		List<Action> additionalActions = getAdditionalActions();
+		Action[] tableActions = new Action[actions.size() + additionalActions.size() + 1];
+		for (int i = 0; i < actions.size(); i++)
 			tableActions[i] = actions.get(i);
-		tableActions[actions.size()] = TableClipboard.onCopy(viewer);
+		for (int i = 0; i < additionalActions.size(); i++)
+			tableActions[i + actions.size()] = additionalActions.get(i);
+		tableActions[tableActions.length - 1] = TableClipboard.onCopy(viewer);
 		Actions.bind(viewer, tableActions);
+	}
+
+	protected List<Action> getAdditionalActions() {
+		return Collections.emptyList();
 	}
 
 	private void addDropSupport(TableViewer viewer) {
@@ -132,7 +140,7 @@ public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 								method.setAccessible(true);
 								method.invoke(thisObject, object);
 								method.setAccessible(accessible);
-							} catch (Exception e) {								
+							} catch (Exception e) {
 								log.error("Error invoking OnDrop method", e);
 							}
 						}

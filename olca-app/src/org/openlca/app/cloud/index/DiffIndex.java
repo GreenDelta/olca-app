@@ -46,6 +46,12 @@ public class DiffIndex {
 			db.close();
 	}
 
+	public void clear() {
+		index.clear();
+		changedTopLevelElements.clear();
+		commit();
+	}
+
 	public void add(Dataset dataset, long localId) {
 		Diff diff = index.get(dataset.refId);
 		if (diff != null)
