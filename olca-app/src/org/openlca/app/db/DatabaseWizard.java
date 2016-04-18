@@ -44,6 +44,7 @@ public class DatabaseWizard extends Wizard {
 			getContainer().run(true, false, runner);
 			new DatabaseUpdate(Database.get()).run();
 			Navigator.refresh();
+			HistoryView.refresh();
 			return true;
 		} catch (Exception e) {
 			log.error("Database creation failed", e);
@@ -88,8 +89,6 @@ public class DatabaseWizard extends Wizard {
 			} catch (Exception e) {
 				log.error("Create database failed", e);
 			}
-			Navigator.refresh();
-			HistoryView.refresh();
 			monitor.done();
 		}
 
