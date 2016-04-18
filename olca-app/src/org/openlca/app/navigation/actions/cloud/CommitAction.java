@@ -108,8 +108,7 @@ public class CommitAction extends Action implements INavigationAction {
 			if (!doContinue)
 				return;
 			if (CloudPreference.doCheckAgainstLibraries()) {
-				App.runWithProgress(M.CheckingAgainstLibraries,
-						this::checkAgainstLibraries);
+				App.runWithProgress(M.CheckingAgainstLibraries, this::checkAgainstLibraries);
 				doContinue = openLibraryResultDialog();
 			}
 			if (!doContinue)
@@ -137,16 +136,14 @@ public class CommitAction extends Action implements INavigationAction {
 		}
 
 		private boolean openCommitDialog() {
-			DiffNode node = new DiffNodeBuilder(Database.get(),
-					Database.getDiffIndex()).build(changes);
+			DiffNode node = new DiffNodeBuilder(Database.get(), Database.getDiffIndex()).build(changes);
 			if (node == null) {
 				noChanges = true;
 				return false;
 			}
 			CommitDialog dialog = new CommitDialog(node, client);
 			dialog.setBlockOnOpen(true);
-			Set<String> refIds = new RefIdListBuilder(selection, changes, index)
-					.build();
+			Set<String> refIds = new RefIdListBuilder(selection, changes, index).build();
 			dialog.setInitialSelection(refIds);
 			if (dialog.open() != IDialogConstants.OK_ID)
 				return false;
@@ -165,12 +162,11 @@ public class CommitAction extends Action implements INavigationAction {
 				return false;
 			if (references == null || references.isEmpty())
 				return true;
-			DiffNode node = new DiffNodeBuilder(Database.get(),
-					Database.getDiffIndex()).build(references);
-			ReferencesResultDialog dialog = new ReferencesResultDialog(node,
-					client);
+			DiffNode node = new DiffNodeBuilder(Database.get(), Database.getDiffIndex()).build(references);
+			ReferencesResultDialog dialog = new ReferencesResultDialog(node, client);
 			if (dialog.open() != IDialogConstants.OK_ID)
 				return false;
+			selected.addAll(dialog.getSelected());
 			return true;
 		}
 
@@ -179,8 +175,7 @@ public class CommitAction extends Action implements INavigationAction {
 				return false;
 			if (checkResult == null || checkResult.isEmpty())
 				return true;
-			LibraryResultDialog libraryDialog = new LibraryResultDialog(
-					checkResult);
+			LibraryResultDialog libraryDialog = new LibraryResultDialog(checkResult);
 			if (libraryDialog.open() != IDialogConstants.OK_ID)
 				return false;
 			return true;

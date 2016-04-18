@@ -1,7 +1,8 @@
 package org.openlca.app.cloud.ui;
 
-import org.openlca.app.M;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.graphics.Point;
@@ -11,16 +12,18 @@ import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.openlca.app.M;
 import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.cloud.JsonLoader;
+import org.openlca.app.cloud.ui.diff.CommitDiffViewer;
 import org.openlca.app.cloud.ui.diff.DiffNode;
-import org.openlca.app.cloud.ui.diff.ReferencesDiffViewer;
+import org.openlca.app.cloud.ui.diff.DiffResult;
 import org.openlca.app.util.UI;
 import org.openlca.cloud.api.RepositoryClient;
 
 public class ReferencesResultDialog extends FormDialog {
 
-	private ReferencesDiffViewer viewer;
+	private CommitDiffViewer viewer;
 	private DiffNode node;
 	private RepositoryClient client;
 
@@ -38,8 +41,7 @@ public class ReferencesResultDialog extends FormDialog {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		ScrolledForm form = UI.formHeader(mform,
-				M.CommitReferenceNotice);
+		ScrolledForm form = UI.formHeader(mform, M.CommitReferenceNotice);
 		FormToolkit toolkit = mform.getToolkit();
 		Composite body = form.getBody();
 		body.setLayout(new GridLayout());
@@ -52,14 +54,20 @@ public class ReferencesResultDialog extends FormDialog {
 
 	private void createModelViewer(Composite parent, FormToolkit toolkit) {
 		JsonLoader loader = CloudUtil.getJsonLoader(client);
-		viewer = new ReferencesDiffViewer(parent, loader);
+		viewer = new CommitDiffViewer(parent, loader);
 	}
 
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
-		createButton(parent, IDialogConstants.CANCEL_ID,
-				IDialogConstants.CANCEL_LABEL, false);
-		createButton(parent, IDialogConstants.OK_ID, M.AcceptCommit, true);
+		createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
+		createButton(parent, IDialogConstants.OK_ID, M.Commit, true);
+	}
+
+	public List<DiffResult> getSelected() {
+		List<DiffResult> selected = new ArrayList<>();
+		for (DiffNode node : viewer.getChecked())
+			selected.add(node.getContent());
+		return selected;
 	}
 
 }
