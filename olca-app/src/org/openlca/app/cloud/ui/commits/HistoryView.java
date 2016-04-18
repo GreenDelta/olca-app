@@ -123,6 +123,12 @@ public class HistoryView extends ViewPart {
 		instance.jsonViewer.setInput(new JsonNode[0]);
 	}
 
+	@Override
+	public void dispose() {
+		instance = null;
+		super.dispose();
+	}
+
 	private void loadReferences(Commit commit) {
 		if (!Database.isConnected())
 			return;

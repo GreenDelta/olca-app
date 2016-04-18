@@ -23,6 +23,7 @@ import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.UI;
+import org.openlca.app.validation.ValidationView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,6 +79,7 @@ public class DatabaseDeleteAction extends Action implements INavigationAction {
 		App.run(M.DeleteDatabase, () -> doDelete(), () -> {
 			Navigator.refresh();
 			HistoryView.refresh();
+			ValidationView.clear();
 		});
 	}
 

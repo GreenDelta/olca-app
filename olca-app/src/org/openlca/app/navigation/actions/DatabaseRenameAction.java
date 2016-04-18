@@ -18,6 +18,7 @@ import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.UI;
+import org.openlca.app.validation.ValidationView;
 import org.openlca.core.database.DbUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,6 +79,7 @@ public class DatabaseRenameAction extends Action implements INavigationAction {
 			if (isActive) {
 				Editors.closeAll();
 				Database.close();
+				ValidationView.clear();
 			}
 			File oldDbFolder = DatabaseDir.getRootFolder(config.getName());
 			File newDbFolder = DatabaseDir.getRootFolder(newName);

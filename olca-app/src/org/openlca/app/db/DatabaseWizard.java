@@ -12,6 +12,7 @@ import org.openlca.app.cloud.ui.commits.HistoryView;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.UI;
+import org.openlca.app.validation.ValidationView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +46,7 @@ public class DatabaseWizard extends Wizard {
 			new DatabaseUpdate(Database.get()).run();
 			Navigator.refresh();
 			HistoryView.refresh();
+			ValidationView.clear();
 			return true;
 		} catch (Exception e) {
 			log.error("Database creation failed", e);

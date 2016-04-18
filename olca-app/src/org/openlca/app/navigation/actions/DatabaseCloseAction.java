@@ -13,6 +13,7 @@ import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Editors;
+import org.openlca.app.validation.ValidationView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,6 +56,7 @@ public class DatabaseCloseAction extends Action implements INavigationAction {
 			public void run() {
 				Navigator.refresh();
 				HistoryView.refresh();
+				ValidationView.clear();
 			}
 		});
 	}

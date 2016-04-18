@@ -34,8 +34,13 @@ import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
 public class ValidationView extends ViewPart {
 
+	private static ValidationView instance;
 	private TreeViewer viewer;
 
+	public ValidationView() {
+		instance = this;
+	}
+	
 	@Override
 	public void createPartControl(Composite parent) {
 		SashForm body = new SashForm(parent, SWT.VERTICAL | SWT.SMOOTH);
@@ -82,7 +87,19 @@ public class ValidationView extends ViewPart {
 			e.printStackTrace();
 		}
 	}
+	
+	public static void clear() {
+		if (instance == null)
+			return;
+		instance.viewer.setInput(new Object[0]);
+	}
 
+	@Override
+	public void dispose() {
+		instance = null;
+		super.dispose();
+	}
+	
 	@Override
 	public void setFocus() {
 

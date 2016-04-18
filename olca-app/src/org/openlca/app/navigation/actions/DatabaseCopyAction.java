@@ -20,6 +20,7 @@ import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.UI;
+import org.openlca.app.validation.ValidationView;
 import org.openlca.core.database.DbUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,7 +81,7 @@ public class DatabaseCopyAction extends Action implements INavigationAction {
 			if (isActive) {
 				Editors.closeAll();
 				Database.close();
-				HistoryView.refresh();
+				ValidationView.clear();
 			}
 			File fromFolder = DatabaseDir.getRootFolder(config.getName());
 			File toFolder = DatabaseDir.getRootFolder(newName);
@@ -91,6 +92,7 @@ public class DatabaseCopyAction extends Action implements INavigationAction {
 			if (isActive)
 				Database.activate(config);
 			Navigator.refresh();
+			HistoryView.refresh();
 		} catch (Exception e) {
 			log.error("failed to copy database", e);
 		}
