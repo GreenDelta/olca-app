@@ -90,9 +90,6 @@ class SelectionHandler implements EventHandler {
 			BaseDescriptor selection, double total, String unit) {
 		Contributions.sortDescending(set.contributions);
 		List<LocationItem> items = inputBuilder.build(set, selection, total);
-		if (page.tree != null) {
-			page.tree.setInput(items, unit);
-		}
-		page.renderMap(set.contributions);
+		page.setInput(items, unit);
 	}
 }
