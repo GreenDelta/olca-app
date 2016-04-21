@@ -22,12 +22,12 @@ import org.openlca.core.results.Contributions;
  * Creates the content that should be displayed in the location tree for a
  * given selection.
  */
-class TreeConentBuilder {
+class TreeContentBuilder {
 
 	private ContributionResultProvider<?> result;
 	private Map<Location, List<ProcessDescriptor>> index = new HashMap<>();
 
-	TreeConentBuilder(ContributionResultProvider<?> result) {
+	TreeContentBuilder(ContributionResultProvider<?> result) {
 		this.result = result;
 		initProcessIndex();
 	}

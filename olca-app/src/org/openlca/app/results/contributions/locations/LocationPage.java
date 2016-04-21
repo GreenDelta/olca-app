@@ -17,28 +17,17 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.components.ResultTypeSelection;
-import org.openlca.app.components.ResultTypeSelection.EventHandler;
 import org.openlca.app.db.Cache;
-import org.openlca.app.db.Database;
 import org.openlca.app.rcp.html.HtmlPage;
 import org.openlca.app.rcp.html.HtmlView;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
-import org.openlca.app.util.CostResultDescriptor;
-import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
-import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.database.EntityCache;
-import org.openlca.core.model.Currency;
 import org.openlca.core.model.Location;
-import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
-import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.ContributionItem;
 import org.openlca.core.results.ContributionResultProvider;
-import org.openlca.core.results.ContributionSet;
-import org.openlca.core.results.Contributions;
-import org.openlca.core.results.LocationContribution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,14 +40,14 @@ import com.google.gson.Gson;
 public class LocationPage extends FormPage implements HtmlPage {
 
 	private EntityCache cache = Cache.getEntityCache();
+	ContributionResultProvider<?> result;
+
 	private Logger log = LoggerFactory.getLogger(getClass());
-	private ContributionResultProvider<?> result;
 	private Browser browser;
-	private LocationTree tree;
-	private LocationContribution calculator;
 	private ResultTypeSelection combos;
-	private TreeConentBuilder inputBuilder;
-	private boolean showMap;
+
+	LocationTree tree;
+	boolean showMap;
 
 	public LocationPage(FormEditor editor,
 			ContributionResultProvider<?> result) {
@@ -70,8 +59,6 @@ public class LocationPage extends FormPage implements HtmlPage {
 		super(editor, "analysis.MapPage", M.Locations);
 		this.showMap = showMap;
 		this.result = result;
-		this.inputBuilder = new TreeConentBuilder(result);
-		calculator = new LocationContribution(result);
 	}
 
 	@Override
@@ -89,17 +76,15 @@ public class LocationPage extends FormPage implements HtmlPage {
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, M.Locations);
-		FormToolkit toolkit = managedForm.getToolkit();
-		Composite body = UI.formBody(form, toolkit);
-		createCombos(body, toolkit);
-		createTree(body, toolkit);
-		if (showMap)
-			createBrowser(body, toolkit);
-		if (result.getFlowDescriptors().size() > 0)
-			combos.selectWithEvent(result.getFlowDescriptors().iterator()
-					.next());
+	protected void createFormContent(IManagedForm mform) {
+		ScrolledForm form = UI.formHeader(mform, M.Locations);
+		FormToolkit tk = mform.getToolkit();
+		Composite body = UI.formBody(form, tk);
+		createCombos(body, tk);
+		createTree(body, tk);
+		if (showMap) {
+			createBrowser(body, tk);
+		}
 		form.reflow(true);
 	}
 
@@ -107,7 +92,7 @@ public class LocationPage extends FormPage implements HtmlPage {
 		Composite composite = toolkit.createComposite(body);
 		UI.gridLayout(composite, 2);
 		combos = ResultTypeSelection.on(result, cache)
-				.withEventHandler(new SelectionHandler())
+				.withEventHandler(new SelectionHandler(this))
 				.withSelection(result.getFlowDescriptors().iterator().next())
 				.create(composite, toolkit);
 	}
@@ -131,10 +116,10 @@ public class LocationPage extends FormPage implements HtmlPage {
 		browser = UI.createBrowser(browserComp, this);
 	}
 
-	private void renderMap(List<ContributionItem<Location>> contributions) {
+	void renderMap(List<ContributionItem<Location>> contributions) {
 		List<HeatmapPoint> points = new ArrayList<>();
 		for (ContributionItem<Location> contribution : contributions) {
-			if (!showContribution(contribution))
+			if (!showInMap(contribution))
 				continue;
 			Location location = contribution.item;
 			HeatmapPoint point = new HeatmapPoint();
@@ -150,7 +135,7 @@ public class LocationPage extends FormPage implements HtmlPage {
 		browser.execute("setData(" + json + ")");
 	}
 
-	private boolean showContribution(ContributionItem<Location> contribution) {
+	private boolean showInMap(ContributionItem<Location> contribution) {
 		Location location = contribution.item;
 		if (location == null)
 			return false;
@@ -159,70 +144,6 @@ public class LocationPage extends FormPage implements HtmlPage {
 		if (contribution.share <= 0)
 			return false;
 		return true;
-	}
-
-	private class SelectionHandler implements EventHandler {
-
-		@Override
-		public void flowSelected(FlowDescriptor flow) {
-			if (tree == null || calculator == null || flow == null)
-				return;
-			String unit = Labels.getRefUnit(flow, result.cache);
-			ContributionSet<Location> set = calculator.calculate(flow);
-			double total = result.getTotalFlowResult(flow).value;
-			setData(set, flow, total, unit);
-		}
-
-		@Override
-		public void impactCategorySelected(ImpactCategoryDescriptor impact) {
-			if (tree == null || calculator == null || impact == null)
-				return;
-			String unit = impact.getReferenceUnit();
-			ContributionSet<Location> set = calculator.calculate(impact);
-			double total = result.getTotalImpactResult(impact).value;
-			setData(set, impact, total, unit);
-		}
-
-		@Override
-		public void costResultSelected(CostResultDescriptor cost) {
-			if (tree == null || calculator == null || cost == null)
-				return;
-			String unit = getCurrency();
-			if (cost.forAddedValue) {
-				ContributionSet<Location> set = calculator.addedValues();
-				double total = result.getTotalCostResult();
-				total = total == 0 ? 0 : -total;
-				setData(set, cost, total, unit);
-			} else {
-				ContributionSet<Location> set = calculator.netCosts();
-				double total = result.getTotalCostResult();
-				setData(set, cost, total, unit);
-			}
-		}
-
-		private String getCurrency() {
-			try {
-				CurrencyDao dao = new CurrencyDao(Database.get());
-				Currency ref = dao.getReferenceCurrency();
-				if (ref == null)
-					return "?";
-				else
-					return ref.code != null ? ref.code : ref.getName();
-			} catch (Exception e) {
-				log.error("failed to get reference currency", e);
-				return "?";
-			}
-		}
-
-		private void setData(ContributionSet<Location> set,
-				BaseDescriptor selection, double total, String unit) {
-			Contributions.sortDescending(set.contributions);
-			List<LocationItem> items = inputBuilder.build(set, selection, total);
-			tree.setInput(items, unit);
-			if (showMap)
-				renderMap(set.contributions);
-		}
-
 	}
 
 	private class RefreshMapAction extends Action {

@@ -16,8 +16,7 @@ class TreeLabel extends ColumnLabelProvider implements ITableLabelProvider {
 
 	String unit = "";
 
-	private ContributionImage image = new ContributionImage(
-			Display.getCurrent());
+	private ContributionImage image = new ContributionImage(Display.getCurrent());
 
 	@Override
 	public void dispose() {
