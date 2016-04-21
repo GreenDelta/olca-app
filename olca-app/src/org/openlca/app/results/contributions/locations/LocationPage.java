@@ -1,10 +1,7 @@
-package org.openlca.app.results.contributions;
+package org.openlca.app.results.contributions.locations;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.jface.action.Action;
@@ -37,7 +34,6 @@ import org.openlca.core.model.Location;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.ContributionItem;
 import org.openlca.core.results.ContributionResultProvider;
 import org.openlca.core.results.ContributionSet;
@@ -52,29 +48,29 @@ import com.google.gson.Gson;
  * Shows the contributions of the locations in the product system to an analysis
  * result.
  */
-public class LocationContributionPage extends FormPage implements HtmlPage {
+public class LocationPage extends FormPage implements HtmlPage {
 
 	private EntityCache cache = Cache.getEntityCache();
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private ContributionResultProvider<?> result;
 	private Browser browser;
-	private LocationContributionTree tree;
+	private LocationTree tree;
 	private LocationContribution calculator;
 	private ResultTypeSelection combos;
-	private TreeInputBuilder inputBuilder;
+	private TreeConentBuilder inputBuilder;
 	private boolean showMap;
 
-	public LocationContributionPage(FormEditor editor,
+	public LocationPage(FormEditor editor,
 			ContributionResultProvider<?> result) {
 		this(editor, result, true);
 	}
 
-	public LocationContributionPage(FormEditor editor,
+	public LocationPage(FormEditor editor,
 			ContributionResultProvider<?> result, boolean showMap) {
 		super(editor, "analysis.MapPage", M.Locations);
 		this.showMap = showMap;
 		this.result = result;
-		this.inputBuilder = new TreeInputBuilder(result);
+		this.inputBuilder = new TreeConentBuilder(result);
 		calculator = new LocationContribution(result);
 	}
 
@@ -121,7 +117,7 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 		UI.gridData(section, true, true);
 		Composite composite = UI.sectionClient(section, tk);
 		UI.gridLayout(composite, 1);
-		tree = new LocationContributionTree(composite, showMap);
+		tree = new LocationTree(composite, showMap);
 	}
 
 	private void createBrowser(Composite body, FormToolkit toolkit) {
@@ -221,111 +217,10 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 		private void setData(ContributionSet<Location> set,
 				BaseDescriptor selection, double total, String unit) {
 			Contributions.sortDescending(set.contributions);
-			List<TreeItem> items = inputBuilder.build(set, selection, total);
+			List<LocationItem> items = inputBuilder.build(set, selection, total);
 			tree.setInput(items, unit);
 			if (showMap)
 				renderMap(set.contributions);
-		}
-
-	}
-
-	private class TreeInputBuilder {
-
-		private ContributionResultProvider<?> result;
-		private Map<Location, List<ProcessDescriptor>> processIndex = new HashMap<>();
-
-		private TreeInputBuilder(ContributionResultProvider<?> result) {
-			this.result = result;
-			initProcessIndex();
-		}
-
-		private void initProcessIndex() {
-			if (result == null)
-				return;
-			EntityCache cache = result.cache;
-			for (ProcessDescriptor process : result.getProcessDescriptors()) {
-				Location loc = null;
-				if (process.getLocation() != null)
-					loc = cache.get(Location.class, process.getLocation());
-				List<ProcessDescriptor> list = processIndex.get(loc);
-				if (list == null) {
-					list = new ArrayList<>();
-					processIndex.put(loc, list);
-				}
-				list.add(process);
-			}
-		}
-
-		private List<TreeItem> build(ContributionSet<Location> set,
-				BaseDescriptor descriptor, double total) {
-			List<TreeItem> items = new ArrayList<>();
-			for (ContributionItem<Location> contribution : set.contributions)
-				items.add(new TreeItem(contribution));
-			Contributions
-					.calculate(
-							processIndex.keySet(),
-							total,
-							location -> {
-								TreeItem elem = getItem(items, location);
-								if (elem == null)
-									return 0;
-								List<ProcessDescriptor> list = processIndex
-										.get(location);
-								double amount = 0;
-								for (ProcessDescriptor p : list) {
-									double r = getSingleResult(p, descriptor);
-									ContributionItem<ProcessDescriptor> item = new ContributionItem<>();
-									item.rest = p == null;
-									item.item = p;
-									item.amount = r;
-									item.share = r / total;
-									elem.processContributions.add(item);
-									amount += r;
-								}
-								Contributions
-										.sortDescending(elem.processContributions);
-								return amount;
-							});
-			return items;
-		}
-
-		private double getSingleResult(ProcessDescriptor process,
-				BaseDescriptor selection) {
-			if (process == null || selection == null)
-				return 0;
-			if (selection instanceof ImpactCategoryDescriptor) {
-				ImpactCategoryDescriptor d = (ImpactCategoryDescriptor) selection;
-				return result.getSingleImpactResult(process, d).value;
-			}
-			if (selection instanceof FlowDescriptor) {
-				FlowDescriptor d = (FlowDescriptor) selection;
-				return result.getSingleFlowResult(process, d).value;
-			}
-			if (selection instanceof CostResultDescriptor) {
-				double costs = result.getSingleCostResult(process);
-				CostResultDescriptor d = (CostResultDescriptor) selection;
-				return d.forAddedValue ? costs == 0 ? 0 : -costs : costs;
-			}
-			return 0;
-		}
-
-		private TreeItem getItem(List<TreeItem> items, Location location) {
-			for (TreeItem item : items) {
-				Location other = item.contribution.item;
-				if (Objects.equals(other, location))
-					return item;
-			}
-			return null;
-		}
-	}
-
-	class TreeItem {
-
-		final ContributionItem<Location> contribution;
-		final List<ContributionItem<ProcessDescriptor>> processContributions = new ArrayList<>();
-
-		private TreeItem(ContributionItem<Location> contribution) {
-			this.contribution = contribution;
 		}
 
 	}
@@ -342,7 +237,6 @@ public class LocationContributionPage extends FormPage implements HtmlPage {
 			// force data binding
 			combos.selectWithEvent(combos.getSelection());
 		}
-
 	}
 
 	@SuppressWarnings("unused")

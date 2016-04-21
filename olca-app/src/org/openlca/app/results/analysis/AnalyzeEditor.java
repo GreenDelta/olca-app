@@ -20,7 +20,7 @@ import org.openlca.app.results.contributions.ContributionTreePage;
 import org.openlca.app.results.contributions.FlowImpactPage;
 import org.openlca.app.results.contributions.ImpactTreePage;
 import org.openlca.app.results.contributions.ImpactTreePage.FlowWithProcess;
-import org.openlca.app.results.contributions.LocationContributionPage;
+import org.openlca.app.results.contributions.locations.LocationPage;
 import org.openlca.app.results.contributions.ProcessResultPage;
 import org.openlca.app.results.grouping.GroupPage;
 import org.openlca.core.math.CalculationSetup;
@@ -89,7 +89,7 @@ public class AnalyzeEditor extends FormEditor implements IResultEditor<FullResul
 			if (result.hasImpactResults())
 				addPage(new ImpactTreePage(this, result, this::getImpactFactor));
 			addPage(new GroupPage(this, result));
-			addPage(new LocationContributionPage(this, result));
+			addPage(new LocationPage(this, result));
 			if (FeatureFlag.EXPERIMENTAL_VISUALISATIONS.isEnabled()) {
 				addPage(new SunBurstView(this, result));
 			}

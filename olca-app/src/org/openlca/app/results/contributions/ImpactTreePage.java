@@ -23,9 +23,9 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
-import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
@@ -69,7 +69,8 @@ public class ImpactTreePage extends FormPage {
 	private boolean filterZeroes = true;
 	private int cutOff = 10;
 
-	public ImpactTreePage(FormEditor editor, FullResultProvider result, ImpactFactorProvider impactFactors) {
+	public ImpactTreePage(FormEditor editor, FullResultProvider result,
+			ImpactFactorProvider impactFactors) {
 		super(editor, "ImpactTreePage", M.ImpactAnalysis);
 		this.result = result;
 		this.impactFactors = impactFactors;

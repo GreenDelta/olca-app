@@ -24,7 +24,7 @@ import org.openlca.app.results.contributions.ContributionTablePage;
 import org.openlca.app.results.contributions.ContributionTreePage;
 import org.openlca.app.results.contributions.ImpactTreePage;
 import org.openlca.app.results.contributions.ImpactTreePage.FlowWithProcess;
-import org.openlca.app.results.contributions.LocationContributionPage;
+import org.openlca.app.results.contributions.locations.LocationPage;
 import org.openlca.app.results.contributions.ProcessResultPage;
 import org.openlca.app.results.grouping.GroupPage;
 import org.openlca.core.database.ImpactCategoryDao;
@@ -96,7 +96,7 @@ public class RegionalizedResultEditor extends FormEditor implements IResultEdito
 				addPage(new NwResultPage(this, regioResult, setup));
 			addPage(new ContributionTablePage(this, regioResult));
 			addPage(new KmlResultView(this, this.result));
-			addPage(new LocationContributionPage(this, regioResult, false));
+			addPage(new LocationPage(this, regioResult, false));
 			addPage(new ProcessResultPage(this, regioResult));
 			// if (regioResult.hasImpactResults())
 			// addPage(new FlowImpactPage(this, regioResult));
