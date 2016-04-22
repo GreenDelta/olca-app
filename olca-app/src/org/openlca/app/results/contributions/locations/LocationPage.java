@@ -15,8 +15,6 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.results.ContributionResultProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Shows the contributions of the locations in the product system to an analysis
@@ -27,21 +25,17 @@ public class LocationPage extends FormPage {
 	private EntityCache cache = Cache.getEntityCache();
 	ContributionResultProvider<?> result;
 
-	private Logger log = LoggerFactory.getLogger(getClass());
-
 	private ResultTypeSelection combos;
-
 	private LocationTree tree;
 	private LocationMap map;
 	private boolean showMap;
 
-	public LocationPage(FormEditor editor,
-			ContributionResultProvider<?> result) {
+	public LocationPage(FormEditor editor, ContributionResultProvider<?> result) {
 		this(editor, result, true);
 	}
 
-	public LocationPage(FormEditor editor,
-			ContributionResultProvider<?> result, boolean showMap) {
+	public LocationPage(FormEditor editor, ContributionResultProvider<?> result,
+			boolean showMap) {
 		super(editor, "analysis.MapPage", M.Locations);
 		this.showMap = showMap;
 		this.result = result;
@@ -58,15 +52,16 @@ public class LocationPage extends FormPage {
 			map = LocationMap.create(this, body, tk);
 		}
 		form.reflow(true);
+		refreshSelection();
 	}
 
-	private void createCombos(Composite body, FormToolkit toolkit) {
-		Composite composite = toolkit.createComposite(body);
+	private void createCombos(Composite body, FormToolkit tk) {
+		Composite composite = tk.createComposite(body);
 		UI.gridLayout(composite, 2);
 		combos = ResultTypeSelection.on(result, cache)
 				.withEventHandler(new SelectionHandler(this))
 				.withSelection(result.getFlowDescriptors().iterator().next())
-				.create(composite, toolkit);
+				.create(composite, tk);
 	}
 
 	private void createTree(Composite body, FormToolkit tk) {
