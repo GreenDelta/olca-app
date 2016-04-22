@@ -19,8 +19,8 @@ import org.openlca.core.results.ContributionSet;
 import org.openlca.core.results.Contributions;
 
 /**
- * Creates the content that should be displayed in the location tree for a
- * given selection.
+ * Creates the content that should be displayed in the location tree for a given
+ * selection.
  */
 class TreeContentBuilder {
 
@@ -51,9 +51,11 @@ class TreeContentBuilder {
 	}
 
 	List<LocationItem> build(ContributionSet<Location> set,
-			BaseDescriptor selection, double total) {
+			BaseDescriptor selection, double total, boolean skipZeros) {
 		List<LocationItem> items = new ArrayList<>();
 		for (ContributionItem<Location> contribution : set.contributions) {
+			if (skipZeros && contribution.amount == 0)
+				continue;
 			items.add(new LocationItem(contribution));
 		}
 		Contributions.calculate(index.keySet(), total, location -> {
@@ -64,6 +66,8 @@ class TreeContentBuilder {
 			double amount = 0;
 			for (ProcessDescriptor p : list) {
 				double r = getSingleResult(p, selection);
+				if (r == 0 && skipZeros)
+					continue;
 				ContributionItem<ProcessDescriptor> item = new ContributionItem<>();
 				item.rest = p == null;
 				item.item = p;

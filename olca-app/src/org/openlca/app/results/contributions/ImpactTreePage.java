@@ -66,7 +66,7 @@ public class ImpactTreePage extends FormPage {
 	private Spinner spinner;
 	private TreeViewer viewer;
 	private ImpactCategoryDescriptor impactCategory;
-	private boolean filterZeroes = true;
+	private boolean filterZeros = true;
 	private int cutOff = 10;
 
 	public ImpactTreePage(FormEditor editor, FullResultProvider result,
@@ -115,9 +115,9 @@ public class ImpactTreePage extends FormPage {
 	private void createNoImpactFilter(Composite parent) {
 		Button button = UI.formCheckBox(parent, toolkit, M.ExcludeZeroEntries);
 		UI.gridData(button, false, false);
-		button.setSelection(filterZeroes);
+		button.setSelection(filterZeros);
 		Controls.onSelect(button, event -> {
-			filterZeroes = button.getSelection();
+			filterZeros = button.getSelection();
 			viewer.refresh();
 		});
 	}
@@ -347,7 +347,7 @@ public class ImpactTreePage extends FormPage {
 
 		@Override
 		public boolean select(Viewer viewer, Object parent, Object element) {
-			if (!filterZeroes)
+			if (!filterZeros)
 				return true;
 			if (element instanceof FlowWithProcess) {
 				FlowWithProcess descriptor = (FlowWithProcess) element;

@@ -2,6 +2,9 @@ package org.openlca.app.results.contributions.locations;
 
 import java.util.List;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
@@ -12,6 +15,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.components.ResultTypeSelection;
 import org.openlca.app.db.Cache;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.results.ContributionResultProvider;
@@ -29,6 +33,7 @@ public class LocationPage extends FormPage {
 	private LocationTree tree;
 	private LocationMap map;
 	private boolean showMap;
+	boolean skipZeros = true;
 
 	public LocationPage(FormEditor editor, ContributionResultProvider<?> result) {
 		this(editor, result, true);
@@ -56,12 +61,24 @@ public class LocationPage extends FormPage {
 	}
 
 	private void createCombos(Composite body, FormToolkit tk) {
-		Composite composite = tk.createComposite(body);
-		UI.gridLayout(composite, 2);
+		Composite outer = tk.createComposite(body);
+		UI.gridLayout(outer, 2, 5, 0);
+		Composite comboComp = tk.createComposite(outer);
+		UI.gridLayout(comboComp, 2);
 		combos = ResultTypeSelection.on(result, cache)
 				.withEventHandler(new SelectionHandler(this))
 				.withSelection(result.getFlowDescriptors().iterator().next())
-				.create(composite, tk);
+				.create(comboComp, tk);
+		Composite checkComp = tk.createComposite(outer);
+		UI.gridLayout(checkComp, 2);
+		GridData gd = new GridData(SWT.FILL, SWT.BOTTOM, true, false);
+		checkComp.setLayoutData(gd);
+		Button zeroCheck = UI.formCheckBox(checkComp, tk, M.ExcludeZeroEntries);
+		zeroCheck.setSelection(skipZeros);
+		Controls.onSelect(zeroCheck, event -> {
+			skipZeros = zeroCheck.getSelection();
+			refreshSelection();
+		});
 	}
 
 	private void createTree(Composite body, FormToolkit tk) {
