@@ -18,6 +18,8 @@ class Search implements Runnable {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private IDatabase database;
+
+	ModelType typeFilter;
 	private String rawTerm;
 	private String[] terms;
 	private List<BaseDescriptor> result = new ArrayList<>();
@@ -37,10 +39,12 @@ class Search implements Runnable {
 	@Override
 	public void run() {
 		result.clear();
-		log.trace("run search with term {}", rawTerm);
 		if (rawTerm.isEmpty())
 			return;
-		for (ModelType type : ModelType.categorized()) {
+		log.trace("run search with term {}", rawTerm);
+		ModelType[] types = typeFilter == null ? ModelType.categorized()
+				: new ModelType[] { typeFilter };
+		for (ModelType type : types) {
 			List<?> descriptors = getDescriptors(type);
 			fetchResults(descriptors);
 		}
