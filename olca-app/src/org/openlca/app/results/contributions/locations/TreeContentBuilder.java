@@ -24,11 +24,13 @@ import org.openlca.core.results.Contributions;
  */
 class TreeContentBuilder {
 
+	private LocationPage page;
 	private ContributionResultProvider<?> result;
 	private Map<Location, List<ProcessDescriptor>> index = new HashMap<>();
 
-	TreeContentBuilder(ContributionResultProvider<?> result) {
-		this.result = result;
+	TreeContentBuilder(LocationPage page) {
+		this.page = page;
+		this.result = page.result;
 		initProcessIndex();
 	}
 
@@ -51,10 +53,12 @@ class TreeContentBuilder {
 	}
 
 	List<LocationItem> build(ContributionSet<Location> set,
-			BaseDescriptor selection, double total, boolean skipZeros) {
+			BaseDescriptor selection, double total) {
 		List<LocationItem> items = new ArrayList<>();
 		for (ContributionItem<Location> contribution : set.contributions) {
-			if (skipZeros && contribution.amount == 0)
+			if (Math.abs(contribution.share) < page.cutoff)
+				continue;
+			if (contribution.amount == 0 && page.skipZeros)
 				continue;
 			items.add(new LocationItem(contribution));
 		}
@@ -66,7 +70,7 @@ class TreeContentBuilder {
 			double amount = 0;
 			for (ProcessDescriptor p : list) {
 				double r = getSingleResult(p, selection);
-				if (r == 0 && skipZeros)
+				if (r == 0 && page.skipZeros)
 					continue;
 				ContributionItem<ProcessDescriptor> item = new ContributionItem<>();
 				item.rest = p == null;

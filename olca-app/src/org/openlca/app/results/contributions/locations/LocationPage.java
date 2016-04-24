@@ -6,6 +6,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
@@ -34,6 +35,7 @@ public class LocationPage extends FormPage {
 	private LocationMap map;
 	private boolean showMap;
 	boolean skipZeros = true;
+	double cutoff = 0.01;
 
 	public LocationPage(FormEditor editor, ContributionResultProvider<?> result) {
 		this(editor, result, true);
@@ -61,6 +63,7 @@ public class LocationPage extends FormPage {
 	}
 
 	private void createCombos(Composite body, FormToolkit tk) {
+
 		Composite outer = tk.createComposite(body);
 		UI.gridLayout(outer, 2, 5, 0);
 		Composite comboComp = tk.createComposite(outer);
@@ -69,10 +72,24 @@ public class LocationPage extends FormPage {
 				.withEventHandler(new SelectionHandler(this))
 				.withSelection(result.getFlowDescriptors().iterator().next())
 				.create(comboComp, tk);
-		Composite checkComp = tk.createComposite(outer);
-		UI.gridLayout(checkComp, 2);
+
+		Composite cutoffComp = tk.createComposite(outer);
+		UI.gridLayout(cutoffComp, 1, 0, 0);
 		GridData gd = new GridData(SWT.FILL, SWT.BOTTOM, true, false);
-		checkComp.setLayoutData(gd);
+		cutoffComp.setLayoutData(gd);
+
+		Composite checkComp = tk.createComposite(cutoffComp);
+		tk.createLabel(checkComp, M.Cutoff);
+		Spinner spinner = new Spinner(checkComp, SWT.BORDER);
+		spinner.setValues(1, 0, 100, 0, 1, 10);
+		tk.adapt(spinner);
+		tk.createLabel(checkComp, "%");
+		Controls.onSelect(spinner, e -> {
+			cutoff = ((double) spinner.getSelection()) / 100d;
+			refreshSelection();
+		});
+
+		UI.gridLayout(checkComp, 5);
 		Button zeroCheck = UI.formCheckBox(checkComp, tk, M.ExcludeZeroEntries);
 		zeroCheck.setSelection(skipZeros);
 		Controls.onSelect(zeroCheck, event -> {

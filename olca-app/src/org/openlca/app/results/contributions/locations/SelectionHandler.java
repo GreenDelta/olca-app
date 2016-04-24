@@ -32,7 +32,7 @@ class SelectionHandler implements EventHandler {
 	SelectionHandler(LocationPage page) {
 		this.page = page;
 		this.result = page.result;
-		this.inputBuilder = new TreeContentBuilder(result);
+		this.inputBuilder = new TreeContentBuilder(page);
 		calculator = new LocationContribution(result);
 	}
 
@@ -90,8 +90,7 @@ class SelectionHandler implements EventHandler {
 
 	private void setData(ContributionSet<Location> set,
 			BaseDescriptor selection, double total, String unit) {
-		List<LocationItem> items = inputBuilder.build(set, selection, total,
-				page.skipZeros);
+		List<LocationItem> items = inputBuilder.build(set, selection, total);
 		Collections.sort(items, (item1, item2) -> {
 			if (item1.contribution == null || item2.contribution == null)
 				return 0;
