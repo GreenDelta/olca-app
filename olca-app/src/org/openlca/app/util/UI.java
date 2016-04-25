@@ -249,9 +249,12 @@ public class UI {
 	}
 
 	/** Creates a label and check box as two separate components. */
-	public static Button formCheckBox(Composite parent, FormToolkit toolkit,
-			String label) {
-		formLabel(parent, label);
+	public static Button formCheckBox(Composite parent, FormToolkit toolkit, String label) {
+		formLabel(parent, toolkit, label);
+		return formCheckbox(parent, toolkit);
+	}
+
+	public static Button formCheckbox(Composite parent, FormToolkit toolkit) {
 		Button button = null;
 		if (toolkit != null)
 			button = toolkit.createButton(parent, null, SWT.CHECK);
