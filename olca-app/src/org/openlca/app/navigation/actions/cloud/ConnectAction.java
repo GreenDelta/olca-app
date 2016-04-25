@@ -1,15 +1,11 @@
 package org.openlca.app.navigation.actions.cloud;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.List;
-import java.util.Properties;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
@@ -19,6 +15,7 @@ import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.cloud.index.DiffType;
 import org.openlca.app.cloud.ui.commits.HistoryView;
+import org.openlca.app.cloud.ui.preferences.CloudPreference;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.navigation.CategoryElement;
@@ -62,9 +59,7 @@ public class ConnectAction extends Action implements INavigationAction {
 			if (dialog.open() != Dialog.OK)
 				return;
 			RepositoryConfig config = dialog.createConfig();
-			storeConnectionData(config.getServerUrl(), config.getUsername());
-			String text = M.ConnectingToRepository + config.getServerUrl()
-					+ " " + config.getRepositoryId();
+			String text = M.ConnectingToRepository + config.getServerUrl() + " " + config.getRepositoryId();
 			App.runWithProgress(text, () -> connect(config));
 			HistoryView.refresh();
 		}
@@ -73,7 +68,8 @@ public class ConnectAction extends Action implements INavigationAction {
 			RepositoryClient client = new RepositoryClient(config);
 			try {
 				if (!client.hasAccess(config.getRepositoryId())) {
-					error = new Exception(M.NoAccessToRepository);				}
+					error = new Exception(M.NoAccessToRepository);
+				}
 			} catch (WebRequestException e) {
 				error = e;
 			}
@@ -123,12 +119,17 @@ public class ConnectAction extends Action implements INavigationAction {
 		protected Control createDialogArea(Composite parent) {
 			Composite container = UI.formComposite(parent);
 			Text serverText = UI.formText(container, M.ServerUrl);
+			((GridData) serverText.getLayoutData()).minimumWidth = 250;
 			serverText.addModifyListener((event) -> {
 				serverUrl = serverText.getText();
+				if (serverUrl != null)
+					serverUrl.trim();
 			});
 			Text usernameText = UI.formText(container, M.Username);
 			usernameText.addModifyListener((event) -> {
 				username = usernameText.getText();
+				if (username != null)
+					username.trim();
 			});
 			Text passwordText = UI.formText(container, M.Password,
 					SWT.PASSWORD);
@@ -138,15 +139,12 @@ public class ConnectAction extends Action implements INavigationAction {
 			Text repoText = UI.formText(container, M.RepositoryId);
 			repoText.addModifyListener((event) -> {
 				repositoryId = repoText.getText();
+				if (repositoryId != null)
+					repositoryId.trim();
 			});
-			Properties config = loadConnectionData();
-			if (config.containsKey("server"))
-				serverText.setText(config.getProperty("server"));
-			if (config.containsKey("username")) {
-				String username = config.getProperty("username");
-				usernameText.setText(username);
-				repoText.setText(username + "/" + Database.get().getName());
-			}
+			serverText.setText(CloudPreference.getDefaultHost());
+			usernameText.setText(CloudPreference.getDefaultUser());
+			passwordText.setText(CloudPreference.getDefaultPass());
 			return container;
 		}
 
@@ -172,36 +170,6 @@ public class ConnectAction extends Action implements INavigationAction {
 	@Override
 	public boolean accept(List<INavigationElement<?>> elements) {
 		return false;
-	}
-
-	private void storeConnectionData(String server, String username) {
-		File config = getConfigFile();
-		Properties properties = new Properties();
-		properties.setProperty("server", server);
-		properties.setProperty("username", username);
-		try (FileOutputStream out = new FileOutputStream(config)) {
-			if (!config.exists())
-				config.createNewFile();
-			properties.store(out, null);
-		} catch (IOException e) {
-			// fail silently, this is just for convenience
-		}
-	}
-
-	private Properties loadConnectionData() {
-		File config = getConfigFile();
-		Properties properties = new Properties();
-		try (FileInputStream in = new FileInputStream(config)) {
-			properties.load(in);
-		} catch (IOException e) {
-			// fail silently, this is just for convenience
-		}
-		return properties;
-	}
-
-	private File getConfigFile() {
-		File file = Database.get().getFileStorageLocation();
-		return new File(file, "cloud_config.properties");
 	}
 
 }
