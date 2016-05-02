@@ -253,19 +253,23 @@ class ShapeFilePage extends FormPage {
 			ShapeFileSection[] newSections = new ShapeFileSection[sections.length
 					- 1];
 			System.arraycopy(sections, 0, newSections, 0, index);
-			if ((index + 1) < sections.length)
+			if ((index + 1) < sections.length) {
 				System.arraycopy(sections, index + 1, newSections, index,
 						newSections.length - index);
+			}
 			sections = newSections;
 			form.reflow(true);
 			return true;
 		}
 
 		private void removeExternalSourceReferences() {
-			for (Parameter parameter : method().getParameters())
-				if (parameter.isInputParameter())
-					if (shapeFile.equals(parameter.getExternalSource()))
-						parameter.setExternalSource(null);
+			for (Parameter parameter : method().getParameters()) {
+				if (!parameter.isInputParameter())
+					continue;
+				if (shapeFile.equals(parameter.getExternalSource())) {
+					parameter.setExternalSource(null);
+				}
+			}
 			editor.getParameterSupport().evaluate();
 			editor.setDirty(true);
 		}
@@ -276,22 +280,22 @@ class ShapeFilePage extends FormPage {
 		 */
 		private void updateExternalSourceReferences(Set<String> stillLinked,
 				Map<String, ShapeFileParameter> nameToParam) {
-			for (Parameter parameter : method().getParameters())
-				if (parameter.isInputParameter())
-					if (shapeFile.equals(parameter.getExternalSource()))
-						if (!stillLinked.contains(parameter.getName()))
-							parameter.setExternalSource(null);
-						else {
-							ShapeFileParameter param = nameToParam
-									.get(parameter.getName());
-							if (param == null)
-								continue;
-							parameter
-									.setValue((param.getMin() + param.getMax())
-											/ 2);
-							parameter.setUncertainty(Uncertainty.uniform(
-									param.getMin(), param.getMax()));
-						}
+			for (Parameter parameter : method().getParameters()) {
+				if (!parameter.isInputParameter())
+					continue;
+				if (!shapeFile.equals(parameter.getExternalSource()))
+					continue;
+				if (!stillLinked.contains(parameter.getName())) {
+					parameter.setExternalSource(null);
+				} else {
+					ShapeFileParameter param = nameToParam.get(parameter.getName());
+					if (param == null)
+						continue;
+					parameter.setValue((param.getMin() + param.getMax()) / 2);
+					parameter.setUncertainty(Uncertainty.uniform(
+							param.getMin(), param.getMax()));
+				}
+			}
 			editor.getParameterSupport().evaluate();
 		}
 
