@@ -19,6 +19,8 @@ import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 import org.openlca.app.Config;
 import org.openlca.app.M;
+import org.openlca.app.components.replace.ReplaceFlowsDialog;
+import org.openlca.app.components.replace.ReplaceProvidersDialog;
 import org.openlca.app.devtools.js.JavaScriptEditor;
 import org.openlca.app.devtools.python.PythonEditor;
 import org.openlca.app.devtools.sql.SqlEditor;
@@ -26,11 +28,13 @@ import org.openlca.app.editors.LogFileEditor;
 import org.openlca.app.editors.StartPage;
 import org.openlca.app.rcp.browser.MozillaConfigView;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.plugins.PluginManager;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.DefaultInput;
 import org.openlca.app.util.Desktop;
 import org.openlca.app.util.Editors;
+import org.openlca.core.model.ModelType;
 
 public class RcpActionBarAdvisor extends ActionBarAdvisor {
 
@@ -103,7 +107,10 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		MenuManager viewMenu = new MenuManager(M.Showviews);
 		viewMenu.add(showViews);
 		windowMenu.add(viewMenu);
+		windowMenu.add(new Separator());
 		createDeveloperMenu(windowMenu);
+		createMassReplaceMenu(windowMenu);
+		windowMenu.add(new Separator());
 		windowMenu.add(new FormulaConsoleAction());
 		if (MozillaConfigView.canShow()) {
 			windowMenu.add(Actions.create(M.BrowserConfiguration, Icon.FIREFOX.descriptor(),
@@ -113,13 +120,18 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	}
 
 	private void createDeveloperMenu(MenuManager windowMenu) {
-		windowMenu.add(new Separator());
 		MenuManager devMenu = new MenuManager(M.DeveloperTools);
 		windowMenu.add(devMenu);
 		devMenu.add(Actions.create("SQL", Icon.SQL.descriptor(), SqlEditor::open));
 		devMenu.add(Actions.create("JavaScript", Icon.JAVASCRIPT.descriptor(), JavaScriptEditor::open));
 		devMenu.add(Actions.create("Python", Icon.PYTHON.descriptor(), PythonEditor::open));
-		windowMenu.add(new Separator());
+	}
+
+	private void createMassReplaceMenu(MenuManager windowMenu) {
+		MenuManager m = new MenuManager("#Mass-replace");
+		windowMenu.add(m);
+		m.add(Actions.create("#Flows", Images.descriptor(ModelType.FLOW), ReplaceFlowsDialog::openDialog));
+		m.add(Actions.create("#Providers", Images.descriptor(ModelType.PROCESS), ReplaceProvidersDialog::openDialog));
 	}
 
 	@Override
