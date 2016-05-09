@@ -18,13 +18,11 @@ import org.openlca.core.database.references.ExchangeReferenceSearch;
 import org.openlca.core.database.references.FlowPropertyFactorReferenceSearch;
 import org.openlca.core.database.references.IReferenceSearch;
 import org.openlca.core.database.references.IReferenceSearch.Reference;
-import org.openlca.core.database.references.UnitReferenceSearch;
 import org.openlca.core.database.usage.IUseSearch;
 import org.openlca.core.model.AbstractEntity;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.Unit;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
 class ReferenceSearcher {
@@ -82,9 +80,9 @@ class ReferenceSearcher {
 			List<Reference> references) {
 		Map<Class<? extends AbstractEntity>, Set<Long>> map = new HashMap<>();
 		for (Reference reference : references) {
-			Set<Long> set = map.get(reference.type);
+			Set<Long> set = map.get(reference.getType());
 			if (set == null)
-				map.put(reference.type, set = new HashSet<>());
+				map.put(reference.getType(), set = new HashSet<>());
 			set.add(reference.id);
 		}
 		Set<CategorizedDescriptor> descriptors = new HashSet<>();
@@ -95,9 +93,6 @@ class ReferenceSearcher {
 				CategorizedEntityDao<?, ?> dao = Daos.createCategorizedDao(
 						database, type);
 				descriptors.addAll(dao.getDescriptors(map.get(clazz)));
-			} else if (clazz == Unit.class) {
-				newRefs.addAll(new UnitReferenceSearch(database)
-						.findReferences(map.get(clazz)));
 			} else if (clazz == FlowPropertyFactor.class) {
 				newRefs.addAll(new FlowPropertyFactorReferenceSearch(database)
 						.findReferences(map.get(clazz)));
