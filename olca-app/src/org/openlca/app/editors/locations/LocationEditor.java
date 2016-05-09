@@ -6,15 +6,17 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.lcia_methods.ShapeFileUtils;
-import org.openlca.app.editors.processes.kml.KmlUtil;
 import org.openlca.app.util.Info;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.geo.parameter.ParameterCache;
 import org.openlca.geo.parameter.ShapeFileFolder;
+import org.openlca.util.Geometries;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Strings;
 
 public class LocationEditor extends ModelEditor<Location> {
 
@@ -42,10 +44,17 @@ public class LocationEditor extends ModelEditor<Location> {
 			return;
 		}
 		String kml = infoPage.getKml();
-		if (kml == null)
-			getModel().setKmz(null);
-		else
-			getModel().setKmz(KmlUtil.toKmz(kml));
+		if (Strings.isNullOrEmpty(kml)) {
+			double latitude = getModel().getLatitude();
+			double longitude = getModel().getLongitude();
+			if (latitude != 0 || longitude != 0) {
+				kml = Geometries.pointToKml(latitude, longitude);
+				getModel().setKmz(Geometries.kmlToKmz(kml));
+				infoPage.updateKml();
+			} else
+				getModel().setKmz(null);
+		} else
+			getModel().setKmz(Geometries.kmlToKmz(kml));
 		invalidateIntersections();
 		super.doSave(monitor);
 	}

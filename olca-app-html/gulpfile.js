@@ -95,10 +95,10 @@ gulp.task('plugin_manager_styles', function() {
 
 var readMessages = function(file, defaultMsg) {
 	var data = fs.readFileSync(file, 'utf8');
-	if (!data) {
-		return {};
-	}
 	var msg = JSON.parse(JSON.stringify(defaultMsg));
+	if (!data) {
+		return msg;
+	}
 	var lines = data.split('\n');
 	for (var i = 0; i < lines.length; i++) {
 		var line = lines[i];
@@ -114,8 +114,8 @@ var readMessages = function(file, defaultMsg) {
 			if (!target[subKey]) {
 				target[subKey] = {};
 			}
-			var target = target[subKey];
-			var key = key.substring(dotIndex + 1);
+			target = target[subKey];
+			key = key.substring(dotIndex + 1);
 		}
 		target[key] = value;
 	}
@@ -130,7 +130,7 @@ gulp.task('start-page-templates', function() {
 			var dotIndex = file.indexOf('.properties');
 			var suffix = '';
 			if (dotIndex !== -1 && file.charAt(dotIndex - 3) === '_') {
-				var suffix = file.substring(dotIndex - 3, dotIndex);
+				suffix = file.substring(dotIndex - 3, dotIndex);
 			}
 			var newName = 'start_page' + suffix + '.html';
 			var msg = readMessages(file, defaultMsg);

@@ -7,7 +7,7 @@ import java.util.Objects;
  */
 public enum Language {
 
-	// ARABIC("Arabic", "ar"),
+	ARABIC("Arabic", "ar"),
 
 	BULGARIAN("Bulgarian", "bg"),
 

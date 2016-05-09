@@ -45,6 +45,8 @@ public class UncertaintyDialog extends Dialog {
 	public UncertaintyDialog(Shell parentShell, Uncertainty initial) {
 		super(parentShell);
 		toolkit = new FormToolkit(parentShell.getDisplay());
+		if (initial == null)
+			initial = new Uncertainty();
 		this.uncertainty = initial.clone();
 		if (uncertainty.getParameter1Value() != null)
 			defaultMean = uncertainty.getParameter1Value();

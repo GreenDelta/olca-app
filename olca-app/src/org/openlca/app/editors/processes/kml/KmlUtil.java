@@ -26,20 +26,6 @@ public class KmlUtil {
 	private KmlUtil() {
 	}
 
-	public static byte[] toKmz(String kml) {
-		if (kml == null)
-			return null;
-		if (kml.isEmpty())
-			return null;
-		try {
-			return BinUtils.zip(kml.getBytes("utf-8"));
-		} catch (Exception e) {
-			Logger log = LoggerFactory.getLogger(KmlUtil.class);
-			log.error("failed to zip KML", e);
-			return null;
-		}
-	}
-
 	public static String toKml(byte[] kmz) {
 		if (kmz == null)
 			return null;
