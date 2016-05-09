@@ -64,25 +64,29 @@ public class ParameterSection {
 	private ParameterScope scope;
 	private SourceHandler sourceHandler;
 
-	public static ParameterSection forInputParameters(ModelEditor<? extends CategorizedEntity> editor,
+	public static ParameterSection forInputParameters(
+			ModelEditor<? extends CategorizedEntity> editor,
 			ParameterChangeSupport support, Composite body,
 			FormToolkit toolkit, SourceHandler sourceHandler) {
 		return new ParameterSection(editor, support, body, toolkit,
 				sourceHandler, true);
 	}
 
-	public static ParameterSection forInputParameters(ModelEditor<? extends CategorizedEntity> editor,
+	public static ParameterSection forInputParameters(
+			ModelEditor<? extends CategorizedEntity> editor,
 			ParameterChangeSupport support, Composite body, FormToolkit toolkit) {
 		return new ParameterSection(editor, support, body, toolkit, null, true);
 	}
 
-	public static ParameterSection forDependentParameters(ModelEditor<? extends CategorizedEntity> editor,
+	public static ParameterSection forDependentParameters(
+			ModelEditor<? extends CategorizedEntity> editor,
 			ParameterChangeSupport support, Composite body, FormToolkit toolkit) {
 		return new ParameterSection(editor, support, body, toolkit, null, false);
 	}
 
-	private ParameterSection(ModelEditor<? extends CategorizedEntity> editor, ParameterChangeSupport support,
-			Composite body, FormToolkit toolkit, SourceHandler sourceHandler,
+	private ParameterSection(ModelEditor<? extends CategorizedEntity> editor,
+			ParameterChangeSupport support, Composite body,
+			FormToolkit toolkit, SourceHandler sourceHandler,
 			boolean forInputParameters) {
 		this.forInputParameters = forInputParameters;
 		this.sourceHandler = sourceHandler;
@@ -227,9 +231,14 @@ public class ParameterSection {
 	}
 
 	private boolean exists(String name) {
-		for (Parameter parameter : supplier.get())
-			if (Strings.nullOrEqual(name, parameter.getName()))
+		for (Parameter parameter : supplier.get()) {
+			if (name == null && parameter.getName() == null)
 				return true;
+			if (name == null || parameter.getName() == null)
+				continue;
+			if (name.toLowerCase().equals(parameter.getName().toLowerCase()))
+				return true;
+		}
 		return false;
 	}
 
@@ -249,8 +258,8 @@ public class ParameterSection {
 	private void onPaste(String text) {
 		if (supplier == null)
 			return;
-		List<Parameter> params = forInputParameters ? Clipboard.readInputParams(text)
-				: Clipboard.readCalculatedParams(text);
+		List<Parameter> params = forInputParameters ? Clipboard
+				.readInputParams(text) : Clipboard.readCalculatedParams(text);
 		boolean skipped = false;
 		for (Parameter param : params) {
 			String name = param.getName();
@@ -358,8 +367,7 @@ public class ParameterSection {
 
 		@Override
 		protected void setItem(Parameter element, String item) {
-			if (!Question.ask(M.ExternalSourceChange,
-					M.RecalculateQuestion))
+			if (!Question.ask(M.ExternalSourceChange, M.RecalculateQuestion))
 				return;
 			element.setExternalSource(item);
 			sourceHandler.sourceChanged(element, item);
