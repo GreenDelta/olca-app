@@ -195,7 +195,10 @@ public class ShapeFileUtils {
 		File shapeFile = new File(folder, shapeFileName + ".shp");
 		List<File> files = getAllFiles(shapeFile);
 		for (File file : files) {
-			file.delete();
+			boolean b = file.delete();
+			if (!b) {
+				file.deleteOnExit();
+			}
 		}
 	}
 
@@ -264,8 +267,11 @@ public class ShapeFileUtils {
 					style = ShapeFileStyle.create(dataStore, parameter, fType);
 				showMapFrame(shapeFileName, source, style);
 			}
+			it.close();
 		} catch (Exception e) {
 			log.error("Failed to open shape-file", e);
+		} finally {
+			dataStore.dispose();
 		}
 	}
 

@@ -24,8 +24,8 @@ import org.openlca.app.results.contributions.ContributionTablePage;
 import org.openlca.app.results.contributions.ContributionTreePage;
 import org.openlca.app.results.contributions.ImpactTreePage;
 import org.openlca.app.results.contributions.ImpactTreePage.FlowWithProcess;
-import org.openlca.app.results.contributions.LocationContributionPage;
 import org.openlca.app.results.contributions.ProcessResultPage;
+import org.openlca.app.results.contributions.locations.LocationPage;
 import org.openlca.app.results.grouping.GroupPage;
 import org.openlca.core.database.ImpactCategoryDao;
 import org.openlca.core.math.CalculationSetup;
@@ -49,7 +49,7 @@ public class RegionalizedResultEditor extends FormEditor implements IResultEdito
 	private CalculationSetup setup;
 	private SankeyDiagram diagram;
 	private int diagramIndex;
-	private ImpactFactorCalculator factorCalculator;
+	private FactorCalculator factorCalculator;
 	private ImpactCategoryDao impactCategoryDao;
 	private Map<Long, ImpactCategory> impactCategories = new HashMap<>();
 	private Map<LongPair, Map<FlowDescriptor, Double>> factorsMap = new HashMap<>();
@@ -77,7 +77,8 @@ public class RegionalizedResultEditor extends FormEditor implements IResultEdito
 			impactCategoryDao = new ImpactCategoryDao(Database.get());
 			ParameterSet parameterSet = Cache.getAppCache().remove(
 					input.getParameterSetKey(), ParameterSet.class);
-			factorCalculator = new ImpactFactorCalculator(parameterSet);
+			factorCalculator = new FactorCalculator(parameterSet,
+					Database.get(), setup);
 		} catch (Exception e) {
 			log.error("failed to load regionalized result", e);
 			throw new PartInitException("failed to load regionalized result", e);
@@ -96,10 +97,8 @@ public class RegionalizedResultEditor extends FormEditor implements IResultEdito
 				addPage(new NwResultPage(this, regioResult, setup));
 			addPage(new ContributionTablePage(this, regioResult));
 			addPage(new KmlResultView(this, this.result));
-			addPage(new LocationContributionPage(this, regioResult, false));
+			addPage(new LocationPage(this, regioResult, false));
 			addPage(new ProcessResultPage(this, regioResult));
-			// if (regioResult.hasImpactResults())
-			// addPage(new FlowImpactPage(this, regioResult));
 			addPage(new ContributionTreePage(this, regioResult));
 			addPage(new ImpactTreePage(this, regioResult, this::getImpactFactor));
 			addPage(new GroupPage(this, regioResult));

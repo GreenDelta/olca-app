@@ -14,6 +14,7 @@ import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.FlowPropertyDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ImpactMethodDao;
+import org.openlca.core.database.LocationDao;
 import org.openlca.core.database.NativeSql;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.database.ProductSystemDao;
@@ -29,6 +30,7 @@ import org.openlca.core.model.Category;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.ImpactMethod;
+import org.openlca.core.model.Location;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.Project;
@@ -40,6 +42,7 @@ import org.openlca.core.model.descriptors.Descriptors;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.FlowPropertyDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
+import org.openlca.core.model.descriptors.LocationDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.model.descriptors.ProductSystemDescriptor;
 import org.openlca.core.model.descriptors.ProjectDescriptor;
@@ -92,6 +95,49 @@ public class ScriptApi {
 		}
 	}
 
+	// locations
+
+	public Location getLocation(String name) {
+		LocationDao dao = new LocationDao(database);
+		List<Location> list = dao.getForName(name);
+		return list.isEmpty() ? null : list.get(0);
+	}
+
+	public Location getLocation(int id) {
+		LocationDao dao = new LocationDao(database);
+		return dao.getForId(id);
+	}
+
+	public List<LocationDescriptor> getLocationDescriptors() {
+		LocationDao dao = new LocationDao(database);
+		return dao.getDescriptors();
+	}
+
+	public void eachLocation(Consumer<Location> consumer) {
+		LocationDao dao = new LocationDao(database);
+		for (LocationDescriptor d : dao.getDescriptors()) {
+			Location val = dao.getForId(d.getId());
+			consumer.accept(val);
+		}
+	}
+
+	public Location updateLocation(Location model) {
+		LocationDao dao = new LocationDao(database);
+		return dao.update(model);
+	}
+
+	public void insertLocation(Location model) {
+		LocationDao dao = new LocationDao(database);
+		dao.insert(model);
+	}
+
+	public void deleteLocation(Location model) {
+		LocationDao dao = new LocationDao(database);
+		dao.delete(model);
+	}
+
+	// actors
+
 	public Actor getActor(String name) {
 		ActorDao dao = new ActorDao(database);
 		List<Actor> list = dao.getForName(name);
@@ -115,6 +161,23 @@ public class ScriptApi {
 			consumer.accept(val);
 		}
 	}
+
+	public Actor updateActor(Actor model) {
+		ActorDao dao = new ActorDao(database);
+		return dao.update(model);
+	}
+
+	public void insertActor(Actor model) {
+		ActorDao dao = new ActorDao(database);
+		dao.insert(model);
+	}
+
+	public void deleteActor(Actor actor) {
+		ActorDao dao = new ActorDao(database);
+		dao.delete(actor);
+	}
+
+	// sources
 
 	public Source getSource(String name) {
 		SourceDao dao = new SourceDao(database);
@@ -311,21 +374,6 @@ public class ScriptApi {
 	public Category updateCategory(Category category) {
 		CategoryDao dao = new CategoryDao(database);
 		return dao.update(category);
-	}
-
-	public Actor updateActor(Actor model) {
-		ActorDao dao = new ActorDao(database);
-		return dao.update(model);
-	}
-
-	public void insertActor(Actor model) {
-		ActorDao dao = new ActorDao(database);
-		dao.insert(model);
-	}
-
-	public void deleteActor(Actor actor) {
-		ActorDao dao = new ActorDao(database);
-		dao.delete(actor);
 	}
 
 	public Source updateSource(Source model) {

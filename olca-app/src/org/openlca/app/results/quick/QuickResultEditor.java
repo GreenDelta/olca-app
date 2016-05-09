@@ -13,7 +13,7 @@ import org.openlca.app.results.TotalFlowResultPage;
 import org.openlca.app.results.TotalImpactResultPage;
 import org.openlca.app.results.contributions.ContributionTablePage;
 import org.openlca.app.results.contributions.FlowImpactPage;
-import org.openlca.app.results.contributions.LocationContributionPage;
+import org.openlca.app.results.contributions.locations.LocationPage;
 import org.openlca.app.results.grouping.GroupPage;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.results.ContributionResultProvider;
@@ -66,7 +66,7 @@ public class QuickResultEditor extends FormEditor implements IResultEditor<Contr
 			addPage(new ContributionTablePage(this, result));
 			if (result.hasImpactResults())
 				addPage(new FlowImpactPage(this, result));
-			addPage(new LocationContributionPage(this, result));
+			addPage(new LocationPage(this, result));
 			addPage(new GroupPage(this, result));
 		} catch (Exception e) {
 			log.error("failed to add pages", e);

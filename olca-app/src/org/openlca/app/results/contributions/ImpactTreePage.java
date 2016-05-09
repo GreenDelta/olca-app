@@ -23,9 +23,9 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
-import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
@@ -66,10 +66,11 @@ public class ImpactTreePage extends FormPage {
 	private Spinner spinner;
 	private TreeViewer viewer;
 	private ImpactCategoryDescriptor impactCategory;
-	private boolean filterZeroes = true;
+	private boolean filterZeros = true;
 	private int cutOff = 10;
 
-	public ImpactTreePage(FormEditor editor, FullResultProvider result, ImpactFactorProvider impactFactors) {
+	public ImpactTreePage(FormEditor editor, FullResultProvider result,
+			ImpactFactorProvider impactFactors) {
 		super(editor, "ImpactTreePage", M.ImpactAnalysis);
 		this.result = result;
 		this.impactFactors = impactFactors;
@@ -114,9 +115,9 @@ public class ImpactTreePage extends FormPage {
 	private void createNoImpactFilter(Composite parent) {
 		Button button = UI.formCheckBox(parent, toolkit, M.ExcludeZeroEntries);
 		UI.gridData(button, false, false);
-		button.setSelection(filterZeroes);
+		button.setSelection(filterZeros);
 		Controls.onSelect(button, event -> {
-			filterZeroes = button.getSelection();
+			filterZeros = button.getSelection();
 			viewer.refresh();
 		});
 	}
@@ -346,7 +347,7 @@ public class ImpactTreePage extends FormPage {
 
 		@Override
 		public boolean select(Viewer viewer, Object parent, Object element) {
-			if (!filterZeroes)
+			if (!filterZeros)
 				return true;
 			if (element instanceof FlowWithProcess) {
 				FlowWithProcess descriptor = (FlowWithProcess) element;
