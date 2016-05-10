@@ -99,6 +99,10 @@ public class LocationInfoPage extends ModelPage<Location> implements HtmlPage {
 		new KmlPrettifyFunction(browser, (value) -> {
 			isValidKml = value;
 		});
+		updateKml();
+	}
+
+	void updateKml() {
 		kml = KmlUtil.toKml(getModel().getKmz());
 		if (kml == null)
 			kml = "";

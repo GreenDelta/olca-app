@@ -39,6 +39,7 @@ import org.openlca.core.database.LocationDao;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
+import org.openlca.util.Geometries;
 import org.openlca.util.KeyGen;
 
 import com.google.common.eventbus.Subscribe;
@@ -229,7 +230,7 @@ class InfoPage extends ModelPage<Process> {
 			location.setCode(nameAndCode[1]);
 			location.setRefId(KeyGen.get(nameAndCode[1]));
 			if (kml != null)
-				location.setKmz(KmlUtil.toKmz(kml));
+				location.setKmz(Geometries.kmlToKmz(kml));
 			else
 				location.setKmz(null);
 			return locationDao.insert(location);
