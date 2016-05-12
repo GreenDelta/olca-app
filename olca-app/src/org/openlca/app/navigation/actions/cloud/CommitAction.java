@@ -33,7 +33,6 @@ import org.openlca.app.util.Info;
 import org.openlca.cloud.api.CommitInvocation;
 import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.model.data.Dataset;
-import org.openlca.cloud.util.WebRequests.WebRequestException;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ModelType;
 
@@ -92,7 +91,7 @@ public class CommitAction extends Action implements INavigationAction {
 		private List<DiffResult> selected;
 		private List<DiffResult> references;
 		private Map<Dataset, String> checkResult;
-		private WebRequestException error;
+		private Exception error;
 
 		public void run() {
 			App.runWithProgress(M.ComparingWithRepository,
@@ -129,7 +128,7 @@ public class CommitAction extends Action implements INavigationAction {
 		private void checkUpToDate(RepositoryClient client) {
 			try {
 				upToDate = client.requestCommit();
-			} catch (WebRequestException e) {
+			} catch (Exception e) {
 				error = e;
 				upToDate = false;
 			}
@@ -187,7 +186,7 @@ public class CommitAction extends Action implements INavigationAction {
 				datasets.add(result.getDataset());
 			try {
 				checkResult = client.performLibraryCheck(datasets);
-			} catch (WebRequestException e) {
+			} catch (Exception e) {
 				error = e;
 			}
 		}
@@ -202,7 +201,7 @@ public class CommitAction extends Action implements INavigationAction {
 				putChanges(selected, commit);
 				client.execute(commit);
 				indexCommit();
-			} catch (WebRequestException e) {
+			} catch (Exception e) {
 				error = e;
 			}
 		}

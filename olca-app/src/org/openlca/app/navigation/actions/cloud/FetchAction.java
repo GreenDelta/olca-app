@@ -1,7 +1,5 @@
 package org.openlca.app.navigation.actions.cloud;
 
-import org.openlca.app.M;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +8,7 @@ import java.util.Map;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.cloud.JsonLoader;
 import org.openlca.app.cloud.index.Diff;
@@ -31,7 +30,6 @@ import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.model.data.Commit;
 import org.openlca.cloud.model.data.Dataset;
 import org.openlca.cloud.model.data.FetchRequestData;
-import org.openlca.cloud.util.WebRequests.WebRequestException;
 
 import com.google.gson.JsonObject;
 
@@ -57,7 +55,7 @@ public class FetchAction extends Action implements INavigationAction {
 
 		private List<Commit> commits;
 		private List<DiffResult> differences;
-		private WebRequestException error;
+		private Exception error;
 		private DiffNode root;
 
 		public void run() {
@@ -78,7 +76,7 @@ public class FetchAction extends Action implements INavigationAction {
 		private void fetchCommits() {
 			try {
 				commits = client.fetchNewCommitHistory();
-			} catch (WebRequestException e) {
+			} catch (Exception e) {
 				error = e;
 			}
 		}
@@ -102,7 +100,7 @@ public class FetchAction extends Action implements INavigationAction {
 				differences = createDifferences(descriptors);
 				root = new DiffNodeBuilder(client.getConfig().getDatabase(),
 						index).build(differences);
-			} catch (WebRequestException e) {
+			} catch (Exception e) {
 				error = e;
 			}
 		}
@@ -142,7 +140,7 @@ public class FetchAction extends Action implements INavigationAction {
 				client.fetch(toFetch, mergedData);
 				Database.getIndexUpdater().enable();
 				FetchIndexHelper.index(differences, index);
-			} catch (WebRequestException e) {
+			} catch (Exception e) {
 				error = e;
 			}
 		}
