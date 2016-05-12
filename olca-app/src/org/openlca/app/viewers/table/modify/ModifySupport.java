@@ -9,6 +9,7 @@ import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -114,13 +115,19 @@ public class ModifySupport<T> {
 	private void setEditor(ICellModifier<T> modifier, int index) {
 		switch (modifier.getCellEditingType()) {
 		case TEXTBOX:
-			editors[index] = new TextCellEditor(viewer.getTable());
+			if (modifier.getStyle() != SWT.NONE)
+				editors[index] = new TextCellEditor(viewer.getTable(), modifier.getStyle());
+			else
+				editors[index] = new TextCellEditor(viewer.getTable());
 			break;
 		case COMBOBOX:
 			editors[index] = new ComboEditor(viewer.getTable(), new String[0]);
 			break;
 		case CHECKBOX:
-			editors[index] = new CheckboxCellEditor(viewer.getTable());
+			if (modifier.getStyle() != SWT.NONE)
+				editors[index] = new CheckboxCellEditor(viewer.getTable(), modifier.getStyle());
+			else
+				editors[index] = new CheckboxCellEditor(viewer.getTable());
 			break;
 		default:
 			break;

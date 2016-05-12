@@ -1,5 +1,7 @@
 package org.openlca.app.viewers.table.modify;
 
+import org.eclipse.swt.SWT;
+
 public interface ICellModifier<T> {
 
 	public enum CellEditingType {
@@ -26,7 +28,11 @@ public interface ICellModifier<T> {
 	String[] getStringValues(T element);
 
 	CellEditingType getCellEditingType();
-	
+
 	boolean affectsOtherElements();
+
+	default int getStyle() {
+		return SWT.NONE;
+	};
 
 }

@@ -38,7 +38,7 @@ public abstract class TextCellModifier<T> implements ICellModifier<T> {
 	public boolean affectsOtherElements() {
 		return false;
 	}
-	
+
 	protected abstract String getText(T element);
 
 	protected abstract void setText(T element, String text);

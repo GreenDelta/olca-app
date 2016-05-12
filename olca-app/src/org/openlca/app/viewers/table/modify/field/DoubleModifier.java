@@ -4,7 +4,7 @@ import java.util.function.Consumer;
 
 import org.openlca.app.editors.IEditor;
 
-public class DoubleModifier<T> extends FieldModifier<T, Double> {
+public class DoubleModifier<T> extends TextFieldModifier<T, Double> {
 
 	public DoubleModifier(IEditor editor, String field) {
 		super(editor, field);
