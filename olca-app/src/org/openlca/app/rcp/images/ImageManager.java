@@ -22,18 +22,26 @@ class ImageManager {
 	private static ImageRegistry registry = new ImageRegistry();
 
 	static Image get(Icon icon) {
+		if (icon == null)
+			return null;
 		return get(icon.fileName);
 	}
 
 	static Image get(FileIcon icon) {
+		if (icon == null)
+			return null;
 		return get(icon.fileName);
 	}
 
 	static Image get(ModelIcon icon) {
+		if (icon == null)
+			return null;
 		return get(icon.fileName);
 	}
 
 	private static Image get(String filename) {
+		if (filename == null)
+			return null;
 		Image image = registry.get(filename);
 		if (image != null && !image.isDisposed())
 			return image;
@@ -43,18 +51,26 @@ class ImageManager {
 	}
 
 	static Image get(Icon icon, Overlay overlay) {
+		if (icon == null || overlay == null)
+			return null;
 		return get(icon.fileName, overlay.fileName);
 	}
 
 	static Image get(FileIcon icon, Overlay overlay) {
+		if (icon == null || overlay == null)
+			return null;
 		return get(icon.fileName, overlay.fileName);
 	}
 
 	static Image get(ModelIcon icon, Overlay overlay) {
+		if (icon == null || overlay == null)
+			return null;
 		return get(icon.fileName, overlay.fileName);
 	}
 
 	private static Image get(String filename, String overlay) {
+		if (filename == null || overlay == null)
+			return null;
 		String id = filename + "-" + overlay;
 		Image withOverlay = registry.get(id);
 		if (withOverlay != null && !withOverlay.isDisposed())
@@ -67,18 +83,26 @@ class ImageManager {
 	}
 
 	static ImageDescriptor descriptor(Icon icon) {
+		if (icon == null)
+			return null;
 		return descriptor(icon.fileName);
 	}
 
 	static ImageDescriptor descriptor(FileIcon icon) {
+		if (icon == null)
+			return null;
 		return descriptor(icon.fileName);
 	}
 
 	static ImageDescriptor descriptor(ModelIcon icon) {
+		if (icon == null)
+			return null;
 		return descriptor(icon.fileName);
 	}
 
 	private static ImageDescriptor descriptor(String filename) {
+		if (filename == null)
+			return null;
 		ImageDescriptor d = registry.getDescriptor(filename);
 		if (d != null)
 			return d;
@@ -88,14 +112,20 @@ class ImageManager {
 	}
 
 	static ImageDescriptor descriptor(Icon icon, Overlay overlay) {
+		if (icon == null || overlay == null)
+			return null;
 		return descriptor(icon.fileName, overlay.fileName);
 	}
 
 	static ImageDescriptor descriptor(FileIcon icon, Overlay overlay) {
+		if (icon == null || overlay == null)
+			return null;
 		return descriptor(icon.fileName, overlay.fileName);
 	}
 
 	static ImageDescriptor descriptor(ModelIcon icon, Overlay overlay) {
+		if (icon == null || overlay == null)
+			return null;
 		return descriptor(icon.fileName, overlay.fileName);
 	}
 
