@@ -57,7 +57,7 @@ class Search implements Runnable {
 				ModelType.IMPACT_METHOD, ModelType.PROCESS, ModelType.FLOW,
 				ModelType.FLOW_PROPERTY, ModelType.UNIT_GROUP, ModelType.SOURCE,
 				ModelType.ACTOR, ModelType.LOCATION, ModelType.SOCIAL_INDICATOR,
-				ModelType.CURRENCY };
+				ModelType.CURRENCY, ModelType.CATEGORY };
 	}
 
 	private List<?> getDescriptors(ModelType type) {

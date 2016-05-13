@@ -120,7 +120,7 @@ public class InfoSection {
 				link = new Hyperlink(breadcrumb, SWT.NONE);
 			}
 			link.setText(current.getName());
-			link.addHyperlinkListener(new CategoryLinkSelectionListener(current));
+			link.addHyperlinkListener(new CategoryLinkClick(current));
 			link.setForeground(Colors.linkBlue());
 		}
 	}
@@ -129,11 +129,11 @@ public class InfoSection {
 		return container;
 	}
 
-	private class CategoryLinkSelectionListener extends HyperlinkAdapter {
+	private class CategoryLinkClick extends HyperlinkAdapter {
 
 		private Category category;
 
-		private CategoryLinkSelectionListener(Category category) {
+		private CategoryLinkClick(Category category) {
 			this.category = category;
 		}
 
