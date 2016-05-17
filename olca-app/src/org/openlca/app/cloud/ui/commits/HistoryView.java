@@ -6,11 +6,11 @@ import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
-import org.eclipse.jface.viewers.ITableColorProvider;
+import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
@@ -25,7 +25,7 @@ import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer.Side;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.images.Overlay;
-import org.openlca.app.util.Colors;
+import org.openlca.app.util.Error;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.viewers.BaseLabelProvider;
@@ -33,7 +33,6 @@ import org.openlca.app.viewers.table.AbstractTableViewer;
 import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.model.data.Commit;
 import org.openlca.cloud.model.data.FetchRequestData;
-import org.openlca.cloud.util.WebRequests.WebRequestException;
 import org.openlca.core.model.ModelType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,8 +94,8 @@ public class HistoryView extends ViewPart {
 			RepositoryClient client = Database.getRepositoryClient();
 			JsonLoader loader = CloudUtil.getJsonLoader(client);
 			List<JsonNode> nodes = new ArrayList<>();
-			App.runWithProgress("Loading data", () -> {
-				nodes.add(new ModelNodeBuilder().build(null, loader.getRemoteJson(ref)));
+			App.runWithProgress("Loading data", () -> { 
+				nodes.add(new ModelNodeBuilder().build(null, loader.getRemoteJson(ref))); 
 			});
 			jsonViewer.setInput(nodes.toArray(new JsonNode[nodes.size()]));
 		});
@@ -106,8 +105,9 @@ public class HistoryView extends ViewPart {
 		RepositoryClient client = Database.getRepositoryClient();
 		try {
 			historyViewer.setInput(client.fetchCommitHistory());
-		} catch (WebRequestException e) {
-			log.error("Error loading commit history", e);
+		} catch (Exception e) {
+			log.warn("Error loading commit history", e);
+			Error.showBox(e.getMessage());
 		}
 	}
 
@@ -137,8 +137,9 @@ public class HistoryView extends ViewPart {
 		App.runWithProgress("Loading references", () -> {
 			try {
 				references.addAll(client.getReferences(commit.id));
-			} catch (WebRequestException e) {
-				log.error("Error loading commit history", e);
+			} catch (Exception e) {
+				log.warn("Error loading commit history", e);
+				Error.showBox(e.getMessage());
 			}
 		});
 		for (FetchRequestData data : new ArrayList<>(references))
@@ -177,8 +178,8 @@ public class HistoryView extends ViewPart {
 
 	}
 
-	private class HistoryLabel extends org.eclipse.jface.viewers.LabelProvider implements ITableLabelProvider,
-			ITableColorProvider {
+	private class HistoryLabel extends org.eclipse.jface.viewers.LabelProvider
+			implements ITableLabelProvider, ITableFontProvider {
 
 		@Override
 		public Image getColumnImage(Object element, int column) {
@@ -202,22 +203,18 @@ public class HistoryView extends ViewPart {
 		}
 
 		@Override
-		public Color getForeground(Object element, int column) {
+		public Font getFont(Object element, int columnIndex) {
 			Commit commit = (Commit) element;
 			String lastCommitId = Database.getRepositoryClient().getConfig().getLastCommitId();
 			if (!commit.id.equals(lastCommitId))
 				return null;
-			return Colors.get(112, 179, 89);
-		}
-
-		@Override
-		public Color getBackground(Object element, int columnIndex) {
-			return null;
+			return UI.boldFont();
 		}
 
 	}
 
-	private class ReferencesViewer extends AbstractTableViewer<FetchRequestData> {
+	private class ReferencesViewer extends
+			AbstractTableViewer<FetchRequestData> {
 
 		private FetchRequestData lastSelection;
 
