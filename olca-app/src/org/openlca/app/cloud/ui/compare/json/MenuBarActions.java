@@ -51,19 +51,19 @@ class MenuBarActions {
 
 	void selectNext() {
 		int selected = getLastSelected();
-		JsonNode node = find(true, selected + 1, nodes.size());
+		JsonNode node = findNext(selected + 1, nodes.size());
 		if (node == null)
-			node = find(true, 0, selected);
+			node = findNext(0, selected);
 		select(node);
 	}
 
 	void selectPrevious() {
 		int selected = getLastSelected();
 		if (selected == -1)
-			selected = nodes.size() - 1;
-		JsonNode node = find(false, selected - 1, 0);
+			selected = nodes.size();
+		JsonNode node = findPrevious(selected - 1, -1);
 		if (node == null)
-			node = find(true, nodes.size() - 1, selected);
+			node = findPrevious(nodes.size() - 1, selected);
 		select(node);
 	}
 
@@ -75,12 +75,24 @@ class MenuBarActions {
 		return nodes.indexOf(last);
 	}
 
-	private JsonNode find(boolean next, int index, int limit) {
+	private JsonNode findNext(int index, int limit) {
 		JsonNode select = null;
-		while (!nodes.get(index).hasEqualValues() && index > limit
-				&& index < limit) {
-			select = nodes.get(index);
-			index += next ? 1 : -1;
+		while (select == null && index < limit) {
+			JsonNode node = nodes.get(index);
+			if (!node.hasEqualValues())
+				select = node;
+			index++;
+		}
+		return select;
+	}
+
+	private JsonNode findPrevious(int index, int limit) {
+		JsonNode select = null;
+		while (select == null && index > limit) {
+			JsonNode node = nodes.get(index);
+			if (!node.hasEqualValues())
+				select = node;
+			index--;
 		}
 		return select;
 	}
