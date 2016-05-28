@@ -6,12 +6,11 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.events.HyperlinkAdapter;
-import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.Desktop;
 import org.openlca.app.util.UI;
 import org.openlca.util.Strings;
@@ -77,15 +76,12 @@ public class DatabasePropertiesDialog extends FormDialog {
 		toolkit.adapt(link);
 		link.setText(Strings.cut(path, 75));
 		link.setToolTipText(path);
-		link.addHyperlinkListener(new HyperlinkAdapter() {
-			@Override
-			public void linkActivated(HyperlinkEvent e) {
-				try {
-					Desktop.browse(path);
-				} catch (Exception ex) {
-					Logger log = LoggerFactory.getLogger(getClass());
-					log.error("failed to open folder", ex);
-				}
+		Controls.onClick(link, e -> {
+			try {
+				Desktop.browse(path);
+			} catch (Exception ex) {
+				Logger log = LoggerFactory.getLogger(getClass());
+				log.error("failed to open folder", ex);
 			}
 		});
 	}

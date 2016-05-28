@@ -5,8 +5,6 @@ import java.io.File;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.forms.events.HyperlinkAdapter;
-import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.openlca.app.M;
 import org.openlca.app.rcp.images.Icon;
@@ -31,17 +29,11 @@ public class ErrorPopup extends Popup {
 	}
 
 	@Override
-	protected void makeLink(Composite composite) {
-		Hyperlink hyperlink = new Hyperlink(composite, SWT.NONE);
-		hyperlink.setText(M.ErrorPopupMessage);
-		hyperlink.setForeground(composite.getDisplay().getSystemColor(
-				SWT.COLOR_BLUE));
-		hyperlink.addHyperlinkListener(new LinkActivation());
-	}
-
-	private class LinkActivation extends HyperlinkAdapter {
-		@Override
-		public void linkActivated(HyperlinkEvent evt) {
+	protected void makeLink(Composite comp) {
+		Hyperlink link = new Hyperlink(comp, SWT.NONE);
+		link.setText(M.ErrorPopupMessage);
+		link.setForeground(comp.getDisplay().getSystemColor(SWT.COLOR_BLUE));
+		Controls.onClick(link, evt -> {
 			try {
 				File workspaceDir = Platform.getLocation().toFile();
 				File logFile = new File(workspaceDir, "log.html");
@@ -49,7 +41,7 @@ public class ErrorPopup extends Popup {
 			} catch (Exception e) {
 				log.error("Writing file failed", e);
 			}
-		}
+		});
 	}
 
 	public static void show(final String message) {

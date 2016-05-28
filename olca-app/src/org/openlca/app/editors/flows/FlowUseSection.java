@@ -8,8 +8,6 @@ import java.util.TreeSet;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.forms.events.HyperlinkAdapter;
-import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.eclipse.ui.forms.widgets.Section;
@@ -18,6 +16,7 @@ import org.openlca.app.M;
 import org.openlca.app.editors.UsageView;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Colors;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.FlowDao;
@@ -115,13 +114,10 @@ class FlowUseSection {
 		link.setToolTipText(Labels.getDisplayInfoText(d));
 		link.setImage(image);
 		link.setForeground(Colors.linkBlue());
-		link.addHyperlinkListener(new HyperlinkAdapter() {
-			@Override
-			public void linkActivated(HyperlinkEvent evt) {
-				ProcessDao dao = new ProcessDao(database);
-				Process p = dao.getForId(d.getId());
-				App.openEditor(p);
-			}
+		Controls.onClick(link, e -> {
+			ProcessDao dao = new ProcessDao(database);
+			Process p = dao.getForId(d.getId());
+			App.openEditor(p);
 		});
 	}
 
@@ -132,12 +128,8 @@ class FlowUseSection {
 		link.setText(rest + " more"); // TODO: @translate
 		link.setImage(image);
 		link.setForeground(Colors.linkBlue());
-		link.addHyperlinkListener(new HyperlinkAdapter() {
-			@Override
-			public void linkActivated(HyperlinkEvent evt) {
-				UsageView.open(Descriptors.toDescriptor(flow));
-			}
-		});
+		Controls.onClick(link,
+				e -> UsageView.open(Descriptors.toDescriptor(flow)));
 	}
 
 }

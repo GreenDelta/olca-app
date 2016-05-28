@@ -10,7 +10,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
@@ -22,11 +21,11 @@ import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Desktop;
 import org.openlca.app.util.FileType;
-import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Info;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
@@ -103,13 +102,13 @@ class SourceInfoPage extends ModelPage<Source> {
 		deleteLink.addMouseTrackListener(new DeleteFileVisibility());
 		deleteLink.setVisible(false);
 		deleteLink.setToolTipText(M.Delete);
-		deleteLink.addHyperlinkListener(new DeleteFileListener());
+		Controls.onClick(deleteLink, this::deleteFile);
 	}
 
 	private void createFileLink(Composite composite) {
 		fileLink = toolkit.createImageHyperlink(composite, SWT.TOP);
 		fileLink.setForeground(Colors.linkBlue());
-		fileLink.addHyperlinkListener(new OpenFileListener());
+		Controls.onClick(fileLink, this::openFile);
 		fileLink.addMouseTrackListener(new DeleteFileVisibility());
 		String file = getModel().getExternalFile();
 		if (file != null) {
@@ -175,40 +174,34 @@ class SourceInfoPage extends ModelPage<Source> {
 		return file;
 	}
 
-	private class OpenFileListener extends HyperlinkAdapter {
-		@Override
-		public void linkActivated(HyperlinkEvent evt) {
-			File file = getDatabaseFile();
-			if (file == null)
-				return;
-			if (file.exists()) {
-				log.trace("open file {}", file);
-				Desktop.browse(file.toURI().toString());
-			} else {
-				Info.showBox(M.FileDoesNotExist);
-			}
+	private void openFile(HyperlinkEvent evt) {
+		File file = getDatabaseFile();
+		if (file == null)
+			return;
+		if (file.exists()) {
+			log.trace("open file {}", file);
+			Desktop.browse(file.toURI().toString());
+		} else {
+			Info.showBox(M.FileDoesNotExist);
 		}
 	}
 
-	private class DeleteFileListener extends HyperlinkAdapter {
-		@Override
-		public void linkActivated(HyperlinkEvent e) {
-			if (getModel().getExternalFile() == null)
-				return;
-			File file = getDatabaseFile();
-			boolean doIt = Question.ask(M.DeleteFile,
-					M.SourceFileDeleteQuestion);
-			if (!doIt)
-				return;
-			try {
-				if (file.exists())
-					file.delete();
-				getModel().setExternalFile(null);
-				updateFileLink();
-				getEditor().setDirty(true);
-			} catch (Exception ex) {
-				log.error("failed to delete file", ex);
-			}
+	private void deleteFile(HyperlinkEvent e) {
+		if (getModel().getExternalFile() == null)
+			return;
+		File file = getDatabaseFile();
+		boolean doIt = Question.ask(M.DeleteFile,
+				M.SourceFileDeleteQuestion);
+		if (!doIt)
+			return;
+		try {
+			if (file.exists())
+				file.delete();
+			getModel().setExternalFile(null);
+			updateFileLink();
+			getEditor().setDirty(true);
+		} catch (Exception ex) {
+			log.error("failed to delete file", ex);
 		}
 	}
 

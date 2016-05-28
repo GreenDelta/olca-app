@@ -22,7 +22,7 @@ import org.openlca.app.util.UncertaintyLabel;
 import org.openlca.core.database.ParameterDao;
 import org.openlca.core.model.Parameter;
 
-public class GlobalParameterInfoPage extends ModelPage<Parameter> {
+class GlobalParameterInfoPage extends ModelPage<Parameter> {
 
 	private ParameterChangeSupport support = new ParameterChangeSupport();
 	private List<Parameter> parameters;
@@ -106,7 +106,7 @@ public class GlobalParameterInfoPage extends ModelPage<Parameter> {
 		UI.formLabel(comp, toolkit, M.Value);
 		Label label = UI.formLabel(comp, toolkit,
 				Double.toString(getModel().getValue()));
-		text.addModifyListener((event) -> {
+		text.addModifyListener(e -> {
 			support.evaluate();
 			label.setText(Double.toString(getModel().getValue()));
 			getEditor().setDirty(true);
@@ -115,5 +115,4 @@ public class GlobalParameterInfoPage extends ModelPage<Parameter> {
 		support.evaluate();
 		label.setText(Double.toString(getModel().getValue()));
 	}
-
 }
