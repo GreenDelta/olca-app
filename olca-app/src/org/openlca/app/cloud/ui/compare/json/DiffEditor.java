@@ -95,4 +95,5 @@ class DiffEditor extends Composite {
 	JsonNode getRootNode() {
 		return root;
 	}
+
 }

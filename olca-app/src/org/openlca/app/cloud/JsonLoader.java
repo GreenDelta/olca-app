@@ -99,14 +99,15 @@ public class JsonLoader {
 		JsonArray exchanges = obj.getAsJsonArray("exchanges");
 		JsonArray inputs = new JsonArray();
 		JsonArray outputs = new JsonArray();
-		for (JsonElement elem : exchanges) {
-			JsonObject e = elem.getAsJsonObject();
-			JsonElement isInput = e.get("input");
-			if (isInput.isJsonPrimitive() && isInput.getAsBoolean())
-				inputs.add(e);
-			else
-				outputs.add(e);
-		}
+		if (exchanges != null)
+			for (JsonElement elem : exchanges) {
+				JsonObject e = elem.getAsJsonObject();
+				JsonElement isInput = e.get("input");
+				if (isInput.isJsonPrimitive() && isInput.getAsBoolean())
+					inputs.add(e);
+				else
+					outputs.add(e);
+			}
 		obj.remove("exchanges");
 		obj.add("inputs", inputs);
 		obj.add("outputs", outputs);

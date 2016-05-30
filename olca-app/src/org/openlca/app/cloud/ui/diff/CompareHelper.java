@@ -40,8 +40,6 @@ class CompareHelper {
 		int code = dialog.open();
 		if (code == IDialogConstants.CANCEL_ID)
 			return false;
-		if (!data.result.isConflict())
-			return false;
 		boolean localDiffersFromRemote = dialog.leftDiffersFromRight();
 		boolean keepLocalModel = code == DiffEditorDialog.KEEP_LOCAL_MODEL;
 		updateResult(data, localDiffersFromRemote, keepLocalModel);
@@ -56,12 +54,12 @@ class CompareHelper {
 			data.local = JsonUtil.toJsonObject(data.node.leftElement);
 			data.remote = JsonUtil.toJsonObject(data.node.rightElement);
 		}
-		if (!data.result.isConflict())
-			return DiffEditorDialog.forViewing(data.node,
-					new ModelLabelProvider(),
+		if (data.result.getType().direction == Direction.LEFT_TO_RIGHT)
+			return DiffEditorDialog.forViewing(data.node, new ModelLabelProvider(),
 					ModelUtil.getDependencyResolver(), direction);
-		return DiffEditorDialog.forEditing(data.node, new ModelLabelProvider(),
+		DiffEditorDialog dialog = DiffEditorDialog.forEditing(data.node, new ModelLabelProvider(),
 				ModelUtil.getDependencyResolver(), direction);
+		return dialog;
 	}
 
 	private void createNode(DiffData data) {

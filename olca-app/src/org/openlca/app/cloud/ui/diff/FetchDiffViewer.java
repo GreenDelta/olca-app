@@ -32,7 +32,7 @@ public class FetchDiffViewer extends DiffTreeViewer {
 	}
 
 	@Override
-	protected void onMerge() {
+	protected void onMerge(DiffNode node) {
 		if (onMerge != null)
 			onMerge.run();
 	}

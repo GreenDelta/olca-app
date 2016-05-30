@@ -33,7 +33,6 @@ import org.openlca.app.viewers.table.AbstractTableViewer;
 import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.model.data.Commit;
 import org.openlca.cloud.model.data.FetchRequestData;
-import org.openlca.cloud.util.WebRequests.WebRequestException;
 import org.openlca.core.model.ModelType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,7 +105,7 @@ public class HistoryView extends ViewPart {
 		RepositoryClient client = Database.getRepositoryClient();
 		try {
 			historyViewer.setInput(client.fetchCommitHistory());
-		} catch (WebRequestException e) {
+		} catch (Exception e) {
 			log.error("Error loading commit history", e);
 		}
 	}
@@ -137,7 +136,7 @@ public class HistoryView extends ViewPart {
 		App.runWithProgress("Loading references", () -> {
 			try {
 				references.addAll(client.getReferences(commit.id));
-			} catch (WebRequestException e) {
+			} catch (Exception e) {
 				log.error("Error loading commit history", e);
 			}
 		});

@@ -48,11 +48,11 @@ abstract class DiffTreeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 		boolean merged = mergeHelper.openDiffEditor(selected);
 		if (merged) {
 			getViewer().refresh(selected);
-			onMerge();
+			onMerge(selected);
 		}
 	}
 
-	protected void onMerge() {
+	protected void onMerge(DiffNode node) {
 		// subclasses may override
 	}
 

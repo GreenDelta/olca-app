@@ -1,6 +1,5 @@
 package org.openlca.app.cloud.ui.compare.json;
 
-import org.openlca.app.M;
 import java.util.Collections;
 import java.util.List;
 
@@ -12,6 +11,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.M;
 import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
@@ -69,11 +69,9 @@ class MenuBar extends Composite {
 			toolkit.adapt(comp, false, false);
 	}
 
-	void initActions(JsonNode root, JsonTreeViewer left, JsonTreeViewer right,
-			IDependencyResolver dependencyResolver) {
+	void initActions(JsonNode root, JsonTreeViewer left, JsonTreeViewer right, IDependencyResolver dependencyResolver) {
 		this.root = root;
-		MenuBarActions actions = new MenuBarActions(root, left, right,
-				dependencyResolver);
+		MenuBarActions actions = new MenuBarActions(root, left, right, dependencyResolver);
 		Controls.onSelect(copySelectionButton, (e) -> actions.copySelection());
 		Controls.onSelect(copyAllButton, (e) -> actions.copyAll());
 		Controls.onSelect(resetSelectionButton, (e) -> actions.resetSelection());

@@ -6,10 +6,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.cloud.JsonLoader;
 import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer.Direction;
 
-public class ReferencesDiffViewer extends DiffTreeViewer {
+class SyncDiffViewer extends DiffTreeViewer {
 
-	public ReferencesDiffViewer(Composite parent, JsonLoader jsonLoader) {
-		super(parent, jsonLoader, Direction.LEFT_TO_RIGHT);
+	public SyncDiffViewer(Composite parent, JsonLoader jsonLoader) {
+		super(parent, jsonLoader, Direction.RIGHT_TO_LEFT);
 	}
 
 	@Override
@@ -17,6 +17,12 @@ public class ReferencesDiffViewer extends DiffTreeViewer {
 		TreeViewer viewer = new TreeViewer(parent, SWT.BORDER);
 		configureViewer(viewer, false);
 		return viewer;
+	}
+	
+	@Override
+	protected void onMerge(DiffNode node) {
+		if (!node.hasChanged())
+			return;
 	}
 
 }

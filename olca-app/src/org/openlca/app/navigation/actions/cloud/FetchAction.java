@@ -98,8 +98,7 @@ public class FetchAction extends Action implements INavigationAction {
 			try {
 				List<FetchRequestData> descriptors = client.requestFetch();
 				differences = createDifferences(descriptors);
-				root = new DiffNodeBuilder(client.getConfig().getDatabase(),
-						index).build(differences);
+				root = new DiffNodeBuilder(client.getConfig().getDatabase(), index).build(differences);
 			} catch (Exception e) {
 				error = e;
 			}
