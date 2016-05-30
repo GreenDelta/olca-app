@@ -4,7 +4,6 @@ import org.eclipse.jface.action.Action;
 import org.openlca.app.App;
 import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.cloud.index.DiffIndex;
-import org.openlca.app.cloud.ui.commits.HistoryView.HistoryViewer;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.navigation.CategoryElement;

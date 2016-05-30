@@ -12,7 +12,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.openlca.app.cloud.JsonLoader;
-import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer.Direction;
 import org.openlca.app.cloud.ui.diff.DiffResult.DiffResponse;
 
 public class CommitDiffViewer extends DiffTreeViewer {
@@ -20,7 +19,7 @@ public class CommitDiffViewer extends DiffTreeViewer {
 	private List<DiffNode> selected = new ArrayList<>();
 
 	public CommitDiffViewer(Composite parent, JsonLoader jsonLoader) {
-		super(parent, jsonLoader, Direction.LEFT_TO_RIGHT);
+		super(parent, jsonLoader);
 	}
 
 	public void setInitialSelection(Set<String> initialSelection) {

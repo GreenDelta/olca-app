@@ -4,12 +4,11 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.cloud.JsonLoader;
-import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer.Direction;
 
 class SyncDiffViewer extends DiffTreeViewer {
 
 	public SyncDiffViewer(Composite parent, JsonLoader jsonLoader) {
-		super(parent, jsonLoader, Direction.RIGHT_TO_LEFT);
+		super(parent, jsonLoader);
 	}
 
 	@Override

@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.openlca.core.model.ModelType;
 
-class GroupElement extends NavigationElement<Group> {
+public class GroupElement extends NavigationElement<Group> {
 
 	public GroupElement(INavigationElement<?> parent, Group group) {
 		super(parent, group);

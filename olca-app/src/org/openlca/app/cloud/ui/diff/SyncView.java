@@ -9,67 +9,134 @@ import java.util.Set;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
+import org.openlca.app.App;
 import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.cloud.JsonLoader;
 import org.openlca.app.cloud.index.Diff;
 import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.db.Database;
+import org.openlca.app.navigation.CategoryElement;
+import org.openlca.app.navigation.DatabaseElement;
+import org.openlca.app.navigation.INavigationElement;
+import org.openlca.app.navigation.ModelElement;
+import org.openlca.app.navigation.ModelTypeElement;
 import org.openlca.app.util.UI;
 import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.model.data.Dataset;
 import org.openlca.cloud.model.data.FetchRequestData;
+import org.openlca.core.model.Category;
+import org.openlca.core.model.ModelType;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SyncView extends ViewPart {
 
+	public final static String ID = "views.cloud.sync";
 	private final static Logger log = LoggerFactory.getLogger(SyncView.class);
+	private JsonLoader jsonLoader;
+	private SyncDiffViewer viewer;
+	private DiffNode input;
 
 	@Override
 	public void createPartControl(Composite parent) {
 		Composite body = new Composite(parent, SWT.NONE);
 		UI.gridLayout(body, 1, 0, 0);
 		RepositoryClient client = Database.getRepositoryClient();
-		if (client == null)
+		jsonLoader = CloudUtil.getJsonLoader(client);
+		viewer = new SyncDiffViewer(body, jsonLoader);
+	}
+
+	public void update(List<INavigationElement<?>> elements, String commitId) {
+		if (!Database.isConnected())
 			return;
-		JsonLoader jsonLoader = CloudUtil.getJsonLoader(client);
-		SyncDiffViewer viewer = new SyncDiffViewer(body, jsonLoader);
-		DiffNode input = getInput();
+		if (jsonLoader == null)
+			jsonLoader = CloudUtil.getJsonLoader(Database.getRepositoryClient());
+		else
+			jsonLoader.setClient(Database.getRepositoryClient());
+		jsonLoader.setCommitId(commitId);
+		App.runWithProgress("Comparing data sets", () -> loadInput(elements, commitId));
 		if (input != null)
 			viewer.setInput(Collections.singleton(input));
 	}
 
-	private DiffNode getInput() {
+	private void loadInput(List<INavigationElement<?>> elements, String commitId) {
 		try {
 			RepositoryClient client = Database.getRepositoryClient();
 			if (client == null)
-				return null;
+				input = null;
 			DiffIndex index = Database.getDiffIndex();
 			List<Dataset> localChanges = new ArrayList<>();
 			for (Diff diff : index.getChanged())
-				localChanges.add(diff.getDataset());
-			List<FetchRequestData> descriptors = client.sync(null, localChanges);
-			List<DiffResult> differences = createDifferences(descriptors);
-			DiffNode root = new DiffNodeBuilder(client.getConfig().getDatabase(), index).build(differences);
-			return root;
+				if (isContainedIn(diff.getDataset(), elements))
+					localChanges.add(diff.getDataset());
+			List<FetchRequestData> descriptors = client.sync(commitId, localChanges);
+			List<DiffResult> differences = createDifferences(descriptors, elements);
+			input = new DiffNodeBuilder(client.getConfig().getDatabase(), index).build(differences);
 		} catch (Exception e) {
 			log.error("Error loading remote data", e);
-			return null;
+			input = null;
 		}
 	}
 
-	private List<DiffResult> createDifferences(List<FetchRequestData> remotes) {
+	private boolean isContainedIn(Dataset dataset, List<INavigationElement<?>> elements) {
+		if (elements == null || elements.isEmpty())
+			return true;
+		for (INavigationElement<?> element : elements)
+			if (element instanceof DatabaseElement)
+				return true; // skip searching since db element contains all
+		for (INavigationElement<?> element : elements)
+			if (isContainedIn(dataset, element))
+				return true;
+		return false;
+	}
+
+	private boolean isContainedIn(Dataset dataset, INavigationElement<?> element) {
+		if (element instanceof DatabaseElement)
+			return true;
+		if (element instanceof ModelTypeElement) {
+			ModelType type = ((ModelTypeElement) element).getContent();
+			if (type == dataset.type)
+				return true;
+		}
+		if (element instanceof CategoryElement) {
+			Category category = ((CategoryElement) element).getContent();
+			if (dataset.type == ModelType.CATEGORY)
+				if (category.getRefId().equals(dataset.refId))
+					return true;
+			if (dataset.type == category.getModelType())
+				if (dataset.fullPath != null && dataset.fullPath.startsWith(CloudUtil.getFullPath(category) + "/"))
+					return true;
+		}
+		if (element instanceof ModelElement) {
+			CategorizedDescriptor descriptor = ((ModelElement) element).getContent();
+			if (descriptor.getRefId().equals(dataset.refId))
+				return true;
+		}
+		for (INavigationElement<?> child : element.getChildren())
+			if (isContainedIn(dataset, child))
+				return true;
+		return false;
+
+	}
+
+	private List<DiffResult> createDifferences(List<FetchRequestData> remotes, List<INavigationElement<?>> elements) {
 		DiffIndex index = Database.getDiffIndex();
 		List<DiffResult> differences = new ArrayList<>();
 		Set<String> added = new HashSet<>();
 		for (FetchRequestData identifier : remotes) {
 			Diff local = index.get(identifier.refId);
+			if (local != null && !isContainedIn(local.getDataset(), elements))
+				continue;
+			if (local == null && !isContainedIn(identifier, elements))
+				continue;
 			differences.add(new DiffResult(identifier, local));
 			added.add(identifier.refId);
 		}
 		for (Diff diff : index.getChanged())
 			if (!added.contains(diff.getDataset().refId))
-				differences.add(new DiffResult(diff));
+				if (isContainedIn(diff.getDataset(), elements))
+					differences.add(new DiffResult(diff));
 		return differences;
 	}
 

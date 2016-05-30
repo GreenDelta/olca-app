@@ -44,6 +44,8 @@ import org.openlca.app.navigation.actions.cloud.CommitAction;
 import org.openlca.app.navigation.actions.cloud.ConnectAction;
 import org.openlca.app.navigation.actions.cloud.DisconnectAction;
 import org.openlca.app.navigation.actions.cloud.FetchAction;
+import org.openlca.app.navigation.actions.cloud.OpenHistoryViewAction;
+import org.openlca.app.navigation.actions.cloud.OpenSyncViewAction;
 import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.util.viewers.Viewers;
 
@@ -91,12 +93,20 @@ public class NavigationActionProvider extends CommonActionProvider {
 	private INavigationAction[][] cloudActions = new INavigationAction[][] {	
 		new INavigationAction[] { 
 			new CommitAction(), 
-			new FetchAction() 
+			new FetchAction() ,
+			new OpenHistoryViewAction()
 		},
 		new INavigationAction[]	{ 
 			new ConnectAction(), 
 			new DisconnectAction() 
 		}	
+	};
+	
+	private INavigationAction[][] cloudCompareActions = new INavigationAction[][] {	
+		new INavigationAction[] {
+			new OpenSyncViewAction(false),			
+			new OpenSyncViewAction(true)
+		}
 	};
 	//@formatter:on
 
@@ -127,6 +137,16 @@ public class NavigationActionProvider extends CommonActionProvider {
 			registered += registerSingleActions(elements.get(0), subMenu, cloudActions);
 		else if (elements.size() > 1)
 			registered += registerMultiActions(elements, subMenu, cloudActions);
+		int subRegistered = 0;
+		IMenuManager compareMenu = new MenuManager("Compare with");
+		if (elements.size() == 1)
+			subRegistered += registerSingleActions(elements.get(0), compareMenu, cloudCompareActions);
+		else if (elements.size() > 1)
+			subRegistered += registerMultiActions(elements, compareMenu, cloudCompareActions);
+		if (subRegistered > 0) {
+			subMenu.add(compareMenu);
+			registered++;
+		}
 		if (registered == 0)
 			return;
 		menu.add(subMenu);

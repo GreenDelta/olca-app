@@ -9,7 +9,6 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.cloud.JsonLoader;
-import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer.Direction;
 import org.openlca.app.cloud.ui.diff.DiffResult.DiffResponse;
 
 public class FetchDiffViewer extends DiffTreeViewer {
@@ -17,7 +16,7 @@ public class FetchDiffViewer extends DiffTreeViewer {
 	private Runnable onMerge;
 
 	public FetchDiffViewer(Composite parent, JsonLoader jsonLoader) {
-		super(parent, jsonLoader, Direction.RIGHT_TO_LEFT);
+		super(parent, jsonLoader);
 	}
 
 	@Override

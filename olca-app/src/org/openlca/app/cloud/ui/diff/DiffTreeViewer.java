@@ -8,7 +8,6 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Tree;
 import org.openlca.app.cloud.JsonLoader;
-import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer.Direction;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.AbstractViewer;
 
@@ -17,9 +16,9 @@ abstract class DiffTreeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 	DiffNode root;
 	private CompareHelper mergeHelper;
 
-	DiffTreeViewer(Composite parent, JsonLoader jsonLoader, Direction direction) {
+	DiffTreeViewer(Composite parent, JsonLoader jsonLoader) {
 		super(parent);
-		mergeHelper = new CompareHelper(jsonLoader, direction);
+		mergeHelper = new CompareHelper(jsonLoader);
 	}
 
 	protected void configureViewer(TreeViewer viewer, boolean checkable) {
@@ -30,7 +29,7 @@ abstract class DiffTreeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 		Tree tree = viewer.getTree();
 		UI.gridData(tree, true, true);
 	}
-	
+
 	@Override
 	public void setInput(Collection<DiffNode> collection) {
 		root = collection.iterator().next();

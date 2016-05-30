@@ -20,10 +20,19 @@ import com.google.gson.JsonObject;
 
 public class JsonLoader {
 
-	private final RepositoryClient client;
+	private RepositoryClient client;
+	private String commitId;
 
 	JsonLoader(RepositoryClient client) {
 		this.client = client;
+	}
+
+	public void setClient(RepositoryClient client) {
+		this.client = client;
+	}
+
+	public void setCommitId(String commitId) {
+		this.commitId = commitId;
 	}
 
 	public JsonObject getLocalJson(Dataset dataset) {
@@ -54,7 +63,7 @@ public class JsonLoader {
 		if (dataset == null)
 			return null;
 		try {
-			JsonObject json = client.getDataset(dataset.type, dataset.refId);
+			JsonObject json = client.getDataset(dataset.type, dataset.refId, commitId);
 			String type = JsonUtil.getString(json, "@type");
 			if (ImpactMethod.class.getSimpleName().equals(type)) {
 				replaceReferences(json, "impactCategories", ModelType.IMPACT_CATEGORY);

@@ -21,12 +21,10 @@ import com.google.gson.JsonObject;
 class CompareHelper {
 
 	private JsonLoader loader;
-	private Direction direction;
 	private Map<String, JsonNode> nodes = new HashMap<>();
 
-	CompareHelper(JsonLoader loader, Direction direction) {
+	CompareHelper(JsonLoader loader) {
 		this.loader = loader;
-		this.direction = direction;
 	}
 
 	boolean openDiffEditor(DiffNode node) {
@@ -56,9 +54,9 @@ class CompareHelper {
 		}
 		if (data.result.getType().direction == Direction.LEFT_TO_RIGHT)
 			return DiffEditorDialog.forViewing(data.node, new ModelLabelProvider(),
-					ModelUtil.getDependencyResolver(), direction);
+					ModelUtil.getDependencyResolver(), data.result.getType().direction);
 		DiffEditorDialog dialog = DiffEditorDialog.forEditing(data.node, new ModelLabelProvider(),
-				ModelUtil.getDependencyResolver(), direction);
+				ModelUtil.getDependencyResolver(), data.result.getType().direction);
 		return dialog;
 	}
 
@@ -67,7 +65,7 @@ class CompareHelper {
 			data.local = loader.getLocalJson(data.result.local.getDataset());
 		if (data.result.remote != null && !data.result.remote.isDeleted())
 			data.remote = loader.getRemoteJson(data.result.remote);
-		else if (direction == Direction.LEFT_TO_RIGHT)
+		else if (data.result.getType().direction == Direction.LEFT_TO_RIGHT)
 			data.remote = loader.getRemoteJson(data.result.getDataset());
 		data.node = new ModelNodeBuilder().build(data.local, data.remote);
 		nodes.put(toKey(data.result.getDataset()), data.node);

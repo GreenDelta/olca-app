@@ -63,8 +63,11 @@ public class CloudUtil {
 		return toDataset(descriptor, category);
 	}
 
-	private static String getFullPath(CategorizedDescriptor entity,
-			Category category) {
+	public static String getFullPath(Category category) {
+		return getFullPath(Descriptors.toDescriptor(category), category.getCategory());
+	}
+
+	public static String getFullPath(CategorizedDescriptor entity, Category category) {
 		String path = entity.getName();
 		while (category != null) {
 			path = category.getName() + "/" + path;
@@ -81,7 +84,7 @@ public class CloudUtil {
 	public static JsonLoader getJsonLoader(RepositoryClient client) {
 		return new JsonLoader(client);
 	}
-
+	
 	public static String formatCommitDate(long value) {
 		Calendar today = Calendar.getInstance();
 		Calendar cal = Calendar.getInstance();
