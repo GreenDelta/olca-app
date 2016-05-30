@@ -32,6 +32,7 @@ import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
+import org.openlca.app.util.Colors;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
@@ -70,7 +71,8 @@ public class ConnectAction extends Action implements INavigationAction {
 			if (dialog.open() != Dialog.OK)
 				return false;
 			RepositoryConfig config = dialog.createConfig();
-			String text = M.ConnectingToRepository + config.getServerUrl() + " " + config.getRepositoryId();
+			String text = M.ConnectingToRepository + config.getServerUrl()
+					+ " " + config.getRepositoryId();
 			App.runWithProgress(text, () -> connect(config));
 			HistoryView.refresh();
 			return true;
@@ -148,11 +150,13 @@ public class ConnectAction extends Action implements INavigationAction {
 			});
 			configViewer.select(CloudConfigurations.getDefault());
 			Hyperlink editConfig = UI.formLink(container, "#Edit");
+			editConfig.setForeground(Colors.linkBlue());
 			editConfig.addHyperlinkListener(new HyperlinkAdapter() {
 				@Override
 				public void linkActivated(HyperlinkEvent e) {
-					PreferenceDialog dialog = PreferencesUtil.createPreferenceDialogOn(null, CloudPreferencePage.ID,
-							null, null);
+					PreferenceDialog dialog = PreferencesUtil
+							.createPreferenceDialogOn(null,
+									CloudPreferencePage.ID, null, null);
 					dialog.setBlockOnOpen(true);
 					dialog.open();
 					configViewer.setInput(CloudConfigurations.get());
@@ -191,7 +195,8 @@ public class ConnectAction extends Action implements INavigationAction {
 		}
 
 		private RepositoryConfig createConfig() {
-			return RepositoryConfig.connect(Database.get(), serverUrl + "/ws", repositoryId, username, password);
+			return RepositoryConfig.connect(Database.get(), serverUrl + "/ws",
+					repositoryId, username, password);
 		}
 	}
 

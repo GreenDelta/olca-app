@@ -47,6 +47,7 @@ class CheckoutAction extends Action {
 		index.commit();
 		Database.getIndexUpdater().enable();
 		Navigator.refresh();
+		HistoryView.refresh();
 	}
 
 	private void indexElement(DiffIndex index, INavigationElement<?> element) {
