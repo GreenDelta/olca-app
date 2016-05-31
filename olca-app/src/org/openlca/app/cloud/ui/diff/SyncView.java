@@ -66,11 +66,7 @@ public class SyncView extends ViewPart {
 			if (client == null)
 				input = null;
 			DiffIndex index = Database.getDiffIndex();
-			List<Dataset> localChanges = new ArrayList<>();
-			for (Diff diff : index.getChanged())
-				if (isContainedIn(diff.getDataset(), elements))
-					localChanges.add(diff.getDataset());
-			List<FetchRequestData> descriptors = client.sync(commitId, localChanges);
+			List<FetchRequestData> descriptors = client.sync(commitId);
 			List<DiffResult> differences = createDifferences(descriptors, elements);
 			input = new DiffNodeBuilder(client.getConfig().getDatabase(), index).build(differences);
 		} catch (Exception e) {
@@ -133,7 +129,7 @@ public class SyncView extends ViewPart {
 			differences.add(new DiffResult(identifier, local));
 			added.add(identifier.refId);
 		}
-		for (Diff diff : index.getChanged())
+		for (Diff diff : index.getAll())
 			if (!added.contains(diff.getDataset().refId))
 				if (isContainedIn(diff.getDataset(), elements))
 					differences.add(new DiffResult(diff));

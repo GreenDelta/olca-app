@@ -5,6 +5,7 @@ import org.openlca.app.cloud.index.DiffType;
 import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer.Direction;
 import org.openlca.cloud.model.data.Dataset;
 import org.openlca.cloud.model.data.FetchRequestData;
+import org.openlca.core.model.Version;
 
 import com.google.gson.JsonObject;
 
@@ -56,7 +57,10 @@ public class DiffResult {
 		if (remote == null && local == null)
 			return DiffResponse.NONE;
 		if (remote == null)
-			return getTypeFromLocal();
+			if (local.type == DiffType.DELETED)
+				return DiffResponse.NONE;
+			else
+				return DiffResponse.ADD_TO_REMOTE;
 		if (local == null || local.type == null)
 			if (remote.isDeleted())
 				return DiffResponse.NONE;
@@ -66,48 +70,64 @@ public class DiffResult {
 		return getTypeMixed();
 	}
 
-	private DiffResponse getTypeFromLocal() {
+	private DiffResponse getTypeMixed() {
+		if (isEqual())
+			return DiffResponse.NONE;
 		switch (local.type) {
-		case NEW:
-			return DiffResponse.ADD_TO_REMOTE;
+		case NO_DIFF:
+			if (remote.isDeleted())
+				return DiffResponse.DELETE_FROM_LOCAL;
+			// TODO check if this always correct
+			if (isNewer(local.getDataset().version, remote.version))
+				return DiffResponse.MODIFY_IN_REMOTE;
+			return DiffResponse.MODIFY_IN_LOCAL;
 		case DELETED:
+			if (remote.isDeleted())
+				return DiffResponse.NONE;
+			if (!remote.version.equals(local.dataset.version))
+				return DiffResponse.CONFLICT;
 			return DiffResponse.DELETE_FROM_REMOTE;
 		case CHANGED:
-			return DiffResponse.MODIFY_IN_REMOTE;
+			if (!remote.version.equals(local.dataset.version))
+				return DiffResponse.CONFLICT;
+			// TODO check if this always correct
+			if (isNewer(local.getDataset().version, remote.version))
+				return DiffResponse.MODIFY_IN_REMOTE;
+			return DiffResponse.MODIFY_IN_LOCAL;
 		default:
 			return DiffResponse.NONE;
 		}
 	}
 
-	private DiffResponse getTypeMixed() {
-		switch (local.type) {
-		case NO_DIFF:
-			if (remote.isDeleted())
-				return DiffResponse.DELETE_FROM_LOCAL;
-			return DiffResponse.MODIFY_IN_LOCAL;
-		case DELETED:
-			if (remote.isDeleted())
-				return DiffResponse.NONE;
-		default:
-			if (checkConflict())
-				return DiffResponse.CONFLICT;
-			return getTypeFromLocal();
-		}
-	}
-
-	private boolean checkConflict() {
-		boolean localDeleted = local.type == DiffType.DELETED;
-		if (localDeleted && !remote.isDeleted())
+	private boolean isNewer(String version1, String version2) {
+		Version local = Version.fromString(version1);
+		Version remote = Version.fromString(version2);
+		if (local.getMajor() > remote.getMajor())
 			return true;
-		if (remote.type != local.dataset.type)
+		if (local.getMajor() < remote.getMajor())
+			return false;
+		if (local.getMinor() > remote.getMinor())
 			return true;
-		if (!remote.refId.equals(local.dataset.refId))
-			return true;
-		if (!remote.version.equals(local.dataset.version))
-			return true;
-		if (remote.lastChange != local.dataset.lastChange)
+		if (local.getMinor() < remote.getMinor())
+			return false;
+		if (local.getUpdate() > remote.getUpdate())
 			return true;
 		return false;
+	}
+
+	private boolean isEqual() {
+		boolean localDeleted = local.type == DiffType.DELETED;
+		if (localDeleted && !remote.isDeleted())
+			return false;
+		if (remote.type != local.getDataset().type)
+			return false;
+		if (!remote.refId.equals(local.getDataset().refId))
+			return false;
+		if (!remote.version.equals(local.getDataset().version))
+			return false;
+		if (remote.lastChange != local.getDataset().lastChange)
+			return false;
+		return true;
 	}
 
 	boolean isConflict() {

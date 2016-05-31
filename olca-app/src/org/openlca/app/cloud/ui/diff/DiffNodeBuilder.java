@@ -39,8 +39,7 @@ public class DiffNodeBuilder {
 
 	private boolean init(List<DiffResult> diffs) {
 		for (DiffResult result : diffs)
-			if (result.getType() != DiffResponse.NONE)
-				this.diffs.put(result.getDataset().refId, result);
+			this.diffs.put(result.getDataset().refId, result);
 		nodes.clear();
 		return this.diffs.size() != 0;
 	}
@@ -49,6 +48,8 @@ public class DiffNodeBuilder {
 		if (nodes.containsKey(result.getDataset().refId))
 			return;
 		if (!result.getDataset().type.isCategorized())
+			return;
+		if (result.getType() == DiffResponse.NONE)
 			return;
 		DiffNode parent = getOrCreateParentNode(result.getDataset());
 		DiffNode node = new DiffNode(parent, result);

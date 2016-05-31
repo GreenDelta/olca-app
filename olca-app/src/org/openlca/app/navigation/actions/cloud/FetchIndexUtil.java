@@ -74,6 +74,8 @@ class FetchIndexHelper {
 
 	private void index(DiffResult diff) {
 		Dataset dataset = diff.getDataset();
+		if (dataset.type == ModelType.IMPACT_METHOD)
+			System.out.println(1);
 		if (!dataset.type.isCategorized())
 			return;
 		DiffResponse responseType = diff.getType();

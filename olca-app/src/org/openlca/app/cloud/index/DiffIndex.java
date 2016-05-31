@@ -113,6 +113,10 @@ public class DiffIndex {
 		return changed;
 	}
 
+	public List<Diff> getAll() {
+		return new ArrayList<>(index.values());
+	}
+
 	public boolean hasChanged(ModelType type) {
 		Set<String> elements = changedTopLevelElements.get(type.name());
 		return elements != null && !elements.isEmpty();
