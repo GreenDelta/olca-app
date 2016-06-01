@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
@@ -20,7 +21,11 @@ import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.ModelTypeElement;
+import org.openlca.app.navigation.Navigator;
+import org.openlca.app.util.Actions;
+import org.openlca.app.util.Error;
 import org.openlca.app.util.UI;
+import org.openlca.app.util.viewers.Viewers;
 import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.model.data.Dataset;
 import org.openlca.cloud.model.data.FetchRequestData;
@@ -37,6 +42,8 @@ public class SyncView extends ViewPart {
 	private JsonLoader jsonLoader;
 	private SyncDiffViewer viewer;
 	private DiffNode input;
+	private List<INavigationElement<?>> currentSelection;
+	private String currentCommitId;
 
 	@Override
 	public void createPartControl(Composite parent) {
@@ -45,11 +52,14 @@ public class SyncView extends ViewPart {
 		RepositoryClient client = Database.getRepositoryClient();
 		jsonLoader = CloudUtil.getJsonLoader(client);
 		viewer = new SyncDiffViewer(body, jsonLoader);
+		Actions.bind(viewer.getViewer(), new OverwriteAction());
 	}
 
 	public void update(List<INavigationElement<?>> elements, String commitId) {
 		if (!Database.isConnected())
 			return;
+		this.currentSelection = elements;
+		this.currentCommitId = commitId;
 		if (jsonLoader == null)
 			jsonLoader = CloudUtil.getJsonLoader(Database.getRepositoryClient());
 		else
@@ -139,6 +149,38 @@ public class SyncView extends ViewPart {
 	@Override
 	public void setFocus() {
 
+	}
+
+	private class OverwriteAction extends Action {
+
+		private Exception error;
+
+		private OverwriteAction() {
+			setText("Overwrite local changes");
+		}
+
+		@Override
+		public void run() {
+			List<DiffNode> selected = Viewers.getAllSelected(viewer.getViewer());
+			List<Dataset> remotes = new ArrayList<>();
+			for (DiffNode node : selected)
+				if (node.getContent().remote != null)
+					remotes.add(node.getContent().getDataset());
+			RepositoryClient client = Database.getRepositoryClient();
+			App.runWithProgress("#Downloading data...", () -> {
+				try {
+					client.download(remotes, currentCommitId);
+				} catch (Exception e) {
+					error = e;
+				}
+			});
+			if (error != null)
+				Error.showBox("Error during download", error.getMessage());
+			else {
+				Navigator.refresh();
+				update(currentSelection, currentCommitId);
+			}
+		}
 	}
 
 }

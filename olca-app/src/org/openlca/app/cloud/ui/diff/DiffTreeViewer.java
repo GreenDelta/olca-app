@@ -15,10 +15,16 @@ abstract class DiffTreeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 
 	DiffNode root;
 	private CompareHelper mergeHelper;
+	private boolean viewMode;
 
 	DiffTreeViewer(Composite parent, JsonLoader jsonLoader) {
+		this(parent, jsonLoader, false);
+	}
+
+	DiffTreeViewer(Composite parent, JsonLoader jsonLoader, boolean viewMode) {
 		super(parent);
 		mergeHelper = new CompareHelper(jsonLoader);
+		this.viewMode = viewMode;
 	}
 
 	protected void configureViewer(TreeViewer viewer, boolean checkable) {
@@ -32,6 +38,7 @@ abstract class DiffTreeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 
 	@Override
 	public void setInput(Collection<DiffNode> collection) {
+		mergeHelper.reset();
 		root = collection.iterator().next();
 		super.setInput(collection);
 	}
@@ -44,8 +51,8 @@ abstract class DiffTreeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 
 	private void onDoubleClick(DoubleClickEvent event) {
 		DiffNode selected = getSelected(event);
-		boolean merged = mergeHelper.openDiffEditor(selected);
-		if (merged) {
+		boolean merged = mergeHelper.openDiffEditor(selected, viewMode);
+		if (merged && !viewMode) {
 			getViewer().refresh(selected);
 			onMerge(selected);
 		}

@@ -8,12 +8,12 @@ import org.openlca.app.cloud.JsonLoader;
 class SyncDiffViewer extends DiffTreeViewer {
 
 	public SyncDiffViewer(Composite parent, JsonLoader jsonLoader) {
-		super(parent, jsonLoader);
+		super(parent, jsonLoader, true);
 	}
 
 	@Override
 	protected TreeViewer createViewer(Composite parent) {
-		TreeViewer viewer = new TreeViewer(parent, SWT.BORDER);
+		TreeViewer viewer = new TreeViewer(parent, SWT.BORDER | SWT.MULTI);
 		configureViewer(viewer, false);
 		return viewer;
 	}

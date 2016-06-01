@@ -121,18 +121,10 @@ public class FetchAction extends Action implements INavigationAction {
 			Map<Dataset, JsonObject> mergedData = new HashMap<>();
 			for (DiffResult result : differences) {
 				Dataset dataset = result.getDataset();
-				switch (result.getType()) {
-				case MODIFY_IN_LOCAL:
-				case ADD_TO_LOCAL:
-				case DELETE_FROM_LOCAL:
-					toFetch.add(dataset);
-					break;
-				case CONFLICT:
+				if (result.getMergedData() != null)
 					mergedData.put(dataset, result.getMergedData());
-					break;
-				default:
-					break;
-				}
+				else
+					toFetch.add(dataset);
 			}
 			try {
 				Database.getIndexUpdater().disable();
