@@ -162,10 +162,7 @@ public class SyncView extends ViewPart {
 		@Override
 		public void run() {
 			List<DiffNode> selected = Viewers.getAllSelected(viewer.getViewer());
-			List<Dataset> remotes = new ArrayList<>();
-			for (DiffNode node : selected)
-				if (node.getContent().remote != null)
-					remotes.add(node.getContent().getDataset());
+			List<Dataset> remotes = collectDatasets(selected);
 			RepositoryClient client = Database.getRepositoryClient();
 			App.runWithProgress("#Downloading data...", () -> {
 				try {
@@ -181,6 +178,17 @@ public class SyncView extends ViewPart {
 				update(currentSelection, currentCommitId);
 			}
 		}
+
+		private List<Dataset> collectDatasets(List<DiffNode> nodes) {
+			List<Dataset> remotes = new ArrayList<>();
+			for (DiffNode node : nodes) {
+				if (node.getContent().remote != null)
+					remotes.add(node.getContent().getDataset());
+				remotes.addAll(collectDatasets(node.children));
+			}
+			return remotes;
+		}
+
 	}
 
 }
