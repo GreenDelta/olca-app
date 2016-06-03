@@ -13,15 +13,13 @@ public class ProcessNode extends Node {
 
 	public static String CONNECTION = "Connection";
 
-	private ProcessFigure figure;
-
-	private List<ConnectionLink> links = new ArrayList<>();
-	private ProcessDescriptor process;
-
-	private double totalResult;
-	private double singleResult;
-	private double singleContribution;
-	private double totalContribution;
+	public final ProcessDescriptor process;
+	public ProcessFigure figure;
+	public final List<ConnectionLink> links = new ArrayList<>();
+	public double upstreamResult;
+	public double upstreamContribution;
+	public double directResult;
+	public double directContribution;
 
 	private Rectangle xyLayoutConstraints;
 
@@ -29,60 +27,15 @@ public class ProcessNode extends Node {
 		this.process = process;
 	}
 
-	public double getTotalResult() {
-		return totalResult;
+	public void add(ConnectionLink link) {
+		links.add(link);
+		listeners.firePropertyChange(CONNECTION, null, link);
 	}
 
-	public void setTotalResult(double totalResult) {
-		this.totalResult = totalResult;
-	}
-
-	public double getSingleResult() {
-		return singleResult;
-	}
-
-	public void setSingleResult(double singleResult) {
-		this.singleResult = singleResult;
-	}
-
-	public double getSingleContribution() {
-		return singleContribution;
-	}
-
-	public void setSingleContribution(double singleContribution) {
-		this.singleContribution = singleContribution;
-	}
-
-	public double getTotalContribution() {
-		return totalContribution;
-	}
-
-	public void setTotalContribution(double totalContribution) {
-		this.totalContribution = totalContribution;
-	}
-
-	@Override
-	public void dispose() {
-	}
-
-	public void add(ConnectionLink connectionLink) {
-		links.add(connectionLink);
-		listeners.firePropertyChange(CONNECTION, null, connectionLink);
-	}
-
-	public ProcessFigure getFigure() {
-		return figure;
-	}
-
-	/**
-	 * Getter of all incoming links
-	 * 
-	 * @return The incoming links
-	 */
 	public List<ConnectionLink> getIncomingLinks() {
-		final List<ConnectionLink> incomingPositive = new ArrayList<>();
-		final List<ConnectionLink> incomingNegative = new ArrayList<>();
-		for (final ConnectionLink link : links) {
+		List<ConnectionLink> incomingPositive = new ArrayList<>();
+		List<ConnectionLink> incomingNegative = new ArrayList<>();
+		for (ConnectionLink link : links) {
 			if (link.getTargetNode() == this) {
 				if (link.getRatio() >= 0) {
 					incomingPositive.add(link);
@@ -95,19 +48,10 @@ public class ProcessNode extends Node {
 		Collections.sort(incomingPositive, new LinkComparator(true));
 		Collections.sort(incomingNegative, new LinkComparator(true));
 
-		final List<ConnectionLink> incoming = new ArrayList<>();
+		List<ConnectionLink> incoming = new ArrayList<>();
 		incoming.addAll(incomingPositive);
 		incoming.addAll(incomingNegative);
 		return incoming;
-	}
-
-	/**
-	 * Getter of {@link #links}
-	 * 
-	 * @return links
-	 */
-	public List<ConnectionLink> getLinks() {
-		return links;
 	}
 
 	@Override
@@ -115,15 +59,10 @@ public class ProcessNode extends Node {
 		return Labels.getDisplayName(process);
 	}
 
-	/**
-	 * Getter of all outgoing links
-	 * 
-	 * @return The outgoing links
-	 */
 	public List<ConnectionLink> getOutgoingLinks() {
-		final List<ConnectionLink> outgoingPositive = new ArrayList<>();
-		final List<ConnectionLink> outgoingNegative = new ArrayList<>();
-		for (final ConnectionLink link : links) {
+		List<ConnectionLink> outgoingPositive = new ArrayList<>();
+		List<ConnectionLink> outgoingNegative = new ArrayList<>();
+		for (ConnectionLink link : links) {
 			if (link.getSourceNode() == this) {
 				if (link.getRatio() >= 0) {
 					outgoingPositive.add(link);
@@ -135,22 +74,14 @@ public class ProcessNode extends Node {
 		Collections.sort(outgoingPositive, new LinkComparator(false));
 		Collections.sort(outgoingNegative, new LinkComparator(false));
 
-		final List<ConnectionLink> outgoing = new ArrayList<>();
+		List<ConnectionLink> outgoing = new ArrayList<>();
 		outgoing.addAll(outgoingPositive);
 		outgoing.addAll(outgoingNegative);
 		return outgoing;
 	}
 
-	public ProcessDescriptor getProcess() {
-		return process;
-	}
-
 	public Rectangle getXyLayoutConstraints() {
 		return xyLayoutConstraints;
-	}
-
-	public void setFigure(ProcessFigure figure) {
-		this.figure = figure;
 	}
 
 	public void setXyLayoutConstraints(Rectangle xyLayoutConstraints) {
@@ -171,26 +102,26 @@ public class ProcessNode extends Node {
 		}
 
 		@Override
-		public int compare(final ConnectionLink o1, final ConnectionLink o2) {
+		public int compare(ConnectionLink o1, ConnectionLink o2) {
 			int result = 0;
 			if (source) {
-				result = Double.compare(o1.getSourceNode().getFigure()
-						.getLocation().x, o2.getSourceNode().getFigure()
-						.getLocation().x);
+				result = Double.compare(o1.getSourceNode().figure
+						.getLocation().x, o2.getSourceNode().figure
+								.getLocation().x);
 			} else {
-				result = Double.compare(o1.getTargetNode().getFigure()
-						.getLocation().x, o2.getTargetNode().getFigure()
-						.getLocation().x);
+				result = Double.compare(o1.getTargetNode().figure
+						.getLocation().x, o2.getTargetNode().figure
+								.getLocation().x);
 			}
 			if (result == 0) {
 				if (source) {
-					result = Double.compare(o1.getSourceNode().getFigure()
-							.getLocation().y, o2.getSourceNode().getFigure()
-							.getLocation().y);
+					result = Double.compare(o1.getSourceNode().figure
+							.getLocation().y, o2.getSourceNode().figure
+									.getLocation().y);
 				} else {
-					result = Double.compare(o1.getTargetNode().getFigure()
-							.getLocation().y, o2.getTargetNode().getFigure()
-							.getLocation().y);
+					result = Double.compare(o1.getTargetNode().figure
+							.getLocation().y, o2.getTargetNode().figure
+									.getLocation().y);
 				}
 			}
 			return result;

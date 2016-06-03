@@ -28,8 +28,8 @@ public class ProcessFigure extends Figure {
 	private Font boldFont;
 
 	public ProcessFigure(ProcessNode processNode) {
-		setToolTip(new Label(Labels.getDisplayName(processNode.getProcess())));
-		processNode.setFigure(this);
+		setToolTip(new Label(Labels.getDisplayName(processNode.process)));
+		processNode.figure = this;
 		this.processNode = processNode;
 		setSize(WIDTH, HEIGHT);
 		processNode.setXyLayoutConstraints(getBounds());
@@ -50,7 +50,7 @@ public class ProcessFigure extends Figure {
 	}
 
 	private Color getColor() {
-		double contribution = processNode.getTotalContribution();
+		double contribution = processNode.upstreamContribution;
 		RGB rgb = FaviColor.getForContribution(contribution);
 		return Colors.get(rgb);
 	}
@@ -58,10 +58,10 @@ public class ProcessFigure extends Figure {
 	private void paintBody(Graphics g) {
 		Rectangle rect = new Rectangle(getLocation(), getSize());
 		g.fillRoundRectangle(rect, 15, 15);
-		String singleVal = format(processNode.getSingleResult());
-		String singlePerc = format(processNode.getSingleContribution() * 100);
-		String totalVal = format(processNode.getTotalResult());
-		String totalPerc = format(processNode.getTotalContribution() * 100);
+		String singleVal = format(processNode.directResult);
+		String singlePerc = format(processNode.directContribution * 100);
+		String totalVal = format(processNode.upstreamResult);
+		String totalPerc = format(processNode.upstreamContribution * 100);
 		String single = singleVal + " (" + singlePerc + "%)";
 		String total = totalVal + " (" + totalPerc + "%)";
 		drawTexts(g, single, total);

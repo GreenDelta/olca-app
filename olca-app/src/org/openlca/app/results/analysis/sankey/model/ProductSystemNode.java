@@ -28,7 +28,7 @@ public class ProductSystemNode extends Node implements PropertyChangeListener {
 	public boolean addChild(Node child) {
 		boolean added = super.addChild(child);
 		if (added && child instanceof ProcessNode) {
-			processIds.add(((ProcessNode) child).getProcess().getId());
+			processIds.add(((ProcessNode) child).process.getId());
 		}
 		return added;
 	}

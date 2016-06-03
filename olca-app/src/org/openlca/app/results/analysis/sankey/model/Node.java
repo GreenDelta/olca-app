@@ -59,7 +59,8 @@ public abstract class Node implements Comparable<Node> {
 		return children.contains(child);
 	}
 
-	public abstract void dispose();
+	public void dispose() {
+	}
 
 	public List<Node> getChildrenArray() {
 		return children;

@@ -48,9 +48,9 @@ public class TreeLayout {
 		for (final Object o : productSystemNode.getChildrenArray()) {
 			if (o instanceof ProcessNode) {
 				final ProcessNode processNode = (ProcessNode) o;
-				if (!containing.contains(processNode.getProcess().getId())) {
+				if (!containing.contains(processNode.process.getId())) {
 					final Node node = new Node();
-					node.processKey = processNode.getProcess().getId();
+					node.processKey = processNode.process.getId();
 					build(productSystemNode.getProductSystem(),
 							new Node[] { node });
 					node.sort();
@@ -86,8 +86,8 @@ public class TreeLayout {
 			final Map<Long, ProcessFigure> figures = new HashMap<>();
 			for (final Object n : productSystemNode.getChildrenArray()) {
 				if (n instanceof ProcessNode) {
-					final ProcessFigure figure = ((ProcessNode) n).getFigure();
-					figures.put(figure.getProcessNode().getProcess().getId(),
+					final ProcessFigure figure = ((ProcessNode) n).figure;
+					figures.put(figure.getProcessNode().process.getId(),
 							figure);
 				}
 			}
@@ -213,10 +213,9 @@ public class TreeLayout {
 		for (final Object node : productSystemNode.getChildrenArray()) {
 			if (node instanceof ProcessNode) {
 				final ProcessNode processNode = (ProcessNode) node;
-				paintedProcesses.add(processNode.getProcess().getId());
+				paintedProcesses.add(processNode.process.getId());
 				processNode.setXyLayoutConstraints(new Rectangle(0, 0,
-						processNode.getFigure().getSize().width, processNode
-								.getFigure().getSize().height));
+						processNode.figure.getSize().width, processNode.figure.getSize().height));
 			}
 		}
 	}

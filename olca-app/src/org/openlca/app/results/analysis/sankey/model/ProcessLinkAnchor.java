@@ -14,8 +14,8 @@ public class ProcessLinkAnchor extends AbstractConnectionAnchor {
 	private boolean recipient;
 
 	public ProcessLinkAnchor(ConnectionLink link, boolean recipient) {
-		super(recipient ? link.getTargetNode().getFigure() : link
-				.getSourceNode().getFigure());
+		super(recipient ? link.getTargetNode().figure : link
+		.getSourceNode().figure);
 //		this.link = link;
 		this.recipient = recipient;
 //		this.processNode = recipient ? link.getTargetNode() : link
