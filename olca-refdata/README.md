@@ -39,7 +39,7 @@ with open(file + '_raw.csv', 'r', encoding='utf8', newline='\n') as f:
             continue
         for num_col in num_cols:
             fval = float(row[num_col])
-            if abs(fval - int(fval)) < 1e-4:
+            if abs(fval - int(fval)) < 1e-16:
                 row[num_col] = int(fval)
             else:
                 row[num_col] = fval
