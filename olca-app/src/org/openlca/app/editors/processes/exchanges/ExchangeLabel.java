@@ -70,66 +70,65 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider {
 	public String getColumnText(Object obj, int col) {
 		if (!(obj instanceof Exchange))
 			return null;
-		Exchange exchange = (Exchange) obj;
+		Exchange e = (Exchange) obj;
 		switch (col) {
 		case 0:
-			return Labels.getDisplayName(exchange.getFlow());
+			return Labels.getDisplayName(e.getFlow());
 		case 1:
-			return CategoryPath.getShort(exchange.getFlow().getCategory());
+			return CategoryPath.getShort(e.getFlow().getCategory());
 		case 2:
-			return getAmountText(exchange);
+			return getAmountText(e);
 		case 3:
-			return Labels.getDisplayName(exchange.getUnit());
+			return Labels.getDisplayName(e.getUnit());
 		case 4:
-			return getCostValue(exchange);
+			return getCostValue(e);
 		case 5:
-			return UncertaintyLabel.get(exchange.getUncertainty());
+			return UncertaintyLabel.get(e.getUncertainty());
 		case 6:
-			if (forInputs)
-				return getDefaultProvider(exchange);
-			else
-				return null;
+			return forInputs ? getDefaultProvider(e) : null;
 		case 7:
-			return exchange.getPedigreeUncertainty();
+			return e.getPedigreeUncertainty();
 		case 8:
-			return exchange.description;
+			return e.description;
 		}
 		return null;
 	}
 
-	private String getDefaultProvider(Exchange exchange) {
-		if (exchange.getDefaultProviderId() == 0)
+	private String getDefaultProvider(Exchange e) {
+		if (e.getDefaultProviderId() == 0)
 			return null;
 		EntityCache cache = Cache.getEntityCache();
-		ProcessDescriptor descriptor = cache.get(ProcessDescriptor.class, exchange.getDefaultProviderId());
-		if (descriptor == null)
+		ProcessDescriptor p = cache.get(ProcessDescriptor.class,
+				e.getDefaultProviderId());
+		if (p == null)
 			return null;
-		return Labels.getDisplayName(descriptor);
+		return Labels.getDisplayName(p);
 	}
 
-	private String getAmountText(Exchange exchange) {
-		if (!showFormulas || exchange.getAmountFormula() == null)
-			if (Preferences.is(Preferences.FORMAT_INPUT_VALUES))
-				return Numbers.format(exchange.getAmountValue());
-			else
-				return Double.toString(exchange.getAmountValue());
-		else
-			return exchange.getAmountFormula();
+	private String getAmountText(Exchange e) {
+		if (!showFormulas || e.getAmountFormula() == null) {
+			if (Preferences.is(Preferences.FORMAT_INPUT_VALUES)) {
+				return Numbers.format(e.getAmountValue());
+			} else {
+				return Double.toString(e.getAmountValue());
+			}
+		}
+		return e.getAmountFormula();
 	}
 
-	private String getCostValue(Exchange exchange) {
-		if (exchange == null || exchange.costValue == null)
+	private String getCostValue(Exchange e) {
+		if (e == null || e.costValue == null)
 			return null;
 		String s;
-		if (showFormulas && exchange.costFormula != null) {
-			s = exchange.costFormula;
+		if (showFormulas && e.costFormula != null) {
+			s = e.costFormula;
 		} else {
-			s = exchange.costValue.toString();
+			if (Preferences.is(Preferences.FORMAT_INPUT_VALUES))
+				return Numbers.format(e.costValue);
+			else
+				return Double.toString(e.costValue);
 		}
-		if (exchange.currency == null)
-			return s;
-		else
-			return s + " " + exchange.currency.code;
+		return e.currency == null ? s : s + " " + e.currency.code;
 	}
 
 	CellLabelProvider asColumnLabel() {
