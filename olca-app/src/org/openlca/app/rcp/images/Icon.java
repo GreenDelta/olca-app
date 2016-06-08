@@ -59,7 +59,7 @@ public enum Icon {
 	INFO("info.png"),
 	INPUT("model/input.png"),
 
-	JAVASCRIPT("javascript.gif"),
+	JAVASCRIPT("javascript.png"),
 
 	LAYOUT("graphical/layout.png"),
 	LINK("link.png"),
@@ -86,7 +86,7 @@ public enum Icon {
 	PROCESS_BG("graphical/process_bg.jpg"),
 	PROCESS_BG_LCI("graphical/process_bg_lci.jpg"),
 	PROCESS_BG_MARKED("graphical/process_bg_marked.jpg"),
-	PYTHON("python.gif"),
+	PYTHON("python.png"),
 
 	REDO("redo.png"),
 	REDO_DISABLED("redo_disabled.png"),
@@ -106,7 +106,7 @@ public enum Icon {
 	SAVE_AS_IMAGE("save_as_image.png"),
 	SEARCH("search.png"),
 	SIMULATE("calculation/simulate.png"),
-	SQL("sql.gif"),
+	SQL("sql.png"),
 
 	UNDO("undo.png"),
 	UNDO_DISABLED("undo_disabled.png"),

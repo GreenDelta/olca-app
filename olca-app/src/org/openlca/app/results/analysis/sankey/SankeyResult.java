@@ -22,7 +22,7 @@ class SankeyResult {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 
-	private ProductSystem productSystem;
+	private ProductSystem system;
 	private FullResultProvider results;
 
 	private LongIndex processIndex;
@@ -32,9 +32,8 @@ class SankeyResult {
 	private double[] directResults;
 	private double[] directContributions;
 
-	public SankeyResult(ProductSystem productSystem,
-			FullResultProvider results) {
-		this.productSystem = productSystem;
+	public SankeyResult(ProductSystem system, FullResultProvider results) {
+		this.system = system;
 		this.results = results;
 	}
 
@@ -76,7 +75,7 @@ class SankeyResult {
 
 	public List<Long> getProcesseIdsAboveCutoff(double cutoff) {
 		List<Long> processes = new ArrayList<>();
-		for (Long process : productSystem.getProcesses()) {
+		for (Long process : system.getProcesses()) {
 			double contr = getUpstreamContribution(process);
 			if (Math.abs(contr) >= cutoff)
 				processes.add(process);
@@ -84,11 +83,11 @@ class SankeyResult {
 		return processes;
 	}
 
-	public double getLinkContribution(ProcessLink processLink) {
-		if (processLink == null || results == null)
+	public double getLinkContribution(ProcessLink link) {
+		if (link == null || results == null)
 			return 0;
-		double totalContr = getUpstreamContribution(processLink.getProviderId());
-		double linkShare = results.getLinkShare(processLink);
+		double totalContr = getUpstreamContribution(link.getProviderId());
+		double linkShare = results.getLinkShare(link);
 		return totalContr * linkShare;
 	}
 
