@@ -10,6 +10,7 @@ import org.openlca.app.cloud.ui.compare.json.JsonNode;
 import org.openlca.app.cloud.ui.compare.json.JsonUtil.ElementFinder;
 import org.openlca.app.util.UncertaintyLabel;
 import org.openlca.core.model.AllocationFactor;
+import org.openlca.core.model.DQSystem;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowPropertyFactor;
@@ -216,6 +217,9 @@ public class ModelUtil {
 			else if ("processLinks".equals(property))
 				return true;
 			else if ("parameterRedefs".equals(property))
+				return true;
+		if (isType(parent, DQSystem.class))
+			if ("hasUncertainties".equals(property))
 				return true;
 		return false;
 	}

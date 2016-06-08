@@ -177,7 +177,14 @@
             id="editors.currency"
             name="Currency">
       </editor>
-      
+      <editor
+            class="org.openlca.app.editors.dq_systems.DQSystemEditor"
+            default="false"
+            icon="icons/model/data_quality_system.png"
+            id="editors.dqsystem"
+            name="%ActorEditor">
+      </editor>
+            
       <!-- result views -->
       <editor
             class="org.openlca.app.results.quick.QuickResultEditor"
@@ -356,6 +363,12 @@
             icon="icons/wizard/currency.png"
             id="wizards.new.currency"
             name="Currency">
+      </wizard>
+      <wizard
+            class="org.openlca.app.wizards.DQSystemWizard"
+            icon="icons/wizard/data_quality_system.png"
+            id="wizards.new.dqsystem"
+            name="%DQSystems">
       </wizard>
    </extension>   
    

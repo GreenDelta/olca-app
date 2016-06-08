@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.openlca.app.navigation.ModelTypeComparison;
 import org.openlca.app.util.Labels;
 import org.openlca.core.database.Daos;
 import org.openlca.core.database.IDatabase;
@@ -53,11 +54,7 @@ class Search implements Runnable {
 	}
 
 	private ModelType[] getSearchTypes() {
-		return new ModelType[] { ModelType.PROJECT, ModelType.PRODUCT_SYSTEM,
-				ModelType.IMPACT_METHOD, ModelType.PROCESS, ModelType.FLOW,
-				ModelType.FLOW_PROPERTY, ModelType.UNIT_GROUP, ModelType.SOURCE,
-				ModelType.ACTOR, ModelType.LOCATION, ModelType.SOCIAL_INDICATOR,
-				ModelType.CURRENCY, ModelType.CATEGORY };
+		return ModelTypeComparison.getOrderedTypes();
 	}
 
 	private List<?> getDescriptors(ModelType type) {

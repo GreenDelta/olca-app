@@ -14,12 +14,7 @@ public class ModelTypeComparison {
 	}
 
 	private static void fillTypeOrder() {
-		ModelType[] order = new ModelType[] { ModelType.PROJECT,
-				ModelType.PRODUCT_SYSTEM, ModelType.IMPACT_METHOD,
-				ModelType.PARAMETER, ModelType.PROCESS, ModelType.FLOW,
-				ModelType.SOCIAL_INDICATOR, ModelType.FLOW_PROPERTY,
-				ModelType.UNIT_GROUP, ModelType.SOURCE, ModelType.ACTOR,
-				ModelType.LOCATION };
+		ModelType[] order = getOrderedTypes();
 		for (int i = 0; i < order.length; i++)
 			typeOrder.put(order[i], i);
 	}
@@ -32,6 +27,15 @@ public class ModelTypeComparison {
 		if (order1 == null || order2 == null)
 			return 0;
 		return order1 - order2;
+	}
+
+	public static ModelType[] getOrderedTypes() {
+		return new ModelType[] { ModelType.PROJECT, ModelType.PRODUCT_SYSTEM,
+				ModelType.IMPACT_METHOD, ModelType.PROCESS, ModelType.FLOW,
+				ModelType.SOCIAL_INDICATOR, ModelType.PARAMETER,
+				ModelType.FLOW_PROPERTY, ModelType.UNIT_GROUP,
+				ModelType.CURRENCY, ModelType.ACTOR, ModelType.SOURCE,
+				ModelType.LOCATION, ModelType.DQ_SYSTEM };
 	}
 
 }

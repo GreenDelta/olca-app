@@ -9,6 +9,9 @@ import org.openlca.core.model.AllocationFactor;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Currency;
+import org.openlca.core.model.DQIndicator;
+import org.openlca.core.model.DQScore;
+import org.openlca.core.model.DQSystem;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
@@ -88,6 +91,9 @@ class PropertyLabels {
 		putParameterRedefLabels();
 		putProjectLabels();
 		putProjectVariantLabels();
+		putDQSystemLabels();
+		putDQIndicatorLabels();
+		putDQScoreLabels();
 	}
 
 	private static void putBasicLabels(Class<?> clazz) {
@@ -99,7 +105,7 @@ class PropertyLabels {
 
 	private static void putCategoryLabels() {
 		Class<?> clazz = Category.class;
-		put(clazz, "modelType", M.ModelType); 
+		put(clazz, "modelType", M.ModelType);
 		put(clazz, "name", M.Name);
 		put(clazz, "category", M.Category);
 	}
@@ -110,7 +116,7 @@ class PropertyLabels {
 		put(clazz, "code", M.Code);
 		put(clazz, "longitude", M.Longitude);
 		put(clazz, "latitude", M.Latitude);
-		put(clazz, "geometry", M.Geometry); 
+		put(clazz, "geometry", M.Geometry);
 	}
 
 	private static void putCurrencyLabels() {
@@ -118,7 +124,7 @@ class PropertyLabels {
 		putBasicLabels(clazz);
 		put(clazz, "code", M.Code);
 		put(clazz, "conversionFactor", M.ConversionFactor);
-		put(clazz, "referenceCurrency", M.ReferenceCurrency); 
+		put(clazz, "referenceCurrency", M.ReferenceCurrency);
 	}
 
 	private static void putActorLabels() {
@@ -171,7 +177,7 @@ class PropertyLabels {
 		put(clazz, "unitOfMeasurement", M.UnitOfMeasurement);
 		put(clazz, "evaluationScheme", M.EvaluationScheme);
 		put(clazz, "activityVariable", M.ActivityVariable);
-		put(clazz, "activityQuantity", M.ActivityQuantity); 
+		put(clazz, "activityQuantity", M.ActivityQuantity);
 		put(clazz, "activityUnit", M.ActivityUnit);
 	}
 
@@ -213,7 +219,7 @@ class PropertyLabels {
 		put(clazz, "creationDate", M.CreationDate);
 		put(clazz, "validFrom", M.StartDate);
 		put(clazz, "validUntil", M.EndDate);
-		put(clazz, "timeDescription", M.TimeDescription); 
+		put(clazz, "timeDescription", M.TimeDescription);
 		put(clazz, "geographyDescription", M.GeographyDescription);
 		put(clazz, "technologyDescription", M.TechnologyDescription);
 		put(clazz, "intendedApplication", M.IntendedApplication);
@@ -247,7 +253,7 @@ class PropertyLabels {
 		put(clazz, "defaultProvider", M.DefaultProvider);
 		put(clazz, "pedigreeUncertainty", M.PedigreeUncertainty);
 		put(clazz, "costCategory", M.CostCategory);
-		put(clazz, "costFormula", M.CostFormula); 
+		put(clazz, "costFormula", M.CostFormula);
 		put(clazz, "costValue", M.CostValue);
 		put(clazz, "currency", M.Currency);
 		put(clazz, "uncertainty", M.Uncertainty);
@@ -256,15 +262,15 @@ class PropertyLabels {
 	private static void putUncertaintyLabels() {
 		Class<?> clazz = Uncertainty.class;
 		put(clazz, "distributionType", M.UncertaintyDistribution);
-		put(clazz, "meanFormula", M.MeanFormula); 
+		put(clazz, "meanFormula", M.MeanFormula);
 		put(clazz, "mean", M.Mean);
 		put(clazz, "sdFormula", M.StandardDeviationFormula);
 		put(clazz, "sd", M.StandardDeviation);
-		put(clazz, "geomMeanFormula", M.GeometricMeanFormula); 
+		put(clazz, "geomMeanFormula", M.GeometricMeanFormula);
 		put(clazz, "geomMean", M.GeometricMean);
 		put(clazz, "geomSdFormula", M.GeometricStandardDeviationFormula);
 		put(clazz, "geomSd", M.GeometricStandardDeviation);
-		put(clazz, "minimumFormula", M.MinimumFormula); 
+		put(clazz, "minimumFormula", M.MinimumFormula);
 		put(clazz, "minimum", M.Minimum);
 		put(clazz, "modeFormula", M.ModeFormula);
 		put(clazz, "mode", M.Mode);
@@ -384,6 +390,28 @@ class PropertyLabels {
 		put(clazz, "allocationMethod", M.AllocationMethod);
 		put(clazz, "description", M.Description);
 		put(clazz, "parameterRedefs", M.Parameters);
+	}
+
+	private static void putDQSystemLabels() {
+		Class<?> clazz = DQSystem.class;
+		putBasicLabels(clazz);
+		put(clazz, "hasUncertainties", "#Has uncertainties");
+		put(clazz, "indicators", "#Indicators");
+	}
+
+	private static void putDQIndicatorLabels() {
+		Class<?> clazz = DQIndicator.class;
+		putBasicLabels(clazz);
+		put(clazz, "position", "#Position");
+		put(clazz, "scores", "#Scores");
+	}
+
+	private static void putDQScoreLabels() {
+		Class<?> clazz = DQScore.class;
+		putBasicLabels(clazz);
+		put(clazz, "position", "#Position");
+		put(clazz, "description", M.Description);
+		put(clazz, "uncertainty", M.Uncertainty);
 	}
 
 	private static void put(Class<?> clazz, String property, String label) {

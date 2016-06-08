@@ -302,6 +302,8 @@ public class Labels {
 			return M.GlobalParameters;
 		case CATEGORY:
 			return M.Category;
+		case DQ_SYSTEM:
+			return "#Data quality systems";
 		default:
 			return M.Unknown;
 		}

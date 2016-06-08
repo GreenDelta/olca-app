@@ -271,6 +271,8 @@ public class Images {
 			return ModelIcon.SOURCE_WIZARD;
 		case UNIT_GROUP:
 			return ModelIcon.UNIT_GROUP_WIZARD;
+		case DQ_SYSTEM:
+			return ModelIcon.DQ_SYSTEM_WIZARD;
 		default:
 			return null;
 		}
@@ -322,6 +324,8 @@ public class Images {
 		case UNIT_GROUP:
 		case UNIT:
 			return ModelIcon.UNIT_GROUP;
+		case DQ_SYSTEM:
+			return ModelIcon.DQ_SYSTEM;
 		default:
 			return null;
 		}
@@ -412,6 +416,8 @@ public class Images {
 			return ModelIcon.PARAMETER_CATEGORY;
 		case CURRENCY:
 			return ModelIcon.CURRENCY_CATEGORY;
+		case DQ_SYSTEM:
+			return ModelIcon.DQ_SYSTEM_CATEGORY;
 		default:
 			return null;
 		}
