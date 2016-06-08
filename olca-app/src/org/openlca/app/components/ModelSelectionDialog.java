@@ -158,11 +158,11 @@ public class ModelSelectionDialog extends FormDialog {
 		Action expand = Actions.create(
 				M.ExpandAll,
 				Icon.EXPAND.descriptor(),
-				viewer::expandAll);
+				() -> viewer.expandAll());
 		Action collapse = Actions.create(
 				M.CollapseAll,
 				Icon.COLLAPSE.descriptor(),
-				viewer::collapseAll);
+				() -> viewer.collapseAll());
 		Actions.bind(section, expand, collapse);
 	}
 

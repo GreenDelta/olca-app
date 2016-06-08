@@ -99,11 +99,10 @@ public class SankeyDiagram extends GraphicalEditor implements
 	private ProcessNode createNode(ProcessDescriptor process) {
 		ProcessNode node = new ProcessNode(process);
 		long processId = process.getId();
-		node.directContribution = sankeyResult
-		.getDirectContribution(processId);
+		node.directContribution = sankeyResult.getDirectContribution(processId);
 		node.directResult = sankeyResult.getDirectResult(processId);
 		node.upstreamContribution = sankeyResult
-		.getUpstreamContribution(processId);
+				.getUpstreamContribution(processId);
 		node.upstreamResult = sankeyResult.getUpstreamResult(processId);
 		createdProcesses.put(process.getId(), node);
 		return node;
@@ -296,14 +295,14 @@ public class SankeyDiagram extends GraphicalEditor implements
 			return;
 		App.run("Calculate sankey results", () -> sankeyResult
 				.calculate(selection), () -> {
-			systemNode = new ProductSystemNode(productSystem,
-					SankeyDiagram.this, selection, cutoff);
-			createdProcesses.clear();
-			createdLinks.clear();
-			updateModel(cutoff);
-			getGraphicalViewer().deselectAll();
-			getGraphicalViewer().setContents(systemNode);
-		});
+					systemNode = new ProductSystemNode(productSystem,
+							SankeyDiagram.this, selection, cutoff);
+					createdProcesses.clear();
+					createdLinks.clear();
+					updateModel(cutoff);
+					getGraphicalViewer().deselectAll();
+					getGraphicalViewer().setContents(systemNode);
+				});
 	}
 
 }
