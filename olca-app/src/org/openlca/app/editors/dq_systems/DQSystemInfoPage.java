@@ -43,7 +43,8 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 	void redraw() {
 		indicatorTexts.clear();
 		indicatorSection.dispose();
-		uncertaintySection.dispose();
+		if (uncertaintySection != null)
+			uncertaintySection.dispose();
 		createAdditionalInfo(body);
 		form.reflow(true);
 	}
@@ -95,7 +96,7 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 			for (DQScore score : indicator.scores) {
 				Text descriptionText = createTextCell(composite, 8, 8);
 				getBinding().onString(() -> score, "description", descriptionText);
-				
+
 			}
 			createRemoveIndicatorButton(composite, indicator.position);
 		}
@@ -173,9 +174,13 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 		Controls.onSelect(button, (e) -> {
 			for (DQIndicator indicator : getModel().indicators) {
 				for (DQScore score : new ArrayList<>(indicator.scores)) {
-					if (score.position != position)
+					if (score.position < position)
 						continue;
-					indicator.scores.remove(score);
+					if (score.position == position) {
+						indicator.scores.remove(score);
+						continue;
+					}
+					score.position--;
 				}
 			}
 			getEditor().setDirty(true);
@@ -205,13 +210,16 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 		Button button = toolkit.createButton(parent, "#Remove indicator", SWT.NONE);
 		Controls.onSelect(button, (e) -> {
 			for (DQIndicator indicator : new ArrayList<>(getModel().indicators)) {
-				if (indicator.position != position)
+				if (indicator.position < position)
 					continue;
-				getModel().indicators.remove(indicator);
+				if (indicator.position == position) {
+					getModel().indicators.remove(indicator);
+					continue;
+				}
+				indicator.position--;
 			}
 			getEditor().setDirty(true);
 			redraw();
 		});
 	}
-
 }
