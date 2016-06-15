@@ -242,8 +242,11 @@ public class CommitAction extends Action implements INavigationAction {
 		private List<DiffResult> createDifferences(DiffIndex index,
 				List<Diff> changes) {
 			List<DiffResult> differences = new ArrayList<>();
-			for (Diff diff : changes)
-				differences.add(new DiffResult(diff));
+			for (Diff diff : changes) {
+				DiffResult diffResult =  new DiffResult(diff);
+				diffResult.ignoreRemote = true;
+				differences.add(diffResult);
+			}
 			return differences;
 		}
 

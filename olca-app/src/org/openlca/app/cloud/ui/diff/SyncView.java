@@ -139,10 +139,13 @@ public class SyncView extends ViewPart {
 			differences.add(new DiffResult(identifier, local));
 			added.add(identifier.refId);
 		}
-		for (Diff diff : index.getAll())
-			if (!added.contains(diff.getDataset().refId))
-				if (isContainedIn(diff.getDataset(), elements))
-					differences.add(new DiffResult(diff));
+		for (Diff diff : index.getAll()) {
+			if (added.contains(diff.getDataset().refId))
+				continue;
+			if (!isContainedIn(diff.getDataset(), elements))
+				continue;
+			differences.add(new DiffResult(diff));
+		}
 		return differences;
 	}
 

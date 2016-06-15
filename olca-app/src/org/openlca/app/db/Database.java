@@ -12,6 +12,7 @@ import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.CategorizedEntityDao;
 import org.openlca.core.database.Daos;
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.model.AbstractEntity;
 import org.openlca.core.model.ModelType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -169,7 +170,7 @@ public class Database {
 		saveConfig();
 	}
 
-	public static <T> BaseDao<T> createDao(Class<T> clazz) {
+	public static <T extends AbstractEntity> BaseDao<T> createDao(Class<T> clazz) {
 		if (database == null)
 			return null;
 		return database.createDao(clazz);

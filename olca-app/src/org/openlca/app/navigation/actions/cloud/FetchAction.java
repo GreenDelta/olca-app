@@ -30,6 +30,7 @@ import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.model.data.Commit;
 import org.openlca.cloud.model.data.Dataset;
 import org.openlca.cloud.model.data.FetchRequestData;
+import org.openlca.util.KeyGen;
 
 import com.google.gson.JsonObject;
 
@@ -42,6 +43,10 @@ public class FetchAction extends Action implements INavigationAction {
 		setText(M.Fetch);
 	}
 
+	public static void main(String[] args) {
+		KeyGen.get("");
+	}
+	
 	@Override
 	public void run() {
 		Runner runner = new Runner();

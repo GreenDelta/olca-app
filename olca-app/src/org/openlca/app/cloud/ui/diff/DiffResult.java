@@ -16,6 +16,7 @@ public class DiffResult {
 	private JsonObject mergedData;
 	private boolean overwriteLocalChanges;
 	private boolean overwriteRemoteChanges;
+	public boolean ignoreRemote;
 
 	public DiffResult(FetchRequestData remote) {
 		this(remote, null);
@@ -57,10 +58,16 @@ public class DiffResult {
 		if (remote == null && local == null)
 			return DiffResponse.NONE;
 		if (remote == null)
-			if (local.type == DiffType.DELETED)
+			if (local.type == DiffType.DELETED || local.type == DiffType.NO_DIFF)
 				return DiffResponse.NONE;
-			else
+			else if (!ignoreRemote)
 				return DiffResponse.ADD_TO_REMOTE;
+			// ignore remote means that remote was not even fetched, we have to
+			// take this into account
+			else if (local.type == DiffType.NEW)
+				return DiffResponse.ADD_TO_REMOTE;
+			else
+				return DiffResponse.MODIFY_IN_REMOTE;
 		if (local == null || local.type == null)
 			if (remote.isDeleted())
 				return DiffResponse.NONE;

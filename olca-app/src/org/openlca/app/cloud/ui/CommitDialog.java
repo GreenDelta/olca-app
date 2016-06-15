@@ -90,7 +90,7 @@ public class CommitDialog extends FormDialog {
 		UI.gridLayout(comp, 1);
 		section.setClient(comp);
 		JsonLoader loader = CloudUtil.getJsonLoader(client);
-		viewer = new CommitDiffViewer(comp, loader);
+		viewer = new CommitDiffViewer(comp, loader, false);
 		viewer.getViewer().addCheckStateListener((e) -> updateButton());
 	}
 

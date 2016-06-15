@@ -79,7 +79,7 @@ public class ILCDImportWizard extends Wizard implements IImportWizard {
 
 	private ImportConfig createConfig(File zip) {
 		ImportConfig config = new ImportConfig(zip, Database.get());
-		if (App.runsInDevMode())
+//		if (App.runsInDevMode())
 			config.importFlows = true;
 		config.ilcdConfig = new IlcdConfig(IoPreference.getIlcdLanguage());
 		return config;

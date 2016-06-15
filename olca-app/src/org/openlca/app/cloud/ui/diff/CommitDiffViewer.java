@@ -12,14 +12,19 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.openlca.app.cloud.JsonLoader;
+import org.openlca.app.cloud.index.DiffType;
 import org.openlca.app.cloud.ui.diff.DiffResult.DiffResponse;
 
 public class CommitDiffViewer extends DiffTreeViewer {
 
 	private List<DiffNode> selected = new ArrayList<>();
+	// The option fixNewElements will prevent the user to uncheck "NEW"
+	// elements, used in ReferencesResultDialog
+	private boolean fixNewElements;
 
-	public CommitDiffViewer(Composite parent, JsonLoader jsonLoader) {
+	public CommitDiffViewer(Composite parent, JsonLoader jsonLoader, boolean fixNewElements) {
 		super(parent, jsonLoader);
+		this.fixNewElements = fixNewElements;
 	}
 
 	public void setInitialSelection(Set<String> initialSelection) {
@@ -27,7 +32,7 @@ public class CommitDiffViewer extends DiffTreeViewer {
 		Set<String> expanded = new HashSet<>();
 		Tree tree = getViewer().getTree();
 		for (DiffNode node : selected) {
-			if (!node.isModelNode())
+			if (!node.isModelNode() && !node.isCategoryNode())
 				continue;
 			String cId = node.getContent().getDataset().categoryRefId;
 			if (cId == null)
@@ -51,11 +56,16 @@ public class CommitDiffViewer extends DiffTreeViewer {
 			DiffNode node = (DiffNode) item.getData();
 			if (node != null && !node.isModelTypeNode()) {
 				String refId = node.getContent().getDataset().refId;
-				if (refIds.contains(refId))
+				// null is used as hack to select all
+				if (refIds == null || refIds.contains(refId))
 					item.setChecked(true);
 			}
 			setChecked(refIds, item.getItems());
 		}
+	}
+
+	public void selectAll() {
+		setInitialSelection(null);
 	}
 
 	private List<DiffNode> findNodes(Set<String> refIds, DiffNode node) {
@@ -63,7 +73,8 @@ public class CommitDiffViewer extends DiffTreeViewer {
 		for (DiffNode child : node.children) {
 			if (!child.isModelTypeNode() && child.hasChanged()) {
 				String refId = child.getContent().getDataset().refId;
-				if (refIds.contains(refId))
+				// null is used as hack to select all
+				if (refIds == null || refIds.contains(refId))
 					elements.add(child);
 			}
 			elements.addAll(findNodes(refIds, child));
@@ -82,10 +93,15 @@ public class CommitDiffViewer extends DiffTreeViewer {
 					viewer.setChecked(node, false);
 				return;
 			}
-			if (e.getChecked())
+			if (e.getChecked()) {
 				selected.add(node);
-			else
+			} else {
+				if (fixNewElements && node.getContent().local.type == DiffType.NEW) {
+					viewer.setChecked(node, true);
+					return;
+				}
 				selected.remove(node);
+			}
 		});
 		return viewer;
 	}

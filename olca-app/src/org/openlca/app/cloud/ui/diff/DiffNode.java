@@ -10,7 +10,7 @@ public class DiffNode {
 
 	final Object content;
 	final DiffNode parent;
-	final List<DiffNode> children = new ArrayList<>();
+	public final List<DiffNode> children = new ArrayList<>();
 
 	DiffNode(DiffNode parent, Object content) {
 		this.content = content;
@@ -46,7 +46,7 @@ public class DiffNode {
 	}
 
 	public DiffResult getContent() {
-		if (isModelTypeNode())
+		if (!(content instanceof DiffResult))
 			return null;
 		return (DiffResult) content;
 	}

@@ -13,6 +13,7 @@ import org.eclipse.ui.IWorkbench;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.model.AbstractEntity;
 import org.openlca.core.model.Callback.Message;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.RootEntity;
@@ -94,8 +95,8 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 					break;
 				monitor.subTask(model.getName());
 				ModelType type = model.getModelType();
-				Class<?> clazz = type.getModelClass();
-				Object o = database.createDao(clazz).getForId(model.getId());
+				Class<? extends AbstractEntity> clazz = type.getModelClass();
+				AbstractEntity o = database.createDao(clazz).getForId(model.getId());
 				if (o instanceof RootEntity)
 					doExport(export, (RootEntity) o);
 				monitor.worked(1);

@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.openlca.app.cloud.index.Diff;
 import org.openlca.app.cloud.index.DiffIndex;
+import org.openlca.app.cloud.index.DiffType;
 import org.openlca.app.cloud.ui.diff.DiffResult;
 import org.openlca.core.database.CategorizedEntityDao;
 import org.openlca.core.database.Daos;
@@ -26,11 +27,13 @@ import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
 class ReferenceSearcher {
 
-	private Set<Long> alreadyChecked = new HashSet<>();
 	private Set<Long> initialIds = new HashSet<>();
+	private Map<Long, String> idToRefId = new HashMap<>();
 	private Set<DiffResult> results = new HashSet<>();
 	private IDatabase database;
 	private DiffIndex index;
+	private Set<Long> alreadySearchedReferences = new HashSet<>();
+	private Set<Long> alreadySearchedUsages = new HashSet<>();
 
 	ReferenceSearcher(IDatabase database, DiffIndex index) {
 		this.database = database;
@@ -41,33 +44,73 @@ class ReferenceSearcher {
 		initialIds.clear();
 		for (DiffResult result : toCheck)
 			initialIds.add(result.local.localId);
-		Map<ModelType, Set<Long>> typeToIds = prepare(toCheck);
-		while (!typeToIds.isEmpty())
-			typeToIds = search(typeToIds);
+		Map<ModelType, Set<Long>> typeToIds = prepareFromResults(toCheck);
+		search(typeToIds);
 		return new ArrayList<>(results);
 	}
 
-	private Map<ModelType, Set<Long>> search(Map<ModelType, Set<Long>> toCheck) {
-		Map<ModelType, Set<Long>> next = new HashMap<>();
+	private void search(Map<ModelType, Set<Long>> toCheck) {
+		Set<CategorizedDescriptor> allFound = new HashSet<>();
 		for (ModelType type : toCheck.keySet()) {
 			Set<Long> values = toCheck.get(type);
 			Set<CategorizedDescriptor> refs = search(type, values);
+			allFound.addAll(refs);
 			List<Diff> diffs = getChanged(refs);
 			for (Diff diff : diffs) {
-				results.add(new DiffResult(diff));
-				addId(next, type, diff);
+				DiffResult diffResult = new DiffResult(diff);
+				diffResult.ignoreRemote = true;
+				results.add(diffResult);
 			}
 		}
-		return next;
+		if (allFound.isEmpty())
+			return;
+		Map<ModelType, Set<Long>> next = prepareFromDescriptors(allFound);
+		search(next);
 	}
 
 	private Set<CategorizedDescriptor> search(ModelType type, Set<Long> toCheck) {
+		Set<CategorizedDescriptor> results = searchReferences(type, toCheck);
+		results.addAll(searchUsage(type, toCheck));
+		return results;
+	}
+
+	private Set<CategorizedDescriptor> searchReferences(ModelType type, Set<Long> toCheck) {
 		Set<CategorizedDescriptor> results = new HashSet<>();
+		for (Long id : new HashSet<>(toCheck)) {
+			if (alreadySearchedReferences.contains(id)) {
+				toCheck.remove(id);
+				continue;
+			}
+			alreadySearchedReferences.add(id);
+		}
 		IReferenceSearch<?> refSearch = IReferenceSearch.FACTORY.createFor(type, database, true);
 		results.addAll(loadDescriptors(refSearch.findReferences(toCheck)));
+		return results;
+	}
+
+	private Set<CategorizedDescriptor> searchUsage(ModelType type, Set<Long> toCheck) {
+		for (Long id : new HashSet<>(toCheck)) {
+			if (alreadySearchedUsages.contains(id)) {
+				toCheck.remove(id);
+				continue;
+			}
+			alreadySearchedUsages.add(id);
+			Diff diff = index.get(idToRefId.get(id));
+			if (diff == null || diff.type != DiffType.CHANGED)
+				continue;
+			toCheck.remove(id);
+		}
+		Set<CategorizedDescriptor> results = new HashSet<>();
+		if (toCheck.isEmpty())
+			return results;
 		IUseSearch<?> useSearch = IUseSearch.FACTORY.createFor(type, database);
-		results.addAll(useSearch.findUses(toCheck));
-		alreadyChecked.addAll(toCheck);
+		List<CategorizedDescriptor> usedIn = useSearch.findUses(toCheck);
+		for (CategorizedDescriptor descriptor : usedIn) {
+			Diff diff = index.get(descriptor.getRefId());
+			if (diff == null || diff.type == DiffType.NO_DIFF || diff.type == DiffType.NEW)
+				continue;
+			results.add(descriptor);
+		}
 		return results;
 	}
 
@@ -94,6 +137,8 @@ class ReferenceSearcher {
 		}
 		if (!newRefs.isEmpty())
 			descriptors.addAll(loadDescriptors(newRefs));
+		for (CategorizedDescriptor descriptor : descriptors)
+			idToRefId.put(descriptor.getId(), descriptor.getRefId());
 		return descriptors;
 	}
 
@@ -101,8 +146,6 @@ class ReferenceSearcher {
 		List<Diff> relevant = new ArrayList<>();
 		for (CategorizedDescriptor d : refs) {
 			if (initialIds.contains(d.getId()))
-				continue;
-			if (alreadyChecked.contains(d.getId()))
 				continue;
 			Diff diff = index.get(d.getRefId());
 			if (!diff.hasChanged())
@@ -112,20 +155,29 @@ class ReferenceSearcher {
 		return relevant;
 	}
 
-	private Map<ModelType, Set<Long>> prepare(List<DiffResult> toCheck) {
+	private Map<ModelType, Set<Long>> prepareFromResults(List<DiffResult> toCheck) {
 		Map<ModelType, Set<Long>> typeToIds = new HashMap<>();
 		for (DiffResult result : toCheck) {
 			ModelType type = result.local.getDataset().type;
-			addId(typeToIds, type, result.local);
+			addId(typeToIds, type, result.local.localId);
+			idToRefId.put(result.local.localId, result.local.getDataset().refId);
 		}
 		return typeToIds;
 	}
 
-	private void addId(Map<ModelType, Set<Long>> map, ModelType type, Diff diff) {
+	private Map<ModelType, Set<Long>> prepareFromDescriptors(Set<CategorizedDescriptor> toCheck) {
+		Map<ModelType, Set<Long>> typeToIds = new HashMap<>();
+		for (CategorizedDescriptor descriptor : toCheck) {
+			addId(typeToIds, descriptor.getModelType(), descriptor.getId());
+			idToRefId.put(descriptor.getId(), descriptor.getRefId());
+		}
+		return typeToIds;
+	}
+
+	private void addId(Map<ModelType, Set<Long>> map, ModelType type, long id) {
 		Set<Long> ids = map.get(type);
 		if (ids == null)
 			map.put(type, ids = new HashSet<>());
-		ids.add(diff.localId);
+		ids.add(id);
 	}
-
 }
