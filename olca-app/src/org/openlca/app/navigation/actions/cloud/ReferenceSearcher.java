@@ -148,7 +148,7 @@ class ReferenceSearcher {
 			if (initialIds.contains(d.getId()))
 				continue;
 			Diff diff = index.get(d.getRefId());
-			if (!diff.hasChanged())
+			if (diff == null || !diff.hasChanged())
 				continue;
 			relevant.add(diff);
 		}
