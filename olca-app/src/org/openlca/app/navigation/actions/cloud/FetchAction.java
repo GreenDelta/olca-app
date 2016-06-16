@@ -16,6 +16,7 @@ import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.cloud.ui.DiffDialog;
 import org.openlca.app.cloud.ui.commits.CommitEntryDialog;
 import org.openlca.app.cloud.ui.commits.HistoryView;
+import org.openlca.app.cloud.ui.compare.json.JsonUtil;
 import org.openlca.app.cloud.ui.diff.DiffNode;
 import org.openlca.app.cloud.ui.diff.DiffNodeBuilder;
 import org.openlca.app.cloud.ui.diff.DiffResult;
@@ -30,8 +31,11 @@ import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.model.data.Commit;
 import org.openlca.cloud.model.data.Dataset;
 import org.openlca.cloud.model.data.FetchRequestData;
+import org.openlca.core.model.Process;
 import org.openlca.util.KeyGen;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 public class FetchAction extends Action implements INavigationAction {
@@ -46,7 +50,7 @@ public class FetchAction extends Action implements INavigationAction {
 	public static void main(String[] args) {
 		KeyGen.get("");
 	}
-	
+
 	@Override
 	public void run() {
 		Runner runner = new Runner();
@@ -126,10 +130,16 @@ public class FetchAction extends Action implements INavigationAction {
 			Map<Dataset, JsonObject> mergedData = new HashMap<>();
 			for (DiffResult result : differences) {
 				Dataset dataset = result.getDataset();
-				if (result.getMergedData() != null)
-					mergedData.put(dataset, result.getMergedData());
-				else
+				JsonObject data = result.getMergedData();
+				String type = JsonUtil.getString(data, "@type");
+				if (Process.class.getSimpleName().equals(type)) {
+					joinExchanges(data);
+				}
+				if (data != null) {
+					mergedData.put(dataset, data);
+				} else {
 					toFetch.add(dataset);
+				}
 			}
 			try {
 				Database.getIndexUpdater().disable();
@@ -139,6 +149,29 @@ public class FetchAction extends Action implements INavigationAction {
 			} catch (Exception e) {
 				error = e;
 			}
+		}
+
+		// for ease of display, the exchanges list was split into inputs and
+		// outputs, these two lists need to be merged
+		private void joinExchanges(JsonObject data) {
+			JsonArray exchanges = new JsonArray();
+			JsonArray inputs = data.getAsJsonArray("inputs");
+			JsonArray outputs = data.getAsJsonArray("outputs");
+			if (inputs != null) {
+				for (JsonElement elem : inputs) {
+					JsonObject e = elem.getAsJsonObject();
+					exchanges.add(e);
+				}
+			}
+			if (outputs != null) {
+				for (JsonElement elem : outputs) {
+					JsonObject e = elem.getAsJsonObject();
+					exchanges.add(e);
+				}
+			}
+			data.remove("inputs");
+			data.remove("outputs");
+			data.add("exchanges", exchanges);
 		}
 
 		private void showNoChangesBox() {
