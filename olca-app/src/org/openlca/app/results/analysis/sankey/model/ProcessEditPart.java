@@ -60,7 +60,7 @@ public class ProcessEditPart extends AbstractGraphicalEditPart implements
 	protected List<ConnectionLink> getModelSourceConnections() {
 		List<ConnectionLink> sourceConnections = new ArrayList<>();
 		ProcessNode thisNode = getModel();
-		for (ConnectionLink link : thisNode.getLinks()) {
+		for (ConnectionLink link : thisNode.links) {
 			if (link.getSourceNode().equals(thisNode))
 				sourceConnections.add(link);
 		}
@@ -70,7 +70,7 @@ public class ProcessEditPart extends AbstractGraphicalEditPart implements
 	@Override
 	protected List<ConnectionLink> getModelTargetConnections() {
 		List<ConnectionLink> targetConnections = new ArrayList<>();
-		for (ConnectionLink link : getModel().getLinks()) {
+		for (ConnectionLink link : getModel().links) {
 			if (link.getTargetNode().equals(getModel())) {
 				targetConnections.add(link);
 			}
@@ -104,14 +104,14 @@ public class ProcessEditPart extends AbstractGraphicalEditPart implements
 						XYLayoutCommand command = new XYLayoutCommand();
 						command.setProcessNode(part.getModel());
 
-						Rectangle bounds = (part.getModel()).getFigure()
+						Rectangle bounds = (part.getModel()).figure
 								.getBounds().getCopy();
-						part.getModel().getFigure().translateToAbsolute(bounds);
+						part.getModel().figure.translateToAbsolute(bounds);
 						Rectangle moveResize = new Rectangle(
 								req.getMoveDelta(), req.getSizeDelta());
 						bounds.resize(moveResize.getSize());
 						bounds.translate(moveResize.getLocation());
-						part.getModel().getFigure().translateToRelative(bounds);
+						part.getModel().figure.translateToRelative(bounds);
 						command.setConstraint(bounds);
 						if (commandChain == null) {
 							commandChain = command;
@@ -178,7 +178,7 @@ public class ProcessEditPart extends AbstractGraphicalEditPart implements
 		if (!(linkObj instanceof ConnectionLink))
 			return;
 		ConnectionLink link = (ConnectionLink) linkObj;
-		ProcessDescriptor thisProcess = getModel().getProcess();
+		ProcessDescriptor thisProcess = getModel().process;
 
 		ProcessDescriptor provider = cache.get(ProcessDescriptor.class, link
 				.getProcessLink().getProviderId());

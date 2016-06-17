@@ -10,6 +10,9 @@ import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.Spinner;
+import org.eclipse.ui.forms.events.HyperlinkAdapter;
+import org.eclipse.ui.forms.events.HyperlinkEvent;
+import org.eclipse.ui.forms.widgets.Hyperlink;
 
 public class Controls {
 
@@ -57,4 +60,14 @@ public class Controls {
 		};
 	}
 
+	public static void onClick(Hyperlink link, Consumer<HyperlinkEvent> fn) {
+		if (link == null || fn == null)
+			return;
+		link.addHyperlinkListener(new HyperlinkAdapter() {
+			@Override
+			public void linkActivated(HyperlinkEvent e) {
+				fn.accept(e);
+			}
+		});
+	}
 }

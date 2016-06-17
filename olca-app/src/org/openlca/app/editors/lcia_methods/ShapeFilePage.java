@@ -22,8 +22,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
-import org.eclipse.ui.forms.events.HyperlinkAdapter;
-import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
@@ -116,15 +114,12 @@ class ShapeFilePage extends FormPage {
 		link.setImage(Icon.FOLDER.get());
 		link.setForeground(Colors.linkBlue());
 		link.setToolTipText(folder.getAbsolutePath());
-		link.addHyperlinkListener(new HyperlinkAdapter() {
-			@Override
-			public void linkActivated(HyperlinkEvent e) {
-				try {
-					if (folder.exists() && folder.isDirectory())
-						Desktop.getDesktop().open(folder);
-				} catch (Exception ex) {
-					log.error("failed to open shape-file folder", ex);
-				}
+		Controls.onClick(link, e -> {
+			try {
+				if (folder.exists() && folder.isDirectory())
+					Desktop.getDesktop().open(folder);
+			} catch (Exception ex) {
+				log.error("failed to open shape-file folder", ex);
 			}
 		});
 	}

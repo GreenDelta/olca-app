@@ -5,8 +5,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.events.HyperlinkAdapter;
-import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
@@ -15,8 +13,8 @@ import org.openlca.app.M;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.ModelPage;
-import org.openlca.app.util.Controls;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.Currency;
 import org.openlca.core.model.ModelType;
@@ -109,12 +107,7 @@ public class CurrencyEditor extends ModelEditor<Currency> {
 			ImageHyperlink link = tk.createImageHyperlink(comp, SWT.TOP);
 			link.setText(ref.getName());
 			link.setImage(Images.get(ModelType.CURRENCY));
-			link.addHyperlinkListener(new HyperlinkAdapter() {
-				@Override
-				public void linkActivated(HyperlinkEvent e) {
-					App.openEditor(ref);
-				}
-			});
+			Controls.onClick(link, e -> App.openEditor(ref));
 		}
 
 		private void createRefButton(Composite comp, FormToolkit tk) {

@@ -21,15 +21,17 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.db.Cache;
+import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Editors;
-import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.descriptors.CategoryDescriptor;
 import org.openlca.io.CategoryPath;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
@@ -134,57 +136,59 @@ public class SearchResultView extends FormEditor {
 		}
 
 		@Override
-		protected void createFormContent(IManagedForm managedForm) {
-			ScrolledForm form = UI.formHeader(managedForm,
-					M.SearchResults + ": " + term + " (" + results.size() + M.Results + ")");
-			FormToolkit toolkit = managedForm.getToolkit();
-			Composite body = UI.formBody(form, toolkit);
+		protected void createFormContent(IManagedForm mform) {
+			ScrolledForm form = UI.formHeader(mform, M.SearchResults + ": "
+					+ term + " (" + results.size() + M.Results + ")");
+			FormToolkit tk = mform.getToolkit();
+			Composite body = UI.formBody(form, tk);
 			UI.gridLayout(body, 1).verticalSpacing = 5;
-			createItems(toolkit, body);
+			createItems(tk, body);
 			form.reflow(true);
 		}
 
-		private void createItems(FormToolkit toolkit, Composite body) {
+		private void createItems(FormToolkit tk, Composite body) {
 			int i = 0;
 			LinkClick click = new LinkClick();
-			for (BaseDescriptor descriptor : results) {
+			for (BaseDescriptor d : results) {
 				if (i > 1000)
 					break;
 				i++;
-				Composite composite = toolkit.createComposite(body);
-				UI.gridData(composite, true, false);
-				UI.gridLayout(composite, 1).verticalSpacing = 3;
-				ImageHyperlink link = toolkit.createImageHyperlink(composite, SWT.CENTER);
-				link.setText(Labels.getDisplayName(descriptor));
-				link.setImage(Images.get(descriptor));
+				Composite comp = tk.createComposite(body);
+				UI.gridData(comp, true, false);
+				UI.gridLayout(comp, 1).verticalSpacing = 3;
+				ImageHyperlink link = tk.createImageHyperlink(comp, SWT.TOP);
+				link.setText(Labels.getDisplayName(d));
+				link.setImage(Images.get(d));
 				link.setForeground(Colors.linkBlue());
-				link.setData(descriptor);
+				link.setData(d);
 				link.addHyperlinkListener(click);
-				renderCategory(toolkit, descriptor, composite);
-				renderDescription(toolkit, descriptor, composite);
+				renderCategory(tk, d, comp);
+				renderDescription(tk, d, comp);
 			}
 		}
 
-		private void renderDescription(FormToolkit toolkit, BaseDescriptor descriptor, Composite composite) {
-			String description = Strings.cut(Labels.getDisplayInfoText(descriptor), 400);
-			if (description != null && !description.isEmpty()) {
-				Label descriptionLabel = toolkit.createLabel(composite, description, SWT.WRAP);
-				UI.gridData(descriptionLabel, false, false).widthHint = 600;
+		private void renderDescription(FormToolkit tk, BaseDescriptor d,
+				Composite comp) {
+			String text = Strings.cut(Labels.getDisplayInfoText(d), 400);
+			if (text != null && !text.isEmpty()) {
+				Label label = tk.createLabel(comp, text, SWT.WRAP);
+				UI.gridData(label, false, false).widthHint = 600;
 			}
 		}
 
-		private void renderCategory(FormToolkit toolkit, BaseDescriptor descriptor, Composite composite) {
-			if (!(descriptor instanceof CategorizedDescriptor))
+		private void renderCategory(FormToolkit tk, BaseDescriptor d,
+				Composite comp) {
+			if (!(d instanceof CategorizedDescriptor))
 				return;
-			CategorizedDescriptor cd = (CategorizedDescriptor) descriptor;
-			Long categoryId = cd.getCategory();
-			if (categoryId == null)
+			CategorizedDescriptor cd = (CategorizedDescriptor) d;
+			Long id = cd.getCategory();
+			if (id == null)
 				return;
-			Category cat = Cache.getEntityCache().get(Category.class, categoryId);
+			Category cat = Cache.getEntityCache().get(Category.class, id);
 			if (cat == null)
 				return;
-			String catPath = CategoryPath.getFull(cat);
-			Label label = toolkit.createLabel(composite, catPath);
+			String path = CategoryPath.getFull(cat);
+			Label label = tk.createLabel(comp, path);
 			label.setForeground(Colors.get(0, 128, 42));
 		}
 	}
@@ -194,7 +198,11 @@ public class SearchResultView extends FormEditor {
 		public void linkActivated(HyperlinkEvent e) {
 			ImageHyperlink link = (ImageHyperlink) e.widget;
 			Object data = link.getData();
-			if (data instanceof BaseDescriptor) {
+			if (data instanceof CategoryDescriptor) {
+				CategoryDescriptor d = (CategoryDescriptor) data;
+				Category c = Cache.getEntityCache().get(Category.class, d.getId());
+				Navigator.select(c);
+			} else if (data instanceof BaseDescriptor) {
 				App.openEditor((BaseDescriptor) data);
 			}
 		}

@@ -132,7 +132,8 @@ public class SearchText extends WorkbenchWindowControlContribution {
 					"Search in flow properties",
 					"Search in unit groups",
 					"Search in sources",
-					"Search in actors" };
+					"Search in actors",
+					"Search in locations" };
 
 			ModelType[] types = { null,
 					ModelType.PROJECT,
@@ -143,7 +144,8 @@ public class SearchText extends WorkbenchWindowControlContribution {
 					ModelType.FLOW_PROPERTY,
 					ModelType.UNIT_GROUP,
 					ModelType.SOURCE,
-					ModelType.ACTOR
+					ModelType.ACTOR,
+					ModelType.LOCATION
 			};
 
 			for (int i = 0; i < texts.length; i++) {

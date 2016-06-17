@@ -13,7 +13,7 @@ public final class Config {
 	 * The version that is shown in the application to the user. Note that this
 	 * can be another version then the internal build version.
 	 */
-	public static final String VERSION = "1.5.0beta1";
+	public static final String VERSION = "1.5.0";
 
 	/**
 	 * The name of the application that is shown to the user.

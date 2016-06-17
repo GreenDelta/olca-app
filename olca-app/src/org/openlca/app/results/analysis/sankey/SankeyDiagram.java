@@ -90,7 +90,7 @@ public class SankeyDiagram extends GraphicalEditor implements
 					ConnectionLink link = new ConnectionLink(sourceNode,
 							targetNode, processLink, ratio);
 					createdLinks.put(processLink, link);
-					createConnections(sourceNode.getProcess().getId());
+					createConnections(sourceNode.process.getId());
 				}
 			}
 		}
@@ -99,12 +99,11 @@ public class SankeyDiagram extends GraphicalEditor implements
 	private ProcessNode createNode(ProcessDescriptor process) {
 		ProcessNode node = new ProcessNode(process);
 		long processId = process.getId();
-		node.setSingleContribution(sankeyResult
-				.getDirectContribution(processId));
-		node.setSingleResult(sankeyResult.getDirectResult(processId));
-		node.setTotalContribution(sankeyResult
-				.getUpstreamContribution(processId));
-		node.setTotalResult(sankeyResult.getUpstreamResult(processId));
+		node.directContribution = sankeyResult.getDirectContribution(processId);
+		node.directResult = sankeyResult.getDirectResult(processId);
+		node.upstreamContribution = sankeyResult
+				.getUpstreamContribution(processId);
+		node.upstreamResult = sankeyResult.getUpstreamResult(processId);
 		createdProcesses.put(process.getId(), node);
 		return node;
 	}
@@ -296,14 +295,14 @@ public class SankeyDiagram extends GraphicalEditor implements
 			return;
 		App.run("Calculate sankey results", () -> sankeyResult
 				.calculate(selection), () -> {
-			systemNode = new ProductSystemNode(productSystem,
-					SankeyDiagram.this, selection, cutoff);
-			createdProcesses.clear();
-			createdLinks.clear();
-			updateModel(cutoff);
-			getGraphicalViewer().deselectAll();
-			getGraphicalViewer().setContents(systemNode);
-		});
+					systemNode = new ProductSystemNode(productSystem,
+							SankeyDiagram.this, selection, cutoff);
+					createdProcesses.clear();
+					createdLinks.clear();
+					updateModel(cutoff);
+					getGraphicalViewer().deselectAll();
+					getGraphicalViewer().setContents(systemNode);
+				});
 	}
 
 }

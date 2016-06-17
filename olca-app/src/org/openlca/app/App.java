@@ -88,17 +88,17 @@ public class App {
 		openEditor(descriptor);
 	}
 
-	public static void openEditor(BaseDescriptor modelDescriptor) {
-		if (modelDescriptor == null) {
+	public static void openEditor(BaseDescriptor d) {
+		if (d == null) {
 			log.error("model is null, could not open editor");
 			return;
 		}
-		log.trace("open editor for {} ", modelDescriptor);
-		String editorId = getEditorId(modelDescriptor.getModelType());
+		log.trace("open editor for {} ", d);
+		String editorId = getEditorId(d.getModelType());
 		if (editorId == null)
-			log.error("could not find editor for model {}", modelDescriptor);
+			log.error("could not find editor for model {}", d);
 		else {
-			ModelEditorInput input = new ModelEditorInput(modelDescriptor);
+			ModelEditorInput input = new ModelEditorInput(d);
 			Editors.open(input, editorId);
 		}
 	}

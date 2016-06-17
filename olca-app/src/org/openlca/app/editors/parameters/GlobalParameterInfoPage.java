@@ -8,8 +8,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.IMessage;
-import org.eclipse.ui.forms.events.HyperlinkAdapter;
-import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
@@ -18,12 +16,13 @@ import org.openlca.app.components.UncertaintyDialog;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.UncertaintyLabel;
 import org.openlca.core.database.ParameterDao;
 import org.openlca.core.model.Parameter;
 
-public class GlobalParameterInfoPage extends ModelPage<Parameter> {
+class GlobalParameterInfoPage extends ModelPage<Parameter> {
 
 	private ParameterChangeSupport support = new ParameterChangeSupport();
 	private List<Parameter> parameters;
@@ -75,50 +74,45 @@ public class GlobalParameterInfoPage extends ModelPage<Parameter> {
 	}
 
 	private void createAdditionalInfo(Composite body) {
-		Composite composite = UI.formSection(body, toolkit,
-				M.AdditionalInformation);
-		UI.formLabel(composite, toolkit, M.Type);
-		UI.formLabel(composite, toolkit,
-				getModel().isInputParameter() ? M.InputParameter
-						: M.DependentParameter);
-		if (getModel().isInputParameter())
-			createValueSection(composite);
-		else
-			createFormulaSection(composite);
-		UI.formLabel(composite, toolkit, M.Uncertainty);
-		Hyperlink link = UI.formLink(composite, toolkit,
+		Composite comp = UI.formSection(body, toolkit, M.AdditionalInformation);
+		UI.formLabel(comp, toolkit, M.Type);
+		if (getModel().isInputParameter()) {
+			UI.formLabel(comp, toolkit, M.InputParameter);
+			forInputParameter(comp);
+		} else {
+			UI.formLabel(comp, toolkit, M.DependentParameter);
+			forDependentParameter(comp);
+		}
+	}
+
+	private void forInputParameter(Composite comp) {
+		createDoubleText(M.Value, "value", comp);
+		UI.formLabel(comp, toolkit, M.Uncertainty);
+		Hyperlink link = UI.formLink(comp, toolkit,
 				UncertaintyLabel.get(getModel().getUncertainty()));
-		link.addHyperlinkListener(new HyperlinkAdapter() {
-			@Override
-			public void linkActivated(HyperlinkEvent e) {
-				UncertaintyDialog dialog = new UncertaintyDialog(UI.shell(),
-						getModel().getUncertainty());
-				if (dialog.open() != IDialogConstants.OK_ID)
-					return;
-				getModel().setUncertainty(dialog.getUncertainty());
-				link.setText(UncertaintyLabel.get(getModel().getUncertainty()));
-				getEditor().setDirty(true);
-			}
+		Controls.onClick(link, e -> {
+			UncertaintyDialog dialog = new UncertaintyDialog(UI.shell(),
+					getModel().getUncertainty());
+			if (dialog.open() != IDialogConstants.OK_ID)
+				return;
+			getModel().setUncertainty(dialog.getUncertainty());
+			link.setText(UncertaintyLabel.get(getModel().getUncertainty()));
+			getEditor().setDirty(true);
 		});
 	}
 
-	private void createValueSection(Composite parent) {
-		createDoubleText(M.Value, "value", parent);
-	}
-
-	private void createFormulaSection(Composite parent) {
-		Text formulaText = createText(M.Formula, "formula", parent);
-		UI.formLabel(parent, toolkit, M.Value);
-		Label valueLabel = UI.formLabel(parent, toolkit,
+	private void forDependentParameter(Composite comp) {
+		Text text = createText(M.Formula, "formula", comp);
+		UI.formLabel(comp, toolkit, M.Value);
+		Label label = UI.formLabel(comp, toolkit,
 				Double.toString(getModel().getValue()));
-		formulaText.addModifyListener((event) -> {
+		text.addModifyListener(e -> {
 			support.evaluate();
-			valueLabel.setText(Double.toString(getModel().getValue()));
+			label.setText(Double.toString(getModel().getValue()));
 			getEditor().setDirty(true);
-			parent.layout();
+			comp.layout();
 		});
 		support.evaluate();
-		valueLabel.setText(Double.toString(getModel().getValue()));
+		label.setText(Double.toString(getModel().getValue()));
 	}
-
 }
