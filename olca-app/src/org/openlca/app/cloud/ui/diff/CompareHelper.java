@@ -58,7 +58,7 @@ class CompareHelper {
 			data.local = JsonUtil.toJsonObject(data.node.leftElement);
 			data.remote = JsonUtil.toJsonObject(data.node.rightElement);
 		}
-		if (viewMode || data.result.getType().direction == Direction.LEFT_TO_RIGHT)
+		if (viewMode || !data.result.isConflict())
 			return DiffEditorDialog.forViewing(data.node, new ModelLabelProvider(),
 					ModelUtil.getDependencyResolver(), data.result.getType().direction);
 		DiffEditorDialog dialog = DiffEditorDialog.forEditing(data.node, new ModelLabelProvider(),

@@ -51,11 +51,11 @@ public class DiffEditor extends Composite {
 		this.rightLabel = right;
 	}
 
-	public void initialize(IJsonNodeLabelProvider labelProvider, IDependencyResolver dependencyResolver,
+	public void initialize(JsonNode root, IJsonNodeLabelProvider labelProvider, IDependencyResolver dependencyResolver,
 			Direction direction) {
 		UI.gridLayout(this, 1, 0, 0);
 		MenuBar menu = null;
-		if (editMode && root.leftElement != null && root.rightElement != null)
+		if (editMode && root != null && root.leftElement != null && root.rightElement != null)
 			menu = new MenuBar(this, dependencyResolver);
 		createTreeParts(direction);
 		if (menu != null) {

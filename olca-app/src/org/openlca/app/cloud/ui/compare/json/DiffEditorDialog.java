@@ -84,8 +84,7 @@ public class DiffEditorDialog extends FormDialog {
 			editor = DiffEditor.forEditing(body, toolkit);
 		else
 			editor = DiffEditor.forViewing(body, toolkit);
-		editor.initialize(labelProvider, dependencyResolver, direction);
-		editor.setInput(root);
+		editor.initialize(root, labelProvider, dependencyResolver, direction);
 		UI.gridData(editor, true, true);
 		form.reflow(true);
 	}
