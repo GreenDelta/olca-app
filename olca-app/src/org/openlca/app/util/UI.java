@@ -231,6 +231,8 @@ public class UI {
 	}
 
 	public static Composite formComposite(Composite parent, FormToolkit toolkit) {
+		if (toolkit == null)
+			return formComposite(parent);
 		Composite composite = toolkit.createComposite(parent);
 		gridLayout(composite, 2);
 		return composite;

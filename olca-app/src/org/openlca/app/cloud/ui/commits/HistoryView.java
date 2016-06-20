@@ -3,6 +3,8 @@ package org.openlca.app.cloud.ui.commits;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ws.rs.core.Response.Status;
+
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
@@ -14,9 +16,10 @@ import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.cloud.JsonLoader;
 import org.openlca.app.cloud.ui.compare.ModelLabelProvider;
 import org.openlca.app.cloud.ui.compare.ModelNodeBuilder;
+import org.openlca.app.cloud.ui.compare.ModelUtil;
+import org.openlca.app.cloud.ui.compare.json.DiffEditor;
 import org.openlca.app.cloud.ui.compare.json.JsonNode;
-import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer;
-import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer.Side;
+import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer.Direction;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.images.Overlay;
@@ -28,9 +31,12 @@ import org.openlca.app.viewers.table.AbstractTableViewer;
 import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.model.data.Commit;
 import org.openlca.cloud.model.data.FetchRequestData;
+import org.openlca.cloud.util.WebRequests.WebRequestException;
 import org.openlca.core.model.ModelType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonElement;
 
 public class HistoryView extends ViewPart {
 
@@ -39,7 +45,7 @@ public class HistoryView extends ViewPart {
 	private static HistoryView instance;
 	private HistoryViewer historyViewer;
 	private ReferencesViewer referencesViewer;
-	private JsonTreeViewer jsonViewer;
+	private DiffEditor diffViewer;
 	private Commit current;
 
 	public HistoryView() {
@@ -68,13 +74,15 @@ public class HistoryView extends ViewPart {
 			if (commit.equals(current))
 				return;
 			current = commit;
+			instance.diffViewer.setInput(null);
 			loadReferences(commit);
 		});
 	}
 
 	private void createJsonViewer(Composite parent) {
-		jsonViewer = new JsonTreeViewer(parent, Side.RIGHT, null);
-		jsonViewer.setLabelProvider(new ModelLabelProvider());
+		diffViewer = DiffEditor.forViewing(parent);
+		diffViewer.setLabels("#Selected commit", "#Previous commit");
+		diffViewer.initialize(new ModelLabelProvider(), ModelUtil.getDependencyResolver(), Direction.LEFT_TO_RIGHT);
 	}
 
 	private void createReferencesViewer(Composite parent) {
@@ -90,12 +98,33 @@ public class HistoryView extends ViewPart {
 			referencesViewer.lastSelection = ref;
 			RepositoryClient client = Database.getRepositoryClient();
 			JsonLoader loader = CloudUtil.getJsonLoader(client);
+			loader.setCommitId(current.id);
 			List<JsonNode> nodes = new ArrayList<>();
 			App.runWithProgress("Loading data", () -> {
-				nodes.add(new ModelNodeBuilder().build(null, loader.getRemoteJson(ref)));
+				JsonElement currentElement = loader.getRemoteJson(ref);
+				JsonElement previousElement = null;
+				String previousCommit = loadPreviousCommit(ref);
+				if (previousCommit != null) {
+					loader.setCommitId(previousCommit);
+					previousElement = loader.getRemoteJson(ref);
+				}
+				nodes.add(new ModelNodeBuilder().build(currentElement, previousElement));
 			});
-			jsonViewer.setInput(nodes.toArray(new JsonNode[nodes.size()]));
+			diffViewer.setInput(nodes.get(0));
 		});
+	}
+
+	private String loadPreviousCommit(FetchRequestData ref) {
+		RepositoryClient client = Database.getRepositoryClient();
+		try {
+			return client.getPreviousReference(ref.type, ref.refId, current.id);
+		} catch (WebRequestException e) {
+			if (e.getErrorCode() == Status.NOT_FOUND.getStatusCode())
+				return null;
+			log.warn("Error loading previous commit", e);
+			Error.showBox(e.getMessage());
+			return null;
+		}
 	}
 
 	private void loadCommitHistory() {
@@ -111,13 +140,13 @@ public class HistoryView extends ViewPart {
 	public static void refresh() {
 		if (instance == null)
 			return;
+		instance.historyViewer.setInput(new Commit[0]);
+		instance.referencesViewer.setInput(new FetchRequestData[0]);
+		instance.diffViewer.setInput(null);
 		if (Database.isConnected()) {
 			instance.loadCommitHistory();
 			return;
 		}
-		instance.historyViewer.setInput(new Commit[0]);
-		instance.referencesViewer.setInput(new FetchRequestData[0]);
-		instance.jsonViewer.setInput(new JsonNode[0]);
 	}
 
 	@Override

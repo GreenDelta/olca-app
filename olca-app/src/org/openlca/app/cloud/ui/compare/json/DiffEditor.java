@@ -11,13 +11,15 @@ import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer.Side;
 import org.openlca.app.cloud.ui.compare.json.viewer.label.IJsonNodeLabelProvider;
 import org.openlca.app.util.UI;
 
-class DiffEditor extends Composite {
+public class DiffEditor extends Composite {
 
 	private FormToolkit toolkit;
 	private JsonTreeViewer leftTree;
 	private JsonTreeViewer rightTree;
 	private JsonNode root;
 	private boolean editMode;
+	private String leftLabel = M.LocalModel;
+	private String rightLabel = M.RemoteModel;
 
 	static DiffEditor forEditing(Composite parent) {
 		return forEditing(parent, null);
@@ -29,11 +31,11 @@ class DiffEditor extends Composite {
 		return editor;
 	}
 
-	static DiffEditor forViewing(Composite parent) {
+	public static DiffEditor forViewing(Composite parent) {
 		return forViewing(parent, null);
 	}
 
-	static DiffEditor forViewing(Composite parent, FormToolkit toolkit) {
+	public static DiffEditor forViewing(Composite parent, FormToolkit toolkit) {
 		DiffEditor editor = new DiffEditor(parent, toolkit);
 		editor.editMode = false;
 		return editor;
@@ -44,9 +46,13 @@ class DiffEditor extends Composite {
 		this.toolkit = toolkit;
 	}
 
-	void initialize(JsonNode root, IJsonNodeLabelProvider labelProvider,
-			IDependencyResolver dependencyResolver, Direction direction) {
-		this.root = root;
+	public void setLabels(String left, String right) {
+		this.leftLabel = left;
+		this.rightLabel = right;
+	}
+
+	public void initialize(IJsonNodeLabelProvider labelProvider, IDependencyResolver dependencyResolver,
+			Direction direction) {
 		UI.gridLayout(this, 1, 0, 0);
 		MenuBar menu = null;
 		if (editMode && root.leftElement != null && root.rightElement != null)
@@ -60,8 +66,7 @@ class DiffEditor extends Composite {
 		}
 		leftTree.setLabelProvider(labelProvider);
 		rightTree.setLabelProvider(labelProvider);
-		leftTree.setInput(new JsonNode[] { root });
-		rightTree.setInput(new JsonNode[] { root });
+		setInput(root);
 		if (toolkit == null)
 			return;
 		toolkit.adapt(this);
@@ -69,13 +74,24 @@ class DiffEditor extends Composite {
 			menu.apply(toolkit);
 	}
 
+	public void setInput(JsonNode node) {
+		this.root = node;
+		if (node == null) {
+			leftTree.setInput(new JsonNode[0]);
+			rightTree.setInput(new JsonNode[0]);
+		} else {
+			leftTree.setInput(new JsonNode[] { node });
+			rightTree.setInput(new JsonNode[] { node });
+		}
+	}
+
 	private void createTreeParts(Direction direction) {
 		Composite comp = new Composite(this, SWT.BORDER);
 		GridLayout layout = UI.gridLayout(comp, 2, 0, 0);
 		layout.makeColumnsEqualWidth = true;
 		UI.gridData(comp, true, true).widthHint = 1;
-		leftTree = createTree(comp, M.LocalModel, Side.LEFT, direction);
-		rightTree = createTree(comp, M.RemoteModel, Side.RIGHT, direction);
+		leftTree = createTree(comp, leftLabel, Side.LEFT, direction);
+		rightTree = createTree(comp, rightLabel, Side.RIGHT, direction);
 		leftTree.setCounterpart(rightTree);
 		rightTree.setCounterpart(leftTree);
 		// one listener is enough since trees are synced
