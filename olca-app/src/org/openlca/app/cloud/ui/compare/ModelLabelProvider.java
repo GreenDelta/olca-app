@@ -57,7 +57,7 @@ public class ModelLabelProvider implements IJsonNodeLabelProvider {
 	private boolean showPropertyOnly(JsonElement element,
 			JsonElement otherElement, JsonElement parent, boolean isArrayElement) {
 		if (element == null || element.isJsonNull())
-			if (otherElement.isJsonArray())
+			if (otherElement == null || otherElement.isJsonArray())
 				return true;
 			else
 				return false;

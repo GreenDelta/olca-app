@@ -246,6 +246,8 @@ public class ModelUtil {
 				return new String[] { "flowProperty.@id" };
 			if (propery.equals("inputs") || propery.equals("outputs"))
 				return new String[] { "flow.@id", "input" };
+			if (propery.equals("socialAspects"))
+				return new String[] { "socialIndicator.@id" };
 			if (propery.equals("synonyms"))
 				return new String[0];
 			if (propery.equals("allocationFactors"))
