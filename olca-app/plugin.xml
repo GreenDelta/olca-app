@@ -436,7 +436,7 @@
       <page
             class="org.openlca.app.cloud.ui.preferences.CloudPreferencePage"
             id="preferencepages.cloud"
-            name="Cloud ">
+            name="Collaboration">
       </page>
    </extension>
    <extension
