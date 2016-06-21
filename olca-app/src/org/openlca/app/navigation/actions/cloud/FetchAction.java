@@ -32,7 +32,8 @@ import org.openlca.cloud.model.data.Commit;
 import org.openlca.cloud.model.data.Dataset;
 import org.openlca.cloud.model.data.FetchRequestData;
 import org.openlca.core.model.Process;
-import org.openlca.util.KeyGen;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -40,6 +41,7 @@ import com.google.gson.JsonObject;
 
 public class FetchAction extends Action implements INavigationAction {
 
+	private Logger log = LoggerFactory.getLogger(FetchAction.class);
 	private RepositoryClient client;
 	private DiffIndex index;
 
@@ -47,16 +49,14 @@ public class FetchAction extends Action implements INavigationAction {
 		setText(M.Fetch);
 	}
 
-	public static void main(String[] args) {
-		KeyGen.get("");
-	}
-
 	@Override
 	public void run() {
 		Runner runner = new Runner();
 		runner.run();
-		if (runner.error != null)
+		if (runner.error != null) {
+			log.error("Error during fetch action", runner.error);
 			Error.showBox(runner.error.getMessage());
+		}
 		HistoryView.refresh();
 	}
 
@@ -126,7 +126,7 @@ public class FetchAction extends Action implements INavigationAction {
 		}
 
 		private void fetchData() {
-			List<Dataset> toFetch = new ArrayList<>();
+			List<String> toFetch = new ArrayList<>();
 			Map<Dataset, JsonObject> mergedData = new HashMap<>();
 			for (DiffResult result : differences) {
 				Dataset dataset = result.getDataset();
@@ -138,7 +138,7 @@ public class FetchAction extends Action implements INavigationAction {
 				if (data != null) {
 					mergedData.put(dataset, data);
 				} else {
-					toFetch.add(dataset);
+					toFetch.add(dataset.refId);
 				}
 			}
 			try {
