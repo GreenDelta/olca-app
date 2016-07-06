@@ -28,7 +28,8 @@ public class DQSystemWizard extends AbstractWizard<DQSystem> {
 	private class DQSystemWizardPage extends AbstractWizardPage<DQSystem> {
 
 		private Button hasUncertaintiesCheck;
-		
+		private Button summableCheck;
+
 		public DQSystemWizardPage() {
 			super("DQSystemWizardPage");
 			setTitle("#New data quality system");
@@ -40,6 +41,8 @@ public class DQSystemWizard extends AbstractWizard<DQSystem> {
 		protected void createContents(Composite container) {
 			hasUncertaintiesCheck = new Button(container, SWT.CHECK);
 			hasUncertaintiesCheck.setText("#System defines uncertainties");
+			summableCheck = new Button(container, SWT.CHECK);
+			summableCheck.setText("#System is summable");
 		}
 
 		@Override
@@ -49,6 +52,7 @@ public class DQSystemWizard extends AbstractWizard<DQSystem> {
 			system.setName(getModelName());
 			system.setDescription(getModelDescription());
 			system.hasUncertainties = hasUncertaintiesCheck.getSelection();
+			system.summable = summableCheck.getSelection();
 			return system;
 		}
 

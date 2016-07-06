@@ -399,6 +399,7 @@ class PropertyLabels {
 		Class<?> clazz = DQSystem.class;
 		putBasicLabels(clazz);
 		put(clazz, "hasUncertainties", "#Has uncertainties");
+		put(clazz, "summable", "#Summable");
 		put(clazz, "indicators", "#Indicators");
 	}
 
