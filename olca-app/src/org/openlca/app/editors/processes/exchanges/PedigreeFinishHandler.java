@@ -63,7 +63,7 @@ class PedigreeFinishHandler implements SelectionListener {
 	private void handleDelete() {
 		if (exchange == null)
 			return;
-		exchange.setPedigreeUncertainty(null);
+		exchange.setDqEntry(null);
 	}
 
 	private void handleOk() {
@@ -71,7 +71,7 @@ class PedigreeFinishHandler implements SelectionListener {
 			return;
 		Map<PedigreeMatrixRow, Integer> values = shell.getSelection();
 		exchange.setBaseUncertainty(shell.getBaseValue());
-		exchange.setPedigreeUncertainty(PedigreeMatrix.toString(values));
+		exchange.setDqEntry(PedigreeMatrix.toString(values));
 	}
 
 }

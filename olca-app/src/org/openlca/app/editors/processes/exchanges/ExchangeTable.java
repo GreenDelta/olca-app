@@ -65,7 +65,7 @@ class ExchangeTable {
 	private final String AMOUNT = M.Amount;
 	private final String UNIT = M.Unit;
 	private final String COSTS;
-	private final String PEDIGREE = M.PedigreeUncertainty;
+	private final String PEDIGREE = "#Data quality entry";
 	private final String DEFAULT_PROVIDER = M.DefaultProvider;
 	private final String UNCERTAINTY = M.Uncertainty;
 	private final String DESCRIPTION = M.Description;

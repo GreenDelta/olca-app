@@ -83,6 +83,7 @@ class InfoPage extends ModelPage<Process> {
 		createTimeSection(body);
 		createGeographySection(body);
 		createTechnologySection(body);
+		createDQSection(body);
 		body.setFocus();
 		form.reflow(true);
 	}
@@ -131,6 +132,18 @@ class InfoPage extends ModelPage<Process> {
 		createDate(M.StartDate, "documentation.validFrom", composite);
 		createDate(M.EndDate, "documentation.validUntil", composite);
 		createMultiText(M.Description, "documentation.time", composite);
+	}
+	
+	private void createDQSection(Composite body) {
+		Composite composite = UI.formSection(body, toolkit, "#Data quality");
+		toolkit.createLabel(composite, "#Process schema");
+		DQSystemViewer processSystemViewer = new DQSystemViewer(composite);
+		processSystemViewer.setNullable(true);
+		processSystemViewer.setInput(Database.get());
+		toolkit.createLabel(composite, "#Input/Output schema");
+		DQSystemViewer ioSystemViewer = new DQSystemViewer(composite);		
+		ioSystemViewer.setNullable(true);
+		ioSystemViewer.setInput(Database.get());
 	}
 
 	private void createGeographySection(Composite body) {

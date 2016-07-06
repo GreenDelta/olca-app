@@ -52,8 +52,8 @@ class PedigreeShell extends Shell {
 
 	private void initSelection() {
 		Map<PedigreeMatrixRow, Integer> map = null;
-		if (exchange != null && exchange.getPedigreeUncertainty() != null)
-			map = PedigreeMatrix.fromString(exchange.getPedigreeUncertainty());
+		if (exchange != null && exchange.getDqEntry() != null)
+			map = PedigreeMatrix.fromString(exchange.getDqEntry());
 		else
 			map = PedigreeShellData.defaultSelection();
 		for (PedigreeMatrixRow key : map.keySet()) {
@@ -158,7 +158,7 @@ class PedigreeShell extends Shell {
 		Button okBtn = toolkit.createButton(composite, M.OK, SWT.NONE);
 		UI.gridData(okBtn, false, false).widthHint = 60;
 		okBtn.addSelectionListener(PedigreeFinishHandler.forOk(this, exchange));
-		if (exchange.getPedigreeUncertainty() != null) {
+		if (exchange.getDqEntry() != null) {
 			Button deleteBtn = toolkit.createButton(composite, M.Delete,
 					SWT.NONE);
 			UI.gridData(deleteBtn, false, false).widthHint = 60;

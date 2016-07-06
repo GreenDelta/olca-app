@@ -87,7 +87,7 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider {
 		case 6:
 			return forInputs ? getDefaultProvider(e) : null;
 		case 7:
-			return e.getPedigreeUncertainty();
+			return e.getDqEntry();
 		case 8:
 			return e.description;
 		}

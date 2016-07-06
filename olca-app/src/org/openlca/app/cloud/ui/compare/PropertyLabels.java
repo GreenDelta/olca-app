@@ -204,6 +204,9 @@ class PropertyLabels {
 		putBasicLabels(clazz);
 		put(clazz, "processType", M.ProcessType);
 		put(clazz, "location", M.Location);
+		put(clazz, "dqSystem", "#Process data quality schema");
+		put(clazz, "dqEntry", "#Data quality entry");
+		put(clazz, "exchangeDqSystem", "#Exchange data quality schema");
 		put(clazz, "infrastructureProcess", M.InfrastructureProcess);
 		put(clazz, "defaultAllocationMethod", M.AllocationMethod);
 		put(clazz, "processDocumentation", M.ProcessDocumentation);
@@ -251,7 +254,7 @@ class PropertyLabels {
 		put(clazz, "quantitativeReference", M.QuantitativeReference);
 		put(clazz, "avoidedProduct", M.AvoidedProduct);
 		put(clazz, "defaultProvider", M.DefaultProvider);
-		put(clazz, "pedigreeUncertainty", M.PedigreeUncertainty);
+		put(clazz, "dqEntry", "#Data quality entry");
 		put(clazz, "costCategory", M.CostCategory);
 		put(clazz, "costFormula", M.CostFormula);
 		put(clazz, "costValue", M.CostValue);
@@ -410,6 +413,7 @@ class PropertyLabels {
 		Class<?> clazz = DQScore.class;
 		putBasicLabels(clazz);
 		put(clazz, "position", "#Position");
+		put(clazz, "label", "#Label");
 		put(clazz, "description", M.Description);
 		put(clazz, "uncertainty", M.Uncertainty);
 	}

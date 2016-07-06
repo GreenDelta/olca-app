@@ -35,6 +35,7 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 	private Section indicatorSection;
 	private Section uncertaintySection;
 	private Map<Integer, Text> indicatorTexts = new HashMap<>();
+	private Map<Integer, Text> scoreTexts = new HashMap<>();
 
 	DQSystemInfoPage(DQSystemEditor editor) {
 		super(editor, "DQSystemInfoPage", M.GeneralInformation);
@@ -86,7 +87,7 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 
 	private void createIndicatorMatrix(Composite composite) {
 		UI.gridLayout(composite, getModel().getScoreCount() + 2);
-		createHeader(composite);
+		createHeader(composite, true);
 		createAddScoreButton(composite);
 		for (DQIndicator indicator : getModel().indicators) {
 			Text nameText = createTextCell(composite, 1, 15);
@@ -96,6 +97,7 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 			for (DQScore score : indicator.scores) {
 				Text descriptionText = createTextCell(composite, 8, 8);
 				getBinding().onString(() -> score, "description", descriptionText);
+				descriptionText.setBackground(DQColors.get(score.position, getModel().getScoreCount()));
 
 			}
 			createRemoveIndicatorButton(composite, indicator.position);
@@ -108,7 +110,7 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 
 	private void createUncertaintyMatrix(Composite composite) {
 		UI.gridLayout(composite, getModel().getScoreCount() + 1);
-		createHeader(composite);
+		createHeader(composite, false);
 		for (DQIndicator indicator : getModel().indicators) {
 			String name = indicator.name != null ? indicator.name : "";
 			Label label = toolkit.createLabel(composite, name);
@@ -126,11 +128,33 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 		}
 	}
 
-	private void createHeader(Composite composite) {
+	private void createHeader(Composite composite, boolean editable) {
 		UI.formLabel(composite, "");
 		for (int i = 1; i <= getModel().getScoreCount(); i++) {
-			Label label = UI.formLabel(composite, Integer.toString(i));
-			((GridData) label.getLayoutData()).horizontalAlignment = SWT.CENTER;
+			String scoreLabel = getModel().getScoreLabel(i - 1);
+			if (scoreLabel == null) {
+				scoreLabel = Integer.toString(i);
+			}
+			if (editable) {
+				Text labelText = createTextCell(composite, 1, 8);
+				labelText.setText(scoreLabel);
+				int index = i - 1;
+				labelText.addModifyListener((e) -> {
+					getModel().setScoreLabel(index, labelText.getText());
+					getEditor().setDirty(true);
+				});
+				scoreTexts.put(i, labelText);
+			} else {
+				Label label = UI.formLabel(composite, scoreLabel);
+				label.setToolTipText(scoreLabel);
+				setGridData(label, 1, 8);
+				((GridData) label.getLayoutData()).horizontalAlignment = SWT.CENTER;
+				Text scoreText = scoreTexts.get(i);
+				scoreText.addModifyListener((e) -> {
+					label.setText(scoreText.getText());
+					label.setToolTipText(scoreText.getText());
+				});
+			}
 		}
 	}
 
@@ -161,6 +185,7 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 			for (DQIndicator indicator : getModel().indicators) {
 				DQScore score = new DQScore();
 				score.position = newScore;
+				score.label = "Score " + newScore;
 				score.description = indicator.name + " - score " + newScore;
 				indicator.scores.add(score);
 			}
@@ -197,6 +222,7 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 			for (int i = 1; i <= getModel().getScoreCount(); i++) {
 				DQScore score = new DQScore();
 				score.position = i;
+				score.label = getModel().getScoreLabel(i - 1);
 				score.description = indicator.name + " - score " + i;
 				indicator.scores.add(score);
 			}

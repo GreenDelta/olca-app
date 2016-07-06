@@ -24,9 +24,9 @@ class PedigreeCellEditor extends DialogCellEditor {
 	protected void doSetValue(Object value) {
 		if (value instanceof Exchange) {
 			exchange = (Exchange) value;
-			oldEntryVal = exchange.getPedigreeUncertainty();
+			oldEntryVal = exchange.getDqEntry();
 			oldBaseVal = exchange.getBaseUncertainty();
-			super.doSetValue(exchange.getPedigreeUncertainty());
+			super.doSetValue(exchange.getDqEntry());
 		} else {
 			exchange = null;
 			oldEntryVal = null;
@@ -39,7 +39,7 @@ class PedigreeCellEditor extends DialogCellEditor {
 		PedigreeShell shell = new PedigreeShell(control.getShell(), exchange);
 		shell.addDisposeListener(e -> {
 			if (valuesChanged()) {
-				updateContents(exchange.getPedigreeUncertainty());
+				updateContents(exchange.getDqEntry());
 				editor.setDirty(true);
 			}
 		});
@@ -48,7 +48,7 @@ class PedigreeCellEditor extends DialogCellEditor {
 	}
 
 	private boolean valuesChanged() {
-		return !Objects.equals(oldEntryVal, exchange.getPedigreeUncertainty())
+		return !Objects.equals(oldEntryVal, exchange.getDqEntry())
 				|| !Objects.equals(oldBaseVal, exchange.getBaseUncertainty());
 	}
 }
