@@ -131,16 +131,16 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 	private void createHeader(Composite composite, boolean editable) {
 		UI.formLabel(composite, "");
 		for (int i = 1; i <= getModel().getScoreCount(); i++) {
-			String scoreLabel = getModel().getScoreLabel(i - 1);
+			String scoreLabel = getModel().getScoreLabel(i);
 			if (scoreLabel == null) {
 				scoreLabel = Integer.toString(i);
 			}
 			if (editable) {
 				Text labelText = createTextCell(composite, 1, 8);
 				labelText.setText(scoreLabel);
-				int index = i - 1;
+				int pos = i;
 				labelText.addModifyListener((e) -> {
-					getModel().setScoreLabel(index, labelText.getText());
+					getModel().setScoreLabel(pos, labelText.getText());
 					getEditor().setDirty(true);
 				});
 				scoreTexts.put(i, labelText);
@@ -222,7 +222,7 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 			for (int i = 1; i <= getModel().getScoreCount(); i++) {
 				DQScore score = new DQScore();
 				score.position = i;
-				score.label = getModel().getScoreLabel(i - 1);
+				score.label = getModel().getScoreLabel(i);
 				score.description = indicator.name + " - score " + i;
 				indicator.scores.add(score);
 			}

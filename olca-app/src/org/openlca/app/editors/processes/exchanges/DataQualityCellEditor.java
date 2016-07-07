@@ -6,16 +6,17 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.Control;
 import org.openlca.app.components.DialogCellEditor;
 import org.openlca.app.editors.processes.ProcessEditor;
+import org.openlca.app.editors.processes.data_quality.DataQualityShell;
 import org.openlca.core.model.Exchange;
 
-class PedigreeCellEditor extends DialogCellEditor {
+class DataQualityCellEditor extends DialogCellEditor {
 
 	private ProcessEditor editor;
 	private Exchange exchange;
 	private String oldEntryVal;
 	private Double oldBaseVal;
 
-	public PedigreeCellEditor(TableViewer viewer, ProcessEditor editor) {
+	public DataQualityCellEditor(TableViewer viewer, ProcessEditor editor) {
 		super(viewer.getTable());
 		this.editor = editor;
 	}
@@ -36,7 +37,10 @@ class PedigreeCellEditor extends DialogCellEditor {
 
 	@Override
 	protected Object openDialogBox(Control control) {
-		PedigreeShell shell = new PedigreeShell(control.getShell(), exchange);
+		if (exchange == null || editor.getModel().exchangeDqSystem == null)
+			return null; // TODO show message
+		DataQualityShell shell = DataQualityShell.withUncertainty(control.getShell(), editor.getModel().exchangeDqSystem,
+				exchange.getDqEntry(), exchange.getBaseUncertainty(), this::onOk, this::onDelete);
 		shell.addDisposeListener(e -> {
 			if (valuesChanged()) {
 				updateContents(exchange.getDqEntry());
@@ -50,5 +54,14 @@ class PedigreeCellEditor extends DialogCellEditor {
 	private boolean valuesChanged() {
 		return !Objects.equals(oldEntryVal, exchange.getDqEntry())
 				|| !Objects.equals(oldBaseVal, exchange.getBaseUncertainty());
+	}
+
+	private void onDelete(DataQualityShell shell) {
+		exchange.setDqEntry(null);
+	}
+
+	private void onOk(DataQualityShell shell) {
+		exchange.setDqEntry(shell.getSelection());
+		exchange.setBaseUncertainty(shell.getBaseValue());
 	}
 }

@@ -1,4 +1,4 @@
-package org.openlca.app.editors.processes.exchanges;
+package org.openlca.app.editors.processes.data_quality;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
@@ -10,21 +10,23 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.editors.dq_systems.DQColors;
 import org.openlca.app.util.UI;
-import org.openlca.core.model.PedigreeMatrixRow;
+import org.openlca.core.model.DQIndicator;
+import org.openlca.core.model.DQScore;
 
-class PedigreeCell {
+class DataQualityCell {
 
-	private PedigreeShell shell;
-	private PedigreeMatrixRow row;
-	private int score;
+	private DataQualityShell shell;
+	private DQIndicator indicator;
+	private DQScore score;
 	private boolean selected;
 	private Label label;
 	private Composite composite;
 
-	PedigreeCell(PedigreeShell shell, PedigreeMatrixRow row, int score) {
+	DataQualityCell(DataQualityShell shell, DQIndicator indicator, DQScore score) {
 		this.shell = shell;
-		this.row = row;
+		this.indicator = indicator;
 		this.score = score;
 	}
 
@@ -36,17 +38,16 @@ class PedigreeCell {
 		return selected;
 	}
 
-	public PedigreeMatrixRow getRow() {
-		return row;
+	public DQIndicator getIndicator() {
+		return indicator;
 	}
 
-	public int getScore() {
+	public DQScore getScore() {
 		return score;
 	}
 
-	void createComponents(Composite parent, PedigreeShellData data,
-			FormToolkit toolkit) {
-		String text = data.getLabel(row, score);
+	void createComponents(Composite parent, FormToolkit toolkit) {
+		String text = score.description;
 		composite = toolkit.createComposite(parent, SWT.BORDER);
 		GridData gridData = UI.gridData(composite, true, true);
 		gridData.minimumWidth = 120;
@@ -63,8 +64,9 @@ class PedigreeCell {
 	private class MouseOver implements MouseTrackListener {
 		@Override
 		public void mouseEnter(MouseEvent e) {
-			label.setBackground(shell.getColors()[score - 1]);
-			composite.setBackground(shell.getColors()[score - 1]);
+			Color color = DQColors.get(score.position, indicator.scores.size());
+			label.setBackground(color);
+			composite.setBackground(color);
 		}
 
 		@Override
@@ -80,7 +82,7 @@ class PedigreeCell {
 	void setColor() {
 		Color color = null;
 		if (selected)
-			color = shell.getColors()[score - 1];
+			color = DQColors.get(score.position, indicator.scores.size());
 		else
 			color = shell.getDisplay().getSystemColor(SWT.COLOR_WHITE);
 		label.setBackground(color);
@@ -91,7 +93,7 @@ class PedigreeCell {
 
 		@Override
 		public void mouseDown(MouseEvent e) {
-			shell.select(row, score);
+			shell.select(indicator, score);
 			shell.calculateSigmaG();
 		}
 	}
