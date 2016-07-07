@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.openlca.core.model.DQSystem;
 import org.openlca.core.model.ModelType;
 
@@ -39,8 +40,10 @@ public class DQSystemWizard extends AbstractWizard<DQSystem> {
 
 		@Override
 		protected void createContents(Composite container) {
+			new Label(container, SWT.NONE);
 			hasUncertaintiesCheck = new Button(container, SWT.CHECK);
 			hasUncertaintiesCheck.setText("#System defines uncertainties");
+			new Label(container, SWT.NONE);
 			summableCheck = new Button(container, SWT.CHECK);
 			summableCheck.setText("#System is summable");
 		}
