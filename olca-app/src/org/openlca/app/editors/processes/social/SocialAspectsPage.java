@@ -80,7 +80,7 @@ public class SocialAspectsPage extends ModelPage<Process> {
 		if (!(o instanceof SocialAspect))
 			return;
 		SocialAspect copy = ((SocialAspect) o).clone();
-		if (Dialog.open(copy) == Window.OK) {
+		if (Dialog.open(copy, editor.getModel().socialDqSystem) == Window.OK) {
 			Aspects.update(getModel(), copy);
 			treeModel.update(copy);
 			tree.refresh();

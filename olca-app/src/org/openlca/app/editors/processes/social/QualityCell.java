@@ -9,28 +9,30 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.editors.dq_systems.DQColors;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.UI;
-import org.openlca.core.model.PedigreeMatrixRow;
+import org.openlca.core.model.DQIndicator;
+import org.openlca.core.model.DQScore;
 
 class QualityCell {
 
-	final PedigreeMatrixRow row;
-	final int score;
+	final DQIndicator indicator;
+	final DQScore score;
 	boolean selected;
 
 	private final QualityPanel panel;
 	private Label label;
 	private Composite composite;
 
-	public QualityCell(QualityPanel panel, PedigreeMatrixRow row, int score) {
+	public QualityCell(QualityPanel panel, DQIndicator indicator, DQScore score) {
 		this.panel = panel;
-		this.row = row;
+		this.indicator = indicator;
 		this.score = score;
 	}
 
-	void create(Composite parent, FormToolkit tk, QualityLabelData data) {
-		String text = data.getLabel(row, score);
+	void create(Composite parent, FormToolkit tk) {
+		String text = score.description;
 		composite = tk.createComposite(parent, SWT.BORDER);
 		UI.gridData(composite, true, true);
 		FillLayout layout = new FillLayout(SWT.HORIZONTAL);
@@ -47,8 +49,9 @@ class QualityCell {
 	private class MouseOver implements MouseTrackListener {
 		@Override
 		public void mouseEnter(MouseEvent e) {
-			label.setBackground(QualityLabelData.getColors()[score - 1]);
-			composite.setBackground(QualityLabelData.getColors()[score - 1]);
+			Color color = DQColors.get(score.position, indicator.scores.size());
+			label.setBackground(color);
+			composite.setBackground(color);
 		}
 
 		@Override
@@ -64,7 +67,7 @@ class QualityCell {
 	void setColor() {
 		Color color = null;
 		if (selected)
-			color = QualityLabelData.getColors()[score - 1];
+			color = DQColors.get(score.position, indicator.scores.size());
 		else
 			color = Colors.white();
 		label.setBackground(color);
@@ -75,7 +78,7 @@ class QualityCell {
 
 		@Override
 		public void mouseDown(MouseEvent e) {
-			panel.select(row, score, true);
+			panel.select(indicator, score, true);
 		}
 	}
 }

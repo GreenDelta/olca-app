@@ -151,6 +151,11 @@ class InfoPage extends ModelPage<Process> {
 		ioSystemViewer.setNullable(true);
 		ioSystemViewer.setInput(Database.get());
 		getBinding().onModel(() -> getModel(), "exchangeDqSystem", ioSystemViewer);
+		toolkit.createLabel(composite, "#Social schema");
+		DQSystemViewer socialSystemViewer = new DQSystemViewer(composite);
+		socialSystemViewer.setNullable(true);
+		socialSystemViewer.setInput(Database.get());
+		getBinding().onModel(() -> getModel(), "socialDqSystem", socialSystemViewer);
 	}
 
 	private Hyperlink createDqEntryRow(Composite composite) {

@@ -125,12 +125,12 @@ public class DataQualityShell extends Shell {
 		UI.gridLayout(root, 1);
 		createHeader(root);
 		createSeparator(root);
-		ceateContent(root);
+		createContent(root);
 		createSeparator(root);
 		createFooter(root, withUncertainty);
 	}
 
-	private void ceateContent(Composite root) {
+	private void createContent(Composite root) {
 		Composite composite = toolkit.createComposite(root);
 		composite.setLayout(new GridLayout(system.getScoreCount() + 1, false));
 		UI.gridData(composite, true, true);

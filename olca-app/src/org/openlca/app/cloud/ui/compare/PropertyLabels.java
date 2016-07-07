@@ -207,6 +207,7 @@ class PropertyLabels {
 		put(clazz, "dqSystem", "#Process data quality schema");
 		put(clazz, "dqEntry", "#Data quality entry");
 		put(clazz, "exchangeDqSystem", "#Exchange data quality schema");
+		put(clazz, "socialDqSystem", "#Social data quality schema");
 		put(clazz, "infrastructureProcess", M.InfrastructureProcess);
 		put(clazz, "defaultAllocationMethod", M.AllocationMethod);
 		put(clazz, "processDocumentation", M.ProcessDocumentation);

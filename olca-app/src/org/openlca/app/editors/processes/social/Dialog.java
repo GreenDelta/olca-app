@@ -14,6 +14,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.UIFactory;
 import org.openlca.core.database.SourceDao;
+import org.openlca.core.model.DQSystem;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.SocialAspect;
 import org.openlca.core.model.descriptors.Descriptors;
@@ -21,17 +22,19 @@ import org.openlca.core.model.descriptors.Descriptors;
 class Dialog extends FormDialog {
 
 	private SocialAspect aspect;
+	private DQSystem system;
 
-	public static int open(SocialAspect aspect) {
+	public static int open(SocialAspect aspect, DQSystem system) {
 		if (aspect == null || aspect.indicator == null)
 			return CANCEL;
-		Dialog d = new Dialog(aspect);
+		Dialog d = new Dialog(aspect, system);
 		return d.open();
 	}
 
-	private Dialog(SocialAspect aspect) {
+	private Dialog(SocialAspect aspect, DQSystem system) {
 		super(UI.shell());
 		this.aspect = aspect;
+		this.system = system;
 	}
 
 	@Override
@@ -56,7 +59,8 @@ class Dialog extends FormDialog {
 		new RiskCombo(aspect).create(body, tk);
 		sourceRow(body, tk);
 		commentRow(body, tk);
-		qualityRow(body, tk);
+		if (system != null)
+			qualityRow(body, tk);
 	}
 
 	private void amountRow(Composite body, FormToolkit tk) {
@@ -117,7 +121,7 @@ class Dialog extends FormDialog {
 
 	private void qualityRow(Composite body, FormToolkit tk) {
 		UI.formLabel(body, tk, M.DataQuality);
-		new QualityPanel(aspect).create(body, tk);
+		new QualityPanel(aspect, system).create(body, tk);
 		UI.formLabel(body, tk, "");
 	}
 
