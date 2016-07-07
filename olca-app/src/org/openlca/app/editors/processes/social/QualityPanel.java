@@ -65,7 +65,7 @@ class QualityPanel {
 				value = selection.position;
 				anySelected = true;
 			}
-			values[indicator.position] = value;
+			values[indicator.position - 1] = value;
 		}
 		if (!anySelected)
 			return null;

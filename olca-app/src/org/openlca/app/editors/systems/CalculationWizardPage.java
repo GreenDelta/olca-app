@@ -36,6 +36,7 @@ class CalculationWizardPage extends WizardPage {
 	private NwSetComboViewer nwViewer;
 	private Text iterationText;
 	private Button costCheck;
+	private Button dqAssessment;
 	private int iterationCount = 100;
 	private CalculationType type = CalculationType.QUICK;
 	private ProductSystem productSystem;
@@ -63,6 +64,10 @@ class CalculationWizardPage extends WizardPage {
 
 	public CalculationType getCalculationType() {
 		return type;
+	}
+
+	public boolean doAssessDataQuality() {
+		return dqAssessment.getSelection();
 	}
 
 	@Override
@@ -106,6 +111,10 @@ class CalculationWizardPage extends WizardPage {
 		costCheck = new Button(parent, SWT.CHECK);
 		costCheck.setSelection(false);
 		costCheck.setText(M.IncludeCostCalculation);
+		new Label(parent, SWT.NONE);
+		dqAssessment = new Button(parent, SWT.CHECK);
+		dqAssessment.setSelection(false);
+		dqAssessment.setText("#Assess data quality");
 	}
 
 	private void createRadios(Composite parent) {

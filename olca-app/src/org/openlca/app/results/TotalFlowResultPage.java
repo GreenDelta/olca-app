@@ -5,10 +5,12 @@ import java.util.function.Function;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.jface.viewers.BaseLabelProvider;
+import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
@@ -19,8 +21,9 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
-import org.openlca.app.util.Actions;
+import org.openlca.app.editors.dq_systems.DQColors;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
@@ -28,6 +31,7 @@ import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.database.EntityCache;
+import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.matrix.FlowIndex;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.results.FlowResult;
@@ -42,10 +46,12 @@ public class TotalFlowResultPage extends FormPage {
 	private EntityCache cache = Cache.getEntityCache();
 	private FormToolkit toolkit;
 	private SimpleResultProvider<?> result;
+	private DQResult dqResult;
 
-	public TotalFlowResultPage(FormEditor editor, SimpleResultProvider<?> result) {
+	public TotalFlowResultPage(FormEditor editor, SimpleResultProvider<?> result, DQResult dqResult) {
 		super(editor, "InventoryPage", M.InventoryResults);
 		this.result = result;
+		this.dqResult = dqResult;
 	}
 
 	@Override
@@ -55,7 +61,7 @@ public class TotalFlowResultPage extends FormPage {
 		Composite body = UI.formBody(form, toolkit);
 		TableViewer inputViewer = createSectionAndViewer(body, true);
 		TableViewer outputViewer = createSectionAndViewer(body, false);
-		TotalRequirementsSection reqSection = new TotalRequirementsSection(result);
+		TotalRequirementsSection reqSection = new TotalRequirementsSection(result, dqResult);
 		reqSection.create(body, toolkit);
 		form.reflow(true);
 		Collection<FlowDescriptor> flows = result.getFlowDescriptors();
@@ -70,14 +76,21 @@ public class TotalFlowResultPage extends FormPage {
 		UI.gridData(section, true, true);
 		Composite composite = UI.sectionClient(section, toolkit);
 		UI.gridLayout(composite, 1);
-		TableViewer viewer = Tables.createViewer(composite, new String[] {
-				M.Flow, M.Category, M.SubCategory,
-				M.Unit, M.Amount });
+		String[] headers = new String[] { M.Flow, M.Category, M.SubCategory, M.Unit, M.Amount };
+		boolean appendDQ = dqResult != null && dqResult.exchangeSystem != null;
+		if (appendDQ) {
+			headers = DQUIHelper.appendTableHeaders(headers, dqResult.exchangeSystem);
+		}
+		TableViewer viewer = Tables.createViewer(composite, headers);
 		Label label = new Label();
 		viewer.setLabelProvider(label);
 		viewer.setFilters(new ViewerFilter[] { new InputOutputFilter(input) });
 		createColumnSorters(viewer, label);
-		Tables.bindColumnWidths(viewer.getTable(), .4, .2, .2, .1, .1);
+		double[] widths = new double[] { .4, .2, .2, .1, .1 };
+		if (appendDQ) {
+			widths = DQUIHelper.adjustTableWidths(widths, dqResult.exchangeSystem);
+		}
+		Tables.bindColumnWidths(viewer.getTable(), widths);
 		Actions.bind(viewer, TableClipboard.onCopy(viewer));
 		return viewer;
 	}
@@ -91,7 +104,7 @@ public class TotalFlowResultPage extends FormPage {
 		Viewers.sortByDouble(viewer, amount, 4);
 	}
 
-	private class Label extends BaseLabelProvider implements ITableLabelProvider {
+	private class Label extends BaseLabelProvider implements ITableLabelProvider, ITableColorProvider {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
@@ -125,6 +138,26 @@ public class TotalFlowResultPage extends FormPage {
 				return null;
 			}
 		}
+
+		@Override
+		public Color getBackground(Object obj, int col) {
+			if (!(obj instanceof FlowDescriptor))
+				return null;
+			if (col < 5)
+				return null;
+			FlowDescriptor flow = (FlowDescriptor) obj;
+			int pos = col - 5; // column 5 is the first dq column
+			int[] quality = dqResult.getFlowQuality(flow.getId());
+			if (quality == null)
+				return null;
+			return DQColors.get(quality[pos], dqResult.exchangeSystem.getScoreCount());
+		}
+
+		@Override
+		public Color getForeground(Object element, int col) {
+			return null;
+		}
+
 	}
 
 	private class InputOutputFilter extends ViewerFilter {

@@ -29,6 +29,7 @@ import org.openlca.app.results.contributions.locations.LocationPage;
 import org.openlca.app.results.grouping.GroupPage;
 import org.openlca.core.database.ImpactCategoryDao;
 import org.openlca.core.math.CalculationSetup;
+import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.matrix.LongPair;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.descriptors.FlowDescriptor;
@@ -53,6 +54,7 @@ public class RegionalizedResultEditor extends FormEditor implements IResultEdito
 	private ImpactCategoryDao impactCategoryDao;
 	private Map<Long, ImpactCategory> impactCategories = new HashMap<>();
 	private Map<LongPair, Map<FlowDescriptor, Double>> factorsMap = new HashMap<>();
+	private DQResult dqResult;
 
 	@Override
 	public CalculationSetup getSetup() {
@@ -79,6 +81,9 @@ public class RegionalizedResultEditor extends FormEditor implements IResultEdito
 					input.getParameterSetKey(), ParameterSet.class);
 			factorCalculator = new FactorCalculator(parameterSet,
 					Database.get(), setup);
+			String dqResultKey = input.getDqResultKey();
+			if (dqResultKey != null)
+				dqResult = Cache.getAppCache().remove(dqResultKey, DQResult.class);
 		} catch (Exception e) {
 			log.error("failed to load regionalized result", e);
 			throw new PartInitException("failed to load regionalized result", e);
@@ -90,7 +95,7 @@ public class RegionalizedResultEditor extends FormEditor implements IResultEdito
 		try {
 			FullResultProvider regioResult = this.result.result;
 			addPage(new AnalyzeInfoPage(this, regioResult, setup));
-			addPage(new TotalFlowResultPage(this, regioResult));
+			addPage(new TotalFlowResultPage(this, regioResult, dqResult));
 			if (regioResult.hasImpactResults())
 				addPage(new TotalImpactResultPage(this, regioResult));
 			if (regioResult.hasImpactResults() && setup.nwSet != null)

@@ -21,6 +21,7 @@ import org.openlca.app.util.Info;
 import org.openlca.app.util.UI;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.SystemCalculator;
+import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.BaseDescriptor;
@@ -70,9 +71,10 @@ class CalculationWizard extends Wizard {
 	public boolean performFinish() {
 		CalculationSetup setup = calculationPage.getSetup();
 		CalculationType type = calculationPage.getCalculationType();
+		boolean assessDataQuality = calculationPage.doAssessDataQuality();
 		saveDefaults(setup, type);
 		try {
-			Calculation calculation = new Calculation(setup, type);
+			Calculation calculation = new Calculation(setup, type, assessDataQuality);
 			getContainer().run(true, true, calculation);
 			if (calculation.outOfMemory)
 				MemoryError.show();
@@ -84,14 +86,17 @@ class CalculationWizard extends Wizard {
 	}
 
 	private ResultEditorInput getEditorInput(Object result,
-			CalculationSetup setup, ParameterSet parameterSet) {
+			CalculationSetup setup, ParameterSet parameterSet, DQResult dqResult) {
 		String resultKey = Cache.getAppCache().put(result);
 		String setupKey = Cache.getAppCache().put(setup);
+		String dqResultKey = null;
+		if (dqResult != null)
+			dqResultKey = Cache.getAppCache().put(dqResult);
 		String parameterSetKey = null;
 		if (parameterSet != null)
 			parameterSetKey = Cache.getAppCache().put(parameterSet);
 		return new ResultEditorInput(setup.productSystem.getId(), resultKey,
-				setupKey, parameterSetKey);
+				setupKey, parameterSetKey, dqResultKey);
 	}
 
 	private void saveDefaults(CalculationSetup setup, CalculationType type) {
@@ -112,11 +117,13 @@ class CalculationWizard extends Wizard {
 
 		private CalculationSetup setup;
 		private CalculationType type;
+		private boolean assessDataQuality;
 		private boolean outOfMemory;
 
-		public Calculation(CalculationSetup setup, CalculationType type) {
+		public Calculation(CalculationSetup setup, CalculationType type, boolean assessDataQuality) {
 			this.setup = setup;
 			this.type = type;
+			this.assessDataQuality = assessDataQuality;
 		}
 
 		@Override
@@ -157,8 +164,11 @@ class CalculationWizard extends Wizard {
 			log.trace("calculation done, open editor");
 			FullResultProvider resultProvider = new FullResultProvider(result,
 					Cache.getEntityCache());
+			DQResult dqResult = null;
+			if (assessDataQuality)
+				dqResult = DQResult.calculate(Database.get(), result, productSystem.getId());
 			ResultEditorInput input = getEditorInput(resultProvider, setup,
-					null);
+					null, dqResult);
 			Editors.open(input, AnalyzeEditor.ID);
 		}
 
@@ -171,8 +181,11 @@ class CalculationWizard extends Wizard {
 			log.trace("calculation done, open editor");
 			ContributionResultProvider<ContributionResult> resultProvider = new ContributionResultProvider<>(
 					result, Cache.getEntityCache());
+			DQResult dqResult = null;
+			if (assessDataQuality)
+				dqResult = DQResult.calculate(Database.get(), result, productSystem.getId());
 			ResultEditorInput input = getEditorInput(resultProvider, setup,
-					null);
+					null, dqResult);
 			Editors.open(input, QuickResultEditor.ID);
 		}
 
@@ -197,8 +210,11 @@ class CalculationWizard extends Wizard {
 			provider.result = new FullResultProvider(regioResult.result,
 					Cache.getEntityCache());
 			provider.kmlData = regioResult.kmlData;
+			DQResult dqResult = null;
+			if (assessDataQuality)
+				dqResult = DQResult.calculate(Database.get(), regioResult.result, productSystem.getId());
 			ResultEditorInput input = getEditorInput(provider, setup,
-					regioResult.parameterSet);
+					regioResult.parameterSet, dqResult);
 			Editors.open(input, RegionalizedResultEditor.ID);
 		}
 	}

@@ -16,6 +16,7 @@ import org.openlca.app.results.contributions.FlowImpactPage;
 import org.openlca.app.results.contributions.locations.LocationPage;
 import org.openlca.app.results.grouping.GroupPage;
 import org.openlca.core.math.CalculationSetup;
+import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.results.ContributionResultProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,7 @@ public class QuickResultEditor extends FormEditor implements IResultEditor<Contr
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private CalculationSetup setup;
 	private ContributionResultProvider<?> result;
+	private DQResult dqResult;
 
 	@Override
 	public void init(IEditorSite site, IEditorInput editorInput)
@@ -38,6 +40,9 @@ public class QuickResultEditor extends FormEditor implements IResultEditor<Contr
 					CalculationSetup.class);
 			result = Cache.getAppCache().remove(
 					input.getResultKey(), ContributionResultProvider.class);
+			String dqResultKey = input.getDqResultKey();
+			if (dqResultKey != null)
+				dqResult = Cache.getAppCache().remove(dqResultKey, DQResult.class);
 		} catch (Exception e) {
 			log.error("failed to load inventory result", e);
 			throw new PartInitException("failed to load inventory result", e);
@@ -58,7 +63,7 @@ public class QuickResultEditor extends FormEditor implements IResultEditor<Contr
 	protected void addPages() {
 		try {
 			addPage(new QuickResultInfoPage(this));
-			addPage(new TotalFlowResultPage(this, result));
+			addPage(new TotalFlowResultPage(this, result, dqResult));
 			if (result.hasImpactResults())
 				addPage(new TotalImpactResultPage(this, result));
 			if (result.hasImpactResults() && setup.nwSet != null)

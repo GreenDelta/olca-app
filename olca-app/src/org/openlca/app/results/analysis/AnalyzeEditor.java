@@ -24,6 +24,7 @@ import org.openlca.app.results.contributions.locations.LocationPage;
 import org.openlca.app.results.contributions.ProcessResultPage;
 import org.openlca.app.results.grouping.GroupPage;
 import org.openlca.core.math.CalculationSetup;
+import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.matrix.FlowIndex;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
@@ -45,6 +46,7 @@ public class AnalyzeEditor extends FormEditor implements IResultEditor<FullResul
 	private int diagramIndex;
 	private CalculationSetup setup;
 	private FullResultProvider result;
+	private DQResult dqResult;
 
 	@Override
 	public CalculationSetup getSetup() {
@@ -65,6 +67,9 @@ public class AnalyzeEditor extends FormEditor implements IResultEditor<FullResul
 		String setupKey = editorInput.getSetupKey();
 		FullResultProvider result = Cache.getAppCache().remove(resultKey,
 				FullResultProvider.class);
+		String dqResultKey = editorInput.getDqResultKey();
+		if (dqResultKey != null)
+			dqResult = Cache.getAppCache().remove(dqResultKey, DQResult.class);
 		setup = Cache.getAppCache().remove(setupKey, CalculationSetup.class);
 		ProductSystem system = setup.productSystem;
 		String name = M.AnalysisResultOf + " " + system.getName();
@@ -76,7 +81,7 @@ public class AnalyzeEditor extends FormEditor implements IResultEditor<FullResul
 	protected void addPages() {
 		try {
 			addPage(new AnalyzeInfoPage(this, result, setup));
-			addPage(new TotalFlowResultPage(this, result));
+			addPage(new TotalFlowResultPage(this, result, dqResult));
 			if (result.hasImpactResults())
 				addPage(new TotalImpactResultPage(this, result));
 			if (result.hasImpactResults() && setup.nwSet != null)

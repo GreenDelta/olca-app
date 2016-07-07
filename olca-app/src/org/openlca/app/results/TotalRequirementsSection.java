@@ -7,8 +7,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jface.viewers.BaseLabelProvider;
+import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -19,6 +21,7 @@ import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
+import org.openlca.app.editors.dq_systems.DQColors;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
@@ -29,6 +32,7 @@ import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.database.EntityCache;
+import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.matrix.LongPair;
 import org.openlca.core.matrix.ProductIndex;
 import org.openlca.core.model.Currency;
@@ -46,22 +50,22 @@ class TotalRequirementsSection {
 
 	private EntityCache cache = Cache.getEntityCache();
 	private SimpleResultProvider<?> result;
+	private DQResult dqResult;
 	private Costs costs;
 	private String currencySymbol;
 	private Map<Long, ProcessDescriptor> processDescriptors = new HashMap<>();
 
 	private TableViewer table;
 
-	TotalRequirementsSection(SimpleResultProvider<?> result) {
+	TotalRequirementsSection(SimpleResultProvider<?> result, DQResult dqResult) {
 		this.result = result;
 		for (ProcessDescriptor desc : result.getProcessDescriptors())
 			processDescriptors.put(desc.getId(), desc);
 		if (!result.hasCostResults())
 			costs = Costs.NONE;
-		else {
-			costs = result.getTotalCostResult() >= 0
-					? Costs.NET_COSTS : Costs.ADDED_VALUE;
-		}
+		else
+			costs = result.getTotalCostResult() >= 0 ? Costs.NET_COSTS : Costs.ADDED_VALUE;
+		this.dqResult = dqResult;
 	}
 
 	void create(Composite body, FormToolkit tk) {
@@ -69,7 +73,7 @@ class TotalRequirementsSection {
 		UI.gridData(section, true, true);
 		Composite comp = UI.sectionClient(section, tk);
 		UI.gridLayout(comp, 1);
-		table = Tables.createViewer(comp, columnLables());
+		table = Tables.createViewer(comp, columnLabels());
 		Tables.bindColumnWidths(table, columnWidths());
 		Label label = new Label();
 		table.setLabelProvider(label);
@@ -109,7 +113,7 @@ class TotalRequirementsSection {
 		table.setInput(createItems());
 	}
 
-	private String[] columnLables() {
+	private String[] columnLabels() {
 		List<String> b = new ArrayList<>();
 		b.add(M.Process);
 		b.add(M.Product);
@@ -119,14 +123,23 @@ class TotalRequirementsSection {
 			b.add(M.AddedValue);
 		else if (costs == Costs.NET_COSTS)
 			b.add(M.NetCosts);
-		return b.toArray(new String[b.size()]);
+		String[] columnLabels = b.toArray(new String[b.size()]);
+		boolean appendDQ = dqResult != null && dqResult.processSystem != null;
+		if (!appendDQ)
+			return columnLabels;
+		return DQUIHelper.appendTableHeaders(columnLabels, dqResult.processSystem);
 	}
 
 	private double[] columnWidths() {
+		double[] widths = null;
 		if (costs == Costs.NONE)
-			return new double[] { .4, .2, .2, .2 };
+			widths = new double[] { .4, .2, .2, .2 };
 		else
-			return new double[] { .4, .2, .2, .1, .1 };
+			widths = new double[] { .4, .2, .2, .1, .1 };
+		boolean appendDQ = dqResult != null && dqResult.processSystem != null;
+		if (!appendDQ)
+			return widths;
+		return DQUIHelper.adjustTableWidths(widths, dqResult.processSystem);
 	}
 
 	private List<Item> createItems() {
@@ -229,7 +242,7 @@ class TotalRequirementsSection {
 
 	}
 
-	private class Label extends BaseLabelProvider implements ITableLabelProvider {
+	private class Label extends BaseLabelProvider implements ITableLabelProvider, ITableColorProvider {
 
 		private ContributionImage costImage = new ContributionImage(
 				UI.shell().getDisplay());
@@ -250,6 +263,8 @@ class TotalRequirementsSection {
 			case 1:
 				return Images.get(FlowType.PRODUCT_FLOW);
 			case 4:
+				if (costs == Costs.NONE)
+					return null;
 				return costImage.getForTable(((Item) obj).costShare);
 			default:
 				return null;
@@ -271,10 +286,32 @@ class TotalRequirementsSection {
 			case 3:
 				return item.unit;
 			case 4:
+				if (costs == Costs.NONE)
+					return null;
 				return asCosts(item.costValue);
 			default:
 				return null;
 			}
+		}
+
+		@Override
+		public Color getBackground(Object obj, int col) {
+			if (!(obj instanceof Item))
+				return null;
+			int firstCol = costs == Costs.NONE ? 4 : 5;
+			if (col < firstCol)
+				return null;
+			Item item = (Item) obj;
+			int pos = col - firstCol; // column 5 is the first dq column
+			int[] quality = dqResult.getProcessQuality(item.processId);
+			if (quality == null)
+				return null;
+			return DQColors.get(quality[pos], dqResult.processSystem.getScoreCount());
+		}
+
+		@Override
+		public Color getForeground(Object element, int columnIndex) {
+			return null;
 		}
 
 	}
