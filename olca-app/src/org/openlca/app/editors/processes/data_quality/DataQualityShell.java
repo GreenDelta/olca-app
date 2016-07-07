@@ -70,17 +70,16 @@ public class DataQualityShell extends Shell {
 	private void initSelection() {
 		if (dqEntry == null)
 			return;
-		String[] values = dqEntry.substring(1, dqEntry.length() - 1).split(";");
-		if (values == null || values.length == 0)
+		int[] values = system.toValues(dqEntry);
+		if (values == null)
 			return;
 		for (int i = 1; i <= values.length; i++) {
-			if ("n.a.".equals(values[i - 1]))
+			if (values[i - 1] == 0)
 				continue;
-			int value = Integer.parseInt(values[i - 1]);
 			DQIndicator indicator = system.getIndicator(i);
 			if (indicator == null)
 				continue;
-			DQScore score = indicator.getScore(value);
+			DQScore score = indicator.getScore(values[i - 1]);
 			if (score == null)
 				continue;
 			select(indicator, score);
@@ -91,25 +90,19 @@ public class DataQualityShell extends Shell {
 
 	public String getSelection() {
 		boolean anySelected = false;
-		String selected = null;
-		// already sorted in initSelection
+		int[] values = new int[system.indicators.size()];
 		for (DQIndicator indicator : system.indicators) {
-			if (selected == null) {
-				selected = "(";
-			} else {
-				selected += ";";
-			}
 			DQScore selection = getSelection(indicator);
-			if (selection == null) {
-				selected += "n.a.";
-				continue;
+			int value = 0;
+			if (selection != null) {
+				value = selection.position;
+				anySelected = true;
 			}
-			selected += Integer.toString(selection.position);
-			anySelected = true;
+			values[indicator.position] = value;
 		}
-		if (selected == null || !anySelected)
+		if (!anySelected)
 			return null;
-		return selected + ")";
+		return system.toString(values);
 	}
 
 	private DQScore getSelection(DQIndicator indicator) {
