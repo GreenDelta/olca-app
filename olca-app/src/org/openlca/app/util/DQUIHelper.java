@@ -47,7 +47,7 @@ public class DQUIHelper {
 		if (quality == null)
 			return null;
 		if (quality[pos] == 0)
-			return "n.a.";
+			return null;
 		return Integer.toString(quality[pos]);
 	}
 
