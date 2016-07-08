@@ -3,8 +3,10 @@ package org.openlca.app.results;
 import java.util.function.Function;
 
 import org.eclipse.jface.viewers.BaseLabelProvider;
+import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
@@ -14,13 +16,15 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
-import org.openlca.app.util.Actions;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Actions;
+import org.openlca.app.util.DQUIHelper;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
+import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.ImpactResult;
@@ -34,10 +38,12 @@ public class TotalImpactResultPage extends FormPage {
 
 	private FormToolkit toolkit;
 	private SimpleResultProvider<?> result;
+	private DQResult dqResult;
 
-	public TotalImpactResultPage(FormEditor editor, SimpleResultProvider<?> result) {
+	public TotalImpactResultPage(FormEditor editor, SimpleResultProvider<?> result, DQResult dqResult) {
 		super(editor, "ImpactResultPage", M.LCIAResult);
 		this.result = result;
+		this.dqResult = dqResult;
 	}
 
 	@Override
@@ -57,11 +63,19 @@ public class TotalImpactResultPage extends FormPage {
 		section.setClient(composite);
 		UI.gridLayout(composite, 1);
 		String[] columns = { IMPACT_CATEGORY, RESULT, REFERENCE_UNIT };
+		boolean appendDQ = dqResult != null && dqResult.exchangeSystem != null;
+		if (appendDQ) {
+			columns = DQUIHelper.appendTableHeaders(columns, dqResult.exchangeSystem);
+		}
 		TableViewer viewer = Tables.createViewer(composite, columns);
 		Label label = new Label();
 		viewer.setLabelProvider(label);
 		createColumnSorters(viewer, label);
-		Tables.bindColumnWidths(viewer.getTable(), 0.50, 0.30, 0.2);
+		double[] widths = { 0.50, 0.30, 0.2 };
+		if (appendDQ) {
+			widths = DQUIHelper.adjustTableWidths(widths, dqResult.exchangeSystem);
+		}
+		Tables.bindColumnWidths(viewer.getTable(), widths);
 		Actions.bind(viewer, TableClipboard.onCopy(viewer));
 		return viewer;
 	}
@@ -75,13 +89,13 @@ public class TotalImpactResultPage extends FormPage {
 		Viewers.sortByDouble(viewer, amountFn, 1);
 	}
 
-	private class Label extends BaseLabelProvider implements ITableLabelProvider {
+	private class Label extends BaseLabelProvider implements ITableLabelProvider, ITableColorProvider {
 
 		@Override
 		public Image getColumnImage(Object element, int col) {
 			if (col != 0)
 				return null;
-			return Images.get(ModelType.IMPACT_CATEGORY); 
+			return Images.get(ModelType.IMPACT_CATEGORY);
 		}
 
 		@Override
@@ -98,9 +112,31 @@ public class TotalImpactResultPage extends FormPage {
 			case 2:
 				return impactCategory.getReferenceUnit();
 			default:
-				return null;
+				int pos = col - 3;
+				int[] quality = dqResult.getImpactQuality(impactCategory.getId());
+				return DQUIHelper.getLabel(pos, quality);
 			}
 		}
+
+		@Override
+		public Color getBackground(Object element, int col) {
+			if (!(element instanceof ImpactCategoryDescriptor))
+				return null;
+			if (col < 3)
+				return null;
+			ImpactCategoryDescriptor impactCategory = (ImpactCategoryDescriptor) element;
+			int pos = col - 3; // column 3 is the first dq column
+			int[] quality = dqResult.getImpactQuality(impactCategory.getId());
+			if (quality == null)
+				return null;
+			return DQUIHelper.getColor(quality[pos], dqResult.exchangeSystem.getScoreCount());
+		}
+
+		@Override
+		public Color getForeground(Object element, int columnIndex) {
+			return null;
+		}
+
 	}
 
 }

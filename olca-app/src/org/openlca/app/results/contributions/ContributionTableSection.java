@@ -20,6 +20,7 @@ import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.app.viewers.combo.CostResultViewer;
 import org.openlca.app.viewers.combo.FlowViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
+import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
@@ -43,38 +44,33 @@ public class ContributionTableSection {
 	private AbstractComboViewer<?> itemViewer;
 	private ContributionTable table;
 	private Spinner spinner;
+	private DQResult dqResult;
 
-	public static ContributionTableSection forFlows(
-			ContributionResultProvider<?> provider) {
-		ContributionTableSection section = new ContributionTableSection(
-				provider, ModelType.FLOW);
+	public static ContributionTableSection forFlows(ContributionResultProvider<?> provider, DQResult dqResult) {
+		ContributionTableSection section = new ContributionTableSection(provider, ModelType.FLOW, dqResult);
 		section.sectionTitle = M.DirectContributionsFlowResults;
 		section.selectionName = M.Flow;
 		return section;
 	}
 
-	public static ContributionTableSection forImpacts(
-			ContributionResultProvider<?> provider) {
-		ContributionTableSection section = new ContributionTableSection(
-				provider, ModelType.IMPACT_CATEGORY);
+	public static ContributionTableSection forImpacts(ContributionResultProvider<?> provider, DQResult dqResult) {
+		ContributionTableSection section = new ContributionTableSection(provider, ModelType.IMPACT_CATEGORY, dqResult);
 		section.sectionTitle = M.DirectContributionsImpactCategoryResults;
 		section.selectionName = M.ImpactCategory;
 		return section;
 	}
 
-	public static ContributionTableSection forCosts(
-			ContributionResultProvider<?> provider) {
-		ContributionTableSection section = new ContributionTableSection(
-				provider, ModelType.CURRENCY);
+	public static ContributionTableSection forCosts(ContributionResultProvider<?> provider, DQResult dqResult) {
+		ContributionTableSection section = new ContributionTableSection(provider, ModelType.CURRENCY, dqResult);
 		section.sectionTitle = M.CostsAddedValues;
 		section.selectionName = M.Costs;
 		return section;
 	}
 
-	private ContributionTableSection(ContributionResultProvider<?> provider,
-			ModelType type) {
+	private ContributionTableSection(ContributionResultProvider<?> provider, ModelType type, DQResult dqResult) {
 		this.provider = provider;
 		this.type = type;
+		this.dqResult = dqResult;
 	}
 
 	public void render(Composite parent, FormToolkit toolkit) {
@@ -88,7 +84,7 @@ public class ContributionTableSection {
 		UI.gridLayout(header, 5);
 		createItemCombo(toolkit, header);
 		createSpinner(toolkit, header);
-		table = new ContributionTable(composite);
+		table = new ContributionTable(composite, type, dqResult);
 		UI.gridData(table.getTable(), true, true);
 	}
 
@@ -155,14 +151,17 @@ public class ContributionTableSection {
 			return;
 		String unit = null;
 		List<ContributionItem<ProcessDescriptor>> items = null;
+		long selectedModelId = 0;
 		if (selected instanceof FlowDescriptor) {
 			FlowDescriptor flow = (FlowDescriptor) selected;
 			unit = Labels.getRefUnit(flow, provider.cache);
 			items = provider.getProcessContributions(flow).contributions;
+			selectedModelId = flow.getId();
 		} else if (selected instanceof ImpactCategoryDescriptor) {
 			ImpactCategoryDescriptor impact = (ImpactCategoryDescriptor) selected;
 			unit = impact.getReferenceUnit();
 			items = provider.getProcessContributions(impact).contributions;
+			selectedModelId = impact.getId();
 		} else if (selected instanceof CostResultDescriptor) {
 			CostResultDescriptor cost = (CostResultDescriptor) selected;
 			unit = Labels.getReferenceCurrencyCode();
@@ -171,12 +170,12 @@ public class ContributionTableSection {
 			if (cost.forAddedValue)
 				CostResults.forAddedValues(set);
 			items = set.contributions;
+			selectedModelId = cost.getId();
 		}
-		setTableData(items, unit);
+		setTableData(items, unit, selectedModelId);
 	}
 
-	private void setTableData(List<ContributionItem<ProcessDescriptor>> items,
-			String unit) {
+	private void setTableData(List<ContributionItem<ProcessDescriptor>> items, String unit, long selectedModelId) {
 		if (items == null)
 			return;
 		double cutOff = spinner.getSelection() / 100.0;
@@ -186,6 +185,6 @@ public class ContributionTableSection {
 			if (Math.abs(cutOff) < 1e-5 || Math.abs(item.share) >= cutOff)
 				tableData.add(item);
 		}
-		table.setInput(tableData, unit);
+		table.setInput(tableData, unit, selectedModelId);
 	}
 }

@@ -83,13 +83,13 @@ public class AnalyzeEditor extends FormEditor implements IResultEditor<FullResul
 			addPage(new AnalyzeInfoPage(this, result, setup));
 			addPage(new TotalFlowResultPage(this, result, dqResult));
 			if (result.hasImpactResults())
-				addPage(new TotalImpactResultPage(this, result));
+				addPage(new TotalImpactResultPage(this, result, dqResult));
 			if (result.hasImpactResults() && setup.nwSet != null)
 				addPage(new NwResultPage(this, result, setup));
-			addPage(new ContributionTablePage(this, result));
+			addPage(new ContributionTablePage(this, result, dqResult));
 			addPage(new ProcessResultPage(this, result));
 			if (result.hasImpactResults())
-				addPage(new FlowImpactPage(this, result));
+				addPage(new FlowImpactPage(this, result, dqResult));
 			addPage(new ContributionTreePage(this, result));
 			if (result.hasImpactResults())
 				addPage(new ImpactTreePage(this, result, this::getImpactFactor));

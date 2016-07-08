@@ -65,12 +65,12 @@ public class QuickResultEditor extends FormEditor implements IResultEditor<Contr
 			addPage(new QuickResultInfoPage(this));
 			addPage(new TotalFlowResultPage(this, result, dqResult));
 			if (result.hasImpactResults())
-				addPage(new TotalImpactResultPage(this, result));
+				addPage(new TotalImpactResultPage(this, result, dqResult));
 			if (result.hasImpactResults() && setup.nwSet != null)
 				addPage(new NwResultPage(this, result, setup));
-			addPage(new ContributionTablePage(this, result));
+			addPage(new ContributionTablePage(this, result, dqResult));
 			if (result.hasImpactResults())
-				addPage(new FlowImpactPage(this, result));
+				addPage(new FlowImpactPage(this, result, dqResult));
 			addPage(new LocationPage(this, result));
 			addPage(new GroupPage(this, result));
 		} catch (Exception e) {

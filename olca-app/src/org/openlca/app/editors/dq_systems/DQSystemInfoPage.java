@@ -22,6 +22,7 @@ import org.openlca.app.M;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.util.Controls;
+import org.openlca.app.util.DQUIHelper;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.DQIndicator;
 import org.openlca.core.model.DQScore;
@@ -97,7 +98,7 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 			for (DQScore score : indicator.scores) {
 				Text descriptionText = createTextCell(composite, 8, 8);
 				getBinding().onString(() -> score, "description", descriptionText);
-				descriptionText.setBackground(DQColors.get(score.position, getModel().getScoreCount()));
+				descriptionText.setBackground(DQUIHelper.getColor(score.position, getModel().getScoreCount()));
 
 			}
 			createRemoveIndicatorButton(composite, indicator.position);

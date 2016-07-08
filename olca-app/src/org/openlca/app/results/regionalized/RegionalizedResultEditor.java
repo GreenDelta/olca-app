@@ -97,10 +97,10 @@ public class RegionalizedResultEditor extends FormEditor implements IResultEdito
 			addPage(new AnalyzeInfoPage(this, regioResult, setup));
 			addPage(new TotalFlowResultPage(this, regioResult, dqResult));
 			if (regioResult.hasImpactResults())
-				addPage(new TotalImpactResultPage(this, regioResult));
+				addPage(new TotalImpactResultPage(this, regioResult, dqResult));
 			if (regioResult.hasImpactResults() && setup.nwSet != null)
 				addPage(new NwResultPage(this, regioResult, setup));
-			addPage(new ContributionTablePage(this, regioResult));
+			addPage(new ContributionTablePage(this, regioResult, dqResult));
 			addPage(new KmlResultView(this, this.result));
 			addPage(new LocationPage(this, regioResult, false));
 			addPage(new ProcessResultPage(this, regioResult));

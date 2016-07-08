@@ -4,11 +4,13 @@ import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.jface.viewers.BaseLabelProvider;
+import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -23,6 +25,7 @@ import org.openlca.app.components.ContributionImage;
 import org.openlca.app.db.Cache;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
+import org.openlca.app.util.DQUIHelper;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
@@ -30,6 +33,7 @@ import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
+import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.results.ContributionItem;
 import org.openlca.core.results.ContributionResultProvider;
@@ -46,15 +50,16 @@ public class FlowImpactPage extends FormPage {
 			M.Amount, M.Unit };
 
 	private ContributionResultProvider<?> result;
+	private DQResult dqResult;
 	private ImpactCategoryViewer impactCombo;
 	private TableViewer table;
 	private Spinner spinner;
 	private double cutOff = 1;
 
-	public FlowImpactPage(FormEditor editor,
-			ContributionResultProvider<?> result) {
+	public FlowImpactPage(FormEditor editor, ContributionResultProvider<?> result, DQResult dqResult) {
 		super(editor, "FlowImpactPage", M.FlowContributions);
 		this.result = result;
+		this.dqResult = dqResult;
 	}
 
 	@Override
@@ -102,19 +107,27 @@ public class FlowImpactPage extends FormPage {
 	}
 
 	private void makeTable(Composite parent) {
-		table = Tables.createViewer(parent, COLUMN_LABELS);
+		String[] columns = COLUMN_LABELS;
+		boolean appendDQ = dqResult != null && dqResult.exchangeSystem != null;
+		if (appendDQ) {
+			columns = DQUIHelper.appendTableHeaders(columns, dqResult.exchangeSystem);
+		}
+		table = Tables.createViewer(parent, columns);
 		Label label = new Label();
 		table.setLabelProvider(label);
 		table.setFilters(new ViewerFilter[] { new CutOffFilter() });
-		Tables.bindColumnWidths(table.getTable(), 0.1, 0.3, 0.2, 0.2, 0.1, 0.1);
+		double[] widths = { 0.1, 0.3, 0.2, 0.2, 0.1, 0.1 };
+		if (appendDQ) {
+			widths = DQUIHelper.adjustTableWidths(widths, dqResult.exchangeSystem);
+		}
+		Tables.bindColumnWidths(table.getTable(), widths);
 		Actions.bind(table, TableClipboard.onCopy(table));
 		Viewers.sortByLabels(table, label, 1, 2, 3, 5);
 		Viewers.sortByDouble(table, (ContributionItem<?> i) -> i.share, 0);
 		Viewers.sortByDouble(table, (ContributionItem<?> i) -> i.amount, 4);
 	}
 
-	private class Label extends BaseLabelProvider implements
-			ITableLabelProvider {
+	private class Label extends BaseLabelProvider implements ITableLabelProvider, ITableColorProvider {
 
 		private ContributionImage image = new ContributionImage(
 				Display.getCurrent());
@@ -155,8 +168,31 @@ public class FlowImpactPage extends FormPage {
 			case 5:
 				return impactCombo.getSelected().getReferenceUnit();
 			default:
-				return null;
+				int pos = columnIndex - 6;
+				int[] quality = dqResult.getFlowQuality(flow.getId());
+				return DQUIHelper.getLabel(pos, quality);
 			}
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public Color getBackground(Object element, int columnIndex) {
+			if (!(element instanceof ContributionItem))
+				return null;
+			if (columnIndex < 6)
+				return null;
+			ContributionItem<FlowDescriptor> contribution = ContributionItem.class.cast(element);
+			FlowDescriptor flow = contribution.item;
+			int pos = columnIndex - 6;
+			int[] quality = dqResult.getFlowQuality(flow.getId());
+			if (quality == null)
+				return null;
+			return DQUIHelper.getColor(quality[pos], dqResult.exchangeSystem.getScoreCount());
+		}
+
+		@Override
+		public Color getForeground(Object element, int columnIndex) {
+			return null;
 		}
 
 		@Override

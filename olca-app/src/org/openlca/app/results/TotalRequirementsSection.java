@@ -21,9 +21,9 @@ import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
-import org.openlca.app.editors.dq_systems.DQColors;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.DQUIHelper;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
@@ -286,11 +286,16 @@ class TotalRequirementsSection {
 			case 3:
 				return item.unit;
 			case 4:
-				if (costs == Costs.NONE)
+				if (costs == Costs.NONE) {
+					if (dqResult != null && dqResult.processSystem != null)
+						return DQUIHelper.getLabel(0, dqResult.getProcessQuality(item.processId));
 					return null;
+				}
 				return asCosts(item.costValue);
 			default:
-				return null;
+				int pos = col - (costs == Costs.NONE ? 4 : 5);
+				int[] quality = dqResult.getProcessQuality(item.processId);
+				return DQUIHelper.getLabel(pos, quality);
 			}
 		}
 
@@ -306,7 +311,7 @@ class TotalRequirementsSection {
 			int[] quality = dqResult.getProcessQuality(item.processId);
 			if (quality == null)
 				return null;
-			return DQColors.get(quality[pos], dqResult.processSystem.getScoreCount());
+			return DQUIHelper.getColor(quality[pos], dqResult.processSystem.getScoreCount());
 		}
 
 		@Override

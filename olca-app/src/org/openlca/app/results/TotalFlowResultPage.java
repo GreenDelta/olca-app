@@ -21,9 +21,9 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
-import org.openlca.app.editors.dq_systems.DQColors;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.DQUIHelper;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
@@ -135,7 +135,9 @@ public class TotalFlowResultPage extends FormPage {
 				double v = result.getTotalFlowResult(flow).value;
 				return Numbers.format(v);
 			default:
-				return null;
+				int pos = col - 5;
+				int[] quality = dqResult.getFlowQuality(flow.getId());
+				return DQUIHelper.getLabel(pos, quality);
 			}
 		}
 
@@ -150,7 +152,7 @@ public class TotalFlowResultPage extends FormPage {
 			int[] quality = dqResult.getFlowQuality(flow.getId());
 			if (quality == null)
 				return null;
-			return DQColors.get(quality[pos], dqResult.exchangeSystem.getScoreCount());
+			return DQUIHelper.getColor(quality[pos], dqResult.exchangeSystem.getScoreCount());
 		}
 
 		@Override
