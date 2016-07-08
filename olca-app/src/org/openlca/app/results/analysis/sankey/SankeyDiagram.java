@@ -34,6 +34,7 @@ import org.openlca.app.results.analysis.sankey.model.ConnectionLink;
 import org.openlca.app.results.analysis.sankey.model.ProcessNode;
 import org.openlca.app.results.analysis.sankey.model.ProductSystemNode;
 import org.openlca.core.math.CalculationSetup;
+import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.matrix.ProcessLinkSearchMap;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
@@ -54,10 +55,12 @@ public class SankeyDiagram extends GraphicalEditor implements
 	private ProductSystemNode systemNode;
 	private ProductSystem productSystem;
 	private FullResultProvider result;
+	private DQResult dqResult;
 
 	private double zoom = 1;
 
-	public SankeyDiagram(CalculationSetup setUp, FullResultProvider result) {
+	public SankeyDiagram(CalculationSetup setUp, FullResultProvider result, DQResult dqResult) {
+		this.dqResult = dqResult;
 		setEditDomain(new DefaultEditDomain(this));
 		this.result = result;
 		productSystem = setUp.productSystem;
@@ -72,6 +75,10 @@ public class SankeyDiagram extends GraphicalEditor implements
 		return result;
 	}
 
+	public DQResult getDqResult() {
+		return dqResult;
+	}
+	
 	public ProcessLinkSearchMap getLinkSearchMap() {
 		return linkSearchMap;
 	}

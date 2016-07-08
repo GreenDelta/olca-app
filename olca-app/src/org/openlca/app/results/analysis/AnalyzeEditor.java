@@ -98,7 +98,7 @@ public class AnalyzeEditor extends FormEditor implements IResultEditor<FullResul
 			if (FeatureFlag.EXPERIMENTAL_VISUALISATIONS.isEnabled()) {
 				addPage(new SunBurstView(this, result));
 			}
-			diagram = new SankeyDiagram(setup, result);
+			diagram = new SankeyDiagram(setup, result, dqResult);
 			diagramIndex = addPage(diagram, getEditorInput());
 			setPageText(diagramIndex, M.SankeyDiagram);
 		} catch (final PartInitException e) {

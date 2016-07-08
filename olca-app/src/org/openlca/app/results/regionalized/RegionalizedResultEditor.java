@@ -110,7 +110,7 @@ public class RegionalizedResultEditor extends FormEditor implements IResultEdito
 			if (FeatureFlag.EXPERIMENTAL_VISUALISATIONS.isEnabled()) {
 				addPage(new SunBurstView(this, regioResult));
 			}
-			diagram = new SankeyDiagram(setup, regioResult);
+			diagram = new SankeyDiagram(setup, regioResult, dqResult);
 			diagramIndex = addPage(diagram, getEditorInput());
 			setPageText(diagramIndex, M.SankeyDiagram);
 		} catch (Exception e) {

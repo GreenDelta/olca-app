@@ -1,5 +1,7 @@
 package org.openlca.app.results.analysis.sankey.model;
 
+import java.util.Collections;
+
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.Label;
@@ -16,8 +18,11 @@ import org.openlca.app.FaviColor;
 import org.openlca.app.M;
 import org.openlca.app.results.analysis.sankey.ProcessMouseClick;
 import org.openlca.app.util.Colors;
+import org.openlca.app.util.DQUIHelper;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
+import org.openlca.core.math.data_quality.DQResult;
+import org.openlca.core.model.DQIndicator;
 import org.openlca.util.Strings;
 
 public class ProcessFigure extends Figure {
@@ -65,6 +70,7 @@ public class ProcessFigure extends Figure {
 		String single = singleVal + " (" + singlePerc + "%)";
 		String total = totalVal + " (" + totalPerc + "%)";
 		drawTexts(g, single, total);
+		drawDqBar(g);
 	}
 
 	private void drawTexts(Graphics g, String single, String total) {
@@ -82,6 +88,32 @@ public class ProcessFigure extends Figure {
 		g.drawText(M.UpstreamTotal + ":", loc.x + 5, loc.y + 80);
 		g.drawText(total, loc.x + 5, loc.y + 95);
 		g.setForegroundColor(black);
+	}
+
+	private void drawDqBar(Graphics g) {
+		DQResult dqResult = ((ProductSystemNode) processNode.getParent()).getEditor().getDqResult();
+		if (dqResult == null || dqResult.processSystem == null || dqResult.processSystem.indicators.isEmpty())
+			return;
+		Point loc = getLocation();
+		Dimension size = getSize();
+		Color fColor = g.getForegroundColor();
+		Color bColor = g.getBackgroundColor();
+		g.setForegroundColor(Colors.white());
+		g.setBackgroundColor(Colors.white());
+		int x = loc.x + size.width - 30;
+		int y = loc.y + 10;
+		int w = 20;
+		int h = (size.height - 20) / dqResult.processSystem.indicators.size();
+		int[] values = dqResult.getProcessQuality(processNode.process.getId());
+		for (int i = 0; i < values.length; i++) {
+			Color color = DQUIHelper.getColor(values[i], dqResult.processSystem.getScoreCount());
+			g.setBackgroundColor(color);
+			g.drawRectangle(x, y, w, h);
+			g.fillRectangle(x + 1, y + 1, w - 1, h - 1);
+			y += h;
+		}
+		g.setForegroundColor(fColor);
+		g.setBackgroundColor(bColor);
 	}
 
 	private Font getBoldFont(Font normalFont) {

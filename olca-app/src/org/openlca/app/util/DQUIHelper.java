@@ -50,6 +50,8 @@ public class DQUIHelper {
 	}
 
 	public static Color getColor(int index, int total) {
+		if (index == 0)
+			return Colors.white();
 		if (index == 1)
 			return Colors.get(125, 250, 125);
 		if (index == total)
