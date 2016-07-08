@@ -1,7 +1,5 @@
 package org.openlca.app.results.analysis.sankey.model;
 
-import java.util.Collections;
-
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.Label;
@@ -22,7 +20,6 @@ import org.openlca.app.util.DQUIHelper;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.core.math.data_quality.DQResult;
-import org.openlca.core.model.DQIndicator;
 import org.openlca.util.Strings;
 
 public class ProcessFigure extends Figure {
