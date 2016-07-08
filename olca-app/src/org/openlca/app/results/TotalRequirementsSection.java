@@ -124,8 +124,7 @@ class TotalRequirementsSection {
 		else if (costs == Costs.NET_COSTS)
 			b.add(M.NetCosts);
 		String[] columnLabels = b.toArray(new String[b.size()]);
-		boolean appendDQ = dqResult != null && dqResult.processSystem != null;
-		if (!appendDQ)
+		if (!DQUIHelper.displayProcessQuality(dqResult))
 			return columnLabels;
 		return DQUIHelper.appendTableHeaders(columnLabels, dqResult.processSystem);
 	}
@@ -136,8 +135,7 @@ class TotalRequirementsSection {
 			widths = new double[] { .4, .2, .2, .2 };
 		else
 			widths = new double[] { .4, .2, .2, .1, .1 };
-		boolean appendDQ = dqResult != null && dqResult.processSystem != null;
-		if (!appendDQ)
+		if (!DQUIHelper.displayProcessQuality(dqResult))
 			return widths;
 		return DQUIHelper.adjustTableWidths(widths, dqResult.processSystem);
 	}

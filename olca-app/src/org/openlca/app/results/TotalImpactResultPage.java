@@ -63,8 +63,7 @@ public class TotalImpactResultPage extends FormPage {
 		section.setClient(composite);
 		UI.gridLayout(composite, 1);
 		String[] columns = { IMPACT_CATEGORY, RESULT, REFERENCE_UNIT };
-		boolean appendDQ = dqResult != null && dqResult.exchangeSystem != null;
-		if (appendDQ) {
+		if (DQUIHelper.displayExchangeQuality(dqResult)) {
 			columns = DQUIHelper.appendTableHeaders(columns, dqResult.exchangeSystem);
 		}
 		TableViewer viewer = Tables.createViewer(composite, columns);
@@ -72,7 +71,7 @@ public class TotalImpactResultPage extends FormPage {
 		viewer.setLabelProvider(label);
 		createColumnSorters(viewer, label);
 		double[] widths = { 0.50, 0.30, 0.2 };
-		if (appendDQ) {
+		if (DQUIHelper.displayExchangeQuality(dqResult)) {
 			widths = DQUIHelper.adjustTableWidths(widths, dqResult.exchangeSystem);
 		}
 		Tables.bindColumnWidths(viewer.getTable(), widths);

@@ -6,6 +6,7 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.database.EntityCache;
+import org.openlca.core.math.data_quality.AggregationType;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Currency;
@@ -343,6 +344,23 @@ public class Labels {
 			return M.Category;
 		default:
 			return M.Unknown;
+		}
+	}
+
+	public static String aggregationType(AggregationType type) {
+		if (type == null)
+			return null;
+		switch (type) {
+		case WEIGHTED_AVERAGE:
+			return "#Weighted average";
+		case WEIGHTED_SQUARED_AVERAGE:
+			return "#Weighted squared average";
+		case MAXIMUM:
+			return "#Maximum";
+		case NONE:
+			return "#None";
+		default:
+			return null;
 		}
 	}
 

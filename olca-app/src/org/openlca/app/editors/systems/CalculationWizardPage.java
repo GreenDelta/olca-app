@@ -1,7 +1,11 @@
 package org.openlca.app.editors.systems;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -12,6 +16,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Error;
+import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AllocationMethodViewer;
 import org.openlca.app.viewers.combo.ImpactMethodViewer;
@@ -19,6 +24,7 @@ import org.openlca.app.viewers.combo.NwSetComboViewer;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.database.NwSetDao;
 import org.openlca.core.math.CalculationSetup;
+import org.openlca.core.math.data_quality.AggregationType;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
@@ -37,9 +43,11 @@ class CalculationWizardPage extends WizardPage {
 	private Text iterationText;
 	private Button costCheck;
 	private Button dqAssessment;
+	private AggregationType aggregationType = AggregationType.WEIGHTED_AVERAGE;
 	private int iterationCount = 100;
 	private CalculationType type = CalculationType.QUICK;
 	private ProductSystem productSystem;
+	private List<Button> aggregationTypeButtons = new ArrayList<>();
 
 	public CalculationWizardPage(ProductSystem system) {
 		super(CalculationWizardPage.class.getCanonicalName());
@@ -60,6 +68,12 @@ class CalculationWizardPage extends WizardPage {
 		setUp.numberOfRuns = iterationCount;
 		setUp.parameterRedefs.addAll(productSystem.getParameterRedefs());
 		return setUp;
+	}
+
+	public AggregationType getAggregationType() {
+		if (dqAssessment.getSelection())
+			return aggregationType;
+		return null;
 	}
 
 	public CalculationType getCalculationType() {
@@ -115,6 +129,28 @@ class CalculationWizardPage extends WizardPage {
 		dqAssessment = new Button(parent, SWT.CHECK);
 		dqAssessment.setSelection(false);
 		dqAssessment.setText("#Assess data quality");
+		Controls.onSelect(dqAssessment, (e) -> {
+			for (Button button : aggregationTypeButtons) {
+				button.setEnabled(dqAssessment.getSelection());
+			}
+		});
+		new Label(parent, SWT.NONE);
+		Composite radioGroup = new Composite(parent, SWT.NONE);
+		GridLayout layout = UI.gridLayout(radioGroup, 1, 10, 20);
+		layout.marginTop = 0;
+		layout.marginHeight = 0;
+		for (AggregationType type : AggregationType.values()) {
+			Button button = new Button(radioGroup, SWT.RADIO);
+			button.setText(Labels.aggregationType(type));
+			button.setEnabled(false);
+			Controls.onSelect(button, (e) -> {
+				aggregationType = type;
+			});
+			if (type == aggregationType) {
+				button.setSelection(true);
+			}
+			aggregationTypeButtons.add(button);
+		}
 	}
 
 	private void createRadios(Composite parent) {
@@ -163,6 +199,7 @@ class CalculationWizardPage extends WizardPage {
 	private void createMethodComboViewer(Composite parent) {
 		UI.formLabel(parent, M.ImpactAssessmentMethod);
 		methodViewer = new ImpactMethodViewer(parent);
+		methodViewer.setNullable(true);
 		methodViewer.setInput(Database.get());
 		methodViewer.addSelectionChangedListener((selection) -> nwViewer
 				.setInput(methodViewer.getSelected()));

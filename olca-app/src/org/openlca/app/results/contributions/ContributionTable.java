@@ -58,7 +58,8 @@ class ContributionTable extends TableViewer {
 		setLabelProvider(label);
 		createColumnSorters(label);
 		double[] widths = { 0.2, 0.4, 0.2, 0.2 };
-		if (dqResult != null && dqResult.exchangeSystem != null && type != ModelType.CURRENCY) {
+		boolean ignoreAggregationType = type == ModelType.FLOW;
+		if (DQUIHelper.displayExchangeQuality(dqResult, ignoreAggregationType) && type != ModelType.CURRENCY) {
 			widths = DQUIHelper.adjustTableWidths(widths, dqResult.exchangeSystem);
 		}
 		Tables.bindColumnWidths(table, widths);
@@ -74,7 +75,8 @@ class ContributionTable extends TableViewer {
 
 	private void createColumns() {
 		String[] columns = columnLabels;
-		if (dqResult != null && dqResult.exchangeSystem != null && type != ModelType.CURRENCY) {
+		boolean ignoreAggregationType = type == ModelType.FLOW;
+		if (DQUIHelper.displayExchangeQuality(dqResult, ignoreAggregationType) && type != ModelType.CURRENCY) {
 			columns = DQUIHelper.appendTableHeaders(columns, dqResult.exchangeSystem);
 		}
 		for (String label : columns) {

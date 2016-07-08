@@ -1,6 +1,8 @@
 package org.openlca.app.util;
 
 import org.eclipse.swt.graphics.Color;
+import org.openlca.core.math.data_quality.AggregationType;
+import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.DQIndicator;
 import org.openlca.core.model.DQSystem;
 import org.python.google.common.base.Strings;
@@ -67,6 +69,36 @@ public class DQUIHelper {
 		int divisor = median - 1;
 		int factor = index - median;
 		return Colors.get(250, 250 - (125 * factor / divisor), 125);
+	}
+
+	public static boolean displayProcessQuality(DQResult result) {
+		if (result == null)
+			return false;
+		if (result.processSystem == null)
+			return false;
+		if (result.processSystem.indicators.isEmpty())
+			return false;
+		if (result.processSystem.getScoreCount() == 0)
+			return false;
+		return true;
+	}
+
+	public static boolean displayExchangeQuality(DQResult result) {
+		return displayExchangeQuality(result, false);
+	}
+
+	public static boolean displayExchangeQuality(DQResult result, boolean ignoreAggregationType) {
+		if (result == null)
+			return false;
+		if (result.exchangeSystem == null)
+			return false;
+		if (result.exchangeSystem.indicators.isEmpty())
+			return false;
+		if (result.exchangeSystem.getScoreCount() == 0)
+			return false;
+		if (!ignoreAggregationType && result.aggregationType == AggregationType.NONE)
+			return false;
+		return true;
 	}
 
 }

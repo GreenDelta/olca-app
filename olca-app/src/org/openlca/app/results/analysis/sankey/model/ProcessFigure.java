@@ -89,7 +89,7 @@ public class ProcessFigure extends Figure {
 
 	private void drawDqBar(Graphics g) {
 		DQResult dqResult = ((ProductSystemNode) processNode.getParent()).getEditor().getDqResult();
-		if (dqResult == null || dqResult.processSystem == null || dqResult.processSystem.indicators.isEmpty())
+		if (!DQUIHelper.displayProcessQuality(dqResult))
 			return;
 		Point loc = getLocation();
 		Dimension size = getSize();

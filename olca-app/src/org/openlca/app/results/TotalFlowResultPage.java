@@ -77,8 +77,7 @@ public class TotalFlowResultPage extends FormPage {
 		Composite composite = UI.sectionClient(section, toolkit);
 		UI.gridLayout(composite, 1);
 		String[] headers = new String[] { M.Flow, M.Category, M.SubCategory, M.Unit, M.Amount };
-		boolean appendDQ = dqResult != null && dqResult.exchangeSystem != null;
-		if (appendDQ) {
+		if (DQUIHelper.displayExchangeQuality(dqResult)) {
 			headers = DQUIHelper.appendTableHeaders(headers, dqResult.exchangeSystem);
 		}
 		TableViewer viewer = Tables.createViewer(composite, headers);
@@ -87,7 +86,7 @@ public class TotalFlowResultPage extends FormPage {
 		viewer.setFilters(new ViewerFilter[] { new InputOutputFilter(input) });
 		createColumnSorters(viewer, label);
 		double[] widths = new double[] { .4, .2, .2, .1, .1 };
-		if (appendDQ) {
+		if (DQUIHelper.displayExchangeQuality(dqResult)) {
 			widths = DQUIHelper.adjustTableWidths(widths, dqResult.exchangeSystem);
 		}
 		Tables.bindColumnWidths(viewer.getTable(), widths);

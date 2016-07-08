@@ -108,8 +108,7 @@ public class FlowImpactPage extends FormPage {
 
 	private void makeTable(Composite parent) {
 		String[] columns = COLUMN_LABELS;
-		boolean appendDQ = dqResult != null && dqResult.exchangeSystem != null;
-		if (appendDQ) {
+		if (DQUIHelper.displayExchangeQuality(dqResult)) {
 			columns = DQUIHelper.appendTableHeaders(columns, dqResult.exchangeSystem);
 		}
 		table = Tables.createViewer(parent, columns);
@@ -117,7 +116,7 @@ public class FlowImpactPage extends FormPage {
 		table.setLabelProvider(label);
 		table.setFilters(new ViewerFilter[] { new CutOffFilter() });
 		double[] widths = { 0.1, 0.3, 0.2, 0.2, 0.1, 0.1 };
-		if (appendDQ) {
+		if (DQUIHelper.displayExchangeQuality(dqResult)) {
 			widths = DQUIHelper.adjustTableWidths(widths, dqResult.exchangeSystem);
 		}
 		Tables.bindColumnWidths(table.getTable(), widths);
