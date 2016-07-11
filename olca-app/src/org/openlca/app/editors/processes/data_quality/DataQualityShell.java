@@ -61,7 +61,7 @@ public class DataQualityShell extends Shell {
 		setLayout(new FillLayout(SWT.HORIZONTAL));
 		create(withUncertainty);
 		setText(M.PedigreeMatrix);
-		setSize(830, 600);
+		setSize(830, 700);
 		// pack();
 		initSelection();
 		UI.center(parent, this);
