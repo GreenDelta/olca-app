@@ -181,6 +181,10 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 
 	private void createAddScoreButton(Composite parent) {
 		Button button = toolkit.createButton(parent, "#Add score", SWT.NONE);
+		if (getModel().indicators.size() == 0) {
+			button.setEnabled(false);
+			return;
+		}
 		Controls.onSelect(button, (e) -> {
 			int newScore = getModel().getScoreCount() + 1;
 			for (DQIndicator indicator : getModel().indicators) {

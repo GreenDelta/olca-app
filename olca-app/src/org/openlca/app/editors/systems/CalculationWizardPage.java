@@ -18,11 +18,13 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
+import org.openlca.app.util.Warning;
 import org.openlca.app.viewers.combo.AllocationMethodViewer;
 import org.openlca.app.viewers.combo.ImpactMethodViewer;
 import org.openlca.app.viewers.combo.NwSetComboViewer;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.database.NwSetDao;
+import org.openlca.core.database.ProductSystemDao;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.data_quality.AggregationType;
 import org.openlca.core.model.AllocationMethod;
@@ -130,6 +132,12 @@ class CalculationWizardPage extends WizardPage {
 		dqAssessment.setSelection(false);
 		dqAssessment.setText("#Assess data quality");
 		Controls.onSelect(dqAssessment, (e) -> {
+			if (dqAssessment.getSelection()) {
+				if (!checkDqSystems()) {
+					dqAssessment.setSelection(false);
+					return;
+				}
+			}
 			for (Button button : aggregationTypeButtons) {
 				button.setEnabled(dqAssessment.getSelection());
 			}
@@ -151,6 +159,25 @@ class CalculationWizardPage extends WizardPage {
 			}
 			aggregationTypeButtons.add(button);
 		}
+	}
+
+	private boolean checkDqSystems() {
+		ProductSystemDao dao = new ProductSystemDao(Database.get());
+		long psSystemCount = dao.countProcessDqSystems(productSystem.getId());
+		long exSystemCount = dao.countExchangeDqSystems(productSystem.getId());
+		if (psSystemCount != 1 && exSystemCount != 1) {
+			Error.showBox("#Data quality assessment can not be applied to the current product system, because different or no data quality systems were assigned, both for process and exchange level.");
+			return false;
+		}
+		if (psSystemCount != 1) {
+			Warning.showBox("#Data quality assessment can only be applied partially to the current product system, because different or no process data quality systems were assigned.");
+			return true;
+		}
+		if (exSystemCount != 1) {
+			Warning.showBox("#Data quality assessment can only be applied partially to the current product system, because different or no exchange data quality systems were assigned.");
+			return true;
+		}
+		return true;
 	}
 
 	private void createRadios(Composite parent) {

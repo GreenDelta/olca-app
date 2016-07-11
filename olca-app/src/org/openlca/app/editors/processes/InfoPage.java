@@ -36,6 +36,7 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.images.Overlay;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Editors;
+import org.openlca.app.util.Error;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.ExchangeViewer;
 import org.openlca.app.viewers.combo.LocationViewer;
@@ -47,6 +48,7 @@ import org.openlca.util.Geometries;
 import org.openlca.util.KeyGen;
 
 import com.google.common.eventbus.Subscribe;
+
 
 class InfoPage extends ModelPage<Process> {
 
@@ -162,8 +164,10 @@ class InfoPage extends ModelPage<Process> {
 		UI.formLabel(composite, toolkit, "#Data quality entry");
 		Hyperlink link = UI.formLink(composite, toolkit, getDqEntryLabel());
 		Controls.onClick(link, e -> {
-			if (getModel().dqSystem == null)
-				return; // TODO show message
+			if (getModel().dqSystem == null) {
+				Error.showBox("Please select a data quality system first");				
+				return; 
+			}
 			String oldVal = getModel().dqEntry;
 			DataQualityShell shell = DataQualityShell.withoutUncertainty(composite.getShell(), getModel().dqSystem,
 					getModel().dqEntry, InfoPage.this::onDqEntryDialogOk, InfoPage.this::onDqEntryDialogDelete);

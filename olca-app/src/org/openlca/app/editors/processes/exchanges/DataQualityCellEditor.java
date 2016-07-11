@@ -7,6 +7,7 @@ import org.eclipse.swt.widgets.Control;
 import org.openlca.app.components.DialogCellEditor;
 import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.editors.processes.data_quality.DataQualityShell;
+import org.openlca.app.util.Error;
 import org.openlca.core.model.Exchange;
 
 class DataQualityCellEditor extends DialogCellEditor {
@@ -37,9 +38,12 @@ class DataQualityCellEditor extends DialogCellEditor {
 
 	@Override
 	protected Object openDialogBox(Control control) {
-		if (exchange == null || editor.getModel().exchangeDqSystem == null)
-			return null; // TODO show message
-		DataQualityShell shell = DataQualityShell.withUncertainty(control.getShell(), editor.getModel().exchangeDqSystem,
+		if (exchange == null || editor.getModel().exchangeDqSystem == null) {
+			Error.showBox("Please select a data quality system first");
+			return null;
+		}
+		DataQualityShell shell = DataQualityShell.withUncertainty(control.getShell(),
+				editor.getModel().exchangeDqSystem,
 				exchange.getDqEntry(), exchange.getBaseUncertainty(), this::onOk, this::onDelete);
 		shell.addDisposeListener(e -> {
 			if (valuesChanged()) {
