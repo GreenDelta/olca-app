@@ -74,7 +74,7 @@ class TotalRequirementsSection {
 		Composite comp = UI.sectionClient(section, tk);
 		UI.gridLayout(comp, 1);
 		table = Tables.createViewer(comp, columnLabels());
-		Tables.bindColumnWidths(table, columnWidths());
+		Tables.bindColumnWidths(table, DQUIHelper.MIN_COL_WIDTH, columnWidths());
 		Label label = new Label();
 		table.setLabelProvider(label);
 		Viewers.sortByLabels(table, label, 0, 1, 3);

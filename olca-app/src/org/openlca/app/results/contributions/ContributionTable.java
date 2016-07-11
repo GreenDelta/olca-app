@@ -62,7 +62,7 @@ class ContributionTable extends TableViewer {
 		if (DQUIHelper.displayExchangeQuality(dqResult, ignoreAggregationType) && type != ModelType.CURRENCY) {
 			widths = DQUIHelper.adjustTableWidths(widths, dqResult.exchangeSystem);
 		}
-		Tables.bindColumnWidths(table, widths);
+		Tables.bindColumnWidths(table, DQUIHelper.MIN_COL_WIDTH, widths);
 		Actions.bind(this, TableClipboard.onCopy(this));
 	}
 

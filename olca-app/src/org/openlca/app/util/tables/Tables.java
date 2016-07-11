@@ -47,10 +47,8 @@ public class Tables {
 	 * <li>grid data with horizontal and vertical fill
 	 * 
 	 */
-	public static TableViewer createViewer(Composite parent,
-			String... properties) {
-		TableViewer viewer = new TableViewer(parent, SWT.BORDER
-				| SWT.FULL_SELECTION | SWT.VIRTUAL | SWT.MULTI);
+	public static TableViewer createViewer(Composite parent, String... properties) {
+		TableViewer viewer = new TableViewer(parent, SWT.BORDER | SWT.FULL_SELECTION | SWT.VIRTUAL | SWT.MULTI);
 		viewer.setContentProvider(new ArrayContentProvider());
 		viewer.setColumnProperties(properties);
 		Table table = viewer.getTable();
@@ -71,11 +69,9 @@ public class Tables {
 			c.pack();
 	}
 
-	public static void addDropSupport(TableViewer table,
-			final IModelDropHandler handler) {
+	public static void addDropSupport(TableViewer table, IModelDropHandler handler) {
 		final Transfer transfer = ModelTransfer.getInstance();
-		DropTarget dropTarget = new DropTarget(table.getTable(), DND.DROP_COPY
-				| DND.DROP_MOVE | DND.DROP_DEFAULT);
+		DropTarget dropTarget = new DropTarget(table.getTable(), DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_DEFAULT);
 		dropTarget.setTransfer(new Transfer[] { transfer });
 		dropTarget.addDropListener(new DropTargetAdapter() {
 			@Override
@@ -93,27 +89,31 @@ public class Tables {
 		bindColumnWidths(viewer.getTable(), percents);
 	}
 
+	public static void bindColumnWidths(TableViewer viewer, int minimum, double... percents) {
+		bindColumnWidths(viewer.getTable(), minimum, percents);
+	}
+
 	/**
 	 * Binds the given percentage values (values between 0 and 1) to the column
 	 * widths of the given table
 	 */
-	public static void bindColumnWidths(final Table table,
-			final double... percents) {
+	public static void bindColumnWidths(Table table, double... percents) {
+		bindColumnWidths(table, 0, percents);
+	}
+
+	public static void bindColumnWidths(Table table, int minimum, double... percents) {
 		if (table == null || percents == null)
 			return;
-		TableResizeListener tableListener = new TableResizeListener(table,
-				percents);
+		TableResizeListener tableListener = new TableResizeListener(table, percents, minimum);
 		// see resize listener declaration for comment on why this is done
-		ColumnResizeListener columnListener = new ColumnResizeListener(
-				tableListener);
+		ColumnResizeListener columnListener = new ColumnResizeListener(tableListener);
 		for (TableColumn column : table.getColumns())
 			column.addControlListener(columnListener);
 		table.addControlListener(tableListener);
 	}
 
 	/** Add an event handler for double clicks on the given table viewer. */
-	public static void onDoubleClick(TableViewer viewer,
-			Consumer<MouseEvent> handler) {
+	public static void onDoubleClick(TableViewer viewer, Consumer<MouseEvent> handler) {
 		if (viewer == null || viewer.getTable() == null || handler == null)
 			return;
 		viewer.getTable().addMouseListener(new MouseAdapter() {
@@ -137,8 +137,7 @@ public class Tables {
 		return table.getItem(new Point(event.x, event.y));
 	}
 
-	public static void onDeletePressed(TableViewer viewer,
-			Consumer<Event> handler) {
+	public static void onDeletePressed(TableViewer viewer, Consumer<Event> handler) {
 		if (viewer == null || viewer.getTable() == null || handler == null)
 			return;
 		viewer.getTable().addListener(SWT.KeyUp, (event) -> {
@@ -206,11 +205,13 @@ public class Tables {
 	private static class TableResizeListener extends ControlAdapter {
 		private Table table;
 		private double[] percents;
+		private int minimum = 0;
 		private boolean enabled = true;
 
-		private TableResizeListener(Table table, double[] percents) {
+		private TableResizeListener(Table table, double[] percents, int mininmum) {
 			this.table = table;
 			this.percents = percents;
+			this.minimum = mininmum;
 		}
 
 		@Override
@@ -219,12 +220,26 @@ public class Tables {
 				return;
 			double width = table.getSize().x - 25;
 			TableColumn[] columns = table.getColumns();
+			int longest = -1;
+			double max = 0;
+			double additional = 0;
 			for (int i = 0; i < columns.length; i++) {
 				if (i >= percents.length)
 					break;
 				double colWidth = percents[i] * width;
+				if (max < colWidth) {
+					max = colWidth;
+					longest = i;
+				}
+				if (minimum > 0 && colWidth < minimum) {
+					additional += minimum - colWidth;
+					colWidth = minimum;
+				}
 				columns[i].setWidth((int) colWidth);
 			}
+			if (additional == 0 || longest == -1)
+				return;
+			columns[longest].setWidth((int) (percents[longest] * width - additional));
 		}
 
 	}

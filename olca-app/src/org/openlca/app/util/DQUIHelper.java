@@ -8,6 +8,8 @@ import org.openlca.core.model.DQSystem;
 import org.python.google.common.base.Strings;
 
 public class DQUIHelper {
+	
+	public static final int MIN_COL_WIDTH = 20;
 
 	public static String[] appendTableHeaders(String[] headers, DQSystem system) {
 		String[] newHeaders = new String[headers.length + system.indicators.size()];

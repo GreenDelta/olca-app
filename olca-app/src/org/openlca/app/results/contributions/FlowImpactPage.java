@@ -119,7 +119,7 @@ public class FlowImpactPage extends FormPage {
 		if (DQUIHelper.displayExchangeQuality(dqResult)) {
 			widths = DQUIHelper.adjustTableWidths(widths, dqResult.exchangeSystem);
 		}
-		Tables.bindColumnWidths(table.getTable(), widths);
+		Tables.bindColumnWidths(table.getTable(), DQUIHelper.MIN_COL_WIDTH, widths);
 		Actions.bind(table, TableClipboard.onCopy(table));
 		Viewers.sortByLabels(table, label, 1, 2, 3, 5);
 		Viewers.sortByDouble(table, (ContributionItem<?> i) -> i.share, 0);

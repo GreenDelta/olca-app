@@ -89,7 +89,7 @@ public class TotalFlowResultPage extends FormPage {
 		if (DQUIHelper.displayExchangeQuality(dqResult)) {
 			widths = DQUIHelper.adjustTableWidths(widths, dqResult.exchangeSystem);
 		}
-		Tables.bindColumnWidths(viewer.getTable(), widths);
+		Tables.bindColumnWidths(viewer.getTable(), DQUIHelper.MIN_COL_WIDTH, widths);
 		Actions.bind(viewer, TableClipboard.onCopy(viewer));
 		return viewer;
 	}
