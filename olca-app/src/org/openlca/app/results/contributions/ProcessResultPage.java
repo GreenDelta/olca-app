@@ -279,7 +279,7 @@ public class ProcessResultPage extends FormPage {
 			String val = flow.getName();
 			if (flow.getCategory() == null && flow.getLocation() == null)
 				return val;
-			Pair<String, String> cat = Labels.getFlowCategory(flow, cache);
+			Pair<String, String> cat = Labels.getCategory(flow, cache);
 			val += "(";
 			if (cat.getLeft() != null && !cat.getLeft().isEmpty())
 				val += cat.getLeft();

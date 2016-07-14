@@ -15,19 +15,17 @@ import org.openlca.app.results.SunBurstView;
 import org.openlca.app.results.TotalFlowResultPage;
 import org.openlca.app.results.TotalImpactResultPage;
 import org.openlca.app.results.analysis.sankey.SankeyDiagram;
-import org.openlca.app.results.contributions.ContributionTablePage;
 import org.openlca.app.results.contributions.ContributionTreePage;
-import org.openlca.app.results.contributions.FlowImpactPage;
-import org.openlca.app.results.contributions.ImpactTreePage;
-import org.openlca.app.results.contributions.ImpactTreePage.FlowWithProcess;
-import org.openlca.app.results.contributions.locations.LocationPage;
 import org.openlca.app.results.contributions.ProcessResultPage;
+import org.openlca.app.results.contributions.locations.LocationPage;
 import org.openlca.app.results.grouping.GroupPage;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.matrix.FlowIndex;
 import org.openlca.core.model.ProductSystem;
+import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
+import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.FullResult;
 import org.openlca.core.results.FullResultProvider;
 import org.slf4j.Logger;
@@ -83,16 +81,11 @@ public class AnalyzeEditor extends FormEditor implements IResultEditor<FullResul
 			addPage(new AnalyzeInfoPage(this, result, setup));
 			addPage(new TotalFlowResultPage(this, result, dqResult));
 			if (result.hasImpactResults())
-				addPage(new TotalImpactResultPage(this, result, dqResult));
+				addPage(new TotalImpactResultPage(this, result, dqResult, this::getImpactFactor));
 			if (result.hasImpactResults() && setup.nwSet != null)
-				addPage(new NwResultPage(this, result, setup));
-			addPage(new ContributionTablePage(this, result, dqResult));
+				addPage(new NwResultPage(this, result, setup)); 
 			addPage(new ProcessResultPage(this, result));
-			if (result.hasImpactResults())
-				addPage(new FlowImpactPage(this, result, dqResult));
 			addPage(new ContributionTreePage(this, result));
-			if (result.hasImpactResults())
-				addPage(new ImpactTreePage(this, result, this::getImpactFactor));
 			addPage(new GroupPage(this, result));
 			addPage(new LocationPage(this, result));
 			if (FeatureFlag.EXPERIMENTAL_VISUALISATIONS.isEnabled()) {
@@ -138,14 +131,14 @@ public class AnalyzeEditor extends FormEditor implements IResultEditor<FullResul
 		return page;
 	}
 
-	private double getImpactFactor(ImpactCategoryDescriptor impactCategory,
-			FlowWithProcess descriptor) {
+	private double getImpactFactor(ImpactCategoryDescriptor impactCategory, ProcessDescriptor process,
+			FlowDescriptor flow) {
 		FullResult fr = result.result;
 		FlowIndex flowIdx = fr.flowIndex;
 		int row = fr.impactIndex.getIndex(impactCategory.getId());
-		int col = flowIdx.getIndex(descriptor.flow.getId());
+		int col = flowIdx.getIndex(flow.getId());
 		double value = fr.impactFactors.getEntry(row, col);
-		if (flowIdx.isInput(descriptor.flow.getId())) {
+		if (flowIdx.isInput(flow.getId())) {
 			// characterization factors for input flows are negative in the
 			// matrix. A simple abs() is not correct because the original
 			// characterization factor maybe was already negative (-(-(f))).

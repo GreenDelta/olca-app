@@ -19,12 +19,15 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.openlca.app.components.IModelDropHandler;
 import org.openlca.app.components.ModelTransfer;
+import org.openlca.app.util.UI;
 import org.openlca.app.util.viewers.Sorter;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 
@@ -32,6 +35,28 @@ import org.openlca.core.model.descriptors.BaseDescriptor;
  * A helper class for creating trees, tree viewers and related resources.
  */
 public class Trees {
+
+	public static TreeViewer createViewer(Composite parent, String[] headers) {
+		TreeViewer viewer = new TreeViewer(parent, SWT.BORDER | SWT.FULL_SELECTION | SWT.VIRTUAL | SWT.MULTI);
+		viewer.setColumnProperties(headers);
+		Tree tree = viewer.getTree();
+		tree.setLinesVisible(true);
+		tree.setHeaderVisible(true);
+		createColumns(tree, headers);
+		GridData data = UI.gridData(tree, true, true);
+		data.minimumHeight = 150;
+		return viewer;
+	}
+
+	private static void createColumns(Tree tree, String[] labels) {
+		for (String label : labels) {
+			TreeColumn c = new TreeColumn(tree, SWT.NULL);
+			c.setText(label);
+		}
+		for (TreeColumn c : tree.getColumns()) {
+			c.pack();
+		}
+	}
 
 	public static void addDropSupport(TreeViewer tree,
 			final IModelDropHandler handler) {
@@ -55,11 +80,14 @@ public class Trees {
 	 * Binds the given percentage values (values between 0 and 1) to the column
 	 * widths of the given tree
 	 */
-	public static void bindColumnWidths(final Tree tree,
-			final double... percents) {
+	public static void bindColumnWidths(final Tree tree, final double... percents) {
+		bindColumnWidths(tree, 0, percents);
+	}
+
+	public static void bindColumnWidths(final Tree tree, int minimum, final double... percents) {
 		if (tree == null || percents == null)
 			return;
-		TreeResizeListener treeListener = new TreeResizeListener(tree, percents);		
+		TreeResizeListener treeListener = new TreeResizeListener(tree, percents);
 		ColumnResizeListener columnListener = new ColumnResizeListener(treeListener);
 		for (TreeColumn column : tree.getColumns())
 			column.addControlListener(columnListener);
@@ -133,7 +161,6 @@ public class Trees {
 		private boolean enabled = true;
 		private boolean initialized;
 
-		
 		private ColumnResizeListener(TreeResizeListener depending) {
 			this.depending = depending;
 		}

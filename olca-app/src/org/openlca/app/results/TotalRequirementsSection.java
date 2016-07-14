@@ -79,11 +79,19 @@ class TotalRequirementsSection {
 		table.setLabelProvider(label);
 		Viewers.sortByLabels(table, label, 0, 1, 3);
 		Viewers.sortByDouble(table, (Item i) -> i.amount, 2);
+		if (costs != Costs.NONE)
+			Viewers.sortByDouble(table, (Item i) -> i.costValue, 4);
+		if (DQUIHelper.displayProcessQuality(dqResult)) {
+			int startCol = costs == Costs.NONE ? 4 : 5;
+			for (int i = 0; i < dqResult.processSystem.indicators.size(); i++) {
+				Viewers.sortByDouble(table, label, i + startCol);
+			}
+		}
 		Actions.bind(table, TableClipboard.onCopy(table));
 		Tables.onDoubleClick(table, e -> {
 			Item item = Viewers.getFirstSelected(table);
 			if (item != null) {
-				App.openEditor(cache.get(ProcessDescriptor.class, item.processId));
+				App.openEditor(item.process);
 			}
 		});
 		createCostSum(comp, tk);
@@ -188,8 +196,7 @@ class TotalRequirementsSection {
 
 	private class Item {
 
-		long processId;
-		String process;
+		ProcessDescriptor process;
 		String product;
 		double amount;
 		String unit;
@@ -215,8 +222,7 @@ class TotalRequirementsSection {
 				return;
 			ProcessDescriptor process = processDescriptors.get(lp.getFirst());
 			if (process != null) {
-				this.processId = process.getId();
-				this.process = Labels.getDisplayName(process);
+				this.process = process;
 			}
 			FlowDescriptor flow = cache.get(FlowDescriptor.class, lp.getSecond());
 			if (flow != null) {
@@ -276,7 +282,7 @@ class TotalRequirementsSection {
 			Item item = (Item) obj;
 			switch (col) {
 			case 0:
-				return item.process;
+				return Labels.getDisplayName(item.process);
 			case 1:
 				return item.product;
 			case 2:
@@ -286,13 +292,13 @@ class TotalRequirementsSection {
 			case 4:
 				if (costs == Costs.NONE) {
 					if (dqResult != null && dqResult.processSystem != null)
-						return DQUIHelper.getLabel(0, dqResult.getProcessQuality(item.processId));
+						return DQUIHelper.getLabel(0, dqResult.get(item.process));
 					return null;
 				}
 				return asCosts(item.costValue);
 			default:
 				int pos = col - (costs == Costs.NONE ? 4 : 5);
-				int[] quality = dqResult.getProcessQuality(item.processId);
+				int[] quality = dqResult.get(item.process);
 				return DQUIHelper.getLabel(pos, quality);
 			}
 		}
@@ -306,7 +312,7 @@ class TotalRequirementsSection {
 				return null;
 			Item item = (Item) obj;
 			int pos = col - firstCol; // column 5 is the first dq column
-			int[] quality = dqResult.getProcessQuality(item.processId);
+			int[] quality = dqResult.get(item.process);
 			if (quality == null)
 				return null;
 			return DQUIHelper.getColor(quality[pos], dqResult.processSystem.getScoreCount());

@@ -24,6 +24,7 @@ import org.openlca.core.model.UncertaintyType;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.slf4j.Logger;
@@ -106,11 +107,11 @@ public class Labels {
 	 * category and the right value is the sub-category. Default values are
 	 * empty strings.
 	 */
-	public static Pair<String, String> getFlowCategory(FlowDescriptor flow,
+	public static Pair<String, String> getCategory(CategorizedDescriptor entity,
 			EntityCache cache) {
-		if (flow == null || flow.getCategory() == null)
+		if (entity == null || entity.getCategory() == null)
 			return Pair.of("", "");
-		Category cat = cache.get(Category.class, flow.getCategory());
+		Category cat = cache.get(Category.class, entity.getCategory());
 		if (cat == null)
 			return Pair.of("", "");
 		if (cat.getCategory() == null)

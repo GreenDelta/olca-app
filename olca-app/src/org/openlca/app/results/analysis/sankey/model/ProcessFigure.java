@@ -101,7 +101,7 @@ public class ProcessFigure extends Figure {
 		int y = loc.y + 10;
 		int w = 20;
 		int h = (size.height - 20) / dqResult.processSystem.indicators.size();
-		int[] values = dqResult.getProcessQuality(processNode.process.getId());
+		int[] values = dqResult.get(processNode.process);
 		for (int i = 0; i < values.length; i++) {
 			Color color = DQUIHelper.getColor(values[i], dqResult.processSystem.getScoreCount());
 			g.setBackgroundColor(color);
