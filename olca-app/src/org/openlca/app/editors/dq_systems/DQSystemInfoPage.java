@@ -27,6 +27,7 @@ import org.openlca.app.util.UI;
 import org.openlca.core.model.DQIndicator;
 import org.openlca.core.model.DQScore;
 import org.openlca.core.model.DQSystem;
+import org.openlca.core.model.ModelType;
 
 class DQSystemInfoPage extends ModelPage<DQSystem> {
 
@@ -59,6 +60,7 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 		body = UI.formBody(form, toolkit);
 		InfoSection infoSection = new InfoSection(getEditor());
 		infoSection.render(body, toolkit);
+		createDropComponent(M.Source, "source", ModelType.SOURCE, infoSection.getContainer());
 		createAdditionalInfo(body);
 		body.setFocus();
 		form.reflow(true);
