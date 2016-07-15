@@ -101,9 +101,9 @@ public class ProcessFigure extends Figure {
 		int y = loc.y + 10;
 		int w = 20;
 		int h = (size.height - 20) / dqResult.processSystem.indicators.size();
-		int[] values = dqResult.get(processNode.process);
+		double[] values = dqResult.get(processNode.process);
 		for (int i = 0; i < values.length; i++) {
-			Color color = DQUIHelper.getColor(values[i], dqResult.processSystem.getScoreCount());
+			Color color = DQUIHelper.getColor(values[i], dqResult.processSystem.getScoreCount(), dqResult.rounding);
 			g.setBackgroundColor(color);
 			g.drawRectangle(x, y, w, h);
 			g.fillRectangle(x + 1, y + 1, w - 1, h - 1);

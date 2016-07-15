@@ -5,13 +5,9 @@ import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.BaseLabelProvider;
-import org.eclipse.jface.viewers.ITableColorProvider;
-import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -144,10 +140,14 @@ public class TotalImpactResultPage extends FormPage {
 		}
 	}
 
-	private class LabelProvider extends BaseLabelProvider implements ITableLabelProvider, ITableColorProvider {
+	private class LabelProvider extends DQLabelProvider {
+
+		LabelProvider() {
+			super(dqResult, 6);
+		}
 
 		@Override
-		public Image getColumnImage(Object element, int columnIndex) {
+		public Image getImage(Object element, int columnIndex) {
 			if (columnIndex > 0)
 				return null;
 			if (!(element instanceof Triple))
@@ -157,7 +157,7 @@ public class TotalImpactResultPage extends FormPage {
 		}
 
 		@Override
-		public String getColumnText(Object element, int columnIndex) {
+		public String getText(Object element, int columnIndex) {
 			if (!(element instanceof Triple))
 				return null;
 			Triple triple = (Triple) element;
@@ -181,11 +181,7 @@ public class TotalImpactResultPage extends FormPage {
 				String unit = impact.getReferenceUnit();
 				return value + " " + unit;
 			default:
-				if (columnIndex < 6)
-					return null;
-				int pos = columnIndex - 6;
-				int[] quality = dqResult.get(impact);
-				return DQUIHelper.getLabel(pos, quality);
+				return null;
 			}
 		}
 
@@ -206,17 +202,12 @@ public class TotalImpactResultPage extends FormPage {
 				String unit = impact.getReferenceUnit();
 				return value + " " + unit;
 			default:
-				if (columnIndex < 6)
-					return null;
-				int pos = columnIndex - 6;
-				int[] quality = dqResult.get(process, impact);
-				return DQUIHelper.getLabel(pos, quality);
+				return null;
 			}
 		}
 
 		private String getFlowText(Triple triple, int columnIndex) {
 			FlowDescriptor flow = triple.flow;
-			ProcessDescriptor process = triple.process;
 			ImpactCategoryDescriptor impact = triple.impactCategory;
 			switch (columnIndex) {
 			case 0:
@@ -236,16 +227,7 @@ public class TotalImpactResultPage extends FormPage {
 				String unit3 = impact.getReferenceUnit();
 				return value3 + " " + unit3;
 			default:
-				if (columnIndex < 6)
-					return null;
-				int pos = columnIndex - 6;
-				int[] quality = null;
-				if (process != null) {
-					quality = dqResult.get(process, flow);
-				} else {
-					quality = dqResult.get(flow, impact);
-				}
-				return DQUIHelper.getLabel(pos, quality);
+				return null;
 			}
 		}
 
@@ -265,33 +247,18 @@ public class TotalImpactResultPage extends FormPage {
 		}
 
 		@Override
-		public Color getBackground(Object element, int columnIndex) {
-			if (columnIndex < 6)
-				return null;
-			if (!(element instanceof Triple))
-				return null;
-			Triple triple = (Triple) element;
+		protected double[] getQuality(Object obj) {
+			Triple triple = (Triple) obj;
 			BaseDescriptor elem = triple.getLast();
-			int[] quality = null;
-			if (elem instanceof ImpactCategoryDescriptor) {
-				quality = dqResult.get(triple.impactCategory);
-			} else if (elem instanceof ProcessDescriptor) {
-				quality = dqResult.get(triple.process, triple.impactCategory);
-			} else if (elem instanceof FlowDescriptor) {
-				if (triple.process == null)
-					quality = dqResult.get(triple.flow, triple.impactCategory);
-				else
-					quality = dqResult.get(triple.process, triple.flow);
-			}
-			int pos = columnIndex - 6;
-			if (quality == null)
+			if (elem instanceof ImpactCategoryDescriptor)
+				return dqResult.get(triple.impactCategory);
+			if (elem instanceof ProcessDescriptor)
+				return dqResult.get(triple.process, triple.impactCategory);
+			if (!(elem instanceof FlowDescriptor))
 				return null;
-			return DQUIHelper.getColor(quality[pos], dqResult.exchangeSystem.getScoreCount());
-		}
-
-		@Override
-		public Color getForeground(Object element, int columnIndex) {
-			return null;
+			if (triple.process == null)
+				return dqResult.get(triple.flow, triple.impactCategory);
+			return dqResult.get(triple.process, triple.flow);
 		}
 
 	}

@@ -7,14 +7,10 @@ import java.util.function.Function;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.BaseLabelProvider;
-import org.eclipse.jface.viewers.ITableColorProvider;
-import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
@@ -97,6 +93,7 @@ public class TotalFlowResultPage extends FormPage {
 		}
 		Trees.bindColumnWidths(viewer.getTree(), DQUIHelper.MIN_COL_WIDTH, widths);
 		Actions.bind(viewer, TreeClipboard.onCopy(viewer));
+		viewer.getTree().setToolTipText("asd");
 		return viewer;
 	}
 
@@ -151,10 +148,14 @@ public class TotalFlowResultPage extends FormPage {
 
 	}
 
-	private class Label extends BaseLabelProvider implements ITableLabelProvider, ITableColorProvider {
+	private class Label extends DQLabelProvider {
+
+		Label() {
+			super(dqResult, 4);
+		}
 
 		@Override
-		public Image getColumnImage(Object obj, int col) {
+		public Image getImage(Object obj, int col) {
 			if (col != 0)
 				return null;
 			if (obj instanceof FlowDescriptor) {
@@ -168,7 +169,7 @@ public class TotalFlowResultPage extends FormPage {
 		}
 
 		@Override
-		public String getColumnText(Object obj, int col) {
+		public String getText(Object obj, int col) {
 			if (obj instanceof FlowDescriptor)
 				return getFlowColumnText((FlowDescriptor) obj, col);
 			if (obj instanceof ContributionWrapper)
@@ -190,9 +191,7 @@ public class TotalFlowResultPage extends FormPage {
 				String unit = Labels.getRefUnit(flow, cache);
 				return Numbers.format(v) + " " + unit;
 			default:
-				int pos = col - 4;
-				int[] quality = dqResult.get(flow);
-				return DQUIHelper.getLabel(pos, quality);
+				return null;
 			}
 		}
 
@@ -211,32 +210,20 @@ public class TotalFlowResultPage extends FormPage {
 				String unit = Labels.getRefUnit(item.toFlow, cache);
 				return Numbers.format(v) + " " + unit;
 			default:
-				int pos = col - 4;
-				int[] quality = dqResult.get(process, item.toFlow);
-				return DQUIHelper.getLabel(pos, quality);
+				return null;
 			}
 		}
 
 		@Override
-		public Color getBackground(Object obj, int col) {
-			if (col < 4)
-				return null;
-			int pos = col - 4; // column 4 is the first dq column
-			int[] quality = null;
+		protected double[] getQuality(Object obj) {
 			if (obj instanceof FlowDescriptor) {
 				FlowDescriptor flow = (FlowDescriptor) obj;
-				quality = dqResult.get(flow);
-			} else if (obj instanceof ContributionWrapper) {
-				ContributionWrapper item = (ContributionWrapper) obj;
-				quality = dqResult.get(item.contribution.item, item.toFlow);
+				return dqResult.get(flow);
 			}
-			if (quality == null)
-				return null;
-			return DQUIHelper.getColor(quality[pos], dqResult.exchangeSystem.getScoreCount());
-		}
-
-		@Override
-		public Color getForeground(Object element, int col) {
+			if (obj instanceof ContributionWrapper) {
+				ContributionWrapper item = (ContributionWrapper) obj;
+				return dqResult.get(item.contribution.item, item.toFlow);
+			}
 			return null;
 		}
 

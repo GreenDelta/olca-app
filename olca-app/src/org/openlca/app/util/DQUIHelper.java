@@ -1,5 +1,7 @@
 package org.openlca.app.util;
 
+import java.math.RoundingMode;
+
 import org.eclipse.swt.graphics.Color;
 import org.openlca.core.math.data_quality.AggregationType;
 import org.openlca.core.math.data_quality.DQResult;
@@ -8,7 +10,7 @@ import org.openlca.core.model.DQSystem;
 import org.python.google.common.base.Strings;
 
 public class DQUIHelper {
-	
+
 	public static final int MIN_COL_WIDTH = 20;
 
 	public static String[] appendTableHeaders(String[] headers, DQSystem system) {
@@ -45,15 +47,12 @@ public class DQUIHelper {
 		return adjusted;
 	}
 
-	public static String getLabel(int pos, int[] quality) {
-		if (quality == null)
-			return null;
-		if (quality[pos] == 0)
-			return null;
-		return Integer.toString(quality[pos]);
+	public static Color getColor(int value, int total) {
+		return getColor((double) value, total, null);
 	}
 
-	public static Color getColor(int index, int total) {
+	public static Color getColor(double value, int total, RoundingMode rounding) {
+		int index = (int) (rounding == RoundingMode.CEILING ? Math.ceil(value) : Math.round(value));
 		if (index == 0)
 			return Colors.white();
 		if (index == 1)

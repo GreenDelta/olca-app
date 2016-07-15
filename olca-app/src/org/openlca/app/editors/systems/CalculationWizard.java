@@ -1,6 +1,7 @@
 package org.openlca.app.editors.systems;
 
 import java.lang.reflect.InvocationTargetException;
+import java.math.RoundingMode;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -165,7 +166,9 @@ class CalculationWizard extends Wizard {
 			log.trace("calculation done, open editor");
 			FullResultProvider resultProvider = new FullResultProvider(result,
 					Cache.getEntityCache());
-			DQResult dqResult = DQResult.calculate(Database.get(), result, aggregationType, productSystem.getId());
+			RoundingMode rounding = RoundingMode.HALF_UP;
+			DQResult dqResult = DQResult.calculate(Database.get(), result, aggregationType, rounding,
+					productSystem.getId());
 			ResultEditorInput input = getEditorInput(resultProvider, setup,
 					null, dqResult);
 			Editors.open(input, AnalyzeEditor.ID);
@@ -180,7 +183,9 @@ class CalculationWizard extends Wizard {
 			log.trace("calculation done, open editor");
 			ContributionResultProvider<ContributionResult> resultProvider = new ContributionResultProvider<>(
 					result, Cache.getEntityCache());
-			DQResult dqResult = DQResult.calculate(Database.get(), result, aggregationType, productSystem.getId());
+			RoundingMode rounding = RoundingMode.HALF_UP;
+			DQResult dqResult = DQResult.calculate(Database.get(), result, aggregationType, rounding,
+					productSystem.getId());
 			ResultEditorInput input = getEditorInput(resultProvider, setup,
 					null, dqResult);
 			Editors.open(input, QuickResultEditor.ID);
@@ -207,7 +212,8 @@ class CalculationWizard extends Wizard {
 			provider.result = new FullResultProvider(regioResult.result,
 					Cache.getEntityCache());
 			provider.kmlData = regioResult.kmlData;
-			DQResult dqResult = DQResult.calculate(Database.get(), regioResult.result, aggregationType,
+			RoundingMode rounding = RoundingMode.HALF_UP;
+			DQResult dqResult = DQResult.calculate(Database.get(), regioResult.result, aggregationType, rounding,
 					productSystem.getId());
 			ResultEditorInput input = getEditorInput(provider, setup,
 					regioResult.parameterSet, dqResult);

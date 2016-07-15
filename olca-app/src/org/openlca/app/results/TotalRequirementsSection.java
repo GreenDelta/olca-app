@@ -6,11 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.jface.viewers.BaseLabelProvider;
-import org.eclipse.jface.viewers.ITableColorProvider;
-import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -246,10 +242,14 @@ class TotalRequirementsSection {
 
 	}
 
-	private class Label extends BaseLabelProvider implements ITableLabelProvider, ITableColorProvider {
+	private class Label extends DQLabelProvider {
 
 		private ContributionImage costImage = new ContributionImage(
 				UI.shell().getDisplay());
+
+		public Label() {
+			super(dqResult, costs == Costs.NONE ? 4 : 5);
+		}
 
 		@Override
 		public void dispose() {
@@ -258,7 +258,7 @@ class TotalRequirementsSection {
 		}
 
 		@Override
-		public Image getColumnImage(Object obj, int col) {
+		public Image getImage(Object obj, int col) {
 			if (!(obj instanceof Item))
 				return null;
 			switch (col) {
@@ -276,7 +276,7 @@ class TotalRequirementsSection {
 		}
 
 		@Override
-		public String getColumnText(Object obj, int col) {
+		public String getText(Object obj, int col) {
 			if (!(obj instanceof Item))
 				return null;
 			Item item = (Item) obj;
@@ -290,37 +290,18 @@ class TotalRequirementsSection {
 			case 3:
 				return item.unit;
 			case 4:
-				if (costs == Costs.NONE) {
-					if (dqResult != null && dqResult.processSystem != null)
-						return DQUIHelper.getLabel(0, dqResult.get(item.process));
-					return null;
-				}
 				return asCosts(item.costValue);
 			default:
-				int pos = col - (costs == Costs.NONE ? 4 : 5);
-				int[] quality = dqResult.get(item.process);
-				return DQUIHelper.getLabel(pos, quality);
+				return null;
 			}
 		}
 
 		@Override
-		public Color getBackground(Object obj, int col) {
+		protected double[] getQuality(Object obj) {
 			if (!(obj instanceof Item))
 				return null;
-			int firstCol = costs == Costs.NONE ? 4 : 5;
-			if (col < firstCol)
-				return null;
 			Item item = (Item) obj;
-			int pos = col - firstCol; // column 5 is the first dq column
-			int[] quality = dqResult.get(item.process);
-			if (quality == null)
-				return null;
-			return DQUIHelper.getColor(quality[pos], dqResult.processSystem.getScoreCount());
-		}
-
-		@Override
-		public Color getForeground(Object element, int columnIndex) {
-			return null;
+			return dqResult.get(item.process);
 		}
 
 	}
