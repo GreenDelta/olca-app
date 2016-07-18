@@ -19,6 +19,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
 import org.openlca.app.util.Colors;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.DQIndicator;
 import org.openlca.core.model.DQScore;
@@ -33,35 +34,35 @@ public class DataQualityShell extends Shell {
 	private final Double baseUncertainty;
 	private final Consumer<DataQualityShell> onOk;
 	private final Consumer<DataQualityShell> onDelete;
+	private final Consumer<DataQualityShell> onUseUncertainties;
 	private Text baseUncertaintyText;
 	private Text valueLabel;
 
 	public static DataQualityShell withoutUncertainty(Shell parent, DQSystem system, String dqEntry,
-			Consumer<DataQualityShell> onOk,
-			Consumer<DataQualityShell> onDelete) {
-		return new DataQualityShell(parent, system, dqEntry, null, onOk, onDelete, false);
+			Consumer<DataQualityShell> onOk, Consumer<DataQualityShell> onDelete) {
+		return new DataQualityShell(parent, system, dqEntry, null, onOk, onDelete, null);
 	}
 
 	public static DataQualityShell withUncertainty(Shell parent, DQSystem system, String dqEntry,
-			Double baseUncertainty,
-			Consumer<DataQualityShell> onOk,
-			Consumer<DataQualityShell> onDelete) {
-		return new DataQualityShell(parent, system, dqEntry, baseUncertainty, onOk, onDelete, system.hasUncertainties);
+			Double baseUncertainty, Consumer<DataQualityShell> onOk, Consumer<DataQualityShell> onDelete,
+			Consumer<DataQualityShell> onUseUncertainties) {
+		return new DataQualityShell(parent, system, dqEntry, baseUncertainty, onOk, onDelete, onUseUncertainties);
 	}
 
 	private DataQualityShell(Shell parent, DQSystem system, String dqEntry, Double baseUncertainty,
-			Consumer<DataQualityShell> onOk,
-			Consumer<DataQualityShell> onDelete, boolean withUncertainty) {
+			Consumer<DataQualityShell> onOk, Consumer<DataQualityShell> onDelete,
+			Consumer<DataQualityShell> onUseUncertainties) {
 		super(parent, SWT.TITLE | SWT.RESIZE | SWT.CLOSE | SWT.APPLICATION_MODAL);
 		this.system = system;
 		this.dqEntry = dqEntry;
 		this.baseUncertainty = baseUncertainty;
 		this.onOk = onOk;
 		this.onDelete = onDelete;
+		this.onUseUncertainties = onUseUncertainties;
 		setLayout(new FillLayout(SWT.HORIZONTAL));
-		create(withUncertainty);
+		create();
 		setText(M.PedigreeMatrix);
-		setSize(830, 700);
+		setSize(830, 750);
 		// pack();
 		initSelection();
 		UI.center(parent, this);
@@ -112,7 +113,7 @@ public class DataQualityShell extends Shell {
 		return null;
 	}
 
-	private void create(boolean withUncertainty) {
+	private void create() {
 		ScrolledForm form = toolkit.createScrolledForm(this);
 		Composite root = form.getBody();
 		UI.gridLayout(root, 1);
@@ -120,7 +121,7 @@ public class DataQualityShell extends Shell {
 		createSeparator(root);
 		createContent(root);
 		createSeparator(root);
-		createFooter(root, withUncertainty);
+		createFooter(root);
 	}
 
 	private void createContent(Composite root) {
@@ -175,26 +176,39 @@ public class DataQualityShell extends Shell {
 		toolkit.paintBordersFor(sep);
 	}
 
-	private void createFooter(Composite root, boolean withUncertainty) {
-		Composite composite = toolkit.createComposite(root);
-		UI.gridLayout(composite, withUncertainty ? 7 : 3);
+	private void createFooter(Composite root) {
+		if (onUseUncertainties != null) {
+			createUncertaintyFields(root);
+		}
+		createButtons(root);
+	}
+
+	private void createUncertaintyFields(Composite parent) {
+		Composite composite = toolkit.createComposite(parent);
+		UI.gridLayout(composite, 5);
+		UI.gridData(composite, true, false);
+		toolkit.paintBordersFor(composite);
+		toolkit.createLabel(composite, M.BaseUncertainty + ": ");
+		baseUncertaintyText = toolkit.createText(composite, "1.0");
+		UI.gridData(baseUncertaintyText, false, false).widthHint = 80;
+		baseUncertaintyText.addModifyListener((e) -> calculateSigmaG());
+		toolkit.createLabel(composite, "\u03c3g: ");
+		valueLabel = toolkit.createText(composite, "", SWT.NONE);
+		valueLabel.setEditable(false);
+		UI.gridData(valueLabel, true, false);
+		Button button = new Button(composite, SWT.NONE);
+		button.setText("Use as uncertainty value");
+		Controls.onSelect(button, (e) -> {
+			onUseUncertainties.accept(this);
+		});
+	}
+
+	private void createButtons(Composite parent) {
+		Composite composite = toolkit.createComposite(parent);
+		UI.gridLayout(composite, 3);
 		GridData gd = UI.gridData(composite, true, false);
 		gd.horizontalAlignment = SWT.END;
 		toolkit.paintBordersFor(composite);
-		if (withUncertainty) {
-			toolkit.createLabel(composite, M.BaseUncertainty + ": ");
-			baseUncertaintyText = toolkit.createText(composite, "1.0");
-			UI.gridData(baseUncertaintyText, false, false).widthHint = 80;
-			baseUncertaintyText.addModifyListener((e) -> calculateSigmaG());
-			toolkit.createLabel(composite, "\u03c3g: ");
-			valueLabel = toolkit.createText(composite, "", SWT.NONE);
-			valueLabel.setEditable(false);
-			UI.gridData(valueLabel, true, false);
-		}
-		createButtons(composite);
-	}
-
-	private void createButtons(Composite composite) {
 		Button okBtn = toolkit.createButton(composite, M.OK, SWT.NONE);
 		UI.gridData(okBtn, false, false).widthHint = 60;
 		okBtn.addSelectionListener(new DataQualityFinishHandler(this, onOk));
@@ -210,9 +224,9 @@ public class DataQualityShell extends Shell {
 		UI.gridData(cancelBtn, false, false).widthHint = 60;
 	}
 
-	void calculateSigmaG() {
+	public double calculateSigmaG() {
 		if (baseUncertaintyText == null)
-			return;
+			return 0;
 		String baseFactorText = baseUncertaintyText.getText();
 		try {
 			double baseFactor = Double.parseDouble(baseFactorText);
@@ -221,9 +235,11 @@ public class DataQualityShell extends Shell {
 			baseUncertaintyText.setBackground(getDisplay().getSystemColor(
 					SWT.COLOR_WHITE));
 			baseUncertaintyText.setToolTipText(null);
+			return sigma;
 		} catch (Exception e) {
 			baseUncertaintyText.setBackground(Colors.errorColor());
 			baseUncertaintyText.setToolTipText(M.InvalidValue);
+			return 0;
 		}
 	}
 
