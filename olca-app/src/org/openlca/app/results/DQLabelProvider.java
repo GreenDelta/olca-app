@@ -10,6 +10,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.openlca.app.util.DQUIHelper;
 import org.openlca.core.math.data_quality.DQResult;
+import org.openlca.core.model.DQSystem;
 
 abstract class DQLabelProvider extends ColumnLabelProvider implements ITableLabelProvider, ITableColorProvider {
 
@@ -36,7 +37,7 @@ abstract class DQLabelProvider extends ColumnLabelProvider implements ITableLabe
 	protected Color getForegroundColor(Object element, int col) {
 		return null;
 	}
-	
+
 	protected String getToolTipText(Object element, int col) {
 		return null;
 	}
@@ -55,7 +56,7 @@ abstract class DQLabelProvider extends ColumnLabelProvider implements ITableLabe
 		cell.setForeground(getForeground(obj, col));
 		cell.setBackground(getBackground(obj, col));
 	}
-	
+
 	@Override
 	public String getToolTipText(Object element) {
 		return super.getToolTipText(element);
@@ -79,7 +80,8 @@ abstract class DQLabelProvider extends ColumnLabelProvider implements ITableLabe
 		if (quality[pos] == 0)
 			return null;
 		double value = quality[pos];
-		int iValue = (int) (dataQualityResult.rounding == RoundingMode.CEILING ? Math.ceil(value) : Math.round(value));
+		RoundingMode roundingMode = dataQualityResult.setup.roundingMode;
+		int iValue = (int) (roundingMode == RoundingMode.CEILING ? Math.ceil(value) : Math.round(value));
 		return Integer.toString(iValue);
 	}
 
@@ -91,8 +93,8 @@ abstract class DQLabelProvider extends ColumnLabelProvider implements ITableLabe
 		double[] quality = getQuality(element);
 		if (quality == null)
 			return null;
-		return DQUIHelper
-				.getColor(quality[pos], dataQualityResult.exchangeSystem.getScoreCount(), dataQualityResult.rounding);
+		DQSystem system = dataQualityResult.setup.exchangeDqSystem;
+		return DQUIHelper.getColor(quality[pos], system.getScoreCount(), dataQualityResult.setup.roundingMode);
 	}
 
 	@Override

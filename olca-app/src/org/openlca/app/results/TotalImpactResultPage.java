@@ -110,7 +110,7 @@ public class TotalImpactResultPage extends FormPage {
 		viewer.getTree().setHeaderVisible(true);
 		String[] properties = COLUMN_LABELS;
 		if (DQUIHelper.displayExchangeQuality(dqResult)) {
-			properties = DQUIHelper.appendTableHeaders(properties, dqResult.exchangeSystem);
+			properties = DQUIHelper.appendTableHeaders(properties, dqResult.setup.exchangeDqSystem);
 		}
 		for (int i = 0; i < properties.length; i++) {
 			TreeColumn c = new TreeColumn(viewer.getTree(), SWT.NULL);
@@ -125,7 +125,7 @@ public class TotalImpactResultPage extends FormPage {
 		createColumnSorters(labelProvider);
 		double[] widths = { .35, .15, .2, .10, .10, .10 };
 		if (DQUIHelper.displayExchangeQuality(dqResult)) {
-			widths = DQUIHelper.adjustTableWidths(widths, dqResult.exchangeSystem);
+			widths = DQUIHelper.adjustTableWidths(widths, dqResult.setup.exchangeDqSystem);
 		}
 		Trees.bindColumnWidths(viewer.getTree(), widths);
 		setInput();
@@ -134,7 +134,7 @@ public class TotalImpactResultPage extends FormPage {
 	private void createColumnSorters(LabelProvider p) {
 		Viewers.sortByLabels(viewer, p, 0, 1, 2, 3, 4, 5);
 		if (DQUIHelper.displayExchangeQuality(dqResult)) {
-			for (int i = 0; i < dqResult.exchangeSystem.indicators.size(); i++) {
+			for (int i = 0; i < dqResult.setup.exchangeDqSystem.indicators.size(); i++) {
 				Viewers.sortByDouble(viewer, p, i + 6);
 			}
 		}
@@ -258,7 +258,9 @@ public class TotalImpactResultPage extends FormPage {
 				return null;
 			if (triple.process == null)
 				return dqResult.get(triple.flow, triple.impactCategory);
-			return dqResult.get(triple.process, triple.flow);
+			return dqResult.get(triple.process, triple.flow); // TODO check if
+																// this is
+																// correct
 		}
 
 	}

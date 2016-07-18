@@ -75,11 +75,11 @@ public class DQUIHelper {
 	public static boolean displayProcessQuality(DQResult result) {
 		if (result == null)
 			return false;
-		if (result.processSystem == null)
+		if (result.setup.processDqSystem == null)
 			return false;
-		if (result.processSystem.indicators.isEmpty())
+		if (result.setup.processDqSystem.indicators.isEmpty())
 			return false;
-		if (result.processSystem.getScoreCount() == 0)
+		if (result.setup.processDqSystem.getScoreCount() == 0)
 			return false;
 		return true;
 	}
@@ -91,13 +91,13 @@ public class DQUIHelper {
 	public static boolean displayExchangeQuality(DQResult result, boolean ignoreAggregationType) {
 		if (result == null)
 			return false;
-		if (result.exchangeSystem == null)
+		if (result.setup.exchangeDqSystem == null)
 			return false;
-		if (result.exchangeSystem.indicators.isEmpty())
+		if (result.setup.exchangeDqSystem.indicators.isEmpty())
 			return false;
-		if (result.exchangeSystem.getScoreCount() == 0)
+		if (result.setup.exchangeDqSystem.getScoreCount() == 0)
 			return false;
-		if (!ignoreAggregationType && result.aggregationType == AggregationType.NONE)
+		if (!ignoreAggregationType && result.setup.aggregationType == AggregationType.NONE)
 			return false;
 		return true;
 	}

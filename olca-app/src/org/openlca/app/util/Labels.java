@@ -7,6 +7,7 @@ import org.openlca.app.db.Database;
 import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.math.data_quality.AggregationType;
+import org.openlca.core.math.data_quality.ProcessingType;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Currency;
@@ -360,6 +361,19 @@ public class Labels {
 			return "#Maximum";
 		case NONE:
 			return "#None";
+		default:
+			return null;
+		}
+	}
+
+	public static String processingType(ProcessingType type) {
+		if (type == null)
+			return null;
+		switch (type) {
+		case EXCLUDE:
+			return "#Exclude value";
+		case USE_MAX:
+			return "#Use maximum value";
 		default:
 			return null;
 		}

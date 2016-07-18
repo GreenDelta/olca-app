@@ -179,9 +179,7 @@ public class DataQualityShell extends Shell {
 		Composite composite = toolkit.createComposite(root);
 		UI.gridLayout(composite, withUncertainty ? 7 : 3);
 		GridData gd = UI.gridData(composite, true, false);
-		if (!withUncertainty) {
-			gd.horizontalAlignment = SWT.END;
-		}
+		gd.horizontalAlignment = SWT.END;
 		toolkit.paintBordersFor(composite);
 		if (withUncertainty) {
 			toolkit.createLabel(composite, M.BaseUncertainty + ": ");

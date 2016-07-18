@@ -23,7 +23,9 @@ import org.openlca.app.util.UI;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.SystemCalculator;
 import org.openlca.core.math.data_quality.AggregationType;
+import org.openlca.core.math.data_quality.DQCalculationSetup;
 import org.openlca.core.math.data_quality.DQResult;
+import org.openlca.core.math.data_quality.ProcessingType;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.BaseDescriptor;
@@ -73,10 +75,10 @@ class CalculationWizard extends Wizard {
 	public boolean performFinish() {
 		CalculationSetup setup = calculationPage.getSetup();
 		CalculationType type = calculationPage.getCalculationType();
-		AggregationType aggregationType = calculationPage.getAggregationType();
-		saveDefaults(setup, type);
+		DQCalculationSetup dqSetup = calculationPage.getDqSetup();
+		saveDefaults(setup, dqSetup, type);
 		try {
-			Calculation calculation = new Calculation(setup, type, aggregationType);
+			Calculation calculation = new Calculation(setup, type, dqSetup);
 			getContainer().run(true, true, calculation);
 			if (calculation.outOfMemory)
 				MemoryError.show();
@@ -87,8 +89,8 @@ class CalculationWizard extends Wizard {
 		}
 	}
 
-	private ResultEditorInput getEditorInput(Object result,
-			CalculationSetup setup, ParameterSet parameterSet, DQResult dqResult) {
+	private ResultEditorInput getEditorInput(Object result, CalculationSetup setup, ParameterSet parameterSet,
+			DQResult dqResult) {
 		String resultKey = Cache.getAppCache().put(result);
 		String setupKey = Cache.getAppCache().put(setup);
 		String dqResultKey = null;
@@ -97,11 +99,10 @@ class CalculationWizard extends Wizard {
 		String parameterSetKey = null;
 		if (parameterSet != null)
 			parameterSetKey = Cache.getAppCache().put(parameterSet);
-		return new ResultEditorInput(setup.productSystem.getId(), resultKey,
-				setupKey, parameterSetKey, dqResultKey);
+		return new ResultEditorInput(setup.productSystem.getId(), resultKey, setupKey, parameterSetKey, dqResultKey);
 	}
 
-	private void saveDefaults(CalculationSetup setup, CalculationType type) {
+	private void saveDefaults(CalculationSetup setup, DQCalculationSetup dqSetup, CalculationType type) {
 		if (setup == null)
 			return;
 		AllocationMethod am = setup.allocationMethod;
@@ -113,24 +114,38 @@ class CalculationWizard extends Wizard {
 		BaseDescriptor nws = setup.nwSet;
 		String nwsVal = nws == null ? "" : nws.getRefId();
 		Preferences.set("calc.nwset", nwsVal);
+		saveDefault(CalculationType.class, type);
+		Preferences.set("calc.numberOfRuns", Integer.toString(setup.numberOfRuns));
+		Preferences.set("calc.costCalculation", Boolean.toString(setup.withCosts));
+		if (dqSetup == null) {
+			Preferences.set("calc.dqAssessment", "false");
+			return;
+		}
+		Preferences.set("calc.dqAssessment", "true");
+		saveDefault(AggregationType.class, dqSetup.aggregationType);
+		saveDefault(ProcessingType.class, dqSetup.processingType);
+		saveDefault(RoundingMode.class, dqSetup.roundingMode);
+	}
+
+	private <T extends Enum<T>> void saveDefault(Class<T> clazz, T value) {
+		Preferences.set("calc." + clazz.getSimpleName(), value == null ? null : value.name());
 	}
 
 	private class Calculation implements IRunnableWithProgress {
 
 		private CalculationSetup setup;
 		private CalculationType type;
-		private AggregationType aggregationType;
+		private DQCalculationSetup dqSetup;
 		private boolean outOfMemory;
 
-		public Calculation(CalculationSetup setup, CalculationType type, AggregationType aggregationType) {
+		public Calculation(CalculationSetup setup, CalculationType type, DQCalculationSetup dqSetup) {
 			this.setup = setup;
 			this.type = type;
-			this.aggregationType = aggregationType;
+			this.dqSetup = dqSetup;
 		}
 
 		@Override
-		public void run(IProgressMonitor monitor)
-				throws InvocationTargetException, InterruptedException {
+		public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 			outOfMemory = false;
 			monitor.beginTask(M.RunCalculation, IProgressMonitor.UNKNOWN);
 			int size = productSystem.getProcesses().size();
@@ -160,64 +175,48 @@ class CalculationWizard extends Wizard {
 
 		private void analyse() {
 			log.trace("run analysis");
-			SystemCalculator calculator = new SystemCalculator(
-					Cache.getMatrixCache(), App.getSolver());
+			SystemCalculator calculator = new SystemCalculator(Cache.getMatrixCache(), App.getSolver());
 			FullResult result = calculator.calculateFull(setup);
 			log.trace("calculation done, open editor");
-			FullResultProvider resultProvider = new FullResultProvider(result,
-					Cache.getEntityCache());
-			RoundingMode rounding = RoundingMode.HALF_UP;
-			DQResult dqResult = DQResult.calculate(Database.get(), result, aggregationType, rounding,
-					productSystem.getId());
-			ResultEditorInput input = getEditorInput(resultProvider, setup,
-					null, dqResult);
+			FullResultProvider resultProvider = new FullResultProvider(result, Cache.getEntityCache());
+			DQResult dqResult = DQResult.calculate(Database.get(), result, dqSetup);
+			ResultEditorInput input = getEditorInput(resultProvider, setup, null, dqResult);
 			Editors.open(input, AnalyzeEditor.ID);
 		}
 
 		private void solve() {
 			log.trace("run quick calculation");
-			SystemCalculator calculator = new SystemCalculator(
-					Cache.getMatrixCache(), App.getSolver());
-			ContributionResult result = calculator
-					.calculateContributions(setup);
+			SystemCalculator calculator = new SystemCalculator(Cache.getMatrixCache(), App.getSolver());
+			ContributionResult result = calculator.calculateContributions(setup);
 			log.trace("calculation done, open editor");
-			ContributionResultProvider<ContributionResult> resultProvider = new ContributionResultProvider<>(
-					result, Cache.getEntityCache());
-			RoundingMode rounding = RoundingMode.HALF_UP;
-			DQResult dqResult = DQResult.calculate(Database.get(), result, aggregationType, rounding,
-					productSystem.getId());
-			ResultEditorInput input = getEditorInput(resultProvider, setup,
-					null, dqResult);
+			ContributionResultProvider<ContributionResult> resultProvider = new ContributionResultProvider<>(result,
+					Cache.getEntityCache());
+			DQResult dqResult = DQResult.calculate(Database.get(), result, dqSetup);
+			ResultEditorInput input = getEditorInput(resultProvider, setup, null, dqResult);
 			Editors.open(input, QuickResultEditor.ID);
 		}
 
 		private void simulate() {
 			log.trace("init Monte Carlo Simulation");
-			SimulationInit init = new SimulationInit(setup,
-					Cache.getMatrixCache());
+			SimulationInit init = new SimulationInit(setup, Cache.getMatrixCache());
 			init.run();
 		}
 
 		private void calcRegionalized() {
 			log.trace("calculate regionalized result");
-			RegionalizedCalculator calculator = new RegionalizedCalculator(
-					setup, App.getSolver());
-			RegionalizedResult regioResult = calculator.calculate(
-					Database.get(), Cache.getMatrixCache());
+			RegionalizedCalculator calculator = new RegionalizedCalculator(setup, App.getSolver());
+			RegionalizedResult regioResult = calculator.calculate(Database.get(), Cache.getMatrixCache());
 			if (regioResult == null) {
 				Info.showBox("No regionalized information available for this system");
 				return;
 			}
 			RegionalizedResultProvider provider = new RegionalizedResultProvider();
-			provider.result = new FullResultProvider(regioResult.result,
-					Cache.getEntityCache());
+			provider.result = new FullResultProvider(regioResult.result, Cache.getEntityCache());
 			provider.kmlData = regioResult.kmlData;
-			RoundingMode rounding = RoundingMode.HALF_UP;
-			DQResult dqResult = DQResult.calculate(Database.get(), regioResult.result, aggregationType, rounding,
-					productSystem.getId());
-			ResultEditorInput input = getEditorInput(provider, setup,
-					regioResult.parameterSet, dqResult);
+			DQResult dqResult = DQResult.calculate(Database.get(), regioResult.result, dqSetup);
+			ResultEditorInput input = getEditorInput(provider, setup, regioResult.parameterSet, dqResult);
 			Editors.open(input, RegionalizedResultEditor.ID);
 		}
+
 	}
 }

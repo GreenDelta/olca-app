@@ -20,6 +20,7 @@ import org.openlca.app.util.DQUIHelper;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.core.math.data_quality.DQResult;
+import org.openlca.core.model.DQSystem;
 import org.openlca.util.Strings;
 
 public class ProcessFigure extends Figure {
@@ -100,10 +101,11 @@ public class ProcessFigure extends Figure {
 		int x = loc.x + size.width - 30;
 		int y = loc.y + 10;
 		int w = 20;
-		int h = (size.height - 20) / dqResult.processSystem.indicators.size();
+		DQSystem system = dqResult.setup.processDqSystem;
+		int h = (size.height - 20) / system.indicators.size();
 		double[] values = dqResult.get(processNode.process);
 		for (int i = 0; i < values.length; i++) {
-			Color color = DQUIHelper.getColor(values[i], dqResult.processSystem.getScoreCount(), dqResult.rounding);
+			Color color = DQUIHelper.getColor(values[i], system.getScoreCount(), dqResult.setup.roundingMode);
 			g.setBackgroundColor(color);
 			g.drawRectangle(x, y, w, h);
 			g.fillRectangle(x + 1, y + 1, w - 1, h - 1);

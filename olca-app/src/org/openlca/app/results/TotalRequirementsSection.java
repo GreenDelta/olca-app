@@ -79,7 +79,7 @@ class TotalRequirementsSection {
 			Viewers.sortByDouble(table, (Item i) -> i.costValue, 4);
 		if (DQUIHelper.displayProcessQuality(dqResult)) {
 			int startCol = costs == Costs.NONE ? 4 : 5;
-			for (int i = 0; i < dqResult.processSystem.indicators.size(); i++) {
+			for (int i = 0; i < dqResult.setup.processDqSystem.indicators.size(); i++) {
 				Viewers.sortByDouble(table, label, i + startCol);
 			}
 		}
@@ -130,7 +130,7 @@ class TotalRequirementsSection {
 		String[] columnLabels = b.toArray(new String[b.size()]);
 		if (!DQUIHelper.displayProcessQuality(dqResult))
 			return columnLabels;
-		return DQUIHelper.appendTableHeaders(columnLabels, dqResult.processSystem);
+		return DQUIHelper.appendTableHeaders(columnLabels, dqResult.setup.processDqSystem);
 	}
 
 	private double[] columnWidths() {
@@ -141,7 +141,7 @@ class TotalRequirementsSection {
 			widths = new double[] { .4, .2, .2, .1, .1 };
 		if (!DQUIHelper.displayProcessQuality(dqResult))
 			return widths;
-		return DQUIHelper.adjustTableWidths(widths, dqResult.processSystem);
+		return DQUIHelper.adjustTableWidths(widths, dqResult.setup.processDqSystem);
 	}
 
 	private List<Item> createItems() {

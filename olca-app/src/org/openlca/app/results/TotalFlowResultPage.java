@@ -79,7 +79,7 @@ public class TotalFlowResultPage extends FormPage {
 		UI.gridLayout(composite, 1);
 		String[] headers = new String[] { M.Name, M.Category, M.SubCategory, M.Amount };
 		if (DQUIHelper.displayExchangeQuality(dqResult)) {
-			headers = DQUIHelper.appendTableHeaders(headers, dqResult.exchangeSystem);
+			headers = DQUIHelper.appendTableHeaders(headers, dqResult.setup.exchangeDqSystem);
 		}
 		TreeViewer viewer = Trees.createViewer(composite, headers);
 		Label label = new Label();
@@ -89,7 +89,7 @@ public class TotalFlowResultPage extends FormPage {
 		createColumnSorters(viewer, label);
 		double[] widths = { .4, .2, .2, .2 };
 		if (DQUIHelper.displayExchangeQuality(dqResult)) {
-			widths = DQUIHelper.adjustTableWidths(widths, dqResult.exchangeSystem);
+			widths = DQUIHelper.adjustTableWidths(widths, dqResult.setup.exchangeDqSystem);
 		}
 		Trees.bindColumnWidths(viewer.getTree(), DQUIHelper.MIN_COL_WIDTH, widths);
 		Actions.bind(viewer, TreeClipboard.onCopy(viewer));
@@ -105,7 +105,7 @@ public class TotalFlowResultPage extends FormPage {
 		};
 		Viewers.sortByDouble(viewer, amount, 4);
 		if (DQUIHelper.displayExchangeQuality(dqResult)) {
-			for (int i = 0; i < dqResult.exchangeSystem.indicators.size(); i++) {
+			for (int i = 0; i < dqResult.setup.exchangeDqSystem.indicators.size(); i++) {
 				Viewers.sortByDouble(viewer, label, i + 5);
 			}
 		}

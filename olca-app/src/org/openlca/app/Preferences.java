@@ -24,7 +24,7 @@ public final class Preferences extends AbstractPreferenceInitializer {
 	public static void init() {
 		Logger log = LoggerFactory.getLogger(Preferences.class);
 		log.trace("init preferences");
-		IPreferenceStore store = RcpActivator.getDefault().getPreferenceStore();
+		IPreferenceStore store = getStore();
 		int acc = store.getDefaultInt(NUMBER_ACCURACY);
 		Numbers.setDefaultAccuracy(acc);
 		log.trace("preference {} = {}", NUMBER_ACCURACY, acc);
