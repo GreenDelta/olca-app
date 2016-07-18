@@ -5,7 +5,12 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.function.Consumer;
 
+import org.eclipse.jface.viewers.CellLabelProvider;
+import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
+import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.TreeViewerColumn;
+import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
@@ -37,23 +42,36 @@ import org.openlca.core.model.descriptors.BaseDescriptor;
 public class Trees {
 
 	public static TreeViewer createViewer(Composite parent, String[] headers) {
+		return createViewer(parent, headers, null);
+	}
+
+	public static TreeViewer createViewer(Composite parent, String[] headers, IBaseLabelProvider label) {
 		TreeViewer viewer = new TreeViewer(parent, SWT.BORDER | SWT.FULL_SELECTION | SWT.VIRTUAL | SWT.MULTI);
 		viewer.setColumnProperties(headers);
+		if (label != null) {
+			viewer.setLabelProvider(label);
+		}
 		Tree tree = viewer.getTree();
 		tree.setLinesVisible(true);
 		tree.setHeaderVisible(true);
-		createColumns(tree, headers);
+		createColumns(viewer, headers, label);
 		GridData data = UI.gridData(tree, true, true);
 		data.minimumHeight = 150;
 		return viewer;
 	}
 
-	private static void createColumns(Tree tree, String[] labels) {
-		for (String label : labels) {
-			TreeColumn c = new TreeColumn(tree, SWT.NULL);
-			c.setText(label);
+	private static void createColumns(TreeViewer viewer, String[] labels, IBaseLabelProvider labelProvider) {
+		if (labelProvider instanceof CellLabelProvider) {
+			ColumnViewerToolTipSupport.enableFor(viewer, ToolTip.NO_RECREATE);
 		}
-		for (TreeColumn c : tree.getColumns()) {
+		for (String label : labels) {
+			TreeViewerColumn c = new TreeViewerColumn(viewer, SWT.NULL);
+			c.getColumn().setText(label);
+			if (labelProvider instanceof CellLabelProvider) {
+				c.setLabelProvider((CellLabelProvider) labelProvider);
+			}
+		}
+		for (TreeColumn c : viewer.getTree().getColumns()) {
 			c.pack();
 		}
 	}

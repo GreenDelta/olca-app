@@ -81,9 +81,8 @@ public class TotalFlowResultPage extends FormPage {
 		if (DQUIHelper.displayExchangeQuality(dqResult)) {
 			headers = DQUIHelper.appendTableHeaders(headers, dqResult.setup.exchangeDqSystem);
 		}
-		TreeViewer viewer = Trees.createViewer(composite, headers);
 		Label label = new Label();
-		viewer.setLabelProvider(label);
+		TreeViewer viewer = Trees.createViewer(composite, headers, label);
 		viewer.setContentProvider(new ContentProvider());
 		viewer.setFilters(new ViewerFilter[] { new InputOutputFilter(input) });
 		createColumnSorters(viewer, label);
@@ -93,7 +92,6 @@ public class TotalFlowResultPage extends FormPage {
 		}
 		Trees.bindColumnWidths(viewer.getTree(), DQUIHelper.MIN_COL_WIDTH, widths);
 		Actions.bind(viewer, TreeClipboard.onCopy(viewer));
-		viewer.getTree().setToolTipText("asd");
 		return viewer;
 	}
 
@@ -151,7 +149,7 @@ public class TotalFlowResultPage extends FormPage {
 	private class Label extends DQLabelProvider {
 
 		Label() {
-			super(dqResult, 4);
+			super(dqResult, dqResult.setup.exchangeDqSystem, 4);
 		}
 
 		@Override

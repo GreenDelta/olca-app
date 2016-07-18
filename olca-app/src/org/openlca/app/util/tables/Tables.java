@@ -6,7 +6,12 @@ import java.util.TimerTask;
 import java.util.function.Consumer;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.CellLabelProvider;
+import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
+import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
@@ -37,6 +42,10 @@ import org.openlca.core.model.descriptors.BaseDescriptor;
  */
 public class Tables {
 
+	public static TableViewer createViewer(Composite parent, String... properties) {
+		return createViewer(parent, properties, null);
+	}
+
 	/**
 	 * Creates a default table viewer with the given properties. The properties
 	 * are also used to create columns where each column label is the respective
@@ -47,25 +56,34 @@ public class Tables {
 	 * <li>grid data with horizontal and vertical fill
 	 * 
 	 */
-	public static TableViewer createViewer(Composite parent, String... properties) {
+	public static TableViewer createViewer(Composite parent, String[] properties, IBaseLabelProvider labelProvider) {
 		TableViewer viewer = new TableViewer(parent, SWT.BORDER | SWT.FULL_SELECTION | SWT.VIRTUAL | SWT.MULTI);
+		if (labelProvider != null) {
+			viewer.setLabelProvider(labelProvider);
+		}
 		viewer.setContentProvider(new ArrayContentProvider());
 		viewer.setColumnProperties(properties);
 		Table table = viewer.getTable();
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
-		createColumns(table, properties);
+		createColumns(viewer, properties, labelProvider);
 		GridData data = UI.gridData(table, true, true);
 		data.minimumHeight = 150;
 		return viewer;
 	}
 
-	public static void createColumns(Table table, String[] labels) {
-		for (String label : labels) {
-			TableColumn c = new TableColumn(table, SWT.NULL);
-			c.setText(label);
+	private static void createColumns(TableViewer viewer, String[] labels, IBaseLabelProvider labelProvider) {
+		if (labelProvider instanceof CellLabelProvider) {
+			ColumnViewerToolTipSupport.enableFor(viewer, ToolTip.NO_RECREATE);
 		}
-		for (TableColumn c : table.getColumns())
+		for (String label : labels) {
+			TableViewerColumn c = new TableViewerColumn(viewer, SWT.NULL);
+			c.getColumn().setText(label);
+			if (labelProvider instanceof CellLabelProvider) {
+				c.setLabelProvider((CellLabelProvider) labelProvider);
+			}
+		}
+		for (TableColumn c : viewer.getTable().getColumns())
 			c.pack();
 	}
 

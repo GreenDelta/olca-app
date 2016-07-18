@@ -69,10 +69,9 @@ class TotalRequirementsSection {
 		UI.gridData(section, true, true);
 		Composite comp = UI.sectionClient(section, tk);
 		UI.gridLayout(comp, 1);
-		table = Tables.createViewer(comp, columnLabels());
-		Tables.bindColumnWidths(table, DQUIHelper.MIN_COL_WIDTH, columnWidths());
 		Label label = new Label();
-		table.setLabelProvider(label);
+		table = Tables.createViewer(comp, columnLabels(), label);
+		Tables.bindColumnWidths(table, DQUIHelper.MIN_COL_WIDTH, columnWidths());
 		Viewers.sortByLabels(table, label, 0, 1, 3);
 		Viewers.sortByDouble(table, (Item i) -> i.amount, 2);
 		if (costs != Costs.NONE)
@@ -248,7 +247,7 @@ class TotalRequirementsSection {
 				UI.shell().getDisplay());
 
 		public Label() {
-			super(dqResult, costs == Costs.NONE ? 4 : 5);
+			super(dqResult, dqResult.setup.processDqSystem, costs == Costs.NONE ? 4 : 5);
 		}
 
 		@Override

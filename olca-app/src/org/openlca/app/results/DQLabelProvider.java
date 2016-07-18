@@ -1,6 +1,7 @@
 package org.openlca.app.results;
 
 import java.math.RoundingMode;
+import java.util.Collections;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ITableColorProvider;
@@ -10,16 +11,19 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.openlca.app.util.DQUIHelper;
 import org.openlca.core.math.data_quality.DQResult;
+import org.openlca.core.model.DQIndicator;
 import org.openlca.core.model.DQSystem;
 
 abstract class DQLabelProvider extends ColumnLabelProvider implements ITableLabelProvider, ITableColorProvider {
 
-	protected DQResult dataQualityResult;
-	private int startCol = 0;
+	protected final DQResult dataQualityResult;
+	private final DQSystem dqSystem;
+	private final int startCol;
 
-	DQLabelProvider(DQResult result, int startCol) {
-		this.startCol = startCol;
+	DQLabelProvider(DQResult result, DQSystem dqSystem, int startCol) {
 		this.dataQualityResult = result;
+		this.dqSystem = dqSystem;
+		this.startCol = startCol;
 	}
 
 	protected Image getImage(Object element, int col) {
@@ -35,10 +39,6 @@ abstract class DQLabelProvider extends ColumnLabelProvider implements ITableLabe
 	}
 
 	protected Color getForegroundColor(Object element, int col) {
-		return null;
-	}
-
-	protected String getToolTipText(Object element, int col) {
 		return null;
 	}
 
@@ -59,7 +59,19 @@ abstract class DQLabelProvider extends ColumnLabelProvider implements ITableLabe
 
 	@Override
 	public String getToolTipText(Object element) {
-		return super.getToolTipText(element);
+		double[] quality = getQuality(element);
+		if (quality == null)
+			return null;
+		String text = "";
+		Collections.sort(dqSystem.indicators);
+		for (int i = 0; i < dqSystem.indicators.size(); i++) {
+			DQIndicator indicator = dqSystem.indicators.get(i);
+			text += indicator.name + ": " + quality[indicator.position - 1];
+			if (i != dqSystem.indicators.size() - 1) {
+				text += "\n";
+			}
+		}
+		return text;
 	}
 
 	@Override

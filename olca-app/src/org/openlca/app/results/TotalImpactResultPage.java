@@ -7,11 +7,9 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
@@ -102,25 +100,15 @@ public class TotalImpactResultPage extends FormPage {
 	}
 
 	private void createImpactContributionTree(Composite parent) {
-		viewer = new TreeViewer(parent, SWT.FULL_SELECTION | SWT.MULTI | SWT.BORDER);
-		LabelProvider labelProvider = new LabelProvider();
-		viewer.setLabelProvider(labelProvider);
-		viewer.setContentProvider(new ContentProvider());
-		viewer.getTree().setLinesVisible(true);
-		viewer.getTree().setHeaderVisible(true);
 		String[] properties = COLUMN_LABELS;
 		if (DQUIHelper.displayExchangeQuality(dqResult)) {
 			properties = DQUIHelper.appendTableHeaders(properties, dqResult.setup.exchangeDqSystem);
 		}
-		for (int i = 0; i < properties.length; i++) {
-			TreeColumn c = new TreeColumn(viewer.getTree(), SWT.NULL);
-			c.setText(properties[i]);
-			c.pack();
-		}
-		viewer.setColumnProperties(properties);
+		LabelProvider labelProvider = new LabelProvider();
+		viewer = Trees.createViewer(parent, properties, labelProvider);
+		viewer.setContentProvider(new ContentProvider());
 		toolkit.adapt(viewer.getTree(), false, false);
 		toolkit.paintBordersFor(viewer.getTree());
-		UI.gridData(viewer.getTree(), true, true);
 		Actions.bind(viewer, TreeClipboard.onCopy(viewer));
 		createColumnSorters(labelProvider);
 		double[] widths = { .35, .15, .2, .10, .10, .10 };
@@ -143,7 +131,7 @@ public class TotalImpactResultPage extends FormPage {
 	private class LabelProvider extends DQLabelProvider {
 
 		LabelProvider() {
-			super(dqResult, 6);
+			super(dqResult, dqResult.setup.exchangeDqSystem, 6);
 		}
 
 		@Override
