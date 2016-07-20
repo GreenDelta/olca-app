@@ -105,8 +105,7 @@ abstract class DQLabelProvider extends ColumnLabelProvider implements ITableLabe
 		double[] quality = getQuality(element);
 		if (quality == null)
 			return null;
-		DQSystem system = dataQualityResult.setup.exchangeDqSystem;
-		return DQUIHelper.getColor(quality[pos], system.getScoreCount(), dataQualityResult.setup.roundingMode);
+		return DQUIHelper.getColor(quality[pos], dqSystem.getScoreCount(), dataQualityResult.setup.roundingMode);
 	}
 
 	@Override

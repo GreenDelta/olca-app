@@ -131,7 +131,7 @@ public class TotalImpactResultPage extends FormPage {
 	private class LabelProvider extends DQLabelProvider {
 
 		LabelProvider() {
-			super(dqResult, dqResult.setup.exchangeDqSystem, 6);
+			super(dqResult, dqResult != null ? dqResult.setup.exchangeDqSystem : null, 6);
 		}
 
 		@Override

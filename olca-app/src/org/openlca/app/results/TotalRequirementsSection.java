@@ -247,7 +247,7 @@ class TotalRequirementsSection {
 				UI.shell().getDisplay());
 
 		public Label() {
-			super(dqResult, dqResult.setup.processDqSystem, costs == Costs.NONE ? 4 : 5);
+			super(dqResult, dqResult != null ? dqResult.setup.processDqSystem : null, costs == Costs.NONE ? 4 : 5);
 		}
 
 		@Override

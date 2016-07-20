@@ -149,7 +149,7 @@ public class TotalFlowResultPage extends FormPage {
 	private class Label extends DQLabelProvider {
 
 		Label() {
-			super(dqResult, dqResult.setup.exchangeDqSystem, 4);
+			super(dqResult, dqResult != null ? dqResult.setup.exchangeDqSystem : null, 4);
 		}
 
 		@Override

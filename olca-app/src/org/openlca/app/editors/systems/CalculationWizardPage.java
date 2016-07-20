@@ -300,6 +300,7 @@ class CalculationWizardPage extends WizardPage {
 	private DQSystemViewer createDQSystemViewer(Composite parent, String label, int cols) {
 		UI.formLabel(parent, label);
 		DQSystemViewer viewer = new DQSystemViewer(parent);
+		viewer.setNullable(true);
 		GridData gd = (GridData) viewer.getViewer().getTableCombo().getLayoutData();
 		gd.horizontalSpan = cols;
 		return viewer;

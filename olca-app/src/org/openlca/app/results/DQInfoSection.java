@@ -62,6 +62,9 @@ public class DQInfoSection {
 	}
 
 	private void createStatisticsTree(Composite parent, String label, boolean forProcesses) {
+		DQSystem system = forProcesses ? dqResult.setup.processDqSystem : dqResult.setup.exchangeDqSystem;
+		if (system == null)
+			return;
 		UI.formLabel(parent, toolkit, label);
 		UI.formLabel(parent, toolkit, "");
 		String[] headers = { "Indicator", "Coverage" };
@@ -69,7 +72,6 @@ public class DQInfoSection {
 		viewer.setContentProvider(new ContentProvider(forProcesses));
 		viewer.setLabelProvider(new LabelProvider(forProcesses));
 		UI.gridData(viewer.getTree(), true, true).horizontalSpan = 2;
-		DQSystem system = forProcesses ? dqResult.setup.processDqSystem : dqResult.setup.exchangeDqSystem;
 		viewer.setInput(system.indicators);
 	}
 
