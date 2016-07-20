@@ -146,7 +146,7 @@ class CalculationWizardPage extends WizardPage {
 	}
 
 	private void createRadios(Composite parent) {
-		Composite composite = new Composite(parent, SWT.NULL);
+		Composite composite = new Composite(parent, SWT.NO_RADIO_GROUP);
 		CalculationType[] types = getCalculationTypes();
 		UI.gridLayout(composite, types.length, 10, 0);
 		for (CalculationType type : types) {
@@ -252,8 +252,8 @@ class CalculationWizardPage extends WizardPage {
 			createTypeRadio(container, Labels.aggregationType(type), aggregationRadios, type, 1);
 		}
 		new Label(container, SWT.NULL).setText("#Rounding mode:");
-		createTypeRadio(container, "#Half up", roundingRadios, RoundingMode.HALF_UP, 1);
-		createTypeRadio(container, "#Up", roundingRadios, RoundingMode.CEILING, 3);
+		createTypeRadio(container, Labels.roundingMode(RoundingMode.HALF_UP), roundingRadios, RoundingMode.HALF_UP, 1);
+		createTypeRadio(container, Labels.roundingMode(RoundingMode.CEILING), roundingRadios, RoundingMode.CEILING, 3);
 		new Label(container, SWT.NULL).setText("#n.a. value handling:");
 		createTypeRadio(container, Labels.processingType(ProcessingType.EXCLUDE), processingRadios,
 				ProcessingType.EXCLUDE, 1);
@@ -316,25 +316,30 @@ class CalculationWizardPage extends WizardPage {
 			nwViewer.select(nwset);
 		type = getDefaultValue(CalculationType.class, CalculationType.QUICK);
 		calculationRadios.get(type).setSelection(true);
-		updateOptions();
-		boolean withCosts = getDefaultBoolean("calc.costCalculation");
-		costCheck.setSelection(withCosts);
-		boolean doDqAssessment = getDefaultBoolean("calc.dqAssessment");
-		dqAssessment.setSelection(doDqAssessment);
-		dqAssessmentChanged();
-		AggregationType aType = getDefaultValue(AggregationType.class, AggregationType.WEIGHTED_AVERAGE);
-		aggregationRadios.get(aType).setSelection(true);
-		typeChanged(aggregationRadios, aType);
-		ProcessingType pType = getDefaultValue(ProcessingType.class, ProcessingType.EXCLUDE);
-		processingRadios.get(pType).setSelection(true);
-		typeChanged(processingRadios, pType);
-		RoundingMode rounding = getDefaultValue(RoundingMode.class, RoundingMode.HALF_UP);
-		roundingRadios.get(rounding).setSelection(true);
-		typeChanged(roundingRadios, rounding);
 		String itCount = Preferences.get("calc.numberOfRuns");
 		if (Strings.isNullOrEmpty(itCount))
 			itCount = "100";
 		iterationText.setText(itCount);
+		boolean withCosts = getDefaultBoolean("calc.costCalculation");
+		costCheck.setSelection(withCosts);
+		boolean doDqAssessment = getDefaultBoolean("calc.dqAssessment");
+		dqAssessment.setSelection(doDqAssessment);
+		AggregationType aType = getDefaultValue(AggregationType.class, AggregationType.WEIGHTED_AVERAGE);
+		aggregationRadios.get(aType).setSelection(true);
+		ProcessingType pType = getDefaultValue(ProcessingType.class, ProcessingType.EXCLUDE);
+		processingRadios.get(pType).setSelection(true);
+		RoundingMode rounding = getDefaultValue(RoundingMode.class, RoundingMode.HALF_UP);
+		roundingRadios.get(rounding).setSelection(true);
+		updateOptions();
+		if (doDqAssessment) {
+			loadDqSystems();
+		}
+		if (type == CalculationType.MONTE_CARLO)
+			return;
+		dqAssessmentChanged();
+		typeChanged(aggregationRadios, aType);
+		typeChanged(processingRadios, pType);
+		typeChanged(roundingRadios, rounding);
 	}
 
 	private void loadDqSystems() {

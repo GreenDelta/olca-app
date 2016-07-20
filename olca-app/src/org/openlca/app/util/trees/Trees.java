@@ -105,7 +105,7 @@ public class Trees {
 	public static void bindColumnWidths(final Tree tree, int minimum, final double... percents) {
 		if (tree == null || percents == null)
 			return;
-		TreeResizeListener treeListener = new TreeResizeListener(tree, percents);
+		TreeResizeListener treeListener = new TreeResizeListener(tree, minimum, percents);
 		ColumnResizeListener columnListener = new ColumnResizeListener(treeListener);
 		for (TreeColumn column : tree.getColumns())
 			column.addControlListener(columnListener);
@@ -207,10 +207,12 @@ public class Trees {
 	private static class TreeResizeListener extends ControlAdapter {
 		private Tree tree;
 		private double[] percents;
+		private int minimum;
 		private boolean enabled = true;
 
-		private TreeResizeListener(Tree tree, double[] percents) {
+		private TreeResizeListener(Tree tree, int minimum, double[] percents) {
 			this.tree = tree;
+			this.minimum = minimum;
 			this.percents = percents;
 		}
 
@@ -220,11 +222,25 @@ public class Trees {
 				return;
 			double width = tree.getSize().x - 25;
 			TreeColumn[] columns = tree.getColumns();
+			int indexOfLargest = -1;
+			double max = 0;
+			double diff = 0;
 			for (int i = 0; i < columns.length; i++) {
 				if (i >= percents.length)
 					break;
 				double colWidth = percents[i] * width;
+				if (max < colWidth) {
+					max = colWidth;
+					indexOfLargest = i;
+				}
+				if (colWidth < minimum) {
+					colWidth = minimum;
+					diff += minimum - colWidth;
+				}
 				columns[i].setWidth((int) colWidth);
+			}
+			if (diff > 0) {
+				columns[indexOfLargest].setWidth((int) (max - diff));
 			}
 		}
 

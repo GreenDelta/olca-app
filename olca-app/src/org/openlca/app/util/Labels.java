@@ -1,5 +1,7 @@
 package org.openlca.app.util;
 
+import java.math.RoundingMode;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
@@ -371,9 +373,22 @@ public class Labels {
 			return null;
 		switch (type) {
 		case EXCLUDE:
-			return "#Exclude value";
+			return "#Exclude zero values";
 		case USE_MAX:
-			return "#Use maximum value";
+			return "#Use maximum score for zero values";
+		default:
+			return null;
+		}
+	}
+
+	public static String roundingMode(RoundingMode mode) {
+		if (mode == null)
+			return null;
+		switch (mode) {
+		case HALF_UP:
+			return "#Half up";
+		case CEILING:
+			return "#Up";
 		default:
 			return null;
 		}
