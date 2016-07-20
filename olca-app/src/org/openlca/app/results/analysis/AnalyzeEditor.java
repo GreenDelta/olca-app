@@ -55,6 +55,10 @@ public class AnalyzeEditor extends FormEditor implements IResultEditor<FullResul
 	public FullResultProvider getResult() {
 		return result;
 	}
+	
+	public DQResult getDqResult() {
+		return dqResult;
+	}
 
 	@Override
 	public void init(IEditorSite site, IEditorInput input)
@@ -78,7 +82,7 @@ public class AnalyzeEditor extends FormEditor implements IResultEditor<FullResul
 	@Override
 	protected void addPages() {
 		try {
-			addPage(new AnalyzeInfoPage(this, result, setup));
+			addPage(new AnalyzeInfoPage(this, result, dqResult, setup));
 			addPage(new TotalFlowResultPage(this, result, dqResult));
 			if (result.hasImpactResults())
 				addPage(new TotalImpactResultPage(this, result, dqResult, this::getImpactFactor));

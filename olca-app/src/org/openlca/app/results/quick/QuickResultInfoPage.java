@@ -10,24 +10,32 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.results.DQInfoSection;
+import org.openlca.app.results.ExcelExportAction;
 import org.openlca.app.results.contributions.ContributionChartSection;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.FileType;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.math.CalculationSetup;
+import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.NwSetDescriptor;
+import org.openlca.core.results.SimpleResultProvider;
 
 public class QuickResultInfoPage extends FormPage {
 
 	private QuickResultEditor editor;
+	private SimpleResultProvider<?> result;
+	private DQResult dqResult;
 	private FormToolkit toolkit;
 
-	public QuickResultInfoPage(QuickResultEditor editor) {
+	public QuickResultInfoPage(QuickResultEditor editor, SimpleResultProvider<?> result, DQResult dqResult) {
 		super(editor, "QuickResultInfoPage", M.GeneralInformation);
 		this.editor = editor;
+		this.result = result;
+		this.dqResult = dqResult;
 	}
 
 	@Override
@@ -38,6 +46,7 @@ public class QuickResultInfoPage extends FormPage {
 		Composite body = UI.formBody(form, toolkit);
 		createInfoSection(body);
 		createChartSections(body);
+		new DQInfoSection(body, toolkit, result, dqResult);
 		form.reflow(true);
 	}
 
@@ -81,7 +90,7 @@ public class QuickResultInfoPage extends FormPage {
 		Button button = toolkit.createButton(composite, M.ExportToExcel,
 				SWT.NONE);
 		button.setImage(Images.get(FileType.EXCEL));
-		Controls.onSelect(button, (e) -> new ExcelExport().run());
+		Controls.onSelect(button, (e) -> new ExcelExportAction("Quick result").run());
 	}
 
 	private void createText(Composite parent, String label, String val) {

@@ -65,6 +65,11 @@ public class RegionalizedResultEditor extends FormEditor implements IResultEdito
 	}
 
 	@Override
+	public DQResult getDqResult() {
+		return dqResult;
+	}
+	
+	@Override
 	public void init(IEditorSite site, IEditorInput editorInput)
 			throws PartInitException {
 		super.init(site, editorInput);
@@ -92,7 +97,7 @@ public class RegionalizedResultEditor extends FormEditor implements IResultEdito
 	protected void addPages() {
 		try {
 			FullResultProvider regioResult = this.result.result;
-			addPage(new AnalyzeInfoPage(this, regioResult, setup));
+			addPage(new AnalyzeInfoPage(this, regioResult, dqResult, setup));
 			addPage(new TotalFlowResultPage(this, regioResult, dqResult));
 			if (regioResult.hasImpactResults())
 				addPage(new TotalImpactResultPage(this, regioResult, dqResult, this::getImpactFactor));

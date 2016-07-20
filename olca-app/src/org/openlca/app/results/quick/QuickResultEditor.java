@@ -63,9 +63,14 @@ public class QuickResultEditor extends FormEditor implements IResultEditor<Contr
 	}
 
 	@Override
+	public DQResult getDqResult() {
+		return dqResult;
+	}
+	
+	@Override
 	protected void addPages() {
 		try {
-			addPage(new QuickResultInfoPage(this));
+			addPage(new QuickResultInfoPage(this, result, dqResult));
 			addPage(new TotalFlowResultPage(this, result, dqResult));
 			if (result.hasImpactResults())
 				addPage(new TotalImpactResultPage(this, result, dqResult, this::getImpactFactor));

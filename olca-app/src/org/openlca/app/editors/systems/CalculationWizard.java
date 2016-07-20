@@ -63,8 +63,9 @@ class CalculationWizard extends Wizard {
 		CalculationWizard wizard = new CalculationWizard(productSystem);
 		WizardDialog dialog = new WizardDialog(UI.shell(), wizard);
 		dialog.open();
+		dialog.setPageSize(100, 100);
 	}
-
+	
 	@Override
 	public void addPages() {
 		calculationPage = new CalculationWizardPage(productSystem);

@@ -36,8 +36,7 @@ class SimulationExportAction extends Action {
 			return;
 		App.run(M.ExportResultsToExcel, () -> {
 			try {
-				SimulationResultExport export = new SimulationResultExport(
-						setup, result);
+				SimulationResultExport export = new SimulationResultExport(setup, result);
 				export.run(file);
 			} catch (Exception e) {
 				log.error("Result export failed", e);

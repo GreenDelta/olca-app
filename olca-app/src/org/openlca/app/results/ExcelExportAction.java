@@ -10,23 +10,25 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.FileType;
 import org.openlca.app.util.InformationPopup;
-import org.openlca.io.xls.results.IExcelExport;
+import org.openlca.io.xls.results.ResultExport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class ExcelExportAction<T extends IResultEditor<?>> extends Action {
+public class ExcelExportAction extends Action {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
+	private final String type;
 
-	public ExcelExportAction() {
+	public ExcelExportAction(String type) {
 		setImageDescriptor(Images.descriptor(FileType.EXCEL));
 		setText(M.ExportToExcel);
 		setToolTipText(M.ExportToExcel);
+		this.type = type;
 	}
 
 	@Override
 	public void run() {
-		T editor = Editors.getActive();
+		IResultEditor<?> editor = Editors.getActive();
 		if (editor == null) {
 			log.error(
 					"unexpected error: the product system editor is not active");
@@ -35,16 +37,11 @@ public abstract class ExcelExportAction<T extends IResultEditor<?>> extends Acti
 		runExport(editor);
 	}
 
-	protected abstract IExcelExport createExport(T editor);
-
-	protected abstract String getDefaultFilename();
-
-	private void runExport(T editor) {
-		File file = FileChooser.forExport("*.xlsx", getDefaultFilename());
+	private void runExport(IResultEditor<?> editor) {
+		File file = FileChooser.forExport("*.xlsx", toFileName(type));
 		if (file == null)
 			return;
-		IExcelExport export = createExport(editor);
-		export.setFile(file);
+		ResultExport export = new ResultExport(editor.getSetup(), editor.getResult(), editor.getDqResult(), type, file);
 		App.run(M.Export, export, new Runnable() {
 			@Override
 			public void run() {
@@ -53,6 +50,10 @@ public abstract class ExcelExportAction<T extends IResultEditor<?>> extends Acti
 				}
 			}
 		});
+	}
+
+	private String toFileName(String type) {
+		return type.toLowerCase().replace(' ', '_') + ".xlsx";
 	}
 
 }
