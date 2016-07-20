@@ -1,6 +1,7 @@
 package org.openlca.app.devtools.sql;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
@@ -18,11 +19,14 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Colors;
+import org.openlca.app.util.Info;
 import org.openlca.app.util.UI;
+import org.python.google.common.base.Strings;
 
 public class SqlEditorPage extends FormPage {
 
@@ -72,6 +76,10 @@ public class SqlEditorPage extends FormPage {
 
 		@Override
 		public void run() {
+			if (Database.get() == null) {
+				Info.showBox(M.NoDatabaseOpened, M.NeedOpenDatabase);
+				return;
+			}
 			List<String> statements = getStatements();
 			List<String> results = new ArrayList<>();
 			for (String st : statements) {
@@ -95,16 +103,28 @@ public class SqlEditorPage extends FormPage {
 
 		private List<String> getStatements() {
 			String statement = queryText.getText();
+			if (Strings.isNullOrEmpty(statement))
+				return Collections.emptyList();
 			List<String> statements = new ArrayList<>();
-			if (!statement.contains(";"))
-				statements.add(statement);
-			else {
-				String[] parts = statement.split(";");
-				for (String part : parts) {
-					if (part.trim().isEmpty())
-						continue;
-					statements.add(part);
+			boolean inQuote = false;
+			String next = "";
+			for (char c : statement.toCharArray()) {
+				if (c == '\'') {
+					inQuote = !inQuote;
 				}
+				if (c == ';' && !inQuote) {
+					if (!next.trim().isEmpty()) {
+						statements.add(next.trim());
+					}
+					next = "";
+				} else if (c != '\r' && c != '\n' && c != '\t') {
+					next += c;
+				} else {
+					next += ' ';
+				}
+			}
+			if (!next.trim().isEmpty()) {
+				statements.add(next.trim());
 			}
 			return statements;
 		}
