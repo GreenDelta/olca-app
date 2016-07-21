@@ -3,7 +3,6 @@ package org.openlca.app.editors;
 import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.widgets.Composite;
@@ -11,7 +10,6 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
@@ -44,7 +42,7 @@ import com.google.gson.Gson;
 /**
  * View of usages of a model entity in other entities.
  */
-public class UsageView extends FormEditor {
+public class UsageView extends SimpleFormEditor {
 
 	public static String ID = "editors.usage";
 
@@ -59,28 +57,12 @@ public class UsageView extends FormEditor {
 		Editors.open(input, UsageView.ID);
 	}
 
-	@Override
-	protected void addPages() {
-		try {
-			addPage(new Page());
-		} catch (Exception e) {
-			log.error("Failed to add form page", e);
-		}
-	}
 
 	@Override
-	public void doSave(IProgressMonitor monitor) {
+	protected FormPage getPage() {
+		return new Page();
 	}
-
-	@Override
-	public void doSaveAs() {
-	}
-
-	@Override
-	public boolean isSaveAsAllowed() {
-		return false;
-	}
-
+	
 	@Override
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {

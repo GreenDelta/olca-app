@@ -1,22 +1,18 @@
 package org.openlca.app.results.simulation;
 
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.forms.editor.FormEditor;
+import org.eclipse.ui.forms.editor.FormPage;
 import org.openlca.app.db.Cache;
+import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.Simulator;
 import org.openlca.util.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public class SimulationEditor extends FormEditor {
+public class SimulationEditor extends SimpleFormEditor {
 
 	public static String ID = "SimulationEditor";
-
-	private Logger log = LoggerFactory.getLogger(getClass());
 
 	private CalculationSetup setup;
 	private Simulator simulator;
@@ -42,24 +38,8 @@ public class SimulationEditor extends FormEditor {
 	}
 
 	@Override
-	protected void addPages() {
-		try {
-			addPage(new SimulationPage(this));
-		} catch (Exception e) {
-			log.error("Failed to add simulation page", e);
-		}
+	protected FormPage getPage() {
+		return new SimulationPage(this);
 	}
-
-	@Override
-	public void doSave(IProgressMonitor monitor) {
-	}
-
-	@Override
-	public void doSaveAs() {
-	}
-
-	@Override
-	public boolean isSaveAsAllowed() {
-		return false;
-	}
+	
 }

@@ -1,48 +1,41 @@
 package org.openlca.app.devtools.js;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.ui.forms.editor.FormEditor;
+import org.eclipse.ui.forms.editor.FormPage;
 import org.openlca.app.devtools.IScriptEditor;
-import org.openlca.app.devtools.ScriptEditorInput;
+import org.openlca.app.devtools.ScriptEditorPage;
+import org.openlca.app.editors.SimpleFormEditor;
+import org.openlca.app.rcp.html.HtmlView;
+import org.openlca.app.util.DefaultInput;
 import org.openlca.app.util.Editors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public class JavaScriptEditor extends FormEditor implements IScriptEditor {
+public class JavaScriptEditor extends SimpleFormEditor implements IScriptEditor {
 
 	public static String ID = "JavaScriptEditor";
-	private JavaScriptEditorPage page;
+	private Page page;
 
 	public static void open() {
-		Editors.open(new ScriptEditorInput("JavaScript"), ID);
+		Editors.open(new DefaultInput(ID, "JavaScript"), ID);
 	}
 
 	@Override
-	protected void addPages() {
-		try {
-			page = new JavaScriptEditorPage(this);
-			addPage(page);
-		} catch (Exception e) {
-			Logger log = LoggerFactory.getLogger(getClass());
-			log.error("failed to open Sql Editor page", e);
-		}
+	protected FormPage getPage() {
+		return page = new Page();
 	}
 
 	public void evalContent() {
 		JavaScript.eval(page.getScript());
 	}
 
-	@Override
-	public void doSave(IProgressMonitor monitor) {
-	}
+	private class Page extends ScriptEditorPage {
 
-	@Override
-	public void doSaveAs() {
-	}
+		public Page() {
+			super(JavaScriptEditor.this, "JavaScriptEditorPage", "JavaScript");
+		}
 
-	@Override
-	public boolean isSaveAsAllowed() {
-		return false;
-	}
+		@Override
+		public String getUrl() {
+			return HtmlView.JAVASCRIPT_EDITOR.getUrl();
+		}
 
+	}
 }

@@ -1,19 +1,19 @@
 package org.openlca.app.results.projects;
 
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.forms.editor.FormEditor;
+import org.eclipse.ui.forms.editor.FormPage;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
+import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.core.database.ProjectDao;
 import org.openlca.core.model.Project;
 import org.openlca.core.results.ProjectResultProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ProjectResultEditor extends FormEditor {
+public class ProjectResultEditor extends SimpleFormEditor {
 
 	public static final String ID = "ProjectResultEditor";
 
@@ -46,25 +46,8 @@ public class ProjectResultEditor extends FormEditor {
 	}
 
 	@Override
-	protected void addPages() {
-		try {
-			addPage(new ProjectResultPage(this));
-		} catch (Exception e) {
-			log.error("failed to add pages", e);
-		}
-	}
-
-	@Override
-	public void doSave(IProgressMonitor monitor) {
-	}
-
-	@Override
-	public void doSaveAs() {
-	}
-
-	@Override
-	public boolean isSaveAsAllowed() {
-		return false;
+	protected FormPage getPage() {
+		return new ProjectResultPage(this);
 	}
 
 }

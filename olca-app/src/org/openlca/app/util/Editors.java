@@ -1,6 +1,7 @@
 package org.openlca.app.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -17,9 +18,12 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.progress.UIJob;
 import org.openlca.app.App;
 import org.openlca.app.M;
-import org.openlca.app.devtools.ScriptEditorInput;
+import org.openlca.app.devtools.js.JavaScriptEditor;
+import org.openlca.app.devtools.python.PythonEditor;
+import org.openlca.app.devtools.sql.SqlEditor;
+import org.openlca.app.editors.LogFileEditor;
 import org.openlca.app.editors.ModelEditor;
-import org.openlca.app.editors.StartPage.StartPageInput;
+import org.openlca.app.editors.StartPage;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.core.model.CategorizedEntity;
 import org.slf4j.Logger;
@@ -27,6 +31,8 @@ import org.slf4j.LoggerFactory;
 
 public class Editors {
 
+	private static String[] PREVENT_FROM_CLOSING = { SqlEditor.ID, PythonEditor.ID, JavaScriptEditor.ID, StartPage.ID,
+			LogFileEditor.ID };
 	private static Logger log = LoggerFactory.getLogger(Editors.class);
 
 	private Editors() {
@@ -58,10 +64,12 @@ public class Editors {
 		try {
 			List<IEditorReference> rest = new ArrayList<>();
 			for (IEditorReference editor : getReferences()) {
-				if (editor.getEditorInput() instanceof StartPageInput)
-					continue;
-				if (editor.getEditorInput() instanceof ScriptEditorInput)
-					continue;
+				if (editor.getEditorInput() instanceof DefaultInput) {
+					DefaultInput input = (DefaultInput) editor.getEditorInput();
+					List<String> preventClosing = Arrays.asList(PREVENT_FROM_CLOSING);
+					if (preventClosing.contains(input.id))
+						continue;
+				}
 				rest.add(editor);
 			}
 			IEditorReference[] restArray = rest.toArray(new IEditorReference[rest.size()]);

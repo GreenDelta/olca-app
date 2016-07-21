@@ -3,7 +3,6 @@ package org.openlca.app;
 import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -13,7 +12,6 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IPersistableElement;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
@@ -21,6 +19,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.db.Cache;
+import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
@@ -34,13 +33,10 @@ import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.CategoryDescriptor;
 import org.openlca.io.CategoryPath;
 import org.openlca.util.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public class SearchResultView extends FormEditor {
+public class SearchResultView extends SimpleFormEditor {
 
 	public static final String ID = "SearchResultView";
-	private Logger log = LoggerFactory.getLogger(getClass());
 	private String term;
 	private List<BaseDescriptor> results;
 
@@ -67,25 +63,8 @@ public class SearchResultView extends FormEditor {
 	}
 
 	@Override
-	protected void addPages() {
-		try {
-			addPage(new Page());
-		} catch (Exception e) {
-			log.error("failed to add editor page", e);
-		}
-	}
-
-	@Override
-	public void doSave(IProgressMonitor monitor) {
-	}
-
-	@Override
-	public void doSaveAs() {
-	}
-
-	@Override
-	public boolean isSaveAsAllowed() {
-		return false;
+	protected FormPage getPage() {
+		return new Page();
 	}
 
 	private static class Input implements IEditorInput {
