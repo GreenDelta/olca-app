@@ -1,5 +1,7 @@
 package org.openlca.app.editors.processes;
 
+import java.util.Objects;
+
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
@@ -16,6 +18,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
@@ -24,6 +27,7 @@ import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
+import org.openlca.app.editors.processes.data_quality.DataQualityShell;
 import org.openlca.app.editors.processes.kml.EditorHandler;
 import org.openlca.app.editors.processes.kml.KmlUtil;
 import org.openlca.app.editors.processes.kml.MapEditor;
@@ -32,6 +36,7 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.images.Overlay;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Editors;
+import org.openlca.app.util.Error;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.ExchangeViewer;
 import org.openlca.app.viewers.combo.LocationViewer;
@@ -43,6 +48,7 @@ import org.openlca.util.Geometries;
 import org.openlca.util.KeyGen;
 
 import com.google.common.eventbus.Subscribe;
+
 
 class InfoPage extends ModelPage<Process> {
 
@@ -83,6 +89,7 @@ class InfoPage extends ModelPage<Process> {
 		createTimeSection(body);
 		createGeographySection(body);
 		createTechnologySection(body);
+		createDQSection(body);
 		body.setFocus();
 		form.reflow(true);
 	}
@@ -131,6 +138,63 @@ class InfoPage extends ModelPage<Process> {
 		createDate(M.StartDate, "documentation.validFrom", composite);
 		createDate(M.EndDate, "documentation.validUntil", composite);
 		createMultiText(M.Description, "documentation.time", composite);
+	}
+
+	private void createDQSection(Composite body) {
+		Composite composite = UI.formSection(body, toolkit, "#Data quality");
+		toolkit.createLabel(composite, "#Process schema");
+		DQSystemViewer processSystemViewer = new DQSystemViewer(composite);
+		processSystemViewer.setNullable(true);
+		processSystemViewer.setInput(Database.get());
+		getBinding().onModel(() -> getModel(), "dqSystem", processSystemViewer);
+		createDqEntryRow(composite);
+		toolkit.createLabel(composite, "#Input/Output schema");
+		DQSystemViewer ioSystemViewer = new DQSystemViewer(composite);
+		ioSystemViewer.setNullable(true);
+		ioSystemViewer.setInput(Database.get());
+		getBinding().onModel(() -> getModel(), "exchangeDqSystem", ioSystemViewer);
+		toolkit.createLabel(composite, "#Social schema");
+		DQSystemViewer socialSystemViewer = new DQSystemViewer(composite);
+		socialSystemViewer.setNullable(true);
+		socialSystemViewer.setInput(Database.get());
+		getBinding().onModel(() -> getModel(), "socialDqSystem", socialSystemViewer);
+	}
+
+	private Hyperlink createDqEntryRow(Composite composite) {
+		UI.formLabel(composite, toolkit, "#Data quality entry");
+		Hyperlink link = UI.formLink(composite, toolkit, getDqEntryLabel());
+		Controls.onClick(link, e -> {
+			if (getModel().dqSystem == null) {
+				Error.showBox("Please select a data quality system first");				
+				return; 
+			}
+			String oldVal = getModel().dqEntry;
+			DataQualityShell shell = DataQualityShell.withoutUncertainty(composite.getShell(), getModel().dqSystem,
+					getModel().dqEntry, InfoPage.this::onDqEntryDialogOk, InfoPage.this::onDqEntryDialogDelete);
+			shell.addDisposeListener(e2 -> {
+				if (Objects.equals(oldVal, getModel().dqEntry))
+					return;
+				link.setText(getDqEntryLabel());
+				getEditor().setDirty(true);
+			});
+			shell.open();
+		});
+		return link;
+	}
+
+	private void onDqEntryDialogOk(DataQualityShell shell) {
+		getModel().dqEntry = shell.getSelection();
+	}
+
+	private void onDqEntryDialogDelete(DataQualityShell shell) {
+		getModel().dqEntry = null;
+	}
+
+	private String getDqEntryLabel() {
+		if (getModel().dqEntry != null)
+			return getModel().dqEntry;
+		return "(not specified)";
+
 	}
 
 	private void createGeographySection(Composite body) {
@@ -235,7 +299,7 @@ class InfoPage extends ModelPage<Process> {
 				location.setKmz(null);
 			return locationDao.insert(location);
 		}
-		
+
 		@Override
 		public boolean hasModel() {
 			return getModel().getLocation() != null;

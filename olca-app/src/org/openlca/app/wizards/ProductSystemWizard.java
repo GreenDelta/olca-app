@@ -43,6 +43,8 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 			return false;
 		}
 		system.setCategory(getCategory());
+		if (page.cutoff != null)
+			system.cutoff = page.cutoff;
 		try {
 			createDao().insert(system);
 			boolean autoComplete = page.addSupplyChain();
@@ -52,7 +54,6 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 			}
 			boolean preferSystems = page.useSystemProcesses();
 			Runner runner = new Runner(system, preferSystems);
-			runner.cutoff = page.cutoff;
 			getContainer().run(true, true, runner);
 			system = runner.system;
 			Cache.registerNew(Descriptors.toDescriptor(system));
@@ -74,7 +75,6 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 		private ProductSystem system;
 		private boolean preferSystemProcesses;
 		private MatrixCache cache;
-		private Double cutoff;
 
 		public Runner(ProductSystem system, boolean preferSystemProcesses) {
 			this.system = system;
@@ -90,8 +90,8 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 						IProgressMonitor.UNKNOWN);
 				ProductSystemBuilder builder = new ProductSystemBuilder(cache,
 						preferSystemProcesses);
-				if (cutoff != null)
-					builder.setCutoff(cutoff);
+				if (system.cutoff != null)
+					builder.setCutoff(system.cutoff);
 				system = builder.autoComplete(system);
 				monitor.done();
 			} catch (Exception e) {

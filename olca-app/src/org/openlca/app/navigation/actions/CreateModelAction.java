@@ -122,6 +122,8 @@ public class CreateModelAction extends Action implements INavigationAction {
 			return M.NewLocation;
 		case PARAMETER:
 			return M.NewParameter;
+		case DQ_SYSTEM:
+			return "#New data quality system";
 		default:
 			return M.Unknown + "?";
 		}

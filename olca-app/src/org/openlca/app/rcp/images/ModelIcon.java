@@ -10,6 +10,10 @@ enum ModelIcon {
 	CURRENCY_CATEGORY("category/currency.png"),
 	CURRENCY_WIZARD("wizard/currency.png"),
 
+	DQ_SYSTEM("model/data_quality_system.png"),
+	DQ_SYSTEM_CATEGORY("category/data_quality_system.png"),
+	DQ_SYSTEM_WIZARD("wizard/data_quality_system.png"),
+	
 	FLOW("model/flow.png"),
 	FLOW_ELEMENTARY("model/flow_elementary.png"),
 	FLOW_PRODUCT("model/flow_product.png"),

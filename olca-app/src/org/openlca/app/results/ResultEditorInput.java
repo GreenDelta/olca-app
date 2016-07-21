@@ -16,13 +16,15 @@ public class ResultEditorInput implements IEditorInput {
 	private String resultKey;
 	private String setupKey;
 	private String parameterSetKey;
+	private String dqResultKey;
 
 	public ResultEditorInput(long productSystemId, String resultKey,
-			String setupKey, String parameterSetKey) {
+			String setupKey, String parameterSetKey, String dqResultKey) {
 		this.productSystemId = productSystemId;
 		this.resultKey = resultKey;
 		this.setupKey = setupKey;
 		this.parameterSetKey = parameterSetKey;
+		this.dqResultKey = dqResultKey;
 	}
 
 	public long getProductSystemId() {
@@ -40,7 +42,11 @@ public class ResultEditorInput implements IEditorInput {
 	public String getParameterSetKey() {
 		return parameterSetKey;
 	}
-	
+
+	public String getDqResultKey() {
+		return dqResultKey;
+	}
+
 	@Override
 	@SuppressWarnings("rawtypes")
 	public Object getAdapter(Class adapter) {

@@ -1,46 +1,26 @@
 package org.openlca.app.devtools.python;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.ui.forms.editor.FormEditor;
+import org.eclipse.ui.forms.editor.FormPage;
 import org.openlca.app.App;
 import org.openlca.app.devtools.IScriptEditor;
-import org.openlca.app.devtools.ScriptEditorInput;
+import org.openlca.app.devtools.ScriptEditorPage;
+import org.openlca.app.editors.SimpleFormEditor;
+import org.openlca.app.rcp.html.HtmlView;
+import org.openlca.app.util.DefaultInput;
 import org.openlca.app.util.Editors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public class PythonEditor extends FormEditor implements IScriptEditor {
+public class PythonEditor extends SimpleFormEditor implements IScriptEditor {
 
 	public static String ID = "PythonEditor";
-
-	private PythonEditorPage page;
-	private Logger log = LoggerFactory.getLogger(getClass());
+	private Page page;
 
 	public static void open() {
-		Editors.open(new ScriptEditorInput("Python"), ID);
+		Editors.open(new DefaultInput(ID, "Python"), ID);
 	}
 
 	@Override
-	protected void addPages() {
-		try {
-			page = new PythonEditorPage(this);
-			addPage(page);
-		} catch (Exception e) {
-			log.error("failed to add editor page", e);
-		}
-	}
-
-	@Override
-	public void doSave(IProgressMonitor monitor) {
-	}
-
-	@Override
-	public void doSaveAs() {
-	}
-
-	@Override
-	public boolean isSaveAsAllowed() {
-		return false;
+	protected FormPage getPage() {
+		return page = new Page();
 	}
 
 	@Override
@@ -49,4 +29,16 @@ public class PythonEditor extends FormEditor implements IScriptEditor {
 		App.run("Eval script", () -> Python.eval(script));
 	}
 
+	private class Page extends ScriptEditorPage {
+
+		public Page() {
+			super(PythonEditor.this, "PythonEditorPage", "Python");
+		}
+
+		@Override
+		public String getUrl() {
+			return HtmlView.PYTHON_EDITOR.getUrl();
+		}
+
+	}
 }

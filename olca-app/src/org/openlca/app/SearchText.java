@@ -123,17 +123,21 @@ public class SearchText extends WorkbenchWindowControlContribution {
 				menu.dispose();
 			menu = new Menu(parent);
 
-			String[] texts = { "Search all types",
-					"Search in projects",
-					"Search in product systems",
-					"Search in LCIA methods",
-					"Search in processes",
-					"Search in flows",
-					"Search in flow properties",
-					"Search in unit groups",
-					"Search in sources",
-					"Search in actors",
-					"Search in locations" };
+			String[] texts = { "#Search all types",
+					"#Search in projects",
+					"#Search in product systems",
+					"#Search in LCIA methods",
+					"#Search in processes",
+					"#Search in flows",
+					"#Search in social indicators",
+					"#Search in parameters",
+					"#Search in flow properties",
+					"#Search in unit groups",
+					"#Search in actors",
+					"#Search in sources",
+					"#Search in locations" ,					
+					"#Search in data quality systems",
+			};
 
 			ModelType[] types = { null,
 					ModelType.PROJECT,
@@ -141,11 +145,15 @@ public class SearchText extends WorkbenchWindowControlContribution {
 					ModelType.IMPACT_METHOD,
 					ModelType.PROCESS,
 					ModelType.FLOW,
+					ModelType.SOCIAL_INDICATOR,
+					ModelType.PARAMETER,
 					ModelType.FLOW_PROPERTY,
 					ModelType.UNIT_GROUP,
-					ModelType.SOURCE,
+					ModelType.CURRENCY,
 					ModelType.ACTOR,
-					ModelType.LOCATION
+					ModelType.SOURCE,
+					ModelType.LOCATION,
+					ModelType.DQ_SYSTEM
 			};
 
 			for (int i = 0; i < texts.length; i++) {

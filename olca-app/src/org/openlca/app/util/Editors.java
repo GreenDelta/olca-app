@@ -1,6 +1,7 @@
 package org.openlca.app.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -17,6 +18,10 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.progress.UIJob;
 import org.openlca.app.App;
 import org.openlca.app.M;
+import org.openlca.app.devtools.js.JavaScriptEditor;
+import org.openlca.app.devtools.python.PythonEditor;
+import org.openlca.app.devtools.sql.SqlEditor;
+import org.openlca.app.editors.LogFileEditor;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.StartPage;
 import org.openlca.app.rcp.images.Icon;
@@ -26,6 +31,8 @@ import org.slf4j.LoggerFactory;
 
 public class Editors {
 
+	private static String[] PREVENT_FROM_CLOSING = { SqlEditor.ID, PythonEditor.ID, JavaScriptEditor.ID, StartPage.ID,
+			LogFileEditor.ID };
 	private static Logger log = LoggerFactory.getLogger(Editors.class);
 
 	private Editors() {
@@ -40,7 +47,7 @@ public class Editors {
 		if (form == null || editor == null)
 			return;
 		CategorizedEntity model = editor.getModel();
-		Action refresh = Actions.create(M.Reload, Icon.REFRESH.descriptor(), 
+		Action refresh = Actions.create(M.Reload, Icon.REFRESH.descriptor(),
 				() -> {
 					App.closeEditor(model);
 					App.openEditor(model);
@@ -55,23 +62,21 @@ public class Editors {
 	 */
 	public static void closeAll() {
 		try {
-			if (StartPage.isOpen()) {
-				closeAllExceptStartPage();
-			} else {
-				getActivePage().closeAllEditors(false);
+			List<IEditorReference> rest = new ArrayList<>();
+			for (IEditorReference editor : getReferences()) {
+				if (editor.getEditorInput() instanceof DefaultInput) {
+					DefaultInput input = (DefaultInput) editor.getEditorInput();
+					List<String> preventClosing = Arrays.asList(PREVENT_FROM_CLOSING);
+					if (preventClosing.contains(input.id))
+						continue;
+				}
+				rest.add(editor);
 			}
+			IEditorReference[] restArray = rest.toArray(new IEditorReference[rest.size()]);
+			getActivePage().closeEditors(restArray, false);
 		} catch (Exception e) {
 			log.error("Failed to close editors", e);
 		}
-	}
-
-	private static void closeAllExceptStartPage() {
-		List<IEditorReference> rest = new ArrayList<>();
-		for (IEditorReference editor : getReferences())
-			if (!StartPage.is(editor))
-				rest.add(editor);
-		IEditorReference[] restArray = rest.toArray(new IEditorReference[rest.size()]);
-		getActivePage().closeEditors(restArray, false);
 	}
 
 	@SuppressWarnings("unchecked")

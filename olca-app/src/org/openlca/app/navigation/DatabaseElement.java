@@ -35,7 +35,8 @@ public class DatabaseElement extends NavigationElement<IDatabaseConfiguration> {
 				ModelType.CURRENCY,
 				ModelType.ACTOR,
 				ModelType.SOURCE,
-				ModelType.LOCATION)));
+				ModelType.LOCATION,
+				ModelType.DQ_SYSTEM)));
 		return list;
 	}
 

@@ -1,6 +1,5 @@
 package org.openlca.app.editors.reports;
 
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.layout.FillLayout;
@@ -10,15 +9,15 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IPersistableElement;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
+import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.editors.reports.model.Report;
 import org.openlca.app.rcp.html.HtmlPage;
 import org.openlca.app.rcp.html.HtmlView;
-import org.openlca.app.util.Editors;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Editors;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ModelType;
 import org.openlca.util.Strings;
@@ -27,7 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
-public class ReportViewer extends FormEditor {
+public class ReportViewer extends SimpleFormEditor {
 
 	public static String ID = "ReportViewer";
 	private Logger log = LoggerFactory.getLogger(getClass());
@@ -58,25 +57,8 @@ public class ReportViewer extends FormEditor {
 	}
 
 	@Override
-	protected void addPages() {
-		try {
-			addPage(new Page());
-		} catch (Exception e) {
-			log.error("failed to add start page", e);
-		}
-	}
-
-	@Override
-	public void doSave(IProgressMonitor monitor) {
-	}
-
-	@Override
-	public void doSaveAs() {
-	}
-
-	@Override
-	public boolean isSaveAsAllowed() {
-		return false;
+	protected FormPage getPage() {
+		return new Page();
 	}
 
 	private static class EditorInput implements IEditorInput {

@@ -1,11 +1,15 @@
 package org.openlca.app.util;
 
+import java.math.RoundingMode;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.database.EntityCache;
+import org.openlca.core.math.data_quality.AggregationType;
+import org.openlca.core.math.data_quality.ProcessingType;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Currency;
@@ -23,6 +27,7 @@ import org.openlca.core.model.UncertaintyType;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.slf4j.Logger;
@@ -105,11 +110,11 @@ public class Labels {
 	 * category and the right value is the sub-category. Default values are
 	 * empty strings.
 	 */
-	public static Pair<String, String> getFlowCategory(FlowDescriptor flow,
+	public static Pair<String, String> getCategory(CategorizedDescriptor entity,
 			EntityCache cache) {
-		if (flow == null || flow.getCategory() == null)
+		if (entity == null || entity.getCategory() == null)
 			return Pair.of("", "");
-		Category cat = cache.get(Category.class, flow.getCategory());
+		Category cat = cache.get(Category.class, entity.getCategory());
 		if (cat == null)
 			return Pair.of("", "");
 		if (cat.getCategory() == null)
@@ -302,6 +307,8 @@ public class Labels {
 			return M.GlobalParameters;
 		case CATEGORY:
 			return M.Category;
+		case DQ_SYSTEM:
+			return "#Data quality systems";
 		default:
 			return M.Unknown;
 		}
@@ -341,6 +348,49 @@ public class Labels {
 			return M.Category;
 		default:
 			return M.Unknown;
+		}
+	}
+
+	public static String aggregationType(AggregationType type) {
+		if (type == null)
+			return null;
+		switch (type) {
+		case WEIGHTED_AVERAGE:
+			return "#Weighted average";
+		case WEIGHTED_SQUARED_AVERAGE:
+			return "#Weighted squared average";
+		case MAXIMUM:
+			return "#Maximum";
+		case NONE:
+			return "#None";
+		default:
+			return null;
+		}
+	}
+
+	public static String processingType(ProcessingType type) {
+		if (type == null)
+			return null;
+		switch (type) {
+		case EXCLUDE:
+			return "#Exclude zero values";
+		case USE_MAX:
+			return "#Use maximum score for zero values";
+		default:
+			return null;
+		}
+	}
+
+	public static String roundingMode(RoundingMode mode) {
+		if (mode == null)
+			return null;
+		switch (mode) {
+		case HALF_UP:
+			return "#Half up";
+		case CEILING:
+			return "#Up";
+		default:
+			return null;
 		}
 	}
 

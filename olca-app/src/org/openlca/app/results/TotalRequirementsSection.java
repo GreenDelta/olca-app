@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.jface.viewers.BaseLabelProvider;
-import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -21,6 +19,7 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.DQUIHelper;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
@@ -29,6 +28,7 @@ import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.database.EntityCache;
+import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.matrix.LongPair;
 import org.openlca.core.matrix.ProductIndex;
 import org.openlca.core.model.Currency;
@@ -46,22 +46,22 @@ class TotalRequirementsSection {
 
 	private EntityCache cache = Cache.getEntityCache();
 	private SimpleResultProvider<?> result;
+	private DQResult dqResult;
 	private Costs costs;
 	private String currencySymbol;
 	private Map<Long, ProcessDescriptor> processDescriptors = new HashMap<>();
 
 	private TableViewer table;
 
-	TotalRequirementsSection(SimpleResultProvider<?> result) {
+	TotalRequirementsSection(SimpleResultProvider<?> result, DQResult dqResult) {
 		this.result = result;
 		for (ProcessDescriptor desc : result.getProcessDescriptors())
 			processDescriptors.put(desc.getId(), desc);
 		if (!result.hasCostResults())
 			costs = Costs.NONE;
-		else {
-			costs = result.getTotalCostResult() >= 0
-					? Costs.NET_COSTS : Costs.ADDED_VALUE;
-		}
+		else
+			costs = result.getTotalCostResult() >= 0 ? Costs.NET_COSTS : Costs.ADDED_VALUE;
+		this.dqResult = dqResult;
 	}
 
 	void create(Composite body, FormToolkit tk) {
@@ -69,17 +69,24 @@ class TotalRequirementsSection {
 		UI.gridData(section, true, true);
 		Composite comp = UI.sectionClient(section, tk);
 		UI.gridLayout(comp, 1);
-		table = Tables.createViewer(comp, columnLables());
-		Tables.bindColumnWidths(table, columnWidths());
 		Label label = new Label();
-		table.setLabelProvider(label);
+		table = Tables.createViewer(comp, columnLabels(), label);
+		Tables.bindColumnWidths(table, DQUIHelper.MIN_COL_WIDTH, columnWidths());
 		Viewers.sortByLabels(table, label, 0, 1, 3);
 		Viewers.sortByDouble(table, (Item i) -> i.amount, 2);
+		if (costs != Costs.NONE)
+			Viewers.sortByDouble(table, (Item i) -> i.costValue, 4);
+		if (DQUIHelper.displayProcessQuality(dqResult)) {
+			int startCol = costs == Costs.NONE ? 4 : 5;
+			for (int i = 0; i < dqResult.setup.processDqSystem.indicators.size(); i++) {
+				Viewers.sortByDouble(table, label, i + startCol);
+			}
+		}
 		Actions.bind(table, TableClipboard.onCopy(table));
 		Tables.onDoubleClick(table, e -> {
 			Item item = Viewers.getFirstSelected(table);
 			if (item != null) {
-				App.openEditor(cache.get(ProcessDescriptor.class, item.processId));
+				App.openEditor(item.process);
 			}
 		});
 		createCostSum(comp, tk);
@@ -109,7 +116,7 @@ class TotalRequirementsSection {
 		table.setInput(createItems());
 	}
 
-	private String[] columnLables() {
+	private String[] columnLabels() {
 		List<String> b = new ArrayList<>();
 		b.add(M.Process);
 		b.add(M.Product);
@@ -119,14 +126,21 @@ class TotalRequirementsSection {
 			b.add(M.AddedValue);
 		else if (costs == Costs.NET_COSTS)
 			b.add(M.NetCosts);
-		return b.toArray(new String[b.size()]);
+		String[] columnLabels = b.toArray(new String[b.size()]);
+		if (!DQUIHelper.displayProcessQuality(dqResult))
+			return columnLabels;
+		return DQUIHelper.appendTableHeaders(columnLabels, dqResult.setup.processDqSystem);
 	}
 
 	private double[] columnWidths() {
+		double[] widths = null;
 		if (costs == Costs.NONE)
-			return new double[] { .4, .2, .2, .2 };
+			widths = new double[] { .4, .2, .2, .2 };
 		else
-			return new double[] { .4, .2, .2, .1, .1 };
+			widths = new double[] { .4, .2, .2, .1, .1 };
+		if (!DQUIHelper.displayProcessQuality(dqResult))
+			return widths;
+		return DQUIHelper.adjustTableWidths(widths, dqResult.setup.processDqSystem);
 	}
 
 	private List<Item> createItems() {
@@ -177,8 +191,7 @@ class TotalRequirementsSection {
 
 	private class Item {
 
-		long processId;
-		String process;
+		ProcessDescriptor process;
 		String product;
 		double amount;
 		String unit;
@@ -204,8 +217,7 @@ class TotalRequirementsSection {
 				return;
 			ProcessDescriptor process = processDescriptors.get(lp.getFirst());
 			if (process != null) {
-				this.processId = process.getId();
-				this.process = Labels.getDisplayName(process);
+				this.process = process;
 			}
 			FlowDescriptor flow = cache.get(FlowDescriptor.class, lp.getSecond());
 			if (flow != null) {
@@ -229,10 +241,14 @@ class TotalRequirementsSection {
 
 	}
 
-	private class Label extends BaseLabelProvider implements ITableLabelProvider {
+	private class Label extends DQLabelProvider {
 
 		private ContributionImage costImage = new ContributionImage(
 				UI.shell().getDisplay());
+
+		public Label() {
+			super(dqResult, dqResult != null ? dqResult.setup.processDqSystem : null, costs == Costs.NONE ? 4 : 5);
+		}
 
 		@Override
 		public void dispose() {
@@ -241,7 +257,7 @@ class TotalRequirementsSection {
 		}
 
 		@Override
-		public Image getColumnImage(Object obj, int col) {
+		public Image getImage(Object obj, int col) {
 			if (!(obj instanceof Item))
 				return null;
 			switch (col) {
@@ -250,6 +266,8 @@ class TotalRequirementsSection {
 			case 1:
 				return Images.get(FlowType.PRODUCT_FLOW);
 			case 4:
+				if (costs == Costs.NONE)
+					return null;
 				return costImage.getForTable(((Item) obj).costShare);
 			default:
 				return null;
@@ -257,13 +275,13 @@ class TotalRequirementsSection {
 		}
 
 		@Override
-		public String getColumnText(Object obj, int col) {
+		public String getText(Object obj, int col) {
 			if (!(obj instanceof Item))
 				return null;
 			Item item = (Item) obj;
 			switch (col) {
 			case 0:
-				return item.process;
+				return Labels.getDisplayName(item.process);
 			case 1:
 				return item.product;
 			case 2:
@@ -275,6 +293,14 @@ class TotalRequirementsSection {
 			default:
 				return null;
 			}
+		}
+
+		@Override
+		protected double[] getQuality(Object obj) {
+			if (!(obj instanceof Item))
+				return null;
+			Item item = (Item) obj;
+			return dqResult.get(item.process);
 		}
 
 	}

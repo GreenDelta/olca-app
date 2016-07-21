@@ -3,13 +3,16 @@ package org.openlca.app.util;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
+import org.openlca.util.Strings;
 
 public class DefaultInput implements IEditorInput {
 
-	private String uuid;
-
-	public DefaultInput(String uuid) {
-		this.uuid = uuid;
+	public final String id;
+	private final String name;
+	
+	public DefaultInput(String id, String name) {
+		this.id = id;
+		this.name = name;
 	}
 
 	@Override
@@ -29,7 +32,7 @@ public class DefaultInput implements IEditorInput {
 
 	@Override
 	public String getName() {
-		return uuid;
+		return name;
 	}
 
 	@Override
@@ -39,7 +42,14 @@ public class DefaultInput implements IEditorInput {
 
 	@Override
 	public String getToolTipText() {
-		return uuid;
+		return name;
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof DefaultInput))
+			return false;
+		DefaultInput input = (DefaultInput) obj;
+		return Strings.nullOrEqual(id, input.id);
+	}
 }

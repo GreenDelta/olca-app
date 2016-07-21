@@ -65,7 +65,7 @@ class ExchangeTable {
 	private final String AMOUNT = M.Amount;
 	private final String UNIT = M.Unit;
 	private final String COSTS;
-	private final String PEDIGREE = M.PedigreeUncertainty;
+	private final String PEDIGREE = "#Data quality entry";
 	private final String DEFAULT_PROVIDER = M.DefaultProvider;
 	private final String UNCERTAINTY = M.Uncertainty;
 	private final String DESCRIPTION = M.Description;
@@ -121,7 +121,7 @@ class ExchangeTable {
 		ms.bind(AMOUNT, new AmountModifier());
 		ms.bind(UNIT, new UnitCell(editor));
 		ms.bind(COSTS, new CostCellEditor(viewer, editor));
-		ms.bind(PEDIGREE, new PedigreeCellEditor(viewer, editor));
+		ms.bind(PEDIGREE, new DataQualityCellEditor(viewer, editor));
 		ms.bind(UNCERTAINTY, new UncertaintyCellEditor(viewer.getTable(),
 				editor));
 		ms.bind(DESCRIPTION, new StringModifier<>(editor, "description"));

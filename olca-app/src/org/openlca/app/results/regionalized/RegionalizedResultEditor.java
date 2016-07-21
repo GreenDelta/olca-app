@@ -20,19 +20,18 @@ import org.openlca.app.results.TotalFlowResultPage;
 import org.openlca.app.results.TotalImpactResultPage;
 import org.openlca.app.results.analysis.AnalyzeInfoPage;
 import org.openlca.app.results.analysis.sankey.SankeyDiagram;
-import org.openlca.app.results.contributions.ContributionTablePage;
 import org.openlca.app.results.contributions.ContributionTreePage;
-import org.openlca.app.results.contributions.ImpactTreePage;
-import org.openlca.app.results.contributions.ImpactTreePage.FlowWithProcess;
 import org.openlca.app.results.contributions.ProcessResultPage;
 import org.openlca.app.results.contributions.locations.LocationPage;
 import org.openlca.app.results.grouping.GroupPage;
 import org.openlca.core.database.ImpactCategoryDao;
 import org.openlca.core.math.CalculationSetup;
+import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.matrix.LongPair;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
+import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.FullResult;
 import org.openlca.core.results.FullResultProvider;
 import org.openlca.geo.RegionalizedResultProvider;
@@ -53,6 +52,7 @@ public class RegionalizedResultEditor extends FormEditor implements IResultEdito
 	private ImpactCategoryDao impactCategoryDao;
 	private Map<Long, ImpactCategory> impactCategories = new HashMap<>();
 	private Map<LongPair, Map<FlowDescriptor, Double>> factorsMap = new HashMap<>();
+	private DQResult dqResult;
 
 	@Override
 	public CalculationSetup getSetup() {
@@ -64,6 +64,11 @@ public class RegionalizedResultEditor extends FormEditor implements IResultEdito
 		return result.result;
 	}
 
+	@Override
+	public DQResult getDqResult() {
+		return dqResult;
+	}
+	
 	@Override
 	public void init(IEditorSite site, IEditorInput editorInput)
 			throws PartInitException {
@@ -79,6 +84,9 @@ public class RegionalizedResultEditor extends FormEditor implements IResultEdito
 					input.getParameterSetKey(), ParameterSet.class);
 			factorCalculator = new FactorCalculator(parameterSet,
 					Database.get(), setup);
+			String dqResultKey = input.getDqResultKey();
+			if (dqResultKey != null)
+				dqResult = Cache.getAppCache().remove(dqResultKey, DQResult.class);
 		} catch (Exception e) {
 			log.error("failed to load regionalized result", e);
 			throw new PartInitException("failed to load regionalized result", e);
@@ -89,23 +97,21 @@ public class RegionalizedResultEditor extends FormEditor implements IResultEdito
 	protected void addPages() {
 		try {
 			FullResultProvider regioResult = this.result.result;
-			addPage(new AnalyzeInfoPage(this, regioResult, setup));
-			addPage(new TotalFlowResultPage(this, regioResult));
+			addPage(new AnalyzeInfoPage(this, regioResult, dqResult, setup));
+			addPage(new TotalFlowResultPage(this, regioResult, dqResult));
 			if (regioResult.hasImpactResults())
-				addPage(new TotalImpactResultPage(this, regioResult));
+				addPage(new TotalImpactResultPage(this, regioResult, dqResult, this::getImpactFactor));
 			if (regioResult.hasImpactResults() && setup.nwSet != null)
 				addPage(new NwResultPage(this, regioResult, setup));
-			addPage(new ContributionTablePage(this, regioResult));
 			addPage(new KmlResultView(this, this.result));
 			addPage(new LocationPage(this, regioResult, false));
 			addPage(new ProcessResultPage(this, regioResult));
 			addPage(new ContributionTreePage(this, regioResult));
-			addPage(new ImpactTreePage(this, regioResult, this::getImpactFactor));
 			addPage(new GroupPage(this, regioResult));
 			if (FeatureFlag.EXPERIMENTAL_VISUALISATIONS.isEnabled()) {
 				addPage(new SunBurstView(this, regioResult));
 			}
-			diagram = new SankeyDiagram(setup, regioResult);
+			diagram = new SankeyDiagram(setup, regioResult, dqResult);
 			diagramIndex = addPage(diagram, getEditorInput());
 			setPageText(diagramIndex, M.SankeyDiagram);
 		} catch (Exception e) {
@@ -136,22 +142,19 @@ public class RegionalizedResultEditor extends FormEditor implements IResultEdito
 		return page;
 	}
 
-	private double getImpactFactor(ImpactCategoryDescriptor category,
-			FlowWithProcess descriptor) {
-		if (descriptor.process.getLocation() == null)
-			return _getImpactFactor(category, descriptor);
-		Map<FlowDescriptor, Double> impactFactors = getImpactFactors(
-				category.getId(), descriptor.process.getLocation());
-		if (!impactFactors.containsKey(descriptor.flow))
+	private double getImpactFactor(ImpactCategoryDescriptor category, ProcessDescriptor process, FlowDescriptor flow) {
+		if (process.getLocation() == null)
+			return _getImpactFactor(category, process, flow);
+		Map<FlowDescriptor, Double> impactFactors = getImpactFactors(category.getId(), process.getLocation());
+		if (!impactFactors.containsKey(flow))
 			return 0d;
-		return impactFactors.get(descriptor.flow);
+		return impactFactors.get(flow);
 	}
 
-	private double _getImpactFactor(ImpactCategoryDescriptor category,
-			FlowWithProcess descriptor) {
+	private double _getImpactFactor(ImpactCategoryDescriptor category, ProcessDescriptor process, FlowDescriptor flow) {
 		FullResult result = this.result.result.result;
 		int row = result.impactIndex.getIndex(category.getId());
-		int col = result.flowIndex.getIndex(descriptor.flow.getId());
+		int col = result.flowIndex.getIndex(flow.getId());
 		return Math.abs(result.impactFactors.getEntry(row, col));
 	}
 

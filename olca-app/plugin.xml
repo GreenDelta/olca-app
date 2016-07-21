@@ -177,7 +177,14 @@
             id="editors.currency"
             name="Currency">
       </editor>
-      
+      <editor
+            class="org.openlca.app.editors.dq_systems.DQSystemEditor"
+            default="false"
+            icon="icons/model/data_quality_system.png"
+            id="editors.dqsystem"
+            name="%ActorEditor">
+      </editor>
+            
       <!-- result views -->
       <editor
             class="org.openlca.app.results.quick.QuickResultEditor"
@@ -357,6 +364,12 @@
             id="wizards.new.currency"
             name="Currency">
       </wizard>
+      <wizard
+            class="org.openlca.app.wizards.DQSystemWizard"
+            icon="icons/wizard/data_quality_system.png"
+            id="wizards.new.dqsystem"
+            name="%DQSystems">
+      </wizard>
    </extension>   
    
    <extension
@@ -503,10 +516,6 @@
       <viewer
             viewerId="views.navigation">
             <options>
-		        <property
-		            name="org.eclipse.ui.navigator.hideLinkWithEditorAction"
-		            value="true">
-		         </property>
 		         <property
 		            name="org.eclipse.ui.navigator.hideCollapseAllAction"
 		            value="true">
@@ -536,6 +545,9 @@
             <contentExtension
                   pattern="viewer.filter.wasteflow">
             </contentExtension>
+			<contentExtension 
+				  pattern="navigator.linkHelper">
+			</contentExtension>
          </includes>
       </viewerContentBinding>
       <viewerActionBinding
@@ -613,6 +625,19 @@
             id="viewer.filter.wasteflow"
             name="%WasteFlows">
       </commonFilter>
+   </extension>
+   <extension
+         point="org.eclipse.ui.navigator.linkHelper">
+      <linkHelper
+	            class="org.openlca.app.navigation.NavigationLinkHelper"
+	            id="navigator.linkHelper">
+         <selectionEnablement>
+            <instanceof value="org.openlca.app.navigation.ModelElement"/>
+	     </selectionEnablement>
+	     <editorInputEnablement>
+			<instanceof value="org.openlca.app.editors.ModelEditorInput"/>
+	     </editorInputEnablement>
+      </linkHelper>
    </extension>
    <extension
          point="org.eclipse.core.runtime.preferences">
@@ -786,4 +811,5 @@
       		name="JSON-LD">
       </wizard>
    </extension>
+
 </plugin>

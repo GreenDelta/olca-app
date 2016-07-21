@@ -207,7 +207,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 
 		@Override
 		public void run() {
-			Editors.open(new DefaultInput(LogFileEditor.ID), LogFileEditor.ID);
+			Editors.open(new DefaultInput(LogFileEditor.ID, "Log file"), LogFileEditor.ID);
 		}
 	}
 }

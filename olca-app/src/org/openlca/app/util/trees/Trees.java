@@ -5,7 +5,12 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.function.Consumer;
 
+import org.eclipse.jface.viewers.CellLabelProvider;
+import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
+import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.TreeViewerColumn;
+import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
@@ -19,12 +24,15 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.openlca.app.components.IModelDropHandler;
 import org.openlca.app.components.ModelTransfer;
+import org.openlca.app.util.UI;
 import org.openlca.app.util.viewers.Sorter;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 
@@ -32,6 +40,41 @@ import org.openlca.core.model.descriptors.BaseDescriptor;
  * A helper class for creating trees, tree viewers and related resources.
  */
 public class Trees {
+
+	public static TreeViewer createViewer(Composite parent, String[] headers) {
+		return createViewer(parent, headers, null);
+	}
+
+	public static TreeViewer createViewer(Composite parent, String[] headers, IBaseLabelProvider label) {
+		TreeViewer viewer = new TreeViewer(parent, SWT.BORDER | SWT.FULL_SELECTION | SWT.VIRTUAL | SWT.MULTI);
+		viewer.setColumnProperties(headers);
+		if (label != null) {
+			viewer.setLabelProvider(label);
+		}
+		Tree tree = viewer.getTree();
+		tree.setLinesVisible(true);
+		tree.setHeaderVisible(true);
+		createColumns(viewer, headers, label);
+		GridData data = UI.gridData(tree, true, true);
+		data.minimumHeight = 150;
+		return viewer;
+	}
+
+	private static void createColumns(TreeViewer viewer, String[] labels, IBaseLabelProvider labelProvider) {
+		if (labelProvider instanceof CellLabelProvider) {
+			ColumnViewerToolTipSupport.enableFor(viewer, ToolTip.NO_RECREATE);
+		}
+		for (String label : labels) {
+			TreeViewerColumn c = new TreeViewerColumn(viewer, SWT.NULL);
+			c.getColumn().setText(label);
+			if (labelProvider instanceof CellLabelProvider) {
+				c.setLabelProvider((CellLabelProvider) labelProvider);
+			}
+		}
+		for (TreeColumn c : viewer.getTree().getColumns()) {
+			c.pack();
+		}
+	}
 
 	public static void addDropSupport(TreeViewer tree,
 			final IModelDropHandler handler) {
@@ -55,11 +98,14 @@ public class Trees {
 	 * Binds the given percentage values (values between 0 and 1) to the column
 	 * widths of the given tree
 	 */
-	public static void bindColumnWidths(final Tree tree,
-			final double... percents) {
+	public static void bindColumnWidths(final Tree tree, final double... percents) {
+		bindColumnWidths(tree, 0, percents);
+	}
+
+	public static void bindColumnWidths(final Tree tree, int minimum, final double... percents) {
 		if (tree == null || percents == null)
 			return;
-		TreeResizeListener treeListener = new TreeResizeListener(tree, percents);		
+		TreeResizeListener treeListener = new TreeResizeListener(tree, minimum, percents);
 		ColumnResizeListener columnListener = new ColumnResizeListener(treeListener);
 		for (TreeColumn column : tree.getColumns())
 			column.addControlListener(columnListener);
@@ -133,7 +179,6 @@ public class Trees {
 		private boolean enabled = true;
 		private boolean initialized;
 
-		
 		private ColumnResizeListener(TreeResizeListener depending) {
 			this.depending = depending;
 		}
@@ -162,10 +207,12 @@ public class Trees {
 	private static class TreeResizeListener extends ControlAdapter {
 		private Tree tree;
 		private double[] percents;
+		private int minimum;
 		private boolean enabled = true;
 
-		private TreeResizeListener(Tree tree, double[] percents) {
+		private TreeResizeListener(Tree tree, int minimum, double[] percents) {
 			this.tree = tree;
+			this.minimum = minimum;
 			this.percents = percents;
 		}
 
@@ -175,11 +222,25 @@ public class Trees {
 				return;
 			double width = tree.getSize().x - 25;
 			TreeColumn[] columns = tree.getColumns();
+			int indexOfLargest = -1;
+			double max = 0;
+			double diff = 0;
 			for (int i = 0; i < columns.length; i++) {
 				if (i >= percents.length)
 					break;
 				double colWidth = percents[i] * width;
+				if (max < colWidth) {
+					max = colWidth;
+					indexOfLargest = i;
+				}
+				if (colWidth < minimum) {
+					colWidth = minimum;
+					diff += minimum - colWidth;
+				}
 				columns[i].setWidth((int) colWidth);
+			}
+			if (diff > 0) {
+				columns[indexOfLargest].setWidth((int) (max - diff));
 			}
 		}
 

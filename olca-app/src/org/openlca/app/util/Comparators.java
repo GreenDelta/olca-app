@@ -25,9 +25,9 @@ public class Comparators {
 				if (c != 0)
 					return c;
 				Pair<String, String> cat1 = Labels
-						.getFlowCategory(flow1, cache);
+						.getCategory(flow1, cache);
 				Pair<String, String> cat2 = Labels
-						.getFlowCategory(flow2, cache);
+						.getCategory(flow2, cache);
 				c = Strings.compare(cat1.getLeft(), cat2.getLeft());
 				if (c != 0)
 					return c;
