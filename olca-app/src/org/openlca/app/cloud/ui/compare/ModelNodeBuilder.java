@@ -6,9 +6,9 @@ import org.openlca.app.cloud.ui.compare.json.JsonNode;
 import org.openlca.app.cloud.ui.compare.json.JsonNodeBuilder;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
-public class ModelNodeBuilder extends JsonNodeBuilder implements
-		Comparator<JsonNode> {
+public class ModelNodeBuilder extends JsonNodeBuilder implements Comparator<JsonNode> {
 
 	public ModelNodeBuilder() {
 		super(ModelUtil.getElementFinder());
@@ -41,6 +41,12 @@ public class ModelNodeBuilder extends JsonNodeBuilder implements
 			return 0;
 		JsonElement parent = node.parent.getElement();
 		String type = ModelUtil.getType(parent);
+		if (node.parent.getElement().isJsonArray()) {
+			JsonObject obj = node.getElement().getAsJsonObject();
+			if (obj.has("position")) {
+				return obj.get("position").getAsInt();
+			}
+		}
 		return PropertyLabels.getOrdinal(type, node.property);
 	}
 

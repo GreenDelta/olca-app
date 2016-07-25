@@ -10,6 +10,8 @@ import org.openlca.app.cloud.ui.compare.json.JsonNode;
 import org.openlca.app.cloud.ui.compare.json.JsonUtil.ElementFinder;
 import org.openlca.app.util.UncertaintyLabel;
 import org.openlca.core.model.AllocationFactor;
+import org.openlca.core.model.DQIndicator;
+import org.openlca.core.model.DQScore;
 import org.openlca.core.model.DQSystem;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
@@ -79,6 +81,10 @@ public class ModelUtil {
 			return getProjectVariantLabel(o);
 		if (o.has("name"))
 			return o.get("name").getAsString();
+		if (o.has("label"))
+			return o.get("label").getAsString();
+		if (isType(o, DQIndicator.class) || isType(o, DQScore.class))
+			return o.get("position").getAsString();
 		if (isType(parent, Flow.class) && isType(o, FlowPropertyFactor.class))
 			return getString(o, "flowProperty.name");
 		if (isType(parent, Process.class) && isType(o, Exchange.class))
@@ -164,7 +170,12 @@ public class ModelUtil {
 				return false;
 			if (isType(parent, NwSet.class))
 				return false;
+			if (isType(parent, DQIndicator.class))
+				return false;
 		}
+		if (property.equals("label"))
+			if (isType(parent, DQScore.class))
+				return false;
 		if (property.equals("productSystem"))
 			if (isType(parent, ProjectVariant.class))
 				return false;
@@ -243,28 +254,29 @@ public class ModelUtil {
 	private static class ModelElementFinder extends ElementFinder {
 
 		@Override
-		public String[] getComparisonFields(String propery) {
-			if (propery.equals("units"))
+		public String[] getComparisonFields(String property) {
+			if (property.equals("units"))
 				return new String[] { "name" };
-			if (propery.equals("flowProperties"))
+			if (property.equals("flowProperties"))
 				return new String[] { "flowProperty.@id" };
-			if (propery.equals("inputs") || propery.equals("outputs"))
+			if (property.equals("inputs") || property.equals("outputs"))
 				return new String[] { "flow.@id", "input" };
-			if (propery.equals("socialAspects"))
+			if (property.equals("socialAspects"))
 				return new String[] { "socialIndicator.@id" };
-			if (propery.equals("synonyms"))
+			if (property.equals("synonyms"))
 				return new String[0];
-			if (propery.equals("allocationFactors"))
-				return new String[] { "product.@id", "exchange.flow.@id",
-						"allocationType" };
-			if (propery.equals("impactFactors"))
+			if (property.equals("allocationFactors"))
+				return new String[] { "product.@id", "exchange.flow.@id", "allocationType" };
+			if (property.equals("impactFactors"))
 				return new String[] { "flow.@id" };
-			if (propery.equals("factors"))
+			if (property.equals("factors"))
 				return new String[] { "impactCategory.@id" };
-			if (propery.equals("variants"))
+			if (property.equals("variants"))
 				return new String[] { "name", "productSystem.@id" };
-			if (propery.equals("parameterRedefs"))
+			if (property.equals("parameterRedefs"))
 				return new String[] { "name", "context.@id" };
+			if (property.equals("indicators") || property.equals("scores"))
+				return new String[] { "position" };
 			return new String[] { "@id" };
 		}
 
