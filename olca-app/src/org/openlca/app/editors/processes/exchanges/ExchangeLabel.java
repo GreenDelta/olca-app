@@ -44,7 +44,10 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider {
 			return null;
 		Exchange exchange = (Exchange) element;
 		if (col == 0)
-			return Images.get(exchange.getFlow());
+			if (exchange.getFlow() == null)
+				return Images.get(ModelType.FLOW);
+			else
+				return Images.get(exchange.getFlow());
 		if (col == 3)
 			return Images.get(ModelType.UNIT);
 		if (col == 6 && forInputs && exchange.getDefaultProviderId() != 0l)
@@ -62,8 +65,7 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider {
 		Process process = editor.getModel();
 		if (Objects.equals(process.getQuantitativeReference(), exchange))
 			return null;
-		else
-			return exchange.isAvoidedProduct() ? Icon.CHECK_TRUE.get() : Icon.CHECK_FALSE.get();
+		return exchange.isAvoidedProduct() ? Icon.CHECK_TRUE.get() : Icon.CHECK_FALSE.get();
 	}
 
 	@Override
@@ -75,6 +77,8 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider {
 		case 0:
 			return Labels.getDisplayName(e.getFlow());
 		case 1:
+			if (e.getFlow() == null)
+				return null;
 			return CategoryPath.getShort(e.getFlow().getCategory());
 		case 2:
 			return getAmountText(e);

@@ -29,6 +29,7 @@ import org.openlca.app.validation.ModelStatus.Status;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.references.IReferenceSearch.Reference;
 import org.openlca.core.model.Category;
+import org.openlca.core.model.Parameter;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
@@ -40,7 +41,7 @@ public class ValidationView extends ViewPart {
 	public ValidationView() {
 		instance = this;
 	}
-	
+
 	@Override
 	public void createPartControl(Composite parent) {
 		SashForm body = new SashForm(parent, SWT.VERTICAL | SWT.SMOOTH);
@@ -87,7 +88,7 @@ public class ValidationView extends ViewPart {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static void clear() {
 		if (instance == null)
 			return;
@@ -99,7 +100,7 @@ public class ValidationView extends ViewPart {
 		instance = null;
 		super.dispose();
 	}
-	
+
 	@Override
 	public void setFocus() {
 
@@ -230,12 +231,16 @@ public class ValidationView extends ViewPart {
 				text = "#Missing ";
 			else
 				text = "#Broken ";
-			text += ref.property;
-			if (ref.id != 0)
-				text += " (id=" + ref.id + ")";
-			if (!com.google.common.base.Strings.isNullOrEmpty(ref.nestedProperty))
-				text += " in " + ref.nestedProperty + " (id=" + ref.nestedOwnerId + ")";
-			return text;
+			if (ref.getType() == Parameter.class) {
+				return text += "parameter in formula";
+			} else {
+				text += ref.property;
+				if (ref.id != 0)
+					text += " (id=" + ref.id + ")";
+				if (!com.google.common.base.Strings.isNullOrEmpty(ref.nestedProperty))
+					text += " in " + ref.nestedProperty + " (id=" + ref.nestedOwnerId + ")";
+				return text;
+			}
 		}
 	}
 

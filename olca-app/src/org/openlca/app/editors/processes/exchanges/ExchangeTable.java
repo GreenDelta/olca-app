@@ -39,9 +39,11 @@ import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
+import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
+import org.openlca.core.model.Unit;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -193,8 +195,8 @@ class ExchangeTable {
 			Flow flow = flowDao.getForId(descriptor.getId());
 			exchange.setFlow(flow);
 			exchange.setFlowPropertyFactor(flow.getReferenceFactor());
-			exchange.setUnit(flow.getReferenceFactor().getFlowProperty()
-					.getUnitGroup().getReferenceUnit());
+			Unit unit = getUnit(flow.getReferenceFactor());
+			exchange.setUnit(unit);
 			exchange.setAmountValue(1.0);
 			exchange.setInput(forInputs);
 			process.getExchanges().add(exchange);
@@ -202,6 +204,16 @@ class ExchangeTable {
 		viewer.setInput(process.getExchanges());
 		editor.setDirty(true);
 		editor.postEvent(editor.EXCHANGES_CHANGED, this);
+	}
+
+	private Unit getUnit(FlowPropertyFactor factor) {
+		if (factor == null)
+			return null;
+		if (factor.getFlowProperty() == null)
+			return null;
+		if (factor.getFlowProperty().getUnitGroup() == null)
+			return null;
+		return factor.getFlowProperty().getUnitGroup().getReferenceUnit();
 	}
 
 	private class AmountModifier extends TextCellModifier<Exchange> {

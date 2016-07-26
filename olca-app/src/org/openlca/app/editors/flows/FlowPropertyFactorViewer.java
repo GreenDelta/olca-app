@@ -30,6 +30,8 @@ import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.ModelType;
+import org.openlca.core.model.Unit;
+import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.FlowPropertyDescriptor;
@@ -157,11 +159,12 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 			if (column != 4)
 				return null;
 			Flow flow = editor.getModel();
-			FlowPropertyFactor refFactor = flow != null ? flow
-					.getReferenceFactor() : null;
-			if (refFactor != null && refFactor.equals(element))
-				return Icon.CHECK_TRUE.get();
-			return Icon.CHECK_FALSE.get();
+			if (flow == null || flow.getReferenceFactor() == null)
+				return Icon.CHECK_FALSE.get();
+			FlowPropertyFactor refFactor = flow.getReferenceFactor();
+			if (refFactor == null || !refFactor.equals(element))
+				return Icon.CHECK_FALSE.get();
+			return Icon.CHECK_TRUE.get();
 		}
 
 		@Override
@@ -171,12 +174,19 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 			FlowPropertyFactor factor = (FlowPropertyFactor) element;
 			switch (columnIndex) {
 			case 0:
+				if (factor.getFlowProperty() == null)
+					return null;
 				return factor.getFlowProperty().getName();
 			case 1:
 				return Double.toString(factor.getConversionFactor());
 			case 2:
-				return factor.getFlowProperty().getUnitGroup()
-						.getReferenceUnit().getName();
+				if (factor.getFlowProperty() == null)
+					return null;
+				if (factor.getFlowProperty().getUnitGroup() == null)
+					return null;
+				if (factor.getFlowProperty().getUnitGroup().getReferenceUnit() == null)
+					return null;
+				return factor.getFlowProperty().getUnitGroup().getReferenceUnit().getName();
 			case 3:
 				return getFormula(factor);
 			default:
@@ -187,24 +197,31 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 		private String getFormula(FlowPropertyFactor factor) {
 			Flow flow = editor.getModel();
 			FlowPropertyFactor refFactor = flow.getReferenceFactor();
-			String refUnit = refFactor.getFlowProperty().getUnitGroup()
-					.getReferenceUnit().getName();
-			String unit = factor.getFlowProperty().getUnitGroup()
-					.getReferenceUnit().getName();
-			return "1.0 " + refUnit + " = "
-					+ Double.toString(factor.getConversionFactor()) + " "
-					+ unit;
+			Unit refUnit = getUnit(refFactor);
+			Unit unit = getUnit(factor);
+			if (unit == null || refUnit == null)
+				return null;
+			return "1.0 " + refUnit.getName()
+					+ " = " + Double.toString(factor.getConversionFactor()) + " " + unit.getName();
+		}
+
+		private Unit getUnit(FlowPropertyFactor factor) {
+			if (factor == null || factor.getFlowProperty() == null)
+				return null;
+			UnitGroup unitGroup = factor.getFlowProperty().getUnitGroup();
+			if (unitGroup == null)
+				return null;
+			return unitGroup.getReferenceUnit();
 		}
 
 		@Override
 		public Font getFont(Object element, int columnIndex) {
 			Flow flow = editor.getModel();
-			FlowPropertyFactor refFactor = flow != null ? flow
-					.getReferenceFactor() : null;
-			if (refFactor != null && refFactor.equals(element)) {
-				return UI.boldFont();
-			}
-			return null;
+			if (flow == null || flow.getReferenceFactor() == null)
+				return null;
+			if (!flow.getReferenceFactor().equals(element))
+				return null;
+			return UI.boldFont();
 		}
 	}
 

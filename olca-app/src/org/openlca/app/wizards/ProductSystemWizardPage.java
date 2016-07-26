@@ -73,10 +73,11 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 			system.setReferenceProcess(refProcess);
 			Exchange qRef = refProcess.getQuantitativeReference();
 			system.setReferenceExchange(qRef);
-			system.setTargetUnit(qRef.getUnit());
-			system.setTargetFlowPropertyFactor(qRef
-					.getFlowPropertyFactor());
+			if (qRef == null)
+				return system;
 			system.setTargetAmount(qRef.getAmountValue());
+			system.setTargetUnit(qRef.getUnit());
+			system.setTargetFlowPropertyFactor(qRef.getFlowPropertyFactor());
 		} catch (final Exception e) {
 			log.error("Loading reference process failed / no selected", e);
 		}

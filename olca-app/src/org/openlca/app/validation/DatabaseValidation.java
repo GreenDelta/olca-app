@@ -61,7 +61,7 @@ public class DatabaseValidation {
 			toEval.put(type, ids);
 		}
 		if (monitor != null)
-			monitor.beginTask("#Indexing database", toEval.size() * 3);
+			monitor.beginTask("#Validating database", toEval.size() * 3);
 		List<ModelStatus> result = new ArrayList<>();
 		for (ModelType type : toEval.keySet()) {
 			if (monitor != null)
@@ -92,7 +92,7 @@ public class DatabaseValidation {
 		if (db == null)
 			return null;
 		if (monitor != null)
-			monitor.beginTask("Indexing model", IProgressMonitor.UNKNOWN);
+			monitor.beginTask("Validating model", IProgressMonitor.UNKNOWN);
 		ModelStatus result = eval(type, Collections.singleton(id)).get(0);
 		if (monitor != null)
 			monitor.done();
@@ -104,7 +104,7 @@ public class DatabaseValidation {
 		if (db == null)
 			return Collections.emptyList();
 		if (monitor != null)
-			monitor.beginTask("Indexing model", IProgressMonitor.UNKNOWN);
+			monitor.beginTask("Validating model", IProgressMonitor.UNKNOWN);
 		Set<Long> ids = getAll(type);
 		List<ModelStatus> result = eval(type, ids);
 		if (monitor != null)
@@ -177,15 +177,15 @@ public class DatabaseValidation {
 	private List<Reference> checkExistence(List<Reference> references) {
 		IDatabase db = Database.get();
 		List<Reference> notExisting = new ArrayList<>();
-		Map<Class<? extends AbstractEntity>, Map<Long, Reference>> byType = splitByType(references);
+		Map<Class<? extends AbstractEntity>, Map<Long, List<Reference>>> byType = splitByType(references);
 		for (Class<? extends AbstractEntity> type : byType.keySet()) {
-			Map<Long, Reference> refMap = byType.get(type);
-			Collection<Reference> values = refMap.values();
+			Map<Long, List<Reference>> refMap = byType.get(type);
+			Collection<List<Reference>> values = refMap.values();
 			Set<Long> ids = toIdSet(values);
 			Map<Long, Boolean> map = Daos.createBaseDao(db, type).contains(ids);
 			for (Long id : map.keySet())
 				if (map.get(id) == false)
-					notExisting.add(refMap.get(id));
+					notExisting.addAll(refMap.get(id));
 		}
 		for (Reference ref : references)
 			if (!ref.optional && ref.id == 0l)
@@ -193,23 +193,31 @@ public class DatabaseValidation {
 		return notExisting;
 	}
 
-	private Map<Class<? extends AbstractEntity>, Map<Long, Reference>> splitByType(
+	private Map<Class<? extends AbstractEntity>, Map<Long, List<Reference>>> splitByType(
 			List<Reference> references) {
-		Map<Class<? extends AbstractEntity>, Map<Long, Reference>> byType = new HashMap<>();
+		Map<Class<? extends AbstractEntity>, Map<Long, List<Reference>>> byType = new HashMap<>();
 		for (Reference reference : references) {
-			Map<Long, Reference> forType = byType.get(reference.getType());
+			Map<Long, List<Reference>> forType = byType.get(reference.getType());
 			if (forType == null)
 				byType.put(reference.getType(), forType = new HashMap<>());
-			forType.put(reference.id, reference);
+			add(reference, forType);
 		}
 		return byType;
 	}
 
-	private Set<Long> toIdSet(Collection<Reference> references) {
+	private void add(Reference reference, Map<Long, List<Reference>> map) {
+		List<Reference> list = map.get(reference.id);
+		if (list == null)
+			map.put(reference.id, list = new ArrayList<>());
+		list.add(reference);
+	}
+
+	private Set<Long> toIdSet(Collection<List<Reference>> references) {
 		Set<Long> ids = new HashSet<>();
-		for (Reference reference : references)
-			if (reference.id != 0l)
-				ids.add(reference.id);
+		for (List<Reference> referenceList : references)
+			for (Reference reference : referenceList)
+				if (reference.id != 0l)
+					ids.add(reference.id);
 		return ids;
 	}
 
