@@ -104,7 +104,7 @@ class Dialog extends FormDialog {
 				aspect.source = dao.getForId(d.getId());
 			}
 		});
-		UI.formLabel(body, tk, "");
+		UI.filler(body, tk);
 	}
 
 	private void commentRow(Composite body, FormToolkit tk) {
@@ -112,13 +112,13 @@ class Dialog extends FormDialog {
 		if (aspect.comment != null)
 			t.setText(aspect.comment);
 		t.addModifyListener(e -> aspect.comment = t.getText());
-		UI.formLabel(body, tk, "");
+		UI.filler(body, tk);
 	}
 
 	private void qualityRow(Composite body, FormToolkit tk) {
 		UI.formLabel(body, tk, M.DataQuality);
 		new QualityPanel(aspect).create(body, tk);
-		UI.formLabel(body, tk, "");
+		UI.filler(body, tk);
 	}
 
 	@Override

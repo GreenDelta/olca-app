@@ -22,7 +22,7 @@ public class ReportEditorPage extends FormPage {
 	private ProjectEditor editor;
 	private DataBinding binding;
 
-	private FormToolkit toolkit;
+	private FormToolkit tk;
 	private SectionList sectionList;
 
 	public ReportEditorPage(ProjectEditor editor, Report report) {
@@ -35,27 +35,25 @@ public class ReportEditorPage extends FormPage {
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
 		ScrolledForm form = UI.formHeader(managedForm, M.ReportSections);
-		toolkit = managedForm.getToolkit();
-		Composite body = UI.formBody(form, toolkit);
+		tk = managedForm.getToolkit();
+		Composite body = UI.formBody(form, tk);
 		createInfoSection(body);
 		createAddButton(body);
-		sectionList = new SectionList(editor, body, form, toolkit);
+		sectionList = new SectionList(editor, body, form, tk);
 		form.reflow(true);
 	}
 
 	private void createAddButton(Composite body) {
-		Composite composite = UI.formComposite(body, toolkit);
-		UI.formLabel(composite, "");
-		Button addButton = toolkit.createButton(composite, M.AddSection,
-				SWT.NONE);
+		Composite comp = UI.formComposite(body, tk);
+		UI.filler(comp);
+		Button addButton = tk.createButton(comp, M.AddSection, SWT.NONE);
 		addButton.setImage(Icon.ADD.get());
 		Controls.onSelect(addButton, e -> sectionList.addNew());
 	}
 
 	private void createInfoSection(Composite body) {
-		Composite composite = UI.formSection(body, toolkit,
-				M.GeneralInformation);
-		Text titleText = UI.formText(composite, toolkit, M.Title);
+		Composite comp = UI.formSection(body, tk, M.GeneralInformation);
+		Text titleText = UI.formText(comp, tk, M.Title);
 		binding.onString(() -> report, "title", titleText);
 	}
 
