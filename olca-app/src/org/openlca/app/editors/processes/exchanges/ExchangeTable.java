@@ -33,7 +33,6 @@ import org.openlca.app.viewers.table.modify.CheckBoxCellModifier;
 import org.openlca.app.viewers.table.modify.ComboBoxCellModifier;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
-import org.openlca.app.viewers.table.modify.field.StringModifier;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
@@ -124,7 +123,7 @@ class ExchangeTable {
 		ms.bind(PEDIGREE, new PedigreeCellEditor(viewer, editor));
 		ms.bind(UNCERTAINTY, new UncertaintyCellEditor(viewer.getTable(),
 				editor));
-		ms.bind(DESCRIPTION, new StringModifier<>(editor, "description"));
+		ms.bind(DESCRIPTION, new CommentEditor(viewer, editor));
 		if (forInputs)
 			ms.bind(DEFAULT_PROVIDER, new ProviderModifier());
 		if (!forInputs)
