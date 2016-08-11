@@ -31,6 +31,7 @@ import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.FileStore;
 import org.openlca.core.model.Source;
+import org.python.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,15 +73,26 @@ class SourceInfoPage extends ModelPage<Source> {
 		Composite comp = UI.formSection(body, tk, M.AdditionalInformation);
 		UI.gridLayout(comp, 3);
 		createText(M.URL, "url", comp);
+		Button urlButton = tk.createButton(comp, M.Open, SWT.NONE);
+		urlButton.setImage(Icon.MAP.get());
+		Controls.onSelect(urlButton, e -> {
+			String url = getModel().getUrl();
+			if (Strings.isNullOrEmpty(url))
+				return;
+			Desktop.browse(url);
+		});
 		createText(M.TextReference, "textReference", comp);
+		UI.filler(comp, tk);
 		Text text = UI.formText(comp, getManagedForm().getToolkit(), M.Year);
 		getBinding().onShort(() -> getModel(), "year", text);
+		UI.filler(comp, tk);
 		fileSection(comp);
 	}
 
 	private void fileSection(Composite parent) {
 		UI.formLabel(parent, M.File);
 		Composite comp = tk.createComposite(parent);
+		UI.filler(parent);
 		GridLayout layout = new GridLayout();
 		layout.marginWidth = 0;
 		layout.marginHeight = 0;
@@ -89,7 +101,7 @@ class SourceInfoPage extends ModelPage<Source> {
 		comp.setLayout(layout);
 		comp.addMouseTrackListener(new DeleteFileVisibility());
 		Button browseButton = tk.createButton(comp, M.Browse, SWT.NONE);
-		Controls.onSelect(browseButton, (e) -> selectFile());
+		Controls.onSelect(browseButton, e -> selectFile());
 		fileLink(comp);
 		deleteLink(comp);
 	}
