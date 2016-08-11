@@ -4,7 +4,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.forms.HyperlinkSettings;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
@@ -30,7 +29,7 @@ public class AnalyzeInfoPage extends FormPage {
 
 	private CalculationSetup setup;
 	private FullResultProvider result;
-	private FormToolkit toolkit;
+	private FormToolkit tk;
 
 	public AnalyzeInfoPage(FormEditor editor, FullResultProvider result,
 			CalculationSetup setup) {
@@ -40,58 +39,52 @@ public class AnalyzeInfoPage extends FormPage {
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = managedForm.getForm();
-		toolkit = managedForm.getToolkit();
-		toolkit.getHyperlinkGroup().setHyperlinkUnderlineMode(
-				HyperlinkSettings.UNDERLINE_HOVER);
-		form.setText(M.AnalysisResultOf + " "
+	protected void createFormContent(IManagedForm mform) {
+		ScrolledForm form = UI.formHeader(mform, M.AnalysisResultOf + " "
 				+ Labels.getDisplayName(setup.productSystem));
-		toolkit.decorateFormHeading(form.getForm());
-		Composite body = UI.formBody(form, toolkit);
+		tk = mform.getToolkit();
+		Composite body = UI.formBody(form, tk);
 		createInfoSection(body);
-		createResultSections(body);
+		resultSections(body);
 		form.reflow(true);
 	}
 
 	private void createInfoSection(Composite body) {
-		Composite composite = UI.formSection(body, toolkit,
-				M.GeneralInformation);
+		Composite comp = UI.formSection(body, tk, M.GeneralInformation);
 		ProductSystem system = setup.productSystem;
-		createText(composite, M.ProductSystem, system.getName());
-		String targetText = system.getTargetAmount() + " "
-				+ system.getTargetUnit().getName() + " "
+		text(comp, M.ProductSystem, system.getName());
+		String refAmount = setup.getAmount() + " "
+				+ setup.getUnit().getName() + " "
 				+ system.getReferenceExchange().getFlow().getName();
-		createText(composite, M.TargetAmount, targetText);
+		text(comp, M.TargetAmount, refAmount);
 		ImpactMethodDescriptor method = setup.impactMethod;
-		if (method != null)
-			createText(composite, M.ImpactAssessmentMethod,
-					method.getName());
+		if (method != null) {
+			text(comp, M.ImpactAssessmentMethod, method.getName());
+		}
 		NwSetDescriptor nwSet = setup.nwSet;
-		if (nwSet != null)
-			createText(composite, M.NormalizationAndWeightingSet,
-					nwSet.getName());
-		createExportButton(composite);
+		if (nwSet != null) {
+			text(comp, M.NormalizationAndWeightingSet, nwSet.getName());
+		}
+		exportButton(comp);
 	}
 
-	private void createExportButton(Composite composite) {
-		toolkit.createLabel(composite, "");
-		Button button = toolkit.createButton(composite, M.ExportToExcel,
-				SWT.NONE);
+	private void exportButton(Composite comp) {
+		tk.createLabel(comp, "");
+		Button button = tk.createButton(comp, M.ExportToExcel, SWT.NONE);
 		button.setImage(Images.get(FileType.EXCEL));
 		Controls.onSelect(button, (e) -> new ExcelExport().run());
 	}
 
-	private void createText(Composite parent, String label, String val) {
-		Text text = UI.formText(parent, toolkit, label);
+	private void text(Composite comp, String label, String val) {
+		Text text = UI.formText(comp, tk, label);
 		text.setText(val);
 		text.setEditable(false);
 	}
 
-	private void createResultSections(Composite body) {
-		ContributionChartSection.forFlows(result).render(body, toolkit);
-		if (result.hasImpactResults())
-			ContributionChartSection.forImpacts(result).render(body, toolkit);
-
+	private void resultSections(Composite body) {
+		ContributionChartSection.forFlows(result).render(body, tk);
+		if (result.hasImpactResults()) {
+			ContributionChartSection.forImpacts(result).render(body, tk);
+		}
 	}
 }
