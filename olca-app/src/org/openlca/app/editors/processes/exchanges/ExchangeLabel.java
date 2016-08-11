@@ -39,31 +39,31 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider {
 	}
 
 	@Override
-	public Image getColumnImage(Object element, int col) {
-		if (!(element instanceof Exchange))
+	public Image getColumnImage(Object obj, int col) {
+		if (!(obj instanceof Exchange))
 			return null;
-		Exchange exchange = (Exchange) element;
+		Exchange e = (Exchange) obj;
 		if (col == 0)
-			return Images.get(exchange.getFlow());
+			return Images.get(e.getFlow());
 		if (col == 3)
 			return Images.get(ModelType.UNIT);
-		if (col == 6 && forInputs && exchange.getDefaultProviderId() != 0l)
+		if (col == 6 && forInputs && e.getDefaultProviderId() != 0l)
 			return Images.get(ModelType.PROCESS);
 		if (col == 6 && !forInputs)
-			return getAvoidedCheck(exchange);
+			return getAvoidedCheck(e);
 		return null;
 	}
 
-	private Image getAvoidedCheck(Exchange exchange) {
-		if (exchange.getFlow() == null)
+	private Image getAvoidedCheck(Exchange e) {
+		if (e.getFlow() == null)
 			return null;
-		if (exchange.getFlow().getFlowType() != FlowType.PRODUCT_FLOW)
+		if (e.getFlow().getFlowType() != FlowType.PRODUCT_FLOW)
 			return null;
 		Process process = editor.getModel();
-		if (Objects.equals(process.getQuantitativeReference(), exchange))
+		if (Objects.equals(process.getQuantitativeReference(), e))
 			return null;
 		else
-			return exchange.isAvoidedProduct() ? Icon.CHECK_TRUE.get() : Icon.CHECK_FALSE.get();
+			return e.isAvoidedProduct() ? Icon.CHECK_TRUE.get() : Icon.CHECK_FALSE.get();
 	}
 
 	@Override
@@ -119,16 +119,13 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider {
 	private String getCostValue(Exchange e) {
 		if (e == null || e.costValue == null)
 			return null;
-		String s;
-		if (showFormulas && e.costFormula != null) {
-			s = e.costFormula;
-		} else {
-			if (Preferences.is(Preferences.FORMAT_INPUT_VALUES))
-				return Numbers.format(e.costValue);
-			else
-				return Double.toString(e.costValue);
-		}
-		return e.currency == null ? s : s + " " + e.currency.code;
+		String unit = e.currency == null ? "" : " " + e.currency.code;
+		if (showFormulas && e.costFormula != null)
+			return e.costFormula + unit;
+		if (Preferences.is(Preferences.FORMAT_INPUT_VALUES))
+			return Numbers.format(e.costValue) + unit;
+		else
+			return Double.toString(e.costValue) + unit;
 	}
 
 	CellLabelProvider asColumnLabel() {
