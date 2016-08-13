@@ -30,7 +30,7 @@ import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.matrix.LongPair;
-import org.openlca.core.matrix.ProductIndex;
+import org.openlca.core.matrix.TechIndex;
 import org.openlca.core.model.Currency;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
@@ -191,15 +191,15 @@ class TotalRequirementsSection {
 		}
 
 		private void init(int idx) {
-			ProductIndex productIdx = result.result.productIndex;
-			if (productIdx == null)
+			TechIndex index = result.result.productIndex;
+			if (index == null)
 				return;
-			setProcessProduct(productIdx, idx);
+			setProcessProduct(index, idx);
 			setCostValue(idx);
 		}
 
-		private void setProcessProduct(ProductIndex productIdx, int idx) {
-			LongPair lp = productIdx.getProductAt(idx);
+		private void setProcessProduct(TechIndex techIdx, int idx) {
+			LongPair lp = techIdx.getProviderAt(idx);
 			if (lp == null)
 				return;
 			ProcessDescriptor process = processDescriptors.get(lp.getFirst());

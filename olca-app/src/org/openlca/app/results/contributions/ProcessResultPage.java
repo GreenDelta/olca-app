@@ -107,7 +107,8 @@ public class ProcessResultPage extends FormPage {
 	private void setInputs() {
 		fillFlows(inputTable);
 		fillFlows(outputTable);
-		ProcessDescriptor p = processDescriptors.get(result.result.productIndex.getRefProduct().getFirst());
+		long refProcessId = result.result.productIndex.getRefFlow().getFirst();
+		ProcessDescriptor p = processDescriptors.get(refProcessId);
 		flowProcessViewer.select(p);
 		if (result.hasImpactResults()) {
 			impactProcessCombo.select(p);
@@ -353,8 +354,7 @@ public class ProcessResultPage extends FormPage {
 		private FullResultProvider result;
 
 		public ResultProvider(FullResultProvider result) {
-			long refProcessId = result.result.productIndex
-					.getRefProduct().getFirst();
+			long refProcessId = result.result.productIndex.getRefFlow().getFirst();
 			this.process = cache.get(ProcessDescriptor.class, refProcessId);
 			this.result = result;
 		}
