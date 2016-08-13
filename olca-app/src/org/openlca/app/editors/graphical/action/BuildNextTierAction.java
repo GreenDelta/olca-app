@@ -113,7 +113,7 @@ class BuildNextTierAction extends Action implements IBuildAction {
 		List<ProcessLink> incomingLinks = linkSearch
 				.getIncomingLinks(processId);
 		for (ProcessLink link : incomingLinks)
-			if (link.getFlowId() == flowId)
+			if (link.flowId == flowId)
 				return true;
 		return false;
 	}

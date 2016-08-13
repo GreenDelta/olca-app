@@ -74,7 +74,7 @@ public class ConnectorDialog extends Dialog {
 		linkSearch = systemNode.getLinkSearch();
 		selectProvider = exchangeNode.getExchange().isInput();
 		for (ProcessLink link : linkSearch.getIncomingLinks(processId))
-			if (link.getFlowId() == flowId)
+			if (link.flowId == flowId)
 				isConnected = true;
 	}
 
@@ -187,9 +187,9 @@ public class ConnectorDialog extends Dialog {
 
 	private boolean isAlreadyProvider(ProcessDescriptor process) {
 		for (ProcessLink link : linkSearch.getOutgoingLinks(process.getId())) {
-			if (link.getRecipientId() != processId)
+			if (link.processId != processId)
 				continue;
-			if (link.getFlowId() != flowId)
+			if (link.flowId != flowId)
 				continue;
 			return true;
 		}
@@ -198,9 +198,9 @@ public class ConnectorDialog extends Dialog {
 
 	private boolean isAlreadyReceiver(ProcessDescriptor process) {
 		for (ProcessLink link : linkSearch.getIncomingLinks(process.getId())) {
-			if (link.getProviderId() != processId)
+			if (link.providerId != processId)
 				continue;
-			if (link.getFlowId() != flowId)
+			if (link.flowId != flowId)
 				continue;
 			return true;
 		}
@@ -228,7 +228,7 @@ public class ConnectorDialog extends Dialog {
 	private boolean hasProvider(ConnectableProcess process) {
 		for (ProcessLink link : linkSearch.getIncomingLinks(process
 				.getProcess().getId()))
-			if (link.getFlowId() == flowId)
+			if (link.flowId == flowId)
 				return true;
 		return false;
 	}

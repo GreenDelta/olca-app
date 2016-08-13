@@ -80,9 +80,10 @@ class MassCreationCommand extends Command {
 	private ProcessLink createProcessLink(long sourceId, long targetId,
 			long flowId) {
 		ProcessLink processLink = new ProcessLink();
-		processLink.setRecipientId(targetId);
-		processLink.setProviderId(sourceId);
-		processLink.setFlowId(flowId);
+		processLink.processId = targetId;
+		processLink.providerId = sourceId;
+		processLink.flowId = flowId;
+		// TODO: exchangeId
 		return processLink;
 	}
 

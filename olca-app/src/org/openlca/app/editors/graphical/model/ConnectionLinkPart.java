@@ -79,9 +79,9 @@ class ConnectionLinkPart extends AbstractConnectionEditPart {
 			ConnectionLink link = (ConnectionLink) request
 					.getConnectionEditPart().getModel();
 			ExchangeNode target = link.getTargetNode().getInputNode(
-					link.getProcessLink().getFlowId());
+					link.getProcessLink().flowId);
 			ExchangeNode source = link.getSourceNode().getOutputNode(
-					link.getProcessLink().getFlowId());
+					link.getProcessLink().flowId);
 
 			ExchangeNode n1 = request.isMovingStartAnchor() ? target : source;
 			ExchangeNode n2 = request.isMovingStartAnchor() ? source : target;

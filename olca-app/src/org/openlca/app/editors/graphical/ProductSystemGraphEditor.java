@@ -146,14 +146,14 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 				.getLinkSearch();
 		long id = node.getProcess().getId();
 		for (ProcessLink link : linkSearch.getLinks(id)) {
-			long processId = link.getRecipientId() == id ? link.getProviderId()
-					: link.getRecipientId();
+			long processId = link.processId == id ? link.providerId
+					: link.processId;
 			ProcessNode otherNode = model.getProcessNode(processId);
 			if (otherNode == null)
 				continue;
-			ProcessNode sourceNode = link.getRecipientId() == id ? otherNode
+			ProcessNode sourceNode = link.processId == id ? otherNode
 					: node;
-			ProcessNode targetNode = link.getRecipientId() == id ? node
+			ProcessNode targetNode = link.processId == id ? node
 					: otherNode;
 			if (!sourceNode.isExpandedRight() && !targetNode.isExpandedLeft())
 				continue;

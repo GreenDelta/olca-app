@@ -9,7 +9,7 @@ import org.eclipse.gef.requests.ReconnectRequest;
 import org.openlca.app.editors.graphical.command.CreateLinkCommand;
 
 abstract class AbstractNodeEditPart<N extends Node> extends
-		AppAbstractEditPart<N> implements NodeEditPart {
+		AppAbstractEditPart<N>implements NodeEditPart {
 
 	@Override
 	public ConnectionAnchor getSourceConnectionAnchor(
@@ -44,7 +44,7 @@ abstract class AbstractNodeEditPart<N extends Node> extends
 					.getModel();
 			ProcessNode processNode = ((ExchangePart) req.getTarget())
 					.getModel().getParent().getParent();
-			long flowId = link.getProcessLink().getFlowId();
+			long flowId = link.getProcessLink().flowId;
 			ExchangeNode source = processNode.getOutputNode(flowId);
 			ExchangeNode target = link.getTargetNode().getInputNode(flowId);
 			if (target != null && target.matches(source))
@@ -80,7 +80,7 @@ abstract class AbstractNodeEditPart<N extends Node> extends
 					.getModel();
 			ProcessNode processNode = ((ExchangePart) req.getTarget())
 					.getModel().getParent().getParent();
-			long flowId = link.getProcessLink().getFlowId();
+			long flowId = link.getProcessLink().flowId;
 			ExchangeNode source = link.getSourceNode().getOutputNode(flowId);
 			ExchangeNode target = processNode.getInputNode(flowId);
 			if (source != null && source.matches(target))

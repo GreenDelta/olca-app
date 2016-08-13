@@ -61,10 +61,9 @@ class Statistics {
 		Multimap<Long, Long> inEdges = HashMultimap.create();
 		Multimap<Long, Long> outEdges = HashMultimap.create();
 		for (ProcessLink link : system.getProcessLinks()) {
-			processProducts.add(LongPair.of(link.getProviderId(),
-					link.getFlowId()));
-			inEdges.put(link.getRecipientId(), link.getProviderId());
-			outEdges.put(link.getProviderId(), link.getRecipientId());
+			processProducts.add(LongPair.of(link.providerId, link.flowId));
+			inEdges.put(link.processId, link.providerId);
+			outEdges.put(link.providerId, link.processId);
 		}
 		techMatrixSize = processProducts.size();
 		connectedGraph = isConnectedGraph(system, inEdges);

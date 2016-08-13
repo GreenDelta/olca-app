@@ -62,9 +62,9 @@ public class TreeLayout {
 		for (Node node : nodes) {
 			long processId = node.processId;
 			for (ProcessLink link : linkSearch.getLinks(processId)) {
-				if (link.getRecipientId() != processId)
+				if (link.processId != processId)
 					continue;
-				long providerId = link.getProviderId();
+				long providerId = link.providerId;
 				if (containing.get(providerId) != null)
 					continue;
 				Node child = new Node();
@@ -80,9 +80,9 @@ public class TreeLayout {
 		for (Node node : nodes) {
 			long processId = node.processId;
 			for (ProcessLink link : linkSearch.getLinks(processId)) {
-				if (link.getProviderId() != processId)
+				if (link.providerId != processId)
 					continue;
-				long recipientId = link.getRecipientId();
+				long recipientId = link.processId;
 				if (containing.get(recipientId) != null)
 					continue;
 				Node child = new Node();

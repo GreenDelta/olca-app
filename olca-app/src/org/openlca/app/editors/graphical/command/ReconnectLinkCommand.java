@@ -15,10 +15,6 @@ public class ReconnectLinkCommand extends Command {
 	private ProcessNode sourceNode;
 	private ProcessNode targetNode;
 
-	ReconnectLinkCommand() {
-
-	}
-
 	@Override
 	public boolean canExecute() {
 		if (sourceNode == null)
@@ -43,9 +39,10 @@ public class ReconnectLinkCommand extends Command {
 				.remove(oldLink.getProcessLink());
 		systemNode.getLinkSearch().remove(oldLink.getProcessLink());
 		ProcessLink processLink = new ProcessLink();
-		processLink.setRecipientId(targetNode.getProcess().getId());
-		processLink.setProviderId(sourceNode.getProcess().getId());
-		processLink.setFlowId(oldLink.getProcessLink().getFlowId());
+		processLink.processId = targetNode.getProcess().getId();
+		processLink.providerId = sourceNode.getProcess().getId();
+		processLink.flowId = oldLink.getProcessLink().flowId;
+		// TODO: exchangeId
 		systemNode.getProductSystem().getProcessLinks().add(processLink);
 		systemNode.getLinkSearch().put(processLink);
 		link = new ConnectionLink();

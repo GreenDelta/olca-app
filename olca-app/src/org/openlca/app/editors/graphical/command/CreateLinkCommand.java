@@ -59,10 +59,10 @@ public class CreateLinkCommand extends Command {
 		if (processLink == null)
 			processLink = new ProcessLink();
 		if (targetNode != null)
-			processLink.setRecipientId(targetNode.getProcess().getId());
+			processLink.processId = targetNode.getProcess().getId();
 		if (sourceNode != null)
-			processLink.setProviderId(sourceNode.getProcess().getId());
-		processLink.setFlowId(flowId);
+			processLink.providerId = sourceNode.getProcess().getId();
+		processLink.flowId = flowId;
 		return processLink;
 	}
 

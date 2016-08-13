@@ -84,7 +84,7 @@ class HtmlGraph extends FormPage implements HtmlPage {
 			handled.add(recipient);
 			int recipId = nodeIndex.getIndex(recipient);
 			for (ProcessLink link : map.getIncomingLinks(recipient)) {
-				long provider = link.getProviderId();
+				long provider = link.providerId;
 				if (handled.contains(provider) || queue.contains(provider))
 					continue;
 				queue.add(provider);

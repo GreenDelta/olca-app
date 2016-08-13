@@ -135,7 +135,8 @@ public class ProcessNode extends Node {
 			text += " ["
 					+ Cache.getEntityCache()
 							.get(Location.class, process.getLocation())
-							.getCode() + "]";
+							.getCode()
+					+ "]";
 		return text;
 	}
 
@@ -243,7 +244,7 @@ public class ProcessNode extends Node {
 		MutableProcessLinkSearchMap linkSearch = getParent().getLinkSearch();
 		for (ProcessLink link : linkSearch.getIncomingLinks(getProcess()
 				.getId()))
-			if (link.getFlowId() == flowId)
+			if (link.flowId == flowId)
 				return true;
 		return false;
 	}

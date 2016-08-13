@@ -80,14 +80,14 @@ class RemoveSupplyChainAction extends EditorAction {
 			} else
 				links.add(link);
 			linkSearch.remove(link);
-			if (linkSearch.getOutgoingLinks(link.getProviderId()).size() == 0) {
-				collectSupplyChain(link.getProviderId());
+			if (linkSearch.getOutgoingLinks(link.providerId).size() == 0) {
+				collectSupplyChain(link.providerId);
 				ProcessNode providerNode = getEditor().getModel()
-						.getProcessNode(link.getProviderId());
+						.getProcessNode(link.providerId);
 				if (providerNode != null)
 					nodes.add(providerNode);
 				else
-					processIds.add(link.getProviderId());
+					processIds.add(link.providerId);
 			}
 		}
 	}
@@ -101,7 +101,7 @@ class RemoveSupplyChainAction extends EditorAction {
 	private class RemoveCommand extends Command {
 
 		private Map<Long, Rectangle> layouts = new HashMap<>();
-		private Map<String, Boolean> visibility = new HashMap<>();
+		private Map<Long, Boolean> visibility = new HashMap<>();
 
 		@Override
 		public boolean canExecute() {
@@ -118,7 +118,7 @@ class RemoveSupplyChainAction extends EditorAction {
 			ProductSystemNode systemNode = node.getParent();
 			ProductSystem system = systemNode.getProductSystem();
 			for (ConnectionLink link : connections) {
-				visibility.put(getKey(link.getProcessLink()), link.isVisible());
+				visibility.put(link.getProcessLink().exchangeId, link.isVisible());
 				link.unlink();
 				links.add(link.getProcessLink());
 			}
@@ -162,7 +162,7 @@ class RemoveSupplyChainAction extends EditorAction {
 						.add(link.getProcessLink());
 				systemNode.getLinkSearch().put(link.getProcessLink());
 				link.link();
-				link.setVisible(visibility.remove(getKey(link.getProcessLink())));
+				link.setVisible(visibility.remove(link.getProcessLink().exchangeId));
 			}
 			refresh();
 		}
@@ -179,11 +179,6 @@ class RemoveSupplyChainAction extends EditorAction {
 			execute();
 		}
 
-	}
-
-	private String getKey(ProcessLink link) {
-		return link.getProviderId() + "_" + link.getRecipientId() + "_"
-				+ link.getFlowId();
 	}
 
 }

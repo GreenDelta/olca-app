@@ -37,9 +37,9 @@ class ProcessExpander extends ImageFigure {
 				.getLinkSearch();
 		long processId = node.getProcess().getId();
 		for (ProcessLink link : linkSearch.getLinks(processId))
-			if (side == Side.LEFT && link.getRecipientId() == processId)
+			if (side == Side.LEFT && link.processId == processId)
 				return true;
-			else if (side == Side.RIGHT && link.getProviderId() == processId)
+			else if (side == Side.RIGHT && link.providerId == processId)
 				return true;
 		return false;
 	}
@@ -67,11 +67,11 @@ class ProcessExpander extends ImageFigure {
 		long processId = node.getProcess().getId();
 		List<ProcessLink> links = side == Side.LEFT ? linkSearch
 				.getIncomingLinks(processId) : linkSearch
-				.getOutgoingLinks(processId);
+						.getOutgoingLinks(processId);
 		Map<Long, ProcessDescriptor> map = getLinkedProcesses(links);
 		for (ProcessLink link : links) {
-			long linkedProcessId = side == Side.LEFT ? link.getProviderId()
-					: link.getRecipientId();
+			long linkedProcessId = side == Side.LEFT ? link.providerId
+					: link.processId;
 			ProcessNode node = systemNode.getProcessNode(linkedProcessId);
 			if (node == null) {
 				ProcessDescriptor descriptor = map.get(linkedProcessId);
@@ -93,9 +93,9 @@ class ProcessExpander extends ImageFigure {
 		HashSet<Long> processIds = new HashSet<>();
 		for (ProcessLink link : links)
 			if (side == Side.LEFT)
-				processIds.add(link.getProviderId());
+				processIds.add(link.providerId);
 			else
-				processIds.add(link.getRecipientId());
+				processIds.add(link.processId);
 		return Cache.getEntityCache().getAll(ProcessDescriptor.class,
 				processIds);
 	}

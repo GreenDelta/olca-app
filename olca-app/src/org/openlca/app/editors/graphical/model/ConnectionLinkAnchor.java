@@ -17,9 +17,9 @@ class ConnectionLinkAnchor extends AbstractConnectionAnchor {
 	ConnectionLinkAnchor(ProcessNode node, ConnectionLink link, int type) {
 		super(node.isMinimized() ? node.getFigure()
 				: (type == SOURCE_ANCHOR ? node.getOutputNode(
-						link.getProcessLink().getFlowId()).getFigure() : node
-						.getInputNode(link.getProcessLink().getFlowId())
-						.getFigure()));
+						link.getProcessLink().flowId).getFigure() : node
+								.getInputNode(link.getProcessLink().flowId)
+								.getFigure()));
 		this.node = node;
 		this.link = link;
 		this.type = type;

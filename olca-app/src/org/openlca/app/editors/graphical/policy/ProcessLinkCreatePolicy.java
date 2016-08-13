@@ -104,7 +104,7 @@ public class ProcessLinkCreatePolicy extends GraphicalNodeEditPolicy {
 					.getConnectionEditPart().getModel();
 			ExchangeNode target = (ExchangeNode) request.getTarget().getModel();
 			ProcessNode targetNode = target.getParent().getParent();
-			long flowId = link.getProcessLink().getFlowId();
+			long flowId = link.getProcessLink().flowId;
 			boolean canConnect = true;
 			if (!link.getTargetNode().equals(targetNode)
 					&& targetNode.hasIncomingConnection(flowId))
