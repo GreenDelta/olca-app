@@ -81,9 +81,9 @@ public class ProcessNode extends Node {
 	public void add(ConnectionLink link) {
 		if (!links.contains(link)) {
 			links.add(link);
-			if (equals(link.getSourceNode()))
+			if (equals(link.sourceNode))
 				getEditPart().refreshSourceConnections();
-			if (equals(link.getTargetNode()))
+			if (equals(link.targetNode))
 				getEditPart().refreshTargetConnections();
 			getEditPart().refresh();
 		}
@@ -92,9 +92,9 @@ public class ProcessNode extends Node {
 	public void remove(ConnectionLink link) {
 		if (links.contains(link)) {
 			links.remove(link);
-			if (equals(link.getSourceNode()))
+			if (equals(link.sourceNode))
 				getEditPart().refreshSourceConnections();
-			if (equals(link.getTargetNode()))
+			if (equals(link.targetNode))
 				getEditPart().refreshTargetConnections();
 			getEditPart().refresh();
 		}
@@ -106,7 +106,7 @@ public class ProcessNode extends Node {
 
 	public ConnectionLink getLink(ProcessLink link) {
 		for (ConnectionLink l : links)
-			if (l.getProcessLink().equals(link))
+			if (l.processLink.equals(link))
 				return l;
 		return null;
 	}
@@ -115,11 +115,11 @@ public class ProcessNode extends Node {
 		for (ConnectionLink link : getLinks()) {
 			ProcessNode otherNode = null;
 			boolean isSource = false;
-			if (link.getSourceNode().equals(this)) {
-				otherNode = link.getTargetNode();
+			if (link.sourceNode.equals(this)) {
+				otherNode = link.targetNode;
 				isSource = true;
-			} else if (link.getTargetNode().equals(this))
-				otherNode = link.getSourceNode();
+			} else if (link.targetNode.equals(this))
+				otherNode = link.sourceNode;
 			if (otherNode.isVisible())
 				if (isSource && otherNode.isExpandedLeft())
 					link.setVisible(true);
@@ -271,7 +271,7 @@ public class ProcessNode extends Node {
 	public int countOutgoingConnections() {
 		int count = 0;
 		for (ConnectionLink link : links)
-			if (link.getSourceNode().equals(this))
+			if (link.sourceNode.equals(this))
 				count++;
 		return count;
 	}
@@ -279,7 +279,7 @@ public class ProcessNode extends Node {
 	public int countIncomingConnections() {
 		int count = 0;
 		for (ConnectionLink link : links)
-			if (link.getTargetNode().equals(this))
+			if (link.targetNode.equals(this))
 				count++;
 		return count;
 	}

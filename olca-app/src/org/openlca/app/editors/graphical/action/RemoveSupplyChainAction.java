@@ -118,9 +118,9 @@ class RemoveSupplyChainAction extends EditorAction {
 			ProductSystemNode systemNode = node.getParent();
 			ProductSystem system = systemNode.getProductSystem();
 			for (ConnectionLink link : connections) {
-				visibility.put(link.getProcessLink().exchangeId, link.isVisible());
+				visibility.put(link.processLink.exchangeId, link.isVisible());
 				link.unlink();
-				links.add(link.getProcessLink());
+				links.add(link.processLink);
 			}
 			system.getProcessLinks().removeAll(links);
 			systemNode.getLinkSearch().removeAll(links);
@@ -159,10 +159,10 @@ class RemoveSupplyChainAction extends EditorAction {
 			}
 			for (ConnectionLink link : connections) {
 				systemNode.getProductSystem().getProcessLinks()
-						.add(link.getProcessLink());
-				systemNode.getLinkSearch().put(link.getProcessLink());
+						.add(link.processLink);
+				systemNode.getLinkSearch().put(link.processLink);
 				link.link();
-				link.setVisible(visibility.remove(link.getProcessLink().exchangeId));
+				link.setVisible(visibility.remove(link.processLink.exchangeId));
 			}
 			refresh();
 		}

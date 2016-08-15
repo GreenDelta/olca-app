@@ -72,7 +72,7 @@ public class CommandFactory {
 
 	public static CreateLinkCommand createCreateLinkCommand(long flowId) {
 		CreateLinkCommand command = new CreateLinkCommand();
-		command.setFlowId(flowId);
+		command.flowId = flowId;
 		return command;
 	}
 

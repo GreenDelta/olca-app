@@ -158,9 +158,9 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 			if (!sourceNode.isExpandedRight() && !targetNode.isExpandedLeft())
 				continue;
 			ConnectionLink connectionLink = new ConnectionLink();
-			connectionLink.setSourceNode(sourceNode);
-			connectionLink.setTargetNode(targetNode);
-			connectionLink.setProcessLink(link);
+			connectionLink.sourceNode = sourceNode;
+			connectionLink.targetNode = targetNode;
+			connectionLink.processLink = link;
 			connectionLink.link();
 		}
 	}
@@ -303,7 +303,7 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 			router = TreeConnectionRouter.get();
 		for (ProcessNode node : model.getChildren())
 			for (ConnectionLink link : node.getLinks())
-				link.getFigure().setConnectionRouter(router);
+				link.figure.setConnectionRouter(router);
 	}
 
 }

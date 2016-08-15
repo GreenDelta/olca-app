@@ -75,8 +75,8 @@ public class MinimalTreeLayout {
 		}
 		for (ProcessNode processNode : processNodes) {
 			for (ConnectionLink link : processNode.getLinks()) {
-				long sourceId = link.getSourceNode().getProcess().getId();
-				long targetId = link.getTargetNode().getProcess().getId();
+				long sourceId = link.sourceNode.getProcess().getId();
+				long targetId = link.targetNode.getProcess().getId();
 				if (graph.nodes.get(sourceId) != null
 						&& graph.nodes.get(targetId) != null) {
 					// add edge to source node

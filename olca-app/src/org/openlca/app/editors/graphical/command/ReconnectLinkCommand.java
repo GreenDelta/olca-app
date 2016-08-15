@@ -36,19 +36,19 @@ public class ReconnectLinkCommand extends Command {
 		ProductSystemNode systemNode = sourceNode.getParent();
 		oldLink.unlink();
 		systemNode.getProductSystem().getProcessLinks()
-				.remove(oldLink.getProcessLink());
-		systemNode.getLinkSearch().remove(oldLink.getProcessLink());
+				.remove(oldLink.processLink);
+		systemNode.getLinkSearch().remove(oldLink.processLink);
 		ProcessLink processLink = new ProcessLink();
 		processLink.processId = targetNode.getProcess().getId();
 		processLink.providerId = sourceNode.getProcess().getId();
-		processLink.flowId = oldLink.getProcessLink().flowId;
+		processLink.flowId = oldLink.processLink.flowId;
 		// TODO: exchangeId
 		systemNode.getProductSystem().getProcessLinks().add(processLink);
 		systemNode.getLinkSearch().put(processLink);
 		link = new ConnectionLink();
-		link.setSourceNode(sourceNode);
-		link.setTargetNode(targetNode);
-		link.setProcessLink(processLink);
+		link.sourceNode = sourceNode;
+		link.targetNode = targetNode;
+		link.processLink = processLink;
 		link.link();
 		systemNode.getEditor().setDirty(true);
 	}
@@ -63,10 +63,10 @@ public class ReconnectLinkCommand extends Command {
 		ProductSystemNode systemNode = sourceNode.getParent();
 		ProductSystem system = systemNode.getProductSystem();
 		oldLink.unlink();
-		system.getProcessLinks().remove(oldLink.getProcessLink());
-		systemNode.getLinkSearch().remove(oldLink.getProcessLink());
-		system.getProcessLinks().add(link.getProcessLink());
-		systemNode.getLinkSearch().put(link.getProcessLink());
+		system.getProcessLinks().remove(oldLink.processLink);
+		systemNode.getLinkSearch().remove(oldLink.processLink);
+		system.getProcessLinks().add(link.processLink);
+		systemNode.getLinkSearch().put(link.processLink);
 		link.link();
 		systemNode.getEditor().setDirty(true);
 	}
@@ -76,10 +76,10 @@ public class ReconnectLinkCommand extends Command {
 		ProductSystemNode systemNode = sourceNode.getParent();
 		ProductSystem system = systemNode.getProductSystem();
 		link.unlink();
-		system.getProcessLinks().remove(link.getProcessLink());
-		systemNode.getLinkSearch().remove(link.getProcessLink());
-		system.getProcessLinks().add(oldLink.getProcessLink());
-		systemNode.getLinkSearch().put(oldLink.getProcessLink());
+		system.getProcessLinks().remove(link.processLink);
+		systemNode.getLinkSearch().remove(link.processLink);
+		system.getProcessLinks().add(oldLink.processLink);
+		systemNode.getLinkSearch().put(oldLink.processLink);
 		oldLink.link();
 		sourceNode.getParent().getEditor().setDirty(true);
 	}

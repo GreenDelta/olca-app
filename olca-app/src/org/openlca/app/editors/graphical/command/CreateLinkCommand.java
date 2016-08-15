@@ -10,24 +10,13 @@ import org.openlca.core.model.ProductSystem;
 
 public class CreateLinkCommand extends Command {
 
+	public boolean startedFromSource;
+	public ProcessNode sourceNode;
+	public ProcessNode targetNode;
+	public long flowId;
+
 	private ConnectionLink link;
 	private ProcessLink processLink;
-	private ProcessNode sourceNode;
-	private ProcessNode targetNode;
-	private boolean startedFromSource;
-	private long flowId;
-
-	CreateLinkCommand() {
-
-	}
-
-	public void setStartedFromSource(boolean startedFromSource) {
-		this.startedFromSource = startedFromSource;
-	}
-
-	public boolean isStartedFromSource() {
-		return startedFromSource;
-	}
 
 	@Override
 	public boolean canExecute() {
@@ -81,9 +70,9 @@ public class CreateLinkCommand extends Command {
 
 	private void refreshNodes() {
 		ProductSystemNode systemNode = sourceNode.getParent();
-		sourceNode = systemNode.getProcessNode(link.getSourceNode()
+		sourceNode = systemNode.getProcessNode(link.sourceNode
 				.getProcess().getId());
-		targetNode = systemNode.getProcessNode(link.getTargetNode()
+		targetNode = systemNode.getProcessNode(link.targetNode
 				.getProcess().getId());
 	}
 
@@ -97,36 +86,12 @@ public class CreateLinkCommand extends Command {
 		systemNode.getEditor().setDirty(true);
 	}
 
-	public void setSourceNode(ProcessNode sourceNode) {
-		this.sourceNode = sourceNode;
-	}
-
-	public void setTargetNode(ProcessNode targetNode) {
-		this.targetNode = targetNode;
-	}
-
-	void setFlowId(long flowId) {
-		this.flowId = flowId;
-	}
-
-	public ProcessNode getSourceNode() {
-		return sourceNode;
-	}
-
-	public ProcessNode getTargetNode() {
-		return targetNode;
-	}
-
-	public long getFlowId() {
-		return flowId;
-	}
-
 	public ConnectionLink getLink() {
 		if (link == null)
 			link = new ConnectionLink();
-		link.setProcessLink(getProcessLink());
-		link.setSourceNode(sourceNode);
-		link.setTargetNode(targetNode);
+		link.processLink = getProcessLink();
+		link.sourceNode = sourceNode;
+		link.targetNode = targetNode;
 		return link;
 	}
 

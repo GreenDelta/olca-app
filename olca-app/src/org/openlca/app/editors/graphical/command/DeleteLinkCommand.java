@@ -29,12 +29,12 @@ public class DeleteLinkCommand extends Command {
 
 	@Override
 	public void execute() {
-		ProductSystemNode systemNode = links.get(0).getSourceNode().getParent();
+		ProductSystemNode systemNode = links.get(0).sourceNode.getParent();
 		for (ConnectionLink link : links) {
-			visibilityMap.put(link.getProcessLink().exchangeId, link.isVisible());
+			visibilityMap.put(link.processLink.exchangeId, link.isVisible());
 			systemNode.getProductSystem().getProcessLinks()
-					.remove(link.getProcessLink());
-			systemNode.getLinkSearch().remove(link.getProcessLink());
+					.remove(link.processLink);
+			systemNode.getLinkSearch().remove(link.processLink);
 			link.unlink();
 		}
 		systemNode.getEditor().setDirty(true);
@@ -47,25 +47,25 @@ public class DeleteLinkCommand extends Command {
 
 	@Override
 	public void redo() {
-		ProductSystemNode systemNode = links.get(0).getSourceNode().getParent();
+		ProductSystemNode systemNode = links.get(0).sourceNode.getParent();
 		for (ConnectionLink link : links) {
 			link.unlink();
 			systemNode.getProductSystem().getProcessLinks()
-					.remove(link.getProcessLink());
-			systemNode.getLinkSearch().remove(link.getProcessLink());
+					.remove(link.processLink);
+			systemNode.getLinkSearch().remove(link.processLink);
 		}
 		systemNode.getEditor().setDirty(true);
 	}
 
 	@Override
 	public void undo() {
-		ProductSystemNode systemNode = links.get(0).getSourceNode().getParent();
+		ProductSystemNode systemNode = links.get(0).sourceNode.getParent();
 		for (ConnectionLink link : links) {
 			systemNode.getProductSystem().getProcessLinks()
-					.add(link.getProcessLink());
-			systemNode.getLinkSearch().put(link.getProcessLink());
+					.add(link.processLink);
+			systemNode.getLinkSearch().put(link.processLink);
 			link.link();
-			link.setVisible(visibilityMap.get(link.getProcessLink().exchangeId));
+			link.setVisible(visibilityMap.get(link.processLink.exchangeId));
 		}
 		systemNode.getEditor().setDirty(true);
 	}

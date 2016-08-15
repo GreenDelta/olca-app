@@ -31,7 +31,7 @@ class LinkPart extends AbstractConnectionEditPart {
 		figure.setConnectionRouter(getConnectionRouter());
 		figure.setTargetDecoration(new PolygonDecoration());
 		figure.setVisible(isVisible());
-		getModel().setFigure(figure);
+		getModel().figure = figure;
 		return figure;
 	}
 
@@ -56,7 +56,7 @@ class LinkPart extends AbstractConnectionEditPart {
 	}
 
 	private ProductSystemGraphEditor getEditor() {
-		return getModel().getSourceNode().getParent().getEditor();
+		return getModel().sourceNode.getParent().getEditor();
 	}
 
 	private ConnectionRouter getConnectionRouter() {
@@ -65,9 +65,9 @@ class LinkPart extends AbstractConnectionEditPart {
 	}
 
 	private boolean isVisible() {
-		if (!getModel().getSourceNode().getFigure().isVisible())
+		if (!getModel().sourceNode.getFigure().isVisible())
 			return false;
-		if (!getModel().getTargetNode().getFigure().isVisible())
+		if (!getModel().targetNode.getFigure().isVisible())
 			return false;
 		return true;
 	}
@@ -78,10 +78,10 @@ class LinkPart extends AbstractConnectionEditPart {
 			ReconnectRequest request = ((ReconnectRequest) req);
 			ConnectionLink link = (ConnectionLink) request
 					.getConnectionEditPart().getModel();
-			ExchangeNode target = link.getTargetNode().getExchangeNode(
-					link.getProcessLink().exchangeId);
-			ExchangeNode source = link.getSourceNode().getOutputNode(
-					link.getProcessLink().flowId);
+			ExchangeNode target = link.targetNode.getExchangeNode(
+					link.processLink.exchangeId);
+			ExchangeNode source = link.sourceNode.getOutputNode(
+					link.processLink.flowId);
 
 			ExchangeNode n1 = request.isMovingStartAnchor() ? target : source;
 			ExchangeNode n2 = request.isMovingStartAnchor() ? source : target;

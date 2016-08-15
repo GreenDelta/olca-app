@@ -12,50 +12,19 @@ public class ConnectionLink {
 	public static Color COLOR = ColorConstants.gray;
 	public static Color HIGHLIGHT_COLOR = ColorConstants.blue;
 
-	private Connection figure;
-	private ProcessLink processLink;
-	private ProcessNode sourceNode;
-	private ProcessNode targetNode;
+	public ProcessLink processLink;
+	public Connection figure;
+	public ProcessNode sourceNode;
+	public ProcessNode targetNode;
+
 	private LinkPart editPart;
 
 	void setEditPart(LinkPart editPart) {
 		this.editPart = editPart;
 	}
 
-	public void setSourceNode(ProcessNode sourceNode) {
-		this.sourceNode = sourceNode;
-	}
-
-	public void setTargetNode(ProcessNode targetNode) {
-		this.targetNode = targetNode;
-	}
-
-	public void setProcessLink(ProcessLink processLink) {
-		this.processLink = processLink;
-	}
-
-	public ProcessLink getProcessLink() {
-		return processLink;
-	}
-
-	public Connection getFigure() {
-		return figure;
-	}
-
-	void setFigure(Connection figure) {
-		this.figure = figure;
-	}
-
-	public ProcessNode getSourceNode() {
-		return sourceNode;
-	}
-
 	void refreshSourceAnchor() {
 		editPart.refreshSourceAnchor();
-	}
-
-	public ProcessNode getTargetNode() {
-		return targetNode;
 	}
 
 	void refreshTargetAnchor() {
@@ -89,22 +58,22 @@ public class ConnectionLink {
 			return false;
 
 		ConnectionLink link = (ConnectionLink) obj;
-		if (!Objects.equals(getProcessLink(), link.getProcessLink()))
+		if (!Objects.equals(processLink, link.processLink))
 			return false;
-		if (!Objects.equals(getSourceNode(), link.getSourceNode()))
+		if (!Objects.equals(sourceNode, link.sourceNode))
 			return false;
-		if (!Objects.equals(getTargetNode(), link.getTargetNode()))
+		if (!Objects.equals(targetNode, link.targetNode))
 			return false;
 		return true;
 	}
 
 	public boolean isVisible() {
-		return getFigure() != null ? getFigure().isVisible() : false;
+		return figure != null ? figure.isVisible() : false;
 	}
 
 	public void setVisible(boolean value) {
-		if (getFigure() != null)
-			getFigure().setVisible(value);
+		if (figure != null)
+			figure.setVisible(value);
 	}
 
 }

@@ -36,7 +36,7 @@ class LinkAnchor extends AbstractConnectionAnchor {
 		if (node == null || link == null)
 			return null;
 		IFigure figure = null;
-		ProcessLink pLink = link.getProcessLink();
+		ProcessLink pLink = link.processLink;
 		if (node.isMinimized()) {
 			figure = node.getFigure();
 		} else if (type == SOURCE_ANCHOR) {
@@ -57,9 +57,9 @@ class LinkAnchor extends AbstractConnectionAnchor {
 	public Point getLocation(Point reference) {
 		int hTrans = 0;
 		if (!node.isMinimized()) {
-			if (Objects.equals(link.getTargetNode(), node))
+			if (Objects.equals(link.targetNode, node))
 				hTrans -= ProcessFigure.MARGIN_WIDTH + 1;
-			else if (Objects.equals(link.getSourceNode(), node))
+			else if (Objects.equals(link.sourceNode, node))
 				hTrans += ProcessFigure.MARGIN_WIDTH + 1;
 		}
 		Rectangle r = getOwner().getBounds().getCopy();

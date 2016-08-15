@@ -80,9 +80,9 @@ class MassCreationCommand extends Command {
 		ProcessNode sourceNode = model.getProcessNode(link.providerId);
 		ProcessNode targetNode = model.getProcessNode(link.processId);
 		ConnectionLink connection = new ConnectionLink();
-		connection.setProcessLink(link);
-		connection.setSourceNode(sourceNode);
-		connection.setTargetNode(targetNode);
+		connection.processLink = link;
+		connection.sourceNode = sourceNode;
+		connection.targetNode = targetNode;
 		return connection;
 	}
 
@@ -116,8 +116,8 @@ class MassCreationCommand extends Command {
 
 	private void unlink(ConnectionLink link) {
 		ProductSystem system = model.getProductSystem();
-		system.getProcessLinks().remove(link.getProcessLink());
-		model.getLinkSearch().remove(link.getProcessLink());
+		system.getProcessLinks().remove(link.processLink);
+		model.getLinkSearch().remove(link.processLink);
 		link.unlink();
 	}
 }

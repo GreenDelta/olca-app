@@ -26,9 +26,9 @@ public class ProcessLinkCreatePolicy extends GraphicalNodeEditPolicy {
 		if (req instanceof CreateConnectionRequest) {
 			CreateLinkCommand command = (CreateLinkCommand) ((CreateConnectionRequest) req)
 					.getStartCommand();
-			if (command.getSourceNode() != null)
+			if (command.sourceNode != null)
 				connection.setTargetDecoration(new PolygonDecoration());
-			else if (command.getTargetNode() != null)
+			else if (command.targetNode != null)
 				connection.setSourceDecoration(new PolygonDecoration());
 		} else
 			connection.setTargetDecoration(new PolygonDecoration());
@@ -46,9 +46,9 @@ public class ProcessLinkCreatePolicy extends GraphicalNodeEditPolicy {
 						.getTargetEditPart().getModel();
 				ProcessNode targetNode = target.getParent().getParent();
 				if (!target.getExchange().isInput())
-					cmd.setSourceNode(targetNode);
-				else if (!targetNode.hasIncomingConnection(cmd.getFlowId()))
-					cmd.setTargetNode(targetNode);
+					cmd.sourceNode = targetNode;
+				else if (!targetNode.hasIncomingConnection(cmd.flowId))
+					cmd.targetNode = targetNode;
 				request.setStartCommand(cmd);
 				return cmd;
 			}
@@ -57,22 +57,21 @@ public class ProcessLinkCreatePolicy extends GraphicalNodeEditPolicy {
 	}
 
 	@Override
-	protected Command getConnectionCreateCommand(
-			final CreateConnectionRequest request) {
-		CreateLinkCommand cmd = null;
+	protected Command getConnectionCreateCommand(CreateConnectionRequest request) {
 		ExchangeNode target = (ExchangeNode) request.getTargetEditPart()
 				.getModel();
 		ProcessNode targetNode = target.getParent().getParent();
+		CreateLinkCommand cmd = null;
 		long flowId = target.getExchange().getFlow().getId();
 		if (!target.getExchange().isInput()) {
 			cmd = CommandFactory.createCreateLinkCommand(flowId);
-			cmd.setSourceNode(targetNode);
-			cmd.setStartedFromSource(true);
+			cmd.sourceNode = targetNode;
+			cmd.startedFromSource = true;
 			request.setStartCommand(cmd);
 		} else if (!targetNode.hasIncomingConnection(flowId)) {
 			cmd = CommandFactory.createCreateLinkCommand(flowId);
-			cmd.setTargetNode(targetNode);
-			cmd.setStartedFromSource(false);
+			cmd.targetNode = targetNode;
+			cmd.startedFromSource = false;
 			request.setStartCommand(cmd);
 		}
 		return cmd;
@@ -92,7 +91,7 @@ public class ProcessLinkCreatePolicy extends GraphicalNodeEditPolicy {
 			ExchangeNode source = (ExchangeNode) request.getTarget().getModel();
 			ProcessNode sourceNode = source.getParent().getParent();
 			return CommandFactory.createReconnectLinkCommand(link, sourceNode,
-					link.getTargetNode());
+					link.targetNode);
 		}
 		return null;
 	}
@@ -104,14 +103,14 @@ public class ProcessLinkCreatePolicy extends GraphicalNodeEditPolicy {
 					.getConnectionEditPart().getModel();
 			ExchangeNode target = (ExchangeNode) request.getTarget().getModel();
 			ProcessNode targetNode = target.getParent().getParent();
-			long flowId = link.getProcessLink().flowId;
+			long flowId = link.processLink.flowId;
 			boolean canConnect = true;
-			if (!link.getTargetNode().equals(targetNode)
+			if (!link.targetNode.equals(targetNode)
 					&& targetNode.hasIncomingConnection(flowId))
 				canConnect = false;
 			if (canConnect)
 				return CommandFactory.createReconnectLinkCommand(link,
-						link.getSourceNode(), targetNode);
+						link.sourceNode, targetNode);
 		}
 		return null;
 	}
