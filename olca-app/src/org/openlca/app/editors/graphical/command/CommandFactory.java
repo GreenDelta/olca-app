@@ -19,6 +19,7 @@ import org.openlca.app.editors.graphical.layout.GraphLayoutType;
 import org.openlca.app.editors.graphical.model.ConnectionLink;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
+import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 public class CommandFactory {
@@ -130,28 +131,28 @@ public class CommandFactory {
 
 	public static MassCreationCommand createBuildNextTierCommand(
 			List<ProcessDescriptor> processesToCreate,
-			List<ConnectionInput> newConnections, ProductSystemNode model) {
+			List<ProcessLink> newConnections, ProductSystemNode model) {
 		return createMassCreationCommand(processesToCreate, newConnections,
 				model, M.BuildNextTier);
 	}
 
 	public static MassCreationCommand createConnectProvidersCommand(
 			List<ProcessDescriptor> processesToCreate,
-			List<ConnectionInput> newConnections, ProductSystemNode model) {
+			List<ProcessLink> newConnections, ProductSystemNode model) {
 		return createMassCreationCommand(processesToCreate, newConnections,
 				model, M.ConnectProviders);
 	}
 
 	public static MassCreationCommand createConnectRecipientsCommand(
 			List<ProcessDescriptor> processesToCreate,
-			List<ConnectionInput> newConnections, ProductSystemNode model) {
+			List<ProcessLink> newConnections, ProductSystemNode model) {
 		return createMassCreationCommand(processesToCreate, newConnections,
 				model, M.ConnectRecipients);
 	}
 
 	private static MassCreationCommand createMassCreationCommand(
 			List<ProcessDescriptor> processesToCreate,
-			List<ConnectionInput> newConnections, ProductSystemNode model,
+			List<ProcessLink> newConnections, ProductSystemNode model,
 			String label) {
 		MassCreationCommand command = new MassCreationCommand();
 		command.setProcessesToCreate(processesToCreate);

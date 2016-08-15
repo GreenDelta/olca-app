@@ -16,11 +16,11 @@ import org.openlca.app.M;
 import org.openlca.app.editors.graphical.ConnectorDialog;
 import org.openlca.app.editors.graphical.command.CommandFactory;
 import org.openlca.app.editors.graphical.command.CommandUtil;
-import org.openlca.app.editors.graphical.command.ConnectionInput;
 import org.openlca.app.editors.graphical.model.ExchangeNode;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.app.util.Controls;
+import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 class SearchConnectorsAction extends EditorAction {
@@ -60,14 +60,26 @@ class SearchConnectorsAction extends EditorAction {
 		if (dialog.open() != IDialogConstants.OK_ID)
 			return;
 		List<ProcessDescriptor> toCreate = dialog.getProcessesToCreate();
-		List<ConnectionInput> toConnect = new ArrayList<>();
-		for (ProcessDescriptor process : dialog.getProcessesToConnect())
-			if (type == PROVIDER)
-				toConnect.add(new ConnectionInput(process.getId(), nodeId,
-						flowId));
-			else if (type == RECIPIENTS)
-				toConnect.add(new ConnectionInput(nodeId, process.getId(),
-						flowId));
+
+		List<ProcessLink> toConnect = new ArrayList<>();
+		for (ProcessDescriptor process : dialog.getProcessesToConnect()) {
+			if (type == PROVIDER) {
+				ProcessLink link = new ProcessLink();
+				link.exchangeId = exchangeNode.getExchange().getId();
+				link.flowId = flowId;
+				link.providerId = process.getId();
+				link.processId = nodeId;
+				toConnect.add(link);
+			} else if (type == RECIPIENTS) {
+				ProcessLink link = new ProcessLink();
+				link.flowId = flowId;
+				link.providerId = nodeId;
+				link.processId = process.getId();
+				// TODO: find exchangeID of process
+				// toConnect.add(link);
+			}
+		}
+
 		Command command = null;
 		if (type == PROVIDER)
 			command = CommandFactory.createConnectProvidersCommand(
@@ -80,36 +92,33 @@ class SearchConnectorsAction extends EditorAction {
 
 	@Override
 	public void run() {
-		// nothing to do (pop up menu)
 	}
 
 	private class MenuCreator implements IMenuCreator {
 
 		private void fillMenu() {
-			if (menu != null) {
-				for (MenuItem item : menu.getItems())
-					item.dispose();
-
-				boolean providers = type == PROVIDER;
-				List<ExchangeNode> exchangeNodes = new ArrayList<>();
-				for (ExchangeNode exchangeNode : node.loadExchangeNodes()) {
-					if (exchangeNode.isDummy())
-						continue;
-					if (exchangeNode.getExchange().isInput() == providers)
-						exchangeNodes.add(exchangeNode);
-				}
-
-				for (final ExchangeNode exchangeNode : exchangeNodes) {
-					MenuItem item = new MenuItem(menu, SWT.NONE);
-					item.setText(exchangeNode.getName());
-					Controls.onSelect(item, (e) -> executeRequest(exchangeNode));
-				}
+			if (menu == null)
+				return;
+			for (MenuItem item : menu.getItems()) {
+				item.dispose();
+			}
+			boolean providers = type == PROVIDER;
+			List<ExchangeNode> nodes = new ArrayList<>();
+			for (ExchangeNode node : node.loadExchangeNodes()) {
+				if (node.isDummy())
+					continue;
+				if (node.getExchange().isInput() == providers)
+					nodes.add(node);
+			}
+			for (ExchangeNode node : nodes) {
+				MenuItem item = new MenuItem(menu, SWT.NONE);
+				item.setText(node.getName());
+				Controls.onSelect(item, e -> executeRequest(node));
 			}
 		}
 
 		@Override
 		public void dispose() {
-			// nothing to dispose
 		}
 
 		@Override

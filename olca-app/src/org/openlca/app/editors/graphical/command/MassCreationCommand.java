@@ -19,7 +19,7 @@ import org.openlca.core.model.descriptors.ProcessDescriptor;
 class MassCreationCommand extends Command {
 
 	private List<ProcessDescriptor> processesToCreate;
-	private List<ConnectionInput> newConnections;
+	private List<ProcessLink> newConnections;
 	private ProductSystemNode model;
 	// for undoing
 	private Map<IFigure, Rectangle> oldConstraints = new HashMap<>();
@@ -33,7 +33,7 @@ class MassCreationCommand extends Command {
 		this.processesToCreate = processesToCreate;
 	}
 
-	void setNewConnections(List<ConnectionInput> newConnections) {
+	void setNewConnections(List<ProcessLink> newConnections) {
 		this.newConnections = newConnections;
 	}
 
@@ -45,8 +45,8 @@ class MassCreationCommand extends Command {
 	public void execute() {
 		for (ProcessDescriptor process : processesToCreate)
 			addNode(process);
-		for (ConnectionInput input : newConnections)
-			link(input.sourceId, input.targetId, input.flowId);
+		for (ProcessLink input : newConnections)
+			link(input);
 		for (ProcessNode node : model.getChildren())
 			if (node.getFigure().isVisible())
 				oldConstraints.put(node.getFigure(), node.getFigure()
@@ -67,35 +67,23 @@ class MassCreationCommand extends Command {
 		createdNodes.add(node);
 	}
 
-	private void link(long sourceId, long targetId, long flowId) {
+	private void link(ProcessLink link) {
 		ProductSystem system = model.getProductSystem();
-		ProcessLink processLink = createProcessLink(sourceId, targetId, flowId);
-		system.getProcessLinks().add(processLink);
-		model.getLinkSearch().put(processLink);
-		ConnectionLink link = createLink(sourceId, targetId, processLink);
-		link.link();
-		createdLinks.add(link);
+		system.getProcessLinks().add(link);
+		model.getLinkSearch().put(link);
+		ConnectionLink connection = createLink(link);
+		connection.link();
+		createdLinks.add(connection);
 	}
 
-	private ProcessLink createProcessLink(long sourceId, long targetId,
-			long flowId) {
-		ProcessLink processLink = new ProcessLink();
-		processLink.processId = targetId;
-		processLink.providerId = sourceId;
-		processLink.flowId = flowId;
-		// TODO: exchangeId
-		return processLink;
-	}
-
-	private ConnectionLink createLink(long sourceId, long targetId,
-			ProcessLink processLink) {
-		ProcessNode sourceNode = model.getProcessNode(sourceId);
-		ProcessNode targetNode = model.getProcessNode(targetId);
-		ConnectionLink link = new ConnectionLink();
-		link.setProcessLink(processLink);
-		link.setSourceNode(sourceNode);
-		link.setTargetNode(targetNode);
-		return link;
+	private ConnectionLink createLink(ProcessLink link) {
+		ProcessNode sourceNode = model.getProcessNode(link.providerId);
+		ProcessNode targetNode = model.getProcessNode(link.processId);
+		ConnectionLink connection = new ConnectionLink();
+		connection.setProcessLink(link);
+		connection.setSourceNode(sourceNode);
+		connection.setTargetNode(targetNode);
+		return connection;
 	}
 
 	@Override
