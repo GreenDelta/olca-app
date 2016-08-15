@@ -30,11 +30,11 @@ abstract class AbstractNodeEditPart<N extends Node> extends
 		if (request instanceof CreateConnectionRequest) {
 			CreateLinkCommand cmd = (CreateLinkCommand) ((CreateConnectionRequest) request)
 					.getStartCommand();
-			if (cmd.sourceNode != null)
-				return LinkAnchor.createSourceAnchor(cmd.sourceNode,
+			if (cmd.providerNode != null)
+				return LinkAnchor.createSourceAnchor(cmd.providerNode,
 						cmd.getLink());
-			else if (cmd.targetNode != null)
-				return LinkAnchor.createTargetAnchor(cmd.targetNode,
+			else if (cmd.exchangeNode != null)
+				return LinkAnchor.createTargetAnchor(cmd.exchangeNode,
 						cmd.getLink());
 		} else if (request instanceof ReconnectRequest) {
 			ReconnectRequest req = (ReconnectRequest) request;
@@ -58,18 +58,18 @@ abstract class AbstractNodeEditPart<N extends Node> extends
 			CreateLinkCommand cmd = (CreateLinkCommand) ((CreateConnectionRequest) request)
 					.getStartCommand();
 			if (cmd.startedFromSource) {
-				if (cmd.targetNode != null)
-					return LinkAnchor.createTargetAnchor(cmd.targetNode,
+				if (cmd.exchangeNode != null)
+					return LinkAnchor.createTargetAnchor(cmd.exchangeNode,
 							cmd.getLink());
-				else if (cmd.sourceNode != null)
-					return LinkAnchor.createSourceAnchor(cmd.sourceNode,
+				else if (cmd.providerNode != null)
+					return LinkAnchor.createSourceAnchor(cmd.providerNode,
 							cmd.getLink());
 			} else {
-				if (cmd.sourceNode != null)
-					return LinkAnchor.createSourceAnchor(cmd.sourceNode,
+				if (cmd.providerNode != null)
+					return LinkAnchor.createSourceAnchor(cmd.providerNode,
 							cmd.getLink());
-				else if (cmd.targetNode != null)
-					return LinkAnchor.createTargetAnchor(cmd.targetNode,
+				else if (cmd.exchangeNode != null)
+					return LinkAnchor.createTargetAnchor(cmd.exchangeNode,
 							cmd.getLink());
 			}
 		} else if (request instanceof ReconnectRequest) {

@@ -15,7 +15,7 @@ import org.openlca.app.editors.graphical.model.ConnectionLink;
 import org.openlca.app.editors.graphical.model.ExchangeNode;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 
-public class ProcessLinkCreatePolicy extends GraphicalNodeEditPolicy {
+public class LinkPolicy extends GraphicalNodeEditPolicy {
 
 	private PolylineConnection connection;
 
@@ -26,9 +26,9 @@ public class ProcessLinkCreatePolicy extends GraphicalNodeEditPolicy {
 		if (req instanceof CreateConnectionRequest) {
 			CreateLinkCommand command = (CreateLinkCommand) ((CreateConnectionRequest) req)
 					.getStartCommand();
-			if (command.sourceNode != null)
+			if (command.providerNode != null)
 				connection.setTargetDecoration(new PolygonDecoration());
-			else if (command.targetNode != null)
+			else if (command.exchangeNode != null)
 				connection.setSourceDecoration(new PolygonDecoration());
 		} else
 			connection.setTargetDecoration(new PolygonDecoration());
@@ -46,9 +46,9 @@ public class ProcessLinkCreatePolicy extends GraphicalNodeEditPolicy {
 						.getTargetEditPart().getModel();
 				ProcessNode targetNode = target.getParent().getParent();
 				if (!target.getExchange().isInput())
-					cmd.sourceNode = targetNode;
+					cmd.providerNode = targetNode;
 				else if (!targetNode.hasIncomingConnection(cmd.flowId))
-					cmd.targetNode = targetNode;
+					cmd.exchangeNode = targetNode;
 				request.setStartCommand(cmd);
 				return cmd;
 			}
@@ -65,12 +65,12 @@ public class ProcessLinkCreatePolicy extends GraphicalNodeEditPolicy {
 		long flowId = target.getExchange().getFlow().getId();
 		if (!target.getExchange().isInput()) {
 			cmd = CommandFactory.createCreateLinkCommand(flowId);
-			cmd.sourceNode = targetNode;
+			cmd.providerNode = targetNode;
 			cmd.startedFromSource = true;
 			request.setStartCommand(cmd);
 		} else if (!targetNode.hasIncomingConnection(flowId)) {
 			cmd = CommandFactory.createCreateLinkCommand(flowId);
-			cmd.targetNode = targetNode;
+			cmd.exchangeNode = targetNode;
 			cmd.startedFromSource = false;
 			request.setStartCommand(cmd);
 		}

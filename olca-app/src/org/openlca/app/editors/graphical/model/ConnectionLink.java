@@ -56,7 +56,6 @@ public class ConnectionLink {
 	public boolean equals(Object obj) {
 		if (!(obj instanceof ConnectionLink))
 			return false;
-
 		ConnectionLink link = (ConnectionLink) obj;
 		if (!Objects.equals(processLink, link.processLink))
 			return false;

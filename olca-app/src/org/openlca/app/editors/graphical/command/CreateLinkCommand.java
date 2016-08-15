@@ -2,8 +2,9 @@ package org.openlca.app.editors.graphical.command;
 
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.M;
+import org.openlca.app.editors.graphical.GraphUtil;
 import org.openlca.app.editors.graphical.model.ConnectionLink;
-import org.openlca.app.editors.graphical.model.ProcessNode;
+import org.openlca.app.editors.graphical.model.ExchangeNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
@@ -11,20 +12,15 @@ import org.openlca.core.model.ProductSystem;
 public class CreateLinkCommand extends Command {
 
 	public boolean startedFromSource;
-	public ProcessNode sourceNode;
-	public ProcessNode targetNode;
-	public long flowId;
+	public ExchangeNode providerNode;
+	public ExchangeNode exchangeNode;
 
 	private ConnectionLink link;
 	private ProcessLink processLink;
 
 	@Override
 	public boolean canExecute() {
-		if (sourceNode == null)
-			return false;
-		if (targetNode == null)
-			return false;
-		return flowId != 0;
+		return providerNode != null && exchangeNode != null;
 	}
 
 	@Override
@@ -34,7 +30,7 @@ public class CreateLinkCommand extends Command {
 
 	@Override
 	public void execute() {
-		ProductSystemNode systemNode = sourceNode.getParent();
+		ProductSystemNode systemNode = GraphUtil.getSystemNode(providerNode);
 		ProductSystem system = systemNode.getProductSystem();
 		processLink = getProcessLink();
 		system.getProcessLinks().add(processLink);
@@ -47,11 +43,12 @@ public class CreateLinkCommand extends Command {
 	private ProcessLink getProcessLink() {
 		if (processLink == null)
 			processLink = new ProcessLink();
-		if (targetNode != null)
-			processLink.processId = targetNode.getProcess().getId();
-		if (sourceNode != null)
-			processLink.providerId = sourceNode.getProcess().getId();
-		processLink.flowId = flowId;
+		if (exchangeNode != null)
+			processLink.processId = GraphUtil.getProcess(exchangeNode).getId();
+		if (providerNode != null)
+			processLink.providerId = GraphUtil.getProcess(providerNode).getId();
+		processLink.flowId = GraphUtil.getFlow(exchangeNode).getId();
+		processLink.exchangeId = exchangeNode.getExchange().getId();
 		return processLink;
 	}
 
@@ -69,16 +66,17 @@ public class CreateLinkCommand extends Command {
 	}
 
 	private void refreshNodes() {
-		ProductSystemNode systemNode = sourceNode.getParent();
-		sourceNode = systemNode.getProcessNode(link.sourceNode
-				.getProcess().getId());
-		targetNode = systemNode.getProcessNode(link.targetNode
-				.getProcess().getId());
+		// TODO: find exchange nodes in product system
+		// ProductSystemNode system = GraphUtil.getSystemNode(providerNode);
+		// providerNode = system.getProcessNode(link.sourceNode
+		// .getProcess().getId());
+		// exchangeNode = system.getProcessNode(link.targetNode
+		// .getProcess().getId());
 	}
 
 	@Override
 	public void undo() {
-		ProductSystemNode systemNode = sourceNode.getParent();
+		ProductSystemNode systemNode = GraphUtil.getSystemNode(providerNode);
 		ProductSystem system = systemNode.getProductSystem();
 		link.unlink();
 		system.getProcessLinks().remove(processLink);
@@ -90,8 +88,8 @@ public class CreateLinkCommand extends Command {
 		if (link == null)
 			link = new ConnectionLink();
 		link.processLink = getProcessLink();
-		link.sourceNode = sourceNode;
-		link.targetNode = targetNode;
+		link.sourceNode = GraphUtil.getProcessNode(providerNode);
+		link.targetNode = GraphUtil.getProcessNode(exchangeNode);
 		return link;
 	}
 
