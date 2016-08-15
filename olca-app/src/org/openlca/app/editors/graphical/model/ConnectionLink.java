@@ -16,9 +16,9 @@ public class ConnectionLink {
 	private ProcessLink processLink;
 	private ProcessNode sourceNode;
 	private ProcessNode targetNode;
-	private ConnectionLinkPart editPart;
+	private LinkPart editPart;
 
-	void setEditPart(ConnectionLinkPart editPart) {
+	void setEditPart(LinkPart editPart) {
 		this.editPart = editPart;
 	}
 

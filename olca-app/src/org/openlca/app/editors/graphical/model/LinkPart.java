@@ -16,7 +16,7 @@ import org.eclipse.gef.requests.ReconnectRequest;
 import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
 import org.openlca.app.editors.graphical.command.CommandFactory;
 
-class ConnectionLinkPart extends AbstractConnectionEditPart {
+class LinkPart extends AbstractConnectionEditPart {
 
 	@Override
 	public void activate() {
@@ -78,8 +78,8 @@ class ConnectionLinkPart extends AbstractConnectionEditPart {
 			ReconnectRequest request = ((ReconnectRequest) req);
 			ConnectionLink link = (ConnectionLink) request
 					.getConnectionEditPart().getModel();
-			ExchangeNode target = link.getTargetNode().getInputNode(
-					link.getProcessLink().flowId);
+			ExchangeNode target = link.getTargetNode().getExchangeNode(
+					link.getProcessLink().exchangeId);
 			ExchangeNode source = link.getSourceNode().getOutputNode(
 					link.getProcessLink().flowId);
 

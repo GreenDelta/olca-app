@@ -49,14 +49,14 @@ public class ProductSystemNode extends Node {
 
 	public void highlightMatchingExchanges(ExchangeNode toMatch) {
 		for (ProcessNode node : getChildren()) {
-			if (node.isVisible() && !node.isMinimized()) {
-				ExchangeNode inputNode = node.getInputNode(toMatch
-						.getExchange().getFlow().getId());
-				highlightExchange(node, inputNode, toMatch);
-				ExchangeNode outputNode = node.getOutputNode(toMatch
-						.getExchange().getFlow().getId());
-				highlightExchange(node, outputNode, toMatch);
-			}
+			if (!node.isVisible() || node.isMinimized())
+				continue;
+			ExchangeNode inputNode = node.getExchangeNode(toMatch
+					.getExchange().getId());
+			highlightExchange(node, inputNode, toMatch);
+			ExchangeNode outputNode = node.getOutputNode(toMatch
+					.getExchange().getFlow().getId());
+			highlightExchange(node, outputNode, toMatch);
 		}
 	}
 

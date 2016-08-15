@@ -197,12 +197,15 @@ public class ProcessNode extends Node {
 		getProcessFigure().refresh();
 	}
 
-	public ExchangeNode getInputNode(long flowId) {
-		for (ExchangeNode node : getExchangeNodes())
-			if (!node.isDummy())
-				if (node.getExchange().isInput())
-					if (node.getExchange().getFlow().getId() == flowId)
-						return node;
+	/** Get the node of the linked exchange of a process link. */
+	public ExchangeNode getExchangeNode(long exchangeId) {
+		for (ExchangeNode node : getExchangeNodes()) {
+			Exchange e = node.getExchange();
+			if (node.isDummy() || e == null)
+				continue;
+			if (node.getExchange().getId() == exchangeId)
+				return node;
+		}
 		return null;
 	}
 
