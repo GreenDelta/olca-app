@@ -15,6 +15,7 @@ import org.openlca.app.editors.graphical.command.CreateLinkCommand;
 import org.openlca.app.editors.graphical.model.ConnectionLink;
 import org.openlca.app.editors.graphical.model.ExchangeNode;
 import org.openlca.app.editors.graphical.model.ProcessNode;
+import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.core.model.Exchange;
 
 public class LinkPolicy extends GraphicalNodeEditPolicy {
@@ -115,23 +116,26 @@ public class LinkPolicy extends GraphicalNodeEditPolicy {
 	}
 
 	@Override
-	public void eraseSourceFeedback(Request request) {
-		if (getHost().getModel() instanceof ExchangeNode) {
-			ExchangeNode node = (ExchangeNode) getHost().getModel();
-			node.getParent().getParent().getParent().removeHighlighting();
-			node.setHighlighted(false);
-		}
-		super.eraseSourceFeedback(request);
-	}
-
-	@Override
 	public void showSourceFeedback(Request request) {
-		if (getHost().getModel() instanceof ExchangeNode) {
-			ExchangeNode node = (ExchangeNode) getHost().getModel();
-			node.getParent().getParent().getParent()
-					.highlightMatchingExchanges(node);
+		Object model = getHost().getModel();
+		if (model instanceof ExchangeNode) {
+			ExchangeNode node = (ExchangeNode) model;
+			ProductSystemNode system = GraphUtil.getSystemNode(node);
+			system.highlightMatchingExchanges(node);
 			node.setHighlighted(true);
 		}
 		super.showSourceFeedback(request);
+	}
+
+	@Override
+	public void eraseSourceFeedback(Request request) {
+		Object model = getHost().getModel();
+		if (model instanceof ExchangeNode) {
+			ExchangeNode node = (ExchangeNode) model;
+			ProductSystemNode system = GraphUtil.getSystemNode(node);
+			system.removeHighlighting();
+			node.setHighlighted(false);
+		}
+		super.eraseSourceFeedback(request);
 	}
 }

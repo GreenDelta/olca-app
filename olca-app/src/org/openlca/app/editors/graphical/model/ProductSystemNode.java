@@ -2,6 +2,7 @@ package org.openlca.app.editors.graphical.model;
 
 import java.util.List;
 
+import org.openlca.app.editors.graphical.GraphUtil;
 import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
 import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
 import org.openlca.core.model.Exchange;
@@ -49,36 +50,32 @@ public class ProductSystemNode extends Node {
 	}
 
 	public void highlightMatchingExchanges(ExchangeNode toMatch) {
+		boolean matchInputs = !toMatch.getExchange().isInput();
+		long flowId = toMatch.getExchange().getFlow().getId();
 		for (ProcessNode node : getChildren()) {
 			if (!node.isVisible() || node.isMinimized())
 				continue;
-			ExchangeNode inputNode = node.getExchangeNode(toMatch
-					.getExchange().getId());
-			highlightExchange(node, inputNode, toMatch);
-			ExchangeNode outputNode = node.getProviderNode(toMatch
-					.getExchange().getFlow().getId());
-			highlightExchange(node, outputNode, toMatch);
+			for (ExchangeNode en : GraphUtil.getExchangeNodes(node)) {
+				if (en.isDummy() || !en.isVisible())
+					continue;
+				Exchange e = en.getExchange();
+				if (matchInputs != e.isInput() || flowId != e.getFlow().getId())
+					continue;
+				if (node.isLinkedExchange(e.getId()))
+					continue;
+				en.setHighlighted(true);
+			}
 		}
 	}
 
-	private void highlightExchange(ProcessNode node, ExchangeNode exchangeNode,
-			ExchangeNode matchNode) {
-		if (node == null || exchangeNode == null || matchNode == null)
-			return;
-		Exchange exchange = exchangeNode.getExchange();
-		Exchange match = matchNode.getExchange();
-		if (exchange.isInput() == match.isInput())
-			return;
-		if (match.isInput() || !node.isLinkedExchange(exchange.getId()))
-			exchangeNode.setHighlighted(true);
-	}
-
 	public void removeHighlighting() {
-		for (ProcessNode node : getChildren())
-			if (node.isVisible() && !node.isMinimized())
-				for (ExchangeNode exchangeNode : node.getChildren().get(0)
-						.getChildren())
-					exchangeNode.setHighlighted(false);
+		for (ProcessNode node : getChildren()) {
+			if (!node.isVisible() || node.isMinimized())
+				continue;
+			for (ExchangeNode e : GraphUtil.getExchangeNodes(node)) {
+				e.setHighlighted(false);
+			}
+		}
 	}
 
 	public void refreshChildren() {
