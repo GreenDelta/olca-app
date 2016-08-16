@@ -64,12 +64,12 @@ public class LinkPolicy extends GraphicalNodeEditPolicy {
 		CreateLinkCommand cmd = new CreateLinkCommand();
 		if (!exchange.isInput()) {
 			cmd.providerNode = node;
-			cmd.startedFromSource = true;
+			cmd.startedFromProvider = true;
 		} else {
 			ProcessNode p = GraphUtil.getProcessNode(node);
 			if (!p.isLinkedExchange(exchange.getId())) {
 				cmd.exchangeNode = node;
-				cmd.startedFromSource = false;
+				cmd.startedFromProvider = false;
 			}
 		}
 		req.setStartCommand(cmd);

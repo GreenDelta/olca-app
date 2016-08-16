@@ -11,7 +11,7 @@ import org.openlca.core.model.ProductSystem;
 
 public class CreateLinkCommand extends Command {
 
-	public boolean startedFromSource;
+	public boolean startedFromProvider;
 	public ExchangeNode providerNode;
 	public ExchangeNode exchangeNode;
 
@@ -94,6 +94,12 @@ public class CreateLinkCommand extends Command {
 		link.sourceNode = GraphUtil.getProcessNode(providerNode);
 		link.targetNode = GraphUtil.getProcessNode(exchangeNode);
 		return link;
+	}
+
+	@Override
+	public String toString() {
+		return "CreateLinkCommand [ provider=" + providerNode
+				+ "; exchange=" + exchangeNode + "]";
 	}
 
 }
