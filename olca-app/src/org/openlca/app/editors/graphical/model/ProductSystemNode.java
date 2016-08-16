@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
 import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
+import org.openlca.core.model.Exchange;
 import org.openlca.core.model.ProductSystem;
 
 public class ProductSystemNode extends Node {
@@ -61,14 +62,15 @@ public class ProductSystemNode extends Node {
 	}
 
 	private void highlightExchange(ProcessNode node, ExchangeNode exchangeNode,
-			ExchangeNode toMatch) {
-		if (exchangeNode != null)
-			if (toMatch.getExchange().isInput() != exchangeNode.getExchange()
-					.isInput())
-				if (toMatch.getExchange().isInput()
-						|| !node.hasIncomingConnection(exchangeNode
-								.getExchange().getFlow().getId()))
-					exchangeNode.setHighlighted(true);
+			ExchangeNode matchNode) {
+		if (node == null || exchangeNode == null || matchNode == null)
+			return;
+		Exchange exchange = exchangeNode.getExchange();
+		Exchange match = matchNode.getExchange();
+		if (exchange.isInput() == match.isInput())
+			return;
+		if (match.isInput() || !node.isLinkedExchange(exchange.getId()))
+			exchangeNode.setHighlighted(true);
 	}
 
 	public void removeHighlighting() {

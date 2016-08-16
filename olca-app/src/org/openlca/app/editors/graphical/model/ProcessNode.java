@@ -246,12 +246,12 @@ public class ProcessNode extends Node {
 		getEditPart().revalidate();
 	}
 
-	public boolean hasIncomingConnection(long flowId) {
-		MutableProcessLinkSearchMap linkSearch = getParent().getLinkSearch();
-		for (ProcessLink link : linkSearch.getIncomingLinks(getProcess()
-				.getId()))
-			if (link.flowId == flowId)
+	public boolean isLinkedExchange(long exchangeId) {
+		MutableProcessLinkSearchMap index = getParent().getLinkSearch();
+		for (ProcessLink link : index.getIncomingLinks(getProcess().getId())) {
+			if (link.exchangeId == exchangeId)
 				return true;
+		}
 		return false;
 	}
 

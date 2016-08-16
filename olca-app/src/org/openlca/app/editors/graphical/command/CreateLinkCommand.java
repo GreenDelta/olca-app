@@ -43,12 +43,15 @@ public class CreateLinkCommand extends Command {
 	private ProcessLink getProcessLink() {
 		if (processLink == null)
 			processLink = new ProcessLink();
-		if (exchangeNode != null)
+		if (exchangeNode != null) {
 			processLink.processId = GraphUtil.getProcess(exchangeNode).getId();
-		if (providerNode != null)
+			processLink.flowId = GraphUtil.getFlow(exchangeNode).getId();
+			processLink.exchangeId = exchangeNode.getExchange().getId();
+		}
+		if (providerNode != null) {
 			processLink.providerId = GraphUtil.getProcess(providerNode).getId();
-		processLink.flowId = GraphUtil.getFlow(exchangeNode).getId();
-		processLink.exchangeId = exchangeNode.getExchange().getId();
+			processLink.flowId = GraphUtil.getFlow(providerNode).getId();
+		}
 		return processLink;
 	}
 

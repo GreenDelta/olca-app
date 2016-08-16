@@ -9,11 +9,13 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.editpolicies.GraphicalNodeEditPolicy;
 import org.eclipse.gef.requests.CreateConnectionRequest;
 import org.eclipse.gef.requests.ReconnectRequest;
+import org.openlca.app.editors.graphical.GraphUtil;
 import org.openlca.app.editors.graphical.command.CommandFactory;
 import org.openlca.app.editors.graphical.command.CreateLinkCommand;
 import org.openlca.app.editors.graphical.model.ConnectionLink;
 import org.openlca.app.editors.graphical.model.ExchangeNode;
 import org.openlca.app.editors.graphical.model.ProcessNode;
+import org.openlca.core.model.Exchange;
 
 public class LinkPolicy extends GraphicalNodeEditPolicy {
 
@@ -44,33 +46,34 @@ public class LinkPolicy extends GraphicalNodeEditPolicy {
 		if (!(model instanceof ExchangeNode))
 			return null;
 		ExchangeNode node = (ExchangeNode) model;
-
-		if (!target.getExchange().isInput())
-			cmd.providerNode = targetNode;
-		else if (!targetNode.hasIncomingConnection(cmd.flowId))
-			cmd.exchangeNode = targetNode;
-		req.setStartCommand(cmd);
+		Exchange exchange = node.getExchange();
+		if (!exchange.isInput()) {
+			cmd.providerNode = node;
+		} else {
+			ProcessNode p = GraphUtil.getProcessNode(node);
+			if (p.isLinkedExchange(exchange.getId())) {
+				cmd.exchangeNode = node;
+			}
+		}
 		return cmd;
 	}
 
 	@Override
-	protected Command getConnectionCreateCommand(CreateConnectionRequest request) {
-		ExchangeNode target = (ExchangeNode) request.getTargetEditPart()
-				.getModel();
-		ProcessNode targetNode = target.getParent().getParent();
-		CreateLinkCommand cmd = null;
-		long flowId = target.getExchange().getFlow().getId();
-		if (!target.getExchange().isInput()) {
-			cmd = CommandFactory.createCreateLinkCommand(flowId);
-			cmd.providerNode = targetNode;
+	protected Command getConnectionCreateCommand(CreateConnectionRequest req) {
+		ExchangeNode node = (ExchangeNode) req.getTargetEditPart().getModel();
+		Exchange exchange = node.getExchange();
+		CreateLinkCommand cmd = new CreateLinkCommand();
+		if (!exchange.isInput()) {
+			cmd.providerNode = node;
 			cmd.startedFromSource = true;
-			request.setStartCommand(cmd);
-		} else if (!targetNode.hasIncomingConnection(flowId)) {
-			cmd = CommandFactory.createCreateLinkCommand(flowId);
-			cmd.exchangeNode = targetNode;
-			cmd.startedFromSource = false;
-			request.setStartCommand(cmd);
+		} else {
+			ProcessNode p = GraphUtil.getProcessNode(node);
+			if (!p.isLinkedExchange(exchange.getId())) {
+				cmd.exchangeNode = node;
+				cmd.startedFromSource = false;
+			}
 		}
+		req.setStartCommand(cmd);
 		return cmd;
 	}
 
@@ -95,20 +98,19 @@ public class LinkPolicy extends GraphicalNodeEditPolicy {
 
 	@Override
 	protected Command getReconnectTargetCommand(ReconnectRequest request) {
-		if (request.getTarget().getModel() instanceof ExchangeNode) {
-			ConnectionLink link = (ConnectionLink) request
-					.getConnectionEditPart().getModel();
-			ExchangeNode target = (ExchangeNode) request.getTarget().getModel();
-			ProcessNode targetNode = target.getParent().getParent();
-			long flowId = link.processLink.flowId;
-			boolean canConnect = true;
-			if (!link.targetNode.equals(targetNode)
-					&& targetNode.hasIncomingConnection(flowId))
-				canConnect = false;
-			if (canConnect)
-				return CommandFactory.createReconnectLinkCommand(link,
-						link.sourceNode, targetNode);
-		}
+		Object model = request.getTarget().getModel();
+		if (!(model instanceof ExchangeNode))
+			return null;
+		ConnectionLink link = (ConnectionLink) request
+				.getConnectionEditPart().getModel();
+		ExchangeNode node = (ExchangeNode) request.getTarget().getModel();
+		ProcessNode p = GraphUtil.getProcessNode(node);
+		long exchangeId = node.getExchange().getId();
+		boolean canConnect = true;
+		if (!link.targetNode.equals(p) && p.isLinkedExchange(exchangeId))
+			canConnect = false;
+		if (canConnect)
+			return CommandFactory.createReconnectLinkCommand(link, link.sourceNode, p);
 		return null;
 	}
 

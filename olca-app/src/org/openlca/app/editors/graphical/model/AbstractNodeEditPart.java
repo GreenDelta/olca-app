@@ -1,11 +1,14 @@
 package org.openlca.app.editors.graphical.model;
 
+import java.util.Objects;
+
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.NodeEditPart;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.requests.CreateConnectionRequest;
 import org.eclipse.gef.requests.ReconnectRequest;
+import org.openlca.app.editors.graphical.GraphUtil;
 import org.openlca.app.editors.graphical.command.CreateLinkCommand;
 
 abstract class AbstractNodeEditPart<N extends Node> extends
@@ -91,18 +94,13 @@ abstract class AbstractNodeEditPart<N extends Node> extends
 		return null;
 	}
 
-	private boolean canConnect(ExchangeNode node, ExchangeNode withNode) {
-		if (withNode
-				.getParent()
-				.getParent()
-				.hasIncomingConnection(withNode.getExchange().getFlow().getId()))
+	private boolean canConnect(ExchangeNode node, ExchangeNode with) {
+		if (node == with)
 			return false;
-		if (node.getExchange().getFlow()
-				.equals(withNode.getExchange().getFlow()))
+		ProcessNode withProcess = GraphUtil.getProcessNode(with);
+		if (withProcess.isLinkedExchange(with.getExchange().getId()))
 			return false;
-		if (node == withNode)
-			return false;
-		return true;
+		return Objects.equals(node.getExchange().getFlow(),
+				with.getExchange().getFlow());
 	}
-
 }
