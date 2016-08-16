@@ -209,12 +209,15 @@ public class ProcessNode extends Node {
 		return null;
 	}
 
-	public ExchangeNode getOutputNode(long flowId) {
-		for (ExchangeNode node : getExchangeNodes())
-			if (!node.isDummy())
-				if (!node.getExchange().isInput())
-					if (node.getExchange().getFlow().getId() == flowId)
-						return node;
+	public ExchangeNode getProviderNode(long flowId) {
+		for (ExchangeNode node : getExchangeNodes()) {
+			Exchange e = node.getExchange();
+			// TODO: !isInput in future waste modeling
+			if (node.isDummy() || e.getFlow() == null || e.isInput())
+				continue;
+			if (e.getFlow().getId() == flowId)
+				return node;
+		}
 		return null;
 	}
 

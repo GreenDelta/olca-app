@@ -36,24 +36,21 @@ public class LinkPolicy extends GraphicalNodeEditPolicy {
 	}
 
 	@Override
-	protected Command getConnectionCompleteCommand(
-			CreateConnectionRequest request) {
-		if (request.getStartCommand() != null) {
-			CreateLinkCommand cmd = (CreateLinkCommand) request
-					.getStartCommand();
-			if (request.getTargetEditPart().getModel() instanceof ExchangeNode) {
-				ExchangeNode target = (ExchangeNode) request
-						.getTargetEditPart().getModel();
-				ProcessNode targetNode = target.getParent().getParent();
-				if (!target.getExchange().isInput())
-					cmd.providerNode = targetNode;
-				else if (!targetNode.hasIncomingConnection(cmd.flowId))
-					cmd.exchangeNode = targetNode;
-				request.setStartCommand(cmd);
-				return cmd;
-			}
-		}
-		return null;
+	protected Command getConnectionCompleteCommand(CreateConnectionRequest req) {
+		if (req.getStartCommand() == null)
+			return null;
+		CreateLinkCommand cmd = (CreateLinkCommand) req.getStartCommand();
+		Object model = req.getTargetEditPart().getModel();
+		if (!(model instanceof ExchangeNode))
+			return null;
+		ExchangeNode node = (ExchangeNode) model;
+
+		if (!target.getExchange().isInput())
+			cmd.providerNode = targetNode;
+		else if (!targetNode.hasIncomingConnection(cmd.flowId))
+			cmd.exchangeNode = targetNode;
+		req.setStartCommand(cmd);
+		return cmd;
 	}
 
 	@Override

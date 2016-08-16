@@ -80,7 +80,7 @@ class LinkPart extends AbstractConnectionEditPart {
 					.getConnectionEditPart().getModel();
 			ExchangeNode target = link.targetNode.getExchangeNode(
 					link.processLink.exchangeId);
-			ExchangeNode source = link.sourceNode.getOutputNode(
+			ExchangeNode source = link.sourceNode.getProviderNode(
 					link.processLink.flowId);
 
 			ExchangeNode n1 = request.isMovingStartAnchor() ? target : source;

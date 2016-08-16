@@ -54,7 +54,7 @@ public class ProductSystemNode extends Node {
 			ExchangeNode inputNode = node.getExchangeNode(toMatch
 					.getExchange().getId());
 			highlightExchange(node, inputNode, toMatch);
-			ExchangeNode outputNode = node.getOutputNode(toMatch
+			ExchangeNode outputNode = node.getProviderNode(toMatch
 					.getExchange().getFlow().getId());
 			highlightExchange(node, outputNode, toMatch);
 		}

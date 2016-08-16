@@ -44,7 +44,7 @@ abstract class AbstractNodeEditPart<N extends Node> extends
 					.getModel().getParent().getParent();
 			long flowId = link.processLink.flowId;
 			long exchangeId = link.processLink.exchangeId;
-			ExchangeNode source = provider.getOutputNode(flowId);
+			ExchangeNode source = provider.getProviderNode(flowId);
 			ExchangeNode target = link.targetNode.getExchangeNode(exchangeId);
 			if (target != null && target.matches(source))
 				return LinkAnchor.createSourceAnchor(provider, link);
@@ -80,7 +80,7 @@ abstract class AbstractNodeEditPart<N extends Node> extends
 					.getModel().getParent().getParent();
 			long flowId = link.processLink.flowId;
 			long exchangeId = link.processLink.exchangeId;
-			ExchangeNode source = link.sourceNode.getOutputNode(flowId);
+			ExchangeNode source = link.sourceNode.getProviderNode(flowId);
 			ExchangeNode target = processNode.getExchangeNode(exchangeId);
 			if (source != null && source.matches(target)) {
 				if (canConnect(link.targetNode.getExchangeNode(exchangeId),

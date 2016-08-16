@@ -70,12 +70,6 @@ public class CommandFactory {
 		return command;
 	}
 
-	public static CreateLinkCommand createCreateLinkCommand(long flowId) {
-		CreateLinkCommand command = new CreateLinkCommand();
-		command.flowId = flowId;
-		return command;
-	}
-
 	public static CreateProcessCommand createCreateProcessCommand(
 			ProductSystemNode model, ProcessDescriptor process) {
 		CreateProcessCommand command = new CreateProcessCommand();

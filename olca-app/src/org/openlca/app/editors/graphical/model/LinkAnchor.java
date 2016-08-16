@@ -6,6 +6,7 @@ import org.eclipse.draw2d.AbstractConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.openlca.app.editors.graphical.GraphUtil;
 import org.openlca.core.model.ProcessLink;
 
 class LinkAnchor extends AbstractConnectionAnchor {
@@ -27,8 +28,18 @@ class LinkAnchor extends AbstractConnectionAnchor {
 		return createAnchor(node, link, SOURCE_ANCHOR);
 	}
 
+	static LinkAnchor createSourceAnchor(ExchangeNode node, ConnectionLink link) {
+		ProcessNode p = GraphUtil.getProcessNode(node);
+		return createAnchor(p, link, SOURCE_ANCHOR);
+	}
+
 	static LinkAnchor createTargetAnchor(ProcessNode node, ConnectionLink link) {
 		return createAnchor(node, link, TARGET_ANCHOR);
+	}
+
+	static LinkAnchor createTargetAnchor(ExchangeNode node, ConnectionLink link) {
+		ProcessNode p = GraphUtil.getProcessNode(node);
+		return createAnchor(p, link, TARGET_ANCHOR);
 	}
 
 	private static LinkAnchor createAnchor(ProcessNode node,
@@ -40,7 +51,7 @@ class LinkAnchor extends AbstractConnectionAnchor {
 		if (node.isMinimized()) {
 			figure = node.getFigure();
 		} else if (type == SOURCE_ANCHOR) {
-			ExchangeNode provider = node.getOutputNode(pLink.flowId);
+			ExchangeNode provider = node.getProviderNode(pLink.flowId);
 			figure = provider != null ? provider.getFigure() : null;
 		} else if (type == TARGET_ANCHOR) {
 			ExchangeNode exchange = node.getExchangeNode(pLink.exchangeId);
