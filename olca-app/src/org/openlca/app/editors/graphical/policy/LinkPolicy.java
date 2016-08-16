@@ -20,11 +20,9 @@ import org.openlca.core.model.Exchange;
 
 public class LinkPolicy extends GraphicalNodeEditPolicy {
 
-	private PolylineConnection connection;
-
 	@Override
 	protected Connection createDummyConnection(Request req) {
-		connection = (PolylineConnection) super.createDummyConnection(req);
+		PolylineConnection connection = (PolylineConnection) super.createDummyConnection(req);
 		connection.setForegroundColor(ConnectionLink.COLOR);
 		if (req instanceof CreateConnectionRequest) {
 			CreateLinkCommand command = (CreateLinkCommand) ((CreateConnectionRequest) req)
@@ -52,7 +50,7 @@ public class LinkPolicy extends GraphicalNodeEditPolicy {
 			cmd.providerNode = node;
 		} else {
 			ProcessNode p = GraphUtil.getProcessNode(node);
-			if (p.isLinkedExchange(exchange.getId())) {
+			if (!p.isLinkedExchange(exchange.getId())) {
 				cmd.exchangeNode = node;
 			}
 		}

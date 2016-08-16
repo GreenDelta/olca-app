@@ -39,15 +39,12 @@ class LinkPart extends AbstractConnectionEditPart {
 	protected void createEditPolicies() {
 		installEditPolicy(EditPolicy.CONNECTION_ENDPOINTS_ROLE,
 				new ConnectionEndpointEditPolicy());
-		installEditPolicy(EditPolicy.CONNECTION_ROLE,
-				new ConnectionEditPolicy() {
-
-					@Override
-					protected Command getDeleteCommand(GroupRequest arg0) {
-						return CommandFactory
-								.createDeleteLinkCommand(getModel());
-					}
-				});
+		installEditPolicy(EditPolicy.CONNECTION_ROLE, new ConnectionEditPolicy() {
+			@Override
+			protected Command getDeleteCommand(GroupRequest req) {
+				return CommandFactory.createDeleteLinkCommand(getModel());
+			}
+		});
 	}
 
 	@Override
@@ -129,13 +126,11 @@ class LinkPart extends AbstractConnectionEditPart {
 
 	@Override
 	public void refreshSourceAnchor() {
-		// make public
 		super.refreshSourceAnchor();
 	}
 
 	@Override
 	public void refreshTargetAnchor() {
-		// make public
 		super.refreshTargetAnchor();
 	}
 

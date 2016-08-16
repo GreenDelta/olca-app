@@ -60,21 +60,10 @@ abstract class AbstractNodeEditPart<N extends Node> extends
 		if (request instanceof CreateConnectionRequest) {
 			CreateLinkCommand cmd = (CreateLinkCommand) ((CreateConnectionRequest) request)
 					.getStartCommand();
-			if (cmd.startedFromSource) {
-				if (cmd.exchangeNode != null)
-					return LinkAnchor.createTargetAnchor(cmd.exchangeNode,
-							cmd.getLink());
-				else if (cmd.providerNode != null)
-					return LinkAnchor.createSourceAnchor(cmd.providerNode,
-							cmd.getLink());
-			} else {
-				if (cmd.providerNode != null)
-					return LinkAnchor.createSourceAnchor(cmd.providerNode,
-							cmd.getLink());
-				else if (cmd.exchangeNode != null)
-					return LinkAnchor.createTargetAnchor(cmd.exchangeNode,
-							cmd.getLink());
-			}
+			if (cmd.providerNode != null)
+				return LinkAnchor.createSourceAnchor(cmd.providerNode, cmd.getLink());
+			if (cmd.exchangeNode != null)
+				return LinkAnchor.createTargetAnchor(cmd.exchangeNode, cmd.getLink());
 		} else if (request instanceof ReconnectRequest) {
 			ReconnectRequest req = (ReconnectRequest) request;
 			ConnectionLink link = (ConnectionLink) req.getConnectionEditPart()
