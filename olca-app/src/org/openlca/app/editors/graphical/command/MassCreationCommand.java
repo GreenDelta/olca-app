@@ -81,8 +81,8 @@ class MassCreationCommand extends Command {
 		ProcessNode targetNode = model.getProcessNode(link.processId);
 		ConnectionLink connection = new ConnectionLink();
 		connection.processLink = link;
-		connection.sourceNode = sourceNode;
-		connection.targetNode = targetNode;
+		connection.provider = sourceNode.getProviderNode(link.flowId);
+		connection.exchange = targetNode.getExchangeNode(link.exchangeId);
 		return connection;
 	}
 

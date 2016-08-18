@@ -128,9 +128,9 @@ class ProcessFigure extends Figure {
 		getParent().setConstraint(this,
 				new Rectangle(x - 1, y - 1, width, height));
 		for (ConnectionLink link : node.getLinks())
-			if (node.equals(link.targetNode))
+			if (node.equals(link.exchange))
 				link.refreshTargetAnchor();
-			else if (node.equals(link.sourceNode))
+			else if (node.equals(link.provider))
 				link.refreshSourceAnchor();
 	}
 

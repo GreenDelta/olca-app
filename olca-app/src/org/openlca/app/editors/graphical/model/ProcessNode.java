@@ -9,6 +9,7 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
+import org.openlca.app.editors.graphical.GraphUtil;
 import org.openlca.app.editors.graphical.layout.GraphLayoutManager;
 import org.openlca.app.editors.graphical.layout.NodeLayoutInfo;
 import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
@@ -81,9 +82,9 @@ public class ProcessNode extends Node {
 	public void add(ConnectionLink link) {
 		if (!links.contains(link)) {
 			links.add(link);
-			if (equals(link.sourceNode))
+			if (equals(link.provider))
 				getEditPart().refreshSourceConnections();
-			if (equals(link.targetNode))
+			if (equals(link.exchange))
 				getEditPart().refreshTargetConnections();
 			getEditPart().refresh();
 		}
@@ -92,9 +93,9 @@ public class ProcessNode extends Node {
 	public void remove(ConnectionLink link) {
 		if (links.contains(link)) {
 			links.remove(link);
-			if (equals(link.sourceNode))
+			if (equals(link.provider))
 				getEditPart().refreshSourceConnections();
-			if (equals(link.targetNode))
+			if (equals(link.exchange))
 				getEditPart().refreshTargetConnections();
 			getEditPart().refresh();
 		}
@@ -115,11 +116,11 @@ public class ProcessNode extends Node {
 		for (ConnectionLink link : getLinks()) {
 			ProcessNode otherNode = null;
 			boolean isSource = false;
-			if (link.sourceNode.equals(this)) {
-				otherNode = link.targetNode;
+			if (link.provider.equals(this)) {
+				otherNode = GraphUtil.getProcessNode(link.exchange);
 				isSource = true;
-			} else if (link.targetNode.equals(this))
-				otherNode = link.sourceNode;
+			} else if (link.exchange.equals(this))
+				otherNode = GraphUtil.getProcessNode(link.provider);
 			if (otherNode.isVisible())
 				if (isSource && otherNode.isExpandedLeft())
 					link.setVisible(true);
@@ -274,7 +275,7 @@ public class ProcessNode extends Node {
 	public int countOutgoingConnections() {
 		int count = 0;
 		for (ConnectionLink link : links)
-			if (link.sourceNode.equals(this))
+			if (link.provider.equals(this))
 				count++;
 		return count;
 	}
@@ -282,7 +283,7 @@ public class ProcessNode extends Node {
 	public int countIncomingConnections() {
 		int count = 0;
 		for (ConnectionLink link : links)
-			if (link.targetNode.equals(this))
+			if (link.exchange.equals(this))
 				count++;
 		return count;
 	}

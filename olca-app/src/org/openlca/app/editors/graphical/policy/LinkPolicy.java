@@ -10,8 +10,8 @@ import org.eclipse.gef.editpolicies.GraphicalNodeEditPolicy;
 import org.eclipse.gef.requests.CreateConnectionRequest;
 import org.eclipse.gef.requests.ReconnectRequest;
 import org.openlca.app.editors.graphical.GraphUtil;
-import org.openlca.app.editors.graphical.command.CommandFactory;
 import org.openlca.app.editors.graphical.command.CreateLinkCommand;
+import org.openlca.app.editors.graphical.command.ReconnectCommand;
 import org.openlca.app.editors.graphical.model.ConnectionLink;
 import org.openlca.app.editors.graphical.model.ExchangeNode;
 import org.openlca.app.editors.graphical.model.ProcessNode;
@@ -88,9 +88,7 @@ public class LinkPolicy extends GraphicalNodeEditPolicy {
 			ConnectionLink link = (ConnectionLink) request
 					.getConnectionEditPart().getModel();
 			ExchangeNode source = (ExchangeNode) request.getTarget().getModel();
-			ProcessNode sourceNode = source.getParent().getParent();
-			return CommandFactory.createReconnectLinkCommand(link, sourceNode,
-					link.targetNode);
+			new ReconnectCommand(link, source, link.exchange);
 		}
 		return null;
 	}
@@ -106,10 +104,10 @@ public class LinkPolicy extends GraphicalNodeEditPolicy {
 		ProcessNode p = GraphUtil.getProcessNode(node);
 		long exchangeId = node.getExchange().getId();
 		boolean canConnect = true;
-		if (!link.targetNode.equals(p) && p.isLinkedExchange(exchangeId))
+		if (!link.exchange.equals(p) && p.isLinkedExchange(exchangeId))
 			canConnect = false;
 		if (canConnect)
-			return CommandFactory.createReconnectLinkCommand(link, link.sourceNode, p);
+			return new ReconnectCommand(link, link.provider, node);
 		return null;
 	}
 

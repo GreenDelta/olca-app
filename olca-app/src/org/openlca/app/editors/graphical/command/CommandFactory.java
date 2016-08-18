@@ -98,15 +98,6 @@ public class CommandFactory {
 		return command;
 	}
 
-	public static ReconnectLinkCommand createReconnectLinkCommand(
-			ConnectionLink link, ProcessNode sourceNode, ProcessNode targetNode) {
-		ReconnectLinkCommand command = new ReconnectLinkCommand();
-		command.setLink(link);
-		command.setSourceNode(sourceNode);
-		command.setTargetNode(targetNode);
-		return command;
-	}
-
 	public static HideShowCommand createShowCommand(ProcessDescriptor process,
 			ProductSystemNode model) {
 		HideShowCommand command = new HideShowCommand(SHOW);

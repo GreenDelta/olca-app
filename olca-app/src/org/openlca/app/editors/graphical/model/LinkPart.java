@@ -13,6 +13,7 @@ import org.eclipse.gef.editpolicies.ConnectionEditPolicy;
 import org.eclipse.gef.editpolicies.ConnectionEndpointEditPolicy;
 import org.eclipse.gef.requests.GroupRequest;
 import org.eclipse.gef.requests.ReconnectRequest;
+import org.openlca.app.editors.graphical.GraphUtil;
 import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
 import org.openlca.app.editors.graphical.command.CommandFactory;
 
@@ -53,7 +54,7 @@ class LinkPart extends AbstractConnectionEditPart {
 	}
 
 	private ProductSystemGraphEditor getEditor() {
-		return getModel().sourceNode.getParent().getEditor();
+		return GraphUtil.getEditor(getModel().provider);
 	}
 
 	private ConnectionRouter getConnectionRouter() {
@@ -62,9 +63,9 @@ class LinkPart extends AbstractConnectionEditPart {
 	}
 
 	private boolean isVisible() {
-		if (!getModel().sourceNode.getFigure().isVisible())
+		if (!getModel().provider.getFigure().isVisible())
 			return false;
-		if (!getModel().targetNode.getFigure().isVisible())
+		if (!getModel().exchange.getFigure().isVisible())
 			return false;
 		return true;
 	}
@@ -75,10 +76,8 @@ class LinkPart extends AbstractConnectionEditPart {
 			ReconnectRequest request = ((ReconnectRequest) req);
 			ConnectionLink link = (ConnectionLink) request
 					.getConnectionEditPart().getModel();
-			ExchangeNode target = link.targetNode.getExchangeNode(
-					link.processLink.exchangeId);
-			ExchangeNode source = link.sourceNode.getProviderNode(
-					link.processLink.flowId);
+			ExchangeNode target = link.exchange;
+			ExchangeNode source = link.provider;
 
 			ExchangeNode n1 = request.isMovingStartAnchor() ? target : source;
 			ExchangeNode n2 = request.isMovingStartAnchor() ? source : target;

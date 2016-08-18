@@ -40,6 +40,11 @@ public final class GraphUtil {
 		return process == null ? null : process.getParent();
 	}
 
+	public static ProductSystemGraphEditor getEditor(ExchangeNode node) {
+		ProductSystemNode system = getSystemNode(node);
+		return system == null ? null : system.getEditor();
+	}
+
 	public static List<ExchangeNode> getExchangeNodes(ProcessNode node) {
 		if (node == null || node.getChildren() == null)
 			return Collections.emptyList();

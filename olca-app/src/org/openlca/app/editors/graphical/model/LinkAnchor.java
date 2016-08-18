@@ -11,8 +11,8 @@ import org.openlca.core.model.ProcessLink;
 
 class LinkAnchor extends AbstractConnectionAnchor {
 
-	private static final int SOURCE_ANCHOR = 1;
-	private static final int TARGET_ANCHOR = 2;
+	private static final int OUTPUT = 1;
+	private static final int INPUT = 2;
 
 	private int type;
 	private ProcessNode node;
@@ -24,22 +24,22 @@ class LinkAnchor extends AbstractConnectionAnchor {
 		this.link = link;
 	}
 
-	static LinkAnchor createSourceAnchor(ProcessNode node, ConnectionLink link) {
-		return createAnchor(node, link, SOURCE_ANCHOR);
+	static LinkAnchor createOutputAnchor(ProcessNode node, ConnectionLink link) {
+		return createAnchor(node, link, OUTPUT);
 	}
 
-	static LinkAnchor createSourceAnchor(ExchangeNode node, ConnectionLink link) {
+	static LinkAnchor createOutputAnchor(ExchangeNode node, ConnectionLink link) {
 		ProcessNode p = GraphUtil.getProcessNode(node);
-		return createAnchor(p, link, SOURCE_ANCHOR);
+		return createAnchor(p, link, OUTPUT);
 	}
 
-	static LinkAnchor createTargetAnchor(ProcessNode node, ConnectionLink link) {
-		return createAnchor(node, link, TARGET_ANCHOR);
+	static LinkAnchor createInputAnchor(ProcessNode node, ConnectionLink link) {
+		return createAnchor(node, link, INPUT);
 	}
 
-	static LinkAnchor createTargetAnchor(ExchangeNode node, ConnectionLink link) {
+	static LinkAnchor createInputAnchor(ExchangeNode node, ConnectionLink link) {
 		ProcessNode p = GraphUtil.getProcessNode(node);
-		return createAnchor(p, link, TARGET_ANCHOR);
+		return createAnchor(p, link, INPUT);
 	}
 
 	private static LinkAnchor createAnchor(ProcessNode node,
@@ -50,10 +50,10 @@ class LinkAnchor extends AbstractConnectionAnchor {
 		ProcessLink pLink = link.processLink;
 		if (node.isMinimized()) {
 			figure = node.getFigure();
-		} else if (type == SOURCE_ANCHOR) {
+		} else if (type == OUTPUT) {
 			ExchangeNode provider = node.getProviderNode(pLink.flowId);
 			figure = provider != null ? provider.getFigure() : null;
-		} else if (type == TARGET_ANCHOR) {
+		} else if (type == INPUT) {
 			ExchangeNode exchange = node.getExchangeNode(pLink.exchangeId);
 			figure = exchange != null ? exchange.getFigure() : null;
 		}
@@ -68,15 +68,15 @@ class LinkAnchor extends AbstractConnectionAnchor {
 	public Point getLocation(Point reference) {
 		int hTrans = 0;
 		if (!node.isMinimized()) {
-			if (Objects.equals(link.targetNode, node))
+			if (Objects.equals(link.exchange, node))
 				hTrans -= ProcessFigure.MARGIN_WIDTH + 1;
-			else if (Objects.equals(link.sourceNode, node))
+			else if (Objects.equals(link.provider, node))
 				hTrans += ProcessFigure.MARGIN_WIDTH + 1;
 		}
 		Rectangle r = getOwner().getBounds().getCopy();
 		r.translate(hTrans, 0);
 		getOwner().translateToAbsolute(r);
-		return type == TARGET_ANCHOR ? r.getLeft() : r.getRight();
+		return type == INPUT ? r.getLeft() : r.getRight();
 	}
 
 }

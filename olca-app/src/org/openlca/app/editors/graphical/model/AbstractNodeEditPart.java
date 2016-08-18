@@ -18,14 +18,14 @@ abstract class AbstractNodeEditPart<N extends Node> extends
 	public ConnectionAnchor getSourceConnectionAnchor(
 			ConnectionEditPart connection) {
 		ConnectionLink link = (ConnectionLink) connection.getModel();
-		return LinkAnchor.createSourceAnchor(link.sourceNode, link);
+		return LinkAnchor.createOutputAnchor(link.provider, link);
 	}
 
 	@Override
 	public ConnectionAnchor getTargetConnectionAnchor(
 			ConnectionEditPart connection) {
 		ConnectionLink link = (ConnectionLink) connection.getModel();
-		return LinkAnchor.createTargetAnchor(link.targetNode, link);
+		return LinkAnchor.createInputAnchor(link.exchange, link);
 	}
 
 	@Override
@@ -35,21 +35,24 @@ abstract class AbstractNodeEditPart<N extends Node> extends
 					.getStartCommand();
 			ConnectionLink link = cmd.getLink();
 			if (cmd.providerNode != null && cmd.startedFromProvider)
-				return LinkAnchor.createSourceAnchor(cmd.providerNode, link);
+				return LinkAnchor.createOutputAnchor(cmd.providerNode, link);
 			else if (cmd.exchangeNode != null)
-				return LinkAnchor.createTargetAnchor(cmd.exchangeNode, link);
+				return LinkAnchor.createInputAnchor(cmd.exchangeNode, link);
 		} else if (request instanceof ReconnectRequest) {
 			ReconnectRequest req = (ReconnectRequest) request;
 			ConnectionLink link = (ConnectionLink) req.getConnectionEditPart()
 					.getModel();
+			ExchangeNode onNode = (ExchangeNode) req.getTarget().getModel();
+			System.out.println("sourceAnchor; onNode=" + onNode);
+
 			ProcessNode provider = ((ExchangePart) req.getTarget())
 					.getModel().getParent().getParent();
 			long flowId = link.processLink.flowId;
-			long exchangeId = link.processLink.exchangeId;
+
 			ExchangeNode source = provider.getProviderNode(flowId);
-			ExchangeNode target = link.targetNode.getExchangeNode(exchangeId);
+			ExchangeNode target = link.exchange;
 			if (target != null && target.matches(source))
-				return LinkAnchor.createSourceAnchor(provider, link);
+				return LinkAnchor.createOutputAnchor(provider, link);
 		}
 		return null;
 	}
@@ -61,23 +64,25 @@ abstract class AbstractNodeEditPart<N extends Node> extends
 					.getStartCommand();
 			ConnectionLink link = cmd.getLink();
 			if (cmd.exchangeNode != null && cmd.startedFromProvider)
-				return LinkAnchor.createTargetAnchor(cmd.exchangeNode, link);
+				return LinkAnchor.createInputAnchor(cmd.exchangeNode, link);
 			else if (cmd.providerNode != null)
-				return LinkAnchor.createSourceAnchor(cmd.providerNode, link);
+				return LinkAnchor.createOutputAnchor(cmd.providerNode, link);
 		} else if (request instanceof ReconnectRequest) {
 			ReconnectRequest req = (ReconnectRequest) request;
 			ConnectionLink link = (ConnectionLink) req.getConnectionEditPart()
 					.getModel();
+			ExchangeNode onNode = (ExchangeNode) req.getTarget().getModel();
+			System.out.println("targetAnchor; onNode=" + onNode);
+
 			ProcessNode processNode = ((ExchangePart) req.getTarget())
 					.getModel().getParent().getParent();
 			long flowId = link.processLink.flowId;
 			long exchangeId = link.processLink.exchangeId;
-			ExchangeNode source = link.sourceNode.getProviderNode(flowId);
+			ExchangeNode source = link.provider;
 			ExchangeNode target = processNode.getExchangeNode(exchangeId);
 			if (source != null && source.matches(target)) {
-				if (canConnect(link.targetNode.getExchangeNode(exchangeId),
-						target))
-					return LinkAnchor.createTargetAnchor(processNode, link);
+				if (canConnect(link.exchange, target))
+					return LinkAnchor.createInputAnchor(processNode, link);
 			}
 		}
 		return null;

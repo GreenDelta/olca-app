@@ -91,8 +91,8 @@ public class CreateLinkCommand extends Command {
 		if (link == null)
 			link = new ConnectionLink();
 		link.processLink = getProcessLink();
-		link.sourceNode = GraphUtil.getProcessNode(providerNode);
-		link.targetNode = GraphUtil.getProcessNode(exchangeNode);
+		link.provider = providerNode;
+		link.exchange = exchangeNode;
 		return link;
 	}
 

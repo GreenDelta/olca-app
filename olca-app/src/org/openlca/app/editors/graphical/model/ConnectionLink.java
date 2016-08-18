@@ -5,6 +5,7 @@ import java.util.Objects;
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.Connection;
 import org.eclipse.swt.graphics.Color;
+import org.openlca.app.editors.graphical.GraphUtil;
 import org.openlca.core.model.ProcessLink;
 
 public class ConnectionLink {
@@ -14,8 +15,9 @@ public class ConnectionLink {
 
 	public ProcessLink processLink;
 	public Connection figure;
-	public ProcessNode sourceNode;
-	public ProcessNode targetNode;
+
+	public ExchangeNode provider;
+	public ExchangeNode exchange;
 
 	private LinkPart editPart;
 
@@ -36,20 +38,25 @@ public class ConnectionLink {
 	}
 
 	public void link() {
-		sourceNode.add(this);
-		targetNode.add(this);
-		sourceNode.refresh();
-		targetNode.refresh();
+		ProcessNode providerProcess = GraphUtil.getProcessNode(provider);
+		providerProcess.add(this);
+		providerProcess.refresh();
+		ProcessNode exchangeProcess = GraphUtil.getProcessNode(exchange);
+		exchangeProcess.add(this);
+		exchangeProcess.refresh();
 	}
 
 	public void unlink() {
 		editPart.setSelected(0);
-		sourceNode.remove(this);
-		targetNode.remove(this);
-		sourceNode.getEditPart().refreshSourceConnections();
-		targetNode.getEditPart().refreshTargetConnections();
-		sourceNode.refresh();
-		targetNode.refresh();
+		ProcessNode providerProcess = GraphUtil.getProcessNode(provider);
+		providerProcess.remove(this);
+		providerProcess.getEditPart().refreshSourceConnections();
+		providerProcess.refresh();
+
+		ProcessNode exchangeProcess = GraphUtil.getProcessNode(exchange);
+		exchangeProcess.remove(this);
+		exchangeProcess.getEditPart().refreshTargetConnections();
+		exchangeProcess.refresh();
 	}
 
 	@Override
@@ -59,9 +66,9 @@ public class ConnectionLink {
 		ConnectionLink link = (ConnectionLink) obj;
 		if (!Objects.equals(processLink, link.processLink))
 			return false;
-		if (!Objects.equals(sourceNode, link.sourceNode))
+		if (!Objects.equals(provider, link.provider))
 			return false;
-		if (!Objects.equals(targetNode, link.targetNode))
+		if (!Objects.equals(exchange, link.exchange))
 			return false;
 		return true;
 	}

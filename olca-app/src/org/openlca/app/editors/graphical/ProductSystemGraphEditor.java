@@ -158,8 +158,8 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 			if (!sourceNode.isExpandedRight() && !targetNode.isExpandedLeft())
 				continue;
 			ConnectionLink connectionLink = new ConnectionLink();
-			connectionLink.sourceNode = sourceNode;
-			connectionLink.targetNode = targetNode;
+			connectionLink.provider = sourceNode.getProviderNode(link.flowId);
+			connectionLink.exchange = targetNode.getExchangeNode(link.exchangeId);
 			connectionLink.processLink = link;
 			connectionLink.link();
 		}
