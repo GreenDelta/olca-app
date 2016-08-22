@@ -1,5 +1,7 @@
 package org.openlca.app.wizards;
 
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
@@ -30,6 +32,16 @@ import org.openlca.core.model.descriptors.Descriptors;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 
 public class ProcessWizard extends AbstractWizard<Process> {
+
+	private Flow refFlow;
+
+	/**
+	 * Optionally set the reference flow of process. This function is used when
+	 * a process is directly created from a product flow.
+	 */
+	public void setRefFlow(Flow refFlow) {
+		this.refFlow = refFlow;
+	}
 
 	@Override
 	protected String getTitle() {
@@ -83,12 +95,12 @@ public class ProcessWizard extends AbstractWizard<Process> {
 		}
 
 		@Override
-		protected void createContents(Composite container) {
-			new Label(container, SWT.NONE);
-			createRefFlowCheck(container);
-			filterText = UI.formText(container, M.QuantitativeReference);
-			createLabelStack(container);
-			contentStack = new Composite(container, SWT.NONE);
+		protected void createContents(Composite comp) {
+			new Label(comp, SWT.NONE);
+			createRefFlowCheck(comp);
+			filterText = UI.formText(comp, M.QuantitativeReference);
+			createLabelStack(comp);
+			contentStack = new Composite(comp, SWT.NONE);
 			UI.gridData(contentStack, true, true).heightHint = 200;
 			contentStack.setLayout(new StackLayout());
 			createProductViewer();
@@ -97,12 +109,21 @@ public class ProcessWizard extends AbstractWizard<Process> {
 			((StackLayout) contentStack.getLayout()).topControl = productTreeContainer;
 			labelStack.layout();
 			contentStack.layout();
+			if (refFlow != null) {
+				FlowDescriptor d = Descriptors.toDescriptor(refFlow);
+				INavigationElement<?> e = Navigator.findElement(d);
+				ISelection s = new StructuredSelection(e);
+				productTree.setSelection(s, true);
+				String name = refFlow.getName() != null ? refFlow.getName() : "";
+				nameText.setText(name);
+				checkInput();
+			}
 		}
 
 		private void createRefFlowCheck(Composite container) {
 			createRefFlowCheck = new Button(container, SWT.CHECK);
 			createRefFlowCheck.setText(M.CreateANewProductFlowForTheProcess);
-			Controls.onSelect(createRefFlowCheck, (e) -> {
+			Controls.onSelect(createRefFlowCheck, e -> {
 				boolean createFlow = createRefFlowCheck.getSelection();
 				StackLayout labelLayout = (StackLayout) labelStack.getLayout();
 				StackLayout contentLayout = (StackLayout) contentStack
@@ -151,7 +172,7 @@ public class ProcessWizard extends AbstractWizard<Process> {
 					FlowType.WASTE_FLOW));
 			productTree.addFilter(new EmptyCategoryFilter());
 			productTree.addFilter(new ModelTextFilter(filterText, productTree));
-			productTree.addSelectionChangedListener((s) -> checkInput());
+			productTree.addSelectionChangedListener(s -> checkInput());
 			productTree.setInput(Navigator.findElement(ModelType.FLOW));
 		}
 
