@@ -51,12 +51,12 @@ public class ProcessWizard extends AbstractWizard<Process> {
 		private Composite contentStack;
 		private Button createRefFlowCheck;
 		private Composite labelStack;
-		private TreeViewer productViewer;
+		private TreeViewer productTree;
 		private FlowPropertyViewer flowPropertyViewer;
-		private Label selectFlowLabel;
+		private Label selectProductLabel;
 		private Label selectFlowPropertyLabel;
-		private Composite flowPropertyViewerContainer;
-		private Composite productViewerContainer;
+		private Composite flowPropertyContainer;
+		private Composite productTreeContainer;
 		private Text filterText;
 
 		protected Page() {
@@ -93,8 +93,8 @@ public class ProcessWizard extends AbstractWizard<Process> {
 			contentStack.setLayout(new StackLayout());
 			createProductViewer();
 			createPropertyViewer();
-			((StackLayout) labelStack.getLayout()).topControl = selectFlowLabel;
-			((StackLayout) contentStack.getLayout()).topControl = productViewerContainer;
+			((StackLayout) labelStack.getLayout()).topControl = selectProductLabel;
+			((StackLayout) contentStack.getLayout()).topControl = productTreeContainer;
 			labelStack.layout();
 			contentStack.layout();
 		}
@@ -109,11 +109,11 @@ public class ProcessWizard extends AbstractWizard<Process> {
 						.getLayout();
 				if (createFlow) {
 					labelLayout.topControl = selectFlowPropertyLabel;
-					contentLayout.topControl = flowPropertyViewerContainer;
+					contentLayout.topControl = flowPropertyContainer;
 					filterText.setEnabled(false);
 				} else {
-					labelLayout.topControl = selectFlowLabel;
-					contentLayout.topControl = productViewerContainer;
+					labelLayout.topControl = selectProductLabel;
+					contentLayout.topControl = productTreeContainer;
 					filterText.setEnabled(true);
 				}
 				labelStack.layout();
@@ -127,7 +127,7 @@ public class ProcessWizard extends AbstractWizard<Process> {
 			labelStack
 					.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
 			labelStack.setLayout(new StackLayout());
-			selectFlowLabel = new Label(labelStack, SWT.NONE);
+			selectProductLabel = new Label(labelStack, SWT.NONE);
 			selectFlowPropertyLabel = new Label(labelStack, SWT.NONE);
 			selectFlowPropertyLabel.setText(M.ReferenceFlowProperty);
 		}
@@ -142,24 +142,24 @@ public class ProcessWizard extends AbstractWizard<Process> {
 		}
 
 		private void createProductViewer() {
-			productViewerContainer = new Composite(contentStack, SWT.NONE);
-			UI.gridData(productViewerContainer, true, false);
-			productViewerContainer.setLayout(gridLayout());
-			productViewer = NavigationTree.createViewer(productViewerContainer);
-			UI.gridData(productViewer.getTree(), true, true).heightHint = 200;
-			productViewer.addFilter(new FlowTypeFilter(FlowType.ELEMENTARY_FLOW,
+			productTreeContainer = new Composite(contentStack, SWT.NONE);
+			UI.gridData(productTreeContainer, true, false);
+			productTreeContainer.setLayout(gridLayout());
+			productTree = NavigationTree.createViewer(productTreeContainer);
+			UI.gridData(productTree.getTree(), true, true).heightHint = 200;
+			productTree.addFilter(new FlowTypeFilter(FlowType.ELEMENTARY_FLOW,
 					FlowType.WASTE_FLOW));
-			productViewer.addFilter(new EmptyCategoryFilter());
-			productViewer.addFilter(new ModelTextFilter(filterText, productViewer));
-			productViewer.addSelectionChangedListener((s) -> checkInput());
-			productViewer.setInput(Navigator.findElement(ModelType.FLOW));
+			productTree.addFilter(new EmptyCategoryFilter());
+			productTree.addFilter(new ModelTextFilter(filterText, productTree));
+			productTree.addSelectionChangedListener((s) -> checkInput());
+			productTree.setInput(Navigator.findElement(ModelType.FLOW));
 		}
 
 		private void createPropertyViewer() {
-			flowPropertyViewerContainer = new Composite(contentStack, SWT.NONE);
-			UI.gridData(flowPropertyViewerContainer, true, false);
-			flowPropertyViewerContainer.setLayout(gridLayout());
-			flowPropertyViewer = new FlowPropertyViewer(flowPropertyViewerContainer);
+			flowPropertyContainer = new Composite(contentStack, SWT.NONE);
+			UI.gridData(flowPropertyContainer, true, false);
+			flowPropertyContainer.setLayout(gridLayout());
+			flowPropertyViewer = new FlowPropertyViewer(flowPropertyContainer);
 			flowPropertyViewer.setInput(Database.get());
 			flowPropertyViewer.selectFirst();
 		}
@@ -181,7 +181,7 @@ public class ProcessWizard extends AbstractWizard<Process> {
 		}
 
 		private Flow getSelectedFlow() {
-			INavigationElement<?> e = Viewers.getFirstSelected(productViewer);
+			INavigationElement<?> e = Viewers.getFirstSelected(productTree);
 			if (e == null || !(e.getContent() instanceof FlowDescriptor))
 				return null;
 			FlowDescriptor flow = (FlowDescriptor) e.getContent();

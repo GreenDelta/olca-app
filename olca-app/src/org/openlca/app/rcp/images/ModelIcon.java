@@ -22,6 +22,7 @@ enum ModelIcon {
 	FLOW_PROPERTY_WIZARD("wizard/flow_property.png"),
 
 	GROUP_BACKGROUND_DATA("model/group_background_data.png"),
+	GROUP_INDICATORS("model/group_indicators.png"),
 	GROUP_INVENTORY("model/group_inventory.png"),
 	GROUP_MODELS("model/group_models.png"),
 

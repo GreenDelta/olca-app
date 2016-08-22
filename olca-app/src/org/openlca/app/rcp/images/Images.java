@@ -282,6 +282,8 @@ public class Images {
 		switch (type) {
 		case BACKGROUND_DATA:
 			return ModelIcon.GROUP_BACKGROUND_DATA;
+		case INDICATORS:
+			return ModelIcon.GROUP_INDICATORS;
 		case MODELS:
 			return ModelIcon.GROUP_MODELS;
 		default:
