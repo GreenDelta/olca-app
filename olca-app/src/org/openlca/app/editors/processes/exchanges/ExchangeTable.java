@@ -44,6 +44,7 @@ import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.util.Strings;
 
 /**
  * The table for the display and editing of inputs or outputs of process
@@ -140,14 +141,14 @@ class ExchangeTable {
 		Tables.onDeletePressed(viewer, e -> onRemove());
 	}
 
-	private void bindDoubleClick(final TableViewer viewer) {
-		Tables.onDoubleClick(viewer, e -> {
-			TableItem item = Tables.getItem(viewer, e);
+	private void bindDoubleClick(TableViewer table) {
+		Tables.onDoubleClick(table, e -> {
+			TableItem item = Tables.getItem(table, e);
 			if (item == null) {
 				onAdd();
 				return;
 			}
-			Exchange exchange = Viewers.getFirstSelected(viewer);
+			Exchange exchange = Viewers.getFirstSelected(table);
 			if (exchange != null && exchange.getFlow() != null)
 				App.openEditor(exchange.getFlow());
 		});
@@ -187,16 +188,16 @@ class ExchangeTable {
 		for (BaseDescriptor descriptor : descriptors) {
 			if (!(descriptor instanceof FlowDescriptor))
 				continue;
-			Exchange exchange = new Exchange();
+			Exchange e = new Exchange();
 			FlowDao flowDao = new FlowDao(Database.get());
 			Flow flow = flowDao.getForId(descriptor.getId());
-			exchange.setFlow(flow);
-			exchange.setFlowPropertyFactor(flow.getReferenceFactor());
-			exchange.setUnit(flow.getReferenceFactor().getFlowProperty()
+			e.setFlow(flow);
+			e.setFlowPropertyFactor(flow.getReferenceFactor());
+			e.setUnit(flow.getReferenceFactor().getFlowProperty()
 					.getUnitGroup().getReferenceUnit());
-			exchange.setAmountValue(1.0);
-			exchange.setInput(forInputs);
-			process.getExchanges().add(exchange);
+			e.setAmountValue(1.0);
+			e.setInput(forInputs);
+			process.getExchanges().add(e);
 		}
 		viewer.setInput(process.getExchanges());
 		editor.setDirty(true);
@@ -206,10 +207,10 @@ class ExchangeTable {
 	private class AmountModifier extends TextCellModifier<Exchange> {
 
 		@Override
-		protected String getText(Exchange element) {
-			if (element.getAmountFormula() == null)
-				return Double.toString(element.getAmountValue());
-			return element.getAmountFormula();
+		protected String getText(Exchange e) {
+			if (e.getAmountFormula() == null)
+				return Double.toString(e.getAmountValue());
+			return e.getAmountFormula();
 		}
 
 		@Override
@@ -236,50 +237,46 @@ class ExchangeTable {
 			ComboBoxCellModifier<Exchange, ProcessDescriptor> {
 
 		@Override
-		public boolean canModify(Exchange element) {
-			return element.isInput() && element.getFlow() != null
-					&& element.getFlow().getFlowType() == FlowType.PRODUCT_FLOW;
+		public boolean canModify(Exchange e) {
+			return e.isInput() && e.getFlow() != null
+					&& e.getFlow().getFlowType() == FlowType.PRODUCT_FLOW;
 		}
 
 		@Override
-		protected ProcessDescriptor[] getItems(Exchange element) {
-			if (element.getFlow() == null)
+		protected ProcessDescriptor[] getItems(Exchange e) {
+			if (e.getFlow() == null)
 				return new ProcessDescriptor[0];
 			FlowDao dao = new FlowDao(database);
-			Set<Long> providerIds = dao.getProviders(element.getFlow().getId());
-			Collection<ProcessDescriptor> descriptors = cache.getAll(
+			Set<Long> providerIds = dao.getProviders(e.getFlow().getId());
+			Collection<ProcessDescriptor> list = cache.getAll(
 					ProcessDescriptor.class, providerIds).values();
-			ProcessDescriptor[] array = new ProcessDescriptor[descriptors
-					.size() + 1];
-			int i = 1;
-			for (ProcessDescriptor d : descriptors) {
-				array[i] = d;
-				i++;
-			}
-			return array;
+			ProcessDescriptor[] providers = list.toArray(
+					new ProcessDescriptor[list.size()]);
+			Arrays.sort(providers, (p1, p2) -> Strings.compare(
+					Labels.getDisplayName(p1), Labels.getDisplayName(p2)));
+			return providers;
 		}
 
 		@Override
-		protected ProcessDescriptor getItem(Exchange element) {
-			if (element.getDefaultProviderId() == 0)
+		protected ProcessDescriptor getItem(Exchange e) {
+			if (e.getDefaultProviderId() == 0)
 				return null;
-			return cache.get(ProcessDescriptor.class,
-					element.getDefaultProviderId());
+			return cache.get(ProcessDescriptor.class, e.getDefaultProviderId());
 		}
 
 		@Override
-		protected String getText(ProcessDescriptor value) {
-			if (value == null)
+		protected String getText(ProcessDescriptor d) {
+			if (d == null)
 				return M.None;
-			return Labels.getDisplayName(value);
+			return Labels.getDisplayName(d);
 		}
 
 		@Override
-		protected void setItem(Exchange element, ProcessDescriptor item) {
-			if (item == null)
-				element.setDefaultProviderId(0);
+		protected void setItem(Exchange e, ProcessDescriptor d) {
+			if (d == null)
+				e.setDefaultProviderId(0);
 			else
-				element.setDefaultProviderId(item.getId());
+				e.setDefaultProviderId(d.getId());
 			editor.setDirty(true);
 		}
 	}
@@ -299,31 +296,30 @@ class ExchangeTable {
 		}
 
 		@Override
-		protected boolean isChecked(Exchange element) {
-			return element.isAvoidedProduct();
+		protected boolean isChecked(Exchange e) {
+			return e.isAvoidedProduct();
 		}
 
 		@Override
-		protected void setChecked(Exchange element, boolean value) {
-			if (element.isAvoidedProduct() == value)
+		protected void setChecked(Exchange e, boolean value) {
+			if (e.isAvoidedProduct() == value)
 				return;
-			element.setAvoidedProduct(value);
-			element.setInput(value);
+			e.setAvoidedProduct(value);
+			e.setInput(value);
 			editor.setDirty(true);
 		}
 	}
 
 	private class Filter extends ViewerFilter {
 		@Override
-		public boolean select(Viewer viewer, Object parentElement,
-				Object element) {
-			if (!(element instanceof Exchange))
+		public boolean select(Viewer viewer, Object parent, Object obj) {
+			if (!(obj instanceof Exchange))
 				return false;
-			Exchange exchange = (Exchange) element;
-			if (exchange.isAvoidedProduct())
+			Exchange e = (Exchange) obj;
+			if (e.isAvoidedProduct())
 				return !forInputs;
 			else
-				return exchange.isInput() == forInputs;
+				return e.isInput() == forInputs;
 		}
 	}
 
@@ -350,5 +346,4 @@ class ExchangeTable {
 			viewer.refresh();
 		}
 	}
-
 }
