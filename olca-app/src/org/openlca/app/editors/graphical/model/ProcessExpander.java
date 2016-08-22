@@ -10,7 +10,6 @@ import org.eclipse.draw2d.MouseEvent;
 import org.eclipse.draw2d.MouseListener;
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.db.Cache;
-import org.openlca.app.editors.graphical.GraphUtil;
 import org.openlca.app.editors.graphical.command.CommandFactory;
 import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
 import org.openlca.app.rcp.images.Icon;
@@ -77,16 +76,15 @@ class ProcessExpander extends ImageFigure {
 			if (node == null) {
 				ProcessDescriptor descriptor = map.get(linkedProcessId);
 				node = new ProcessNode(descriptor);
-				node.loadExchangeNodes();
 				systemNode.add(node);
 			}
 			ProcessNode sourceNode = side == Side.LEFT ? node : this.node;
 			ProcessNode targetNode = side == Side.LEFT ? this.node : node;
-			ConnectionLink connection = new ConnectionLink();
-			connection.provider = sourceNode.getProviderNode(link.flowId);
-			connection.exchange = targetNode.getExchangeNode(link.exchangeId);
-			connection.processLink = link;
-			connection.link();
+			ConnectionLink connectionLink = new ConnectionLink();
+			connectionLink.setSourceNode(sourceNode);
+			connectionLink.setTargetNode(targetNode);
+			connectionLink.setProcessLink(link);
+			connectionLink.link();
 		}
 	}
 
@@ -109,10 +107,10 @@ class ProcessExpander extends ImageFigure {
 		ConnectionLink[] links = node.getLinks().toArray(
 				new ConnectionLink[node.getLinks().size()]);
 		for (ConnectionLink link : links) {
-			ProcessNode thisNode = GraphUtil.getProcessNode(side == Side.LEFT
-					? link.exchange : link.provider);
-			ProcessNode otherNode = GraphUtil.getProcessNode(side == Side.LEFT
-					? link.provider : link.exchange);
+			ProcessNode thisNode = side == Side.LEFT ? link.getTargetNode()
+					: link.getSourceNode();
+			ProcessNode otherNode = side == Side.LEFT ? link.getSourceNode()
+					: link.getTargetNode();
 			if (!thisNode.equals(node))
 				continue;
 			link.unlink();
@@ -130,8 +128,8 @@ class ProcessExpander extends ImageFigure {
 	}
 
 	private ProcessNode getMatchingNode(ConnectionLink link) {
-		ProcessNode source = GraphUtil.getProcessNode(link.provider);
-		ProcessNode target = GraphUtil.getProcessNode(link.exchange);
+		ProcessNode source = link.getSourceNode();
+		ProcessNode target = link.getTargetNode();
 		if (side == Side.LEFT)
 			if (target.equals(node))
 				if (!source.equals(node))
@@ -154,9 +152,9 @@ class ProcessExpander extends ImageFigure {
 	}
 
 	private boolean processFiguresVisible(ConnectionLink link) {
-		if (!link.provider.getFigure().isVisible())
+		if (!link.getSourceNode().getFigure().isVisible())
 			return false;
-		if (!link.exchange.getFigure().isVisible())
+		if (!link.getTargetNode().getFigure().isVisible())
 			return false;
 		return true;
 	}

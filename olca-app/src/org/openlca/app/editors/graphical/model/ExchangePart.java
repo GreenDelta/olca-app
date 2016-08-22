@@ -7,7 +7,7 @@ import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.tools.ConnectionDragCreationTool;
 import org.eclipse.swt.SWT;
-import org.openlca.app.editors.graphical.policy.LinkPolicy;
+import org.openlca.app.editors.graphical.policy.ProcessLinkCreatePolicy;
 
 class ExchangePart extends AbstractNodeEditPart<ExchangeNode> {
 
@@ -22,7 +22,7 @@ class ExchangePart extends AbstractNodeEditPart<ExchangeNode> {
 
 	@Override
 	protected void createEditPolicies() {
-		installEditPolicy(EditPolicy.NODE_ROLE, new LinkPolicy());
+		installEditPolicy(EditPolicy.NODE_ROLE, new ProcessLinkCreatePolicy());
 	}
 
 	@Override

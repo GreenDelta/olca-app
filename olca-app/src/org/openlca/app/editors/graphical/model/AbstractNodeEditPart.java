@@ -1,14 +1,11 @@
 package org.openlca.app.editors.graphical.model;
 
-import java.util.Objects;
-
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.NodeEditPart;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.requests.CreateConnectionRequest;
 import org.eclipse.gef.requests.ReconnectRequest;
-import org.openlca.app.editors.graphical.GraphUtil;
 import org.openlca.app.editors.graphical.command.CreateLinkCommand;
 
 abstract class AbstractNodeEditPart<N extends Node> extends
@@ -18,14 +15,16 @@ abstract class AbstractNodeEditPart<N extends Node> extends
 	public ConnectionAnchor getSourceConnectionAnchor(
 			ConnectionEditPart connection) {
 		ConnectionLink link = (ConnectionLink) connection.getModel();
-		return LinkAnchor.createOutputAnchor(link.provider, link);
+		return new ConnectionLinkAnchor(link.getSourceNode(), link,
+				ConnectionLinkAnchor.SOURCE_ANCHOR);
 	}
 
 	@Override
 	public ConnectionAnchor getTargetConnectionAnchor(
 			ConnectionEditPart connection) {
 		ConnectionLink link = (ConnectionLink) connection.getModel();
-		return LinkAnchor.createInputAnchor(link.exchange, link);
+		return new ConnectionLinkAnchor(link.getTargetNode(), link,
+				ConnectionLinkAnchor.TARGET_ANCHOR);
 	}
 
 	@Override
@@ -33,19 +32,24 @@ abstract class AbstractNodeEditPart<N extends Node> extends
 		if (request instanceof CreateConnectionRequest) {
 			CreateLinkCommand cmd = (CreateLinkCommand) ((CreateConnectionRequest) request)
 					.getStartCommand();
-			ConnectionLink link = cmd.getLink();
-			if (cmd.providerNode != null && cmd.startedFromProvider)
-				return LinkAnchor.createOutputAnchor(cmd.providerNode, link);
-			else if (cmd.exchangeNode != null)
-				return LinkAnchor.createInputAnchor(cmd.exchangeNode, link);
+			if (cmd.getSourceNode() != null)
+				return new ConnectionLinkAnchor(cmd.getSourceNode(),
+						cmd.getLink(), ConnectionLinkAnchor.SOURCE_ANCHOR);
+			else if (cmd.getTargetNode() != null)
+				return new ConnectionLinkAnchor(cmd.getTargetNode(),
+						cmd.getLink(), ConnectionLinkAnchor.TARGET_ANCHOR);
 		} else if (request instanceof ReconnectRequest) {
 			ReconnectRequest req = (ReconnectRequest) request;
 			ConnectionLink link = (ConnectionLink) req.getConnectionEditPart()
 					.getModel();
-			ExchangeNode provider = (ExchangeNode) req.getTarget().getModel();
-			ExchangeNode exchange = link.exchange;
-			if (exchange != null && exchange.matches(provider))
-				return LinkAnchor.createOutputAnchor(provider, link);
+			ProcessNode processNode = ((ExchangePart) req.getTarget())
+					.getModel().getParent().getParent();
+			long flowId = link.getProcessLink().flowId;
+			ExchangeNode source = processNode.getOutputNode(flowId);
+			ExchangeNode target = link.getTargetNode().getInputNode(flowId);
+			if (target != null && target.matches(source))
+				return new ConnectionLinkAnchor(processNode, link,
+						ConnectionLinkAnchor.SOURCE_ANCHOR);
 		}
 		return null;
 	}
@@ -55,32 +59,51 @@ abstract class AbstractNodeEditPart<N extends Node> extends
 		if (request instanceof CreateConnectionRequest) {
 			CreateLinkCommand cmd = (CreateLinkCommand) ((CreateConnectionRequest) request)
 					.getStartCommand();
-			ConnectionLink link = cmd.getLink();
-			if (cmd.exchangeNode != null && cmd.startedFromProvider)
-				return LinkAnchor.createInputAnchor(cmd.exchangeNode, link);
-			else if (cmd.providerNode != null)
-				return LinkAnchor.createOutputAnchor(cmd.providerNode, link);
+			if (cmd.isStartedFromSource()) {
+				if (cmd.getTargetNode() != null)
+					return new ConnectionLinkAnchor(cmd.getTargetNode(),
+							cmd.getLink(), ConnectionLinkAnchor.TARGET_ANCHOR);
+				else if (cmd.getSourceNode() != null)
+					return new ConnectionLinkAnchor(cmd.getSourceNode(),
+							cmd.getLink(), ConnectionLinkAnchor.SOURCE_ANCHOR);
+			} else {
+				if (cmd.getSourceNode() != null)
+					return new ConnectionLinkAnchor(cmd.getSourceNode(),
+							cmd.getLink(), ConnectionLinkAnchor.SOURCE_ANCHOR);
+				else if (cmd.getTargetNode() != null)
+					return new ConnectionLinkAnchor(cmd.getTargetNode(),
+							cmd.getLink(), ConnectionLinkAnchor.TARGET_ANCHOR);
+			}
 		} else if (request instanceof ReconnectRequest) {
 			ReconnectRequest req = (ReconnectRequest) request;
 			ConnectionLink link = (ConnectionLink) req.getConnectionEditPart()
 					.getModel();
-			ExchangeNode exchange = (ExchangeNode) req.getTarget().getModel();
-			ExchangeNode provider = link.provider;
-			if (provider != null && provider.matches(exchange)) {
-				if (canConnect(link.exchange, exchange))
-					return LinkAnchor.createInputAnchor(exchange, link);
-			}
+			ProcessNode processNode = ((ExchangePart) req.getTarget())
+					.getModel().getParent().getParent();
+			long flowId = link.getProcessLink().flowId;
+			ExchangeNode source = link.getSourceNode().getOutputNode(flowId);
+			ExchangeNode target = processNode.getInputNode(flowId);
+			if (source != null && source.matches(target))
+				if (canConnect(link.getTargetNode().getInputNode(flowId),
+						target))
+					return new ConnectionLinkAnchor(processNode, link,
+							ConnectionLinkAnchor.TARGET_ANCHOR);
 		}
 		return null;
 	}
 
-	private boolean canConnect(ExchangeNode node, ExchangeNode with) {
-		if (node == with)
+	private boolean canConnect(ExchangeNode node, ExchangeNode withNode) {
+		if (withNode
+				.getParent()
+				.getParent()
+				.hasIncomingConnection(withNode.getExchange().getFlow().getId()))
 			return false;
-		ProcessNode withProcess = GraphUtil.getProcessNode(with);
-		if (withProcess.isLinkedExchange(with.getExchange().getId()))
+		if (node.getExchange().getFlow()
+				.equals(withNode.getExchange().getFlow()))
 			return false;
-		return Objects.equals(node.getExchange().getFlow(),
-				with.getExchange().getFlow());
+		if (node == withNode)
+			return false;
+		return true;
 	}
+
 }

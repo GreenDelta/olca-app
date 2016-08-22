@@ -146,9 +146,9 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 				.getLinkSearch();
 		long id = node.getProcess().getId();
 		for (ProcessLink link : linkSearch.getLinks(id)) {
-			long otherId = link.processId == id ? link.providerId
+			long processId = link.processId == id ? link.providerId
 					: link.processId;
-			ProcessNode otherNode = model.getProcessNode(otherId);
+			ProcessNode otherNode = model.getProcessNode(processId);
 			if (otherNode == null)
 				continue;
 			ProcessNode sourceNode = link.processId == id ? otherNode
@@ -158,9 +158,9 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 			if (!sourceNode.isExpandedRight() && !targetNode.isExpandedLeft())
 				continue;
 			ConnectionLink connectionLink = new ConnectionLink();
-			connectionLink.provider = sourceNode.getProviderNode(link.flowId);
-			connectionLink.exchange = targetNode.getExchangeNode(link.exchangeId);
-			connectionLink.processLink = link;
+			connectionLink.setSourceNode(sourceNode);
+			connectionLink.setTargetNode(targetNode);
+			connectionLink.setProcessLink(link);
 			connectionLink.link();
 		}
 	}
@@ -303,7 +303,7 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 			router = TreeConnectionRouter.get();
 		for (ProcessNode node : model.getChildren())
 			for (ConnectionLink link : node.getLinks())
-				link.figure.setConnectionRouter(router);
+				link.getFigure().setConnectionRouter(router);
 	}
 
 }

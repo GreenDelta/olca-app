@@ -5,30 +5,57 @@ import java.util.Objects;
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.Connection;
 import org.eclipse.swt.graphics.Color;
-import org.openlca.app.editors.graphical.GraphUtil;
 import org.openlca.core.model.ProcessLink;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ConnectionLink {
 
 	public static Color COLOR = ColorConstants.gray;
 	public static Color HIGHLIGHT_COLOR = ColorConstants.blue;
 
-	public ProcessLink processLink;
-	public Connection figure;
+	private Connection figure;
+	private ProcessLink processLink;
+	private ProcessNode sourceNode;
+	private ProcessNode targetNode;
+	private ConnectionLinkPart editPart;
 
-	public ExchangeNode provider;
-	public ExchangeNode exchange;
-
-	private LinkPart editPart;
-
-	void setEditPart(LinkPart editPart) {
+	void setEditPart(ConnectionLinkPart editPart) {
 		this.editPart = editPart;
+	}
+
+	public void setSourceNode(ProcessNode sourceNode) {
+		this.sourceNode = sourceNode;
+	}
+
+	public void setTargetNode(ProcessNode targetNode) {
+		this.targetNode = targetNode;
+	}
+
+	public void setProcessLink(ProcessLink processLink) {
+		this.processLink = processLink;
+	}
+
+	public ProcessLink getProcessLink() {
+		return processLink;
+	}
+
+	public Connection getFigure() {
+		return figure;
+	}
+
+	void setFigure(Connection figure) {
+		this.figure = figure;
+	}
+
+	public ProcessNode getSourceNode() {
+		return sourceNode;
 	}
 
 	void refreshSourceAnchor() {
 		editPart.refreshSourceAnchor();
+	}
+
+	public ProcessNode getTargetNode() {
+		return targetNode;
 	}
 
 	void refreshTargetAnchor() {
@@ -40,59 +67,44 @@ public class ConnectionLink {
 	}
 
 	public void link() {
-		if (provider == null || exchange == null) {
-			Logger log = LoggerFactory.getLogger(getClass());
-			log.error("failed to create link {}", this);
-			return;
-		}
-		ProcessNode providerProcess = GraphUtil.getProcessNode(provider);
-		providerProcess.add(this);
-		providerProcess.refresh();
-		ProcessNode exchangeProcess = GraphUtil.getProcessNode(exchange);
-		exchangeProcess.add(this);
-		exchangeProcess.refresh();
+		sourceNode.add(this);
+		targetNode.add(this);
+		sourceNode.refresh();
+		targetNode.refresh();
 	}
 
 	public void unlink() {
 		editPart.setSelected(0);
-		ProcessNode providerProcess = GraphUtil.getProcessNode(provider);
-		providerProcess.remove(this);
-		providerProcess.getEditPart().refreshSourceConnections();
-		providerProcess.refresh();
-
-		ProcessNode exchangeProcess = GraphUtil.getProcessNode(exchange);
-		exchangeProcess.remove(this);
-		exchangeProcess.getEditPart().refreshTargetConnections();
-		exchangeProcess.refresh();
+		sourceNode.remove(this);
+		targetNode.remove(this);
+		sourceNode.getEditPart().refreshSourceConnections();
+		targetNode.getEditPart().refreshTargetConnections();
+		sourceNode.refresh();
+		targetNode.refresh();
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof ConnectionLink))
 			return false;
+
 		ConnectionLink link = (ConnectionLink) obj;
-		if (!Objects.equals(processLink, link.processLink))
+		if (!Objects.equals(getProcessLink(), link.getProcessLink()))
 			return false;
-		if (!Objects.equals(provider, link.provider))
+		if (!Objects.equals(getSourceNode(), link.getSourceNode()))
 			return false;
-		if (!Objects.equals(exchange, link.exchange))
+		if (!Objects.equals(getTargetNode(), link.getTargetNode()))
 			return false;
 		return true;
 	}
 
-	@Override
-	public String toString() {
-		return "ConnectionLink [provider=" + provider
-				+ ", exchange=" + exchange + "]";
-	}
-
 	public boolean isVisible() {
-		return figure != null ? figure.isVisible() : false;
+		return getFigure() != null ? getFigure().isVisible() : false;
 	}
 
 	public void setVisible(boolean value) {
-		if (figure != null)
-			figure.setVisible(value);
+		if (getFigure() != null)
+			getFigure().setVisible(value);
 	}
 
 }

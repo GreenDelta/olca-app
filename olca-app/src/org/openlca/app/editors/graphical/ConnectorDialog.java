@@ -215,7 +215,7 @@ public class ConnectorDialog extends Dialog {
 	private boolean canBeConnected(ConnectableProcess process) {
 		if (isConnected)
 			return false;
-		if (process.isAlreadyConnected)
+		if (process.isAlreadyConnectedToExchange())
 			return false;
 		if (selectProvider) {
 			if (userHasSelectedProvider())
@@ -226,7 +226,8 @@ public class ConnectorDialog extends Dialog {
 	}
 
 	private boolean hasProvider(ConnectableProcess process) {
-		for (ProcessLink link : linkSearch.getIncomingLinks(process.process.getId()))
+		for (ProcessLink link : linkSearch.getIncomingLinks(process
+				.getProcess().getId()))
 			if (link.flowId == flowId)
 				return true;
 		return false;
@@ -234,7 +235,8 @@ public class ConnectorDialog extends Dialog {
 
 	private boolean userHasSelectedProvider() {
 		for (ConnectableProcess connectable : connectableProcesses)
-			if (connectable.isAlreadyConnected || connectable.doConnect)
+			if (connectable.isAlreadyConnectedToExchange()
+					|| connectable.doConnect())
 				return true;
 		return false;
 	}
@@ -243,36 +245,39 @@ public class ConnectorDialog extends Dialog {
 		List<ProcessDescriptor> processes = new ArrayList<>();
 		for (ConnectableProcess process : connectableProcesses)
 			if (process.doCreate())
-				processes.add(process.process);
+				processes.add(process.getProcess());
 		return processes;
 	}
 
 	public List<ProcessDescriptor> getProcessesToConnect() {
 		List<ProcessDescriptor> processes = new ArrayList<>();
-		for (ConnectableProcess process : connectableProcesses) {
-			if (process.doConnect)
-				processes.add(process.process);
-		}
+		for (ConnectableProcess process : connectableProcesses)
+			if (process.doConnect())
+				processes.add(process.getProcess());
 		return processes;
 	}
 
 	private class ConnectableProcess {
 
-		boolean doConnect;
-		boolean create;
+		private boolean connect;
+		private boolean create;
+		private boolean alreadyExisting;
+		private boolean alreadyConnected;
+		private ProcessDescriptor process;
 
-		boolean isAlreadyExisting;
-
-		/** True if the process is already connected. */
-		boolean isAlreadyConnected;
-
-		ProcessDescriptor process;
-
-		ConnectableProcess(ProcessDescriptor process, boolean exists,
-				boolean isConnected) {
+		public ConnectableProcess(ProcessDescriptor process,
+				boolean alreadyExisting, boolean alreadyConnected) {
 			this.process = process;
-			this.isAlreadyExisting = exists;
-			this.isAlreadyConnected = isConnected;
+			this.alreadyExisting = alreadyExisting;
+			this.alreadyConnected = alreadyConnected;
+		}
+
+		public boolean isAlreadyConnectedToExchange() {
+			return alreadyConnected;
+		}
+
+		public boolean doConnect() {
+			return connect;
 		}
 
 		public boolean doCreate() {
@@ -284,10 +289,27 @@ public class ConnectorDialog extends Dialog {
 			if (!(arg0 instanceof ConnectableProcess))
 				return false;
 			ConnectableProcess other = (ConnectableProcess) arg0;
-			if (other.process == null)
+			if (other.getProcess() == null)
 				return process == null;
-			return Objects.equals(other.process, process);
+			return Objects.equals(other.getProcess(), process);
 		}
+
+		public boolean isAlreadyExisting() {
+			return alreadyExisting;
+		}
+
+		public ProcessDescriptor getProcess() {
+			return process;
+		}
+
+		public void setCreate(boolean create) {
+			this.create = create;
+		}
+
+		public void setConnect(boolean connect) {
+			this.connect = connect;
+		}
+
 	}
 
 	private class ProcessCellModifier implements ICellModifier {
@@ -301,14 +323,14 @@ public class ConnectorDialog extends Dialog {
 			if (property.equals(LABELS.CREATE))
 				return canModifyCreateField(process);
 			else if (property.equals(LABELS.CONNECT))
-				return process.doConnect || canBeConnected(process);
+				return process.doConnect() || canBeConnected(process);
 			return false;
 		}
 
 		private boolean canModifyCreateField(ConnectableProcess process) {
-			if (process.isAlreadyExisting)
+			if (process.isAlreadyExisting())
 				return false;
-			if (process.doConnect)
+			if (process.doConnect())
 				return false;
 			return true;
 		}
@@ -322,7 +344,7 @@ public class ConnectorDialog extends Dialog {
 			if (property.equals(LABELS.CREATE))
 				return process.doCreate();
 			else if (property.equals(LABELS.CONNECT))
-				return process.doConnect;
+				return process.doConnect();
 
 			return null;
 		}
@@ -337,11 +359,11 @@ public class ConnectorDialog extends Dialog {
 
 			ConnectableProcess process = (ConnectableProcess) item.getData();
 			if (property.equals(LABELS.CREATE))
-				process.create = Boolean.parseBoolean(value.toString());
+				process.setCreate(Boolean.parseBoolean(value.toString()));
 			else if (property.equals(LABELS.CONNECT)) {
-				process.doConnect = Boolean.parseBoolean(value.toString());
-				if (process.doConnect && !process.isAlreadyExisting)
-					process.create = true;
+				process.setConnect(Boolean.parseBoolean(value.toString()));
+				if (process.doConnect() && !process.isAlreadyExisting())
+					process.setCreate(true);
 			}
 			viewer.refresh();
 		}
@@ -352,10 +374,12 @@ public class ConnectorDialog extends Dialog {
 
 		@Override
 		public void addListener(ILabelProviderListener listener) {
+
 		}
 
 		@Override
 		public void dispose() {
+
 		}
 
 		@Override
@@ -368,21 +392,21 @@ public class ConnectorDialog extends Dialog {
 			case 1:
 				if (process.doCreate())
 					return Icon.CHECK_TRUE.get();
-				if (!process.isAlreadyExisting)
+				if (!process.isAlreadyExisting())
 					return Icon.CHECK_FALSE.get();
 				return null;
 			case 2:
-				if (process.doConnect)
+				if (process.doConnect())
 					return Icon.CHECK_TRUE.get();
 				if (canBeConnected(process))
 					return Icon.CHECK_FALSE.get();
 				return null;
 			case 3:
-				if (process.isAlreadyExisting)
+				if (process.isAlreadyExisting())
 					return Icon.ACCEPT.get();
 				return null; // just show a - (getColumnText)
 			case 4:
-				if (process.isAlreadyConnected)
+				if (process.isAlreadyConnectedToExchange())
 					return Icon.ACCEPT.get();
 				return null; // just show a - (getColumnText)
 			default:
@@ -397,13 +421,13 @@ public class ConnectorDialog extends Dialog {
 			ConnectableProcess process = (ConnectableProcess) element;
 			switch (columnIndex) {
 			case 0:
-				return Labels.getDisplayName(process.process);
+				return Labels.getDisplayName(process.getProcess());
 			case 3:
-				if (!process.isAlreadyExisting)
+				if (!process.isAlreadyExisting())
 					return "-";
 				return null; // show checkmark icon (getColumnImage)
 			case 4:
-				if (!process.isAlreadyConnected)
+				if (!process.isAlreadyConnectedToExchange())
 					return "-";
 				return null; // show checkmark icon (getColumnImage)
 			}

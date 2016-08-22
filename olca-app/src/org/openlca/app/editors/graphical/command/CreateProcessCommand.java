@@ -12,6 +12,7 @@ public class CreateProcessCommand extends Command {
 	private ProcessDescriptor process;
 
 	CreateProcessCommand() {
+
 	}
 
 	@Override

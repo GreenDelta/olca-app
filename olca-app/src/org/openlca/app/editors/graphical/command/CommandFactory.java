@@ -19,7 +19,6 @@ import org.openlca.app.editors.graphical.layout.GraphLayoutType;
 import org.openlca.app.editors.graphical.model.ConnectionLink;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
-import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 public class CommandFactory {
@@ -70,6 +69,12 @@ public class CommandFactory {
 		return command;
 	}
 
+	public static CreateLinkCommand createCreateLinkCommand(long flowId) {
+		CreateLinkCommand command = new CreateLinkCommand();
+		command.setFlowId(flowId);
+		return command;
+	}
+
 	public static CreateProcessCommand createCreateProcessCommand(
 			ProductSystemNode model, ProcessDescriptor process) {
 		CreateProcessCommand command = new CreateProcessCommand();
@@ -98,6 +103,15 @@ public class CommandFactory {
 		return command;
 	}
 
+	public static ReconnectLinkCommand createReconnectLinkCommand(
+			ConnectionLink link, ProcessNode sourceNode, ProcessNode targetNode) {
+		ReconnectLinkCommand command = new ReconnectLinkCommand();
+		command.setLink(link);
+		command.setSourceNode(sourceNode);
+		command.setTargetNode(targetNode);
+		return command;
+	}
+
 	public static HideShowCommand createShowCommand(ProcessDescriptor process,
 			ProductSystemNode model) {
 		HideShowCommand command = new HideShowCommand(SHOW);
@@ -116,28 +130,28 @@ public class CommandFactory {
 
 	public static MassCreationCommand createBuildNextTierCommand(
 			List<ProcessDescriptor> processesToCreate,
-			List<ProcessLink> newConnections, ProductSystemNode model) {
+			List<ConnectionInput> newConnections, ProductSystemNode model) {
 		return createMassCreationCommand(processesToCreate, newConnections,
 				model, M.BuildNextTier);
 	}
 
 	public static MassCreationCommand createConnectProvidersCommand(
 			List<ProcessDescriptor> processesToCreate,
-			List<ProcessLink> newConnections, ProductSystemNode model) {
+			List<ConnectionInput> newConnections, ProductSystemNode model) {
 		return createMassCreationCommand(processesToCreate, newConnections,
 				model, M.ConnectProviders);
 	}
 
 	public static MassCreationCommand createConnectRecipientsCommand(
 			List<ProcessDescriptor> processesToCreate,
-			List<ProcessLink> newConnections, ProductSystemNode model) {
+			List<ConnectionInput> newConnections, ProductSystemNode model) {
 		return createMassCreationCommand(processesToCreate, newConnections,
 				model, M.ConnectRecipients);
 	}
 
 	private static MassCreationCommand createMassCreationCommand(
 			List<ProcessDescriptor> processesToCreate,
-			List<ProcessLink> newConnections, ProductSystemNode model,
+			List<ConnectionInput> newConnections, ProductSystemNode model,
 			String label) {
 		MassCreationCommand command = new MassCreationCommand();
 		command.setProcessesToCreate(processesToCreate);

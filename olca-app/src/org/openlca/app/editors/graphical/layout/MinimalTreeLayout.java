@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.openlca.app.editors.graphical.GraphUtil;
 import org.openlca.app.editors.graphical.model.ConnectionLink;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 
@@ -76,8 +75,8 @@ public class MinimalTreeLayout {
 		}
 		for (ProcessNode processNode : processNodes) {
 			for (ConnectionLink link : processNode.getLinks()) {
-				long sourceId = GraphUtil.getProcess(link.provider).getId();
-				long targetId = GraphUtil.getProcess(link.exchange).getId();
+				long sourceId = link.getSourceNode().getProcess().getId();
+				long targetId = link.getTargetNode().getProcess().getId();
 				if (graph.nodes.get(sourceId) != null
 						&& graph.nodes.get(targetId) != null) {
 					// add edge to source node

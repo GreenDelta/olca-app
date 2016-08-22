@@ -13,11 +13,10 @@ import org.eclipse.gef.editpolicies.ConnectionEditPolicy;
 import org.eclipse.gef.editpolicies.ConnectionEndpointEditPolicy;
 import org.eclipse.gef.requests.GroupRequest;
 import org.eclipse.gef.requests.ReconnectRequest;
-import org.openlca.app.editors.graphical.GraphUtil;
 import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
 import org.openlca.app.editors.graphical.command.CommandFactory;
 
-class LinkPart extends AbstractConnectionEditPart {
+class ConnectionLinkPart extends AbstractConnectionEditPart {
 
 	@Override
 	public void activate() {
@@ -32,7 +31,7 @@ class LinkPart extends AbstractConnectionEditPart {
 		figure.setConnectionRouter(getConnectionRouter());
 		figure.setTargetDecoration(new PolygonDecoration());
 		figure.setVisible(isVisible());
-		getModel().figure = figure;
+		getModel().setFigure(figure);
 		return figure;
 	}
 
@@ -40,12 +39,15 @@ class LinkPart extends AbstractConnectionEditPart {
 	protected void createEditPolicies() {
 		installEditPolicy(EditPolicy.CONNECTION_ENDPOINTS_ROLE,
 				new ConnectionEndpointEditPolicy());
-		installEditPolicy(EditPolicy.CONNECTION_ROLE, new ConnectionEditPolicy() {
-			@Override
-			protected Command getDeleteCommand(GroupRequest req) {
-				return CommandFactory.createDeleteLinkCommand(getModel());
-			}
-		});
+		installEditPolicy(EditPolicy.CONNECTION_ROLE,
+				new ConnectionEditPolicy() {
+
+					@Override
+					protected Command getDeleteCommand(GroupRequest arg0) {
+						return CommandFactory
+								.createDeleteLinkCommand(getModel());
+					}
+				});
 	}
 
 	@Override
@@ -54,7 +56,7 @@ class LinkPart extends AbstractConnectionEditPart {
 	}
 
 	private ProductSystemGraphEditor getEditor() {
-		return GraphUtil.getEditor(getModel().provider);
+		return getModel().getSourceNode().getParent().getEditor();
 	}
 
 	private ConnectionRouter getConnectionRouter() {
@@ -63,9 +65,9 @@ class LinkPart extends AbstractConnectionEditPart {
 	}
 
 	private boolean isVisible() {
-		if (!getModel().provider.getFigure().isVisible())
+		if (!getModel().getSourceNode().getFigure().isVisible())
 			return false;
-		if (!getModel().exchange.getFigure().isVisible())
+		if (!getModel().getTargetNode().getFigure().isVisible())
 			return false;
 		return true;
 	}
@@ -76,8 +78,10 @@ class LinkPart extends AbstractConnectionEditPart {
 			ReconnectRequest request = ((ReconnectRequest) req);
 			ConnectionLink link = (ConnectionLink) request
 					.getConnectionEditPart().getModel();
-			ExchangeNode target = link.exchange;
-			ExchangeNode source = link.provider;
+			ExchangeNode target = link.getTargetNode().getInputNode(
+					link.getProcessLink().flowId);
+			ExchangeNode source = link.getSourceNode().getOutputNode(
+					link.getProcessLink().flowId);
 
 			ExchangeNode n1 = request.isMovingStartAnchor() ? target : source;
 			ExchangeNode n2 = request.isMovingStartAnchor() ? source : target;
@@ -125,11 +129,13 @@ class LinkPart extends AbstractConnectionEditPart {
 
 	@Override
 	public void refreshSourceAnchor() {
+		// make public
 		super.refreshSourceAnchor();
 	}
 
 	@Override
 	public void refreshTargetAnchor() {
+		// make public
 		super.refreshTargetAnchor();
 	}
 

@@ -101,7 +101,7 @@ class RemoveSupplyChainAction extends EditorAction {
 	private class RemoveCommand extends Command {
 
 		private Map<Long, Rectangle> layouts = new HashMap<>();
-		private Map<Long, Boolean> visibility = new HashMap<>();
+		private Map<String, Boolean> visibility = new HashMap<>();
 
 		@Override
 		public boolean canExecute() {
@@ -118,9 +118,9 @@ class RemoveSupplyChainAction extends EditorAction {
 			ProductSystemNode systemNode = node.getParent();
 			ProductSystem system = systemNode.getProductSystem();
 			for (ConnectionLink link : connections) {
-				visibility.put(link.processLink.exchangeId, link.isVisible());
+				visibility.put(getKey(link.getProcessLink()), link.isVisible());
 				link.unlink();
-				links.add(link.processLink);
+				links.add(link.getProcessLink());
 			}
 			system.getProcessLinks().removeAll(links);
 			systemNode.getLinkSearch().removeAll(links);
@@ -159,10 +159,10 @@ class RemoveSupplyChainAction extends EditorAction {
 			}
 			for (ConnectionLink link : connections) {
 				systemNode.getProductSystem().getProcessLinks()
-						.add(link.processLink);
-				systemNode.getLinkSearch().put(link.processLink);
+						.add(link.getProcessLink());
+				systemNode.getLinkSearch().put(link.getProcessLink());
 				link.link();
-				link.setVisible(visibility.remove(link.processLink.exchangeId));
+				link.setVisible(visibility.remove(getKey(link.getProcessLink())));
 			}
 			refresh();
 		}
@@ -179,6 +179,10 @@ class RemoveSupplyChainAction extends EditorAction {
 			execute();
 		}
 
+	}
+
+	private String getKey(ProcessLink link) {
+		return link.providerId + "_" + link.processId + "_" + link.flowId;
 	}
 
 }

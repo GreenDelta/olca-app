@@ -52,9 +52,4 @@ public class ExchangeNode extends Node {
 			((ExchangeFigure) getFigure()).setHighlighted(value);
 	}
 
-	@Override
-	public String toString() {
-		return "ExchangeNode [exchange=" + exchange + "]";
-	}
-
 }

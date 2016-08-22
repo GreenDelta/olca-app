@@ -10,6 +10,7 @@ import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.command.CommandFactory;
 import org.openlca.app.editors.graphical.command.CommandUtil;
+import org.openlca.app.editors.graphical.command.ConnectionInput;
 import org.openlca.app.editors.graphical.model.ExchangeNode;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
@@ -57,7 +58,7 @@ class BuildNextTierAction extends Action implements IBuildAction {
 			return;
 		ProductSystemNode systemNode = nodes.get(0).getParent();
 		List<ProcessDescriptor> providers = new ArrayList<>();
-		List<ProcessLink> newConnections = new ArrayList<>();
+		List<ConnectionInput> newConnections = new ArrayList<>();
 		for (ProcessNode node : nodes)
 			collectFor(node, providers, newConnections);
 		Command command = CommandFactory.createBuildNextTierCommand(providers,
@@ -73,21 +74,20 @@ class BuildNextTierAction extends Action implements IBuildAction {
 
 	private void collectFor(ProcessNode node,
 			List<ProcessDescriptor> providers,
-			List<ProcessLink> newConnections) {
+			List<ConnectionInput> newConnections) {
+		long targetId = node.getProcess().getId();
 		List<ExchangeNode> toConnect = loadExchangeNodes(node);
 		for (ExchangeNode exchange : toConnect) {
 			ProcessDescriptor provider = findProvider(exchange.getExchange());
-			if (provider == null)
-				return;
-			if (!providers.contains(provider))
-				providers.add(provider);
-			ProcessLink link = new ProcessLink();
-			link.providerId = provider.getId();
-			link.flowId = exchange.getExchange().getFlow().getId();
-			link.processId = node.getProcess().getId();
-			link.exchangeId = exchange.getExchange().getId();
-			if (!newConnections.contains(link))
-				newConnections.add(link);
+			if (provider != null) {
+				if (!providers.contains(provider))
+					providers.add(provider);
+				ConnectionInput connectionInput = new ConnectionInput(
+						provider.getId(), targetId, exchange.getExchange()
+								.getFlow().getId());
+				if (!newConnections.contains(connectionInput))
+					newConnections.add(connectionInput);
+			}
 		}
 	}
 

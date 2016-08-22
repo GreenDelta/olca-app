@@ -9,7 +9,6 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
-import org.openlca.app.editors.graphical.GraphUtil;
 import org.openlca.app.editors.graphical.layout.GraphLayoutManager;
 import org.openlca.app.editors.graphical.layout.NodeLayoutInfo;
 import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
@@ -82,9 +81,9 @@ public class ProcessNode extends Node {
 	public void add(ConnectionLink link) {
 		if (!links.contains(link)) {
 			links.add(link);
-			if (equals(link.provider))
+			if (equals(link.getSourceNode()))
 				getEditPart().refreshSourceConnections();
-			if (equals(link.exchange))
+			if (equals(link.getTargetNode()))
 				getEditPart().refreshTargetConnections();
 			getEditPart().refresh();
 		}
@@ -93,9 +92,9 @@ public class ProcessNode extends Node {
 	public void remove(ConnectionLink link) {
 		if (links.contains(link)) {
 			links.remove(link);
-			if (equals(link.provider))
+			if (equals(link.getSourceNode()))
 				getEditPart().refreshSourceConnections();
-			if (equals(link.exchange))
+			if (equals(link.getTargetNode()))
 				getEditPart().refreshTargetConnections();
 			getEditPart().refresh();
 		}
@@ -107,7 +106,7 @@ public class ProcessNode extends Node {
 
 	public ConnectionLink getLink(ProcessLink link) {
 		for (ConnectionLink l : links)
-			if (l.processLink.equals(link))
+			if (l.getProcessLink().equals(link))
 				return l;
 		return null;
 	}
@@ -116,11 +115,11 @@ public class ProcessNode extends Node {
 		for (ConnectionLink link : getLinks()) {
 			ProcessNode otherNode = null;
 			boolean isSource = false;
-			if (link.provider.equals(this)) {
-				otherNode = GraphUtil.getProcessNode(link.exchange);
+			if (link.getSourceNode().equals(this)) {
+				otherNode = link.getTargetNode();
 				isSource = true;
-			} else if (link.exchange.equals(this))
-				otherNode = GraphUtil.getProcessNode(link.provider);
+			} else if (link.getTargetNode().equals(this))
+				otherNode = link.getSourceNode();
 			if (otherNode.isVisible())
 				if (isSource && otherNode.isExpandedLeft())
 					link.setVisible(true);
@@ -198,27 +197,21 @@ public class ProcessNode extends Node {
 		getProcessFigure().refresh();
 	}
 
-	/** Get the node of the linked exchange of a process link. */
-	public ExchangeNode getExchangeNode(long exchangeId) {
-		for (ExchangeNode node : getExchangeNodes()) {
-			Exchange e = node.getExchange();
-			if (node.isDummy() || e == null)
-				continue;
-			if (node.getExchange().getId() == exchangeId)
-				return node;
-		}
+	public ExchangeNode getInputNode(long flowId) {
+		for (ExchangeNode node : getExchangeNodes())
+			if (!node.isDummy())
+				if (node.getExchange().isInput())
+					if (node.getExchange().getFlow().getId() == flowId)
+						return node;
 		return null;
 	}
 
-	public ExchangeNode getProviderNode(long flowId) {
-		for (ExchangeNode node : getExchangeNodes()) {
-			Exchange e = node.getExchange();
-			// TODO: !isInput in future waste modeling
-			if (node.isDummy() || e.getFlow() == null || e.isInput())
-				continue;
-			if (e.getFlow().getId() == flowId)
-				return node;
-		}
+	public ExchangeNode getOutputNode(long flowId) {
+		for (ExchangeNode node : getExchangeNodes())
+			if (!node.isDummy())
+				if (!node.getExchange().isInput())
+					if (node.getExchange().getFlow().getId() == flowId)
+						return node;
 		return null;
 	}
 
@@ -247,12 +240,12 @@ public class ProcessNode extends Node {
 		getEditPart().revalidate();
 	}
 
-	public boolean isLinkedExchange(long exchangeId) {
-		MutableProcessLinkSearchMap index = getParent().getLinkSearch();
-		for (ProcessLink link : index.getIncomingLinks(getProcess().getId())) {
-			if (link.exchangeId == exchangeId)
+	public boolean hasIncomingConnection(long flowId) {
+		MutableProcessLinkSearchMap linkSearch = getParent().getLinkSearch();
+		for (ProcessLink link : linkSearch.getIncomingLinks(getProcess()
+				.getId()))
+			if (link.flowId == flowId)
 				return true;
-		}
 		return false;
 	}
 
@@ -275,7 +268,7 @@ public class ProcessNode extends Node {
 	public int countOutgoingConnections() {
 		int count = 0;
 		for (ConnectionLink link : links)
-			if (link.provider.equals(this))
+			if (link.getSourceNode().equals(this))
 				count++;
 		return count;
 	}
@@ -283,7 +276,7 @@ public class ProcessNode extends Node {
 	public int countIncomingConnections() {
 		int count = 0;
 		for (ConnectionLink link : links)
-			if (link.exchange.equals(this))
+			if (link.getTargetNode().equals(this))
 				count++;
 		return count;
 	}
@@ -362,11 +355,6 @@ public class ProcessNode extends Node {
 	@Override
 	public int hashCode() {
 		return Objects.hashCode(getProcess());
-	}
-
-	@Override
-	public String toString() {
-		return "Process [process=" + process + "]";
 	}
 
 }

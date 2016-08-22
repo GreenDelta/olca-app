@@ -18,7 +18,7 @@ public class AppEditPartFactory implements EditPartFactory {
 		else if (model instanceof InputOutputNode)
 			part = new InputOutputPart();
 		else if (model instanceof ConnectionLink)
-			part = new LinkPart();
+			part = new ConnectionLinkPart();
 
 		if (part != null)
 			part.setModel(model);
