@@ -77,6 +77,7 @@ class ProcessExpander extends ImageFigure {
 			if (node == null) {
 				ProcessDescriptor descriptor = map.get(linkedProcessId);
 				node = new ProcessNode(descriptor);
+				node.loadExchangeNodes();
 				systemNode.add(node);
 			}
 			ProcessNode sourceNode = side == Side.LEFT ? node : this.node;

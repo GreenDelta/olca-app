@@ -7,6 +7,8 @@ import org.eclipse.draw2d.Connection;
 import org.eclipse.swt.graphics.Color;
 import org.openlca.app.editors.graphical.GraphUtil;
 import org.openlca.core.model.ProcessLink;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ConnectionLink {
 
@@ -38,6 +40,11 @@ public class ConnectionLink {
 	}
 
 	public void link() {
+		if (provider == null || exchange == null) {
+			Logger log = LoggerFactory.getLogger(getClass());
+			log.error("failed to create link {}", this);
+			return;
+		}
 		ProcessNode providerProcess = GraphUtil.getProcessNode(provider);
 		providerProcess.add(this);
 		providerProcess.refresh();
@@ -71,6 +78,12 @@ public class ConnectionLink {
 		if (!Objects.equals(exchange, link.exchange))
 			return false;
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "ConnectionLink [provider=" + provider
+				+ ", exchange=" + exchange + "]";
 	}
 
 	public boolean isVisible() {

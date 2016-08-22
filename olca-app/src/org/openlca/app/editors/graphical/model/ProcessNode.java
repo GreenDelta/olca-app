@@ -364,4 +364,9 @@ public class ProcessNode extends Node {
 		return Objects.hashCode(getProcess());
 	}
 
+	@Override
+	public String toString() {
+		return "Process [process=" + process + "]";
+	}
+
 }

@@ -146,9 +146,9 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 				.getLinkSearch();
 		long id = node.getProcess().getId();
 		for (ProcessLink link : linkSearch.getLinks(id)) {
-			long processId = link.processId == id ? link.providerId
+			long otherId = link.processId == id ? link.providerId
 					: link.processId;
-			ProcessNode otherNode = model.getProcessNode(processId);
+			ProcessNode otherNode = model.getProcessNode(otherId);
 			if (otherNode == null)
 				continue;
 			ProcessNode sourceNode = link.processId == id ? otherNode

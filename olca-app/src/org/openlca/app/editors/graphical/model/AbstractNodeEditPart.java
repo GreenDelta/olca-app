@@ -42,16 +42,9 @@ abstract class AbstractNodeEditPart<N extends Node> extends
 			ReconnectRequest req = (ReconnectRequest) request;
 			ConnectionLink link = (ConnectionLink) req.getConnectionEditPart()
 					.getModel();
-			ExchangeNode onNode = (ExchangeNode) req.getTarget().getModel();
-			System.out.println("sourceAnchor; onNode=" + onNode);
-
-			ProcessNode provider = ((ExchangePart) req.getTarget())
-					.getModel().getParent().getParent();
-			long flowId = link.processLink.flowId;
-
-			ExchangeNode source = provider.getProviderNode(flowId);
-			ExchangeNode target = link.exchange;
-			if (target != null && target.matches(source))
+			ExchangeNode provider = (ExchangeNode) req.getTarget().getModel();
+			ExchangeNode exchange = link.exchange;
+			if (exchange != null && exchange.matches(provider))
 				return LinkAnchor.createOutputAnchor(provider, link);
 		}
 		return null;
