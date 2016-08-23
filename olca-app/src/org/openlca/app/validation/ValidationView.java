@@ -232,7 +232,7 @@ public class ValidationView extends ViewPart {
 			else
 				text = "#Broken ";
 			if (ref.getType() == Parameter.class) {
-				return text += "parameter in formula";
+				return text += "parameter '" + ref.property + "' in formula";
 			} else {
 				text += ref.property;
 				if (ref.id != 0)
