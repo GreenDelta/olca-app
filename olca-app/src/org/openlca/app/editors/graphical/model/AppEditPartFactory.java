@@ -15,11 +15,10 @@ public class AppEditPartFactory implements EditPartFactory {
 			part = new ProcessPart();
 		else if (model instanceof ExchangeNode)
 			part = new ExchangePart();
-		else if (model instanceof InputOutputNode)
-			part = new InputOutputPart();
-		else if (model instanceof ConnectionLink)
-			part = new ConnectionLinkPart();
-
+		else if (model instanceof IONode)
+			part = new IOPart();
+		else if (model instanceof Link)
+			part = new LinkPart();
 		if (part != null)
 			part.setModel(model);
 		return part;

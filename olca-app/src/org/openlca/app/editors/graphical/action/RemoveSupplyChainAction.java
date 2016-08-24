@@ -10,7 +10,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.viewers.ISelection;
 import org.openlca.app.M;
-import org.openlca.app.editors.graphical.model.ConnectionLink;
+import org.openlca.app.editors.graphical.model.Link;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
@@ -21,12 +21,12 @@ import org.openlca.core.model.ProductSystem;
 class RemoveSupplyChainAction extends EditorAction {
 
 	private ProcessNode node;
-	private Set<ConnectionLink> connections = new HashSet<>();
+	private Set<Link> connections = new HashSet<>();
 	private Set<ProcessNode> nodes = new HashSet<>();
 	private Set<ProcessLink> links = new HashSet<>();
 	private Set<Long> processIds = new HashSet<>();
-	private MutableProcessLinkSearchMap linkSearch; // only used in
-													// collectSupplyChain
+	// only used in collectSupplyChain
+	private MutableProcessLinkSearchMap linkSearch;
 
 	RemoveSupplyChainAction() {
 		setId(ActionIds.REMOVE_SUPPLY_CHAIN);
@@ -37,13 +37,13 @@ class RemoveSupplyChainAction extends EditorAction {
 	@Override
 	public void run() {
 		clear();
-		ProductSystem system = getEditor().getModel().getProductSystem();
+		ProductSystem system = editor.getModel().getProductSystem();
 		long refId = system.getReferenceProcess().getId();
-		if (refId == node.getProcess().getId()) {
-			for (ProcessNode node : getEditor().getModel().getChildren())
-				if (refId != node.getProcess().getId()) {
+		if (refId == node.process.getId()) {
+			for (ProcessNode node : editor.getModel().getChildren())
+				if (refId != node.process.getId()) {
 					nodes.add(node);
-					connections.addAll(node.getLinks());
+					connections.addAll(node.links);
 				}
 			processIds.addAll(system.getProcesses());
 			processIds.remove(refId);
@@ -51,11 +51,11 @@ class RemoveSupplyChainAction extends EditorAction {
 		} else {
 			linkSearch = new MutableProcessLinkSearchMap(
 					system.getProcessLinks());
-			collectSupplyChain(node.getProcess().getId());
+			collectSupplyChain(node.process.getId());
 		}
 		if (connections.size() > 0 || nodes.size() > 0 || links.size() > 0
 				|| processIds.size() > 0)
-			getEditor().getCommandStack().execute(new RemoveCommand());
+			editor.getCommandStack().execute(new RemoveCommand());
 	}
 
 	private void clear() {
@@ -66,24 +66,24 @@ class RemoveSupplyChainAction extends EditorAction {
 	}
 
 	private void collectSupplyChain(long processId) {
-		ProductSystemNode systemNode = getEditor().getModel();
+		ProductSystemNode systemNode = editor.getModel();
 		ProcessNode node = systemNode.getProcessNode(processId);
 		List<ProcessLink> incomingLinks = linkSearch
 				.getIncomingLinks(processId);
 		for (ProcessLink link : incomingLinks) {
 			if (node != null) {
-				ConnectionLink l = node.getLink(link);
+				Link l = node.getLink(link);
 				if (l != null)
 					connections.add(l);
 				else
 					links.add(link);
-			} else
+			} else {
 				links.add(link);
+			}
 			linkSearch.remove(link);
 			if (linkSearch.getOutgoingLinks(link.providerId).size() == 0) {
 				collectSupplyChain(link.providerId);
-				ProcessNode providerNode = getEditor().getModel()
-						.getProcessNode(link.providerId);
+				ProcessNode providerNode = editor.getModel().getProcessNode(link.providerId);
 				if (providerNode != null)
 					nodes.add(providerNode);
 				else
@@ -115,20 +115,19 @@ class RemoveSupplyChainAction extends EditorAction {
 
 		@Override
 		public void execute() {
-			ProductSystemNode systemNode = node.getParent();
+			ProductSystemNode systemNode = node.parent();
 			ProductSystem system = systemNode.getProductSystem();
-			for (ConnectionLink link : connections) {
-				visibility.put(getKey(link.getProcessLink()), link.isVisible());
+			for (Link link : connections) {
+				visibility.put(getKey(link.processLink), link.isVisible());
 				link.unlink();
-				links.add(link.getProcessLink());
+				links.add(link.processLink);
 			}
 			system.getProcessLinks().removeAll(links);
-			systemNode.getLinkSearch().removeAll(links);
+			systemNode.linkSearch.removeAll(links);
 			for (ProcessNode processNode : nodes) {
-				layouts.put(processNode.getProcess().getId(),
-						processNode.getXyLayoutConstraints());
+				layouts.put(processNode.process.getId(), processNode.getXyLayoutConstraints());
 				systemNode.remove(processNode);
-				processIds.add(processNode.getProcess().getId());
+				processIds.add(processNode.process.getId());
 			}
 			system.getProcesses().removeAll(processIds);
 			refresh();
@@ -141,37 +140,35 @@ class RemoveSupplyChainAction extends EditorAction {
 
 		@Override
 		public void undo() {
-			ProductSystemNode systemNode = node.getParent();
+			ProductSystemNode systemNode = node.parent();
 			for (Long processId : processIds)
 				systemNode.getProductSystem().getProcesses().add(processId);
 			for (ProcessNode node : nodes) {
 				systemNode.add(node);
-				node.setXyLayoutConstraints(layouts.remove(node.getProcess()
-						.getId()));
-				systemNode.getProductSystem().getProcesses()
-						.add(node.getProcess().getId());
-				if (node.getParent().getEditor().getOutline() != null)
-					node.getParent().getEditor().getOutline().refresh();
+				node.setXyLayoutConstraints(layouts.remove(node.process.getId()));
+				systemNode.getProductSystem().getProcesses().add(node.process.getId());
+				if (node.parent().editor.getOutline() == null)
+					continue;
+				node.parent().editor.getOutline().refresh();
 			}
 			for (ProcessLink link : links) {
 				systemNode.getProductSystem().getProcessLinks().add(link);
-				systemNode.getLinkSearch().put(link);
+				systemNode.linkSearch.put(link);
 			}
-			for (ConnectionLink link : connections) {
-				systemNode.getProductSystem().getProcessLinks()
-						.add(link.getProcessLink());
-				systemNode.getLinkSearch().put(link.getProcessLink());
+			for (Link link : connections) {
+				systemNode.getProductSystem().getProcessLinks().add(link.processLink);
+				systemNode.linkSearch.put(link.processLink);
 				link.link();
-				link.setVisible(visibility.remove(getKey(link.getProcessLink())));
+				link.setVisible(visibility.remove(getKey(link.processLink)));
 			}
 			refresh();
 		}
 
 		private void refresh() {
 			node.refresh();
-			getEditor().setDirty(true);
-			if (getEditor().getOutline() != null)
-				getEditor().getOutline().refresh();
+			editor.setDirty(true);
+			if (editor.getOutline() != null)
+				editor.getOutline().refresh();
 		}
 
 		@Override
@@ -182,7 +179,7 @@ class RemoveSupplyChainAction extends EditorAction {
 	}
 
 	private String getKey(ProcessLink link) {
-		return link.providerId + "_" + link.processId + "_" + link.flowId;
+		return link.providerId + "->" + link.flowId + "->" + link.processId + "->" + link.exchangeId;
 	}
 
 }

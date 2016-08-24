@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.openlca.app.editors.graphical.model.ProcessNode;
 
-public interface IBuildAction {
+interface IBuildAction {
 
 	void setProcessNodes(List<ProcessNode> nodes);
 	

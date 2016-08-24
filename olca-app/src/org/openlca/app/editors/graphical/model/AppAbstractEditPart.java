@@ -4,12 +4,11 @@ import java.util.List;
 
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 
-abstract class AppAbstractEditPart<N extends Node> extends
-		AbstractGraphicalEditPart {
+abstract class AppAbstractEditPart<N extends Node> extends AbstractGraphicalEditPart {
 
 	@Override
 	public void activate() {
-		getModel().setEditPart(this);
+		getModel().editPart = this;
 		super.activate();
 	}
 
@@ -28,5 +27,4 @@ abstract class AppAbstractEditPart<N extends Node> extends
 	protected final List<? extends Node> getModelChildren() {
 		return getModel().getChildren();
 	}
-
 }

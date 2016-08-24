@@ -6,11 +6,11 @@ import org.eclipse.draw2d.GridData;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.swt.SWT;
 
-class InputOutputPart extends AppAbstractEditPart<InputOutputNode> {
+class IOPart extends AppAbstractEditPart<IONode> {
 
 	@Override
 	protected IFigure createFigure() {
-		return new InputOutputFigure();
+		return new IOFigure();
 	}
 
 	@Override
@@ -36,8 +36,7 @@ class InputOutputPart extends AppAbstractEditPart<InputOutputNode> {
 
 	@Override
 	protected void refreshVisuals() {
-		getFigure().getParent().setConstraint(getFigure(),
-				new GridData(SWT.FILL, SWT.FILL, true, true));
+		getFigure().getParent().setConstraint(getFigure(), new GridData(SWT.FILL, SWT.FILL, true, true));
 	}
 
 }

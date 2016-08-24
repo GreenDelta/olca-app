@@ -6,16 +6,33 @@ import org.openlca.app.editors.graphical.model.ProcessNode;
 
 public class ExpansionCommand extends Command {
 
-	final static int EXPAND = 1;
-	final static int COLLAPSE = 2;
-	final static int LEFT = 1;
-	final static int RIGHT = 2;
+	private final static int EXPAND = 1;
+	private final static int COLLAPSE = 2;
+	private final static int LEFT = 1;
+	private final static int RIGHT = 2;
 
-	private ProcessNode node;
-	private int side;
-	private int type;
+	private final ProcessNode node;
+	private final int side;
+	private final int type;
 
-	ExpansionCommand(int type, int side) {
+	public static ExpansionCommand expandLeft(ProcessNode node) {
+		return new ExpansionCommand(node, EXPAND, LEFT);
+	}
+
+	public static ExpansionCommand expandRight(ProcessNode node) {
+		return new ExpansionCommand(node, EXPAND, RIGHT);
+	}
+
+	public static ExpansionCommand collapseLeft(ProcessNode node) {
+		return new ExpansionCommand(node, COLLAPSE, LEFT);
+	}
+
+	public static ExpansionCommand collapseRight(ProcessNode node) {
+		return new ExpansionCommand(node, COLLAPSE, RIGHT);
+	}
+
+	private ExpansionCommand(ProcessNode node, int type, int side) {
+		this.node = node;
 		this.side = side;
 		this.type = type;
 	}
@@ -48,7 +65,7 @@ public class ExpansionCommand extends Command {
 				node.collapseRight();
 		}
 		node.layout();
-		node.getParent().getEditor().setDirty(true);
+		node.parent().editor.setDirty(true);
 		node.select();
 		node.reveal();
 	}
@@ -60,10 +77,6 @@ public class ExpansionCommand extends Command {
 		else if (type == COLLAPSE)
 			return M.Collapse;
 		return null;
-	}
-
-	void setNode(ProcessNode node) {
-		this.node = node;
 	}
 
 }

@@ -6,7 +6,7 @@ import java.util.List;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.viewers.ISelection;
 import org.openlca.app.M;
-import org.openlca.app.editors.graphical.command.CommandFactory;
+import org.openlca.app.editors.graphical.command.CommandUtil;
 import org.openlca.app.editors.graphical.command.MarkingCommand;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 
@@ -33,20 +33,15 @@ class MarkingAction extends EditorAction {
 		Command actualCommand = null;
 		for (ProcessNode node : processNodes) {
 			boolean mark = type == MARK;
-			if (node.isMarked() != mark) {
-				MarkingCommand newCommand = CommandFactory
-						.createMarkingCommand(node);
-				if (actualCommand == null)
-					actualCommand = newCommand;
-				else
-					actualCommand = actualCommand.chain(newCommand);
-			}
+			if (node.isMarked() == mark)
+				continue;
+			MarkingCommand newCommand = new MarkingCommand(node);
+			actualCommand = CommandUtil.chain(newCommand, actualCommand);
 		}
-		if (actualCommand != null) {
-			getEditor().getCommandStack().execute(actualCommand);
-			getEditor().selectionChanged(getEditor().getSite().getPart(),
-					getEditor().getSelection());
-		}
+		if (actualCommand == null)
+			return;
+		editor.getCommandStack().execute(actualCommand);
+		editor.selectionChanged(editor.getSite().getPart(), editor.getSelection());
 	}
 
 	@Override

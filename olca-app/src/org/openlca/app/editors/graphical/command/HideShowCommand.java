@@ -2,21 +2,31 @@ package org.openlca.app.editors.graphical.command;
 
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.M;
-import org.openlca.app.editors.graphical.model.ConnectionLink;
+import org.openlca.app.editors.graphical.model.Link;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 public class HideShowCommand extends Command {
 
-	static final int SHOW = 1;
-	static final int HIDE = 2;
+	private static final int SHOW = 1;
+	private static final int HIDE = 2;
 
-	private ProcessDescriptor process;
-	private ProductSystemNode model;
+	private final ProductSystemNode model;
+	private final ProcessDescriptor process;
 	private int type;
 
-	HideShowCommand(int type) {
+	public static HideShowCommand show(ProductSystemNode model, ProcessDescriptor process) {
+		return new HideShowCommand(model, process, SHOW);
+	}
+
+	public static HideShowCommand hide(ProductSystemNode model, ProcessDescriptor process) {
+		return new HideShowCommand(model, process, HIDE);
+	}
+
+	private HideShowCommand(ProductSystemNode model, ProcessDescriptor process, int type) {
+		this.model = model;
+		this.process = process;
 		this.type = type;
 	}
 
@@ -26,16 +36,16 @@ public class HideShowCommand extends Command {
 		if (type == SHOW && node == null) {
 			node = new ProcessNode(process);
 			model.add(node);
-			model.getEditor().createNecessaryLinks(node);
+			model.editor.createNecessaryLinks(node);
 		}
 		if (type == HIDE)
-			for (ConnectionLink link : node.getLinks())
+			for (Link link : node.links)
 				link.setVisible(false);
 		node.setVisible(type == SHOW);
 		if (type == SHOW)
 			node.showLinks();
 		node.layout();
-		node.getParent().getEditor().setDirty(true);
+		node.parent().editor.setDirty(true);
 	}
 
 	@Override
@@ -78,14 +88,6 @@ public class HideShowCommand extends Command {
 			type = HIDE;
 		else if (type == HIDE)
 			type = SHOW;
-	}
-
-	void setProcess(ProcessDescriptor process) {
-		this.process = process;
-	}
-
-	void setModel(ProductSystemNode model) {
-		this.model = model;
 	}
 
 }

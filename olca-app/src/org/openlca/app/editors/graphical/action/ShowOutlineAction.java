@@ -23,8 +23,7 @@ class ShowOutlineAction extends EditorAction {
 	@Override
 	public void run() {
 		try {
-			PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-					.getActivePage().showView(IPageLayout.ID_OUTLINE);
+			PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView(IPageLayout.ID_OUTLINE);
 		} catch (PartInitException e) {
 			e.printStackTrace();
 		}

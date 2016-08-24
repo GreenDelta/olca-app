@@ -24,10 +24,8 @@ public class ProcessLinkSearchMap {
 	ArrayList<ProcessLink> data;
 
 	public ProcessLinkSearchMap(Collection<ProcessLink> links) {
-		providerIndex = new TLongObjectHashMap<>(Constants.DEFAULT_CAPACITY,
-				Constants.DEFAULT_LOAD_FACTOR, -1L);
-		recipientIndex = new TLongObjectHashMap<>(Constants.DEFAULT_CAPACITY,
-				Constants.DEFAULT_LOAD_FACTOR, -1L);
+		providerIndex = new TLongObjectHashMap<>(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, -1L);
+		recipientIndex = new TLongObjectHashMap<>(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, -1L);
 		data = new ArrayList<>(links);
 		for (int i = 0; i < data.size(); i++) {
 			ProcessLink link = data.get(i);
@@ -56,8 +54,7 @@ public class ProcessLinkSearchMap {
 		// presentations of product systems and there can be a lot of links
 		// in some kind of product systems (e.g. from IO-databases) we do
 		// not just merge the incoming and outgoing links here
-		TIntHashSet intSet = new TIntHashSet(Constants.DEFAULT_CAPACITY,
-				Constants.DEFAULT_LOAD_FACTOR, -1);
+		TIntHashSet intSet = new TIntHashSet(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, -1);
 		TIntArrayList list = providerIndex.get(processId);
 		if (list != null)
 			intSet.addAll(list);

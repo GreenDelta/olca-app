@@ -13,8 +13,12 @@ import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
 
 public abstract class EditorAction extends Action implements UpdateAction {
 
-	private ProductSystemGraphEditor editor;
+	ProductSystemGraphEditor editor;
 
+	public void setEditor(ProductSystemGraphEditor editor) {
+		this.editor = editor;
+	}
+	
 	protected EditorAction() {
 
 	}
@@ -28,14 +32,6 @@ public abstract class EditorAction extends Action implements UpdateAction {
 		setEnabled(accept(editor.getSelection()));
 	}
 
-	public void setEditor(ProductSystemGraphEditor editor) {
-		this.editor = editor;
-	}
-
-	protected ProductSystemGraphEditor getEditor() {
-		return editor;
-	}
-
 	protected abstract boolean accept(ISelection selection);
 
 	@SuppressWarnings("unchecked")
@@ -46,7 +42,6 @@ public abstract class EditorAction extends Action implements UpdateAction {
 			return null;
 		if (!(selection instanceof IStructuredSelection))
 			return null;
-
 		IStructuredSelection sel = (IStructuredSelection) selection;
 		if (sel.size() > 1)
 			return null;
@@ -67,7 +62,6 @@ public abstract class EditorAction extends Action implements UpdateAction {
 			return Collections.emptyList();
 		if (!(selection instanceof IStructuredSelection))
 			return Collections.emptyList();
-
 		IStructuredSelection sel = (IStructuredSelection) selection;
 		for (Object o : sel.toArray())
 			if (o instanceof EditPart) {

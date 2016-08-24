@@ -8,8 +8,7 @@ import org.eclipse.gef.requests.CreateRequest;
 public class LayoutPolicy extends XYLayoutEditPolicy {
 
 	@Override
-	protected Command createChangeConstraintCommand(EditPart child,
-			Object constraint) {
+	protected Command createChangeConstraintCommand(EditPart child, Object constraint) {
 		return null;
 	}
 

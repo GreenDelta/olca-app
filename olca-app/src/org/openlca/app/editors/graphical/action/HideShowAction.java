@@ -6,7 +6,8 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
-import org.openlca.app.editors.graphical.command.CommandFactory;
+import org.openlca.app.editors.graphical.command.CommandUtil;
+import org.openlca.app.editors.graphical.command.HideShowCommand;
 import org.openlca.app.editors.graphical.outline.ProcessTreeEditPart;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
@@ -15,11 +16,11 @@ class HideShowAction extends Action {
 	final static int SHOW = 1;
 	final static int HIDE = 2;
 
-	private ProductSystemGraphEditor editor;
-	private TreeViewer viewer;
-	private int type;
+	private final ProductSystemGraphEditor editor;
+	private final TreeViewer viewer;
+	private final int type;
 
-	HideShowAction(int type) {
+	HideShowAction(ProductSystemGraphEditor editor, TreeViewer viewer, int type) {
 		if (type == SHOW) {
 			setId(ActionIds.SHOW);
 			setText(M.Show);
@@ -27,6 +28,8 @@ class HideShowAction extends Action {
 			setId(ActionIds.HIDE);
 			setText(M.Hide);
 		}
+		this.editor = editor;
+		this.viewer = viewer;
 		this.type = type;
 	}
 
@@ -36,32 +39,22 @@ class HideShowAction extends Action {
 			return;
 		Command command = null;
 		for (Object o : ((StructuredSelection) viewer.getSelection()).toArray()) {
-			if (o instanceof ProcessTreeEditPart) {
-				ProcessTreeEditPart part = (ProcessTreeEditPart) o;
-				if (command == null)
-					command = createCommand(part.getModel());
-				else
-					command = command.chain(createCommand(part.getModel()));
-			}
+			if (!(o instanceof ProcessTreeEditPart))
+				continue;
+			ProcessTreeEditPart part = (ProcessTreeEditPart) o;
+			command = CommandUtil.chain(createCommand(part.getModel()), command);
 		}
-		if (command != null)
-			editor.getCommandStack().execute(command);
+		if (command == null)
+			return;
+		editor.getCommandStack().execute(command);
 	}
 
 	private Command createCommand(ProcessDescriptor process) {
 		if (type == SHOW)
-			return CommandFactory.createShowCommand(process, editor.getModel());
+			return HideShowCommand.show(editor.getModel(), process);
 		if (type == HIDE)
-			return CommandFactory.createHideCommand(process, editor.getModel());
+			return HideShowCommand.hide(editor.getModel(), process);
 		return null;
-	}
- 
-	void setEditor(ProductSystemGraphEditor editor) {
-		this.editor = editor;
-	}
-
-	void setViewer(TreeViewer viewer) {
-		this.viewer = viewer;
 	}
 
 }

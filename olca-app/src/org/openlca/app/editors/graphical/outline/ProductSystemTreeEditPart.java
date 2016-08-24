@@ -2,9 +2,9 @@ package org.openlca.app.editors.graphical.outline;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.gef.editparts.AbstractTreeEditPart;
 import org.openlca.app.db.Cache;
@@ -20,18 +20,11 @@ public class ProductSystemTreeEditPart extends AbstractTreeEditPart {
 
 	@Override
 	protected List<ProcessDescriptor> getModelChildren() {
-		Map<Long, ProcessDescriptor> resultMap = Cache.getEntityCache().getAll(
-				ProcessDescriptor.class, getModel().getProcesses());
-		List<ProcessDescriptor> descriptors = new ArrayList<>(
-				resultMap.values());
-		Collections.sort(descriptors, new Comparator<ProcessDescriptor>() {
-
-			@Override
-			public int compare(ProcessDescriptor d1, ProcessDescriptor d2) {
-				return d1.getName().toLowerCase()
-						.compareTo(d2.getName().toLowerCase());
-			}
-
+		Set<Long> ids = getModel().getProcesses();
+		Map<Long, ProcessDescriptor> resultMap = Cache.getEntityCache().getAll(ProcessDescriptor.class, ids);
+		List<ProcessDescriptor> descriptors = new ArrayList<>(resultMap.values());
+		Collections.sort(descriptors, (d1, d2) -> {
+			return d1.getName().toLowerCase().compareTo(d2.getName().toLowerCase());
 		});
 		return descriptors;
 	}

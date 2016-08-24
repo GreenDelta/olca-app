@@ -2,7 +2,7 @@ package org.openlca.app.editors.graphical.command;
 
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.M;
-import org.openlca.app.editors.graphical.model.ConnectionLink;
+import org.openlca.app.editors.graphical.model.Link;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.core.model.ProcessLink;
@@ -10,23 +10,15 @@ import org.openlca.core.model.ProductSystem;
 
 public class CreateLinkCommand extends Command {
 
-	private ConnectionLink link;
+	public final long flowId;
+	public ProcessNode sourceNode;
+	public ProcessNode targetNode;
+	public boolean startedFromSource;
 	private ProcessLink processLink;
-	private ProcessNode sourceNode;
-	private ProcessNode targetNode;
-	private boolean startedFromSource;
-	private long flowId;
+	private Link link;
 
-	CreateLinkCommand() {
-
-	}
-
-	public void setStartedFromSource(boolean startedFromSource) {
-		this.startedFromSource = startedFromSource;
-	}
-
-	public boolean isStartedFromSource() {
-		return startedFromSource;
+	public CreateLinkCommand(long flowId) {
+		this.flowId = flowId;
 	}
 
 	@Override
@@ -45,23 +37,23 @@ public class CreateLinkCommand extends Command {
 
 	@Override
 	public void execute() {
-		ProductSystemNode systemNode = sourceNode.getParent();
+		ProductSystemNode systemNode = sourceNode.parent();
 		ProductSystem system = systemNode.getProductSystem();
 		processLink = getProcessLink();
 		system.getProcessLinks().add(processLink);
-		systemNode.getLinkSearch().put(processLink);
+		systemNode.linkSearch.put(processLink);
 		link = getLink();
 		link.link();
-		systemNode.getEditor().setDirty(true);
+		systemNode.editor.setDirty(true);
 	}
 
 	private ProcessLink getProcessLink() {
 		if (processLink == null)
 			processLink = new ProcessLink();
 		if (targetNode != null)
-			processLink.processId = targetNode.getProcess().getId();
+			processLink.processId = targetNode.process.getId();
 		if (sourceNode != null)
-			processLink.providerId = sourceNode.getProcess().getId();
+			processLink.providerId = sourceNode.process.getId();
 		processLink.flowId = flowId;
 		return processLink;
 	}
@@ -80,53 +72,27 @@ public class CreateLinkCommand extends Command {
 	}
 
 	private void refreshNodes() {
-		ProductSystemNode systemNode = sourceNode.getParent();
-		sourceNode = systemNode.getProcessNode(link.getSourceNode()
-				.getProcess().getId());
-		targetNode = systemNode.getProcessNode(link.getTargetNode()
-				.getProcess().getId());
+		ProductSystemNode systemNode = sourceNode.parent();
+		sourceNode = systemNode.getProcessNode(link.sourceNode.process.getId());
+		targetNode = systemNode.getProcessNode(link.targetNode.process.getId());
 	}
 
 	@Override
 	public void undo() {
-		ProductSystemNode systemNode = sourceNode.getParent();
+		ProductSystemNode systemNode = sourceNode.parent();
 		ProductSystem system = systemNode.getProductSystem();
 		link.unlink();
 		system.getProcessLinks().remove(processLink);
-		systemNode.getLinkSearch().remove(processLink);
-		systemNode.getEditor().setDirty(true);
+		systemNode.linkSearch.remove(processLink);
+		systemNode.editor.setDirty(true);
 	}
 
-	public void setSourceNode(ProcessNode sourceNode) {
-		this.sourceNode = sourceNode;
-	}
-
-	public void setTargetNode(ProcessNode targetNode) {
-		this.targetNode = targetNode;
-	}
-
-	void setFlowId(long flowId) {
-		this.flowId = flowId;
-	}
-
-	public ProcessNode getSourceNode() {
-		return sourceNode;
-	}
-
-	public ProcessNode getTargetNode() {
-		return targetNode;
-	}
-
-	public long getFlowId() {
-		return flowId;
-	}
-
-	public ConnectionLink getLink() {
+	public Link getLink() {
 		if (link == null)
-			link = new ConnectionLink();
-		link.setProcessLink(getProcessLink());
-		link.setSourceNode(sourceNode);
-		link.setTargetNode(targetNode);
+			link = new Link();
+		link.processLink = processLink;
+		link.sourceNode = sourceNode;
+		link.targetNode = targetNode;
 		return link;
 	}
 

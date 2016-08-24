@@ -9,11 +9,12 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.editpolicies.GraphicalNodeEditPolicy;
 import org.eclipse.gef.requests.CreateConnectionRequest;
 import org.eclipse.gef.requests.ReconnectRequest;
-import org.openlca.app.editors.graphical.command.CommandFactory;
 import org.openlca.app.editors.graphical.command.CreateLinkCommand;
-import org.openlca.app.editors.graphical.model.ConnectionLink;
+import org.openlca.app.editors.graphical.command.ReconnectLinkCommand;
 import org.openlca.app.editors.graphical.model.ExchangeNode;
+import org.openlca.app.editors.graphical.model.Link;
 import org.openlca.app.editors.graphical.model.ProcessNode;
+import org.openlca.app.editors.graphical.model.ProductSystemNode;
 
 public class ProcessLinkCreatePolicy extends GraphicalNodeEditPolicy {
 
@@ -22,118 +23,108 @@ public class ProcessLinkCreatePolicy extends GraphicalNodeEditPolicy {
 	@Override
 	protected Connection createDummyConnection(Request req) {
 		connection = (PolylineConnection) super.createDummyConnection(req);
-		connection.setForegroundColor(ConnectionLink.COLOR);
-		if (req instanceof CreateConnectionRequest) {
-			CreateLinkCommand command = (CreateLinkCommand) ((CreateConnectionRequest) req)
-					.getStartCommand();
-			if (command.getSourceNode() != null)
-				connection.setTargetDecoration(new PolygonDecoration());
-			else if (command.getTargetNode() != null)
-				connection.setSourceDecoration(new PolygonDecoration());
-		} else
+		connection.setForegroundColor(Link.COLOR);
+		if (!(req instanceof CreateConnectionRequest)) {
 			connection.setTargetDecoration(new PolygonDecoration());
+			return connection;
+		}
+		CreateLinkCommand command = (CreateLinkCommand) ((CreateConnectionRequest) req).getStartCommand();
+		if (command.sourceNode != null)
+			connection.setTargetDecoration(new PolygonDecoration());
+		else if (command.targetNode != null)
+			connection.setSourceDecoration(new PolygonDecoration());
 		return connection;
 	}
 
 	@Override
-	protected Command getConnectionCompleteCommand(
-			CreateConnectionRequest request) {
-		if (request.getStartCommand() != null) {
-			CreateLinkCommand cmd = (CreateLinkCommand) request
-					.getStartCommand();
-			if (request.getTargetEditPart().getModel() instanceof ExchangeNode) {
-				ExchangeNode target = (ExchangeNode) request
-						.getTargetEditPart().getModel();
-				ProcessNode targetNode = target.getParent().getParent();
-				if (!target.getExchange().isInput())
-					cmd.setSourceNode(targetNode);
-				else if (!targetNode.hasIncomingConnection(cmd.getFlowId()))
-					cmd.setTargetNode(targetNode);
-				request.setStartCommand(cmd);
-				return cmd;
-			}
-		}
-		return null;
+	protected Command getConnectionCompleteCommand(CreateConnectionRequest request) {
+		if (request.getStartCommand() == null)
+			return null;
+		if (!(request.getTargetEditPart().getModel() instanceof ExchangeNode))
+			return null;
+		CreateLinkCommand cmd = (CreateLinkCommand) request.getStartCommand();
+		ExchangeNode target = (ExchangeNode) request.getTargetEditPart().getModel();
+		ProcessNode targetNode = target.parent();
+		if (!target.exchange.isInput())
+			cmd.sourceNode = targetNode;
+		else if (!targetNode.hasIncomingConnection(cmd.flowId))
+			cmd.targetNode = targetNode;
+		request.setStartCommand(cmd);
+		return cmd;
 	}
 
 	@Override
-	protected Command getConnectionCreateCommand(
-			final CreateConnectionRequest request) {
+	protected Command getConnectionCreateCommand(CreateConnectionRequest request) {
 		CreateLinkCommand cmd = null;
-		ExchangeNode target = (ExchangeNode) request.getTargetEditPart()
-				.getModel();
-		ProcessNode targetNode = target.getParent().getParent();
-		long flowId = target.getExchange().getFlow().getId();
-		if (!target.getExchange().isInput()) {
-			cmd = CommandFactory.createCreateLinkCommand(flowId);
-			cmd.setSourceNode(targetNode);
-			cmd.setStartedFromSource(true);
+		ExchangeNode target = (ExchangeNode) request.getTargetEditPart().getModel();
+		ProcessNode targetNode = target.parent();
+		long flowId = target.exchange.getFlow().getId();
+		if (!target.exchange.isInput()) {
+			cmd = new CreateLinkCommand(flowId);
+			cmd.sourceNode = targetNode;
+			cmd.startedFromSource = true;
 			request.setStartCommand(cmd);
 		} else if (!targetNode.hasIncomingConnection(flowId)) {
-			cmd = CommandFactory.createCreateLinkCommand(flowId);
-			cmd.setTargetNode(targetNode);
-			cmd.setStartedFromSource(false);
+			cmd = new CreateLinkCommand(flowId);
+			cmd.targetNode = targetNode;
+			cmd.startedFromSource = false;
 			request.setStartCommand(cmd);
 		}
 		return cmd;
 	}
 
 	@Override
-	protected ConnectionRouter getDummyConnectionRouter(
-			CreateConnectionRequest request) {
+	protected ConnectionRouter getDummyConnectionRouter(CreateConnectionRequest request) {
 		return ConnectionRouter.NULL;
 	}
 
 	@Override
 	protected Command getReconnectSourceCommand(ReconnectRequest request) {
-		if (request.getTarget().getModel() instanceof ExchangeNode) {
-			ConnectionLink link = (ConnectionLink) request
-					.getConnectionEditPart().getModel();
-			ExchangeNode source = (ExchangeNode) request.getTarget().getModel();
-			ProcessNode sourceNode = source.getParent().getParent();
-			return CommandFactory.createReconnectLinkCommand(link, sourceNode,
-					link.getTargetNode());
-		}
-		return null;
+		if (!(request.getTarget().getModel() instanceof ExchangeNode))
+			return null;
+		Link link = (Link) request.getConnectionEditPart().getModel();
+		ExchangeNode source = (ExchangeNode) request.getTarget().getModel();
+		ProcessNode sourceNode = source.parent();
+		return new ReconnectLinkCommand(sourceNode, link.targetNode, link);
 	}
 
 	@Override
 	protected Command getReconnectTargetCommand(ReconnectRequest request) {
-		if (request.getTarget().getModel() instanceof ExchangeNode) {
-			ConnectionLink link = (ConnectionLink) request
-					.getConnectionEditPart().getModel();
-			ExchangeNode target = (ExchangeNode) request.getTarget().getModel();
-			ProcessNode targetNode = target.getParent().getParent();
-			long flowId = link.getProcessLink().flowId;
-			boolean canConnect = true;
-			if (!link.getTargetNode().equals(targetNode)
-					&& targetNode.hasIncomingConnection(flowId))
-				canConnect = false;
-			if (canConnect)
-				return CommandFactory.createReconnectLinkCommand(link,
-						link.getSourceNode(), targetNode);
-		}
+		if (!(request.getTarget().getModel() instanceof ExchangeNode))
+			return null;
+		Link link = (Link) request.getConnectionEditPart().getModel();
+		ExchangeNode target = (ExchangeNode) request.getTarget().getModel();
+		ProcessNode targetNode = target.parent();
+		long flowId = link.processLink.flowId;
+		boolean canConnect = true;
+		if (!link.targetNode.equals(targetNode) && targetNode.hasIncomingConnection(flowId))
+			canConnect = false;
+		if (canConnect)
+			return new ReconnectLinkCommand(link.sourceNode, targetNode, link);
 		return null;
 	}
 
 	@Override
 	public void eraseSourceFeedback(Request request) {
-		if (getHost().getModel() instanceof ExchangeNode) {
-			ExchangeNode node = (ExchangeNode) getHost().getModel();
-			node.getParent().getParent().getParent().removeHighlighting();
-			node.setHighlighted(false);
+		if (!(getHost().getModel() instanceof ExchangeNode)) {
+			super.eraseSourceFeedback(request);
+			return;
 		}
-		super.eraseSourceFeedback(request);
+		ExchangeNode node = (ExchangeNode) getHost().getModel();
+		ProductSystemNode psNode = node.parent().parent();
+		psNode.removeHighlighting();
+		node.setHighlighted(false);
 	}
 
 	@Override
 	public void showSourceFeedback(Request request) {
-		if (getHost().getModel() instanceof ExchangeNode) {
-			ExchangeNode node = (ExchangeNode) getHost().getModel();
-			node.getParent().getParent().getParent()
-					.highlightMatchingExchanges(node);
-			node.setHighlighted(true);
+		if (!(getHost().getModel() instanceof ExchangeNode)) {
+			super.showSourceFeedback(request);
+			return;
 		}
-		super.showSourceFeedback(request);
+		ExchangeNode node = (ExchangeNode) getHost().getModel();
+		ProductSystemNode psNode = node.parent().parent();
+		psNode.highlightMatchingExchanges(node);
+		node.setHighlighted(true);
 	}
 }

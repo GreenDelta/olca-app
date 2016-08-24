@@ -66,13 +66,12 @@ public class ConnectorDialog extends Dialog {
 		super(UI.shell());
 		setShellStyle(SWT.BORDER | SWT.TITLE);
 		setBlockOnOpen(true);
-		flowId = exchangeNode.getExchange().getFlow().getId();
-		processId = exchangeNode.getParent().getParent().getProcess().getId();
-		ProductSystemNode systemNode = exchangeNode.getParent().getParent()
-				.getParent();
+		flowId = exchangeNode.exchange.getFlow().getId();
+		processId = exchangeNode.parent().process.getId();
+		ProductSystemNode systemNode = exchangeNode.parent().parent();
 		existingProcesses = systemNode.getProductSystem().getProcesses();
-		linkSearch = systemNode.getLinkSearch();
-		selectProvider = exchangeNode.getExchange().isInput();
+		linkSearch = systemNode.linkSearch;
+		selectProvider = exchangeNode.exchange.isInput();
 		for (ProcessLink link : linkSearch.getIncomingLinks(processId))
 			if (link.flowId == flowId)
 				isConnected = true;

@@ -8,36 +8,35 @@ import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 public class CreateProcessCommand extends Command {
 
-	private ProductSystemNode model;
-	private ProcessDescriptor process;
+	private final ProductSystemNode model;
+	private final ProcessDescriptor process;
 
-	CreateProcessCommand() {
-
+	public CreateProcessCommand(ProductSystemNode model, ProcessDescriptor process) {
+		this.model = model;
+		this.process = process;
 	}
 
 	@Override
 	public boolean canExecute() {
 		if (model == null)
 			return false;
-		return !model.getProductSystem().getProcesses()
-				.contains(process.getId());
+		return !model.getProductSystem().getProcesses().contains(process.getId());
 	}
 
 	@Override
 	public boolean canUndo() {
 		if (model == null)
 			return false;
-		return model.getProductSystem().getProcesses()
-				.contains(process.getId());
+		return model.getProductSystem().getProcesses().contains(process.getId());
 	}
 
 	@Override
 	public void execute() {
 		model.getProductSystem().getProcesses().add(process.getId());
 		model.add(new ProcessNode(process));
-		if (model.getEditor().getOutline() != null)
-			model.getEditor().getOutline().refresh();
-		model.getEditor().setDirty(true);
+		if (model.editor.getOutline() != null)
+			model.editor.getOutline().refresh();
+		model.editor.setDirty(true);
 	}
 
 	@Override
@@ -50,20 +49,12 @@ public class CreateProcessCommand extends Command {
 		execute();
 	}
 
-	void setModel(ProductSystemNode model) {
-		this.model = model;
-	}
-
-	void setProcess(ProcessDescriptor process) {
-		this.process = process;
-	}
-
 	@Override
 	public void undo() {
 		model.getProductSystem().getProcesses().remove(process.getId());
 		model.remove(model.getProcessNode(process.getId()));
-		if (model.getEditor().getOutline() != null)
-			model.getEditor().getOutline().refresh();
-		model.getEditor().setDirty(true);
+		if (model.editor.getOutline() != null)
+			model.editor.getOutline().refresh();
+		model.editor.setDirty(true);
 	}
 }

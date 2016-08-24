@@ -12,22 +12,23 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.editpolicies.ComponentEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.GroupRequest;
-import org.openlca.app.editors.graphical.command.CommandFactory;
+import org.openlca.app.editors.graphical.command.CommandUtil;
+import org.openlca.app.editors.graphical.command.DeleteProcessCommand;
+import org.openlca.app.editors.graphical.command.XYLayoutCommand;
 import org.openlca.app.editors.graphical.policy.LayoutPolicy;
 
 class ProcessPart extends AbstractNodeEditPart<ProcessNode> {
 
 	@Override
 	protected void addChildVisual(EditPart childEditPart, int index) {
-		super.addChildVisual(childEditPart, getContentPane().getChildren()
-				.size());
+		super.addChildVisual(childEditPart, getContentPane().getChildren().size());
 	}
 
 	@Override
 	protected IFigure createFigure() {
-		ProcessFigure figure = new ProcessFigure(getModel());
-		ProcessNode pNode = getModel();
-		pNode.setFigure(figure);
+		ProcessNode node = getModel();
+		ProcessFigure figure = new ProcessFigure(node);
+		node.setFigure(figure);
 		return figure;
 	}
 
@@ -37,7 +38,7 @@ class ProcessPart extends AbstractNodeEditPart<ProcessNode> {
 		installEditPolicy(EditPolicy.COMPONENT_ROLE, new ComponentEditPolicy() {
 			@Override
 			protected Command createDeleteCommand(GroupRequest deleteRequest) {
-				return CommandFactory.createDeleteProcessCommand(getModel());
+				return new DeleteProcessCommand(getModel());
 			}
 		});
 	}
@@ -49,7 +50,7 @@ class ProcessPart extends AbstractNodeEditPart<ProcessNode> {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<InputOutputPart> getChildren() {
+	public List<IOPart> getChildren() {
 		return super.getChildren();
 	}
 
@@ -59,42 +60,38 @@ class ProcessPart extends AbstractNodeEditPart<ProcessNode> {
 			return super.getCommand(req);
 		ChangeBoundsRequest request = (ChangeBoundsRequest) req;
 		Command commandChain = null;
-		for (Object o : request.getEditParts()) {
-			if (!(o instanceof ProcessPart))
+		for (Object part : request.getEditParts()) {
+			if (!(part instanceof ProcessPart))
 				continue;
-			ProcessPart part = (ProcessPart) o;
-			Rectangle bounds = part.getModel().getFigure().getBounds()
-					.getCopy();
-			part.getModel().getFigure().translateToAbsolute(bounds);
-			Rectangle moveResize = new Rectangle(request.getMoveDelta(),
-					request.getSizeDelta());
-			bounds.resize(moveResize.getSize());
-			bounds.translate(moveResize.getLocation());
-			part.getModel().getFigure().translateToRelative(bounds);
-			Command command = null;
-			if (request.getSizeDelta().height != 0
-					|| request.getSizeDelta().width != 0)
-				command = CommandFactory.createResizeCommand(part.getModel(),
-						bounds);
-			if (request.getMoveDelta().x != 0 || request.getMoveDelta().y != 0)
-				command = CommandFactory.createMoveCommand(part.getModel(),
-						bounds);
-			if (commandChain == null)
-				commandChain = command;
-			else
-				commandChain = commandChain.chain(command);
+			Command command = getCommand((ProcessPart) part, request);
+			commandChain = CommandUtil.chain(command, commandChain);
 		}
 		return commandChain;
 	}
 
-	@Override
-	protected List<ConnectionLink> getModelSourceConnections() {
-		return getModel().getLinks();
+	private Command getCommand(ProcessPart part, ChangeBoundsRequest request) {
+		IFigure figure = part.getModel().figure;
+		Rectangle bounds = figure.getBounds().getCopy();
+		figure.translateToAbsolute(bounds);
+		Rectangle moveResize = new Rectangle(request.getMoveDelta(), request.getSizeDelta());
+		bounds.resize(moveResize.getSize());
+		bounds.translate(moveResize.getLocation());
+		figure.translateToRelative(bounds);
+		if (request.getSizeDelta().height != 0 || request.getSizeDelta().width != 0)
+			return XYLayoutCommand.resize(part.getModel(), bounds);
+		if (request.getMoveDelta().x != 0 || request.getMoveDelta().y != 0)
+			return XYLayoutCommand.move(part.getModel(), bounds);
+		return null;
 	}
 
 	@Override
-	protected List<ConnectionLink> getModelTargetConnections() {
-		return getModel().getLinks();
+	protected List<Link> getModelSourceConnections() {
+		return getModel().links;
+	}
+
+	@Override
+	protected List<Link> getModelTargetConnections() {
+		return getModel().links;
 	}
 
 	@Override
@@ -106,25 +103,28 @@ class ProcessPart extends AbstractNodeEditPart<ProcessNode> {
 	public void setSelected(int value) {
 		if (getFigure().isVisible()) {
 			super.setSelected(value);
-			for (ConnectionLink link : getModel().getLinks())
-				if (link.isVisible())
-					link.setSelected(value);
+			for (Link link : getModel().links) {
+				if (!link.isVisible())
+					continue;
+				link.setSelected(value);
+			}
 		}
 	}
 
 	@Override
 	public void refreshSourceConnections() {
+		// make public
 		super.refreshSourceConnections();
 	}
 
 	@Override
 	public void refreshTargetConnections() {
+		// make public
 		super.refreshTargetConnections();
 	}
 
 	void revalidate() {
-		((GraphicalEditPart) getViewer().getContents()).getFigure()
-				.revalidate();
+		((GraphicalEditPart) getViewer().getContents()).getFigure().revalidate();
 	}
 
 }

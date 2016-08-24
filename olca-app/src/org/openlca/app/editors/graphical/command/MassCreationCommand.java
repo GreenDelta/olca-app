@@ -8,54 +8,63 @@ import java.util.Map;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.commands.Command;
-import org.openlca.app.editors.graphical.layout.GraphLayoutManager;
-import org.openlca.app.editors.graphical.model.ConnectionLink;
+import org.openlca.app.M;
+import org.openlca.app.editors.graphical.layout.LayoutManager;
+import org.openlca.app.editors.graphical.model.Link;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
-class MassCreationCommand extends Command {
+public class MassCreationCommand extends Command {
 
-	private List<ProcessDescriptor> processesToCreate;
-	private List<ConnectionInput> newConnections;
-	private ProductSystemNode model;
+	private final ProductSystemNode model;
+	private final List<ProcessDescriptor> toCreate;
+	private final List<ConnectionInput> newConnections;
 	// for undoing
-	private Map<IFigure, Rectangle> oldConstraints = new HashMap<>();
-	private List<ProcessNode> createdNodes = new ArrayList<>();
-	private List<ConnectionLink> createdLinks = new ArrayList<>();
+	private final Map<IFigure, Rectangle> oldConstraints = new HashMap<>();
+	private final List<ProcessNode> createdNodes = new ArrayList<>();
+	private final List<Link> createdLinks = new ArrayList<>();
 
-	MassCreationCommand() {
+	public static MassCreationCommand nextTier(List<ProcessDescriptor> toCreate,
+			List<ConnectionInput> newConnections, ProductSystemNode model) {
+		return new MassCreationCommand(model, toCreate, newConnections, M.BuildNextTier);
 	}
 
-	void setProcessesToCreate(List<ProcessDescriptor> processesToCreate) {
-		this.processesToCreate = processesToCreate;
+	public static MassCreationCommand providers(List<ProcessDescriptor> toCreate,
+			List<ConnectionInput> newConnections, ProductSystemNode model) {
+		return new MassCreationCommand(model, toCreate, newConnections, M.ConnectProviders);
 	}
 
-	void setNewConnections(List<ConnectionInput> newConnections) {
-		this.newConnections = newConnections;
+	public static MassCreationCommand recipients(List<ProcessDescriptor> toCreate,
+			List<ConnectionInput> newConnections, ProductSystemNode model) {
+		return new MassCreationCommand(model, toCreate, newConnections, M.ConnectRecipients);
 	}
 
-	void setModel(ProductSystemNode model) {
+	private MassCreationCommand(ProductSystemNode model, List<ProcessDescriptor> toCreate,
+			List<ConnectionInput> newConnections, String label) {
 		this.model = model;
+		this.toCreate = toCreate;
+		this.newConnections = newConnections;
+		setLabel(label);
 	}
 
 	@Override
 	public void execute() {
-		for (ProcessDescriptor process : processesToCreate)
+		for (ProcessDescriptor process : toCreate)
 			addNode(process);
 		for (ConnectionInput input : newConnections)
 			link(input.sourceId, input.targetId, input.flowId);
 		for (ProcessNode node : model.getChildren())
-			if (node.getFigure().isVisible())
-				oldConstraints.put(node.getFigure(), node.getFigure()
+			if (node.figure.isVisible())
+				oldConstraints.put(node.figure, node.figure
 						.getBounds().getCopy());
-		((GraphLayoutManager) model.getFigure().getLayoutManager()).layout(
-				model.getFigure(), model.getEditor().getLayoutType());
-		model.getEditor().setDirty(true);
-		if (model.getEditor().getOutline() != null)
-			model.getEditor().getOutline().refresh();
+		((LayoutManager) model.figure.getLayoutManager()).layout(
+				model.figure, model.editor.getLayoutType());
+		model.editor.setDirty(true);
+		if (model.editor.getOutline() != null)
+			model.editor.getOutline().refresh();
 	}
 
 	private void addNode(ProcessDescriptor process) {
@@ -71,8 +80,8 @@ class MassCreationCommand extends Command {
 		ProductSystem system = model.getProductSystem();
 		ProcessLink processLink = createProcessLink(sourceId, targetId, flowId);
 		system.getProcessLinks().add(processLink);
-		model.getLinkSearch().put(processLink);
-		ConnectionLink link = createLink(sourceId, targetId, processLink);
+		model.linkSearch.put(processLink);
+		Link link = createLink(sourceId, targetId, processLink);
 		link.link();
 		createdLinks.add(link);
 	}
@@ -86,14 +95,14 @@ class MassCreationCommand extends Command {
 		return processLink;
 	}
 
-	private ConnectionLink createLink(long sourceId, long targetId,
+	private Link createLink(long sourceId, long targetId,
 			ProcessLink processLink) {
 		ProcessNode sourceNode = model.getProcessNode(sourceId);
 		ProcessNode targetNode = model.getProcessNode(targetId);
-		ConnectionLink link = new ConnectionLink();
-		link.setProcessLink(processLink);
-		link.setSourceNode(sourceNode);
-		link.setTargetNode(targetNode);
+		Link link = new Link();
+		link.processLink = processLink;
+		link.sourceNode = sourceNode;
+		link.targetNode = targetNode;
 		return link;
 	}
 
@@ -104,31 +113,31 @@ class MassCreationCommand extends Command {
 
 	@Override
 	public void undo() {
-		for (ConnectionLink link : createdLinks)
+		for (Link link : createdLinks)
 			unlink(link);
 		for (ProcessNode node : createdNodes)
 			removeNode(node);
 		for (ProcessNode node : model.getChildren())
-			if (oldConstraints.get(node.getFigure()) != null)
-				node.setXyLayoutConstraints(oldConstraints.get(node.getFigure()));
+			if (oldConstraints.get(node.figure) != null)
+				node.setXyLayoutConstraints(oldConstraints.get(node.figure));
 		createdLinks.clear();
 		createdNodes.clear();
 		oldConstraints.clear();
-		if (model.getEditor().getOutline() != null)
-			model.getEditor().getOutline().refresh();
-		model.getEditor().setDirty(true);
+		if (model.editor.getOutline() != null)
+			model.editor.getOutline().refresh();
+		model.editor.setDirty(true);
 	}
 
 	private void removeNode(ProcessNode node) {
 		model.getProductSystem().getProcesses()
-				.remove(node.getProcess().getId());
+				.remove(node.process.getId());
 		model.remove(node);
 	}
 
-	private void unlink(ConnectionLink link) {
+	private void unlink(Link link) {
 		ProductSystem system = model.getProductSystem();
-		system.getProcessLinks().remove(link.getProcessLink());
-		model.getLinkSearch().remove(link.getProcessLink());
+		system.getProcessLinks().remove(link.processLink);
+		model.linkSearch.remove(link.processLink);
 		link.unlink();
 	}
 }

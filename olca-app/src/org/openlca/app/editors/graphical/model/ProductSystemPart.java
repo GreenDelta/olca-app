@@ -7,8 +7,8 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.commands.CommandStackListener;
 import org.eclipse.gef.editpolicies.ComponentEditPolicy;
-import org.openlca.app.editors.graphical.layout.GraphAnimation;
-import org.openlca.app.editors.graphical.layout.GraphLayoutManager;
+import org.openlca.app.editors.graphical.layout.Animation;
+import org.openlca.app.editors.graphical.layout.LayoutManager;
 import org.openlca.app.editors.graphical.policy.LayoutPolicy;
 
 class ProductSystemPart extends AppAbstractEditPart<ProductSystemNode> {
@@ -18,21 +18,19 @@ class ProductSystemPart extends AppAbstractEditPart<ProductSystemNode> {
 	@Override
 	public void activate() {
 		super.activate();
-		getViewer().getEditDomain().getCommandStack()
-				.addCommandStackListener(stackListener);
+		getViewer().getEditDomain().getCommandStack().addCommandStackListener(stackListener);
 	}
 
 	@Override
 	public void deactivate() {
-		getViewer().getEditDomain().getCommandStack()
-				.removeCommandStackListener(stackListener);
+		getViewer().getEditDomain().getCommandStack().removeCommandStackListener(stackListener);
 		super.deactivate();
 	}
 
 	@Override
 	protected IFigure createFigure() {
-		ProductSystemFigure figure = new ProductSystemFigure(getModel());
-		getModel().setEditPart(this);
+		ProductSystemNode node = getModel();
+		ProductSystemFigure figure = new ProductSystemFigure(node);
 		return figure;
 	}
 
@@ -41,7 +39,7 @@ class ProductSystemPart extends AppAbstractEditPart<ProductSystemNode> {
 		installEditPolicy(EditPolicy.LAYOUT_ROLE, new LayoutPolicy());
 		installEditPolicy(EditPolicy.COMPONENT_ROLE, new ComponentEditPolicy() {
 		});
-		GraphLayoutManager manager = new GraphLayoutManager(getModel());
+		LayoutManager manager = new LayoutManager(getModel());
 		getFigure().setLayoutManager(manager);
 	}
 
@@ -60,11 +58,11 @@ class ProductSystemPart extends AppAbstractEditPart<ProductSystemNode> {
 
 		@Override
 		public void commandStackChanged(EventObject event) {
-			if (!GraphAnimation.captureLayout(getFigure()))
+			if (!Animation.captureLayout(getFigure()))
 				return;
-			while (GraphAnimation.step())
+			while (Animation.step())
 				getFigure().getUpdateManager().performUpdate();
-			GraphAnimation.end();
+			Animation.end();
 		}
 	}
 

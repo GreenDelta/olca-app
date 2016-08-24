@@ -2,7 +2,6 @@ package org.openlca.app.editors.graphical.layout;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -100,14 +99,12 @@ public class TreeLayout {
 		for (ProcessNode processNode : productSystemNode.getChildren()) {
 			if (processNode.isVisible())
 				continue;
-			long id = processNode.getProcess().getId();
+			long id = processNode.process.getId();
 			Dimension size = processNode.getSize();
 			containing.put(id, 1);
-			processNode.setXyLayoutConstraints(new Rectangle(0, 0, size.width,
-					size.height));
+			processNode.setXyLayoutConstraints(new Rectangle(0, 0, size.width, size.height));
 		}
-		for (long processId : productSystemNode.getProductSystem()
-				.getProcesses())
+		for (long processId : productSystemNode.getProductSystem().getProcesses())
 			if (productSystemNode.getProcessNode(processId) == null)
 				containing.put(processId, 1);
 	}
@@ -121,17 +118,17 @@ public class TreeLayout {
 	}
 
 	public void layout(ProductSystemNode productSystemNode) {
-		this.linkSearch = productSystemNode.getLinkSearch();
+		this.linkSearch = productSystemNode.linkSearch;
 		prepare(productSystemNode);
 		List<Node> nodes = new ArrayList<>();
 		Node mainNode = build(productSystemNode.getProductSystem());
 		mainNode.sort();
 		nodes.add(mainNode);
 		for (ProcessNode processNode : productSystemNode.getChildren()) {
-			if (containing.get(processNode.getProcess().getId()) != null)
+			if (containing.get(processNode.process.getId()) != null)
 				continue;
 			Node node = new Node();
-			node.processId = processNode.getProcess().getId();
+			node.processId = processNode.process.getId();
 			build(productSystemNode.getProductSystem(), new Node[] { node });
 			node.sort();
 			nodes.add(node);
@@ -141,12 +138,10 @@ public class TreeLayout {
 			int newAdditionalHeight = 0;
 			locations.clear();
 			applyLayout(node, 0, node.getLeftDepth());
-
 			int minimumX = Integer.MAX_VALUE;
 			int maximumX = Integer.MIN_VALUE;
 			int minimumY = Integer.MAX_VALUE;
 			int maximumY = Integer.MIN_VALUE;
-
 			for (Point p : locations.keySet()) {
 				if (p.x < minimumX)
 					minimumX = p.x;
@@ -157,11 +152,9 @@ public class TreeLayout {
 				if (p.y > maximumY)
 					maximumY = p.y;
 			}
-
 			Map<Long, ProcessNode> processNodes = new HashMap<>();
 			for (ProcessNode processNode : productSystemNode.getChildren())
-				processNodes.put(processNode.getProcess().getId(), processNode);
-
+				processNodes.put(processNode.process.getId(), processNode);
 			for (int x = minimumX; x <= maximumX; x++) {
 				widths.put(x, 0);
 				for (int y = minimumY; y <= maximumY; y++) {
@@ -194,19 +187,15 @@ public class TreeLayout {
 					heights.put(y, height);
 				}
 			}
-			int xPosition = GraphLayoutManager.HORIZONTAL_SPACING;
+			int xPosition = LayoutManager.H_SPACE;
 			for (int x = minimumX; x <= maximumX; x++) {
-				if (x > minimumX)
-					if (widths.get(x - 1) > 0)
-						xPosition += widths.get(x - 1)
-								+ GraphLayoutManager.HORIZONTAL_SPACING;
-				int yPosition = GraphLayoutManager.VERTICAL_SPACING;
+				if (x > minimumX && widths.get(x - 1) > 0)
+					xPosition += widths.get(x - 1) + LayoutManager.H_SPACE;
+				int yPosition = LayoutManager.V_SPACE;
 				for (int y = minimumY; y <= maximumY; y++) {
 					Long processId = locations.get(new Point(x, y));
-					if (y > minimumY)
-						if (heights.get(y - 1) > 0)
-							yPosition += heights.get(y - 1)
-									+ GraphLayoutManager.VERTICAL_SPACING;
+					if (y > minimumY && heights.get(y - 1) > 0)
+						yPosition += heights.get(y - 1) + LayoutManager.V_SPACE;
 					if (processId == null)
 						continue;
 					ProcessNode processNode = processNodes.get(processId);
@@ -215,15 +204,12 @@ public class TreeLayout {
 					Dimension size = processNode.getSize();
 					if (size == null)
 						continue;
-					processNode.setXyLayoutConstraints(new Rectangle(xPosition,
-							yPosition + additionalHeight, size.width,
-							size.height));
-					newAdditionalHeight = Math.max(newAdditionalHeight,
-							yPosition + additionalHeight + size.height);
+					processNode.setXyLayoutConstraints(new Rectangle(xPosition, yPosition + additionalHeight,
+							size.width, size.height));
+					newAdditionalHeight = Math.max(newAdditionalHeight, yPosition + additionalHeight + size.height);
 				}
 			}
-			additionalHeight = newAdditionalHeight
-					+ GraphLayoutManager.VERTICAL_SPACING;
+			additionalHeight = newAdditionalHeight + LayoutManager.V_SPACE;
 		}
 		containing.clear();
 		widths.clear();
@@ -243,8 +229,7 @@ public class TreeLayout {
 			int depth = 1;
 			int depthAdd = 0;
 			for (int i = 0; i < leftChildren.size(); i++)
-				depthAdd = Math.max(depthAdd, leftChildren.get(i)
-						.getLeftDepth());
+				depthAdd = Math.max(depthAdd, leftChildren.get(i).getLeftDepth());
 			depth += depthAdd;
 			return depth;
 		}
@@ -263,13 +248,8 @@ public class TreeLayout {
 		void sort() {
 			List<Node> temp = new ArrayList<>();
 			temp.addAll(leftChildren);
-			Collections.sort(temp, new Comparator<Node>() {
-
-				@Override
-				public int compare(Node o1, Node o2) {
-					return Integer.compare(o2.getSize(), o1.getSize());
-				}
-
+			Collections.sort(temp, (o1, o2) -> {
+				return Integer.compare(o2.getSize(), o1.getSize());
 			});
 			leftChildren.clear();
 			int count = 0;

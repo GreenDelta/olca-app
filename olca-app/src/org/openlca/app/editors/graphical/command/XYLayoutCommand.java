@@ -9,15 +9,25 @@ import org.openlca.app.editors.graphical.model.ProcessNode;
 
 public class XYLayoutCommand extends Command {
 
-	static final int MOVE = 1;
-	static final int RESIZE = 2;
+	private static final int MOVE = 1;
+	private static final int RESIZE = 2;
 
-	private Rectangle newLayout;
+	private final ProcessNode node;
+	private final Rectangle newLayout;
+	private final int type;
 	private Rectangle previousLayout;
-	private ProcessNode node;
-	private int type;
 
-	XYLayoutCommand(int type) {
+	public static XYLayoutCommand move(ProcessNode node, Rectangle newLayout) {
+		return new XYLayoutCommand(node, newLayout, MOVE);
+	}
+
+	public static XYLayoutCommand resize(ProcessNode node, Rectangle newLayout) {
+		return new XYLayoutCommand(node, newLayout, RESIZE);
+	}
+
+	private XYLayoutCommand(ProcessNode node, Rectangle newLayout, int type) {
+		this.node = node;
+		this.newLayout = newLayout;
 		this.type = type;
 	}
 
@@ -52,7 +62,7 @@ public class XYLayoutCommand extends Command {
 	public void execute() {
 		previousLayout = node.getXyLayoutConstraints();
 		node.setXyLayoutConstraints(newContraints());
-		node.getParent().getEditor().setDirty(true);
+		node.parent().editor.setDirty(true);
 	}
 
 	private Rectangle newContraints() {
@@ -80,15 +90,7 @@ public class XYLayoutCommand extends Command {
 	@Override
 	public void undo() {
 		node.setXyLayoutConstraints(previousLayout);
-		node.getParent().getEditor().setDirty(true);
-	}
-
-	void setLayout(Rectangle layout) {
-		newLayout = layout;
-	}
-
-	void setNode(ProcessNode node) {
-		this.node = node;
+		node.parent().editor.setDirty(true);
 	}
 
 }

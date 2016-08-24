@@ -6,8 +6,8 @@ import java.util.List;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.viewers.ISelection;
 import org.openlca.app.M;
-import org.openlca.app.editors.graphical.command.CommandFactory;
-import org.openlca.app.editors.graphical.model.ConnectionLink;
+import org.openlca.app.editors.graphical.command.DeleteLinkCommand;
+import org.openlca.app.editors.graphical.model.Link;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
@@ -26,23 +26,22 @@ class RemoveAllConnectionsAction extends EditorAction {
 	public void run() {
 		if (processNodes.size() == 0)
 			return;
-		ProductSystemNode systemNode = getEditor().getModel();
-		List<ConnectionLink> links = new ArrayList<>();
+		ProductSystemNode systemNode = editor.getModel();
+		List<Link> links = new ArrayList<>();
 		// create new link search to avoid problems with missing entries before
 		// ConnectionLink.unlink is called
-		MutableProcessLinkSearchMap linkSearch = new MutableProcessLinkSearchMap(
-				systemNode.getProductSystem().getProcessLinks());
+		List<ProcessLink> pLinks = systemNode.getProductSystem().getProcessLinks();
+		MutableProcessLinkSearchMap linkSearch = new MutableProcessLinkSearchMap(pLinks);
 		for (ProcessNode processNode : processNodes) {
-			List<ProcessLink> processLinks = linkSearch.getLinks(processNode
-					.getProcess().getId());
+			List<ProcessLink> processLinks = linkSearch.getLinks(processNode.process.getId());
 			for (ProcessLink link : processLinks)
 				linkSearch.remove(link);
-			for (ConnectionLink link : processNode.getLinks())
+			for (Link link : processNode.links)
 				if (!links.contains(link))
 					links.add(link);
 		}
-		Command command = CommandFactory.createDeleteLinkCommand(links);
-		getEditor().getCommandStack().execute(command);
+		Command command = new DeleteLinkCommand(links);
+		editor.getCommandStack().execute(command);
 	}
 
 	@Override
@@ -51,7 +50,7 @@ class RemoveAllConnectionsAction extends EditorAction {
 		if (processNodes.size() == 0)
 			return false;
 		for (ProcessNode node : processNodes)
-			if (node.getLinks().size() > 0)
+			if (node.links.size() > 0)
 				return true;
 		return false;
 	}

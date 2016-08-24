@@ -5,52 +5,33 @@ import java.util.List;
 
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Dimension;
-import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 
 public abstract class Node implements Comparable<Node> {
 
 	private Node parent;
-	private List<Node> children;
-	private IFigure figure;
-	private AppAbstractEditPart<?> editPart;
+	private List<Node> children = new ArrayList<>();
+	public IFigure figure;
+	AppAbstractEditPart<?> editPart;
 
-	Node() {
-		children = new ArrayList<>();
-		parent = null;
-	}
-
-	void setEditPart(AppAbstractEditPart<?> editPart) {
-		this.editPart = editPart;
-	}
-
-	AbstractGraphicalEditPart getEditPart() {
-		return editPart;
-	}
-
-	public Node getParent() {
+	public Node parent() {
 		return parent;
 	}
 
-	public void setParent(Node parent) {
-		this.parent = parent;
-	}
-
 	public boolean add(Node child) {
-		boolean b = children.add(child);
-		if (b) {
-			child.setParent(this);
-			if (editPart != null)
-				editPart.refreshChildren();
-		}
-		return b;
+		if (!children.add(child))
+			return false;
+		child.parent = this;
+		if (editPart != null)
+			editPart.refreshChildren();
+		return true;
 	}
 
 	public boolean remove(Node child) {
-		boolean b = children.remove(child);
-		if (b)
-			if (editPart != null)
-				editPart.refreshChildren();
-		return b;
+		if (!children.remove(child))
+			return false;
+		if (editPart != null)
+			editPart.refreshChildren();
+		return true;
 	}
 
 	public boolean contains(final Node child) {
@@ -61,27 +42,20 @@ public abstract class Node implements Comparable<Node> {
 		return children;
 	}
 
-	public IFigure getFigure() {
-		return figure;
-	}
-
-	void setFigure(IFigure figure) {
-		this.figure = figure;
-	}
-
 	public abstract String getName();
 
 	public boolean isVisible() {
-		return getFigure() != null ? getFigure().isVisible() : false;
+		return figure != null ? figure.isVisible() : false;
 	}
 
 	public void setVisible(boolean value) {
-		if (getFigure() != null)
-			getFigure().setVisible(value);
+		if (figure == null)
+			return;
+		figure.setVisible(value);
 	}
 
 	public Dimension getSize() {
-		return getFigure() != null ? getFigure().getSize() : new Dimension();
+		return figure != null ? figure.getSize() : new Dimension();
 	}
 
 	@Override
