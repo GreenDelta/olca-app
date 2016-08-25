@@ -45,15 +45,15 @@ public class ProcessLinkCreatePolicy extends GraphicalNodeEditPolicy {
 			return null;
 		ExchangeNode toConnect = getNode(request);
 		ExchangeNode other = cmd.startedFromSource ? cmd.sourceNode.getOutput(cmd.flowId) : cmd.targetNode;
-		if (!toConnect.matches(other))
+		if (!toConnect.matches(other) || toConnect.parent().hasIncoming(toConnect.exchange.getId())) {
+			cmd.completeWith(null);
+			request.setStartCommand(cmd);
 			return null;
-		if (cmd.startedFromSource)
-			cmd.targetNode = toConnect;
-		else if (!toConnect.parent().hasIncoming(toConnect.exchange.getId()))
-			cmd.sourceNode = toConnect.parent();
+		}
+		cmd.completeWith(toConnect);
+		request.setStartCommand(cmd);
 		if (cmd.sourceNode == null || cmd.targetNode == null)
 			return null;
-		request.setStartCommand(cmd);
 		return cmd;
 	}
 
@@ -118,6 +118,7 @@ public class ProcessLinkCreatePolicy extends GraphicalNodeEditPolicy {
 		ProductSystemNode psNode = node.parent().parent();
 		psNode.removeHighlighting();
 		node.setHighlighted(false);
+		super.eraseSourceFeedback(request);
 	}
 
 	@Override
@@ -126,5 +127,6 @@ public class ProcessLinkCreatePolicy extends GraphicalNodeEditPolicy {
 		ProductSystemNode psNode = node.parent().parent();
 		psNode.highlightMatchingExchanges(node);
 		node.setHighlighted(true);
+		super.showSourceFeedback(request);
 	}
 }

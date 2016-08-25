@@ -7,7 +7,6 @@ import org.eclipse.gef.Request;
 import org.eclipse.gef.requests.CreateConnectionRequest;
 import org.eclipse.gef.requests.ReconnectRequest;
 import org.openlca.app.editors.graphical.command.CreateLinkCommand;
-import org.openlca.core.model.Flow;
 
 abstract class AbstractNodeEditPart<N extends Node> extends AppAbstractEditPart<N> implements NodeEditPart {
 
@@ -37,14 +36,14 @@ abstract class AbstractNodeEditPart<N extends Node> extends AppAbstractEditPart<
 
 	private ConnectionAnchor getSourceConnectionAnchor(ReconnectRequest request) {
 		Link link = (Link) request.getConnectionEditPart().getModel();
-		ProcessNode processNode = ((ExchangePart) request.getTarget()).getModel().parent();
+		ProcessNode node = ((ExchangePart) request.getTarget()).getModel().parent();
 		long flowId = link.processLink.flowId;
 		long exchangeId = link.processLink.exchangeId;
-		ExchangeNode source = processNode.getOutput(flowId);
+		ExchangeNode source = node.getOutput(flowId);
 		ExchangeNode target = link.targetNode.getNode(exchangeId);
 		if (target == null || !target.matches(source))
 			return null;
-		return LinkAnchor.newSourceAnchor(processNode, link.processLink);
+		return LinkAnchor.newSourceAnchor(node, source);
 	}
 
 	@Override
@@ -67,41 +66,22 @@ abstract class AbstractNodeEditPart<N extends Node> extends AppAbstractEditPart<
 		if (cmd.startedFromSource) {
 			if (cmd.targetNode != null)
 				return LinkAnchor.newTargetAnchor(cmd);
-			if (cmd.sourceNode != null)
-				return LinkAnchor.newSourceAnchor(cmd);
 			return null;
 		}
 		if (cmd.sourceNode != null)
 			return LinkAnchor.newSourceAnchor(cmd);
-		if (cmd.targetNode != null)
-			return LinkAnchor.newTargetAnchor(cmd);
 		return null;
 	}
 
 	private ConnectionAnchor getTargetConnectionAnchor(ReconnectRequest request) {
 		Link link = (Link) request.getConnectionEditPart().getModel();
 		ExchangeNode target = ((ExchangePart) request.getTarget()).getModel();
-		long flowId = link.processLink.flowId;
-		long exchangeId = link.processLink.exchangeId;
-		ExchangeNode source = link.sourceNode.getOutput(flowId);
+		ExchangeNode source = link.sourceNode.getOutput(link.processLink.flowId);
 		if (source == null || !source.matches(target))
 			return null;
-		if (!canConnect(link.targetNode.getNode(exchangeId), target))
+		if (target.exchange.getId() != link.processLink.exchangeId
+				&& target.parent().hasIncoming(target.exchange.getId()))
 			return null;
-		return LinkAnchor.newTargetAnchor(target.parent(), link.processLink);
+		return LinkAnchor.newTargetAnchor(target.parent(), target);
 	}
-
-	private boolean canConnect(ExchangeNode node, ExchangeNode withNode) {
-		ProcessNode parentNode = withNode.parent();
-		Flow flow = node.exchange.getFlow();
-		Flow withFlow = withNode.exchange.getFlow();
-		if (parentNode.hasIncoming(node.exchange.getId()))
-			return false;
-		if (flow.equals(withFlow))
-			return false;
-		if (node == withNode)
-			return false;
-		return true;
-	}
-
 }

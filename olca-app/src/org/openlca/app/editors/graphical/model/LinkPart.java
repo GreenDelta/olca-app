@@ -69,10 +69,6 @@ class LinkPart extends AbstractConnectionEditPart {
 
 	@Override
 	public void showSourceFeedback(Request req) {
-		if (!(req instanceof ReconnectRequest)) {
-			super.showSourceFeedback(req);
-			return;
-		}
 		ReconnectRequest request = ((ReconnectRequest) req);
 		Link link = (Link) request.getConnectionEditPart().getModel();
 		ExchangeNode target = link.targetNode.getNode(link.processLink.exchangeId);
@@ -86,17 +82,15 @@ class LinkPart extends AbstractConnectionEditPart {
 		}
 		if (n2 != null)
 			n2.setHighlighted(true);
+		super.showSourceFeedback(req);
 	}
 
 	@Override
 	public void eraseSourceFeedback(Request req) {
-		if (!(req instanceof ReconnectRequest)) {
-			super.eraseSourceFeedback(req);
-			return;
-		}
 		ProcessPart source = (ProcessPart) getSource();
 		ProductSystemNode node = source.getModel().parent();
 		node.removeHighlighting();
+		super.eraseSourceFeedback(req);
 	}
 
 	@Override

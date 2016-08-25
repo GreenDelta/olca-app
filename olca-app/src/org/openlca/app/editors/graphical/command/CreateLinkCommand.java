@@ -51,10 +51,13 @@ public class CreateLinkCommand extends Command {
 	private ProcessLink getProcessLink() {
 		if (processLink == null)
 			processLink = new ProcessLink();
-		processLink.processId = targetNode.parent().process.getId();
-		processLink.exchangeId = targetNode.exchange.getId();
-		processLink.flowId = targetNode.exchange.getFlow().getId();
-		processLink.providerId = sourceNode.process.getId();
+		processLink.flowId = flowId;
+		if (targetNode != null) {
+			processLink.processId = targetNode.parent().process.getId();
+			processLink.exchangeId = targetNode.exchange.getId();
+		}
+		if (sourceNode != null)
+			processLink.providerId = sourceNode.process.getId();
 		return processLink;
 	}
 
@@ -91,10 +94,21 @@ public class CreateLinkCommand extends Command {
 	public Link getLink() {
 		if (link == null)
 			link = new Link();
-		link.processLink = processLink;
+		link.processLink = getProcessLink();
 		link.sourceNode = sourceNode;
-		link.targetNode = targetNode.parent();
+		if (targetNode != null)
+			link.targetNode = targetNode.parent();
 		return link;
 	}
 
+	public void completeWith(ExchangeNode node) {
+		if (startedFromSource) {
+			targetNode = node;
+			return;
+		}
+		if (node == null)
+			sourceNode = null;
+		else if (!node.parent().hasIncoming(node.exchange.getId()))
+			sourceNode = node.parent();
+	}
 }
