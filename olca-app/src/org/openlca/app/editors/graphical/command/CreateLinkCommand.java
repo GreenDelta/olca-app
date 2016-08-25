@@ -2,6 +2,7 @@ package org.openlca.app.editors.graphical.command;
 
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.M;
+import org.openlca.app.editors.graphical.model.ExchangeNode;
 import org.openlca.app.editors.graphical.model.Link;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
@@ -12,7 +13,7 @@ public class CreateLinkCommand extends Command {
 
 	public final long flowId;
 	public ProcessNode sourceNode;
-	public ProcessNode targetNode;
+	public ExchangeNode targetNode;
 	public boolean startedFromSource;
 	private ProcessLink processLink;
 	private Link link;
@@ -27,7 +28,7 @@ public class CreateLinkCommand extends Command {
 			return false;
 		if (targetNode == null)
 			return false;
-		return flowId != 0;
+		return true;
 	}
 
 	@Override
@@ -50,11 +51,10 @@ public class CreateLinkCommand extends Command {
 	private ProcessLink getProcessLink() {
 		if (processLink == null)
 			processLink = new ProcessLink();
-		if (targetNode != null)
-			processLink.processId = targetNode.process.getId();
-		if (sourceNode != null)
-			processLink.providerId = sourceNode.process.getId();
-		processLink.flowId = flowId;
+		processLink.processId = targetNode.parent().process.getId();
+		processLink.exchangeId = targetNode.exchange.getId();
+		processLink.flowId = targetNode.exchange.getFlow().getId();
+		processLink.providerId = sourceNode.process.getId();
 		return processLink;
 	}
 
@@ -74,7 +74,8 @@ public class CreateLinkCommand extends Command {
 	private void refreshNodes() {
 		ProductSystemNode systemNode = sourceNode.parent();
 		sourceNode = systemNode.getProcessNode(link.sourceNode.process.getId());
-		targetNode = systemNode.getProcessNode(link.targetNode.process.getId());
+		ProcessNode targetParentNode = systemNode.getProcessNode(link.targetNode.process.getId());
+		targetNode = targetParentNode.getNode(link.processLink.exchangeId);
 	}
 
 	@Override
@@ -92,7 +93,7 @@ public class CreateLinkCommand extends Command {
 			link = new Link();
 		link.processLink = processLink;
 		link.sourceNode = sourceNode;
-		link.targetNode = targetNode;
+		link.targetNode = targetNode.parent();
 		return link;
 	}
 

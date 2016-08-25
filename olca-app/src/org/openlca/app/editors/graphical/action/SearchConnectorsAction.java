@@ -59,9 +59,9 @@ class SearchConnectorsAction extends EditorAction {
 			List<ConnectionInput> toConnect = new ArrayList<>();
 			for (ProcessDescriptor process : dialog.getProcessesToConnect())
 				if (type == PROVIDER)
-					toConnect.add(new ConnectionInput(process.getId(), nodeId, flowId));
+					toConnect.add(new ConnectionInput(process.getId(), flowId, nodeId));
 				else if (type == RECIPIENTS)
-					toConnect.add(new ConnectionInput(nodeId, process.getId(), flowId));
+					toConnect.add(new ConnectionInput(nodeId, flowId, process.getId()));
 			Command command = null;
 			if (type == PROVIDER)
 				command = MassCreationCommand.providers(toCreate, toConnect, model);

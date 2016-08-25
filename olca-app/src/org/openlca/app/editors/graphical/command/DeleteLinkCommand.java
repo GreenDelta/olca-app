@@ -48,7 +48,7 @@ public class DeleteLinkCommand extends Command {
 
 	private String getUniqueId(Link connection) {
 		ProcessLink link = connection.processLink;
-		return link.providerId + "->" + link.flowId + "->" + link.processId;
+		return link.providerId + "->" + link.flowId + "->" + link.processId + "->" + link.exchangeId;
 	}
 
 	@Override
@@ -61,8 +61,7 @@ public class DeleteLinkCommand extends Command {
 		ProductSystemNode systemNode = links.get(0).sourceNode.parent();
 		for (Link link : links) {
 			link.unlink();
-			systemNode.getProductSystem().getProcessLinks()
-					.remove(link.processLink);
+			systemNode.getProductSystem().getProcessLinks().remove(link.processLink);
 			systemNode.linkSearch.remove(link.processLink);
 		}
 		systemNode.editor.setDirty(true);
@@ -72,8 +71,7 @@ public class DeleteLinkCommand extends Command {
 	public void undo() {
 		ProductSystemNode systemNode = links.get(0).sourceNode.parent();
 		for (Link link : links) {
-			systemNode.getProductSystem().getProcessLinks()
-					.add(link.processLink);
+			systemNode.getProductSystem().getProcessLinks().add(link.processLink);
 			systemNode.linkSearch.put(link.processLink);
 			link.link();
 			link.setVisible(visibilityMap.get(getUniqueId(link)));

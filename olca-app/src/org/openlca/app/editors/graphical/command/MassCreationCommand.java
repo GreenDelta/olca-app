@@ -55,13 +55,11 @@ public class MassCreationCommand extends Command {
 		for (ProcessDescriptor process : toCreate)
 			addNode(process);
 		for (ConnectionInput input : newConnections)
-			link(input.sourceId, input.targetId, input.flowId);
+			link(input.sourceId, input.flowId, input.targetId, input.exchangeId);
 		for (ProcessNode node : model.getChildren())
 			if (node.figure.isVisible())
-				oldConstraints.put(node.figure, node.figure
-						.getBounds().getCopy());
-		((LayoutManager) model.figure.getLayoutManager()).layout(
-				model.figure, model.editor.getLayoutType());
+				oldConstraints.put(node.figure, node.figure.getBounds().getCopy());
+		((LayoutManager) model.figure.getLayoutManager()).layout(model.figure, model.editor.getLayoutType());
 		model.editor.setDirty(true);
 		if (model.editor.getOutline() != null)
 			model.editor.getOutline().refresh();
@@ -76,9 +74,9 @@ public class MassCreationCommand extends Command {
 		createdNodes.add(node);
 	}
 
-	private void link(long sourceId, long targetId, long flowId) {
+	private void link(long sourceId, long flowId, long targetId, long exchangeId) {
 		ProductSystem system = model.getProductSystem();
-		ProcessLink processLink = createProcessLink(sourceId, targetId, flowId);
+		ProcessLink processLink = createProcessLink(sourceId, flowId, targetId, exchangeId);
 		system.getProcessLinks().add(processLink);
 		model.linkSearch.put(processLink);
 		Link link = createLink(sourceId, targetId, processLink);
@@ -86,12 +84,12 @@ public class MassCreationCommand extends Command {
 		createdLinks.add(link);
 	}
 
-	private ProcessLink createProcessLink(long sourceId, long targetId,
-			long flowId) {
+	private ProcessLink createProcessLink(long sourceId, long flowId, long targetId, long exchangeId) {
 		ProcessLink processLink = new ProcessLink();
 		processLink.processId = targetId;
 		processLink.providerId = sourceId;
 		processLink.flowId = flowId;
+		processLink.exchangeId = exchangeId;
 		return processLink;
 	}
 
@@ -129,8 +127,7 @@ public class MassCreationCommand extends Command {
 	}
 
 	private void removeNode(ProcessNode node) {
-		model.getProductSystem().getProcesses()
-				.remove(node.process.getId());
+		model.getProductSystem().getProcesses().remove(node.process.getId());
 		model.remove(node);
 	}
 

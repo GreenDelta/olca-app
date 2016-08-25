@@ -18,12 +18,6 @@ abstract class AbstractNodeEditPart<N extends Node> extends AppAbstractEditPart<
 	}
 
 	@Override
-	public ConnectionAnchor getTargetConnectionAnchor(ConnectionEditPart connection) {
-		Link link = (Link) connection.getModel();
-		return LinkAnchor.newTargetAnchor(link);
-	}
-
-	@Override
 	public ConnectionAnchor getSourceConnectionAnchor(Request request) {
 		if (request instanceof CreateConnectionRequest)
 			return getSourceConnectionAnchor((CreateConnectionRequest) request);
@@ -46,11 +40,17 @@ abstract class AbstractNodeEditPart<N extends Node> extends AppAbstractEditPart<
 		ProcessNode processNode = ((ExchangePart) request.getTarget()).getModel().parent();
 		long flowId = link.processLink.flowId;
 		long exchangeId = link.processLink.exchangeId;
-		ExchangeNode source = processNode.getOutputNode(flowId);
-		ExchangeNode target = link.targetNode.getExchangeNode(exchangeId);
+		ExchangeNode source = processNode.getOutput(flowId);
+		ExchangeNode target = link.targetNode.getNode(exchangeId);
 		if (target == null || !target.matches(source))
 			return null;
 		return LinkAnchor.newSourceAnchor(processNode, link.processLink);
+	}
+
+	@Override
+	public ConnectionAnchor getTargetConnectionAnchor(ConnectionEditPart connection) {
+		Link link = (Link) connection.getModel();
+		return LinkAnchor.newTargetAnchor(link);
 	}
 
 	@Override
@@ -80,23 +80,22 @@ abstract class AbstractNodeEditPart<N extends Node> extends AppAbstractEditPart<
 
 	private ConnectionAnchor getTargetConnectionAnchor(ReconnectRequest request) {
 		Link link = (Link) request.getConnectionEditPart().getModel();
-		ProcessNode processNode = ((ExchangePart) request.getTarget()).getModel().parent();
+		ExchangeNode target = ((ExchangePart) request.getTarget()).getModel();
 		long flowId = link.processLink.flowId;
 		long exchangeId = link.processLink.exchangeId;
-		ExchangeNode source = link.sourceNode.getOutputNode(flowId);
-		ExchangeNode target = processNode.getExchangeNode(exchangeId);
+		ExchangeNode source = link.sourceNode.getOutput(flowId);
 		if (source == null || !source.matches(target))
 			return null;
-		if (!canConnect(link.targetNode.getInputNode(flowId), target))
+		if (!canConnect(link.targetNode.getNode(exchangeId), target))
 			return null;
-		return LinkAnchor.newTargetAnchor(processNode, link.processLink);
+		return LinkAnchor.newTargetAnchor(target.parent(), link.processLink);
 	}
 
 	private boolean canConnect(ExchangeNode node, ExchangeNode withNode) {
 		ProcessNode parentNode = withNode.parent();
 		Flow flow = node.exchange.getFlow();
 		Flow withFlow = withNode.exchange.getFlow();
-		if (parentNode.hasIncomingConnection(flow.getId()))
+		if (parentNode.hasIncoming(node.exchange.getId()))
 			return false;
 		if (flow.equals(withFlow))
 			return false;

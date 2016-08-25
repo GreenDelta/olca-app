@@ -78,15 +78,16 @@ class BuildNextTierAction extends Action implements IBuildAction {
 		List<ExchangeNode> toConnect = loadExchangeNodes(node);
 		for (ExchangeNode exchange : toConnect) {
 			ProcessDescriptor provider = findProvider(exchange.exchange);
-			if (provider != null) {
-				if (!providers.contains(provider))
-					providers.add(provider);
-				ConnectionInput connectionInput = new ConnectionInput(
-						provider.getId(), targetId, exchange.exchange
-								.getFlow().getId());
-				if (!newConnections.contains(connectionInput))
-					newConnections.add(connectionInput);
-			}
+			if (provider == null)
+				continue;
+			if (!providers.contains(provider))
+				providers.add(provider);
+			long flowId = exchange.exchange.getFlow().getId();
+			long exchangeId = exchange.exchange.getId();
+			ConnectionInput connectionInput = new ConnectionInput(provider.getId(), flowId, targetId, exchangeId);
+			if (newConnections.contains(connectionInput))
+				continue;
+			newConnections.add(connectionInput);
 		}
 	}
 

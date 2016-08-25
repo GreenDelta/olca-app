@@ -2,6 +2,7 @@ package org.openlca.app.editors.graphical.command;
 
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.M;
+import org.openlca.app.editors.graphical.model.ExchangeNode;
 import org.openlca.app.editors.graphical.model.Link;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
@@ -11,11 +12,11 @@ import org.openlca.core.model.ProductSystem;
 public class ReconnectLinkCommand extends Command {
 
 	private final ProcessNode sourceNode;
-	private final ProcessNode targetNode;
+	private final ExchangeNode targetNode;
 	private final Link oldLink;
 	private Link link;
 
-	public ReconnectLinkCommand(ProcessNode sourceNode, ProcessNode targetNode, Link oldLink) {
+	public ReconnectLinkCommand(ProcessNode sourceNode, ExchangeNode targetNode, Link oldLink) {
 		this.sourceNode = sourceNode;
 		this.targetNode = targetNode;
 		this.oldLink = oldLink;
@@ -41,18 +42,18 @@ public class ReconnectLinkCommand extends Command {
 	public void execute() {
 		ProductSystemNode systemNode = sourceNode.parent();
 		oldLink.unlink();
-		systemNode.getProductSystem().getProcessLinks()
-				.remove(oldLink.processLink);
+		systemNode.getProductSystem().getProcessLinks().remove(oldLink.processLink);
 		systemNode.linkSearch.remove(oldLink.processLink);
 		ProcessLink processLink = new ProcessLink();
-		processLink.processId = targetNode.process.getId();
 		processLink.providerId = sourceNode.process.getId();
 		processLink.flowId = oldLink.processLink.flowId;
+		processLink.processId = targetNode.parent().process.getId();
+		processLink.exchangeId = targetNode.exchange.getId();
 		systemNode.getProductSystem().getProcessLinks().add(processLink);
 		systemNode.linkSearch.put(processLink);
 		link = new Link();
 		link.sourceNode = sourceNode;
-		link.targetNode = targetNode;
+		link.targetNode = targetNode.parent();
 		link.processLink = processLink;
 		link.link();
 		systemNode.editor.setDirty(true);

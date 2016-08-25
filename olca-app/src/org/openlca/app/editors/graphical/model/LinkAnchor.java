@@ -31,7 +31,7 @@ class LinkAnchor extends AbstractConnectionAnchor {
 	}
 
 	static LinkAnchor newTargetAnchor(CreateLinkCommand cmd) {
-		return newTargetAnchor(cmd.targetNode, cmd.getLink().processLink);
+		return newTargetAnchor(cmd.targetNode.parent(), cmd.getLink().processLink);
 	}
 
 	static LinkAnchor newTargetAnchor(ProcessNode node, ProcessLink link) {
@@ -43,9 +43,9 @@ class LinkAnchor extends AbstractConnectionAnchor {
 		if (!node.isMinimized()) {
 			ExchangeNode eNode = null;
 			if (type == SOURCE_ANCHOR) {
-				eNode = node.getOutputNode(link.flowId);
+				eNode = node.getOutput(link.flowId);
 			} else {
-				eNode = node.getExchangeNode(link.exchangeId);
+				eNode = node.getNode(link.exchangeId);
 			}
 			figure = eNode.figure;
 		}

@@ -175,16 +175,17 @@ public class ProcessNode extends Node {
 		figure().refresh();
 	}
 
-	public ExchangeNode getInputNode(long flowId) {
+	public List<ExchangeNode> getInputs(long flowId) {
+		List<ExchangeNode> nodes = new ArrayList<>();
 		for (ExchangeNode node : getExchangeNodes())
 			if (!node.isDummy())
 				if (node.exchange.isInput())
 					if (node.exchange.getFlow().getId() == flowId)
-						return node;
-		return null;
+						nodes.add(node);
+		return nodes;
 	}
 
-	public ExchangeNode getOutputNode(long flowId) {
+	public ExchangeNode getOutput(long flowId) {
 		for (ExchangeNode node : getExchangeNodes())
 			if (!node.isDummy())
 				if (!node.exchange.isInput())
@@ -193,7 +194,7 @@ public class ProcessNode extends Node {
 		return null;
 	}
 
-	public ExchangeNode getExchangeNode(long exchangeId) {
+	public ExchangeNode getNode(long exchangeId) {
 		for (ExchangeNode node : getExchangeNodes())
 			if (!node.isDummy())
 				if (node.exchange.getId() == exchangeId)
@@ -227,10 +228,10 @@ public class ProcessNode extends Node {
 		editPart().revalidate();
 	}
 
-	public boolean hasIncomingConnection(long flowId) {
+	public boolean hasIncoming(long exchangeId) {
 		MutableProcessLinkSearchMap linkSearch = parent().linkSearch;
 		for (ProcessLink link : linkSearch.getIncomingLinks(process.getId()))
-			if (link.flowId == flowId)
+			if (link.exchangeId == exchangeId)
 				return true;
 		return false;
 	}
@@ -249,7 +250,7 @@ public class ProcessNode extends Node {
 		return links.size() > 0;
 	}
 
-	public int countOutgoingConnections() {
+	public int countOutgoing() {
 		int count = 0;
 		for (Link link : links)
 			if (link.sourceNode.equals(this))
@@ -257,7 +258,7 @@ public class ProcessNode extends Node {
 		return count;
 	}
 
-	public int countIncomingConnections() {
+	public int countIncoming() {
 		int count = 0;
 		for (Link link : links)
 			if (link.targetNode.equals(this))

@@ -33,6 +33,8 @@ public class Link {
 	public void link() {
 		sourceNode.add(this);
 		targetNode.add(this);
+		sourceNode.editPart().refreshSourceConnections();
+		targetNode.editPart().refreshTargetConnections();
 		sourceNode.refresh();
 		targetNode.refresh();
 	}

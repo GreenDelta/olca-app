@@ -2,14 +2,16 @@ package org.openlca.app.editors.graphical.command;
 
 public class ConnectionInput {
 
-	long sourceId;
-	long targetId;
-	long flowId;
+	final long sourceId;
+	final long flowId;
+	final long targetId;
+	final long exchangeId;
 
-	public ConnectionInput(long sourceId, long targetId, long flowId) {
+	public ConnectionInput(long sourceId, long flowId, long targetId, long exchangeId) {
 		this.sourceId = sourceId;
-		this.targetId = targetId;
 		this.flowId = flowId;
+		this.targetId = targetId;
+		this.exchangeId = exchangeId;
 	}
 
 	@Override
@@ -24,6 +26,8 @@ public class ConnectionInput {
 		if (targetId != input.targetId)
 			return false;
 		if (flowId != input.flowId)
+			return false;
+		if (exchangeId != input.exchangeId)
 			return false;
 		return true;
 	}
