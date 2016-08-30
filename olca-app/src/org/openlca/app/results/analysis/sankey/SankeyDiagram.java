@@ -84,12 +84,9 @@ public class SankeyDiagram extends GraphicalEditor implements
 	}
 
 	private void createConnections(long processId) {
-		for (ProcessLink processLink : linkSearchMap
-				.getIncomingLinks(processId)) {
-			ProcessNode sourceNode = createdProcesses.get(processLink
-					.getProviderId());
-			ProcessNode targetNode = createdProcesses.get(processLink
-					.getRecipientId());
+		for (ProcessLink processLink : linkSearchMap.getIncomingLinks(processId)) {
+			ProcessNode sourceNode = createdProcesses.get(processLink.providerId);
+			ProcessNode targetNode = createdProcesses.get(processLink.processId);
 			if (sourceNode != null && targetNode != null) {
 				if (!createdLinks.containsKey(processLink)) {
 					double ratio = sankeyResult

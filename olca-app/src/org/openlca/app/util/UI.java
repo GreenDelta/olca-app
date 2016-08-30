@@ -318,16 +318,16 @@ public class UI {
 		return formMultiText(parent, null, label);
 	}
 
-	public static Text formMultiText(Composite parent, FormToolkit toolkit,
-			String label) {
-		formLabel(parent, toolkit, label);
+	public static Text formMultiText(Composite comp, FormToolkit tk, String label) {
+		formLabel(comp, tk, label);
 		Text text = null;
-		if (toolkit != null)
-			text = toolkit.createText(parent, null, SWT.BORDER | SWT.V_SCROLL
+		if (tk != null) {
+			text = tk.createText(comp, null, SWT.BORDER
+					| SWT.V_SCROLL | SWT.WRAP | SWT.MULTI);
+		} else {
+			text = new Text(comp, SWT.BORDER | SWT.V_SCROLL
 					| SWT.WRAP | SWT.MULTI);
-		else
-			text = new Text(parent, SWT.BORDER | SWT.V_SCROLL | SWT.WRAP
-					| SWT.MULTI);
+		}
 		GridData gd = gridData(text, true, false);
 		gd.minimumHeight = 100;
 		gd.heightHint = 100;
@@ -335,54 +335,65 @@ public class UI {
 		return text;
 	}
 
-	public static Combo formCombo(Composite parent, String label) {
-		return formCombo(parent, null, label);
+	public static Combo formCombo(Composite comp, String label) {
+		return formCombo(comp, null, label);
 	}
 
-	public static Combo formCombo(Composite parent, FormToolkit toolkit,
-			String label) {
-		formLabel(parent, toolkit, label);
-		Combo combo = new Combo(parent, SWT.READ_ONLY);
+	public static Combo formCombo(Composite comp, FormToolkit tk, String label) {
+		formLabel(comp, tk, label);
+		Combo combo = new Combo(comp, SWT.READ_ONLY);
 		gridData(combo, true, false);
 		return combo;
 	}
 
-	public static Label formLabel(Composite parent, String text) {
-		return formLabel(parent, null, text);
+	public static Label formLabel(Composite comp, String text) {
+		return formLabel(comp, null, text);
 	}
 
-	public static Label formLabel(Composite parent, FormToolkit toolkit,
-			String label) {
-		Label labelWidget = null;
-		if (toolkit != null)
-			labelWidget = toolkit.createLabel(parent, label, SWT.NONE);
-		else {
-			labelWidget = new Label(parent, SWT.NONE);
-			labelWidget.setText(label);
+	public static Label formLabel(Composite comp, FormToolkit tk, String text) {
+		Label label = null;
+		if (tk != null) {
+			label = tk.createLabel(comp, text, SWT.NONE);
+		} else {
+			label = new Label(comp, SWT.NONE);
+			label.setText(text);
 		}
-		GridData gridData = gridData(labelWidget, false, false);
-		gridData.verticalAlignment = SWT.TOP;
-		gridData.verticalIndent = 2;
-		return labelWidget;
+		GridData gd = gridData(label, false, false);
+		gd.verticalAlignment = SWT.TOP;
+		gd.verticalIndent = 2;
+		return label;
+	}
+
+	/**
+	 * Creates an empty label which can be used to fill cells in a grid layout.
+	 */
+	public static void filler(Composite comp, FormToolkit tk) {
+		formLabel(comp, tk, "");
+	}
+
+	/**
+	 * Creates an empty label which can be used to fill cells in a grid layout.
+	 */
+	public static void filler(Composite comp) {
+		formLabel(comp, null, "");
 	}
 
 	public static Hyperlink formLink(Composite parent, String label) {
 		return formLink(parent, null, label);
 	}
 
-	public static Hyperlink formLink(Composite parent, FormToolkit toolkit,
-			String label) {
-		Hyperlink linkWidget = null;
-		if (toolkit != null)
-			linkWidget = toolkit.createHyperlink(parent, label, SWT.NONE);
+	public static Hyperlink formLink(Composite comp, FormToolkit tk, String text) {
+		Hyperlink link = null;
+		if (tk != null)
+			link = tk.createHyperlink(comp, text, SWT.NONE);
 		else {
-			linkWidget = new Hyperlink(parent, SWT.NONE);
-			linkWidget.setText(label);
+			link = new Hyperlink(comp, SWT.NONE);
+			link.setText(text);
 		}
-		GridData gridData = gridData(linkWidget, false, false);
-		gridData.verticalAlignment = SWT.TOP;
-		gridData.verticalIndent = 2;
-		return linkWidget;
+		GridData gd = gridData(link, false, false);
+		gd.verticalAlignment = SWT.TOP;
+		gd.verticalIndent = 2;
+		return link;
 	}
 
 }

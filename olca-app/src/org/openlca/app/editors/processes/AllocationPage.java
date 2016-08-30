@@ -16,10 +16,10 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Event;
 import org.openlca.app.M;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Error;
-import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
@@ -42,7 +42,7 @@ class AllocationPage extends FormPage {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private ProcessEditor editor;
-	private FormToolkit toolkit;
+	private FormToolkit tk;
 	private TableViewer factorViewer;
 	private CausalFactorTable causalFactorTable;
 
@@ -88,9 +88,9 @@ class AllocationPage extends FormPage {
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
 		ScrolledForm form = UI.formHeader(managedForm, M.Allocation);
-		toolkit = managedForm.getToolkit();
-		Composite body = UI.formBody(form, toolkit);
-		Composite composite = UI.formComposite(body, toolkit);
+		tk = managedForm.getToolkit();
+		Composite body = UI.formBody(form, tk);
+		Composite composite = UI.formComposite(body, tk);
 		createDefaultCombo(composite);
 		createCalcButton(composite);
 		createPhysicalEconomicSection(body);
@@ -100,7 +100,7 @@ class AllocationPage extends FormPage {
 	}
 
 	private void createDefaultCombo(Composite composite) {
-		UI.formLabel(composite, toolkit, M.DefaultMethod);
+		UI.formLabel(composite, tk, M.DefaultMethod);
 		AllocationMethod[] methods = { AllocationMethod.NONE,
 				AllocationMethod.CAUSAL, AllocationMethod.ECONOMIC,
 				AllocationMethod.PHYSICAL, };
@@ -116,12 +116,11 @@ class AllocationPage extends FormPage {
 		});
 	}
 
-	private void createCalcButton(Composite composite) {
-		UI.formLabel(composite, toolkit, "");
-		Button button = toolkit.createButton(composite,
-				M.CalculateDefaultValues, SWT.NONE);
+	private void createCalcButton(Composite comp) {
+		UI.filler(comp, tk);
+		Button button = tk.createButton(comp, M.CalculateDefaultValues, SWT.NONE);
 		button.setImage(Icon.RUN.get());
-		Controls.onSelect(button, (e) -> {
+		Controls.onSelect(button, e -> {
 			AllocationSync.calculateDefaults(process());
 			factorViewer.refresh();
 			causalFactorTable.refresh();
@@ -130,9 +129,9 @@ class AllocationPage extends FormPage {
 	}
 
 	private void createPhysicalEconomicSection(Composite body) {
-		Section section = UI.section(body, toolkit,
+		Section section = UI.section(body, tk,
 				M.PhysicalAndEconomicAllocation);
-		Composite composite = UI.sectionClient(section, toolkit);
+		Composite composite = UI.sectionClient(section, tk);
 		UI.gridLayout(composite, 1);
 		String[] colNames = { M.Product, M.Physical,
 				M.Economic };
@@ -151,10 +150,10 @@ class AllocationPage extends FormPage {
 	}
 
 	private void createCausalSection(Composite body) {
-		Section section = UI.section(body, toolkit, M.CausalAllocation);
+		Section section = UI.section(body, tk, M.CausalAllocation);
 		UI.gridData(section, true, true);
 		causalFactorTable = new CausalFactorTable(editor);
-		causalFactorTable.render(section, toolkit);
+		causalFactorTable.render(section, tk);
 	}
 
 	private String productText(Exchange exchange) {

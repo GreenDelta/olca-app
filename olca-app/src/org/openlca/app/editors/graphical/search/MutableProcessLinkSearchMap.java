@@ -1,11 +1,11 @@
 package org.openlca.app.editors.graphical.search;
 
-import gnu.trove.list.array.TIntArrayList;
-import gnu.trove.map.hash.TLongObjectHashMap;
-
 import java.util.Collection;
 
 import org.openlca.core.model.ProcessLink;
+
+import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.map.hash.TLongObjectHashMap;
 
 public class MutableProcessLinkSearchMap extends ProcessLinkSearchMap {
 
@@ -21,8 +21,8 @@ public class MutableProcessLinkSearchMap extends ProcessLinkSearchMap {
 			data.set(index, link);
 		else
 			data.add(link);
-		index(link.getProviderId(), index, providerIndex);
-		index(link.getRecipientId(), index, recipientIndex);
+		index(link.providerId, index, providerIndex);
+		index(link.processId, index, recipientIndex);
 	}
 
 	private int getAvailableIndex() {
@@ -42,8 +42,8 @@ public class MutableProcessLinkSearchMap extends ProcessLinkSearchMap {
 		if (index < 0)
 			return -1;
 		data.set(index, null);
-		remove(link.getProviderId(), index, providerIndex);
-		remove(link.getRecipientId(), index, recipientIndex);
+		remove(link.providerId, index, providerIndex);
+		remove(link.processId, index, recipientIndex);
 		return index;
 	}
 

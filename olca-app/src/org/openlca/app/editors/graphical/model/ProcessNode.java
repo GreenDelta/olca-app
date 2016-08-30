@@ -9,7 +9,7 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
-import org.openlca.app.editors.graphical.layout.GraphLayoutManager;
+import org.openlca.app.editors.graphical.layout.LayoutManager;
 import org.openlca.app.editors.graphical.layout.NodeLayoutInfo;
 import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
 import org.openlca.core.database.ProcessDao;
@@ -24,8 +24,8 @@ import com.google.common.base.Objects;
 
 public class ProcessNode extends Node {
 
-	private ProcessDescriptor process;
-	private List<ConnectionLink> links = new ArrayList<>();
+	public final ProcessDescriptor process;
+	public final List<Link> links = new ArrayList<>();
 	private Rectangle xyLayoutConstraints;
 	private boolean minimized = true;
 	private boolean marked = false;
@@ -35,32 +35,21 @@ public class ProcessNode extends Node {
 	}
 
 	@Override
-	public ProductSystemNode getParent() {
-		return (ProductSystemNode) super.getParent();
-	}
-
-	@Override
-	ProcessPart getEditPart() {
-		return (ProcessPart) super.getEditPart();
+	public ProductSystemNode parent() {
+		return (ProductSystemNode) super.parent();
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<InputOutputNode> getChildren() {
-		return (List<InputOutputNode>) super.getChildren();
+	public List<IONode> getChildren() {
+		return (List<IONode>) super.getChildren();
 	}
 
-	private ProcessFigure getProcessFigure() {
-		return (ProcessFigure) getFigure();
-	}
-
-	@Override
-	protected void setFigure(IFigure figure) {
+	void setFigure(IFigure figure) {
 		Dimension prefSize = figure.getPreferredSize(-1, -1);
 		if (xyLayoutConstraints == null)
-			xyLayoutConstraints = new Rectangle(0, 0, prefSize.width,
-					prefSize.height);
-		super.setFigure(figure);
+			xyLayoutConstraints = new Rectangle(0, 0, prefSize.width, prefSize.height);
+		this.figure = figure;
 	}
 
 	public void apply(NodeLayoutInfo layout) {
@@ -68,82 +57,72 @@ public class ProcessNode extends Node {
 		if (!minimized)
 			if (getChildren().isEmpty())
 				initializeExchangeNodes();
-		Dimension prefSize = getFigure().getPreferredSize(-1, -1);
+		Dimension prefSize = figure.getPreferredSize(-1, -1);
 		xyLayoutConstraints = new Rectangle(layout.getLocation(), prefSize);
-		getFigure().setBounds(getXyLayoutConstraints());
-		getProcessFigure().getLeftExpander().setExpanded(
-				layout.isExpandedLeft());
-		getProcessFigure().getRightExpander().setExpanded(
-				layout.isExpandedRight());
-		getProcessFigure().refresh();
+		figure.setBounds(getXyLayoutConstraints());
+		figure().getLeftExpander().setExpanded(layout.isExpandedLeft());
+		figure().getRightExpander().setExpanded(layout.isExpandedRight());
+		figure().refresh();
 	}
 
-	public void add(ConnectionLink link) {
-		if (!links.contains(link)) {
-			links.add(link);
-			if (equals(link.getSourceNode()))
-				getEditPart().refreshSourceConnections();
-			if (equals(link.getTargetNode()))
-				getEditPart().refreshTargetConnections();
-			getEditPart().refresh();
-		}
+	public void add(Link link) {
+		if (links.contains(link))
+			return;
+		links.add(link);
+		if (equals(link.sourceNode))
+			editPart().refreshSourceConnections();
+		if (equals(link.targetNode))
+			editPart().refreshTargetConnections();
+		editPart.refresh();
 	}
 
-	public void remove(ConnectionLink link) {
-		if (links.contains(link)) {
-			links.remove(link);
-			if (equals(link.getSourceNode()))
-				getEditPart().refreshSourceConnections();
-			if (equals(link.getTargetNode()))
-				getEditPart().refreshTargetConnections();
-			getEditPart().refresh();
-		}
+	ProcessPart editPart() {
+		return (ProcessPart) editPart;
 	}
 
-	public List<ConnectionLink> getLinks() {
-		return links;
+	public void remove(Link link) {
+		if (!links.contains(link))
+			return;
+		links.remove(link);
+		if (equals(link.sourceNode))
+			editPart().refreshSourceConnections();
+		if (equals(link.targetNode))
+			editPart().refreshTargetConnections();
+		editPart.refresh();
 	}
 
-	public ConnectionLink getLink(ProcessLink link) {
-		for (ConnectionLink l : links)
-			if (l.getProcessLink().equals(link))
+	public Link getLink(ProcessLink link) {
+		for (Link l : links)
+			if (l.processLink.equals(link))
 				return l;
 		return null;
 	}
 
 	public void showLinks() {
-		for (ConnectionLink link : getLinks()) {
+		for (Link link : links) {
 			ProcessNode otherNode = null;
 			boolean isSource = false;
-			if (link.getSourceNode().equals(this)) {
-				otherNode = link.getTargetNode();
+			if (link.sourceNode.equals(this)) {
+				otherNode = link.targetNode;
 				isSource = true;
-			} else if (link.getTargetNode().equals(this))
-				otherNode = link.getSourceNode();
-			if (otherNode.isVisible())
-				if (isSource && otherNode.isExpandedLeft())
-					link.setVisible(true);
-				else if (!isSource && otherNode.isExpandedRight())
-					link.setVisible(true);
+			} else if (link.targetNode.equals(this)) {
+				otherNode = link.sourceNode;
+			}
+			if (!otherNode.isVisible())
+				continue;
+			if (isSource && otherNode.isExpandedLeft())
+				link.setVisible(true);
+			else if (!isSource && otherNode.isExpandedRight())
+				link.setVisible(true);
 		}
 	}
 
 	@Override
 	public String getName() {
-		if (process == null)
-			return "";
 		String text = process.getName();
-		if (process.getLocation() == null)
-			return text;
-		Location location = Cache.getEntityCache().get(Location.class,
-				process.getLocation());
-		if (location == null)
-			return text;
-		return text += " [" + location.getCode() + "]";
-	}
-
-	public ProcessDescriptor getProcess() {
-		return process;
+		if (process.getLocation() != null)
+			text += " [" + Cache.getEntityCache().get(Location.class, process.getLocation()).getCode() + "]";
+		return text;
 	}
 
 	public boolean isMinimized() {
@@ -177,49 +156,56 @@ public class ProcessNode extends Node {
 	}
 
 	private void initializeExchangeNodes() {
-		Process process = new ProcessDao(Database.get()).getForId(this.process
-				.getId());
+		Process process = new ProcessDao(Database.get()).getForId(this.process.getId());
 		List<Exchange> technologies = new ArrayList<>();
 		for (Exchange exchange : process.getExchanges())
 			if (exchange.getFlow().getFlowType() == FlowType.ELEMENTARY_FLOW)
 				continue;
 			else
 				technologies.add(exchange);
-		Exchange[] technologyArray = technologies
-				.toArray(new Exchange[technologies.size()]);
-		add(new InputOutputNode(technologyArray));
+		Exchange[] technologyArray = technologies.toArray(new Exchange[technologies.size()]);
+		add(new IONode(technologyArray));
 	}
 
 	public void refresh() {
-		Point location = getProcessFigure().getLocation();
+		Point location = figure().getLocation();
 		if (xyLayoutConstraints != null)
 			location = xyLayoutConstraints.getLocation();
-		xyLayoutConstraints = new Rectangle(location, getFigure()
-				.getPreferredSize());
-		getProcessFigure().refresh();
+		xyLayoutConstraints = new Rectangle(location, figure.getPreferredSize());
+		figure().refresh();
 	}
 
-	public ExchangeNode getInputNode(long flowId) {
+	public List<ExchangeNode> getInputs(long flowId) {
+		List<ExchangeNode> nodes = new ArrayList<>();
 		for (ExchangeNode node : getExchangeNodes())
 			if (!node.isDummy())
-				if (node.getExchange().isInput())
-					if (node.getExchange().getFlow().getId() == flowId)
+				if (node.exchange.isInput())
+					if (node.exchange.getFlow().getId() == flowId)
+						nodes.add(node);
+		return nodes;
+	}
+
+	public ExchangeNode getOutput(long flowId) {
+		for (ExchangeNode node : getExchangeNodes())
+			if (!node.isDummy())
+				if (!node.exchange.isInput())
+					if (node.exchange.getFlow().getId() == flowId)
 						return node;
 		return null;
 	}
 
-	public ExchangeNode getOutputNode(long flowId) {
+	public ExchangeNode getNode(long exchangeId) {
 		for (ExchangeNode node : getExchangeNodes())
 			if (!node.isDummy())
-				if (!node.getExchange().isInput())
-					if (node.getExchange().getFlow().getId() == flowId)
-						return node;
+				if (node.exchange.getId() == exchangeId)
+					return node;
 		return null;
+
 	}
 
 	public ExchangeNode[] getExchangeNodes() {
 		List<ExchangeNode> exchangesNodes = new ArrayList<>();
-		for (InputOutputNode node : getChildren())
+		for (IONode node : getChildren())
 			for (ExchangeNode node2 : node.getChildren())
 				exchangesNodes.add(node2);
 		ExchangeNode[] result = new ExchangeNode[exchangesNodes.size()];
@@ -239,14 +225,13 @@ public class ProcessNode extends Node {
 
 	public void setXyLayoutConstraints(Rectangle xyLayoutConstraints) {
 		this.xyLayoutConstraints = xyLayoutConstraints;
-		getEditPart().revalidate();
+		editPart().revalidate();
 	}
 
-	public boolean hasIncomingConnection(long flowId) {
-		MutableProcessLinkSearchMap linkSearch = getParent().getLinkSearch();
-		for (ProcessLink link : linkSearch.getIncomingLinks(getProcess()
-				.getId()))
-			if (link.getFlowId() == flowId)
+	public boolean hasIncoming(long exchangeId) {
+		MutableProcessLinkSearchMap linkSearch = parent().linkSearch;
+		for (ProcessLink link : linkSearch.getIncomingLinks(process.getId()))
+			if (link.exchangeId == exchangeId)
 				return true;
 		return false;
 	}
@@ -254,7 +239,7 @@ public class ProcessNode extends Node {
 	public int getMinimumHeight() {
 		if (isMinimized())
 			return ProcessFigure.MINIMUM_HEIGHT;
-		return getProcessFigure().getMinimumHeight();
+		return figure().getMinimumHeight();
 	}
 
 	public int getMinimumWidth() {
@@ -262,23 +247,21 @@ public class ProcessNode extends Node {
 	}
 
 	public boolean hasConnections() {
-		if (links.size() > 0)
-			return true;
-		return false;
+		return links.size() > 0;
 	}
 
-	public int countOutgoingConnections() {
+	public int countOutgoing() {
 		int count = 0;
-		for (ConnectionLink link : links)
-			if (link.getSourceNode().equals(this))
+		for (Link link : links)
+			if (link.sourceNode.equals(this))
 				count++;
 		return count;
 	}
 
-	public int countIncomingConnections() {
+	public int countIncoming() {
 		int count = 0;
-		for (ConnectionLink link : links)
-			if (link.getTargetNode().equals(this))
+		for (Link link : links)
+			if (link.targetNode.equals(this))
 				count++;
 		return count;
 	}
@@ -286,13 +269,13 @@ public class ProcessNode extends Node {
 	public void collapseLeft() {
 		if (!isExpandedLeft())
 			return;
-		getProcessFigure().getLeftExpander().collapse(this);
+		figure().getLeftExpander().collapse(this);
 	}
 
 	public void collapseRight() {
 		if (!isExpandedRight())
 			return;
-		getProcessFigure().getRightExpander().collapse(this);
+		figure().getRightExpander().collapse(this);
 	}
 
 	/**
@@ -302,7 +285,7 @@ public class ProcessNode extends Node {
 	void collapseLeft(ProcessNode initialNode) {
 		if (!isExpandedLeft())
 			return;
-		getProcessFigure().getLeftExpander().collapse(initialNode);
+		figure().getLeftExpander().collapse(initialNode);
 	}
 
 	/**
@@ -312,38 +295,40 @@ public class ProcessNode extends Node {
 	void collapseRight(ProcessNode initialNode) {
 		if (!isExpandedRight())
 			return;
-		getProcessFigure().getRightExpander().collapse(initialNode);
+		figure().getRightExpander().collapse(initialNode);
 	}
 
 	public void expandLeft() {
-		getProcessFigure().getLeftExpander().expand();
+		figure().getLeftExpander().expand();
 	}
 
 	public void expandRight() {
-		getProcessFigure().getRightExpander().expand();
+		figure().getRightExpander().expand();
 	}
 
 	public boolean isExpandedLeft() {
-		return getProcessFigure().getLeftExpander().isExpanded();
+		return figure().getLeftExpander().isExpanded();
 	}
 
 	public boolean isExpandedRight() {
-		return getProcessFigure().getRightExpander().isExpanded();
+		return figure().getRightExpander().isExpanded();
 	}
 
 	public void layout() {
-		GraphLayoutManager layoutManager = (GraphLayoutManager) getParent()
-				.getFigure().getLayoutManager();
-		layoutManager.layout(getFigure(), getParent().getEditor()
-				.getLayoutType());
+		LayoutManager layoutManager = (LayoutManager) parent().figure.getLayoutManager();
+		layoutManager.layout(figure, parent().editor.getLayoutType());
 	}
 
 	public void select() {
-		getParent().getEditor().getGraphicalViewer().select(getEditPart());
+		parent().editor.getGraphicalViewer().select(editPart);
 	}
 
 	public void reveal() {
-		getParent().getEditor().getGraphicalViewer().reveal(getEditPart());
+		parent().editor.getGraphicalViewer().reveal(editPart);
+	}
+
+	private ProcessFigure figure() {
+		return (ProcessFigure) figure;
 	}
 
 	@Override
@@ -351,12 +336,12 @@ public class ProcessNode extends Node {
 		if (!(obj instanceof ProcessNode))
 			return false;
 		ProcessNode other = (ProcessNode) obj;
-		return Objects.equal(getProcess(), other.getProcess());
+		return Objects.equal(process, other.process);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(getProcess());
+		return Objects.hashCode(process);
 	}
 
 }

@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
 class ShapeFilePage extends FormPage {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
-	private FormToolkit toolkit;
+	private FormToolkit tk;
 	private Composite body;
 	private ShapeFileSection[] sections;
 	private ScrolledForm form;
@@ -70,8 +70,8 @@ class ShapeFilePage extends FormPage {
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
 		form = UI.formHeader(managedForm, "Shape file parameters");
-		toolkit = managedForm.getToolkit();
-		body = UI.formBody(form, toolkit);
+		tk = managedForm.getToolkit();
+		body = UI.formBody(form, tk);
 		createFileSection();
 		List<String> shapeFiles = ShapeFileUtils.getShapeFiles(method());
 		sections = new ShapeFileSection[shapeFiles.size()];
@@ -81,34 +81,33 @@ class ShapeFilePage extends FormPage {
 	}
 
 	private void createFileSection() {
-		Composite composite = UI.formSection(body, toolkit, "Files");
-		createFolderLink(composite);
-		UI.formLabel(composite, toolkit, "");
-		Button importButton = toolkit.createButton(composite, M.Import,
-				SWT.NONE);
+		Composite comp = UI.formSection(body, tk, "Files");
+		createFolderLink(comp);
+		UI.filler(comp, tk);
+		Button importButton = tk.createButton(comp, M.Import, SWT.NONE);
 		importButton.setImage(Icon.IMPORT.get());
 		Controls.onSelect(importButton, (e) -> {
 			File file = FileChooser.forImport("*.shp");
 			if (file != null)
 				checkRunImport(file);
 		});
-		UI.formLabel(composite, toolkit, "");
-		Button evaluateButton = toolkit.createButton(composite,
+		UI.filler(comp, tk);
+		Button evaluateButton = tk.createButton(comp,
 				M.EvaluateLocations, SWT.NONE);
 		evaluateButton.setImage(Icon.EXPRESSION.get());
 		Controls.onSelect(evaluateButton, (e) -> {
 			try {
 				new ProgressMonitorDialog(UI.shell()).run(true, true,
 						new EvaluateLocationsJob(method()));
-			} catch (Exception e1) {
-				e1.printStackTrace();
+			} catch (Exception ex) {
+				log.error("Failed to evaluate locations", ex);
 			}
 		});
 	}
 
 	private void createFolderLink(Composite composite) {
-		UI.formLabel(composite, toolkit, "Location");
-		ImageHyperlink link = toolkit.createImageHyperlink(composite, SWT.TOP);
+		UI.formLabel(composite, tk, "Location");
+		ImageHyperlink link = tk.createImageHyperlink(composite, SWT.TOP);
 		File folder = ShapeFileUtils.getFolder(method());
 		link.setText(Strings.cut(folder.getAbsolutePath(), 75));
 		link.setImage(Icon.FOLDER.get());
@@ -188,8 +187,8 @@ class ShapeFilePage extends FormPage {
 		}
 
 		private void render() {
-			section = UI.section(body, toolkit, M.Parameters + " - " + shapeFile);
-			Composite composite = UI.sectionClient(section, toolkit);
+			section = UI.section(body, tk, M.Parameters + " - " + shapeFile);
+			Composite composite = UI.sectionClient(section, tk);
 			parameterTable = new ShapeFileParameterTable(shapeFile, composite);
 			Action delete = Actions.onRemove(() -> {
 				if (delete()) {

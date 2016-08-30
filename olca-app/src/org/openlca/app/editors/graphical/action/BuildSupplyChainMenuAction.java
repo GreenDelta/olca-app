@@ -17,10 +17,8 @@ import org.openlca.core.model.ProcessType;
 class BuildSupplyChainMenuAction extends EditorAction {
 
 	private List<ProcessNode> nodes;
-	private BuildSupplyChainAction supplyChainAction = ActionFactory
-			.createBuildSupplyChainAction();
-	private BuildNextTierAction nextTierAction = ActionFactory
-			.createBuildNextTierAction();
+	private BuildSupplyChainAction supplyChainAction = (BuildSupplyChainAction) ActionFactory.buildSupplyChain();
+	private BuildNextTierAction nextTierAction = (BuildNextTierAction) ActionFactory.buildNextTier();
 
 	BuildSupplyChainMenuAction() {
 		setId(ActionIds.BUILD_SUPPLY_CHAIN_MENU);
@@ -42,8 +40,7 @@ class BuildSupplyChainMenuAction extends EditorAction {
 
 		private void createSelectTypeItem(Menu menu, final ProcessType type) {
 			MenuItem treeItem = new MenuItem(menu, SWT.RADIO);
-			treeItem.setText(M.bind(M.Prefer,
-					getDisplayName(type)));
+			treeItem.setText(M.bind(M.Prefer, getDisplayName(type)));
 			Controls.onSelect(treeItem, (e) -> {
 				supplyChainAction.setPreferredType(type);
 				nextTierAction.setPreferredType(type);

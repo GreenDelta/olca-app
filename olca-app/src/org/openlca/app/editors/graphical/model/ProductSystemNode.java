@@ -8,17 +8,12 @@ import org.openlca.core.model.ProductSystem;
 
 public class ProductSystemNode extends Node {
 
-	private ProductSystemGraphEditor editor;
-	private MutableProcessLinkSearchMap linkSearch;
+	public final ProductSystemGraphEditor editor;
+	public final MutableProcessLinkSearchMap linkSearch;
 
 	public ProductSystemNode(ProductSystemGraphEditor editor) {
-		this.linkSearch = new MutableProcessLinkSearchMap(editor
-				.getSystemEditor().getModel().getProcessLinks());
+		this.linkSearch = new MutableProcessLinkSearchMap(editor.getSystemEditor().getModel().getProcessLinks());
 		this.editor = editor;
-	}
-
-	public MutableProcessLinkSearchMap getLinkSearch() {
-		return linkSearch;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -27,17 +22,13 @@ public class ProductSystemNode extends Node {
 		return (List<ProcessNode>) super.getChildren();
 	}
 
-	public ProductSystemGraphEditor getEditor() {
-		return editor;
-	}
-
 	public ProductSystem getProductSystem() {
 		return editor.getSystemEditor().getModel();
 	}
 
 	public ProcessNode getProcessNode(long id) {
 		for (ProcessNode node : getChildren())
-			if (node.getProcess().getId() == id)
+			if (node.process.getId() == id)
 				return node;
 		return null;
 	}
@@ -48,39 +39,38 @@ public class ProductSystemNode extends Node {
 	}
 
 	public void highlightMatchingExchanges(ExchangeNode toMatch) {
+		long flowId = toMatch.exchange.getFlow().getId();
 		for (ProcessNode node : getChildren()) {
-			if (node.isVisible() && !node.isMinimized()) {
-				ExchangeNode inputNode = node.getInputNode(toMatch
-						.getExchange().getFlow().getId());
+			if (!node.isVisible() || node.isMinimized())
+				continue;
+			for (ExchangeNode inputNode : node.getInputs(flowId))
 				highlightExchange(node, inputNode, toMatch);
-				ExchangeNode outputNode = node.getOutputNode(toMatch
-						.getExchange().getFlow().getId());
-				highlightExchange(node, outputNode, toMatch);
-			}
+			ExchangeNode outputNode = node.getOutput(flowId);
+			highlightExchange(node, outputNode, toMatch);
 		}
 	}
 
-	private void highlightExchange(ProcessNode node, ExchangeNode exchangeNode,
-			ExchangeNode toMatch) {
-		if (exchangeNode != null)
-			if (toMatch.getExchange().isInput() != exchangeNode.getExchange()
-					.isInput())
-				if (toMatch.getExchange().isInput()
-						|| !node.hasIncomingConnection(exchangeNode
-								.getExchange().getFlow().getId()))
-					exchangeNode.setHighlighted(true);
+	private void highlightExchange(ProcessNode node, ExchangeNode exchangeNode, ExchangeNode toMatch) {
+		if (exchangeNode == null)
+			return;
+		if (toMatch.exchange.isInput() == exchangeNode.exchange.isInput())
+			return;
+		if (!toMatch.exchange.isInput() && node.hasIncoming(exchangeNode.exchange.getId()))
+			return;
+		exchangeNode.setHighlighted(true);
 	}
 
 	public void removeHighlighting() {
-		for (ProcessNode node : getChildren())
-			if (node.isVisible() && !node.isMinimized())
-				for (ExchangeNode exchangeNode : node.getChildren().get(0)
-						.getChildren())
-					exchangeNode.setHighlighted(false);
+		for (ProcessNode node : getChildren()) {
+			if (!node.isVisible() || node.isMinimized())
+				continue;
+			for (ExchangeNode exchangeNode : node.getChildren().get(0).getChildren())
+				exchangeNode.setHighlighted(false);
+		}
 	}
 
 	public void refreshChildren() {
-		((ProductSystemPart) getEditPart()).refreshChildren();
+		((ProductSystemPart) editPart).refreshChildren();
 	}
 
 }

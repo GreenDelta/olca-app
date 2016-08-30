@@ -20,14 +20,14 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 
-public class GraphLayoutManager extends AbstractLayout {
+public class LayoutManager extends AbstractLayout {
 
-	public static int HORIZONTAL_SPACING = 25;
-	public static int VERTICAL_SPACING = 25;
+	public static int H_SPACE = 25;
+	public static int V_SPACE = 25;
 
 	private ProductSystemNode node;
 
-	public GraphLayoutManager(ProductSystemNode node) {
+	public LayoutManager(ProductSystemNode node) {
 		this.node = node;
 	}
 
@@ -37,8 +37,7 @@ public class GraphLayoutManager extends AbstractLayout {
 			if (child.isVisible())
 				nodes.add(child);
 			else
-				child.setXyLayoutConstraints(new Rectangle(0, 0, child
-						.getSize().width, child.getSize().height));
+				child.setXyLayoutConstraints(new Rectangle(0, 0, child.getSize().width, child.getSize().height));
 		}
 		MinimalTreeLayout layout = new MinimalTreeLayout();
 		layout.layout(nodes.toArray(new ProcessNode[nodes.size()]));
@@ -50,9 +49,11 @@ public class GraphLayoutManager extends AbstractLayout {
 	}
 
 	private void layoutXY() {
-		for (ProcessNode child : node.getChildren())
-			if (child.getFigure() != null)
-				child.getFigure().setBounds(child.getXyLayoutConstraints());
+		for (ProcessNode child : node.getChildren()) {
+			if (child.figure == null)
+				continue;
+			child.figure.setBounds(child.getXyLayoutConstraints());
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -61,26 +62,24 @@ public class GraphLayoutManager extends AbstractLayout {
 			int hint2) {
 		container.validate();
 		List<IFigure> children = container.getChildren();
-		Rectangle result = new Rectangle().setLocation(container
-				.getClientArea().getLocation());
+		Rectangle result = new Rectangle().setLocation(container.getClientArea().getLocation());
 		for (IFigure child : children)
 			result.union(child.getBounds());
-		result.resize(container.getInsets().getWidth(), container.getInsets()
-				.getHeight());
+		result.resize(container.getInsets().getWidth(), container.getInsets().getHeight());
 		return result.getSize();
 	}
 
 	@Override
 	public void layout(IFigure container) {
-		GraphAnimation.recordInitialState(container);
-		if (GraphAnimation.playbackState(container))
+		Animation.recordInitialState(container);
+		if (Animation.playbackState(container))
 			return;
 		layoutXY();
 	}
 
-	public void layout(IFigure container, GraphLayoutType type) {
-		GraphAnimation.recordInitialState(container);
-		if (GraphAnimation.playbackState(container))
+	public void layout(IFigure container, LayoutType type) {
+		Animation.recordInitialState(container);
+		if (Animation.playbackState(container))
 			return;
 		if (type != null)
 			switch (type) {

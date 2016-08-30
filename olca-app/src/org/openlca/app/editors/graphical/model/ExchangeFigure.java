@@ -6,8 +6,9 @@ import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.LineBorder;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
 import org.openlca.app.M;
-import org.openlca.app.editors.graphical.layout.GraphAnimation;
+import org.openlca.app.editors.graphical.layout.Animation;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.Exchange;
@@ -18,29 +19,26 @@ class ExchangeFigure extends Label {
 	private static final Color BACKGROUND_COLOR = ColorConstants.white;
 	private static final Color TEXT_COLOR = ColorConstants.gray;
 	private static final Color TEXT_HIGHLIGHTED_COLOR = ColorConstants.lightBlue;
-
 	private ExchangeNode node;
 
 	ExchangeFigure(ExchangeNode node) {
 		this.node = node;
 		if (node.isDummy())
 			return;
-		Exchange exchange = node.getExchange();
+		Exchange exchange = node.exchange;
 		setBorder(new LineBorder(ColorConstants.white, 1));
-		setForegroundColor(exchange.isAvoidedProduct() ? BACKGROUND_COLOR
-				: TEXT_COLOR);
+		setForegroundColor(exchange.isAvoidedProduct() ? BACKGROUND_COLOR : TEXT_COLOR);
 		setBackgroundColor(BACKGROUND_COLOR);
 		setToolTip(new Label(getPrefix() + ": " + node.getName()));
 	}
 
 	private String getPrefix() {
-		if (node.getExchange().isAvoidedProduct())
-			if (node.getExchange().getFlow().getFlowType() == FlowType.PRODUCT_FLOW)
+		if (node.exchange.isAvoidedProduct()) {
+			if (node.exchange.getFlow().getFlowType() == FlowType.PRODUCT_FLOW)
 				return M.AvoidedProductFlow;
-			else
-				return M.AvoidedWasteFlow;
-		else
-			return Labels.flowType(node.getExchange().getFlow());
+			return M.AvoidedWasteFlow;
+		}
+		return Labels.flowType(node.exchange.getFlow());
 	}
 
 	void setHighlighted(boolean value) {
@@ -48,29 +46,29 @@ class ExchangeFigure extends Label {
 			setForegroundColor(TEXT_HIGHLIGHTED_COLOR);
 		} else {
 			setBackgroundColor(BACKGROUND_COLOR);
-			setForegroundColor(node.getExchange().isAvoidedProduct() ? BACKGROUND_COLOR
-					: TEXT_COLOR);
+			setForegroundColor(node.exchange.isAvoidedProduct() ? BACKGROUND_COLOR : TEXT_COLOR);
 		}
 	}
 
 	@Override
 	protected void paintFigure(Graphics graphics) {
-		if (node.getParent().getParent().isMinimized()
-				&& !GraphAnimation.isRunning())
+		if (node.parent().isMinimized() && !Animation.isRunning())
 			return;
-		if (!node.isDummy() && node.getExchange().isAvoidedProduct()) {
-			int x = getLocation().x;
-			int y = getLocation().y;
-			int width = getSize().width;
-			int margin = 5;
-			graphics.drawImage(Icon.EXCHANGE_BG_LEFT.get(), new Point(x,
-					y + 2));
-			for (int i = margin; i < width - margin; i++)
-				graphics.drawImage((Icon.EXCHANGE_BG_MIDDLE.get()),
-						new Point(x + i, y + 2));
-			graphics.drawImage(Icon.EXCHANGE_BG_RIGHT.get(), new Point(x
-					+ width - margin, y + 2));
+		if (node.isDummy() || !node.exchange.isAvoidedProduct()) {
+			super.paintFigure(graphics);
+			return;
 		}
+		int x = getLocation().x;
+		int y = getLocation().y;
+		int width = getSize().width;
+		int margin = 5;
+		Image iconLeft = Icon.EXCHANGE_BG_LEFT.get();
+		Image iconMiddle = Icon.EXCHANGE_BG_MIDDLE.get();
+		Image iconRight = Icon.EXCHANGE_BG_RIGHT.get();
+		graphics.drawImage(iconLeft, new Point(x, y + 2));
+		for (int i = margin; i < width - margin; i++)
+			graphics.drawImage(iconMiddle, new Point(x + i, y + 2));
+		graphics.drawImage(iconRight, new Point(x + width - margin, y + 2));
 		super.paintFigure(graphics);
 	}
 }

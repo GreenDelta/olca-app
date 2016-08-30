@@ -98,11 +98,11 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 	}
 
 	@Override
-	protected void createContents(Composite composite) {
-		filterText = UI.formText(composite, M.ReferenceProcess);
-		UI.formLabel(composite, "");
-		createProcessTree(composite);
-		createOptions(composite);
+	protected void createContents(Composite comp) {
+		filterText = UI.formText(comp, M.ReferenceProcess);
+		UI.filler(comp);
+		createProcessTree(comp);
+		createOptions(comp);
 		if (refProcess != null) {
 			nameText.setText(refProcess.getName());
 			ProcessDescriptor descriptor = Descriptors.toDescriptor(refProcess);
@@ -142,10 +142,10 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 	}
 
 	private void createOptions(Composite comp) {
-		UI.formLabel(comp, "");
+		UI.filler(comp);
 		supplyChainCheck = UI.checkBox(comp, M.AddConnectedProcesses);
 		supplyChainCheck.setSelection(true);
-		UI.formLabel(comp, "");
+		UI.filler(comp);
 		systemProcessesCheck = UI.checkBox(comp,
 				M.ConnectWithSystemProcessesIfPossible);
 		systemProcessesCheck.setSelection(true);
@@ -156,7 +156,7 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 	}
 
 	private void createCutoffText(Composite comp) {
-		UI.formLabel(comp, "");
+		UI.filler(comp);
 		Composite inner = new Composite(comp, SWT.NONE);
 		UI.gridLayout(inner, 2, 5, 0);
 		Button check = UI.checkBox(inner, M.Cutoff);

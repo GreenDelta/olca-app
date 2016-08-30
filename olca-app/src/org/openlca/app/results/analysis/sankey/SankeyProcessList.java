@@ -60,7 +60,7 @@ class SankeyProcessList {
 			unconnected.remove(recipient);
 			connected.add(recipient);
 			for (ProcessLink link : linkSearchMap.getIncomingLinks(recipient)) {
-				Long provider = link.getProviderId();
+				Long provider = link.providerId;
 				if (!processIds.contains(provider))
 					continue;
 				if (!queue.contains(provider) && !connected.contains(provider))
@@ -134,7 +134,7 @@ class SankeyProcessList {
 		List<WeightedProcess> recipients = new ArrayList<>();
 		for (ProcessLink link : linkSearchMap.getOutgoingLinks(processId)) {
 			WeightedProcess wp = new WeightedProcess();
-			wp.id = link.getRecipientId();
+			wp.id = link.processId;
 			wp.weight = Math.abs(sankeyResult.getLinkContribution(link));
 			recipients.add(wp);
 		}

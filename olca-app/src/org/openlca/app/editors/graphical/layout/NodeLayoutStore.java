@@ -26,9 +26,11 @@ public final class NodeLayoutStore {
 		if (model == null)
 			return;
 		List<NodeLayoutInfo> layoutInfo = new ArrayList<>();
-		for (ProcessNode node : model.getChildren())
-			if (node.isVisible())
-				layoutInfo.add(new NodeLayoutInfo(node));
+		for (ProcessNode node : model.getChildren()) {
+			if (!node.isVisible())
+				continue;
+			layoutInfo.add(new NodeLayoutInfo(node));
+		}
 		try {
 			File layoutFile = createLayoutFile(model);
 			writeAsJson(layoutInfo, layoutFile);
@@ -37,8 +39,7 @@ public final class NodeLayoutStore {
 		}
 	}
 
-	private static void writeAsJson(List<NodeLayoutInfo> layoutInfo, File toFile)
-			throws IOException {
+	private static void writeAsJson(List<NodeLayoutInfo> layoutInfo, File toFile) throws IOException {
 		JsonWriter writer = new JsonWriter(new FileWriter(toFile));
 		writer.beginObject();
 		writer.name("nodes");
@@ -51,8 +52,7 @@ public final class NodeLayoutStore {
 		writer.close();
 	}
 
-	private static void writeAsJson(NodeLayoutInfo layout, JsonWriter writer)
-			throws IOException {
+	private static void writeAsJson(NodeLayoutInfo layout, JsonWriter writer) throws IOException {
 		writer.beginObject();
 		writer.name("id");
 		writer.value(layout.getId());
@@ -71,8 +71,7 @@ public final class NodeLayoutStore {
 		writer.endObject();
 	}
 
-	public static boolean loadLayout(ProductSystemNode node)
-			throws NodeLayoutException {
+	public static boolean loadLayout(ProductSystemNode node) throws NodeLayoutException {
 		if (node == null || node.getProductSystem() == null)
 			return false;
 		File file = getLayoutFile(node.getProductSystem());
@@ -89,25 +88,22 @@ public final class NodeLayoutStore {
 		}
 	}
 
-	private static void apply(NodeLayoutInfo layout, ProductSystemNode model)
-			throws NodeLayoutException {
+	private static void apply(NodeLayoutInfo layout, ProductSystemNode model) throws NodeLayoutException {
 		ProcessNode node = model.getProcessNode(layout.getId());
-		if (node == null) {
-			ProcessDescriptor descriptor = Cache.getEntityCache().get(
-					ProcessDescriptor.class, layout.getId());
-			if (descriptor == null)
-				throw new NodeLayoutException();
-			node = new ProcessNode(descriptor);
-			model.add(node);
+		if (node != null) {
 			node.apply(layout);
-			model.getEditor().createNecessaryLinks(node);
-		} else {
-			node.apply(layout);
+			return;
 		}
+		ProcessDescriptor descriptor = Cache.getEntityCache().get(ProcessDescriptor.class, layout.getId());
+		if (descriptor == null)
+			throw new NodeLayoutException();
+		node = new ProcessNode(descriptor);
+		model.add(node);
+		node.apply(layout);
+		model.editor.createNecessaryLinks(node);
 	}
 
-	private static List<NodeLayoutInfo> parseJson(File fromFile)
-			throws IOException {
+	private static List<NodeLayoutInfo> parseJson(File fromFile) throws IOException {
 		List<NodeLayoutInfo> layoutInfo = new ArrayList<>();
 		JsonReader reader = new JsonReader(new FileReader(fromFile));
 		reader.beginObject();
@@ -121,8 +117,7 @@ public final class NodeLayoutStore {
 		return layoutInfo;
 	}
 
-	private static NodeLayoutInfo parseLayoutInfo(JsonReader reader)
-			throws IOException {
+	private static NodeLayoutInfo parseLayoutInfo(JsonReader reader) throws IOException {
 		reader.beginObject();
 		reader.nextName();
 		long id = reader.nextLong();
@@ -139,12 +134,10 @@ public final class NodeLayoutStore {
 		reader.nextName();
 		boolean marked = reader.nextBoolean();
 		reader.endObject();
-		return new NodeLayoutInfo(id, x, y, minimized, expandedLeft,
-				expandedRight, marked);
+		return new NodeLayoutInfo(id, x, y, minimized, expandedLeft, expandedRight, marked);
 	}
 
-	private static File createLayoutFile(ProductSystemNode node)
-			throws IOException {
+	private static File createLayoutFile(ProductSystemNode node) throws IOException {
 		File file = getLayoutFile(node.getProductSystem());
 		if (file.exists())
 			file.delete();

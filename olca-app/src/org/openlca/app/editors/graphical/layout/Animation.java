@@ -26,7 +26,7 @@ import org.eclipse.draw2d.geometry.Translatable;
 /**
  * @author hudsonr Created on Apr 28, 2003
  */
-public class GraphAnimation {
+public class Animation {
 
 	static long current;
 

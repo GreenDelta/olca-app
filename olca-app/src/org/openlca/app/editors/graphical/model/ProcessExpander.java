@@ -10,7 +10,7 @@ import org.eclipse.draw2d.MouseEvent;
 import org.eclipse.draw2d.MouseListener;
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.db.Cache;
-import org.openlca.app.editors.graphical.command.CommandFactory;
+import org.openlca.app.editors.graphical.command.ExpansionCommand;
 import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.core.model.ProcessLink;
@@ -33,45 +33,47 @@ class ProcessExpander extends ImageFigure {
 	}
 
 	boolean shouldBeVisible() {
-		MutableProcessLinkSearchMap linkSearch = node.getParent()
-				.getLinkSearch();
-		long processId = node.getProcess().getId();
-		for (ProcessLink link : linkSearch.getLinks(processId))
-			if (side == Side.LEFT && link.getRecipientId() == processId)
+		MutableProcessLinkSearchMap linkSearch = node.parent().linkSearch;
+		long processId = node.process.getId();
+		for (ProcessLink link : linkSearch.getLinks(processId)) {
+			if (side == Side.LEFT && link.processId == processId)
 				return true;
-			else if (side == Side.RIGHT && link.getProviderId() == processId)
+			if (side == Side.RIGHT && link.providerId == processId)
 				return true;
+		}
 		return false;
 	}
 
 	void expand() {
 		createNecessaryNodes();
 		showLinksAndNodes();
-		expanded = true;
 		setImage(Icon.MINUS.get());
+		expanded = true;
 	}
 
 	private List<ProcessNode> getNodesToShow() {
 		List<ProcessNode> nodes = new ArrayList<>();
-		for (ConnectionLink link : node.getLinks()) {
+		for (Link link : node.links) {
 			ProcessNode match = getMatchingNode(link);
-			if (match != null && !nodes.contains(match))
-				nodes.add(match);
+			if (match == null || nodes.contains(match))
+				continue;
+			nodes.add(match);
 		}
 		return nodes;
 	}
 
 	private void createNecessaryNodes() {
-		ProductSystemNode systemNode = node.getParent();
-		MutableProcessLinkSearchMap linkSearch = systemNode.getLinkSearch();
-		long processId = node.getProcess().getId();
-		List<ProcessLink> links = side == Side.LEFT ? linkSearch
-				.getIncomingLinks(processId) : linkSearch
-				.getOutgoingLinks(processId);
+		ProductSystemNode systemNode = node.parent();
+		MutableProcessLinkSearchMap linkSearch = systemNode.linkSearch;
+		long processId = node.process.getId();
+		List<ProcessLink> links = null;
+		if (side == Side.LEFT)
+			links = linkSearch.getIncomingLinks(processId);
+		else
+			links = linkSearch.getOutgoingLinks(processId);
 		Map<Long, ProcessDescriptor> map = getLinkedProcesses(links);
 		for (ProcessLink link : links) {
-			long linkedProcessId = side == Side.LEFT ? link.getProviderId()
-					: link.getRecipientId();
+			long linkedProcessId = side == Side.LEFT ? link.providerId : link.processId;
 			ProcessNode node = systemNode.getProcessNode(linkedProcessId);
 			if (node == null) {
 				ProcessDescriptor descriptor = map.get(linkedProcessId);
@@ -80,10 +82,10 @@ class ProcessExpander extends ImageFigure {
 			}
 			ProcessNode sourceNode = side == Side.LEFT ? node : this.node;
 			ProcessNode targetNode = side == Side.LEFT ? this.node : node;
-			ConnectionLink connectionLink = new ConnectionLink();
-			connectionLink.setSourceNode(sourceNode);
-			connectionLink.setTargetNode(targetNode);
-			connectionLink.setProcessLink(link);
+			Link connectionLink = new Link();
+			connectionLink.sourceNode = sourceNode;
+			connectionLink.targetNode = targetNode;
+			connectionLink.processLink = link;
 			connectionLink.link();
 		}
 	}
@@ -93,24 +95,21 @@ class ProcessExpander extends ImageFigure {
 		HashSet<Long> processIds = new HashSet<>();
 		for (ProcessLink link : links)
 			if (side == Side.LEFT)
-				processIds.add(link.getProviderId());
+				processIds.add(link.providerId);
 			else
-				processIds.add(link.getRecipientId());
-		return Cache.getEntityCache().getAll(ProcessDescriptor.class,
-				processIds);
+				processIds.add(link.processId);
+		return Cache.getEntityCache().getAll(ProcessDescriptor.class, processIds);
 	}
 
 	void collapse(ProcessNode initialNode) {
 		if (isCollapsing)
 			return;
 		isCollapsing = true;
-		ConnectionLink[] links = node.getLinks().toArray(
-				new ConnectionLink[node.getLinks().size()]);
-		for (ConnectionLink link : links) {
-			ProcessNode thisNode = side == Side.LEFT ? link.getTargetNode()
-					: link.getSourceNode();
-			ProcessNode otherNode = side == Side.LEFT ? link.getSourceNode()
-					: link.getTargetNode();
+		Link[] links = node.links.toArray(
+				new Link[node.links.size()]);
+		for (Link link : links) {
+			ProcessNode thisNode = side == Side.LEFT ? link.targetNode : link.sourceNode;
+			ProcessNode otherNode = side == Side.LEFT ? link.sourceNode : link.targetNode;
 			if (!thisNode.equals(node))
 				continue;
 			link.unlink();
@@ -118,18 +117,18 @@ class ProcessExpander extends ImageFigure {
 			otherNode.collapseRight(initialNode);
 			if (otherNode.equals(initialNode))
 				continue;
-			if (!otherNode.getLinks().isEmpty())
+			if (!otherNode.links.isEmpty())
 				continue;
-			node.getParent().remove(otherNode);
+			node.parent().remove(otherNode);
 		}
-		expanded = false;
 		setImage(Icon.PLUS.get());
 		isCollapsing = false;
+		expanded = false;
 	}
 
-	private ProcessNode getMatchingNode(ConnectionLink link) {
-		ProcessNode source = link.getSourceNode();
-		ProcessNode target = link.getTargetNode();
+	private ProcessNode getMatchingNode(Link link) {
+		ProcessNode source = link.sourceNode;
+		ProcessNode target = link.targetNode;
 		if (side == Side.LEFT)
 			if (target.equals(node))
 				if (!source.equals(node))
@@ -145,16 +144,18 @@ class ProcessExpander extends ImageFigure {
 		List<ProcessNode> nodes = getNodesToShow();
 		for (ProcessNode node : nodes) {
 			node.setVisible(true);
-			for (ConnectionLink link : node.getLinks())
-				if (processFiguresVisible(link))
-					link.setVisible(true);
+			for (Link link : node.links) {
+				if (!processFiguresVisible(link))
+					continue;
+				link.setVisible(true);
+			}
 		}
 	}
 
-	private boolean processFiguresVisible(ConnectionLink link) {
-		if (!link.getSourceNode().getFigure().isVisible())
+	private boolean processFiguresVisible(Link link) {
+		if (!link.sourceNode.isVisible())
 			return false;
-		if (!link.getTargetNode().getFigure().isVisible())
+		if (!link.targetNode.isVisible())
 			return false;
 		return true;
 	}
@@ -188,18 +189,19 @@ class ProcessExpander extends ImageFigure {
 
 		@Override
 		public void mousePressed(MouseEvent me) {
-			Command command = null;
-			if (side == Side.LEFT)
+			Command command = getCommand();
+			node.parent().editor.getCommandStack().execute(command);
+		}
+
+		private Command getCommand() {
+			if (side == Side.LEFT) {
 				if (expanded)
-					command = CommandFactory.createCollapseLeftCommand(node);
-				else
-					command = CommandFactory.createExpandLeftCommand(node);
-			else if (side == Side.RIGHT)
-				if (expanded)
-					command = CommandFactory.createCollapseRightCommand(node);
-				else
-					command = CommandFactory.createExpandRightCommand(node);
-			node.getParent().getEditor().getCommandStack().execute(command);
+					return ExpansionCommand.collapseLeft(node);
+				return ExpansionCommand.expandLeft(node);
+			}
+			if (expanded)
+				return ExpansionCommand.collapseRight(node);
+			return ExpansionCommand.expandRight(node);
 		}
 
 		@Override

@@ -20,10 +20,10 @@ public enum Icon {
 	COLLAPSE("collapse.png"),
 	COMMIT("cloud/commit.png"),
 	CONNECT("connect.png"),
-	COPY("copy.png"), 
+	COPY("copy.png"),
 	COPY_ALL_CHANGES("cloud/copy_all.png"),
 	COPY_SELECTED_CHANGE("cloud/copy_selected.png"),
-	CUT("cut.png"), 
+	CUT("cut.png"),
 
 	DATABASE("model/database.png"),
 	DATABASE_DISABLED("model/database_disabled.png"),
@@ -45,6 +45,7 @@ public enum Icon {
 	EXPRESSION("expression.png"),
 	EXTENSION("extension.gif"),
 
+	FILE("file.png"),
 	FIREFOX("firefox.png"),
 	FOLDER("folder.png"),
 	FOLDER_BLUE("folder_blue.png"),
@@ -65,8 +66,8 @@ public enum Icon {
 	LINK("link.png"),
 	LOGO("plugin/logo_32_32bit.png"),
 
-	MANAGE_PLUGINS("manage_plugins.png"), 
-	MAP("map.png"), 
+	MANAGE_PLUGINS("manage_plugins.png"),
+	MAP("map.png"),
 	MAXIMIZE("graphical/maximize.png"),
 	MINIATURE_VIEW("graphical/miniature_view.png"),
 	MINIMIZE("graphical/minimize.png"),
@@ -79,7 +80,7 @@ public enum Icon {
 	OUTLINE("graphical/outline.png"),
 	OUTPUT("model/output.png"),
 
-	PASTE("paste.png"), 
+	PASTE("paste.png"),
 	PLUS("graphical/plus.gif"),
 	PREFERENCES("preferences.png"),
 	PREVIOUS_CHANGE("cloud/previous_change.png"),
@@ -90,7 +91,7 @@ public enum Icon {
 
 	REDO("redo.png"),
 	REDO_DISABLED("redo_disabled.png"),
-	REMOVE_SUPPLY_CHAIN("graphical/remove_supply_chain.png"), 
+	REMOVE_SUPPLY_CHAIN("graphical/remove_supply_chain.png"),
 	REFRESH("refresh.png"),
 	RESET_ALL_CHANGES("cloud/reset_all.png"),
 	RESET_SELECTED_CHANGE("cloud/reset_selected.png"),

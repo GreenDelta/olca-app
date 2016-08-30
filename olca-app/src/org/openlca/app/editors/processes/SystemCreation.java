@@ -39,9 +39,9 @@ class SystemCreation {
 			ProductSystemWizard systemWizard = (ProductSystemWizard) wizard;
 			systemWizard.setProcess(process);
 			WizardDialog dialog = new WizardDialog(UI.shell(), wizard);
-			if (dialog.open() == Window.OK)
-				Navigator.refresh(Navigator
-						.findElement(ModelType.PRODUCT_SYSTEM));
+			if (dialog.open() == Window.OK) {
+				Navigator.refresh(Navigator.findElement(ModelType.PRODUCT_SYSTEM));
+			}
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(getClass());
 			log.error("failed to open product system dialog for process", e);

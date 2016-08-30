@@ -11,8 +11,7 @@ public class CommandUtil {
 		return command.chain(toChain);
 	}
 
-	public static void executeCommand(Command command,
-			ProductSystemGraphEditor editor) {
+	public static void executeCommand(Command command, ProductSystemGraphEditor editor) {
 		if (command == null)
 			return;
 		editor.getCommandStack().execute(command);

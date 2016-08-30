@@ -375,6 +375,7 @@ public class M extends NLS {
 	public static String ImportingXMLData;
 	public static String IncludeCostCalculation;
 	public static String IndicatorBarChart;
+	public static String IndicatorsAndParameters;
 	public static String IndicatorScore;
 	public static String Information;
 	public static String InfrastructureFlow;

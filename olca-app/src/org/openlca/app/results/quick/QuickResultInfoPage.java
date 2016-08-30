@@ -24,12 +24,12 @@ import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.NwSetDescriptor;
 import org.openlca.core.results.SimpleResultProvider;
 
-public class QuickResultInfoPage extends FormPage {
+class QuickResultInfoPage extends FormPage {
 
 	private QuickResultEditor editor;
 	private SimpleResultProvider<?> result;
 	private DQResult dqResult;
-	private FormToolkit toolkit;
+	private FormToolkit tk;
 
 	public QuickResultInfoPage(QuickResultEditor editor, SimpleResultProvider<?> result, DQResult dqResult) {
 		super(editor, "QuickResultInfoPage", M.GeneralInformation);
@@ -39,62 +39,58 @@ public class QuickResultInfoPage extends FormPage {
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, M.ResultsOf + " "
+	protected void createFormContent(IManagedForm mform) {
+		ScrolledForm form = UI.formHeader(mform, M.ResultsOf + " "
 				+ Labels.getDisplayName(editor.getSetup().productSystem));
-		this.toolkit = managedForm.getToolkit();
-		Composite body = UI.formBody(form, toolkit);
-		createInfoSection(body);
-		createChartSections(body);
-		new DQInfoSection(body, toolkit, result, dqResult);
+		this.tk = mform.getToolkit();
+		Composite body = UI.formBody(form, tk);
+		infoSection(body);
+		chartSections(body);
+		new DQInfoSection(body, tk, result, dqResult);
 		form.reflow(true);
 	}
 
-	private void createChartSections(Composite body) {
-		ContributionChartSection.forFlows(editor.getResult()).render(body,
-				toolkit);
+	private void chartSections(Composite body) {
+		ContributionChartSection.forFlows(editor.getResult()).render(body, tk);
 		if (editor.getResult().hasImpactResults()) {
-			ContributionChartSection.forImpacts(editor.getResult()).render(
-					body, toolkit);
+			ContributionChartSection.forImpacts(
+					editor.getResult()).render(body, tk);
 		}
 	}
 
-	private void createInfoSection(Composite body) {
+	private void infoSection(Composite body) {
 		CalculationSetup setup = editor.getSetup();
 		if (setup == null || setup.productSystem == null)
 			return;
 		ProductSystem system = setup.productSystem;
-		Composite composite = UI.formSection(body, toolkit,
-				M.GeneralInformation);
+		Composite comp = UI.formSection(body, tk, M.GeneralInformation);
 		String sysText = Labels.getDisplayName(system);
-		createText(composite, M.ProductSystem, sysText);
+		text(comp, M.ProductSystem, sysText);
 		String allocText = Labels.getEnumText(setup.allocationMethod);
-		createText(composite, M.AllocationMethod, allocText);
-		String targetText = system.getTargetAmount() + " "
-				+ system.getTargetUnit().getName() + " "
-				+ system.getReferenceExchange().getFlow().getName();
-		createText(composite, M.TargetAmount, targetText);
+		text(comp, M.AllocationMethod, allocText);
+		String refAmount = setup.getAmount() + " " + setup.getUnit().getName()
+				+ " " + system.getReferenceExchange().getFlow().getName();
+		text(comp, M.TargetAmount, refAmount);
 		ImpactMethodDescriptor method = setup.impactMethod;
-		if (method != null)
-			createText(composite, M.ImpactAssessmentMethod,
-					method.getName());
+		if (method != null) {
+			text(comp, M.ImpactAssessmentMethod, method.getName());
+		}
 		NwSetDescriptor nwSet = setup.nwSet;
-		if (nwSet != null)
-			createText(composite, M.NormalizationAndWeightingSet,
-					nwSet.getName());
-		createExportButton(composite);
+		if (nwSet != null) {
+			text(comp, M.NormalizationAndWeightingSet, nwSet.getName());
+		}
+		exportButton(comp);
 	}
 
-	private void createExportButton(Composite composite) {
-		toolkit.createLabel(composite, "");
-		Button button = toolkit.createButton(composite, M.ExportToExcel,
-				SWT.NONE);
+	private void exportButton(Composite composite) {
+		tk.createLabel(composite, "");
+		Button button = tk.createButton(composite, M.ExportToExcel, SWT.NONE);
 		button.setImage(Images.get(FileType.EXCEL));
 		Controls.onSelect(button, (e) -> new ExcelExportAction("Quick result").run());
 	}
 
-	private void createText(Composite parent, String label, String val) {
-		Text text = UI.formText(parent, toolkit, label);
+	private void text(Composite comp, String label, String val) {
+		Text text = UI.formText(comp, tk, label);
 		text.setText(val);
 		text.setEditable(false);
 	}

@@ -13,9 +13,10 @@ class ExchangePart extends AbstractNodeEditPart<ExchangeNode> {
 
 	@Override
 	protected IFigure createFigure() {
-		ExchangeFigure figure = new ExchangeFigure(getModel());
-		getModel().setFigure(figure);
-		String name = getModel().getName();
+		ExchangeNode node = getModel();
+		ExchangeFigure figure = new ExchangeFigure(node);
+		node.figure = figure;
+		String name = node.getName();
 		figure.setText(name);
 		return figure;
 	}
@@ -31,20 +32,16 @@ class ExchangePart extends AbstractNodeEditPart<ExchangeNode> {
 	}
 
 	@Override
-	public InputOutputPart getParent() {
-		return (InputOutputPart) super.getParent();
+	public IOPart getParent() {
+		return (IOPart) super.getParent();
 	}
 
 	@Override
 	protected void refreshVisuals() {
 		if (getModel().isDummy())
 			return;
-		if (getModel().getExchange().isInput())
-			getFigure().getParent().setConstraint(getFigure(),
-					new GridData(SWT.LEFT, SWT.TOP, true, false));
-		else
-			getFigure().getParent().setConstraint(getFigure(),
-					new GridData(SWT.RIGHT, SWT.TOP, true, false));
+		int hAlign = getModel().exchange.isInput() ? SWT.LEFT : SWT.RIGHT;
+		getFigure().getParent().setConstraint(getFigure(), new GridData(hAlign, SWT.TOP, true, false));
 	}
 
 }

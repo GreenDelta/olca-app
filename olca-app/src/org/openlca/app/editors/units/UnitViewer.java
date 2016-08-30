@@ -168,19 +168,21 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 	private class NameModifier extends TextCellModifier<Unit> {
 
 		@Override
-		protected String getText(Unit element) {
-			return element.getName();
+		protected String getText(Unit unit) {
+			return unit.getName();
 		}
 
 		@Override
-		protected void setText(Unit element, String text) {
-			if (Objects.equals(element.getName(), text))
+		protected void setText(Unit unit, String text) {
+			if (Objects.equals(unit.getName(), text))
 				return;
-			if (!new UnitDao(Database.get()).getForName(text).isEmpty() || editor.getModel().getUnit(text) != null) {
+			if (!new UnitDao(Database.get()).getForName(text).isEmpty()
+					|| editor.getModel().getUnit(text) != null) {
 				Error.showBox("A unit with the name '" + text + "' already exists");
 				return;
 			}
-			element.setName(text);
+			unit.setName(text);
+			editor.setDirty(true);
 		}
 
 	}
@@ -192,10 +194,10 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 		}
 
 		@Override
-		public boolean canModify(Unit element) {
-			if (element == null)
+		public boolean canModify(Unit unit) {
+			if (unit == null)
 				return false;
-			return !element.equals(editor.getModel().getReferenceUnit());
+			return !unit.equals(editor.getModel().getReferenceUnit());
 		}
 	}
 

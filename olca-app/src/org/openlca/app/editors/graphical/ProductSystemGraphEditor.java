@@ -1,6 +1,5 @@
 package org.openlca.app.editors.graphical;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -12,19 +11,17 @@ import org.eclipse.gef.editparts.ScalableRootEditPart;
 import org.eclipse.gef.editparts.ZoomManager;
 import org.eclipse.gef.ui.parts.GraphicalEditor;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
-import org.openlca.app.EventHandler;
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
-import org.openlca.app.editors.graphical.layout.GraphLayoutType;
+import org.openlca.app.editors.graphical.layout.LayoutType;
 import org.openlca.app.editors.graphical.layout.NodeLayoutStore;
-import org.openlca.app.editors.graphical.model.ConnectionLink;
+import org.openlca.app.editors.graphical.model.Link;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.app.editors.graphical.model.TreeConnectionRouter;
@@ -43,7 +40,7 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 
 	private ProductSystemEditor systemEditor;
 	private ProductSystemNode model;
-	private GraphLayoutType layoutType = GraphLayoutType.TREE_LAYOUT;
+	private LayoutType layoutType = LayoutType.TREE_LAYOUT;
 	private OutlinePage outline;
 	private boolean routed;
 	private GraphicalViewerConfigurator configurator;
@@ -53,13 +50,7 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 
 	public ProductSystemGraphEditor(ProductSystemEditor editor) {
 		this.systemEditor = editor;
-		editor.onSaved(new EventHandler() {
-
-			@Override
-			public void handleEvent() {
-				NodeLayoutStore.saveLayout(getModel());
-			}
-		});
+		editor.onSaved(() -> NodeLayoutStore.saveLayout(getModel()));
 	}
 
 	public ProductSystemEditor getSystemEditor() {
@@ -93,8 +84,9 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 		setEditDomain(new DefaultEditDomain(this));
 		if (input instanceof GraphicalEditorInput) {
 			GraphicalEditorInput modelInput = (GraphicalEditorInput) input;
-			if (modelInput.getDescriptor() != null)
+			if (modelInput.getDescriptor() != null) {
 				setPartName(Labels.getDisplayName(modelInput.getDescriptor()));
+			}
 		}
 		super.init(site, input);
 	}
@@ -104,16 +96,7 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 			return true;
 		String question = M.SystemSaveProceedQuestion;
 		if (Question.ask(M.Save + "?", question)) {
-			new ProgressMonitorDialog(UI.shell()).run(false, false,
-					new IRunnableWithProgress() {
-
-						@Override
-						public void run(IProgressMonitor monitor)
-								throws InvocationTargetException,
-								InterruptedException {
-							systemEditor.doSave(monitor);
-						}
-					});
+			new ProgressMonitorDialog(UI.shell()).run(false, false, (monitor) -> systemEditor.doSave(monitor));
 			return true;
 		}
 		return false;
@@ -122,8 +105,7 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 	private ProductSystemNode createModel() {
 		if (getSystemEditor().getModel().getReferenceProcess() == null)
 			return new ProductSystemNode(this);
-		long referenceId = getSystemEditor().getModel().getReferenceProcess()
-				.getId();
+		long referenceId = getSystemEditor().getModel().getReferenceProcess().getId();
 		ProductSystemNode productSystemNode = new ProductSystemNode(this);
 		productSystemNode.add(createProcessNode(referenceId));
 		return productSystemNode;
@@ -136,40 +118,34 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 		return productSystemNode;
 	}
 
-	public ProcessNode createProcessNode(long id) {
-		ProcessDescriptor descriptor = Cache.getEntityCache().get(
-				ProcessDescriptor.class, id);
+	private ProcessNode createProcessNode(long id) {
+		ProcessDescriptor descriptor = Cache.getEntityCache().get(ProcessDescriptor.class, id);
 		ProcessNode processNode = new ProcessNode(descriptor);
 		return processNode;
 	}
 
 	public void createNecessaryLinks(ProcessNode node) {
-		MutableProcessLinkSearchMap linkSearch = node.getParent()
-				.getLinkSearch();
-		long id = node.getProcess().getId();
+		MutableProcessLinkSearchMap linkSearch = node.parent().linkSearch;
+		long id = node.process.getId();
 		for (ProcessLink link : linkSearch.getLinks(id)) {
-			long processId = link.getRecipientId() == id ? link.getProviderId()
-					: link.getRecipientId();
+			long processId = link.processId == id ? link.providerId : link.processId;
 			ProcessNode otherNode = model.getProcessNode(processId);
 			if (otherNode == null)
 				continue;
-			ProcessNode sourceNode = link.getRecipientId() == id ? otherNode
-					: node;
-			ProcessNode targetNode = link.getRecipientId() == id ? node
-					: otherNode;
+			ProcessNode sourceNode = link.processId == id ? otherNode : node;
+			ProcessNode targetNode = link.processId == id ? node : otherNode;
 			if (!sourceNode.isExpandedRight() && !targetNode.isExpandedLeft())
 				continue;
-			ConnectionLink connectionLink = new ConnectionLink();
-			connectionLink.setSourceNode(sourceNode);
-			connectionLink.setTargetNode(targetNode);
-			connectionLink.setProcessLink(link);
+			Link connectionLink = new Link();
+			connectionLink.sourceNode = sourceNode;
+			connectionLink.targetNode = targetNode;
+			connectionLink.processLink = link;
 			connectionLink.link();
 		}
 	}
 
 	private GraphicalViewerConfigurator createGraphicalViewerConfigurator() {
-		GraphicalViewerConfigurator configurator = new GraphicalViewerConfigurator(
-				getGraphicalViewer());
+		GraphicalViewerConfigurator configurator = new GraphicalViewerConfigurator(getGraphicalViewer());
 		configurator.setActionRegistry(getActionRegistry());
 		configurator.setCommandStack(getCommandStack());
 		configurator.setModel(model);
@@ -204,8 +180,7 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 	}
 
 	public void updateModel(final IProgressMonitor monitor) {
-		monitor.beginTask(M.UpdatingProductSystem,
-				IProgressMonitor.UNKNOWN);
+		monitor.beginTask(M.UpdatingProductSystem, IProgressMonitor.UNKNOWN);
 		systemEditor.updateModel();
 		monitor.done();
 	}
@@ -213,10 +188,8 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 	@Override
 	@SuppressWarnings("rawtypes")
 	public Object getAdapter(final Class type) {
-		if (type == ZoomManager.class) {
-			return ((ScalableRootEditPart) getGraphicalViewer()
-					.getRootEditPart()).getZoomManager();
-		}
+		if (type == ZoomManager.class)
+			return ((ScalableRootEditPart) getGraphicalViewer().getRootEditPart()).getZoomManager();
 		if (type == IContentOutlinePage.class) {
 			outline = new OutlinePage(model);
 			outline.setEditDomain(getEditDomain());
@@ -234,7 +207,7 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 		return stack;
 	}
 
-	public GraphLayoutType getLayoutType() {
+	public LayoutType getLayoutType() {
 		return layoutType;
 	}
 
@@ -302,10 +275,10 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 		this.routed = routed;
 		ConnectionRouter router = ConnectionRouter.NULL;
 		if (routed)
-			router = TreeConnectionRouter.get();
+			router = TreeConnectionRouter.instance;
 		for (ProcessNode node : model.getChildren())
-			for (ConnectionLink link : node.getLinks())
-				link.getFigure().setConnectionRouter(router);
+			for (Link link : node.links)
+				link.figure.setConnectionRouter(router);
 	}
 
 }

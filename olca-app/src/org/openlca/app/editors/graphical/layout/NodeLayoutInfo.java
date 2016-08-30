@@ -25,7 +25,7 @@ public class NodeLayoutInfo {
 	}
 
 	public NodeLayoutInfo(ProcessNode node) {
-		this.id = node.getProcess().getId();
+		this.id = node.process.getId();
 		this.x = node.getXyLayoutConstraints().x;
 		this.y = node.getXyLayoutConstraints().y;
 		this.minimized = node.isMinimized();

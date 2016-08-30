@@ -1,18 +1,15 @@
 package org.openlca.app.editors.graphical.action;
 
-import org.eclipse.jface.action.Action;
+import org.eclipse.jface.viewers.ISelection;
 import org.openlca.app.M;
-import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Question;
 
-class MassExpansionAction extends Action {
+class MassExpansionAction extends EditorAction {
 
 	static final int EXPAND = 1;
 	static final int COLLAPSE = 2;
-
-	private int type;
-	private ProductSystemGraphEditor editor;
+	private final int type;
 
 	MassExpansionAction(int type) {
 		if (type == EXPAND) {
@@ -46,8 +43,9 @@ class MassExpansionAction extends Action {
 		return Question.ask(title, text);
 	}
 
-	void setEditor(ProductSystemGraphEditor editor) {
-		this.editor = editor;
+	@Override
+	protected boolean accept(ISelection selection) {
+		return true;
 	}
-
+	
 }
