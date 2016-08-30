@@ -75,6 +75,8 @@ class TotalRequirementsSection {
 		table.setLabelProvider(label);
 		Viewers.sortByLabels(table, label, 0, 1, 3);
 		Viewers.sortByDouble(table, (Item i) -> i.amount, 2);
+		Viewers.sortByDouble(table,
+				(Item i) -> costs == Costs.ADDED_VALUE ? -i.costValue : i.costValue, 4);
 		Actions.bind(table, TableClipboard.onCopy(table));
 		Tables.onDoubleClick(table, e -> {
 			Item item = Viewers.getFirstSelected(table);
