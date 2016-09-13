@@ -98,8 +98,8 @@ public class ProcessSearchPage extends WizardPage {
 			NetworkClient client = IoPreference.createClient();
 			client.connect();
 			DescriptorList result = client.search(Process.class, term);
-			if (result != null && result.getDescriptors() != null) {
-				viewer.setInput(result.getDescriptors().toArray());
+			if (result != null && result.descriptors != null) {
+				viewer.setInput(result.descriptors.toArray());
 			}
 		} catch (Exception e) {
 			Dialog.showError(getShell(),
