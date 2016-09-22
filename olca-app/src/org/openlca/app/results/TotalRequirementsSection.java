@@ -30,7 +30,7 @@ import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.matrix.LongPair;
-import org.openlca.core.matrix.ProductIndex;
+import org.openlca.core.matrix.TechIndex;
 import org.openlca.core.model.Currency;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
@@ -53,14 +53,16 @@ class TotalRequirementsSection {
 
 	private TableViewer table;
 
-	TotalRequirementsSection(SimpleResultProvider<?> result, DQResult dqResult) {
+	TotalRequirementsSection(SimpleResultProvider<?> result,
+			DQResult dqResult) {
 		this.result = result;
 		for (ProcessDescriptor desc : result.getProcessDescriptors())
 			processDescriptors.put(desc.getId(), desc);
 		if (!result.hasCostResults())
 			costs = Costs.NONE;
 		else
-			costs = result.getTotalCostResult() >= 0 ? Costs.NET_COSTS : Costs.ADDED_VALUE;
+			costs = result.getTotalCostResult() >= 0 ? Costs.NET_COSTS
+					: Costs.ADDED_VALUE;
 		this.dqResult = dqResult;
 	}
 
@@ -71,14 +73,16 @@ class TotalRequirementsSection {
 		UI.gridLayout(comp, 1);
 		Label label = new Label();
 		table = Tables.createViewer(comp, columnLabels(), label);
-		Tables.bindColumnWidths(table, DQUIHelper.MIN_COL_WIDTH, columnWidths());
+		Tables.bindColumnWidths(table, DQUIHelper.MIN_COL_WIDTH,
+				columnWidths());
 		Viewers.sortByLabels(table, label, 0, 1, 3);
 		Viewers.sortByDouble(table, (Item i) -> i.amount, 2);
 		if (costs != Costs.NONE)
 			Viewers.sortByDouble(table, (Item i) -> i.costValue, 4);
 		if (DQUIHelper.displayProcessQuality(dqResult)) {
 			int startCol = costs == Costs.NONE ? 4 : 5;
-			for (int i = 0; i < dqResult.setup.processDqSystem.indicators.size(); i++) {
+			for (int i = 0; i < dqResult.setup.processDqSystem.indicators
+					.size(); i++) {
 				Viewers.sortByDouble(table, label, i + startCol);
 			}
 		}
@@ -129,7 +133,8 @@ class TotalRequirementsSection {
 		String[] columnLabels = b.toArray(new String[b.size()]);
 		if (!DQUIHelper.displayProcessQuality(dqResult))
 			return columnLabels;
-		return DQUIHelper.appendTableHeaders(columnLabels, dqResult.setup.processDqSystem);
+		return DQUIHelper.appendTableHeaders(columnLabels,
+				dqResult.setup.processDqSystem);
 	}
 
 	private double[] columnWidths() {
@@ -140,7 +145,8 @@ class TotalRequirementsSection {
 			widths = new double[] { .4, .2, .2, .1, .1 };
 		if (!DQUIHelper.displayProcessQuality(dqResult))
 			return widths;
-		return DQUIHelper.adjustTableWidths(widths, dqResult.setup.processDqSystem);
+		return DQUIHelper.adjustTableWidths(widths,
+				dqResult.setup.processDqSystem);
 	}
 
 	private List<Item> createItems() {
@@ -204,22 +210,23 @@ class TotalRequirementsSection {
 		}
 
 		private void init(int idx) {
-			ProductIndex productIdx = result.result.productIndex;
+			TechIndex productIdx = result.result.productIndex;
 			if (productIdx == null)
 				return;
 			setProcessProduct(productIdx, idx);
 			setCostValue(idx);
 		}
 
-		private void setProcessProduct(ProductIndex productIdx, int idx) {
-			LongPair lp = productIdx.getProductAt(idx);
+		private void setProcessProduct(TechIndex productIdx, int idx) {
+			LongPair lp = productIdx.getProviderAt(idx);
 			if (lp == null)
 				return;
 			ProcessDescriptor process = processDescriptors.get(lp.getFirst());
 			if (process != null) {
 				this.process = process;
 			}
-			FlowDescriptor flow = cache.get(FlowDescriptor.class, lp.getSecond());
+			FlowDescriptor flow = cache.get(FlowDescriptor.class,
+					lp.getSecond());
 			if (flow != null) {
 				this.product = Labels.getDisplayName(flow);
 				this.unit = Labels.getRefUnit(flow, cache);
@@ -247,7 +254,9 @@ class TotalRequirementsSection {
 				UI.shell().getDisplay());
 
 		public Label() {
-			super(dqResult, dqResult != null ? dqResult.setup.processDqSystem : null, costs == Costs.NONE ? 4 : 5);
+			super(dqResult,
+					dqResult != null ? dqResult.setup.processDqSystem : null,
+					costs == Costs.NONE ? 4 : 5);
 		}
 
 		@Override
