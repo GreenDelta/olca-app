@@ -50,7 +50,7 @@ public class SankeyDiagram extends GraphicalEditor implements
 
 	private SankeyResult sankeyResult;
 	private ProcessLinkSearchMap linkSearchMap;
-	private Map<ProcessLink, ConnectionLink> createdLinks = new HashMap<>();
+	private Map<Long, ConnectionLink> createdLinks = new HashMap<>();
 	private Map<Long, ProcessNode> createdProcesses = new HashMap<>();
 	private ProductSystemNode systemNode;
 	private ProductSystem productSystem;
@@ -78,25 +78,23 @@ public class SankeyDiagram extends GraphicalEditor implements
 	public DQResult getDqResult() {
 		return dqResult;
 	}
-	
+
 	public ProcessLinkSearchMap getLinkSearchMap() {
 		return linkSearchMap;
 	}
 
 	private void createConnections(long processId) {
-		for (ProcessLink processLink : linkSearchMap.getIncomingLinks(processId)) {
-			ProcessNode sourceNode = createdProcesses.get(processLink.providerId);
-			ProcessNode targetNode = createdProcesses.get(processLink.processId);
-			if (sourceNode != null && targetNode != null) {
-				if (!createdLinks.containsKey(processLink)) {
-					double ratio = sankeyResult
-							.getLinkContribution(processLink);
-					ConnectionLink link = new ConnectionLink(sourceNode,
-							targetNode, processLink, ratio);
-					createdLinks.put(processLink, link);
-					createConnections(sourceNode.process.getId());
-				}
-			}
+		for (ProcessLink link : linkSearchMap.getIncomingLinks(processId)) {
+			ProcessNode source = createdProcesses.get(link.providerId);
+			ProcessNode target = createdProcesses.get(link.processId);
+			if (source == null || target == null)
+				continue;
+			if (createdLinks.containsKey(link.exchangeId))
+				continue;
+			double ratio = sankeyResult.getLinkContribution(link);
+			ConnectionLink con = new ConnectionLink(source, target, link, ratio);
+			createdLinks.put(link.exchangeId, con);
+			createConnections(source.process.getId());
 		}
 	}
 
@@ -117,7 +115,7 @@ public class SankeyDiagram extends GraphicalEditor implements
 	 */
 	private void updateConnections() {
 		createConnections(productSystem.getReferenceProcess().getId());
-		for (final ConnectionLink link : createdLinks.values()) {
+		for (ConnectionLink link : createdLinks.values()) {
 			link.link();
 		}
 	}

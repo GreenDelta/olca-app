@@ -98,11 +98,11 @@ public class Trees {
 	 * Binds the given percentage values (values between 0 and 1) to the column
 	 * widths of the given tree
 	 */
-	public static void bindColumnWidths(final Tree tree, final double... percents) {
+	public static void bindColumnWidths(Tree tree, double... percents) {
 		bindColumnWidths(tree, 0, percents);
 	}
 
-	public static void bindColumnWidths(final Tree tree, int minimum, final double... percents) {
+	public static void bindColumnWidths(Tree tree, int minimum, double... percents) {
 		if (tree == null || percents == null)
 			return;
 		TreeResizeListener treeListener = new TreeResizeListener(tree, minimum, percents);

@@ -13,6 +13,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
@@ -20,10 +21,11 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
+import org.openlca.app.components.ContributionImage;
 import org.openlca.app.db.Cache;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
-import org.openlca.app.util.DQUIHelper;
+import org.openlca.app.util.DQUI;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
@@ -78,8 +80,8 @@ public class TotalFlowResultPage extends FormPage {
 		Composite composite = UI.sectionClient(section, toolkit);
 		UI.gridLayout(composite, 1);
 		String[] headers = new String[] { M.Name, M.Category, M.SubCategory, M.Amount };
-		if (DQUIHelper.displayExchangeQuality(dqResult)) {
-			headers = DQUIHelper.appendTableHeaders(headers, dqResult.setup.exchangeDqSystem);
+		if (DQUI.displayExchangeQuality(dqResult)) {
+			headers = DQUI.appendTableHeaders(headers, dqResult.setup.exchangeDqSystem);
 		}
 		Label label = new Label();
 		TreeViewer viewer = Trees.createViewer(composite, headers, label);
@@ -87,10 +89,10 @@ public class TotalFlowResultPage extends FormPage {
 		viewer.setFilters(new ViewerFilter[] { new InputOutputFilter(input) });
 		createColumnSorters(viewer, label);
 		double[] widths = { .4, .2, .2, .2 };
-		if (DQUIHelper.displayExchangeQuality(dqResult)) {
-			widths = DQUIHelper.adjustTableWidths(widths, dqResult.setup.exchangeDqSystem);
+		if (DQUI.displayExchangeQuality(dqResult)) {
+			widths = DQUI.adjustTableWidths(widths, dqResult.setup.exchangeDqSystem);
 		}
-		Trees.bindColumnWidths(viewer.getTree(), DQUIHelper.MIN_COL_WIDTH, widths);
+		Trees.bindColumnWidths(viewer.getTree(), DQUI.MIN_COL_WIDTH, widths);
 		Actions.bind(viewer, TreeClipboard.onCopy(viewer));
 		return viewer;
 	}
@@ -102,26 +104,28 @@ public class TotalFlowResultPage extends FormPage {
 			return r == null ? 0 : r.value;
 		};
 		Viewers.sortByDouble(viewer, amount, 4);
-		if (DQUIHelper.displayExchangeQuality(dqResult)) {
+		if (DQUI.displayExchangeQuality(dqResult)) {
 			for (int i = 0; i < dqResult.setup.exchangeDqSystem.indicators.size(); i++) {
 				Viewers.sortByDouble(viewer, label, i + 5);
 			}
 		}
 	}
 
-	private class ContentProvider extends ArrayContentProvider implements ITreeContentProvider {
+	private class ContentProvider extends ArrayContentProvider
+			implements ITreeContentProvider {
 
 		@Override
-		public Object[] getChildren(Object parentElement) {
-			List<ContributionItem<ProcessDescriptor>> contributions = getContributions(parentElement);
-			if (contributions == null || contributions.isEmpty())
+		public Object[] getChildren(Object parent) {
+			List<ContributionItem<ProcessDescriptor>> items = getContributions(parent);
+			if (items == null || items.isEmpty())
 				return null;
-			FlowDescriptor flow = (FlowDescriptor) parentElement;
-			List<ContributionWrapper> result = new ArrayList<>();
-			for (ContributionItem<ProcessDescriptor> item : contributions) {
-				result.add(new ContributionWrapper(item, flow));
+			items.sort((i1, i2) -> -Double.compare(i1.amount, i2.amount));
+			FlowDescriptor flow = (FlowDescriptor) parent;
+			List<Contribution> childs = new ArrayList<>();
+			for (ContributionItem<ProcessDescriptor> item : items) {
+				childs.add(new Contribution(item, flow));
 			}
-			return result.toArray();
+			return childs.toArray();
 		}
 
 		@Override
@@ -141,12 +145,22 @@ public class TotalFlowResultPage extends FormPage {
 			if (!(element instanceof FlowDescriptor))
 				return null;
 			FlowDescriptor flow = (FlowDescriptor) element;
-			return ((ContributionResultProvider<?>) result).getProcessContributions(flow).contributions;
+			List<ContributionItem<ProcessDescriptor>> list = result
+					.getProcessContributions(flow).contributions;
+			List<ContributionItem<ProcessDescriptor>> filtered = new ArrayList<>();
+			for (ContributionItem<ProcessDescriptor> i : list) {
+				if (i.amount != 0) {
+					filtered.add(i);
+				}
+			}
+			return filtered;
 		}
 
 	}
 
 	private class Label extends DQLabelProvider {
+
+		private ContributionImage img = new ContributionImage(Display.getCurrent());
 
 		Label() {
 			super(dqResult, dqResult != null ? dqResult.setup.exchangeDqSystem : null, 4);
@@ -154,24 +168,32 @@ public class TotalFlowResultPage extends FormPage {
 
 		@Override
 		public Image getImage(Object obj, int col) {
-			if (col != 0)
-				return null;
 			if (obj instanceof FlowDescriptor) {
 				FlowDescriptor flow = (FlowDescriptor) obj;
-				return Images.get(flow);
-			} else if (obj instanceof ContributionWrapper) {
-				ProcessDescriptor process = ((ContributionWrapper) obj).contribution.item;
-				return Images.get(process);
+				if (col == 0)
+					return Images.get(flow);
+			} else if (obj instanceof Contribution) {
+				Contribution c = (Contribution) obj;
+				if (col == 0)
+					return Images.get(c.item.item);
+				if (col == 3)
+					return img.getForTable(c.item.share);
 			}
 			return null;
+		}
+
+		@Override
+		public void dispose() {
+			img.dispose();
+			super.dispose();
 		}
 
 		@Override
 		public String getText(Object obj, int col) {
 			if (obj instanceof FlowDescriptor)
 				return getFlowColumnText((FlowDescriptor) obj, col);
-			if (obj instanceof ContributionWrapper)
-				return getProcessColumnText((ContributionWrapper) obj, col);
+			if (obj instanceof Contribution)
+				return getProcessColumnText((Contribution) obj, col);
 			return null;
 		}
 
@@ -193,8 +215,8 @@ public class TotalFlowResultPage extends FormPage {
 			}
 		}
 
-		private String getProcessColumnText(ContributionWrapper item, int col) {
-			ProcessDescriptor process = item.contribution.item;
+		private String getProcessColumnText(Contribution item, int col) {
+			ProcessDescriptor process = item.item.item;
 			Pair<String, String> category = Labels.getCategory(process, cache);
 			switch (col) {
 			case 0:
@@ -204,8 +226,8 @@ public class TotalFlowResultPage extends FormPage {
 			case 2:
 				return category.getRight();
 			case 3:
-				double v = item.contribution.amount;
-				String unit = Labels.getRefUnit(item.toFlow, cache);
+				double v = item.item.amount;
+				String unit = Labels.getRefUnit(item.flow, cache);
 				return Numbers.format(v) + " " + unit;
 			default:
 				return null;
@@ -218,9 +240,9 @@ public class TotalFlowResultPage extends FormPage {
 				FlowDescriptor flow = (FlowDescriptor) obj;
 				return dqResult.get(flow);
 			}
-			if (obj instanceof ContributionWrapper) {
-				ContributionWrapper item = (ContributionWrapper) obj;
-				return dqResult.get(item.contribution.item, item.toFlow);
+			if (obj instanceof Contribution) {
+				Contribution item = (Contribution) obj;
+				return dqResult.get(item.item.item, item.flow);
 			}
 			return null;
 		}
@@ -246,15 +268,15 @@ public class TotalFlowResultPage extends FormPage {
 		}
 	}
 
-	private class ContributionWrapper {
-		private final ContributionItem<ProcessDescriptor> contribution;
-		private final FlowDescriptor toFlow;
+	private class Contribution {
 
-		private ContributionWrapper(ContributionItem<ProcessDescriptor> contribution, FlowDescriptor toFlow) {
-			this.contribution = contribution;
-			this.toFlow = toFlow;
+		private final ContributionItem<ProcessDescriptor> item;
+		private final FlowDescriptor flow;
+
+		private Contribution(ContributionItem<ProcessDescriptor> item, FlowDescriptor flow) {
+			this.item = item;
+			this.flow = flow;
 		}
-
 	}
 
 }

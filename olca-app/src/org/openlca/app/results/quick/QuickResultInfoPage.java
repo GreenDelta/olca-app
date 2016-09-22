@@ -31,7 +31,8 @@ public class QuickResultInfoPage extends FormPage {
 	private DQResult dqResult;
 	private FormToolkit toolkit;
 
-	public QuickResultInfoPage(QuickResultEditor editor, SimpleResultProvider<?> result, DQResult dqResult) {
+	public QuickResultInfoPage(QuickResultEditor editor,
+			SimpleResultProvider<?> result, DQResult dqResult) {
 		super(editor, "QuickResultInfoPage", M.GeneralInformation);
 		this.editor = editor;
 		this.result = result;
@@ -46,7 +47,8 @@ public class QuickResultInfoPage extends FormPage {
 		Composite body = UI.formBody(form, toolkit);
 		createInfoSection(body);
 		createChartSections(body);
-		new DQInfoSection(body, toolkit, result, dqResult);
+		if (dqResult != null)
+			new DQInfoSection(body, toolkit, result, dqResult);
 		form.reflow(true);
 	}
 
@@ -90,7 +92,8 @@ public class QuickResultInfoPage extends FormPage {
 		Button button = toolkit.createButton(composite, M.ExportToExcel,
 				SWT.NONE);
 		button.setImage(Images.get(FileType.EXCEL));
-		Controls.onSelect(button, (e) -> new ExcelExportAction("Quick result").run());
+		Controls.onSelect(button,
+				(e) -> new ExcelExportAction("Quick result").run());
 	}
 
 	private void createText(Composite parent, String label, String val) {

@@ -10,7 +10,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.util.Colors;
-import org.openlca.app.util.DQUIHelper;
+import org.openlca.app.util.DQUI;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.DQIndicator;
 import org.openlca.core.model.DQScore;
@@ -49,7 +49,7 @@ class QualityCell {
 	private class MouseOver implements MouseTrackListener {
 		@Override
 		public void mouseEnter(MouseEvent e) {
-			Color color = DQUIHelper.getColor(score.position, indicator.scores.size());
+			Color color = DQUI.getColor(score.position, indicator.scores.size());
 			label.setBackground(color);
 			composite.setBackground(color);
 		}
@@ -67,7 +67,7 @@ class QualityCell {
 	void setColor() {
 		Color color = null;
 		if (selected)
-			color = DQUIHelper.getColor(score.position, indicator.scores.size());
+			color = DQUI.getColor(score.position, indicator.scores.size());
 		else
 			color = Colors.white();
 		label.setBackground(color);
