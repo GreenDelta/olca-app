@@ -1,17 +1,17 @@
 package org.openlca.app.editors.graphical.search;
 
-import gnu.trove.impl.Constants;
-import gnu.trove.iterator.TIntIterator;
-import gnu.trove.list.array.TIntArrayList;
-import gnu.trove.map.hash.TLongObjectHashMap;
-import gnu.trove.set.hash.TIntHashSet;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 import org.openlca.core.model.ProcessLink;
+
+import gnu.trove.impl.Constants;
+import gnu.trove.iterator.TIntIterator;
+import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.set.hash.TIntHashSet;
 
 /**
  * This is a data structure for searching a set of existing process links by
@@ -24,15 +24,13 @@ public class ProcessLinkSearchMap {
 	ArrayList<ProcessLink> data;
 
 	public ProcessLinkSearchMap(Collection<ProcessLink> links) {
-		providerIndex = new TLongObjectHashMap<>(Constants.DEFAULT_CAPACITY,
-				Constants.DEFAULT_LOAD_FACTOR, -1L);
-		recipientIndex = new TLongObjectHashMap<>(Constants.DEFAULT_CAPACITY,
-				Constants.DEFAULT_LOAD_FACTOR, -1L);
+		providerIndex = new TLongObjectHashMap<>(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, -1L);
+		recipientIndex = new TLongObjectHashMap<>(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, -1L);
 		data = new ArrayList<>(links);
 		for (int i = 0; i < data.size(); i++) {
 			ProcessLink link = data.get(i);
-			index(link.getProviderId(), i, providerIndex);
-			index(link.getRecipientId(), i, recipientIndex);
+			index(link.providerId, i, providerIndex);
+			index(link.processId, i, recipientIndex);
 		}
 	}
 
@@ -56,8 +54,7 @@ public class ProcessLinkSearchMap {
 		// presentations of product systems and there can be a lot of links
 		// in some kind of product systems (e.g. from IO-databases) we do
 		// not just merge the incoming and outgoing links here
-		TIntHashSet intSet = new TIntHashSet(Constants.DEFAULT_CAPACITY,
-				Constants.DEFAULT_LOAD_FACTOR, -1);
+		TIntHashSet intSet = new TIntHashSet(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, -1);
 		TIntArrayList list = providerIndex.get(processId);
 		if (list != null)
 			intSet.addAll(list);

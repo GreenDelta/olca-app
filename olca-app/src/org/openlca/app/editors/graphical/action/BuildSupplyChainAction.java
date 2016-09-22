@@ -46,18 +46,17 @@ class BuildSupplyChainAction extends Action implements IBuildAction {
 	public void run() {
 		if (nodes == null || nodes.isEmpty())
 			return;
-		ProductSystemGraphEditor editor = nodes.get(0).getParent().getEditor();
+		ProductSystemGraphEditor editor = nodes.get(0).parent().editor;
 		ProductSystem system = editor.getModel().getProductSystem();
 		try {
 			if (editor.promptSaveIfNecessary())
-				new ProgressMonitorDialog(UI.shell()).run(true, false,
-						new Runner(system));
+				new ProgressMonitorDialog(UI.shell()).run(true, false, new Runner(system));
 			editor.collapse();
 			NodeLayoutStore.loadLayout(editor.getModel());
 			if (editor.getOutline() != null)
 				editor.getOutline().refresh();
 			editor.setDirty(true);
-		} catch (final Exception e) {
+		} catch (Exception e) {
 			log.error("Failed to complete product system. ", e);
 		}
 	}
@@ -71,20 +70,15 @@ class BuildSupplyChainAction extends Action implements IBuildAction {
 		}
 
 		@Override
-		public void run(IProgressMonitor monitor)
-				throws InvocationTargetException, InterruptedException {
-			monitor.beginTask(M.CreatingProductSystem,
-					IProgressMonitor.UNKNOWN);
-			ProductSystemBuilder builder = new ProductSystemBuilder(
-					Cache.getMatrixCache(), 
-					preferredType == ProcessType.LCI_RESULT);
+		public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+			monitor.beginTask(M.CreatingProductSystem, IProgressMonitor.UNKNOWN);
+			boolean preferSystems = preferredType == ProcessType.LCI_RESULT;
+			ProductSystemBuilder builder = new ProductSystemBuilder(Cache.getMatrixCache(), preferSystems);
 			for (ProcessNode node : nodes) {
-				LongPair idPair = new LongPair(node.getProcess().getId(), node
-						.getProcess().getQuantitativeReference());
+				LongPair idPair = new LongPair(node.process.getId(), node.process.getQuantitativeReference());
 				system = builder.autoComplete(system, idPair);
 			}
-			ProductSystemGraphEditor editor = nodes.get(0).getParent()
-					.getEditor();
+			ProductSystemGraphEditor editor = nodes.get(0).parent().editor;
 			editor.updateModel(monitor);
 			Database.get().notifyUpdate(system);
 		}

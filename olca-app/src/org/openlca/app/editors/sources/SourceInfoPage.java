@@ -31,6 +31,7 @@ import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.FileStore;
 import org.openlca.core.model.Source;
+import org.python.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +40,7 @@ import com.google.common.io.Files;
 class SourceInfoPage extends ModelPage<Source> {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
-	private FormToolkit toolkit;
+	private FormToolkit tk;
 	private ImageHyperlink fileLink;
 	private ImageHyperlink deleteLink;
 	private ScrolledForm form;
@@ -49,14 +50,14 @@ class SourceInfoPage extends ModelPage<Source> {
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm managedForm) {
-		form = UI.formHeader(managedForm);
+	protected void createFormContent(IManagedForm mform) {
+		form = UI.formHeader(mform);
 		updateFormTitle();
-		toolkit = managedForm.getToolkit();
-		Composite body = UI.formBody(form, toolkit);
+		tk = mform.getToolkit();
+		Composite body = UI.formBody(form, tk);
 		InfoSection infoSection = new InfoSection(getEditor());
-		infoSection.render(body, toolkit);
-		createAdditionalInfo(body);
+		infoSection.render(body, tk);
+		additionalInfo(body);
 		body.setFocus();
 		form.reflow(true);
 	}
@@ -68,36 +69,45 @@ class SourceInfoPage extends ModelPage<Source> {
 		form.setText(M.Source + ": " + getModel().getName());
 	}
 
-	protected void createAdditionalInfo(Composite body) {
-		Composite composite = UI.formSection(body, toolkit,
-				M.AdditionalInformation);
-		createText(M.Doi, "doi", composite);
-		createText(M.TextReference, "textReference", composite);
-		Text text = UI.formText(composite, getManagedForm().getToolkit(),
-				M.Year);
+	protected void additionalInfo(Composite body) {
+		Composite comp = UI.formSection(body, tk, M.AdditionalInformation);
+		UI.gridLayout(comp, 3);
+		createText(M.URL, "url", comp);
+		Button urlButton = tk.createButton(comp, M.Open, SWT.NONE);
+		urlButton.setImage(Icon.MAP.get());
+		Controls.onSelect(urlButton, e -> {
+			String url = getModel().getUrl();
+			if (Strings.isNullOrEmpty(url))
+				return;
+			Desktop.browse(url);
+		});
+		createText(M.TextReference, "textReference", comp);
+		UI.filler(comp, tk);
+		Text text = UI.formText(comp, getManagedForm().getToolkit(), M.Year);
 		getBinding().onShort(() -> getModel(), "year", text);
-		createFileSection(composite);
+		UI.filler(comp, tk);
+		fileSection(comp);
 	}
 
-	private void createFileSection(Composite parent) {
+	private void fileSection(Composite parent) {
 		UI.formLabel(parent, M.File);
-		Composite composite = toolkit.createComposite(parent);
+		Composite comp = tk.createComposite(parent);
+		UI.filler(parent);
 		GridLayout layout = new GridLayout();
 		layout.marginWidth = 0;
 		layout.marginHeight = 0;
 		layout.horizontalSpacing = 10;
 		layout.numColumns = 3;
-		composite.setLayout(layout);
-		composite.addMouseTrackListener(new DeleteFileVisibility());
-		Button browseButton = toolkit.createButton(composite, M.Browse,
-				SWT.NONE);
-		Controls.onSelect(browseButton, (e) -> selectFile());
-		createFileLink(composite);
-		createDeleteLink(composite);
+		comp.setLayout(layout);
+		comp.addMouseTrackListener(new DeleteFileVisibility());
+		Button browseButton = tk.createButton(comp, M.Browse, SWT.NONE);
+		Controls.onSelect(browseButton, e -> selectFile());
+		fileLink(comp);
+		deleteLink(comp);
 	}
 
-	private void createDeleteLink(Composite composite) {
-		deleteLink = toolkit.createImageHyperlink(composite, SWT.TOP);
+	private void deleteLink(Composite comp) {
+		deleteLink = tk.createImageHyperlink(comp, SWT.TOP);
 		deleteLink.setImage(Icon.DELETE_DISABLED.get());
 		deleteLink.addMouseTrackListener(new DeleteFileVisibility());
 		deleteLink.setVisible(false);
@@ -105,8 +115,8 @@ class SourceInfoPage extends ModelPage<Source> {
 		Controls.onClick(deleteLink, this::deleteFile);
 	}
 
-	private void createFileLink(Composite composite) {
-		fileLink = toolkit.createImageHyperlink(composite, SWT.TOP);
+	private void fileLink(Composite comp) {
+		fileLink = tk.createImageHyperlink(comp, SWT.TOP);
 		fileLink.setForeground(Colors.linkBlue());
 		Controls.onClick(fileLink, this::openFile);
 		fileLink.addMouseTrackListener(new DeleteFileVisibility());

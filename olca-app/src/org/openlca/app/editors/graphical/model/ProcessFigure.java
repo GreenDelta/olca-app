@@ -32,8 +32,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.command.ChangeStateCommand;
-import org.openlca.app.editors.graphical.command.CommandFactory;
-import org.openlca.app.editors.graphical.layout.GraphAnimation;
+import org.openlca.app.editors.graphical.layout.Animation;
 import org.openlca.app.editors.graphical.model.ProcessExpander.Side;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Labels;
@@ -49,7 +48,7 @@ class ProcessFigure extends Figure {
 	private static final Color LINE_COLOR = ColorConstants.gray;
 	private static final Color TEXT_COLOR = ColorConstants.black;
 
-	private ProcessNode node;
+	final ProcessNode node;
 	private ProcessExpander leftExpander;
 	private ProcessExpander rightExpander;
 	private int minimumHeight = 0;
@@ -62,54 +61,42 @@ class ProcessFigure extends Figure {
 	}
 
 	private void initializeFigure() {
-		setToolTip(new Label(Labels.processType(node.getProcess()
-				.getProcessType()) + ": " + node.getName()));
+		setToolTip(new Label(Labels.processType(node.process.getProcessType()) + ": " + node.getName()));
 		setForegroundColor(TEXT_COLOR);
 		setBounds(new Rectangle(0, 0, 0, 0));
 		setSize(calculateSize());
-
 		GridLayout layout = new GridLayout(1, true);
 		layout.horizontalSpacing = 10;
 		layout.verticalSpacing = 0;
 		layout.marginHeight = MARGIN_HEIGHT;
 		layout.marginWidth = MARGIN_WIDTH;
 		setLayoutManager(layout);
-
 		paintBorder();
 	}
 
 	private void createHeader() {
 		Figure top = new Figure();
-
 		GridLayout topLayout = new GridLayout(3, false);
 		topLayout.horizontalSpacing = 0;
 		topLayout.verticalSpacing = 0;
 		topLayout.marginHeight = 0;
 		topLayout.marginWidth = 0;
 		top.setLayoutManager(topLayout);
-
 		leftExpander = new ProcessExpander(node, Side.LEFT);
 		rightExpander = new ProcessExpander(node, Side.RIGHT);
 		top.add(leftExpander, new GridData(SWT.LEFT, SWT.CENTER, false, false));
-		top.add(new Label(node.getName()), new GridData(SWT.FILL, SWT.FILL,
-				true, false));
-		top.add(rightExpander,
-				new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+		top.add(new Label(node.getName()), new GridData(SWT.FILL, SWT.FILL, true, false));
+		top.add(rightExpander, new GridData(SWT.RIGHT, SWT.CENTER, false, false));
 		add(top, new GridData(SWT.FILL, SWT.FILL, true, false));
-
 		GridData dummyGridData = new GridData(SWT.FILL, SWT.FILL, true, false);
 		dummyGridData.heightHint = TEXT_HEIGHT + 3 * MARGIN_HEIGHT;
 		add(new Figure(), dummyGridData);
 	}
 
-	ProcessNode getNode() {
-		return node;
-	}
-
-	private InputOutputFigure getInputOutputFigure() {
+	private IOFigure getIOFigure() {
 		for (Object child : getChildren())
-			if (child instanceof InputOutputFigure)
-				return (InputOutputFigure) child;
+			if (child instanceof IOFigure)
+				return (IOFigure) child;
 		return null;
 	}
 
@@ -125,12 +112,11 @@ class ProcessFigure extends Figure {
 			width = getSize().width;
 		if (getParent() == null)
 			return;
-		getParent().setConstraint(this,
-				new Rectangle(x - 1, y - 1, width, height));
-		for (ConnectionLink link : node.getLinks())
-			if (node.equals(link.getTargetNode()))
+		getParent().setConstraint(this, new Rectangle(x - 1, y - 1, width, height));
+		for (Link link : node.links)
+			if (node.equals(link.targetNode))
 				link.refreshTargetAnchor();
-			else if (node.equals(link.getSourceNode()))
+			else if (node.equals(link.sourceNode))
 				link.refreshSourceAnchor();
 	}
 
@@ -140,14 +126,14 @@ class ProcessFigure extends Figure {
 		graphics.setBackgroundColor(ColorConstants.white);
 		graphics.fillRectangle(new Rectangle(getLocation(), getSize()));
 		paintTop(graphics);
-		if (!node.isMinimized() || GraphAnimation.isRunning())
+		if (!node.isMinimized() || Animation.isRunning())
 			paintTable(graphics);
 		graphics.popState();
 		super.paintFigure(graphics);
 	}
 
 	private void paintBorder() {
-		if (node.getProcess().getProcessType() == ProcessType.LCI_RESULT) {
+		if (node.process.getProcessType() == ProcessType.LCI_RESULT) {
 			LineBorder outer = new LineBorder(LINE_COLOR, 1);
 			LineBorder innerInner = new LineBorder(LINE_COLOR, 1);
 			LineBorder innerOuter = new LineBorder(ColorConstants.white, 1);
@@ -164,21 +150,17 @@ class ProcessFigure extends Figure {
 		Image file = null;
 		if (node.isMarked())
 			file = Icon.PROCESS_BG_MARKED.get();
-		else if (node.getProcess().getProcessType() == ProcessType.LCI_RESULT)
+		else if (node.process.getProcessType() == ProcessType.LCI_RESULT)
 			file = Icon.PROCESS_BG_LCI.get();
 		else
 			file = Icon.PROCESS_BG.get();
-
 		int x = getLocation().x;
 		int y = getLocation().y;
 		int width = getSize().width;
-
 		for (int i = 0; i < width - 20; i++)
 			graphics.drawImage(file, new Point(x + i, y));
-
 		graphics.setForegroundColor(LINE_COLOR);
-		graphics.drawLine(new Point(x, y + MINIMUM_HEIGHT), new Point(x + width
-				- 1, y + MINIMUM_HEIGHT));
+		graphics.drawLine(new Point(x, y + MINIMUM_HEIGHT), new Point(x + width - 1, y + MINIMUM_HEIGHT));
 		graphics.setForegroundColor(TEXT_COLOR);
 	}
 
@@ -193,27 +175,23 @@ class ProcessFigure extends Figure {
 				+ TEXT_HEIGHT + MARGIN_HEIGHT), new Point(x + width - margin, y
 				+ MINIMUM_HEIGHT + TEXT_HEIGHT + MARGIN_HEIGHT));
 		if (height - margin > MINIMUM_HEIGHT + margin)
-			graphics.drawLine(new Point(x + width / 2, y + MINIMUM_HEIGHT
-					+ margin), new Point(x + width / 2, y + height - margin));
-
+			graphics.drawLine(new Point(x + width / 2, y + MINIMUM_HEIGHT + margin), new Point(x + width / 2, y
+					+ height - margin));
 		graphics.setForegroundColor(TEXT_COLOR);
-		graphics.drawText(M.Inputs, new Point(x + width / 6, y
-				+ MINIMUM_HEIGHT + MARGIN_HEIGHT));
-		graphics.drawText(M.Outputs, new Point(x + 2 * width / 3, y
-				+ MINIMUM_HEIGHT + MARGIN_HEIGHT));
+		graphics.drawText(M.Inputs, new Point(x + width / 6, y + MINIMUM_HEIGHT + MARGIN_HEIGHT));
+		graphics.drawText(M.Outputs, new Point(x + 2 * width / 3, y + MINIMUM_HEIGHT + MARGIN_HEIGHT));
 		graphics.setForegroundColor(ColorConstants.black);
 	}
 
 	@Override
 	protected void paintChildren(Graphics graphics) {
 		super.paintChildren(graphics);
-		if (getInputOutputFigure() == null)
+		if (getIOFigure() == null)
 			return;
 		Rectangle clip = Rectangle.SINGLETON;
-		if (getInputOutputFigure().isVisible()
-				&& getInputOutputFigure().intersects(graphics.getClip(clip))) {
-			graphics.clipRect(getInputOutputFigure().getBounds());
-			getInputOutputFigure().paint(graphics);
+		if (getIOFigure().isVisible() && getIOFigure().intersects(graphics.getClip(clip))) {
+			graphics.clipRect(getIOFigure().getBounds());
+			getIOFigure().paint(graphics);
 			graphics.restoreState();
 		}
 	}
@@ -228,7 +206,7 @@ class ProcessFigure extends Figure {
 
 	ExchangeFigure[] getExchangeFigures() {
 		List<ExchangeFigure> figures = new ArrayList<>();
-		for (ExchangeFigure o2 : getInputOutputFigure().getChildren())
+		for (ExchangeFigure o2 : getIOFigure().getChildren())
 			figures.add(o2);
 		ExchangeFigure[] result = new ExchangeFigure[figures.size()];
 		figures.toArray(result);
@@ -238,15 +216,14 @@ class ProcessFigure extends Figure {
 	@Override
 	public Dimension getPreferredSize(int hint, int hint2) {
 		final Dimension cSize = calculateSize();
-		if (cSize.height > getSize().height || cSize.width > getSize().width
-				|| node.isMinimized())
+		if (cSize.height > getSize().height || cSize.width > getSize().width || node.isMinimized())
 			return cSize;
 		return getSize();
 	}
 
 	Dimension calculateSize() {
 		int offSet = 0;
-		if (node.getProcess().getProcessType() == ProcessType.LCI_RESULT)
+		if (node.process.getProcessType() == ProcessType.LCI_RESULT)
 			offSet = 3;
 		int x = MINIMUM_WIDTH + offSet;
 		if (getSize() != null && getSize().width > x)
@@ -268,16 +245,15 @@ class ProcessFigure extends Figure {
 		int outputs = 0;
 		for (ExchangeNode e : node.getChildren().get(0).getChildren())
 			if (!e.isDummy())
-				if (e.getExchange().isInput())
+				if (e.exchange.isInput())
 					inputs++;
 				else
 					outputs++;
 		int length = Math.max(inputs, outputs);
 		int offSet = 0;
-		if (node.getProcess().getProcessType() == ProcessType.LCI_RESULT)
+		if (node.process.getProcessType() == ProcessType.LCI_RESULT)
 			offSet = 3;
-		int startExchanges = MINIMUM_HEIGHT + 4 * MARGIN_HEIGHT + TEXT_HEIGHT
-				+ offSet;
+		int startExchanges = MINIMUM_HEIGHT + 4 * MARGIN_HEIGHT + TEXT_HEIGHT + offSet;
 		minimumHeight = startExchanges + length * (TEXT_HEIGHT + 1);
 	}
 
@@ -305,10 +281,8 @@ class ProcessFigure extends Figure {
 					Timer timer = new Timer();
 					timer.schedule(timerTask, 250);
 				} else {
-					ChangeStateCommand command = CommandFactory
-							.createChangeStateCommand(node);
-					node.getParent().getEditor().getCommandStack()
-							.execute(command);
+					ChangeStateCommand command = new ChangeStateCommand(node);
+					node.parent().editor.getCommandStack().execute(command);
 				}
 			}
 		}

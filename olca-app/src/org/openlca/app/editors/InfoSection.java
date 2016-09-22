@@ -19,8 +19,8 @@ import org.openlca.app.EventHandler;
 import org.openlca.app.M;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.util.Colors;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Colors;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Category;
@@ -84,19 +84,16 @@ public class InfoSection {
 		new VersionLink(composite, toolkit, VersionLink.MINOR);
 	}
 
-	private void createDateText(FormToolkit toolkit) {
-		final SimpleDateFormat format = new SimpleDateFormat(
-				"yyyy-MM-dd'T'HH:mm:ssZ");
-		UI.formLabel(container, toolkit, M.LastChange);
-		final Label text = UI.formLabel(container, toolkit, "");
-		if (entity.getLastChange() != 0)
+	private void createDateText(FormToolkit tk) {
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+		UI.formLabel(container, tk, M.LastChange);
+		Label text = UI.formLabel(container, tk, "");
+		if (entity.getLastChange() != 0) {
 			text.setText(format.format(new Date(entity.getLastChange())));
-		editor.onSaved(new EventHandler() {
-			@Override
-			public void handleEvent() {
-				entity = editor.getModel();
-				text.setText(format.format(new Date(entity.getLastChange())));
-			}
+		}
+		editor.onSaved(() -> {
+			entity = editor.getModel();
+			text.setText(format.format(new Date(entity.getLastChange())));
 		});
 	}
 

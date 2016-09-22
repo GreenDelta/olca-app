@@ -14,8 +14,9 @@ class GroupElement extends NavigationElement<Group> {
 	@Override
 	protected List<INavigationElement<?>> queryChilds() {
 		List<INavigationElement<?>> elements = new ArrayList<>();
-		for (ModelType type : getContent().types)
+		for (ModelType type : getContent().types) {
 			elements.add(new ModelTypeElement(this, type));
+		}
 		return elements;
 	}
 

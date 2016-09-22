@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.openlca.app.editors.graphical.model.ConnectionLink;
+import org.openlca.app.editors.graphical.model.Link;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 
 public class MinimalTreeLayout {
@@ -18,18 +18,17 @@ public class MinimalTreeLayout {
 	private void applyLayout(ProcessNode[] processFigures, Graph graph) {
 		Map<Long, ProcessNode> nodes = new HashMap<>();
 		for (ProcessNode node : processFigures)
-			nodes.put(node.getProcess().getId(), node);
+			nodes.put(node.process.getId(), node);
 
 		// build "width-map"
 		for (int x = graph.minimumX; x <= graph.maximumX; x++) {
 			widths.put(x, 0);
 			for (int y = graph.minimumY; y <= graph.maximumY; y++) {
 				Node node = graph.coordinateSystem.get(new Point(x, y));
-				if (node != null) {
-					int width = Math.max(widths.get(x), nodes.get(node.key)
-							.getSize().width);
-					widths.put(x, width);
-				}
+				if (node == null)
+					continue;
+				int width = Math.max(widths.get(x), nodes.get(node.key).getSize().width);
+				widths.put(x, width);
 			}
 		}
 		// build "height-map"
@@ -37,57 +36,47 @@ public class MinimalTreeLayout {
 			heights.put(y, 0);
 			for (int x = graph.minimumX; x <= graph.maximumX; x++) {
 				Node node = graph.coordinateSystem.get(new Point(x, y));
-				if (node != null) {
-					int height = Math.max(heights.get(y), nodes.get(node.key)
-							.getSize().height);
-					heights.put(y, height);
-				}
+				if (node == null)
+					continue;
+				int height = Math.max(heights.get(y), nodes.get(node.key).getSize().height);
+				heights.put(y, height);
 			}
 		}
 		int xPosition = 25;
 		for (int x = graph.minimumX; x <= graph.maximumX; x++) {
-			if (x > graph.minimumX)
-				if (widths.get(x - 1) > 0)
-					xPosition += widths.get(x - 1)
-							+ GraphLayoutManager.HORIZONTAL_SPACING;
+			if (x > graph.minimumX && widths.get(x - 1) > 0)
+				xPosition += widths.get(x - 1) + LayoutManager.H_SPACE;
 			int yPosition = 25;
 			for (int y = graph.minimumY; y <= graph.maximumY; y++) {
 				Node node = graph.coordinateSystem.get(new Point(x, y));
-				if (y > graph.minimumY)
-					if (heights.get(y - 1) > 0)
-						yPosition += heights.get(y - 1)
-								+ GraphLayoutManager.VERTICAL_SPACING;
-				if (node != null) {
-					ProcessNode pNode = nodes.get(node.key);
-					pNode.setXyLayoutConstraints(new Rectangle(xPosition,
-							yPosition, pNode.getSize().width,
-							pNode.getSize().height));
-				}
+				if (y > graph.minimumY && heights.get(y - 1) > 0)
+					yPosition += heights.get(y - 1) + LayoutManager.V_SPACE;
+				if (node == null)
+					continue;
+				ProcessNode pNode = nodes.get(node.key);
+				pNode.setXyLayoutConstraints(new Rectangle(xPosition, yPosition,
+						pNode.getSize().width, pNode.getSize().height));
 			}
 		}
 	}
 
 	private Graph buildGraph(ProcessNode[] processNodes) {
 		Graph graph = new Graph();
+		Map<Long, Node> nodes = graph.nodes;
 		for (ProcessNode processNode : processNodes) {
-			long id = processNode.getProcess().getId();
-			graph.nodes.put(id, new Node(id));
+			long id = processNode.process.getId();
+			nodes.put(id, new Node(id));
 		}
 		for (ProcessNode processNode : processNodes) {
-			for (ConnectionLink link : processNode.getLinks()) {
-				long sourceId = link.getSourceNode().getProcess().getId();
-				long targetId = link.getTargetNode().getProcess().getId();
-				if (graph.nodes.get(sourceId) != null
-						&& graph.nodes.get(targetId) != null) {
-					// add edge to source node
-					graph.nodes.get(sourceId).outgoingEdges.add(new Edge(
-							graph.nodes.get(sourceId), graph.nodes
-									.get(targetId)));
-					// add edge to target node
-					graph.nodes.get(targetId).incomingEdges.add(new Edge(
-							graph.nodes.get(sourceId), graph.nodes
-									.get(targetId)));
-				}
+			for (Link link : processNode.links) {
+				long sourceId = link.sourceNode.process.getId();
+				long targetId = link.targetNode.process.getId();
+				if (nodes.get(sourceId) == null || nodes.get(targetId) == null)
+					continue;
+				// add edge to source node
+				nodes.get(sourceId).outgoingEdges.add(new Edge(nodes.get(sourceId), nodes.get(targetId)));
+				// add edge to target node
+				nodes.get(targetId).incomingEdges.add(new Edge(nodes.get(sourceId), nodes.get(targetId)));
 			}
 		}
 		return graph;
@@ -180,9 +169,11 @@ public class MinimalTreeLayout {
 		}
 
 		void initLocations() {
-			for (Node node : nodes.values())
-				if (node.location == null)
-					setLocation(node, 0, 0);
+			for (Node node : nodes.values()) {
+				if (node.location != null)
+					continue;
+				setLocation(node, 0, 0);
+			}
 		}
 
 		void optimize() {
@@ -192,81 +183,9 @@ public class MinimalTreeLayout {
 				for (Node node : nodes.values()) {
 					boolean stop = false;
 					while (!stop) {
-						Edge heaviestEdge = node.getHeaviestEdge();
-						if (heaviestEdge != null) {
-							int oldWeightSum = node.getEdgesWeightSum();
-							Point oldLocation = node.location.getCopy();
-							Edge lightestEdge = node.getLightestEdge();
-							boolean nodeIsStart = heaviestEdge.start
-									.equals(node);
-							Node n = nodeIsStart ? heaviestEdge.end
-									: heaviestEdge.start;
-							int x = n.location.x + (nodeIsStart ? 1 : -1);
-							int y = n.location.y;
-							boolean stopTrying = false;
-							boolean canMove = false;
-							int divisor = 2;
-							while (!stopTrying) {
-								Node nearest = lightestEdge.start.key == node.key ? lightestEdge.end
-										: lightestEdge.start;
-								Node farest = heaviestEdge.start.key == node.key ? heaviestEdge.end
-										: heaviestEdge.start;
-								if (!lightestEdge.equals(heaviestEdge)) {
-									x = Math.min(nearest.location.x,
-											farest.location.x);
-									x += Math.abs(nearest.location.x
-											- farest.location.x)
-											/ divisor;
-									y = Math.min(nearest.location.y,
-											farest.location.y);
-									y += Math.abs(nearest.location.y
-											- farest.location.y)
-											/ divisor;
-								}
-
-								int tempY = y;
-								int addition = 1;
-								boolean add = true;
-								// find empty location
-								while (coordinateSystem.get(new Point(x, y)) != null) {
-									if (add) {
-										y = tempY + addition;
-										add = false;
-									} else {
-										y = tempY - addition;
-										add = true;
-										addition++;
-									}
-								}
-
-								node.location = new Point(x, y);
-								int newWeightSum = node.getEdgesWeightSum();
-								// if old weight > new weight we found a better
-								// location
-								if (oldWeightSum > newWeightSum) {
-									stopTrying = true;
-									canMove = true;
-								}
-								divisor++;
-								if (divisor >= Math.abs(nearest.location.y
-										- farest.location.y)) {
-									stopTrying = true;
-								}
-							}
-							if (canMove) {
-								// move nodes
-								coordinateSystem.put(node.location.getCopy(),
-										node);
-								coordinateSystem.put(oldLocation.getCopy(),
-										null);
-								checkNewMinimumsAndMaximums(x, y);
-								stopOptimizing = false;
-							} else {
-								// no better spot found, stop optimizing, best
-								// location is already set
-								node.location = oldLocation.getCopy();
-								stop = true;
-							}
+						boolean result = optimize(node);
+						if (!result) {
+							stopOptimizing = false;
 						} else {
 							stop = true;
 						}
@@ -275,122 +194,142 @@ public class MinimalTreeLayout {
 			}
 		}
 
+		private boolean optimize(Node node) {
+			Edge heaviestEdge = node.getHeaviestEdge();
+			if (heaviestEdge == null)
+				return true;
+			int oldWeightSum = node.getEdgesWeightSum();
+			Point oldLocation = node.location.getCopy();
+			Edge lightestEdge = node.getLightestEdge();
+			boolean nodeIsStart = heaviestEdge.start.equals(node);
+			Node n = nodeIsStart ? heaviestEdge.end : heaviestEdge.start;
+			int x = n.location.x + (nodeIsStart ? 1 : -1);
+			int y = n.location.y;
+			boolean stopTrying = false;
+			boolean canMove = false;
+			int divisor = 2;
+			while (!stopTrying) {
+				Node nearest = lightestEdge.start.key == node.key ? lightestEdge.end : lightestEdge.start;
+				Node farest = heaviestEdge.start.key == node.key ? heaviestEdge.end : heaviestEdge.start;
+				if (!lightestEdge.equals(heaviestEdge)) {
+					x = Math.min(nearest.location.x, farest.location.x);
+					x += Math.abs(nearest.location.x - farest.location.x) / divisor;
+					y = Math.min(nearest.location.y, farest.location.y);
+					y += Math.abs(nearest.location.y - farest.location.y) / divisor;
+				}
+				int tempY = y;
+				int addition = 1;
+				boolean add = true;
+				// find empty location
+				while (coordinateSystem.get(new Point(x, y)) != null) {
+					if (add) {
+						y = tempY + addition;
+						add = false;
+					} else {
+						y = tempY - addition;
+						add = true;
+						addition++;
+					}
+				}
+				node.location = new Point(x, y);
+				int newWeightSum = node.getEdgesWeightSum();
+				// if old weight > new weight we found a better
+				// location
+				if (oldWeightSum > newWeightSum) {
+					stopTrying = true;
+					canMove = true;
+				}
+				divisor++;
+				if (divisor >= Math.abs(nearest.location.y - farest.location.y)) {
+					stopTrying = true;
+				}
+			}
+			if (canMove) {
+				// move nodes
+				coordinateSystem.put(node.location.getCopy(), node);
+				coordinateSystem.put(oldLocation.getCopy(), null);
+				checkNewMinimumsAndMaximums(x, y);
+				return false; // stop optimizing
+			} else {
+				// no better spot found, stop optimizing, best
+				// location is already set
+				node.location = oldLocation.getCopy();
+				return true; // stop
+			}
+		}
+
 	}
 
-	/**
-	 * Node of a graph
-	 * 
-	 * @author Sebastian Greve
-	 * 
-	 */
 	class Node {
 
-		/**
-		 * Incoming edges
-		 */
-		private final List<Edge> incomingEdges = new ArrayList<>();
-
-		/**
-		 * Identifier of the node
-		 */
 		private final long key;
-
-		/**
-		 * Location in the coordinate system of the graph
-		 */
+		private final List<Edge> incomingEdges = new ArrayList<>();
+		private final List<Edge> outgoingEdges = new ArrayList<>();
 		private Point location;
 
-		/**
-		 * Outgoing edges
-		 */
-		private final List<Edge> outgoingEdges = new ArrayList<>();
-
-		/**
-		 * Creates a new node
-		 * 
-		 * @param key
-		 *            The identifier of the node
-		 */
 		public Node(final long key) {
 			this.key = key;
 		}
 
-		/**
-		 * Get the sum of the weight of the edges of the node
-		 * 
-		 * @return The sum of the weight of the edges of the node
-		 */
 		int getEdgesWeightSum() {
 			int weightSum = 0;
-			for (final Edge edge : incomingEdges) {
+			for (Edge edge : incomingEdges) {
 				weightSum += edge.getWeight();
 			}
-			for (final Edge edge : outgoingEdges) {
+			for (Edge edge : outgoingEdges) {
 				weightSum += edge.getWeight();
 			}
 			return weightSum;
 		}
 
-		/**
-		 * Searches for the heaviest edge of the node
-		 * 
-		 * @return The heaviest edge of the node
-		 */
 		Edge getHeaviestEdge() {
 			Edge heaviestEdge = null;
 			int heaviestWeight = 0;
-			for (final Edge edge : incomingEdges) {
-				final int weight = edge.getWeight();
-				if (weight > heaviestWeight) {
-					heaviestWeight = weight;
-					heaviestEdge = edge;
-				}
+			for (Edge edge : incomingEdges) {
+				int weight = edge.getWeight();
+				if (weight <= heaviestWeight)
+					continue;
+				heaviestWeight = weight;
+				heaviestEdge = edge;
 			}
-			for (final Edge edge : outgoingEdges) {
-				final int weight = edge.getWeight();
-				if (weight > heaviestWeight) {
-					heaviestWeight = weight;
-					heaviestEdge = edge;
-				}
+			for (Edge edge : outgoingEdges) {
+				int weight = edge.getWeight();
+				if (weight <= heaviestWeight)
+					continue;
+				heaviestWeight = weight;
+				heaviestEdge = edge;
+
 			}
 			return heaviestEdge;
 		}
 
-		/**
-		 * Searches for the lightest edge of the node
-		 * 
-		 * @return The lightest edge of the node
-		 */
 		Edge getLightestEdge() {
 			Edge lightestEdge = null;
 			int lightestWeight = Integer.MAX_VALUE;
-			for (final Edge edge : incomingEdges) {
-				final int weight = edge.getWeight();
-				if (weight < lightestWeight) {
-					lightestWeight = weight;
-					lightestEdge = edge;
-				}
+			for (Edge edge : incomingEdges) {
+				int weight = edge.getWeight();
+				if (weight >= lightestWeight)
+					continue;
+				lightestWeight = weight;
+				lightestEdge = edge;
 			}
-			for (final Edge edge : outgoingEdges) {
-				final int weight = edge.getWeight();
-				if (weight < lightestWeight) {
-					lightestWeight = weight;
-					lightestEdge = edge;
-				}
+			for (Edge edge : outgoingEdges) {
+				int weight = edge.getWeight();
+				if (weight >= lightestWeight)
+					continue;
+				lightestWeight = weight;
+				lightestEdge = edge;
 			}
 			return lightestEdge;
 		}
 
 		@Override
-		public boolean equals(final Object obj) {
-			if (obj == this) {
+		public boolean equals(Object obj) {
+			if (obj == this)
 				return true;
-			}
-			if (obj instanceof Node) {
-				if (key == ((Node) obj).key) {
+			if (obj instanceof Node)
+				if (key == ((Node) obj).key)
 					return true;
-				}
-			}
 			return false;
 		}
 	}

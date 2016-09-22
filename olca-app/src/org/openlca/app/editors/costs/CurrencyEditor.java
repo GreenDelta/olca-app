@@ -111,15 +111,12 @@ public class CurrencyEditor extends ModelEditor<Currency> {
 		}
 
 		private void createRefButton(Composite comp, FormToolkit tk) {
-			UI.formLabel(comp, tk, "");
-			Button button = tk.createButton(comp, M.SetAsReferenceCurrency,
-					SWT.NONE);
-			button.setImage(Images.get(ModelType.CURRENCY));
-			Controls.onSelect(button, e -> {
+			UI.filler(comp, tk);
+			Button b = tk.createButton(comp, M.SetAsReferenceCurrency, SWT.NONE);
+			b.setImage(Images.get(ModelType.CURRENCY));
+			Controls.onSelect(b, e -> {
 				RefCurrencyUpdate.run(getModel());
 			});
 		}
-
 	}
-
 }

@@ -190,6 +190,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	private class OpenLogAction extends Action {
 		public OpenLogAction() {
 			setText(M.OpenLogFile);
+			setImageDescriptor(Icon.FILE.descriptor());
 			setToolTipText("Opens the openLCA log file");
 		}
 

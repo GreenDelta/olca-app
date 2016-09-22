@@ -6,8 +6,8 @@ import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.LineBorder;
-import org.openlca.app.editors.graphical.layout.GraphLayoutManager;
-import org.openlca.app.editors.graphical.layout.GraphLayoutType;
+import org.openlca.app.editors.graphical.layout.LayoutManager;
+import org.openlca.app.editors.graphical.layout.LayoutType;
 import org.openlca.app.editors.graphical.layout.NodeLayoutStore;
 import org.openlca.app.editors.graphical.layout.NodeLayoutStore.NodeLayoutException;
 
@@ -19,7 +19,7 @@ class ProductSystemFigure extends Figure {
 	ProductSystemFigure(ProductSystemNode node) {
 		setForegroundColor(ColorConstants.black);
 		setBorder(new LineBorder(1));
-		node.setFigure(this);
+		node.figure = this;
 		this.node = node;
 	}
 
@@ -30,8 +30,8 @@ class ProductSystemFigure extends Figure {
 	}
 
 	@Override
-	public GraphLayoutManager getLayoutManager() {
-		return (GraphLayoutManager) super.getLayoutManager();
+	public LayoutManager getLayoutManager() {
+		return (LayoutManager) super.getLayoutManager();
 	}
 
 	@Override
@@ -41,8 +41,8 @@ class ProductSystemFigure extends Figure {
 			return;
 		firstTime = false;
 		boolean layoutLoaded = false;
-		if (!node.getEditor().isInitialized()) {
-			node.getEditor().setInitialized(true);
+		if (!node.editor.isInitialized()) {
+			node.editor.setInitialized(true);
 			try {
 				layoutLoaded = NodeLayoutStore.loadLayout(node);
 			} catch (NodeLayoutException e) {
@@ -53,6 +53,6 @@ class ProductSystemFigure extends Figure {
 			return;
 		long refId = node.getProductSystem().getReferenceProcess().getId();
 		node.getProcessNode(refId).expandLeft();
-		getLayoutManager().layout(this, GraphLayoutType.TREE_LAYOUT);
+		getLayoutManager().layout(this, LayoutType.TREE_LAYOUT);
 	}
 }

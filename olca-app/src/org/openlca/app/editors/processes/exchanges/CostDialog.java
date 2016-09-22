@@ -83,7 +83,7 @@ class CostDialog extends FormDialog {
 			exchange.currency = currency;
 			updateCurrencyLabels();
 		});
-		UI.formLabel(body, tk, "");
+		UI.filler(body, tk);
 	}
 
 	private void setCurrencyContent(ComboViewer combo) {

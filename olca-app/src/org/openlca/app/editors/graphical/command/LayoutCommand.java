@@ -7,19 +7,22 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.M;
-import org.openlca.app.editors.graphical.layout.GraphLayoutManager;
-import org.openlca.app.editors.graphical.layout.GraphLayoutType;
+import org.openlca.app.editors.graphical.layout.LayoutManager;
+import org.openlca.app.editors.graphical.layout.LayoutType;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 
 public class LayoutCommand extends Command {
 
-	private ProductSystemNode model;
-	private GraphLayoutManager layoutManager;
-	private GraphLayoutType type;
-	private Map<IFigure, Rectangle> oldConstraints = new HashMap<>();
+	private final ProductSystemNode model;
+	private final LayoutManager layoutManager;
+	private final LayoutType type;
+	private final Map<IFigure, Rectangle> oldConstraints = new HashMap<>();
 
-	LayoutCommand() {
+	public LayoutCommand(ProductSystemNode model, LayoutManager layoutManager, LayoutType type) {
+		this.model = model;
+		this.layoutManager = layoutManager;
+		this.type = type;
 	}
 
 	@Override
@@ -41,11 +44,11 @@ public class LayoutCommand extends Command {
 	@Override
 	public void execute() {
 		for (ProcessNode node : model.getChildren())
-			if (node.getFigure().isVisible())
-				oldConstraints.put(node.getFigure(), node.getFigure()
+			if (node.figure.isVisible())
+				oldConstraints.put(node.figure, node.figure
 						.getBounds().getCopy());
-		layoutManager.layout(model.getFigure(), type);
-		model.getEditor().setDirty(true);
+		layoutManager.layout(model.figure, type);
+		model.editor.setDirty(true);
 	}
 
 	@Override
@@ -55,28 +58,16 @@ public class LayoutCommand extends Command {
 
 	@Override
 	public void redo() {
-		layoutManager.layout(model.getFigure(), type);
-		model.getEditor().setDirty(true);
+		layoutManager.layout(model.figure, type);
+		model.editor.setDirty(true);
 	}
 
 	@Override
 	public void undo() {
 		for (ProcessNode node : model.getChildren())
-			if (oldConstraints.get(node.getFigure()) != null)
-				node.setXyLayoutConstraints(oldConstraints.get(node.getFigure()));
-		model.getEditor().setDirty(true);
-	}
-
-	void setModel(ProductSystemNode model) {
-		this.model = model;
-	}
-
-	void setLayoutManager(GraphLayoutManager layoutManager) {
-		this.layoutManager = layoutManager;
-	}
-
-	void setLayoutType(GraphLayoutType type) {
-		this.type = type;
+			if (oldConstraints.get(node.figure) != null)
+				node.setXyLayoutConstraints(oldConstraints.get(node.figure));
+		model.editor.setDirty(true);
 	}
 
 }

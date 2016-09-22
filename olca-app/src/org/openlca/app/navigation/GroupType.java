@@ -4,6 +4,8 @@ public enum GroupType {
 
 	BACKGROUND_DATA,
 
+	INDICATORS,
+
 	MODELS;
 
 }

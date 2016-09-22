@@ -6,11 +6,12 @@ import org.openlca.app.editors.graphical.model.ProcessNode;
 
 public class ChangeStateCommand extends Command {
 
-	private ProcessNode node;
-	private boolean initiallyMinimized;
+	private final ProcessNode node;
+	private final boolean initiallyMinimized;
 
-	ChangeStateCommand() {
-
+	public ChangeStateCommand(ProcessNode node) {
+		this.node = node;
+		initiallyMinimized = node.isMinimized();
 	}
 
 	@Override
@@ -31,22 +32,19 @@ public class ChangeStateCommand extends Command {
 			node.maximize();
 		else
 			node.minimize();
-		node.getParent().getEditor().setDirty(true);
+		node.parent().editor.setDirty(true);
 	}
 
 	@Override
 	public String getLabel() {
-		if (node.isMinimized())
+		if (node.isMinimized()) {
 			if (initiallyMinimized)
 				return M.Maximize;
-			else
-				return M.Minimize;
-		else {
-			if (initiallyMinimized)
-				return M.Minimize;
-			else
-				return M.Maximize;
+			return M.Minimize;
 		}
+		if (initiallyMinimized)
+			return M.Minimize;
+		return M.Maximize;
 	}
 
 	@Override
@@ -57,11 +55,6 @@ public class ChangeStateCommand extends Command {
 	@Override
 	public void undo() {
 		execute();
-	}
-
-	void setNode(ProcessNode node) {
-		this.node = node;
-		initiallyMinimized = node.isMinimized();
 	}
 
 }

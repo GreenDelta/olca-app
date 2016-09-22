@@ -86,7 +86,7 @@ class SankeyResult {
 	public double getLinkContribution(ProcessLink link) {
 		if (link == null || results == null)
 			return 0;
-		double totalContr = getUpstreamContribution(link.getProviderId());
+		double totalContr = getUpstreamContribution(link.providerId);
 		double linkShare = results.getLinkShare(link);
 		return totalContr * linkShare;
 	}

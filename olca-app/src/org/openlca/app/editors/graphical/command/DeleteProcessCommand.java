@@ -7,32 +7,30 @@ import org.openlca.app.editors.graphical.model.ProcessNode;
 
 public class DeleteProcessCommand extends Command {
 
+	private final ProcessNode node;
 	private Rectangle oldLayout;
-	private ProcessNode node;
 
-	DeleteProcessCommand() {
-
+	public DeleteProcessCommand(ProcessNode node) {
+		this.node = node;
 	}
 
 	@Override
 	public boolean canExecute() {
 		if (node == null)
 			return false;
-		if (node.getParent().getProductSystem().getReferenceProcess().getId() == node
-				.getProcess().getId())
+		if (node.parent().getProductSystem().getReferenceProcess().getId() == node.process.getId())
 			return false;
-		return node.getLinks().size() == 0;
+		return node.links.size() == 0;
 	}
 
 	@Override
 	public void execute() {
 		oldLayout = node.getXyLayoutConstraints();
-		node.getParent().getProductSystem().getProcesses()
-				.remove(node.getProcess().getId());
-		node.getParent().remove(node);
-		if (node.getParent().getEditor().getOutline() != null)
-			node.getParent().getEditor().getOutline().refresh();
-		node.getParent().getEditor().setDirty(true);
+		node.parent().getProductSystem().getProcesses().remove(node.process.getId());
+		node.parent().remove(node);
+		if (node.parent().editor.getOutline() != null)
+			node.parent().editor.getOutline().refresh();
+		node.parent().editor.setDirty(true);
 	}
 
 	@Override
@@ -45,18 +43,13 @@ public class DeleteProcessCommand extends Command {
 		execute();
 	}
 
-	void setNode(ProcessNode node) {
-		this.node = node;
-	}
-
 	@Override
 	public void undo() {
-		node.getParent().add(node);
+		node.parent().add(node);
 		node.setXyLayoutConstraints(oldLayout);
-		node.getParent().getProductSystem().getProcesses()
-				.add(node.getProcess().getId());
-		if (node.getParent().getEditor().getOutline() != null)
-			node.getParent().getEditor().getOutline().refresh();
-		node.getParent().getEditor().setDirty(true);
+		node.parent().getProductSystem().getProcesses().add(node.process.getId());
+		if (node.parent().editor.getOutline() != null)
+			node.parent().editor.getOutline().refresh();
+		node.parent().editor.setDirty(true);
 	}
 }

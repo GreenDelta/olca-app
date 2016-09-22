@@ -34,15 +34,15 @@ class RiskCombo {
 		if (selected >= 0)
 			combo.select(selected);
 		Controls.onSelect(combo, (e) -> selectionChanged());
-		UI.formLabel(body, tk, "");
+		UI.filler(body, tk);
 	}
 
 	private void selectionChanged() {
 		int i = combo.getSelectionIndex();
-		if (i < 0)
+		if (i < 0) {
 			aspect.riskLevel = null;
-		else
+		} else {
 			aspect.riskLevel = levels[i];
+		}
 	}
-
 }

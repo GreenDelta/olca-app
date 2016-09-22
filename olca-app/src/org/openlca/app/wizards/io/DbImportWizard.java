@@ -88,7 +88,7 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 							M.DBImportVersionNewerMessage);
 			return false;
 		}
-		if (config.getMode() == config.FILE_MODE)
+		if (config.mode == config.FILE_MODE)
 			return true;
 		return Question
 				.ask(M.UpdateDatabase,
@@ -175,10 +175,10 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 				InvocationTargetException, InterruptedException {
 			log.trace("connect to source database");
 			try {
-				if (config.getMode() == config.FILE_MODE)
+				if (config.mode == config.FILE_MODE)
 					source = connectToFolder();
 				else
-					source = config.getDatabaseConfiguration().createInstance();
+					source = config.databaseConfiguration.createInstance();
 			} catch (Exception e) {
 				log.error("Failed to connect to source database", e);
 				throw new InvocationTargetException(e);
@@ -186,7 +186,7 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 		}
 
 		private IDatabase connectToFolder() {
-			File zipFile = config.getFile();
+			File zipFile = config.file;
 			File tempDir = new File(System.getProperty("java.io.tmpdir"));
 			tempDbFolder = new File(tempDir, UUID.randomUUID().toString());
 			tempDbFolder.mkdirs();

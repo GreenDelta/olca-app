@@ -2,6 +2,7 @@ package org.openlca.app.wizards.io;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -21,6 +22,7 @@ import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.viewers.Viewers;
+import org.openlca.util.Strings;
 
 class DbImportPage extends WizardPage {
 
@@ -33,7 +35,7 @@ class DbImportPage extends WizardPage {
 	public DbImportPage() {
 		super("DbImportPage");
 		config = new ImportConfig();
-		config.setMode(config.EXISTING_MODE);
+		config.mode = config.EXISTING_MODE;
 		setTitle(M.DatabaseImport);
 		setDescription(M.DatabaseImportDescription);
 		setPageComplete(false);
@@ -67,8 +69,7 @@ class DbImportPage extends WizardPage {
 		UI.gridData(existingViewer.getControl(), true, false);
 		existingViewer.setLabelProvider(new DbLabel());
 		existingViewer.setContentProvider(ArrayContentProvider.getInstance());
-		existingViewer
-				.addSelectionChangedListener((e) -> selectDatabase());
+		existingViewer.addSelectionChangedListener(e -> selectDatabase());
 		fillExistingViewer();
 	}
 
@@ -76,19 +77,23 @@ class DbImportPage extends WizardPage {
 		DatabaseList dbList = Database.getConfigurations();
 		List<IDatabaseConfiguration> configs = new ArrayList<>();
 		for (IDatabaseConfiguration config : dbList.getLocalDatabases()) {
-			if (!Database.isActive(config))
+			if (!Database.isActive(config)) {
 				configs.add(config);
+			}
 		}
 		for (IDatabaseConfiguration config : dbList.getRemoteDatabases()) {
-			if (!Database.isActive(config))
+			if (!Database.isActive(config)) {
 				configs.add(config);
+			}
 		}
+		Collections.sort(configs,
+				(c1, c2) -> Strings.compare(c1.getName(), c2.getName()));
 		existingViewer.setInput(configs);
 	}
 
 	private void selectDatabase() {
 		IDatabaseConfiguration db = Viewers.getFirstSelected(existingViewer);
-		config.setDatabaseConfiguration(db);
+		config.databaseConfiguration = db;
 		setPageComplete(db != null);
 	}
 
@@ -111,12 +116,12 @@ class DbImportPage extends WizardPage {
 		if (zolcaFile == null)
 			return;
 		fileText.setText(zolcaFile.getAbsolutePath());
-		config.setFile(zolcaFile);
+		config.file = zolcaFile;
 		setPageComplete(true);
 	}
 
 	private void setSelection(int mode) {
-		config.setMode(mode);
+		config.mode = mode;
 		if (mode == config.EXISTING_MODE) {
 			existingViewer.getCombo().setEnabled(true);
 			fileText.setEnabled(false);
@@ -135,35 +140,9 @@ class DbImportPage extends WizardPage {
 		final int EXISTING_MODE = 0;
 		final int FILE_MODE = 1;
 
-		private File file;
-		private IDatabaseConfiguration databaseConfiguration;
-
-		private int mode;
-
-		public int getMode() {
-			return mode;
-		}
-
-		public void setMode(int mode) {
-			this.mode = mode;
-		}
-
-		public File getFile() {
-			return file;
-		}
-
-		public void setFile(File file) {
-			this.file = file;
-		}
-
-		public IDatabaseConfiguration getDatabaseConfiguration() {
-			return databaseConfiguration;
-		}
-
-		public void setDatabaseConfiguration(
-				IDatabaseConfiguration databaseConfiguration) {
-			this.databaseConfiguration = databaseConfiguration;
-		}
+		File file;
+		IDatabaseConfiguration databaseConfiguration;
+		int mode;
 	}
 
 	private class DbLabel extends LabelProvider {

@@ -50,7 +50,7 @@ public class TreeLayout {
 				final ProcessNode processNode = (ProcessNode) o;
 				if (!containing.contains(processNode.process.getId())) {
 					final Node node = new Node();
-					node.processKey = processNode.process.getId();
+					node.processId = processNode.process.getId();
 					build(productSystemNode.getProductSystem(),
 							new Node[] { node });
 					node.sort();
@@ -112,7 +112,7 @@ public class TreeLayout {
 							figure.getProcessNode().setXyLayoutConstraints(
 									new Rectangle(xPosition, yPosition
 											+ additionalHeight, figure
-											.getSize().width,
+													.getSize().width,
 											figure.getSize().height));
 							newAdditionalHeight = Math.max(
 									newAdditionalHeight,
@@ -137,7 +137,7 @@ public class TreeLayout {
 			y++;
 			addition++;
 		}
-		locations.put(new Point(x, y), node.processKey);
+		locations.put(new Point(x, y), node.processId);
 		for (int i = 0; i < node.leftChildren.size(); i++) {
 			final Node child = node.leftChildren.get(i);
 			int sizeAddition = 0;
@@ -163,49 +163,49 @@ public class TreeLayout {
 
 	private Node build(final ProductSystem productSystem) {
 		final Node node = new Node();
-		node.processKey = productSystem.getReferenceProcess().getId();
+		node.processId = productSystem.getReferenceProcess().getId();
 		build(productSystem, new Node[] { node });
 		return node;
 	}
 
-	private void build(final ProductSystem productSystem, final Node[] nodes) {
-		List<Node> children = new ArrayList<>();
+	private void build(ProductSystem system, Node[] nodes) {
+		List<Node> childs = new ArrayList<>();
 		for (Node node : nodes) {
-			long processKey = node.processKey;
-			for (ProcessLink link : linkSearchMap.getLinks(processKey)) {
-				if (link.getRecipientId() == processKey) {
-					if (!containing.contains(link.getProviderId())
-							&& paintedProcesses.contains(link.getProviderId())) {
+			long processId = node.processId;
+			for (ProcessLink link : linkSearchMap.getLinks(processId)) {
+				if (link.processId == processId) {
+					if (!containing.contains(link.providerId)
+							&& paintedProcesses.contains(link.providerId)) {
 						Node child = new Node();
-						child.processKey = link.getProviderId();
+						child.processId = link.providerId;
 						node.leftChildren.add(child);
-						containing.add(child.processKey);
-						children.add(child);
+						containing.add(child.processId);
+						childs.add(child);
 					}
 				}
 			}
 		}
-		if (children.size() > 0) {
-			build(productSystem, children.toArray(new Node[children.size()]));
+		if (childs.size() > 0) {
+			build(system, childs.toArray(new Node[childs.size()]));
 		}
-		children.clear();
+		childs.clear();
 		for (Node node : nodes) {
-			long processKey = node.processKey;
-			for (ProcessLink link : linkSearchMap.getLinks(processKey)) {
-				if (link.getProviderId() != processKey)
+			long providerId = node.processId;
+			for (ProcessLink link : linkSearchMap.getLinks(providerId)) {
+				if (link.providerId != providerId)
 					continue;
-				if (!containing.contains(link.getRecipientId())
-						&& paintedProcesses.contains(link.getRecipientId())) {
+				if (!containing.contains(link.processId)
+						&& paintedProcesses.contains(link.processId)) {
 					Node child = new Node();
-					child.processKey = link.getRecipientId();
+					child.processId = link.processId;
 					node.rightChildren.add(child);
-					containing.add(child.processKey);
-					children.add(child);
+					containing.add(child.processId);
+					childs.add(child);
 				}
 			}
 		}
-		if (children.size() > 0) {
-			build(productSystem, children.toArray(new Node[children.size()]));
+		if (childs.size() > 0) {
+			build(system, childs.toArray(new Node[childs.size()]));
 		}
 	}
 
@@ -223,7 +223,7 @@ public class TreeLayout {
 	class Node {
 
 		List<Node> leftChildren = new ArrayList<>();
-		long processKey;
+		long processId;
 		List<Node> rightChildren = new ArrayList<>();
 
 		int getLeftDepth() {

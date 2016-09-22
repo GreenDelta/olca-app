@@ -3,16 +3,13 @@ package org.openlca.app.editors.graphical.model;
 import org.eclipse.draw2d.BendpointConnectionRouter;
 import org.eclipse.draw2d.Connection;
 import org.eclipse.draw2d.ConnectionAnchor;
+import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.PointList;
-import org.openlca.app.editors.graphical.layout.GraphLayoutManager;
+import org.openlca.app.editors.graphical.layout.LayoutManager;
 
 public class TreeConnectionRouter extends BendpointConnectionRouter {
 
-	private static final TreeConnectionRouter instance = new TreeConnectionRouter();
-
-	public static TreeConnectionRouter get() {
-		return instance;
-	}
+	public static final TreeConnectionRouter instance = new TreeConnectionRouter();
 
 	private TreeConnectionRouter() {
 
@@ -28,69 +25,30 @@ public class TreeConnectionRouter extends BendpointConnectionRouter {
 	@Override
 	public void route(Connection conn) {
 		super.route(conn);
-		if (conn.getSourceAnchor().getOwner() != null
-				&& conn.getTargetAnchor().getOwner() != null) {
-			PointList points = new PointList();
-			points.addPoint(conn.getPoints().getFirstPoint());
-
-			ProcessFigure source = getProcessFigure(conn.getSourceAnchor());
-			ProcessFigure target = getProcessFigure(conn.getTargetAnchor());
-
-			if (target.getLocation().x < source.getLocation().x
-					+ source.getSize().width
-					|| target.getLocation().x > source.getLocation().x
-							+ source.getSize().width
-							+ GraphLayoutManager.HORIZONTAL_SPACING
-							+ target.getSize().width || target == source) {
-				points.addPoint(conn
-						.getPoints()
-						.getFirstPoint()
-						.getTranslated(
-								GraphLayoutManager.HORIZONTAL_SPACING / 2, 0));
-
-				int y1 = source.getLocation().y < target.getLocation().y ? target
-						.getLocation().y
-						- GraphLayoutManager.VERTICAL_SPACING
-						/ 2 : source.getLocation().y
-						- GraphLayoutManager.VERTICAL_SPACING / 2;
-
-				points.addPoint(
-						conn.getPoints()
-								.getFirstPoint()
-								.getTranslated(
-										+GraphLayoutManager.HORIZONTAL_SPACING / 2,
-										0).x, y1);
-
-				points.addPoint(
-						conn.getPoints()
-								.getLastPoint()
-								.getTranslated(
-										-GraphLayoutManager.HORIZONTAL_SPACING / 2,
-										0).x, y1);
-
-				points.addPoint(conn
-						.getPoints()
-						.getLastPoint()
-						.getTranslated(
-								-GraphLayoutManager.HORIZONTAL_SPACING / 2, 0));
-			} else {
-				points.addPoint(conn
-						.getPoints()
-						.getFirstPoint()
-						.getTranslated(
-								GraphLayoutManager.HORIZONTAL_SPACING / 2, 0));
-
-				points.addPoint(
-						conn.getPoints()
-								.getFirstPoint()
-								.getTranslated(
-										GraphLayoutManager.HORIZONTAL_SPACING / 2,
-										0).x, conn.getPoints().getLastPoint().y);
-			}
-
-			points.addPoint(conn.getPoints().getLastPoint());
-			conn.setPoints(points);
+		if (conn.getSourceAnchor().getOwner() == null || conn.getTargetAnchor().getOwner() == null)
+			return;
+		PointList points = new PointList();
+		points.addPoint(conn.getPoints().getFirstPoint());
+		ProcessFigure source = getProcessFigure(conn.getSourceAnchor());
+		ProcessFigure target = getProcessFigure(conn.getTargetAnchor());
+		Point sourceLoc = source.getLocation();
+		Point targetLoc = target.getLocation();
+		Point firstPoint = conn.getPoints().getFirstPoint();
+		Point lastPoint = conn.getPoints().getLastPoint();
+		if (targetLoc.x < sourceLoc.x + source.getSize().width
+				|| targetLoc.x > sourceLoc.x + source.getSize().width + LayoutManager.H_SPACE + target.getSize().width
+				|| target == source) {
+			points.addPoint(firstPoint.getTranslated(LayoutManager.H_SPACE / 2, 0));
+			int y1 = sourceLoc.y < targetLoc.y ? targetLoc.y : sourceLoc.y;
+			y1 -= LayoutManager.V_SPACE / 2;
+			points.addPoint(firstPoint.getTranslated(LayoutManager.H_SPACE / 2, 0).x, y1);
+			points.addPoint(lastPoint.getTranslated(-LayoutManager.H_SPACE / 2, 0).x, y1);
+			points.addPoint(lastPoint.getTranslated(-LayoutManager.H_SPACE / 2, 0));
+		} else {
+			points.addPoint(firstPoint.getTranslated(LayoutManager.H_SPACE / 2, 0));
+			points.addPoint(firstPoint.getTranslated(LayoutManager.H_SPACE / 2, 0).x, lastPoint.y);
 		}
+		points.addPoint(lastPoint);
+		conn.setPoints(points);
 	}
-
 }

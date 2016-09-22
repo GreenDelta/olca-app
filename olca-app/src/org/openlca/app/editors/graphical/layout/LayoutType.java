@@ -3,7 +3,7 @@ package org.openlca.app.editors.graphical.layout;
 import org.openlca.app.M;
 
 
-public enum GraphLayoutType {
+public enum LayoutType {
 
 	MINIMAL_TREE_LAYOUT(M.MinimalTree),
 
@@ -11,7 +11,7 @@ public enum GraphLayoutType {
 
 	private String displayName;
 
-	private GraphLayoutType(final String displayName) {
+	private LayoutType(final String displayName) {
 		this.displayName = displayName;
 	}
 

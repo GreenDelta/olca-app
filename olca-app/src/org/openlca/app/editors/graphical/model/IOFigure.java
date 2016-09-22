@@ -5,9 +5,9 @@ import java.util.List;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.GridLayout;
 
-class InputOutputFigure extends Figure {
+class IOFigure extends Figure {
 
-	InputOutputFigure() {
+	IOFigure() {
 		GridLayout layout = new GridLayout(2, true);
 		layout.horizontalSpacing = 4;
 		layout.verticalSpacing = 0;
@@ -16,8 +16,8 @@ class InputOutputFigure extends Figure {
 		setLayoutManager(layout);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
+	@SuppressWarnings("unchecked")
 	public List<ExchangeFigure> getChildren() {
 		return super.getChildren();
 	}

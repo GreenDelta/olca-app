@@ -6,10 +6,10 @@ import org.openlca.app.editors.graphical.model.ProcessNode;
 
 public class MarkingCommand extends Command {
 
-	private ProcessNode node;
+	private final ProcessNode node;
 
-	MarkingCommand() {
-
+	public MarkingCommand(ProcessNode node) {
+		this.node = node;
 	}
 
 	@Override
@@ -30,15 +30,14 @@ public class MarkingCommand extends Command {
 			node.unmark();
 		else
 			node.mark();
-		node.getParent().getEditor().setDirty(true);
+		node.parent().editor.setDirty(true);
 	}
 
 	@Override
 	public String getLabel() {
 		if (node.isMarked())
 			return M.Unmark;
-		else
-			return M.Mark;
+		return M.Mark;
 	}
 
 	@Override
@@ -49,10 +48,6 @@ public class MarkingCommand extends Command {
 	@Override
 	public void undo() {
 		execute();
-	}
-
-	void setNode(ProcessNode node) {
-		this.node = node;
 	}
 
 }

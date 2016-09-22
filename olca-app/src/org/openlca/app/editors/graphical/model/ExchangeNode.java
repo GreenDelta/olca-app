@@ -6,7 +6,7 @@ import org.openlca.core.model.descriptors.Descriptors;
 
 public class ExchangeNode extends Node {
 
-	private Exchange exchange;
+	public Exchange exchange;
 
 	public ExchangeNode(Exchange exchange) {
 		this.exchange = exchange;
@@ -17,20 +17,10 @@ public class ExchangeNode extends Node {
 	}
 
 	@Override
-	public InputOutputNode getParent() {
-		return (InputOutputNode) super.getParent();
-	}
-
-	@Override
 	public String getName() {
 		if (isDummy())
 			return "";
-		return Labels.getDisplayName(Descriptors.toDescriptor(exchange
-				.getFlow()));
-	}
-
-	public Exchange getExchange() {
-		return exchange;
+		return Labels.getDisplayName(Descriptors.toDescriptor(exchange.getFlow()));
 	}
 
 	public boolean matches(ExchangeNode node) {
@@ -40,16 +30,22 @@ public class ExchangeNode extends Node {
 			return false;
 		if (isDummy())
 			return false;
-		if (!exchange.getFlow().equals(node.getExchange().getFlow()))
+		if (!exchange.getFlow().equals(node.exchange.getFlow()))
 			return false;
-		if (exchange.isInput() == node.getExchange().isInput())
+		if (exchange.isInput() == node.exchange.isInput())
 			return false;
 		return true;
 	}
 
 	public void setHighlighted(boolean value) {
-		if (!isDummy())
-			((ExchangeFigure) getFigure()).setHighlighted(value);
+		if (isDummy())
+			return;
+		((ExchangeFigure) figure).setHighlighted(value);
 	}
 
+	@Override
+	public ProcessNode parent() {
+		return (ProcessNode) super.parent().parent();
+	}
+	
 }

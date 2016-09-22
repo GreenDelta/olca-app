@@ -55,8 +55,7 @@ class OpenMiniatureViewAction extends EditorAction {
 			window.refresh();
 	}
 
-	private void update(Viewport port, IFigure figure, Control control,
-			ZoomManager zoomManager) {
+	private void update(Viewport port, IFigure figure, Control control, ZoomManager zoomManager) {
 		this.port = port;
 		this.figure = figure;
 		this.control = control;
@@ -150,12 +149,10 @@ class OpenMiniatureViewAction extends EditorAction {
 
 	@Override
 	protected boolean accept(ISelection selection) {
-		if (getEditor() == null)
+		if (editor == null)
 			return false;
-		update(getViewport(),
-				getRootEditPart().getLayer(LayerConstants.PRINTABLE_LAYERS),
-				getEditor().getGraphicalViewer().getControl(), getEditor()
-						.getZoomManager());
+		IFigure layer = getRootEditPart().getLayer(LayerConstants.PRINTABLE_LAYERS);
+		update(getViewport(), layer, editor.getGraphicalViewer().getControl(), editor.getZoomManager());
 		return true;
 	}
 
@@ -164,7 +161,6 @@ class OpenMiniatureViewAction extends EditorAction {
 	}
 
 	private ScalableRootEditPart getRootEditPart() {
-		return (ScalableRootEditPart) getEditor().getGraphicalViewer()
-				.getRootEditPart();
+		return (ScalableRootEditPart) editor.getGraphicalViewer().getRootEditPart();
 	}
 }

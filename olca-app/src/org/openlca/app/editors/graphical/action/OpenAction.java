@@ -24,7 +24,7 @@ class OpenAction extends EditorAction {
 
 	@Override
 	public void run() {
-		Editors.open(new ModelEditorInput(node.getProcess()), ProcessEditor.ID);
+		Editors.open(new ModelEditorInput(node.process), ProcessEditor.ID);
 	}
 
 }

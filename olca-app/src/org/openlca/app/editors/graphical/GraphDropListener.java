@@ -5,7 +5,7 @@ import org.eclipse.gef.commands.CommandStack;
 import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.Transfer;
-import org.openlca.app.editors.graphical.command.CommandFactory;
+import org.openlca.app.editors.graphical.command.CommandUtil;
 import org.openlca.app.editors.graphical.command.CreateProcessCommand;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -16,8 +16,7 @@ class GraphDropListener extends DropTargetAdapter {
 	private CommandStack commandStack;
 	private Transfer transferType;
 
-	GraphDropListener(ProductSystemNode model, Transfer transferType,
-			CommandStack commandStack) {
+	GraphDropListener(ProductSystemNode model, Transfer transferType, CommandStack commandStack) {
 		this.model = model;
 		this.transferType = transferType;
 		this.commandStack = commandStack;
@@ -32,18 +31,14 @@ class GraphDropListener extends DropTargetAdapter {
 		ProcessDescriptor[] descriptors = new ProcessDescriptor[data.length];
 		for (int i = 0; i < data.length; i++)
 			descriptors[i] = (ProcessDescriptor) data[i];
-
 		Command command = null;
 		for (ProcessDescriptor process : descriptors) {
-			CreateProcessCommand cmd = CommandFactory
-					.createCreateProcessCommand(model, process);
-			if (command == null)
-				command = cmd;
-			else
-				command = command.chain(cmd);
+			Command cmd = new CreateProcessCommand(model, process);
+			command = CommandUtil.chain(cmd, command);
 		}
-		if (command != null && command.canExecute())
-			commandStack.execute(command);
+		if (command == null || !command.canExecute())
+			return;
+		commandStack.execute(command);
 	}
 
 	private boolean validateInput(DropTargetEvent event) {

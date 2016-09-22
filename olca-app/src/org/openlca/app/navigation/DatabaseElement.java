@@ -24,12 +24,15 @@ public class DatabaseElement extends NavigationElement<IDatabaseConfiguration> {
 		List<INavigationElement<?>> list = new ArrayList<>();
 		list.add(new ModelTypeElement(this, ModelType.PROJECT));
 		list.add(new ModelTypeElement(this, ModelType.PRODUCT_SYSTEM));
-		list.add(new ModelTypeElement(this, ModelType.IMPACT_METHOD));
 		list.add(new ModelTypeElement(this, ModelType.PROCESS));
 		list.add(new ModelTypeElement(this, ModelType.FLOW));
-		list.add(new ModelTypeElement(this, ModelType.SOCIAL_INDICATOR));
-		list.add(new ModelTypeElement(this, ModelType.PARAMETER));
-		list.add(new GroupElement(this, g(M.BackgroundData, GroupType.BACKGROUND_DATA,
+		list.add(new GroupElement(this, g(M.IndicatorsAndParameters,
+				GroupType.INDICATORS,
+				ModelType.IMPACT_METHOD,
+				ModelType.SOCIAL_INDICATOR,
+				ModelType.PARAMETER)));
+		list.add(new GroupElement(this, g(M.BackgroundData,
+				GroupType.BACKGROUND_DATA,
 				ModelType.FLOW_PROPERTY,
 				ModelType.UNIT_GROUP,
 				ModelType.CURRENCY,

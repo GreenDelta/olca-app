@@ -8,9 +8,10 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.action.Action;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
-import org.openlca.app.editors.graphical.command.CommandFactory;
 import org.openlca.app.editors.graphical.command.CommandUtil;
 import org.openlca.app.editors.graphical.command.ConnectionInput;
+import org.openlca.app.editors.graphical.command.ExpansionCommand;
+import org.openlca.app.editors.graphical.command.MassCreationCommand;
 import org.openlca.app.editors.graphical.model.ExchangeNode;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
@@ -25,12 +26,12 @@ import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 class BuildNextTierAction extends Action implements IBuildAction {
 
+	private final FlowDao flowDao;
+	private final ProcessDao processDao;
+	private final BaseDao<Exchange> exchangeDao;
 	private List<ProcessNode> nodes;
 	private ProductSystemNode systemNode;
 	private ProcessType preferredType = ProcessType.UNIT_PROCESS;
-	private FlowDao flowDao;
-	private ProcessDao processDao;
-	private BaseDao<Exchange> exchangeDao;
 
 	BuildNextTierAction() {
 		setId(ActionIds.BUILD_NEXT_TIER);
@@ -45,7 +46,7 @@ class BuildNextTierAction extends Action implements IBuildAction {
 		this.nodes = nodes;
 		if (nodes == null || nodes.isEmpty())
 			return;
-		this.systemNode = nodes.get(0).getParent();
+		this.systemNode = nodes.get(0).parent();
 	}
 
 	void setPreferredType(ProcessType preferredType) {
@@ -56,38 +57,37 @@ class BuildNextTierAction extends Action implements IBuildAction {
 	public void run() {
 		if (nodes == null || nodes.isEmpty())
 			return;
-		ProductSystemNode systemNode = nodes.get(0).getParent();
+		ProductSystemNode systemNode = nodes.get(0).parent();
 		List<ProcessDescriptor> providers = new ArrayList<>();
 		List<ConnectionInput> newConnections = new ArrayList<>();
 		for (ProcessNode node : nodes)
 			collectFor(node, providers, newConnections);
-		Command command = CommandFactory.createBuildNextTierCommand(providers,
-				newConnections, systemNode);
+		Command command = MassCreationCommand.nextTier(providers, newConnections, systemNode);
 		if (command == null)
 			return;
 		for (ProcessNode node : nodes)
-			command = command.chain(CommandFactory
-					.createExpandLeftCommand(node));
-		CommandUtil.executeCommand(command, systemNode.getEditor());
-		systemNode.getEditor().setDirty(true);
+			command = command.chain(ExpansionCommand.expandLeft(node));
+		CommandUtil.executeCommand(command, systemNode.editor);
+		systemNode.editor.setDirty(true);
 	}
 
 	private void collectFor(ProcessNode node,
 			List<ProcessDescriptor> providers,
 			List<ConnectionInput> newConnections) {
-		long targetId = node.getProcess().getId();
+		long targetId = node.process.getId();
 		List<ExchangeNode> toConnect = loadExchangeNodes(node);
 		for (ExchangeNode exchange : toConnect) {
-			ProcessDescriptor provider = findProvider(exchange.getExchange());
-			if (provider != null) {
-				if (!providers.contains(provider))
-					providers.add(provider);
-				ConnectionInput connectionInput = new ConnectionInput(
-						provider.getId(), targetId, exchange.getExchange()
-								.getFlow().getId());
-				if (!newConnections.contains(connectionInput))
-					newConnections.add(connectionInput);
-			}
+			ProcessDescriptor provider = findProvider(exchange.exchange);
+			if (provider == null)
+				continue;
+			if (!providers.contains(provider))
+				providers.add(provider);
+			long flowId = exchange.exchange.getFlow().getId();
+			long exchangeId = exchange.exchange.getId();
+			ConnectionInput connectionInput = new ConnectionInput(provider.getId(), flowId, targetId, exchangeId);
+			if (newConnections.contains(connectionInput))
+				continue;
+			newConnections.add(connectionInput);
 		}
 	}
 
@@ -98,22 +98,21 @@ class BuildNextTierAction extends Action implements IBuildAction {
 				continue;
 			if (isAlreadyConnected(exchangeNode))
 				continue;
-			if (exchangeNode.getExchange().isInput())
+			if (exchangeNode.exchange.isInput())
 				nodes.add(exchangeNode);
 		}
 		return nodes;
 	}
 
 	private boolean isAlreadyConnected(ExchangeNode exchangeNode) {
-		ProcessNode processNode = exchangeNode.getParent().getParent();
-		long processId = processNode.getProcess().getId();
-		long flowId = exchangeNode.getExchange().getFlow().getId();
-		ProcessLinkSearchMap linkSearch = processNode.getParent()
-				.getLinkSearch();
+		ProcessNode processNode = exchangeNode.parent();
+		long processId = processNode.process.getId();
+		long flowId = exchangeNode.exchange.getFlow().getId();
+		ProcessLinkSearchMap linkSearch = processNode.parent().linkSearch;
 		List<ProcessLink> incomingLinks = linkSearch
 				.getIncomingLinks(processId);
 		for (ProcessLink link : incomingLinks)
-			if (link.getFlowId() == flowId)
+			if (link.flowId == flowId)
 				return true;
 		return false;
 	}

@@ -376,6 +376,11 @@ public class ScriptApi {
 		return dao.update(category);
 	}
 
+	public void insertCategory(Category category) {
+		CategoryDao dao = new CategoryDao(database);
+		dao.insert(category);
+	}
+
 	public Source updateSource(Source model) {
 		SourceDao dao = new SourceDao(database);
 		return dao.update(model);
