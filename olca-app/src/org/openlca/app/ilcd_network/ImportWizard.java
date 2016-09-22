@@ -77,7 +77,7 @@ public class ImportWizard extends Wizard implements IImportWizard {
 			ImportConfig config) throws Exception {
 		for (ProcessDescriptor descriptor : descriptors) {
 			Process process = config.store.get(Process.class,
-					descriptor.getUuid());
+					descriptor.uuid);
 			if (process != null) {
 				ProcessBag bag = new ProcessBag(process, config.ilcdConfig);
 				if (bag.hasProductModel()) {

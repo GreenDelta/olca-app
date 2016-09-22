@@ -8,12 +8,6 @@ import org.eclipse.swt.graphics.Image;
 import org.openlca.ilcd.descriptors.ProcessDescriptor;
 import org.openlca.ilcd.descriptors.Time;
 
-/**
- * The label provider for a search result row.
- * 
- * @author Michael Srocka
- * 
- */
 class SearchResultLabel extends LabelProvider implements ITableLabelProvider {
 
 	@Override
@@ -34,10 +28,9 @@ class SearchResultLabel extends LabelProvider implements ITableLabelProvider {
 	private String createLabel(ProcessDescriptor process, int columnIndex) {
 		switch (columnIndex) {
 		case SearchResultViewer.NAME_COLUMN:
-			return process.getName() != null ? process.getName().getValue()
-					: "";
+			return process.name != null ? process.name.value : "";
 		case SearchResultViewer.LOCATION_COLUMN:
-			return process.getLocation();
+			return process.location;
 		case SearchResultViewer.TIME_COLUMN:
 			return createTimeLabel(process);
 		case SearchResultViewer.TYPE_COLUMN:
@@ -49,10 +42,10 @@ class SearchResultLabel extends LabelProvider implements ITableLabelProvider {
 
 	private String createTimeLabel(ProcessDescriptor process) {
 		String timeSpan = "";
-		Time time = process.getTime();
+		Time time = process.time;
 		if (time != null) {
-			String startYear = yearToString(time.getReferenceYear());
-			String endYear = yearToString(time.getValidUntil());
+			String startYear = yearToString(time.referenceYear);
+			String endYear = yearToString(time.validUntil);
 			timeSpan = startYear + " - " + endYear;
 		}
 		return timeSpan;
@@ -65,9 +58,9 @@ class SearchResultLabel extends LabelProvider implements ITableLabelProvider {
 	}
 
 	private String createTypeLabel(ProcessDescriptor process) {
-		if (process == null || process.getType() == null)
+		if (process == null || process.type == null)
 			return null;
-		return process.getType().value();
+		return process.type.value();
 	}
 
 }
