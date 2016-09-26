@@ -175,6 +175,7 @@ public class ReplaceFlowsDialog extends FormDialog {
 		FlowDescriptor newFlow = Viewers.getFirstSelected(replacementViewer);
 		FlowDao dao = (FlowDao) Daos.createCategorizedDao(Database.get(), ModelType.FLOW);
 		dao.replace(oldFlow.getId(), newFlow.getId(), excludeWithProviders.getSelection());
+		Database.get().getEntityFactory().getCache().evictAll();
 		super.okPressed();
 	}
 

@@ -41,7 +41,7 @@ public class ReplaceProvidersDialog extends FormDialog {
 	private ComboViewer processViewer;
 	private ComboViewer productViewer;
 	private ComboViewer replacementViewer;
-	
+
 	public static void openDialog() {
 		if (Database.get() == null) {
 			Info.showBox(M.NoDatabaseOpened, M.NeedOpenDatabase);
@@ -54,7 +54,7 @@ public class ReplaceProvidersDialog extends FormDialog {
 		super(UI.shell());
 		setBlockOnOpen(true);
 	}
-	
+
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
@@ -185,6 +185,7 @@ public class ReplaceProvidersDialog extends FormDialog {
 		ProcessDescriptor newProcess = Viewers.getFirstSelected(replacementViewer);
 		ProcessDao dao = (ProcessDao) Daos.createCategorizedDao(Database.get(), ModelType.PROCESS);
 		dao.replace(oldProcess.getId(), product.getId(), newProcess != null ? newProcess.getId() : null);
+		Database.get().getEntityFactory().getCache().evictAll();
 		super.okPressed();
 	}
 
