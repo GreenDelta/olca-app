@@ -1,6 +1,7 @@
 package org.openlca.app.navigation.actions.cloud;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -27,7 +28,7 @@ import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
 class ReferenceSearcher {
 
-	private Set<Long> initialIds = new HashSet<>();
+	private Set<Long> allChanged = new HashSet<>();
 	private Map<Long, String> idToRefId = new HashMap<>();
 	private Set<DiffResult> results = new HashSet<>();
 	private IDatabase database;
@@ -41,9 +42,11 @@ class ReferenceSearcher {
 	}
 
 	List<DiffResult> run(List<DiffResult> toCheck) {
-		initialIds.clear();
+		allChanged.clear();
 		for (DiffResult result : toCheck)
-			initialIds.add(result.local.localId);
+			allChanged.add(result.local.localId);
+		if (allChanged.size() == index.getChanged().size())
+			return Collections.emptyList();
 		Map<ModelType, Set<Long>> typeToIds = prepareFromResults(toCheck);
 		search(typeToIds);
 		return new ArrayList<>(results);
@@ -59,10 +62,11 @@ class ReferenceSearcher {
 			for (Diff diff : diffs) {
 				DiffResult diffResult = new DiffResult(diff);
 				diffResult.ignoreRemote = true;
+				allChanged.add(diffResult.local.localId);
 				results.add(diffResult);
 			}
 		}
-		if (allFound.isEmpty())
+		if (allFound.isEmpty() || allChanged.size() == index.getChanged().size())
 			return;
 		Map<ModelType, Set<Long>> next = prepareFromDescriptors(allFound);
 		search(next);
@@ -145,7 +149,7 @@ class ReferenceSearcher {
 	private List<Diff> getChanged(Set<CategorizedDescriptor> refs) {
 		List<Diff> relevant = new ArrayList<>();
 		for (CategorizedDescriptor d : refs) {
-			if (initialIds.contains(d.getId()))
+			if (allChanged.contains(d.getId()))
 				continue;
 			Diff diff = index.get(d.getRefId());
 			if (diff == null || !diff.hasChanged())
