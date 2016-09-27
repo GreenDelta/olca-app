@@ -1,6 +1,10 @@
 package org.openlca.app.results;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -8,8 +12,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
@@ -31,12 +33,12 @@ import org.openlca.app.util.trees.Trees;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.math.data_quality.DQResult;
-import org.openlca.core.matrix.FlowIndex;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.ContributionItem;
 import org.openlca.core.results.ContributionResultProvider;
 import org.openlca.core.results.FlowResult;
+import org.openlca.util.Strings;
 
 /**
  * Shows the total inventory result of a quick calculation, analysis result,
@@ -60,30 +62,46 @@ public class TotalFlowResultPage extends FormPage {
 		ScrolledForm form = UI.formHeader(mform, M.InventoryResults);
 		toolkit = mform.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
-		TreeViewer inputViewer = createSectionAndViewer(body, true);
-		TreeViewer outputViewer = createSectionAndViewer(body, false);
+		TreeViewer inputTree = createSectionAndViewer(body, true);
+		TreeViewer outputTree = createSectionAndViewer(body, false);
 		TotalRequirementsSection reqSection = new TotalRequirementsSection(result, dqResult);
 		reqSection.create(body, toolkit);
 		form.reflow(true);
-		Collection<FlowDescriptor> flows = result.getFlowDescriptors();
-		inputViewer.setInput(flows);
-		outputViewer.setInput(flows);
+		fillTrees(inputTree, outputTree);
 		reqSection.fill();
 	}
 
-	private TreeViewer createSectionAndViewer(Composite parent, boolean input) {
-		Section section = UI.section(parent, toolkit, input ? M.Inputs : M.Outputs);
+	private void fillTrees(TreeViewer inputTree, TreeViewer outputTree) {
+		Collection<FlowDescriptor> flows = result.getFlowDescriptors();
+		List<FlowDescriptor> inFlows = new ArrayList<>();
+		List<FlowDescriptor> outFlows = new ArrayList<>();
+		for (FlowDescriptor flow : flows) {
+			if (result.isInput(flow)) {
+				inFlows.add(flow);
+			} else {
+				outFlows.add(flow);
+			}
+		}
+		Comparator<FlowDescriptor> sorter = (f1, f2) -> Strings.compare(
+				f1.getName(), f2.getName());
+		Collections.sort(inFlows, sorter);
+		Collections.sort(outFlows, sorter);
+		inputTree.setInput(inFlows);
+		outputTree.setInput(outFlows);
+	}
+
+	private TreeViewer createSectionAndViewer(Composite parent, boolean forInputs) {
+		Section section = UI.section(parent, toolkit, forInputs ? M.Inputs : M.Outputs);
 		UI.gridData(section, true, true);
-		Composite composite = UI.sectionClient(section, toolkit);
-		UI.gridLayout(composite, 1);
+		Composite comp = UI.sectionClient(section, toolkit);
+		UI.gridLayout(comp, 1);
 		String[] headers = new String[] { M.Name, M.Category, M.SubCategory, M.Amount };
 		if (DQUI.displayExchangeQuality(dqResult)) {
 			headers = DQUI.appendTableHeaders(headers, dqResult.setup.exchangeDqSystem);
 		}
 		Label label = new Label();
-		TreeViewer viewer = Trees.createViewer(composite, headers, label);
+		TreeViewer viewer = Trees.createViewer(comp, headers, label);
 		viewer.setContentProvider(new ContentProvider());
-		viewer.setFilters(new ViewerFilter[] { new InputOutputFilter(input) });
 		createColumnSorters(viewer, label);
 		double[] widths = { .4, .2, .2, .2 };
 		if (DQUI.displayExchangeQuality(dqResult)) {
@@ -216,25 +234,6 @@ public class TotalFlowResultPage extends FormPage {
 			return null;
 		}
 
-	}
-
-	private class InputOutputFilter extends ViewerFilter {
-
-		private boolean input;
-
-		private InputOutputFilter(boolean input) {
-			this.input = input;
-		}
-
-		@Override
-		public boolean select(Viewer viewer, Object parentElement,
-				Object element) {
-			if (!(element instanceof FlowDescriptor))
-				return true;
-			FlowIndex index = result.result.flowIndex;
-			FlowDescriptor flow = (FlowDescriptor) element;
-			return index.isInput(flow.getId()) == input;
-		}
 	}
 
 	private class Contribution {
