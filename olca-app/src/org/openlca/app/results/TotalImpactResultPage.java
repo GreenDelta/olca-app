@@ -236,6 +236,8 @@ public class TotalImpactResultPage extends FormPage {
 
 		@Override
 		protected double[] getQuality(Object obj) {
+			if (dqResult == null)
+				return null;
 			Triple triple = (Triple) obj;
 			BaseDescriptor elem = triple.getLast();
 			if (elem instanceof ImpactCategoryDescriptor)
