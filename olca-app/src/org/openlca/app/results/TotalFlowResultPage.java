@@ -1,9 +1,8 @@
 package org.openlca.app.results;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -109,41 +108,33 @@ public class TotalFlowResultPage extends FormPage {
 		}
 	}
 
-	private class ContentProvider extends ArrayContentProvider implements ITreeContentProvider {
+	private class ContentProvider extends ArrayContentProvider
+			implements ITreeContentProvider {
 
 		@Override
-		public Object[] getChildren(Object parentElement) {
-			List<ContributionItem<ProcessDescriptor>> contributions = getContributions(parentElement);
-			if (contributions == null || contributions.isEmpty())
+		public Object[] getChildren(Object e) {
+			if (!(e instanceof FlowDescriptor))
 				return null;
-			FlowDescriptor flow = (FlowDescriptor) parentElement;
-			List<ContributionWrapper> result = new ArrayList<>();
-			for (ContributionItem<ProcessDescriptor> item : contributions) {
-				result.add(new ContributionWrapper(item, flow));
-			}
-			return result.toArray();
+			FlowDescriptor flow = (FlowDescriptor) e;
+			return result.getProcessContributions(flow).contributions.stream()
+					.filter(i -> i.amount != 0)
+					.sorted((i1, i2) -> -Double.compare(i1.amount, i2.amount))
+					.map(i -> new Contribution(i, flow))
+					.collect(Collectors.toList())
+					.toArray();
 		}
 
 		@Override
-		public Object getParent(Object element) {
+		public Object getParent(Object e) {
+			if (e instanceof Contribution)
+				return ((Contribution) e).flow;
 			return null;
 		}
 
 		@Override
-		public boolean hasChildren(Object element) {
-			List<ContributionItem<ProcessDescriptor>> contributions = getContributions(element);
-			if (contributions == null || contributions.isEmpty())
-				return false;
-			return true;
+		public boolean hasChildren(Object e) {
+			return e instanceof FlowDescriptor;
 		}
-
-		private List<ContributionItem<ProcessDescriptor>> getContributions(Object element) {
-			if (!(element instanceof FlowDescriptor))
-				return null;
-			FlowDescriptor flow = (FlowDescriptor) element;
-			return ((ContributionResultProvider<?>) result).getProcessContributions(flow).contributions;
-		}
-
 	}
 
 	private class Label extends DQLabelProvider {
@@ -159,8 +150,8 @@ public class TotalFlowResultPage extends FormPage {
 			if (obj instanceof FlowDescriptor) {
 				FlowDescriptor flow = (FlowDescriptor) obj;
 				return Images.get(flow);
-			} else if (obj instanceof ContributionWrapper) {
-				ProcessDescriptor process = ((ContributionWrapper) obj).contribution.item;
+			} else if (obj instanceof Contribution) {
+				ProcessDescriptor process = ((Contribution) obj).item.item;
 				return Images.get(process);
 			}
 			return null;
@@ -170,8 +161,8 @@ public class TotalFlowResultPage extends FormPage {
 		public String getText(Object obj, int col) {
 			if (obj instanceof FlowDescriptor)
 				return getFlowColumnText((FlowDescriptor) obj, col);
-			if (obj instanceof ContributionWrapper)
-				return getProcessColumnText((ContributionWrapper) obj, col);
+			if (obj instanceof Contribution)
+				return getProcessColumnText((Contribution) obj, col);
 			return null;
 		}
 
@@ -193,8 +184,8 @@ public class TotalFlowResultPage extends FormPage {
 			}
 		}
 
-		private String getProcessColumnText(ContributionWrapper item, int col) {
-			ProcessDescriptor process = item.contribution.item;
+		private String getProcessColumnText(Contribution item, int col) {
+			ProcessDescriptor process = item.item.item;
 			Pair<String, String> category = Labels.getCategory(process, cache);
 			switch (col) {
 			case 0:
@@ -204,8 +195,8 @@ public class TotalFlowResultPage extends FormPage {
 			case 2:
 				return category.getRight();
 			case 3:
-				double v = item.contribution.amount;
-				String unit = Labels.getRefUnit(item.toFlow, cache);
+				double v = item.item.amount;
+				String unit = Labels.getRefUnit(item.flow, cache);
 				return Numbers.format(v) + " " + unit;
 			default:
 				return null;
@@ -218,9 +209,9 @@ public class TotalFlowResultPage extends FormPage {
 				FlowDescriptor flow = (FlowDescriptor) obj;
 				return dqResult.get(flow);
 			}
-			if (obj instanceof ContributionWrapper) {
-				ContributionWrapper item = (ContributionWrapper) obj;
-				return dqResult.get(item.contribution.item, item.toFlow);
+			if (obj instanceof Contribution) {
+				Contribution item = (Contribution) obj;
+				return dqResult.get(item.item.item, item.flow);
 			}
 			return null;
 		}
@@ -246,15 +237,14 @@ public class TotalFlowResultPage extends FormPage {
 		}
 	}
 
-	private class ContributionWrapper {
-		private final ContributionItem<ProcessDescriptor> contribution;
-		private final FlowDescriptor toFlow;
+	private class Contribution {
 
-		private ContributionWrapper(ContributionItem<ProcessDescriptor> contribution, FlowDescriptor toFlow) {
-			this.contribution = contribution;
-			this.toFlow = toFlow;
+		final ContributionItem<ProcessDescriptor> item;
+		final FlowDescriptor flow;
+
+		private Contribution(ContributionItem<ProcessDescriptor> item, FlowDescriptor flow) {
+			this.item = item;
+			this.flow = flow;
 		}
-
 	}
-
 }
