@@ -46,7 +46,8 @@ class QuickResultInfoPage extends FormPage {
 		Composite body = UI.formBody(form, tk);
 		infoSection(body);
 		chartSections(body);
-		new DQInfoSection(body, tk, result, dqResult);
+		if (dqResult != null)
+			new DQInfoSection(body, tk, result, dqResult);
 		form.reflow(true);
 	}
 
