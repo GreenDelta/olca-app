@@ -23,7 +23,7 @@ import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
-import org.openlca.app.util.DQUIHelper;
+import org.openlca.app.util.DQUI;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
@@ -78,8 +78,8 @@ public class TotalFlowResultPage extends FormPage {
 		Composite composite = UI.sectionClient(section, toolkit);
 		UI.gridLayout(composite, 1);
 		String[] headers = new String[] { M.Name, M.Category, M.SubCategory, M.Amount };
-		if (DQUIHelper.displayExchangeQuality(dqResult)) {
-			headers = DQUIHelper.appendTableHeaders(headers, dqResult.setup.exchangeDqSystem);
+		if (DQUI.displayExchangeQuality(dqResult)) {
+			headers = DQUI.appendTableHeaders(headers, dqResult.setup.exchangeDqSystem);
 		}
 		Label label = new Label();
 		TreeViewer viewer = Trees.createViewer(composite, headers, label);
@@ -87,10 +87,10 @@ public class TotalFlowResultPage extends FormPage {
 		viewer.setFilters(new ViewerFilter[] { new InputOutputFilter(input) });
 		createColumnSorters(viewer, label);
 		double[] widths = { .4, .2, .2, .2 };
-		if (DQUIHelper.displayExchangeQuality(dqResult)) {
-			widths = DQUIHelper.adjustTableWidths(widths, dqResult.setup.exchangeDqSystem);
+		if (DQUI.displayExchangeQuality(dqResult)) {
+			widths = DQUI.adjustTableWidths(widths, dqResult.setup.exchangeDqSystem);
 		}
-		Trees.bindColumnWidths(viewer.getTree(), DQUIHelper.MIN_COL_WIDTH, widths);
+		Trees.bindColumnWidths(viewer.getTree(), DQUI.MIN_COL_WIDTH, widths);
 		Actions.bind(viewer, TreeClipboard.onCopy(viewer));
 		return viewer;
 	}
@@ -102,7 +102,7 @@ public class TotalFlowResultPage extends FormPage {
 			return r == null ? 0 : r.value;
 		};
 		Viewers.sortByDouble(viewer, amount, 4);
-		if (DQUIHelper.displayExchangeQuality(dqResult)) {
+		if (DQUI.displayExchangeQuality(dqResult)) {
 			for (int i = 0; i < dqResult.setup.exchangeDqSystem.indicators.size(); i++) {
 				Viewers.sortByDouble(viewer, label, i + 5);
 			}

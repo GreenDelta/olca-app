@@ -20,7 +20,7 @@ import org.openlca.app.M;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
-import org.openlca.app.util.DQUIHelper;
+import org.openlca.app.util.DQUI;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
@@ -101,8 +101,8 @@ public class TotalImpactResultPage extends FormPage {
 
 	private void createImpactContributionTree(Composite parent) {
 		String[] properties = COLUMN_LABELS;
-		if (DQUIHelper.displayExchangeQuality(dqResult)) {
-			properties = DQUIHelper.appendTableHeaders(properties, dqResult.setup.exchangeDqSystem);
+		if (DQUI.displayExchangeQuality(dqResult)) {
+			properties = DQUI.appendTableHeaders(properties, dqResult.setup.exchangeDqSystem);
 		}
 		LabelProvider labelProvider = new LabelProvider();
 		viewer = Trees.createViewer(parent, properties, labelProvider);
@@ -112,8 +112,8 @@ public class TotalImpactResultPage extends FormPage {
 		Actions.bind(viewer, TreeClipboard.onCopy(viewer));
 		createColumnSorters(labelProvider);
 		double[] widths = { .35, .15, .2, .10, .10, .10 };
-		if (DQUIHelper.displayExchangeQuality(dqResult)) {
-			widths = DQUIHelper.adjustTableWidths(widths, dqResult.setup.exchangeDqSystem);
+		if (DQUI.displayExchangeQuality(dqResult)) {
+			widths = DQUI.adjustTableWidths(widths, dqResult.setup.exchangeDqSystem);
 		}
 		Trees.bindColumnWidths(viewer.getTree(), widths);
 		setInput();
@@ -121,7 +121,7 @@ public class TotalImpactResultPage extends FormPage {
 
 	private void createColumnSorters(LabelProvider p) {
 		Viewers.sortByLabels(viewer, p, 0, 1, 2, 3, 4, 5);
-		if (DQUIHelper.displayExchangeQuality(dqResult)) {
+		if (DQUI.displayExchangeQuality(dqResult)) {
 			for (int i = 0; i < dqResult.setup.exchangeDqSystem.indicators.size(); i++) {
 				Viewers.sortByDouble(viewer, p, i + 6);
 			}

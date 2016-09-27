@@ -19,7 +19,7 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
-import org.openlca.app.util.DQUIHelper;
+import org.openlca.app.util.DQUI;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
@@ -71,12 +71,12 @@ class TotalRequirementsSection {
 		UI.gridLayout(comp, 1);
 		Label label = new Label();
 		table = Tables.createViewer(comp, columnLabels(), label);
-		Tables.bindColumnWidths(table, DQUIHelper.MIN_COL_WIDTH, columnWidths());
+		Tables.bindColumnWidths(table, DQUI.MIN_COL_WIDTH, columnWidths());
 		Viewers.sortByLabels(table, label, 0, 1, 3);
 		Viewers.sortByDouble(table, (Item i) -> i.amount, 2);
 		if (costs != Costs.NONE)
 			Viewers.sortByDouble(table, (Item i) -> i.costValue, 4);
-		if (DQUIHelper.displayProcessQuality(dqResult)) {
+		if (DQUI.displayProcessQuality(dqResult)) {
 			int startCol = costs == Costs.NONE ? 4 : 5;
 			for (int i = 0; i < dqResult.setup.processDqSystem.indicators.size(); i++) {
 				Viewers.sortByDouble(table, label, i + startCol);
@@ -127,9 +127,9 @@ class TotalRequirementsSection {
 		else if (costs == Costs.NET_COSTS)
 			b.add(M.NetCosts);
 		String[] columnLabels = b.toArray(new String[b.size()]);
-		if (!DQUIHelper.displayProcessQuality(dqResult))
+		if (!DQUI.displayProcessQuality(dqResult))
 			return columnLabels;
-		return DQUIHelper.appendTableHeaders(columnLabels, dqResult.setup.processDqSystem);
+		return DQUI.appendTableHeaders(columnLabels, dqResult.setup.processDqSystem);
 	}
 
 	private double[] columnWidths() {
@@ -138,9 +138,9 @@ class TotalRequirementsSection {
 			widths = new double[] { .4, .2, .2, .2 };
 		else
 			widths = new double[] { .4, .2, .2, .1, .1 };
-		if (!DQUIHelper.displayProcessQuality(dqResult))
+		if (!DQUI.displayProcessQuality(dqResult))
 			return widths;
-		return DQUIHelper.adjustTableWidths(widths, dqResult.setup.processDqSystem);
+		return DQUI.adjustTableWidths(widths, dqResult.setup.processDqSystem);
 	}
 
 	private List<Item> createItems() {

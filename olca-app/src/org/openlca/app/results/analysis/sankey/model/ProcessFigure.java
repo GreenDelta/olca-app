@@ -16,7 +16,7 @@ import org.openlca.app.FaviColor;
 import org.openlca.app.M;
 import org.openlca.app.results.analysis.sankey.ProcessMouseClick;
 import org.openlca.app.util.Colors;
-import org.openlca.app.util.DQUIHelper;
+import org.openlca.app.util.DQUI;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.core.math.data_quality.DQResult;
@@ -90,7 +90,7 @@ public class ProcessFigure extends Figure {
 
 	private void drawDqBar(Graphics g) {
 		DQResult dqResult = ((ProductSystemNode) processNode.getParent()).getEditor().getDqResult();
-		if (!DQUIHelper.displayProcessQuality(dqResult))
+		if (!DQUI.displayProcessQuality(dqResult))
 			return;
 		Point loc = getLocation();
 		Dimension size = getSize();
@@ -105,7 +105,7 @@ public class ProcessFigure extends Figure {
 		int h = (size.height - 20) / system.indicators.size();
 		double[] values = dqResult.get(processNode.process);
 		for (int i = 0; i < values.length; i++) {
-			Color color = DQUIHelper.getColor(values[i], system.getScoreCount(), dqResult.setup.roundingMode);
+			Color color = DQUI.getColor(values[i], system.getScoreCount(), dqResult.setup.roundingMode);
 			g.setBackgroundColor(color);
 			g.drawRectangle(x, y, w, h);
 			g.fillRectangle(x + 1, y + 1, w - 1, h - 1);

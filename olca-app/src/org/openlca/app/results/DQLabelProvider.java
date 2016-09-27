@@ -9,7 +9,7 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
-import org.openlca.app.util.DQUIHelper;
+import org.openlca.app.util.DQUI;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.DQIndicator;
 import org.openlca.core.model.DQSystem;
@@ -105,7 +105,7 @@ abstract class DQLabelProvider extends ColumnLabelProvider implements ITableLabe
 		double[] quality = getQuality(element);
 		if (quality == null)
 			return null;
-		return DQUIHelper.getColor(quality[pos], dqSystem.getScoreCount(), dataQualityResult.setup.roundingMode);
+		return DQUI.getColor(quality[pos], dqSystem.getScoreCount(), dataQualityResult.setup.roundingMode);
 	}
 
 	@Override
