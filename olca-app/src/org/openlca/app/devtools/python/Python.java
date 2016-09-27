@@ -83,7 +83,7 @@ class Python {
 		if (pyDir.exists())
 			FileUtils.deleteDirectory(pyDir);
 		pyDir.mkdirs();
-		String pyJar = "libs/jython-standalone-2.7-b3.jar";
+		String pyJar = "libs/jython-standalone-2.7.0.jar";
 		try (InputStream is = RcpActivator.getStream(pyJar)) {
 			ZipUtil.unpack(is, pyDir, (entry) -> {
 				if (entry.startsWith("Lib/") && entry.length() > 4) {
