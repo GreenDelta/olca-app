@@ -85,10 +85,6 @@ public class DQUI {
 	}
 
 	public static boolean displayExchangeQuality(DQResult result) {
-		return displayExchangeQuality(result, false);
-	}
-
-	public static boolean displayExchangeQuality(DQResult result, boolean ignoreAggregationType) {
 		if (result == null)
 			return false;
 		if (result.setup.exchangeDqSystem == null)
@@ -97,7 +93,7 @@ public class DQUI {
 			return false;
 		if (result.setup.exchangeDqSystem.getScoreCount() == 0)
 			return false;
-		if (!ignoreAggregationType && result.setup.aggregationType == AggregationType.NONE)
+		if (result.setup.aggregationType == AggregationType.NONE)
 			return false;
 		return true;
 	}
