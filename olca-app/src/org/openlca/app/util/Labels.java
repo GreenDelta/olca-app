@@ -33,6 +33,8 @@ import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
+
 public class Labels {
 
 	private Labels() {
@@ -121,6 +123,22 @@ public class Labels {
 			return Pair.of(cat.getName(), "");
 		else
 			return Pair.of(cat.getCategory().getName(), cat.getName());
+	}
+
+	/**
+	 * Same as {@link #getCategory(CategorizedDescriptor, EntityCache)} but top-
+	 * and sub-category concatenated as a short string.
+	 */
+	public static String getShortCategory(CategorizedDescriptor entity,
+			EntityCache cache) {
+		Pair<String, String> p = getCategory(entity, cache);
+		if (Strings.isNullOrEmpty(p.getLeft()) && Strings.isNullOrEmpty(p.getRight()))
+			return "";
+		if (Strings.isNullOrEmpty(p.getLeft()))
+			return p.getRight();
+		if (Strings.isNullOrEmpty(p.getRight()))
+			return p.getLeft();
+		return p.getLeft() + " / " + p.getRight();
 	}
 
 	public static String getEnumText(Object enumValue) {

@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -278,16 +277,9 @@ public class ProcessResultPage extends FormPage {
 
 		private String getFlowLabel(FlowDescriptor flow) {
 			String val = flow.getName();
-			if (flow.getCategory() == null && flow.getLocation() == null)
+			if (flow.getCategory() == null)
 				return val;
-			Pair<String, String> cat = Labels.getCategory(flow, cache);
-			val += "(";
-			if (cat.getLeft() != null && !cat.getLeft().isEmpty())
-				val += cat.getLeft();
-			if (cat.getRight() != null && !cat.getRight().isEmpty())
-				val += "/" + cat.getRight();
-			val += ")";
-			return val;
+			return val + " (" + Labels.getShortCategory(flow, cache) + ")";
 		}
 	}
 

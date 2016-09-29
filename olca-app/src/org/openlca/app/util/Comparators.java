@@ -17,22 +17,17 @@ public class Comparators {
 	 * descriptors first by name and than by category.
 	 */
 	public static Comparator<FlowDescriptor> forFlowDescriptors(
-			final EntityCache cache) {
-		return new Comparator<FlowDescriptor>() {
-			@Override
-			public int compare(FlowDescriptor flow1, FlowDescriptor flow2) {
-				int c = Strings.compare(flow1.getName(), flow2.getName());
-				if (c != 0)
-					return c;
-				Pair<String, String> cat1 = Labels
-						.getCategory(flow1, cache);
-				Pair<String, String> cat2 = Labels
-						.getCategory(flow2, cache);
-				c = Strings.compare(cat1.getLeft(), cat2.getLeft());
-				if (c != 0)
-					return c;
-				return Strings.compare(cat1.getRight(), cat2.getLeft());
-			}
+			EntityCache cache) {
+		return (flow1, flow2) -> {
+			int c = Strings.compare(flow1.getName(), flow2.getName());
+			if (c != 0)
+				return c;
+			Pair<String, String> cat1 = Labels.getCategory(flow1, cache);
+			Pair<String, String> cat2 = Labels.getCategory(flow2, cache);
+			c = Strings.compare(cat1.getLeft(), cat2.getLeft());
+			if (c != 0)
+				return c;
+			return Strings.compare(cat1.getRight(), cat2.getRight());
 		};
 	}
 
