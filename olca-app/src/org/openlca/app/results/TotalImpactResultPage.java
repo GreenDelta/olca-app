@@ -31,7 +31,7 @@ import org.openlca.core.database.EntityCache;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.Location;
-import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -92,9 +92,9 @@ public class TotalImpactResultPage extends FormPage {
 	}
 
 	private void setInput() {
-		List<Triple> impacts = new ArrayList<>();
+		List<Item> impacts = new ArrayList<>();
 		for (ImpactCategoryDescriptor impact : result.getImpactDescriptors()) {
-			impacts.add(new Triple(impact));
+			impacts.add(new Item(impact));
 		}
 		viewer.setInput(impacts);
 	}
@@ -138,45 +138,44 @@ public class TotalImpactResultPage extends FormPage {
 		public Image getImage(Object element, int columnIndex) {
 			if (columnIndex > 0)
 				return null;
-			if (!(element instanceof Triple))
+			if (!(element instanceof Item))
 				return null;
-			Triple triple = (Triple) element;
-			return Images.get(triple.getLast());
+			Item triple = (Item) element;
+			return Images.get(triple.getType());
 		}
 
 		@Override
-		public String getText(Object element, int columnIndex) {
-			if (!(element instanceof Triple))
+		public String getText(Object obj, int col) {
+			if (!(obj instanceof Item))
 				return null;
-			Triple triple = (Triple) element;
-			BaseDescriptor elem = triple.getLast();
-			if (elem instanceof ImpactCategoryDescriptor)
-				return getImpactText(triple, columnIndex);
-			if (elem instanceof ProcessDescriptor)
-				return getProcessText(triple, columnIndex);
-			if (elem instanceof FlowDescriptor)
-				return getFlowText(triple, columnIndex);
-			return null;
-		}
-
-		private String getImpactText(Triple triple, int columnIndex) {
-			ImpactCategoryDescriptor impact = triple.impactCategory;
-			switch (columnIndex) {
-			case 0:
-				return impact.getName();
-			case 5:
-				String value = Numbers.format(result.getTotalImpactResult(impact).value);
-				String unit = impact.getReferenceUnit();
-				return value + " " + unit;
+			Item item = (Item) obj;
+			switch (item.getType()) {
+			case IMPACT_CATEGORY:
+				return getImpactText(item, col);
+			case PROCESS:
+				return getProcessText(item, col);
+			case FLOW:
+				return getFlowText(item, col);
 			default:
 				return null;
 			}
 		}
 
-		private String getProcessText(Triple triple, int columnIndex) {
-			ProcessDescriptor process = triple.process;
-			ImpactCategoryDescriptor impact = triple.impactCategory;
-			switch (columnIndex) {
+		private String getImpactText(Item item, int col) {
+			ImpactCategoryDescriptor impact = item.impact;
+			switch (col) {
+			case 0:
+				return impact.getName();
+			case 5:
+				return item.getResultString();
+			default:
+				return null;
+			}
+		}
+
+		private String getProcessText(Item item, int col) {
+			ProcessDescriptor process = item.process;
+			switch (col) {
 			case 0:
 				return process.getName();
 			case 1:
@@ -186,34 +185,30 @@ public class TotalImpactResultPage extends FormPage {
 				Location location = cache.get(Location.class, process.getLocation());
 				return location.getName();
 			case 5:
-				String value = Numbers.format(result.getSingleImpactResult(process, impact).value);
-				String unit = impact.getReferenceUnit();
-				return value + " " + unit;
+				return item.getResultString();
 			default:
 				return null;
 			}
 		}
 
-		private String getFlowText(Triple triple, int columnIndex) {
-			FlowDescriptor flow = triple.flow;
-			ImpactCategoryDescriptor impact = triple.impactCategory;
-			switch (columnIndex) {
+		private String getFlowText(Item item, int col) {
+			FlowDescriptor flow = item.flow;
+			ImpactCategoryDescriptor impact = item.impact;
+			switch (col) {
 			case 0:
 				return flow.getName();
 			case 2:
 				return toString(Labels.getCategory(flow, result.cache));
 			case 3:
-				String value1 = Numbers.format(getFlowAmount(triple));
+				String value1 = Numbers.format(item.getFlowAmount());
 				String unit1 = getReferenceUnit(flow);
 				return value1 + " " + unit1;
 			case 4:
-				String value2 = Numbers.format(getImpactFactor(triple));
+				String value2 = Numbers.format(item.getImpactFactor());
 				String unit2 = impact.getReferenceUnit() + "/" + getReferenceUnit(flow);
 				return value2 + " " + unit2;
 			case 5:
-				String value3 = Numbers.format(getFlowResult(triple));
-				String unit3 = impact.getReferenceUnit();
-				return value3 + " " + unit3;
+				return item.getResultString();
 			default:
 				return null;
 			}
@@ -238,58 +233,46 @@ public class TotalImpactResultPage extends FormPage {
 		protected double[] getQuality(Object obj) {
 			if (dqResult == null)
 				return null;
-			Triple triple = (Triple) obj;
-			BaseDescriptor elem = triple.getLast();
-			if (elem instanceof ImpactCategoryDescriptor)
-				return dqResult.get(triple.impactCategory);
-			if (elem instanceof ProcessDescriptor)
-				return dqResult.get(triple.process, triple.impactCategory);
-			if (!(elem instanceof FlowDescriptor))
+			Item item = (Item) obj;
+			switch (item.getType()) {
+			case IMPACT_CATEGORY:
+				return dqResult.get(item.impact);
+			case PROCESS:
+				return dqResult.get(item.process, item.impact);
+			case FLOW:
+				if (item.process != null)
+					return dqResult.get(item.process, item.flow);
+				else
+					return dqResult.get(item.flow, item.impact);
+			default:
 				return null;
-			if (triple.process == null)
-				return dqResult.get(triple.flow, triple.impactCategory);
-			return dqResult.get(triple.process, triple.flow); // TODO check if
-																// this is
-																// correct
+			}
 		}
-
-	}
-
-	private double getFlowAmount(Triple t) {
-		if (t.process == null) {
-			return result.getFlowContributions(t.impactCategory).getContribution(t.flow).amount;
-		}
-		return result.getSingleFlowResult(t.process, t.flow).value;
-	}
-
-	private double getImpactFactor(Triple t) {
-		return impactFactors.get(t.impactCategory, t.process, t.flow);
-	}
-
-	private double getFlowResult(Triple t) {
-		double factor = getImpactFactor(t);
-		double amount = getFlowAmount(t);
-		return factor * amount;
 	}
 
 	private class ContentProvider extends ArrayContentProvider implements ITreeContentProvider {
 
 		@Override
-		public Object[] getChildren(Object parentElement) {
-			if (!(parentElement instanceof Triple))
+		public Object[] getChildren(Object obj) {
+			if (!(obj instanceof Item))
 				return null;
-			Triple triple = (Triple) parentElement;
-			List<Triple> children = new ArrayList<>();
-			if (triple.getLast() instanceof ImpactCategoryDescriptor && subgroupByProcesses) {
+			Item parent = (Item) obj;
+			List<Item> children = new ArrayList<>();
+			if (parent.getType() == ModelType.IMPACT_CATEGORY && subgroupByProcesses) {
 				for (ProcessDescriptor process : result.getProcessDescriptors()) {
-					children.add(new Triple(triple.impactCategory, process));
+					Item child = new Item(parent.impact, process);
+					if (child.getResult() != 0)
+						children.add(child);
 				}
 			} else {
 				for (FlowDescriptor flow : result.getFlowDescriptors()) {
 					// process will be null in case of subgroupByProcesses=true
-					children.add(new Triple(triple.impactCategory, triple.process, flow));
+					Item child = new Item(parent.impact, parent.process, flow);
+					if (child.getResult() != 0)
+						children.add(child);
 				}
 			}
+			children.sort((i1, i2) -> -Double.compare(i1.getResult(), i2.getResult()));
 			return children.toArray();
 		}
 
@@ -300,50 +283,80 @@ public class TotalImpactResultPage extends FormPage {
 
 		@Override
 		public boolean hasChildren(Object element) {
-			if (!(element instanceof Triple))
+			if (!(element instanceof Item))
 				return false;
-			Triple triple = (Triple) element;
-			if (triple.getLast() instanceof FlowDescriptor)
-				return false;
-			return true;
+			Item item = (Item) element;
+			return item.getType() != ModelType.FLOW;
 		}
 
 	}
 
 	public interface ImpactFactorProvider {
 
-		double get(ImpactCategoryDescriptor impactCategory, ProcessDescriptor process, FlowDescriptor flow);
+		double get(ImpactCategoryDescriptor impact, ProcessDescriptor process,
+				FlowDescriptor flow);
 
 	}
 
-	private class Triple {
+	private class Item {
 
-		private final ImpactCategoryDescriptor impactCategory;
-		private final ProcessDescriptor process;
-		private final FlowDescriptor flow;
+		final ImpactCategoryDescriptor impact;
+		final ProcessDescriptor process;
+		final FlowDescriptor flow;
 
-		private Triple(ImpactCategoryDescriptor impactCategory) {
-			this(impactCategory, null, null);
+		Item(ImpactCategoryDescriptor impact) {
+			this(impact, null, null);
 
 		}
 
-		private Triple(ImpactCategoryDescriptor impactCategory, ProcessDescriptor process) {
-			this(impactCategory, process, null);
+		Item(ImpactCategoryDescriptor impact, ProcessDescriptor process) {
+			this(impact, process, null);
 		}
 
-		private Triple(ImpactCategoryDescriptor impactCategory, ProcessDescriptor process, FlowDescriptor flow) {
-			this.impactCategory = impactCategory;
+		Item(ImpactCategoryDescriptor impact, ProcessDescriptor process,
+				FlowDescriptor flow) {
+			this.impact = impact;
 			this.process = process;
 			this.flow = flow;
 		}
 
-		private BaseDescriptor getLast() {
+		/** The type of contribution shown by the item. */
+		ModelType getType() {
 			if (flow != null)
-				return flow;
+				return ModelType.FLOW;
 			if (process != null)
-				return process;
-			return impactCategory;
+				return ModelType.PROCESS;
+			return ModelType.IMPACT_CATEGORY;
 		}
 
+		double getImpactFactor() {
+			return impactFactors.get(impact, process, flow);
+		}
+
+		double getFlowAmount() {
+			if (process == null)
+				return result.getTotalFlowResult(flow).value;
+			return result.getSingleFlowResult(process, flow).value;
+		}
+
+		double getResult() {
+			switch (getType()) {
+			case IMPACT_CATEGORY:
+				return result.getTotalImpactResult(impact).value;
+			case PROCESS:
+				return result.getSingleImpactResult(process, impact).value;
+			case FLOW:
+				return getImpactFactor() * getFlowAmount();
+			default:
+				return 0;
+			}
+		}
+
+		String getResultString() {
+			String s = Numbers.format(getResult());
+			if (impact.getReferenceUnit() != null)
+				s += " " + impact.getReferenceUnit();
+			return s;
+		}
 	}
 }
