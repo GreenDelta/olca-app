@@ -162,6 +162,10 @@
 			<cutdirsmapper dirs="1" />
 		</copy>
 
-	</target>
+		<!-- plugins to enable JavaFX -->
+		<copy todir="${platform_dir}/plugins" overwrite="false">
+			<fileset dir="${basedir}/fxlibs" includes="*.jar" />
+		</copy>
 
+	</target>
 </project>
