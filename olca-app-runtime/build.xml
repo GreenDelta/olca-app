@@ -77,10 +77,6 @@
 			<url url="http://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.4-201406061215/eclipse-SDK-4.4-win32-x86_64.zip&amp;r=1" />
 		</get>
 
-		<!-- SWT Charts -->
-		<get dest="${download_dir}/swt_charts_0.9.0.zip" verbose="true" skipexisting="true">
-			<url url="http://sourceforge.net/projects/swt-chart/files/SWTChart/0.9.0/org.swtchart_0.9.0.zip/download" />
-		</get>
 	</target>
 
 	<target name="extract">
@@ -166,12 +162,6 @@
 			<cutdirsmapper dirs="1" />
 		</copy>
 
-		<!-- SWT Charts -->
-		<copy todir="${platform_dir}" overwrite="false">
-			<zipfileset src="${download_dir}/swt_charts_0.9.0.zip">
-				<include name="plugins/**" />
-			</zipfileset>
-		</copy>
 	</target>
 
 </project>
