@@ -7,7 +7,6 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.Config;
 import org.openlca.app.M;
-import org.openlca.app.navigation.actions.DatabaseImportAction;
 import org.openlca.app.rcp.RcpActivator;
 import org.openlca.app.rcp.html.HtmlFolder;
 import org.openlca.app.rcp.html.HtmlView;
@@ -98,10 +97,6 @@ public class StartPage extends SimpleFormEditor {
 	}
 
 	public class JsHandler {
-		public void importDatabase() {
-			log.trace("js-callback: importDatabase");
-			new DatabaseImportAction().run();
-		}
 
 		public void openUrl(String url) {
 			log.trace("js-callback: openUrl");

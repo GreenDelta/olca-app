@@ -1,5 +1,6 @@
 package org.openlca.app.results;
 
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
@@ -81,6 +82,7 @@ public class SunBurstView extends FormPage implements WebPage {
 				.withEventHandler(new SelectionHandler())
 				.create(comp, toolkit);
 		comp = toolkit.createComposite(body);
+		comp.setLayout(new FillLayout());
 		UI.createWebView(comp, this);
 		UI.gridData(comp, true, true);
 		form.reflow(true);
