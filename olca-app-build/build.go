@@ -2,6 +2,7 @@ package main
 
 import (
 	"archive/tar"
+	"archive/zip"
 	"bufio"
 	"io"
 	"log"
@@ -78,6 +79,49 @@ func untar(archive, folder string, cutdirCount int) error {
 	return nil
 }
 
+func zipDir(dir, zipTarget string) error {
+	zipFile, err := os.Create(zipTarget)
+	if err != nil {
+		return err
+	}
+	defer zipFile.Close()
+	zipWriter := zip.NewWriter(zipFile)
+
+	basePath := filepath.Dir(dir)
+
+	err = filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		if err != nil || info.IsDir() {
+			return err
+		}
+
+		relPath, err := filepath.Rel(basePath, path)
+		if err != nil {
+			return err
+		}
+
+		file, err := os.Open(path)
+		if err != nil {
+			return err
+		}
+		defer file.Close()
+
+		// TODO first create a file header: zipWriter.CreateHeader
+		zipFileWriter, err := zipWriter.Create(relPath)
+		if err != nil {
+			return err
+		}
+
+		_, err = io.Copy(zipFileWriter, file)
+		return err
+	})
+	if err != nil {
+		return err
+	}
+
+	return zipWriter.Close()
+
+}
+
 func main() {
 	log.SetOutput(os.Stdout)
 	if !isDir("builds") {
@@ -90,4 +134,6 @@ func main() {
 	if err != nil {
 		log.Fatalln("Failed to untar JRE: ", err.Error())
 	}
+	zipDir("builds/linux.gtk.x86_64/openLCA", "builds/linux.gtk.x86_64/openLCA_1.6.0alhpa_linux.gtk.x86_64.zip")
+
 }
