@@ -1,7 +1,5 @@
 package org.openlca.app.editors;
 
-import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
@@ -12,8 +10,8 @@ import org.openlca.app.M;
 import org.openlca.app.navigation.actions.DatabaseImportAction;
 import org.openlca.app.rcp.RcpActivator;
 import org.openlca.app.rcp.html.HtmlFolder;
-import org.openlca.app.rcp.html.HtmlPage;
 import org.openlca.app.rcp.html.HtmlView;
+import org.openlca.app.rcp.html.WebPage;
 import org.openlca.app.util.DefaultInput;
 import org.openlca.app.util.Desktop;
 import org.openlca.app.util.EclipseCommandLine;
@@ -22,6 +20,9 @@ import org.openlca.app.util.UI;
 import org.openlca.util.OS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javafx.scene.web.WebEngine;
+import netscape.javascript.JSObject;
 
 public class StartPage extends SimpleFormEditor {
 
@@ -37,9 +38,7 @@ public class StartPage extends SimpleFormEditor {
 		return new Page();
 	}
 
-	private class Page extends FormPage implements HtmlPage {
-
-		private Browser browser;
+	private class Page extends FormPage implements WebPage {
 
 		public Page() {
 			super(StartPage.this, "olca.StartPage.Page", M.Welcome);
@@ -63,12 +62,13 @@ public class StartPage extends SimpleFormEditor {
 		}
 
 		@Override
-		public void onLoaded() {
-			new ImportDatabaseCallback(browser);
-			new OpenUrlCallback(browser);
+		public void onLoaded(WebEngine webkit) {
+			JSObject win = (JSObject) webkit.executeScript("window");
+			win.setMember("java", new JsHandler());
 			String version = M.Version + " " + Config.VERSION + " ("
 					+ OS.getCurrent() + " " + getArch() + ")";
-			browser.evaluate("document.getElementById('version').innerHTML = '" + version + "'");
+			webkit.executeScript("document.getElementById('version').innerHTML = '"
+					+ version + "'");
 		}
 
 		private String getArch() {
@@ -92,42 +92,25 @@ public class StartPage extends SimpleFormEditor {
 			ScrolledForm form = managedForm.getForm();
 			Composite composite = form.getBody();
 			composite.setLayout(new FillLayout());
-			browser = UI.createBrowser(composite, this);
+			UI.createWebView(composite, this);
 		}
 
 	}
 
-	private class ImportDatabaseCallback extends BrowserFunction {
-		public ImportDatabaseCallback(Browser browser) {
-			super(browser, "importDatabase");
-		}
-
-		@Override
-		public Object function(Object[] arguments) {
+	public class JsHandler {
+		public void importDatabase() {
 			log.trace("js-callback: importDatabase");
 			new DatabaseImportAction().run();
-			return null;
-		}
-	}
-
-	private class OpenUrlCallback extends BrowserFunction {
-		public OpenUrlCallback(Browser browser) {
-			super(browser, "openUrl");
 		}
 
-		@Override
-		public Object function(Object[] arguments) {
+		public void openUrl(String url) {
 			log.trace("js-callback: openUrl");
-			if (arguments == null || arguments.length == 0
-					|| arguments[0] == null) {
+			if (url == null) {
 				log.warn("openUrl: no url given");
-				return null;
+				return;
 			}
-			String url = arguments[0].toString();
 			log.trace("open URL {}", url);
 			Desktop.browse(url);
-			return null;
 		}
 	}
-
 }

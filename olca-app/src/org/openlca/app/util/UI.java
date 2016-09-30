@@ -1,5 +1,7 @@
 package org.openlca.app.util;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
@@ -9,6 +11,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -28,8 +31,15 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.rcp.browser.BrowserFactory;
 import org.openlca.app.rcp.html.HtmlPage;
+import org.openlca.app.rcp.html.WebPage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javafx.concurrent.Worker.State;
+import javafx.embed.swt.FXCanvas;
+import javafx.scene.Scene;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 
 public class UI {
 
@@ -64,6 +74,24 @@ public class UI {
 			log.error("Failed to html load page ", e);
 		}
 		return browser;
+	}
+
+	public static void createWebView(Composite parent, WebPage page) {
+		FXCanvas canvas = new FXCanvas(parent, SWT.NONE);
+		canvas.setLayout(new FillLayout());
+		WebView view = new WebView();
+		Scene scene = new Scene(view);
+		canvas.setScene(scene);
+		WebEngine webkit = view.getEngine();
+		webkit.setJavaScriptEnabled(true);
+		webkit.load(page.getUrl());
+		AtomicBoolean firstCall = new AtomicBoolean(true);
+		webkit.getLoadWorker().stateProperty().addListener((v, old, newState) -> {
+			if (firstCall.get() && newState == State.SUCCEEDED) {
+				firstCall.set(false);
+				page.onLoaded(webkit);
+			}
+		});
 	}
 
 	public static Shell shell() {

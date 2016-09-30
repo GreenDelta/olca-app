@@ -1,6 +1,5 @@
 package org.openlca.app.results;
 
-import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
@@ -11,8 +10,8 @@ import org.openlca.app.App;
 import org.openlca.app.components.ResultTypeSelection;
 import org.openlca.app.components.ResultTypeSelection.EventHandler;
 import org.openlca.app.db.Cache;
-import org.openlca.app.rcp.html.HtmlPage;
 import org.openlca.app.rcp.html.HtmlView;
+import org.openlca.app.rcp.html.WebPage;
 import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.UI;
 import org.openlca.core.matrix.FlowIndex;
@@ -25,14 +24,16 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
-public class SunBurstView extends FormPage implements HtmlPage {
+import javafx.scene.web.WebEngine;
+
+public class SunBurstView extends FormPage implements WebPage {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
+	private WebEngine webkit;
 	private FullResultProvider result;
-	private Browser browser;
 	private ResultTypeSelection flowImpactSelection;
 	private boolean loaded;
-	
+
 	public SunBurstView(FormEditor editor, FullResultProvider result) {
 		super(editor, "analysis.SunBurstView", "Sun burst");
 		this.result = result;
@@ -45,7 +46,8 @@ public class SunBurstView extends FormPage implements HtmlPage {
 	}
 
 	@Override
-	public void onLoaded() {
+	public void onLoaded(WebEngine webkit) {
+		this.webkit = webkit;
 		loaded = true;
 		App.run("Calculate result", () -> {
 			FlowDescriptor first = firstFlow();
@@ -53,7 +55,7 @@ public class SunBurstView extends FormPage implements HtmlPage {
 				return;
 			log.trace("initialize the tree");
 			result.getTree(first);
-		} , () -> {
+		}, () -> {
 			FlowDescriptor first = firstFlow();
 			if (first == null)
 				return;
@@ -72,14 +74,15 @@ public class SunBurstView extends FormPage implements HtmlPage {
 		ScrolledForm form = UI.formHeader(managedForm, "Sun burst");
 		FormToolkit toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
-		Composite composite = toolkit.createComposite(body);
-		UI.gridLayout(composite, 2);
+		Composite comp = toolkit.createComposite(body);
+		UI.gridLayout(comp, 2);
 		flowImpactSelection = ResultTypeSelection
 				.on(result, Cache.getEntityCache())
 				.withEventHandler(new SelectionHandler())
-				.create(composite, toolkit);
-		browser = UI.createBrowser(body, this);
-		UI.gridData(browser, true, true);
+				.create(comp, toolkit);
+		comp = toolkit.createComposite(body);
+		UI.createWebView(comp, this);
+		UI.gridData(comp, true, true);
 		form.reflow(true);
 	}
 
@@ -119,11 +122,10 @@ public class SunBurstView extends FormPage implements HtmlPage {
 			String json = gson.toJson(model);
 			String command = "setData(" + json + ")";
 			try {
-				browser.evaluate(command);
+				webkit.executeScript(command);
 			} catch (Exception e) {
 				log.error("failed to set sunburst chart data", e);
 			}
 		}
 	}
-
 }
