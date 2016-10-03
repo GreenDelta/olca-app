@@ -29,22 +29,22 @@
 
 		<!-- Eclipse Babel language packs -->
 		<get dest="${download_dir}/babel_bg_4.4.0.zip" verbose="true" skipexisting="true">
-			<url url="http://www.eclipse.org/downloads/download.php?file=/technology/babel/babel_language_packs/R0.12.0/luna/BabelLanguagePack-eclipse-bg_4.4.0.v20140623020002.zip&amp;r=1" />
+			<url url="http://www.eclipse.org/downloads/download.php?file=/technology/babel/babel_language_packs/R0.14.0/luna/BabelLanguagePack-eclipse-bg_4.4.0.v20140623020002.zip&amp;r=1" />
 		</get>
 		<get dest="${download_dir}/babel_de_4.4.0.zip" verbose="true" skipexisting="true">
-			<url url="http://www.eclipse.org/downloads/download.php?file=/technology/babel/babel_language_packs/R0.12.0/luna/BabelLanguagePack-eclipse-de_4.4.0.v20140623020002.zip&amp;r=1" />
+			<url url="http://www.eclipse.org/downloads/download.php?file=/technology/babel/babel_language_packs/R0.14.0/luna/BabelLanguagePack-eclipse-de_4.4.0.v20140623020002.zip&amp;r=1" />
 		</get>
 		<get dest="${download_dir}/babel_es_4.4.0.zip" verbose="true" skipexisting="true">
-			<url url="http://www.eclipse.org/downloads/download.php?file=/technology/babel/babel_language_packs/R0.12.0/luna/BabelLanguagePack-eclipse-es_4.4.0.v20140623020002.zip&amp;r=1" />
+			<url url="http://www.eclipse.org/downloads/download.php?file=/technology/babel/babel_language_packs/R0.14.0/luna/BabelLanguagePack-eclipse-es_4.4.0.v20140623020002.zip&amp;r=1" />
 		</get>
 		<get dest="${download_dir}/babel_fr_4.4.0.zip" verbose="true" skipexisting="true">
-			<url url="http://www.eclipse.org/downloads/download.php?file=/technology/babel/babel_language_packs/R0.12.0/luna/BabelLanguagePack-eclipse-fr_4.4.0.v20140623020002.zip&amp;r=1" />
+			<url url="http://www.eclipse.org/downloads/download.php?file=/technology/babel/babel_language_packs/R0.14.0/luna/BabelLanguagePack-eclipse-fr_4.4.0.v20140623020002.zip&amp;r=1" />
 		</get>
 		<get dest="${download_dir}/babel_it_4.4.0.zip" verbose="true" skipexisting="true">
-			<url url="http://www.eclipse.org/downloads/download.php?file=/technology/babel/babel_language_packs/R0.12.0/luna/BabelLanguagePack-eclipse-it_4.4.0.v20140623020002.zip&amp;r=1" />
+			<url url="http://www.eclipse.org/downloads/download.php?file=/technology/babel/babel_language_packs/R0.14.0/luna/BabelLanguagePack-eclipse-it_4.4.0.v20140623020002.zip&amp;r=1" />
 		</get>
 		<get dest="${download_dir}/babel_zh_4.4.0.zip" verbose="true" skipexisting="true">
-			<url url="http://www.eclipse.org/downloads/download.php?file=/technology/babel/babel_language_packs/R0.12.0/luna/BabelLanguagePack-eclipse-zh_4.4.0.v20140623020002.zip&amp;r=1" />
+			<url url="http://www.eclipse.org/downloads/download.php?file=/technology/babel/babel_language_packs/R0.14.0/luna/BabelLanguagePack-eclipse-zh_4.4.0.v20140623020002.zip&amp;r=1" />
 		</get>
 
 		<!-- Eclipse Birt Chart SDK -->
