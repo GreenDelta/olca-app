@@ -48,8 +48,9 @@ class CalculationWizard extends Wizard {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
-	private CalculationWizardPage calculationPage;
-	private ProductSystem productSystem;
+	CalculationWizardPage calculationPage;
+	DQSettingsPage dqSettingsPage;
+	ProductSystem productSystem;
 
 	public CalculationWizard(ProductSystem productSystem) {
 		this.productSystem = productSystem;
@@ -63,20 +64,23 @@ class CalculationWizard extends Wizard {
 		CalculationWizard wizard = new CalculationWizard(productSystem);
 		WizardDialog dialog = new WizardDialog(UI.shell(), wizard);
 		dialog.open();
-		dialog.setPageSize(100, 100);
 	}
-	
+
 	@Override
 	public void addPages() {
-		calculationPage = new CalculationWizardPage(productSystem);
+		calculationPage = new CalculationWizardPage();
 		addPage(calculationPage);
+		dqSettingsPage = new DQSettingsPage();
+		addPage(dqSettingsPage);
 	}
 
 	@Override
 	public boolean performFinish() {
-		CalculationSetup setup = calculationPage.getSetup();
+		CalculationSetup setup = calculationPage.getSetup(productSystem);
 		CalculationType type = calculationPage.getCalculationType();
-		DQCalculationSetup dqSetup = calculationPage.getDqSetup();
+		DQCalculationSetup dqSetup = null;
+		if (calculationPage.doDqAssessment())
+			dqSetup = dqSettingsPage.getSetup(productSystem);
 		saveDefaults(setup, dqSetup, type);
 		try {
 			Calculation calculation = new Calculation(setup, type, dqSetup);
