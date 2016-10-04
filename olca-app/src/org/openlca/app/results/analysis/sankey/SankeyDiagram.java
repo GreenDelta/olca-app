@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.ConnectionLayer;
@@ -78,24 +79,27 @@ public class SankeyDiagram extends GraphicalEditor implements
 	public DQResult getDqResult() {
 		return dqResult;
 	}
-	
+
 	public ProcessLinkSearchMap getLinkSearchMap() {
 		return linkSearchMap;
 	}
 
-	private void createConnections(long processId) {
-		for (ProcessLink processLink : linkSearchMap.getIncomingLinks(processId)) {
-			ProcessNode sourceNode = createdProcesses.get(processLink.providerId);
-			ProcessNode targetNode = createdProcesses.get(processLink.processId);
-			if (sourceNode != null && targetNode != null) {
-				if (!createdLinks.containsKey(processLink)) {
-					double ratio = sankeyResult
-							.getLinkContribution(processLink);
-					ConnectionLink link = new ConnectionLink(sourceNode,
-							targetNode, processLink, ratio);
-					createdLinks.put(processLink, link);
-					createConnections(sourceNode.process.getId());
-				}
+	private void createConnections(long startProcessId) {
+		Stack<Long> processes = new Stack<>();
+		processes.add(startProcessId);
+		while (!processes.isEmpty()) {
+			long nextId = processes.pop();
+			for (ProcessLink processLink : linkSearchMap.getIncomingLinks(nextId)) {
+				ProcessNode sourceNode = createdProcesses.get(processLink.providerId);
+				ProcessNode targetNode = createdProcesses.get(processLink.processId);
+				if (sourceNode == null || targetNode == null)
+					continue;
+				if (createdLinks.containsKey(processLink))
+					continue;
+				double ratio = sankeyResult.getLinkContribution(processLink);
+				ConnectionLink link = new ConnectionLink(sourceNode, targetNode, processLink, ratio);
+				createdLinks.put(processLink, link);
+				processes.add(sourceNode.process.getId());
 			}
 		}
 	}
@@ -299,14 +303,14 @@ public class SankeyDiagram extends GraphicalEditor implements
 			return;
 		App.run("Calculate sankey results", () -> sankeyResult
 				.calculate(selection), () -> {
-					systemNode = new ProductSystemNode(productSystem,
-							SankeyDiagram.this, selection, cutoff);
-					createdProcesses.clear();
-					createdLinks.clear();
-					updateModel(cutoff);
-					getGraphicalViewer().deselectAll();
-					getGraphicalViewer().setContents(systemNode);
-				});
+			systemNode = new ProductSystemNode(productSystem,
+					SankeyDiagram.this, selection, cutoff);
+			createdProcesses.clear();
+			createdLinks.clear();
+			updateModel(cutoff);
+			getGraphicalViewer().deselectAll();
+			getGraphicalViewer().setContents(systemNode);
+		});
 	}
 
 }
