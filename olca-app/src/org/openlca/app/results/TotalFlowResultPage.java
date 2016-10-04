@@ -14,6 +14,7 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
@@ -21,6 +22,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
+import org.openlca.app.components.ContributionImage;
 import org.openlca.app.db.Cache;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
@@ -157,21 +159,29 @@ public class TotalFlowResultPage extends FormPage {
 
 	private class Label extends DQLabelProvider {
 
+		private ContributionImage img = new ContributionImage(Display.getCurrent());
+
 		Label() {
 			super(dqResult, dqResult != null ? dqResult.setup.exchangeDqSystem : null, 4);
 		}
 
 		@Override
+		public void dispose() {
+			img.dispose();
+			super.dispose();
+		}
+
+		@Override
 		public Image getImage(Object obj, int col) {
-			if (col != 0)
+			if (col == 0 && obj instanceof FlowDescriptor)
+				return Images.get((FlowDescriptor) obj);
+			if (!(obj instanceof Contribution))
 				return null;
-			if (obj instanceof FlowDescriptor) {
-				FlowDescriptor flow = (FlowDescriptor) obj;
-				return Images.get(flow);
-			} else if (obj instanceof Contribution) {
-				ProcessDescriptor process = ((Contribution) obj).item.item;
-				return Images.get(process);
-			}
+			Contribution c = (Contribution) obj;
+			if (col == 0)
+				return Images.get(c.item.item);
+			if (col == 3)
+				return img.getForTable(c.item.share);
 			return null;
 		}
 
