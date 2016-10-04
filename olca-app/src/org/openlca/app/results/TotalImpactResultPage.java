@@ -9,6 +9,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
@@ -16,6 +17,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
+import org.openlca.app.components.ContributionImage;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
@@ -119,19 +121,29 @@ public class TotalImpactResultPage extends FormPage {
 
 	private class LabelProvider extends DQLabelProvider {
 
+		private ContributionImage img = new ContributionImage(Display.getCurrent());
+
 		LabelProvider() {
 			super(dqResult, dqResult != null ? dqResult.setup.exchangeDqSystem
 					: null, 5);
 		}
 
 		@Override
+		public void dispose() {
+			img.dispose();
+			super.dispose();
+		}
+
+		@Override
 		public Image getImage(Object obj, int col) {
-			if (col > 0)
-				return null;
 			if (!(obj instanceof Item))
 				return null;
 			Item item = (Item) obj;
-			return Images.get(item.getType());
+			if (col == 0)
+				return Images.get(item.getType());
+			if (col == 4 && item.getType() != ModelType.IMPACT_CATEGORY)
+				return img.getForTable(item.contribution());
+			return null;
 		}
 
 		@Override
@@ -336,6 +348,16 @@ public class TotalImpactResultPage extends FormPage {
 			if (impact.getReferenceUnit() != null)
 				s += " " + impact.getReferenceUnit();
 			return s;
+		}
+
+		double contribution() {
+			double total = Math.abs(result.getTotalImpactResult(impact).value);
+			double r = result();
+			if (r == 0)
+				return 0;
+			if (total == 0)
+				return r > 0 ? 1 : -1;
+			return r / total;
 		}
 	}
 }
