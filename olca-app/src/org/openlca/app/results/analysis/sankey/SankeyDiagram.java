@@ -4,6 +4,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
@@ -85,10 +86,12 @@ public class SankeyDiagram extends GraphicalEditor implements
 	}
 
 	private void createConnections(long startProcessId) {
+		Set<Long> processed = new HashSet<>();
 		Stack<Long> processes = new Stack<>();
 		processes.add(startProcessId);
 		while (!processes.isEmpty()) {
 			long nextId = processes.pop();
+			processed.add(nextId);
 			for (ProcessLink processLink : linkSearchMap.getIncomingLinks(nextId)) {
 				ProcessNode sourceNode = createdProcesses.get(processLink.providerId);
 				ProcessNode targetNode = createdProcesses.get(processLink.processId);
@@ -99,6 +102,8 @@ public class SankeyDiagram extends GraphicalEditor implements
 				double ratio = sankeyResult.getLinkContribution(processLink);
 				ConnectionLink link = new ConnectionLink(sourceNode, targetNode, processLink, ratio);
 				createdLinks.put(processLink, link);
+				if (processed.contains(sourceNode.process.getId()))
+					continue;
 				processes.add(sourceNode.process.getId());
 			}
 		}
