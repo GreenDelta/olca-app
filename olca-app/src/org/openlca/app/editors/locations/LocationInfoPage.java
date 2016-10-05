@@ -1,9 +1,8 @@
 package org.openlca.app.editors.locations;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -14,19 +13,21 @@ import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.processes.kml.KmlPrettifyFunction;
 import org.openlca.app.editors.processes.kml.KmlUtil;
-import org.openlca.app.rcp.html.HtmlPage;
 import org.openlca.app.rcp.html.HtmlView;
+import org.openlca.app.rcp.html.WebPage;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.Location;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class LocationInfoPage extends ModelPage<Location> implements HtmlPage {
+import javafx.scene.web.WebEngine;
+
+public class LocationInfoPage extends ModelPage<Location> implements WebPage {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private FormToolkit toolkit;
-	private Browser browser;
+	private WebEngine webkit;
 	private String kml;
 	private boolean isValidKml = true;
 	private ScrolledForm form;
@@ -76,8 +77,8 @@ public class LocationInfoPage extends ModelPage<Location> implements HtmlPage {
 		Actions.bind(section, new ClearAction());
 		UI.gridLayout(composite, 1);
 		UI.gridData(composite, true, true);
-		browser = UI.createBrowser(composite, this);
-		UI.gridData(browser, true, true).minimumHeight = 360;
+		Control canvas = UI.createWebView(composite, this);
+		UI.gridData(canvas, true, true).minimumHeight = 360;
 	}
 
 	@Override
@@ -94,11 +95,12 @@ public class LocationInfoPage extends ModelPage<Location> implements HtmlPage {
 	}
 
 	@Override
-	public void onLoaded() {
-		new KmlChangedFunction(browser);
-		new KmlPrettifyFunction(browser, (value) -> {
-			isValidKml = value;
-		});
+	public void onLoaded(WebEngine webkit) {
+		this.webkit = webkit;
+		UI.bindVar(webkit, "java", new KmlChangedFunction());
+		UI.bindVar(webkit, "prettifier", new KmlPrettifyFunction(b -> {
+			isValidKml = b;
+		}));
 		updateKml();
 	}
 
@@ -108,32 +110,24 @@ public class LocationInfoPage extends ModelPage<Location> implements HtmlPage {
 			kml = "";
 		kml = kml.replace("\r\n", "").replace("\n", "").replace("\r", "");
 		try {
-			browser.evaluate("setKML('" + kml + "')");
-			browser.evaluate("setEmbedded()");
+			webkit.executeScript("setKML('" + kml + "')");
+			webkit.executeScript("setEmbedded()");
 		} catch (Exception e) {
 			log.error("failed to set KML data", e);
 		}
 	}
 
-	private class KmlChangedFunction extends BrowserFunction {
+	public class KmlChangedFunction {
 
-		private KmlChangedFunction(Browser browser) {
-			super(browser, "kmlChanged");
-		}
-
-		@Override
-		public Object function(Object[] arguments) {
-			kml = getArg(arguments, 0);
-			isValidKml = (Boolean) browser.evaluate("return isValidKml()");
-			getEditor().setDirty(true);
-			return null;
-		}
-
-		@SuppressWarnings("unchecked")
-		private <T> T getArg(Object[] args, int index) {
-			if (args.length <= index)
-				return null;
-			return (T) args[index];
+		public void kmlChanged(String data) {
+			kml = data;
+			try {
+				isValidKml = (Boolean) webkit.executeScript("isValidKml();");
+				getEditor().setDirty(true);
+			} catch (Exception e) {
+				Logger log = LoggerFactory.getLogger(getClass());
+				log.error("failed to call isValidKml", e);
+			}
 		}
 	}
 
@@ -145,9 +139,12 @@ public class LocationInfoPage extends ModelPage<Location> implements HtmlPage {
 
 		@Override
 		public void run() {
-			browser.evaluate("onClear()");
+			try {
+				webkit.executeScript("onClear();");
+			} catch (Exception e) {
+				Logger log = LoggerFactory.getLogger(getClass());
+				log.error("failed to call onClear", e);
+			}
 		}
-
 	}
-
 }

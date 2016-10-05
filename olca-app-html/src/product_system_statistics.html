@@ -109,18 +109,18 @@
 			$scope.statistics = {};
 			
 			$scope.callOpenProcess = function(process) {
-				if(typeof(openProcess) !== 'undefined') {
-					openProcess(angular.toJson(process));
-				} else {
-					console.log('openProcess is not a registered function');
+				try {
+					java.openProcess(angular.toJson(process));
+				} catch (e) {
+					alert(e);
 				}
 			};
 			
 			$scope.callRecalculate = function() {
-				if(typeof(recalculate) !== 'undefined') {
-					recalculate();
-				} else {
-					console.log('recalculate is not a registered function');
+				try {
+					java.recalculate();
+				} catch (e) {
+					alert(e);
 				}
 			};
 		};

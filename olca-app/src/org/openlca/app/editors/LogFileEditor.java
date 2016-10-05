@@ -1,12 +1,11 @@
 package org.openlca.app.editors;
 
-import org.openlca.app.M;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.IManagedForm;
@@ -14,10 +13,14 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.openlca.app.M;
 import org.openlca.app.logging.HtmlLogFile;
 import org.openlca.app.util.UI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javafx.embed.swt.FXCanvas;
+import javafx.scene.web.WebEngine;
 
 public class LogFileEditor extends FormEditor {
 
@@ -65,16 +68,15 @@ public class LogFileEditor extends FormEditor {
 			FormToolkit toolkit = managedForm.getToolkit();
 			UI.formHeader(managedForm, M.OpenLCALog);
 			Composite body = UI.formBody(form, toolkit);
-			Browser browser = UI.createBrowser(body);
-			UI.gridData(browser, true, true);
+			FXCanvas canvas = new FXCanvas(body, SWT.NONE);
+			WebEngine webkit = UI.createWebView(canvas);
+			UI.gridData(canvas, true, true);
 			try {
 				String html = new String(Files.readAllBytes(file.toPath()));
-				browser.setText(html);
+				webkit.loadContent(html);
 			} catch (IOException e) {
 				log.error("Error loading log files", e);
 			}
 		}
-
 	}
-
 }

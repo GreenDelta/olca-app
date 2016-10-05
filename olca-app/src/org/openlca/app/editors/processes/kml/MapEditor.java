@@ -1,25 +1,25 @@
 package org.openlca.app.editors.processes.kml;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Shell;
 import org.openlca.app.M;
-import org.openlca.app.rcp.html.HtmlPage;
 import org.openlca.app.rcp.html.HtmlView;
+import org.openlca.app.rcp.html.WebPage;
 import org.openlca.app.util.Info;
 import org.openlca.app.util.UI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MapEditor implements HtmlPage {
+import javafx.scene.web.WebEngine;
+
+public class MapEditor implements WebPage {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 
 	private final Shell shell;
-	private final Browser browser;
+	private WebEngine webkit;
 	private String kml;
 	private EditorHandler handler;
 
@@ -35,7 +35,7 @@ public class MapEditor implements HtmlPage {
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
 		shell.setLayout(new FillLayout());
 		shell.setText(M.KmlEditor);
-		browser = UI.createBrowser(shell, this);
+		UI.createWebView(shell, this);
 		Point parentSize = parent.getSize();
 		shell.setSize((int) (parentSize.x * 0.85), (int) (parentSize.y * 0.85));
 		UI.center(parent, shell);
@@ -55,67 +55,42 @@ public class MapEditor implements HtmlPage {
 	}
 
 	@Override
-	public void onLoaded() {
-		new LocationOpenFunction();
-		new LocationSaveFunction();
-		new KmlPrettifyFunction(browser, null);
+	public void onLoaded(WebEngine webkit) {
+		this.webkit = webkit;
+		UI.bindVar(webkit, "java", new JsHandler());
+		UI.bindVar(webkit, "prettifier", new KmlPrettifyFunction(b -> {
+		}));
 		if (kml == null)
 			kml = "";
 		try {
-			browser.evaluate("setKML('" + kml + "')");
-			browser.evaluate("setOpenButtonVisible(" + handler.hasModel() + ")");
+			webkit.executeScript("setKML('" + kml + "')");
+			webkit.executeScript("setOpenButtonVisible(" + handler.hasModel() + ")");
 		} catch (Exception e) {
 			log.error("failed to set KML data", e);
 		}
 	}
 
-	private class LocationSaveFunction extends BrowserFunction {
+	public class JsHandler {
 
-		public LocationSaveFunction() {
-			super(browser, "doSave");
-		}
-
-		@Override
-		public Object function(Object[] args) {
+		public void doSave(String kml) {
 			if (handler == null)
-				return null;
-			String kml = getArg(args, 0);
-			boolean isValid = (Boolean) browser.evaluate("return isValidKml()");
+				return;
+			boolean isValid = (Boolean) webkit.executeScript("isValidKml();");
 			if (!isValid) {
 				Info.showBox("The kml you provided is not valid, please check your input");
-				return null;
+				return;
 			}
 			if (handler.contentSaved(kml)) {
 				handler.openModel();
 				close();
 			}
-			return null;
 		}
 
-		@SuppressWarnings("unchecked")
-		private <T> T getArg(Object[] args, int index) {
-			if (args.length <= index)
-				return null;
-			return (T) args[index];
-		}
-
-	}
-
-	private class LocationOpenFunction extends BrowserFunction {
-
-		public LocationOpenFunction() {
-			super(browser, "doOpenEditor");
-		}
-
-		@Override
-		public Object function(Object[] args) {
+		public void doOpenEditor() {
 			if (handler == null)
-				return null;
+				return;
 			handler.openModel();
 			close();
-			return null;
 		}
-
 	}
-
 }

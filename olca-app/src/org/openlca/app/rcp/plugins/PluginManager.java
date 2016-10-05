@@ -8,11 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.browser.BrowserFunction;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -24,14 +21,18 @@ import org.openlca.app.App;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.rcp.RcpActivator;
 import org.openlca.app.rcp.html.HtmlFolder;
-import org.openlca.app.rcp.html.HtmlPage;
+import org.openlca.app.rcp.html.WebPage;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.Info;
 import org.openlca.app.util.UI;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class PluginManager extends FormDialog implements HtmlPage {
+import javafx.scene.web.WebEngine;
+import netscape.javascript.JSObject;
+
+public class PluginManager extends FormDialog implements WebPage {
 
 	private final static Gson mapper = new GsonBuilder().serializeNulls()
 			.create();
@@ -39,7 +40,7 @@ public class PluginManager extends FormDialog implements HtmlPage {
 	private final static BundleService bundleService = new BundleService();
 	private static Map<String, Plugin> plugins;
 
-	private Browser browser;
+	private WebEngine webkit;
 
 	public PluginManager() {
 		super(UI.shell());
@@ -58,24 +59,16 @@ public class PluginManager extends FormDialog implements HtmlPage {
 		Composite body = form.getBody();
 		body.getParent().getParent().setLayout(createNoSpacingLayout());
 		body.getParent().setLayout(createNoSpacingLayout());
-		body.setLayout(createNoSpacingLayout());
+		body.setLayout(new FillLayout());
 		toolkit.paintBordersFor(body);
-		UI.gridData(body, true, true);
-		browser = UI.createBrowser(body, this);
-		UI.gridData(browser, true, true);
+		UI.createWebView(body, this);
 		form.reflow(true);
 	}
 
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
-		Button localButton = createButton(parent, 22, "Install local file",
-				false);
-		localButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				installLocalFile();
-			}
-		});
+		Button b = createButton(parent, 22, "Install local file", false);
+		Controls.onSelect(b, e -> installLocalFile());
 		createButton(parent, IDialogConstants.CANCEL_ID,
 				IDialogConstants.CLOSE_LABEL, true);
 	}
@@ -99,10 +92,10 @@ public class PluginManager extends FormDialog implements HtmlPage {
 	}
 
 	@Override
-	public void onLoaded() {
-		new InstallFunction(browser);
-		new UpdateFunction(browser);
-		new UninstallFunction(browser);
+	public void onLoaded(WebEngine webkit) {
+		this.webkit = webkit;
+		JSObject window = (JSObject) webkit.executeScript("window");
+		window.setMember("java", new JsHandler());
 		refresh();
 	}
 
@@ -123,7 +116,7 @@ public class PluginManager extends FormDialog implements HtmlPage {
 		loadPlugins();
 		String data = mapper.toJson(plugins.values());
 		boolean online = isOnline();
-		browser.evaluate("setData(" + data + ", " + online + ")");
+		webkit.executeScript("setData(" + data + ", " + online + ")");
 	}
 
 	private boolean isOnline() {
@@ -159,60 +152,32 @@ public class PluginManager extends FormDialog implements HtmlPage {
 		return null;
 	}
 
-	private class InstallFunction extends BrowserFunction {
+	public class JsHandler {
 
-		public InstallFunction(Browser browser) {
-			super(browser, "install");
-		}
-
-		@Override
-		public Object function(Object[] arguments) {
-			Plugin plugin = plugins.get(arguments[0]);
-			App.runWithProgress("Installing " + plugin.getFullDisplayName(),
-					() -> {
-						service.install(plugin);
-					});
+		public void install(String name) {
+			Plugin plugin = plugins.get(name);
+			String title = "Installing " + plugin.getFullDisplayName();
+			App.runWithProgress(title, () -> service.install(plugin));
 			refresh();
-			return null;
-		}
-	}
-
-	private class UpdateFunction extends BrowserFunction {
-
-		public UpdateFunction(Browser browser) {
-			super(browser, "update");
 		}
 
-		@Override
-		public Object function(Object[] arguments) {
-			Plugin plugin = plugins.get(arguments[0]);
-			App.runWithProgress("Updating to " + plugin.getFullDisplayName(),
-					() -> {
-						service.update(plugin);
-						refresh();
-					});
-			return null;
+		public void update(String name) {
+			Plugin plugin = plugins.get(name);
+			String title = "Updating to " + plugin.getFullDisplayName();
+			App.runWithProgress(title, () -> {
+				service.update(plugin);
+				refresh();
+			});
 		}
 
-	}
-
-	private class UninstallFunction extends BrowserFunction {
-
-		public UninstallFunction(Browser browser) {
-			super(browser, "uninstall");
+		public void uninstall(String name) {
+			Plugin plugin = plugins.get(name);
+			String title = "Uninstalling " + plugin.getFullDisplayName();
+			App.runWithProgress(title, () -> {
+				service.uninstall(plugin);
+				refresh();
+			});
 		}
-
-		@Override
-		public Object function(Object[] arguments) {
-			Plugin plugin = plugins.get(arguments[0]);
-			App.runWithProgress("Uninstalling " + plugin.getFullDisplayName(),
-					() -> {
-						service.uninstall(plugin);
-						refresh();
-					});
-			return null;
-		}
-
 	}
 
 }

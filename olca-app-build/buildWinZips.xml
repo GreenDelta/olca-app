@@ -64,10 +64,6 @@
 			<fileset dir="${jre_path}" />
 		</copy>
 
-		<!-- copy XUL-Runner -->
-		<available file="${xulrunner_path}" property="copy_xulrunner" />
-		<antcall target="copyXulRunner" />
-
 		<!-- extract and move the compiled files to the build directory -->
 		<unzip dest="${package_dir}/openlca">
 			<fileset dir="${basedir}/builds">
@@ -103,12 +99,5 @@
 		<!-- delete the temporary build directory -->
 		<delete dir="${package_dir}" />
 	</target>
-
-	<target name="copyXulRunner" if="copy_xulrunner">
-		<copy todir="${package_dir}/openlca/xulrunner">
-			<fileset dir="${xulrunner_path}" />
-		</copy>
-	</target>
-
 
 </project>

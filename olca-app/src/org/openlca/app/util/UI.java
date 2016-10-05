@@ -1,14 +1,14 @@
 package org.openlca.app.util;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.browser.ProgressEvent;
-import org.eclipse.swt.browser.ProgressListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -26,44 +26,58 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.rcp.browser.BrowserFactory;
-import org.openlca.app.rcp.html.HtmlPage;
+import org.openlca.app.rcp.html.WebPage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javafx.concurrent.Worker.State;
+import javafx.embed.swt.FXCanvas;
+import javafx.scene.Scene;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
+import netscape.javascript.JSObject;
 
 public class UI {
 
 	private UI() {
 	}
 
-	public static Browser createBrowser(Composite parent) {
-		return BrowserFactory.create(parent);
+	public static WebEngine createWebView(FXCanvas canvas) {
+		canvas.setLayout(new FillLayout());
+		WebView view = new WebView();
+		Scene scene = new Scene(view);
+		canvas.setScene(scene);
+		WebEngine webkit = view.getEngine();
+		webkit.setJavaScriptEnabled(true);
+		webkit.setOnAlert(e -> {
+			Logger log = LoggerFactory.getLogger(UI.class);
+			log.error("JavaScript alert: {}", e.getData());
+		});
+		return webkit;
 	}
 
-	public static Browser createBrowser(Composite parent, final HtmlPage page) {
-		final Browser browser = createBrowser(parent);
+	public static Control createWebView(Composite parent, WebPage page) {
+		FXCanvas canvas = new FXCanvas(parent, SWT.NONE);
+		WebEngine webkit = UI.createWebView(canvas);
+		AtomicBoolean firstCall = new AtomicBoolean(true);
+		webkit.getLoadWorker().stateProperty().addListener((v, old, newState) -> {
+			if (firstCall.get() && newState == State.SUCCEEDED) {
+				firstCall.set(false);
+				page.onLoaded(webkit);
+			}
+		});
+		webkit.load(page.getUrl());
+		return canvas;
+	}
+
+	public static void bindVar(WebEngine webkit, String name, Object var) {
 		try {
-			browser.setUrl(page.getUrl());
-			browser.addProgressListener(new ProgressListener() {
-				boolean initialzed = false;
-
-				@Override
-				public void completed(ProgressEvent event) {
-					if (initialzed)
-						return;
-					page.onLoaded();
-					initialzed = true;
-				}
-
-				@Override
-				public void changed(ProgressEvent event) {
-				}
-			});
+			JSObject window = (JSObject) webkit.executeScript("window");
+			window.setMember(name, var);
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(UI.class);
-			log.error("Failed to html load page ", e);
+			log.error("failed to bind {} as {}", var, name, e);
 		}
-		return browser;
 	}
 
 	public static Shell shell() {

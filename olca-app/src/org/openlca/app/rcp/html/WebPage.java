@@ -1,10 +1,8 @@
 package org.openlca.app.rcp.html;
 
-/**
- * Interface for an HTML page used in the SWT browser widget.
- */
-public interface HtmlPage {
+import javafx.scene.web.WebEngine;
 
+public interface WebPage {
 	/**
 	 * Get the URL to the HTML page.
 	 */
@@ -13,6 +11,5 @@ public interface HtmlPage {
 	/**
 	 * Is executed when the page is ready in the browser.
 	 */
-	void onLoaded();
-
+	void onLoaded(WebEngine webkit);
 }
