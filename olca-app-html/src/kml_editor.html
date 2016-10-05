@@ -160,7 +160,7 @@
               doOpenEditor();
             });
             textEditor.on('change', function() {
-              kmlChanged(textEditor.getValue());
+              java.kmlChanged(textEditor.getValue());
             });
             $('.nav-tabs a').click(function (e) {
               e.preventDefault()
@@ -175,8 +175,8 @@
               if (id == "#textDiv") {
                   inTextEditor = true;
                   var kml = getKML(false);
-                  if (kml && typeof(prettifyKML) === "function") 
-                    kml = prettifyKML(kml);
+                  if (kml) 
+                    kml = prettifier.prettifyKML(kml);
                   textEditor.setValue(kml);
               } else if (id == "#mapDiv") {
                   inTextEditor = false;
@@ -200,7 +200,7 @@
 
           function onSaveAs() {        
             var kml = getKML(inTextEditor);
-            kml = prettifyKML(kml);
+            kml = prettifier.prettifyKML(kml);
             doSave(kml);
           }
                         
@@ -255,9 +255,7 @@
               currentType = type;
             });
             editLayer.events.register("featureadded", null, function(f) {
-              if (typeof(kmlChanged) === "function") {
-                kmlChanged(getKML(false));
-              }
+                java.kmlChanged(getKML(false));
             });
             listenersRegistered = true;
           }
