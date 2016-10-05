@@ -101,10 +101,10 @@
             };
             
             $scope.doOpenModel = function(item) {
-                if (typeof (openModel) !== 'undefined') {
-                    openModel(angular.toJson(item.descriptor));
-                } else {
-                    console.log('openModel is not a registered function');
+                try {
+                    java.openModel(angular.toJson(item.descriptor));
+                } catch (e) {
+                    alert(e);
                 }
             };
         
