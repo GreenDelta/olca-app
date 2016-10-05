@@ -66,13 +66,6 @@
 		</exec>
 		<move file="${work_dir}/openLCA/${jre_version}" tofile="${work_dir}/openLCA/jre" />
 
-		<!-- un-tar the XulRunner and rename the folder to xulrunner -->
-		<exec executable="${basedir}/7zip/7za.exe">
-			<arg value="x" />
-			<arg value="${basedir}/${xulrunner_path}" />
-			<arg value="-o${work_dir}/openLCA" />
-		</exec>
-
 		<!-- Copy legal info -->
 		<copy todir="${work_dir}/openLCA">
 			<fileset dir="${basedir}/legal" includes="/**" />
