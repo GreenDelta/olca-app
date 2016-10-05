@@ -26,7 +26,6 @@ import org.openlca.app.devtools.python.PythonEditor;
 import org.openlca.app.devtools.sql.SqlEditor;
 import org.openlca.app.editors.LogFileEditor;
 import org.openlca.app.editors.StartPage;
-import org.openlca.app.rcp.browser.MozillaConfigView;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.plugins.PluginManager;
@@ -112,10 +111,6 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		createMassReplaceMenu(windowMenu);
 		windowMenu.add(new Separator());
 		windowMenu.add(new FormulaConsoleAction());
-		if (MozillaConfigView.canShow()) {
-			windowMenu.add(Actions.create(M.BrowserConfiguration, Icon.FIREFOX.descriptor(),
-					MozillaConfigView::open));
-		}
 		menuBar.add(windowMenu);
 	}
 

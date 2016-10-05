@@ -4,9 +4,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.browser.ProgressEvent;
-import org.eclipse.swt.browser.ProgressListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Point;
@@ -29,8 +26,6 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.rcp.browser.BrowserFactory;
-import org.openlca.app.rcp.html.HtmlPage;
 import org.openlca.app.rcp.html.WebPage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,36 +39,6 @@ import javafx.scene.web.WebView;
 public class UI {
 
 	private UI() {
-	}
-
-	public static Browser createBrowser(Composite parent) {
-		return BrowserFactory.create(parent);
-	}
-
-	public static Browser createBrowser(Composite parent, final HtmlPage page) {
-		final Browser browser = createBrowser(parent);
-		try {
-			browser.setUrl(page.getUrl());
-			browser.addProgressListener(new ProgressListener() {
-				boolean initialzed = false;
-
-				@Override
-				public void completed(ProgressEvent event) {
-					if (initialzed)
-						return;
-					page.onLoaded();
-					initialzed = true;
-				}
-
-				@Override
-				public void changed(ProgressEvent event) {
-				}
-			});
-		} catch (Exception e) {
-			Logger log = LoggerFactory.getLogger(UI.class);
-			log.error("Failed to html load page ", e);
-		}
-		return browser;
 	}
 
 	public static void createWebView(Composite parent, WebPage page) {
