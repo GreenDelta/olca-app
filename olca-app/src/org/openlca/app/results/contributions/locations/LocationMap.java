@@ -55,6 +55,8 @@ class LocationMap implements WebPage {
 	}
 
 	void setInput(List<LocationItem> items) {
+		if (webkit == null)
+			return;
 		List<HeatmapPoint> points = new ArrayList<>();
 		for (LocationItem item : items) {
 			ContributionItem<Location> ci = item.contribution;
