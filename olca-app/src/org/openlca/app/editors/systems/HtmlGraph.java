@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
@@ -14,8 +13,8 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
-import org.openlca.app.rcp.html.HtmlPage;
 import org.openlca.app.rcp.html.HtmlView;
+import org.openlca.app.rcp.html.WebPage;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.EntityCache;
@@ -31,13 +30,13 @@ import com.google.gson.Gson;
 
 import gnu.trove.list.linked.TLongLinkedList;
 import gnu.trove.set.hash.TLongHashSet;
+import javafx.scene.web.WebEngine;
 
-class HtmlGraph extends FormPage implements HtmlPage {
+class HtmlGraph extends FormPage implements WebPage {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 
 	private ProductSystem productSystem;
-	private Browser browser;
 
 	public HtmlGraph(FormEditor editor, ProductSystem productSystem) {
 		super(editor, "system.HtmlGraph", M.HTMLGraph);
@@ -50,11 +49,11 @@ class HtmlGraph extends FormPage implements HtmlPage {
 	}
 
 	@Override
-	public void onLoaded() {
+	public void onLoaded(WebEngine webkit) {
 		try {
 			String graph = buildGraph().toJson();
 			String command = "setData(" + graph + ")";
-			browser.evaluate(command);
+			webkit.executeScript(command);
 		} catch (Exception e) {
 			log.error("failed to set graph data", e);
 		}
@@ -66,7 +65,7 @@ class HtmlGraph extends FormPage implements HtmlPage {
 		FormToolkit toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		body.setLayout(new FillLayout());
-		browser = UI.createBrowser(body, this);
+		UI.createWebView(body, this);
 		form.reflow(true);
 	}
 
