@@ -42,8 +42,7 @@ public class UI {
 	private UI() {
 	}
 
-	public static Control createWebView(Composite parent, WebPage page) {
-		FXCanvas canvas = new FXCanvas(parent, SWT.NONE);
+	public static WebEngine createWebView(FXCanvas canvas) {
 		canvas.setLayout(new FillLayout());
 		WebView view = new WebView();
 		Scene scene = new Scene(view);
@@ -54,6 +53,12 @@ public class UI {
 			Logger log = LoggerFactory.getLogger(UI.class);
 			log.error("JavaScript alert: {}", e.getData());
 		});
+		return webkit;
+	}
+
+	public static Control createWebView(Composite parent, WebPage page) {
+		FXCanvas canvas = new FXCanvas(parent, SWT.NONE);
+		WebEngine webkit = UI.createWebView(canvas);
 		AtomicBoolean firstCall = new AtomicBoolean(true);
 		webkit.getLoadWorker().stateProperty().addListener((v, old, newState) -> {
 			if (firstCall.get() && newState == State.SUCCEEDED) {

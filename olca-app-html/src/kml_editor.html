@@ -157,7 +157,7 @@
               onSaveAs();
             });
             $("#openButton").on("click", function() {
-              doOpenEditor();
+              java.doOpenEditor();
             });
             textEditor.on('change', function() {
               java.kmlChanged(textEditor.getValue());
@@ -201,7 +201,7 @@
           function onSaveAs() {        
             var kml = getKML(inTextEditor);
             kml = prettifier.prettifyKML(kml);
-            doSave(kml);
+            java.doSave(kml);
           }
                         
           function getKML(fromText) {
