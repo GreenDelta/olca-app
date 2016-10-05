@@ -2,22 +2,17 @@ package org.openlca.app.editors.processes.kml;
 
 import java.util.function.Consumer;
 
-import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.browser.BrowserFunction;
-import org.python.google.common.base.Strings;
+import org.openlca.util.Strings;
 
-public class KmlPrettifyFunction extends BrowserFunction {
+public class KmlPrettifyFunction {
 
 	private Consumer<Boolean> validHandler;
 
-	public KmlPrettifyFunction(Browser browser, Consumer<Boolean> validHandler) {
-		super(browser, "prettifyKML");
+	public KmlPrettifyFunction(Consumer<Boolean> validHandler) {
 		this.validHandler = validHandler;
 	}
 
-	@Override
-	public Object function(Object[] arguments) {
-		String kml = getArg(arguments, 0);
+	public String prettifyKML(String kml) {
 		if (kml == null || kml.isEmpty()) {
 			if (validHandler != null)
 				validHandler.accept(true);
@@ -26,7 +21,7 @@ public class KmlPrettifyFunction extends BrowserFunction {
 		try {
 			String result = KmlUtil.prettyFormat(kml);
 			if (validHandler != null)
-				validHandler.accept(!Strings.isNullOrEmpty(result));
+				validHandler.accept(!Strings.nullOrEmpty(result));
 			return result;
 		} catch (Exception e) {
 			if (validHandler != null)
@@ -34,12 +29,4 @@ public class KmlPrettifyFunction extends BrowserFunction {
 			return null;
 		}
 	}
-
-	@SuppressWarnings("unchecked")
-	private <T> T getArg(Object[] args, int index) {
-		if (args.length <= index)
-			return null;
-		return (T) args[index];
-	}
-
 }

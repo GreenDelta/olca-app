@@ -35,13 +35,14 @@ import javafx.embed.swt.FXCanvas;
 import javafx.scene.Scene;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import netscape.javascript.JSObject;
 
 public class UI {
 
 	private UI() {
 	}
 
-	public static void createWebView(Composite parent, WebPage page) {
+	public static Control createWebView(Composite parent, WebPage page) {
 		FXCanvas canvas = new FXCanvas(parent, SWT.NONE);
 		canvas.setLayout(new FillLayout());
 		WebView view = new WebView();
@@ -61,6 +62,17 @@ public class UI {
 			}
 		});
 		webkit.load(page.getUrl());
+		return canvas;
+	}
+
+	public static void bindVar(WebEngine webkit, String name, Object var) {
+		try {
+			JSObject window = (JSObject) webkit.executeScript("window");
+			window.setMember(name, var);
+		} catch (Exception e) {
+			Logger log = LoggerFactory.getLogger(UI.class);
+			log.error("failed to bind {} as {}", var, name, e);
+		}
 	}
 
 	public static Shell shell() {
