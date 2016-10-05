@@ -84,7 +84,6 @@ public class UI {
 		canvas.setScene(scene);
 		WebEngine webkit = view.getEngine();
 		webkit.setJavaScriptEnabled(true);
-		webkit.load(page.getUrl());
 		AtomicBoolean firstCall = new AtomicBoolean(true);
 		webkit.getLoadWorker().stateProperty().addListener((v, old, newState) -> {
 			if (firstCall.get() && newState == State.SUCCEEDED) {
@@ -92,6 +91,7 @@ public class UI {
 				page.onLoaded(webkit);
 			}
 		});
+		webkit.load(page.getUrl());
 	}
 
 	public static Shell shell() {
