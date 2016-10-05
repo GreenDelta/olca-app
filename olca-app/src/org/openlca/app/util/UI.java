@@ -84,6 +84,10 @@ public class UI {
 		canvas.setScene(scene);
 		WebEngine webkit = view.getEngine();
 		webkit.setJavaScriptEnabled(true);
+		webkit.setOnAlert(e -> {
+			Logger log = LoggerFactory.getLogger(UI.class);
+			log.error("JavaScript alert: {}", e.getData());
+		});
 		AtomicBoolean firstCall = new AtomicBoolean(true);
 		webkit.getLoadWorker().stateProperty().addListener((v, old, newState) -> {
 			if (firstCall.get() && newState == State.SUCCEEDED) {

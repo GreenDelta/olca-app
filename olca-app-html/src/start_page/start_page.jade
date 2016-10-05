@@ -24,10 +24,10 @@ html(lang='en')
 			+community
 		script.
 			$('a').on('click', function() {
-				if (typeof window.java === 'undefined') {
-					console.log('java object not bound');
-					return false;
+				try {				
+					java.openUrl($(this).attr('href'));
+				} catch(e) {
+					alert(e);
 				}
-				window.java.openUrl($(this).attr('href'));
 				return false;
 			});
