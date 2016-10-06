@@ -15,7 +15,6 @@ import org.openlca.app.preferencepages.IoPreference;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
-import org.openlca.ilcd.util.IlcdConfig;
 import org.openlca.io.ilcd.ILCDExport;
 import org.openlca.io.ilcd.output.ExportConfig;
 
@@ -74,7 +73,7 @@ public class ILCDExportWizard extends Wizard implements IExportWizard {
 			try {
 				Object component = config.db.createDao(
 						descriptor.getModelType().getModelClass()).getForId(
-						descriptor.getId());
+								descriptor.getId());
 				if (component instanceof CategorizedEntity)
 					export.export((CategorizedEntity) component);
 			} catch (Exception e) {
@@ -88,7 +87,7 @@ public class ILCDExportWizard extends Wizard implements IExportWizard {
 
 	private ExportConfig createConfig(File targetDir) {
 		ExportConfig config = new ExportConfig(Database.get(), targetDir);
-		config.ilcdConfig = new IlcdConfig(IoPreference.getIlcdLanguage());
+		config.lang = IoPreference.getIlcdLanguage();
 		return config;
 	}
 
