@@ -1,7 +1,6 @@
 package org.openlca.app.editors.systems;
 
-import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.browser.BrowserFunction;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
@@ -10,8 +9,8 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
-import org.openlca.app.rcp.html.HtmlPage;
 import org.openlca.app.rcp.html.HtmlView;
+import org.openlca.app.rcp.html.WebPage;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -20,12 +19,14 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
-public class StatisticsPage extends FormPage implements HtmlPage {
+import javafx.scene.web.WebEngine;
+
+public class StatisticsPage extends FormPage implements WebPage {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 
 	private ProductSystem system;
-	private Browser browser;
+	private WebEngine webkit;
 
 	public StatisticsPage(ProductSystemEditor editor) {
 		super(editor, "ProductSystemStatisticsPage", M.Statistics);
@@ -38,8 +39,8 @@ public class StatisticsPage extends FormPage implements HtmlPage {
 				M.ProductSystemStatistics);
 		FormToolkit toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
-		browser = UI.createBrowser(body, this);
-		UI.gridData(browser, true, true);
+		body.setLayout(new FillLayout());
+		UI.createWebView(body, this);
 		form.reflow(true);
 	}
 
@@ -49,37 +50,10 @@ public class StatisticsPage extends FormPage implements HtmlPage {
 	}
 
 	@Override
-	public void onLoaded() {
-		new BrowserFunction(browser, "openProcess") {
-			@Override
-			public Object function(Object[] args) {
-				openProcess(args);
-				return null;
-			}
-		};
-		new BrowserFunction(browser, "recalculate") {
-			@Override
-			public Object function(Object[] args) {
-				calculate();
-				return null;
-			}
-		};
+	public void onLoaded(WebEngine webkit) {
+		this.webkit = webkit;
+		UI.bindVar(webkit, "java", new JsHandler());
 		calculate();
-	}
-
-	private void openProcess(Object[] args) {
-		if (args == null || args.length == 0)
-			return;
-		if (!(args[0] instanceof String))
-			return;
-		try {
-			String json = (String) args[0];
-			ProcessDescriptor descriptor = new Gson().fromJson(json,
-					ProcessDescriptor.class);
-			App.openEditor(descriptor);
-		} catch (Exception e) {
-			log.error("failed to open process " + args[0], e);
-		}
 	}
 
 	private void calculate() {
@@ -98,9 +72,26 @@ public class StatisticsPage extends FormPage implements HtmlPage {
 		try {
 			String json = statistics.toJson();
 			String command = "setData(" + json + ")";
-			browser.evaluate(command);
+			webkit.executeScript(command);
 		} catch (Exception e) {
 			log.error("failed to set browser data", e);
+		}
+	}
+
+	public class JsHandler {
+
+		public void openProcess(String json) {
+			try {
+				ProcessDescriptor descriptor = new Gson().fromJson(json,
+						ProcessDescriptor.class);
+				App.openEditor(descriptor);
+			} catch (Exception e) {
+				log.error("failed to open process " + json, e);
+			}
+		}
+
+		public void recalculate() {
+			calculate();
 		}
 	}
 }

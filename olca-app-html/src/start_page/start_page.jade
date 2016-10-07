@@ -24,6 +24,10 @@ html(lang='en')
 			+community
 		script.
 			$('a').on('click', function() {
-				openUrl($(this).attr('href'));
+				try {				
+					java.openUrl($(this).attr('href'));
+				} catch(e) {
+					alert(e);
+				}
 				return false;
 			});

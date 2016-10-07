@@ -4,3 +4,5 @@ nsis-2.46
 packages
 runtime
 sources
+
+*.exe

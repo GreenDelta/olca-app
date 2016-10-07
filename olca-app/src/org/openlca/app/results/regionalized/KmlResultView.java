@@ -7,8 +7,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
@@ -17,8 +17,8 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
 import org.openlca.app.components.ResultTypeSelection;
 import org.openlca.app.db.Cache;
-import org.openlca.app.rcp.html.HtmlPage;
 import org.openlca.app.rcp.html.HtmlView;
+import org.openlca.app.rcp.html.WebPage;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.geo.RegionalizedResultProvider;
@@ -27,12 +27,14 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
-class KmlResultView extends FormPage implements HtmlPage {
+import javafx.scene.web.WebEngine;
+
+class KmlResultView extends FormPage implements WebPage {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 
 	private RegionalizedResultProvider result;
-	private Browser browser;
+	private WebEngine webkit;
 	private ResultTypeSelection flowImpactSelection;
 	private boolean incompleteData = false;
 	private boolean loaded;
@@ -48,7 +50,8 @@ class KmlResultView extends FormPage implements HtmlPage {
 	}
 
 	@Override
-	public void onLoaded() {
+	public void onLoaded(WebEngine webkit) {
+		this.webkit = webkit;
 		loaded = true;
 		Set<FlowDescriptor> flowDescriptors = result.result.getFlowDescriptors();
 		if (flowDescriptors.isEmpty())
@@ -68,7 +71,7 @@ class KmlResultView extends FormPage implements HtmlPage {
 				.on(result.result, Cache.getEntityCache())
 				.withEventHandler(new KmlSelectionHandler(result))
 				.create(composite, toolkit);
-		browser = UI.createBrowser(body, this);
+		Control browser = UI.createWebView(body, this);
 		UI.gridData(browser, true, true);
 		form.reflow(true);
 	}
@@ -76,13 +79,14 @@ class KmlResultView extends FormPage implements HtmlPage {
 	@Override
 	public void setActive(boolean active) {
 		super.setActive(active);
-		if (incompleteData)
+		if (incompleteData && webkit != null) {
 			// reset browser data
 			try {
-				browser.evaluate("initData()");
+				webkit.executeScript("initData()");
 			} catch (Exception e) {
 				log.error("failed to evaluate initData()", e);
 			}
+		}
 	}
 
 	private class KmlSelectionHandler extends SelectionHandler {
@@ -134,6 +138,8 @@ class KmlResultView extends FormPage implements HtmlPage {
 				cancelDelayedJobs();
 				return;
 			}
+			if (webkit == null)
+				return;
 			String command = null;
 			if (value instanceof String)
 				command = value.toString();
@@ -143,7 +149,7 @@ class KmlResultView extends FormPage implements HtmlPage {
 				command = "addFeature(" + json + ")";
 			}
 			try {
-				browser.evaluate(command);
+				webkit.executeScript(command);
 			} catch (Exception e) {
 				log.error("failed to evaluate " + value, e);
 			}

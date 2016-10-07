@@ -3,8 +3,7 @@ package org.openlca.app.editors;
 import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.browser.BrowserFunction;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -16,8 +15,8 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
-import org.openlca.app.rcp.html.HtmlPage;
 import org.openlca.app.rcp.html.HtmlView;
+import org.openlca.app.rcp.html.WebPage;
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
@@ -39,6 +38,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
+import javafx.scene.web.WebEngine;
+
 /**
  * View of usages of a model entity in other entities.
  */
@@ -57,12 +58,11 @@ public class UsageView extends SimpleFormEditor {
 		Editors.open(input, UsageView.ID);
 	}
 
-
 	@Override
 	protected FormPage getPage() {
 		return new Page();
 	}
-	
+
 	@Override
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
@@ -74,9 +74,7 @@ public class UsageView extends SimpleFormEditor {
 		}
 	}
 
-	private class Page extends FormPage implements HtmlPage {
-
-		private Browser browser;
+	private class Page extends FormPage implements WebPage {
 
 		public Page() {
 			super(UsageView.this, "UsageView.Page", M.Usage);
@@ -88,15 +86,15 @@ public class UsageView extends SimpleFormEditor {
 		}
 
 		@Override
-		public void onLoaded() {
+		public void onLoaded(WebEngine webkit) {
 			log.trace("page completed, set data");
-			registerFunction();
+			UI.bindVar(webkit, "java", new JsHandler());
 			try {
 				List<CategorizedDescriptor> list = runSearch();
 				Gson gson = new Gson();
 				String json = gson.toJson(list);
-				String function = "setData(" + json + ")";
-				browser.evaluate(function);
+				String command = "setData(" + json + ")";
+				webkit.executeScript(command);
 			} catch (Exception e) {
 				log.trace("Failed to load data: where used", e);
 			}
@@ -117,44 +115,15 @@ public class UsageView extends SimpleFormEditor {
 					+ ": " + Labels.getDisplayName(model));
 			FormToolkit toolkit = managedForm.getToolkit();
 			Composite body = UI.formBody(form, toolkit);
-			browser = UI.createBrowser(body, this);
-			UI.gridData(browser, true, true);
+			body.setLayout(new FillLayout());
+			UI.createWebView(body, this);
 			form.reflow(true);
 		}
+	}
 
-		private void registerFunction() {
-			new BrowserFunction(browser, "openModel") {
-				@Override
-				public Object function(Object[] args) {
-					openModel(args);
-					return null;
-				}
-			};
-			new BrowserFunction(browser, "getLabel") {
-				@Override
-				public Object function(Object[] args) {
-					String json = args[0].toString();
-					BaseDescriptor descriptor = getDescriptor(json);
-					return Labels.getDisplayName(descriptor);
-				}
-			};
-			new BrowserFunction(browser, "getTypeLabel") {
-				public Object function(Object[] args) {
-					String json = args[0].toString();
-					BaseDescriptor descriptor = getDescriptor(json);
-					return Labels.modelTypeSingular(descriptor.getModelType());
+	public class JsHandler {
 
-				}
-
-			};
-		}
-
-		private void openModel(Object[] args) {
-			if (args == null || args.length < 1 || args[0] == null) {
-				log.error("Could not open model, no Json string in arg[0]");
-				return;
-			}
-			String json = args[0].toString();
+		public void openModel(String json) {
 			log.trace("open model: json={}", json);
 			try {
 				BaseDescriptor descriptor = getDescriptor(json);
@@ -171,7 +140,8 @@ public class UsageView extends SimpleFormEditor {
 					BaseDescriptor.class);
 			if (descriptor == null || descriptor.getModelType() == null)
 				return descriptor;
-			// load the descriptor specific attributes for the given model type
+			// load the descriptor specific attributes for the given model
+			// type
 			// this also assures object equality when comparing different
 			// descriptor objects, e.g. when opening the editor
 			switch (descriptor.getModelType()) {

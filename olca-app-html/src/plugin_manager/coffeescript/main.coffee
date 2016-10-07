@@ -10,13 +10,11 @@ setData = (data, online) ->
 
 registerCallbacks = () ->
 	$('.btn-install').on 'click', () ->
-		install getPlugin $(@)
+		window.java.install getPlugin $(@)
 	$('.btn-update').on 'click', () ->
-		update getPlugin $(@)
+		window.java.update getPlugin $(@)
 	$('.btn-uninstall').on 'click', () ->
-		uninstall getPlugin $(@)
-	$('.btn-install-local').on 'click', () ->
-		installLocal()
+		window.java.uninstall getPlugin $(@)
 
 getPlugin = (element) ->
 	while !element.attr('data-plugin')

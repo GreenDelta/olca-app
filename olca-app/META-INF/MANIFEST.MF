@@ -24,7 +24,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.birt.chart.ui.extension,
  org.eclipse.birt.core,
  org.eclipse.birt.core.ui,
- com.ibm.icu
+ com.ibm.icu,
+ org.eclipse.fx.ui.workbench3;bundle-version="2.4.0"
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
  libs/bonecp-0.8.0.RELEASE.jar,

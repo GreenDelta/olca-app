@@ -1,7 +1,6 @@
 package org.openlca.app.editors.reports;
 
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
@@ -14,8 +13,8 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.editors.reports.model.Report;
-import org.openlca.app.rcp.html.HtmlPage;
 import org.openlca.app.rcp.html.HtmlView;
+import org.openlca.app.rcp.html.WebPage;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.UI;
@@ -25,6 +24,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+
+import javafx.scene.web.WebEngine;
 
 public class ReportViewer extends SimpleFormEditor {
 
@@ -107,9 +108,7 @@ public class ReportViewer extends SimpleFormEditor {
 		}
 	}
 
-	private class Page extends FormPage implements HtmlPage {
-
-		private Browser browser;
+	private class Page extends FormPage implements WebPage {
 
 		public Page() {
 			super(ReportViewer.this, "olca.ReportPreview.Page",
@@ -122,14 +121,13 @@ public class ReportViewer extends SimpleFormEditor {
 		}
 
 		@Override
-		public void onLoaded() {
+		public void onLoaded(WebEngine webkit) {
 			Gson gson = new Gson();
 			String json = gson.toJson(report);
-			System.out.println(json);
 			String messages = M.asJson();
 			String command = "setData(" + json + ", " + messages + ")";
 			try {
-				browser.evaluate(command);
+				webkit.executeScript(command);
 			} catch (Exception e) {
 				log.error("failed to set report data to browser", e);
 			}
@@ -140,7 +138,7 @@ public class ReportViewer extends SimpleFormEditor {
 			ScrolledForm form = managedForm.getForm();
 			Composite composite = form.getBody();
 			composite.setLayout(new FillLayout());
-			browser = UI.createBrowser(composite, this);
+			UI.createWebView(composite, this);
 		}
 	}
 }

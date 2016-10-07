@@ -4,15 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
-import org.openlca.app.rcp.html.HtmlPage;
 import org.openlca.app.rcp.html.HtmlView;
+import org.openlca.app.rcp.html.WebPage;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
@@ -21,10 +20,12 @@ import org.openlca.core.results.ContributionItem;
 
 import com.google.gson.Gson;
 
-class LocationMap implements HtmlPage {
+import javafx.scene.web.WebEngine;
+
+class LocationMap implements WebPage {
 
 	private LocationPage page;
-	private Browser browser;
+	private WebEngine webkit;
 
 	static LocationMap create(LocationPage page, Composite body, FormToolkit tk) {
 		return new LocationMap(page, body, tk);
@@ -39,7 +40,7 @@ class LocationMap implements HtmlPage {
 		gridData.heightHint = 500;
 		Composite browserComp = UI.sectionClient(section, tk);
 		browserComp.setLayout(new FillLayout());
-		browser = UI.createBrowser(browserComp, this);
+		UI.createWebView(browserComp, this);
 	}
 
 	@Override
@@ -48,11 +49,14 @@ class LocationMap implements HtmlPage {
 	}
 
 	@Override
-	public void onLoaded() {
+	public void onLoaded(WebEngine webkit) {
+		this.webkit = webkit;
 		page.refreshSelection();
 	}
 
 	void setInput(List<LocationItem> items) {
+		if (webkit == null)
+			return;
 		List<HeatmapPoint> points = new ArrayList<>();
 		for (LocationItem item : items) {
 			ContributionItem<Location> ci = item.contribution;
@@ -69,7 +73,7 @@ class LocationMap implements HtmlPage {
 			points.get(0).weight = 1;
 		}
 		String json = new Gson().toJson(points);
-		browser.execute("setData(" + json + ")");
+		webkit.executeScript("setData(" + json + ")");
 	}
 
 	private boolean showInMap(ContributionItem<Location> ci) {

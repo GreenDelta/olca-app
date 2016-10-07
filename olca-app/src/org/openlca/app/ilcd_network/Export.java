@@ -14,7 +14,6 @@ import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.ilcd.io.NetworkClient;
-import org.openlca.ilcd.util.IlcdConfig;
 import org.openlca.io.ilcd.output.ExportConfig;
 import org.openlca.io.ilcd.output.ProcessExport;
 import org.openlca.io.ilcd.output.SystemExport;
@@ -39,7 +38,7 @@ public class Export implements IRunnableWithProgress {
 		beginTask(monitor);
 		NetworkClient client = tryCreateClient();
 		ExportConfig config = new ExportConfig(database, client);
-		config.ilcdConfig = new IlcdConfig(IoPreference.getIlcdLanguage());
+		config.lang = IoPreference.getIlcdLanguage();
 		Iterator<BaseDescriptor> it = descriptors.iterator();
 		while (!monitor.isCanceled() && it.hasNext()) {
 			BaseDescriptor descriptor = it.next();
