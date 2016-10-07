@@ -28,10 +28,12 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.db.Cache;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
+import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.combo.ProcessViewer;
@@ -167,17 +169,15 @@ public class ProcessResultPage extends FormPage {
 	}
 
 	private TableViewer createFlowTable(Composite parent) {
-		TableViewer table = new TableViewer(parent);
+		TableViewer table = new TableViewer(parent, SWT.FULL_SELECTION | SWT.MULTI);
 		decorateResultViewer(table, EXCHANGE_COLUMN_LABELS);
 		FlowLabel label = new FlowLabel();
 		table.setLabelProvider(label);
 		Viewers.sortByLabels(table, label, 1, 4);
-		Viewers.sortByDouble(table, (FlowDescriptor f) -> flowResult
-				.getUpstreamContribution(f), 0);
-		Viewers.sortByDouble(table, (FlowDescriptor f) -> flowResult
-				.getUpstreamTotal(f), 2);
-		Viewers.sortByDouble(table, (FlowDescriptor f) -> flowResult
-				.getDirectResult(f), 3);
+		Viewers.sortByDouble(table, (FlowDescriptor f) -> flowResult.getUpstreamContribution(f), 0);
+		Viewers.sortByDouble(table, (FlowDescriptor f) -> flowResult.getUpstreamTotal(f), 2);
+		Viewers.sortByDouble(table, (FlowDescriptor f) -> flowResult.getDirectResult(f), 3);
+		Actions.bind(table, TableClipboard.onCopy(table));
 		return table;
 	}
 
@@ -212,17 +212,15 @@ public class ProcessResultPage extends FormPage {
 	}
 
 	private TableViewer createImpactTable(Composite composite) {
-		TableViewer table = new TableViewer(composite);
+		TableViewer table = new TableViewer(composite, SWT.FULL_SELECTION | SWT.MULTI);
 		decorateResultViewer(table, IMPACT_COLUMN_LABELS);
 		ImpactLabel label = new ImpactLabel();
 		table.setLabelProvider(label);
 		Viewers.sortByLabels(table, label, 1, 4);
-		Viewers.sortByDouble(table, (ImpactCategoryDescriptor i) -> impactResult
-				.getUpstreamContribution(i), 0);
-		Viewers.sortByDouble(table, (ImpactCategoryDescriptor i) -> impactResult
-				.getUpstreamTotal(i), 2);
-		Viewers.sortByDouble(table, (ImpactCategoryDescriptor i) -> impactResult
-				.getDirectResult(i), 3);
+		Viewers.sortByDouble(table, (ImpactCategoryDescriptor i) -> impactResult.getUpstreamContribution(i), 0);
+		Viewers.sortByDouble(table, (ImpactCategoryDescriptor i) -> impactResult.getUpstreamTotal(i), 2);
+		Viewers.sortByDouble(table, (ImpactCategoryDescriptor i) -> impactResult.getDirectResult(i), 3);
+		Actions.bind(table, TableClipboard.onCopy(table));
 		return table;
 	}
 
@@ -323,7 +321,7 @@ public class ProcessResultPage extends FormPage {
 		@Override
 		public boolean select(Viewer viewer, Object parent, Object o) {
 			if (!(o instanceof FlowDescriptor
-					|| o instanceof ImpactCategoryDescriptor))
+			|| o instanceof ImpactCategoryDescriptor))
 				return false;
 			boolean forFlow = o instanceof FlowDescriptor;
 			double cutoff = forFlow ? flowCutOff : impactCutOff;
