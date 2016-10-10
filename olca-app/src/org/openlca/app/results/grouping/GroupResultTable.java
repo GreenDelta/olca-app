@@ -35,7 +35,7 @@ class GroupResultTable {
 	private String unit;
 
 	public GroupResultTable(Composite parent) {
-		viewer = new TableViewer(parent);
+		viewer = new TableViewer(parent, SWT.FULL_SELECTION | SWT.MULTI);
 		viewer.setContentProvider(ArrayContentProvider.getInstance());
 		viewer.setLabelProvider(new GroupResultLabel());
 		Table table = viewer.getTable();

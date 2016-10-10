@@ -25,7 +25,7 @@ class LocationTree {
 
 	public LocationTree(Composite parent, boolean withMinHeight) {
 		UI.gridLayout(parent, 1);
-		viewer = new TreeViewer(parent);
+		viewer = new TreeViewer(parent, SWT.FULL_SELECTION | SWT.MULTI);
 		viewer.setContentProvider(new TreeContentProvider());
 		treeLabel = new TreeLabel();
 		viewer.setLabelProvider(treeLabel);
