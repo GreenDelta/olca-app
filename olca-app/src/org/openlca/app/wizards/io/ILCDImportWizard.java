@@ -13,7 +13,6 @@ import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.preferencepages.IoPreference;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.ilcd.commons.LangConfig;
 import org.openlca.io.ilcd.ILCDImport;
 import org.openlca.io.ilcd.input.ImportConfig;
 import org.slf4j.Logger;
@@ -79,7 +78,9 @@ public class ILCDImportWizard extends Wizard implements IImportWizard {
 	private ImportConfig createConfig(File zip) {
 		ImportConfig config = new ImportConfig(zip, Database.get());
 		config.importFlows = true;
-		config.langConfig = new LangConfig(IoPreference.getIlcdLanguage());
+		String lang = IoPreference.getIlcdLanguage();
+		if (!"en".equals(lang))
+			config.langs = new String[] { lang, "en" };
 		return config;
 	}
 }

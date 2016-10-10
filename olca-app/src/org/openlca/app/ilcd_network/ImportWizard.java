@@ -14,7 +14,6 @@ import org.openlca.app.navigation.Navigator;
 import org.openlca.app.preferencepages.IoPreference;
 import org.openlca.app.rcp.RcpActivator;
 import org.openlca.core.database.IDatabase;
-import org.openlca.ilcd.commons.LangConfig;
 import org.openlca.ilcd.descriptors.ProcessDescriptor;
 import org.openlca.ilcd.io.DataStoreException;
 import org.openlca.ilcd.io.NetworkClient;
@@ -60,7 +59,7 @@ public class ImportWizard extends Wizard implements IImportWizard {
 				.getSelectedProcesses();
 		NetworkClient client = IoPreference.createClient();
 		ImportConfig config = new ImportConfig(client, database);
-		config.langConfig = new LangConfig(IoPreference.getIlcdLanguage());
+		config.langs = new String[] { IoPreference.getIlcdLanguage(), "en" };
 		client.connect();
 		getContainer().run(true, true, monitor -> {
 			monitor.beginTask(M.ILCD_RunImport, IProgressMonitor.UNKNOWN);
@@ -79,7 +78,7 @@ public class ImportWizard extends Wizard implements IImportWizard {
 			Process process = config.store.get(Process.class,
 					descriptor.uuid);
 			if (process != null) {
-				ProcessBag bag = new ProcessBag(process, config.langConfig);
+				ProcessBag bag = new ProcessBag(process, config.langs);
 				if (bag.hasProductModel()) {
 					SystemImport systemImport = new SystemImport(config);
 					systemImport.run(process);
