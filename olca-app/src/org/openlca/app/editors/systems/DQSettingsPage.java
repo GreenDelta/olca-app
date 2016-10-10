@@ -64,17 +64,21 @@ class DQSettingsPage extends WizardPage {
 	}
 
 	public DQCalculationSetup getSetup(ProductSystem system) {
-		long psId = system.getId();
+		DQCalculationSetup setup = new DQCalculationSetup();
+		setup.productSystemId = system.getId();
 		DQSystemDao dqDao = new DQSystemDao(Database.get());
-		DQSystem pSystem = null;
 		DQSystemDescriptor pSystemDesc = processSystemViewer.getSelected();
-		if (pSystemDesc != null)
-			pSystem = dqDao.getForId(pSystemDesc.getId());
-		DQSystem eSystem = null;
+		if (pSystemDesc != null) {
+			setup.processDqSystem = dqDao.getForId(pSystemDesc.getId());
+		}
 		DQSystemDescriptor eSystemDesc = exchangeSystemViewer.getSelected();
-		if (eSystemDesc != null)
-			eSystem = dqDao.getForId(eSystemDesc.getId());
-		return new DQCalculationSetup(psId, aggregationType, roundingMode, processingType, pSystem, eSystem);
+		if (eSystemDesc != null) {
+			setup.exchangeDqSystem = dqDao.getForId(eSystemDesc.getId());
+		}
+		setup.aggregationType = aggregationType;
+		setup.roundingMode = roundingMode;
+		setup.processingType = processingType;
+		return setup;
 	}
 
 	private void loadDefaults() {
