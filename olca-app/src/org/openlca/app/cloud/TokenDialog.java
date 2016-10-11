@@ -7,27 +7,23 @@ import org.openlca.app.util.UI;
 
 public class TokenDialog {
 
-	private int token;
+	private Integer token;
 
 	private TokenDialog() {
 	}
 
-	private int open() {
-		try {
-			Display.getDefault().syncExec(() -> {
-				InputDialog dialog = new InputDialog(UI.shell(), "#Enter your authenticator token",
-						"#Please enter your authenticator token to proceed", null, TokenDialog::checkValid);
-				if (dialog.open() != IDialogConstants.OK_ID)
-					return;
-				token = Integer.parseInt(dialog.getValue());
-			});
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	private Integer open() {
+		Display.getDefault().syncExec(() -> {
+			InputDialog dialog = new InputDialog(UI.shell(), "#Enter your authenticator token",
+					"#Please enter your authenticator token to proceed", null, TokenDialog::checkValid);
+			if (dialog.open() != IDialogConstants.OK_ID)
+				return;
+			token = Integer.parseInt(dialog.getValue());
+		});
 		return token;
 	}
 
-	public static int prompt() {
+	public static Integer prompt() {
 		return new TokenDialog().open();
 	}
 
