@@ -1,5 +1,7 @@
 package org.openlca.app.cloud.ui.commits;
 
+import org.openlca.app.M;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,7 +83,7 @@ public class HistoryView extends ViewPart {
 
 	private void createJsonViewer(Composite parent) {
 		diffViewer = DiffEditor.forViewing(parent);
-		diffViewer.setLabels("#Selected commit", "#Previous commit");
+		diffViewer.setLabels(M.SelectedCommit, M.PreviousCommit);
 		diffViewer.initialize(null, new ModelLabelProvider(), ModelUtil.getDependencyResolver(), Direction.LEFT_TO_RIGHT);
 	}
 

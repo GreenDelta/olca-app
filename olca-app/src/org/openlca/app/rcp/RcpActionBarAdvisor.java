@@ -123,10 +123,10 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	}
 
 	private void createMassReplaceMenu(MenuManager windowMenu) {
-		MenuManager m = new MenuManager("#Mass-replace");
+		MenuManager m = new MenuManager(M.Massreplace);
 		windowMenu.add(m);
-		m.add(Actions.create("#Flows", Images.descriptor(ModelType.FLOW), ReplaceFlowsDialog::openDialog));
-		m.add(Actions.create("#Providers", Images.descriptor(ModelType.PROCESS), ReplaceProvidersDialog::openDialog));
+		m.add(Actions.create(M.Flows, Images.descriptor(ModelType.FLOW), ReplaceFlowsDialog::openDialog));
+		m.add(Actions.create(M.Providers, Images.descriptor(ModelType.PROCESS), ReplaceProvidersDialog::openDialog));
 	}
 
 	@Override

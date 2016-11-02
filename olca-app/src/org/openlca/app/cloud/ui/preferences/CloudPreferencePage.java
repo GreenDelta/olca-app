@@ -43,7 +43,7 @@ public class CloudPreferencePage extends PreferencePage implements IWorkbenchPre
 		Composite general = new Composite(body, SWT.NONE);
 		UI.gridLayout(general, 2, 0, 0);
 		createLibraryCheckBox(general);
-		UI.formLabel(body, "#Server configurations");
+		UI.formLabel(body, M.ServerConfigurations);
 		ConfigurationViewer viewer = new ConfigurationViewer(body);
 		viewer.setInput(configs);
 		return body;
@@ -65,7 +65,7 @@ public class CloudPreferencePage extends PreferencePage implements IWorkbenchPre
 	private static final String URL = M.ServerUrl;
 	private static final String USER = M.User;
 	private static final String PASS = M.Password;
-	private static final String DEFAULT = "#Is default";
+	private static final String DEFAULT = M.IsDefault;
 
 	private class ConfigurationViewer extends AbstractTableViewer<CloudConfiguration> {
 

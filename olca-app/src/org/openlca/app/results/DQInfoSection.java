@@ -1,5 +1,7 @@
 package org.openlca.app.results;
 
+import org.openlca.app.M;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -38,14 +40,14 @@ public class DQInfoSection {
 	}
 
 	private void create(Composite parent) {
-		Composite client = UI.formSection(parent, toolkit, "#Data quality");
-		createText(client, "#Process data quality scheme", dqResult.setup.processDqSystem);
-		createText(client, "#Input/Output data quality scheme", dqResult.setup.exchangeDqSystem);
-		createText(client, "#Aggregation", Labels.aggregationType(dqResult.setup.aggregationType));
-		createText(client, "#Rounding mode", Labels.roundingMode(dqResult.setup.roundingMode));
-		createText(client, "#n.a. value handling", Labels.processingType(dqResult.setup.processingType));
-		createStatisticsTree(client, "#Process data quality statistics", true);
-		createStatisticsTree(client, "#Input/Output data quality statistics", false);
+		Composite client = UI.formSection(parent, toolkit, M.DataQuality);
+		createText(client, M.ProcessDataQualityScheme, dqResult.setup.processDqSystem);
+		createText(client, M.InputOutputDataQualityScheme, dqResult.setup.exchangeDqSystem);
+		createText(client, M.Aggregation, Labels.aggregationType(dqResult.setup.aggregationType));
+		createText(client, M.RoundingMode, Labels.roundingMode(dqResult.setup.roundingMode));
+		createText(client, M.NaValueHandling, Labels.processingType(dqResult.setup.processingType));
+		createStatisticsTree(client, M.ProcessDataQualityStatistics, true);
+		createStatisticsTree(client, M.InputOutputDataQualityStatistics, false);
 	}
 
 	private void createText(Composite parent, String label, DQSystem system) {

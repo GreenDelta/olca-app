@@ -149,7 +149,7 @@ public class ConnectAction extends Action implements INavigationAction {
 				checkValid();
 			});
 			configViewer.select(CloudConfigurations.getDefault());
-			Hyperlink editConfig = UI.formLink(container, "#Edit");
+			Hyperlink editConfig = UI.formLink(container, M.Edit);
 			editConfig.setForeground(Colors.linkBlue());
 			editConfig.addHyperlinkListener(new HyperlinkAdapter() {
 				@Override

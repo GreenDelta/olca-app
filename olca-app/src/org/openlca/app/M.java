@@ -14,6 +14,7 @@ import com.google.gson.Gson;
 
 public class M extends NLS {
 
+	public static String ALocationCodeIsRequired;
 	public static String AcceptCommit;
 	public static String AccessAndUseRestrictions;
 	public static String ActivityQuantity;
@@ -23,37 +24,41 @@ public class M extends NLS {
 	public static String Actors;
 	public static String Add;
 	public static String AddConnectedProcesses;
+	public static String AddIndicator;
 	public static String AddNewChildCategory;
+	public static String AddScore;
 	public static String AddSection;
 	public static String AddToMethodParameters;
 	public static String AddedValue;
 	public static String AdditionalInformation;
 	public static String Address;
 	public static String AdministrativeInformation;
+	public static String Aggregation;
+	public static String AggregationType;
 	public static String Allocation;
 	public static String AllocationFactors;
 	public static String AllocationMethod;
 	public static String AlreadyConnected;
 	public static String AlreadyPresent;
 	public static String Amount;
+	public static String AnErrorOccuredWhileReceivingDataForCommit;
 	public static String Analysis;
 	public static String AnalysisResultOf;
 	public static String AnalyzingForProblems;
 	public static String ApplyFormatToInputsOutputs;
 	public static String AsDefinedInProcesses;
+	public static String AssessDataQuality;
 	public static String AssignUnits;
 	public static String Author;
 	public static String AvoidedProduct;
 	public static String AvoidedProductFlow;
 	public static String AvoidedWasteFlow;
-
 	public static String BackgroundData;
 	public static String BaseUncertainty;
 	public static String Browse;
 	public static String BrowserConfiguration;
 	public static String BuildNextTier;
 	public static String BuildSupplyChain;
-
 	public static String CASNumber;
 	public static String CSVFormat;
 	public static String Calculate;
@@ -83,6 +88,8 @@ public class M extends NLS {
 	public static String CheckAgainstLibraries;
 	public static String CheckForUpdates;
 	public static String CheckingAgainstLibraries;
+	public static String CheckingOutCommit;
+	public static String Checkout;
 	public static String ChooseDirectory;
 	public static String City;
 	public static String ClearData;
@@ -100,6 +107,9 @@ public class M extends NLS {
 	public static String CommitMessage;
 	public static String CommitReferenceNotice;
 	public static String CommitingChanges;
+	public static String CommittedDate;
+	public static String Committer;
+	public static String Compare;
 	public static String ComparingWithRepository;
 	public static String Complete;
 	public static String CompleteReferenceData;
@@ -147,6 +157,7 @@ public class M extends NLS {
 	public static String CreateProcesslink;
 	public static String CreateProductSystem;
 	public static String CreatesANewActor;
+	public static String CreatesANewDataQualitySystem;
 	public static String CreatesANewFlow;
 	public static String CreatesANewFlowProperty;
 	public static String CreatesANewImpactMethod;
@@ -165,7 +176,6 @@ public class M extends NLS {
 	public static String Cut;
 	public static String CutOffForFirstLayerIn;
 	public static String Cutoff;
-
 	public static String DBImportNoTarget;
 	public static String DBImportNoTargetConnectionFailedMessage;
 	public static String DBImportUpdateDatabaseQuestion;
@@ -176,6 +186,9 @@ public class M extends NLS {
 	public static String DataDocumentor;
 	public static String DataGenerator;
 	public static String DataQuality;
+	public static String DataQualityEntry;
+	public static String DataQualitySystem;
+	public static String DataQualitySystems;
 	public static String DataSelection;
 	public static String DataSet;
 	public static String DataSetOtherEvaluation;
@@ -231,7 +244,7 @@ public class M extends NLS {
 	public static String DoYouReallyWantToDelete;
 	public static String Doi;
 	public static String Dot;
-
+	public static String DownloadingData;
 	public static String EcoSpold2Export;
 	public static String EcoSpoldConfiguration;
 	public static String Economic;
@@ -247,13 +260,17 @@ public class M extends NLS {
 	public static String Error;
 	public static String ErrorPopupMessage;
 	public static String ErrorPopupTitle;
+	public static String Errors;
 	public static String EvaluateLocations;
 	public static String EvaluatingLocations;
 	public static String EvaluationScheme;
 	public static String Example;
 	public static String ExcelExport;
+	public static String ExchangeDataQualitySchema;
 	public static String ExchangesAreUsed;
+	public static String ExcludeExchangesWithDefaultProviders;
 	public static String ExcludeZeroEntries;
+	public static String ExcludeZeroValues;
 	public static String Expand;
 	public static String ExpandAll;
 	public static String Export;
@@ -275,7 +292,6 @@ public class M extends NLS {
 	public static String ExternalFile;
 	public static String ExternalSource;
 	public static String ExternalSourceChange;
-
 	public static String Factor;
 	public static String Factors;
 	public static String FailedToLoadFlowProperty;
@@ -311,7 +327,6 @@ public class M extends NLS {
 	public static String FoundProblems;
 	public static String FromDirectory;
 	public static String FunctionalUnit;
-
 	public static String GeneralInformation;
 	public static String Geography;
 	public static String GeographyDescription;
@@ -329,8 +344,10 @@ public class M extends NLS {
 	public static String Group;
 	public static String Grouping;
 	public static String Groups;
-
+	public static String HEADRevision;
 	public static String HTMLGraph;
+	public static String HalfUp;
+	public static String HasUncertainties;
 	public static String Help;
 	public static String Hide;
 	public static String HighOpportunity;
@@ -338,7 +355,6 @@ public class M extends NLS {
 	public static String Home;
 	public static String Host;
 	public static String Hourly;
-
 	public static String ILCDNetworkExport;
 	public static String ILCDNetworkExportDescription;
 	public static String ILCDNetworkSettings;
@@ -351,6 +367,8 @@ public class M extends NLS {
 	public static String ILCD_RunImport;
 	public static String ILCD_SearchFailedMessage;
 	public static String ILCD_SearchPageDescription;
+	public static String IOSchema;
+	public static String Id;
 	public static String ImageExport;
 	public static String ImpactAnalysis;
 	public static String ImpactAssessmentMethod;
@@ -375,8 +393,10 @@ public class M extends NLS {
 	public static String ImportingXMLData;
 	public static String IncludeCostCalculation;
 	public static String IndicatorBarChart;
-	public static String IndicatorsAndParameters;
 	public static String IndicatorScore;
+	public static String Indicators;
+	public static String IndicatorsAndParameters;
+	public static String IndicatorsScores;
 	public static String Information;
 	public static String InfrastructureFlow;
 	public static String InfrastructureProcess;
@@ -384,6 +404,9 @@ public class M extends NLS {
 	public static String Initializing;
 	public static String Input;
 	public static String InputOutput;
+	public static String InputOutputDataQualityScheme;
+	public static String InputOutputDataQualityStatistics;
+	public static String InputOutputSchema;
 	public static String InputParameter;
 	public static String InputParameters;
 	public static String Inputs;
@@ -400,20 +423,20 @@ public class M extends NLS {
 	public static String Inventory;
 	public static String InventoryResult;
 	public static String InventoryResults;
+	public static String IsDefault;
 	public static String IsInvalidFormula;
 	public static String IsNotValidNumber;
 	public static String IsNotValidParameterName;
 	public static String IsReference;
-
 	public static String KeepLocalModel;
 	public static String KeepModelDeleted;
 	public static String KmlEditor;
-
 	public static String LCCAddedValuesTable;
 	public static String LCCNetcostsTable;
 	public static String LCIAMethod;
 	public static String LCIAResult;
 	public static String LCIMethod;
+	public static String Label;
 	public static String Language;
 	public static String LastChange;
 	public static String LastModificationDate;
@@ -436,11 +459,13 @@ public class M extends NLS {
 	public static String Longitude;
 	public static String LowOpportunity;
 	public static String LowRisk;
-
 	public static String ManagePlugins;
 	public static String Map;
 	public static String Mark;
 	public static String MarkAsMerged;
+	public static String Massreplace;
+	public static String MassreplaceFlows;
+	public static String MassreplaceProviders;
 	public static String MatrixExport;
 	public static String MatrixFiles;
 	public static String Maximize;
@@ -454,6 +479,7 @@ public class M extends NLS {
 	public static String MediumRisk;
 	public static String MemoryToHighMessage;
 	public static String MemoryToLowMessage;
+	public static String Message;
 	public static String Methods;
 	public static String MinimalTree;
 	public static String Minimize;
@@ -475,11 +501,11 @@ public class M extends NLS {
 	public static String MultiLine;
 	public static String MultiPoint;
 	public static String MultiPolygon;
-
 	public static String Name;
 	public static String NameCannotBeEmpty;
 	public static String NameEmptyOrAlreadyExists;
 	public static String NameShouldBeDifferent;
+	public static String NaValueHandling;
 	public static String NeedOpenDatabase;
 	public static String NetCosts;
 	public static String Netcosts;
@@ -488,6 +514,7 @@ public class M extends NLS {
 	public static String NewCategory;
 	public static String NewCostEntry;
 	public static String NewCurrency;
+	public static String NewDataQualitySystem;
 	public static String NewDatabase;
 	public static String NewDatabase_AlreadyExists;
 	public static String NewDatabase_InvalidName;
@@ -521,6 +548,7 @@ public class M extends NLS {
 	public static String NoQuantitativeReferenceSelected;
 	public static String NoReferenceFlowPropertySelected;
 	public static String NoReferenceProcessSelected;
+	public static String NoReferenceSet;
 	public static String NoRisk;
 	public static String NoShapefileParameterSelected;
 	public static String NoUnitGroupSelected;
@@ -537,12 +565,13 @@ public class M extends NLS {
 	public static String NotAnIntegerNumber;
 	public static String NotApplicable;
 	public static String Note;
+	public static String NoteDefaultProviders;
 	public static String Notification;
 	public static String NumberFormatPage_Description;
 	public static String NumberOfDecimalPlaces;
 	public static String NumberOfIterations;
 	public static String NumberOfSimulations;
-
+	public static String OfProduct;
 	public static String OK;
 	public static String OnlineHelp;
 	public static String Open;
@@ -560,7 +589,6 @@ public class M extends NLS {
 	public static String Outputs;
 	public static String OverwriteFile;
 	public static String OverwriteFileQuestion;
-
 	public static String Parameter;
 	public static String ParameterAlreadyAdded;
 	public static String ParameterDescriptionTable;
@@ -584,18 +612,25 @@ public class M extends NLS {
 	public static String Point;
 	public static String Polygon;
 	public static String Port;
+	public static String Position;
 	public static String Prefer;
+	public static String Preparing;
+	public static String PreviousCommit;
 	public static String Price;
 	public static String Process;
 	public static String ProcessContributionChart;
 	public static String ProcessContributions;
 	public static String ProcessCosts;
+	public static String ProcessDataQualitySchema;
+	public static String ProcessDataQualityScheme;
+	public static String ProcessDataQualityStatistics;
 	public static String ProcessDocumentation;
 	public static String ProcessEvaluationAndValidation;
 	public static String ProcessExcelImportDescription;
 	public static String ProcessFlowName;
 	public static String ProcessLinks;
 	public static String ProcessResults;
+	public static String ProcessSchema;
 	public static String ProcessType;
 	public static String Processes;
 	public static String ProducedBy;
@@ -611,12 +646,11 @@ public class M extends NLS {
 	public static String ProjectSetup;
 	public static String Projects;
 	public static String Properties;
+	public static String Providers;
 	public static String Publication;
-
 	public static String QuantitativeReference;
 	public static String Quantity;
 	public static String QuickResults;
-
 	public static String RawValue;
 	public static String ReallyDeleteShapeFile;
 	public static String RecalculateQuestion;
@@ -642,10 +676,14 @@ public class M extends NLS {
 	public static String RemoteModel;
 	public static String Remove;
 	public static String RemoveConnections;
+	public static String RemoveIndicator;
 	public static String RemoveObject;
+	public static String RemoveScore;
 	public static String RemoveSelected;
 	public static String RemoveSupplyChain;
 	public static String Rename;
+	public static String ReplaceFlow;
+	public static String ReplaceProvider;
 	public static String Report;
 	public static String ReportName;
 	public static String ReportParameters;
@@ -663,9 +701,9 @@ public class M extends NLS {
 	public static String ResultsOfProject;
 	public static String Reviewer;
 	public static String RiskLevel;
+	public static String RoundingMode;
 	public static String Route;
 	public static String RunCalculation;
-
 	public static String SamplingProcedure;
 	public static String SankeyDiagram;
 	public static String Sankey_ScaleDescription;
@@ -676,7 +714,22 @@ public class M extends NLS {
 	public static String SaveChanges;
 	public static String SaveChangesQuestion;
 	public static String SavingDiagramAsImageIn;
+	public static String Scores;
 	public static String Search;
+	public static String SearchAllTypes;
+	public static String SearchInActors;
+	public static String SearchInDataQualitySystems;
+	public static String SearchInFlowProperties;
+	public static String SearchInFlows;
+	public static String SearchInLCIAMethods;
+	public static String SearchInLocations;
+	public static String SearchInParameters;
+	public static String SearchInProcesses;
+	public static String SearchInProductSystems;
+	public static String SearchInProjects;
+	public static String SearchInSocialIndicators;
+	public static String SearchInSources;
+	public static String SearchInUnitGroups;
 	public static String SearchParameters;
 	public static String SearchProvidersFor;
 	public static String SearchRecipientsFor;
@@ -688,6 +741,7 @@ public class M extends NLS {
 	public static String Select;
 	public static String SelectADirectory;
 	public static String SelectAUserInterfaceLanguage;
+	public static String SelectAll;
 	public static String SelectImportFiles;
 	public static String SelectLanguageNoteMessage;
 	public static String SelectNext;
@@ -697,8 +751,10 @@ public class M extends NLS {
 	public static String SelectRecipients;
 	public static String SelectTheExportFile;
 	public static String SelectTheParameterYouWantToReferTo;
+	public static String SelectedCommit;
 	public static String SelectedParameterWasAlreadyAdded;
 	public static String Semicolon;
+	public static String ServerConfigurations;
 	public static String ServerUrl;
 	public static String SetAsReferenceCurrency;
 	public static String SetReferenceCurrencyQuestion;
@@ -710,6 +766,7 @@ public class M extends NLS {
 	public static String SharingRepository;
 	public static String Show;
 	public static String ShowFormulas;
+	public static String ShowInHistory;
 	public static String ShowInMap;
 	public static String ShowOutline;
 	public static String ShowValues;
@@ -723,8 +780,10 @@ public class M extends NLS {
 	public static String SocialAspect;
 	public static String SocialAspects;
 	public static String SocialAssessment;
+	public static String SocialDataQualitySchema;
 	public static String SocialIndicator;
 	public static String SocialIndicators;
+	public static String SocialSchema;
 	public static String SolvingProblems;
 	public static String SomeParametersWereNotAdded;
 	public static String Source;
@@ -737,11 +796,13 @@ public class M extends NLS {
 	public static String StartDate;
 	public static String Statistics;
 	public static String SubCategory;
+	public static String SubgroupByProcesses;
 	public static String Sum;
+	public static String Summable;
 	public static String Synonyms;
+	public static String SystemDefinesUncertainties;
 	public static String SystemProcess;
 	public static String SystemSaveProceedQuestion;
-
 	public static String Tab;
 	public static String TargetAmount;
 	public static String Technology;
@@ -767,8 +828,8 @@ public class M extends NLS {
 	public static String Tree;
 	public static String TriangleDistribution;
 	public static String Type;
-
 	public static String URL;
+	public static String Uncertainties;
 	public static String Uncertainty;
 	public static String UncertaintyDistribution;
 	public static String UniformDistribution;
@@ -787,6 +848,7 @@ public class M extends NLS {
 	public static String UnshareDescription;
 	public static String UnshareRepository;
 	public static String UnsharingRepository;
+	public static String Up;
 	public static String UpToDate;
 	public static String Update;
 	public static String UpdateDatabase;
@@ -801,11 +863,13 @@ public class M extends NLS {
 	public static String Usage;
 	public static String UsageOf;
 	public static String UseBrowserFeatures;
+	public static String UseMaximumScoreForZeroValues;
 	public static String UsedInProcesses;
 	public static String User;
 	public static String UserFriendlyName;
 	public static String Username;
-
+	public static String Validate;
+	public static String ValidatingDatabase;
 	public static String Value;
 	public static String Variant;
 	public static String VariantDescriptionTable;
@@ -814,20 +878,21 @@ public class M extends NLS {
 	public static String VersionNewer;
 	public static String VeryHighRisk;
 	public static String VeryLowRisk;
-
 	public static String Warning;
+	public static String Warnings;
 	public static String Waste;
 	public static String Website;
 	public static String Weekly;
+	public static String WeightedAverage;
+	public static String WeightedSquaredAverage;
 	public static String Weighting;
 	public static String WeightingFactor;
 	public static String Welcome;
 	public static String Window;
+	public static String With;
 	public static String WithPassword;
-
 	public static String Year;
 	public static String Yes;
-
 	public static String ZipCode;
 
 	private static Map<String, String> map;

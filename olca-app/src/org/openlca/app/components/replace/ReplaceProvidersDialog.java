@@ -58,7 +58,7 @@ public class ReplaceProvidersDialog extends FormDialog {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("#Mass-replace providers");
+		newShell.setText(M.MassreplaceProviders);
 	}
 
 	@Override
@@ -73,7 +73,7 @@ public class ReplaceProvidersDialog extends FormDialog {
 	}
 
 	private ComboViewer createProcessViewer(Composite parent, FormToolkit toolkit) {
-		UI.formLabel(parent, toolkit, "#Replace provider");
+		UI.formLabel(parent, toolkit, M.ReplaceProvider);
 		ComboViewer viewer = new ComboViewer(new CCombo(parent, SWT.DROP_DOWN));
 		decorateViewer(viewer);
 		viewer.setInput(usedInExchanges);
@@ -96,7 +96,7 @@ public class ReplaceProvidersDialog extends FormDialog {
 	}
 
 	private ComboViewer createProductViewer(Composite parent, FormToolkit toolkit) {
-		UI.formLabel(parent, toolkit, "#of product");
+		UI.formLabel(parent, toolkit, M.OfProduct);
 		ComboViewer viewer = new ComboViewer(new Combo(parent, SWT.NONE));
 		decorateViewer(viewer);
 		viewer.setLabelProvider(new BaseLabelProvider());
@@ -116,7 +116,7 @@ public class ReplaceProvidersDialog extends FormDialog {
 	}
 
 	private ComboViewer createReplacementViewer(Composite parent, FormToolkit toolkit) {
-		UI.formLabel(parent, toolkit, "#with");
+		UI.formLabel(parent, toolkit, M.With);
 		ComboViewer viewer = new ComboViewer(new CCombo(parent, SWT.NONE));
 		decorateViewer(viewer);
 		NameFilter filter = new NameFilter();

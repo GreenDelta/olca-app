@@ -1,5 +1,7 @@
 package org.openlca.app.editors.systems;
 
+import org.openlca.app.M;
+
 import java.math.RoundingMode;
 
 import org.eclipse.jface.viewers.IBaseLabelProvider;
@@ -45,17 +47,17 @@ class DQSettingsPage extends WizardPage {
 	public void createControl(Composite parent) {
 		Composite container = UI.formComposite(parent);
 		setControl(container);
-		processSystemViewer = createDQSystemViewer(container, "#Process schema:");
-		exchangeSystemViewer = createDQSystemViewer(container, "#I/O schema:");
-		new Label(container, SWT.NULL).setText("#Aggregation type:");
+		processSystemViewer = createDQSystemViewer(container, M.ProcessSchema);
+		exchangeSystemViewer = createDQSystemViewer(container, M.IOSchema);
+		new Label(container, SWT.NULL).setText(M.AggregationType);
 		aggregationTypeCombo = new TypeCombo<>(container, AggregationType.class);
 		aggregationTypeCombo.setInput(AggregationType.values());
 		aggregationTypeCombo.addSelectionChangedListener((e) -> aggregationType = aggregationTypeCombo.getSelected());
-		new Label(container, SWT.NULL).setText("#Rounding mode:");
+		new Label(container, SWT.NULL).setText(M.RoundingMode);
 		roundingModeCombo = new TypeCombo<>(container, RoundingMode.class);
 		roundingModeCombo.setInput(new RoundingMode[] { RoundingMode.HALF_UP, RoundingMode.CEILING });
 		roundingModeCombo.addSelectionChangedListener((e) -> roundingMode = roundingModeCombo.getSelected());
-		new Label(container, SWT.NULL).setText("#n.a. value handling:");
+		new Label(container, SWT.NULL).setText(M.NaValueHandling);
 		processingTypeCombo = new TypeCombo<>(container, ProcessingType.class);
 		processingTypeCombo.setInput(ProcessingType.values());
 		processingTypeCombo.addSelectionChangedListener((e) -> processingType = processingTypeCombo.getSelected());

@@ -1,5 +1,7 @@
 package org.openlca.app.cloud.ui.commits;
 
+import org.openlca.app.M;
+
 import org.eclipse.jface.action.Action;
 import org.openlca.app.App;
 import org.openlca.app.cloud.CloudUtil;
@@ -26,7 +28,7 @@ class CheckoutAction extends Action {
 
 	@Override
 	public String getText() {
-		return "#Checkout...";
+		return M.Checkout;
 	}
 
 	@Override
@@ -36,9 +38,9 @@ class CheckoutAction extends Action {
 		index.clear();
 		Commit commit = historyViewer.getSelected();
 		Runner runner = new Runner(commit.id);
-		App.runWithProgress("#Checking out commit '" + commit.message + "'", runner);
+		App.runWithProgress(M.CheckingOutCommit + commit.message + "'", runner);
 		if (runner.exception != null)
-			Error.showBox("#An error occured while receiving data for commit " + commit.id);
+			Error.showBox(M.AnErrorOccuredWhileReceivingDataForCommit + commit.id);
 		Navigator.refresh();
 		IDatabaseConfiguration db = Database.getActiveConfiguration();
 		INavigationElement<?> element = Navigator.findElement(db);

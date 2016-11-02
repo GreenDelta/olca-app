@@ -1,5 +1,7 @@
 package org.openlca.app.navigation.actions;
 
+import org.openlca.app.M;
+
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
@@ -12,7 +14,7 @@ import org.openlca.app.validation.ValidationView;
 public class DatabaseValidateAction extends Action implements INavigationAction {
 
 	public DatabaseValidateAction() {
-		setText("#Validate");
+		setText(M.Validate);
 	}
 
 	@Override

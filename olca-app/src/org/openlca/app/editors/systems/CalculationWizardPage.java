@@ -129,7 +129,7 @@ class CalculationWizardPage extends WizardPage {
 		costCheck.setText(M.IncludeCostCalculation);
 		dqAssessment = new Button(commonOptions, SWT.CHECK);
 		dqAssessment.setSelection(false);
-		dqAssessment.setText("#Assess data quality");
+		dqAssessment.setText(M.AssessDataQuality);
 		Controls.onSelect(dqAssessment, e -> dqAssessmentChanged());
 	}
 

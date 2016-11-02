@@ -1,5 +1,7 @@
 package org.openlca.app.cloud.ui.diff;
 
+import org.openlca.app.M;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -167,7 +169,7 @@ public class SyncView extends ViewPart {
 			List<DiffNode> selected = Viewers.getAllSelected(viewer.getViewer());
 			List<Dataset> remotes = collectDatasets(selected);
 			RepositoryClient client = Database.getRepositoryClient();
-			App.runWithProgress("#Downloading data...", () -> {
+			App.runWithProgress(M.DownloadingData, () -> {
 				try {
 					client.download(remotes, currentCommitId);
 				} catch (Exception e) {

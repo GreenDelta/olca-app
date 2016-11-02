@@ -1,5 +1,7 @@
 package org.openlca.app.cloud.ui.commits;
 
+import org.openlca.app.M;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
@@ -20,7 +22,7 @@ class OpenSyncViewAction extends Action {
 
 	@Override
 	public String getText() {
-		return "#Compare";
+		return M.Compare;
 	}
 
 	@Override

@@ -326,7 +326,7 @@ public class Labels {
 		case CATEGORY:
 			return M.Category;
 		case DQ_SYSTEM:
-			return "#Data quality systems";
+			return M.DataQualitySystems;
 		default:
 			return M.Unknown;
 		}
@@ -374,13 +374,13 @@ public class Labels {
 			return null;
 		switch (type) {
 		case WEIGHTED_AVERAGE:
-			return "#Weighted average";
+			return M.WeightedAverage;
 		case WEIGHTED_SQUARED_AVERAGE:
-			return "#Weighted squared average";
+			return M.WeightedSquaredAverage;
 		case MAXIMUM:
-			return "#Maximum";
+			return M.Maximum;
 		case NONE:
-			return "#None";
+			return M.None;
 		default:
 			return null;
 		}
@@ -391,9 +391,9 @@ public class Labels {
 			return null;
 		switch (type) {
 		case EXCLUDE:
-			return "#Exclude zero values";
+			return M.ExcludeZeroValues;
 		case USE_MAX:
-			return "#Use maximum score for zero values";
+			return M.UseMaximumScoreForZeroValues;
 		default:
 			return null;
 		}
@@ -404,9 +404,9 @@ public class Labels {
 			return null;
 		switch (mode) {
 		case HALF_UP:
-			return "#Half up";
+			return M.HalfUp;
 		case CEILING:
-			return "#Up";
+			return M.Up;
 		default:
 			return null;
 		}

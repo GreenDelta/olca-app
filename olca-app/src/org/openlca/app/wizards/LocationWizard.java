@@ -69,7 +69,7 @@ public class LocationWizard extends AbstractWizard<Location> {
 			if (getErrorMessage() != null)
 				return;
 			if (Strings.nullOrEmpty(codeText.getText())) {
-				setErrorMessage("#A location code is required");
+				setErrorMessage(M.ALocationCodeIsRequired);
 				setPageComplete(false);
 				return;
 			}
