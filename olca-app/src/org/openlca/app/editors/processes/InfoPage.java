@@ -141,19 +141,19 @@ class InfoPage extends ModelPage<Process> {
 	}
 
 	private void createDQSection(Composite body) {
-		Composite composite = UI.formSection(body, toolkit, "#Data quality");
-		toolkit.createLabel(composite, "#Process schema");
+		Composite composite = UI.formSection(body, toolkit, M.DataQuality);
+		toolkit.createLabel(composite, M.ProcessSchema);
 		DQSystemViewer processSystemViewer = new DQSystemViewer(composite);
 		processSystemViewer.setNullable(true);
 		processSystemViewer.setInput(Database.get());
 		getBinding().onModel(() -> getModel(), "dqSystem", processSystemViewer);
 		createDqEntryRow(composite);
-		toolkit.createLabel(composite, "#Input/Output schema");
+		toolkit.createLabel(composite, M.InputOutputSchema);
 		DQSystemViewer ioSystemViewer = new DQSystemViewer(composite);
 		ioSystemViewer.setNullable(true);
 		ioSystemViewer.setInput(Database.get());
 		getBinding().onModel(() -> getModel(), "exchangeDqSystem", ioSystemViewer);
-		toolkit.createLabel(composite, "#Social schema");
+		toolkit.createLabel(composite, M.SocialSchema);
 		DQSystemViewer socialSystemViewer = new DQSystemViewer(composite);
 		socialSystemViewer.setNullable(true);
 		socialSystemViewer.setInput(Database.get());
@@ -161,7 +161,7 @@ class InfoPage extends ModelPage<Process> {
 	}
 
 	private Hyperlink createDqEntryRow(Composite composite) {
-		UI.formLabel(composite, toolkit, "#Data quality entry");
+		UI.formLabel(composite, toolkit, M.DataQualityEntry);
 		Hyperlink link = UI.formLink(composite, toolkit, getDqEntryLabel());
 		Controls.onClick(link, e -> {
 			if (getModel().dqSystem == null) {

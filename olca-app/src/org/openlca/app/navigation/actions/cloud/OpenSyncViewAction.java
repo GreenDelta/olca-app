@@ -27,7 +27,7 @@ public class OpenSyncViewAction extends Action implements INavigationAction {
 		if (selectCommit)
 			setText(M.Commit);
 		else
-			setText("#HEAD revision");
+			setText(M.HEADRevision);
 		this.selectCommit = selectCommit;
 	}
 

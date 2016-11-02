@@ -78,7 +78,7 @@ public class ReferencesResultDialog extends FormDialog {
 
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
-		Button selectAll = createButton(parent, IDialogConstants.CLIENT_ID + 1, "#Select all", false);
+		Button selectAll = createButton(parent, IDialogConstants.CLIENT_ID + 1, M.SelectAll, false);
 		Controls.onSelect(selectAll, (e) -> {
 			viewer.selectAll();
 		});

@@ -204,10 +204,10 @@ class PropertyLabels {
 		putBasicLabels(clazz);
 		put(clazz, "processType", M.ProcessType);
 		put(clazz, "location", M.Location);
-		put(clazz, "dqSystem", "#Process data quality schema");
-		put(clazz, "dqEntry", "#Data quality entry");
-		put(clazz, "exchangeDqSystem", "#Exchange data quality schema");
-		put(clazz, "socialDqSystem", "#Social data quality schema");
+		put(clazz, "dqSystem", M.ProcessDataQualitySchema);
+		put(clazz, "dqEntry", M.DataQualityEntry);
+		put(clazz, "exchangeDqSystem", M.ExchangeDataQualitySchema);
+		put(clazz, "socialDqSystem", M.SocialDataQualitySchema);
 		put(clazz, "infrastructureProcess", M.InfrastructureProcess);
 		put(clazz, "defaultAllocationMethod", M.AllocationMethod);
 		put(clazz, "processDocumentation", M.ProcessDocumentation);
@@ -255,7 +255,7 @@ class PropertyLabels {
 		put(clazz, "quantitativeReference", M.QuantitativeReference);
 		put(clazz, "avoidedProduct", M.AvoidedProduct);
 		put(clazz, "defaultProvider", M.DefaultProvider);
-		put(clazz, "dqEntry", "#Data quality entry");
+		put(clazz, "dqEntry", M.DataQualityEntry);
 		put(clazz, "costCategory", M.CostCategory);
 		put(clazz, "costFormula", M.CostFormula);
 		put(clazz, "costValue", M.CostValue);
@@ -399,23 +399,23 @@ class PropertyLabels {
 	private static void putDQSystemLabels() {
 		Class<?> clazz = DQSystem.class;
 		putBasicLabels(clazz);
-		put(clazz, "hasUncertainties", "#Has uncertainties");
-		put(clazz, "summable", "#Summable");
-		put(clazz, "indicators", "#Indicators");
+		put(clazz, "hasUncertainties", M.HasUncertainties);
+		put(clazz, "summable", M.Summable);
+		put(clazz, "indicators", M.Indicators);
 	}
 
 	private static void putDQIndicatorLabels() {
 		Class<?> clazz = DQIndicator.class;
 		putBasicLabels(clazz);
-		put(clazz, "position", "#Position");
-		put(clazz, "scores", "#Scores");
+		put(clazz, "position", M.Position);
+		put(clazz, "scores", M.Scores);
 	}
 
 	private static void putDQScoreLabels() {
 		Class<?> clazz = DQScore.class;
 		putBasicLabels(clazz);
-		put(clazz, "position", "#Position");
-		put(clazz, "label", "#Label");
+		put(clazz, "position", M.Position);
+		put(clazz, "label", M.Label);
 		put(clazz, "description", M.Description);
 		put(clazz, "uncertainty", M.Uncertainty);
 	}

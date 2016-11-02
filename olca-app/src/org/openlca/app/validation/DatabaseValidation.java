@@ -1,5 +1,7 @@
 package org.openlca.app.validation;
 
+import org.openlca.app.M;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -51,7 +53,7 @@ public class DatabaseValidation {
 			return Collections.emptyList();
 		Map<ModelType, Set<Long>> toEval = new HashMap<>();
 		if (monitor != null)
-			monitor.beginTask("#Preparing", IProgressMonitor.UNKNOWN);
+			monitor.beginTask(M.Preparing, IProgressMonitor.UNKNOWN);
 		for (ModelType type : ModelType.values()) {
 			if (!type.isCategorized())
 				continue;
@@ -61,7 +63,7 @@ public class DatabaseValidation {
 			toEval.put(type, ids);
 		}
 		if (monitor != null)
-			monitor.beginTask("#Validating database", toEval.size() * 3);
+			monitor.beginTask(M.ValidatingDatabase, toEval.size() * 3);
 		List<ModelStatus> result = new ArrayList<>();
 		for (ModelType type : toEval.keySet()) {
 			if (monitor != null)

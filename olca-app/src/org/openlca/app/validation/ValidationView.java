@@ -1,5 +1,7 @@
 package org.openlca.app.validation;
 
+import org.openlca.app.M;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -191,8 +193,8 @@ public class ValidationView extends ViewPart {
 			}
 			int models = list.list.size();
 			if (list.status == Status.WARNING)
-				return "#Warnings (" + total + " in " + models + " models)";
-			return "#Errors (" + total + " in " + models + " models)";
+				return M.Warnings + " (" + total + " in " + models + " models)";
+			return M.Errors + " (" + total + " in " + models + " models)";
 		}
 
 		private String getText(ModelStatus status, int column) {
@@ -225,12 +227,12 @@ public class ValidationView extends ViewPart {
 				return null;
 			Reference ref = entry.reference;
 			if (ref == null)
-				return "#No reference set";
+				return M.NoReferenceSet;
 			String text = "";
 			if (ref.id == 0)
-				text = "#Missing ";
+				text = "Missing";
 			else
-				text = "#Broken ";
+				text = "Broken";
 			if (ref.getType() == Parameter.class) {
 				return text += "parameter '" + ref.property + "' in formula";
 			} else {

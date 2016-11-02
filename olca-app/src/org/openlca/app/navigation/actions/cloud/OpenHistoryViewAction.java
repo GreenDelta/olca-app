@@ -1,5 +1,7 @@
 package org.openlca.app.navigation.actions.cloud;
 
+import org.openlca.app.M;
+
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
@@ -18,7 +20,7 @@ public class OpenHistoryViewAction extends Action implements INavigationAction {
 	private final static Logger log = LoggerFactory.getLogger(OpenHistoryViewAction.class);
 
 	public OpenHistoryViewAction() {
-		setText("#Show in history");
+		setText(M.ShowInHistory);
 	}
 
 	@Override

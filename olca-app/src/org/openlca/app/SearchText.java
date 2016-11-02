@@ -1,5 +1,7 @@
 package org.openlca.app;
 
+import org.openlca.app.M;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuCreator;
 import org.eclipse.jface.action.ToolBarManager;
@@ -123,20 +125,20 @@ public class SearchText extends WorkbenchWindowControlContribution {
 				menu.dispose();
 			menu = new Menu(parent);
 
-			String[] texts = { "#Search all types",
-					"#Search in projects",
-					"#Search in product systems",
-					"#Search in LCIA methods",
-					"#Search in processes",
-					"#Search in flows",
-					"#Search in social indicators",
-					"#Search in parameters",
-					"#Search in flow properties",
-					"#Search in unit groups",
-					"#Search in actors",
-					"#Search in sources",
-					"#Search in locations" ,					
-					"#Search in data quality systems",
+			String[] texts = { M.SearchAllTypes,
+					M.SearchInProjects,
+					M.SearchInProductSystems,
+					M.SearchInLCIAMethods,
+					M.SearchInProcesses,
+					M.SearchInFlows,
+					M.SearchInSocialIndicators,
+					M.SearchInParameters,
+					M.SearchInFlowProperties,
+					M.SearchInUnitGroups,
+					M.SearchInActors,
+					M.SearchInSources,
+					M.SearchInLocations ,					
+					M.SearchInDataQualitySystems,
 			};
 
 			ModelType[] types = { null,

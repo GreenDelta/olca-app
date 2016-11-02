@@ -56,7 +56,7 @@ public class ReplaceFlowsDialog extends FormDialog {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("#Mass-replace flows");
+		newShell.setText(M.MassreplaceFlows);
 	}
 
 	@Override
@@ -82,14 +82,14 @@ public class ReplaceFlowsDialog extends FormDialog {
 		Composite bottom = UI.formComposite(parent, toolkit);
 		UI.gridLayout(bottom, 2, 20, 5);
 		excludeWithProviders = UI.formCheckbox(bottom, toolkit);
-		UI.formLabel(bottom, toolkit, "#Exclude exchanges with default providers");
+		UI.formLabel(bottom, toolkit, M.ExcludeExchangesWithDefaultProviders);
 		toolkit.paintBordersFor(bottom);
 		toolkit.adapt(bottom);
 		createNote(parent, toolkit);
 	}
 
 	private void createNote(Composite parent, FormToolkit toolkit) {
-		String note = "#Note: Default providers of replaced exchanges will be removed, because existing providers will not match the new replaced flows. Check the box above to prevent the default providers to be removed (Flows will not be replaced in these cases).";
+		String note = M.NoteDefaultProviders;
 		Label noteLabel = toolkit.createLabel(parent, note, SWT.WRAP);
 		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
 		gd.widthHint = 300;
@@ -97,7 +97,7 @@ public class ReplaceFlowsDialog extends FormDialog {
 	}
 
 	private ComboViewer createSelectionViewer(Composite parent, FormToolkit toolkit) {
-		UI.formLabel(parent, toolkit, "#Replace flow");
+		UI.formLabel(parent, toolkit, M.ReplaceFlow);
 		ComboViewer viewer = new ComboViewer(new CCombo(parent, SWT.DROP_DOWN));
 		decorateViewer(viewer);
 		NameFilter filter = new NameFilter();
@@ -119,7 +119,7 @@ public class ReplaceFlowsDialog extends FormDialog {
 	}
 
 	private ComboViewer createReplacementViewer(Composite parent, FormToolkit toolkit) {
-		UI.formLabel(parent, toolkit, "#with");
+		UI.formLabel(parent, toolkit, M.With);
 		ComboViewer viewer = new ComboViewer(new CCombo(parent, SWT.NONE));
 		decorateViewer(viewer);
 		NameFilter filter = new NameFilter();

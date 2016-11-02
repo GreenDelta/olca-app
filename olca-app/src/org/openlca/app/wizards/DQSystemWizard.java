@@ -1,5 +1,7 @@
 package org.openlca.app.wizards;
 
+import org.openlca.app.M;
+
 import java.util.UUID;
 
 import org.eclipse.swt.SWT;
@@ -13,7 +15,7 @@ public class DQSystemWizard extends AbstractWizard<DQSystem> {
 
 	@Override
 	protected String getTitle() {
-		return "#New data quality system";
+		return M.NewDataQualitySystem;
 	}
 
 	@Override
@@ -32,8 +34,8 @@ public class DQSystemWizard extends AbstractWizard<DQSystem> {
 
 		public DQSystemWizardPage() {
 			super("DQSystemWizardPage");
-			setTitle("#New data quality system");
-			setMessage("#Creates a new data quality system");
+			setTitle(M.NewDataQualitySystem);
+			setMessage(M.CreatesANewDataQualitySystem);
 			setPageComplete(false);
 		}
 
@@ -41,7 +43,7 @@ public class DQSystemWizard extends AbstractWizard<DQSystem> {
 		protected void createContents(Composite container) {
 			new Label(container, SWT.NONE);
 			hasUncertaintiesCheck = new Button(container, SWT.CHECK);
-			hasUncertaintiesCheck.setText("#System defines uncertainties");
+			hasUncertaintiesCheck.setText(M.SystemDefinesUncertainties);
 		}
 
 		@Override

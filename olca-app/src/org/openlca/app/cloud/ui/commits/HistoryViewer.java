@@ -1,5 +1,7 @@
 package org.openlca.app.cloud.ui.commits;
 
+import org.openlca.app.M;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +31,7 @@ class HistoryViewer extends AbstractTableViewer<Commit> {
 
 	@Override
 	protected String[] getColumnHeaders() {
-		return new String[] { "#Id", "#Message", "#Committer", "#Committed date" };
+		return new String[] { M.Id, M.Message, M.Committer, M.CommittedDate };
 	}
 
 	@Override

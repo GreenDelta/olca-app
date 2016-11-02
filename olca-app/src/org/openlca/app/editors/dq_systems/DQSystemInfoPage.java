@@ -72,7 +72,7 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 	protected void updateFormTitle() {
 		if (form == null)
 			return;
-		form.setText("#Data quality system" + ": " + getModel().getName());
+		form.setText(M.DataQualitySystem + ": " + getModel().getName());
 	}
 
 	private void createAdditionalInfo(Composite body) {
@@ -80,12 +80,12 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 		for (DQIndicator indicator : getModel().indicators) {
 			Collections.sort(indicator.scores);
 		}
-		indicatorSection = UI.section(body, toolkit, "#Indicators & Scores");
+		indicatorSection = UI.section(body, toolkit, M.IndicatorsScores);
 		Composite indicatorClient = UI.sectionClient(indicatorSection, toolkit);
 		createIndicatorMatrix(indicatorClient);
 		if (!getModel().hasUncertainties)
 			return;
-		uncertaintySection = UI.section(body, toolkit, "#Uncertainties");
+		uncertaintySection = UI.section(body, toolkit, M.Uncertainties);
 		Composite uncertaintyClient = UI.sectionClient(uncertaintySection, toolkit);
 		createUncertaintyMatrix(uncertaintyClient);
 	}
@@ -191,7 +191,7 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 	}
 
 	private void createAddScoreButton(Composite parent) {
-		Button button = toolkit.createButton(parent, "#Add score", SWT.NONE);
+		Button button = toolkit.createButton(parent, M.AddScore, SWT.NONE);
 		if (getModel().indicators.size() == 0) {
 			button.setEnabled(false);
 			return;
@@ -211,7 +211,7 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 	}
 
 	private void createRemoveScoreButton(Composite parent, int position) {
-		Button button = toolkit.createButton(parent, "#Remove score", SWT.NONE);
+		Button button = toolkit.createButton(parent, M.RemoveScore, SWT.NONE);
 		Controls.onSelect(button, (e) -> {
 			for (DQIndicator indicator : getModel().indicators) {
 				for (DQScore score : new ArrayList<>(indicator.scores)) {
@@ -230,7 +230,7 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 	}
 
 	private void createAddIndicatorButton(Composite parent) {
-		Button button = toolkit.createButton(parent, "#Add indicator", SWT.NONE);
+		Button button = toolkit.createButton(parent, M.AddIndicator, SWT.NONE);
 		Controls.onSelect(button, (e) -> {
 			DQIndicator indicator = new DQIndicator();
 			indicator.name = "Indicator " + (getModel().indicators.size() + 1);
@@ -249,7 +249,7 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 	}
 
 	private void createRemoveIndicatorButton(Composite parent, int position) {
-		Button button = toolkit.createButton(parent, "#Remove indicator", SWT.NONE);
+		Button button = toolkit.createButton(parent, M.RemoveIndicator, SWT.NONE);
 		Controls.onSelect(button, (e) -> {
 			for (DQIndicator indicator : new ArrayList<>(getModel().indicators)) {
 				if (indicator.position < position)
