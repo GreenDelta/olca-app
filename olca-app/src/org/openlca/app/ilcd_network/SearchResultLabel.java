@@ -1,7 +1,5 @@
 package org.openlca.app.ilcd_network;
 
-import java.math.BigInteger;
-
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
@@ -51,7 +49,7 @@ class SearchResultLabel extends LabelProvider implements ITableLabelProvider {
 		return timeSpan;
 	}
 
-	private String yearToString(BigInteger year) {
+	private String yearToString(Integer year) {
 		if (year == null)
 			return "?";
 		return year.toString();
