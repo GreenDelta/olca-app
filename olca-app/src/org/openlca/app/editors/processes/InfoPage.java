@@ -148,7 +148,7 @@ class InfoPage extends ModelPage<Process> {
 		processSystemViewer.setInput(Database.get());
 		getBinding().onModel(() -> getModel(), "dqSystem", processSystemViewer);
 		createDqEntryRow(composite);
-		toolkit.createLabel(composite, M.InputOutputSchema);
+		toolkit.createLabel(composite, M.FlowSchema);
 		DQSystemViewer ioSystemViewer = new DQSystemViewer(composite);
 		ioSystemViewer.setNullable(true);
 		ioSystemViewer.setInput(Database.get());

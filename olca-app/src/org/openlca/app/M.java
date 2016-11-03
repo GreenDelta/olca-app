@@ -232,9 +232,7 @@ public class M extends NLS {
 	public static String Diff;
 	public static String Direct;
 	public static String DirectContribution;
-	public static String DirectContributionsFlowResults;
 	public static String DirectContributionsFlowResultsOverview;
-	public static String DirectContributionsImpactCategoryResults;
 	public static String DirectContributionsImpactCategoryResultsOverview;
 	public static String DirectImpact;
 	public static String Direction;
@@ -263,7 +261,7 @@ public class M extends NLS {
 	public static String Errors;
 	public static String EvaluateLocations;
 	public static String EvaluatingLocations;
-	public static String EvaluationScheme;
+	public static String EvaluationSchema;
 	public static String Example;
 	public static String ExcelExport;
 	public static String ExchangeDataQualitySchema;
@@ -313,11 +311,14 @@ public class M extends NLS {
 	public static String FlowCategory;
 	public static String FlowContributions;
 	public static String FlowContributionsToProcessResults;
+	public static String FlowDataQualitySchema;
+	public static String FlowDataQualityStatistics;
 	public static String FlowProperties;
 	public static String FlowProperty;
 	public static String FlowPropertyIsUsed;
 	public static String FlowPropertyType;
 	public static String FlowResults;
+	public static String FlowSchema;
 	public static String FlowType;
 	public static String Flows;
 	public static String Folder;
@@ -367,7 +368,6 @@ public class M extends NLS {
 	public static String ILCD_RunImport;
 	public static String ILCD_SearchFailedMessage;
 	public static String ILCD_SearchPageDescription;
-	public static String IOSchema;
 	public static String Id;
 	public static String ImageExport;
 	public static String ImpactAnalysis;
@@ -404,9 +404,6 @@ public class M extends NLS {
 	public static String Initializing;
 	public static String Input;
 	public static String InputOutput;
-	public static String InputOutputDataQualityScheme;
-	public static String InputOutputDataQualityStatistics;
-	public static String InputOutputSchema;
 	public static String InputParameter;
 	public static String InputParameters;
 	public static String Inputs;
@@ -622,7 +619,6 @@ public class M extends NLS {
 	public static String ProcessContributions;
 	public static String ProcessCosts;
 	public static String ProcessDataQualitySchema;
-	public static String ProcessDataQualityScheme;
 	public static String ProcessDataQualityStatistics;
 	public static String ProcessDocumentation;
 	public static String ProcessEvaluationAndValidation;

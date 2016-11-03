@@ -85,7 +85,7 @@ public class SocialIndicatorEditor extends ModelEditor<SocialIndicator> {
 				getModel().unitOfMeasurement = ut.getText();
 				editor.setDirty(true);
 			});
-			Text et = UI.formMultiText(comp, tk, M.EvaluationScheme);
+			Text et = UI.formMultiText(comp, tk, M.EvaluationSchema);
 			if (getModel().evaluationScheme != null)
 				et.setText(getModel().evaluationScheme);
 			et.addModifyListener((e) -> {

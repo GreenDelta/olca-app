@@ -48,7 +48,7 @@ class DQSettingsPage extends WizardPage {
 		Composite container = UI.formComposite(parent);
 		setControl(container);
 		processSystemViewer = createDQSystemViewer(container, M.ProcessSchema);
-		exchangeSystemViewer = createDQSystemViewer(container, M.IOSchema);
+		exchangeSystemViewer = createDQSystemViewer(container, M.FlowSchema);
 		new Label(container, SWT.NULL).setText(M.AggregationType);
 		aggregationTypeCombo = new TypeCombo<>(container, AggregationType.class);
 		aggregationTypeCombo.setInput(AggregationType.values());

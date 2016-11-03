@@ -41,13 +41,13 @@ public class DQInfoSection {
 
 	private void create(Composite parent) {
 		Composite client = UI.formSection(parent, toolkit, M.DataQuality);
-		createText(client, M.ProcessDataQualityScheme, dqResult.setup.processDqSystem);
-		createText(client, M.InputOutputDataQualityScheme, dqResult.setup.exchangeDqSystem);
+		createText(client, M.ProcessDataQualitySchema, dqResult.setup.processDqSystem);
+		createText(client, M.FlowDataQualitySchema, dqResult.setup.exchangeDqSystem);
 		createText(client, M.Aggregation, Labels.aggregationType(dqResult.setup.aggregationType));
 		createText(client, M.RoundingMode, Labels.roundingMode(dqResult.setup.roundingMode));
 		createText(client, M.NaValueHandling, Labels.processingType(dqResult.setup.processingType));
 		createStatisticsTree(client, M.ProcessDataQualityStatistics, true);
-		createStatisticsTree(client, M.InputOutputDataQualityStatistics, false);
+		createStatisticsTree(client, M.FlowDataQualityStatistics, false);
 	}
 
 	private void createText(Composite parent, String label, DQSystem system) {

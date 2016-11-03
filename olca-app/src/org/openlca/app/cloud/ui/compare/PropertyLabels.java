@@ -175,7 +175,7 @@ class PropertyLabels {
 		Class<?> clazz = SocialIndicator.class;
 		putBasicLabels(clazz);
 		put(clazz, "unitOfMeasurement", M.UnitOfMeasurement);
-		put(clazz, "evaluationScheme", M.EvaluationScheme);
+		put(clazz, "evaluationScheme", M.EvaluationSchema);
 		put(clazz, "activityVariable", M.ActivityVariable);
 		put(clazz, "activityQuantity", M.ActivityQuantity);
 		put(clazz, "activityUnit", M.ActivityUnit);
