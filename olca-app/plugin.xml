@@ -87,12 +87,20 @@
       		icon="icons/javascript.png"
       		contributorClass="org.openlca.app.devtools.Toolbar">
       </editor>
-       <editor
+      <editor
       		class="org.openlca.app.devtools.python.PythonEditor"
       		default="false"
       		id="PythonEditor"
       		name="Python"
       		icon="icons/python.png"
+      		contributorClass="org.openlca.app.devtools.Toolbar">
+      </editor>  
+      <editor
+      		class="org.openlca.app.devtools.csharp.CSharpEditor"
+      		default="false"
+      		id="CSharpEditor"
+      		name="CSharp"
+      		icon="icons/csharp.png"
       		contributorClass="org.openlca.app.devtools.Toolbar">
       </editor>      
       
@@ -811,6 +819,46 @@
       		id="org.openlca.app.wizards.io.JsonExportWizard"
       		name="JSON-LD">
       </wizard>
+   </extension>
+   <extension
+         id="product"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="org.openlca.app.Application"
+            name="openLCA">
+         <property
+               name="windowImages"
+               value="icons/logo/16_32bit.png,icons/logo/32_32bit.png,icons/logo/48_32bit.png,icons/logo/64.png,icons/logo/128.png">
+         </property>
+         <property
+               name="aboutText"
+               value="openLCA 1.6.0&#x0A;&#x0A;Copyright (c) 2007 - 2016 GreenDelta. All rights reserved.&#x0A;Visit http://openlca.org and http://greendelta.com&#x0A;&#x0A;This product includes software developed in the openLCA &#x0A;project and other open source software.">
+         </property>
+         <property
+               name="aboutImage"
+               value="icons/about.png">
+         </property>
+         <property
+               name="startupForegroundColor"
+               value="000000">
+         </property>
+         <property
+               name="startupProgressRect"
+               value="0,360,540,5">
+         </property>
+         <property
+               name="startupMessageRect"
+               value="7,500,445,20">
+         </property>
+         <property
+               name="appName"
+               value="openLCA">
+         </property>
+         <property
+               name="preferenceCustomization"
+               value="plugin_customization.ini">
+         </property>
+      </product>
    </extension>
 
 </plugin>

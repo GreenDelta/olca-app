@@ -29,22 +29,23 @@
 
 		<!-- Eclipse Babel language packs -->
 		<get dest="${download_dir}/babel_bg_4.4.0.zip" verbose="true" skipexisting="true">
-			<url url="http://www.eclipse.org/downloads/download.php?file=/technology/babel/babel_language_packs/R0.14.0/luna/BabelLanguagePack-eclipse-bg_4.4.0.v20140623020002.zip&amp;r=1" />
+			<!--url url="http://www.eclipse.org/downloads/download.php?file=/technology/babel/babel_language_packs/R0.14.0/luna/BabelLanguagePack-eclipse-bg_4.4.0.v20140623020002.zip&amp;r=1" /-->
+			<url url="http://ftp.fau.de/eclipse/technology/babel/babel_language_packs/R0.14.0/luna/BabelLanguagePack-eclipse-bg_4.4.0.v20160813102823.zip" />
 		</get>
 		<get dest="${download_dir}/babel_de_4.4.0.zip" verbose="true" skipexisting="true">
-			<url url="http://www.eclipse.org/downloads/download.php?file=/technology/babel/babel_language_packs/R0.14.0/luna/BabelLanguagePack-eclipse-de_4.4.0.v20140623020002.zip&amp;r=1" />
+			<url url="http://ftp.fau.de/eclipse/technology/babel/babel_language_packs/R0.14.0/luna/BabelLanguagePack-eclipse-de_4.4.0.v20160813102823.zip" />
 		</get>
 		<get dest="${download_dir}/babel_es_4.4.0.zip" verbose="true" skipexisting="true">
-			<url url="http://www.eclipse.org/downloads/download.php?file=/technology/babel/babel_language_packs/R0.14.0/luna/BabelLanguagePack-eclipse-es_4.4.0.v20140623020002.zip&amp;r=1" />
+			<url url="http://ftp.fau.de/eclipse/technology/babel/babel_language_packs/R0.14.0/luna/BabelLanguagePack-eclipse-es_4.4.0.v20160813102823.zip" />
 		</get>
 		<get dest="${download_dir}/babel_fr_4.4.0.zip" verbose="true" skipexisting="true">
-			<url url="http://www.eclipse.org/downloads/download.php?file=/technology/babel/babel_language_packs/R0.14.0/luna/BabelLanguagePack-eclipse-fr_4.4.0.v20140623020002.zip&amp;r=1" />
+			<url url="http://ftp.fau.de/eclipse/technology/babel/babel_language_packs/R0.14.0/luna/BabelLanguagePack-eclipse-fr_4.4.0.v20160813102823.zip" />
 		</get>
 		<get dest="${download_dir}/babel_it_4.4.0.zip" verbose="true" skipexisting="true">
-			<url url="http://www.eclipse.org/downloads/download.php?file=/technology/babel/babel_language_packs/R0.14.0/luna/BabelLanguagePack-eclipse-it_4.4.0.v20140623020002.zip&amp;r=1" />
+			<url url="http://ftp.fau.de/eclipse/technology/babel/babel_language_packs/R0.14.0/luna/BabelLanguagePack-eclipse-it_4.4.0.v20160813102823.zip" />
 		</get>
 		<get dest="${download_dir}/babel_zh_4.4.0.zip" verbose="true" skipexisting="true">
-			<url url="http://www.eclipse.org/downloads/download.php?file=/technology/babel/babel_language_packs/R0.14.0/luna/BabelLanguagePack-eclipse-zh_4.4.0.v20140623020002.zip&amp;r=1" />
+			<url url="http://ftp.fau.de/eclipse/technology/babel/babel_language_packs/R0.14.0/luna/BabelLanguagePack-eclipse-zh_4.4.0.v20160813102823.zip" />
 		</get>
 
 		<!-- Eclipse Birt Chart SDK -->
@@ -54,12 +55,12 @@
 
 		<!-- Eclipse Delta Pack -->
 		<get dest="${download_dir}/delta_pack_4.4.zip" verbose="true" skipexisting="true">
-			<url url="http://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.4-201406061215/eclipse-4.4-delta-pack.zip&amp;r=1" />
+			<url url="http://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.4-201406061215/eclipse-4.4-delta-pack.zip" />
 		</get>
 
 		<!-- Eclipse GEF and Draw2d -->
 		<get dest="${download_dir}/gef_3.9.zip" verbose="true" skipexisting="true">
-			<url url="http://www.eclipse.org/downloads/download.php?file=/tools/gef/downloads/drops/3.9.100/R201405261516/GEF-runtime-3.9.100.zip&amp;r=1" />
+			<url url="http://www.eclipse.org/modeling/download.php?file=/tools/gef/downloads/drops/3.9.101/R201408150207/GEF-runtime-3.9.101.zip" />
 		</get>
 
 		<!-- Eclipse Mylyn -->
@@ -78,8 +79,8 @@
 		</get>
 
 		<!-- SWT Charts -->
-		<get dest="${download_dir}/swt_charts_0.9.0.zip" verbose="true" skipexisting="true">
-			<url url="http://sourceforge.net/projects/swt-chart/files/SWTChart/0.9.0/org.swtchart_0.9.0.zip/download" />
+		<get dest="${download_dir}/swt_charts_0.10.0.zip" verbose="true" skipexisting="true">
+			<url url="https://github.com/max-grantadesign/SWTChart/blob/master/org.swtchart_0.10.0.zip" />
 		</get>
 	</target>
 
@@ -168,7 +169,7 @@
 
 		<!-- SWT Charts -->
 		<copy todir="${platform_dir}" overwrite="false">
-			<zipfileset src="${download_dir}/swt_charts_0.9.0.zip">
+			<zipfileset src="${download_dir}/swt_charts_0.10.0.zip">
 				<include name="plugins/**" />
 			</zipfileset>
 		</copy>

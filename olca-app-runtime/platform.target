@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="openLCA target platform" sequenceNumber="22">
+<?pde version="3.8"?><target name="openLCA target platform" sequenceNumber="26">
 <locations>
-<location path="C:\Users\Besitzer\Projects\git_repos\olca-app\olca-app-runtime\platform" type="Directory"/>
+<location path="C:\olca\olca-app\olca-app-runtime\platform" type="Directory"/>
 </locations>
 </target>

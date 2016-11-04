@@ -3,6 +3,8 @@ package org.openlca.app.rcp.html;
 import org.openlca.app.rcp.RcpActivator;
 
 public enum HtmlView {
+	
+	CSHARP_EDITOR("csharp_editor.html"),
 
 	GMAP_HEATMAP("gmap_heatmap.html"),
 
