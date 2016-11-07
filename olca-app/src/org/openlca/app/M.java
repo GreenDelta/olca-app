@@ -205,6 +205,7 @@ public class M extends NLS {
 	public static String DatabaseNeedsUpdate;
 	public static String DatabaseRenameError;
 	public static String DatabaseType;
+	public static String DatabaseValidationCompleteNoErrorsWereFound;
 	public static String DatabaseVersionCheckFailed;
 	public static String DatabaseWasExportedToFile;
 	public static String DecimalSeparator;
