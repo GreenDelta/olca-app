@@ -1,7 +1,5 @@
 package org.openlca.app.validation;
 
-import org.openlca.app.M;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,13 +12,12 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Tree;
-import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
@@ -53,17 +50,9 @@ public class ValidationView extends ViewPart {
 	}
 
 	private void createViewer(Composite parent) {
-		viewer = new TreeViewer(parent, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
-		viewer.setContentProvider(new ContentProvider());
-		viewer.setLabelProvider(new StatusLabel());
-		Tree tree = viewer.getTree();
-		UI.gridData(tree, true, true);
 		String[] columnHeaders = { "Description", "Path" };
-		tree.setLinesVisible(true);
-		tree.setHeaderVisible(true);
-		for (String p : columnHeaders)
-			new TreeColumn(tree, SWT.NULL).setText(p);
-		viewer.setColumnProperties(columnHeaders);
+		viewer = Trees.createViewer(parent, columnHeaders, new StatusLabel());
+		viewer.setContentProvider(new ContentProvider());
 		viewer.addDoubleClickListener((e) -> {
 			Object element = Viewers.getFirst(e.getSelection());
 			if (element == null || element instanceof StatusList)
@@ -73,7 +62,7 @@ public class ValidationView extends ViewPart {
 			BaseDescriptor descriptor = Database.createRootDao(status.modelType).getDescriptor(status.id);
 			App.openEditor(descriptor);
 		});
-		Trees.bindColumnWidths(tree, 0.5, 0.5);
+		Trees.bindColumnWidths(viewer.getTree(), 0.5, 0.5);
 	}
 
 	public static void refresh() {

@@ -8,6 +8,7 @@ import org.openlca.app.components.DialogCellEditor;
 import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.editors.processes.data_quality.DataQualityShell;
 import org.openlca.app.util.Error;
+import org.openlca.core.model.DQSystem;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Uncertainty;
 import org.openlca.core.model.UncertaintyType;
@@ -46,9 +47,13 @@ class DataQualityCellEditor extends DialogCellEditor {
 			Error.showBox("Please select a data quality system first");
 			return null;
 		}
-		DataQualityShell shell = DataQualityShell.withUncertainty(control.getShell(),
-				editor.getModel().exchangeDqSystem,
-				exchange.getDqEntry(), exchange.getBaseUncertainty(), this::onOk, this::onDelete, this::onUseUncertainties);
+		DQSystem system = editor.getModel().exchangeDqSystem;
+		String dqEntry = exchange.getDqEntry();
+		Double uncertainty = exchange.getBaseUncertainty();
+		DataQualityShell shell = DataQualityShell.withUncertainty(control.getShell(), system, dqEntry, uncertainty);
+		shell.onOk = this::onOk;
+		shell.onDelete = this::onDelete;
+		shell.onUseUncertainties = this::onUseUncertainties;
 		shell.addDisposeListener(e -> {
 			if (valuesChanged()) {
 				updateContents(exchange.getDqEntry());
@@ -76,10 +81,10 @@ class DataQualityCellEditor extends DialogCellEditor {
 	private void onUseUncertainties(DataQualityShell shell) {
 		Uncertainty u = new Uncertainty();
 		u.setDistributionType(UncertaintyType.LOG_NORMAL);
-		u.setParameter1Value(shell.getBaseValue());
-		u.setParameter2Value(shell.calculateSigmaG());
+		u.setParameter1Value(1d);
+		u.setParameter2Value(shell.updateSigmaG());
 		exchange.setUncertainty(u);
 		viewer.refresh(true);
 	}
-	
+
 }

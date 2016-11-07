@@ -52,7 +52,7 @@ public class DQInfoSection {
 
 	private void createText(Composite parent, String label, DQSystem system) {
 		if (system == null)
-			createText(parent, label, "-- No data quality system specified --");
+			createText(parent, label, M.NoDataQualitySystemSpecified);
 		else
 			createText(parent, label, system.getName());
 	}
@@ -69,12 +69,13 @@ public class DQInfoSection {
 			return;
 		UI.formLabel(parent, toolkit, label);
 		UI.formLabel(parent, toolkit, "");
-		String[] headers = { "Indicator", "Coverage" };
+		String[] headers = { M.Indicator, M.Coverage };
 		TreeViewer viewer = Trees.createViewer(parent, headers);
 		viewer.setContentProvider(new ContentProvider(forProcesses));
 		viewer.setLabelProvider(new LabelProvider(forProcesses));
 		UI.gridData(viewer.getTree(), true, true).horizontalSpan = 2;
 		viewer.setInput(system.indicators);
+		Trees.bindColumnWidths(viewer.getTree(), 0.6, 0.4);
 	}
 
 	private class ContentProvider extends ArrayContentProvider implements ITreeContentProvider {

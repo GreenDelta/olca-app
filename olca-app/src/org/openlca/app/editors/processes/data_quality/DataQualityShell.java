@@ -31,44 +31,37 @@ public class DataQualityShell extends Shell {
 	private List<DataQualityCell> dataCells = new ArrayList<>();
 	private final DQSystem system;
 	private final String dqEntry;
-	private final Double baseUncertainty;
-	private final Consumer<DataQualityShell> onOk;
-	private final Consumer<DataQualityShell> onDelete;
-	private final Consumer<DataQualityShell> onUseUncertainties;
 	private Text baseUncertaintyText;
 	private Text valueLabel;
+	public Consumer<DataQualityShell> onOk;
+	public Consumer<DataQualityShell> onDelete;
+	public Consumer<DataQualityShell> onUseUncertainties;
 
-	public static DataQualityShell withoutUncertainty(Shell parent, DQSystem system, String dqEntry,
-			Consumer<DataQualityShell> onOk, Consumer<DataQualityShell> onDelete) {
-		return new DataQualityShell(parent, system, dqEntry, null, onOk, onDelete, null);
+	public static DataQualityShell withoutUncertainty(Shell parent, DQSystem system, String dqEntry) {
+		DataQualityShell shell = new DataQualityShell(parent, system, dqEntry);
+		shell.create(false);
+		shell.initSelection(null);
+		return shell;
 	}
 
-	public static DataQualityShell withUncertainty(Shell parent, DQSystem system, String dqEntry,
-			Double baseUncertainty, Consumer<DataQualityShell> onOk, Consumer<DataQualityShell> onDelete,
-			Consumer<DataQualityShell> onUseUncertainties) {
-		return new DataQualityShell(parent, system, dqEntry, baseUncertainty, onOk, onDelete, onUseUncertainties);
+	public static DataQualityShell withUncertainty(Shell parent, DQSystem system, String dqEntry, Double uncertainty) {
+		DataQualityShell shell = new DataQualityShell(parent, system, dqEntry);
+		shell.create(true);
+		shell.initSelection(uncertainty);
+		return shell;
 	}
 
-	private DataQualityShell(Shell parent, DQSystem system, String dqEntry, Double baseUncertainty,
-			Consumer<DataQualityShell> onOk, Consumer<DataQualityShell> onDelete,
-			Consumer<DataQualityShell> onUseUncertainties) {
+	private DataQualityShell(Shell parent, DQSystem system, String dqEntry) {
 		super(parent, SWT.TITLE | SWT.RESIZE | SWT.CLOSE | SWT.APPLICATION_MODAL);
 		this.system = system;
 		this.dqEntry = dqEntry;
-		this.baseUncertainty = baseUncertainty;
-		this.onOk = onOk;
-		this.onDelete = onDelete;
-		this.onUseUncertainties = onUseUncertainties;
 		setLayout(new FillLayout(SWT.HORIZONTAL));
-		create();
 		setText(M.PedigreeMatrix);
 		setSize(830, 750);
-		// pack();
-		initSelection();
 		UI.center(parent, this);
 	}
 
-	private void initSelection() {
+	private void initSelection(Double baseUncertainty) {
 		if (dqEntry == null)
 			return;
 		int[] values = system.toValues(dqEntry);
@@ -85,8 +78,12 @@ public class DataQualityShell extends Shell {
 				continue;
 			select(indicator, score);
 		}
-		if (baseUncertainty != null && system.hasUncertainties)
-			baseUncertaintyText.setText(Double.toString(baseUncertainty));
+		if (!system.hasUncertainties)
+			return;
+		if (baseUncertainty == null)
+			baseUncertainty = 1d;
+		baseUncertaintyText.setText(Double.toString(baseUncertainty));
+		updateSigmaG();
 	}
 
 	public String getSelection() {
@@ -113,7 +110,7 @@ public class DataQualityShell extends Shell {
 		return null;
 	}
 
-	private void create() {
+	private void create(boolean withUncertainty) {
 		ScrolledForm form = toolkit.createScrolledForm(this);
 		Composite root = form.getBody();
 		UI.gridLayout(root, 1);
@@ -121,7 +118,7 @@ public class DataQualityShell extends Shell {
 		createSeparator(root);
 		createContent(root);
 		createSeparator(root);
-		createFooter(root);
+		createFooter(root, withUncertainty);
 	}
 
 	private void createContent(Composite root) {
@@ -166,8 +163,7 @@ public class DataQualityShell extends Shell {
 		header.setLayout(new GridLayout(1, false));
 		UI.gridData(header, true, false);
 		toolkit.paintBordersFor(header);
-		toolkit.createLabel(header,
-				M.PedigreeMatrixMessage);
+		toolkit.createLabel(header, M.PedigreeMatrixMessage);
 	}
 
 	private void createSeparator(Composite root) {
@@ -176,8 +172,8 @@ public class DataQualityShell extends Shell {
 		toolkit.paintBordersFor(sep);
 	}
 
-	private void createFooter(Composite root) {
-		if (onUseUncertainties != null) {
+	private void createFooter(Composite root, boolean withUncertainty) {
+		if (withUncertainty && system.hasUncertainties) {
 			createUncertaintyFields(root);
 		}
 		createButtons(root);
@@ -191,16 +187,14 @@ public class DataQualityShell extends Shell {
 		toolkit.createLabel(composite, M.BaseUncertainty + ": ");
 		baseUncertaintyText = toolkit.createText(composite, "1.0");
 		UI.gridData(baseUncertaintyText, false, false).widthHint = 80;
-		baseUncertaintyText.addModifyListener((e) -> calculateSigmaG());
+		baseUncertaintyText.addModifyListener((e) -> updateSigmaG());
 		toolkit.createLabel(composite, "\u03c3g: ");
 		valueLabel = toolkit.createText(composite, "", SWT.NONE);
 		valueLabel.setEditable(false);
 		UI.gridData(valueLabel, true, false);
 		Button button = new Button(composite, SWT.NONE);
 		button.setText("Use as uncertainty value");
-		Controls.onSelect(button, (e) -> {
-			onUseUncertainties.accept(this);
-		});
+		Controls.onSelect(button, (e) -> onUseUncertainties.accept(this));
 	}
 
 	private void createButtons(Composite parent) {
@@ -211,29 +205,24 @@ public class DataQualityShell extends Shell {
 		toolkit.paintBordersFor(composite);
 		Button okBtn = toolkit.createButton(composite, M.OK, SWT.NONE);
 		UI.gridData(okBtn, false, false).widthHint = 60;
-		okBtn.addSelectionListener(new DataQualityFinishHandler(this, onOk));
+		okBtn.addSelectionListener(new DataQualityFinishHandler(this, (s) -> onOk.accept(s)));
 		if (dqEntry != null) {
-			Button deleteBtn = toolkit.createButton(composite, M.Delete,
-					SWT.NONE);
+			Button deleteBtn = toolkit.createButton(composite, M.Delete, SWT.NONE);
 			UI.gridData(deleteBtn, false, false).widthHint = 60;
-			deleteBtn.addSelectionListener(new DataQualityFinishHandler(this, onDelete));
+			deleteBtn.addSelectionListener(new DataQualityFinishHandler(this, (s) -> onDelete.accept(s)));
 		}
-		Button cancelBtn = toolkit.createButton(composite, M.Cancel,
-				SWT.NONE);
+		Button cancelBtn = toolkit.createButton(composite, M.Cancel, SWT.NONE);
 		cancelBtn.addSelectionListener(new DataQualityFinishHandler(this, null));
 		UI.gridData(cancelBtn, false, false).widthHint = 60;
 	}
 
-	public double calculateSigmaG() {
+	public double updateSigmaG() {
 		if (baseUncertaintyText == null)
 			return 0;
-		String baseFactorText = baseUncertaintyText.getText();
 		try {
-			double baseFactor = Double.parseDouble(baseFactorText);
-			double sigma = calculateGeometricSD(baseFactor);
+			double sigma = calculateGeometricSD();
 			valueLabel.setText(Double.toString(sigma));
-			baseUncertaintyText.setBackground(getDisplay().getSystemColor(
-					SWT.COLOR_WHITE));
+			baseUncertaintyText.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
 			baseUncertaintyText.setToolTipText(null);
 			return sigma;
 		} catch (Exception e) {
@@ -243,7 +232,7 @@ public class DataQualityShell extends Shell {
 		}
 	}
 
-	private double calculateGeometricSD(double baseFactor) {
+	private double calculateGeometricSD() {
 		double varSum = 0;
 		for (DQIndicator indicator : system.indicators) {
 			DQScore selectedScore = getSelection(indicator);
@@ -252,11 +241,13 @@ public class DataQualityShell extends Shell {
 			double factor = selectedScore.uncertainty;
 			varSum += Math.pow(Math.log(factor), 2);
 		}
-		varSum += Math.pow(Math.log(baseUncertainty), 2);
+		varSum += Math.pow(Math.log(getBaseValue()), 2);
 		return Math.sqrt(Math.exp(Math.sqrt(varSum)));
 	}
 
-	public double getBaseValue() {
+	public Double getBaseValue() {
+		if (baseUncertaintyText == null)
+			return null;
 		String baseFactorText = baseUncertaintyText.getText();
 		try {
 			return Double.parseDouble(baseFactorText);

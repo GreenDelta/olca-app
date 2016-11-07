@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -18,7 +17,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Spinner;
-import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
@@ -169,10 +167,9 @@ public class ProcessResultPage extends FormPage {
 	}
 
 	private TableViewer createFlowTable(Composite parent) {
-		TableViewer table = new TableViewer(parent, SWT.FULL_SELECTION | SWT.MULTI);
-		decorateResultViewer(table, EXCHANGE_COLUMN_LABELS);
 		FlowLabel label = new FlowLabel();
-		table.setLabelProvider(label);
+		TableViewer table = Tables.createViewer(parent, EXCHANGE_COLUMN_LABELS, label);
+		decorateResultViewer(table);
 		Viewers.sortByLabels(table, label, 1, 4);
 		Viewers.sortByDouble(table, (FlowDescriptor f) -> flowResult.getUpstreamContribution(f), 0);
 		Viewers.sortByDouble(table, (FlowDescriptor f) -> flowResult.getUpstreamTotal(f), 2);
@@ -212,10 +209,9 @@ public class ProcessResultPage extends FormPage {
 	}
 
 	private TableViewer createImpactTable(Composite composite) {
-		TableViewer table = new TableViewer(composite, SWT.FULL_SELECTION | SWT.MULTI);
-		decorateResultViewer(table, IMPACT_COLUMN_LABELS);
 		ImpactLabel label = new ImpactLabel();
-		table.setLabelProvider(label);
+		TableViewer table = Tables.createViewer(composite, IMPACT_COLUMN_LABELS, label);
+		decorateResultViewer(table);
 		Viewers.sortByLabels(table, label, 1, 4);
 		Viewers.sortByDouble(table, (ImpactCategoryDescriptor i) -> impactResult.getUpstreamContribution(i), 0);
 		Viewers.sortByDouble(table, (ImpactCategoryDescriptor i) -> impactResult.getUpstreamTotal(i), 2);
@@ -224,15 +220,7 @@ public class ProcessResultPage extends FormPage {
 		return table;
 	}
 
-	private void decorateResultViewer(TableViewer table, String[] columns) {
-		table.setContentProvider(ArrayContentProvider.getInstance());
-		table.getTable().setLinesVisible(true);
-		table.getTable().setHeaderVisible(true);
-		for (int i = 0; i < columns.length; i++) {
-			TableColumn c = new TableColumn(table.getTable(), SWT.NULL);
-			c.setText(columns[i]);
-		}
-		table.setColumnProperties(columns);
+	private void decorateResultViewer(TableViewer table) {
 		table.setFilters(new ViewerFilter[] { new CutOffFilter() });
 		UI.gridData(table.getTable(), true, true);
 		Tables.bindColumnWidths(table.getTable(), 0.20, 0.30, 0.20, 0.20, 0.10);

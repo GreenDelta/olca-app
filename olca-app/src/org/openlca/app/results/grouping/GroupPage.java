@@ -38,6 +38,7 @@ import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
+import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessGroup;
@@ -134,16 +135,15 @@ public class GroupPage extends FormPage {
 		Actions.bind(groupingSection, new AddGroupAction(),
 				new SaveGroupSetAction(this), new GroupSetAction(this));
 		createGroupViewer(composite);
-		processViewer = new TableViewer(composite, SWT.BORDER | SWT.MULTI);
+		processViewer = Tables.createViewer(composite);
 		UI.gridData(processViewer.getControl(), true, false).heightHint = 200;
 		configureViewer(processViewer);
 		createMoveMenu();
 	}
 
 	private void createGroupViewer(Composite composite) {
-		groupViewer = new TableViewer(composite, SWT.BORDER);
-		GridData groupData = UI
-				.gridData(groupViewer.getControl(), false, false);
+		groupViewer = Tables.createViewer(composite);
+		GridData groupData = UI.gridData(groupViewer.getControl(), false, false);
 		groupData.heightHint = 200;
 		groupData.widthHint = 250;
 		configureViewer(groupViewer);

@@ -17,11 +17,12 @@ import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.M;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.util.UI;
 import org.openlca.app.util.UIFactory;
+import org.openlca.app.util.tables.Tables;
 
 /**
  * Wizard page for displaying warnings and errors while deleting an object
@@ -74,18 +75,12 @@ public class ProblemsPage extends WizardPage {
 
 	@Override
 	public void createControl(final Composite parent) {
-		// create body
-		final Composite body = UIFactory.createContainer(parent,
-				UIFactory.createGridLayout(1, true, 0));
-
-		// create table viewer for displaying problems
-		final TableViewer problemsViewer = new TableViewer(body);
+		Composite body = UIFactory.createContainer(parent, UIFactory.createGridLayout(1, true, 0));
+		TableViewer problemsViewer = Tables.createViewer(body);
 		problemsViewer.setContentProvider(new ProblemContentProvider());
 		problemsViewer.setLabelProvider(new ProblemLabelProvider());
 		problemsViewer.setSorter(new ProblemSorter());
-		final GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
-		gd.heightHint = parent.computeSize(SWT.DEFAULT, SWT.DEFAULT).y;
-		problemsViewer.getTable().setLayoutData(gd);
+		UI.gridData(problemsViewer.getControl(), true, true).heightHint = parent.computeSize(SWT.DEFAULT, SWT.DEFAULT).y;
 		problemsViewer.setInput(problems);
 		setControl(body);
 	}

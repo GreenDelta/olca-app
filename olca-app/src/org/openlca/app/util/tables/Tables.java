@@ -58,15 +58,17 @@ public class Tables {
 	 */
 	public static TableViewer createViewer(Composite parent, String[] properties, IBaseLabelProvider labelProvider) {
 		TableViewer viewer = new TableViewer(parent, SWT.BORDER | SWT.FULL_SELECTION | SWT.VIRTUAL | SWT.MULTI);
+		viewer.setContentProvider(new ArrayContentProvider());
+		boolean hasColumns = properties != null && properties.length > 0;
+		Table table = viewer.getTable();
+		table.setLinesVisible(hasColumns);
+		table.setHeaderVisible(hasColumns);
+		if (hasColumns) {
+			createColumns(viewer, properties, labelProvider);
+		}
 		if (labelProvider != null) {
 			viewer.setLabelProvider(labelProvider);
 		}
-		viewer.setContentProvider(new ArrayContentProvider());
-		viewer.setColumnProperties(properties);
-		Table table = viewer.getTable();
-		table.setLinesVisible(true);
-		table.setHeaderVisible(true);
-		createColumns(viewer, properties, labelProvider);
 		GridData data = UI.gridData(table, true, true);
 		data.minimumHeight = 150;
 		return viewer;
@@ -76,6 +78,7 @@ public class Tables {
 		if (labelProvider instanceof CellLabelProvider) {
 			ColumnViewerToolTipSupport.enableFor(viewer, ToolTip.NO_RECREATE);
 		}
+		viewer.setColumnProperties(labels);
 		for (String label : labels) {
 			TableViewerColumn c = new TableViewerColumn(viewer, SWT.NULL);
 			c.getColumn().setText(label);

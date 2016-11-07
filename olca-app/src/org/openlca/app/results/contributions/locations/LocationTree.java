@@ -3,11 +3,7 @@ package org.openlca.app.results.contributions.locations;
 import java.util.List;
 
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Tree;
-import org.eclipse.swt.widgets.TreeColumn;
 import org.openlca.app.M;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
@@ -25,28 +21,12 @@ class LocationTree {
 
 	public LocationTree(Composite parent, boolean withMinHeight) {
 		UI.gridLayout(parent, 1);
-		viewer = new TreeViewer(parent, SWT.FULL_SELECTION | SWT.MULTI);
-		viewer.setContentProvider(new TreeContentProvider());
 		treeLabel = new TreeLabel();
-		viewer.setLabelProvider(treeLabel);
-		Tree tree = viewer.getTree();
-		GridData gridData = UI.gridData(tree, true, true);
-		if (withMinHeight) {
-			gridData.minimumHeight = 150;
-		}
-		tree.setHeaderVisible(true);
-		tree.setLinesVisible(true);
-		createColumns(tree);
-		Actions.bind(viewer, TreeClipboard.onCopy(viewer));
-	}
-
-	private void createColumns(Tree tree) {
 		String[] labels = { M.Location + "/" + M.Process, M.Amount, M.Unit };
-		for (String col : labels) {
-			TreeColumn column = new TreeColumn(tree, SWT.NONE);
-			column.setText(col);
-		}
-		Trees.bindColumnWidths(tree, 0.4, 0.3, 0.3);
+		viewer = Trees.createViewer(parent, labels, treeLabel);
+		viewer.setContentProvider(new TreeContentProvider());
+		Trees.bindColumnWidths(viewer.getTree(), 0.4, 0.3, 0.3);
+		Actions.bind(viewer, TreeClipboard.onCopy(viewer));
 	}
 
 	void setInput(List<LocationItem> contributions, String unit) {

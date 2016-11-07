@@ -6,9 +6,7 @@ import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Tree;
 import org.openlca.app.cloud.JsonLoader;
-import org.openlca.app.util.UI;
 import org.openlca.app.viewers.AbstractViewer;
 
 abstract class DiffTreeViewer extends AbstractViewer<DiffNode, TreeViewer> {
@@ -32,8 +30,6 @@ abstract class DiffTreeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 		viewer.setLabelProvider(new LabelProvider());
 		viewer.setSorter(new Sorter());
 		viewer.addDoubleClickListener(this::onDoubleClick);
-		Tree tree = viewer.getTree();
-		UI.gridData(tree, true, true);
 	}
 
 	@Override

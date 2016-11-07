@@ -2,16 +2,12 @@ package org.openlca.app.results.grouping;
 
 import java.util.List;
 
-import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
 import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.util.Actions;
@@ -35,18 +31,9 @@ class GroupResultTable {
 	private String unit;
 
 	public GroupResultTable(Composite parent) {
-		viewer = new TableViewer(parent, SWT.FULL_SELECTION | SWT.MULTI);
-		viewer.setContentProvider(ArrayContentProvider.getInstance());
-		viewer.setLabelProvider(new GroupResultLabel());
-		Table table = viewer.getTable();
-		table.setHeaderVisible(true);
-		table.setLinesVisible(true);
 		String[] colLabels = { GROUP, AMOUNT, UNIT };
-		for (String col : colLabels) {
-			TableColumn column = new TableColumn(table, SWT.NONE);
-			column.setText(col);
-		}
-		Tables.bindColumnWidths(table, 0.5, 0.25, 0.25);
+		viewer = Tables.createViewer(parent, colLabels, new GroupResultLabel());
+		Tables.bindColumnWidths(viewer.getTable(), 0.5, 0.25, 0.25);
 		UI.gridData(viewer.getControl(), true, false).heightHint = 200;
 		Actions.bind(viewer, TableClipboard.onCopy(viewer));
 	}

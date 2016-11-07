@@ -148,6 +148,7 @@ public class M extends NLS {
 	public static String CouldNotOpenDatabase;
 	public static String CouldNotOverwriteFile;
 	public static String Country;
+	public static String Coverage;
 	public static String CreateANewDatabase;
 	public static String CreateANewProductFlowForTheProcess;
 	public static String CreateDatabase;
@@ -392,6 +393,7 @@ public class M extends NLS {
 	public static String ImportingKMLData;
 	public static String ImportingXMLData;
 	public static String IncludeCostCalculation;
+	public static String Indicator;
 	public static String IndicatorBarChart;
 	public static String IndicatorScore;
 	public static String Indicators;
@@ -537,6 +539,7 @@ public class M extends NLS {
 	public static String NoCostCategorySelected;
 	public static String NoData;
 	public static String NoDatabaseOpened;
+	public static String NoDataQualitySystemSpecified;
 	public static String NoDescription;
 	public static String NoDistribution;
 	public static String NoExportFilesSelected;

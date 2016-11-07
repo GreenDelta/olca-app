@@ -121,7 +121,6 @@ class ProjectParameterTable {
 		viewer = Tables.createViewer(composite, getColumnTitles());
 		viewer.setLabelProvider(new LabelProvider());
 		Tables.bindColumnWidths(viewer, 0.15, 0.15, 0.15, 0.15);
-		UI.gridData(viewer.getTable(), true, true).minimumHeight = 150;
 		viewer.setInput(redefs);
 		createModifySupport();
 		Action add = Actions.onAdd(this::onAdd);

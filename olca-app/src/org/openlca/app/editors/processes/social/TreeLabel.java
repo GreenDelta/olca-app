@@ -22,8 +22,7 @@ class TreeLabel extends BaseLabelProvider implements ITableLabelProvider {
 		SocialAspect a = (SocialAspect) obj;
 		if (col == 6 && a.source != null)
 			return Images.get(ModelType.SOURCE);
-		else
-			return null;
+		return null;
 	}
 
 	@Override
@@ -32,15 +31,13 @@ class TreeLabel extends BaseLabelProvider implements ITableLabelProvider {
 			return text((CategoryNode) obj, col);
 		if (obj instanceof SocialAspect)
 			return text((SocialAspect) obj, col);
-		else
-			return null;
+		return null;
 	}
 
 	private String text(CategoryNode n, int col) {
 		if (col == 0 && n.category != null)
 			return n.category.getName();
-		else
-			return null;
+		return null;
 	}
 
 	private String text(SocialAspect a, int col) {

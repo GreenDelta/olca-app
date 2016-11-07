@@ -30,7 +30,7 @@ class QualityPanel {
 		this.tk = tk;
 		Composite comp = tk.createComposite(body);
 		UI.gridData(comp, true, true);
-		UI.gridLayout(comp, 6, 2, 0);
+		UI.gridLayout(comp, system.getScoreCount() + 1, 2, 0);
 		drawHeader(comp);
 		drawContent(comp);
 		initSelection();

@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Stack;
 
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.cloud.JsonLoader;
 import org.openlca.app.cloud.ui.diff.DiffResult.DiffResponse;
+import org.openlca.app.util.trees.Trees;
 
 public class FetchDiffViewer extends DiffTreeViewer {
 
@@ -21,7 +21,7 @@ public class FetchDiffViewer extends DiffTreeViewer {
 
 	@Override
 	protected TreeViewer createViewer(Composite parent) {
-		TreeViewer viewer = new TreeViewer(parent, SWT.BORDER);
+		TreeViewer viewer = Trees.createViewer(parent);
 		configureViewer(viewer, false);
 		return viewer;
 	}

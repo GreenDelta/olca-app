@@ -94,7 +94,7 @@ class DataQualityCell {
 		@Override
 		public void mouseDown(MouseEvent e) {
 			shell.select(indicator, score);
-			shell.calculateSigmaG();
+			shell.updateSigmaG();
 		}
 	}
 

@@ -46,8 +46,7 @@ public class JsonTreeViewer extends AbstractViewer<JsonNode, TreeViewer> {
 
 	@Override
 	protected TreeViewer createViewer(Composite parent) {
-		TreeViewer viewer = new TreeViewer(parent, SWT.MULTI | SWT.NO_FOCUS
-				| SWT.HIDE_SELECTION | SWT.BORDER);
+		TreeViewer viewer = new TreeViewer(parent, SWT.MULTI | SWT.NO_FOCUS | SWT.HIDE_SELECTION | SWT.BORDER);
 		viewer.setContentProvider(new ContentProvider());
 		Tree tree = viewer.getTree();
 		if (viewerParameters[0] == Side.LEFT)

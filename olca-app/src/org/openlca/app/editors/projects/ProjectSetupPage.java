@@ -174,7 +174,6 @@ class ProjectSetupPage extends ModelPage<Project> {
 		support.bind(M.Unit, new VariantUnitEditor());
 		support.bind(M.Description, new VariantDescriptionEditor());
 		addVariantActions(variantViewer, section);
-		UI.gridData(variantViewer.getTable(), true, true).minimumHeight = 150;
 	}
 
 	private void createParameterSection(Composite body) {

@@ -67,7 +67,6 @@ public class ProjectResultPage extends FormPage {
 				new String[] { M.Variant, M.Amount, M.Unit });
 		tableViewer.setLabelProvider(new TableLabel());
 		Tables.bindColumnWidths(tableViewer, 0.4, 0.3, 0.3);
-		UI.gridData(tableViewer.getTable(), true, true).minimumHeight = 150;
 	}
 
 	private void initialSelection(ResultTypeSelection selector) {

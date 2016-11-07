@@ -140,7 +140,6 @@ public class FileImportPage extends WizardPage {
 		fileViewer.getTable().setLayoutData(gdfv);
 		fileViewer.setContentProvider(new FileContentProvider());
 		fileViewer.setLabelProvider(new FileLabelProvider());
-
 		fileViewer.addSelectionChangedListener((event) -> {
 			ISelection selection = event.getSelection();
 			if (!(selection instanceof IStructuredSelection)

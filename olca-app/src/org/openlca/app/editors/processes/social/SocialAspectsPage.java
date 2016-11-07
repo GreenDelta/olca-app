@@ -3,10 +3,7 @@ package org.openlca.app.editors.processes.social;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.Window;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Tree;
-import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
@@ -89,27 +86,11 @@ public class SocialAspectsPage extends ModelPage<Process> {
 	}
 
 	private void createTree(Composite comp) {
-		String[] headers = { M.Name, M.RawValue,
-				M.RiskLevel, M.ActivityVariable,
-				M.DataQuality, M.Comment, M.Source };
-		tree = new TreeViewer(comp, SWT.FULL_SELECTION
-				| SWT.MULTI | SWT.BORDER);
-		Tree t = tree.getTree();
-		t.setLinesVisible(true);
-		for (int i = 0; i < headers.length; i++) {
-			TreeColumn c = new TreeColumn(t, SWT.NULL);
-			c.setText(headers[i]);
-		}
-		for (TreeColumn c : t.getColumns())
-			c.pack();
-		tree.setColumnProperties(headers);
-		Trees.bindColumnWidths(t, 0.2, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1);
-		tree.setAutoExpandLevel(3);
-		t.setLinesVisible(false);
-		t.setHeaderVisible(true);
-		UI.gridData(t, true, true);
+		String[] headers = { M.Name, M.RawValue, M.RiskLevel, M.ActivityVariable, M.DataQuality, M.Comment, M.Source };
+		tree = Trees.createViewer(comp, headers, new TreeLabel());
+		Trees.bindColumnWidths(tree.getTree(), 0.2, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1);
 		tree.setContentProvider(new TreeContent());
-		tree.setLabelProvider(new TreeLabel());
+		tree.setAutoExpandLevel(3);
 		tree.setInput(treeModel);
 	}
 

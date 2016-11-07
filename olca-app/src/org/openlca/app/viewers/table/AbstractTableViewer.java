@@ -11,21 +11,16 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.components.ModelTransfer;
 import org.openlca.app.util.Actions;
-import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
@@ -56,36 +51,13 @@ public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 
 	@Override
 	protected TableViewer createViewer(Composite parent) {
-		TableViewer viewer = new TableViewer(parent, SWT.BORDER
-				| SWT.FULL_SELECTION | SWT.MULTI);
-		viewer.setContentProvider(ArrayContentProvider.getInstance());
-		viewer.setLabelProvider(getLabelProvider());
-		initTable(viewer);
-		Table table = viewer.getTable();
-		UI.gridData(table, true, true);
+		TableViewer viewer = Tables.createViewer(parent, getColumnHeaders(), getLabelProvider());
 		createActions(viewer);
 		if (supports(OnDrop.class))
 			addDropSupport(viewer);
 		if (useColumnHeaders())
 			cellModifySupport = new ModifySupport<>(viewer);
 		return viewer;
-	}
-
-	private void initTable(TableViewer viewer) {
-		Table table = viewer.getTable();
-		if (!useColumnHeaders()) {
-			table.setLinesVisible(false);
-			table.setHeaderVisible(false);
-		} else {
-			String[] columnHeaders = getColumnHeaders();
-			table.setLinesVisible(true);
-			table.setHeaderVisible(true);
-			for (String p : columnHeaders)
-				new TableColumn(table, SWT.NULL).setText(p);
-			for (TableColumn c : table.getColumns())
-				c.pack();
-			viewer.setColumnProperties(columnHeaders);
-		}
 	}
 
 	private void createActions(TableViewer viewer) {

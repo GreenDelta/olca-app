@@ -41,22 +41,28 @@ import org.openlca.core.model.descriptors.BaseDescriptor;
  */
 public class Trees {
 
-	public static TreeViewer createViewer(Composite parent, String[] headers) {
+	public static TreeViewer createViewer(Composite parent, String... headers) {
 		return createViewer(parent, headers, null);
+	}
+
+	public static TreeViewer createViewer(Composite parent, IBaseLabelProvider label) {
+		return createViewer(parent, null, label);
 	}
 
 	public static TreeViewer createViewer(Composite parent, String[] headers, IBaseLabelProvider label) {
 		TreeViewer viewer = new TreeViewer(parent, SWT.BORDER | SWT.FULL_SELECTION | SWT.VIRTUAL | SWT.MULTI);
-		viewer.setColumnProperties(headers);
+		Tree tree = viewer.getTree();
+		boolean hasColumns = headers != null && headers.length > 0;
+		tree.setLinesVisible(hasColumns);
+		tree.setHeaderVisible(hasColumns);
+		if (hasColumns) {
+			createColumns(viewer, headers, label);
+		}
 		if (label != null) {
 			viewer.setLabelProvider(label);
 		}
-		Tree tree = viewer.getTree();
-		tree.setLinesVisible(true);
-		tree.setHeaderVisible(true);
-		createColumns(viewer, headers, label);
 		GridData data = UI.gridData(tree, true, true);
-		data.minimumHeight = 150;
+		data.minimumHeight = 400;
 		return viewer;
 	}
 
