@@ -62,7 +62,7 @@ public class Trees {
 			viewer.setLabelProvider(label);
 		}
 		GridData data = UI.gridData(tree, true, true);
-		data.minimumHeight = 400;
+		data.minimumHeight = 150;
 		return viewer;
 	}
 
