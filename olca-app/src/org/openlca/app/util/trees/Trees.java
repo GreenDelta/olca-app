@@ -215,6 +215,7 @@ public class Trees {
 		private double[] percents;
 		private int minimum;
 		private boolean enabled = true;
+		private boolean initialized;
 
 		private TreeResizeListener(Tree tree, int minimum, double[] percents) {
 			this.tree = tree;
@@ -224,9 +225,11 @@ public class Trees {
 
 		@Override
 		public void controlResized(ControlEvent e) {
-			if (!enabled)
+			if (!enabled && initialized)
 				return;
 			double width = tree.getSize().x - 25;
+			if (width <= 0)
+				return;
 			TreeColumn[] columns = tree.getColumns();
 			int indexOfLargest = -1;
 			double max = 0;
@@ -248,6 +251,7 @@ public class Trees {
 			if (diff > 0) {
 				columns[indexOfLargest].setWidth((int) (max - diff));
 			}
+			initialized = true;
 		}
 
 	}

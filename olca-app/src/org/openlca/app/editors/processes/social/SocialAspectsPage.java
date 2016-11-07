@@ -88,19 +88,21 @@ public class SocialAspectsPage extends ModelPage<Process> {
 	private void createTree(Composite comp) {
 		String[] headers = { M.Name, M.RawValue, M.RiskLevel, M.ActivityVariable, M.DataQuality, M.Comment, M.Source };
 		tree = Trees.createViewer(comp, headers, new TreeLabel());
-		Trees.bindColumnWidths(tree.getTree(), 0.2, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1);
 		tree.setContentProvider(new TreeContent());
 		tree.setAutoExpandLevel(3);
 		tree.setInput(treeModel);
+		Trees.bindColumnWidths(tree.getTree(), 0.2, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1);
 	}
 
 	private void addIndicator() {
-		BaseDescriptor[] list = ModelSelectionDialog
-				.multiSelect(ModelType.SOCIAL_INDICATOR);
+		BaseDescriptor[] list = ModelSelectionDialog.multiSelect(ModelType.SOCIAL_INDICATOR);
+		if (list == null)
+			return;
 		for (BaseDescriptor d : list) {
 			SocialAspect aspect = Aspects.find(getModel(), d);
-			if (aspect == null)
-				addIndicator(d);
+			if (aspect != null)
+				continue;
+			addIndicator(d);
 		}
 	}
 
