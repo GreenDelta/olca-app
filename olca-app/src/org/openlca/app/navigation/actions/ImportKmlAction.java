@@ -16,7 +16,7 @@ import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ModelType;
 
-public class ImportKmlAction extends Action implements INavigationAction {
+class ImportKmlAction extends Action implements INavigationAction {
 
 	public ImportKmlAction() {
 		setText(M.ImportKMLGeographies);

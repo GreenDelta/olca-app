@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Delete a category via the navigation tree.
  */
-public class DeleteCategoryAction extends Action implements INavigationAction {
+class DeleteCategoryAction extends Action implements INavigationAction {
 
 	private CategoryElement categoryElement;
 

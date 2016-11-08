@@ -1,4 +1,4 @@
-package org.openlca.app.navigation.actions.cloud;
+package org.openlca.app.navigation.actions;
 
 import org.openlca.app.M;
 
@@ -27,7 +27,6 @@ import org.openlca.app.cloud.ui.preferences.CloudPreference;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Info;
 import org.openlca.cloud.api.CommitInvocation;
@@ -36,14 +35,14 @@ import org.openlca.cloud.model.data.Dataset;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ModelType;
 
-public class CommitAction extends Action implements INavigationAction {
+class CloudCommitAction extends Action implements INavigationAction {
 
 	private IDatabase database;
 	private DiffIndex index;
 	private RepositoryClient client;
 	private List<INavigationElement<?>> selection;
 
-	public CommitAction() {
+	public CloudCommitAction() {
 		setText(M.Commit);
 	}
 

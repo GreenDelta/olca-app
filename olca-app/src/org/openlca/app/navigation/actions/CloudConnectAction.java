@@ -1,4 +1,4 @@
-package org.openlca.app.navigation.actions.cloud;
+package org.openlca.app.navigation.actions;
 
 import java.util.List;
 
@@ -31,7 +31,6 @@ import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.UI;
@@ -42,7 +41,7 @@ import org.openlca.cloud.model.data.Dataset;
 
 import com.google.common.base.Strings;
 
-public class ConnectAction extends Action implements INavigationAction {
+class CloudConnectAction extends Action implements INavigationAction {
 
 	@Override
 	public String getText() {

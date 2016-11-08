@@ -10,7 +10,7 @@ import org.openlca.app.M;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
 
-public class OpenModelAction extends Action implements INavigationAction {
+class OpenModelAction extends Action implements INavigationAction {
 
 	private List<ModelElement> elements;
 

@@ -12,7 +12,7 @@ import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.io.refdata.RefDataExport;
 
-public class XRefDataExport extends Action implements INavigationAction {
+class XRefDataExport extends Action implements INavigationAction {
 
 	public XRefDataExport() {
 		setImageDescriptor(Icon.EXTENSION.descriptor());

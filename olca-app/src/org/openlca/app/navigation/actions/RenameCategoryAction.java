@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Rename a category via the navigation tree.
  */
-public class RenameCategoryAction extends Action implements INavigationAction {
+class RenameCategoryAction extends Action implements INavigationAction {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 

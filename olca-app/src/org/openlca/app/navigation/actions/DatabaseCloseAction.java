@@ -18,7 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** Close the activated database */
-public class DatabaseCloseAction extends Action implements INavigationAction {
+class DatabaseCloseAction extends Action implements INavigationAction {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 

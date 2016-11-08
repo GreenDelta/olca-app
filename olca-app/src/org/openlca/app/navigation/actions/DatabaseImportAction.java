@@ -16,7 +16,7 @@ import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
 import org.zeroturnaround.zip.ZipUtil;
 
-public class DatabaseImportAction extends Action implements INavigationAction {
+class DatabaseImportAction extends Action implements INavigationAction {
 
 	public DatabaseImportAction() {
 		setText(M.ImportDatabase);

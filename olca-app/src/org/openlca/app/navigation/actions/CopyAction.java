@@ -10,7 +10,7 @@ import org.openlca.app.navigation.CopyPaste;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
 
-public class CopyAction extends Action implements INavigationAction {
+class CopyAction extends Action implements INavigationAction {
 
 	private List<INavigationElement<?>> selection;
 

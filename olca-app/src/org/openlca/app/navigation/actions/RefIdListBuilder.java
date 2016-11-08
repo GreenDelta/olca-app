@@ -1,4 +1,4 @@
-package org.openlca.app.navigation.actions.cloud;
+package org.openlca.app.navigation.actions;
 
 import java.util.Collections;
 import java.util.HashMap;

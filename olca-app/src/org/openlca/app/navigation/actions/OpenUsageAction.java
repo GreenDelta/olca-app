@@ -14,7 +14,7 @@ import org.openlca.core.model.descriptors.CategorizedDescriptor;
 /**
  * Opens a view with the usages of a model in other entities.
  */
-public class OpenUsageAction extends Action implements INavigationAction {
+class OpenUsageAction extends Action implements INavigationAction {
 
 	private CategorizedDescriptor descriptor;
 

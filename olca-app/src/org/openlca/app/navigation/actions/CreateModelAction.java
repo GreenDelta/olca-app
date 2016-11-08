@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Opens the 'New'-wizard for a model type.
  */
-public class CreateModelAction extends Action implements INavigationAction {
+class CreateModelAction extends Action implements INavigationAction {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 

@@ -10,7 +10,7 @@ import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.io.ecospold2.input.MarketProcessCleanUp;
 
-public class XEI3MarketProcessCleanUp extends Action implements
+class XEI3MarketProcessCleanUp extends Action implements
 		INavigationAction {
 
 	public XEI3MarketProcessCleanUp() {

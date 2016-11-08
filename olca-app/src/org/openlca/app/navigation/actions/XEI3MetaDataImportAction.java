@@ -21,7 +21,7 @@ import org.openlca.io.ecospold2.input.SourceUpdate;
  * Navigation extension that imports ecoinvent 3 meta data into an existing
  * database.
  */
-public class XEI3MetaDataImportAction extends Action implements
+class XEI3MetaDataImportAction extends Action implements
 		INavigationAction {
 
 	public XEI3MetaDataImportAction() {

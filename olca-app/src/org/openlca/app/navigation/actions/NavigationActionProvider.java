@@ -1,4 +1,4 @@
-package org.openlca.app.navigation;
+package org.openlca.app.navigation.actions;
 
 import java.util.List;
 
@@ -9,43 +9,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.actions.ActionContext;
 import org.eclipse.ui.navigator.CommonActionProvider;
 import org.openlca.app.App;
-import org.openlca.app.navigation.actions.CopyAction;
-import org.openlca.app.navigation.actions.CreateCategoryAction;
-import org.openlca.app.navigation.actions.CreateModelAction;
-import org.openlca.app.navigation.actions.CutAction;
-import org.openlca.app.navigation.actions.DatabaseActivateAction;
-import org.openlca.app.navigation.actions.DatabaseCloseAction;
-import org.openlca.app.navigation.actions.DatabaseCopyAction;
-import org.openlca.app.navigation.actions.DatabaseCreateAction;
-import org.openlca.app.navigation.actions.DatabaseDeleteAction;
-import org.openlca.app.navigation.actions.DatabaseExportAction;
-import org.openlca.app.navigation.actions.DatabaseImportAction;
-import org.openlca.app.navigation.actions.DatabasePropertiesAction;
-import org.openlca.app.navigation.actions.DatabaseRenameAction;
-import org.openlca.app.navigation.actions.DatabaseValidateAction;
-import org.openlca.app.navigation.actions.DeleteCategoryAction;
-import org.openlca.app.navigation.actions.DeleteModelAction;
-import org.openlca.app.navigation.actions.ExportAction;
-import org.openlca.app.navigation.actions.INavigationAction;
-import org.openlca.app.navigation.actions.ImportAction;
-import org.openlca.app.navigation.actions.ImportKmlAction;
-import org.openlca.app.navigation.actions.ImportXmlKmlAction;
-import org.openlca.app.navigation.actions.OpenModelAction;
-import org.openlca.app.navigation.actions.OpenUsageAction;
-import org.openlca.app.navigation.actions.PasteAction;
-import org.openlca.app.navigation.actions.RenameCategoryAction;
-import org.openlca.app.navigation.actions.XEI3MarketProcessCleanUp;
-import org.openlca.app.navigation.actions.XEI3MetaDataImportAction;
-import org.openlca.app.navigation.actions.XNexusIndexExportAction;
-import org.openlca.app.navigation.actions.XParameterCheckAction;
-import org.openlca.app.navigation.actions.XRefDataExport;
-import org.openlca.app.navigation.actions.XRefDataImport;
-import org.openlca.app.navigation.actions.cloud.CommitAction;
-import org.openlca.app.navigation.actions.cloud.ConnectAction;
-import org.openlca.app.navigation.actions.cloud.DisconnectAction;
-import org.openlca.app.navigation.actions.cloud.FetchAction;
-import org.openlca.app.navigation.actions.cloud.OpenHistoryViewAction;
-import org.openlca.app.navigation.actions.cloud.OpenSyncViewAction;
+import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.util.viewers.Viewers;
 
@@ -92,20 +56,20 @@ public class NavigationActionProvider extends CommonActionProvider {
 	
 	private INavigationAction[][] cloudActions = new INavigationAction[][] {	
 		new INavigationAction[] { 
-			new CommitAction(), 
-			new FetchAction() ,
-			new OpenHistoryViewAction()
+			new CloudCommitAction(), 
+			new CloudFetchAction() ,
+			new CloudOpenHistoryViewAction()
 		},
 		new INavigationAction[]	{ 
-			new ConnectAction(), 
-			new DisconnectAction() 
+			new CloudConnectAction(), 
+			new CloudDisconnectAction() 
 		}	
 	};
 	
 	private INavigationAction[][] cloudCompareActions = new INavigationAction[][] {	
 		new INavigationAction[] {
-			new OpenSyncViewAction(false),			
-			new OpenSyncViewAction(true)
+			new CloudOpenSyncViewAction(false),			
+			new CloudOpenSyncViewAction(true)
 		}
 	};
 	//@formatter:on

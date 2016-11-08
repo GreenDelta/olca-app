@@ -1,4 +1,4 @@
-package org.openlca.app.navigation.actions.cloud;
+package org.openlca.app.navigation.actions;
 
 import java.util.Collections;
 import java.util.List;
@@ -13,17 +13,16 @@ import org.openlca.app.cloud.ui.commits.SelectCommitDialog;
 import org.openlca.app.cloud.ui.diff.SyncView;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.INavigationElement;
-import org.openlca.app.navigation.actions.INavigationAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OpenSyncViewAction extends Action implements INavigationAction {
+class CloudOpenSyncViewAction extends Action implements INavigationAction {
 
-	private final static Logger log = LoggerFactory.getLogger(OpenSyncViewAction.class);
+	private final static Logger log = LoggerFactory.getLogger(CloudOpenSyncViewAction.class);
 	private final boolean selectCommit;
 	private List<INavigationElement<?>> elements;
 
-	public OpenSyncViewAction(boolean selectCommit) {
+	public CloudOpenSyncViewAction(boolean selectCommit) {
 		if (selectCommit)
 			setText(M.Commit);
 		else

@@ -73,11 +73,12 @@
       
       <!-- developer tools -->
       <editor
-      		class="org.openlca.app.devtools.sql.SqlEditor"
-      		default="false"
-      		id="SqlEditor"
-      		name="SQL"
-      		icon="icons/sql.png">
+            class="org.openlca.app.devtools.sql.SqlEditor"
+            contributorClass="org.openlca.app.devtools.Toolbar"
+            default="false"
+            icon="icons/sql.png"
+            id="SqlEditor"
+            name="SQL">
       </editor>
       <editor
       		class="org.openlca.app.devtools.js.JavaScriptEditor"
@@ -237,14 +238,6 @@
             icon="icons/file.png"
             name="Log file">
       </editor>       
-      <!-- other --> 
-      <editor
-            class="org.openlca.app.rcp.browser.MozillaConfigView"
-            default="false"
-            icon="icons/firefox.png"
-            id="olca.MozillaConfigView"
-            name="Browser configuration">
-      </editor>
       <editor
             class="org.openlca.app.editors.UsageView"
             default="false"
@@ -597,7 +590,7 @@
          </possibleChildren>
       </navigatorContent>
       <actionProvider
-            class="org.openlca.app.navigation.NavigationActionProvider"
+            class="org.openlca.app.navigation.actions.NavigationActionProvider"
             id="actionprovider.navigation"
             priority="normal">
          <enablement></enablement>

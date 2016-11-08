@@ -17,7 +17,7 @@ import org.openlca.app.rcp.images.Icon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ImportAction extends Action implements INavigationAction {
+class ImportAction extends Action implements INavigationAction {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 

@@ -1,4 +1,4 @@
-package org.openlca.app.navigation.actions.cloud;
+package org.openlca.app.navigation.actions;
 
 import org.openlca.app.M;
 
@@ -11,15 +11,14 @@ import org.eclipse.ui.PlatformUI;
 import org.openlca.app.cloud.ui.commits.HistoryView;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.INavigationElement;
-import org.openlca.app.navigation.actions.INavigationAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OpenHistoryViewAction extends Action implements INavigationAction {
+class CloudOpenHistoryViewAction extends Action implements INavigationAction {
 
-	private final static Logger log = LoggerFactory.getLogger(OpenHistoryViewAction.class);
+	private final static Logger log = LoggerFactory.getLogger(CloudOpenHistoryViewAction.class);
 
-	public OpenHistoryViewAction() {
+	public CloudOpenHistoryViewAction() {
 		setText(M.ShowInHistory);
 	}
 

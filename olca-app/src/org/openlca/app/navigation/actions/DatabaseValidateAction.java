@@ -11,7 +11,7 @@ import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.validation.ValidationView;
 
-public class DatabaseValidateAction extends Action implements INavigationAction {
+class DatabaseValidateAction extends Action implements INavigationAction {
 
 	public DatabaseValidateAction() {
 		setText(M.Validate);

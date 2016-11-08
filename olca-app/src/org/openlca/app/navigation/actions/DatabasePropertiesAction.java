@@ -13,7 +13,7 @@ import org.openlca.app.rcp.images.Icon;
 /**
  * Shows the database properties in a window.
  */
-public class DatabasePropertiesAction extends Action implements
+class DatabasePropertiesAction extends Action implements
 		INavigationAction {
 
 	private IDatabaseConfiguration config;

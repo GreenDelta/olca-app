@@ -22,7 +22,7 @@ import org.openlca.expressions.FormulaInterpreter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class XParameterCheckAction extends Action implements INavigationAction {
+class XParameterCheckAction extends Action implements INavigationAction {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 

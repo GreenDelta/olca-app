@@ -11,7 +11,7 @@ import org.openlca.app.rcp.images.Images;
 /**
  * Opens the wizard for creating a new database.
  */
-public class DatabaseCreateAction extends Action implements INavigationAction {
+class DatabaseCreateAction extends Action implements INavigationAction {
 
 	public DatabaseCreateAction() {
 		setText(M.NewDatabase);

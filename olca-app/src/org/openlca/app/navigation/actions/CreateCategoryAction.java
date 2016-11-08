@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  * This action creates a new category and appends it to the specified parent
  * category
  */
-public class CreateCategoryAction extends Action implements INavigationAction {
+class CreateCategoryAction extends Action implements INavigationAction {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 

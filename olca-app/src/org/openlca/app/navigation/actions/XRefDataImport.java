@@ -14,7 +14,7 @@ import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.io.refdata.RefDataImport;
 
-public class XRefDataImport extends Action implements INavigationAction {
+class XRefDataImport extends Action implements INavigationAction {
 
 	public XRefDataImport() {
 		setImageDescriptor(Icon.EXTENSION.descriptor());

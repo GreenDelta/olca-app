@@ -28,7 +28,7 @@ import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DeleteModelAction extends Action implements INavigationAction {
+class DeleteModelAction extends Action implements INavigationAction {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private List<ModelElement> elements;

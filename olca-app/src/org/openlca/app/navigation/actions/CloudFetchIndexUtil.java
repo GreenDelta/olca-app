@@ -1,4 +1,4 @@
-package org.openlca.app.navigation.actions.cloud;
+package org.openlca.app.navigation.actions;
 
 import static org.openlca.app.cloud.index.DiffType.CHANGED;
 import static org.openlca.app.cloud.index.DiffType.DELETED;

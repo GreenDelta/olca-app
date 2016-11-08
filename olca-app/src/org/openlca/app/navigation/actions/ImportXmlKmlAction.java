@@ -16,7 +16,7 @@ import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ModelType;
 
-public class ImportXmlKmlAction extends Action implements INavigationAction {
+class ImportXmlKmlAction extends Action implements INavigationAction {
 
 	public ImportXmlKmlAction() {
 		setText(M.ImportEcoSpoldGeographies);

@@ -25,7 +25,7 @@ import org.openlca.core.database.DbUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DatabaseCopyAction extends Action implements INavigationAction {
+class DatabaseCopyAction extends Action implements INavigationAction {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 
