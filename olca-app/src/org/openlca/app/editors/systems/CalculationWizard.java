@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
  * Wizard for setting calculation properties and run the calculation of a
  * product system
  */
-class CalculationWizard extends Wizard {
+public class CalculationWizard extends Wizard {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 

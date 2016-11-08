@@ -26,6 +26,7 @@ public class NavigationActionProvider extends CommonActionProvider {
 			// model actions
 			new INavigationAction[] {
 				new OpenModelAction(),
+				new CalculateSystemAction(),
 				new CreateModelAction(),
 				new OpenUsageAction(),				
 				new DeleteModelAction()
