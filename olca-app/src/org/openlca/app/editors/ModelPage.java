@@ -150,16 +150,12 @@ public abstract class ModelPage<T extends CategorizedEntity> extends FormPage {
 		return text;
 	}
 
-	public class ModelLinkClickedListener extends HyperlinkAdapter {
+	private class ModelLinkClickedListener extends HyperlinkAdapter {
 
 		private Object model;
 
 		public ModelLinkClickedListener(CategorizedEntity entity) {
 			this.model = entity;
-		}
-
-		public ModelLinkClickedListener(BaseDescriptor descriptor) {
-			this.model = descriptor;
 		}
 
 		@Override
