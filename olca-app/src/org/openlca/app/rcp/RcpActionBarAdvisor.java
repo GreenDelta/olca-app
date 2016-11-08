@@ -30,9 +30,7 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.plugins.PluginManager;
 import org.openlca.app.util.Actions;
-import org.openlca.app.util.DefaultInput;
 import org.openlca.app.util.Desktop;
-import org.openlca.app.util.Editors;
 import org.openlca.core.model.ModelType;
 
 public class RcpActionBarAdvisor extends ActionBarAdvisor {
@@ -203,7 +201,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 
 		@Override
 		public void run() {
-			Editors.open(new DefaultInput(LogFileEditor.ID, "Log file"), LogFileEditor.ID);
+			LogFileEditor.open();
 		}
 	}
 }

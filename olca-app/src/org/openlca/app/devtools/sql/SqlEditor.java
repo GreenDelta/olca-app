@@ -3,6 +3,7 @@ package org.openlca.app.devtools.sql;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.Action;
@@ -21,6 +22,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
+import org.openlca.app.devtools.IScriptEditor;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
@@ -31,19 +33,29 @@ import org.openlca.app.util.Info;
 import org.openlca.app.util.UI;
 import org.python.google.common.base.Strings;
 
-public class SqlEditor extends SimpleFormEditor {
+public class SqlEditor extends SimpleFormEditor implements IScriptEditor {
 
-	public static String ID = "SqlEditor";
+	public static String TYPE = "SqlEditor";
+	private Page page;
 
 	public static void open() {
-		Editors.open(new DefaultInput(ID, "SQL"), ID);
+		Editors.open(new DefaultInput(TYPE, UUID.randomUUID().toString(), "SQL"), TYPE);
+	}
+
+	@Override
+	public void evalContent() {
+		page.runAction.run();
 	}
 
 	@Override
 	protected FormPage getPage() {
-		return new Page();
+		return page = new Page();
 	}
 
+	public void clearResults() {
+		page.resultText.setText("");
+	}
+	
 	@Override
 	public void doSave(IProgressMonitor monitor) {
 	}
@@ -61,6 +73,7 @@ public class SqlEditor extends SimpleFormEditor {
 
 		private Text resultText;
 		private StyledText queryText;
+		private RunAction runAction;
 
 		public Page() {
 			super(SqlEditor.this, "SqlEditorPage", "SQL Query Browser");
@@ -83,7 +96,7 @@ public class SqlEditor extends SimpleFormEditor {
 			toolkit.adapt(queryText);
 			UI.gridData(queryText, true, false).heightHint = 150;
 			queryText.addModifyListener(new SyntaxStyler(queryText));
-			Actions.bind(section, new RunAction());
+			Actions.bind(section, runAction = new RunAction());
 		}
 
 		private void createResultSection(Composite body, FormToolkit toolkit) {

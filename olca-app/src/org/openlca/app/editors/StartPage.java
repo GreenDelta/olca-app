@@ -1,5 +1,7 @@
 package org.openlca.app.editors;
 
+import java.util.UUID;
+
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
@@ -25,11 +27,11 @@ import netscape.javascript.JSObject;
 
 public class StartPage extends SimpleFormEditor {
 
-	public static String ID = "olca.StartPage";
+	public static String TYPE = "olca.StartPage";
 	private static Logger log = LoggerFactory.getLogger(StartPage.class);
 
 	public static void open() {
-		Editors.open(new DefaultInput(ID, M.Welcome), ID);
+		Editors.open(new DefaultInput(TYPE, UUID.randomUUID().toString(), M.Welcome), TYPE);
 	}
 
 	@Override

@@ -7,10 +7,12 @@ import org.openlca.util.Strings;
 
 public class DefaultInput implements IEditorInput {
 
+	public final String type;
 	public final String id;
 	private final String name;
 	
-	public DefaultInput(String id, String name) {
+	public DefaultInput(String type, String id, String name) {
+		this.type = type;
 		this.id = id;
 		this.name = name;
 	}

@@ -1,5 +1,7 @@
 package org.openlca.app.devtools.js;
 
+import java.util.UUID;
+
 import org.eclipse.ui.forms.editor.FormPage;
 import org.openlca.app.devtools.IScriptEditor;
 import org.openlca.app.devtools.ScriptEditorPage;
@@ -10,11 +12,11 @@ import org.openlca.app.util.Editors;
 
 public class JavaScriptEditor extends SimpleFormEditor implements IScriptEditor {
 
-	public static String ID = "JavaScriptEditor";
+	public static String TYPE = "JavaScriptEditor";
 	private Page page;
 
 	public static void open() {
-		Editors.open(new DefaultInput(ID, "JavaScript"), ID);
+		Editors.open(new DefaultInput(TYPE, UUID.randomUUID().toString(), "JavaScript"), TYPE);
 	}
 
 	@Override

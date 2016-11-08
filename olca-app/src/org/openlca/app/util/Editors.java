@@ -31,8 +31,8 @@ import org.slf4j.LoggerFactory;
 
 public class Editors {
 
-	private static String[] PREVENT_FROM_CLOSING = { SqlEditor.ID, PythonEditor.ID, JavaScriptEditor.ID, StartPage.ID,
-			LogFileEditor.ID };
+	private static String[] PREVENT_FROM_CLOSING = { SqlEditor.TYPE, PythonEditor.TYPE, JavaScriptEditor.TYPE,
+			StartPage.TYPE, LogFileEditor.TYPE };
 	private static Logger log = LoggerFactory.getLogger(Editors.class);
 
 	private Editors() {
@@ -58,19 +58,19 @@ public class Editors {
 	}
 
 	/**
-	 * Closes all editors (except StartPage)
+	 * Closes all editors (except start page, Log editor and script editors)
 	 */
 	public static void closeAll() {
 		try {
 			List<IEditorReference> rest = new ArrayList<>();
-			for (IEditorReference editor : getReferences()) {
-				if (editor.getEditorInput() instanceof DefaultInput) {
-					DefaultInput input = (DefaultInput) editor.getEditorInput();
+			for (IEditorReference ref : getReferences()) {
+				if (ref.getEditorInput() instanceof DefaultInput) {
+					DefaultInput input = (DefaultInput) ref.getEditorInput();
 					List<String> preventClosing = Arrays.asList(PREVENT_FROM_CLOSING);
-					if (preventClosing.contains(input.id))
+					if (preventClosing.contains(input.type))
 						continue;
 				}
-				rest.add(editor);
+				rest.add(ref);
 			}
 			IEditorReference[] restArray = rest.toArray(new IEditorReference[rest.size()]);
 			getActivePage().closeEditors(restArray, false);

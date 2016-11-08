@@ -1,5 +1,7 @@
 package org.openlca.app.devtools.python;
 
+import java.util.UUID;
+
 import org.eclipse.ui.forms.editor.FormPage;
 import org.openlca.app.App;
 import org.openlca.app.devtools.IScriptEditor;
@@ -11,11 +13,11 @@ import org.openlca.app.util.Editors;
 
 public class PythonEditor extends SimpleFormEditor implements IScriptEditor {
 
-	public static String ID = "PythonEditor";
+	public static String TYPE = "PythonEditor";
 	private Page page;
 
 	public static void open() {
-		Editors.open(new DefaultInput(ID, "Python"), ID);
+		Editors.open(new DefaultInput(TYPE, UUID.randomUUID().toString(), "Python"), TYPE);
 	}
 
 	@Override

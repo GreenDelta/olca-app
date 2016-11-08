@@ -3,6 +3,7 @@ package org.openlca.app.editors;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.UUID;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.SWT;
@@ -15,6 +16,8 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
 import org.openlca.app.logging.HtmlLogFile;
+import org.openlca.app.util.DefaultInput;
+import org.openlca.app.util.Editors;
 import org.openlca.app.util.UI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,8 +27,12 @@ import javafx.scene.web.WebEngine;
 
 public class LogFileEditor extends FormEditor {
 
-	public static final String ID = "editors.LogFileEditor";
+	public static final String TYPE = "editors.LogFileEditor";
 	private final Logger log = LoggerFactory.getLogger(getClass());
+
+	public static void open() {
+		Editors.open(new DefaultInput(TYPE, UUID.randomUUID().toString(), "Log file"), TYPE);
+	}
 
 	@Override
 	protected void addPages() {
