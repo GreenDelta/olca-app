@@ -42,13 +42,13 @@ public class InfoSection {
 		return setup.getAmount() + " " + setup.getUnit().getName() + " " + refFlowName;
 	}
 
-	private static void text(Composite comp, FormToolkit toolkit, String label, String val) {
+	static void text(Composite comp, FormToolkit toolkit, String label, String val) {
 		Text text = UI.formText(comp, toolkit, label);
 		text.setText(val);
 		text.setEditable(false);
 	}
 
-	private static void link(Composite parent, FormToolkit toolkit, String label, Object entity) {
+	static void link(Composite parent, FormToolkit toolkit, String label, Object entity) {
 		new Label(parent, SWT.NONE).setText(label);
 		ImageHyperlink link = new ImageHyperlink(parent, SWT.TOP);
 		link.setForeground(Colors.linkBlue());

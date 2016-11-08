@@ -1,7 +1,5 @@
 package org.openlca.app.results;
 
-import org.openlca.app.M;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -12,9 +10,11 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.M;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
@@ -40,30 +40,20 @@ public class DQInfoSection {
 	}
 
 	private void create(Composite parent) {
-		Composite client = UI.formSection(parent, toolkit, M.DataQuality);
-		createText(client, M.ProcessDataQualitySchema, dqResult.setup.processDqSystem);
-		createText(client, M.FlowDataQualitySchema, dqResult.setup.exchangeDqSystem);
-		createText(client, M.Aggregation, Labels.aggregationType(dqResult.setup.aggregationType));
-		createText(client, M.RoundingMode, Labels.roundingMode(dqResult.setup.roundingMode));
-		createText(client, M.NaValueHandling, Labels.processingType(dqResult.setup.processingType));
-		createStatisticsTree(client, M.ProcessDataQualityStatistics, true);
-		createStatisticsTree(client, M.FlowDataQualityStatistics, false);
+		Section section = UI.section(parent, toolkit, M.DataQuality);
+		UI.gridData(section, true, true);
+		Composite client = UI.sectionClient(section, toolkit);
+		UI.gridData(client, true, true);
+		InfoSection.link(client, toolkit, M.ProcessDataQualitySchema, dqResult.setup.processDqSystem);
+		InfoSection.link(client, toolkit, M.FlowDataQualitySchema, dqResult.setup.exchangeDqSystem);
+		InfoSection.text(client, toolkit, M.Aggregation, Labels.aggregationType(dqResult.setup.aggregationType));
+		InfoSection.text(client, toolkit, M.RoundingMode, Labels.roundingMode(dqResult.setup.roundingMode));
+		InfoSection.text(client, toolkit, M.NaValueHandling, Labels.processingType(dqResult.setup.processingType));
+		statisticsTree(client, M.ProcessDataQualityStatistics, true);
+		statisticsTree(client, M.FlowDataQualityStatistics, false);
 	}
 
-	private void createText(Composite parent, String label, DQSystem system) {
-		if (system == null)
-			createText(parent, label, M.NoDataQualitySystemSpecified);
-		else
-			createText(parent, label, system.getName());
-	}
-
-	private void createText(Composite parent, String label, String value) {
-		Text text = UI.formText(parent, label);
-		text.setText(value);
-		text.setEditable(false);
-	}
-
-	private void createStatisticsTree(Composite parent, String label, boolean forProcesses) {
+	private void statisticsTree(Composite parent, String label, boolean forProcesses) {
 		DQSystem system = forProcesses ? dqResult.setup.processDqSystem : dqResult.setup.exchangeDqSystem;
 		if (system == null)
 			return;
@@ -73,7 +63,7 @@ public class DQInfoSection {
 		TreeViewer viewer = Trees.createViewer(parent, headers);
 		viewer.setContentProvider(new ContentProvider(forProcesses));
 		viewer.setLabelProvider(new LabelProvider(forProcesses));
-		UI.gridData(viewer.getTree(), true, true).horizontalSpan = 2;
+		((GridData) viewer.getTree().getLayoutData()).horizontalSpan = 2;
 		viewer.setInput(system.indicators);
 		Trees.bindColumnWidths(viewer.getTree(), 0.6, 0.4);
 	}
