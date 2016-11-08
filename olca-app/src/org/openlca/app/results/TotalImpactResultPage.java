@@ -71,7 +71,8 @@ public class TotalImpactResultPage extends FormPage {
 	}
 
 	private void createOptions(Composite parent) {
-		Button button = UI.formCheckBox(parent, toolkit, M.SubgroupByProcesses);
+		Composite container = UI.formComposite(parent, toolkit);
+		Button button = UI.formCheckBox(container, toolkit, M.SubgroupByProcesses);
 		button.setSelection(true);
 		Controls.onSelect(button, (e) -> {
 			subgroupByProcesses = button.getSelection();
