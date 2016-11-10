@@ -188,6 +188,7 @@ public class M extends NLS {
 	public static String DataGenerator;
 	public static String DataQuality;
 	public static String DataQualityEntry;
+	public static String DataQualityProperties;
 	public static String DataQualitySystem;
 	public static String DataQualitySystems;
 	public static String DataSelection;
@@ -607,6 +608,7 @@ public class M extends NLS {
 	public static String PleaseEnterAName;
 	public static String PleaseEnterANewName;
 	public static String PleaseEnterTheNameOfTheNewCategory;
+	public static String PleaseSelectThePropertiesForTheDataQualityAssessment;
 	public static String PleaseSpecifyHost;
 	public static String PleaseSpecifyPortNumber;
 	public static String PleaseSpecifyUser;
