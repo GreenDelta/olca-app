@@ -1,151 +1,162 @@
 package org.openlca.app.results.contributions;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Stack;
 
-import org.eclipse.birt.chart.model.Chart;
-import org.eclipse.jface.resource.ImageRegistry;
+import javafx.embed.swt.FXCanvas;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.control.Tooltip;
+
+import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.ImageHyperlink;
-import org.openlca.app.FaviColor;
-import org.openlca.app.M;
-import org.openlca.app.components.charts.ChartCanvas;
-import org.openlca.app.util.Colors;
-import org.openlca.app.util.Labels;
-import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
-import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.results.ContributionItem;
-import org.openlca.core.results.ProcessGrouping;
 
-/**
- * A pie chart for showing a set of result contributions.
- */
-public class ContributionChart {
+public class ContributionChart extends BarChart<String, Number> {
 
-	private ImageRegistry imageRegistry = new ImageRegistry();
-	private Stack<ImageHyperlink> createdLinks = new Stack<>();
-	private ChartCanvas chartCanvas;
-	private Composite linkComposite;
-	private String unit;
+	private ChartLegend legend;
 
-	public ContributionChart(Composite parent, FormToolkit toolkit) {
-		parent.addDisposeListener(new Dispose());
-		initContent(parent, toolkit);
+	public static ContributionChart create(Composite parent, FormToolkit toolkit) {
+		return create(parent, toolkit, 550, 250);
 	}
 
-	private void initContent(Composite parent, FormToolkit toolkit) {
-		parent.setLayout(new FillLayout());
-		Composite composite = toolkit.createComposite(parent);
-		UI.gridLayout(composite, 2);
-		chartCanvas = new ChartCanvas(composite, SWT.NONE);
-		GridData gridData = UI.gridData(chartCanvas, false, false);
-		gridData.heightHint = 250;
-		gridData.widthHint = 300;
-		linkComposite = toolkit.createComposite(composite);
-		UI.gridData(linkComposite, true, true);
-		UI.gridLayout(linkComposite, 1).verticalSpacing = 0;
+	public static ContributionChart create(Composite parent, FormToolkit toolkit, double width, double height) {
+		Composite container = UI.formComposite(parent, toolkit);
+		UI.gridLayout(container, 2);
+		UI.gridData(container, true, true);
+		ContributionChart chart = new ContributionChart(width, height);
+		FXCanvas canvas = new FXCanvas(container, SWT.NONE);
+		Scene scene = new Scene(new Group(chart));
+		String cssPath = ContributionChart.class.getPackage().getName().replace('.', '/');
+		scene.getStylesheets().add("/" + cssPath + "/styles.css");
+		canvas.setScene(scene);
+		chart.legend = new ChartLegend(container);
+		return chart;
 	}
 
-	public void setData(List<ContributionItem<?>> data, String unit) {
-		this.unit = unit;
-		setData(data);
+	public void setLabel(ILabelProvider label) {
+		legend.label = label;
 	}
 
-	public void setData(List<ContributionItem<?>> data) {
-		if (data == null)
-			return;
-		while (!createdLinks.isEmpty())
-			createdLinks.pop().dispose();
-		UI.gridLayout(linkComposite, 1);
-		boolean hasRest = hasRest(data);
-		createChart(data, hasRest);
-		createLinks(data);
-		linkComposite.layout(true);
+	private ContributionChart(double width, double height) {
+		super(new CategoryAxis(), new NumberAxis());
+		setLegendVisible(false);
+		getXAxis().setTickMarkVisible(false);
+		setAnimated(false);
+		setPrefSize(width, height);
 	}
 
-	private boolean hasRest(List<ContributionItem<?>> data) {
-		for (ContributionItem<?> item : data) {
-			if (item.rest)
-				return true;
+	public void setData(List<ContributionItem<?>> items, String unit) {
+		getData().clear();
+		Collections.sort(items, new Comparator(true));
+		List<ContributionItem<?>> top = getTop(items);
+		for (ContributionItem<?> item : top) {
+			addData(getLabel(item), item.amount);
 		}
-		return false;
+		double others = 0;
+		if (items.size() > 6) {
+			for (int i = 5; i < items.size(); i++) {
+				others += items.get(i).amount;
+			}
+			Data<String, Number> data = addData("Others", others);
+			data.getNode().getStyleClass().add("others");
+		}
+		updateYAxis(top, others);
+		int bars = items.size() > 5 ? 6 : items.size();
+		setBarGap(getGap(bars));
+		legend.setData(top, others, unit);
 	}
 
-	private void createChart(List<ContributionItem<?>> data, boolean withRest) {
-		List<Double> vals = new ArrayList<>();
-		for (ContributionItem<?> item : data)
-			vals.add(item.amount);
-		Chart chart = new ContributionChartCreator(vals).createChart(withRest);
-		chartCanvas.setChart(chart);
-		chartCanvas.redraw();
+	private List<ContributionItem<?>> getTop(List<ContributionItem<?>> items) {
+		List<ContributionItem<?>> top = items.size() <= 6 ? items : items.subList(0, items.size() == 6 ? 6 : 5);
+		Collections.sort(top, new Comparator(false));
+		return top;
 	}
 
-	private void createLinks(List<ContributionItem<?>> data) {
-		int colorIndex = 0;
-		for (ContributionItem<?> item : data) {
-			ImageHyperlink link = new ImageHyperlink(linkComposite, SWT.TOP);
-			link.setText(getLinkText(item));
-			if (item.rest)
-				link.setImage(getLinkImage(-1));
-			else
-				link.setImage(getLinkImage(colorIndex++));
-			createdLinks.push(link);
+	private double getGap(int bars) {
+		switch (bars) {
+		case 1:
+			return 255;
+		case 2:
+			return 150;
+		case 3:
+			return 100;
+		case 4:
+			return 70;
+		case 5:
+			return 55;
+		default:
+			return 40;
 		}
 	}
 
-	private String getLinkText(ContributionItem<?> item) {
-		String number = Numbers.format(item.amount, 3);
-		if (unit != null)
-			number += " " + unit;
-		String text = "";
-		Object content = item.item;
-		// TODO: it would be better if a label provider could be set here
-		if (content instanceof BaseDescriptor)
-			text = Labels.getDisplayName((BaseDescriptor) content);
-		else if (content instanceof RootEntity)
-			text = Labels.getDisplayName((RootEntity) content);
-		else if (content instanceof ProcessGrouping)
-			text = ((ProcessGrouping) content).name;
-		else if (item.rest)
-			text = M.Other;
-		return number + ": " + text;
+	private Data<String, Number> addData(String label, double amount) {
+		Series<String, Number> series = new Series<>();
+		series.setName(label);
+		Data<String, Number> data = new Data<>("", amount);
+		series.getData().add(data);
+		getData().add(series);
+		Tooltip tooltip = new Tooltip();
+		tooltip.setText(label + "\n" + data.getYValue().toString());
+		Tooltip.install(data.getNode(), tooltip);
+		return data;
 	}
 
-	private Image getLinkImage(int index) {
-		String key = Integer.toString(index);
-		Image image = imageRegistry.get(key);
-		if (image == null) {
-			image = new Image(Display.getCurrent(), 30, 15);
-			GC gc = new GC(image);
-			if (index != -1)
-				gc.setBackground(Colors.get(FaviColor
-						.getRgbForChart(index)));
-			else
-				gc.setBackground(Colors.gray());
-			gc.fillRectangle(5, 5, 25, 5);
-			gc.dispose();
-			imageRegistry.put(key, image);
+	private static String getLabel(ContributionItem<?> item) {
+		if (item.item instanceof BaseDescriptor)
+			return ((BaseDescriptor) item.item).getName();
+		return null;
+	}
+
+	private void updateYAxis(List<ContributionItem<?>> top, double others) {
+		double min = others < 0 ? others : 0;
+		double max = others > 0 ? others : 0;
+		for (ContributionItem<?> item : top) {
+			min = Math.min(min, item.amount);
+			max = Math.max(max, item.amount);
 		}
-		return image;
+		min = Rounding.apply(min);
+		max = Rounding.apply(max);
+		double bound = Math.max(-min, max);
+		NumberAxis yAxis = (NumberAxis) getYAxis();
+		yAxis.setAutoRanging(false);
+		yAxis.setLowerBound(min < 0 ? -bound : 0);
+		yAxis.setUpperBound(bound);
+		yAxis.setTickUnit(bound / (min < 0 ? 2 : 4));
 	}
 
-	private class Dispose implements DisposeListener {
+	private class Comparator implements java.util.Comparator<ContributionItem<?>> {
+
+		private final boolean abs;
+
+		private Comparator(boolean abs) {
+			this.abs = abs;
+		}
+
 		@Override
-		public void widgetDisposed(DisposeEvent e) {
-			imageRegistry.dispose();
+		public int compare(ContributionItem<?> o1, ContributionItem<?> o2) {
+			double a1 = o1.amount;
+			double a2 = o2.amount;
+			if (abs) {
+				a1 = Math.abs(a1);
+				a2 = Math.abs(a2);
+			}
+			if (a1 == a2)
+				return 0;
+			if (a1 == 0d)
+				return 1;
+			if (a2 == 0d)
+				return -1;
+			return -Double.compare(a1, a2);
 		}
+
 	}
 
 }

@@ -1,7 +1,6 @@
 package org.openlca.app.results.contributions;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 import org.eclipse.nebula.jface.tablecomboviewer.TableComboViewer;
@@ -23,7 +22,6 @@ import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.ContributionItem;
 import org.openlca.core.results.ContributionResultProvider;
 import org.openlca.core.results.ContributionSet;
-import org.openlca.core.results.Contributions;
 
 /**
  * Chart section of the first page in the analysis editor. Can contain flow or
@@ -32,9 +30,6 @@ import org.openlca.core.results.Contributions;
 public class ContributionChartSection {
 
 	private boolean forFlows = true;
-
-	private int maxItems = 5;
-
 	private String sectionTitle = "";
 	private String selectionName = "";
 
@@ -42,26 +37,21 @@ public class ContributionChartSection {
 	private AbstractViewer<?, TableComboViewer> itemViewer;
 	private ContributionChart chart;
 
-	public static ContributionChartSection forFlows(
-			ContributionResultProvider<?> provider) {
-		ContributionChartSection section = new ContributionChartSection(
-				provider, true);
+	public static ContributionChartSection forFlows(ContributionResultProvider<?> provider) {
+		ContributionChartSection section = new ContributionChartSection(provider, true);
 		section.sectionTitle = M.DirectContributionsFlowResultsOverview;
 		section.selectionName = M.Flow;
 		return section;
 	}
 
-	public static ContributionChartSection forImpacts(
-			ContributionResultProvider<?> provider) {
-		ContributionChartSection section = new ContributionChartSection(
-				provider, false);
+	public static ContributionChartSection forImpacts(ContributionResultProvider<?> provider) {
+		ContributionChartSection section = new ContributionChartSection(provider, false);
 		section.sectionTitle = M.DirectContributionsImpactCategoryResultsOverview;
 		section.selectionName = M.ImpactCategory;
 		return section;
 	}
 
-	private ContributionChartSection(ContributionResultProvider<?> provider,
-			boolean forFlows) {
+	private ContributionChartSection(ContributionResultProvider<?> provider, boolean forFlows) {
 		this.provider = provider;
 		this.forFlows = forFlows;
 	}
@@ -73,9 +63,7 @@ public class ContributionChartSection {
 		Composite header = toolkit.createComposite(sectionClient);
 		UI.gridLayout(header, 2);
 		createItemCombo(toolkit, header);
-		Composite chartComposite = toolkit.createComposite(sectionClient);
-		UI.gridData(chartComposite, true, false);
-		chart = new ContributionChart(chartComposite, toolkit);
+		chart = ContributionChart.create(sectionClient, toolkit);
 		Actions.bind(section, new ImageExportAction(sectionClient));
 		refresh();
 	}
@@ -101,8 +89,7 @@ public class ContributionChartSection {
 	private void createImpactViewer(Composite header) {
 		ImpactCategoryViewer viewer = new ImpactCategoryViewer(header);
 		Set<ImpactCategoryDescriptor> set = provider.getImpactDescriptors();
-		ImpactCategoryDescriptor[] impacts = set
-				.toArray(new ImpactCategoryDescriptor[set.size()]);
+		ImpactCategoryDescriptor[] impacts = set.toArray(new ImpactCategoryDescriptor[set.size()]);
 		viewer.setInput(impacts);
 		viewer.addSelectionChangedListener((selection) -> refresh());
 		this.itemViewer = viewer;
@@ -125,10 +112,6 @@ public class ContributionChartSection {
 		}
 		if (contributionSet == null)
 			return;
-		List<ContributionItem<ProcessDescriptor>> items = Contributions
-				.topWithRest(contributionSet.contributions, maxItems);
-		List<ContributionItem<?>> chartData = new ArrayList<>();
-		chartData.addAll(items);
-		chart.setData(chartData, unit);
+		chart.setData(new ArrayList<ContributionItem<?>>(contributionSet.contributions), unit);
 	}
 }

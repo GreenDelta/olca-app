@@ -17,6 +17,7 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.results.contributions.ContributionChart;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
+import org.openlca.app.viewers.BaseLabelProvider;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.app.viewers.combo.FlowViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
@@ -43,8 +44,7 @@ class GroupResultSection {
 	private ContributionChart chart;
 	private GroupResultTable table;
 
-	public GroupResultSection(List<ProcessGrouping> groups,
-			ContributionResultProvider<?> result) {
+	public GroupResultSection(List<ProcessGrouping> groups, ContributionResultProvider<?> result) {
 		this.groups = groups;
 		this.result = result;
 	}
@@ -66,8 +66,7 @@ class GroupResultSection {
 
 	private void updateResults(Object selection, String unit) {
 		if (selection != null && table != null) {
-			List<ContributionItem<ProcessGrouping>> items = calculate(
-					selection);
+			List<ContributionItem<ProcessGrouping>> items = calculate(selection);
 			Contributions.sortDescending(items);
 			table.setInput(items, unit);
 			List<ContributionItem<?>> chartData = new ArrayList<>();
@@ -76,16 +75,12 @@ class GroupResultSection {
 		}
 	}
 
-	private List<ContributionItem<ProcessGrouping>> calculate(
-			Object selection) {
-		GroupingContribution calculator = new GroupingContribution(result,
-				groups);
+	private List<ContributionItem<ProcessGrouping>> calculate(Object selection) {
+		GroupingContribution calculator = new GroupingContribution(result, groups);
 		if (selection instanceof FlowDescriptor)
-			return calculator
-					.calculate((FlowDescriptor) selection).contributions;
+			return calculator.calculate((FlowDescriptor) selection).contributions;
 		if (selection instanceof ImpactCategoryDescriptor)
-			return calculator.calculate(
-					(ImpactCategoryDescriptor) selection).contributions;
+			return calculator.calculate((ImpactCategoryDescriptor) selection).contributions;
 		return Collections.emptyList();
 	}
 
@@ -96,14 +91,14 @@ class GroupResultSection {
 		UI.gridLayout(client, 1);
 		createCombos(toolkit, client);
 		table = new GroupResultTable(client);
-		createChartSection(client, toolkit);
+		chart = ContributionChart.create(client, toolkit, 700, 300);
+		chart.setLabel(new BaseLabelProvider() {
+			@Override
+			public String getText(Object element) {
+				return ((ProcessGrouping) element).name;
+			}
+		});
 		update();
-	}
-
-	private void createChartSection(Composite parent, FormToolkit toolkit) {
-		Composite composite = toolkit.createComposite(parent);
-		UI.gridData(composite, true, true);
-		chart = new ContributionChart(composite, toolkit);
 	}
 
 	private void createCombos(FormToolkit toolkit, Composite client) {
@@ -116,8 +111,7 @@ class GroupResultSection {
 	}
 
 	private void createFlowViewer(FormToolkit toolkit, Composite parent) {
-		Button flowsCheck = toolkit.createButton(parent, M.Flows,
-				SWT.RADIO);
+		Button flowsCheck = toolkit.createButton(parent, M.Flows, SWT.RADIO);
 		flowsCheck.setSelection(true);
 		flowViewer = new FlowViewer(parent, cache);
 		Set<FlowDescriptor> flows = result.getFlowDescriptors();
@@ -129,8 +123,7 @@ class GroupResultSection {
 	}
 
 	private void createImpact(FormToolkit toolkit, Composite parent) {
-		Button impactCheck = toolkit.createButton(parent,
-				M.ImpactCategories, SWT.RADIO);
+		Button impactCheck = toolkit.createButton(parent, M.ImpactCategories, SWT.RADIO);
 		impactViewer = new ImpactCategoryViewer(parent);
 		impactViewer.setEnabled(false);
 		Set<ImpactCategoryDescriptor> impacts = result.getImpactDescriptors();
@@ -147,8 +140,7 @@ class GroupResultSection {
 		private Button check;
 		private int type;
 
-		public ResultTypeCheck(AbstractComboViewer<?> viewer, Button check,
-				int type) {
+		public ResultTypeCheck(AbstractComboViewer<?> viewer, Button check, int type) {
 			this.viewer = viewer;
 			this.check = check;
 			this.type = type;
