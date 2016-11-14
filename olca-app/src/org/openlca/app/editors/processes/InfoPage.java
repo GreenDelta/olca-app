@@ -31,6 +31,7 @@ import org.openlca.app.editors.processes.data_quality.DataQualityShell;
 import org.openlca.app.editors.processes.kml.EditorHandler;
 import org.openlca.app.editors.processes.kml.KmlUtil;
 import org.openlca.app.editors.processes.kml.MapEditor;
+import org.openlca.app.navigation.Navigator;
 import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.images.Overlay;
@@ -287,6 +288,7 @@ class InfoPage extends ModelPage<Process> {
 			locationViewer.setInput(Database.get());
 			locationViewer.select(location);
 			kmlLink.setText(getKmlDisplayText());
+			Navigator.refresh();
 			return true;
 		}
 
