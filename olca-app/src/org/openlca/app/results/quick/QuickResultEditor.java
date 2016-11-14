@@ -39,11 +39,11 @@ public class QuickResultEditor extends FormEditor implements IResultEditor<Contr
 		super.init(site, editorInput);
 		try {
 			ResultEditorInput input = (ResultEditorInput) editorInput;
-			setup = Cache.getAppCache().remove(input.getSetupKey(),
+			setup = Cache.getAppCache().remove(input.setupKey,
 					CalculationSetup.class);
 			result = Cache.getAppCache().remove(
-					input.getResultKey(), ContributionResultProvider.class);
-			String dqResultKey = input.getDqResultKey();
+					input.resultKey, ContributionResultProvider.class);
+			String dqResultKey = input.dqResultKey;
 			if (dqResultKey != null)
 				dqResult = Cache.getAppCache().remove(dqResultKey, DQResult.class);
 		} catch (Exception e) {
@@ -66,7 +66,7 @@ public class QuickResultEditor extends FormEditor implements IResultEditor<Contr
 	public DQResult getDqResult() {
 		return dqResult;
 	}
-	
+
 	@Override
 	protected void addPages() {
 		try {
@@ -89,7 +89,7 @@ public class QuickResultEditor extends FormEditor implements IResultEditor<Contr
 		FlowIndex flowIdx = cr.flowIndex;
 		int row = cr.impactIndex.getIndex(impactCategory.getId());
 		int col = flowIdx.getIndex(flow.getId());
-		double value = cr.impactFactors.getEntry(row, col);
+		double value = cr.impactFactors.get(row, col);
 		if (flowIdx.isInput(flow.getId())) {
 			// characterization factors for input flows are negative in the
 			// matrix. A simple abs() is not correct because the original

@@ -94,17 +94,12 @@ class CalculationWizard extends Wizard {
 		}
 	}
 
-	private ResultEditorInput getEditorInput(Object result, CalculationSetup setup, ParameterSet parameterSet,
-			DQResult dqResult) {
-		String resultKey = Cache.getAppCache().put(result);
-		String setupKey = Cache.getAppCache().put(setup);
-		String dqResultKey = null;
-		if (dqResult != null)
-			dqResultKey = Cache.getAppCache().put(dqResult);
-		String parameterSetKey = null;
-		if (parameterSet != null)
-			parameterSetKey = Cache.getAppCache().put(parameterSet);
-		return new ResultEditorInput(setup.productSystem.getId(), resultKey, setupKey, parameterSetKey, dqResultKey);
+	private ResultEditorInput getEditorInput(Object result, CalculationSetup setup,
+			ParameterSet parameterSet, DQResult dqResult) {
+		ResultEditorInput input = ResultEditorInput.create(setup, result)
+				.with(dqResult)
+				.with(parameterSet);
+		return input;
 	}
 
 	private void saveDefaults(CalculationSetup setup, DQCalculationSetup dqSetup, CalculationType type) {
