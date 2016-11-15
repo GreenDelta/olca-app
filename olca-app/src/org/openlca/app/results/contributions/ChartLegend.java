@@ -6,23 +6,29 @@ import java.util.Stack;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
+import org.openlca.app.App;
 import org.openlca.app.FaviColor;
 import org.openlca.app.M;
 import org.openlca.app.util.Colors;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.BaseLabelProvider;
+import org.openlca.core.model.CategorizedEntity;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.results.ContributionItem;
 
 class ChartLegend {
 
 	private ImageRegistry imageRegistry = new ImageRegistry();
-	private Stack<ImageHyperlink> createdLinks = new Stack<>();
+	private Stack<Widget> createdLinks = new Stack<>();
 	private Composite composite;
 	ILabelProvider label = new BaseLabelProvider();
 
@@ -43,29 +49,43 @@ class ChartLegend {
 				continue;
 			}
 			String text = label.getText(item.item);
-			link(getLinkText(text, item.amount, unit), colorIndex++);
+			element(getText(text, item.amount, unit), item.item, colorIndex++);
 		}
 		if (rest != 0d) {
-			link(getLinkText(M.Other, rest, unit), -1);
+			element(getText(M.Other, rest, unit), null, -1);
 		}
 		composite.layout(true);
 	}
 
-	private void link(String text, int colorIndex) {
-		ImageHyperlink link = new ImageHyperlink(composite, SWT.TOP);
-		link.setText(text);
-		link.setImage(getLinkImage(colorIndex));
-		createdLinks.push(link);
+	private void element(String text, Object model, int colorIndex) {
+		if (model instanceof CategorizedDescriptor || model instanceof CategorizedEntity) {
+			ImageHyperlink link = new ImageHyperlink(composite, SWT.TOP);
+			link.setText(text);
+			link.setImage(getImage(colorIndex));
+			Controls.onClick(link, (e) -> {
+				if (model instanceof CategorizedDescriptor) {
+					App.openEditor((CategorizedDescriptor) model);
+				} else if (model instanceof CategorizedEntity) {
+					App.openEditor((CategorizedEntity) model);
+				}
+			});
+			createdLinks.push(link);
+		} else {
+			CLabel label = new CLabel(composite, SWT.TOP);
+			label.setImage(getImage(colorIndex));
+			label.setText(text);
+			createdLinks.push(label);
+		}
 	}
 
-	private String getLinkText(String text, double amount, String unit) {
+	private String getText(String text, double amount, String unit) {
 		String number = Numbers.format(amount, 3);
 		if (unit != null)
 			number += " " + unit;
 		return number + ": " + text;
 	}
 
-	private Image getLinkImage(int index) {
+	private Image getImage(int index) {
 		String key = Integer.toString(index);
 		Image image = imageRegistry.get(key);
 		if (image != null)
