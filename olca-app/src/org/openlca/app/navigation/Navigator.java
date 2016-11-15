@@ -28,7 +28,6 @@ import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.navigation.actions.DatabaseActivateAction;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.viewers.Viewers;
-import org.openlca.core.model.descriptors.BaseDescriptor;
 
 import com.google.common.base.Objects;
 
@@ -42,7 +41,7 @@ public class Navigator extends CommonNavigator {
 		root = new NavigationRoot();
 		return root;
 	}
-	
+
 	@Override
 	protected CommonViewer createCommonViewer(Composite aParent) {
 		CommonViewer viewer = super.createCommonViewer(aParent);
@@ -67,13 +66,13 @@ public class Navigator extends CommonNavigator {
 		Object element = Viewers.getFirst(selection);
 		if (element instanceof ModelElement) {
 			ModelElement e = (ModelElement) element;
-			BaseDescriptor d = e.getContent();
-			App.openEditor(d);
+			App.openEditor(e.getContent());
 		} else if (element instanceof DatabaseElement) {
 			DatabaseElement e = (DatabaseElement) element;
 			IDatabaseConfiguration config = e.getContent();
-			if (config != null && !Database.isActive(config))
+			if (config != null && !Database.isActive(config)) {
 				new DatabaseActivateAction(config).run();
+			}
 		}
 	}
 

@@ -56,7 +56,7 @@ public class JsonLoader {
 	private CategorizedEntity load(Dataset dataset) {
 		ModelType type = dataset.type;
 		String refId = dataset.refId;
-		return Database.createRootDao(type).getForRefId(refId);
+		return Database.createCategorizedDao(type).getForRefId(refId);
 	}
 
 	public JsonObject getRemoteJson(Dataset dataset) {

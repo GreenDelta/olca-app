@@ -250,7 +250,7 @@ public class CopyPaste {
 		CategorizedDescriptor entity = element.getContent();
 		Category category = getCategory(categoryElement);
 		Optional<Category> parent = Optional.fromNullable(category);
-		Database.createRootDao(entity.getModelType()).updateCategory(entity,
+		Database.createCategorizedDao(entity.getModelType()).updateCategory(entity,
 				parent);
 		// need to notifiy index updater manually here
 		Dataset dataset = CloudUtil.toDataset(entity, category);
@@ -287,7 +287,7 @@ public class CopyPaste {
 
 	private static CategorizedEntity copy(ModelElement element) {
 		CategorizedDescriptor descriptor = element.getContent();
-		CategorizedEntityDao<?, ?> dao = Database.createRootDao(descriptor
+		CategorizedEntityDao<?, ?> dao = Database.createCategorizedDao(descriptor
 				.getModelType());
 		CategorizedEntity entity = dao.getForId(descriptor.getId());
 		CategorizedEntity copy = cloneIt(entity);

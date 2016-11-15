@@ -176,7 +176,7 @@ public class Database {
 		return database.createDao(clazz);
 	}
 
-	public static CategorizedEntityDao<?, ?> createRootDao(ModelType type) {
+	public static CategorizedEntityDao<?, ?> createCategorizedDao(ModelType type) {
 		if (database == null)
 			return null;
 		return Daos.createCategorizedDao(database, type);

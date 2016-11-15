@@ -47,7 +47,7 @@ public class ModelTypeElement extends NavigationElement<ModelType> {
 	private void addModelElements(ModelType type,
 			List<INavigationElement<?>> elements) {
 		try {
-			CategorizedEntityDao<?, ?> entityDao = Database.createRootDao(type);
+			CategorizedEntityDao<?, ?> entityDao = Database.createCategorizedDao(type);
 			if (entityDao == null)
 				return;
 			Optional<Category> nil = Optional.absent();

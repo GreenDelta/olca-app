@@ -23,7 +23,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.util.UIFactory;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -162,8 +162,8 @@ public abstract class ModelPage<T extends CategorizedEntity> extends FormPage {
 		public void linkActivated(HyperlinkEvent e) {
 			if (model instanceof CategorizedEntity)
 				App.openEditor((CategorizedEntity) model);
-			else if (model instanceof BaseDescriptor)
-				App.openEditor((BaseDescriptor) model);
+			else if (model instanceof CategorizedDescriptor)
+				App.openEditor((CategorizedDescriptor) model);
 		}
 
 	}

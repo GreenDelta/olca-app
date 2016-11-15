@@ -30,7 +30,6 @@ import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.references.IReferenceSearch.Reference;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Parameter;
-import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
 public class ValidationView extends ViewPart {
@@ -55,13 +54,11 @@ public class ValidationView extends ViewPart {
 		viewer = Trees.createViewer(parent, columnHeaders, new StatusLabel());
 		viewer.setContentProvider(new ContentProvider());
 		viewer.addDoubleClickListener((e) -> {
-			Object element = Viewers.getFirst(e.getSelection());
-			if (element == null || element instanceof StatusList)
+			Object el = Viewers.getFirst(e.getSelection());
+			if (el == null || el instanceof StatusList)
 				return;
-			ModelStatus status = element instanceof ModelStatus ? (ModelStatus) element
-					: ((StatusEntry) element).status;
-			BaseDescriptor descriptor = Database.createRootDao(status.modelType).getDescriptor(status.id);
-			App.openEditor(descriptor);
+			ModelStatus status = el instanceof ModelStatus ? (ModelStatus) el : ((StatusEntry) el).status;
+			App.openEditor(Database.createCategorizedDao(status.modelType).getDescriptor(status.id));
 		});
 		Trees.bindColumnWidths(viewer.getTree(), 0.5, 0.5);
 	}
@@ -191,7 +188,7 @@ public class ValidationView extends ViewPart {
 		}
 
 		private String getText(ModelStatus status, int column) {
-			CategorizedDescriptor descriptor = Database.createRootDao(status.modelType).getDescriptor(status.id);
+			CategorizedDescriptor descriptor = Database.createCategorizedDao(status.modelType).getDescriptor(status.id);
 			Category category = null;
 			if (descriptor.getCategory() != null)
 				category = new CategoryDao(Database.get()).getForId(descriptor.getCategory());

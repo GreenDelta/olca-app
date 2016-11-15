@@ -3,6 +3,8 @@ package org.openlca.app.editors;
 import java.util.Collections;
 import java.util.List;
 
+import javafx.scene.web.WebEngine;
+
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
@@ -37,8 +39,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-
-import javafx.scene.web.WebEngine;
 
 /**
  * View of usages of a model entity in other entities.
@@ -127,8 +127,8 @@ public class UsageView extends SimpleFormEditor {
 			log.trace("open model: json={}", json);
 			try {
 				BaseDescriptor descriptor = getDescriptor(json);
-				if (descriptor != null)
-					App.openEditor(descriptor);
+				if (descriptor instanceof CategorizedDescriptor)
+					App.openEditor((CategorizedDescriptor) descriptor);
 			} catch (Exception e) {
 				log.error("Failed to open model from usage page", e);
 			}
@@ -136,8 +136,7 @@ public class UsageView extends SimpleFormEditor {
 
 		private BaseDescriptor getDescriptor(String json) {
 			Gson gson = new Gson();
-			BaseDescriptor descriptor = gson.fromJson(json,
-					BaseDescriptor.class);
+			BaseDescriptor descriptor = gson.fromJson(json, BaseDescriptor.class);
 			if (descriptor == null || descriptor.getModelType() == null)
 				return descriptor;
 			// load the descriptor specific attributes for the given model

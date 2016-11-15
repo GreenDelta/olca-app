@@ -259,7 +259,7 @@ class CloudCommitAction extends Action implements INavigationAction {
 				} else {
 					ModelType type = change.getDataset().type;
 					String refId = change.getDataset().refId;
-					commit.put(Database.createRootDao(type).getForRefId(refId));
+					commit.put(Database.createCategorizedDao(type).getForRefId(refId));
 				}
 		}
 

@@ -146,8 +146,7 @@ public class SearchResultView extends SimpleFormEditor {
 			}
 		}
 
-		private void renderDescription(FormToolkit tk, BaseDescriptor d,
-				Composite comp) {
+		private void renderDescription(FormToolkit tk, BaseDescriptor d, Composite comp) {
 			String text = Strings.cut(Labels.getDisplayInfoText(d), 400);
 			if (text != null && !text.isEmpty()) {
 				Label label = tk.createLabel(comp, text, SWT.WRAP);
@@ -155,8 +154,7 @@ public class SearchResultView extends SimpleFormEditor {
 			}
 		}
 
-		private void renderCategory(FormToolkit tk, BaseDescriptor d,
-				Composite comp) {
+		private void renderCategory(FormToolkit tk, BaseDescriptor d, Composite comp) {
 			if (!(d instanceof CategorizedDescriptor))
 				return;
 			CategorizedDescriptor cd = (CategorizedDescriptor) d;
@@ -181,8 +179,8 @@ public class SearchResultView extends SimpleFormEditor {
 				CategoryDescriptor d = (CategoryDescriptor) data;
 				Category c = Cache.getEntityCache().get(Category.class, d.getId());
 				Navigator.select(c);
-			} else if (data instanceof BaseDescriptor) {
-				App.openEditor((BaseDescriptor) data);
+			} else if (data instanceof CategorizedDescriptor) {
+				App.openEditor((CategorizedDescriptor) data);
 			}
 		}
 	}

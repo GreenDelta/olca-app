@@ -19,6 +19,7 @@ import org.openlca.core.math.JavaSolver;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.Descriptors;
 import org.openlca.eigen.NativeLibrary;
 import org.openlca.eigen.solvers.BalancedSolver;
@@ -84,11 +85,10 @@ public class App {
 	}
 
 	public static void openEditor(CategorizedEntity model) {
-		BaseDescriptor descriptor = Descriptors.toDescriptor(model);
-		openEditor(descriptor);
+		openEditor(Descriptors.toDescriptor(model));
 	}
 
-	public static void openEditor(BaseDescriptor d) {
+	public static void openEditor(CategorizedDescriptor d) {
 		if (d == null) {
 			log.error("model is null, could not open editor");
 			return;

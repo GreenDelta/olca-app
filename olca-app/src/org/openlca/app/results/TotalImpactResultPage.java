@@ -205,7 +205,7 @@ public class TotalImpactResultPage extends FormPage {
 				}
 			} else {
 				for (FlowDescriptor flow : result.getFlowDescriptors()) {
-					// process will be null in case of subgroupByProcesses=true
+					// process will be null in case of subgroupByProcesses=false
 					Item child = new Item(parent.impact, parent.process, flow);
 					if (child.result() != 0)
 						children.add(child);

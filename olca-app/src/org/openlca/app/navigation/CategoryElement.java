@@ -42,7 +42,7 @@ public class CategoryElement extends NavigationElement<Category> {
 	private void addModelElements(Category category,
 			List<INavigationElement<?>> list) {
 		try {
-			CategorizedEntityDao<?, ?> dao = Database.createRootDao(category
+			CategorizedEntityDao<?, ?> dao = Database.createCategorizedDao(category
 					.getModelType());
 			if (dao == null)
 				return;
