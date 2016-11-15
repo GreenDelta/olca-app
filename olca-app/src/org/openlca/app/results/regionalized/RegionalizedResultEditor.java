@@ -68,23 +68,23 @@ public class RegionalizedResultEditor extends FormEditor implements IResultEdito
 	public DQResult getDqResult() {
 		return dqResult;
 	}
-	
+
 	@Override
 	public void init(IEditorSite site, IEditorInput editorInput)
 			throws PartInitException {
 		super.init(site, editorInput);
 		try {
 			ResultEditorInput input = (ResultEditorInput) editorInput;
-			setup = Cache.getAppCache().remove(input.getSetupKey(),
+			setup = Cache.getAppCache().remove(input.setupKey,
 					CalculationSetup.class);
-			result = Cache.getAppCache().remove(input.getResultKey(),
+			result = Cache.getAppCache().remove(input.resultKey,
 					RegionalizedResultProvider.class);
 			impactCategoryDao = new ImpactCategoryDao(Database.get());
 			ParameterSet parameterSet = Cache.getAppCache().remove(
-					input.getParameterSetKey(), ParameterSet.class);
+					input.parameterSetKey, ParameterSet.class);
 			factorCalculator = new FactorCalculator(parameterSet,
 					Database.get(), setup);
-			String dqResultKey = input.getDqResultKey();
+			String dqResultKey = input.dqResultKey;
 			if (dqResultKey != null)
 				dqResult = Cache.getAppCache().remove(dqResultKey, DQResult.class);
 		} catch (Exception e) {
@@ -155,7 +155,7 @@ public class RegionalizedResultEditor extends FormEditor implements IResultEdito
 		FullResult result = this.result.result.result;
 		int row = result.impactIndex.getIndex(category.getId());
 		int col = result.flowIndex.getIndex(flow.getId());
-		return Math.abs(result.impactFactors.getEntry(row, col));
+		return Math.abs(result.impactFactors.get(row, col));
 	}
 
 	private Map<FlowDescriptor, Double> getImpactFactors(long categoryId,
