@@ -55,7 +55,7 @@ public class AnalyzeEditor extends FormEditor implements IResultEditor<FullResul
 	public FullResultProvider getResult() {
 		return result;
 	}
-	
+
 	public DQResult getDqResult() {
 		return dqResult;
 	}
@@ -65,11 +65,11 @@ public class AnalyzeEditor extends FormEditor implements IResultEditor<FullResul
 			throws PartInitException {
 		super.init(site, input);
 		ResultEditorInput editorInput = (ResultEditorInput) input;
-		String resultKey = editorInput.getResultKey();
-		String setupKey = editorInput.getSetupKey();
+		String resultKey = editorInput.resultKey;
+		String setupKey = editorInput.setupKey;
 		FullResultProvider result = Cache.getAppCache().remove(resultKey,
 				FullResultProvider.class);
-		String dqResultKey = editorInput.getDqResultKey();
+		String dqResultKey = editorInput.dqResultKey;
 		if (dqResultKey != null)
 			dqResult = Cache.getAppCache().remove(dqResultKey, DQResult.class);
 		setup = Cache.getAppCache().remove(setupKey, CalculationSetup.class);
@@ -87,7 +87,7 @@ public class AnalyzeEditor extends FormEditor implements IResultEditor<FullResul
 			if (result.hasImpactResults())
 				addPage(new TotalImpactResultPage(this, result, dqResult, this::getImpactFactor));
 			if (result.hasImpactResults() && setup.nwSet != null)
-				addPage(new NwResultPage(this, result, setup)); 
+				addPage(new NwResultPage(this, result, setup));
 			addPage(new ProcessResultPage(this, result));
 			addPage(new ContributionTreePage(this, result));
 			addPage(new GroupPage(this, result));
@@ -141,7 +141,7 @@ public class AnalyzeEditor extends FormEditor implements IResultEditor<FullResul
 		FlowIndex flowIdx = fr.flowIndex;
 		int row = fr.impactIndex.getIndex(impactCategory.getId());
 		int col = flowIdx.getIndex(flow.getId());
-		double value = fr.impactFactors.getEntry(row, col);
+		double value = fr.impactFactors.get(row, col);
 		if (flowIdx.isInput(flow.getId())) {
 			// characterization factors for input flows are negative in the
 			// matrix. A simple abs() is not correct because the original

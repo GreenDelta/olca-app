@@ -8,43 +8,48 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Labels;
 import org.openlca.core.database.EntityCache;
+import org.openlca.core.math.CalculationSetup;
+import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.descriptors.ProductSystemDescriptor;
+import org.openlca.geo.parameter.ParameterSet;
 
 public class ResultEditorInput implements IEditorInput {
 
-	private long productSystemId;
-	private String resultKey;
-	private String setupKey;
-	private String parameterSetKey;
-	private String dqResultKey;
+	public final long productSystemId;
+	public final String resultKey;
+	public final String setupKey;
+	public String parameterSetKey;
+	public String dqResultKey;
 
-	public ResultEditorInput(long productSystemId, String resultKey,
-			String setupKey, String parameterSetKey, String dqResultKey) {
+	public ResultEditorInput(long productSystemId, String resultKey, String setupKey) {
 		this.productSystemId = productSystemId;
 		this.resultKey = resultKey;
 		this.setupKey = setupKey;
-		this.parameterSetKey = parameterSetKey;
-		this.dqResultKey = dqResultKey;
 	}
 
-	public long getProductSystemId() {
-		return productSystemId;
+	public static ResultEditorInput create(CalculationSetup setup, Object result) {
+		if (setup == null)
+			return null;
+		String resultKey = Cache.getAppCache().put(result);
+		String setupKey = Cache.getAppCache().put(setup);
+		long systemId = 0;
+		if (setup.productSystem != null)
+			systemId = setup.productSystem.getId();
+		return new ResultEditorInput(systemId, resultKey, setupKey);
 	}
 
-	public String getResultKey() {
-		return resultKey;
+	/** With data quality */
+	public ResultEditorInput with(DQResult dqResult) {
+		if (dqResult != null)
+			dqResultKey = Cache.getAppCache().put(dqResult);
+		return this;
 	}
 
-	public String getSetupKey() {
-		return setupKey;
-	}
-
-	public String getParameterSetKey() {
-		return parameterSetKey;
-	}
-
-	public String getDqResultKey() {
-		return dqResultKey;
+	/** With parameters for regionalized calculations. */
+	public ResultEditorInput with(ParameterSet parameterSet) {
+		if (parameterSet != null)
+			parameterSetKey = Cache.getAppCache().put(parameterSet);
+		return this;
 	}
 
 	@Override
