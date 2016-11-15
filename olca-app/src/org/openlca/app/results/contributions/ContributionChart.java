@@ -24,7 +24,8 @@ public class ContributionChart extends BarChart<String, Number> {
 	private ChartLegend legend;
 
 	public static ContributionChart create(Composite parent, FormToolkit toolkit) {
-		return create(parent, toolkit, 550, 250);
+		// #see getGap for more info why this size specifically
+		return create(parent, toolkit, 700, 300);
 	}
 
 	public static ContributionChart create(Composite parent, FormToolkit toolkit, double width, double height) {
@@ -81,6 +82,9 @@ public class ContributionChart extends BarChart<String, Number> {
 	}
 
 	private double getGap(int bars) {
+		// TODO maybe there is a better way to calculate this correctly, this
+		// seems to work for now but not in all chart sizes, so be carefull when
+		// not using the standard size in 2-arg constructor
 		switch (bars) {
 		case 1:
 			return 255;

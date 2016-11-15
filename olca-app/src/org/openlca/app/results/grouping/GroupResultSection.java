@@ -91,7 +91,7 @@ class GroupResultSection {
 		UI.gridLayout(client, 1);
 		createCombos(toolkit, client);
 		table = new GroupResultTable(client);
-		chart = ContributionChart.create(client, toolkit, 700, 300);
+		chart = ContributionChart.create(client, toolkit);
 		chart.setLabel(new BaseLabelProvider() {
 			@Override
 			public String getText(Object element) {
