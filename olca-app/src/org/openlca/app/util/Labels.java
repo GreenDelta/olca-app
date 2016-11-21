@@ -43,21 +43,18 @@ public class Labels {
 	public static String getDisplayName(RootEntity entity) {
 		if (entity == null || entity.getName() == null)
 			return "";
+		Location loc = null;
 		if (entity instanceof Flow) {
 			Flow flow = (Flow) entity;
-			Location location = flow.getLocation();
-			if (location != null && location.getCode() != null) {
-				return flow.getName() + " - " + location.getCode();
-			}
+			loc = flow.getLocation();
 		}
 		if (entity instanceof Process) {
 			Process process = (Process) entity;
-			Location location = process.getLocation();
-			if (location != null && location.getCode() != null) {
-				return process.getName() + " - " + location.getCode();
-			}
+			loc = process.getLocation();
 		}
-		return entity.getName();
+		if (loc == null || Strings.isNullOrEmpty(loc.getCode()))
+			return entity.getName();
+		return entity.getName() + " - " + loc.getCode();
 	}
 
 	public static String getDisplayName(BaseDescriptor descriptor) {
@@ -77,9 +74,9 @@ public class Labels {
 			locationId = flow.getLocation();
 		}
 		if (locationId != null) {
-			Location location = cache.get(Location.class, locationId);
-			if (location != null && location.getCode() != null)
-				text = text + " - " + location.getCode();
+			Location loc = cache.get(Location.class, locationId);
+			if (loc != null && !Strings.isNullOrEmpty(loc.getCode()))
+				text = text + " - " + loc.getCode();
 		}
 		return text;
 	}

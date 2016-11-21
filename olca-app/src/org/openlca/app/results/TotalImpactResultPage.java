@@ -29,7 +29,6 @@ import org.openlca.app.util.trees.TreeClipboard;
 import org.openlca.app.util.trees.Trees;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.math.data_quality.DQResult;
-import org.openlca.core.model.Location;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
@@ -317,17 +316,7 @@ public class TotalImpactResultPage extends FormPage {
 			case FLOW:
 				return flow.getName();
 			case PROCESS:
-				if (process.getLocation() == null)
-					return process.getName();
-				else {
-					String s = process.getName();
-					Location loc = result.cache.get(Location.class,
-							process.getLocation());
-					if (loc != null && loc.getCode() != null) {
-						s += " - " + loc.getCode();
-					}
-					return s;
-				}
+				return Labels.getDisplayName(process);
 			default:
 				return null;
 			}
