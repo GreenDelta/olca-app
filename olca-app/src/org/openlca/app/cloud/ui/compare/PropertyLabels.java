@@ -400,8 +400,8 @@ class PropertyLabels {
 		Class<?> clazz = DQSystem.class;
 		putBasicLabels(clazz);
 		put(clazz, "hasUncertainties", M.HasUncertainties);
-		put(clazz, "summable", M.Summable);
 		put(clazz, "indicators", M.Indicators);
+		put(clazz, "source", M.Source);
 	}
 
 	private static void putDQIndicatorLabels() {

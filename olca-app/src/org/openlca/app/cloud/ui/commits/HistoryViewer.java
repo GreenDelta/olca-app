@@ -31,7 +31,7 @@ class HistoryViewer extends AbstractTableViewer<Commit> {
 
 	@Override
 	protected String[] getColumnHeaders() {
-		return new String[] { M.Id, M.Message, M.Committer, M.CommittedDate };
+		return new String[] { M.Id, M.Message, M.Committer, M.CommitDate };
 	}
 
 	@Override

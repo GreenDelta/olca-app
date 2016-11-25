@@ -41,11 +41,12 @@ public class M extends NLS {
 	public static String AlreadyConnected;
 	public static String AlreadyPresent;
 	public static String Amount;
-	public static String AnErrorOccuredWhileReceivingDataForCommit;
+	public static String AnErrorOccuredWhileReceivingCommitData;
 	public static String Analysis;
 	public static String AnalysisResultOf;
 	public static String AnalyzingForProblems;
 	public static String ApplyFormatToInputsOutputs;
+	public static String AreYouSureYouWantToCheckout;
 	public static String AsDefinedInProcesses;
 	public static String AssessDataQuality;
 	public static String AssignUnits;
@@ -107,7 +108,7 @@ public class M extends NLS {
 	public static String CommitMessage;
 	public static String CommitReferenceNotice;
 	public static String CommitingChanges;
-	public static String CommittedDate;
+	public static String CommitDate;
 	public static String Committer;
 	public static String Compare;
 	public static String ComparingWithRepository;
@@ -464,9 +465,9 @@ public class M extends NLS {
 	public static String Map;
 	public static String Mark;
 	public static String MarkAsMerged;
-	public static String Massreplace;
-	public static String MassreplaceFlows;
-	public static String MassreplaceProviders;
+	public static String Bulkreplace;
+	public static String BulkreplaceFlows;
+	public static String BulkreplaceProviders;
 	public static String MatrixExport;
 	public static String MatrixFiles;
 	public static String Maximize;

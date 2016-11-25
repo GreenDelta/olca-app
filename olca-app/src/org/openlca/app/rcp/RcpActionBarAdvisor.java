@@ -121,7 +121,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	}
 
 	private void createMassReplaceMenu(MenuManager windowMenu) {
-		MenuManager m = new MenuManager(M.Massreplace);
+		MenuManager m = new MenuManager(M.Bulkreplace);
 		windowMenu.add(m);
 		m.add(Actions.create(M.Flows, Images.descriptor(ModelType.FLOW), ReplaceFlowsDialog::openDialog));
 		m.add(Actions.create(M.Providers, Images.descriptor(ModelType.PROCESS), ReplaceProvidersDialog::openDialog));

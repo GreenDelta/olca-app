@@ -58,7 +58,7 @@ public class ReplaceProvidersDialog extends FormDialog {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText(M.MassreplaceProviders);
+		newShell.setText(M.BulkreplaceProviders);
 	}
 
 	@Override

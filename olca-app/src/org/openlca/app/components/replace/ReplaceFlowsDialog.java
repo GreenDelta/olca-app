@@ -56,7 +56,7 @@ public class ReplaceFlowsDialog extends FormDialog {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText(M.MassreplaceFlows);
+		newShell.setText(M.BulkreplaceFlows);
 	}
 
 	@Override
