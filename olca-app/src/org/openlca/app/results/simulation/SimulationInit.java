@@ -1,11 +1,6 @@
 package org.openlca.app.results.simulation;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.openlca.app.App;
-import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.util.Editors;
 import org.openlca.core.math.CalculationSetup;
@@ -30,35 +25,16 @@ public class SimulationInit {
 	}
 
 	public void run() {
-		InitJob job = new InitJob();
-		job.setUser(true);
-		job.schedule();
-	}
-
-	private class InitJob extends Job {
-
-		public InitJob() {
-			super(M.InitializeSimulation);
-		}
-
-		@Override
-		public IStatus run(IProgressMonitor monitor) {
-			monitor.beginTask(M.InitializeSimulation, IProgressMonitor.UNKNOWN);
-			try {
-				Simulator solver = new Simulator(setup, matrixCache,
-						App.getSolver());
-				// do a first calculation that initialises the result;
-				solver.nextRun();
-				String setupKey = Cache.getAppCache().put(setup);
-				String solverKey = Cache.getAppCache().put(solver);
-				SimulationInput input = new SimulationInput(setupKey, solverKey);
-				Editors.open(input, SimulationEditor.ID);
-				monitor.done();
-				return Status.OK_STATUS;
-			} catch (Exception e) {
-				log.error("Simulation initialisation failed", e);
-				return Status.CANCEL_STATUS;
-			}
+		try {
+			Simulator solver = new Simulator(setup, matrixCache, App.getSolver());
+			// do a first calculation that initialises the result;
+			solver.nextRun();
+			String setupKey = Cache.getAppCache().put(setup);
+			String solverKey = Cache.getAppCache().put(solver);
+			SimulationInput input = new SimulationInput(setupKey, solverKey);
+			Editors.open(input, SimulationEditor.ID);
+		} catch (Exception e) {
+			log.error("Simulation initialisation failed", e);
 		}
 	}
 
