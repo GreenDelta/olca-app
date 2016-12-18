@@ -16,7 +16,7 @@ import org.openlca.app.rcp.RcpActivator;
 import org.openlca.core.database.IDatabase;
 import org.openlca.ilcd.descriptors.ProcessDescriptor;
 import org.openlca.ilcd.io.DataStoreException;
-import org.openlca.ilcd.io.NetworkClient;
+import org.openlca.ilcd.io.SodaClient;
 import org.openlca.ilcd.processes.Process;
 import org.openlca.ilcd.util.ProcessBag;
 import org.openlca.io.ilcd.input.ImportConfig;
@@ -57,7 +57,7 @@ public class ImportWizard extends Wizard implements IImportWizard {
 			InvocationTargetException, InterruptedException {
 		List<ProcessDescriptor> processes = processSearchPage
 				.getSelectedProcesses();
-		NetworkClient client = IoPreference.createClient();
+		SodaClient client = IoPreference.createClient();
 		ImportConfig config = new ImportConfig(client, database);
 		config.langs = new String[] { IoPreference.getIlcdLanguage(), "en" };
 		client.connect();

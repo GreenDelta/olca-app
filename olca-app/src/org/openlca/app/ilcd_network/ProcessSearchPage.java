@@ -25,7 +25,7 @@ import org.openlca.app.util.Dialog;
 import org.openlca.app.util.UI;
 import org.openlca.ilcd.descriptors.DescriptorList;
 import org.openlca.ilcd.descriptors.ProcessDescriptor;
-import org.openlca.ilcd.io.NetworkClient;
+import org.openlca.ilcd.io.SodaClient;
 import org.openlca.ilcd.processes.Process;
 
 /**
@@ -95,7 +95,7 @@ public class ProcessSearchPage extends WizardPage {
 
 	private void runSearch(String term) {
 		try {
-			NetworkClient client = IoPreference.createClient();
+			SodaClient client = IoPreference.createClient();
 			client.connect();
 			DescriptorList result = client.search(Process.class, term);
 			if (result != null && result.descriptors != null) {
