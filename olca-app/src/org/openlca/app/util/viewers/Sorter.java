@@ -12,11 +12,17 @@ public abstract class Sorter<T> extends ViewerSorter {
 		this.column = column;
 	}
 
-	protected abstract int compare(Object o1, Object o2);
+	protected abstract int compare(T e1, T e2);
 
 	@Override
-	public final int compare(Viewer viewer, Object o1, Object o2) {
-		int c = compare(o1, o2);
+	@SuppressWarnings("unchecked")
+	public final int compare(Viewer viewer, Object e1, Object e2) {
+		if (e1 == null && e2 == null)
+			return 0;
+		if (e1 == null || e2 == null)
+			return e1 == null ? -1 : 1;
+		int c = compare((T) e1, (T) e2);
 		return ascending ? c : -c;
 	}
+	
 }

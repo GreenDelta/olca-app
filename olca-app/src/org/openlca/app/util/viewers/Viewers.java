@@ -37,8 +37,7 @@ public class Viewers {
 
 	/** Get the first element from the given selection. */
 	public static <T> T getFirst(ISelection selection) {
-		if (selection == null || selection.isEmpty()
-				|| !(selection instanceof IStructuredSelection))
+		if (!(selection instanceof IStructuredSelection) || selection.isEmpty())
 			return null;
 		IStructuredSelection structSelection = (IStructuredSelection) selection;
 		try {
@@ -47,9 +46,7 @@ public class Viewers {
 			T obj = (T) structSelection.getFirstElement();
 			return obj;
 		} catch (ClassCastException e) {
-			log.error("Error casting obj of type "
-					+ structSelection.getFirstElement().getClass()
-							.getCanonicalName(), e);
+			log.error("Error casting obj of type " + structSelection.getFirstElement().getClass().getCanonicalName(), e);
 			return null;
 		}
 	}
@@ -58,8 +55,7 @@ public class Viewers {
 	public static <T> List<T> getAllSelected(StructuredViewer viewer) {
 		if (viewer == null)
 			return Collections.emptyList();
-		IStructuredSelection selection = (IStructuredSelection) viewer
-				.getSelection();
+		IStructuredSelection selection = (IStructuredSelection) viewer.getSelection();
 		return getAll(selection);
 	}
 
@@ -77,8 +73,7 @@ public class Viewers {
 				T obj = (T) o;
 				list.add(obj);
 			} catch (ClassCastException e) {
-				log.error("Error casting obj of type "
-						+ o.getClass().getCanonicalName(), e);
+				log.error("Error casting obj of type " + o.getClass().getCanonicalName(), e);
 			}
 		}
 		return list;
@@ -93,20 +88,12 @@ public class Viewers {
 		return viewer;
 	}
 
-	public static <T> void sortByString(ColumnViewer viewer,
-			Function<T, String> fn, int col) {
-		StringSorter<T> s = new StringSorter<>(col, fn);
-		addSorter(viewer, s);
-	}
-
-	public static <T> void sortByDouble(ColumnViewer viewer,
-			Function<T, Double> fn, int col) {
+	public static <T> void sortByDouble(ColumnViewer viewer, Function<T, Double> fn, int col) {
 		DoubleSorter<T> s = new DoubleSorter<>(col, fn);
 		addSorter(viewer, s);
 	}
 
-	public static <T> void sortByDouble(ColumnViewer viewer,
-			ITableLabelProvider labelProvider, int... cols) {
+	public static <T> void sortByDouble(ColumnViewer viewer, ITableLabelProvider labelProvider, int... cols) {
 		for (int i = 0; i < cols.length; i++) {
 			LabelSorter<T> s = new LabelSorter<>(cols[i], labelProvider);
 			s.asNumbers = true;
@@ -114,8 +101,7 @@ public class Viewers {
 		}
 	}
 
-	public static <T> void sortByLabels(ColumnViewer viewer,
-			ITableLabelProvider labelProvider, int... cols) {
+	public static <T> void sortByLabels(ColumnViewer viewer, ITableLabelProvider labelProvider, int... cols) {
 		for (int i = 0; i < cols.length; i++) {
 			LabelSorter<T> s = new LabelSorter<>(cols[i], labelProvider);
 			addSorter(viewer, s);

@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -25,6 +24,7 @@ import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.db.Cache;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.results.ContributionCutoff.CutoffContentProvider;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.DQUI;
 import org.openlca.app.util.Labels;
@@ -101,6 +101,7 @@ public class TotalFlowResultPage extends FormPage {
 		if (DQUI.displayExchangeQuality(dqResult)) {
 			headers = DQUI.appendTableHeaders(headers, dqResult.setup.exchangeDqSystem);
 		}
+		ContributionCutoff spinner = ContributionCutoff.create(comp, toolkit);
 		Label label = new Label();
 		TreeViewer viewer = Trees.createViewer(comp, headers, label);
 		viewer.setContentProvider(new ContentProvider());
@@ -111,16 +112,13 @@ public class TotalFlowResultPage extends FormPage {
 		}
 		Trees.bindColumnWidths(viewer.getTree(), DQUI.MIN_COL_WIDTH, widths);
 		Actions.bind(viewer, TreeClipboard.onCopy(viewer));
+		spinner.register(viewer);
 		return viewer;
 	}
 
 	private void createColumnSorters(TreeViewer viewer, Label label) {
 		Viewers.sortByLabels(viewer, label, 0, 1, 2, 3);
-		Function<FlowDescriptor, Double> amount = (f) -> {
-			FlowResult r = result.getTotalFlowResult(f);
-			return r == null ? 0 : r.value;
-		};
-		Viewers.sortByDouble(viewer, amount, 4);
+		Viewers.sortByDouble(viewer, this::getAmount, 4);
 		if (DQUI.displayExchangeQuality(dqResult)) {
 			for (int i = 0; i < dqResult.setup.exchangeDqSystem.indicators.size(); i++) {
 				Viewers.sortByDouble(viewer, label, i + 5);
@@ -128,16 +126,19 @@ public class TotalFlowResultPage extends FormPage {
 		}
 	}
 
-	private class ContentProvider extends ArrayContentProvider
-			implements ITreeContentProvider {
+	private class ContentProvider extends ArrayContentProvider implements ITreeContentProvider, CutoffContentProvider {
+
+		private double cutoff;
 
 		@Override
 		public Object[] getChildren(Object e) {
 			if (!(e instanceof FlowDescriptor))
 				return null;
 			FlowDescriptor flow = (FlowDescriptor) e;
+			double cutoffValue = getAmount(flow) * this.cutoff;
 			return result.getProcessContributions(flow).contributions.stream()
 					.filter(i -> i.amount != 0)
+					.filter(i -> Math.abs(i.amount) >= cutoffValue)
 					.sorted((i1, i2) -> -Double.compare(i1.amount, i2.amount))
 					.map(i -> new Contribution(i, flow))
 					.collect(Collectors.toList())
@@ -153,7 +154,14 @@ public class TotalFlowResultPage extends FormPage {
 
 		@Override
 		public boolean hasChildren(Object e) {
-			return e instanceof FlowDescriptor;
+			if (e instanceof FlowDescriptor)
+				return true;
+			return false;
+		}
+
+		@Override
+		public void setCutoff(double cutoff) {
+			this.cutoff = cutoff;
 		}
 	}
 
@@ -204,7 +212,7 @@ public class TotalFlowResultPage extends FormPage {
 			case 2:
 				return category.getRight();
 			case 3:
-				double v = result.getTotalFlowResult(flow).value;
+				double v = getAmount(flow);
 				String unit = Labels.getRefUnit(flow, cache);
 				return Numbers.format(v) + " " + unit;
 			default:
@@ -223,7 +231,7 @@ public class TotalFlowResultPage extends FormPage {
 			case 2:
 				return category.getRight();
 			case 3:
-				double v = item.item.amount;
+				double v = getAmount(item);
 				String unit = Labels.getRefUnit(item.flow, cache);
 				return Numbers.format(v) + " " + unit;
 			default:
@@ -246,6 +254,17 @@ public class TotalFlowResultPage extends FormPage {
 
 	}
 
+	private double getAmount(Object element) {
+		if (element instanceof FlowDescriptor) {
+			FlowResult r = result.getTotalFlowResult((FlowDescriptor) element);
+			return r == null ? 0 : r.value;
+		} else if (element instanceof Contribution) {
+			Contribution item = (Contribution) element;
+			return item.item.amount;
+		}
+		return 0d;
+	}
+
 	private class Contribution {
 
 		final ContributionItem<ProcessDescriptor> item;
@@ -256,4 +275,5 @@ public class TotalFlowResultPage extends FormPage {
 			this.flow = flow;
 		}
 	}
+
 }

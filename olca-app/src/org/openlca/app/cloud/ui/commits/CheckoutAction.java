@@ -1,8 +1,8 @@
 package org.openlca.app.cloud.ui.commits;
 
-import org.openlca.app.M;
 import org.eclipse.jface.action.Action;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.db.Database;

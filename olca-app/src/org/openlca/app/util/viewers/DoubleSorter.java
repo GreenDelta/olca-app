@@ -15,15 +15,10 @@ class DoubleSorter<T> extends Sorter<T> {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	protected int compare(Object e1, Object e2) {
-		if (e1 == null && e2 == null)
-			return 0;
-		if (e1 == null || e2 == null)
-			return e1 == null ? -1 : 1;
+	protected int compare(T e1, T e2) {
 		try {
-			Double d1 = fn.apply((T) e1);
-			Double d2 = fn.apply((T) e2);
+			Double d1 = fn.apply(e1);
+			Double d2 = fn.apply(e2);
 			if (d1 == null && d2 == null)
 				return 0;
 			if (d1 == null || d2 == null)
@@ -31,8 +26,7 @@ class DoubleSorter<T> extends Sorter<T> {
 			return d1.compareTo(d2);
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(getClass());
-			log.error("failed to compare " + e1 + " and " + e2
-					+ " with double function on column " + column, e);
+			log.error("failed to compare " + e1 + " and " + e2 + " with double function on column " + column, e);
 			return 0;
 		}
 	}

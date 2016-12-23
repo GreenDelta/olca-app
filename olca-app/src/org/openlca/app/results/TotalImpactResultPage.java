@@ -19,6 +19,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.results.ContributionCutoff.CutoffContentProvider;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.DQUI;
@@ -43,6 +44,7 @@ public class TotalImpactResultPage extends FormPage {
 
 	private FormToolkit toolkit;
 	private TreeViewer viewer;
+	private ContributionCutoff spinner;
 
 	private boolean subgroupByProcesses = true;
 
@@ -66,17 +68,20 @@ public class TotalImpactResultPage extends FormPage {
 		UI.gridLayout(client, 1);
 		createOptions(client);
 		createTree(client);
+		spinner.register(viewer);
 		form.reflow(true);
 	}
 
 	private void createOptions(Composite parent) {
 		Composite container = UI.formComposite(parent, toolkit);
+		UI.gridLayout(container, 3);
 		Button button = UI.formCheckBox(container, toolkit, M.SubgroupByProcesses);
 		button.setSelection(true);
 		Controls.onSelect(button, (e) -> {
 			subgroupByProcesses = button.getSelection();
 			setInput();
 		});
+		spinner = ContributionCutoff.create(container, toolkit);
 	}
 
 	private void setInput() {
@@ -188,7 +193,9 @@ public class TotalImpactResultPage extends FormPage {
 		}
 	}
 
-	private class ContentProvider extends ArrayContentProvider implements ITreeContentProvider {
+	private class ContentProvider extends ArrayContentProvider implements ITreeContentProvider, CutoffContentProvider {
+
+		private double cutoff;
 
 		@Override
 		public Object[] getChildren(Object obj) {
@@ -197,17 +204,23 @@ public class TotalImpactResultPage extends FormPage {
 			Item parent = (Item) obj;
 			List<Item> children = new ArrayList<>();
 			if (parent.getType() == ModelType.IMPACT_CATEGORY && subgroupByProcesses) {
+				double cutoffValue = parent.result() * cutoff;
 				for (ProcessDescriptor process : result.getProcessDescriptors()) {
 					Item child = new Item(parent.impact, process);
-					if (child.result() != 0)
+					double result = child.result();
+					if (result != 0 && (this.cutoff == 0d || Math.abs(result) >= cutoffValue)) {
 						children.add(child);
+					}
 				}
 			} else {
+				double cutoffValue = parent.result() * cutoff;
 				for (FlowDescriptor flow : result.getFlowDescriptors()) {
 					// process will be null in case of subgroupByProcesses=false
 					Item child = new Item(parent.impact, parent.process, flow);
-					if (child.result() != 0)
+					double result = child.result();
+					if (result != 0 && (this.cutoff == 0d || Math.abs(result) >= cutoffValue)) {
 						children.add(child);
+					}
 				}
 			}
 			children.sort((i1, i2) -> -Double.compare(i1.result(), i2.result()));
@@ -224,7 +237,14 @@ public class TotalImpactResultPage extends FormPage {
 			if (!(element instanceof Item))
 				return false;
 			Item item = (Item) element;
-			return item.getType() != ModelType.FLOW;
+			if (item.getType() == ModelType.FLOW)
+				return false;
+			return true;
+		}
+
+		@Override
+		public void setCutoff(double cutoff) {
+			this.cutoff = cutoff;
 		}
 
 	}
