@@ -1,9 +1,14 @@
 package refdata;
 
 import java.io.File;
+import java.util.Set;
 
+import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.derby.DerbyDatabase;
 import org.openlca.io.refdata.RefDataImport;
+import org.openlca.updates.UpdateHelper;
+import org.openlca.updates.UpdateManifest;
+import org.openlca.updates.UpdateManifestStore;
 import org.openlca.util.Dirs;
 import org.zeroturnaround.zip.ZipUtil;
 
@@ -21,6 +26,7 @@ public class Main {
 
 			System.out.println("  Create empty database ...");
 			DerbyDatabase db = new DerbyDatabase(F("build/empty"));
+			embedUpdates(db);
 			db.close();
 			System.out.println("  done");
 
@@ -28,6 +34,7 @@ public class Main {
 			db = new DerbyDatabase(F("build/units"));
 			RefDataImport refImport = new RefDataImport(F("data/units"), db);
 			refImport.run();
+			embedUpdates(db);
 			db.close();
 			System.out.println("  done");
 
@@ -35,6 +42,7 @@ public class Main {
 			db = new DerbyDatabase(F("build/flows"));
 			refImport = new RefDataImport(F("data/all"), db);
 			refImport.run();
+			embedUpdates(db);
 			db.close();
 			System.out.println("  done");
 
@@ -51,6 +59,16 @@ public class Main {
 
 	private static File F(String path) {
 		return new File(path);
+	}
+
+	private static void embedUpdates(IDatabase db) {
+		UpdateManifestStore store = new UpdateManifestStore(db);
+		UpdateHelper helper = new UpdateHelper(db, null, null);
+		Set<UpdateManifest> all = helper.getAllUpdates();
+		for (UpdateManifest m : all) {
+			m.executed = true;
+			store.save(m);
+		}
 	}
 
 }
