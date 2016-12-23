@@ -1,0 +1,16 @@
+.update-container(data-id=refId, data-parent=parentRefId, data-executed=executed, style=!parentRefId&&executed?'display:none':null)
+	.left
+		.checkbox.checkbox-success
+			input(id=refId, type='checkbox', disabled=executed||required, data-executed=executed, data-required=required, checked=required&&!executed)
+			label(for=refId)
+	.right
+		h3 #{name}
+			//- Avoid UI glitches when icons appear/disappear 
+			//- Therefore set color to background color if 'hidden'
+			span.glyphicon.glyphicon-ok(class=executed?'glyphicon-green':'glyphicon-white')
+		if required
+			div.required Required update
+		div #{description}
+		if hasAttachment
+			div: a.open-attachment(id=refId, href='#') More details
+	.clear

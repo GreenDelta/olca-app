@@ -17,7 +17,7 @@ $ = require('gulp-load-plugins')()
 gulp.task('default', function() {
 	runSequence('clean', 'precompile', 'build', 'zip');
 });
-gulp.task('precompile', ['plugin_manager_scripts', 'plugin_manager_templates', 'plugin_manager_styles']);
+gulp.task('precompile', ['plugin_manager_scripts', 'plugin_manager_templates', 'plugin_manager_styles', 'update_manager_scripts', 'update_manager_templates', 'update_manager_styles']);
 gulp.task('build', ['html_pages', 'jade_pages', 'resources', 'libs', 'start-page-templates', 'start-page-styles']);
 gulp.task('resources', ['images']);
 gulp.task('libs', ['base_libs', 'bootstrap']);
@@ -25,6 +25,7 @@ gulp.task('libs', ['base_libs', 'bootstrap']);
 gulp.task('clean', function() {
 	return gulp.src([
 			'build',
+			'src/update_manager/precompiled',
 			'src/plugin_manager/precompiled'
 		], {read: false})
 		.pipe(clean());
@@ -45,7 +46,7 @@ gulp.task('html_pages', function() {
 });
 
 gulp.task('jade_pages', function() {
-	return gulp.src('src/plugin_manager/jade/plugin_manager.jade')
+	return gulp.src(['src/plugin_manager/jade/plugin_manager.jade', 'src/update_manager/jade/update_manager.jade'])
 		.pipe(jade({ locals: {} }))
 		.pipe(gulp.dest('build'));
 });
@@ -53,6 +54,11 @@ gulp.task('jade_pages', function() {
 gulp.task('images', function() {
 	return gulp.src('images/*')
 		.pipe(gulp.dest('build/images'));
+});
+
+gulp.task('fonts', function() {
+	return gulp.src('fonts/*')
+		.pipe(gulp.dest('build/fonts'));
 });
 
 gulp.task('base_libs', function() {
@@ -80,10 +86,22 @@ gulp.task('plugin_manager_scripts', function() {
 		.pipe(gulp.dest('src/plugin_manager/precompiled'));
 });
 
+gulp.task('update_manager_scripts', function() {
+	return gulp.src('src/update_manager/coffeescript/*.coffee')
+		.pipe(coffee({ bare: true }))
+		.pipe(gulp.dest('src/update_manager/precompiled'));
+});
+
 gulp.task('plugin_manager_templates', function() {
 	return gulp.src('src/plugin_manager/jade/templates/*.jade')
 		.pipe(jadeClient('templates.js'))
 		.pipe(gulp.dest('src/plugin_manager/precompiled'));
+});
+
+gulp.task('update_manager_templates', function() {
+	return gulp.src('src/update_manager/jade/templates/*.jade')
+		.pipe(jadeClient('templates.js'))
+		.pipe(gulp.dest('src/update_manager/precompiled'));
 });
 
 gulp.task('plugin_manager_styles', function() {
@@ -91,6 +109,13 @@ gulp.task('plugin_manager_styles', function() {
 		.pipe(stylus({ use: [nib()] }))
 		.pipe(concat('main.css'))
 		.pipe(gulp.dest('src/plugin_manager/precompiled'));
+});
+
+gulp.task('update_manager_styles', function() {
+	return gulp.src('src/update_manager/stylus/*.styl')
+		.pipe(stylus({ use: [nib()] }))
+		.pipe(concat('main.css'))
+		.pipe(gulp.dest('src/update_manager/precompiled'));
 });
 
 var readMessages = function(file, defaultMsg) {

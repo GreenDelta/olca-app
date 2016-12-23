@@ -1,0 +1,79 @@
+html, body, #container
+	width 100%
+	min-width 540px
+	margin 0
+	padding 0
+
+.clear
+	clear both
+
+#no-unexecuted-message
+	margin-left 20px
+	margin-right 20px
+
+.update-container
+	width auto
+	padding 0 20px	
+
+	&:not(:first-of-type)
+		border-top 1px solid rgb(224, 224, 224)
+	
+	.update-container
+		margin-left 60px
+			
+	h3
+		margin-top 0
+		
+	.checkbox
+		
+		input[type=checkbox]
+						
+			&, & + label, label::after, & + label::before
+				cursor pointer
+				
+			&[disabled]
+
+				&, & + label, & + label::after, & + label::before
+					cursor not-allowed
+		
+		label
+		
+			&::before
+				width 34px
+				height 34px
+		
+			&::after
+				padding-left 5px
+				padding-top 0
+				font-size 25px
+	
+.left
+	float left
+	width 50px
+	margin 15px 10px 20px 0
+
+.update-container:first-child > .left
+	margin -5px 10px 20px 0	
+
+.right
+	margin 20px 0 20px 60px
+
+.bold
+	font-weight bold
+
+.glyphicon-ok
+	margin-left 15px
+
+.glyphicon-green
+	color #5cb85c
+
+.glyphicon-white
+	color #ffffff
+
+.btn-execute
+	&, &.active, &.focus, &:active, &:focus, &:hover
+		color #ec971f
+
+.required 
+	font-weight bold
+	color rgb(150, 10, 10)
