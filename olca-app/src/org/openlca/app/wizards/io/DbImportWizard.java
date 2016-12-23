@@ -13,16 +13,21 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
+import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
+import org.openlca.app.devtools.python.Python;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Question;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.derby.DerbyDatabase;
-import org.openlca.core.database.upgrades.Upgrades;
-import org.openlca.core.database.upgrades.VersionState;
 import org.openlca.io.olca.DatabaseImport;
+import org.openlca.updates.Update;
+import org.openlca.updates.UpdateHelper;
+import org.openlca.updates.UpdateManifest;
+import org.openlca.updates.VersionState;
+import org.openlca.updates.legacy.Upgrades;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeroturnaround.zip.ZipUtil;
@@ -74,14 +79,14 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 	private boolean canRun(DbImportPage.ImportConfig config,
 			ConnectionDispatch connectionDispatch) {
 		VersionState state = connectionDispatch.getSourceState();
-		if (state == VersionState.CURRENT)
+		if (state == VersionState.UP_TO_DATE)
 			return true;
 		if (state == null || state == VersionState.ERROR) {
 			org.openlca.app.util.Error.showBox(M.ConnectionFailed,
 					M.DBImportNoTargetConnectionFailedMessage);
 			return false;
 		}
-		if (state == VersionState.NEWER) {
+		if (state == VersionState.HIGHER_VERSION) {
 			org.openlca.app.util.Error
 					.showBox(
 							M.VersionNewer,
@@ -111,12 +116,12 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 
 	private class ImportDispatch implements IRunnableWithProgress {
 
-		private IDatabase sourceDatabase;
+		private IDatabase sourceDb;
 		private VersionState sourceState;
 		private ConnectionDispatch connectionDispatch;
 
 		ImportDispatch(ConnectionDispatch connectionDispatch) {
-			this.sourceDatabase = connectionDispatch.getSource();
+			this.sourceDb = connectionDispatch.getSource();
 			this.sourceState = connectionDispatch.getSourceState();
 			this.connectionDispatch = connectionDispatch;
 		}
@@ -126,15 +131,10 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 				throws InvocationTargetException, OperationCanceledException {
 			try {
 				Database.getIndexUpdater().beginTransaction();
-				monitor.beginTask(M.ImportDatabase,
-						IProgressMonitor.UNKNOWN);
-				if (sourceState == VersionState.OLDER) {
-					monitor.subTask(M.UpdateDatabase);
-					Upgrades.runUpgrades(sourceDatabase);
-				}
+				monitor.beginTask(M.ImportDatabase, IProgressMonitor.UNKNOWN);
+				checkAndExecuteUpdates(monitor);
 				monitor.subTask(M.ImportData + "...");
-				DatabaseImport dbImport = new DatabaseImport(sourceDatabase,
-						Database.get());
+				DatabaseImport dbImport = new DatabaseImport(sourceDb, Database.get());
 				log.trace("run data import");
 				dbImport.run();
 				monitor.subTask(M.CloseDatabase);
@@ -143,9 +143,34 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 			} catch (Exception e) {
 				throw new InvocationTargetException(e);
 			} finally {
-				Database.getIndexUpdater().endTransaction();				
+				Database.getIndexUpdater().endTransaction();
 			}
 		}
+
+		private void checkAndExecuteUpdates(IProgressMonitor monitor) throws Exception {
+			switch (sourceState) {
+			case NEEDS_UPGRADE:
+				monitor.subTask(M.UpdateDatabase);
+				Upgrades.runUpgrades(sourceDb);
+			case NEEDS_UPDATE:
+				monitor.subTask(M.UpdateDatabase);
+				UpdateHelper updates = new UpdateHelper(sourceDb, App.getCalculationContext(), Python.getDir());
+				for (UpdateManifest update : updates.getNewAndRequired()) {
+					execute(update, updates);
+				}
+			default:
+			}
+		}
+
+		private void execute(UpdateManifest manifest, UpdateHelper updates) {
+			for (String depRefId : manifest.dependencies) {
+				Update dep = updates.getForRefId(depRefId);
+				execute(dep.manifest, updates);
+			}
+			Update update = updates.getForRefId(manifest.refId);
+			updates.execute(update);
+		}
+
 	}
 
 	/**
@@ -167,7 +192,7 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 		}
 
 		public VersionState getSourceState() {
-			return Upgrades.checkVersion(source);
+			return VersionState.checkVersion(source);
 		}
 
 		@Override

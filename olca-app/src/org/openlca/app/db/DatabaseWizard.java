@@ -43,7 +43,6 @@ public class DatabaseWizard extends Wizard {
 			Runner runner = (config instanceof DerbyConfiguration) ? new Runner(
 					config, page.getSelectedContent()) : new Runner(config);
 			getContainer().run(true, false, runner);
-			new DatabaseUpdate(Database.get()).run();
 			Navigator.refresh();
 			HistoryView.refresh();
 			ValidationView.clear();

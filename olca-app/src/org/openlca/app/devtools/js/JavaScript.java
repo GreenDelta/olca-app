@@ -11,7 +11,7 @@ import javax.script.SimpleBindings;
 
 import org.openlca.app.App;
 import org.openlca.app.db.Database;
-import org.openlca.app.devtools.ScriptApi;
+import org.openlca.updates.script.ScriptApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +37,7 @@ class JavaScript {
 		bindings.put("app", App.class);
 		if (Database.get() != null)
 			bindings.put("db", Database.get());
-		ScriptApi scriptApi = new ScriptApi(Database.get());
+		ScriptApi scriptApi = new ScriptApi(Database.get(), App.getCalculationContext());
 		bindings.put("olca", scriptApi);
 		return bindings;
 	}

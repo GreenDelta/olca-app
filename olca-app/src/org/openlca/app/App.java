@@ -9,6 +9,7 @@ import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.IProgressService;
+import org.openlca.app.db.Cache;
 import org.openlca.app.editors.ModelEditorInput;
 import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.rcp.RcpActivator;
@@ -24,6 +25,7 @@ import org.openlca.core.model.descriptors.Descriptors;
 import org.openlca.eigen.NativeLibrary;
 import org.openlca.eigen.solvers.BalancedSolver;
 import org.openlca.eigen.solvers.DenseSolver;
+import org.openlca.updates.script.CalculationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,6 +57,10 @@ public class App {
 		else
 			solver = new DenseSolver();
 		return solver;
+	}
+
+	public static CalculationContext getCalculationContext() {
+		return new CalculationContext(Cache.getMatrixCache(), Cache.getEntityCache(), getSolver());
 	}
 
 	/**

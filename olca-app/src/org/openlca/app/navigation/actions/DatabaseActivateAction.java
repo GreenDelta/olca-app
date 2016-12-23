@@ -11,6 +11,7 @@ import org.eclipse.ui.PlatformUI;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.cloud.ui.commits.HistoryView;
+import org.openlca.app.components.UpdateManager;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.navigation.DatabaseElement;
@@ -20,8 +21,8 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.Question;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.database.upgrades.Upgrades;
-import org.openlca.core.database.upgrades.VersionState;
+import org.openlca.updates.VersionState;
+import org.openlca.updates.legacy.Upgrades;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,12 +65,12 @@ public class DatabaseActivateAction extends Action implements INavigationAction 
 	public void run() {
 		if (Database.get() != null)
 			Editors.closeAll();
+
 		Activation activation = new Activation();
 		// App.run does not work as we have to show a modal dialog in the
 		// callback
 		try {
-			PlatformUI.getWorkbench().getProgressService()
-					.busyCursorWhile(activation);
+			PlatformUI.getWorkbench().getProgressService().busyCursorWhile(activation);
 			ActivationCallback callback = new ActivationCallback(activation);
 			callback.run();
 		} catch (Exception e) {
@@ -88,7 +89,7 @@ public class DatabaseActivateAction extends Action implements INavigationAction 
 				monitor.beginTask(M.OpenDatabase, IProgressMonitor.UNKNOWN);
 				Database.close();
 				IDatabase database = Database.activate(config);
-				versionState = Upgrades.checkVersion(database);
+				versionState = VersionState.checkVersion(database);
 				monitor.done();
 			} catch (Exception e) {
 				log.error("Failed to activate database", e);
@@ -118,13 +119,20 @@ public class DatabaseActivateAction extends Action implements INavigationAction 
 
 		private void handleVersionState(VersionState state) {
 			switch (state) {
-			case NEWER:
+			case HIGHER_VERSION:
 				error(M.DatabaseNeedsUpdate);
 				break;
-			case OLDER:
-				askRunUpdates();
+			case NEEDS_UPGRADE:
+				askRunUpgrades();
 				break;
-			case CURRENT:
+			case NEEDS_UPDATE:
+				if (UpdateManager.openNewAndRequired()) {
+					refresh();
+				} else {
+					closeDatabase();
+				}
+				break;
+			case UP_TO_DATE:
 				refresh();
 				break;
 			default:
@@ -141,33 +149,24 @@ public class DatabaseActivateAction extends Action implements INavigationAction 
 		}
 
 		private void error(String message) {
-			org.openlca.app.util.Error.showBox(M.CouldNotOpenDatabase,
-					message);
+			org.openlca.app.util.Error.showBox(M.CouldNotOpenDatabase, message);
 			closeDatabase();
 		}
 
-		private void askRunUpdates() {
+		private void askRunUpgrades() {
 			IDatabase db = Database.get();
-			boolean doIt = Question
-					.ask(M.UpdateDatabase,
-							M.UpdateDatabaseQuestion);
+			boolean doIt = Question.ask(M.UpdateDatabase, M.UpdateDatabaseQuestion);
 			if (!doIt) {
 				closeDatabase();
 				return;
 			}
 			AtomicBoolean failed = new AtomicBoolean(false);
 			App.run(M.UpdateDatabase,
-					() -> runUpdate(db, failed),
-					() -> {
-						if (failed.get())
-							closeDatabase();
-						else {
-							refresh();
-						}
-					});
+					() -> runUpgrades(db, failed),
+					() -> closeDatabase());
 		}
 
-		private void runUpdate(IDatabase db, AtomicBoolean failed) {
+		private void runUpgrades(IDatabase db, AtomicBoolean failed) {
 			try {
 				Upgrades.runUpgrades(db);
 				db.getEntityFactory().getCache().evictAll();

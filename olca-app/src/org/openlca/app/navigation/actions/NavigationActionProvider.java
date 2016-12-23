@@ -119,7 +119,7 @@ public class NavigationActionProvider extends CommonActionProvider {
 	}
 
 	private INavigationAction[] getDatabaseActions() {
-		int count = App.runsInDevMode() ? 14 : 8;
+		int count = App.runsInDevMode() ? 15 : 9;
 		INavigationAction[] actions = new INavigationAction[count];
 		actions[0] = new DatabaseActivateAction();
 		actions[1] = new DatabaseCopyAction();
@@ -129,13 +129,14 @@ public class NavigationActionProvider extends CommonActionProvider {
 		actions[5] = new DatabaseExportAction();
 		actions[6] = new DatabaseRenameAction();
 		actions[7] = new DatabaseDeleteAction();
+		actions[8] = new OpenUpdateManagerAction();
 		if (App.runsInDevMode()) {
-			actions[8] = new XEI3MetaDataImportAction();
-			actions[9] = new XEI3MarketProcessCleanUp();
-			actions[10] = new XParameterCheckAction();
-			actions[11] = new XNexusIndexExportAction();
-			actions[12] = new XRefDataExport();
-			actions[13] = new XRefDataImport();
+			actions[9] = new XEI3MetaDataImportAction();
+			actions[10] = new XEI3MarketProcessCleanUp();
+			actions[11] = new XParameterCheckAction();
+			actions[12] = new XNexusIndexExportAction();
+			actions[13] = new XRefDataExport();
+			actions[14] = new XRefDataImport();
 		}
 		return actions;
 	}

@@ -82,6 +82,12 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.openlca</groupId>
+			<artifactId>olca-updates</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		
+		<dependency>
 			<groupId>org.geotools</groupId>
 			<artifactId>gt-shapefile</artifactId>
 			<version>10.3</version>

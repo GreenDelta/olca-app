@@ -113,7 +113,8 @@ Bundle-ClassPath: .,
  libs/olca-ilcd-1.6.0.jar,
  libs/olca-io-1.6.0.jar,
  libs/olca-jsonld-1.6.0.jar,
- libs/olca-simapro-csv-1.6.0.jar
+ libs/olca-simapro-csv-1.6.0.jar,
+ libs/olca-updates-1.6.0.jar
 Export-Package: com.google.common.collect,
  com.google.common.eventbus,
  com.google.gson,
