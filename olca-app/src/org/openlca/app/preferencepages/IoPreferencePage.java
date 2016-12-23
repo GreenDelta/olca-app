@@ -24,8 +24,9 @@ import org.openlca.app.M;
 import org.openlca.app.rcp.RcpActivator;
 import org.openlca.app.util.Dialog;
 import org.openlca.app.util.UI;
-import org.openlca.ilcd.io.Authentication;
-import org.openlca.ilcd.io.NetworkClient;
+import org.openlca.ilcd.io.AuthInfo;
+import org.openlca.ilcd.io.SodaClient;
+import org.openlca.ilcd.io.SodaConnection;
 import org.openlca.util.Strings;
 
 public class IoPreferencePage extends PreferencePage implements
@@ -109,10 +110,11 @@ public class IoPreferencePage extends PreferencePage implements
 	@Override
 	protected void performApply() {
 		super.performApply();
-		String url = IoPreference.getIlcdUrl();
-		String user = IoPreference.getIlcdUser();
-		String password = IoPreference.getIlcdPassword();
-		NetworkClient client = new NetworkClient(url, user, password);
+		SodaConnection con = new SodaConnection();
+		con.url = IoPreference.getIlcdUrl();
+		con.user = IoPreference.getIlcdUser();
+		con.password = IoPreference.getIlcdPassword();
+		SodaClient client = new SodaClient(con);
 		testConnection(client);
 	}
 
@@ -131,7 +133,7 @@ public class IoPreferencePage extends PreferencePage implements
 			editor.load();
 	}
 
-	private void testConnection(NetworkClient client) {
+	private void testConnection(SodaClient client) {
 		try {
 			client.connect();
 			checkAuthentication(client.getAuthentication());
@@ -141,8 +143,8 @@ public class IoPreferencePage extends PreferencePage implements
 		}
 	}
 
-	private void checkAuthentication(Authentication auth) {
-		if (!auth.isAuthenticated())
+	private void checkAuthentication(AuthInfo auth) {
+		if (!auth.isAuthenticated)
 			Dialog.showError(getShell(), M.ILCD_AUTHENTICATION_FAILED_MSG);
 		else if (!auth.isReadAllowed() || !auth.isExportAllowed())
 			Dialog.showWarning(getShell(), M.ILCD_NO_READ_OR_WRITE_ACCESS_MSG);

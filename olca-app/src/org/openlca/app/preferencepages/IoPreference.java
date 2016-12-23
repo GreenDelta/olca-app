@@ -3,7 +3,8 @@ package org.openlca.app.preferencepages;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.openlca.app.rcp.RcpActivator;
-import org.openlca.ilcd.io.NetworkClient;
+import org.openlca.ilcd.io.SodaClient;
+import org.openlca.ilcd.io.SodaConnection;
 
 public class IoPreference extends AbstractPreferenceInitializer {
 
@@ -36,10 +37,12 @@ public class IoPreference extends AbstractPreferenceInitializer {
 		return valueOf(ILCD_LANG);
 	}
 
-	public static NetworkClient createClient() {
-		NetworkClient client = new NetworkClient(getIlcdUrl(), getIlcdUser(),
-				getIlcdPassword());
-		return client;
+	public static SodaClient createClient() {
+		SodaConnection con = new SodaConnection();
+		con.url = getIlcdUrl();
+		con.user = getIlcdUser();
+		con.password = getIlcdPassword();
+		return new SodaClient(con);
 	}
 
 	private static String valueOf(String name) {

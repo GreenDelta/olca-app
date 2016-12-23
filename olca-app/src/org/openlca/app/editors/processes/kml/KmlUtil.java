@@ -1,6 +1,5 @@
 package org.openlca.app.editors.processes.kml;
 
-import org.openlca.app.M;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.text.DecimalFormat;
@@ -11,11 +10,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.input.SAXBuilder;
-import org.jdom2.output.Format;
-import org.jdom2.output.XMLOutputter;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.input.SAXBuilder;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
+import org.openlca.app.M;
 import org.openlca.geo.kml.FeatureType;
 import org.openlca.util.BinUtils;
 import org.slf4j.Logger;
@@ -177,9 +177,12 @@ public class KmlUtil {
 		if (Objects.equals(name, root.getName()))
 			return Collections.singletonList(root);
 		List<Element> elements = new ArrayList<>();
-		for (Element child : root.getChildren())
+		for (Object obj : root.getChildren()) {
+			if (!(obj instanceof Element))
+				continue;
+			Element child = (Element) obj;
 			elements.addAll(findElements(child, name));
+		}
 		return elements;
 	}
-
 }

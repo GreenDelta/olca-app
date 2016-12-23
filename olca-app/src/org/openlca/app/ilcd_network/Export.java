@@ -13,7 +13,7 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.BaseDescriptor;
-import org.openlca.ilcd.io.NetworkClient;
+import org.openlca.ilcd.io.SodaClient;
 import org.openlca.io.ilcd.output.ExportConfig;
 import org.openlca.io.ilcd.output.ProcessExport;
 import org.openlca.io.ilcd.output.SystemExport;
@@ -36,7 +36,7 @@ public class Export implements IRunnableWithProgress {
 	public void run(IProgressMonitor monitor) throws InvocationTargetException,
 			InterruptedException {
 		beginTask(monitor);
-		NetworkClient client = tryCreateClient();
+		SodaClient client = tryCreateClient();
 		ExportConfig config = new ExportConfig(database, client);
 		config.lang = IoPreference.getIlcdLanguage();
 		Iterator<BaseDescriptor> it = descriptors.iterator();
@@ -48,9 +48,9 @@ public class Export implements IRunnableWithProgress {
 		monitor.done();
 	}
 
-	private NetworkClient tryCreateClient() throws InvocationTargetException {
+	private SodaClient tryCreateClient() throws InvocationTargetException {
 		try {
-			NetworkClient client = IoPreference.createClient();
+			SodaClient client = IoPreference.createClient();
 			client.connect();
 			return client;
 		} catch (Exception e) {
