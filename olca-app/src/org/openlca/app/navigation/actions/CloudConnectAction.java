@@ -18,6 +18,7 @@ import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.cloud.CloudUtil;
+import org.openlca.app.cloud.TokenDialog;
 import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.cloud.index.DiffType;
 import org.openlca.app.cloud.ui.commits.HistoryView;
@@ -35,6 +36,7 @@ import org.openlca.app.util.Colors;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
+import org.openlca.cloud.api.CredentialSupplier;
 import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.api.RepositoryConfig;
 import org.openlca.cloud.model.data.Dataset;
@@ -87,7 +89,7 @@ class CloudConnectAction extends Action implements INavigationAction {
 				error = e;
 			}
 			if (error == null)
-				Database.connect(config);
+				Database.connect(client);
 			else
 				config.disconnect();
 		}
@@ -148,7 +150,7 @@ class CloudConnectAction extends Action implements INavigationAction {
 				checkValid();
 			});
 			configViewer.select(CloudConfigurations.getDefault());
-			Hyperlink editConfig = UI.formLink(container, M.Edit);
+			Hyperlink editConfig = UI.formLink(container, "#Edit");
 			editConfig.setForeground(Colors.linkBlue());
 			editConfig.addHyperlinkListener(new HyperlinkAdapter() {
 				@Override
@@ -194,8 +196,11 @@ class CloudConnectAction extends Action implements INavigationAction {
 		}
 
 		private RepositoryConfig createConfig() {
-			return RepositoryConfig.connect(Database.get(), serverUrl + "/ws",
-					repositoryId, username, password);
+			CredentialSupplier credentials = new CredentialSupplier(username, password);
+			credentials.setTokenSupplier(TokenDialog::prompt);
+			RepositoryConfig config = RepositoryConfig.connect(Database.get(), serverUrl + "/ws", repositoryId,
+					credentials);
+			return config;
 		}
 	}
 

@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Objects;
 
 import org.openlca.app.App;
+import org.openlca.app.cloud.TokenDialog;
 import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.navigation.CopyPaste;
 import org.openlca.cloud.api.RepositoryClient;
@@ -49,10 +50,11 @@ public class Database {
 			Logger log = LoggerFactory.getLogger(Database.class);
 			log.trace("activated database {} with version{}",
 					database.getName(), database.getVersion());
-			RepositoryConfig repoConfig = RepositoryConfig.loadFor(Database
-					.get());
-			if (repoConfig != null)
-				connect(repoConfig);
+			RepositoryConfig repoConfig = RepositoryConfig.loadFor(Database.get());
+			if (repoConfig != null) {
+				repoConfig.getCredentials().setTokenSupplier(TokenDialog::prompt);
+				connect(new RepositoryClient(repoConfig));
+			}
 			return Database.database;
 		} catch (Exception e) {
 			Database.database = null;
@@ -62,10 +64,10 @@ public class Database {
 		}
 	}
 
-	public static void connect(RepositoryConfig config) {
+	public static void connect(RepositoryClient client) {
 		if (diffIndex != null)
 			diffIndex.close();
-		repositoryClient = new RepositoryClient(config);
+		repositoryClient = client;
 		diffIndex = DiffIndex.getFor(repositoryClient);
 	}
 
