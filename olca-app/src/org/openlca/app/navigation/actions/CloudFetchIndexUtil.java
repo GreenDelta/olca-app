@@ -22,9 +22,12 @@ import org.openlca.core.database.Daos;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class FetchIndexHelper {
 
+	private final static Logger log = LoggerFactory.getLogger(FetchIndexHelper.class);
 	private DiffIndex index;
 	private Map<String, Long> localIds = new HashMap<>();
 
@@ -73,6 +76,7 @@ class FetchIndexHelper {
 	}
 
 	private void index(DiffResult diff) {
+		log.debug("Indexing: " + diff.toString());
 		Dataset dataset = diff.getDataset();
 		if (!dataset.type.isCategorized())
 			return;
