@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.openlca.app.cloud.JsonLoader;
 import org.openlca.app.cloud.index.DiffType;
 import org.openlca.app.cloud.ui.diff.DiffResult.DiffResponse;
+import org.openlca.app.util.UI;
 
 public class CommitDiffViewer extends DiffTreeViewer {
 
@@ -103,6 +104,7 @@ public class CommitDiffViewer extends DiffTreeViewer {
 				selected.remove(node);
 			}
 		});
+		UI.gridData(viewer.getTree(), true, true);
 		return viewer;
 	}
 
