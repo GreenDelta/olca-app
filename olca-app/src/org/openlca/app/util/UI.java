@@ -1,5 +1,6 @@
 package org.openlca.app.util;
 
+import java.net.CookieHandler;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jface.resource.JFaceResources;
@@ -45,6 +46,9 @@ public class UI {
 	public static WebEngine createWebView(FXCanvas canvas) {
 		canvas.setLayout(new FillLayout());
 		WebView view = new WebView();
+		// When the WebEngine is initialized a CookieHandler is set, which has
+		// errors reading multi value cookies, therefore set to null again
+		CookieHandler.setDefault(null);
 		Scene scene = new Scene(view);
 		canvas.setScene(scene);
 		WebEngine webkit = view.getEngine();
