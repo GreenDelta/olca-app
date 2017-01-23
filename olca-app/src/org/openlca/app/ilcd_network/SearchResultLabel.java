@@ -3,6 +3,7 @@ package org.openlca.app.ilcd_network;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
+import org.openlca.ilcd.commons.LangString;
 import org.openlca.ilcd.descriptors.ProcessDescriptor;
 import org.openlca.ilcd.descriptors.Time;
 
@@ -26,7 +27,7 @@ class SearchResultLabel extends LabelProvider implements ITableLabelProvider {
 	private String createLabel(ProcessDescriptor process, int columnIndex) {
 		switch (columnIndex) {
 		case SearchResultViewer.NAME_COLUMN:
-			return process.name != null ? process.name.value : "";
+			return LangString.getFirst(process.name, "en");
 		case SearchResultViewer.LOCATION_COLUMN:
 			return process.location;
 		case SearchResultViewer.TIME_COLUMN:
