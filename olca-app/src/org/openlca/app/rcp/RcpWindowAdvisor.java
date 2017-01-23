@@ -12,7 +12,6 @@ import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 import org.openlca.app.Config;
 import org.openlca.app.editors.StartPage;
-import org.openlca.app.util.Editors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,13 +52,6 @@ public class RcpWindowAdvisor extends WorkbenchWindowAdvisor {
 		IWorkbenchPage page = win.getActivePage();
 		IPerspectiveDescriptor perspective = page.getPerspective();
 		return perspective.getId().equals(RcpPerspective.ID);
-	}
-
-	@Override
-	public boolean preWindowShellClose() {
-		log.trace("close all editors");
-		Editors.closeAll();
-		return super.preWindowShellClose();
 	}
 
 }

@@ -73,7 +73,7 @@ public class Editors {
 				rest.add(ref);
 			}
 			IEditorReference[] restArray = rest.toArray(new IEditorReference[rest.size()]);
-			getActivePage().closeEditors(restArray, false);
+			getActivePage().closeEditors(restArray, true);
 		} catch (Exception e) {
 			log.error("Failed to close editors", e);
 		}
