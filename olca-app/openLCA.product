@@ -33,8 +33,8 @@ project and other open source software.
 
    <splash
       location="olca-app"
-      startupProgressRect="0,360,540,5"
-      startupMessageRect="7,500,445,20"
+      startupProgressRect="0,400,565,5"
+      startupMessageRect="7,525,445,20"
       startupForegroundColor="000000" />
    <launcher name="openLCA">
       <macosx icon="/olca-app/icons/logo/logo.icns"/>
@@ -55,7 +55,6 @@ project and other open source software.
    <vm>
       <windows include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8</windows>
    </vm>
-
 
    <plugins>
       <plugin id="com.google.gson"/>
