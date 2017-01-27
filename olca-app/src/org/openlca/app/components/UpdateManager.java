@@ -27,6 +27,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
 import org.openlca.app.db.Database;
 import org.openlca.app.devtools.python.Python;
+import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.RcpActivator;
 import org.openlca.app.rcp.html.HtmlFolder;
 import org.openlca.app.rcp.html.WebPage;
@@ -135,6 +136,7 @@ public class UpdateManager {
 					}
 				}
 			});
+			Navigator.refresh();
 			super.okPressed();
 		}
 

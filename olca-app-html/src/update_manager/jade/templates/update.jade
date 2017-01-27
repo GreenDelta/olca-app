@@ -1,7 +1,7 @@
 .update-container(data-id=refId, data-parent=parentRefId, data-executed=executed, style=!parentRefId&&executed?'display:none':null)
 	.left
 		.checkbox.checkbox-success
-			input(id=refId, type='checkbox', disabled=executed||required, data-executed=executed, data-required=required, checked=required&&!executed)
+			input(id=refId, type='checkbox', disabled=executed||required, data-executed=executed, data-required=required, checked=!executed)
 			label(for=refId)
 	.right
 		h3 #{name}

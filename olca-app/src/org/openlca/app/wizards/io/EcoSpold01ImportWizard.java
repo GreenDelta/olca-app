@@ -47,7 +47,7 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 				try {
 					unitNames = unitChecker.getUnits(files);
 				} catch (Exception e) {
-					log.error("Failed to get the units from files.");
+					log.error("Failed to get the units from files.", e);
 					unitNames = new String[0];
 				}
 				return unitNames;
