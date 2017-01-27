@@ -121,6 +121,9 @@ class CausalFactorTable {
 			column.setWidth(80);
 			column.setToolTipText(columnTitles[i]);
 		}
+		for (int i = 3; i < table.getColumnCount(); i++) {
+			viewer.getTable().getColumns()[i].setAlignment(SWT.RIGHT);
+		}
 	}
 
 	void setInitialInput() {

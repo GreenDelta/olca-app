@@ -11,6 +11,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -97,7 +98,7 @@ public class TotalFlowResultPage extends FormPage {
 		UI.gridData(section, true, true);
 		Composite comp = UI.sectionClient(section, toolkit);
 		UI.gridLayout(comp, 1);
-		String[] headers = new String[] { M.Name, M.Category, M.SubCategory, M.Amount };
+		String[] headers = new String[] { M.Name, M.Category, M.SubCategory, M.Amount, M.Unit };
 		if (DQUI.displayExchangeQuality(dqResult)) {
 			headers = DQUI.appendTableHeaders(headers, dqResult.setup.exchangeDqSystem);
 		}
@@ -106,10 +107,11 @@ public class TotalFlowResultPage extends FormPage {
 		TreeViewer viewer = Trees.createViewer(comp, headers, label);
 		viewer.setContentProvider(new ContentProvider());
 		createColumnSorters(viewer, label);
-		double[] widths = { .4, .2, .2, .2 };
+		double[] widths = { .4, .2, .2, .15, .05 };
 		if (DQUI.displayExchangeQuality(dqResult)) {
 			widths = DQUI.adjustTableWidths(widths, dqResult.setup.exchangeDqSystem);
 		}
+		viewer.getTree().getColumns()[3].setAlignment(SWT.RIGHT);
 		Trees.bindColumnWidths(viewer.getTree(), DQUI.MIN_COL_WIDTH, widths);
 		Actions.bind(viewer, TreeClipboard.onCopy(viewer));
 		spinner.register(viewer);
@@ -117,8 +119,8 @@ public class TotalFlowResultPage extends FormPage {
 	}
 
 	private void createColumnSorters(TreeViewer viewer, Label label) {
-		Viewers.sortByLabels(viewer, label, 0, 1, 2, 3);
-		Viewers.sortByDouble(viewer, this::getAmount, 4);
+		Viewers.sortByLabels(viewer, label, 0, 1, 2, 4);
+		Viewers.sortByDouble(viewer, this::getAmount, 3);
 		if (DQUI.displayExchangeQuality(dqResult)) {
 			for (int i = 0; i < dqResult.setup.exchangeDqSystem.indicators.size(); i++) {
 				Viewers.sortByDouble(viewer, label, i + 5);
@@ -170,7 +172,7 @@ public class TotalFlowResultPage extends FormPage {
 		private ContributionImage img = new ContributionImage(Display.getCurrent());
 
 		Label() {
-			super(dqResult, dqResult != null ? dqResult.setup.exchangeDqSystem : null, 4);
+			super(dqResult, dqResult != null ? dqResult.setup.exchangeDqSystem : null, 5);
 		}
 
 		@Override
@@ -213,8 +215,9 @@ public class TotalFlowResultPage extends FormPage {
 				return category.getRight();
 			case 3:
 				double v = getAmount(flow);
-				String unit = Labels.getRefUnit(flow, cache);
-				return Numbers.format(v) + " " + unit;
+				return Numbers.format(v);
+			case 4:
+				return Labels.getRefUnit(flow, cache);
 			default:
 				return null;
 			}
@@ -232,8 +235,9 @@ public class TotalFlowResultPage extends FormPage {
 				return category.getRight();
 			case 3:
 				double v = getAmount(item);
-				String unit = Labels.getRefUnit(item.flow, cache);
-				return Numbers.format(v) + " " + unit;
+				return Numbers.format(v);
+			case 4:
+				return Labels.getRefUnit(item.flow, cache);
 			default:
 				return null;
 			}

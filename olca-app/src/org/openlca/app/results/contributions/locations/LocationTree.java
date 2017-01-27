@@ -3,6 +3,7 @@ package org.openlca.app.results.contributions.locations;
 import java.util.List;
 
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.M;
 import org.openlca.app.util.Actions;
@@ -27,6 +28,7 @@ class LocationTree {
 		viewer.setContentProvider(new TreeContentProvider());
 		Trees.bindColumnWidths(viewer.getTree(), 0.4, 0.3, 0.3);
 		Actions.bind(viewer, TreeClipboard.onCopy(viewer));
+		viewer.getTree().getColumns()[1].setAlignment(SWT.RIGHT);
 	}
 
 	void setInput(List<LocationItem> contributions, String unit) {

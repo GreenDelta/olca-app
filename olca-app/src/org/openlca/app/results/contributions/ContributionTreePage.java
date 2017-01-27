@@ -12,6 +12,7 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -101,6 +102,7 @@ public class ContributionTreePage extends FormPage {
 		toolkit.paintBordersFor(tree.getTree());
 		createMenu();
 		Trees.bindColumnWidths(tree.getTree(), 0.20, 0.50, 0.20, 0.10);
+		tree.getTree().getColumns()[2].setAlignment(SWT.RIGHT);
 	}
 
 	private void createMenu() {

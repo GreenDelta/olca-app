@@ -10,6 +10,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -112,6 +113,8 @@ class ExchangeTable {
 				0.09, 0.05);
 		Viewers.sortByLabels(viewer, label, 0, 1, 3, 4, 5, 6, 7, 8);
 		Viewers.sortByDouble(viewer, (Exchange e) -> e.getAmountValue(), 2);
+		viewer.getTable().getColumns()[2].setAlignment(SWT.RIGHT);
+		viewer.getTable().getColumns()[4].setAlignment(SWT.RIGHT);
 	}
 
 	void setInput(Process process) {

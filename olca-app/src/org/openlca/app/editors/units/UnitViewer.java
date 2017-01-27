@@ -7,6 +7,7 @@ import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -56,6 +57,7 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 			if (item == null)
 				onCreate();
 		});
+		getViewer().getTable().getColumns()[3].setAlignment(SWT.RIGHT);
 	}
 
 	@Override

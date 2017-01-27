@@ -5,6 +5,7 @@ import java.util.List;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.M;
@@ -31,6 +32,8 @@ class NwFactorViewer extends AbstractTableViewer<Wrapper> {
 		this.editor = editor;
 		getModifySupport().bind(NORMALIZATION, new NormalizationModifier());
 		getModifySupport().bind(WEIGHTING, new WeightingModifier());
+		getViewer().getTable().getColumns()[1].setAlignment(SWT.RIGHT);
+		getViewer().getTable().getColumns()[2].setAlignment(SWT.RIGHT);
 	}
 
 	public void setInput(NwSet set) {

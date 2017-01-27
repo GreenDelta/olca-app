@@ -5,6 +5,7 @@ import java.util.List;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -36,6 +37,7 @@ class GroupResultTable {
 		Tables.bindColumnWidths(viewer.getTable(), 0.5, 0.25, 0.25);
 		UI.gridData(viewer.getControl(), true, false).heightHint = 200;
 		Actions.bind(viewer, TableClipboard.onCopy(viewer));
+		viewer.getTable().getColumns()[1].setAlignment(SWT.RIGHT);
 	}
 
 	public void setInput(List<ContributionItem<ProcessGrouping>> items,

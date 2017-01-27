@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -82,6 +83,9 @@ class TotalRequirementsSection {
 				Viewers.sortByDouble(table, label, i + startCol);
 			}
 		}
+		for (int col : numberColumns()) {
+			table.getTable().getColumns()[col].setAlignment(SWT.RIGHT);
+		}
 		Actions.bind(table, TableClipboard.onCopy(table));
 		Tables.onDoubleClick(table, e -> {
 			Item item = Viewers.getFirstSelected(table);
@@ -130,6 +134,12 @@ class TotalRequirementsSection {
 		if (!DQUI.displayProcessQuality(dqResult))
 			return columnLabels;
 		return DQUI.appendTableHeaders(columnLabels, dqResult.setup.processDqSystem);
+	}
+
+	private int[] numberColumns() {
+		if (costs == Costs.NONE || costs == null)
+			return new int[] { 2 };
+		return new int[] { 2, 4 };
 	}
 
 	private double[] columnWidths() {

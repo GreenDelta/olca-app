@@ -8,6 +8,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
@@ -96,6 +97,7 @@ public class ModelParameterPage extends FormPage {
 		Viewers.sortByLabels(table, label, 0, 2, 3);
 		Viewers.sortByDouble(table, (Parameter p) -> p.getValue(), 1);
 		Tables.bindColumnWidths(table.getTable(), 0.4, 0.3);
+		table.getTable().getColumns()[1].setAlignment(SWT.RIGHT);
 		section.setExpanded(false);
 		setGlobalTableInput(table);
 		bindGlobalParamActions(section, table);

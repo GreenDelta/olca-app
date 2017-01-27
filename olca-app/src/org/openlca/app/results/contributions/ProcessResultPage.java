@@ -175,6 +175,8 @@ public class ProcessResultPage extends FormPage {
 		Viewers.sortByDouble(table, (FlowDescriptor f) -> flowResult.getUpstreamTotal(f), 2);
 		Viewers.sortByDouble(table, (FlowDescriptor f) -> flowResult.getDirectResult(f), 3);
 		Actions.bind(table, TableClipboard.onCopy(table));
+		table.getTable().getColumns()[2].setAlignment(SWT.RIGHT);
+		table.getTable().getColumns()[3].setAlignment(SWT.RIGHT);
 		return table;
 	}
 
@@ -217,6 +219,8 @@ public class ProcessResultPage extends FormPage {
 		Viewers.sortByDouble(table, (ImpactCategoryDescriptor i) -> impactResult.getUpstreamTotal(i), 2);
 		Viewers.sortByDouble(table, (ImpactCategoryDescriptor i) -> impactResult.getDirectResult(i), 3);
 		Actions.bind(table, TableClipboard.onCopy(table));
+		table.getTable().getColumns()[2].setAlignment(SWT.RIGHT);
+		table.getTable().getColumns()[3].setAlignment(SWT.RIGHT);
 		return table;
 	}
 

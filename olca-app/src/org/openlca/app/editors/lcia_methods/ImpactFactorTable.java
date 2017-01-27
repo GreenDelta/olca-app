@@ -10,6 +10,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableItem;
@@ -66,10 +67,10 @@ class ImpactFactorTable {
 	}
 
 	public void render(Composite parent, Section section) {
-		viewer = Tables.createViewer(parent, new String[] { FLOW, CATEGORY, FLOW_PROPERTY, UNIT, FACTOR, UNCERTAINTY });
+		viewer = Tables.createViewer(parent, new String[] { FLOW, CATEGORY, FLOW_PROPERTY, FACTOR, UNIT, UNCERTAINTY });
 		FactorLabelProvider label = new FactorLabelProvider();
-		Viewers.sortByLabels(viewer, label, 0, 1, 2, 3, 5);
-		Viewers.sortByDouble(viewer, (ImpactFactor f) -> f.getValue(), 4);
+		Viewers.sortByLabels(viewer, label, 0, 1, 2, 4, 5);
+		Viewers.sortByDouble(viewer, (ImpactFactor f) -> f.getValue(), 3);
 		viewer.setLabelProvider(label);
 		Tables.bindColumnWidths(viewer, 0.2, 0.2, 0.15, 0.15, 0.15, 0.15);
 		ModifySupport<ImpactFactor> support = new ModifySupport<>(viewer);
@@ -78,6 +79,7 @@ class ImpactFactorTable {
 		support.bind(FACTOR, new ValueModifier());
 		support.bind(UNCERTAINTY, new UncertaintyCellEditor(viewer.getTable(), editor));
 		bindActions(viewer, section);
+		viewer.getTable().getColumns()[3].setAlignment(SWT.RIGHT);
 	}
 
 	void setImpactCategory(ImpactCategory impact, boolean sort) {
@@ -183,12 +185,12 @@ class ImpactFactorTable {
 			case 2:
 				return f.getFlowPropertyFactor().getFlowProperty().getName();
 			case 3:
-				return getFactorUnit(f);
-			case 4:
 				if (f.getFormula() == null || !showFormulas)
 					return Double.toString(f.getValue());
 				else
 					return f.getFormula();
+			case 4:
+				return getFactorUnit(f);
 			case 5:
 				return UncertaintyLabel.get(f.getUncertainty());
 			default:

@@ -147,6 +147,8 @@ class AllocationPage extends FormPage {
 				AllocationMethod.ECONOMIC));
 		Action copy = TableClipboard.onCopy(factorViewer);
 		Actions.bind(factorViewer, copy);
+		factorViewer.getTable().getColumns()[1].setAlignment(SWT.RIGHT);
+		factorViewer.getTable().getColumns()[2].setAlignment(SWT.RIGHT);
 	}
 
 	private void createCausalSection(Composite body) {

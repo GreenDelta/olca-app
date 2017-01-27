@@ -11,6 +11,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableItem;
@@ -144,6 +145,8 @@ public class ParameterSection {
 		addSorters(viewer, label);
 		bindColumnWidths(viewer);
 		bindActions(section);
+		int col = forInputParameters ? 1 : 2;
+		viewer.getTable().getColumns()[col].setAlignment(SWT.RIGHT);
 	}
 
 	private void bindColumnWidths(TableViewer viewer) {
