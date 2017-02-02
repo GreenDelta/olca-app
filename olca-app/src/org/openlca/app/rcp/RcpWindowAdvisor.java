@@ -12,12 +12,8 @@ import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 import org.openlca.app.Config;
 import org.openlca.app.editors.StartPage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class RcpWindowAdvisor extends WorkbenchWindowAdvisor {
-
-	private Logger log = LoggerFactory.getLogger(this.getClass());
 
 	public RcpWindowAdvisor(IWorkbenchWindowConfigurer configurer) {
 		super(configurer);
