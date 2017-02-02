@@ -19,7 +19,7 @@ gulp.task('default', function() {
 });
 gulp.task('precompile', ['plugin_manager_scripts', 'plugin_manager_templates', 'plugin_manager_styles', 'update_manager_scripts', 'update_manager_templates', 'update_manager_styles']);
 gulp.task('build', ['html_pages', 'jade_pages', 'resources', 'libs', 'start-page-templates', 'start-page-styles']);
-gulp.task('resources', ['images']);
+gulp.task('resources', ['images', 'fonts']);
 gulp.task('libs', ['base_libs', 'bootstrap']);
 
 gulp.task('clean', function() {
@@ -169,11 +169,7 @@ gulp.task('start-page-templates', function() {
 });
 
 gulp.task('start-page-styles', function() {
-	return gulp.src('./src/start_page/start_page.styl')
-		.pipe(stylus({
-			use: [nib()]
-		}))
-		.pipe(concat('start_page.css'))
+	return gulp.src('./src/start_page/start_page.css')
 		.pipe(gulp.dest('./build'));
 });
 

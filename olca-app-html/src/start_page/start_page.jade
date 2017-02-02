@@ -1,33 +1,133 @@
-include mixins/header.jade
-include mixins/whats-new.jade
-include mixins/getting-started.jade
-include mixins/manuals.jade
-include mixins/community.jade
+mixin block(className, messages)
+	.block(class=className)
+		span.block-content
+			span.title!=messages.title
+				img.chevron-right(src='images/chevron_right.png')
+			span.content
+				span!=messages.text + ' ' + messages.link
 
 <!DOCTYPE html>
 html(lang='en')
 	head
 		meta(content='text/html; charset=utf-8' http-equiv='content-type')
 		meta(name='viewport' content='initial-scale=1.0, user-scalable=no')
-		title='Welcome to openLCA'
 		link(rel='stylesheet' type='text/css' href='start_page.css')
 		script(src='libs/jquery.min.js')
 	body
-		+header
-		#main
-			+whats-new
-			hr
-			+getting-started
-			hr
-			+manuals
-			hr
-			+community
+		header
+			a(href='http://www.openlca.org' title='http://www.openlca.org'): img.logo(src='images/logo_start_page.png')
+			.header-title
+				.subtext
+					div!=msg.title1
+					div!=msg.title2
+					div!=msg.title3
+					div!=msg.title4
+				h2#version Version 1.6.0 (Windows 64bit)
+		+block('whats-new', msg.whatsNew)
+		+block('getting-started', msg.gettingStarted)
+		+block('manuals', msg.manuals)
+		+block('community', msg.community)
+		div.placeholder
+		a(href='http://www.greendelta.com' title='http://www.greendelta.com'): .gd-logo
 		script.
+			var blocks = $('.block:not(header)');
+
+			function expand(elem) {
+				$('.title', elem).hide();
+				$('.content', elem).show();
+				elem.css('width', '100%');
+				elem.css('margin-bottom', 50);
+				elem.addClass('expanded');
+			}
+
+			function collapse(elem) {
+				var expandedHeight = elem.outerHeight();
+				$('.content', elem).hide();
+				title = $('.title', elem)
+				title.show();
+				var collapsedHeight = elem.outerHeight();
+				elem.css('width', title.outerWidth() + 21);
+				elem.css('margin-bottom', 50 + expandedHeight - collapsedHeight);
+				elem.removeClass('expanded');
+			}
+
+			function collapseAll() {
+				for (var i = 0; i < blocks.length; i++) {
+					var block = $(blocks[i]);
+					if (block.hasClass('expanded')) {
+						collapse(block);
+					}
+				}
+			}
+
+			function getElement(event) {
+				var elem = $(event.target || event.srcElement || event.originalTarget);
+				while (!elem.hasClass('block')) {
+					elem = elem.parent();
+				}
+				return elem;
+			}
+
+			function initLinks() {
+				initLink('news', 'http://www.openlca.org/openlca/new');
+				initLink('video', 'https://www.youtube.com/watch?v=FqVMbwhAEW4');
+				initLink('channel', 'https://www.youtube.com/channel/UCGiahq1YZWK4pRXDVXuIi6w');
+				initLink('forum', 'http://forum.openlca.org');
+				initLink('linkedin', 'https://www.linkedin.com/groups/5060236/profile');
+				initLink('manuals', 'http://www.openlca.org/learning');
+				initLink('nexus', 'https://nexus.openlca.org');
+				initLink('greendelta', 'http://www.greendelta.com');
+			}
+
+			function initLink(id, href) {
+				$('a#' + id).attr('href', href);
+				$('a#' + id).attr('title', href);
+			}
+
+			function resetPositions() {
+				for (var i = 0; i < blocks.length; i++) {
+					var block = $(blocks[i]);
+					if (block.hasClass('expanded')) {
+						collapse(block);
+						expand(block);
+					} else {
+						expand(block);
+						collapse(block);
+					}
+				}
+			}
+
+			$(window).resize(function(e) {
+				resetPositions();
+			});
+
+			$('body').click(function(e) {
+				collapseAll();
+			});
+
+			$('.block').click(function(e) {
+				var elem = getElement(e);
+				if (elem.hasClass('expanded')) {
+					return true;
+				}
+				var scrollTop = $(window).scrollTop();
+				collapseAll();
+				expand(elem);
+				$(window).scrollTop(scrollTop);
+				e.stopPropagation();
+				return false;
+			});
+
 			$('a').on('click', function() {
-				try {				
-					java.openUrl($(this).attr('href'));
+				if (!window.java || !window.java.openUrl)
+					return;
+				try {
+					window.java.openUrl($(this).attr('href'));
 				} catch(e) {
 					alert(e);
 				}
 				return false;
 			});
+
+			initLinks();
+			resetPositions();
