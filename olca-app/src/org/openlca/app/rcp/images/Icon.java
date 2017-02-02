@@ -116,6 +116,8 @@ public enum Icon {
 	UP_DOUBLE("up_double.png"),
 	UP_DOUBLE_DISABLED("up_double_disabled.png"),
 
+	VALIDATE("validate.png"),
+	
 	WARNING("warning.png");
 
 	final String fileName;

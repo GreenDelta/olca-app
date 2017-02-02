@@ -9,12 +9,14 @@ import org.openlca.app.db.Database;
 import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.validation.ValidationView;
 
 class DatabaseValidateAction extends Action implements INavigationAction {
 
 	public DatabaseValidateAction() {
 		setText(M.Validate);
+		setImageDescriptor(Icon.VALIDATE.descriptor());
 	}
 
 	@Override
