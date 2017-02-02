@@ -801,7 +801,6 @@ public class M extends NLS {
 	public static String SubCategory;
 	public static String SubgroupByProcesses;
 	public static String Sum;
-	public static String Summable;
 	public static String Synonyms;
 	public static String SystemDefinesUncertainties;
 	public static String SystemProcess;
