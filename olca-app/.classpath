@@ -19,7 +19,6 @@
 	<classpathentry exported="true" kind="lib" path="libs/common-2.6.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-beanutils-1.8.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-collections-3.2.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/commons-httpclient-3.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-io-2.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-jxpath-1.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-lang3-3.1.jar"/>
@@ -52,7 +51,6 @@
 	<classpathentry exported="true" kind="lib" path="libs/javax.persistence-2.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jcl-over-slf4j-1.7.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jdom-1.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/jersey-apache-client-1.19.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jersey-client-1.19.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jersey-core-1.19.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jersey-multipart-1.19.jar"/>
