@@ -9,6 +9,7 @@ import org.openlca.io.refdata.RefDataImport;
 import org.openlca.updates.UpdateHelper;
 import org.openlca.updates.UpdateManifest;
 import org.openlca.updates.UpdateManifestStore;
+import org.openlca.util.DQSystems;
 import org.openlca.util.Dirs;
 import org.zeroturnaround.zip.ZipUtil;
 
@@ -42,6 +43,7 @@ public class Main {
 			db = new DerbyDatabase(F("build/flows"));
 			refImport = new RefDataImport(F("data/all"), db);
 			refImport.run();
+			DQSystems.ecoinvent(db);
 			embedUpdates(db);
 			db.close();
 			System.out.println("  done");
