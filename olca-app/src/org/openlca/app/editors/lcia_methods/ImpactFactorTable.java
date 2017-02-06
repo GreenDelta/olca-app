@@ -20,9 +20,10 @@ import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.components.UncertaintyCellEditor;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Error;
-import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Labels;
 import org.openlca.app.util.UncertaintyLabel;
 import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
@@ -179,11 +180,13 @@ class ImpactFactorTable {
 			ImpactFactor f = (ImpactFactor) o;
 			switch (col) {
 			case 0:
-				return f.getFlow().getName();
+				Labels.getDisplayName(f.getFlow());
 			case 1:
 				return CategoryPath.getShort(f.getFlow().getCategory());
 			case 2:
-				return f.getFlowPropertyFactor().getFlowProperty().getName();
+				if (f.getFlowPropertyFactor() == null)
+					return null;
+				return Labels.getDisplayName(f.getFlowPropertyFactor().getFlowProperty());
 			case 3:
 				if (f.getFormula() == null || !showFormulas)
 					return Double.toString(f.getValue());
@@ -222,6 +225,8 @@ class ImpactFactorTable {
 
 		@Override
 		protected FlowProperty getItem(ImpactFactor element) {
+			if (element.getFlowPropertyFactor() == null)
+				return null;
 			return element.getFlowPropertyFactor().getFlowProperty();
 		}
 
@@ -232,7 +237,8 @@ class ImpactFactorTable {
 
 		@Override
 		protected void setItem(ImpactFactor element, FlowProperty item) {
-			if (!Objects.equals(item, element.getFlowPropertyFactor().getFlowProperty())) {
+			if (element.getFlowPropertyFactor() == null
+					|| !Objects.equals(item, element.getFlowPropertyFactor().getFlowProperty())) {
 				FlowPropertyFactor factor = element.getFlow().getFactor(item);
 				element.setFlowPropertyFactor(factor);
 				editor.setDirty(true);
@@ -244,6 +250,12 @@ class ImpactFactorTable {
 
 		@Override
 		protected Unit[] getItems(ImpactFactor element) {
+			if (element.getFlowPropertyFactor() == null)
+				return new Unit[0];
+			if (element.getFlowPropertyFactor().getFlowProperty() == null)
+				return new Unit[0];
+			if (element.getFlowPropertyFactor().getFlowProperty().getUnitGroup() == null)
+				return new Unit[0];
 			List<Unit> items = new ArrayList<>();
 			for (Unit unit : element.getFlowPropertyFactor().getFlowProperty().getUnitGroup().getUnits())
 				items.add(unit);
