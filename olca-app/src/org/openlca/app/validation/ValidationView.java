@@ -220,9 +220,9 @@ public class ValidationView extends ViewPart {
 				return M.NoReferenceSet;
 			String text = "";
 			if (ref.id == 0)
-				text = "Missing";
+				text = "Missing ";
 			else
-				text = "Broken";
+				text = "Broken ";
 			if (ref.getType() == Parameter.class) {
 				return text += "parameter '" + ref.property + "' in formula";
 			} else {
