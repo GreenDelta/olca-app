@@ -1,4 +1,6 @@
 renderUpdate = (update) ->
+	unless update.parentRefId
+		update.parentRefId = null
 	update.hasAttachment = window.java.hasAttachment update.refId
 	template = $ jade.templates['update'] update
 	for depRefId in update.dependencies
