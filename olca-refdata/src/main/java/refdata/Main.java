@@ -7,8 +7,8 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.derby.DerbyDatabase;
 import org.openlca.io.refdata.RefDataImport;
 import org.openlca.updates.UpdateHelper;
-import org.openlca.updates.UpdateManifest;
-import org.openlca.updates.UpdateManifestStore;
+import org.openlca.updates.UpdateMetaInfo;
+import org.openlca.updates.UpdateMetaInfoStore;
 import org.openlca.util.DQSystems;
 import org.openlca.util.Dirs;
 import org.zeroturnaround.zip.ZipUtil;
@@ -64,10 +64,10 @@ public class Main {
 	}
 
 	private static void embedUpdates(IDatabase db) {
-		UpdateManifestStore store = new UpdateManifestStore(db);
+		UpdateMetaInfoStore store = new UpdateMetaInfoStore(db);
 		UpdateHelper helper = new UpdateHelper(db, null, null);
-		Set<UpdateManifest> all = helper.getAllUpdates();
-		for (UpdateManifest m : all) {
+		Set<UpdateMetaInfo> all = helper.getAllUpdates();
+		for (UpdateMetaInfo m : all) {
 			m.executed = true;
 			store.save(m);
 		}
