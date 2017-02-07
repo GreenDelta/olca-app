@@ -46,6 +46,7 @@ public class M extends NLS {
 	public static String AnalysisResultOf;
 	public static String AnalyzingForProblems;
 	public static String ApplyFormatToInputsOutputs;
+	public static String ApplyingDatabaseUpdates;
 	public static String AreYouSureYouWantToCheckout;
 	public static String AsDefinedInProcesses;
 	public static String AssessDataQuality;
@@ -57,6 +58,7 @@ public class M extends NLS {
 	public static String BackgroundData;
 	public static String BaseUncertainty;
 	public static String Browse;
+	public static String BrowseLocalFiles;
 	public static String BrowserConfiguration;
 	public static String BuildNextTier;
 	public static String BuildSupplyChain;
@@ -355,6 +357,7 @@ public class M extends NLS {
 	public static String HasUncertainties;
 	public static String Help;
 	public static String Hide;
+	public static String HideExecutedUpdates;
 	public static String HighOpportunity;
 	public static String HighRisk;
 	public static String Home;
@@ -586,6 +589,7 @@ public class M extends NLS {
 	public static String OpenLogFile;
 	public static String OpenMiniatureView;
 	public static String OpenPluginManager;
+	public static String OpenUpdateManager;
 	public static String Other;
 	public static String OutOfMemory;
 	public static String Output;
@@ -768,6 +772,7 @@ public class M extends NLS {
 	public static String ShareRepository;
 	public static String SharingRepository;
 	public static String Show;
+	public static String ShowExecutedUpdates;
 	public static String ShowFormulas;
 	public static String ShowInHistory;
 	public static String ShowInMap;
@@ -859,6 +864,7 @@ public class M extends NLS {
 	public static String UpdateMinorVersion;
 	public static String UpdatePreferences;
 	public static String UpdateReferenceCurrency;
+	public static String UpdateWasAlreadyAddedOrExecuted;
 	public static String UpdatingProductSystem;
 	public static String UpstreamInclDirect;
 	public static String UpstreamTotal;

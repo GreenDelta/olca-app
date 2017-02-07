@@ -56,11 +56,23 @@ public class FileChooser {
 			String defaultName, String filterPath, int swtFlag) {
 		FileDialog dialog = new FileDialog(shell, swtFlag);
 		dialog.setText(getDialogText(swtFlag));
-		if (extension != null)
-			dialog.setFilterExtensions(new String[] { extension });
+		String ext = null;
+		if (extension != null) {
+			ext = extension;
+			if (ext.contains("|"))
+				ext = ext.substring(0, ext.indexOf("|"));
+			dialog.setFilterExtensions(new String[] { ext });
+		}
 		dialog.setFileName(defaultName);
 		if (filterPath != null)
 			dialog.setFilterPath(filterPath);
+		if (extension != null) {
+			if (extension.contains("|")) {
+				String label = extension.substring(extension.indexOf("|") + 1);
+				label += " (" + ext + ")";
+				dialog.setFilterNames(new String[] { label });
+			}
+		}
 		return dialog.open();
 	}
 

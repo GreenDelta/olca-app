@@ -25,7 +25,7 @@ import org.openlca.core.database.derby.DerbyDatabase;
 import org.openlca.io.olca.DatabaseImport;
 import org.openlca.updates.Update;
 import org.openlca.updates.UpdateHelper;
-import org.openlca.updates.UpdateManifest;
+import org.openlca.updates.UpdateMetaInfo;
 import org.openlca.updates.VersionState;
 import org.openlca.updates.legacy.Upgrades;
 import org.slf4j.Logger;
@@ -155,19 +155,19 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 			case NEEDS_UPDATE:
 				monitor.subTask(M.UpdateDatabase);
 				UpdateHelper updates = new UpdateHelper(sourceDb, App.getCalculationContext(), Python.getDir());
-				for (UpdateManifest update : updates.getNewAndRequired()) {
+				for (UpdateMetaInfo update : updates.getNewAndRequired()) {
 					execute(update, updates);
 				}
 			default:
 			}
 		}
 
-		private void execute(UpdateManifest manifest, UpdateHelper updates) {
-			for (String depRefId : manifest.dependencies) {
+		private void execute(UpdateMetaInfo metaInfo, UpdateHelper updates) {
+			for (String depRefId : metaInfo.dependencies) {
 				Update dep = updates.getForRefId(depRefId);
-				execute(dep.manifest, updates);
+				execute(dep.metaInfo, updates);
 			}
-			Update update = updates.getForRefId(manifest.refId);
+			Update update = updates.getForRefId(metaInfo.refId);
 			updates.execute(update);
 		}
 
