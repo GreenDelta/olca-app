@@ -73,9 +73,16 @@ class Search implements Runnable {
 		}
 	}
 
-	private boolean match(BaseDescriptor descriptor) {
-		String label = Labels.getDisplayName(descriptor);
-		if (terms == null || label == null)
+	private boolean match(BaseDescriptor d) {
+		if (terms == null)
+			return false;
+		if (terms.length == 1
+				&& d.getRefId() != null
+				&& d.getRefId().equalsIgnoreCase(terms[0])) {
+			return true;
+		}
+		String label = Labels.getDisplayName(d);
+		if (label == null)
 			return false;
 		String feed = label.toLowerCase();
 		for (String term : terms) {

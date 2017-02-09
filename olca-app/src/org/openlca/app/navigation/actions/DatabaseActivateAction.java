@@ -142,6 +142,8 @@ public class DatabaseActivateAction extends Action implements INavigationAction 
 
 		private void refresh() {
 			Navigator.refresh();
+			if (Database.get() == null)
+				return;
 			INavigationElement<?> dbElem = Navigator.findElement(config);
 			INavigationElement<?> firstModelType = dbElem.getChildren().get(0);
 			Navigator.getInstance().getCommonViewer().reveal(firstModelType);
@@ -163,7 +165,10 @@ public class DatabaseActivateAction extends Action implements INavigationAction 
 			AtomicBoolean failed = new AtomicBoolean(false);
 			App.run(M.UpdateDatabase,
 					() -> runUpgrades(db, failed),
-					() -> closeDatabase());
+					() -> {
+						closeDatabase();
+						DatabaseActivateAction.this.run();
+					});
 		}
 
 		private void runUpgrades(IDatabase db, AtomicBoolean failed) {
