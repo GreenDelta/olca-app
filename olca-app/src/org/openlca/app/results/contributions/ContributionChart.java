@@ -10,11 +10,13 @@ import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.control.Tooltip;
+import javafx.util.StringConverter;
 
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.results.ContributionItem;
@@ -83,7 +85,7 @@ public class ContributionChart extends BarChart<String, Number> {
 
 	private double getGap(int bars) {
 		// TODO maybe there is a better way to calculate this correctly, this
-		// seems to work for now but not in all chart sizes, so be carefull when
+		// seems to work for now but not in all chart sizes, so be careful when
 		// not using the standard size in 2-arg constructor
 		switch (bars) {
 		case 1:
@@ -133,7 +135,22 @@ public class ContributionChart extends BarChart<String, Number> {
 		yAxis.setAutoRanging(false);
 		yAxis.setLowerBound(min < 0 ? -bound : 0);
 		yAxis.setUpperBound(bound);
-		yAxis.setTickUnit(bound / (min < 0 ? 2 : 4));
+		double tick = bound / (min < 0 ? 2 : 4);
+		yAxis.setTickUnit(tick);
+		yAxis.setTickLabelFormatter(new StringConverter<Number>() {
+			
+			@Override
+			public String toString(Number arg0) {
+				if (arg0 == null)
+					return "0";
+				return Numbers.format(arg0.doubleValue(), 1);
+			}
+			
+			@Override
+			public Number fromString(String arg0) {
+				return Double.parseDouble(arg0);
+			}
+		});
 	}
 
 	private class Comparator implements java.util.Comparator<ContributionItem<?>> {
