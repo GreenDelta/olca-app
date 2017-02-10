@@ -1,5 +1,8 @@
 package org.openlca.app.rcp;
 
+import java.util.Objects;
+
+import org.eclipse.core.runtime.IExtension;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.ICoolBarManager;
@@ -17,6 +20,9 @@ import org.eclipse.ui.actions.ActionFactory.IWorkbenchAction;
 import org.eclipse.ui.actions.ContributionItemFactory;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
+import org.eclipse.ui.internal.WorkbenchPlugin;
+import org.eclipse.ui.internal.registry.ActionSetRegistry;
+import org.eclipse.ui.internal.registry.IActionSetDescriptor;
 import org.openlca.app.Config;
 import org.openlca.app.M;
 import org.openlca.app.components.replace.ReplaceFlowsDialog;
@@ -33,6 +39,7 @@ import org.openlca.app.util.Actions;
 import org.openlca.app.util.Desktop;
 import org.openlca.core.model.ModelType;
 
+@SuppressWarnings("restriction")
 public class RcpActionBarAdvisor extends ActionBarAdvisor {
 
 	private IWorkbenchAction aboutAction;
@@ -68,6 +75,22 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		fillFileMenu(menuBar);
 		fillWindowMenu(menuBar);
 		fillHelpMenu(menuBar);
+		removeActionSets();
+	}
+
+	private void removeActionSets() {
+		// currently we just remove the cheat-sheets here; see:
+		// http://random-eclipse-tips.blogspot.de/2009/02/eclipse-rcp-removing-unwanted_02.html
+		ActionSetRegistry reg = WorkbenchPlugin.getDefault().getActionSetRegistry();
+		IActionSetDescriptor[] actionSets = reg.getActionSets();
+		for (int i = 0; i < actionSets.length; i++) {
+			if (Objects.equals(actionSets[i].getId(),
+					"org.eclipse.ui.cheatsheets.actionSet")) {
+				IExtension ext = actionSets[i].getConfigurationElement()
+						.getDeclaringExtension();
+				reg.removeExtension(ext, new Object[] { actionSets[i] });
+			}
+		}
 	}
 
 	private void fillHelpMenu(IMenuManager menuBar) {
