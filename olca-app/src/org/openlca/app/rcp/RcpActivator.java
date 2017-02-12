@@ -7,10 +7,13 @@ import java.io.InputStream;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.openlca.app.Preferences;
 import org.openlca.app.db.Database;
+import org.openlca.app.devtools.python.Python;
 import org.openlca.app.logging.Console;
 import org.openlca.app.logging.LoggerConfig;
 import org.openlca.app.rcp.html.HtmlFolder;
@@ -66,6 +69,10 @@ public class RcpActivator extends AbstractUIPlugin {
 		log.trace("initialize HTML folder");
 		HtmlFolder.initialize(RcpActivator.getDefault().getBundle(), "html/base_html.zip");
 		Preferences.init();
+		Job.create("init. Python", m -> {
+			Python.getDir();
+			return Status.OK_STATUS;
+		}).schedule();
 		log.trace("Try init olca-eigen");
 		try {
 			NativeLibrary.loadFromDir(workspace);
