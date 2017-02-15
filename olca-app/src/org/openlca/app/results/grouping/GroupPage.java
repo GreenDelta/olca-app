@@ -319,7 +319,7 @@ public class GroupPage extends FormPage {
 				return group.name;
 			} else if (element instanceof ProcessDescriptor) {
 				ProcessDescriptor p = (ProcessDescriptor) element;
-				return Strings.cut(Labels.getDisplayName(p), 75);
+				return Labels.getDisplayName(p);
 			} else
 				return null;
 		}
