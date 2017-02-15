@@ -23,6 +23,7 @@ public class Python {
 		try {
 			if (!initialized)
 				initialize();
+			python.setDatabase(Database.get());
 			python.eval(script);
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(Python.class);
@@ -47,8 +48,7 @@ public class Python {
 		try {
 			if (!matchVersion(pyDir))
 				initPythonDir(pyDir);
-			python = new org.openlca.updates.script.Python(Database.get(),
-					App.getCalculationContext(), pyDir);
+			python = new org.openlca.updates.script.Python(App.getCalculationContext(), pyDir);
 			python.register("app", App.class);
 			File dataDir = new File(workspace, "script_data");
 			if (!dataDir.exists())
