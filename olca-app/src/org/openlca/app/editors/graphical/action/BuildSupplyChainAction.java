@@ -52,12 +52,16 @@ class BuildSupplyChainAction extends Action implements IBuildAction {
 			if (editor.promptSaveIfNecessary())
 				new ProgressMonitorDialog(UI.shell()).run(true, false, new Runner(system));
 			editor.collapse();
+		} catch (Exception e) {
+			log.error("Failed to complete product system. ", e);
+		}
+		try {
 			NodeLayoutStore.loadLayout(editor.getModel());
 			if (editor.getOutline() != null)
 				editor.getOutline().refresh();
 			editor.setDirty(true);
 		} catch (Exception e) {
-			log.error("Failed to complete product system. ", e);
+			log.error("Failed to apply layout to graph", e);
 		}
 	}
 

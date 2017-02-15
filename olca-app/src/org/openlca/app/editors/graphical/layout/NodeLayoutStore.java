@@ -96,7 +96,7 @@ public final class NodeLayoutStore {
 		}
 		ProcessDescriptor descriptor = Cache.getEntityCache().get(ProcessDescriptor.class, layout.getId());
 		if (descriptor == null)
-			throw new NodeLayoutException();
+			return;
 		node = new ProcessNode(descriptor);
 		model.add(node);
 		node.apply(layout);
