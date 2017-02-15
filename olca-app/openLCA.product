@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="openLCA" uid="openLCA" id="olca-app.openLCA" application="org.openlca.app.Application" version="1.6.1.beta1" useFeatures="false" includeLaunchers="true">
+<product name="openLCA" uid="openLCA" id="olca-app.openLCA" application="org.openlca.app.Application" version="1.6.1.rc1" useFeatures="false" includeLaunchers="true">
 
    <aboutInfo>
       <image path="/olca-app/icons/about.png"/>

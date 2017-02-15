@@ -31,22 +31,33 @@ public class Python {
 	}
 
 	public static File getDir() {
+		if (!initialized)
+			initialize();
 		File workspace = App.getWorkspace();
-		return new File(workspace, "python");		
+		return new File(workspace, "python");
 	}
-	
-	private static void initialize() throws Exception { 
+
+	private static synchronized void initialize() {
+		if (initialized)
+			return;
+		Logger log = LoggerFactory.getLogger(Python.class);
 		File workspace = App.getWorkspace();
-		File pyDir = getDir();
-		if (!matchVersion(pyDir))
-			initPythonDir(pyDir);
-		python = new org.openlca.updates.script.Python(Database.get(), App.getCalculationContext(), pyDir);
-		python.register("app", App.class);
-		File dataDir = new File(workspace, "script_data");
-		if (!dataDir.exists())
-			dataDir.mkdir();
-		python.setDataDir(dataDir);
-		initialized = true;
+		File pyDir = new File(workspace, "python");
+		log.info("initialize Python interpreter");
+		try {
+			if (!matchVersion(pyDir))
+				initPythonDir(pyDir);
+			python = new org.openlca.updates.script.Python(Database.get(),
+					App.getCalculationContext(), pyDir);
+			python.register("app", App.class);
+			File dataDir = new File(workspace, "script_data");
+			if (!dataDir.exists())
+				dataDir.mkdir();
+			python.setDataDir(dataDir);
+			initialized = true;
+		} catch (Exception e) {
+			log.error("failed to initialize python interpreter @" + pyDir, e);
+		}
 	}
 
 	private static boolean matchVersion(File pyDir) throws Exception {
