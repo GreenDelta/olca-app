@@ -55,6 +55,8 @@ public class DatabaseValidation {
 		if (monitor != null)
 			monitor.beginTask(M.Preparing, IProgressMonitor.UNKNOWN);
 		for (ModelType type : ModelType.values()) {
+			if (monitor != null && monitor.isCanceled())
+				continue;
 			if (!type.isCategorized())
 				continue;
 			Set<Long> ids = getAll(type);
@@ -62,10 +64,12 @@ public class DatabaseValidation {
 				continue;
 			toEval.put(type, ids);
 		}
-		if (monitor != null)
+		if (monitor != null && !monitor.isCanceled())
 			monitor.beginTask(M.ValidatingDatabase, toEval.size() * 3);
 		List<ModelStatus> result = new ArrayList<>();
 		for (ModelType type : toEval.keySet()) {
+			if (monitor != null && monitor.isCanceled())
+				continue;
 			if (monitor != null)
 				monitor.subTask(Labels.modelType(type));
 			result.addAll(eval(type, toEval.get(type)));
@@ -93,7 +97,7 @@ public class DatabaseValidation {
 		IDatabase db = Database.get();
 		if (db == null)
 			return null;
-		if (monitor != null)
+		if (monitor != null && !monitor.isCanceled())
 			monitor.beginTask("Validating model", IProgressMonitor.UNKNOWN);
 		ModelStatus result = eval(type, Collections.singleton(id)).get(0);
 		if (monitor != null)
@@ -105,7 +109,7 @@ public class DatabaseValidation {
 		IDatabase db = Database.get();
 		if (db == null)
 			return Collections.emptyList();
-		if (monitor != null)
+		if (monitor != null && !monitor.isCanceled())
 			monitor.beginTask("Validating model", IProgressMonitor.UNKNOWN);
 		Set<Long> ids = getAll(type);
 		List<ModelStatus> result = eval(type, ids);
@@ -116,17 +120,27 @@ public class DatabaseValidation {
 
 	private List<ModelStatus> eval(ModelType type, Set<Long> ids) {
 		List<ModelStatus> result = new ArrayList<>();
+		if (monitor != null && monitor.isCanceled())
+			return result;
 		List<Reference> references = findReferences(type, ids);
+		if (monitor != null && monitor.isCanceled())
+			return result;
 		if (monitor != null)
 			monitor.worked(2);
 		List<Reference> notExisting = checkExistence(references);
+		if (monitor != null && monitor.isCanceled())
+			return result;
 		Map<Long, Boolean> referenceSet = checkReferenceSet(type, ids);
+		if (monitor != null && monitor.isCanceled())
+			return result;
 		for (Long id : ids) {
+			if (monitor != null && monitor.isCanceled())
+				continue;
 			boolean validReferenceSet = referenceSet == null || referenceSet.get(id);
 			ModelStatus status = new ModelStatus(type, id, filter(notExisting, id), validReferenceSet);
 			result.add(status);
 		}
-		if (monitor != null)
+		if (monitor != null && !monitor.isCanceled())
 			monitor.worked(1);
 		return result;
 	}
@@ -134,8 +148,7 @@ public class DatabaseValidation {
 	private Map<Long, Boolean> checkReferenceSet(ModelType type, Set<Long> ids) {
 		switch (type) {
 		case PRODUCT_SYSTEM:
-			return new ProductSystemDao(Database.get())
-					.hasReferenceProcess(ids);
+			return new ProductSystemDao(Database.get()).hasReferenceProcess(ids);
 		case PROCESS:
 			return new ProcessDao(Database.get()).hasQuantitativeReference(ids);
 		case FLOW:
@@ -152,6 +165,8 @@ public class DatabaseValidation {
 		result.addAll(references);
 		Map<Class<? extends AbstractEntity>, List<Reference>> nested = new HashMap<>();
 		for (Reference ref : references) {
+			if (monitor != null && monitor.isCanceled())
+				continue;
 			if (!nesting.contains(ref.getType()))
 				continue;
 			List<Reference> ids = nested.get(ref.getType());
@@ -159,12 +174,14 @@ public class DatabaseValidation {
 				nested.put(ref.getType(), ids = new ArrayList<>());
 			ids.add(ref);
 		}
-		for (Class<? extends AbstractEntity> nestingType : nesting)
-			if (nested.containsKey(nestingType)) {
-				List<Reference> nestedRefs = findReferences(nestingType,
-						nested.get(nestingType));
-				result.addAll(nestedRefs);
-			}
+		for (Class<? extends AbstractEntity> nestingType : nesting) {
+			if (monitor != null && monitor.isCanceled())
+				continue;
+			if (!nested.containsKey(nestingType))
+				continue;
+			List<Reference> nestedRefs = findReferences(nestingType, nested.get(nestingType));
+			result.addAll(nestedRefs);
+		}
 		return result;
 	}
 
@@ -181,6 +198,8 @@ public class DatabaseValidation {
 		List<Reference> notExisting = new ArrayList<>();
 		Map<Class<? extends AbstractEntity>, Map<Long, List<Reference>>> byType = splitByType(references);
 		for (Class<? extends AbstractEntity> type : byType.keySet()) {
+			if (monitor != null && monitor.isCanceled())
+				continue;
 			Map<Long, List<Reference>> refMap = byType.get(type);
 			Collection<List<Reference>> values = refMap.values();
 			Set<Long> ids = toIdSet(values);
@@ -195,8 +214,7 @@ public class DatabaseValidation {
 		return notExisting;
 	}
 
-	private Map<Class<? extends AbstractEntity>, Map<Long, List<Reference>>> splitByType(
-			List<Reference> references) {
+	private Map<Class<? extends AbstractEntity>, Map<Long, List<Reference>>> splitByType(List<Reference> references) {
 		Map<Class<? extends AbstractEntity>, Map<Long, List<Reference>>> byType = new HashMap<>();
 		for (Reference reference : references) {
 			Map<Long, List<Reference>> forType = byType.get(reference.getType());
@@ -225,13 +243,11 @@ public class DatabaseValidation {
 
 	private List<Reference> findReferences(ModelType type, Set<Long> ids) {
 		IDatabase db = Database.get();
-		List<Reference> refs = IReferenceSearch.FACTORY.createFor(type, db,
-				true).findReferences(ids);
+		List<Reference> refs = IReferenceSearch.FACTORY.createFor(type, db, true).findReferences(ids);
 		return evalNested(refs);
 	}
 
-	private List<Reference> findReferences(
-			Class<? extends AbstractEntity> type, List<Reference> refs) {
+	private List<Reference> findReferences(Class<? extends AbstractEntity> type, List<Reference> refs) {
 		List<Reference> nestedRefs = null;
 		Map<Long, Class<? extends AbstractEntity>> ownerTypes = new HashMap<>();
 		Map<Long, Long> ownerIds = new HashMap<>();

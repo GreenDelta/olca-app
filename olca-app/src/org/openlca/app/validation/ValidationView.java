@@ -3,6 +3,8 @@ package org.openlca.app.validation;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -13,7 +15,6 @@ import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.openlca.app.App;
@@ -21,8 +22,10 @@ import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Info;
 import org.openlca.app.util.UI;
+import org.openlca.app.util.trees.TreeClipboard;
 import org.openlca.app.util.trees.Trees;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.validation.ModelStatus.Status;
@@ -31,9 +34,12 @@ import org.openlca.core.database.references.IReferenceSearch.Reference;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ValidationView extends ViewPart {
 
+	private static final Logger log = LoggerFactory.getLogger(ValidationView.class);
 	private static ValidationView instance;
 	private TreeViewer viewer;
 
@@ -60,6 +66,13 @@ public class ValidationView extends ViewPart {
 			ModelStatus status = el instanceof ModelStatus ? (ModelStatus) el : ((StatusEntry) el).status;
 			App.openEditor(Database.createCategorizedDao(status.modelType).getDescriptor(status.id));
 		});
+		Action copy = TreeClipboard.onCopy(viewer.getTree());
+		Actions.bind(viewer, new Action(M.ExpandAll) {
+			@Override
+			public void run() {
+				viewer.expandAll();
+			}
+		}, copy);
 		Trees.bindColumnWidths(viewer.getTree(), 0.5, 0.5);
 	}
 
@@ -68,16 +81,17 @@ public class ValidationView extends ViewPart {
 		try {
 			ValidationView instance = (ValidationView) page.showView("views.problems");
 			List<ModelStatus> result = new ArrayList<>();
-			App.runWithProgress("Validating database", () -> {
-				DatabaseValidation validation = new DatabaseValidation();
-				result.addAll(validation.evaluateAll());
+			ProgressMonitorDialog dialog = new ProgressMonitorDialog(UI.shell());
+			dialog.run(true, true, (monitor) -> {
+				DatabaseValidation validation = DatabaseValidation.with(monitor);
+				result.addAll(validation.evaluateAll());				
 			});
 			StatusList[] model = createModel(result);
 			instance.viewer.setInput(model);
 			if (model.length == 0)
 				Info.showBox(M.DatabaseValidationCompleteNoErrorsWereFound);
-		} catch (PartInitException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			log.error("Error validating database", e);
 		}
 	}
 
