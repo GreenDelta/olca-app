@@ -24,7 +24,7 @@ html {
 }
 
 body {
-  font-size: 16px;
+  font-size: 25px;
   font-family: 'TheSans', Helvetica, Arial, sans-serif;
   color: #fbfbfb;
   line-height: 1.42857143;
@@ -34,7 +34,7 @@ body {
 }
 
 h2 {
-  font-size: 24px;
+  font-size: 28px;
   font-weight: normal;
   margin: 0;
 }
@@ -47,16 +47,16 @@ header {
 }
 
 header .subtext {
-  font-size: 18px;
+  font-size: 22px;
 }
 
 header .header-title {
-  margin-left: 222px;
+  margin-left: 250px;
 }
 
 img.logo {
   margin: 15px 25px 15px 25px;
-  height: 106px;
+  height: 126px;
   position: absolute;
 }
 
@@ -81,10 +81,6 @@ img.chevron {
 
 .content {
   display: none;
-}
-
-.title {
-  font-weight: bold;
 }
 
 a {
