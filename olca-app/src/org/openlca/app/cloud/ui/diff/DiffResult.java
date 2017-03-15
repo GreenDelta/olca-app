@@ -189,9 +189,8 @@ public class DiffResult {
 		}
 		String r = "null";
 		if (remote != null) {
-			l = "modelType: " + local.getDataset().type;
-			l += ", name: " + local.getDataset().name;
-			l += ", type: " + local.type;
+			l = "modelType: " + remote.type;
+			l += ", name: " + remote.name;
 		}
 		String text = "local: {" + l + "}, remote: {" + r + "}, resultType: {" + getType() + "}";
 		return text;
