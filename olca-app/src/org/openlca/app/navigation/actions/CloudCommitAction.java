@@ -1,7 +1,5 @@
 package org.openlca.app.navigation.actions;
 
-import org.openlca.app.M;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -12,6 +10,7 @@ import java.util.Set;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.cloud.index.Diff;
 import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.cloud.index.DiffType;
@@ -29,11 +28,9 @@ import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Info;
-import org.openlca.cloud.api.CommitInvocation;
 import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.model.data.Dataset;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.model.ModelType;
 
 class CloudCommitAction extends Action implements INavigationAction {
 
@@ -195,10 +192,15 @@ class CloudCommitAction extends Action implements INavigationAction {
 				checkUpToDate(client);
 				if (!upToDate || error != null)
 					return;
-				CommitInvocation commit = client.createCommitInvocation();
-				commit.setCommitMessage(message);
-				putChanges(selected, commit);
-				client.execute(commit);
+				List<Dataset> datasets = new ArrayList<>();
+				for (DiffResult change : selected) {
+					Dataset dataset = change.getDataset();
+					if (change.getType() == DiffResponse.DELETE_FROM_REMOTE) {
+						dataset.fullPath = change.local.dataset.fullPath;
+					}
+					datasets.add(dataset);
+				}
+				client.commit(message, datasets);
 				indexCommit();
 			} catch (Exception e) {
 				error = e;
@@ -238,29 +240,14 @@ class CloudCommitAction extends Action implements INavigationAction {
 			});
 		}
 
-		private List<DiffResult> createDifferences(DiffIndex index,
-				List<Diff> changes) {
+		private List<DiffResult> createDifferences(DiffIndex index, List<Diff> changes) {
 			List<DiffResult> differences = new ArrayList<>();
 			for (Diff diff : changes) {
-				DiffResult diffResult =  new DiffResult(diff);
+				DiffResult diffResult = new DiffResult(diff);
 				diffResult.ignoreRemote = true;
 				differences.add(diffResult);
 			}
 			return differences;
-		}
-
-		private void putChanges(List<DiffResult> changes,
-				CommitInvocation commit) {
-			for (DiffResult change : changes)
-				if (change.getType() == DiffResponse.DELETE_FROM_REMOTE) {
-					Dataset dataset = change.getDataset();
-					dataset.fullPath = change.local.dataset.fullPath;
-					commit.putForRemoval(dataset);
-				} else {
-					ModelType type = change.getDataset().type;
-					String refId = change.getDataset().refId;
-					commit.put(Database.createCategorizedDao(type).getForRefId(refId));
-				}
 		}
 
 	}
