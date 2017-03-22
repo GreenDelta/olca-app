@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.cloud.index.DiffType;
@@ -36,10 +37,18 @@ class FetchIndexHelper {
 	}
 
 	static void index(List<DiffResult> changed, DiffIndex index) {
+		index(changed, index, null);
+	}
+
+	static void index(List<DiffResult> changed, DiffIndex index, Consumer<DiffResult> callback) {
 		FetchIndexHelper helper = new FetchIndexHelper(index);
 		helper.localIds = getLocalIds(changed);
-		for (DiffResult diff : changed)
+		for (DiffResult diff : changed) {
 			helper.index(diff);
+			if (callback == null)
+				continue;
+			callback.accept(diff);
+		}
 		index.commit();
 	}
 

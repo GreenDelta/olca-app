@@ -1,22 +1,26 @@
 package org.openlca.app.cloud.ui.diff;
 
-import org.openlca.app.M;
-
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.cloud.JsonLoader;
 import org.openlca.app.cloud.index.Diff;
 import org.openlca.app.cloud.index.DiffIndex;
+import org.openlca.app.cloud.ui.FetchNotifierMonitor;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.CategoryElement;
 import org.openlca.app.navigation.DatabaseElement;
@@ -31,6 +35,8 @@ import org.openlca.app.util.viewers.Viewers;
 import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.model.data.Dataset;
 import org.openlca.cloud.model.data.FetchRequestData;
+import org.openlca.cloud.model.data.FileReference;
+import org.openlca.cloud.util.WebRequests.WebRequestException;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
@@ -78,7 +84,7 @@ public class SyncView extends ViewPart {
 			if (client == null)
 				input = null;
 			DiffIndex index = Database.getDiffIndex();
-			List<FetchRequestData> descriptors = client.sync(commitId);
+			Set<FetchRequestData> descriptors = client.sync(commitId);
 			List<DiffResult> differences = createDifferences(descriptors, elements);
 			input = new DiffNodeBuilder(client.getConfig().getDatabase(), index).build(differences);
 		} catch (Exception e) {
@@ -112,9 +118,11 @@ public class SyncView extends ViewPart {
 			if (dataset.type == ModelType.CATEGORY)
 				if (category.getRefId().equals(dataset.refId))
 					return true;
-			if (dataset.type == category.getModelType())
-				if (dataset.fullPath != null && dataset.fullPath.startsWith(CloudUtil.getFullPath(category) + "/"))
+			if (dataset.type == category.getModelType()) {
+				String fullPath = CloudUtil.getFullPath(category);
+				if (dataset.fullPath != null && dataset.fullPath.startsWith(fullPath + "/"))
 					return true;
+			}
 		}
 		if (element instanceof ModelElement) {
 			CategorizedDescriptor descriptor = ((ModelElement) element).getContent();
@@ -128,7 +136,7 @@ public class SyncView extends ViewPart {
 
 	}
 
-	private List<DiffResult> createDifferences(List<FetchRequestData> remotes, List<INavigationElement<?>> elements) {
+	private List<DiffResult> createDifferences(Set<FetchRequestData> remotes, List<INavigationElement<?>> elements) {
 		DiffIndex index = Database.getDiffIndex();
 		List<DiffResult> differences = new ArrayList<>();
 		Set<String> added = new HashSet<>();
@@ -167,28 +175,39 @@ public class SyncView extends ViewPart {
 		@Override
 		public void run() {
 			List<DiffNode> selected = Viewers.getAllSelected(viewer.getViewer());
-			List<Dataset> remotes = collectDatasets(selected);
+			Set<FileReference> remotes = collectDatasets(selected);
 			RepositoryClient client = Database.getRepositoryClient();
-			App.runWithProgress(M.DownloadingData, () -> {
-				try {
-					client.download(remotes, currentCommitId);
-				} catch (Exception e) {
-					error = e;
-				}
-			});
+			ProgressMonitorDialog dialog = new ProgressMonitorDialog(UI.shell());
+			try {
+				dialog.run(true, false, new IRunnableWithProgress() {
+
+					@Override
+					public void run(IProgressMonitor m) throws InvocationTargetException, InterruptedException {
+						try {
+							FetchNotifierMonitor monitor = new FetchNotifierMonitor(m, M.DownloadingData);
+							client.download(remotes, currentCommitId, monitor);
+						} catch (WebRequestException e) {
+							throw new InvocationTargetException(e);
+						}
+					}
+				});
+			} catch (Exception e) {
+				error = e;
+			} finally {
+				Navigator.refresh();
+			}
 			if (error != null)
 				Error.showBox("Error during download", error.getMessage());
 			else {
-				Navigator.refresh();
 				update(currentSelection, currentCommitId);
 			}
 		}
 
-		private List<Dataset> collectDatasets(List<DiffNode> nodes) {
-			List<Dataset> remotes = new ArrayList<>();
+		private Set<FileReference> collectDatasets(List<DiffNode> nodes) {
+			Set<FileReference> remotes = new HashSet<>();
 			for (DiffNode node : nodes) {
 				if (node.getContent().remote != null)
-					remotes.add(node.getContent().getDataset());
+					remotes.add(node.getContent().getDataset().asFileReference());
 				remotes.addAll(collectDatasets(node.children));
 			}
 			return remotes;

@@ -12,7 +12,6 @@ import org.openlca.cloud.model.data.FetchRequestData;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.Version;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.CategoryDescriptor;
 import org.openlca.core.model.descriptors.Descriptors;
@@ -34,33 +33,27 @@ public class CloudUtil {
 		return toDataset(descriptor, category);
 	}
 
-	public static Dataset toDataset(CategorizedDescriptor entity,
-			Category category) {
-		Dataset dataset = new Dataset();
-		dataset.refId = entity.getRefId();
-		dataset.type = entity.getModelType();
-		dataset.version = Version.asString(entity.getVersion());
-		dataset.lastChange = entity.getLastChange();
-		dataset.name = entity.getName();
+	public static Dataset toDataset(CategorizedEntity entity) {
+		CategorizedDescriptor descriptor = Descriptors.toDescriptor(entity);
+		Category category = entity.getCategory();
+		return toDataset(descriptor, category);
+	}
+
+	public static Dataset toDataset(CategorizedDescriptor descriptor, Category category) {
+		Dataset dataset = Dataset.toDataset(descriptor);
 		ModelType categoryType = null;
 		if (category != null) {
 			dataset.categoryRefId = category.getRefId();
 			categoryType = category.getModelType();
 		} else {
-			if (entity.getModelType() == ModelType.CATEGORY)
-				categoryType = ((CategoryDescriptor) entity).getCategoryType();
+			if (descriptor.getModelType() == ModelType.CATEGORY)
+				categoryType = ((CategoryDescriptor) descriptor).getCategoryType();
 			else
-				categoryType = entity.getModelType();
+				categoryType = descriptor.getModelType();
 		}
 		dataset.categoryType = categoryType;
-		dataset.fullPath = getFullPath(entity, category);
+		dataset.fullPath = getFullPath(descriptor, category);
 		return dataset;
-	}
-
-	public static Dataset toDataset(CategorizedEntity entity) {
-		CategorizedDescriptor descriptor = Descriptors.toDescriptor(entity);
-		Category category = entity.getCategory();
-		return toDataset(descriptor, category);
 	}
 
 	public static String getFullPath(Category category) {
@@ -84,7 +77,7 @@ public class CloudUtil {
 	public static JsonLoader getJsonLoader(RepositoryClient client) {
 		return new JsonLoader(client);
 	}
-	
+
 	public static String formatCommitDate(long value) {
 		Calendar today = Calendar.getInstance();
 		Calendar cal = Calendar.getInstance();

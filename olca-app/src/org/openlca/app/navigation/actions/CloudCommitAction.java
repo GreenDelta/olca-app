@@ -1,5 +1,6 @@
 package org.openlca.app.navigation.actions;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -9,6 +10,7 @@ import java.util.Set;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.cloud.index.Diff;
@@ -28,6 +30,8 @@ import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Info;
+import org.openlca.app.util.TimeEstimatingMonitor;
+import org.openlca.app.util.UI;
 import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.model.data.Dataset;
 import org.openlca.core.database.IDatabase;
@@ -108,10 +112,75 @@ class CloudCommitAction extends Action implements INavigationAction {
 			}
 			if (!doContinue)
 				return;
-			App.runWithProgress(M.CommitingChanges, this::commit);
+			checkUpToDate(client);
+			if (!upToDate || error != null)
+				return;
+			Set<Dataset> datasets = new HashSet<>();
+			for (DiffResult change : selected) {
+				Dataset dataset = change.getDataset();
+				if (change.getType() == DiffResponse.DELETE_FROM_REMOTE) {
+					dataset.fullPath = change.local.dataset.fullPath;
+				}
+				datasets.add(dataset);
+			}
+			commit(datasets);
 			if (!upToDate)
 				return;
 			Navigator.refresh(Navigator.getNavigationRoot());
+		}
+
+		private void commit(Set<Dataset> datasets) {
+			ProgressMonitorDialog dialog = new ProgressMonitorDialog(UI.shell());
+			try {
+				dialog.run(true, false, (m) -> {
+					TimeEstimatingMonitor monitor = new TimeEstimatingMonitor(m);
+					monitor.beginTask(M.CommitingChanges, datasets.size());
+					try {
+						client.commit(message, datasets, (dataset) -> monitor.worked());
+					} catch (Exception e) {
+						throw new InvocationTargetException(e);
+					}
+					monitor.done();
+				});
+				dialog.run(true, false, (m) -> {
+					TimeEstimatingMonitor monitor = new TimeEstimatingMonitor(m);
+					monitor.beginTask("#Indexing datasets", datasets.size());
+					orderResults();
+					for (DiffResult change : selected) {
+						Dataset dataset = change.getDataset();
+						DiffType before = index.get(dataset.refId).type;
+						if (before == DiffType.DELETED)
+							index.remove(dataset.refId);
+						else
+							index.update(dataset, DiffType.NO_DIFF);
+						monitor.worked();
+					}
+					index.commit();
+					monitor.done();
+				});
+			} catch (Exception e) {
+				error = e;
+			}
+		}
+
+		// must order diffs by length of path, so when removing from index,
+		// parent updating always works
+		private void orderResults() {
+			Collections.sort(selected, (d1, d2) -> {
+				int depth1 = 0;
+				String path = d1.getDataset().fullPath;
+				while (path.contains("/")) {
+					path = path.substring(path.indexOf("/") + 1);
+					depth1++;
+				}
+				int depth2 = 0;
+				path = d2.getDataset().fullPath;
+				while (path.contains("/")) {
+					path = path.substring(path.indexOf("/") + 1);
+					depth2++;
+				}
+				return Integer.compare(depth2, depth1);
+			});
 		}
 
 		private void getDifferences() {
@@ -185,59 +254,6 @@ class CloudCommitAction extends Action implements INavigationAction {
 			} catch (Exception e) {
 				error = e;
 			}
-		}
-
-		private void commit() {
-			try {
-				checkUpToDate(client);
-				if (!upToDate || error != null)
-					return;
-				List<Dataset> datasets = new ArrayList<>();
-				for (DiffResult change : selected) {
-					Dataset dataset = change.getDataset();
-					if (change.getType() == DiffResponse.DELETE_FROM_REMOTE) {
-						dataset.fullPath = change.local.dataset.fullPath;
-					}
-					datasets.add(dataset);
-				}
-				client.commit(message, datasets);
-				indexCommit();
-			} catch (Exception e) {
-				error = e;
-			}
-		}
-
-		private void indexCommit() {
-			orderResults();
-			for (DiffResult change : selected) {
-				Dataset dataset = change.getDataset();
-				DiffType before = index.get(dataset.refId).type;
-				if (before == DiffType.DELETED)
-					index.remove(dataset.refId);
-				else
-					index.update(dataset, DiffType.NO_DIFF);
-			}
-			index.commit();
-		}
-
-		// must order diffs by length of path, so when removing from index,
-		// parent updating always works
-		private void orderResults() {
-			Collections.sort(selected, (d1, d2) -> {
-				int depth1 = 0;
-				String path = d1.getDataset().fullPath;
-				while (path.contains("/")) {
-					path = path.substring(path.indexOf("/") + 1);
-					depth1++;
-				}
-				int depth2 = 0;
-				path = d2.getDataset().fullPath;
-				while (path.contains("/")) {
-					path = path.substring(path.indexOf("/") + 1);
-					depth2++;
-				}
-				return Integer.compare(depth2, depth1);
-			});
 		}
 
 		private List<DiffResult> createDifferences(DiffIndex index, List<Diff> changes) {
