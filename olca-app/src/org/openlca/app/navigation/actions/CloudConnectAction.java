@@ -171,6 +171,9 @@ class CloudConnectAction extends Action implements INavigationAction {
 					repositoryId.trim();
 				checkValid();
 			});
+			if (username != null) {
+				repoText.setText(username + "/" + Database.get().getName());
+			}
 			return container;
 		}
 

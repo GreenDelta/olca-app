@@ -35,9 +35,12 @@ import org.openlca.app.util.UI;
 import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.model.data.Dataset;
 import org.openlca.core.database.IDatabase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class CloudCommitAction extends Action implements INavigationAction {
 
+	private final Logger log = LoggerFactory.getLogger(getClass());
 	private IDatabase database;
 	private DiffIndex index;
 	private RepositoryClient client;
@@ -51,9 +54,10 @@ class CloudCommitAction extends Action implements INavigationAction {
 	public void run() {
 		Runner runner = new Runner();
 		runner.run();
-		if (runner.error != null)
+		if (runner.error != null) {
+			log.error("Error during commit action", runner.error);
 			Error.showBox(runner.error.getMessage());
-		else if (!runner.upToDate)
+		} else if (!runner.upToDate)
 			Error.showBox(M.RejectMessage);
 		else if (runner.noChanges)
 			Info.showBox(M.NoChangesInLocalDb);
@@ -94,15 +98,13 @@ class CloudCommitAction extends Action implements INavigationAction {
 		private Exception error;
 
 		public void run() {
-			App.runWithProgress(M.ComparingWithRepository,
-					this::getDifferences);
+			App.runWithProgress(M.ComparingWithRepository, this::getDifferences);
 			if (!upToDate)
 				return;
 			boolean doContinue = openCommitDialog();
 			if (!doContinue)
 				return;
-			App.runWithProgress(M.SearchingForReferencedChanges,
-					this::searchForReferences);
+			App.runWithProgress(M.SearchingForReferencedChanges, this::searchForReferences);
 			doContinue = showReferences();
 			if (!doContinue)
 				return;

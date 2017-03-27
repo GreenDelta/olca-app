@@ -124,6 +124,8 @@ public class DiffIndex {
 
 	public void remove(String key) {
 		Diff diff = index.remove(key);
+		if (diff == null)
+			return;
 		updateChangedTopLevelElements(diff.getDataset(), DiffType.NO_DIFF);
 		updateParents(diff, false);
 	}
