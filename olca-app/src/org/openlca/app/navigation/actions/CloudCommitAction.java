@@ -1,7 +1,6 @@
 package org.openlca.app.navigation.actions;
 
-import org.openlca.app.M;
-
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -11,7 +10,9 @@ import java.util.Set;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.cloud.index.Diff;
 import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.cloud.index.DiffType;
@@ -29,14 +30,17 @@ import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Info;
-import org.openlca.cloud.api.CommitInvocation;
+import org.openlca.app.util.TimeEstimatingMonitor;
+import org.openlca.app.util.UI;
 import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.model.data.Dataset;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.model.ModelType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class CloudCommitAction extends Action implements INavigationAction {
 
+	private final Logger log = LoggerFactory.getLogger(getClass());
 	private IDatabase database;
 	private DiffIndex index;
 	private RepositoryClient client;
@@ -50,9 +54,10 @@ class CloudCommitAction extends Action implements INavigationAction {
 	public void run() {
 		Runner runner = new Runner();
 		runner.run();
-		if (runner.error != null)
+		if (runner.error != null) {
+			log.error("Error during commit action", runner.error);
 			Error.showBox(runner.error.getMessage());
-		else if (!runner.upToDate)
+		} else if (!runner.upToDate)
 			Error.showBox(M.RejectMessage);
 		else if (runner.noChanges)
 			Info.showBox(M.NoChangesInLocalDb);
@@ -93,15 +98,13 @@ class CloudCommitAction extends Action implements INavigationAction {
 		private Exception error;
 
 		public void run() {
-			App.runWithProgress(M.ComparingWithRepository,
-					this::getDifferences);
+			App.runWithProgress(M.ComparingWithRepository, this::getDifferences);
 			if (!upToDate)
 				return;
 			boolean doContinue = openCommitDialog();
 			if (!doContinue)
 				return;
-			App.runWithProgress(M.SearchingForReferencedChanges,
-					this::searchForReferences);
+			App.runWithProgress(M.SearchingForReferencedChanges, this::searchForReferences);
 			doContinue = showReferences();
 			if (!doContinue)
 				return;
@@ -111,10 +114,75 @@ class CloudCommitAction extends Action implements INavigationAction {
 			}
 			if (!doContinue)
 				return;
-			App.runWithProgress(M.CommitingChanges, this::commit);
+			checkUpToDate(client);
+			if (!upToDate || error != null)
+				return;
+			Set<Dataset> datasets = new HashSet<>();
+			for (DiffResult change : selected) {
+				Dataset dataset = change.getDataset();
+				if (change.getType() == DiffResponse.DELETE_FROM_REMOTE) {
+					dataset.fullPath = change.local.dataset.fullPath;
+				}
+				datasets.add(dataset);
+			}
+			commit(datasets);
 			if (!upToDate)
 				return;
 			Navigator.refresh(Navigator.getNavigationRoot());
+		}
+
+		private void commit(Set<Dataset> datasets) {
+			ProgressMonitorDialog dialog = new ProgressMonitorDialog(UI.shell());
+			try {
+				dialog.run(true, false, (m) -> {
+					TimeEstimatingMonitor monitor = new TimeEstimatingMonitor(m);
+					monitor.beginTask(M.CommitingChanges, datasets.size());
+					try {
+						client.commit(message, datasets, (dataset) -> monitor.worked());
+					} catch (Exception e) {
+						throw new InvocationTargetException(e);
+					}
+					monitor.done();
+				});
+				dialog.run(true, false, (m) -> {
+					TimeEstimatingMonitor monitor = new TimeEstimatingMonitor(m);
+					monitor.beginTask("#Indexing datasets", datasets.size());
+					orderResults();
+					for (DiffResult change : selected) {
+						Dataset dataset = change.getDataset();
+						DiffType before = index.get(dataset.refId).type;
+						if (before == DiffType.DELETED)
+							index.remove(dataset.refId);
+						else
+							index.update(dataset, DiffType.NO_DIFF);
+						monitor.worked();
+					}
+					index.commit();
+					monitor.done();
+				});
+			} catch (Exception e) {
+				error = e;
+			}
+		}
+
+		// must order diffs by length of path, so when removing from index,
+		// parent updating always works
+		private void orderResults() {
+			Collections.sort(selected, (d1, d2) -> {
+				int depth1 = 0;
+				String path = d1.getDataset().fullPath;
+				while (path.contains("/")) {
+					path = path.substring(path.indexOf("/") + 1);
+					depth1++;
+				}
+				int depth2 = 0;
+				path = d2.getDataset().fullPath;
+				while (path.contains("/")) {
+					path = path.substring(path.indexOf("/") + 1);
+					depth2++;
+				}
+				return Integer.compare(depth2, depth1);
+			});
 		}
 
 		private void getDifferences() {
@@ -190,77 +258,14 @@ class CloudCommitAction extends Action implements INavigationAction {
 			}
 		}
 
-		private void commit() {
-			try {
-				checkUpToDate(client);
-				if (!upToDate || error != null)
-					return;
-				CommitInvocation commit = client.createCommitInvocation();
-				commit.setCommitMessage(message);
-				putChanges(selected, commit);
-				client.execute(commit);
-				indexCommit();
-			} catch (Exception e) {
-				error = e;
-			}
-		}
-
-		private void indexCommit() {
-			orderResults();
-			for (DiffResult change : selected) {
-				Dataset dataset = change.getDataset();
-				DiffType before = index.get(dataset.refId).type;
-				if (before == DiffType.DELETED)
-					index.remove(dataset.refId);
-				else
-					index.update(dataset, DiffType.NO_DIFF);
-			}
-			index.commit();
-		}
-
-		// must order diffs by length of path, so when removing from index,
-		// parent updating always works
-		private void orderResults() {
-			Collections.sort(selected, (d1, d2) -> {
-				int depth1 = 0;
-				String path = d1.getDataset().fullPath;
-				while (path.contains("/")) {
-					path = path.substring(path.indexOf("/") + 1);
-					depth1++;
-				}
-				int depth2 = 0;
-				path = d2.getDataset().fullPath;
-				while (path.contains("/")) {
-					path = path.substring(path.indexOf("/") + 1);
-					depth2++;
-				}
-				return Integer.compare(depth2, depth1);
-			});
-		}
-
-		private List<DiffResult> createDifferences(DiffIndex index,
-				List<Diff> changes) {
+		private List<DiffResult> createDifferences(DiffIndex index, List<Diff> changes) {
 			List<DiffResult> differences = new ArrayList<>();
 			for (Diff diff : changes) {
-				DiffResult diffResult =  new DiffResult(diff);
+				DiffResult diffResult = new DiffResult(diff);
 				diffResult.ignoreRemote = true;
 				differences.add(diffResult);
 			}
 			return differences;
-		}
-
-		private void putChanges(List<DiffResult> changes,
-				CommitInvocation commit) {
-			for (DiffResult change : changes)
-				if (change.getType() == DiffResponse.DELETE_FROM_REMOTE) {
-					Dataset dataset = change.getDataset();
-					dataset.fullPath = change.local.dataset.fullPath;
-					commit.putForRemoval(dataset);
-				} else {
-					ModelType type = change.getDataset().type;
-					String refId = change.getDataset().refId;
-					commit.put(Database.createCategorizedDao(type).getForRefId(refId));
-				}
 		}
 
 	}

@@ -17,9 +17,7 @@ public class DateFormatter {
 	 * @return The locale formatted date
 	 */
 	public static String formatShort(final Date date) {
-		return DateFormat
-				.getDateInstance(DateFormat.SHORT, Locale.getDefault()).format(
-						date);
+		return DateFormat.getDateInstance(DateFormat.SHORT, Locale.getDefault()).format(date);
 	}
 
 	/**
@@ -30,8 +28,7 @@ public class DateFormatter {
 	 * @return The locale formatted date
 	 */
 	public static String formatLong(final Date date) {
-		return DateFormat.getDateInstance(DateFormat.LONG, Locale.getDefault())
-				.format(date);
+		return DateFormat.getDateInstance(DateFormat.LONG, Locale.getDefault()).format(date);
 	}
 
 }
