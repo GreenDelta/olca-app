@@ -180,7 +180,7 @@ class ImpactFactorTable {
 			ImpactFactor f = (ImpactFactor) o;
 			switch (col) {
 			case 0:
-				Labels.getDisplayName(f.getFlow());
+				return Labels.getDisplayName(f.getFlow());
 			case 1:
 				return CategoryPath.getShort(f.getFlow().getCategory());
 			case 2:
