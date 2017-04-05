@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: olca-app
 Bundle-SymbolicName: olca-app;singleton:=true
-Bundle-Version: 1.6.1
+Bundle-Version: 1.6.2
 Bundle-Activator: org.openlca.app.rcp.RcpActivator
 Bundle-Vendor: openLCA.org
 Eclipse-BundleShape: dir
@@ -100,18 +100,18 @@ Bundle-ClassPath: .,
  libs/commons-codec-1.9.jar,
  libs/mapdb-2.0-beta7.jar,
  libs/jython-standalone-2.7.0.jar,
- libs/olca-cloud-1.6.0.jar,
- libs/olca-core-1.6.0.jar,
- libs/olca-ecospold-1-1.6.0.jar,
- libs/olca-ecospold-2-1.6.0.jar,
- libs/olca-eigen-1.6.0.jar,
- libs/olca-formula-1.6.0.jar,
- libs/olca-geo-1.6.0.jar,
- libs/olca-ilcd-1.6.0.jar,
- libs/olca-io-1.6.0.jar,
- libs/olca-jsonld-1.6.0.jar,
- libs/olca-simapro-csv-1.6.0.jar,
- libs/olca-updates-1.6.0.jar
+ libs/olca-cloud-1.6.2.jar,
+ libs/olca-core-1.6.2.jar,
+ libs/olca-ecospold-1-1.6.2.jar,
+ libs/olca-ecospold-2-1.6.2.jar,
+ libs/olca-eigen-1.6.2.jar,
+ libs/olca-formula-1.6.2.jar,
+ libs/olca-geo-1.6.2.jar,
+ libs/olca-ilcd-1.6.2.jar,
+ libs/olca-io-1.6.2.jar,
+ libs/olca-jsonld-1.6.2.jar,
+ libs/olca-simapro-csv-1.6.2.jar,
+ libs/olca-updates-1.6.2.jar
 Export-Package: com.google.common.collect,
  com.google.common.eventbus,
  com.google.gson,
