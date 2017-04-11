@@ -27,6 +27,7 @@ import org.openlca.app.cloud.ui.compare.json.JsonUtil;
 import org.openlca.app.cloud.ui.diff.DiffNode;
 import org.openlca.app.cloud.ui.diff.DiffNodeBuilder;
 import org.openlca.app.cloud.ui.diff.DiffResult;
+import org.openlca.app.cloud.ui.diff.DiffResult.DiffResponse;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
@@ -125,12 +126,14 @@ class CloudFetchAction extends Action implements INavigationAction {
 		private boolean showDifferences() {
 			if (error != null)
 				return false;
-			if (root != null) {
-				JsonLoader loader = CloudUtil.getJsonLoader(client);
-				DiffDialog dialog = new DiffDialog(root, loader);
-				if (dialog.open() != IDialogConstants.OK_ID)
-					return false;
-			}
+			if (root == null)
+				return false;
+			if (root.children.isEmpty())
+				return true;
+			JsonLoader loader = CloudUtil.getJsonLoader(client);
+			DiffDialog dialog = new DiffDialog(root, loader);
+			if (dialog.open() != IDialogConstants.OK_ID)
+				return false;
 			return true;
 		}
 
@@ -138,6 +141,8 @@ class CloudFetchAction extends Action implements INavigationAction {
 			Set<FileReference> toFetch = new HashSet<>();
 			Map<Dataset, JsonObject> mergedData = new HashMap<>();
 			for (DiffResult result : differences) {
+				if (result.getType() == DiffResponse.NONE)
+					continue;
 				Dataset dataset = result.getDataset();
 				JsonObject data = result.getMergedData();
 				String type = JsonUtil.getString(data, "@type");
@@ -172,7 +177,7 @@ class CloudFetchAction extends Action implements INavigationAction {
 			} catch (Exception e) {
 				error = e;
 			} finally {
-				Database.getIndexUpdater().enable();				
+				Database.getIndexUpdater().enable();
 			}
 		}
 

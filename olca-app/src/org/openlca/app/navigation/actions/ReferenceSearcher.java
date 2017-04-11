@@ -87,6 +87,8 @@ class ReferenceSearcher {
 			}
 			alreadySearchedReferences.add(id);
 		}
+		if (toCheck.isEmpty())
+			return Collections.emptySet();
 		IReferenceSearch<?> refSearch = IReferenceSearch.FACTORY.createFor(type, database, true);
 		results.addAll(loadDescriptors(refSearch.findReferences(toCheck)));
 		return results;
