@@ -29,6 +29,9 @@ When you have these tools installed you can build the application from source vi
 ####Install the openLCA core modules
 The core modules contain the application logic that is independent from the user interface and can be used in other applications. These modules are plain Maven projects and can be installed via `mvn install`. See the [olca-modules](https://github.com/GreenDelta/olca-modules) repository for a more information.
 
+####Install the openLCA updates module
+The updates module contains the database updating logic that is independent from the user interface. These modules are plain Maven projects and can be installed via `mvn install`. See the [olca-updates](https://github.com/GreenDelta/olca-updates) repository for a more information.
+
 ####Get the source code of the application
 We recommend that to use Git to manage the source code but you can also download the source code as a [zip file](https://github.com/GreenDelta/olca-app/archive/master.zip). Create a development directory (the path should not contain whitespaces):
 
