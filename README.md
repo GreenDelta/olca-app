@@ -112,8 +112,8 @@ folder to have a clean structure):
       ...
 
 After this, open Eclipse and select the created workspace directory. Import the
-projects into Eclipse via `Import/General/Existing Projects into Workspace`
-(select the olca/olca-app directory). You should now see the `olca-app`, 
+projects into Eclipse via `Import > General > Existing Projects into Workspace`
+(select the `olca/olca-app` directory). You should now see the `olca-app`, 
 `olca-app-build`, and `olca-app-runtime` projects in your Eclipse workspace.
 
 #### Build the Eclipse runtime
@@ -141,6 +141,18 @@ mvn package
 This will copy the installed openLCA core modules and dependencies (see above)
 to the folder `olca-app/olca-app/libs`.
 
+#### Add the JavaFX-SWT bridge
+Since version 1.6, openLCA uses JavaFX components (e.g. the JavaFX WebView or
+charting components). The Java runtime contains a JavaFX-SWT bridge with which
+it is possible to embed JavaFX components in SWT applications. This bridge is
+contained in the library `jfxswt.jar` which you need to add to the Java
+runtime in Eclipse.
+
+To do this, open the preferences for the installed Java runtimes 
+`Window > Preferences > Java > Installed JREs`, select the enabled JRE and
+click on `Edit`. In the upcoming dialog, click on `Add External JARs` and select
+the `jre/lib/jfxswt.jar` library from the respective Java installation.
+
 #### Test the application
 Refresh your Eclipse workspace (select all and press `F5`). Open the file
 [olca-app/openLCA.product](./olca-app/openLCA.product) within  Eclipse and click
@@ -150,6 +162,18 @@ If you want to build an installable product, see the description in the
 [olca-app-build](./olca-app-build) sub-project or simply use the Eclipse export
 wizard (Export/Eclipse product).     
 
+#### Build the database templates
+The openLCA application contains database templates that are used when the user
+creates a new database (empty, with units, or with all reference data). There
+is a Maven project `olca-refdata` that creates these database templates and
+copies them to the `olca-app/olca-app/db_templates` folder from which openLCA
+loads these templates. To build the templates, navigate to the refdata project
+and run the build:
+
+```bash
+cd olca-app/olca-refdata
+mvn package
+```
 
 License
 -------
