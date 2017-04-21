@@ -19,7 +19,6 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
-import org.openlca.app.Config;
 import org.openlca.app.M;
 import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.db.Database;
@@ -29,7 +28,6 @@ import org.openlca.app.editors.reports.ReportViewer;
 import org.openlca.app.editors.reports.Reports;
 import org.openlca.app.editors.reports.model.ReportCalculator;
 import org.openlca.app.preferencepages.FeatureFlag;
-import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
@@ -124,20 +122,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 		toolkit.createLabel(composite, "");
 		Composite buttonContainer = toolkit.createComposite(composite);
 		UI.gridLayout(buttonContainer, 2).marginHeight = 5;
-		if (Config.isBrowserEnabled())
-			createReportButton(buttonContainer);
-		else
-			createCalculationButton(buttonContainer);
-	}
-
-	private void createCalculationButton(Composite composite) {
-		Button button = toolkit.createButton(composite, M.Calculate,
-				SWT.NONE);
-		UI.gridData(button, false, false).widthHint = 100;
-		button.setImage(Icon.RUN.get());
-		Controls.onSelect(button, (e) -> {
-			Calculation.run(getModel());
-		});
+		createReportButton(buttonContainer);
 	}
 
 	private void createReportButton(Composite composite) {
@@ -149,9 +134,9 @@ class ProjectSetupPage extends ModelPage<Project> {
 			App.run(M.Calculate,
 					new ReportCalculator(getModel(), editor.getReport()),
 					() -> {
-				Reports.save(getModel(), editor.getReport(), database);
-				ReportViewer.open(editor.getReport());
-			});
+						Reports.save(getModel(), editor.getReport(), database);
+						ReportViewer.open(editor.getReport());
+					});
 		});
 	}
 
