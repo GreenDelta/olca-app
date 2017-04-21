@@ -549,6 +549,7 @@ public class M extends NLS {
 	public static String NoDescription;
 	public static String NoDistribution;
 	public static String NoExportFilesSelected;
+	public static String NoOpportunity;
 	public static String NoParameterSelected;
 	public static String NoProjectVaraintsAreDefined;
 	public static String NoQuantitativeReferenceSelected;
