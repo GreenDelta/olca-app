@@ -75,27 +75,3 @@ In order to build openLCA with a newer JRE you may have to remove the entry
 	
 from the bundle manifest.
 
-
-Packaging a XulRunner
----------------------
-For some platforms we can package a XulRunner runtime together with openLCA that can be used as an embedded browser in openLCA. Currently, we use Eclipse SWT 4.4 which supports stable bindings for [XulRunner 10.0](http://ftp.mozilla.org/pub/mozilla.org/xulrunner/releases/10.0/). There is also a [XulRunner for Windows 64 bit](http://wiki.mozilla-x86-64.com/Download) available.
-
-For the different platforms extract the XulRunners into the runtime folder:
-
-      olca-app-build
-      - ...
-      - runtime
-        - xulrunner
-          - linux32
-            - xulrunner....tar  # the tar file
-          - linux64
-            - xulrunner....tar  # the tar file
-          - win32
-            - components        # the exctracted zip
-            - ...
-          - win64
-            - components        # the extracted zip
-            - ...    
-
-Finally, you may have to adopt the paths in the `olca-app-build/buildlinux32|64bit.properties`
-

@@ -47,11 +47,6 @@
 			<url url="http://www.eclipse.org/downloads/download.php?file=/technology/babel/babel_language_packs/R0.12.0/luna/BabelLanguagePack-eclipse-zh_4.4.0.v20140623020002.zip&amp;r=1" />
 		</get>
 
-		<!-- Eclipse Birt Chart SDK -->
-		<get dest="${download_dir}/birt_charts_4.4.0.zip" verbose="true" skipexisting="true">
-			<url url="http://www.eclipse.org/downloads/download.php?file=/birt/downloads/drops/R-R1-4_4_0-201406111043/birt-charts-4_4_0-20140611.zip&amp;r=1" />
-		</get>
-
 		<!-- Eclipse Delta Pack -->
 		<get dest="${download_dir}/delta_pack_4.4.zip" verbose="true" skipexisting="true">
 			<url url="http://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.4-201406061215/eclipse-4.4-delta-pack.zip&amp;r=1" />
@@ -108,15 +103,6 @@
 				<include name="eclipse/plugins/**" />
 			</zipfileset>
 			<cutdirsmapper dirs="1" />
-		</copy>
-
-		<!-- Eclipse Birt Chart SDK -->
-		<copy todir="${platform_dir}" overwrite="false">
-			<zipfileset src="${download_dir}/birt_charts_4.4.0.zip">
-				<include name="ChartRuntime/eclipse/features/**" />
-				<include name="ChartRuntime/eclipse/plugins/**" />
-			</zipfileset>
-			<cutdirsmapper dirs="2" />
 		</copy>
 
 		<!-- Eclipse Delta Pack -->

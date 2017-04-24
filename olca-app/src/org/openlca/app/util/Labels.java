@@ -285,6 +285,8 @@ public class Labels {
 			return M.NoData;
 		case NOT_APPLICABLE:
 			return M.NotApplicable;
+		case NO_OPPORTUNITY:
+			return M.NoOpportunity;
 		default:
 			return M.Unknown;
 		}

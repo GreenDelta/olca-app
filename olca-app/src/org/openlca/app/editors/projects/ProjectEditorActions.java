@@ -3,7 +3,6 @@ package org.openlca.app.editors.projects;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.ui.part.EditorActionBarContributor;
 import org.openlca.app.App;
-import org.openlca.app.Config;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.reports.ReportViewer;
@@ -37,10 +36,7 @@ public class ProjectEditorActions extends EditorActionBarContributor {
 			return;
 		Project project = editor.getModel();
 		Report report = editor.getReport();
-		if (!Config.isBrowserEnabled() || report == null)
-			Calculation.run(project);
-		else
-			calculateReport(project, report);
+		calculateReport(project, report);
 	}
 
 	private void calculateReport(Project project, Report report) {

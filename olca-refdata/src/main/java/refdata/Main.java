@@ -1,6 +1,8 @@
 package refdata;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.Set;
 
 import org.openlca.core.database.IDatabase;
@@ -52,10 +54,29 @@ public class Main {
 			ZipUtil.pack(F("build/empty"), F("dist/empty.zolca"));
 			ZipUtil.pack(F("build/units"), F("dist/units.zolca"));
 			ZipUtil.pack(F("build/flows"), F("dist/flows.zolca"));
+
+			copyToApp();
 			System.out.println("  done");
 
 		} catch (Exception e) {
 			throw new RuntimeException("Database build failed", e);
+		}
+	}
+
+	private static void copyToApp() throws Exception {
+		File appDir = F("../olca-app/db_templates");
+		if (!appDir.exists()) {
+			System.out.println(
+					"  WARNING: ../olca-app/db_templates does not exist");
+			return;
+		}
+		System.out.println("  Copy to app ...");
+		String[] dbs = { "empty.zolca", "units.zolca", "flows.zolca" };
+		for (String db : dbs) {
+			File src = F("dist/" + db);
+			File target = new File(appDir, db);
+			Files.copy(src.toPath(), target.toPath(),
+					StandardCopyOption.REPLACE_EXISTING);
 		}
 	}
 
