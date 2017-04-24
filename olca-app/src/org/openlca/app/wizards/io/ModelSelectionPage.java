@@ -175,7 +175,7 @@ public class ModelSelectionPage extends WizardPage {
 			exportDestination = FileChooser.forExport(
 					FileChooser.DIRECTORY_DIALOG, dir);
 		else
-			exportDestination = FileChooser.forExport(fileExtension,
+			exportDestination = FileChooser.forExport("*." + fileExtension,
 					defaultName(), dir);
 		if (exportDestination == null)
 			return;
