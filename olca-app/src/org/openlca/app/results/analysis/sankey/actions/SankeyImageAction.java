@@ -49,7 +49,7 @@ public class SankeyImageAction extends Action {
 	public void run() {
 		if (sankeyDiagram == null)
 			return;
-		File file = FileChooser.forExport(".png", "sankey.png");
+		File file = FileChooser.forExport("*.png", "sankey.png");
 		if (file == null)
 			return;
 		Image image = createImage();

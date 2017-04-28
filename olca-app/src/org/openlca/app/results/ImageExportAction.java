@@ -54,7 +54,7 @@ public class ImageExportAction extends Action {
 	}
 
 	private void writeToFile(Image image) {
-		File file = FileChooser.forExport(".png", "openlca_chart.png");
+		File file = FileChooser.forExport("*.png", "openlca_chart.png");
 		if (file == null)
 			return;
 		log.trace("Export image to {}", file);

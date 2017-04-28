@@ -143,7 +143,7 @@ class PropertyLabels {
 	private static void putSourceLabels() {
 		Class<?> clazz = Source.class;
 		putBasicLabels(clazz);
-		put(clazz, "doi", M.Doi);
+		put(clazz, "url", M.URL);
 		put(clazz, "textReference", M.TextReference);
 		put(clazz, "year", M.Year);
 		put(clazz, "externalFile", M.ExternalFile);
