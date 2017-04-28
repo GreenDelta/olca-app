@@ -77,8 +77,8 @@ public abstract class UnitMappingPage extends WizardPage {
 	private void checkCompletion() {
 		boolean complete = true;
 		for (UnitMappingEntry entry : mappings) {
-			FlowProperty prop = entry.getFlowProperty();
-			Double factor = entry.getFactor();
+			FlowProperty prop = entry.flowProperty;
+			Double factor = entry.factor;
 			if (prop == null || factor == null) {
 				complete = false;
 				break;
@@ -134,7 +134,7 @@ public abstract class UnitMappingPage extends WizardPage {
 			UnitMappingEntry entry = defaultMapping.getEntry(unitName);
 			if (entry == null) {
 				entry = new UnitMappingEntry();
-				entry.setUnitName(unitName);
+				entry.unitName = unitName;
 			}
 			mappings.add(entry);
 		}
@@ -229,10 +229,10 @@ public abstract class UnitMappingPage extends WizardPage {
 			if (property.equals(FLOW_PROPERTY))
 				return true;
 			if (property.equals(CONVERSION_FACTOR)) {
-				UnitGroup group = entry.getUnitGroup();
+				UnitGroup group = entry.unitGroup;
 				if (group == null)
 					return false;
-				Unit unit = group.getUnit(entry.getUnitName());
+				Unit unit = group.getUnit(entry.unitName);
 				return unit == null;
 			}
 			return false;
@@ -246,15 +246,14 @@ public abstract class UnitMappingPage extends WizardPage {
 				return null;
 			UnitMappingEntry entry = (UnitMappingEntry) element;
 			if (property.equals(CONVERSION_FACTOR))
-				return Double.toString(entry.getFactor());
+				return Double.toString(entry.factor);
 			if (property.equals(FLOW_PROPERTY)) {
-				String[] candidates = getFlowPropertyCandidates(entry
-						.getUnitName());
+				String[] candidates = getFlowPropertyCandidates(entry.unitName);
 				flowPropertyCellEditor.setItems(candidates);
-				if (entry.getFlowProperty() == null)
+				if (entry.flowProperty == null)
 					return new Integer(-1);
 				else
-					return getIndex(entry.getFlowProperty().getName(),
+					return getIndex(entry.flowProperty.getName(),
 							candidates);
 			}
 			return null;
@@ -271,12 +270,11 @@ public abstract class UnitMappingPage extends WizardPage {
 			UnitMappingEntry entry = (UnitMappingEntry) element;
 			if (property.equals(FLOW_PROPERTY)) {
 				int val = Integer.parseInt(value.toString());
-				String[] candidates = getFlowPropertyCandidates(entry
-						.getUnitName());
+				String[] candidates = getFlowPropertyCandidates(entry.unitName);
 				updateEntry(entry, val, candidates);
 			} else if (property.equals(CONVERSION_FACTOR)) {
 				try {
-					entry.setFactor(Double.parseDouble(value.toString()));
+					entry.factor = Double.parseDouble(value.toString());
 				} catch (Exception e) {
 					// do nothing
 				}
@@ -325,15 +323,15 @@ public abstract class UnitMappingPage extends WizardPage {
 		}
 
 		private void updateEntry(UnitMappingEntry entry, FlowProperty prop) {
-			entry.setFlowProperty(prop);
+			entry.flowProperty = prop;
 			UnitGroup unitGroup = prop.getUnitGroup();
-			entry.setUnitGroup(unitGroup);
-			Unit unit = unitGroup.getUnit(entry.getUnitName());
-			entry.setUnit(unit);
+			entry.unitGroup = unitGroup;
+			Unit unit = unitGroup.getUnit(entry.unitName);
+			entry.unit = unit;
 			if (unit != null)
-				entry.setFactor(unit.getConversionFactor());
+				entry.factor = unit.getConversionFactor();
 			else
-				entry.setFactor(1d);
+				entry.factor = 1d;
 		}
 
 	}
@@ -357,10 +355,10 @@ public abstract class UnitMappingPage extends WizardPage {
 				return null;
 			UnitMappingEntry row = (UnitMappingEntry) element;
 			if (column == 0)
-				return row.getUnitName(); // no flow-prop check
-			if (row.getFlowProperty() == null)
+				return row.unitName; // no flow-prop check
+			if (row.flowProperty == null)
 				return null;
-			FlowProperty prop = row.getFlowProperty();
+			FlowProperty prop = row.flowProperty;
 			UnitGroup unitGroup = prop.getUnitGroup();
 			switch (column) {
 			case 1:
@@ -370,9 +368,9 @@ public abstract class UnitMappingPage extends WizardPage {
 					return null;
 				return unitGroup.getReferenceUnit().getName();
 			case 3:
-				if (row.getFactor() == null)
+				if (row.factor == null)
 					return null;
-				return Double.toString(row.getFactor());
+				return Double.toString(row.factor);
 			case 4:
 				return getFormula(row);
 			default:
@@ -381,12 +379,12 @@ public abstract class UnitMappingPage extends WizardPage {
 		}
 
 		private String getFormula(UnitMappingEntry row) {
-			if (row == null || row.getFactor() == null
-					|| row.getUnitGroup() == null)
+			if (row == null || row.factor == null
+					|| row.unitGroup == null)
 				return "";
-			return "1.0 " + row.getUnitName() + " = "
-					+ row.getFactor().toString() + " "
-					+ row.getUnitGroup().getReferenceUnit().getName();
+			return "1.0 " + row.unitName + " = "
+					+ row.factor.toString() + " "
+					+ row.unitGroup.getReferenceUnit().getName();
 		}
 	}
 
