@@ -11,6 +11,7 @@ import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.results.IResultEditor;
 import org.openlca.app.results.NwResultPage;
 import org.openlca.app.results.ResultEditorInput;
+import org.openlca.app.results.SaveProcessDialog;
 import org.openlca.app.results.SunBurstView;
 import org.openlca.app.results.TotalFlowResultPage;
 import org.openlca.app.results.TotalImpactResultPage;
@@ -109,7 +110,7 @@ public class AnalyzeEditor extends FormEditor implements IResultEditor<FullResul
 
 	@Override
 	public void doSaveAs() {
-
+		SaveProcessDialog.open(this);
 	}
 
 	public SankeyDiagram getDiagram() {
@@ -123,7 +124,7 @@ public class AnalyzeEditor extends FormEditor implements IResultEditor<FullResul
 
 	@Override
 	public boolean isSaveAsAllowed() {
-		return false;
+		return true;
 	}
 
 	@Override

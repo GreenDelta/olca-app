@@ -9,6 +9,7 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.results.IResultEditor;
 import org.openlca.app.results.NwResultPage;
 import org.openlca.app.results.ResultEditorInput;
+import org.openlca.app.results.SaveProcessDialog;
 import org.openlca.app.results.TotalFlowResultPage;
 import org.openlca.app.results.TotalImpactResultPage;
 import org.openlca.app.results.contributions.locations.LocationPage;
@@ -105,7 +106,7 @@ public class QuickResultEditor extends FormEditor implements IResultEditor<Contr
 
 	@Override
 	public void doSaveAs() {
-		// TODO: save result as system process
+		SaveProcessDialog.open(this);
 	}
 
 	@Override
@@ -115,7 +116,7 @@ public class QuickResultEditor extends FormEditor implements IResultEditor<Contr
 
 	@Override
 	public boolean isSaveAsAllowed() {
-		return false; // result != null;
+		return true;
 	}
 
 	@Override

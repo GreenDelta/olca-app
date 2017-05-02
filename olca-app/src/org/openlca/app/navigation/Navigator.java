@@ -89,11 +89,12 @@ public class Navigator extends CommonNavigator {
 	public static void refresh() {
 		CommonViewer viewer = getNavigationViewer();
 		NavigationRoot root = getNavigationRoot();
-		if (viewer != null && root != null) {
-			root.update();
-			viewer.refresh();
-			viewer.expandToLevel(2);
-		}
+		if (viewer == null || root == null)
+			return;
+		Object[] oldExpansion = viewer.getExpandedElements();
+		root.update();
+		viewer.refresh();
+		setRefreshedExpansion(viewer, oldExpansion);
 	}
 
 	/**
