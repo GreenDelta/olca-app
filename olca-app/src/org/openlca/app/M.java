@@ -56,6 +56,7 @@ public class M extends NLS {
 	public static String AvoidedWasteFlow;
 
 	public static String BackgroundData;
+	public static String BackupDatabase;
 	public static String BaseUncertainty;
 	public static String Browse;
 	public static String BrowseLocalFiles;
@@ -681,6 +682,7 @@ public class M extends NLS {
 	public static String ResetAll;
 	public static String ResetSelection;
 	public static String Resize;
+	public static String RestoreDatabase;
 	public static String Result;
 	public static String Results;
 	public static String ResultsOf;

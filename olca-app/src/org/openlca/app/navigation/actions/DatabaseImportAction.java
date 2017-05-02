@@ -19,7 +19,7 @@ import org.zeroturnaround.zip.ZipUtil;
 class DatabaseImportAction extends Action implements INavigationAction {
 
 	public DatabaseImportAction() {
-		setText(M.ImportDatabase);
+		setText(M.RestoreDatabase);
 		setImageDescriptor(Icon.DATABASE_IMPORT.descriptor());
 	}
 

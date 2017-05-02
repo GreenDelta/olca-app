@@ -196,14 +196,6 @@
             contributorClass="org.openlca.app.results.quick.QuickResultActions">
       </editor>
       <editor
-            id="ProjectResultEditor"
-            class="org.openlca.app.results.projects.ProjectResultEditor"
-            default="false"
-            icon="icons/chart.png"
-            name="Project results"
-            contributorClass="org.openlca.app.results.projects.ProjectResultActions">
-      </editor>
-      <editor
             class="org.openlca.app.results.analysis.AnalyzeEditor"
             contributorClass="org.openlca.app.results.analysis.AnalyzeResultActions"
             default="false"
@@ -702,13 +694,14 @@
            class="org.openlca.app.wizards.io.DbImportWizard"
            icon="icons/logo/16_32bit.png"
            id="wizard.import.db"
-           name="Database Import">
+           name="%ImportEntireDatabase">
+           <description>%ImportEntireDatabase_Info</description>
       </wizard>
       <wizard
       		class="org.openlca.app.wizards.io.JsonImportWizard"
       		icon="icons/logo/16_32bit.png"
             id="wizard.import.json"
-            name="JSON-LD">
+            name="Linked Data (JSON-LD)">
       </wizard>
   	  <wizard
 	       category="import.category.file"
