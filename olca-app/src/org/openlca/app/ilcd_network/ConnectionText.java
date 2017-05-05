@@ -10,6 +10,7 @@ import org.openlca.app.preferencepages.IoPreference;
 import org.openlca.app.preferencepages.IoPreferencePage;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
+import org.openlca.util.Strings;
 
 /**
  * A text with label and change button which shows the ILCD connection
@@ -42,7 +43,9 @@ public class ConnectionText {
 	}
 
 	private void initConnectionText() {
-		String txt = IoPreference.getIlcdUser() + " @ " + IoPreference.getIlcdUrl();
+		String txt = IoPreference.getIlcdUrl();
+		if (!Strings.nullOrEmpty(IoPreference.getIlcdUser()))
+			txt = IoPreference.getIlcdUser() + "@" + txt;
 		text.setText(txt);
 	}
 }

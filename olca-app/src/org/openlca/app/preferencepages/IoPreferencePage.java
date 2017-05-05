@@ -136,20 +136,18 @@ public class IoPreferencePage extends PreferencePage implements
 	private void testConnection(SodaClient client) {
 		try {
 			client.connect();
-			checkAuthentication(client.getAuthentication());
+			AuthInfo info = client.getAuthentication();
+			if (!info.isAuthenticated) {
+				Dialog.showInfo(getShell(), M.ConnectionWithAnonymousAccess);
+			} else if (!info.isReadAllowed() || !info.isExportAllowed()) {
+				Dialog.showWarning(getShell(), M.ILCD_NO_READ_OR_WRITE_ACCESS_MSG);
+			} else {
+				Dialog.showInfo(getShell(), M.ILCD_CONNECTION_WORKS_MSG);
+			}
 		} catch (Exception e) {
 			Dialog.showError(getShell(), M.ILCD_CONNECTION_FAILED_MSG
 					+ " (" + e.getMessage() + ")");
 		}
-	}
-
-	private void checkAuthentication(AuthInfo auth) {
-		if (!auth.isAuthenticated)
-			Dialog.showError(getShell(), M.ILCD_AUTHENTICATION_FAILED_MSG);
-		else if (!auth.isReadAllowed() || !auth.isExportAllowed())
-			Dialog.showWarning(getShell(), M.ILCD_NO_READ_OR_WRITE_ACCESS_MSG);
-		else
-			Dialog.showInfo(getShell(), M.ILCD_CONNECTION_WORKS_MSG);
 	}
 
 	@Override

@@ -127,6 +127,7 @@ public class M extends NLS {
 	public static String ConnectingToRepository;
 	public static String Connection;
 	public static String ConnectionFailed;
+	public static String ConnectionWithAnonymousAccess;
 	public static String ConsumedBy;
 	public static String Content;
 	public static String Context;
