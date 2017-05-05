@@ -6,7 +6,7 @@
    <aboutInfo>
       <image path="/olca-app/icons/about.png"/>
       <text>
-         openLCA 1.6.2
+         openLCA 1.6.3
 
 Copyright (c) 2007 - 2017 GreenDelta. All rights reserved.
 Visit http://openlca.org and http://greendelta.com
@@ -33,7 +33,7 @@ project and other open source software.
 
    <splash
       location="olca-app"
-      startupProgressRect="0,400,565,5"
+      startupProgressRect="0,360,540,5"
       startupMessageRect="7,525,445,20"
       startupForegroundColor="000000" />
    <launcher name="openLCA">
