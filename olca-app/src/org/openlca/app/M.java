@@ -707,6 +707,7 @@ public class M extends NLS {
 	public static String Search;
 	public static String SearchAllTypes;
 	public static String SearchInActors;
+	public static String SearchInCurrencies;
 	public static String SearchInDataQualitySystems;
 	public static String SearchInFlowProperties;
 	public static String SearchInFlows;

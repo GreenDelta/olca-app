@@ -1,7 +1,5 @@
 package org.openlca.app;
 
-import org.openlca.app.M;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuCreator;
 import org.eclipse.jface.action.ToolBarManager;
@@ -124,23 +122,6 @@ public class SearchText extends WorkbenchWindowControlContribution {
 			if (menu != null)
 				menu.dispose();
 			menu = new Menu(parent);
-
-			String[] texts = { M.SearchAllTypes,
-					M.SearchInProjects,
-					M.SearchInProductSystems,
-					M.SearchInLCIAMethods,
-					M.SearchInProcesses,
-					M.SearchInFlows,
-					M.SearchInSocialIndicators,
-					M.SearchInParameters,
-					M.SearchInFlowProperties,
-					M.SearchInUnitGroups,
-					M.SearchInActors,
-					M.SearchInSources,
-					M.SearchInLocations ,					
-					M.SearchInDataQualitySystems,
-			};
-
 			ModelType[] types = { null,
 					ModelType.PROJECT,
 					ModelType.PRODUCT_SYSTEM,
@@ -157,11 +138,48 @@ public class SearchText extends WorkbenchWindowControlContribution {
 					ModelType.LOCATION,
 					ModelType.DQ_SYSTEM
 			};
-
-			for (int i = 0; i < texts.length; i++) {
-				createItem(menu, texts[i], types[i]);
+			for (int i = 0; i < types.length; i++) {
+				ModelType type = types[i];
+				createItem(menu, getSeachLabel(type), type);
 			}
 			return menu;
+		}
+
+		private String getSeachLabel(ModelType type) {
+			if (type == null)
+				return M.SearchAllTypes;
+			switch (type) {
+			case PROJECT:
+				return M.SearchInProjects;
+			case PRODUCT_SYSTEM:
+				return M.SearchInProductSystems;
+			case IMPACT_METHOD:
+				return M.SearchInLCIAMethods;
+			case PROCESS:
+				return M.SearchInProcesses;
+			case FLOW:
+				return M.SearchInFlows;
+			case SOCIAL_INDICATOR:
+				return M.SearchInSocialIndicators;
+			case PARAMETER:
+				return M.SearchInParameters;
+			case FLOW_PROPERTY:
+				return M.SearchInFlowProperties;
+			case UNIT_GROUP:
+				return M.SearchInUnitGroups;
+			case CURRENCY:
+				return M.SearchInCurrencies;
+			case ACTOR:
+				return M.SearchInActors;
+			case SOURCE:
+				return M.SearchInSources;
+			case LOCATION:
+				return M.SearchInLocations;
+			case DQ_SYSTEM:
+				return M.SearchInDataQualitySystems;
+			default:
+				return M.Unknown;
+			}
 		}
 
 		private void createItem(Menu menu, final String text,
