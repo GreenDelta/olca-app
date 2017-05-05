@@ -36,7 +36,7 @@ public final class SaveProcessDialog extends Wizard {
 		if (editor == null)
 			return Window.CANCEL;
 		SaveProcessDialog d = new SaveProcessDialog(editor);
-		d.setWindowTitle("#Save as LCI result");
+		d.setWindowTitle(M.SaveAsLCIResult);
 		WizardDialog dialog = new WizardDialog(UI.shell(), d);
 		dialog.setPageSize(150, 250);
 		return dialog.open();
@@ -80,7 +80,7 @@ public final class SaveProcessDialog extends Wizard {
 		private Button metaCheck;
 
 		private Page() {
-			super("SaveProcessDialogPage", "#Save as LCI result", null);
+			super("SaveProcessDialogPage", M.SaveAsLCIResult, null);
 			setPageComplete(true);
 		}
 
@@ -92,7 +92,7 @@ public final class SaveProcessDialog extends Wizard {
 			nameText = UI.formText(parent, M.Name);
 			nameText.setText(editor.getSetup().productSystem.getName() + " - LCI");
 			UI.filler(parent);
-			metaCheck = UI.checkBox(parent, "#Copy meta data from reference process");
+			metaCheck = UI.checkBox(parent, M.CopyMetaDataFromReferenceProcess);
 			metaCheck.setSelection(true);
 		}
 	}

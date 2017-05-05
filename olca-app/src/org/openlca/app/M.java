@@ -137,6 +137,7 @@ public class M extends NLS {
 	public static String ConversionFactor;
 	public static String Copy;
 	public static String CopyAllFromRightToLeft;
+	public static String CopyMetaDataFromReferenceProcess;
 	public static String CopySelectionFromRightToLeft;
 	public static String Copyright;
 	public static String CostCategory;
@@ -700,6 +701,7 @@ public class M extends NLS {
 	public static String Save;
 	public static String SaveAs;
 	public static String SaveAsImage;
+	public static String SaveAsLCIResult;
 	public static String SaveChanges;
 	public static String SaveChangesQuestion;
 	public static String SavingDiagramAsImageIn;
