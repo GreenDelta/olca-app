@@ -50,13 +50,15 @@ class DataQualityCellEditor extends DialogCellEditor {
 		DQSystem system = editor.getModel().exchangeDqSystem;
 		String dqEntry = exchange.getDqEntry();
 		Double uncertainty = exchange.getBaseUncertainty();
-		DataQualityShell shell = DataQualityShell.withUncertainty(control.getShell(), system, dqEntry, uncertainty);
+		DataQualityShell shell = DataQualityShell.withUncertainty(
+				control.getShell(), system, dqEntry, uncertainty);
 		shell.onOk = this::onOk;
 		shell.onDelete = this::onDelete;
 		shell.onUseUncertainties = this::onUseUncertainties;
 		shell.addDisposeListener(e -> {
 			if (valuesChanged()) {
 				updateContents(exchange.getDqEntry());
+				viewer.refresh();
 				editor.setDirty(true);
 			}
 		});
@@ -81,10 +83,10 @@ class DataQualityCellEditor extends DialogCellEditor {
 	private void onUseUncertainties(DataQualityShell shell) {
 		Uncertainty u = new Uncertainty();
 		u.setDistributionType(UncertaintyType.LOG_NORMAL);
-		u.setParameter1Value(1d);
+		u.setParameter1Value(exchange.getAmountValue());
 		u.setParameter2Value(shell.updateSigmaG());
 		exchange.setUncertainty(u);
-		viewer.refresh(true);
+		viewer.refresh();
 	}
 
 }
