@@ -148,7 +148,7 @@ public class GroupPage extends FormPage {
 		groupData.widthHint = 250;
 		configureViewer(groupViewer);
 		groupViewer.setInput(groups);
-		Actions.bind(groupViewer, new DeleteGroupAction());
+		Actions.bind(groupViewer, new AddGroupAction(), new DeleteGroupAction());
 		groupViewer.addSelectionChangedListener(e -> {
 			ProcessGrouping g = Viewers.getFirst(e.getSelection());
 			if (g != null)
@@ -176,6 +176,7 @@ public class GroupPage extends FormPage {
 
 		public AddGroupAction() {
 			setImageDescriptor(Icon.ADD.descriptor());
+			setText(M.Add);
 			setToolTipText(M.Add);
 		}
 
@@ -192,6 +193,7 @@ public class GroupPage extends FormPage {
 				groups.add(group);
 				groupViewer.add(group);
 				resultSection.update();
+				updateViewers();
 			}
 		}
 	}
