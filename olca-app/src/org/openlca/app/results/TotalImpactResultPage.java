@@ -264,21 +264,25 @@ public class TotalImpactResultPage extends FormPage {
 			Item parent = (Item) obj;
 			List<Item> children = new ArrayList<>();
 			if (parent.type() == ModelType.IMPACT_CATEGORY && subgroupByProcesses) {
-				double cutoffValue = parent.result() * cutoff;
+				double cutoffValue = Math.abs(parent.result() * cutoff);
 				for (ProcessDescriptor process : result.getProcessDescriptors()) {
 					Item child = new Item(parent.impact, process);
 					double result = child.result();
-					if (result != 0 && (this.cutoff == 0d || Math.abs(result) >= cutoffValue)) {
+					if (result == 0)
+						continue;
+					if (Math.abs(result) >= cutoffValue) {
 						children.add(child);
 					}
 				}
 			} else {
-				double cutoffValue = parent.result() * cutoff;
+				double cutoffValue = Math.abs(parent.result() * cutoff);
 				for (FlowDescriptor flow : result.getFlowDescriptors()) {
 					// process will be null in case of subgroupByProcesses=false
 					Item child = new Item(parent.impact, parent.process, flow);
 					double result = child.result();
-					if (result != 0 && (this.cutoff == 0d || Math.abs(result) >= cutoffValue)) {
+					if (result == 0)
+						continue;
+					if (Math.abs(result) >= cutoffValue) {
 						children.add(child);
 					}
 				}
@@ -348,8 +352,8 @@ public class TotalImpactResultPage extends FormPage {
 		}
 
 		double impactFactor() {
-			if (impact == null || process == null || flow == null)
-				return 0;
+			// note that process can be null if we want to get the
+			// total flow contribution
 			return impactFactors.get(impact, process, flow);
 		}
 
