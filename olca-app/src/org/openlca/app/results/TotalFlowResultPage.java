@@ -137,7 +137,7 @@ public class TotalFlowResultPage extends FormPage {
 			if (!(e instanceof FlowDescriptor))
 				return null;
 			FlowDescriptor flow = (FlowDescriptor) e;
-			double cutoffValue = getAmount(flow) * this.cutoff;
+			double cutoffValue = Math.abs(getAmount(flow) * this.cutoff);
 			return result.getProcessContributions(flow).contributions.stream()
 					.filter(i -> i.amount != 0)
 					.filter(i -> Math.abs(i.amount) >= cutoffValue)
