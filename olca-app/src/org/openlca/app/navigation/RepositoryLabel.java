@@ -45,7 +45,7 @@ class RepositoryLabel {
 		RepositoryClient client = Database.getRepositoryClient();
 		if (client == null)
 			return null;
-		return " [" + client.getConfig().getServerUrl() + " " + client.getConfig().getRepositoryId() + "]";
+		return " [" + client.getConfig().getServerUrl() + " " + client.getConfig().repositoryId + "]";
 	}
 
 	static String getStateIndicator(INavigationElement<?> element) {

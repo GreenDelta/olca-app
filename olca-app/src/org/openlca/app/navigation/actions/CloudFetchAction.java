@@ -117,7 +117,7 @@ class CloudFetchAction extends Action implements INavigationAction {
 			try {
 				Set<FetchRequestData> descriptors = client.requestFetch();
 				differences = createDifferences(descriptors);
-				root = new DiffNodeBuilder(client.getConfig().getDatabase(), index).build(differences);
+				root = new DiffNodeBuilder(client.getConfig().database, index).build(differences);
 			} catch (Exception e) {
 				error = e;
 			}

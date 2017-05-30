@@ -73,15 +73,15 @@ public class JsonTreeLabelProvider extends StyledCellLabelProvider {
 		int count2 = countLines(otherValue);
 		if (count2 > count1)
 			for (int i = 1; i <= (count2 - count1); i++)
-				value += "\n";
+				value += "\r\n";
 		return value;
 	}
 
 	private int countLines(String value) {
 		if (value == null)
-			return 0;
+			return 1;
 		int index = -1;
-		int count = 0;
+		int count = 1;
 		while ((index = value.indexOf("\n", index + 1)) != -1)
 			count++;
 		return count;

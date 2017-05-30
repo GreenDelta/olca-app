@@ -20,6 +20,7 @@ import org.openlca.app.util.Error;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.cloud.api.RepositoryClient;
+import org.openlca.cloud.api.RepositoryConfig;
 import org.openlca.cloud.model.data.Commit;
 import org.openlca.cloud.model.data.Dataset;
 import org.openlca.cloud.util.WebRequests.WebRequestException;
@@ -50,9 +51,13 @@ class CheckoutAction extends Action {
 		} catch (Exception e) {
 			Error.showBox(M.AnErrorOccuredWhileReceivingCommitData);
 		} finally {
+			RepositoryConfig config = Database.getRepositoryClient().getConfig();
+			Database.disconnect();
 			Navigator.refresh();
 			IDatabaseConfiguration db = Database.getActiveConfiguration();
 			INavigationElement<?> element = Navigator.findElement(db);
+			config = RepositoryConfig.connect(Database.get(), config.baseUrl, config.repositoryId, config.credentials);
+			Database.connect(new RepositoryClient(config));
 			indexElement(index, element);
 			index.commit();
 			Database.getIndexUpdater().enable();

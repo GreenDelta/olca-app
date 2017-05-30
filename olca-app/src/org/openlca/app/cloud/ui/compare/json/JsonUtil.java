@@ -224,6 +224,8 @@ public class JsonUtil {
 			String... fields) {
 		if (array == null || array.size() == 0)
 			return -1;
+		if (element == null)
+			return -1;
 		if (element.isJsonPrimitive())
 			return findPrimitive(element.getAsJsonPrimitive(), array);
 		if (fields == null)
