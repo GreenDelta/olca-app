@@ -65,13 +65,13 @@ class RepositoryLabel {
 	}
 
 	private static boolean isNew(INavigationElement<?> element) {
-		Diff diff = DiffUtil.getDiff(CloudUtil.toDataset(element));
 		if (element instanceof DatabaseElement)
 			return false;
 		if (element instanceof GroupElement)
 			return false;
 		if (element instanceof ModelTypeElement)
 			return false;
+		Diff diff = DiffUtil.getDiff(CloudUtil.toDataset(element));
 		return diff.type == DiffType.NEW;
 	}
 
