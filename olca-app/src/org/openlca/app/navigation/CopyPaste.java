@@ -15,6 +15,7 @@ import org.openlca.core.database.CategoryDao;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
+import org.openlca.core.model.Version;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,21 +51,18 @@ public class CopyPaste {
 		initialize(Action.CUT, elements);
 		for (INavigationElement<?> element : cache) {
 			element.getParent().getChildren().remove(element);
-			Navigator.getInstance().getCommonViewer()
-					.refresh(element.getParent());
+			Navigator.getInstance().getCommonViewer().refresh(element.getParent());
 		}
 	}
 
 	public static boolean isSupported(INavigationElement<?> element) {
-		return element instanceof ModelElement
-				|| element instanceof CategoryElement;
+		return element instanceof ModelElement || element instanceof CategoryElement;
 	}
 
 	public static boolean isSupported(Collection<INavigationElement<?>> elements) {
 		if (elements == null)
 			return false;
-		return isSupported(elements.toArray(new INavigationElement[elements
-				.size()]));
+		return isSupported(elements.toArray(new INavigationElement[elements.size()]));
 	}
 
 	public static boolean isSupported(INavigationElement<?>[] elements) {
@@ -93,8 +91,7 @@ public class CopyPaste {
 		return ModelType.UNKNOWN;
 	}
 
-	private static void initialize(Action action,
-			INavigationElement<?>[] elements) {
+	private static void initialize(Action action, INavigationElement<?>[] elements) {
 		if (action == Action.CUT && currentAction == Action.CUT) {
 			extendCache(elements);
 			return;
@@ -112,8 +109,7 @@ public class CopyPaste {
 			cache = elements;
 			return;
 		}
-		INavigationElement<?>[] newCache = new INavigationElement<?>[cache.length
-				+ elements.length];
+		INavigationElement<?>[] newCache = new INavigationElement<?>[cache.length + elements.length];
 		System.arraycopy(cache, 0, newCache, 0, cache.length);
 		System.arraycopy(elements, 0, newCache, cache.length, elements.length);
 		cache = newCache;
@@ -124,8 +120,7 @@ public class CopyPaste {
 			return;
 		for (INavigationElement<?> element : cache) {
 			paste(element, element.getParent());
-			INavigationElement<?> root = Navigator
-					.findElement(getModelType(element));
+			INavigationElement<?> root = Navigator.findElement(getModelType(element));
 			Navigator.refresh(root);
 		}
 	}
@@ -151,23 +146,17 @@ public class CopyPaste {
 	public static void clearCache() {
 		cache = null;
 		currentAction = Action.NONE;
-		INavigationElement<?> root = Navigator.findElement(Database
-				.getActiveConfiguration());
+		INavigationElement<?> root = Navigator.findElement(Database.getActiveConfiguration());
 		Navigator.refresh(root);
 	}
 
-	public static boolean canMove(Collection<INavigationElement<?>> elements,
-			INavigationElement<?> target) {
-		return canMove(
-				elements.toArray(new INavigationElement[elements.size()]),
-				target);
+	public static boolean canMove(Collection<INavigationElement<?>> elements, INavigationElement<?> target) {
+		return canMove(elements.toArray(new INavigationElement[elements.size()]), target);
 	}
 
-	private static boolean canMove(INavigationElement<?>[] elements,
-			INavigationElement<?> target) {
+	private static boolean canMove(INavigationElement<?>[] elements, INavigationElement<?> target) {
 		if (!isSupported(elements))
 			return false;
-
 		if (!(target instanceof CategoryElement || target instanceof ModelTypeElement))
 			return false;
 		return getModelType(target) == getModelType(elements[0]);
@@ -181,8 +170,7 @@ public class CopyPaste {
 		return getModelType(element) == getModelType(cache[0]);
 	}
 
-	private static void paste(INavigationElement<?> element,
-			INavigationElement<?> category) {
+	private static void paste(INavigationElement<?> element, INavigationElement<?> category) {
 		if (currentAction == Action.CUT) {
 			if (element instanceof CategoryElement)
 				move((CategoryElement) element, category);
@@ -196,8 +184,7 @@ public class CopyPaste {
 		}
 	}
 
-	private static void copy(ModelElement element,
-			INavigationElement<?> categoryElement) {
+	private static void copy(ModelElement element, INavigationElement<?> categoryElement) {
 		CategorizedEntity copy = copy(element);
 		if (copy == null)
 			return;
@@ -207,12 +194,10 @@ public class CopyPaste {
 	}
 
 	private static Category getCategory(INavigationElement<?> element) {
-		return element instanceof CategoryElement ? ((CategoryElement) element)
-				.getContent() : null;
+		return element instanceof CategoryElement ? ((CategoryElement) element).getContent() : null;
 	}
 
-	private static void move(CategoryElement element,
-			INavigationElement<?> categoryElement) {
+	private static void move(CategoryElement element, INavigationElement<?> categoryElement) {
 		Category newParent = getCategory(categoryElement);
 		Category oldParent = getCategory(element.getParent());
 		Category category = element.getContent();
@@ -230,6 +215,7 @@ public class CopyPaste {
 			oldParent = dao.update(oldParent);
 		if (newParent != null)
 			newParent = dao.update(newParent);
+		Version.incUpdate(category);
 		category = dao.update(category);
 	}
 
@@ -245,20 +231,17 @@ public class CopyPaste {
 		return false;
 	}
 
-	private static void move(ModelElement element,
-			INavigationElement<?> categoryElement) {
+	private static void move(ModelElement element, INavigationElement<?> categoryElement) {
 		CategorizedDescriptor entity = element.getContent();
 		Category category = getCategory(categoryElement);
 		Optional<Category> parent = Optional.fromNullable(category);
-		Database.createCategorizedDao(entity.getModelType()).updateCategory(entity,
-				parent);
+		Database.createCategorizedDao(entity.getModelType()).updateCategory(entity, parent);
 		// need to notifiy index updater manually here
 		Dataset dataset = CloudUtil.toDataset(entity, category);
 		Database.getIndexUpdater().update(dataset);
 	}
 
-	private static void copy(CategoryElement element,
-			INavigationElement<?> category) {
+	private static void copy(CategoryElement element, INavigationElement<?> category) {
 		Category parent = getCategory(category);
 		Queue<CategoryElement> elements = new LinkedList<>();
 		elements.add(element);
@@ -287,8 +270,7 @@ public class CopyPaste {
 
 	private static CategorizedEntity copy(ModelElement element) {
 		CategorizedDescriptor descriptor = element.getContent();
-		CategorizedEntityDao<?, ?> dao = Database.createCategorizedDao(descriptor
-				.getModelType());
+		CategorizedEntityDao<?, ?> dao = Database.createCategorizedDao(descriptor.getModelType());
 		CategorizedEntity entity = dao.getForId(descriptor.getId());
 		CategorizedEntity copy = cloneIt(entity);
 		if (copy != null)
@@ -310,8 +292,7 @@ public class CopyPaste {
 
 	@SuppressWarnings("unchecked")
 	private static <T extends CategorizedEntity> T insert(T entity) {
-		BaseDao<T> dao = (BaseDao<T>) Database.get().createDao(
-				entity.getClass());
+		BaseDao<T> dao = (BaseDao<T>) Database.get().createDao(entity.getClass());
 		return dao.insert(entity);
 	}
 
