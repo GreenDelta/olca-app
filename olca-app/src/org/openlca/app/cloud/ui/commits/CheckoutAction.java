@@ -20,7 +20,6 @@ import org.openlca.app.util.Error;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.cloud.api.RepositoryClient;
-import org.openlca.cloud.api.RepositoryConfig;
 import org.openlca.cloud.model.data.Commit;
 import org.openlca.cloud.model.data.Dataset;
 import org.openlca.cloud.util.WebRequests.WebRequestException;
@@ -43,21 +42,17 @@ class CheckoutAction extends Action {
 		if (!Question.ask(M.Checkout, M.AreYouSureYouWantToCheckout))
 			return;
 		Database.getIndexUpdater().disable();
-		DiffIndex index = Database.getDiffIndex();
-		index.clear();
 		Commit commit = historyViewer.getSelected();
 		try {
 			doCheckout(commit);
 		} catch (Exception e) {
 			Error.showBox(M.AnErrorOccuredWhileReceivingCommitData);
 		} finally {
-			RepositoryConfig config = Database.getRepositoryClient().getConfig();
-			Database.disconnect();
 			Navigator.refresh();
 			IDatabaseConfiguration db = Database.getActiveConfiguration();
 			INavigationElement<?> element = Navigator.findElement(db);
-			config = RepositoryConfig.connect(Database.get(), config.baseUrl, config.repositoryId, config.credentials);
-			Database.connect(new RepositoryClient(config));
+			Database.getDiffIndex().clear();
+			DiffIndex index = Database.getDiffIndex();
 			indexElement(index, element);
 			index.commit();
 			Database.getIndexUpdater().enable();
@@ -71,7 +66,7 @@ class CheckoutAction extends Action {
 		dialog.run(true, false, new IRunnableWithProgress() {
 
 			@Override
-			public void run(IProgressMonitor m) throws InvocationTargetException, InterruptedException {
+			public void run(IProgressMonitor m)	throws InvocationTargetException, InterruptedException {
 				try {
 					FetchNotifierMonitor monitor = new FetchNotifierMonitor(m, M.CheckingOutCommit);
 					RepositoryClient client = Database.getRepositoryClient();
