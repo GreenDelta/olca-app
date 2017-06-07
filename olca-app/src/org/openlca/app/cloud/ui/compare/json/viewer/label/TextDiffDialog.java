@@ -54,7 +54,7 @@ public class TextDiffDialog extends FormDialog {
 	private void createText(Composite parent, String value, String otherValue, Side side) {
 		StyledString styled = new StyledString(value);
 		new DiffStyle().applyTo(styled, otherValue, side, direction);
-		StyledText text = new StyledText(parent, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
+		StyledText text = new StyledText(parent, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.WRAP);
 		text.setText(styled.toString());
 		text.setStyleRanges(styled.getStyleRanges());
 		text.setEditable(false);
