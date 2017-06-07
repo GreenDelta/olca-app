@@ -30,9 +30,13 @@ class LabelStyle {
 	}
 
 	private void apply(StyledString styled, ColorStyler styler, int start, int length) {
+		String s = styled.getString();
+		if (start >= s.length())
+			return;
 		if (length < 1) {
-			length = styled.getString().length();
-		}
+			length = s.length();
+		} else if (length > s.length() - start)
+			length = s.length() - start;
 		styled.setStyle(start, length, styler);
 	}
 	

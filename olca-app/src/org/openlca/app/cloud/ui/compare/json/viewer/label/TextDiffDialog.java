@@ -17,6 +17,8 @@ import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer.Side;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.UI;
 
+import com.google.gson.JsonElement;
+
 public class TextDiffDialog extends FormDialog {
 
 	private final JsonNode node;
@@ -45,12 +47,18 @@ public class TextDiffDialog extends FormDialog {
 		Composite body = form.getBody();
 		UI.gridLayout(body, 2, 0, 0).makeColumnsEqualWidth = true;
 		UI.gridData(body, true, true);
-		String leftText = node.leftElement.getAsString();
-		String rightText = node.rightElement.getAsString();
+		String leftText = getText(node.leftElement);
+		String rightText = getText(node.rightElement);
 		createText(body, leftText, rightText, Side.LEFT);
 		createText(body, rightText, leftText, Side.RIGHT);
 	}
 
+	private String getText(JsonElement element) {
+		if (element == null)
+			return "";
+		return element.getAsString();
+	}
+	
 	private void createText(Composite parent, String value, String otherValue, Side side) {
 		StyledString styled = new StyledString(value);
 		new DiffStyle().applyTo(styled, otherValue, side, direction);
