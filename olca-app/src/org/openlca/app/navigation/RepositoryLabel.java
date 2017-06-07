@@ -45,7 +45,7 @@ class RepositoryLabel {
 		RepositoryClient client = Database.getRepositoryClient();
 		if (client == null)
 			return null;
-		return " [" + client.getConfig().getServerUrl() + " " + client.getConfig().getRepositoryId() + "]";
+		return " [" + client.getConfig().getServerUrl() + " " + client.getConfig().repositoryId + "]";
 	}
 
 	static String getStateIndicator(INavigationElement<?> element) {
@@ -65,13 +65,13 @@ class RepositoryLabel {
 	}
 
 	private static boolean isNew(INavigationElement<?> element) {
-		Diff diff = DiffUtil.getDiff(CloudUtil.toDataset(element));
 		if (element instanceof DatabaseElement)
 			return false;
 		if (element instanceof GroupElement)
 			return false;
 		if (element instanceof ModelTypeElement)
 			return false;
+		Diff diff = DiffUtil.getDiff(CloudUtil.toDataset(element));
 		return diff.type == DiffType.NEW;
 	}
 

@@ -1,7 +1,9 @@
 package org.openlca.app.cloud.ui.compare.json;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.openlca.app.cloud.ui.compare.json.JsonUtil.ElementFinder;
 import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer.Side;
@@ -24,8 +26,7 @@ public class JsonNode {
 	static JsonNode create(JsonNode parent, String property, JsonElement left,
 			JsonElement right, ElementFinder elementFinder, boolean readOnly) {
 		JsonElement original = left != null ? JsonUtil.deepCopy(left) : null;
-		return new JsonNode(parent, property, left, right, original,
-				elementFinder, readOnly);
+		return new JsonNode(parent, property, left, right, original, elementFinder, readOnly);
 	}
 
 	private JsonNode(JsonNode parent, String property, JsonElement leftElement,
@@ -53,13 +54,11 @@ public class JsonNode {
 	}
 
 	public boolean hasEqualValues() {
-		return JsonUtil.equal(property, leftElement, rightElement,
-				elementFinder);
+		return JsonUtil.equal(property, leftElement, rightElement, elementFinder);
 	}
 
 	boolean hadDifferences() {
-		return !JsonUtil.equal(property, leftElement, originalElement,
-				elementFinder);
+		return !JsonUtil.equal(property, leftElement, originalElement, elementFinder);
 	}
 
 	void setValue(JsonElement toSet, boolean leftToRight) {
@@ -80,22 +79,20 @@ public class JsonNode {
 			updateParent(parentElement.getAsJsonArray(), toSet, current);
 	}
 
-	private void updateParent(JsonObject parentElement, JsonElement toSet,
-			JsonElement current) {
+	private void updateParent(JsonObject parentElement, JsonElement toSet, JsonElement current) {
 		parentElement.add(property, toSet);
 	}
 
-	private void updateParent(JsonArray parentElement, JsonElement toSet,
-			JsonElement current) {
+	private void updateParent(JsonArray parentElement, JsonElement toSet, JsonElement current) {
 		JsonObject arrayParent = parent.parent.leftElement.getAsJsonObject();
 		JsonArray array = parentElement.getAsJsonArray();
 		if (toSet == null) {
 			// remove
-			int index = elementFinder.find(parent.property, current, array);
+			int index = elementFinder.find(parent.property, current, array, null);
 			array = JsonUtil.remove(index, array);
 		} else {
 			// add or replace
-			int index = elementFinder.find(parent.property, toSet, array);
+			int index = elementFinder.find(parent.property, toSet, array, null);
 			if (index == -1)
 				array.add(toSet);
 			else
@@ -108,14 +105,15 @@ public class JsonNode {
 	private void updateChildren(boolean leftToRight) {
 		if (children.isEmpty())
 			return;
+		Set<Integer> assigned = new HashSet<>();
 		for (JsonNode child : children) {
-			JsonElement element = getElement(child, leftToRight);
+			JsonElement element = getElement(child, leftToRight, assigned);
 			child.leftElement = element;
 			child.updateChildren(leftToRight);
 		}
 	}
 
-	private JsonElement getElement(JsonNode node, boolean leftToRight) {
+	private JsonElement getElement(JsonNode node, boolean leftToRight, Set<Integer> assigned) {
 		if (leftElement == null)
 			return null;
 		if (leftElement.isJsonObject())
@@ -127,10 +125,10 @@ public class JsonNode {
 			toFind = node.originalElement;
 		else
 			toFind = node.rightElement;
-		int index = elementFinder.find(property, toFind,
-				leftElement.getAsJsonArray());
+		int index = elementFinder.find(property, toFind, leftElement.getAsJsonArray(), assigned);
 		if (index == -1)
 			return null;
+		assigned.add(index);
 		return leftElement.getAsJsonArray().get(index);
 	}
 

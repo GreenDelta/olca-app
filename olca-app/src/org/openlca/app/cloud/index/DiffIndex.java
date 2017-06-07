@@ -24,8 +24,7 @@ public class DiffIndex {
 
 	public static DiffIndex getFor(RepositoryClient client) {
 		RepositoryConfig config = client.getConfig();
-		return new DiffIndex(new File(config.getDatabase()
-				.getFileStorageLocation(), "cloud/" + config.getRepositoryId()));
+		return new DiffIndex(new File(config.database.getFileStorageLocation(), "cloud/" + config.repositoryId));
 	}
 
 	private DiffIndex(File indexDirectory) {

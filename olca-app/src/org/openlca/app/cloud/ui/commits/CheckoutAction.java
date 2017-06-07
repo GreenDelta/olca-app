@@ -42,8 +42,6 @@ class CheckoutAction extends Action {
 		if (!Question.ask(M.Checkout, M.AreYouSureYouWantToCheckout))
 			return;
 		Database.getIndexUpdater().disable();
-		DiffIndex index = Database.getDiffIndex();
-		index.clear();
 		Commit commit = historyViewer.getSelected();
 		try {
 			doCheckout(commit);
@@ -53,6 +51,8 @@ class CheckoutAction extends Action {
 			Navigator.refresh();
 			IDatabaseConfiguration db = Database.getActiveConfiguration();
 			INavigationElement<?> element = Navigator.findElement(db);
+			Database.getDiffIndex().clear();
+			DiffIndex index = Database.getDiffIndex();
 			indexElement(index, element);
 			index.commit();
 			Database.getIndexUpdater().enable();
@@ -66,7 +66,7 @@ class CheckoutAction extends Action {
 		dialog.run(true, false, new IRunnableWithProgress() {
 
 			@Override
-			public void run(IProgressMonitor m) throws InvocationTargetException, InterruptedException {
+			public void run(IProgressMonitor m)	throws InvocationTargetException, InterruptedException {
 				try {
 					FetchNotifierMonitor monitor = new FetchNotifierMonitor(m, M.CheckingOutCommit);
 					RepositoryClient client = Database.getRepositoryClient();

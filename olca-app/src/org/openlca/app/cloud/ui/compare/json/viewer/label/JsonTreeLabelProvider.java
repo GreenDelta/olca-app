@@ -4,24 +4,17 @@ import org.eclipse.jface.viewers.StyledCellLabelProvider;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.openlca.app.cloud.ui.compare.json.JsonNode;
-import org.openlca.app.cloud.ui.compare.json.JsonUtil;
-import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer.Direction;
 import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer.Side;
 
 public class JsonTreeLabelProvider extends StyledCellLabelProvider {
 
-	private final PropertyStyle propertyStyle = new PropertyStyle();
-	private final DiffStyle diffStyle = new DiffStyle();
-	private final ReadOnlyStyle readOnlyStyle = new ReadOnlyStyle();
-	private Side side;
-	private Direction direction;
-	private IJsonNodeLabelProvider nodeLabelProvider;
-
-	public JsonTreeLabelProvider(IJsonNodeLabelProvider nodeLabelProvider,
-			Side side, Direction direction) {
+	private final Side side;
+	private final IJsonNodeLabelProvider nodeLabelProvider;
+	private final LabelStyle style = new LabelStyle();
+	
+	public JsonTreeLabelProvider(IJsonNodeLabelProvider nodeLabelProvider, Side side) {
 		this.nodeLabelProvider = nodeLabelProvider;
 		this.side = side;
-		this.direction = direction;
 	}
 
 	@Override
@@ -42,46 +35,26 @@ public class JsonTreeLabelProvider extends StyledCellLabelProvider {
 		String otherText = nodeLabelProvider.getText(node, side.getOther());
 		text = adjustMultiline(node, text, otherText);
 		StyledString styled = new StyledString(text);
-		propertyStyle.applyTo(styled);
-		if (node.readOnly)
-			readOnlyStyle.applyTo(styled);
-		if (node.hasEqualValues())
-			return styled;
-		if (direction == null)
-			return styled;
-		boolean highlightChanges = doHighlightChanges(node, otherText);
-		diffStyle.applyTo(styled, otherText, side, direction,
-				highlightChanges);
+		style.applyTo(styled, node);
 		return styled;
 	}
 
-	private boolean doHighlightChanges(JsonNode node, String otherText) {
-		if (otherText == null)
-			return false;
-		if (!node.getElement().isJsonPrimitive())
-			return false;
-		if (!JsonUtil.toJsonPrimitive(node.getElement()).isString())
-			return false;
-		return true;
-	}
-
-	private String adjustMultiline(JsonNode node, String value,
-			String otherValue) {
+	private String adjustMultiline(JsonNode node, String value, String otherValue) {
 		if (value == null)
 			value = "";
 		int count1 = countLines(value);
 		int count2 = countLines(otherValue);
 		if (count2 > count1)
 			for (int i = 1; i <= (count2 - count1); i++)
-				value += "\n";
+				value += "\r\n";
 		return value;
 	}
 
 	private int countLines(String value) {
 		if (value == null)
-			return 0;
+			return 1;
 		int index = -1;
-		int count = 0;
+		int count = 1;
 		while ((index = value.indexOf("\n", index + 1)) != -1)
 			count++;
 		return count;
@@ -89,7 +62,7 @@ public class JsonTreeLabelProvider extends StyledCellLabelProvider {
 
 	@Override
 	public void dispose() {
-		readOnlyStyle.dispose();
+		style.dispose();
 		super.dispose();
 	}
 

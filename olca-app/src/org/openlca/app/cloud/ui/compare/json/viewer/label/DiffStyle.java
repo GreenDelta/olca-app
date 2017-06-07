@@ -3,37 +3,23 @@ package org.openlca.app.cloud.ui.compare.json.viewer.label;
 import java.util.LinkedList;
 
 import org.eclipse.jface.viewers.StyledString;
-import org.eclipse.jface.viewers.StyledString.Styler;
 import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer.Direction;
 import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer.Side;
 import org.openlca.app.cloud.ui.compare.json.viewer.label.DiffMatchPatch.Diff;
 import org.openlca.app.cloud.ui.compare.json.viewer.label.DiffMatchPatch.Operation;
+import org.openlca.app.util.Colors;
 
 class DiffStyle {
 
-	private Styler deleteStyler = new DiffStyler(255, 230, 230, true);
-	private Styler insertStyler = new DiffStyler(230, 255, 230, false);
-	private Styler stringStyler = new DiffStyler(240, 240, 240, false);
-	private Styler fieldStyler = new DiffStyler(255, 255, 128, false);
+	private ColorStyler deleteStyler = new ColorStyler().background(Colors.get(255, 230, 230)).strikeout();
+	private ColorStyler insertStyler = new ColorStyler().background(Colors.get(230, 255, 230));
+	private ColorStyler defaultStyler = new ColorStyler().background(Colors.get(240, 240, 240));
 
-	void applyTo(StyledString styled, String otherText, Side side,
-			Direction direction, boolean highlightChanges) {
-		String text = styled.getString();
-		int index = styled.getString().indexOf(":");
-		Styler styler = highlightChanges ? stringStyler : fieldStyler;
-		if (index == -1)
-			styled.setStyle(0, text.length(), styler);
-		else
-			styled.setStyle(index + 2, text.length() - (index + 2), styler);
-		if (highlightChanges)
-			applySpecificDiffs(styled, otherText, side, direction);
-	}
-
-	private void applySpecificDiffs(StyledString styled, String otherText,
-			Side side, Direction direction) {
+	void applyTo(StyledString styled, String otherText, Side side, Direction direction) {
 		String text = styled.getString();
 		if (text.isEmpty())
 			return;
+		styled.setStyle(0, text.length(), defaultStyler);
 		LinkedList<Diff> diffs = getDiffs(text, otherText, side, direction);
 		boolean showDelete = doShowDelete(side, direction);
 		boolean showInsert = doShowInsert(side, direction);

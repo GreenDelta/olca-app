@@ -1,5 +1,6 @@
 package org.openlca.app.cloud.ui.diff;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,6 +16,8 @@ import org.openlca.app.cloud.ui.compare.json.JsonUtil;
 import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer.Direction;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.cloud.model.data.Dataset;
+import org.openlca.core.model.Version;
+import org.openlca.jsonld.Dates;
 
 import com.google.gson.JsonObject;
 
@@ -77,8 +80,7 @@ class CompareHelper {
 		nodes.put(toKey(data.result.getDataset()), data.node);
 	}
 
-	private void updateResult(DiffData data, boolean localDiffersFromRemote,
-			boolean keepLocalModel) {
+	private void updateResult(DiffData data, boolean localDiffersFromRemote, boolean keepLocalModel) {
 		data.result.reset();
 		if (overwriteRemoteChanges(data, localDiffersFromRemote, keepLocalModel))
 			data.result.setOverwriteRemoteChanges(true);
@@ -87,21 +89,29 @@ class CompareHelper {
 		data.result.setMergedData(getMergedData(data, keepLocalModel));
 	}
 
-	private boolean overwriteRemoteChanges(DiffData data,
-			boolean localDiffersFromRemote, boolean keepLocalModel) {
+	private boolean overwriteRemoteChanges(DiffData data, boolean localDiffersFromRemote, boolean keepLocalModel) {
 		if (data.hasLocal() && data.hasRemote() && localDiffersFromRemote)
 			return true;
 		return keepLocalModel;
 	}
 
 	private JsonObject getMergedData(DiffData data, boolean keepLocalModel) {
+		JsonObject obj = null;
 		if (data.hasLocal() && data.hasRemote())
-			return data.local;
+			obj = data.local;
 		if (data.hasLocal() && keepLocalModel)
-			return data.local;
+			obj = data.local;
 		if (data.hasRemote() && !keepLocalModel)
-			return data.remote;
-		return null;
+			obj = data.remote;
+		if (obj == null)
+			return null;
+		if (!data.hasRemote())
+			return obj;
+		Version version = Version.fromString(data.remote.get("version").getAsString());
+		version.incUpdate();
+		obj.addProperty("version", Version.asString(version.getValue()));
+		obj.addProperty("lastChange", Dates.toString(Calendar.getInstance().getTime()));
+		return obj;
 	}
 
 	private String getTitle(DiffNode node) {

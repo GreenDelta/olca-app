@@ -36,6 +36,8 @@ public class DiffUtil {
 
 	public static Diff getDiff(Dataset dataset) {
 		DiffIndex index = Database.getDiffIndex();
+		if (index == null)
+			return null;
 		return index.get(dataset.refId);
 	}
 

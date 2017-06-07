@@ -22,8 +22,7 @@ public abstract class JsonNodeBuilder implements Comparator<JsonNode> {
 	}
 
 	public JsonNode build(JsonElement leftJson, JsonElement rightJson) {
-		JsonNode node = JsonNode.create(null, null, leftJson, rightJson,
-				elementFinder, false);
+		JsonNode node = JsonNode.create(null, null, leftJson, rightJson, elementFinder, false);
 		build(node, leftJson, rightJson);
 		sort(node);
 		return node;
@@ -36,12 +35,10 @@ public abstract class JsonNodeBuilder implements Comparator<JsonNode> {
 			build(node, left, right, Side.RIGHT);
 	}
 
-	private void build(JsonNode node, JsonElement left, JsonElement right,
-			Side side) {
+	private void build(JsonNode node, JsonElement left, JsonElement right, Side side) {
 		JsonElement toCheck = side == Side.LEFT ? left : right;
 		if (toCheck.isJsonObject())
-			build(node, JsonUtil.toJsonObject(left),
-					JsonUtil.toJsonObject(right));
+			build(node, JsonUtil.toJsonObject(left), JsonUtil.toJsonObject(right));
 		if (toCheck.isJsonArray())
 			build(node, JsonUtil.toJsonArray(left), JsonUtil.toJsonArray(right));
 	}
@@ -54,8 +51,7 @@ public abstract class JsonNodeBuilder implements Comparator<JsonNode> {
 			buildChildren(node, right, left, added, Side.RIGHT);
 	}
 
-	private void buildChildren(JsonNode node, JsonObject json,
-			JsonObject other, Set<String> added, Side side) {
+	private void buildChildren(JsonNode node, JsonObject json, JsonObject other, Set<String> added, Side side) {
 		for (Entry<String, JsonElement> child : json.entrySet()) {
 			if (side == Side.RIGHT && added.contains(child.getKey()))
 				continue;
@@ -78,15 +74,14 @@ public abstract class JsonNodeBuilder implements Comparator<JsonNode> {
 			buildChildren(node, right, left, Side.RIGHT, added);
 	}
 
-	private void buildChildren(JsonNode node, JsonArray array,
-			JsonArray otherArray, Side side, Set<Integer> added) {
+	private void buildChildren(JsonNode node, JsonArray array, JsonArray otherArray, Side side, Set<Integer> added) {
 		int count = 0;
 		int counter = node.children.size() + 1;
 		for (JsonElement value : array) {
 			if (side == Side.RIGHT && added.contains(count++))
 				continue;
 			JsonElement otherValue = null;
-			int index = elementFinder.find(node.property, value, otherArray);
+			int index = elementFinder.find(node.property, value, otherArray, added);
 			if (side == Side.LEFT && index != -1) {
 				otherValue = otherArray.get(index);
 				added.add(index);
@@ -95,20 +90,19 @@ public abstract class JsonNodeBuilder implements Comparator<JsonNode> {
 			JsonElement right = side == Side.LEFT ? otherValue : value;
 			String property = Integer.toString(counter++);
 			JsonElement parent = node.parent.getElement(side);
-			JsonNode childNode = JsonNode.create(node, property, left, right,
-					elementFinder, isReadOnly(node, node.property));
+			boolean readOnly = isReadOnly(node, node.property);
+			JsonNode childNode = JsonNode.create(node, property, left, right, elementFinder, readOnly);
 			if (!skipChildren(parent, value))
 				build(childNode, left, right);
 			node.children.add(childNode);
 		}
 	}
 
-	private JsonNode build(JsonNode parent, String property,
-			JsonElement leftValue, JsonElement rightValue) {
+	private JsonNode build(JsonNode parent, String property, JsonElement leftValue, JsonElement rightValue) {
 		if (skip(parent.getElement(), property))
 			return null;
-		JsonNode childNode = JsonNode.create(parent, property, leftValue,
-				rightValue, elementFinder, isReadOnly(parent, property));
+		boolean readOnly = isReadOnly(parent, property);
+		JsonNode childNode = JsonNode.create(parent, property, leftValue, rightValue, elementFinder, readOnly);
 		parent.children.add(childNode);
 		if (leftValue == null) {
 			if (skipChildren(parent.leftElement, rightValue))
@@ -127,8 +121,7 @@ public abstract class JsonNodeBuilder implements Comparator<JsonNode> {
 
 	protected abstract boolean skip(JsonElement parent, String property);
 
-	protected abstract boolean skipChildren(JsonElement parent,
-			JsonElement element);
+	protected abstract boolean skipChildren(JsonElement parent, JsonElement element);
 
 	protected abstract boolean isReadOnly(JsonNode node, String property);
 

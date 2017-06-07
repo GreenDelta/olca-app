@@ -86,7 +86,7 @@ public class SyncView extends ViewPart {
 			DiffIndex index = Database.getDiffIndex();
 			Set<FetchRequestData> descriptors = client.sync(commitId);
 			List<DiffResult> differences = createDifferences(descriptors, elements);
-			input = new DiffNodeBuilder(client.getConfig().getDatabase(), index).build(differences);
+			input = new DiffNodeBuilder(client.getConfig().database, index).build(differences);
 		} catch (Exception e) {
 			log.error("Error loading remote data", e);
 			input = null;

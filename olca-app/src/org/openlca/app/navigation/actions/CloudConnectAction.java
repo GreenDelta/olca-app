@@ -73,7 +73,7 @@ class CloudConnectAction extends Action implements INavigationAction {
 				return false;
 			RepositoryConfig config = dialog.createConfig();
 			String text = M.ConnectingToRepository + config.getServerUrl()
-					+ " " + config.getRepositoryId();
+					+ " " + config.repositoryId;
 			App.runWithProgress(text, () -> connect(config));
 			HistoryView.refresh();
 			return true;
@@ -82,7 +82,7 @@ class CloudConnectAction extends Action implements INavigationAction {
 		private void connect(RepositoryConfig config) {
 			RepositoryClient client = new RepositoryClient(config);
 			try {
-				if (!client.hasAccess(config.getRepositoryId())) {
+				if (!client.hasAccess(config.repositoryId)) {
 					error = new Exception(M.NoAccessToRepository);
 				}
 			} catch (Exception e) {
@@ -199,10 +199,11 @@ class CloudConnectAction extends Action implements INavigationAction {
 		}
 
 		private RepositoryConfig createConfig() {
-			CredentialSupplier credentials = new CredentialSupplier(username, password);
+			CredentialSupplier credentials = new CredentialSupplier(username,
+					password);
 			credentials.setTokenSupplier(TokenDialog::prompt);
-			RepositoryConfig config = RepositoryConfig.connect(Database.get(), serverUrl + "/ws", repositoryId,
-					credentials);
+			RepositoryConfig config = RepositoryConfig.connect(Database.get(),
+					serverUrl + "/ws", repositoryId, credentials);
 			return config;
 		}
 	}

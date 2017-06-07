@@ -52,7 +52,7 @@ public class Database {
 					database.getName(), database.getVersion());
 			RepositoryConfig repoConfig = RepositoryConfig.loadFor(Database.get());
 			if (repoConfig != null) {
-				repoConfig.getCredentials().setTokenSupplier(TokenDialog::prompt);
+				repoConfig.credentials.setTokenSupplier(TokenDialog::prompt);
 				connect(new RepositoryClient(repoConfig));
 			}
 			return Database.database;

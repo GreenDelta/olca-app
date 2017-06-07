@@ -71,8 +71,7 @@ public class JsonUtil {
 		return new JsonPrimitive(element.getAsString());
 	}
 
-	public static boolean equal(String property, JsonElement e1,
-			JsonElement e2, ElementFinder finder) {
+	public static boolean equal(String property, JsonElement e1, JsonElement e2, ElementFinder finder) {
 		if (isNull(e1) && isNull(e2))
 			return true;
 		if (isNull(e1) || isNull(e2))
@@ -80,34 +79,31 @@ public class JsonUtil {
 		if (e1.isJsonPrimitive() && e2.isJsonPrimitive())
 			return equal(e1.getAsJsonPrimitive(), e2.getAsJsonPrimitive());
 		if (e1.isJsonArray() && e2.isJsonArray())
-			return equal(property, e1.getAsJsonArray(), e2.getAsJsonArray(),
-					finder);
+			return equal(property, e1.getAsJsonArray(), e2.getAsJsonArray(), finder);
 		if (e1.isJsonObject() && e2.isJsonObject())
-			return equal(property, e1.getAsJsonObject(), e2.getAsJsonObject(),
-					finder);
+			return equal(property, e1.getAsJsonObject(), e2.getAsJsonObject(), finder);
 		return false;
 	}
 
-	private static boolean equal(String property, JsonArray a1, JsonArray a2,
-			ElementFinder finder) {
+	private static boolean equal(String property, JsonArray a1, JsonArray a2, ElementFinder finder) {
 		if (a1.size() != a2.size())
 			return false;
 		Iterator<JsonElement> it1 = a1.iterator();
+		Set<Integer> used = new HashSet<>();
 		while (it1.hasNext()) {
 			JsonElement e1 = it1.next();
-			int index = finder.find(property, e1, a2);
+			int index = finder.find(property, e1, a2, used);
 			if (index == -1)
 				return false;
 			JsonElement e2 = a2.get(index);
 			if (!equal(property, e1, e2, finder))
 				return false;
-
+			used.add(index);
 		}
 		return true;
 	}
 
-	private static boolean equal(String property, JsonObject e1, JsonObject e2,
-			ElementFinder finder) {
+	private static boolean equal(String property, JsonObject e1, JsonObject e2, ElementFinder finder) {
 		Set<String> checked = new HashSet<>();
 		for (Entry<String, JsonElement> entry : e1.entrySet()) {
 			checked.add(entry.getKey());
@@ -135,8 +131,7 @@ public class JsonUtil {
 		if (e1.isBoolean() && e2.isBoolean())
 			return e1.getAsBoolean() == e2.getAsBoolean();
 		if (e1.isNumber() && e2.isNumber())
-			return e1.getAsNumber().doubleValue() == e2.getAsNumber()
-					.doubleValue();
+			return e1.getAsNumber().doubleValue() == e2.getAsNumber().doubleValue();
 		return e1.getAsString().equals(e2.getAsString());
 	}
 
@@ -168,8 +163,7 @@ public class JsonUtil {
 		return getDouble(element, property, 0d);
 	}
 
-	public static Double getDouble(JsonElement element, String property,
-			Double defaultValue) {
+	public static Double getDouble(JsonElement element, String property, Double defaultValue) {
 		JsonElement value = getValue(element, property);
 		if (!value.isJsonPrimitive())
 			return defaultValue;
@@ -201,8 +195,7 @@ public class JsonUtil {
 		return object.get(property);
 	}
 
-	public static JsonArray replace(int index, JsonArray original,
-			JsonElement toReplace) {
+	public static JsonArray replace(int index, JsonArray original, JsonElement toReplace) {
 		JsonArray copy = new JsonArray();
 		for (int i = 0; i < original.size(); i++)
 			if (index == i)
@@ -220,9 +213,10 @@ public class JsonUtil {
 		return copy;
 	}
 
-	public static int find(JsonElement element, JsonArray array,
-			String... fields) {
+	public static int find(JsonElement element, JsonArray array, Set<Integer> exclude, String... fields) {
 		if (array == null || array.size() == 0)
+			return -1;
+		if (element == null)
 			return -1;
 		if (element.isJsonPrimitive())
 			return findPrimitive(element.getAsJsonPrimitive(), array);
@@ -243,7 +237,7 @@ public class JsonUtil {
 				continue;
 			}
 			String[] otherValues = getValues(other.getAsJsonObject(), fields);
-			if (equal(values, otherValues))
+			if (equal(values, otherValues) && (exclude == null || !exclude.contains(index)))
 				return index;
 			index++;
 		}
@@ -323,8 +317,8 @@ public class JsonUtil {
 
 		protected abstract boolean skipOnEqualsCheck(String parentProperty, JsonElement element, String property);
 
-		public int find(String property, JsonElement element, JsonArray array) {
-			return JsonUtil.find(element, array, getComparisonFields(property));
+		public int find(String property, JsonElement element, JsonArray array, Set<Integer> exclude) {
+			return JsonUtil.find(element, array, exclude, getComparisonFields(property));
 		}
 
 	}

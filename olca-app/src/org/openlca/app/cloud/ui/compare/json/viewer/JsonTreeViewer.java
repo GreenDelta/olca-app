@@ -2,6 +2,8 @@ package org.openlca.app.cloud.ui.compare.json.viewer;
 
 import java.util.List;
 
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -10,6 +12,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.openlca.app.cloud.ui.compare.json.JsonNode;
 import org.openlca.app.cloud.ui.compare.json.viewer.label.IJsonNodeLabelProvider;
 import org.openlca.app.cloud.ui.compare.json.viewer.label.JsonTreeLabelProvider;
+import org.openlca.app.cloud.ui.compare.json.viewer.label.TextDiffDialog;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.AbstractViewer;
@@ -17,7 +20,7 @@ import org.openlca.app.viewers.AbstractViewer;
 public class JsonTreeViewer extends AbstractViewer<JsonNode, TreeViewer> {
 
 	private Side side;
-	private Direction direction;
+	Direction direction;
 
 	public JsonTreeViewer(Composite parent, Side side, Direction direction) {
 		super(parent, side);
@@ -33,15 +36,13 @@ public class JsonTreeViewer extends AbstractViewer<JsonNode, TreeViewer> {
 	public void setCounterpart(JsonTreeViewer counterpart) {
 		TreeViewer viewer = counterpart.getViewer();
 		getViewer().addTreeListener(new ExpansionListener(viewer));
-		getViewer().addSelectionChangedListener(
-				new SelectionChangedListener(viewer));
+		getViewer().addSelectionChangedListener(new SelectionChangedListener(viewer));
 		ScrollBar vBar = getViewer().getTree().getVerticalBar();
 		vBar.addSelectionListener(new ScrollListener(viewer));
 	}
 
 	public void setLabelProvider(IJsonNodeLabelProvider labelProvider) {
-		getViewer().setLabelProvider(
-				new JsonTreeLabelProvider(labelProvider, side, direction));
+		getViewer().setLabelProvider(new JsonTreeLabelProvider(labelProvider, side));
 	}
 
 	@Override
@@ -52,7 +53,14 @@ public class JsonTreeViewer extends AbstractViewer<JsonNode, TreeViewer> {
 		if (viewerParameters[0] == Side.LEFT)
 			tree.getVerticalBar().setVisible(false);
 		UI.gridData(tree, true, true);
+		viewer.addDoubleClickListener((e) -> onDoubleClick(e));
 		return viewer;
+	}
+
+	private void onDoubleClick(DoubleClickEvent e) {
+		IStructuredSelection sel = (IStructuredSelection) e.getSelection();
+		JsonNode node = (JsonNode) sel.getFirstElement();
+		new TextDiffDialog(node, direction).open();
 	}
 
 	public List<JsonNode> getSelection() {

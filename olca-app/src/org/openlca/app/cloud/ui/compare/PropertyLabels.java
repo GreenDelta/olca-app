@@ -36,7 +36,7 @@ import org.openlca.core.model.Uncertainty;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
 
-class PropertyLabels {
+public class PropertyLabels {
 
 	private static final Map<String, Map<String, String>> labels = new HashMap<>();
 	private static final Map<String, Map<String, Integer>> ordinals = new HashMap<>();
@@ -45,7 +45,7 @@ class PropertyLabels {
 		putLabels();
 	}
 
-	static String get(String parentType, String property) {
+	public static String get(String parentType, String property) {
 		if (!labels.containsKey(parentType))
 			return property;
 		Map<String, String> typeLabels = labels.get(parentType);

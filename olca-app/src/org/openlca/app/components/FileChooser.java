@@ -58,9 +58,9 @@ public class FileChooser {
 		dialog.setText(getDialogText(swtFlag));
 		String ext = null;
 		if (extension != null) {
-			ext = extension;
+			ext = extension.trim();
 			if (ext.contains("|"))
-				ext = ext.substring(0, ext.indexOf("|"));
+				ext = ext.substring(0, ext.indexOf("|")).trim();
 			dialog.setFilterExtensions(new String[] { ext });
 		}
 		dialog.setFileName(defaultName);

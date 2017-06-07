@@ -87,9 +87,7 @@ public abstract class ModelEditor<T extends CategorizedEntity> extends
 				monitor.beginTask(M.Save + " " + modelClass.getSimpleName()
 						+ "...", IProgressMonitor.UNKNOWN);
 			model.setLastChange(System.currentTimeMillis());
-			Version version = new Version(model.getVersion());
-			version.incUpdate();
-			model.setVersion(version.getValue());
+			Version.incUpdate(model);
 			model = dao.update(model);
 			doAfterUpdate();
 			if (monitor != null)
