@@ -292,6 +292,11 @@ public class ModelUtil {
 					return true;
 				else if ("recipientInput".equals(parentProperty))
 					return true;
+			if (parentProperty == null)
+				if ("version".equals(property))
+					return true;
+				else if ("lastChange".equals(property))
+					return true;
 			return false;
 		}
 	}

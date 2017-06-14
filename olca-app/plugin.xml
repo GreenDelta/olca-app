@@ -463,7 +463,7 @@
          </property>
          <property
                name="aboutText"
-               value="openLCA 1.6.3&#x0D;&#x0A;&#x0D;&#x0A;Copyright (c) 2007 - 2017 GreenDelta. All rights reserved.&#x0D;&#x0A;Visit http://openlca.org and http://greendelta.com&#x0D;&#x0A;&#x0D;&#x0A;This product includes software developed in the openLCA &#x0D;&#x0A;project and other open source software.">
+               value="openLCA 1.6.3&#x0A;&#x0A;Copyright (c) 2007 - 2017 GreenDelta. All rights reserved.&#x0A;Visit http://openlca.org and http://greendelta.com&#x0A;&#x0A;This product includes software developed in the openLCA &#x0A;project and other open source software.">
          </property>
          <property
                name="aboutImage"
@@ -723,6 +723,12 @@
           id="wizard.import.kml"
           name="KML geographies">
        </wizard>
+    <wizard
+          class="org.openlca.app.wizards.io.RepositoryImportWizard"
+          icon="icons/cloud/logo.png"
+          id="wizard.import.repository"
+          name="Repository Import">
+    </wizard>
    </extension>
    
    <!-- export wizards -->

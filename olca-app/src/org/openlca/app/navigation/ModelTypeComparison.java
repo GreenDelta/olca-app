@@ -30,12 +30,12 @@ public class ModelTypeComparison {
 	}
 
 	public static ModelType[] getOrderedTypes() {
-		return new ModelType[] { ModelType.PROJECT, ModelType.PRODUCT_SYSTEM,
+		return new ModelType[] { ModelType.CATEGORY, ModelType.PROJECT, ModelType.PRODUCT_SYSTEM,
 				ModelType.IMPACT_METHOD, ModelType.PROCESS, ModelType.FLOW,
 				ModelType.SOCIAL_INDICATOR, ModelType.PARAMETER,
 				ModelType.FLOW_PROPERTY, ModelType.UNIT_GROUP,
 				ModelType.CURRENCY, ModelType.ACTOR, ModelType.SOURCE,
-				ModelType.LOCATION, ModelType.DQ_SYSTEM };
+				ModelType.LOCATION, ModelType.DQ_SYSTEM};
 	}
 
 }

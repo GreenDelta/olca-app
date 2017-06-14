@@ -23,6 +23,7 @@ public enum Icon {
 	COPY("copy.png"),
 	COPY_ALL_CHANGES("cloud/copy_all.png"),
 	COPY_SELECTED_CHANGE("cloud/copy_selected.png"),
+	CLOUD_LOGO("cloud/logo.png"),
 	CUT("cut.png"),
 
 	DATABASE("model/database.png"),

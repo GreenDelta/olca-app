@@ -86,7 +86,7 @@ class CompareHelper {
 			data.result.setOverwriteRemoteChanges(true);
 		else
 			data.result.setOverwriteLocalChanges(true);
-		data.result.setMergedData(getMergedData(data, keepLocalModel));
+		data.result.setMergedData(getMergedData(data, localDiffersFromRemote, keepLocalModel));
 	}
 
 	private boolean overwriteRemoteChanges(DiffData data, boolean localDiffersFromRemote, boolean keepLocalModel) {
@@ -95,21 +95,23 @@ class CompareHelper {
 		return keepLocalModel;
 	}
 
-	private JsonObject getMergedData(DiffData data, boolean keepLocalModel) {
+	private JsonObject getMergedData(DiffData data, boolean localDiffersFromRemote, boolean keepLocalModel) {
 		JsonObject obj = null;
 		if (data.hasLocal() && data.hasRemote())
 			obj = data.local;
-		if (data.hasLocal() && keepLocalModel)
+		else if (data.hasLocal() && keepLocalModel)
 			obj = data.local;
-		if (data.hasRemote() && !keepLocalModel)
+		else if (data.hasRemote() && !keepLocalModel)
 			obj = data.remote;
 		if (obj == null)
 			return null;
 		if (!data.hasRemote())
 			return obj;
-		Version version = Version.fromString(data.remote.get("version").getAsString());
-		version.incUpdate();
-		obj.addProperty("version", Version.asString(version.getValue()));
+		if (localDiffersFromRemote) {
+			Version version = Version.fromString(data.remote.get("version").getAsString());
+			version.incUpdate();
+			obj.addProperty("version", Version.asString(version.getValue()));			
+		}
 		obj.addProperty("lastChange", Dates.toString(Calendar.getInstance().getTime()));
 		return obj;
 	}
