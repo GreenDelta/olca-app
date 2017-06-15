@@ -1,5 +1,6 @@
 package org.openlca.app.wizards.io;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,6 +45,8 @@ import org.openlca.cloud.model.data.FetchRequestData;
 import org.openlca.cloud.model.data.FileReference;
 import org.openlca.cloud.util.WebRequests.WebRequestException;
 import org.openlca.core.model.ModelType;
+import org.openlca.jsonld.ZipStore;
+import org.openlca.jsonld.input.JsonImport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,8 +60,9 @@ public class RepositoryImportWizard extends Wizard implements IImportWizard {
 	private String pass;
 	private RepositoryClient client;
 	private Set<FileReference> selection = new HashSet<>();
+	private int total;
 	private WizardPage currentPage;
-	
+
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
 		setNeedsProgressMonitor(true);
@@ -75,10 +79,22 @@ public class RepositoryImportWizard extends Wizard implements IImportWizard {
 	public boolean performFinish() {
 		Exception e = run((m) -> {
 			try {
-				FetchNotifierMonitor monitor = new FetchNotifierMonitor(m, M.DownloadingData);
-				client.download(selection, null, monitor);
-				return null;
-			} catch (WebRequestException ex) {
+				if (total == selection.size()) {
+					FetchNotifierMonitor monitor = new FetchNotifierMonitor(m, M.DownloadingData);
+					client.download(new HashSet<>(), null, monitor);
+					return null;
+				} else {
+					m.beginTask(M.DownloadingData, IProgressMonitor.UNKNOWN);
+					File tmp = client.downloadJson(selection);
+					m.beginTask(M.ImportData, IProgressMonitor.UNKNOWN);
+					ZipStore store = ZipStore.open(tmp);
+					JsonImport jsonImport = new JsonImport(store, Database.get());
+					jsonImport.run();
+					store.close();
+					tmp.delete();
+					return null;
+				}
+			} catch (Exception ex) {
 				return ex;
 			}
 		});
@@ -92,10 +108,13 @@ public class RepositoryImportWizard extends Wizard implements IImportWizard {
 
 	private boolean initClient() {
 		try {
-			String repoName = repo.substring(repo.lastIndexOf('/') + 1);
-			repo = repo.substring(0, repo.lastIndexOf('/'));
-			String groupName = repo.substring(repo.lastIndexOf('/') + 1);
-			String baseUrl = repo.substring(0, repo.lastIndexOf('/')) + "/ws";
+			String url = repo;
+			if (url.endsWith("/"))
+				url = url.substring(0, url.length() - 1);
+			String repoName = url.substring(url.lastIndexOf('/') + 1);
+			url = url.substring(0, url.lastIndexOf('/'));
+			String groupName = url.substring(url.lastIndexOf('/') + 1);
+			String baseUrl = url.substring(0, url.lastIndexOf('/')) + "/ws";
 			String repoId = groupName + "/" + repoName;
 			CredentialSupplier credentials = getCredentials();
 			RepositoryConfig config = new RepositoryConfig(Database.get(), baseUrl, repoId, credentials);
@@ -112,11 +131,11 @@ public class RepositoryImportWizard extends Wizard implements IImportWizard {
 			return null;
 		return new CredentialSupplier(user, pass);
 	}
-	
-	private Exception run(Function<IProgressMonitor, WebRequestException> runnable) {
+
+	private Exception run(Function<IProgressMonitor, Exception> runnable) {
 		try {
 			getContainer().run(true, false, (m) -> {
-				WebRequestException e = runnable.apply(m);
+				Exception e = runnable.apply(m);
 				if (e != null)
 					throw new InvocationTargetException(e);
 			});
@@ -144,7 +163,7 @@ public class RepositoryImportWizard extends Wizard implements IImportWizard {
 			setControl(container);
 			Text repoText = UI.formText(container, M.URL + "*");
 			repoText.addModifyListener((e) -> {
-				repo = repoText.getText(); 
+				repo = repoText.getText();
 				checkCompletion();
 			});
 			Text userText = UI.formText(container, M.User);
@@ -156,7 +175,7 @@ public class RepositoryImportWizard extends Wizard implements IImportWizard {
 		private void checkCompletion() {
 			setPageComplete(!Strings.isNullOrEmpty(repo));
 		}
-	
+
 		@Override
 		public void setVisible(boolean visible) {
 			if (visible) {
@@ -164,14 +183,14 @@ public class RepositoryImportWizard extends Wizard implements IImportWizard {
 			}
 			super.setVisible(visible);
 		}
-		
+
 	}
 
 	private class ModelSelectionPage extends WizardPage {
 
 		private CheckboxTreeViewer viewer;
 		private Node root;
-		
+
 		protected ModelSelectionPage() {
 			super(ModelSelectionPage.class.getCanonicalName());
 			setPageComplete(false);
@@ -214,11 +233,12 @@ public class RepositoryImportWizard extends Wizard implements IImportWizard {
 			}
 			super.setVisible(visible);
 		}
-		
-		private WebRequestException scanRepository(IProgressMonitor m) {
+
+		private Exception scanRepository(IProgressMonitor m) {
 			try {
 				m.beginTask("#Scanning repository", IProgressMonitor.UNKNOWN);
 				List<FetchRequestData> data = new ArrayList<>(client.list());
+				total = data.size();
 				Collections.sort(data, new DataComparator());
 				Map<String, Node> categoryNodes = new HashMap<>();
 				root = new Node();
@@ -251,7 +271,7 @@ public class RepositoryImportWizard extends Wizard implements IImportWizard {
 			categoryNodes.put(type.name(), node);
 			return node;
 		}
-		
+
 		private String toCategoryKey(FetchRequestData data) {
 			String path = data.type.name();
 			if (data.type == ModelType.CATEGORY)
@@ -260,13 +280,13 @@ public class RepositoryImportWizard extends Wizard implements IImportWizard {
 				return path;
 			return path + "/" + data.fullPath.substring(0, data.fullPath.length() - data.name.length() - 1);
 		}
-		
+
 		private void checkCompletion() {
 			setPageComplete(!selection.isEmpty());
 		}
 
 	}
-	
+
 	private class DataComparator implements Comparator<FetchRequestData> {
 
 		@Override
@@ -280,7 +300,7 @@ public class RepositoryImportWizard extends Wizard implements IImportWizard {
 		}
 
 	}
-	
+
 	private class Node {
 
 		private final Node parent;
@@ -299,7 +319,7 @@ public class RepositoryImportWizard extends Wizard implements IImportWizard {
 		private Node(Node parent, FetchRequestData data) {
 			this(parent, data, null);
 		}
-		
+
 		private Node(Node parent, FetchRequestData data, ModelType type) {
 			this.parent = parent;
 			this.data = data;
@@ -310,7 +330,7 @@ public class RepositoryImportWizard extends Wizard implements IImportWizard {
 		}
 
 	}
-	
+
 	private class ContentProvider implements ITreeContentProvider {
 
 		@Override
@@ -359,7 +379,6 @@ public class RepositoryImportWizard extends Wizard implements IImportWizard {
 			return Images.get(node.data.type);
 		}
 
-		
 		@Override
 		public String getText(Object element) {
 			Node node = (Node) element;
@@ -367,14 +386,14 @@ public class RepositoryImportWizard extends Wizard implements IImportWizard {
 				return Labels.modelType(node.type);
 			return node.data.name;
 		}
-			
+
 	}
-	
+
 	private class SelectionState implements ICheckStateListener {
 
 		private final ModelSelectionPage page;
 		private final CheckboxTreeViewer viewer;
-		
+
 		public SelectionState(ModelSelectionPage page) {
 			this.page = page;
 			this.viewer = page.viewer;
@@ -430,14 +449,14 @@ public class RepositoryImportWizard extends Wizard implements IImportWizard {
 			}
 			viewer.getControl().setRedraw(true);
 		}
-		
+
 		private FileReference toFileReference(FetchRequestData data) {
 			FileReference ref = new FileReference();
 			ref.type = data.type;
 			ref.refId = data.refId;
 			return ref;
 		}
-		
+
 	}
-	
+
 }
