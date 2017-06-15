@@ -23,9 +23,12 @@ import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.model.data.Commit;
 import org.openlca.cloud.model.data.Dataset;
 import org.openlca.cloud.util.WebRequests.WebRequestException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class CheckoutAction extends Action {
 
+	private final static Logger log = LoggerFactory.getLogger(CheckoutAction.class);
 	private final HistoryViewer historyViewer;
 
 	CheckoutAction(HistoryViewer historyViewer) {
@@ -45,7 +48,8 @@ class CheckoutAction extends Action {
 		Commit commit = historyViewer.getSelected();
 		try {
 			doCheckout(commit);
-		} catch (Exception e) {
+		} catch (Exception e) { 
+			log.error("Error while receiving commit data", e);
 			Error.showBox(M.AnErrorOccuredWhileReceivingCommitData);
 		} finally {
 			Navigator.refresh();
