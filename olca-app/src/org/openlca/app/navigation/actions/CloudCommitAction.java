@@ -54,12 +54,12 @@ class CloudCommitAction extends Action implements INavigationAction {
 	public void run() {
 		Runner runner = new Runner();
 		runner.run();
-		if (runner.error != null) {
+		if (!runner.upToDate)
+			Error.showBox(M.RejectMessage);
+		else if (runner.error != null) {
 			log.error("Error during commit action", runner.error);
 			Error.showBox(runner.error.getMessage());
-		} else if (!runner.upToDate)
-			Error.showBox(M.RejectMessage);
-		else if (runner.noChanges)
+		} else if (runner.noChanges)
 			Info.showBox(M.NoChangesInLocalDb);
 		HistoryView.refresh();
 	}
