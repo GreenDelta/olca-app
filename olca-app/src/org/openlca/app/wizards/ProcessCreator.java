@@ -2,7 +2,6 @@ package org.openlca.app.wizards;
 
 import java.util.UUID;
 
-import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
@@ -14,8 +13,8 @@ import org.openlca.core.model.ProcessDocumentation;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.descriptors.BaseDescriptor;
-import org.openlca.core.model.descriptors.FlowDescriptor;
 
+import com.google.common.base.Strings;
 import com.ibm.icu.util.Calendar;
 
 /**
@@ -32,7 +31,8 @@ class ProcessCreator {
 	String name;
 	String description;
 	BaseDescriptor flowProperty;
-	FlowDescriptor flow;
+	Flow flow;
+	String flowName;
 	boolean createWithProduct;
 	boolean wasteProcess;
 
@@ -73,13 +73,16 @@ class ProcessCreator {
 	private Flow getFlow() {
 		if (createWithProduct)
 			return createFlow();
-		return new FlowDao(db).getForId(flow.getId());
+		return flow;
 	}
 
 	private Flow createFlow() {
 		Flow flow = new Flow();
 		flow.setRefId(UUID.randomUUID().toString());
-		flow.setName(name);
+		if (!Strings.isNullOrEmpty(flowName))
+			flow.setName(flowName);
+		else
+			flow.setName(name);
 		flow.setDescription(description);
 		FlowType type = wasteProcess ? FlowType.WASTE_FLOW
 				: FlowType.PRODUCT_FLOW;

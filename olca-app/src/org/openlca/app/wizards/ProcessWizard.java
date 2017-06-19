@@ -68,7 +68,7 @@ public class ProcessWizard extends AbstractWizard<Process> {
 		private Label selectFlowPropertyLabel;
 		private Composite flowPropertyContainer;
 		private Composite productTreeContainer;
-		private Text filterText;
+		private Text flowText;
 
 		private Composite labelStack;
 		private Composite contentStack;
@@ -106,7 +106,7 @@ public class ProcessWizard extends AbstractWizard<Process> {
 		protected void createContents(Composite comp) {
 			createWasteCheck(comp);
 			createRefFlowCheck(comp);
-			filterText = UI.formText(comp, M.QuantitativeReference);
+			flowText = UI.formText(comp, M.QuantitativeReference);
 			createLabelStack(comp);
 			contentStack = new Composite(comp, SWT.NONE);
 			UI.gridData(contentStack, true, true).heightHint = 200;
@@ -157,11 +157,9 @@ public class ProcessWizard extends AbstractWizard<Process> {
 				if (createFlow) {
 					labelLayout.topControl = selectFlowPropertyLabel;
 					contentLayout.topControl = flowPropertyContainer;
-					filterText.setEnabled(false);
 				} else {
 					labelLayout.topControl = selectProductLabel;
 					contentLayout.topControl = productTreeContainer;
-					filterText.setEnabled(true);
 				}
 				labelStack.layout();
 				contentStack.layout();
@@ -196,7 +194,7 @@ public class ProcessWizard extends AbstractWizard<Process> {
 			UI.gridData(flowTree.getTree(), true, true).heightHint = 200;
 			flowTree.addFilter(productFilter);
 			flowTree.addFilter(new EmptyCategoryFilter());
-			flowTree.addFilter(new ModelTextFilter(filterText, flowTree));
+			flowTree.addFilter(new ModelTextFilter(flowText, flowTree));
 			flowTree.addSelectionChangedListener(s -> checkInput());
 			flowTree.setInput(Navigator.findElement(ModelType.FLOW));
 		}
@@ -217,9 +215,8 @@ public class ProcessWizard extends AbstractWizard<Process> {
 			creator.createWithProduct = createRefFlowCheck.getSelection();
 			creator.wasteProcess = wasteCheck.getSelection();
 			creator.description = getModelDescription();
-			Flow flow = getSelectedFlow();
-			if (flow != null)
-				creator.flow = Descriptors.toDescriptor(flow);
+			creator.flow = getSelectedFlow();
+			creator.flowName = flowText.getText();
 			creator.flowProperty = propertyCombo.getSelected();
 			Process result = creator.create();
 			Navigator.refresh((Navigator.findElement(ModelType.FLOW)));
