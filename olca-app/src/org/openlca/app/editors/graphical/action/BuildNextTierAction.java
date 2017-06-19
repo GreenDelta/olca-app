@@ -176,7 +176,7 @@ class BuildNextTierAction extends Action implements IBuildAction {
 
 	private List<ProcessDescriptor> getProviders(Exchange exchange) {
 		Set<Long> providerIds = flowDao
-				.getProviders(exchange.getFlow().getId());
+				.getWhereOutput(exchange.getFlow().getId());
 		return processDao.getDescriptors(providerIds);
 	}
 

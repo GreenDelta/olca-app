@@ -56,8 +56,8 @@ class FlowUseSection {
 	void render(Composite body, FormToolkit toolkit) {
 		log.trace("render flow-use-section for flow {}", flow);
 		FlowDao dao = new FlowDao(database);
-		Set<Long> recipients = dao.getRecipients(flow.getId());
-		Set<Long> providers = dao.getProviders(flow.getId());
+		Set<Long> recipients = dao.getWhereInput(flow.getId());
+		Set<Long> providers = dao.getWhereOutput(flow.getId());
 		if (recipients.isEmpty() && providers.isEmpty())
 			return;
 		Section section = UI.section(body, toolkit, M.UsedInProcesses);

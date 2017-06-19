@@ -53,7 +53,7 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 				return Images.get(e.getFlow());
 		if (col == 3)
 			return Images.get(ModelType.UNIT);
-		if (col == 6 && forInputs && e.getDefaultProviderId() != 0l)
+		if (col == 7 && e.getDefaultProviderId() != 0)
 			return Images.get(ModelType.PROCESS);
 		if (col == 6 && !forInputs)
 			return getAvoidedCheck(e);
@@ -91,11 +91,11 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 			return getCostValue(e);
 		case 5:
 			return UncertaintyLabel.get(e.getUncertainty());
-		case 6:
-			return forInputs ? getDefaultProvider(e) : null;
 		case 7:
-			return e.getDqEntry();
+			return getDefaultProvider(e);
 		case 8:
+			return e.getDqEntry();
+		case 9:
 			return e.description;
 		}
 		return null;

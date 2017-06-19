@@ -22,7 +22,6 @@ import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
-import org.openlca.app.Event;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.InfoSection;
@@ -39,7 +38,6 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.combo.ExchangeViewer;
 import org.openlca.app.viewers.combo.LocationViewer;
 import org.openlca.core.database.LocationDao;
 import org.openlca.core.model.DQSystem;
@@ -49,28 +47,18 @@ import org.openlca.core.model.Process;
 import org.openlca.util.Geometries;
 import org.openlca.util.KeyGen;
 
-import com.google.common.eventbus.Subscribe;
-
 class InfoPage extends ModelPage<Process> {
 
 	private ProcessEditor editor;
 	private FormToolkit toolkit;
 	private ImageHyperlink kmlLink;
 	private ScrolledForm form;
-	private ExchangeViewer quanRefViewer;
 	private LocationViewer locationViewer;
 
 	InfoPage(ProcessEditor editor) {
 		super(editor, "ProcessInfoPage", M.GeneralInformation);
 		this.editor = editor;
 		editor.getEventBus().register(this);
-	}
-
-	@Subscribe
-	public void handleExchangesChange(Event event) {
-		if (!event.match(editor.EXCHANGES_CHANGED))
-			return;
-		quanRefViewer.setInput(getModel());
 	}
 
 	@Override
