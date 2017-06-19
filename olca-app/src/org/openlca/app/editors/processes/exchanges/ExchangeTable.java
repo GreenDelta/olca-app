@@ -16,7 +16,6 @@ import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.components.UncertaintyCellEditor;
-import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.rcp.images.Icon;
@@ -29,9 +28,7 @@ import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.table.modify.CheckBoxCellModifier;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
-import org.openlca.core.database.EntityCache;
 import org.openlca.core.database.FlowDao;
-import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowPropertyFactor;
@@ -55,9 +52,6 @@ class ExchangeTable {
 	private final boolean forInputs;
 	private final ProcessEditor editor;
 	private final ProcessExchangePage page;
-
-	private IDatabase database = Database.get();
-	private EntityCache cache = Cache.getEntityCache();
 
 	private final String FLOW = M.Flow;
 	private final String CATEGORY = M.Category;

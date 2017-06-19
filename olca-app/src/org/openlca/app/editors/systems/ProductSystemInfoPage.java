@@ -1,5 +1,9 @@
 package org.openlca.app.editors.systems;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -14,21 +18,23 @@ import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Editors;
+import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.ISelectionChangedListener;
-import org.openlca.app.viewers.combo.ExchangeViewer;
+import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.app.viewers.combo.FlowPropertyFactorViewer;
 import org.openlca.app.viewers.combo.UnitViewer;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowPropertyFactor;
+import org.openlca.core.model.FlowType;
+import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
+import org.openlca.util.Strings;
 
 class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 
-	private FormToolkit toolkit;
 	private ExchangeViewer productViewer;
 	private FlowPropertyFactorViewer propertyViewer;
 	private UnitViewer unitViewer;
@@ -45,12 +51,12 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 		updateFormTitle();
 		if (FeatureFlag.SHOW_REFRESH_BUTTONS.isEnabled())
 			Editors.addRefresh(form, getEditor());
-		toolkit = managedForm.getToolkit();
-		Composite body = UI.formBody(form, toolkit);
+		FormToolkit tk = managedForm.getToolkit();
+		Composite body = UI.formBody(form, tk);
 		InfoSection infoSection = new InfoSection(getEditor());
-		infoSection.render(body, toolkit);
-		addCalculationButton(infoSection.getContainer());
-		createAdditionalInfo(body);
+		infoSection.render(body, tk);
+		addCalculationButton(infoSection.getContainer(), tk);
+		createReferenceSection(body, tk);
 		body.setFocus();
 		form.reflow(true);
 	}
@@ -62,86 +68,86 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 		form.setText(M.ProductSystem + ": " + getModel().getName());
 	}
 
-	private void createAdditionalInfo(Composite body) {
-		Composite composite = UI.formSection(body, toolkit,
-				M.Reference);
-
+	private void createReferenceSection(Composite body, FormToolkit tk) {
+		Composite composite = UI.formSection(body, tk, M.Reference);
 		createLink(M.Process, "referenceProcess", composite);
-
-		toolkit.createLabel(composite, M.Product);
-		productViewer = new ExchangeViewer(composite, ExchangeViewer.OUTPUTS,
-				ExchangeViewer.PRODUCTS);
-
-		toolkit.createLabel(composite, M.FlowProperty);
+		tk.createLabel(composite, M.Product);
+		productViewer = new ExchangeViewer(composite);
+		tk.createLabel(composite, M.FlowProperty);
 		propertyViewer = new FlowPropertyFactorViewer(composite);
-
-		toolkit.createLabel(composite, M.Unit);
+		tk.createLabel(composite, M.Unit);
 		unitViewer = new UnitViewer(composite);
 
-		productViewer.addSelectionChangedListener(new ProductChangedListener(
-				propertyViewer));
-		propertyViewer.addSelectionChangedListener(new PropertyChangedListener(
-				unitViewer));
+		productViewer.addSelectionChangedListener(e -> {
+			Flow flow = e.getFlow();
+			propertyViewer.setInput(flow);
+			propertyViewer.select(flow.getReferenceFactor());
+		});
+		propertyViewer.addSelectionChangedListener(this::propertyChanged);
 
-		productViewer.setInput(getModel().getReferenceProcess());
+		productViewer.setInput(getRefCandidates(getModel().getReferenceProcess()));
+		targetAmountText = UI.formText(composite,
+				getManagedForm().getToolkit(), M.TargetAmount);
+		createBindings();
+	}
 
+	private void createBindings() {
 		getBinding().onModel(() -> getModel(), "referenceExchange",
 				productViewer);
 		getBinding().onModel(() -> getModel(), "targetFlowPropertyFactor",
 				propertyViewer);
 		getBinding().onModel(() -> getModel(), "targetUnit", unitViewer);
-
-		targetAmountText = UI.formText(composite,
-				getManagedForm().getToolkit(), M.TargetAmount);
 		getBinding().onDouble(() -> getModel(), "targetAmount",
 				targetAmountText);
 	}
 
-	private void addCalculationButton(Composite composite) {
-		toolkit.createLabel(composite, "");
-		Button button = toolkit.createButton(composite, M.Calculate,
-				SWT.NONE);
+	private List<Exchange> getRefCandidates(Process p) {
+		if (p == null)
+			return Collections.emptyList();
+		List<Exchange> candidates = new ArrayList<>();
+		for (Exchange e : p.getExchanges()) {
+			if (e.getFlow() == null)
+				continue;
+			FlowType type = e.getFlow().getFlowType();
+			if (e.isInput() && type == FlowType.WASTE_FLOW)
+				candidates.add(e);
+			else if (!e.isInput() && type == FlowType.PRODUCT_FLOW)
+				candidates.add(e);
+		}
+		Collections.sort(candidates, (e1, e2) -> Strings.compare(
+				Labels.getDisplayName(e1.getFlow()),
+				Labels.getDisplayName(e2.getFlow())));
+		return candidates;
+	}
+
+	private void addCalculationButton(Composite comp, FormToolkit tk) {
+		tk.createLabel(comp, "");
+		Button button = tk.createButton(comp, M.Calculate, SWT.NONE);
 		button.setImage(Icon.RUN.get());
-		Controls.onSelect(button, (e) -> CalculationWizard.open(getModel()));
+		Controls.onSelect(button, e -> CalculationWizard.open(getModel()));
 	}
 
-	private class ProductChangedListener implements
-			ISelectionChangedListener<Exchange> {
+	private void propertyChanged(FlowPropertyFactor f) {
+		if (f == null)
+			return;
+		UnitGroup unitGroup = f.getFlowProperty().getUnitGroup();
+		unitViewer.setInput(unitGroup);
+		Unit previousSelection = getModel().getTargetUnit();
+		if (unitGroup.getUnits().contains(previousSelection))
+			unitViewer.select(previousSelection);
+		else
+			unitViewer.select(unitGroup.getReferenceUnit());
+	}
 
-		private FlowPropertyFactorViewer propertyViewer;
+	private class ExchangeViewer extends AbstractComboViewer<Exchange> {
 
-		private ProductChangedListener(FlowPropertyFactorViewer propertyViewer) {
-			this.propertyViewer = propertyViewer;
+		public ExchangeViewer(Composite parent) {
+			super(parent);
 		}
 
 		@Override
-		public void selectionChanged(Exchange selection) {
-			Flow flow = selection.getFlow();
-			propertyViewer.setInput(flow);
-			propertyViewer.select(flow.getReferenceFactor());
-		}
-	}
-
-	private class PropertyChangedListener implements
-			ISelectionChangedListener<FlowPropertyFactor> {
-
-		private UnitViewer unitViewer;
-
-		private PropertyChangedListener(UnitViewer unitViewer) {
-			this.unitViewer = unitViewer;
-		}
-
-		@Override
-		public void selectionChanged(FlowPropertyFactor selection) {
-			if (selection == null)
-				return;
-			UnitGroup unitGroup = selection.getFlowProperty().getUnitGroup();
-			unitViewer.setInput(unitGroup);
-			Unit previousSelection = getModel().getTargetUnit();
-			if (unitGroup.getUnits().contains(previousSelection))
-				unitViewer.select(previousSelection);
-			else
-				unitViewer.select(unitGroup.getReferenceUnit());
+		public Class<Exchange> getType() {
+			return Exchange.class;
 		}
 	}
 }
