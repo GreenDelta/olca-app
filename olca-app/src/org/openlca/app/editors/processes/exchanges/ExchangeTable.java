@@ -13,7 +13,6 @@ import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
 import org.openlca.app.M;
@@ -57,8 +56,11 @@ import org.openlca.util.Strings;
  */
 class ExchangeTable {
 
+	TableViewer viewer;
+
 	private final boolean forInputs;
 	private final ProcessEditor editor;
+	private final ProcessExchangePage page;
 
 	private IDatabase database = Database.get();
 	private EntityCache cache = Cache.getEntityCache();
@@ -74,40 +76,40 @@ class ExchangeTable {
 	private final String DESCRIPTION = M.Description;
 	private final String AVOIDED_PRODUCT = M.AvoidedProduct;
 
-	private TableViewer viewer;
 	private ExchangeLabel label;
 
-	public static ExchangeTable forInputs(Section section, FormToolkit toolkit,
-			ProcessEditor editor) {
-		ExchangeTable table = new ExchangeTable(true, editor);
-		table.render(section, toolkit);
+	public static ExchangeTable forInputs(Section section, ProcessExchangePage page) {
+		ExchangeTable table = new ExchangeTable(true, page);
+		table.render(section);
 		return table;
 	}
 
 	public static ExchangeTable forOutputs(Section section,
-			FormToolkit toolkit, ProcessEditor editor) {
-		ExchangeTable table = new ExchangeTable(false, editor);
-		table.render(section, toolkit);
+			ProcessExchangePage page) {
+		ExchangeTable table = new ExchangeTable(false, page);
+		table.render(section);
 		return table;
 	}
 
-	private ExchangeTable(boolean forInputs, ProcessEditor editor) {
+	private ExchangeTable(boolean forInputs, ProcessExchangePage page) {
 		this.forInputs = forInputs;
+		this.page = page;
+		this.editor = page.editor;
 		this.COSTS = forInputs ? M.Costs : M.CostsRevenues;
-		this.editor = editor;
-		editor.getParameterSupport().afterEvaluation(() -> viewer.refresh());
+		editor.getParameterSupport().afterEvaluation(
+				() -> viewer.refresh());
 	}
 
-	private void render(Section section, FormToolkit toolkit) {
-		Composite composite = UI.sectionClient(section, toolkit);
+	private void render(Section section) {
+		Composite composite = UI.sectionClient(section, page.toolkit);
 		UI.gridLayout(composite, 1);
 		viewer = Tables.createViewer(composite, getColumns());
 		label = new ExchangeLabel(editor, forInputs);
-		viewer.setLabelProvider(label.asColumnLabel());
+		viewer.setLabelProvider(label);
 		bindModifiers();
 		Tables.addDropSupport(viewer, this::add);
 		viewer.addFilter(new Filter());
-		bindActions(section, viewer);
+		bindActions(section);
 		bindDoubleClick(viewer);
 		Tables.bindColumnWidths(viewer, 0.2, 0.15, 0.1, 0.09, 0.09, 0.09, 0.09,
 				0.09, 0.05);
@@ -136,13 +138,21 @@ class ExchangeTable {
 			ms.bind(AVOIDED_PRODUCT, new AvoidedProductModifier());
 	}
 
-	private void bindActions(Section section, final TableViewer viewer) {
+	private void bindActions(Section section) {
 		Action add = Actions.onAdd(() -> onAdd());
 		Action remove = Actions.onRemove(() -> onRemove());
+		Action qRef = Actions.create("#Set as quantitative reference", null, () -> {
+			Exchange e = Viewers.getFirstSelected(viewer);
+			if (e == null)
+				return;
+			editor.getModel().setQuantitativeReference(e);
+			page.refreshTables();
+			editor.setDirty(true);
+		});
 		Action formulaSwitch = new FormulaSwitchAction();
 		Action clipboard = TableClipboard.onCopy(viewer);
 		Actions.bind(section, add, remove, formulaSwitch);
-		Actions.bind(viewer, add, remove, clipboard);
+		Actions.bind(viewer, add, remove, qRef, clipboard);
 		Tables.onDeletePressed(viewer, e -> onRemove());
 	}
 

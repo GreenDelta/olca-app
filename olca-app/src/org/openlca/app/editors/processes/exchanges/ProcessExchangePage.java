@@ -20,9 +20,12 @@ import org.openlca.util.Strings;
 
 public class ProcessExchangePage extends ModelPage<Process> {
 
-	private ProcessEditor editor;
-	private FormToolkit toolkit;
+	final ProcessEditor editor;
+	FormToolkit toolkit;
+
 	private ScrolledForm form;
+	private ExchangeTable inputTable;
+	private ExchangeTable outputTable;
 
 	public ProcessExchangePage(ProcessEditor editor) {
 		super(editor, "ProcessExchangePage", M.InputsOutputs);
@@ -30,16 +33,16 @@ public class ProcessExchangePage extends ModelPage<Process> {
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm managedForm) {
-		form = UI.formHeader(managedForm);
+	protected void createFormContent(IManagedForm mform) {
+		form = UI.formHeader(mform);
 		updateFormTitle();
-		toolkit = managedForm.getToolkit();
+		toolkit = mform.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		SashForm sash = new SashForm(body, SWT.VERTICAL);
 		UI.gridData(sash, true, true);
 		toolkit.adapt(sash);
-		ExchangeTable inputTable = createTable(sash, true);
-		ExchangeTable outputTable = createTable(sash, false);
+		inputTable = createTable(sash, true);
+		outputTable = createTable(sash, false);
 		body.setFocus();
 		form.reflow(true);
 		sortExchanges();
@@ -78,8 +81,15 @@ public class ProcessExchangePage extends ModelPage<Process> {
 		Section section = UI.section(body, toolkit, title);
 		UI.gridData(section, true, true);
 		if (forInputs)
-			return ExchangeTable.forInputs(section, toolkit, editor);
+			return ExchangeTable.forInputs(section, this);
 		else
-			return ExchangeTable.forOutputs(section, toolkit, editor);
+			return ExchangeTable.forOutputs(section, this);
+	}
+
+	void refreshTables() {
+		if (inputTable != null && inputTable.viewer != null)
+			inputTable.viewer.refresh();
+		if (outputTable != null && outputTable.viewer != null)
+			outputTable.viewer.refresh();
 	}
 }

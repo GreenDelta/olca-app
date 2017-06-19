@@ -86,7 +86,6 @@ class InfoPage extends ModelPage<Process> {
 		createCheckBox(M.InfrastructureProcess, "infrastructureProcess",
 				infoSection.getContainer());
 		createSystemButton(infoSection.getContainer());
-		createQuanRefSection(body);
 		createTimeSection(body);
 		createGeographySection(body);
 		createTechnologySection(body);
@@ -109,21 +108,6 @@ class InfoPage extends ModelPage<Process> {
 		button.setImage(Images.get(ModelType.PRODUCT_SYSTEM, Overlay.NEW));
 		Controls.onSelect(button, (e) -> {
 			SystemCreation.run(getModel());
-		});
-	}
-
-	private void createQuanRefSection(Composite body) {
-		Composite composite = UI.formSection(body, toolkit,
-				M.QuantitativeReference);
-		UI.formLabel(composite, toolkit, M.QuantitativeReference);
-		quanRefViewer = new ExchangeViewer(composite, ExchangeViewer.OUTPUTS,
-				ExchangeViewer.PRODUCTS);
-		quanRefViewer.setInput(getModel());
-		getBinding().onModel(() -> getModel(), "quantitativeReference",
-				quanRefViewer);
-		editor.onSaved(() -> {
-			quanRefViewer.setInput(getModel());
-			quanRefViewer.select(getModel().getQuantitativeReference());
 		});
 	}
 

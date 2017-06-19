@@ -2,12 +2,13 @@ package org.openlca.app.editors.processes.exchanges;
 
 import java.util.Objects;
 
-import org.eclipse.jface.viewers.CellLabelProvider;
-import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ITableColorProvider;
+import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.openlca.app.Preferences;
 import org.openlca.app.db.Cache;
@@ -17,6 +18,7 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
+import org.openlca.app.util.UI;
 import org.openlca.app.util.UncertaintyLabel;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.Exchange;
@@ -26,7 +28,8 @@ import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.io.CategoryPath;
 
-class ExchangeLabel extends LabelProvider implements ITableLabelProvider {
+class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
+		ITableColorProvider, ITableFontProvider {
 
 	private final boolean forInputs;
 	private final ProcessEditor editor;
@@ -132,39 +135,32 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider {
 			return Double.toString(e.costValue) + unit;
 	}
 
-	CellLabelProvider asColumnLabel() {
-		return new ColumnLabel();
+	@Override
+	public Color getBackground(Object obj, int columnIndex) {
+		return null;
 	}
 
-	private class ColumnLabel extends ColumnLabelProvider {
-
-		@Override
-		public void update(ViewerCell cell) {
-			super.update(cell);
-			if (cell == null)
-				return;
-			Object obj = cell.getElement();
-			int col = cell.getColumnIndex();
-			cell.setText(getColumnText(obj, col));
-			cell.setImage(getColumnImage(obj, col));
-			if (col == 4)
-				setCostColor(cell);
-		}
-
-		private void setCostColor(ViewerCell cell) {
-			if (cell == null)
-				return;
-			Object obj = cell.getElement();
-			if (!(obj instanceof Exchange))
-				return;
-			Exchange e = (Exchange) obj;
-			if (e.getFlow() == null)
-				return;
-			if (!e.isInput() && e.getFlow().getFlowType() == FlowType.PRODUCT_FLOW)
-				cell.setForeground(Colors.systemColor(SWT.COLOR_DARK_GREEN));
-			else
-				cell.setForeground(Colors.systemColor(SWT.COLOR_DARK_MAGENTA));
-		}
+	@Override
+	public Color getForeground(Object obj, int col) {
+		if (col != 4)
+			return null;
+		Exchange e = (Exchange) obj;
+		if (e.getFlow() == null)
+			return null;
+		if (!e.isInput() && e.getFlow().getFlowType() == FlowType.PRODUCT_FLOW)
+			return Colors.systemColor(SWT.COLOR_DARK_GREEN);
+		else
+			return Colors.systemColor(SWT.COLOR_DARK_MAGENTA);
 	}
 
+	@Override
+	public Font getFont(Object obj, int col) {
+		if (!(obj instanceof Exchange))
+			return null;
+		Exchange e = (Exchange) obj;
+		Exchange qRef = editor.getModel().getQuantitativeReference();
+		if (Objects.equals(e, qRef))
+			return UI.boldFont();
+		return null;
+	}
 }
