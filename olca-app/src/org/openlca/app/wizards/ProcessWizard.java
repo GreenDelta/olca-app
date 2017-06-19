@@ -60,21 +60,29 @@ public class ProcessWizard extends AbstractWizard<Process> {
 
 	private class Page extends AbstractWizardPage<Process> {
 
-		private Composite contentStack;
 		private Button createRefFlowCheck;
-		private Composite labelStack;
-		private TreeViewer productTree;
-		private FlowPropertyViewer flowPropertyViewer;
+		private Button wasteCheck;
+		private TreeViewer flowTree;
+		private FlowPropertyViewer propertyCombo;
 		private Label selectProductLabel;
 		private Label selectFlowPropertyLabel;
 		private Composite flowPropertyContainer;
 		private Composite productTreeContainer;
 		private Text filterText;
 
+		private Composite labelStack;
+		private Composite contentStack;
+
+		private FlowTypeFilter wasteFilter = new FlowTypeFilter(
+				FlowType.ELEMENTARY_FLOW, FlowType.PRODUCT_FLOW);
+		private FlowTypeFilter productFilter = new FlowTypeFilter(
+				FlowType.ELEMENTARY_FLOW, FlowType.WASTE_FLOW);
+
 		protected Page() {
 			super("ProcessWizardPage");
 			setTitle(M.NewProcess);
 			setMessage(M.NewProcess);
+			setWithDescription(false);
 			setPageComplete(false);
 		}
 
@@ -84,7 +92,7 @@ public class ProcessWizard extends AbstractWizard<Process> {
 			boolean createFlow = createRefFlowCheck.getSelection();
 			String err = M.NoQuantitativeReferenceSelected;
 			if (createFlow) {
-				if (flowPropertyViewer.getSelected() == null)
+				if (propertyCombo.getSelected() == null)
 					setErrorMessage(err);
 			} else {
 				Flow flow = getSelectedFlow();
@@ -96,14 +104,14 @@ public class ProcessWizard extends AbstractWizard<Process> {
 
 		@Override
 		protected void createContents(Composite comp) {
-			new Label(comp, SWT.NONE);
+			createWasteCheck(comp);
 			createRefFlowCheck(comp);
 			filterText = UI.formText(comp, M.QuantitativeReference);
 			createLabelStack(comp);
 			contentStack = new Composite(comp, SWT.NONE);
 			UI.gridData(contentStack, true, true).heightHint = 200;
 			contentStack.setLayout(new StackLayout());
-			createProductViewer();
+			createFlowTree();
 			createPropertyViewer();
 			((StackLayout) labelStack.getLayout()).topControl = selectProductLabel;
 			((StackLayout) contentStack.getLayout()).topControl = productTreeContainer;
@@ -113,16 +121,34 @@ public class ProcessWizard extends AbstractWizard<Process> {
 				FlowDescriptor d = Descriptors.toDescriptor(refFlow);
 				INavigationElement<?> e = Navigator.findElement(d);
 				ISelection s = new StructuredSelection(e);
-				productTree.setSelection(s, true);
+				flowTree.setSelection(s, true);
 				String name = refFlow.getName() != null ? refFlow.getName() : "";
 				nameText.setText(name);
 				checkInput();
 			}
 		}
 
-		private void createRefFlowCheck(Composite container) {
-			createRefFlowCheck = new Button(container, SWT.CHECK);
-			createRefFlowCheck.setText(M.CreateANewProductFlowForTheProcess);
+		private void createWasteCheck(Composite comp) {
+			UI.filler(comp);
+			wasteCheck = new Button(comp, SWT.CHECK);
+			wasteCheck.setText("#Create a waste treatment process");
+			Controls.onSelect(wasteCheck, e -> {
+				if (wasteCheck.getSelection()) {
+					flowTree.removeFilter(productFilter);
+					flowTree.addFilter(wasteFilter);
+					flowTree.refresh();
+				} else {
+					flowTree.removeFilter(wasteFilter);
+					flowTree.addFilter(productFilter);
+					flowTree.refresh();
+				}
+			});
+		}
+
+		private void createRefFlowCheck(Composite comp) {
+			UI.filler(comp);
+			createRefFlowCheck = new Button(comp, SWT.CHECK);
+			createRefFlowCheck.setText("#Create a new flow for the process");
 			Controls.onSelect(createRefFlowCheck, e -> {
 				boolean createFlow = createRefFlowCheck.getSelection();
 				StackLayout labelLayout = (StackLayout) labelStack.getLayout();
@@ -162,47 +188,46 @@ public class ProcessWizard extends AbstractWizard<Process> {
 			return layout;
 		}
 
-		private void createProductViewer() {
+		private void createFlowTree() {
 			productTreeContainer = new Composite(contentStack, SWT.NONE);
 			UI.gridData(productTreeContainer, true, false);
 			productTreeContainer.setLayout(gridLayout());
-			productTree = NavigationTree.createViewer(productTreeContainer);
-			UI.gridData(productTree.getTree(), true, true).heightHint = 200;
-			productTree.addFilter(new FlowTypeFilter(FlowType.ELEMENTARY_FLOW,
-					FlowType.WASTE_FLOW));
-			productTree.addFilter(new EmptyCategoryFilter());
-			productTree.addFilter(new ModelTextFilter(filterText, productTree));
-			productTree.addSelectionChangedListener(s -> checkInput());
-			productTree.setInput(Navigator.findElement(ModelType.FLOW));
+			flowTree = NavigationTree.createViewer(productTreeContainer);
+			UI.gridData(flowTree.getTree(), true, true).heightHint = 200;
+			flowTree.addFilter(productFilter);
+			flowTree.addFilter(new EmptyCategoryFilter());
+			flowTree.addFilter(new ModelTextFilter(filterText, flowTree));
+			flowTree.addSelectionChangedListener(s -> checkInput());
+			flowTree.setInput(Navigator.findElement(ModelType.FLOW));
 		}
 
 		private void createPropertyViewer() {
 			flowPropertyContainer = new Composite(contentStack, SWT.NONE);
 			UI.gridData(flowPropertyContainer, true, false);
 			flowPropertyContainer.setLayout(gridLayout());
-			flowPropertyViewer = new FlowPropertyViewer(flowPropertyContainer);
-			flowPropertyViewer.setInput(Database.get());
-			flowPropertyViewer.selectFirst();
+			propertyCombo = new FlowPropertyViewer(flowPropertyContainer);
+			propertyCombo.setInput(Database.get());
+			propertyCombo.selectFirst();
 		}
 
 		@Override
 		public Process createModel() {
-			ProcessCreationController controller = new ProcessCreationController(
-					Database.get());
-			controller.setName(getModelName());
-			controller.setCreateWithProduct(createRefFlowCheck.getSelection());
-			controller.setDescription(getModelDescription());
+			ProcessCreator creator = new ProcessCreator(Database.get());
+			creator.name = getModelName();
+			creator.createWithProduct = createRefFlowCheck.getSelection();
+			creator.wasteProcess = wasteCheck.getSelection();
+			creator.description = getModelDescription();
 			Flow flow = getSelectedFlow();
 			if (flow != null)
-				controller.setFlow(Descriptors.toDescriptor(flow));
-			controller.setFlowProperty(flowPropertyViewer.getSelected());
-			Process result = controller.create();
+				creator.flow = Descriptors.toDescriptor(flow);
+			creator.flowProperty = propertyCombo.getSelected();
+			Process result = creator.create();
 			Navigator.refresh((Navigator.findElement(ModelType.FLOW)));
 			return result;
 		}
 
 		private Flow getSelectedFlow() {
-			INavigationElement<?> e = Viewers.getFirstSelected(productTree);
+			INavigationElement<?> e = Viewers.getFirstSelected(flowTree);
 			if (e == null || !(e.getContent() instanceof FlowDescriptor))
 				return null;
 			FlowDescriptor flow = (FlowDescriptor) e.getContent();

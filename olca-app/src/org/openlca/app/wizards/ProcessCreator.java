@@ -25,37 +25,19 @@ import com.ibm.icu.util.Calendar;
  * case, a flow property must be provided for the second case a flow. If a flow
  * is created the flow is also inserted in the database.
  */
-class ProcessCreationController {
+class ProcessCreator {
 
-	private IDatabase database;
-	private String name;
-	private String description;
-	private boolean createWithProduct;
-	private BaseDescriptor flowProperty;
-	private FlowDescriptor flow;
+	private final IDatabase db;
 
-	public ProcessCreationController(IDatabase database) {
-		this.database = database;
-	}
+	String name;
+	String description;
+	BaseDescriptor flowProperty;
+	FlowDescriptor flow;
+	boolean createWithProduct;
+	boolean wasteProcess;
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public void setCreateWithProduct(boolean createWithProduct) {
-		this.createWithProduct = createWithProduct;
-	}
-
-	public void setFlowProperty(BaseDescriptor flowProperty) {
-		this.flowProperty = flowProperty;
-	}
-
-	public void setFlow(FlowDescriptor flow) {
-		this.flow = flow;
+	public ProcessCreator(IDatabase db) {
+		this.db = db;
 	}
 
 	public boolean canCreate() {
@@ -70,19 +52,19 @@ class ProcessCreationController {
 		if (!canCreate())
 			throw new RuntimeException("Invalid arguments for process creation");
 		try {
-			Process process = new Process();
-			process.setRefId(UUID.randomUUID().toString());
-			process.setName(name);
-			process.setDescription(description);
-			process.setLastChange(System.currentTimeMillis());
-			process.setProcessType(ProcessType.UNIT_PROCESS);
+			Process p = new Process();
+			p.setRefId(UUID.randomUUID().toString());
+			p.setName(name);
+			p.setDescription(description);
+			p.setLastChange(System.currentTimeMillis());
+			p.setProcessType(ProcessType.UNIT_PROCESS);
 			Flow flow = getFlow();
-			addQuantitativeReference(process, flow);
+			addQuantitativeReference(p, flow);
 			ProcessDocumentation doc = new ProcessDocumentation();
 			doc.setCreationDate(Calendar.getInstance().getTime());
-			doc.setId(process.getId());
-			process.setDocumentation(doc);
-			return process;
+			doc.setId(p.getId());
+			p.setDocumentation(doc);
+			return p;
 		} catch (Exception e) {
 			throw new RuntimeException("Could not create process", e);
 		}
@@ -91,24 +73,25 @@ class ProcessCreationController {
 	private Flow getFlow() {
 		if (createWithProduct)
 			return createFlow();
-		return new FlowDao(database).getForId(flow.getId());
+		return new FlowDao(db).getForId(flow.getId());
 	}
 
 	private Flow createFlow() {
-		Flow flow;
-		flow = new Flow();
+		Flow flow = new Flow();
 		flow.setRefId(UUID.randomUUID().toString());
 		flow.setName(name);
 		flow.setDescription(description);
-		flow.setFlowType(FlowType.PRODUCT_FLOW);
-		FlowProperty property = database.createDao(FlowProperty.class)
+		FlowType type = wasteProcess ? FlowType.WASTE_FLOW
+				: FlowType.PRODUCT_FLOW;
+		flow.setFlowType(type);
+		FlowProperty property = db.createDao(FlowProperty.class)
 				.getForId(flowProperty.getId());
 		flow.setReferenceFlowProperty(property);
 		FlowPropertyFactor factor = new FlowPropertyFactor();
 		factor.setConversionFactor(1);
 		factor.setFlowProperty(property);
 		flow.getFlowPropertyFactors().add(factor);
-		database.createDao(Flow.class).insert(flow);
+		db.createDao(Flow.class).insert(flow);
 		return flow;
 	}
 
@@ -121,7 +104,7 @@ class ProcessCreationController {
 		UnitGroup unitGroup = refProp.getUnitGroup();
 		if (unitGroup != null)
 			qRef.setUnit(unitGroup.getReferenceUnit());
-		qRef.setInput(false);
+		qRef.setInput(flow.getFlowType() == FlowType.WASTE_FLOW);
 		process.getExchanges().add(qRef);
 		process.setQuantitativeReference(qRef);
 	}
