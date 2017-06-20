@@ -82,7 +82,8 @@ public class DataQualityShell extends Shell {
 			return;
 		if (baseUncertainty == null)
 			baseUncertainty = 1d;
-		baseUncertaintyText.setText(Double.toString(baseUncertainty));
+		if (baseUncertaintyText != null) // check for issue #21
+			baseUncertaintyText.setText(Double.toString(baseUncertainty));
 		updateSigmaG();
 	}
 
