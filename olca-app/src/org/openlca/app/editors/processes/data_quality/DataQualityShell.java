@@ -32,7 +32,7 @@ public class DataQualityShell extends Shell {
 	private final DQSystem system;
 	private final String dqEntry;
 	private Text baseUncertaintyText;
-	private Text valueLabel;
+	private Text valueText;
 	public Consumer<DataQualityShell> onOk;
 	public Consumer<DataQualityShell> onDelete;
 	public Consumer<DataQualityShell> onUseUncertainties;
@@ -189,9 +189,9 @@ public class DataQualityShell extends Shell {
 		UI.gridData(baseUncertaintyText, false, false).widthHint = 80;
 		baseUncertaintyText.addModifyListener((e) -> updateSigmaG());
 		toolkit.createLabel(composite, "\u03c3g: ");
-		valueLabel = toolkit.createText(composite, "", SWT.NONE);
-		valueLabel.setEditable(false);
-		UI.gridData(valueLabel, true, false);
+		valueText = toolkit.createText(composite, "", SWT.NONE);
+		valueText.setEditable(false);
+		UI.gridData(valueText, true, false);
 		Button button = new Button(composite, SWT.NONE);
 		button.setText("Use as uncertainty value");
 		Controls.onSelect(button, (e) -> onUseUncertainties.accept(this));
@@ -221,7 +221,7 @@ public class DataQualityShell extends Shell {
 			return 0;
 		try {
 			double sigma = calculateGeometricSD();
-			valueLabel.setText(Double.toString(sigma));
+			valueText.setText(Double.toString(sigma));
 			baseUncertaintyText.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
 			baseUncertaintyText.setToolTipText(null);
 			return sigma;
@@ -242,7 +242,7 @@ public class DataQualityShell extends Shell {
 			varSum += Math.pow(Math.log(factor), 2);
 		}
 		varSum += Math.pow(Math.log(getBaseValue()), 2);
-		return Math.sqrt(Math.exp(Math.sqrt(varSum)));
+		return Math.exp(Math.sqrt(varSum));
 	}
 
 	public Double getBaseValue() {
