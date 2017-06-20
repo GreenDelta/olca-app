@@ -23,6 +23,7 @@ import org.openlca.core.database.Daos;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.util.KeyGen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,12 +58,29 @@ class FetchIndexHelper {
 		Map<String, Long> refIdToLocalId = new HashMap<>();
 		IDatabase db = Database.get();
 		for (ModelType type : refIds.keySet()) {
-			CategorizedEntityDao<?, ? extends CategorizedDescriptor> dao = Daos
-					.createCategorizedDao(db, type);
-			List<? extends CategorizedDescriptor> descriptors = dao
-					.getDescriptorsForRefIds(refIds.get(type));
-			for (CategorizedDescriptor descriptor : descriptors)
+			CategorizedEntityDao<?, ? extends CategorizedDescriptor> dao = Daos.createCategorizedDao(db, type);
+			Set<String> ids = refIds.get(type);
+			List<? extends CategorizedDescriptor> descriptors = dao.getDescriptorsForRefIds(ids);
+			for (CategorizedDescriptor descriptor : descriptors) {
+				ids.remove(descriptor.getRefId());
 				refIdToLocalId.put(descriptor.getRefId(), descriptor.getId());
+			}
+			if (!ids.isEmpty() && type == ModelType.CATEGORY) {
+				// some old category ids are in older repositories, to avoid an
+				// index problem, the new ids are calculated
+				Map<String, String> newToOldId = new HashMap<>();
+				for (DiffResult r : changed) {
+					if (r.getType() != DiffResponse.ADD_TO_LOCAL || !ids.contains(r.remote.refId))
+						continue;
+					String newId = KeyGen.get((r.remote.categoryType.name() + "/" + r.remote.fullPath).split("/"));
+					newToOldId.put(newId, r.remote.refId);
+				}
+				descriptors = dao.getDescriptorsForRefIds(newToOldId.keySet());
+				for (CategorizedDescriptor descriptor : descriptors) {
+					ids.remove(descriptor.getRefId());
+					refIdToLocalId.put(newToOldId.get(descriptor.getRefId()), descriptor.getId());
+				}
+			}
 		}
 		return refIdToLocalId;
 	}
