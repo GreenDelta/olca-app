@@ -1,4 +1,4 @@
-package org.openlca.app.editors.processes;
+package org.openlca.app.editors.processes.allocation;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -15,6 +15,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Event;
 import org.openlca.app.M;
+import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
@@ -38,7 +39,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.eventbus.Subscribe;
 
-class AllocationPage extends FormPage {
+public class AllocationPage extends FormPage {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private ProcessEditor editor;
@@ -80,7 +81,7 @@ class AllocationPage extends FormPage {
 
 	private void setTableInputs() {
 		if (factorViewer != null)
-			factorViewer.setInput(Processes.getOutputProducts(process()));
+			factorViewer.setInput(Util.getProviderFlows(process()));
 		if (causalFactorTable != null)
 			causalFactorTable.refresh();
 	}
@@ -138,7 +139,7 @@ class AllocationPage extends FormPage {
 		factorViewer = Tables.createViewer(composite, colNames);
 		Tables.bindColumnWidths(factorViewer, 0.3, 0.3, 0.3);
 		factorViewer.setLabelProvider(new FactorLabel());
-		factorViewer.setInput(Processes.getOutputProducts(process()));
+		factorViewer.setInput(Util.getProviderFlows(process()));
 		ModifySupport<Exchange> modifySupport = new ModifySupport<>(
 				factorViewer);
 		modifySupport.bind(M.Physical, new ValueModifier(
@@ -251,7 +252,7 @@ class AllocationPage extends FormPage {
 
 		@Override
 		public boolean canModify(Exchange element) {
-			return Processes.getOutputProducts(process()).size() > 1;
+			return Util.getProviderFlows(process()).size() > 1;
 		}
 
 	}

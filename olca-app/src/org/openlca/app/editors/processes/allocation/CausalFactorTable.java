@@ -1,4 +1,4 @@
-package org.openlca.app.editors.processes;
+package org.openlca.app.editors.processes.allocation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,8 +18,9 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
-import org.openlca.app.util.Actions;
+import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
@@ -54,7 +55,7 @@ class CausalFactorTable {
 	}
 
 	public void refresh() {
-		List<Exchange> products = Processes.getOutputProducts(process());
+		List<Exchange> products = Util.getProviderFlows(process());
 		List<Exchange> newProducts = new ArrayList<>(products);
 		List<Integer> removalIndices = new ArrayList<>();
 		for (int i = 0; i < columns.length; i++) {
@@ -68,7 +69,7 @@ class CausalFactorTable {
 			removeColumn(col);
 		for (Exchange product : newProducts)
 			addColumn(product);
-		viewer.setInput(Processes.getNonOutputProducts(process()));
+		viewer.setInput(Util.getNonProviderFlows(process()));
 		createModifySupport();
 	}
 
@@ -96,10 +97,11 @@ class CausalFactorTable {
 	}
 
 	private void initColumns() {
-		List<Exchange> products = Processes.getOutputProducts(process());
-		columns = new Column[products.size()];
-		for (int i = 0; i < columns.length; i++)
-			columns[i] = new Column(products.get(i));
+		List<Exchange> pFlows = Util.getProviderFlows(process());
+		columns = new Column[pFlows.size()];
+		for (int i = 0; i < columns.length; i++) {
+			columns[i] = new Column(pFlows.get(i));
+		}
 		Arrays.sort(columns);
 	}
 
@@ -127,7 +129,7 @@ class CausalFactorTable {
 	}
 
 	void setInitialInput() {
-		viewer.setInput(Processes.getNonOutputProducts(process()));
+		viewer.setInput(Util.getNonProviderFlows(process()));
 	}
 
 	private void createModifySupport() {

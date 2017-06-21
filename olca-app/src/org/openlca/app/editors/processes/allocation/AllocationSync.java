@@ -1,4 +1,4 @@
-package org.openlca.app.editors.processes;
+package org.openlca.app.editors.processes.allocation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,15 +45,15 @@ class AllocationSync {
 
 	private void doCalc() {
 		doUpdate();
-		List<Exchange> products = Processes.getOutputProducts(process);
-		if (products.size() < 2)
+		List<Exchange> pFlows = Util.getProviderFlows(process);
+		if (pFlows.size() < 2)
 			return;
-		List<F> physFactors = calcFactors(AllocationMethod.PHYSICAL, products);
+		List<F> physFactors = calcFactors(AllocationMethod.PHYSICAL, pFlows);
 		List<F> ecoFactors;
-		if (canCalculateFromCosts(products))
-			ecoFactors = calculateFromCosts(products);
+		if (canCalculateFromCosts(pFlows))
+			ecoFactors = calculateFromCosts(pFlows);
 		else
-			ecoFactors = calcFactors(AllocationMethod.ECONOMIC, products);
+			ecoFactors = calcFactors(AllocationMethod.ECONOMIC, pFlows);
 		setNewValues(physFactors, AllocationMethod.PHYSICAL);
 		setNewValues(ecoFactors, AllocationMethod.ECONOMIC);
 		setNewCausalValues(physFactors);
@@ -70,7 +70,7 @@ class AllocationSync {
 
 	private void setNewCausalValues(List<F> factors) {
 		for (F f : factors) {
-			for (Exchange e : Processes.getNonOutputProducts(process)) {
+			for (Exchange e : Util.getNonProviderFlows(process)) {
 				AllocationFactor factor = getCausalFactor(f.product, e);
 				if (factor == null)
 					continue;
@@ -80,14 +80,14 @@ class AllocationSync {
 	}
 
 	private void doUpdate() {
-		List<Exchange> products = Processes.getOutputProducts(process);
-		if (products.size() < 2) {
+		List<Exchange> pFlows = Util.getProviderFlows(process);
+		if (pFlows.size() < 2) {
 			process.getAllocationFactors().clear();
 			return;
 		}
 		firstInit = process.getAllocationFactors().isEmpty();
-		removeUnusedFactors(products);
-		addNewFactors(products);
+		removeUnusedFactors(pFlows);
+		addNewFactors(pFlows);
 	}
 
 	private void removeUnusedFactors(List<Exchange> products) {
@@ -111,8 +111,8 @@ class AllocationSync {
 		for (Exchange product : products) {
 			createIfAbsent(product, AllocationMethod.PHYSICAL);
 			createIfAbsent(product, AllocationMethod.ECONOMIC);
-			for (Exchange exchange : Processes.getNonOutputProducts(process)) {
-				createCausalIfAbsent(product, exchange);
+			for (Exchange e : Util.getNonProviderFlows(process)) {
+				createCausalIfAbsent(product, e);
 			}
 		}
 	}
