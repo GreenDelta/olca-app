@@ -68,17 +68,17 @@ class FetchIndexHelper {
 			if (!ids.isEmpty() && type == ModelType.CATEGORY) {
 				// some old category ids are in older repositories, to avoid an
 				// index problem, the new ids are calculated
-				Map<String, String> newToOldId = new HashMap<>();
+				Set<String> correctedIds = new HashSet<>();
 				for (DiffResult r : changed) {
 					if (r.getType() != DiffResponse.ADD_TO_LOCAL || !ids.contains(r.remote.refId))
 						continue;
 					String newId = KeyGen.get((r.remote.categoryType.name() + "/" + r.remote.fullPath).split("/"));
-					newToOldId.put(newId, r.remote.refId);
+					r.remote.refId = newId;
+					correctedIds.add(newId);
 				}
-				descriptors = dao.getDescriptorsForRefIds(newToOldId.keySet());
+				descriptors = dao.getDescriptorsForRefIds(correctedIds);
 				for (CategorizedDescriptor descriptor : descriptors) {
-					ids.remove(descriptor.getRefId());
-					refIdToLocalId.put(newToOldId.get(descriptor.getRefId()), descriptor.getId());
+					refIdToLocalId.put(descriptor.getRefId(), descriptor.getId());
 				}
 			}
 		}
