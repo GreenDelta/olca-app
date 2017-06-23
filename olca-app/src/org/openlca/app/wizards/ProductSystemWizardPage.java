@@ -23,6 +23,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.Exchange;
+import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
@@ -35,8 +36,6 @@ import org.slf4j.LoggerFactory;
 class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
-
-	private final String EMPTY_REFERENCEPROCESS_ERROR = M.NoReferenceProcessSelected;
 
 	private Button supplyChainCheck;
 	private TreeViewer processTree;
@@ -91,10 +90,24 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 	@Override
 	protected void checkInput() {
 		super.checkInput();
-		if (getErrorMessage() == null && refProcess == null) {
-			setErrorMessage(EMPTY_REFERENCEPROCESS_ERROR);
+		if (getErrorMessage() == null && !hasRefFlow()) {
+			setErrorMessage(M.NoReferenceProcessSelected);
 		}
 		setPageComplete(getErrorMessage() == null);
+	}
+
+	private boolean hasRefFlow() {
+		if (refProcess == null)
+			return false;
+		Exchange qRef = refProcess.getQuantitativeReference();
+		if (qRef == null || qRef.flow == null)
+			return false;
+		FlowType type = qRef.flow.getFlowType();
+		if (type == FlowType.PRODUCT_FLOW)
+			return !qRef.isInput;
+		if (type == FlowType.WASTE_FLOW)
+			return qRef.isInput;
+		return false;
 	}
 
 	@Override
