@@ -100,14 +100,14 @@ class ProcessCreator {
 
 	private void addQuantitativeReference(Process process, Flow flow) {
 		Exchange qRef = new Exchange();
-		qRef.setAmountValue(1.0);
-		qRef.setFlow(flow);
+		qRef.amount = 1.0;
+		qRef.flow = flow;
 		FlowProperty refProp = flow.getReferenceFlowProperty();
-		qRef.setFlowPropertyFactor(flow.getReferenceFactor());
+		qRef.flowPropertyFactor = flow.getReferenceFactor();
 		UnitGroup unitGroup = refProp.getUnitGroup();
 		if (unitGroup != null)
-			qRef.setUnit(unitGroup.getReferenceUnit());
-		qRef.setInput(flow.getFlowType() == FlowType.WASTE_FLOW);
+			qRef.unit = unitGroup.getReferenceUnit();
+		qRef.isInput = flow.getFlowType() == FlowType.WASTE_FLOW;
 		process.getExchanges().add(qRef);
 		process.setQuantitativeReference(qRef);
 	}

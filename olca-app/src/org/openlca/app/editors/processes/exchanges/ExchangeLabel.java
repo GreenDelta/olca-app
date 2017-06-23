@@ -47,13 +47,13 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 			return null;
 		Exchange e = (Exchange) obj;
 		if (col == 0)
-			if (e.getFlow() == null)
+			if (e.flow == null)
 				return Images.get(ModelType.FLOW);
 			else
-				return Images.get(e.getFlow());
+				return Images.get(e.flow);
 		if (col == 3)
 			return Images.get(ModelType.UNIT);
-		if (col == 7 && e.getDefaultProviderId() != 0)
+		if (col == 7 && e.defaultProviderId != 0)
 			return Images.get(ModelType.PROCESS);
 		if (col == 6 && !forInputs)
 			return getAvoidedCheck(e);
@@ -61,14 +61,14 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 	}
 
 	private Image getAvoidedCheck(Exchange e) {
-		if (e.getFlow() == null)
+		if (e.flow == null)
 			return null;
-		if (e.getFlow().getFlowType() != FlowType.PRODUCT_FLOW)
+		if (e.flow.getFlowType() != FlowType.PRODUCT_FLOW)
 			return null;
 		Process process = editor.getModel();
 		if (Objects.equals(process.getQuantitativeReference(), e))
 			return null;
-		return e.isAvoidedProduct() ? Icon.CHECK_TRUE.get() : Icon.CHECK_FALSE.get();
+		return e.isAvoided ? Icon.CHECK_TRUE.get() : Icon.CHECK_FALSE.get();
 	}
 
 	@Override
@@ -78,23 +78,23 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 		Exchange e = (Exchange) obj;
 		switch (col) {
 		case 0:
-			return Labels.getDisplayName(e.getFlow());
+			return Labels.getDisplayName(e.flow);
 		case 1:
-			if (e.getFlow() == null)
+			if (e.flow == null)
 				return null;
-			return CategoryPath.getShort(e.getFlow().getCategory());
+			return CategoryPath.getShort(e.flow.getCategory());
 		case 2:
 			return getAmountText(e);
 		case 3:
-			return Labels.getDisplayName(e.getUnit());
+			return Labels.getDisplayName(e.unit);
 		case 4:
 			return getCostValue(e);
 		case 5:
-			return UncertaintyLabel.get(e.getUncertainty());
+			return UncertaintyLabel.get(e.uncertainty);
 		case 7:
 			return getDefaultProvider(e);
 		case 8:
-			return e.getDqEntry();
+			return e.dqEntry;
 		case 9:
 			return e.description;
 		}
@@ -102,37 +102,37 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 	}
 
 	private String getDefaultProvider(Exchange e) {
-		if (e.getDefaultProviderId() == 0)
+		if (e.defaultProviderId == 0)
 			return null;
 		EntityCache cache = Cache.getEntityCache();
 		ProcessDescriptor p = cache.get(ProcessDescriptor.class,
-				e.getDefaultProviderId());
+				e.defaultProviderId);
 		if (p == null)
 			return null;
 		return Labels.getDisplayName(p);
 	}
 
 	private String getAmountText(Exchange e) {
-		if (!showFormulas || e.getAmountFormula() == null) {
+		if (!showFormulas || e.amountFormula == null) {
 			if (Preferences.is(Preferences.FORMAT_INPUT_VALUES)) {
-				return Numbers.format(e.getAmountValue());
+				return Numbers.format(e.amount);
 			} else {
-				return Double.toString(e.getAmountValue());
+				return Double.toString(e.amount);
 			}
 		}
-		return e.getAmountFormula();
+		return e.amountFormula;
 	}
 
 	private String getCostValue(Exchange e) {
-		if (e == null || e.costValue == null)
+		if (e == null || e.costs == null)
 			return null;
 		String unit = e.currency == null ? "" : " " + e.currency.code;
 		if (showFormulas && e.costFormula != null)
 			return e.costFormula + unit;
 		if (Preferences.is(Preferences.FORMAT_INPUT_VALUES))
-			return Numbers.format(e.costValue) + unit;
+			return Numbers.format(e.costs) + unit;
 		else
-			return Double.toString(e.costValue) + unit;
+			return Double.toString(e.costs) + unit;
 	}
 
 	@Override
@@ -145,9 +145,9 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 		if (col != 4)
 			return null;
 		Exchange e = (Exchange) obj;
-		if (e.getFlow() == null)
+		if (e.flow == null)
 			return null;
-		if (!e.isInput() && e.getFlow().getFlowType() == FlowType.PRODUCT_FLOW)
+		if (!e.isInput && e.flow.getFlowType() == FlowType.PRODUCT_FLOW)
 			return Colors.systemColor(SWT.COLOR_DARK_GREEN);
 		else
 			return Colors.systemColor(SWT.COLOR_DARK_MAGENTA);

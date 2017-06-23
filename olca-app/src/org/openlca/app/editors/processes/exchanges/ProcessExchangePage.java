@@ -64,14 +64,14 @@ public class ProcessExchangePage extends ModelPage<Process> {
 	private void sortExchanges() {
 		List<Exchange> exchanges = editor.getModel().getExchanges();
 		exchanges.sort((e1, e2) -> {
-			if (e1.getFlow() == null || e2.getFlow() == null)
+			if (e1.flow == null || e2.flow == null)
 				return 0;
-			int c = Strings.compare(e1.getFlow().getName(), e2.getFlow()
+			int c = Strings.compare(e1.flow.getName(), e2.flow
 					.getName());
 			if (c != 0)
 				return c;
-			String c1 = CategoryPath.getShort(e1.getFlow().getCategory());
-			String c2 = CategoryPath.getShort(e2.getFlow().getCategory());
+			String c1 = CategoryPath.getShort(e1.flow.getCategory());
+			String c2 = CategoryPath.getShort(e2.flow.getCategory());
 			return Strings.compare(c1, c2);
 		});
 	}

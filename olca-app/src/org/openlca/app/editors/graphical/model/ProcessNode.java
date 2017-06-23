@@ -159,7 +159,7 @@ public class ProcessNode extends Node {
 		Process process = new ProcessDao(Database.get()).getForId(this.process.getId());
 		List<Exchange> technologies = new ArrayList<>();
 		for (Exchange exchange : process.getExchanges())
-			if (exchange.getFlow().getFlowType() == FlowType.ELEMENTARY_FLOW)
+			if (exchange.flow.getFlowType() == FlowType.ELEMENTARY_FLOW)
 				continue;
 			else
 				technologies.add(exchange);
@@ -179,8 +179,8 @@ public class ProcessNode extends Node {
 		List<ExchangeNode> nodes = new ArrayList<>();
 		for (ExchangeNode node : getExchangeNodes())
 			if (!node.isDummy())
-				if (node.exchange.isInput())
-					if (node.exchange.getFlow().getId() == flowId)
+				if (node.exchange.isInput)
+					if (node.exchange.flow.getId() == flowId)
 						nodes.add(node);
 		return nodes;
 	}
@@ -188,8 +188,8 @@ public class ProcessNode extends Node {
 	public ExchangeNode getOutput(long flowId) {
 		for (ExchangeNode node : getExchangeNodes())
 			if (!node.isDummy())
-				if (!node.exchange.isInput())
-					if (node.exchange.getFlow().getId() == flowId)
+				if (!node.exchange.isInput)
+					if (node.exchange.flow.getId() == flowId)
 						return node;
 		return null;
 	}

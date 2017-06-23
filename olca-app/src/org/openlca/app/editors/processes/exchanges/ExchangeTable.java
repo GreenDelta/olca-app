@@ -102,7 +102,7 @@ class ExchangeTable {
 		Tables.bindColumnWidths(viewer, 0.2, 0.15, 0.1, 0.08, 0.08, 0.08, 0.08,
 				0.08, 0.08, 0.07);
 		Viewers.sortByLabels(viewer, label, 0, 1, 3, 4, 5, 6, 7, 8);
-		Viewers.sortByDouble(viewer, (Exchange e) -> e.getAmountValue(), 2);
+		Viewers.sortByDouble(viewer, (Exchange e) -> e.amount, 2);
 		viewer.getTable().getColumns()[2].setAlignment(SWT.RIGHT);
 		viewer.getTable().getColumns()[4].setAlignment(SWT.RIGHT);
 	}
@@ -150,8 +150,8 @@ class ExchangeTable {
 				return;
 			}
 			Exchange exchange = Viewers.getFirstSelected(table);
-			if (exchange != null && exchange.getFlow() != null)
-				App.openEditor(exchange.getFlow());
+			if (exchange != null && exchange.flow != null)
+				App.openEditor(exchange.flow);
 		});
 	}
 
@@ -188,12 +188,12 @@ class ExchangeTable {
 			Exchange e = new Exchange();
 			FlowDao flowDao = new FlowDao(Database.get());
 			Flow flow = flowDao.getForId(descriptor.getId());
-			e.setFlow(flow);
-			e.setFlowPropertyFactor(flow.getReferenceFactor());
+			e.flow = flow;
+			e.flowPropertyFactor = flow.getReferenceFactor();
 			Unit unit = getUnit(flow.getReferenceFactor());
-			e.setUnit(unit);
-			e.setAmountValue(1.0);
-			e.setInput(forInputs);
+			e.unit = unit;
+			e.amount = 1.0;
+			e.isInput = forInputs;
 			process.getExchanges().add(e);
 		}
 		viewer.setInput(process.getExchanges());
@@ -215,21 +215,21 @@ class ExchangeTable {
 
 		@Override
 		protected String getText(Exchange e) {
-			if (e.getAmountFormula() == null)
-				return Double.toString(e.getAmountValue());
-			return e.getAmountFormula();
+			if (e.amountFormula == null)
+				return Double.toString(e.amount);
+			return e.amountFormula;
 		}
 
 		@Override
 		protected void setText(Exchange exchange, String text) {
 			try {
 				double value = Double.parseDouble(text);
-				exchange.setAmountFormula(null);
-				exchange.setAmountValue(value);
+				exchange.amountFormula = null;
+				exchange.amount = value;
 				editor.setDirty(true);
 			} catch (NumberFormatException e) {
 				try {
-					exchange.setAmountFormula(text);
+					exchange.amountFormula = text;
 					editor.setDirty(true);
 					editor.getParameterSupport().evaluate();
 				} catch (Exception ex) {
@@ -244,27 +244,27 @@ class ExchangeTable {
 
 		@Override
 		public boolean canModify(Exchange e) {
-			Process process = editor.getModel();
-			if (Objects.equals(process.getQuantitativeReference(), e))
+			Process p = editor.getModel();
+			if (Objects.equals(p.getQuantitativeReference(), e))
 				return false;
-			if (e.getFlow() == null)
+			if (e.flow == null)
 				return false;
-			if (e.getFlow().getFlowType() != FlowType.PRODUCT_FLOW)
+			if (e.flow.getFlowType() != FlowType.PRODUCT_FLOW)
 				return false;
 			return true;
 		}
 
 		@Override
 		protected boolean isChecked(Exchange e) {
-			return e.isAvoidedProduct();
+			return e.isAvoided;
 		}
 
 		@Override
 		protected void setChecked(Exchange e, boolean value) {
-			if (e.isAvoidedProduct() == value)
+			if (e.isAvoided == value)
 				return;
-			e.setAvoidedProduct(value);
-			e.setInput(value);
+			e.isAvoided = value;
+			e.isInput = value;
 			editor.setDirty(true);
 		}
 	}
@@ -275,10 +275,10 @@ class ExchangeTable {
 			if (!(obj instanceof Exchange))
 				return false;
 			Exchange e = (Exchange) obj;
-			if (e.isAvoidedProduct())
+			if (e.isAvoided)
 				return !forInputs;
 			else
-				return e.isInput() == forInputs;
+				return e.isInput == forInputs;
 		}
 	}
 

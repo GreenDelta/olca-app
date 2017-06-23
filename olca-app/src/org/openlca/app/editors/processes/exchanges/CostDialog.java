@@ -107,22 +107,22 @@ class CostDialog extends FormDialog {
 		currencyLabel = UI.formLabel(body, tk, "");
 		if (exchange.costFormula != null)
 			priceText.setText(exchange.costFormula);
-		else if (exchange.costValue != null)
-			priceText.setText(Double.toString(exchange.costValue));
+		else if (exchange.costs != null)
+			priceText.setText(Double.toString(exchange.costs));
 		priceText.addModifyListener(e -> {
 			try {
 				String s = priceText.getText();
 				if (Strings.nullOrEmpty(s))
-					exchange.costValue = null;
+					exchange.costs = null;
 				else
-					exchange.costValue = Double.parseDouble(s);
+					exchange.costs = Double.parseDouble(s);
 				exchange.costFormula = null;
 				clearFormulaError();
 			} catch (Exception ex) {
 				setFormula();
 			}
-			double price = exchange.costValue != null ? exchange.costValue : 0;
-			double perUnit = price / exchange.getAmountValue();
+			double price = exchange.costs != null ? exchange.costs : 0;
+			double perUnit = price / exchange.amount;
 			pricePerUnitText.setText(Double.toString(perUnit));
 		});
 	}
@@ -150,16 +150,16 @@ class CostDialog extends FormDialog {
 		pricePerUnitText.setEditable(false);
 		pricePerUnitText.setBackground(Colors.get(225, 225, 225));
 		currencyPerUnitLabel = UI.formLabel(body, tk, "");
-		if (exchange.costValue != null) {
-			double perUnit = exchange.costValue / exchange.getAmountValue();
+		if (exchange.costs != null) {
+			double perUnit = exchange.costs / exchange.amount;
 			pricePerUnitText.setText(Double.toString(perUnit));
 		}
 	}
 
 	private void updateCurrencyLabels() {
 		String code = currency == null ? "?" : currency.code;
-		String unit = exchange.getUnit() == null
-				? "?" : exchange.getUnit().getName();
+		String unit = exchange.unit == null
+				? "?" : exchange.unit.getName();
 		currencyLabel.setText(code);
 		currencyLabel.pack();
 		currencyPerUnitLabel.setText(code + " / " + unit);

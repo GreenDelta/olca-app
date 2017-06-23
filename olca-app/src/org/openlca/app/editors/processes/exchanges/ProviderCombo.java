@@ -31,10 +31,10 @@ class ProviderCombo extends ComboBoxCellModifier<Exchange, ProcessDescriptor> {
 
 	@Override
 	public boolean canModify(Exchange e) {
-		if (e == null || e.getFlow() == null)
+		if (e == null || e.flow == null)
 			return false;
-		FlowType type = e.getFlow().getFlowType();
-		if (e.isInput())
+		FlowType type = e.flow.getFlowType();
+		if (e.isInput)
 			return type == FlowType.PRODUCT_FLOW;
 		else
 			return type == FlowType.WASTE_FLOW;
@@ -42,7 +42,7 @@ class ProviderCombo extends ComboBoxCellModifier<Exchange, ProcessDescriptor> {
 
 	@Override
 	protected ProcessDescriptor[] getItems(Exchange e) {
-		if (e.getFlow() == null)
+		if (e.flow == null)
 			return new ProcessDescriptor[0];
 		Set<Long> providerIds = getProcessIds(e);
 		Collection<ProcessDescriptor> list = cache.getAll(
@@ -56,9 +56,9 @@ class ProviderCombo extends ComboBoxCellModifier<Exchange, ProcessDescriptor> {
 
 	@Override
 	protected ProcessDescriptor getItem(Exchange e) {
-		if (e.getDefaultProviderId() == 0)
+		if (e.defaultProviderId == 0)
 			return null;
-		return cache.get(ProcessDescriptor.class, e.getDefaultProviderId());
+		return cache.get(ProcessDescriptor.class, e.defaultProviderId);
 	}
 
 	@Override
@@ -71,20 +71,20 @@ class ProviderCombo extends ComboBoxCellModifier<Exchange, ProcessDescriptor> {
 	@Override
 	protected void setItem(Exchange e, ProcessDescriptor d) {
 		if (d == null)
-			e.setDefaultProviderId(0);
+			e.defaultProviderId = 0;
 		else
-			e.setDefaultProviderId(d.getId());
+			e.defaultProviderId = d.getId();
 		editor.setDirty(true);
 	}
 
 	private Set<Long> getProcessIds(Exchange e) {
 		Set<Long> ids = new HashSet<>();
-		if (e == null || e.getFlow() == null)
+		if (e == null || e.flow == null)
 			return ids;
 		FlowDao dao = new FlowDao(db);
-		if (e.isInput())
-			return dao.getWhereOutput(e.getFlow().getId());
+		if (e.isInput)
+			return dao.getWhereOutput(e.flow.getId());
 		else
-			return dao.getWhereInput(e.getFlow().getId());
+			return dao.getWhereInput(e.flow.getId());
 	}
 }

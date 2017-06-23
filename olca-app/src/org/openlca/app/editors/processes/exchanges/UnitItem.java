@@ -30,7 +30,7 @@ class UnitItem implements Comparable<UnitItem> {
 		String name = unit.getName();
 		if (name == null)
 			return "?";
-		Flow f = exchange.getFlow();
+		Flow f = exchange.flow;
 		if (f.getFlowPropertyFactors().size() == 1)
 			return name;
 		FlowProperty fp = factor.getFlowProperty();
@@ -43,7 +43,7 @@ class UnitItem implements Comparable<UnitItem> {
 			return 1;
 		FlowProperty thisFp = factor.getFlowProperty();
 		FlowProperty otherFp = other.factor.getFlowProperty();
-		FlowProperty exchFp = exchange.getFlowPropertyFactor().getFlowProperty();
+		FlowProperty exchFp = exchange.flowPropertyFactor.getFlowProperty();
 		if (Objects.equals(thisFp, otherFp))
 			return Strings.compare(this.toString(), other.toString());
 		if (Objects.equals(thisFp, exchFp))

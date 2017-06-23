@@ -68,10 +68,10 @@ public class ConnectionDialog extends Dialog {
 		ProductSystemNode systemNode = exchangeNode.parent().parent();
 		existingProcesses = systemNode.getProductSystem().getProcesses();
 		linkSearch = systemNode.linkSearch;
-		selectProvider = exchangeNode.exchange.isInput();
+		selectProvider = exchangeNode.exchange.isInput;
 		boolean foundLink = false;
 		for (ProcessLink link : linkSearch.getIncomingLinks(processId))
-			if (link.flowId == exchange.getFlow().getId())
+			if (link.flowId == exchange.flow.getId())
 				foundLink = true;
 		isConnected = foundLink;
 	}
@@ -120,7 +120,7 @@ public class ConnectionDialog extends Dialog {
 
 	private void createInternalModel() {
 		availableConnections.clear();
-		long flowId = exchange.getFlow().getId();
+		long flowId = exchange.flow.getId();
 		String query = "SELECT id, f_owner FROM tbl_exchanges "
 				+ "WHERE f_flow = " + flowId + " AND is_input = " + (selectProvider ? 0 : 1);
 		List<Tuple<Long, Long>> exchanges = new ArrayList<>();
@@ -160,7 +160,7 @@ public class ConnectionDialog extends Dialog {
 		for (ProcessLink link : linkSearch.getOutgoingLinks(process.getId())) {
 			if (link.processId != processId)
 				continue;
-			if (link.flowId != exchange.getFlow().getId())
+			if (link.flowId != exchange.flow.getId())
 				continue;
 			return true;
 		}

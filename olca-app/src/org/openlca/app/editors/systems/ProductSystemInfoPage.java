@@ -79,7 +79,7 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 		unitViewer = new UnitViewer(composite);
 
 		productViewer.addSelectionChangedListener(e -> {
-			Flow flow = e.getFlow();
+			Flow flow = e.flow;
 			propertyViewer.setInput(flow);
 			propertyViewer.select(flow.getReferenceFactor());
 		});
@@ -106,17 +106,17 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 			return Collections.emptyList();
 		List<Exchange> candidates = new ArrayList<>();
 		for (Exchange e : p.getExchanges()) {
-			if (e.getFlow() == null)
+			if (e.flow == null)
 				continue;
-			FlowType type = e.getFlow().getFlowType();
-			if (e.isInput() && type == FlowType.WASTE_FLOW)
+			FlowType type = e.flow.getFlowType();
+			if (e.isInput && type == FlowType.WASTE_FLOW)
 				candidates.add(e);
-			else if (!e.isInput() && type == FlowType.PRODUCT_FLOW)
+			else if (!e.isInput && type == FlowType.PRODUCT_FLOW)
 				candidates.add(e);
 		}
 		Collections.sort(candidates, (e1, e2) -> Strings.compare(
-				Labels.getDisplayName(e1.getFlow()),
-				Labels.getDisplayName(e2.getFlow())));
+				Labels.getDisplayName(e1.flow),
+				Labels.getDisplayName(e2.flow)));
 		return candidates;
 	}
 

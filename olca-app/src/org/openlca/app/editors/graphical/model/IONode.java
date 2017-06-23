@@ -36,7 +36,7 @@ public class IONode extends Node {
 	private List<Exchange> filter(Exchange[] exchanges, boolean inputs) {
 		List<Exchange> result = new ArrayList<>();
 		for (Exchange e : exchanges)
-			if (e.isInput() == inputs && e.getFlow().getFlowType() != FlowType.ELEMENTARY_FLOW)
+			if (e.isInput == inputs && e.flow.getFlowType() != FlowType.ELEMENTARY_FLOW)
 				result.add(e);
 		return result;
 	}
@@ -56,8 +56,8 @@ public class IONode extends Node {
 
 		@Override
 		public int compare(Exchange o1, Exchange o2) {
-			String s1 = o1.getFlow().getName().toLowerCase();
-			String s2 = o2.getFlow().getName().toLowerCase();
+			String s1 = o1.flow.getName().toLowerCase();
+			String s2 = o2.flow.getName().toLowerCase();
 			int length = s1.length();
 			if (length > s2.length())
 				length = s2.length();

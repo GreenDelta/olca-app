@@ -60,8 +60,8 @@ public class ProcessLinkCreatePolicy extends GraphicalNodeEditPolicy {
 	@Override
 	protected Command getConnectionCreateCommand(CreateConnectionRequest request) {
 		ExchangeNode toConnect = getNode(request);
-		long flowId = toConnect.exchange.getFlow().getId();
-		if (!toConnect.exchange.isInput()) {
+		long flowId = toConnect.exchange.flow.getId();
+		if (!toConnect.exchange.isInput) {
 			CreateLinkCommand cmd = new CreateLinkCommand(flowId);
 			cmd.sourceNode = toConnect.parent();
 			cmd.startedFromSource = true;

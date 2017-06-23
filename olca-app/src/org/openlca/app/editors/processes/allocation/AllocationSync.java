@@ -96,7 +96,7 @@ class AllocationSync {
 			long productId = factor.getProductId();
 			boolean remove = true;
 			for (Exchange product : products) {
-				if (productId == product.getFlow().getId()) {
+				if (productId == product.flow.getId()) {
 					remove = false;
 					break;
 				}
@@ -124,7 +124,7 @@ class AllocationSync {
 			return;
 		factor = new AllocationFactor();
 		factor.setAllocationType(method);
-		factor.setProductId(product.getFlow().getId());
+		factor.setProductId(product.flow.getId());
 		factor.setValue(getInitialValue(product));
 		process.getAllocationFactors().add(factor);
 	}
@@ -141,7 +141,7 @@ class AllocationSync {
 		for (AllocationFactor factor : process.getAllocationFactors()) {
 			if (factor.getAllocationType() != method)
 				continue;
-			if (factor.getProductId() == product.getFlow().getId())
+			if (factor.getProductId() == product.flow.getId())
 				return factor;
 		}
 		return null;
@@ -155,7 +155,7 @@ class AllocationSync {
 		factor = new AllocationFactor();
 		factor.setAllocationType(AllocationMethod.CAUSAL);
 		factor.setExchange(exchange);
-		factor.setProductId(product.getFlow().getId());
+		factor.setProductId(product.flow.getId());
 		factor.setValue(getInitialValue(product));
 		process.getAllocationFactors().add(factor);
 	}
@@ -164,7 +164,7 @@ class AllocationSync {
 		for (AllocationFactor factor : process.getAllocationFactors()) {
 			if (factor.getAllocationType() != AllocationMethod.CAUSAL)
 				continue;
-			if (factor.getProductId() == product.getFlow().getId()
+			if (factor.getProductId() == product.flow.getId()
 					&& Objects.equals(exchange, factor.getExchange()))
 				return factor;
 		}
@@ -181,7 +181,7 @@ class AllocationSync {
 			double refAmount = getRefAmount(product);
 			double amount = 0;
 			if (commonProp != null) {
-				Flow flow = product.getFlow();
+				Flow flow = product.flow;
 				FlowPropertyFactor factor = flow.getFactor(commonProp);
 				if (factor != null)
 					amount = refAmount * factor.getConversionFactor();
@@ -197,12 +197,12 @@ class AllocationSync {
 	}
 
 	private double getRefAmount(Exchange exchange) {
-		if (exchange.getUnit() == null
-				|| exchange.getFlowPropertyFactor() == null)
+		if (exchange.unit == null
+				|| exchange.flowPropertyFactor == null)
 			return 0;
-		double amount = exchange.getAmountValue();
-		double unitFactor = exchange.getUnit().getConversionFactor();
-		double propFactor = exchange.getFlowPropertyFactor()
+		double amount = exchange.amount;
+		double unitFactor = exchange.unit.getConversionFactor();
+		double propFactor = exchange.flowPropertyFactor
 				.getConversionFactor();
 		if (propFactor == 0)
 			return 0;
@@ -213,7 +213,7 @@ class AllocationSync {
 			AllocationMethod method) {
 		List<FlowProperty> candidates = null;
 		for (Exchange product : products) {
-			Flow flow = product.getFlow();
+			Flow flow = product.flow;
 			List<FlowProperty> props = getProperties(flow, method);
 			if (candidates == null)
 				candidates = props;
@@ -250,7 +250,7 @@ class AllocationSync {
 
 	private boolean canCalculateFromCosts(List<Exchange> products) {
 		for (Exchange product : products) {
-			if (product.costValue == null)
+			if (product.costs == null)
 				return false;
 		}
 		return true;
@@ -260,7 +260,7 @@ class AllocationSync {
 		List<F> factors = new ArrayList<>();
 		double total = 0;
 		for (Exchange product : products) {
-			double val = product.costValue == null ? 0 : product.costValue;
+			double val = product.costs == null ? 0 : product.costs;
 			if (product.currency != null) {
 				val *= product.currency.conversionFactor;
 			}

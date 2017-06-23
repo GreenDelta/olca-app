@@ -26,7 +26,7 @@ class CostCellEditor extends DialogCellEditor {
 	protected void doSetValue(Object obj) {
 		if (obj instanceof Exchange) {
 			exchange = (Exchange) obj;
-			oldValue = exchange.costValue;
+			oldValue = exchange.costs;
 			oldFormula = exchange.costFormula;
 			oldCurrency = exchange.currency;
 			super.doSetValue(oldValue);
@@ -40,16 +40,16 @@ class CostCellEditor extends DialogCellEditor {
 	protected Object openDialogBox(Control window) {
 		CostDialog.open(editor.getModel(), exchange);
 		if (valuesChanged()) {
-			updateContents(exchange.costValue);
+			updateContents(exchange.costs);
 			editor.setDirty(true);
 		}
-		if (exchange.costValue == null && exchange.costFormula == null)
+		if (exchange.costs == null && exchange.costFormula == null)
 			exchange.currency = null;
-		return exchange.costValue;
+		return exchange.costs;
 	}
 
 	private boolean valuesChanged() {
-		return !Objects.equals(oldValue, exchange.costValue)
+		return !Objects.equals(oldValue, exchange.costs)
 				|| !Objects.equals(oldFormula, exchange.costFormula)
 				|| !Objects.equals(oldCurrency, exchange.currency);
 	}

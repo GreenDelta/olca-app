@@ -44,12 +44,12 @@ class Util {
 	}
 
 	private static boolean isProvider(Exchange e) {
-		if (e == null || e.getFlow() == null || e.isAvoidedProduct())
+		if (e == null || e.flow == null || e.isAvoided)
 			return false;
-		FlowType type = e.getFlow().getFlowType();
-		if (type == FlowType.PRODUCT_FLOW && !e.isInput())
+		FlowType type = e.flow.getFlowType();
+		if (type == FlowType.PRODUCT_FLOW && !e.isInput)
 			return true;
-		if (type == FlowType.WASTE_FLOW && e.isInput())
+		if (type == FlowType.WASTE_FLOW && e.isInput)
 			return true;
 		return false;
 	}

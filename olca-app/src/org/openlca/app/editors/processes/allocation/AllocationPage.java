@@ -160,9 +160,9 @@ public class AllocationPage extends FormPage {
 	}
 
 	private String productText(Exchange exchange) {
-		String text = Labels.getDisplayName(exchange.getFlow());
-		text += " (" + Numbers.format(exchange.getAmountValue(), 2) + " "
-				+ exchange.getUnit().getName() + ")";
+		String text = Labels.getDisplayName(exchange.flow);
+		text += " (" + Numbers.format(exchange.amount, 2) + " "
+				+ exchange.unit.getName() + ")";
 		return text;
 	}
 
@@ -177,7 +177,7 @@ public class AllocationPage extends FormPage {
 		AllocationFactor factor = null;
 		for (AllocationFactor f : process().getAllocationFactors()) {
 			if (f.getAllocationType() == method
-					&& f.getProductId() == exchange.getFlow().getId()) {
+					&& f.getProductId() == exchange.flow.getId()) {
 				factor = f;
 				break;
 			}
@@ -243,7 +243,7 @@ public class AllocationPage extends FormPage {
 			if (factor == null) {
 				factor = new AllocationFactor();
 				factor.setAllocationType(method);
-				factor.setProductId(exchange.getFlow().getId());
+				factor.setProductId(exchange.flow.getId());
 				process().getAllocationFactors().add(factor);
 			}
 			factor.setValue(val);

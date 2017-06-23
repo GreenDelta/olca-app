@@ -23,9 +23,9 @@ class UnitCell extends ComboBoxCellModifier<Exchange, UnitItem> {
 
 	@Override
 	protected UnitItem[] getItems(Exchange exchange) {
-		if (exchange == null || exchange.getFlow() == null)
+		if (exchange == null || exchange.flow == null)
 			return new UnitItem[0];
-		Flow flow = exchange.getFlow();
+		Flow flow = exchange.flow;
 		List<UnitItem> items = new ArrayList<>();
 		for (FlowPropertyFactor factor : flow.getFlowPropertyFactors()) {
 			FlowProperty prop = factor.getFlowProperty();
@@ -44,7 +44,7 @@ class UnitCell extends ComboBoxCellModifier<Exchange, UnitItem> {
 	protected UnitItem getItem(Exchange e) {
 		if (e == null)
 			return null;
-		return new UnitItem(e.getUnit(), e.getFlowPropertyFactor(), e);
+		return new UnitItem(e.unit, e.flowPropertyFactor, e);
 	}
 
 	@Override
@@ -58,11 +58,11 @@ class UnitCell extends ComboBoxCellModifier<Exchange, UnitItem> {
 	protected void setItem(Exchange e, UnitItem i) {
 		if (e == null || i == null)
 			return;
-		if (Objects.equals(e.getUnit(), i.unit)
-				&& Objects.equals(e.getFlowPropertyFactor(), i.factor))
+		if (Objects.equals(e.unit, i.unit)
+				&& Objects.equals(e.flowPropertyFactor, i.factor))
 			return;
-		e.setUnit(i.unit);
-		e.setFlowPropertyFactor(i.factor);
+		e.unit = i.unit;
+		e.flowPropertyFactor = i.factor;
 		editor.setDirty(true);
 	}
 

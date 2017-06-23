@@ -20,7 +20,7 @@ public class ExchangeNode extends Node {
 	public String getName() {
 		if (isDummy())
 			return "";
-		return Labels.getDisplayName(Descriptors.toDescriptor(exchange.getFlow()));
+		return Labels.getDisplayName(Descriptors.toDescriptor(exchange.flow));
 	}
 
 	public boolean matches(ExchangeNode node) {
@@ -30,9 +30,9 @@ public class ExchangeNode extends Node {
 			return false;
 		if (isDummy())
 			return false;
-		if (!exchange.getFlow().equals(node.exchange.getFlow()))
+		if (!exchange.flow.equals(node.exchange.flow))
 			return false;
-		if (exchange.isInput() == node.exchange.isInput())
+		if (exchange.isInput == node.exchange.isInput)
 			return false;
 		return true;
 	}
@@ -47,5 +47,5 @@ public class ExchangeNode extends Node {
 	public ProcessNode parent() {
 		return (ProcessNode) super.parent().parent();
 	}
-	
+
 }

@@ -27,18 +27,18 @@ class ExchangeFigure extends Label {
 			return;
 		Exchange exchange = node.exchange;
 		setBorder(new LineBorder(ColorConstants.white, 1));
-		setForegroundColor(exchange.isAvoidedProduct() ? BACKGROUND_COLOR : TEXT_COLOR);
+		setForegroundColor(exchange.isAvoided ? BACKGROUND_COLOR : TEXT_COLOR);
 		setBackgroundColor(BACKGROUND_COLOR);
 		setToolTip(new Label(getPrefix() + ": " + node.getName()));
 	}
 
 	private String getPrefix() {
-		if (node.exchange.isAvoidedProduct()) {
-			if (node.exchange.getFlow().getFlowType() == FlowType.PRODUCT_FLOW)
+		if (node.exchange.isAvoided) {
+			if (node.exchange.flow.getFlowType() == FlowType.PRODUCT_FLOW)
 				return M.AvoidedProductFlow;
 			return M.AvoidedWasteFlow;
 		}
-		return Labels.flowType(node.exchange.getFlow());
+		return Labels.flowType(node.exchange.flow);
 	}
 
 	void setHighlighted(boolean value) {
@@ -46,7 +46,7 @@ class ExchangeFigure extends Label {
 			setForegroundColor(TEXT_HIGHLIGHTED_COLOR);
 		} else {
 			setBackgroundColor(BACKGROUND_COLOR);
-			setForegroundColor(node.exchange.isAvoidedProduct() ? BACKGROUND_COLOR : TEXT_COLOR);
+			setForegroundColor(node.exchange.isAvoided ? BACKGROUND_COLOR : TEXT_COLOR);
 		}
 	}
 
@@ -54,7 +54,7 @@ class ExchangeFigure extends Label {
 	protected void paintFigure(Graphics graphics) {
 		if (node.parent().isMinimized() && !Animation.isRunning())
 			return;
-		if (node.isDummy() || !node.exchange.isAvoidedProduct()) {
+		if (node.isDummy() || !node.exchange.isAvoided) {
 			super.paintFigure(graphics);
 			return;
 		}
