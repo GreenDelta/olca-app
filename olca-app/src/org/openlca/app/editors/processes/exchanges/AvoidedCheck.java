@@ -50,6 +50,8 @@ class AvoidedCheck extends CheckBoxCellModifier<Exchange> {
 		if (e.isAvoided == value || !canModify(e))
 			return;
 		e.isAvoided = value;
+		if (!value)
+			e.defaultProviderId = 0;
 		FlowType type = e.flow.getFlowType();
 		if (type == FlowType.PRODUCT_FLOW)
 			e.isInput = value;
