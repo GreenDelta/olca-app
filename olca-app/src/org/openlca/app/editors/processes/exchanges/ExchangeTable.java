@@ -2,7 +2,6 @@ package org.openlca.app.editors.processes.exchanges;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.TableViewer;
@@ -25,14 +24,12 @@ import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
-import org.openlca.app.viewers.table.modify.CheckBoxCellModifier;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowPropertyFactor;
-import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.Unit;
@@ -92,7 +89,7 @@ class ExchangeTable {
 		Composite composite = UI.sectionClient(section, page.toolkit);
 		UI.gridLayout(composite, 1);
 		viewer = Tables.createViewer(composite, getColumns());
-		label = new ExchangeLabel(editor, forInputs);
+		label = new ExchangeLabel(editor);
 		viewer.setLabelProvider(label);
 		bindModifiers();
 		Tables.addDropSupport(viewer, this::add);
@@ -121,7 +118,7 @@ class ExchangeTable {
 				editor));
 		ms.bind(DESCRIPTION, new CommentEditor(viewer, editor));
 		ms.bind(PROVIDER, new ProviderCombo(editor));
-		ms.bind(AVOIDED, new AvoidedProductModifier());
+		ms.bind(AVOIDED, new AvoidedCheck(editor));
 	}
 
 	private void bindActions(Section section) {
@@ -240,35 +237,6 @@ class ExchangeTable {
 		}
 	}
 
-	private class AvoidedProductModifier extends CheckBoxCellModifier<Exchange> {
-
-		@Override
-		public boolean canModify(Exchange e) {
-			Process p = editor.getModel();
-			if (Objects.equals(p.getQuantitativeReference(), e))
-				return false;
-			if (e.flow == null)
-				return false;
-			if (e.flow.getFlowType() != FlowType.PRODUCT_FLOW)
-				return false;
-			return true;
-		}
-
-		@Override
-		protected boolean isChecked(Exchange e) {
-			return e.isAvoided;
-		}
-
-		@Override
-		protected void setChecked(Exchange e, boolean value) {
-			if (e.isAvoided == value)
-				return;
-			e.isAvoided = value;
-			e.isInput = value;
-			editor.setDirty(true);
-		}
-	}
-
 	private class Filter extends ViewerFilter {
 		@Override
 		public boolean select(Viewer viewer, Object parent, Object obj) {
@@ -276,7 +244,7 @@ class ExchangeTable {
 				return false;
 			Exchange e = (Exchange) obj;
 			if (e.isAvoided)
-				return !forInputs;
+				return e.isInput != forInputs;
 			else
 				return e.isInput == forInputs;
 		}

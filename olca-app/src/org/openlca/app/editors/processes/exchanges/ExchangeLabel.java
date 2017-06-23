@@ -31,14 +31,12 @@ import org.openlca.io.CategoryPath;
 class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 		ITableColorProvider, ITableFontProvider {
 
-	private final boolean forInputs;
 	private final ProcessEditor editor;
 
 	boolean showFormulas = true;
 
-	ExchangeLabel(ProcessEditor editor, boolean forInputs) {
+	ExchangeLabel(ProcessEditor editor) {
 		this.editor = editor;
-		this.forInputs = forInputs;
 	}
 
 	@Override
@@ -55,20 +53,27 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 			return Images.get(ModelType.UNIT);
 		if (col == 7 && e.defaultProviderId != 0)
 			return Images.get(ModelType.PROCESS);
-		if (col == 6 && !forInputs)
+		if (col == 6)
 			return getAvoidedCheck(e);
 		return null;
 	}
 
 	private Image getAvoidedCheck(Exchange e) {
+		if (e.isAvoided)
+			return Icon.CHECK_TRUE.get();
 		if (e.flow == null)
 			return null;
-		if (e.flow.getFlowType() != FlowType.PRODUCT_FLOW)
+		FlowType type = e.flow.getFlowType();
+		if (type == FlowType.ELEMENTARY_FLOW)
 			return null;
 		Process process = editor.getModel();
 		if (Objects.equals(process.getQuantitativeReference(), e))
 			return null;
-		return e.isAvoided ? Icon.CHECK_TRUE.get() : Icon.CHECK_FALSE.get();
+		if (e.isInput && type == FlowType.WASTE_FLOW)
+			return Icon.CHECK_FALSE.get();
+		if (!e.isInput && type == FlowType.PRODUCT_FLOW)
+			return Icon.CHECK_FALSE.get();
+		return null;
 	}
 
 	@Override
