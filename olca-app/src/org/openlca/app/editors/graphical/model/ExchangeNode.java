@@ -1,5 +1,7 @@
 package org.openlca.app.editors.graphical.model;
 
+import java.util.Objects;
+
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.descriptors.Descriptors;
@@ -24,17 +26,11 @@ public class ExchangeNode extends Node {
 	}
 
 	public boolean matches(ExchangeNode node) {
-		if (node == null)
+		if (node == null || this.exchange == null || node.exchange == null)
 			return false;
-		if (node.isDummy())
+		if (!Objects.equals(exchange.flow, node.exchange.flow))
 			return false;
-		if (isDummy())
-			return false;
-		if (!exchange.flow.equals(node.exchange.flow))
-			return false;
-		if (exchange.isInput == node.exchange.isInput)
-			return false;
-		return true;
+		return exchange.isInput != node.exchange.isInput;
 	}
 
 	public void setHighlighted(boolean value) {

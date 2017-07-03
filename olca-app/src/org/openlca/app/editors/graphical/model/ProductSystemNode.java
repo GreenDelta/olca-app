@@ -39,25 +39,17 @@ public class ProductSystemNode extends Node {
 	}
 
 	public void highlightMatchingExchanges(ExchangeNode toMatch) {
-		long flowId = toMatch.exchange.flow.getId();
-		for (ProcessNode node : getChildren()) {
-			if (!node.isVisible() || node.isMinimized())
+		if (toMatch == null)
+			return;
+		for (ProcessNode process : getChildren()) {
+			if (!process.isVisible() || process.isMinimized())
 				continue;
-			for (ExchangeNode inputNode : node.getInputs(flowId))
-				highlightExchange(node, inputNode, toMatch);
-			ExchangeNode outputNode = node.getOutput(flowId);
-			highlightExchange(node, outputNode, toMatch);
+			for (ExchangeNode e : process.getExchangeNodes()) {
+				if (toMatch.matches(e)) {
+					e.setHighlighted(true);
+				}
+			}
 		}
-	}
-
-	private void highlightExchange(ProcessNode node, ExchangeNode exchangeNode, ExchangeNode toMatch) {
-		if (exchangeNode == null)
-			return;
-		if (toMatch.exchange.isInput == exchangeNode.exchange.isInput)
-			return;
-		if (!toMatch.exchange.isInput && node.hasIncoming(exchangeNode.exchange.getId()))
-			return;
-		exchangeNode.setHighlighted(true);
 	}
 
 	public void removeHighlighting() {

@@ -175,16 +175,6 @@ public class ProcessNode extends Node {
 		figure().refresh();
 	}
 
-	public List<ExchangeNode> getInputs(long flowId) {
-		List<ExchangeNode> nodes = new ArrayList<>();
-		for (ExchangeNode node : getExchangeNodes())
-			if (!node.isDummy())
-				if (node.exchange.isInput)
-					if (node.exchange.flow.getId() == flowId)
-						nodes.add(node);
-		return nodes;
-	}
-
 	public ExchangeNode getOutput(long flowId) {
 		for (ExchangeNode node : getExchangeNodes())
 			if (!node.isDummy())
