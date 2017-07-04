@@ -246,6 +246,7 @@ public class ProcessNode extends Node {
 		editPart().revalidate();
 	}
 
+	@Deprecated
 	public boolean hasIncoming(long exchangeId) {
 		MutableProcessLinkSearchMap linkSearch = parent().linkSearch;
 		for (ProcessLink link : linkSearch.getIncomingLinks(process.getId()))

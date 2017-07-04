@@ -19,18 +19,18 @@ public class ProcessLinkCreatePolicy extends GraphicalNodeEditPolicy {
 
 	@Override
 	protected Connection createDummyConnection(Request req) {
-		PolylineConnection connection = (PolylineConnection) super.createDummyConnection(req);
-		connection.setForegroundColor(Link.COLOR);
+		PolylineConnection con = (PolylineConnection) super.createDummyConnection(req);
+		con.setForegroundColor(Link.COLOR);
 		if (!(req instanceof CreateConnectionRequest)) {
-			connection.setTargetDecoration(new PolygonDecoration());
-			return connection;
+			con.setTargetDecoration(new PolygonDecoration());
+			return con;
 		}
-		CreateLinkCommand command = (CreateLinkCommand) ((CreateConnectionRequest) req).getStartCommand();
-		if (command.sourceNode != null)
-			connection.setTargetDecoration(new PolygonDecoration());
-		else if (command.targetNode != null)
-			connection.setSourceDecoration(new PolygonDecoration());
-		return connection;
+		CreateLinkCommand cmd = (CreateLinkCommand) ((CreateConnectionRequest) req).getStartCommand();
+		if (cmd.output != null)
+			con.setTargetDecoration(new PolygonDecoration());
+		else if (cmd.input != null)
+			con.setSourceDecoration(new PolygonDecoration());
+		return con;
 	}
 
 	@Override
@@ -39,52 +39,48 @@ public class ProcessLinkCreatePolicy extends GraphicalNodeEditPolicy {
 	}
 
 	@Override
-	protected Command getConnectionCompleteCommand(CreateConnectionRequest request) {
-		CreateLinkCommand cmd = (CreateLinkCommand) request.getStartCommand();
+	protected Command getConnectionCompleteCommand(CreateConnectionRequest req) {
+		CreateLinkCommand cmd = (CreateLinkCommand) req.getStartCommand();
 		if (cmd == null)
 			return null;
-		ExchangeNode toConnect = getNode(request);
-		ExchangeNode other = cmd.startedFromSource ? cmd.sourceNode.getOutput(cmd.flowId) : cmd.targetNode;
+		ExchangeNode toConnect = (ExchangeNode) req.getTargetEditPart().getModel();
+		ExchangeNode other = cmd.startedFromOutput ? cmd.output : cmd.input;
 		if (!toConnect.matches(other) || toConnect.parent().hasIncoming(toConnect.exchange.getId())) {
 			cmd.completeWith(null);
-			request.setStartCommand(cmd);
+			req.setStartCommand(cmd);
 			return null;
 		}
 		cmd.completeWith(toConnect);
-		request.setStartCommand(cmd);
-		if (cmd.sourceNode == null || cmd.targetNode == null)
+		req.setStartCommand(cmd);
+		if (cmd.output == null || cmd.input == null)
 			return null;
 		return cmd;
 	}
 
 	@Override
-	protected Command getConnectionCreateCommand(CreateConnectionRequest request) {
-		ExchangeNode toConnect = getNode(request);
+	protected Command getConnectionCreateCommand(CreateConnectionRequest req) {
+		ExchangeNode toConnect = (ExchangeNode) req.getTargetEditPart().getModel();
 		long flowId = toConnect.exchange.flow.getId();
 		if (!toConnect.exchange.isInput) {
 			CreateLinkCommand cmd = new CreateLinkCommand(flowId);
-			cmd.sourceNode = toConnect.parent();
-			cmd.startedFromSource = true;
-			request.setStartCommand(cmd);
+			cmd.output = toConnect;
+			cmd.startedFromOutput = true;
+			req.setStartCommand(cmd);
 			return cmd;
 		} else if (!toConnect.parent().hasIncoming(toConnect.exchange.getId())) {
 			CreateLinkCommand cmd = new CreateLinkCommand(flowId);
-			cmd.targetNode = toConnect;
-			cmd.startedFromSource = false;
-			request.setStartCommand(cmd);
+			cmd.input = toConnect;
+			cmd.startedFromOutput = false;
+			req.setStartCommand(cmd);
 			return cmd;
 		}
 		return null;
 	}
 
-	private ExchangeNode getNode(CreateConnectionRequest request) {
-		return (ExchangeNode) request.getTargetEditPart().getModel();
-	}
-
 	@Override
 	protected Command getReconnectSourceCommand(ReconnectRequest request) {
-		Link link = getLink(request);
-		ExchangeNode toConnect = getNode(request);
+		Link link = (Link) request.getConnectionEditPart().getModel();
+		ExchangeNode toConnect = (ExchangeNode) request.getTarget().getModel();
 		ExchangeNode other = link.targetNode.getInput(link.processLink);
 		if (!toConnect.matches(other))
 			return null;
@@ -93,8 +89,8 @@ public class ProcessLinkCreatePolicy extends GraphicalNodeEditPolicy {
 
 	@Override
 	protected Command getReconnectTargetCommand(ReconnectRequest request) {
-		Link link = getLink(request);
-		ExchangeNode toConnect = getNode(request);
+		Link link = (Link) request.getConnectionEditPart().getModel();
+		ExchangeNode toConnect = (ExchangeNode) request.getTarget().getModel();
 		ExchangeNode other = link.sourceNode.getOutput(link.processLink);
 		if (!toConnect.matches(other))
 			return null;
@@ -102,14 +98,6 @@ public class ProcessLinkCreatePolicy extends GraphicalNodeEditPolicy {
 		if (!sameNode && toConnect.parent().hasIncoming(toConnect.exchange.getId()))
 			return null;
 		return new ReconnectLinkCommand(link.sourceNode, toConnect, link);
-	}
-
-	private Link getLink(ReconnectRequest request) {
-		return (Link) request.getConnectionEditPart().getModel();
-	}
-
-	private ExchangeNode getNode(ReconnectRequest request) {
-		return (ExchangeNode) request.getTarget().getModel();
 	}
 
 	@Override

@@ -3,7 +3,6 @@ package org.openlca.app.editors.graphical.model;
 import org.eclipse.draw2d.AbstractConnectionAnchor;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.openlca.app.editors.graphical.command.CreateLinkCommand;
 
 class LinkAnchor extends AbstractConnectionAnchor {
 
@@ -18,12 +17,6 @@ class LinkAnchor extends AbstractConnectionAnchor {
 		return newSourceAnchor(link.sourceNode, eNode);
 	}
 
-	static LinkAnchor newSourceAnchor(CreateLinkCommand cmd) {
-
-		ExchangeNode eNode = cmd.sourceNode.getOutput(cmd.getLink().processLink);
-		return newSourceAnchor(cmd.sourceNode, eNode);
-	}
-
 	static LinkAnchor newSourceAnchor(ProcessNode node, ExchangeNode eNode) {
 		return new LinkAnchor(node, eNode, SOURCE_ANCHOR);
 	}
@@ -31,11 +24,6 @@ class LinkAnchor extends AbstractConnectionAnchor {
 	static LinkAnchor newTargetAnchor(Link link) {
 		ExchangeNode eNode = link.targetNode.getInput(link.processLink);
 		return newTargetAnchor(link.targetNode, eNode);
-	}
-
-	static LinkAnchor newTargetAnchor(CreateLinkCommand cmd) {
-		ProcessNode node = cmd.targetNode.parent();
-		return newTargetAnchor(node, cmd.targetNode);
 	}
 
 	static LinkAnchor newTargetAnchor(ProcessNode node, ExchangeNode eNode) {

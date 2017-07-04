@@ -6,15 +6,16 @@ import org.openlca.app.editors.graphical.model.ExchangeNode;
 import org.openlca.app.editors.graphical.model.Link;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
+import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
 
 public class CreateLinkCommand extends Command {
 
 	public final long flowId;
-	public ProcessNode sourceNode;
-	public ExchangeNode targetNode;
-	public boolean startedFromSource;
+	public ExchangeNode output;
+	public ExchangeNode input;
+	public boolean startedFromOutput;
 	private ProcessLink processLink;
 	private Link link;
 
@@ -24,11 +25,7 @@ public class CreateLinkCommand extends Command {
 
 	@Override
 	public boolean canExecute() {
-		if (sourceNode == null)
-			return false;
-		if (targetNode == null)
-			return false;
-		return true;
+		return input != null && output != null;
 	}
 
 	@Override
@@ -38,7 +35,7 @@ public class CreateLinkCommand extends Command {
 
 	@Override
 	public void execute() {
-		ProductSystemNode systemNode = sourceNode.parent();
+		ProductSystemNode systemNode = output.parent().parent();
 		ProductSystem system = systemNode.getProductSystem();
 		processLink = getProcessLink();
 		system.getProcessLinks().add(processLink);
@@ -52,13 +49,37 @@ public class CreateLinkCommand extends Command {
 		if (processLink == null)
 			processLink = new ProcessLink();
 		processLink.flowId = flowId;
-		if (targetNode != null) {
-			processLink.processId = targetNode.parent().process.getId();
-			processLink.exchangeId = targetNode.exchange.getId();
+		ProductSystemNode sysNode = sysNode();
+		if (sysNode == null)
+			return processLink;
+		FlowType type = sysNode.flowTypes.get(flowId);
+		if (input != null) {
+			long processID = input.parent().process.getId();
+			if (type == FlowType.PRODUCT_FLOW) {
+				processLink.processId = processID;
+				processLink.exchangeId = input.exchange.getId();
+			} else if (type == FlowType.WASTE_FLOW) {
+				processLink.providerId = processID;
+			}
 		}
-		if (sourceNode != null)
-			processLink.providerId = sourceNode.process.getId();
+		if (output != null) {
+			long processID = output.parent().process.getId();
+			if (type == FlowType.PRODUCT_FLOW) {
+				processLink.providerId = processID;
+			} else if (type == FlowType.WASTE_FLOW) {
+				processLink.processId = processID;
+				processLink.exchangeId = output.exchange.getId();
+			}
+		}
 		return processLink;
+	}
+
+	private ProductSystemNode sysNode() {
+		if (input != null)
+			return input.parent().parent();
+		if (output != null)
+			return output.parent().parent();
+		return null;
 	}
 
 	@Override
@@ -75,40 +96,45 @@ public class CreateLinkCommand extends Command {
 	}
 
 	private void refreshNodes() {
-		ProductSystemNode systemNode = sourceNode.parent();
-		sourceNode = systemNode.getProcessNode(link.sourceNode.process.getId());
-		ProcessNode targetParentNode = systemNode.getProcessNode(link.targetNode.process.getId());
-		targetNode = targetParentNode.getInput(link.processLink);
+		ProductSystemNode sys = sysNode();
+		ProcessNode outProc = sys.getProcessNode(
+				link.sourceNode.process.getId());
+		output = outProc.getOutput(link.processLink);
+		ProcessNode inProc = sys.getProcessNode(
+				link.targetNode.process.getId());
+		input = inProc.getInput(link.processLink);
 	}
 
 	@Override
 	public void undo() {
-		ProductSystemNode systemNode = sourceNode.parent();
-		ProductSystem system = systemNode.getProductSystem();
+		ProductSystemNode sys = sysNode();
+		ProductSystem system = sys.getProductSystem();
 		link.unlink();
 		system.getProcessLinks().remove(processLink);
-		systemNode.linkSearch.remove(processLink);
-		systemNode.editor.setDirty(true);
+		sys.linkSearch.remove(processLink);
+		sys.editor.setDirty(true);
 	}
 
 	public Link getLink() {
 		if (link == null)
 			link = new Link();
 		link.processLink = getProcessLink();
-		link.sourceNode = sourceNode;
-		if (targetNode != null)
-			link.targetNode = targetNode.parent();
+		if (output != null)
+			link.sourceNode = output.parent();
+		if (input != null)
+			link.targetNode = input.parent();
 		return link;
 	}
 
+	@Deprecated
 	public void completeWith(ExchangeNode node) {
-		if (startedFromSource) {
-			targetNode = node;
+		if (startedFromOutput) {
+			input = node;
 			return;
 		}
 		if (node == null)
-			sourceNode = null;
+			output = null;
 		else if (!node.parent().hasIncoming(node.exchange.getId()))
-			sourceNode = node.parent();
+			output = node;
 	}
 }

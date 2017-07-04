@@ -26,11 +26,12 @@ abstract class AbstractNodeEditPart<N extends Node> extends AppAbstractEditPart<
 	}
 
 	private ConnectionAnchor getSourceConnectionAnchor(CreateConnectionRequest req) {
-		CreateLinkCommand cmd = (CreateLinkCommand) ((CreateConnectionRequest) req).getStartCommand();
-		if (cmd.sourceNode != null)
-			return LinkAnchor.newSourceAnchor(cmd);
-		if (cmd.targetNode != null)
-			return LinkAnchor.newTargetAnchor(cmd);
+		CreateLinkCommand cmd = (CreateLinkCommand) ((CreateConnectionRequest) req)
+				.getStartCommand();
+		if (cmd.output != null)
+			return LinkAnchor.newSourceAnchor(cmd.output.parent(), cmd.output);
+		if (cmd.input != null)
+			return LinkAnchor.newTargetAnchor(cmd.input.parent(), cmd.input);
 		return null;
 	}
 
@@ -61,13 +62,13 @@ abstract class AbstractNodeEditPart<N extends Node> extends AppAbstractEditPart<
 
 	private ConnectionAnchor getTargetConnectionAnchor(CreateConnectionRequest request) {
 		CreateLinkCommand cmd = (CreateLinkCommand) request.getStartCommand();
-		if (cmd.startedFromSource) {
-			if (cmd.targetNode != null)
-				return LinkAnchor.newTargetAnchor(cmd);
+		if (cmd.startedFromOutput) {
+			if (cmd.input != null)
+				return LinkAnchor.newTargetAnchor(cmd.input.parent(), cmd.input);
 			return null;
 		}
-		if (cmd.sourceNode != null)
-			return LinkAnchor.newSourceAnchor(cmd);
+		if (cmd.output != null)
+			return LinkAnchor.newSourceAnchor(cmd.output.parent(), cmd.output);
 		return null;
 	}
 
