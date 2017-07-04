@@ -9,23 +9,16 @@ class LinkAnchor extends AbstractConnectionAnchor {
 	private final boolean forInput;
 	private final ProcessNode node;
 
-	static LinkAnchor forOutput(Link link) {
-		ProcessNode process = link.outputNode;
-		ExchangeNode eNode = process.getOutput(link.processLink);
-		return forOutput(link.outputNode, eNode);
+	static LinkAnchor forOutput(ExchangeNode e) {
+		if (e == null)
+			return null;
+		return new LinkAnchor(e.parent(), e, false);
 	}
 
-	static LinkAnchor forOutput(ProcessNode node, ExchangeNode eNode) {
-		return new LinkAnchor(node, eNode, false);
-	}
-
-	static LinkAnchor forInput(Link link) {
-		ExchangeNode eNode = link.inputNode.getInput(link.processLink);
-		return forInput(link.inputNode, eNode);
-	}
-
-	static LinkAnchor forInput(ProcessNode node, ExchangeNode eNode) {
-		return new LinkAnchor(node, eNode, true);
+	static LinkAnchor forInput(ExchangeNode e) {
+		if (e == null)
+			return null;
+		return new LinkAnchor(e.parent(), e, true);
 	}
 
 	private LinkAnchor(ProcessNode pNode, ExchangeNode eNode, boolean forInput) {

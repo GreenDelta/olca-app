@@ -11,9 +11,11 @@ import org.openlca.app.editors.graphical.command.CreateLinkCommand;
 abstract class AbstractNodeEditPart<N extends Node> extends AppAbstractEditPart<N> implements NodeEditPart {
 
 	@Override
-	public ConnectionAnchor getSourceConnectionAnchor(ConnectionEditPart connection) {
-		Link link = (Link) connection.getModel();
-		return LinkAnchor.forOutput(link);
+	public ConnectionAnchor getSourceConnectionAnchor(ConnectionEditPart con) {
+		Link link = (Link) con.getModel();
+		ProcessNode process = link.outputNode;
+		ExchangeNode output = process.getOutput(link.processLink);
+		return LinkAnchor.forOutput(output);
 	}
 
 	@Override
@@ -29,26 +31,28 @@ abstract class AbstractNodeEditPart<N extends Node> extends AppAbstractEditPart<
 		CreateLinkCommand cmd = (CreateLinkCommand) ((CreateConnectionRequest) req)
 				.getStartCommand();
 		if (cmd.output != null)
-			return LinkAnchor.forOutput(cmd.output.parent(), cmd.output);
+			return LinkAnchor.forOutput(cmd.output);
 		if (cmd.input != null)
-			return LinkAnchor.forInput(cmd.input.parent(), cmd.input);
+			return LinkAnchor.forInput(cmd.input);
 		return null;
 	}
 
-	private ConnectionAnchor getSourceConnectionAnchor(ReconnectRequest request) {
-		Link link = (Link) request.getConnectionEditPart().getModel();
-		ProcessNode node = ((ExchangePart) request.getTarget()).getModel().parent();
-		ExchangeNode source = node.getOutput(link.processLink);
-		ExchangeNode target = link.inputNode.getInput(link.processLink);
-		if (target == null || !target.matches(source))
+	private ConnectionAnchor getSourceConnectionAnchor(ReconnectRequest req) {
+		Link link = (Link) req.getConnectionEditPart().getModel();
+		ProcessNode node = ((ExchangePart) req.getTarget()).getModel().parent();
+		ExchangeNode output = node.getOutput(link.processLink);
+		ExchangeNode input = link.inputNode.getInput(link.processLink);
+		if (input == null || !input.matches(output))
 			return null;
-		return LinkAnchor.forOutput(link);
+		return LinkAnchor.forOutput(output);
 	}
 
 	@Override
-	public ConnectionAnchor getTargetConnectionAnchor(ConnectionEditPart connection) {
-		Link link = (Link) connection.getModel();
-		return LinkAnchor.forInput(link);
+	public ConnectionAnchor getTargetConnectionAnchor(ConnectionEditPart con) {
+		Link link = (Link) con.getModel();
+		ProcessNode process = link.inputNode;
+		ExchangeNode input = process.getInput(link.processLink);
+		return LinkAnchor.forInput(input);
 	}
 
 	@Override
@@ -60,27 +64,30 @@ abstract class AbstractNodeEditPart<N extends Node> extends AppAbstractEditPart<
 		return null;
 	}
 
-	private ConnectionAnchor getTargetConnectionAnchor(CreateConnectionRequest request) {
-		CreateLinkCommand cmd = (CreateLinkCommand) request.getStartCommand();
+	private ConnectionAnchor getTargetConnectionAnchor(CreateConnectionRequest req) {
+		CreateLinkCommand cmd = (CreateLinkCommand) req.getStartCommand();
 		if (cmd.startedFromOutput) {
 			if (cmd.input != null)
-				return LinkAnchor.forInput(cmd.input.parent(), cmd.input);
+				return LinkAnchor.forInput(cmd.input);
 			return null;
 		}
 		if (cmd.output != null)
-			return LinkAnchor.forOutput(cmd.output.parent(), cmd.output);
+			return LinkAnchor.forOutput(cmd.output);
 		return null;
 	}
 
-	private ConnectionAnchor getTargetConnectionAnchor(ReconnectRequest request) {
-		Link link = (Link) request.getConnectionEditPart().getModel();
-		ExchangeNode target = ((ExchangePart) request.getTarget()).getModel();
-		ExchangeNode source = link.outputNode.getOutput(link.processLink);
-		if (source == null || !source.matches(target))
+	private ConnectionAnchor getTargetConnectionAnchor(ReconnectRequest req) {
+		Link link = (Link) req.getConnectionEditPart().getModel();
+		ExchangeNode input = ((ExchangePart) req.getTarget()).getModel();
+		ExchangeNode output = link.outputNode.getOutput(link.processLink);
+		if (output == null || !output.matches(input))
 			return null;
-		if (target.exchange.getId() != link.processLink.exchangeId
-				&& target.parent().isConnected(target.exchange.getId()))
+
+		// TODO: waste links
+		if (input.exchange.getId() != link.processLink.exchangeId
+				&& input.parent().isConnected(input.exchange.getId()))
 			return null;
-		return LinkAnchor.forInput(target.parent(), target);
+
+		return LinkAnchor.forInput(input);
 	}
 }
