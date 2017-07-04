@@ -85,7 +85,7 @@ public class ProcessLinkCreatePolicy extends GraphicalNodeEditPolicy {
 	protected Command getReconnectSourceCommand(ReconnectRequest request) {
 		Link link = getLink(request);
 		ExchangeNode toConnect = getNode(request);
-		ExchangeNode other = link.targetNode.getNode(link.processLink.exchangeId);
+		ExchangeNode other = link.targetNode.getInput(link.processLink);
 		if (!toConnect.matches(other))
 			return null;
 		return new ReconnectLinkCommand(toConnect.parent(), other, link);
@@ -95,7 +95,7 @@ public class ProcessLinkCreatePolicy extends GraphicalNodeEditPolicy {
 	protected Command getReconnectTargetCommand(ReconnectRequest request) {
 		Link link = getLink(request);
 		ExchangeNode toConnect = getNode(request);
-		ExchangeNode other = link.sourceNode.getOutput(link.processLink.flowId);
+		ExchangeNode other = link.sourceNode.getOutput(link.processLink);
 		if (!toConnect.matches(other))
 			return null;
 		boolean sameNode = toConnect.exchange.getId() == link.processLink.exchangeId;

@@ -7,15 +7,14 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.layout.LayoutManager;
 import org.openlca.app.editors.graphical.layout.NodeLayoutInfo;
 import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
+import org.openlca.app.util.Labels;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
-import org.openlca.core.model.Location;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -119,10 +118,7 @@ public class ProcessNode extends Node {
 
 	@Override
 	public String getName() {
-		String text = process.getName();
-		if (process.getLocation() != null)
-			text += " [" + Cache.getEntityCache().get(Location.class, process.getLocation()).getCode() + "]";
-		return text;
+		return Labels.getDisplayName(process);
 	}
 
 	public boolean isMinimized() {
@@ -175,6 +171,7 @@ public class ProcessNode extends Node {
 		figure().refresh();
 	}
 
+	@Deprecated
 	public ExchangeNode getOutput(long flowId) {
 		for (ExchangeNode node : getExchangeNodes())
 			if (!node.isDummy())
@@ -184,26 +181,57 @@ public class ProcessNode extends Node {
 		return null;
 	}
 
-	public ExchangeNode getNode(long exchangeId) {
-		for (ExchangeNode node : getExchangeNodes())
-			if (!node.isDummy())
-				if (node.exchange.getId() == exchangeId)
-					return node;
+	public ExchangeNode getOutput(ProcessLink link) {
+		if (link == null)
+			return null;
+		FlowType type = parent().flowTypes.get(link.flowId);
+		if (type == null || type == FlowType.ELEMENTARY_FLOW)
+			return null;
+		for (ExchangeNode n : getExchangeNodes()) {
+			Exchange e = n.exchange;
+			if (e == null || e.isInput ||
+					e.flow == null || e.flow.getId() != link.flowId)
+				continue;
+			if (type == FlowType.PRODUCT_FLOW)
+				return n;
+			if (type == FlowType.WASTE_FLOW
+					&& e.getId() == link.exchangeId)
+				return n;
+		}
 		return null;
-
 	}
 
-	public ExchangeNode[] getExchangeNodes() {
-		List<ExchangeNode> exchangesNodes = new ArrayList<>();
-		for (IONode node : getChildren())
-			for (ExchangeNode node2 : node.getChildren())
-				exchangesNodes.add(node2);
-		ExchangeNode[] result = new ExchangeNode[exchangesNodes.size()];
-		exchangesNodes.toArray(result);
-		return result;
+	public ExchangeNode getInput(ProcessLink link) {
+		if (link == null)
+			return null;
+		FlowType type = parent().flowTypes.get(link.flowId);
+		if (type == null || type == FlowType.ELEMENTARY_FLOW)
+			return null;
+		for (ExchangeNode n : getExchangeNodes()) {
+			Exchange e = n.exchange;
+			if (e == null || !e.isInput ||
+					e.flow == null || e.flow.getId() != link.flowId)
+				continue;
+			if (type == FlowType.PRODUCT_FLOW
+					&& e.getId() == link.exchangeId)
+				return n;
+			if (type == FlowType.WASTE_FLOW)
+				return n;
+		}
+		return null;
 	}
 
-	public ExchangeNode[] loadExchangeNodes() {
+	public List<ExchangeNode> getExchangeNodes() {
+		List<ExchangeNode> list = new ArrayList<>();
+		for (IONode io : getChildren()) {
+			for (ExchangeNode n : io.getChildren()) {
+				list.add(n);
+			}
+		}
+		return list;
+	}
+
+	public List<ExchangeNode> loadExchangeNodes() {
 		if (getChildren().isEmpty())
 			initializeExchangeNodes();
 		return getExchangeNodes();

@@ -1,7 +1,6 @@
 package org.openlca.app.editors.graphical.model;
 
 import org.eclipse.draw2d.AbstractConnectionAnchor;
-import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.openlca.app.editors.graphical.command.CreateLinkCommand;
@@ -14,21 +13,23 @@ class LinkAnchor extends AbstractConnectionAnchor {
 	private final ProcessNode node;
 
 	static LinkAnchor newSourceAnchor(Link link) {
-		ExchangeNode eNode = link.sourceNode.getOutput(link.processLink.flowId);
+		ProcessNode process = link.sourceNode;
+		ExchangeNode eNode = process.getOutput(link.processLink);
 		return newSourceAnchor(link.sourceNode, eNode);
 	}
 
 	static LinkAnchor newSourceAnchor(CreateLinkCommand cmd) {
-		ExchangeNode eNode = cmd.sourceNode.getOutput(cmd.getLink().processLink.flowId);
+
+		ExchangeNode eNode = cmd.sourceNode.getOutput(cmd.getLink().processLink);
 		return newSourceAnchor(cmd.sourceNode, eNode);
 	}
 
 	static LinkAnchor newSourceAnchor(ProcessNode node, ExchangeNode eNode) {
-		return newAnchor(node, eNode, SOURCE_ANCHOR);
+		return new LinkAnchor(node, eNode, SOURCE_ANCHOR);
 	}
 
 	static LinkAnchor newTargetAnchor(Link link) {
-		ExchangeNode eNode = link.targetNode.getNode(link.processLink.exchangeId);
+		ExchangeNode eNode = link.targetNode.getInput(link.processLink);
 		return newTargetAnchor(link.targetNode, eNode);
 	}
 
@@ -38,19 +39,12 @@ class LinkAnchor extends AbstractConnectionAnchor {
 	}
 
 	static LinkAnchor newTargetAnchor(ProcessNode node, ExchangeNode eNode) {
-		return newAnchor(node, eNode, TARGET_ANCHOR);
+		return new LinkAnchor(node, eNode, TARGET_ANCHOR);
 	}
 
-	private static LinkAnchor newAnchor(ProcessNode node, ExchangeNode eNode, int type) {
-		IFigure figure = node.figure;
-		if (!node.isMinimized())
-			figure = eNode.figure;
-		return new LinkAnchor(node, figure, type);
-	}
-
-	private LinkAnchor(ProcessNode node, IFigure figure, int type) {
-		super(figure);
-		this.node = node;
+	private LinkAnchor(ProcessNode pNode, ExchangeNode eNode, int type) {
+		super(pNode.isMinimized() ? pNode.figure : eNode.figure);
+		this.node = pNode;
 		this.type = type;
 	}
 

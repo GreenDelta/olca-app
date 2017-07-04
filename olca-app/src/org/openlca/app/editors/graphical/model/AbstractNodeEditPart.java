@@ -25,8 +25,8 @@ abstract class AbstractNodeEditPart<N extends Node> extends AppAbstractEditPart<
 		return null;
 	}
 
-	private ConnectionAnchor getSourceConnectionAnchor(CreateConnectionRequest request) {
-		CreateLinkCommand cmd = (CreateLinkCommand) ((CreateConnectionRequest) request).getStartCommand();
+	private ConnectionAnchor getSourceConnectionAnchor(CreateConnectionRequest req) {
+		CreateLinkCommand cmd = (CreateLinkCommand) ((CreateConnectionRequest) req).getStartCommand();
 		if (cmd.sourceNode != null)
 			return LinkAnchor.newSourceAnchor(cmd);
 		if (cmd.targetNode != null)
@@ -37,13 +37,11 @@ abstract class AbstractNodeEditPart<N extends Node> extends AppAbstractEditPart<
 	private ConnectionAnchor getSourceConnectionAnchor(ReconnectRequest request) {
 		Link link = (Link) request.getConnectionEditPart().getModel();
 		ProcessNode node = ((ExchangePart) request.getTarget()).getModel().parent();
-		long flowId = link.processLink.flowId;
-		long exchangeId = link.processLink.exchangeId;
-		ExchangeNode source = node.getOutput(flowId);
-		ExchangeNode target = link.targetNode.getNode(exchangeId);
+		ExchangeNode source = node.getOutput(link.processLink);
+		ExchangeNode target = link.targetNode.getInput(link.processLink);
 		if (target == null || !target.matches(source))
 			return null;
-		return LinkAnchor.newSourceAnchor(node, source);
+		return LinkAnchor.newSourceAnchor(link);
 	}
 
 	@Override
@@ -76,7 +74,7 @@ abstract class AbstractNodeEditPart<N extends Node> extends AppAbstractEditPart<
 	private ConnectionAnchor getTargetConnectionAnchor(ReconnectRequest request) {
 		Link link = (Link) request.getConnectionEditPart().getModel();
 		ExchangeNode target = ((ExchangePart) request.getTarget()).getModel();
-		ExchangeNode source = link.sourceNode.getOutput(link.processLink.flowId);
+		ExchangeNode source = link.sourceNode.getOutput(link.processLink);
 		if (source == null || !source.matches(target))
 			return null;
 		if (target.exchange.getId() != link.processLink.exchangeId

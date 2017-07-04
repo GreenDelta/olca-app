@@ -71,8 +71,8 @@ class LinkPart extends AbstractConnectionEditPart {
 	public void showSourceFeedback(Request req) {
 		ReconnectRequest request = ((ReconnectRequest) req);
 		Link link = (Link) request.getConnectionEditPart().getModel();
-		ExchangeNode target = link.targetNode.getNode(link.processLink.exchangeId);
-		ExchangeNode source = link.sourceNode.getOutput(link.processLink.flowId);
+		ExchangeNode target = link.targetNode.getInput(link.processLink);
+		ExchangeNode source = link.sourceNode.getOutput(link.processLink);
 		ExchangeNode n1 = request.isMovingStartAnchor() ? target : source;
 		ExchangeNode n2 = request.isMovingStartAnchor() ? source : target;
 		if (n1 != null) {

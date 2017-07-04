@@ -78,7 +78,7 @@ public class CreateLinkCommand extends Command {
 		ProductSystemNode systemNode = sourceNode.parent();
 		sourceNode = systemNode.getProcessNode(link.sourceNode.process.getId());
 		ProcessNode targetParentNode = systemNode.getProcessNode(link.targetNode.process.getId());
-		targetNode = targetParentNode.getNode(link.processLink.exchangeId);
+		targetNode = targetParentNode.getInput(link.processLink);
 	}
 
 	@Override
