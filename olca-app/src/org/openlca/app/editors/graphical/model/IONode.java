@@ -13,31 +13,30 @@ public class IONode extends Node {
 	public IONode(List<Exchange> exchanges) {
 		List<Exchange> inputs = filter(exchanges, true);
 		List<Exchange> outputs = filter(exchanges, false);
-		boolean inputsAreBiggerThanOutputs = inputs.size() > outputs.size();
-		int min = Math.min(inputs.size(), outputs.size());
-		Collections.sort(inputs, new ExchangeComparator());
-		Collections.sort(outputs, new ExchangeComparator());
-		for (int i = 0; i < min; i++) {
-			add(new ExchangeNode(inputs.get(i)));
-			add(new ExchangeNode(outputs.get(i)));
-		}
-		int max = Math.max(inputs.size(), outputs.size());
-		for (int i = min; i < max; i++) {
-			if (inputsAreBiggerThanOutputs) {
+		int len = Math.max(inputs.size(), outputs.size());
+		// creates dummy nodes if the lists are not equal in size
+		for (int i = 0; i < len; i++) {
+			if (i < inputs.size()) {
 				add(new ExchangeNode(inputs.get(i)));
-				add(new ExchangeNode(null));
 			} else {
 				add(new ExchangeNode(null));
+			}
+			if (i < outputs.size()) {
 				add(new ExchangeNode(outputs.get(i)));
+			} else {
+				add(new ExchangeNode(null));
 			}
 		}
 	}
 
 	private List<Exchange> filter(List<Exchange> exchanges, boolean inputs) {
 		List<Exchange> result = new ArrayList<>();
-		for (Exchange e : exchanges)
-			if (e.isInput == inputs && e.flow.getFlowType() != FlowType.ELEMENTARY_FLOW)
+		for (Exchange e : exchanges) {
+			if (e.isInput == inputs
+					&& e.flow.getFlowType() != FlowType.ELEMENTARY_FLOW)
 				result.add(e);
+		}
+		Collections.sort(result, new ExchangeComparator());
 		return result;
 	}
 

@@ -27,7 +27,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
-import org.openlca.app.editors.graphical.GraphicalViewerConfigurator;
+import org.openlca.app.editors.graphical.GraphConfig;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
@@ -102,7 +102,7 @@ class OpenMiniatureViewAction extends EditorAction {
 			toolkit.paintBordersFor(composite);
 			final Scale scale = new Scale(composite, SWT.NONE);
 			scale.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-			final double[] values = GraphicalViewerConfigurator.ZOOM_LEVELS;
+			final double[] values = GraphConfig.ZOOM_LEVELS;
 			final int increment = 100 / (values.length - 1);
 			scale.setIncrement(increment);
 			scale.setMinimum(0);

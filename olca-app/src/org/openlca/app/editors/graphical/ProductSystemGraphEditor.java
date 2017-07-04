@@ -44,7 +44,7 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 	private LayoutType layoutType = LayoutType.TREE_LAYOUT;
 	private OutlinePage outline;
 	private boolean routed;
-	private GraphicalViewerConfigurator configurator;
+	private GraphConfig config;
 	private ISelection selection;
 	private List<String> actionIds;
 	private boolean initialized = false;
@@ -107,16 +107,16 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 		if (getSystemEditor().getModel().getReferenceProcess() == null)
 			return new ProductSystemNode(this);
 		long referenceId = getSystemEditor().getModel().getReferenceProcess().getId();
-		ProductSystemNode productSystemNode = new ProductSystemNode(this);
-		productSystemNode.add(createProcessNode(referenceId));
-		return productSystemNode;
+		ProductSystemNode node = new ProductSystemNode(this);
+		node.add(createProcessNode(referenceId));
+		return node;
 	}
 
 	private ProductSystemNode expandModel() {
-		ProductSystemNode productSystemNode = new ProductSystemNode(this);
+		ProductSystemNode node = new ProductSystemNode(this);
 		for (Long id : getSystemEditor().getModel().getProcesses())
-			productSystemNode.add(createProcessNode(id));
-		return productSystemNode;
+			node.add(createProcessNode(id));
+		return node;
 	}
 
 	private ProcessNode createProcessNode(long id) {
@@ -157,29 +157,29 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 		}
 	}
 
-	private GraphicalViewerConfigurator createGraphicalViewerConfigurator() {
-		GraphicalViewerConfigurator configurator = new GraphicalViewerConfigurator(getGraphicalViewer());
-		configurator.setActionRegistry(getActionRegistry());
-		configurator.setCommandStack(getCommandStack());
-		configurator.setModel(model);
-		return configurator;
+	private GraphConfig createGraphConfig() {
+		GraphConfig conf = new GraphConfig(getGraphicalViewer());
+		conf.actionRegistry = getActionRegistry();
+		conf.commandStack = getCommandStack();
+		conf.model = model;
+		return conf;
 	}
 
 	@Override
 	protected void configureGraphicalViewer() {
 		model = createModel();
 		super.configureGraphicalViewer();
-		configurator = createGraphicalViewerConfigurator();
-		configurator.configureGraphicalViewer();
-		actionIds = configurator.configureActions();
-		configurator.configureKeyHandler();
-		configurator.configureContextMenu();
+		config = createGraphConfig();
+		config.configureGraphicalViewer();
+		actionIds = config.configureActions();
+		config.configureKeyHandler();
+		config.configureContextMenu();
 	}
 
 	@Override
 	protected void initializeGraphicalViewer() {
-		configurator.initializeGraphicalViewer();
-		configurator.configureZoomManager();
+		config.initializeGraphicalViewer();
+		config.configureZoomManager();
 	}
 
 	@Override
