@@ -10,7 +10,7 @@ import org.openlca.core.model.FlowType;
 
 public class IONode extends Node {
 
-	public IONode(Exchange[] exchanges) {
+	public IONode(List<Exchange> exchanges) {
 		List<Exchange> inputs = filter(exchanges, true);
 		List<Exchange> outputs = filter(exchanges, false);
 		boolean inputsAreBiggerThanOutputs = inputs.size() > outputs.size();
@@ -33,7 +33,7 @@ public class IONode extends Node {
 		}
 	}
 
-	private List<Exchange> filter(Exchange[] exchanges, boolean inputs) {
+	private List<Exchange> filter(List<Exchange> exchanges, boolean inputs) {
 		List<Exchange> result = new ArrayList<>();
 		for (Exchange e : exchanges)
 			if (e.isInput == inputs && e.flow.getFlowType() != FlowType.ELEMENTARY_FLOW)

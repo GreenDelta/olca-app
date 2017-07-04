@@ -73,8 +73,8 @@ class ProcessFigure extends Figure {
 		topLayout.marginHeight = 0;
 		topLayout.marginWidth = 0;
 		top.setLayoutManager(topLayout);
-		leftExpander = new ProcessExpander(node, Side.LEFT);
-		rightExpander = new ProcessExpander(node, Side.RIGHT);
+		leftExpander = new ProcessExpander(node, Side.INPUT);
+		rightExpander = new ProcessExpander(node, Side.OUTPUT);
 		top.add(leftExpander, new GridData(SWT.LEFT, SWT.CENTER, false, false));
 		top.add(new Label(node.getName()), new GridData(SWT.FILL, SWT.FILL, true, false));
 		top.add(rightExpander, new GridData(SWT.RIGHT, SWT.CENTER, false, false));

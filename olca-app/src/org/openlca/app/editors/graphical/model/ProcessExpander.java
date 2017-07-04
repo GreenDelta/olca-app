@@ -34,13 +34,23 @@ class ProcessExpander extends ImageFigure {
 	}
 
 	boolean shouldBeVisible() {
-		MutableProcessLinkSearchMap linkSearch = node.parent().linkSearch;
+		ProductSystemNode sysNode = node.parent();
+		MutableProcessLinkSearchMap linkSearch = sysNode.linkSearch;
 		long processId = node.process.getId();
 		for (ProcessLink link : linkSearch.getLinks(processId)) {
-			if (side == Side.LEFT && link.processId == processId)
-				return true;
-			if (side == Side.RIGHT && link.providerId == processId)
-				return true;
+			FlowType type = sysNode.flowTypes.get(link.flowId);
+			boolean isProvider = link.providerId == processId;
+			if (side == Side.INPUT) {
+				if (type == FlowType.PRODUCT_FLOW && !isProvider)
+					return true;
+				if (type == FlowType.WASTE_FLOW && isProvider)
+					return true;
+			} else if (side == Side.OUTPUT) {
+				if (type == FlowType.PRODUCT_FLOW && isProvider)
+					return true;
+				if (type == FlowType.WASTE_FLOW && !isProvider)
+					return true;
+			}
 		}
 		return false;
 	}
@@ -75,7 +85,7 @@ class ProcessExpander extends ImageFigure {
 				continue;
 			ProcessNode outNode;
 			ProcessNode inNode;
-			if (side == Side.LEFT) {
+			if (side == Side.INPUT) {
 				inNode = this.node;
 				long otherID = type == FlowType.PRODUCT_FLOW
 						? pLink.providerId
@@ -123,8 +133,8 @@ class ProcessExpander extends ImageFigure {
 		Link[] links = node.links.toArray(
 				new Link[node.links.size()]);
 		for (Link link : links) {
-			ProcessNode thisNode = side == Side.LEFT ? link.inputNode : link.outputNode;
-			ProcessNode otherNode = side == Side.LEFT ? link.outputNode : link.inputNode;
+			ProcessNode thisNode = side == Side.INPUT ? link.inputNode : link.outputNode;
+			ProcessNode otherNode = side == Side.INPUT ? link.outputNode : link.inputNode;
 			if (!thisNode.equals(node))
 				continue;
 			link.unlink();
@@ -144,11 +154,11 @@ class ProcessExpander extends ImageFigure {
 	private ProcessNode getMatchingNode(Link link) {
 		ProcessNode source = link.outputNode;
 		ProcessNode target = link.inputNode;
-		if (side == Side.LEFT)
+		if (side == Side.INPUT)
 			if (target.equals(node))
 				if (!source.equals(node))
 					return source;
-		if (side == Side.RIGHT)
+		if (side == Side.OUTPUT)
 			if (source.equals(node))
 				if (!target.equals(node))
 					return target;
@@ -192,7 +202,7 @@ class ProcessExpander extends ImageFigure {
 	}
 
 	enum Side {
-		LEFT, RIGHT;
+		INPUT, OUTPUT;
 	}
 
 	private class ExpansionListener implements MouseListener {
@@ -209,7 +219,7 @@ class ProcessExpander extends ImageFigure {
 		}
 
 		private Command getCommand() {
-			if (side == Side.LEFT) {
+			if (side == Side.INPUT) {
 				if (expanded)
 					return ExpansionCommand.collapseLeft(node);
 				return ExpansionCommand.expandLeft(node);

@@ -38,8 +38,8 @@ public class ProcessNode extends Node {
 		return (ProductSystemNode) super.parent();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
+	@SuppressWarnings("unchecked")
 	public List<IONode> getChildren() {
 		return (List<IONode>) super.getChildren();
 	}
@@ -152,15 +152,15 @@ public class ProcessNode extends Node {
 	}
 
 	private void initializeExchangeNodes() {
-		Process process = new ProcessDao(Database.get()).getForId(this.process.getId());
-		List<Exchange> technologies = new ArrayList<>();
-		for (Exchange exchange : process.getExchanges())
-			if (exchange.flow.getFlowType() == FlowType.ELEMENTARY_FLOW)
+		ProcessDao dao = new ProcessDao(Database.get());
+		Process process = dao.getForId(this.process.getId());
+		List<Exchange> list = new ArrayList<>();
+		for (Exchange e : process.getExchanges()) {
+			if (e.flow.getFlowType() == FlowType.ELEMENTARY_FLOW)
 				continue;
-			else
-				technologies.add(exchange);
-		Exchange[] technologyArray = technologies.toArray(new Exchange[technologies.size()]);
-		add(new IONode(technologyArray));
+			list.add(e);
+		}
+		add(new IONode(list));
 	}
 
 	public void refresh() {
@@ -261,26 +261,6 @@ public class ProcessNode extends Node {
 		return ProcessFigure.MINIMUM_WIDTH;
 	}
 
-	public boolean hasConnections() {
-		return links.size() > 0;
-	}
-
-	public int countOutgoing() {
-		int count = 0;
-		for (Link link : links)
-			if (link.outputNode.equals(this))
-				count++;
-		return count;
-	}
-
-	public int countIncoming() {
-		int count = 0;
-		for (Link link : links)
-			if (link.inputNode.equals(this))
-				count++;
-		return count;
-	}
-
 	public void collapseLeft() {
 		if (!isExpandedLeft())
 			return;
@@ -357,6 +337,15 @@ public class ProcessNode extends Node {
 	@Override
 	public int hashCode() {
 		return Objects.hashCode(process);
+	}
+
+	@Override
+	public String toString() {
+		String id = process != null
+				? Long.toString(process.getId())
+				: "null";
+		return "ProcessNode [ id =" + id + " name = "
+				+ Labels.getDisplayName(process) + " ]";
 	}
 
 }
