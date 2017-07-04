@@ -79,7 +79,7 @@ abstract class AbstractNodeEditPart<N extends Node> extends AppAbstractEditPart<
 		if (source == null || !source.matches(target))
 			return null;
 		if (target.exchange.getId() != link.processLink.exchangeId
-				&& target.parent().hasIncoming(target.exchange.getId()))
+				&& target.parent().isConnected(target.exchange.getId()))
 			return null;
 		return LinkAnchor.forInput(target.parent(), target);
 	}

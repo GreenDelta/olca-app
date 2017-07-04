@@ -13,6 +13,7 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.editors.graphical.command.ExpansionCommand;
 import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
@@ -63,41 +64,55 @@ class ProcessExpander extends ImageFigure {
 	}
 
 	private void createNecessaryNodes() {
-		ProductSystemNode systemNode = node.parent();
-		MutableProcessLinkSearchMap linkSearch = systemNode.linkSearch;
+		ProductSystemNode sysNode = node.parent();
+		MutableProcessLinkSearchMap linkMap = sysNode.linkSearch;
 		long processId = node.process.getId();
-		List<ProcessLink> links = null;
-		if (side == Side.LEFT)
-			links = linkSearch.getIncomingLinks(processId);
-		else
-			links = linkSearch.getOutgoingLinks(processId);
-		Map<Long, ProcessDescriptor> map = getLinkedProcesses(links);
-		for (ProcessLink link : links) {
-			long linkedProcessId = side == Side.LEFT ? link.providerId : link.processId;
-			ProcessNode node = systemNode.getProcessNode(linkedProcessId);
-			if (node == null) {
-				ProcessDescriptor descriptor = map.get(linkedProcessId);
-				node = new ProcessNode(descriptor);
-				systemNode.add(node);
+		List<ProcessLink> links = linkMap.getLinks(processId);
+		Map<Long, ProcessDescriptor> map = processMap(links);
+		for (ProcessLink pLink : links) {
+			FlowType type = sysNode.flowTypes.get(pLink.flowId);
+			if (type == null || type == FlowType.ELEMENTARY_FLOW)
+				continue;
+			ProcessNode outNode;
+			ProcessNode inNode;
+			if (side == Side.LEFT) {
+				inNode = this.node;
+				long otherID = type == FlowType.PRODUCT_FLOW
+						? pLink.providerId
+						: pLink.processId;
+				outNode = node(otherID, sysNode, map);
+			} else {
+				outNode = this.node;
+				long otherID = type == FlowType.PRODUCT_FLOW
+						? pLink.processId
+						: pLink.providerId;
+				inNode = node(otherID, sysNode, map);
 			}
-			ProcessNode sourceNode = side == Side.LEFT ? node : this.node;
-			ProcessNode targetNode = side == Side.LEFT ? this.node : node;
-			Link connectionLink = new Link();
-			connectionLink.outputNode = sourceNode;
-			connectionLink.inputNode = targetNode;
-			connectionLink.processLink = link;
-			connectionLink.link();
+			Link link = new Link();
+			link.outputNode = outNode;
+			link.inputNode = inNode;
+			link.processLink = pLink;
+			link.link();
 		}
 	}
 
-	private Map<Long, ProcessDescriptor> getLinkedProcesses(
-			List<ProcessLink> links) {
+	private ProcessNode node(long processID, ProductSystemNode sysNode,
+			Map<Long, ProcessDescriptor> map) {
+		ProcessNode node = sysNode.getProcessNode(processID);
+		if (node != null)
+			return node;
+		ProcessDescriptor d = map.get(processID);
+		node = new ProcessNode(d);
+		sysNode.add(node);
+		return node;
+	}
+
+	private Map<Long, ProcessDescriptor> processMap(List<ProcessLink> links) {
 		HashSet<Long> processIds = new HashSet<>();
-		for (ProcessLink link : links)
-			if (side == Side.LEFT)
-				processIds.add(link.providerId);
-			else
-				processIds.add(link.processId);
+		for (ProcessLink link : links) {
+			processIds.add(link.providerId);
+			processIds.add(link.processId);
+		}
 		return Cache.getEntityCache().getAll(ProcessDescriptor.class, processIds);
 	}
 

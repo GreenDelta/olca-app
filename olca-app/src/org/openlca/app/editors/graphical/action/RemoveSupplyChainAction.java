@@ -69,7 +69,7 @@ class RemoveSupplyChainAction extends EditorAction {
 		ProductSystemNode systemNode = editor.getModel();
 		ProcessNode node = systemNode.getProcessNode(processId);
 		List<ProcessLink> incomingLinks = linkSearch
-				.getIncomingLinks(processId);
+				.getConnectionLinks(processId);
 		for (ProcessLink link : incomingLinks) {
 			if (node != null) {
 				Link l = node.getLink(link);
@@ -81,7 +81,7 @@ class RemoveSupplyChainAction extends EditorAction {
 				links.add(link);
 			}
 			linkSearch.remove(link);
-			if (linkSearch.getOutgoingLinks(link.providerId).size() == 0) {
+			if (linkSearch.getProviderLinks(link.providerId).size() == 0) {
 				collectSupplyChain(link.providerId);
 				ProcessNode providerNode = editor.getModel().getProcessNode(link.providerId);
 				if (providerNode != null)

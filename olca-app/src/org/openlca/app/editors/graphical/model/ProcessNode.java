@@ -171,16 +171,6 @@ public class ProcessNode extends Node {
 		figure().refresh();
 	}
 
-	@Deprecated
-	public ExchangeNode getOutput(long flowId) {
-		for (ExchangeNode node : getExchangeNodes())
-			if (!node.isDummy())
-				if (!node.exchange.isInput)
-					if (node.exchange.flow.getId() == flowId)
-						return node;
-		return null;
-	}
-
 	public ExchangeNode getOutput(ProcessLink link) {
 		if (link == null)
 			return null;
@@ -246,12 +236,18 @@ public class ProcessNode extends Node {
 		editPart().revalidate();
 	}
 
-	@Deprecated
-	public boolean hasIncoming(long exchangeId) {
+	/**
+	 * Returns true if the exchange with the given ID is already connected by a
+	 * process link.
+	 */
+	public boolean isConnected(long exchangeId) {
 		MutableProcessLinkSearchMap linkSearch = parent().linkSearch;
-		for (ProcessLink link : linkSearch.getIncomingLinks(process.getId()))
+		List<ProcessLink> links = linkSearch.getConnectionLinks(
+				process.getId());
+		for (ProcessLink link : links) {
 			if (link.exchangeId == exchangeId)
 				return true;
+		}
 		return false;
 	}
 

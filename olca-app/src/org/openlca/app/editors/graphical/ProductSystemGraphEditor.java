@@ -31,6 +31,7 @@ import org.openlca.app.editors.systems.ProductSystemEditor;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
+import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
@@ -126,21 +127,33 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 
 	public void createNecessaryLinks(ProcessNode node) {
 		MutableProcessLinkSearchMap linkSearch = node.parent().linkSearch;
+		ProductSystemNode sysNode = node.parent();
 		long id = node.process.getId();
-		for (ProcessLink link : linkSearch.getLinks(id)) {
-			long processId = link.processId == id ? link.providerId : link.processId;
-			ProcessNode otherNode = model.getProcessNode(processId);
+		for (ProcessLink pLink : linkSearch.getLinks(id)) {
+			boolean isProvider = pLink.providerId == id;
+			long otherID = isProvider ? pLink.processId : pLink.providerId;
+			ProcessNode otherNode = model.getProcessNode(otherID);
 			if (otherNode == null)
 				continue;
-			ProcessNode sourceNode = link.processId == id ? otherNode : node;
-			ProcessNode targetNode = link.processId == id ? node : otherNode;
-			if (!sourceNode.isExpandedRight() && !targetNode.isExpandedLeft())
+			ProcessNode outNode = null;
+			ProcessNode inNode = null;
+			FlowType type = sysNode.flowTypes.get(pLink.flowId);
+			if (type == FlowType.PRODUCT_FLOW) {
+				outNode = isProvider ? node : otherNode;
+				inNode = isProvider ? otherNode : node;
+			} else if (type == FlowType.WASTE_FLOW) {
+				outNode = isProvider ? otherNode : node;
+				inNode = isProvider ? node : otherNode;
+			}
+			if (outNode == null || inNode == null)
 				continue;
-			Link connectionLink = new Link();
-			connectionLink.outputNode = sourceNode;
-			connectionLink.inputNode = targetNode;
-			connectionLink.processLink = link;
-			connectionLink.link();
+			if (!outNode.isExpandedRight() && !inNode.isExpandedLeft())
+				continue;
+			Link link = new Link();
+			link.outputNode = outNode;
+			link.inputNode = inNode;
+			link.processLink = pLink;
+			link.link();
 		}
 	}
 

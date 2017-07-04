@@ -134,7 +134,7 @@ public class CreateLinkCommand extends Command {
 		}
 		if (node == null)
 			output = null;
-		else if (!node.parent().hasIncoming(node.exchange.getId()))
+		else if (!node.parent().isConnected(node.exchange.getId()))
 			output = node;
 	}
 }
