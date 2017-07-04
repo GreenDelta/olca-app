@@ -83,8 +83,8 @@ class ProcessExpander extends ImageFigure {
 			ProcessNode sourceNode = side == Side.LEFT ? node : this.node;
 			ProcessNode targetNode = side == Side.LEFT ? this.node : node;
 			Link connectionLink = new Link();
-			connectionLink.sourceNode = sourceNode;
-			connectionLink.targetNode = targetNode;
+			connectionLink.outputNode = sourceNode;
+			connectionLink.inputNode = targetNode;
 			connectionLink.processLink = link;
 			connectionLink.link();
 		}
@@ -108,8 +108,8 @@ class ProcessExpander extends ImageFigure {
 		Link[] links = node.links.toArray(
 				new Link[node.links.size()]);
 		for (Link link : links) {
-			ProcessNode thisNode = side == Side.LEFT ? link.targetNode : link.sourceNode;
-			ProcessNode otherNode = side == Side.LEFT ? link.sourceNode : link.targetNode;
+			ProcessNode thisNode = side == Side.LEFT ? link.inputNode : link.outputNode;
+			ProcessNode otherNode = side == Side.LEFT ? link.outputNode : link.inputNode;
 			if (!thisNode.equals(node))
 				continue;
 			link.unlink();
@@ -127,8 +127,8 @@ class ProcessExpander extends ImageFigure {
 	}
 
 	private ProcessNode getMatchingNode(Link link) {
-		ProcessNode source = link.sourceNode;
-		ProcessNode target = link.targetNode;
+		ProcessNode source = link.outputNode;
+		ProcessNode target = link.inputNode;
 		if (side == Side.LEFT)
 			if (target.equals(node))
 				if (!source.equals(node))
@@ -153,9 +153,9 @@ class ProcessExpander extends ImageFigure {
 	}
 
 	private boolean processFiguresVisible(Link link) {
-		if (!link.sourceNode.isVisible())
+		if (!link.outputNode.isVisible())
 			return false;
-		if (!link.targetNode.isVisible())
+		if (!link.inputNode.isVisible())
 			return false;
 		return true;
 	}

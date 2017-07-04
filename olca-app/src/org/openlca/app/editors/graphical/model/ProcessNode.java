@@ -68,9 +68,9 @@ public class ProcessNode extends Node {
 		if (links.contains(link))
 			return;
 		links.add(link);
-		if (equals(link.sourceNode))
+		if (equals(link.outputNode))
 			editPart().refreshSourceConnections();
-		if (equals(link.targetNode))
+		if (equals(link.inputNode))
 			editPart().refreshTargetConnections();
 		editPart.refresh();
 	}
@@ -83,9 +83,9 @@ public class ProcessNode extends Node {
 		if (!links.contains(link))
 			return;
 		links.remove(link);
-		if (equals(link.sourceNode))
+		if (equals(link.outputNode))
 			editPart().refreshSourceConnections();
-		if (equals(link.targetNode))
+		if (equals(link.inputNode))
 			editPart().refreshTargetConnections();
 		editPart.refresh();
 	}
@@ -101,11 +101,11 @@ public class ProcessNode extends Node {
 		for (Link link : links) {
 			ProcessNode otherNode = null;
 			boolean isSource = false;
-			if (link.sourceNode.equals(this)) {
-				otherNode = link.targetNode;
+			if (link.outputNode.equals(this)) {
+				otherNode = link.inputNode;
 				isSource = true;
-			} else if (link.targetNode.equals(this)) {
-				otherNode = link.sourceNode;
+			} else if (link.inputNode.equals(this)) {
+				otherNode = link.outputNode;
 			}
 			if (!otherNode.isVisible())
 				continue;
@@ -272,7 +272,7 @@ public class ProcessNode extends Node {
 	public int countOutgoing() {
 		int count = 0;
 		for (Link link : links)
-			if (link.sourceNode.equals(this))
+			if (link.outputNode.equals(this))
 				count++;
 		return count;
 	}
@@ -280,7 +280,7 @@ public class ProcessNode extends Node {
 	public int countIncoming() {
 		int count = 0;
 		for (Link link : links)
-			if (link.targetNode.equals(this))
+			if (link.inputNode.equals(this))
 				count++;
 		return count;
 	}

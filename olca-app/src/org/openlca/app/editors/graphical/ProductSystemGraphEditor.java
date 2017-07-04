@@ -137,8 +137,8 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 			if (!sourceNode.isExpandedRight() && !targetNode.isExpandedLeft())
 				continue;
 			Link connectionLink = new Link();
-			connectionLink.sourceNode = sourceNode;
-			connectionLink.targetNode = targetNode;
+			connectionLink.outputNode = sourceNode;
+			connectionLink.inputNode = targetNode;
 			connectionLink.processLink = link;
 			connectionLink.link();
 		}

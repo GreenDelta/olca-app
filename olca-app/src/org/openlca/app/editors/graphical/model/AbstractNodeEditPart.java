@@ -13,7 +13,7 @@ abstract class AbstractNodeEditPart<N extends Node> extends AppAbstractEditPart<
 	@Override
 	public ConnectionAnchor getSourceConnectionAnchor(ConnectionEditPart connection) {
 		Link link = (Link) connection.getModel();
-		return LinkAnchor.newSourceAnchor(link);
+		return LinkAnchor.forOutput(link);
 	}
 
 	@Override
@@ -29,9 +29,9 @@ abstract class AbstractNodeEditPart<N extends Node> extends AppAbstractEditPart<
 		CreateLinkCommand cmd = (CreateLinkCommand) ((CreateConnectionRequest) req)
 				.getStartCommand();
 		if (cmd.output != null)
-			return LinkAnchor.newSourceAnchor(cmd.output.parent(), cmd.output);
+			return LinkAnchor.forOutput(cmd.output.parent(), cmd.output);
 		if (cmd.input != null)
-			return LinkAnchor.newTargetAnchor(cmd.input.parent(), cmd.input);
+			return LinkAnchor.forInput(cmd.input.parent(), cmd.input);
 		return null;
 	}
 
@@ -39,16 +39,16 @@ abstract class AbstractNodeEditPart<N extends Node> extends AppAbstractEditPart<
 		Link link = (Link) request.getConnectionEditPart().getModel();
 		ProcessNode node = ((ExchangePart) request.getTarget()).getModel().parent();
 		ExchangeNode source = node.getOutput(link.processLink);
-		ExchangeNode target = link.targetNode.getInput(link.processLink);
+		ExchangeNode target = link.inputNode.getInput(link.processLink);
 		if (target == null || !target.matches(source))
 			return null;
-		return LinkAnchor.newSourceAnchor(link);
+		return LinkAnchor.forOutput(link);
 	}
 
 	@Override
 	public ConnectionAnchor getTargetConnectionAnchor(ConnectionEditPart connection) {
 		Link link = (Link) connection.getModel();
-		return LinkAnchor.newTargetAnchor(link);
+		return LinkAnchor.forInput(link);
 	}
 
 	@Override
@@ -64,23 +64,23 @@ abstract class AbstractNodeEditPart<N extends Node> extends AppAbstractEditPart<
 		CreateLinkCommand cmd = (CreateLinkCommand) request.getStartCommand();
 		if (cmd.startedFromOutput) {
 			if (cmd.input != null)
-				return LinkAnchor.newTargetAnchor(cmd.input.parent(), cmd.input);
+				return LinkAnchor.forInput(cmd.input.parent(), cmd.input);
 			return null;
 		}
 		if (cmd.output != null)
-			return LinkAnchor.newSourceAnchor(cmd.output.parent(), cmd.output);
+			return LinkAnchor.forOutput(cmd.output.parent(), cmd.output);
 		return null;
 	}
 
 	private ConnectionAnchor getTargetConnectionAnchor(ReconnectRequest request) {
 		Link link = (Link) request.getConnectionEditPart().getModel();
 		ExchangeNode target = ((ExchangePart) request.getTarget()).getModel();
-		ExchangeNode source = link.sourceNode.getOutput(link.processLink);
+		ExchangeNode source = link.outputNode.getOutput(link.processLink);
 		if (source == null || !source.matches(target))
 			return null;
 		if (target.exchange.getId() != link.processLink.exchangeId
 				&& target.parent().hasIncoming(target.exchange.getId()))
 			return null;
-		return LinkAnchor.newTargetAnchor(target.parent(), target);
+		return LinkAnchor.forInput(target.parent(), target);
 	}
 }

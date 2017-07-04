@@ -98,10 +98,10 @@ public class CreateLinkCommand extends Command {
 	private void refreshNodes() {
 		ProductSystemNode sys = sysNode();
 		ProcessNode outProc = sys.getProcessNode(
-				link.sourceNode.process.getId());
+				link.outputNode.process.getId());
 		output = outProc.getOutput(link.processLink);
 		ProcessNode inProc = sys.getProcessNode(
-				link.targetNode.process.getId());
+				link.inputNode.process.getId());
 		input = inProc.getInput(link.processLink);
 	}
 
@@ -120,9 +120,9 @@ public class CreateLinkCommand extends Command {
 			link = new Link();
 		link.processLink = getProcessLink();
 		if (output != null)
-			link.sourceNode = output.parent();
+			link.outputNode = output.parent();
 		if (input != null)
-			link.targetNode = input.parent();
+			link.inputNode = input.parent();
 		return link;
 	}
 
