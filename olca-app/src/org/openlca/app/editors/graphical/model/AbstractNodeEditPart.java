@@ -19,15 +19,15 @@ abstract class AbstractNodeEditPart<N extends Node> extends AppAbstractEditPart<
 	}
 
 	@Override
-	public ConnectionAnchor getSourceConnectionAnchor(Request request) {
-		if (request instanceof CreateConnectionRequest)
-			return getSourceConnectionAnchor((CreateConnectionRequest) request);
-		if (request instanceof ReconnectRequest)
-			return getSourceConnectionAnchor((ReconnectRequest) request);
+	public ConnectionAnchor getSourceConnectionAnchor(Request req) {
+		if (req instanceof CreateConnectionRequest)
+			return sourceAnchor((CreateConnectionRequest) req);
+		if (req instanceof ReconnectRequest)
+			return sourceAnchor((ReconnectRequest) req);
 		return null;
 	}
 
-	private ConnectionAnchor getSourceConnectionAnchor(CreateConnectionRequest req) {
+	private ConnectionAnchor sourceAnchor(CreateConnectionRequest req) {
 		CreateLinkCommand cmd = (CreateLinkCommand) ((CreateConnectionRequest) req)
 				.getStartCommand();
 		if (cmd.output != null)
@@ -37,7 +37,7 @@ abstract class AbstractNodeEditPart<N extends Node> extends AppAbstractEditPart<
 		return null;
 	}
 
-	private ConnectionAnchor getSourceConnectionAnchor(ReconnectRequest req) {
+	private ConnectionAnchor sourceAnchor(ReconnectRequest req) {
 		Link link = (Link) req.getConnectionEditPart().getModel();
 		ProcessNode node = ((ExchangePart) req.getTarget()).getModel().parent();
 		ExchangeNode output = node.getOutput(link.processLink);
@@ -56,15 +56,15 @@ abstract class AbstractNodeEditPart<N extends Node> extends AppAbstractEditPart<
 	}
 
 	@Override
-	public ConnectionAnchor getTargetConnectionAnchor(Request request) {
-		if (request instanceof CreateConnectionRequest)
-			return getTargetConnectionAnchor((CreateConnectionRequest) request);
-		if (request instanceof ReconnectRequest)
-			return getTargetConnectionAnchor((ReconnectRequest) request);
+	public ConnectionAnchor getTargetConnectionAnchor(Request req) {
+		if (req instanceof CreateConnectionRequest)
+			return targetAnchor((CreateConnectionRequest) req);
+		if (req instanceof ReconnectRequest)
+			return targetAnchor((ReconnectRequest) req);
 		return null;
 	}
 
-	private ConnectionAnchor getTargetConnectionAnchor(CreateConnectionRequest req) {
+	private ConnectionAnchor targetAnchor(CreateConnectionRequest req) {
 		CreateLinkCommand cmd = (CreateLinkCommand) req.getStartCommand();
 		if (cmd.startedFromOutput) {
 			if (cmd.input != null)
@@ -76,7 +76,7 @@ abstract class AbstractNodeEditPart<N extends Node> extends AppAbstractEditPart<
 		return null;
 	}
 
-	private ConnectionAnchor getTargetConnectionAnchor(ReconnectRequest req) {
+	private ConnectionAnchor targetAnchor(ReconnectRequest req) {
 		Link link = (Link) req.getConnectionEditPart().getModel();
 		ExchangeNode input = ((ExchangePart) req.getTarget()).getModel();
 		ExchangeNode output = link.outputNode.getOutput(link.processLink);

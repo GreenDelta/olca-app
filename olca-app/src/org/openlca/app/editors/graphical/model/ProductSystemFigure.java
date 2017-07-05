@@ -52,7 +52,9 @@ class ProductSystemFigure extends Figure {
 		if (layoutLoaded)
 			return;
 		long refId = node.getProductSystem().getReferenceProcess().getId();
-		node.getProcessNode(refId).expandLeft();
+		ProcessNode refNode = node.getProcessNode(refId);
+		refNode.expandLeft();
+		refNode.expandRight();
 		getLayoutManager().layout(this, LayoutType.TREE_LAYOUT);
 	}
 }

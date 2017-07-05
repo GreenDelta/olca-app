@@ -75,28 +75,25 @@ class ProcessExpander extends ImageFigure {
 
 	private void createNecessaryNodes() {
 		ProductSystemNode sysNode = node.parent();
-		MutableProcessLinkSearchMap linkMap = sysNode.linkSearch;
-		long processId = node.process.getId();
-		List<ProcessLink> links = linkMap.getLinks(processId);
+		long processID = node.process.getId();
+		List<ProcessLink> links = sysNode.linkSearch.getLinks(processID);
 		Map<Long, ProcessDescriptor> map = processMap(links);
 		for (ProcessLink pLink : links) {
 			FlowType type = sysNode.flowTypes.get(pLink.flowId);
 			if (type == null || type == FlowType.ELEMENTARY_FLOW)
 				continue;
+			boolean isProvider = processID == pLink.providerId;
+			long otherID = isProvider ? pLink.processId : pLink.providerId;
 			ProcessNode outNode;
 			ProcessNode inNode;
-			if (side == Side.INPUT) {
+			if (isInputNode(type, pLink, isProvider)) {
 				inNode = this.node;
-				long otherID = type == FlowType.PRODUCT_FLOW
-						? pLink.providerId
-						: pLink.processId;
 				outNode = node(otherID, sysNode, map);
-			} else {
+			} else if (isOutputNode(type, pLink, isProvider)) {
 				outNode = this.node;
-				long otherID = type == FlowType.PRODUCT_FLOW
-						? pLink.processId
-						: pLink.providerId;
 				inNode = node(otherID, sysNode, map);
+			} else {
+				continue;
 			}
 			Link link = new Link();
 			link.outputNode = outNode;
@@ -104,6 +101,28 @@ class ProcessExpander extends ImageFigure {
 			link.processLink = pLink;
 			link.link();
 		}
+	}
+
+	private boolean isInputNode(FlowType type, ProcessLink link,
+			boolean isProvider) {
+		if (side != Side.INPUT)
+			return false;
+		if (isProvider && type == FlowType.WASTE_FLOW)
+			return true; // waste input
+		if (!isProvider && type == FlowType.PRODUCT_FLOW)
+			return true; // product input
+		return false;
+	}
+
+	private boolean isOutputNode(FlowType type, ProcessLink link,
+			boolean isProvider) {
+		if (side != Side.OUTPUT)
+			return false;
+		if (isProvider && type == FlowType.PRODUCT_FLOW)
+			return true; // product output
+		if (!isProvider && type == FlowType.WASTE_FLOW)
+			return true; // waste output
+		return false;
 	}
 
 	private ProcessNode node(long processID, ProductSystemNode sysNode,
