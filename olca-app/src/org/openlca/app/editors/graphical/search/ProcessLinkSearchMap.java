@@ -19,18 +19,28 @@ import gnu.trove.set.hash.TIntHashSet;
  */
 public class ProcessLinkSearchMap {
 
-	TLongObjectHashMap<TIntArrayList> providerIndex;
-	TLongObjectHashMap<TIntArrayList> recipientIndex;
+	/**
+	 * A map process-ID -> process links, where the process is a provider means
+	 * it has the product output or waste input that is described by the link.
+	 */
+	final TLongObjectHashMap<TIntArrayList> providerIndex;
+
+	/**
+	 * A map process-ID -> process links, where the process is connected by a
+	 * product input or waste output to another process.
+	 */
+	TLongObjectHashMap<TIntArrayList> connectionIndex;
+
 	ArrayList<ProcessLink> data;
 
 	public ProcessLinkSearchMap(Collection<ProcessLink> links) {
 		providerIndex = new TLongObjectHashMap<>(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, -1L);
-		recipientIndex = new TLongObjectHashMap<>(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, -1L);
+		connectionIndex = new TLongObjectHashMap<>(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, -1L);
 		data = new ArrayList<>(links);
 		for (int i = 0; i < data.size(); i++) {
 			ProcessLink link = data.get(i);
 			index(link.providerId, i, providerIndex);
-			index(link.processId, i, recipientIndex);
+			index(link.processId, i, connectionIndex);
 		}
 	}
 
@@ -47,7 +57,7 @@ public class ProcessLinkSearchMap {
 
 	/**
 	 * Returns all the links where the process with the given ID is either
-	 * provider or recipient.
+	 * provider or connected with a provider.
 	 */
 	public List<ProcessLink> getLinks(long processId) {
 		// because this method could be called quite often in graphical
@@ -58,25 +68,25 @@ public class ProcessLinkSearchMap {
 		TIntArrayList list = providerIndex.get(processId);
 		if (list != null)
 			intSet.addAll(list);
-		list = recipientIndex.get(processId);
+		list = connectionIndex.get(processId);
 		if (list != null)
 			intSet.addAll(list);
 		return getLinks(intSet.iterator());
 	}
 
 	/**
-	 * Returns all incoming links to the process with the given ID, i.e. all
-	 * links where the process is recipient.
+	 * Returns all links where the process with the given ID is connected (has
+	 * an product input or waste output).
 	 */
-	public List<ProcessLink> getIncomingLinks(long processId) {
-		return getLinks(processId, recipientIndex);
+	public List<ProcessLink> getConnectionLinks(long processId) {
+		return getLinks(processId, connectionIndex);
 	}
 
 	/**
-	 * Returns all the outgoing links from the process with the given ID, i.e.
-	 * all links where the process is provider.
+	 * Returns all links where the process with the given ID is a provider ( has
+	 * a product output or waste input).
 	 */
-	public List<ProcessLink> getOutgoingLinks(long processId) {
+	public List<ProcessLink> getProviderLinks(long processId) {
 		return getLinks(processId, providerIndex);
 	}
 

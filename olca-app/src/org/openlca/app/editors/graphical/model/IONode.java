@@ -10,34 +10,33 @@ import org.openlca.core.model.FlowType;
 
 public class IONode extends Node {
 
-	public IONode(Exchange[] exchanges) {
+	public IONode(List<Exchange> exchanges) {
 		List<Exchange> inputs = filter(exchanges, true);
 		List<Exchange> outputs = filter(exchanges, false);
-		boolean inputsAreBiggerThanOutputs = inputs.size() > outputs.size();
-		int min = Math.min(inputs.size(), outputs.size());
-		Collections.sort(inputs, new ExchangeComparator());
-		Collections.sort(outputs, new ExchangeComparator());
-		for (int i = 0; i < min; i++) {
-			add(new ExchangeNode(inputs.get(i)));
-			add(new ExchangeNode(outputs.get(i)));
-		}
-		int max = Math.max(inputs.size(), outputs.size());
-		for (int i = min; i < max; i++) {
-			if (inputsAreBiggerThanOutputs) {
+		int len = Math.max(inputs.size(), outputs.size());
+		// creates dummy nodes if the lists are not equal in size
+		for (int i = 0; i < len; i++) {
+			if (i < inputs.size()) {
 				add(new ExchangeNode(inputs.get(i)));
-				add(new ExchangeNode(null));
 			} else {
 				add(new ExchangeNode(null));
+			}
+			if (i < outputs.size()) {
 				add(new ExchangeNode(outputs.get(i)));
+			} else {
+				add(new ExchangeNode(null));
 			}
 		}
 	}
 
-	private List<Exchange> filter(Exchange[] exchanges, boolean inputs) {
+	private List<Exchange> filter(List<Exchange> exchanges, boolean inputs) {
 		List<Exchange> result = new ArrayList<>();
-		for (Exchange e : exchanges)
-			if (e.isInput() == inputs && e.getFlow().getFlowType() != FlowType.ELEMENTARY_FLOW)
+		for (Exchange e : exchanges) {
+			if (e.isInput == inputs
+					&& e.flow.getFlowType() != FlowType.ELEMENTARY_FLOW)
 				result.add(e);
+		}
+		Collections.sort(result, new ExchangeComparator());
 		return result;
 	}
 
@@ -56,8 +55,8 @@ public class IONode extends Node {
 
 		@Override
 		public int compare(Exchange o1, Exchange o2) {
-			String s1 = o1.getFlow().getName().toLowerCase();
-			String s2 = o2.getFlow().getName().toLowerCase();
+			String s1 = o1.flow.getName().toLowerCase();
+			String s2 = o2.flow.getName().toLowerCase();
 			int length = s1.length();
 			if (length > s2.length())
 				length = s2.length();

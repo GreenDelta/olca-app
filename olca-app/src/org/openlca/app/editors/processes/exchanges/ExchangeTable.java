@@ -1,10 +1,7 @@
 package org.openlca.app.editors.processes.exchanges;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.TableViewer;
@@ -13,41 +10,31 @@ import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.components.UncertaintyCellEditor;
-import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Error;
-import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
-import org.openlca.app.viewers.table.modify.CheckBoxCellModifier;
-import org.openlca.app.viewers.table.modify.ComboBoxCellModifier;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
-import org.openlca.core.database.EntityCache;
 import org.openlca.core.database.FlowDao;
-import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowPropertyFactor;
-import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
-import org.openlca.util.Strings;
 
 /**
  * The table for the display and editing of inputs or outputs of process
@@ -57,62 +44,62 @@ import org.openlca.util.Strings;
  */
 class ExchangeTable {
 
+	TableViewer viewer;
+
 	private final boolean forInputs;
 	private final ProcessEditor editor;
-
-	private IDatabase database = Database.get();
-	private EntityCache cache = Cache.getEntityCache();
+	private final ProcessExchangePage page;
 
 	private final String FLOW = M.Flow;
 	private final String CATEGORY = M.Category;
 	private final String AMOUNT = M.Amount;
 	private final String UNIT = M.Unit;
-	private final String COSTS;
+	private final String COSTS = M.CostsRevenues;
 	private final String PEDIGREE = M.DataQualityEntry;
-	private final String DEFAULT_PROVIDER = M.DefaultProvider;
+	private final String PROVIDER = M.DefaultProvider;
 	private final String UNCERTAINTY = M.Uncertainty;
 	private final String DESCRIPTION = M.Description;
-	private final String AVOIDED_PRODUCT = M.AvoidedProduct;
+	private final String AVOIDED;
 
-	private TableViewer viewer;
 	private ExchangeLabel label;
 
-	public static ExchangeTable forInputs(Section section, FormToolkit toolkit,
-			ProcessEditor editor) {
-		ExchangeTable table = new ExchangeTable(true, editor);
-		table.render(section, toolkit);
+	public static ExchangeTable forInputs(Section section, ProcessExchangePage page) {
+		ExchangeTable table = new ExchangeTable(true, page);
+		table.render(section);
 		return table;
 	}
 
 	public static ExchangeTable forOutputs(Section section,
-			FormToolkit toolkit, ProcessEditor editor) {
-		ExchangeTable table = new ExchangeTable(false, editor);
-		table.render(section, toolkit);
+			ProcessExchangePage page) {
+		ExchangeTable table = new ExchangeTable(false, page);
+		table.render(section);
 		return table;
 	}
 
-	private ExchangeTable(boolean forInputs, ProcessEditor editor) {
+	private ExchangeTable(boolean forInputs, ProcessExchangePage page) {
 		this.forInputs = forInputs;
-		this.COSTS = forInputs ? M.Costs : M.CostsRevenues;
-		this.editor = editor;
-		editor.getParameterSupport().afterEvaluation(() -> viewer.refresh());
+		this.page = page;
+		this.editor = page.editor;
+		this.AVOIDED = forInputs ? "#Avoided waste" : M.AvoidedProduct;
+		editor.getParameterSupport().afterEvaluation(
+				() -> viewer.refresh());
 	}
 
-	private void render(Section section, FormToolkit toolkit) {
-		Composite composite = UI.sectionClient(section, toolkit);
+	private void render(Section section) {
+		Composite composite = UI.sectionClient(section, page.toolkit);
 		UI.gridLayout(composite, 1);
 		viewer = Tables.createViewer(composite, getColumns());
-		label = new ExchangeLabel(editor, forInputs);
-		viewer.setLabelProvider(label.asColumnLabel());
+		label = new ExchangeLabel(editor);
+		viewer.setLabelProvider(label);
 		bindModifiers();
 		Tables.addDropSupport(viewer, this::add);
 		viewer.addFilter(new Filter());
-		bindActions(section, viewer);
+		bindActions(section);
 		bindDoubleClick(viewer);
-		Tables.bindColumnWidths(viewer, 0.2, 0.15, 0.1, 0.09, 0.09, 0.09, 0.09,
-				0.09, 0.05);
+		Tables.bindColumnWidths(viewer, 0.2, 0.15, 0.1, 0.08, 0.08, 0.08, 0.08,
+				0.08, 0.08, 0.07);
 		Viewers.sortByLabels(viewer, label, 0, 1, 3, 4, 5, 6, 7, 8);
-		Viewers.sortByDouble(viewer, (Exchange e) -> e.getAmountValue(), 2);
+		Viewers.sortByDouble(viewer, (Exchange e) -> e.amount, 2);
 		viewer.getTable().getColumns()[2].setAlignment(SWT.RIGHT);
 		viewer.getTable().getColumns()[4].setAlignment(SWT.RIGHT);
 	}
@@ -130,19 +117,25 @@ class ExchangeTable {
 		ms.bind(UNCERTAINTY, new UncertaintyCellEditor(viewer.getTable(),
 				editor));
 		ms.bind(DESCRIPTION, new CommentEditor(viewer, editor));
-		if (forInputs)
-			ms.bind(DEFAULT_PROVIDER, new ProviderModifier());
-		if (!forInputs)
-			ms.bind(AVOIDED_PRODUCT, new AvoidedProductModifier());
+		ms.bind(PROVIDER, new ProviderCombo(editor));
+		ms.bind(AVOIDED, new AvoidedCheck(editor));
 	}
 
-	private void bindActions(Section section, final TableViewer viewer) {
+	private void bindActions(Section section) {
 		Action add = Actions.onAdd(() -> onAdd());
 		Action remove = Actions.onRemove(() -> onRemove());
+		Action qRef = Actions.create("#Set as quantitative reference", null, () -> {
+			Exchange e = Viewers.getFirstSelected(viewer);
+			if (e == null)
+				return;
+			editor.getModel().setQuantitativeReference(e);
+			page.refreshTables();
+			editor.setDirty(true);
+		});
 		Action formulaSwitch = new FormulaSwitchAction();
 		Action clipboard = TableClipboard.onCopy(viewer);
 		Actions.bind(section, add, remove, formulaSwitch);
-		Actions.bind(viewer, add, remove, clipboard);
+		Actions.bind(viewer, add, remove, qRef, clipboard);
 		Tables.onDeletePressed(viewer, e -> onRemove());
 	}
 
@@ -154,18 +147,14 @@ class ExchangeTable {
 				return;
 			}
 			Exchange exchange = Viewers.getFirstSelected(table);
-			if (exchange != null && exchange.getFlow() != null)
-				App.openEditor(exchange.getFlow());
+			if (exchange != null && exchange.flow != null)
+				App.openEditor(exchange.flow);
 		});
 	}
 
 	private String[] getColumns() {
-		if (forInputs)
-			return new String[] { FLOW, CATEGORY, AMOUNT, UNIT, COSTS,
-					UNCERTAINTY, DEFAULT_PROVIDER, PEDIGREE, DESCRIPTION };
-		else
-			return new String[] { FLOW, CATEGORY, AMOUNT, UNIT, COSTS,
-					UNCERTAINTY, AVOIDED_PRODUCT, PEDIGREE, DESCRIPTION };
+		return new String[] { FLOW, CATEGORY, AMOUNT, UNIT, COSTS,
+				UNCERTAINTY, AVOIDED, PROVIDER, PEDIGREE, DESCRIPTION };
 	}
 
 	private void onAdd() {
@@ -196,12 +185,12 @@ class ExchangeTable {
 			Exchange e = new Exchange();
 			FlowDao flowDao = new FlowDao(Database.get());
 			Flow flow = flowDao.getForId(descriptor.getId());
-			e.setFlow(flow);
-			e.setFlowPropertyFactor(flow.getReferenceFactor());
+			e.flow = flow;
+			e.flowPropertyFactor = flow.getReferenceFactor();
 			Unit unit = getUnit(flow.getReferenceFactor());
-			e.setUnit(unit);
-			e.setAmountValue(1.0);
-			e.setInput(forInputs);
+			e.unit = unit;
+			e.amount = 1.0;
+			e.isInput = forInputs;
 			process.getExchanges().add(e);
 		}
 		viewer.setInput(process.getExchanges());
@@ -223,21 +212,21 @@ class ExchangeTable {
 
 		@Override
 		protected String getText(Exchange e) {
-			if (e.getAmountFormula() == null)
-				return Double.toString(e.getAmountValue());
-			return e.getAmountFormula();
+			if (e.amountFormula == null)
+				return Double.toString(e.amount);
+			return e.amountFormula;
 		}
 
 		@Override
 		protected void setText(Exchange exchange, String text) {
 			try {
 				double value = Double.parseDouble(text);
-				exchange.setAmountFormula(null);
-				exchange.setAmountValue(value);
+				exchange.amountFormula = null;
+				exchange.amount = value;
 				editor.setDirty(true);
 			} catch (NumberFormatException e) {
 				try {
-					exchange.setAmountFormula(text);
+					exchange.amountFormula = text;
 					editor.setDirty(true);
 					editor.getParameterSupport().evaluate();
 				} catch (Exception ex) {
@@ -248,93 +237,16 @@ class ExchangeTable {
 		}
 	}
 
-	private class ProviderModifier extends
-			ComboBoxCellModifier<Exchange, ProcessDescriptor> {
-
-		@Override
-		public boolean canModify(Exchange e) {
-			return e.isInput() && e.getFlow() != null
-					&& e.getFlow().getFlowType() == FlowType.PRODUCT_FLOW;
-		}
-
-		@Override
-		protected ProcessDescriptor[] getItems(Exchange e) {
-			if (e.getFlow() == null)
-				return new ProcessDescriptor[0];
-			FlowDao dao = new FlowDao(database);
-			Set<Long> providerIds = dao.getProviders(e.getFlow().getId());
-			Collection<ProcessDescriptor> list = cache.getAll(
-					ProcessDescriptor.class, providerIds).values();
-			ProcessDescriptor[] providers = list.toArray(
-					new ProcessDescriptor[list.size()]);
-			Arrays.sort(providers, (p1, p2) -> Strings.compare(
-					Labels.getDisplayName(p1), Labels.getDisplayName(p2)));
-			return providers;
-		}
-
-		@Override
-		protected ProcessDescriptor getItem(Exchange e) {
-			if (e.getDefaultProviderId() == 0)
-				return null;
-			return cache.get(ProcessDescriptor.class, e.getDefaultProviderId());
-		}
-
-		@Override
-		protected String getText(ProcessDescriptor d) {
-			if (d == null)
-				return M.None;
-			return Labels.getDisplayName(d);
-		}
-
-		@Override
-		protected void setItem(Exchange e, ProcessDescriptor d) {
-			if (d == null)
-				e.setDefaultProviderId(0);
-			else
-				e.setDefaultProviderId(d.getId());
-			editor.setDirty(true);
-		}
-	}
-
-	private class AvoidedProductModifier extends CheckBoxCellModifier<Exchange> {
-
-		@Override
-		public boolean canModify(Exchange e) {
-			Process process = editor.getModel();
-			if (Objects.equals(process.getQuantitativeReference(), e))
-				return false;
-			if (e.getFlow() == null)
-				return false;
-			if (e.getFlow().getFlowType() != FlowType.PRODUCT_FLOW)
-				return false;
-			return true;
-		}
-
-		@Override
-		protected boolean isChecked(Exchange e) {
-			return e.isAvoidedProduct();
-		}
-
-		@Override
-		protected void setChecked(Exchange e, boolean value) {
-			if (e.isAvoidedProduct() == value)
-				return;
-			e.setAvoidedProduct(value);
-			e.setInput(value);
-			editor.setDirty(true);
-		}
-	}
-
 	private class Filter extends ViewerFilter {
 		@Override
 		public boolean select(Viewer viewer, Object parent, Object obj) {
 			if (!(obj instanceof Exchange))
 				return false;
 			Exchange e = (Exchange) obj;
-			if (e.isAvoidedProduct())
-				return !forInputs;
+			if (e.isAvoided)
+				return e.isInput != forInputs;
 			else
-				return e.isInput() == forInputs;
+				return e.isInput == forInputs;
 		}
 	}
 

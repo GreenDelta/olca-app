@@ -52,8 +52,8 @@ public class ReconnectLinkCommand extends Command {
 		systemNode.getProductSystem().getProcessLinks().add(processLink);
 		systemNode.linkSearch.put(processLink);
 		link = new Link();
-		link.sourceNode = sourceNode;
-		link.targetNode = targetNode.parent();
+		link.outputNode = sourceNode;
+		link.inputNode = targetNode.parent();
 		link.processLink = processLink;
 		link.link();
 		systemNode.editor.setDirty(true);

@@ -1,4 +1,4 @@
-package org.openlca.app.editors.processes;
+package org.openlca.app.editors.processes.allocation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,8 +18,9 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
-import org.openlca.app.util.Actions;
+import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
@@ -54,7 +55,7 @@ class CausalFactorTable {
 	}
 
 	public void refresh() {
-		List<Exchange> products = Processes.getOutputProducts(process());
+		List<Exchange> products = Util.getProviderFlows(process());
 		List<Exchange> newProducts = new ArrayList<>(products);
 		List<Integer> removalIndices = new ArrayList<>();
 		for (int i = 0; i < columns.length; i++) {
@@ -68,7 +69,7 @@ class CausalFactorTable {
 			removeColumn(col);
 		for (Exchange product : newProducts)
 			addColumn(product);
-		viewer.setInput(Processes.getNonOutputProducts(process()));
+		viewer.setInput(Util.getNonProviderFlows(process()));
 		createModifySupport();
 	}
 
@@ -96,10 +97,11 @@ class CausalFactorTable {
 	}
 
 	private void initColumns() {
-		List<Exchange> products = Processes.getOutputProducts(process());
-		columns = new Column[products.size()];
-		for (int i = 0; i < columns.length; i++)
-			columns[i] = new Column(products.get(i));
+		List<Exchange> pFlows = Util.getProviderFlows(process());
+		columns = new Column[pFlows.size()];
+		for (int i = 0; i < columns.length; i++) {
+			columns[i] = new Column(pFlows.get(i));
+		}
 		Arrays.sort(columns);
 	}
 
@@ -127,7 +129,7 @@ class CausalFactorTable {
 	}
 
 	void setInitialInput() {
-		viewer.setInput(Processes.getNonOutputProducts(process()));
+		viewer.setInput(Util.getNonProviderFlows(process()));
 	}
 
 	private void createModifySupport() {
@@ -157,7 +159,7 @@ class CausalFactorTable {
 		for (AllocationFactor f : process().getAllocationFactors()) {
 			if (f.getAllocationType() != AllocationMethod.CAUSAL)
 				continue;
-			if (product.getFlow().getId() == f.getProductId()
+			if (product.flow.getId() == f.getProductId()
 					&& Objects.equals(f.getExchange(), exchange)) {
 				factor = f;
 				break;
@@ -176,9 +178,9 @@ class CausalFactorTable {
 			if (!(element instanceof Exchange))
 				return null;
 			Exchange exchange = (Exchange) element;
-			if (exchange.getFlow() == null)
+			if (exchange.flow == null)
 				return null;
-			return Images.get(exchange.getFlow());
+			return Images.get(exchange.flow);
 		}
 
 		@Override
@@ -186,18 +188,18 @@ class CausalFactorTable {
 			if (!(element instanceof Exchange))
 				return null;
 			Exchange exchange = (Exchange) element;
-			if (exchange.getFlow() == null || exchange.getUnit() == null)
+			if (exchange.flow == null || exchange.unit == null)
 				return null;
 			switch (col) {
 			case 0:
-				return Labels.getDisplayName(exchange.getFlow());
+				return Labels.getDisplayName(exchange.flow);
 			case 1:
-				return exchange.isInput() ? M.Input : M.Output;
+				return exchange.isInput ? M.Input : M.Output;
 			case 2:
-				return CategoryPath.getShort(exchange.getFlow().getCategory());
+				return CategoryPath.getShort(exchange.flow.getCategory());
 			case 3:
-				return Numbers.format(exchange.getAmountValue()) + " "
-						+ exchange.getUnit().getName();
+				return Numbers.format(exchange.amount) + " "
+						+ exchange.unit.getName();
 			default:
 				return getFactorLabel(exchange, col);
 			}
@@ -235,9 +237,9 @@ class CausalFactorTable {
 		}
 
 		public String getTitle() {
-			if (product == null || product.getFlow() == null)
+			if (product == null || product.flow == null)
 				return "";
-			return Labels.getDisplayName(product.getFlow());
+			return Labels.getDisplayName(product.flow);
 		}
 
 		@Override
@@ -273,7 +275,7 @@ class CausalFactorTable {
 				factor = new AllocationFactor();
 				factor.setAllocationType(AllocationMethod.CAUSAL);
 				factor.setExchange(exchange);
-				factor.setProductId(product.getFlow().getId());
+				factor.setProductId(product.flow.getId());
 				process().getAllocationFactors().add(factor);
 			}
 			factor.setValue(val);

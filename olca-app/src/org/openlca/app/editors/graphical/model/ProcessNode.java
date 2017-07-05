@@ -7,15 +7,14 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.layout.LayoutManager;
 import org.openlca.app.editors.graphical.layout.NodeLayoutInfo;
 import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
+import org.openlca.app.util.Labels;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
-import org.openlca.core.model.Location;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -39,8 +38,8 @@ public class ProcessNode extends Node {
 		return (ProductSystemNode) super.parent();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
+	@SuppressWarnings("unchecked")
 	public List<IONode> getChildren() {
 		return (List<IONode>) super.getChildren();
 	}
@@ -69,9 +68,9 @@ public class ProcessNode extends Node {
 		if (links.contains(link))
 			return;
 		links.add(link);
-		if (equals(link.sourceNode))
+		if (equals(link.outputNode))
 			editPart().refreshSourceConnections();
-		if (equals(link.targetNode))
+		if (equals(link.inputNode))
 			editPart().refreshTargetConnections();
 		editPart.refresh();
 	}
@@ -84,9 +83,9 @@ public class ProcessNode extends Node {
 		if (!links.contains(link))
 			return;
 		links.remove(link);
-		if (equals(link.sourceNode))
+		if (equals(link.outputNode))
 			editPart().refreshSourceConnections();
-		if (equals(link.targetNode))
+		if (equals(link.inputNode))
 			editPart().refreshTargetConnections();
 		editPart.refresh();
 	}
@@ -102,11 +101,11 @@ public class ProcessNode extends Node {
 		for (Link link : links) {
 			ProcessNode otherNode = null;
 			boolean isSource = false;
-			if (link.sourceNode.equals(this)) {
-				otherNode = link.targetNode;
+			if (link.outputNode.equals(this)) {
+				otherNode = link.inputNode;
 				isSource = true;
-			} else if (link.targetNode.equals(this)) {
-				otherNode = link.sourceNode;
+			} else if (link.inputNode.equals(this)) {
+				otherNode = link.outputNode;
 			}
 			if (!otherNode.isVisible())
 				continue;
@@ -119,10 +118,7 @@ public class ProcessNode extends Node {
 
 	@Override
 	public String getName() {
-		String text = process.getName();
-		if (process.getLocation() != null)
-			text += " [" + Cache.getEntityCache().get(Location.class, process.getLocation()).getCode() + "]";
-		return text;
+		return Labels.getDisplayName(process);
 	}
 
 	public boolean isMinimized() {
@@ -156,15 +152,15 @@ public class ProcessNode extends Node {
 	}
 
 	private void initializeExchangeNodes() {
-		Process process = new ProcessDao(Database.get()).getForId(this.process.getId());
-		List<Exchange> technologies = new ArrayList<>();
-		for (Exchange exchange : process.getExchanges())
-			if (exchange.getFlow().getFlowType() == FlowType.ELEMENTARY_FLOW)
+		ProcessDao dao = new ProcessDao(Database.get());
+		Process process = dao.getForId(this.process.getId());
+		List<Exchange> list = new ArrayList<>();
+		for (Exchange e : process.getExchanges()) {
+			if (e.flow.getFlowType() == FlowType.ELEMENTARY_FLOW)
 				continue;
-			else
-				technologies.add(exchange);
-		Exchange[] technologyArray = technologies.toArray(new Exchange[technologies.size()]);
-		add(new IONode(technologyArray));
+			list.add(e);
+		}
+		add(new IONode(list));
 	}
 
 	public void refresh() {
@@ -175,45 +171,57 @@ public class ProcessNode extends Node {
 		figure().refresh();
 	}
 
-	public List<ExchangeNode> getInputs(long flowId) {
-		List<ExchangeNode> nodes = new ArrayList<>();
-		for (ExchangeNode node : getExchangeNodes())
-			if (!node.isDummy())
-				if (node.exchange.isInput())
-					if (node.exchange.getFlow().getId() == flowId)
-						nodes.add(node);
-		return nodes;
-	}
-
-	public ExchangeNode getOutput(long flowId) {
-		for (ExchangeNode node : getExchangeNodes())
-			if (!node.isDummy())
-				if (!node.exchange.isInput())
-					if (node.exchange.getFlow().getId() == flowId)
-						return node;
+	public ExchangeNode getOutput(ProcessLink link) {
+		if (link == null)
+			return null;
+		FlowType type = parent().flowTypes.get(link.flowId);
+		if (type == null || type == FlowType.ELEMENTARY_FLOW)
+			return null;
+		for (ExchangeNode n : getExchangeNodes()) {
+			Exchange e = n.exchange;
+			if (e == null || e.isInput ||
+					e.flow == null || e.flow.getId() != link.flowId)
+				continue;
+			if (type == FlowType.PRODUCT_FLOW)
+				return n;
+			if (type == FlowType.WASTE_FLOW
+					&& e.getId() == link.exchangeId)
+				return n;
+		}
 		return null;
 	}
 
-	public ExchangeNode getNode(long exchangeId) {
-		for (ExchangeNode node : getExchangeNodes())
-			if (!node.isDummy())
-				if (node.exchange.getId() == exchangeId)
-					return node;
+	public ExchangeNode getInput(ProcessLink link) {
+		if (link == null)
+			return null;
+		FlowType type = parent().flowTypes.get(link.flowId);
+		if (type == null || type == FlowType.ELEMENTARY_FLOW)
+			return null;
+		for (ExchangeNode n : getExchangeNodes()) {
+			Exchange e = n.exchange;
+			if (e == null || !e.isInput ||
+					e.flow == null || e.flow.getId() != link.flowId)
+				continue;
+			if (type == FlowType.PRODUCT_FLOW
+					&& e.getId() == link.exchangeId)
+				return n;
+			if (type == FlowType.WASTE_FLOW)
+				return n;
+		}
 		return null;
-
 	}
 
-	public ExchangeNode[] getExchangeNodes() {
-		List<ExchangeNode> exchangesNodes = new ArrayList<>();
-		for (IONode node : getChildren())
-			for (ExchangeNode node2 : node.getChildren())
-				exchangesNodes.add(node2);
-		ExchangeNode[] result = new ExchangeNode[exchangesNodes.size()];
-		exchangesNodes.toArray(result);
-		return result;
+	public List<ExchangeNode> getExchangeNodes() {
+		List<ExchangeNode> list = new ArrayList<>();
+		for (IONode io : getChildren()) {
+			for (ExchangeNode n : io.getChildren()) {
+				list.add(n);
+			}
+		}
+		return list;
 	}
 
-	public ExchangeNode[] loadExchangeNodes() {
+	public List<ExchangeNode> loadExchangeNodes() {
 		if (getChildren().isEmpty())
 			initializeExchangeNodes();
 		return getExchangeNodes();
@@ -228,11 +236,18 @@ public class ProcessNode extends Node {
 		editPart().revalidate();
 	}
 
-	public boolean hasIncoming(long exchangeId) {
+	/**
+	 * Returns true if the exchange with the given ID is already connected by a
+	 * process link.
+	 */
+	public boolean isConnected(long exchangeId) {
 		MutableProcessLinkSearchMap linkSearch = parent().linkSearch;
-		for (ProcessLink link : linkSearch.getIncomingLinks(process.getId()))
+		List<ProcessLink> links = linkSearch.getConnectionLinks(
+				process.getId());
+		for (ProcessLink link : links) {
 			if (link.exchangeId == exchangeId)
 				return true;
+		}
 		return false;
 	}
 
@@ -244,26 +259,6 @@ public class ProcessNode extends Node {
 
 	public int getMinimumWidth() {
 		return ProcessFigure.MINIMUM_WIDTH;
-	}
-
-	public boolean hasConnections() {
-		return links.size() > 0;
-	}
-
-	public int countOutgoing() {
-		int count = 0;
-		for (Link link : links)
-			if (link.sourceNode.equals(this))
-				count++;
-		return count;
-	}
-
-	public int countIncoming() {
-		int count = 0;
-		for (Link link : links)
-			if (link.targetNode.equals(this))
-				count++;
-		return count;
 	}
 
 	public void collapseLeft() {
@@ -342,6 +337,15 @@ public class ProcessNode extends Node {
 	@Override
 	public int hashCode() {
 		return Objects.hashCode(process);
+	}
+
+	@Override
+	public String toString() {
+		String id = process != null
+				? Long.toString(process.getId())
+				: "null";
+		return "ProcessNode [ id =" + id + " name = "
+				+ Labels.getDisplayName(process) + " ]";
 	}
 
 }

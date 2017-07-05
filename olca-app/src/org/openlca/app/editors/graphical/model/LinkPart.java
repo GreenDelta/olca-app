@@ -52,7 +52,7 @@ class LinkPart extends AbstractConnectionEditPart {
 	}
 
 	private ProductSystemGraphEditor getEditor() {
-		return getModel().sourceNode.parent().editor;
+		return getModel().outputNode.parent().editor;
 	}
 
 	private ConnectionRouter getConnectionRouter() {
@@ -60,9 +60,9 @@ class LinkPart extends AbstractConnectionEditPart {
 	}
 
 	private boolean isVisible() {
-		if (!getModel().sourceNode.isVisible())
+		if (!getModel().outputNode.isVisible())
 			return false;
-		if (!getModel().targetNode.isVisible())
+		if (!getModel().inputNode.isVisible())
 			return false;
 		return true;
 	}
@@ -71,8 +71,8 @@ class LinkPart extends AbstractConnectionEditPart {
 	public void showSourceFeedback(Request req) {
 		ReconnectRequest request = ((ReconnectRequest) req);
 		Link link = (Link) request.getConnectionEditPart().getModel();
-		ExchangeNode target = link.targetNode.getNode(link.processLink.exchangeId);
-		ExchangeNode source = link.sourceNode.getOutput(link.processLink.flowId);
+		ExchangeNode target = link.inputNode.getInput(link.processLink);
+		ExchangeNode source = link.outputNode.getOutput(link.processLink);
 		ExchangeNode n1 = request.isMovingStartAnchor() ? target : source;
 		ExchangeNode n2 = request.isMovingStartAnchor() ? source : target;
 		if (n1 != null) {

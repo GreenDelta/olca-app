@@ -68,10 +68,10 @@ public class ConnectionDialog extends Dialog {
 		ProductSystemNode systemNode = exchangeNode.parent().parent();
 		existingProcesses = systemNode.getProductSystem().getProcesses();
 		linkSearch = systemNode.linkSearch;
-		selectProvider = exchangeNode.exchange.isInput();
+		selectProvider = exchangeNode.exchange.isInput;
 		boolean foundLink = false;
-		for (ProcessLink link : linkSearch.getIncomingLinks(processId))
-			if (link.flowId == exchange.getFlow().getId())
+		for (ProcessLink link : linkSearch.getConnectionLinks(processId))
+			if (link.flowId == exchange.flow.getId())
 				foundLink = true;
 		isConnected = foundLink;
 	}
@@ -120,7 +120,7 @@ public class ConnectionDialog extends Dialog {
 
 	private void createInternalModel() {
 		availableConnections.clear();
-		long flowId = exchange.getFlow().getId();
+		long flowId = exchange.flow.getId();
 		String query = "SELECT id, f_owner FROM tbl_exchanges "
 				+ "WHERE f_flow = " + flowId + " AND is_input = " + (selectProvider ? 0 : 1);
 		List<Tuple<Long, Long>> exchanges = new ArrayList<>();
@@ -157,10 +157,10 @@ public class ConnectionDialog extends Dialog {
 	}
 
 	private boolean isAlreadyProvider(ProcessDescriptor process) {
-		for (ProcessLink link : linkSearch.getOutgoingLinks(process.getId())) {
+		for (ProcessLink link : linkSearch.getProviderLinks(process.getId())) {
 			if (link.processId != processId)
 				continue;
-			if (link.flowId != exchange.getFlow().getId())
+			if (link.flowId != exchange.flow.getId())
 				continue;
 			return true;
 		}
@@ -168,7 +168,7 @@ public class ConnectionDialog extends Dialog {
 	}
 
 	private boolean isAlreadyReceiver(ProcessDescriptor process) {
-		for (ProcessLink link : linkSearch.getIncomingLinks(process.getId())) {
+		for (ProcessLink link : linkSearch.getConnectionLinks(process.getId())) {
 			if (link.providerId != processId)
 				continue;
 			if (link.exchangeId != exchange.getId())
@@ -196,7 +196,7 @@ public class ConnectionDialog extends Dialog {
 	}
 
 	private boolean hasProvider(AvailableConnection process) {
-		for (ProcessLink link : linkSearch.getIncomingLinks(process.process.getId()))
+		for (ProcessLink link : linkSearch.getConnectionLinks(process.process.getId()))
 			if (link.exchangeId == exchange.getId())
 				return true;
 		return false;
@@ -234,7 +234,8 @@ public class ConnectionDialog extends Dialog {
 		boolean connect;
 		boolean create;
 
-		AvailableConnection(ProcessDescriptor process, long exchangeId, boolean existing, boolean connected) {
+		AvailableConnection(ProcessDescriptor process, long exchangeId,
+				boolean existing, boolean connected) {
 			this.process = process;
 			this.exchangeId = exchangeId;
 			this.alreadyExisting = existing;

@@ -36,7 +36,7 @@ public class DeleteLinkCommand extends Command {
 
 	@Override
 	public void execute() {
-		ProductSystemNode systemNode = links.get(0).sourceNode.parent();
+		ProductSystemNode systemNode = links.get(0).outputNode.parent();
 		for (Link link : links) {
 			visibilityMap.put(getUniqueId(link), link.isVisible());
 			systemNode.getProductSystem().getProcessLinks().remove(link.processLink);
@@ -58,7 +58,7 @@ public class DeleteLinkCommand extends Command {
 
 	@Override
 	public void redo() {
-		ProductSystemNode systemNode = links.get(0).sourceNode.parent();
+		ProductSystemNode systemNode = links.get(0).outputNode.parent();
 		for (Link link : links) {
 			link.unlink();
 			systemNode.getProductSystem().getProcessLinks().remove(link.processLink);
@@ -69,7 +69,7 @@ public class DeleteLinkCommand extends Command {
 
 	@Override
 	public void undo() {
-		ProductSystemNode systemNode = links.get(0).sourceNode.parent();
+		ProductSystemNode systemNode = links.get(0).outputNode.parent();
 		for (Link link : links) {
 			systemNode.getProductSystem().getProcessLinks().add(link.processLink);
 			systemNode.linkSearch.put(link.processLink);

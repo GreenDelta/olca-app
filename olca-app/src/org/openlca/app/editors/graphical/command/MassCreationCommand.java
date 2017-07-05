@@ -99,8 +99,8 @@ public class MassCreationCommand extends Command {
 		ProcessNode targetNode = model.getProcessNode(targetId);
 		Link link = new Link();
 		link.processLink = processLink;
-		link.sourceNode = sourceNode;
-		link.targetNode = targetNode;
+		link.outputNode = sourceNode;
+		link.inputNode = targetNode;
 		return link;
 	}
 

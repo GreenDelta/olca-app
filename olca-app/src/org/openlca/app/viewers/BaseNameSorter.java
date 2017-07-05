@@ -22,8 +22,8 @@ public class BaseNameSorter extends ViewerSorter {
 			s1 = ((RootEntity) e1).getName();
 			s2 = ((RootEntity) e2).getName();
 		} else if (e1 instanceof Exchange && e2 instanceof Exchange) {
-			s1 = ((Exchange) e1).getFlow().getName();
-			s2 = ((Exchange) e2).getFlow().getName();
+			s1 = ((Exchange) e1).flow.getName();
+			s2 = ((Exchange) e2).flow.getName();
 		} else if (e1 instanceof Category && e2 instanceof Category) {
 			s1 = ((Category) e1).getName();
 			s2 = ((Category) e2).getName();

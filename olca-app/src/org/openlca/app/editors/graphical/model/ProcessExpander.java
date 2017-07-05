@@ -13,6 +13,7 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.editors.graphical.command.ExpansionCommand;
 import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
@@ -33,13 +34,23 @@ class ProcessExpander extends ImageFigure {
 	}
 
 	boolean shouldBeVisible() {
-		MutableProcessLinkSearchMap linkSearch = node.parent().linkSearch;
+		ProductSystemNode sysNode = node.parent();
+		MutableProcessLinkSearchMap linkSearch = sysNode.linkSearch;
 		long processId = node.process.getId();
 		for (ProcessLink link : linkSearch.getLinks(processId)) {
-			if (side == Side.LEFT && link.processId == processId)
-				return true;
-			if (side == Side.RIGHT && link.providerId == processId)
-				return true;
+			FlowType type = sysNode.flowTypes.get(link.flowId);
+			boolean isProvider = link.providerId == processId;
+			if (side == Side.INPUT) {
+				if (type == FlowType.PRODUCT_FLOW && !isProvider)
+					return true;
+				if (type == FlowType.WASTE_FLOW && isProvider)
+					return true;
+			} else if (side == Side.OUTPUT) {
+				if (type == FlowType.PRODUCT_FLOW && isProvider)
+					return true;
+				if (type == FlowType.WASTE_FLOW && !isProvider)
+					return true;
+			}
 		}
 		return false;
 	}
@@ -63,41 +74,74 @@ class ProcessExpander extends ImageFigure {
 	}
 
 	private void createNecessaryNodes() {
-		ProductSystemNode systemNode = node.parent();
-		MutableProcessLinkSearchMap linkSearch = systemNode.linkSearch;
-		long processId = node.process.getId();
-		List<ProcessLink> links = null;
-		if (side == Side.LEFT)
-			links = linkSearch.getIncomingLinks(processId);
-		else
-			links = linkSearch.getOutgoingLinks(processId);
-		Map<Long, ProcessDescriptor> map = getLinkedProcesses(links);
-		for (ProcessLink link : links) {
-			long linkedProcessId = side == Side.LEFT ? link.providerId : link.processId;
-			ProcessNode node = systemNode.getProcessNode(linkedProcessId);
-			if (node == null) {
-				ProcessDescriptor descriptor = map.get(linkedProcessId);
-				node = new ProcessNode(descriptor);
-				systemNode.add(node);
+		ProductSystemNode sysNode = node.parent();
+		long processID = node.process.getId();
+		List<ProcessLink> links = sysNode.linkSearch.getLinks(processID);
+		Map<Long, ProcessDescriptor> map = processMap(links);
+		for (ProcessLink pLink : links) {
+			FlowType type = sysNode.flowTypes.get(pLink.flowId);
+			if (type == null || type == FlowType.ELEMENTARY_FLOW)
+				continue;
+			boolean isProvider = processID == pLink.providerId;
+			long otherID = isProvider ? pLink.processId : pLink.providerId;
+			ProcessNode outNode;
+			ProcessNode inNode;
+			if (isInputNode(type, pLink, isProvider)) {
+				inNode = this.node;
+				outNode = node(otherID, sysNode, map);
+			} else if (isOutputNode(type, pLink, isProvider)) {
+				outNode = this.node;
+				inNode = node(otherID, sysNode, map);
+			} else {
+				continue;
 			}
-			ProcessNode sourceNode = side == Side.LEFT ? node : this.node;
-			ProcessNode targetNode = side == Side.LEFT ? this.node : node;
-			Link connectionLink = new Link();
-			connectionLink.sourceNode = sourceNode;
-			connectionLink.targetNode = targetNode;
-			connectionLink.processLink = link;
-			connectionLink.link();
+			Link link = new Link();
+			link.outputNode = outNode;
+			link.inputNode = inNode;
+			link.processLink = pLink;
+			link.link();
 		}
 	}
 
-	private Map<Long, ProcessDescriptor> getLinkedProcesses(
-			List<ProcessLink> links) {
+	private boolean isInputNode(FlowType type, ProcessLink link,
+			boolean isProvider) {
+		if (side != Side.INPUT)
+			return false;
+		if (isProvider && type == FlowType.WASTE_FLOW)
+			return true; // waste input
+		if (!isProvider && type == FlowType.PRODUCT_FLOW)
+			return true; // product input
+		return false;
+	}
+
+	private boolean isOutputNode(FlowType type, ProcessLink link,
+			boolean isProvider) {
+		if (side != Side.OUTPUT)
+			return false;
+		if (isProvider && type == FlowType.PRODUCT_FLOW)
+			return true; // product output
+		if (!isProvider && type == FlowType.WASTE_FLOW)
+			return true; // waste output
+		return false;
+	}
+
+	private ProcessNode node(long processID, ProductSystemNode sysNode,
+			Map<Long, ProcessDescriptor> map) {
+		ProcessNode node = sysNode.getProcessNode(processID);
+		if (node != null)
+			return node;
+		ProcessDescriptor d = map.get(processID);
+		node = new ProcessNode(d);
+		sysNode.add(node);
+		return node;
+	}
+
+	private Map<Long, ProcessDescriptor> processMap(List<ProcessLink> links) {
 		HashSet<Long> processIds = new HashSet<>();
-		for (ProcessLink link : links)
-			if (side == Side.LEFT)
-				processIds.add(link.providerId);
-			else
-				processIds.add(link.processId);
+		for (ProcessLink link : links) {
+			processIds.add(link.providerId);
+			processIds.add(link.processId);
+		}
 		return Cache.getEntityCache().getAll(ProcessDescriptor.class, processIds);
 	}
 
@@ -108,8 +152,8 @@ class ProcessExpander extends ImageFigure {
 		Link[] links = node.links.toArray(
 				new Link[node.links.size()]);
 		for (Link link : links) {
-			ProcessNode thisNode = side == Side.LEFT ? link.targetNode : link.sourceNode;
-			ProcessNode otherNode = side == Side.LEFT ? link.sourceNode : link.targetNode;
+			ProcessNode thisNode = side == Side.INPUT ? link.inputNode : link.outputNode;
+			ProcessNode otherNode = side == Side.INPUT ? link.outputNode : link.inputNode;
 			if (!thisNode.equals(node))
 				continue;
 			link.unlink();
@@ -127,13 +171,13 @@ class ProcessExpander extends ImageFigure {
 	}
 
 	private ProcessNode getMatchingNode(Link link) {
-		ProcessNode source = link.sourceNode;
-		ProcessNode target = link.targetNode;
-		if (side == Side.LEFT)
+		ProcessNode source = link.outputNode;
+		ProcessNode target = link.inputNode;
+		if (side == Side.INPUT)
 			if (target.equals(node))
 				if (!source.equals(node))
 					return source;
-		if (side == Side.RIGHT)
+		if (side == Side.OUTPUT)
 			if (source.equals(node))
 				if (!target.equals(node))
 					return target;
@@ -153,9 +197,9 @@ class ProcessExpander extends ImageFigure {
 	}
 
 	private boolean processFiguresVisible(Link link) {
-		if (!link.sourceNode.isVisible())
+		if (!link.outputNode.isVisible())
 			return false;
-		if (!link.targetNode.isVisible())
+		if (!link.inputNode.isVisible())
 			return false;
 		return true;
 	}
@@ -177,7 +221,7 @@ class ProcessExpander extends ImageFigure {
 	}
 
 	enum Side {
-		LEFT, RIGHT;
+		INPUT, OUTPUT;
 	}
 
 	private class ExpansionListener implements MouseListener {
@@ -194,7 +238,7 @@ class ProcessExpander extends ImageFigure {
 		}
 
 		private Command getCommand() {
-			if (side == Side.LEFT) {
+			if (side == Side.INPUT) {
 				if (expanded)
 					return ExpansionCommand.collapseLeft(node);
 				return ExpansionCommand.expandLeft(node);

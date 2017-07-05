@@ -22,7 +22,7 @@ public class MutableProcessLinkSearchMap extends ProcessLinkSearchMap {
 		else
 			data.add(link);
 		index(link.providerId, index, providerIndex);
-		index(link.processId, index, recipientIndex);
+		index(link.processId, index, connectionIndex);
 	}
 
 	private int getAvailableIndex() {
@@ -43,7 +43,7 @@ public class MutableProcessLinkSearchMap extends ProcessLinkSearchMap {
 			return -1;
 		data.set(index, null);
 		remove(link.providerId, index, providerIndex);
-		remove(link.processId, index, recipientIndex);
+		remove(link.processId, index, connectionIndex);
 		return index;
 	}
 

@@ -31,6 +31,7 @@ import org.openlca.app.editors.systems.ProductSystemEditor;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
+import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
@@ -43,7 +44,7 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 	private LayoutType layoutType = LayoutType.TREE_LAYOUT;
 	private OutlinePage outline;
 	private boolean routed;
-	private GraphicalViewerConfigurator configurator;
+	private GraphConfig config;
 	private ISelection selection;
 	private List<String> actionIds;
 	private boolean initialized = false;
@@ -106,16 +107,16 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 		if (getSystemEditor().getModel().getReferenceProcess() == null)
 			return new ProductSystemNode(this);
 		long referenceId = getSystemEditor().getModel().getReferenceProcess().getId();
-		ProductSystemNode productSystemNode = new ProductSystemNode(this);
-		productSystemNode.add(createProcessNode(referenceId));
-		return productSystemNode;
+		ProductSystemNode node = new ProductSystemNode(this);
+		node.add(createProcessNode(referenceId));
+		return node;
 	}
 
 	private ProductSystemNode expandModel() {
-		ProductSystemNode productSystemNode = new ProductSystemNode(this);
+		ProductSystemNode node = new ProductSystemNode(this);
 		for (Long id : getSystemEditor().getModel().getProcesses())
-			productSystemNode.add(createProcessNode(id));
-		return productSystemNode;
+			node.add(createProcessNode(id));
+		return node;
 	}
 
 	private ProcessNode createProcessNode(long id) {
@@ -126,47 +127,59 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 
 	public void createNecessaryLinks(ProcessNode node) {
 		MutableProcessLinkSearchMap linkSearch = node.parent().linkSearch;
+		ProductSystemNode sysNode = node.parent();
 		long id = node.process.getId();
-		for (ProcessLink link : linkSearch.getLinks(id)) {
-			long processId = link.processId == id ? link.providerId : link.processId;
-			ProcessNode otherNode = model.getProcessNode(processId);
+		for (ProcessLink pLink : linkSearch.getLinks(id)) {
+			boolean isProvider = pLink.providerId == id;
+			long otherID = isProvider ? pLink.processId : pLink.providerId;
+			ProcessNode otherNode = model.getProcessNode(otherID);
 			if (otherNode == null)
 				continue;
-			ProcessNode sourceNode = link.processId == id ? otherNode : node;
-			ProcessNode targetNode = link.processId == id ? node : otherNode;
-			if (!sourceNode.isExpandedRight() && !targetNode.isExpandedLeft())
+			ProcessNode outNode = null;
+			ProcessNode inNode = null;
+			FlowType type = sysNode.flowTypes.get(pLink.flowId);
+			if (type == FlowType.PRODUCT_FLOW) {
+				outNode = isProvider ? node : otherNode;
+				inNode = isProvider ? otherNode : node;
+			} else if (type == FlowType.WASTE_FLOW) {
+				outNode = isProvider ? otherNode : node;
+				inNode = isProvider ? node : otherNode;
+			}
+			if (outNode == null || inNode == null)
 				continue;
-			Link connectionLink = new Link();
-			connectionLink.sourceNode = sourceNode;
-			connectionLink.targetNode = targetNode;
-			connectionLink.processLink = link;
-			connectionLink.link();
+			if (!outNode.isExpandedRight() && !inNode.isExpandedLeft())
+				continue;
+			Link link = new Link();
+			link.outputNode = outNode;
+			link.inputNode = inNode;
+			link.processLink = pLink;
+			link.link();
 		}
 	}
 
-	private GraphicalViewerConfigurator createGraphicalViewerConfigurator() {
-		GraphicalViewerConfigurator configurator = new GraphicalViewerConfigurator(getGraphicalViewer());
-		configurator.setActionRegistry(getActionRegistry());
-		configurator.setCommandStack(getCommandStack());
-		configurator.setModel(model);
-		return configurator;
+	private GraphConfig createGraphConfig() {
+		GraphConfig conf = new GraphConfig(getGraphicalViewer());
+		conf.actionRegistry = getActionRegistry();
+		conf.commandStack = getCommandStack();
+		conf.model = model;
+		return conf;
 	}
 
 	@Override
 	protected void configureGraphicalViewer() {
 		model = createModel();
 		super.configureGraphicalViewer();
-		configurator = createGraphicalViewerConfigurator();
-		configurator.configureGraphicalViewer();
-		actionIds = configurator.configureActions();
-		configurator.configureKeyHandler();
-		configurator.configureContextMenu();
+		config = createGraphConfig();
+		config.configureGraphicalViewer();
+		actionIds = config.configureActions();
+		config.configureKeyHandler();
+		config.configureContextMenu();
 	}
 
 	@Override
 	protected void initializeGraphicalViewer() {
-		configurator.initializeGraphicalViewer();
-		configurator.configureZoomManager();
+		config.initializeGraphicalViewer();
+		config.configureZoomManager();
 	}
 
 	@Override

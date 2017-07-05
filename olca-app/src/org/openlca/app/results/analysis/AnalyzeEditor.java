@@ -13,7 +13,7 @@ import org.openlca.app.results.NwResultPage;
 import org.openlca.app.results.ResultEditorInput;
 import org.openlca.app.results.SaveProcessDialog;
 import org.openlca.app.results.SunBurstView;
-import org.openlca.app.results.TotalFlowResultPage;
+import org.openlca.app.results.InventoryPage;
 import org.openlca.app.results.TotalImpactResultPage;
 import org.openlca.app.results.analysis.sankey.SankeyDiagram;
 import org.openlca.app.results.contributions.ContributionTreePage;
@@ -62,15 +62,15 @@ public class AnalyzeEditor extends FormEditor implements IResultEditor<FullResul
 	}
 
 	@Override
-	public void init(IEditorSite site, IEditorInput input)
+	public void init(IEditorSite site, IEditorInput iInput)
 			throws PartInitException {
-		super.init(site, input);
-		ResultEditorInput editorInput = (ResultEditorInput) input;
-		String resultKey = editorInput.resultKey;
-		String setupKey = editorInput.setupKey;
+		super.init(site, iInput);
+		ResultEditorInput input = (ResultEditorInput) iInput;
+		String resultKey = input.resultKey;
+		String setupKey = input.setupKey;
 		FullResultProvider result = Cache.getAppCache().remove(resultKey,
 				FullResultProvider.class);
-		String dqResultKey = editorInput.dqResultKey;
+		String dqResultKey = input.dqResultKey;
 		if (dqResultKey != null)
 			dqResult = Cache.getAppCache().remove(dqResultKey, DQResult.class);
 		setup = Cache.getAppCache().remove(setupKey, CalculationSetup.class);
@@ -84,7 +84,7 @@ public class AnalyzeEditor extends FormEditor implements IResultEditor<FullResul
 	protected void addPages() {
 		try {
 			addPage(new AnalyzeInfoPage(this, result, dqResult, setup));
-			addPage(new TotalFlowResultPage(this, result, dqResult));
+			addPage(new InventoryPage(this, result, dqResult));
 			if (result.hasImpactResults())
 				addPage(new TotalImpactResultPage(this, result, dqResult, this::getImpactFactor));
 			if (result.hasImpactResults() && setup.nwSet != null)

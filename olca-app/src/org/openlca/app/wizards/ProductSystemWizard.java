@@ -38,10 +38,8 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 	public boolean performFinish() {
 		ProductSystemWizardPage page = (ProductSystemWizardPage) getPage();
 		ProductSystem system = page.createModel();
-		if (system == null) {
-			log.error("Unexpected error: no page or product system");
+		if (system == null)
 			return false;
-		}
 		system.setCategory(getCategory());
 		if (page.cutoff != null)
 			system.cutoff = page.cutoff;

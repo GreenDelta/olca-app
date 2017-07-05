@@ -13,8 +13,9 @@ public class Link {
 	public static Color HIGHLIGHT_COLOR = ColorConstants.blue;
 
 	public ProcessLink processLink;
-	public ProcessNode sourceNode;
-	public ProcessNode targetNode;
+	public ProcessNode outputNode;
+	public ProcessNode inputNode;
+
 	public Connection figure;
 	LinkPart editPart;
 
@@ -31,22 +32,22 @@ public class Link {
 	}
 
 	public void link() {
-		sourceNode.add(this);
-		targetNode.add(this);
-		sourceNode.editPart().refreshSourceConnections();
-		targetNode.editPart().refreshTargetConnections();
-		sourceNode.refresh();
-		targetNode.refresh();
+		outputNode.add(this);
+		inputNode.add(this);
+		outputNode.editPart().refreshSourceConnections();
+		inputNode.editPart().refreshTargetConnections();
+		outputNode.refresh();
+		inputNode.refresh();
 	}
 
 	public void unlink() {
 		editPart.setSelected(0);
-		sourceNode.remove(this);
-		targetNode.remove(this);
-		sourceNode.editPart().refreshSourceConnections();
-		targetNode.editPart().refreshTargetConnections();
-		sourceNode.refresh();
-		targetNode.refresh();
+		outputNode.remove(this);
+		inputNode.remove(this);
+		outputNode.editPart().refreshSourceConnections();
+		inputNode.editPart().refreshTargetConnections();
+		outputNode.refresh();
+		inputNode.refresh();
 	}
 
 	@Override
@@ -56,9 +57,9 @@ public class Link {
 		Link link = (Link) obj;
 		if (!Objects.equals(processLink, link.processLink))
 			return false;
-		if (!Objects.equals(sourceNode, link.sourceNode))
+		if (!Objects.equals(outputNode, link.outputNode))
 			return false;
-		if (!Objects.equals(targetNode, link.targetNode))
+		if (!Objects.equals(inputNode, link.inputNode))
 			return false;
 		return true;
 	}

@@ -41,7 +41,7 @@ class Exchanges {
 			List<Exchange> exchanges) {
 		List<Exchange> products = new ArrayList<>();
 		for (Exchange exchange : exchanges) {
-			Flow flow = exchange.getFlow();
+			Flow flow = exchange.flow;
 			if (flow != null && flow.getFlowType() != FlowType.ELEMENTARY_FLOW)
 				products.add(exchange);
 		}

@@ -53,7 +53,7 @@ class SearchConnectorsAction extends EditorAction {
 	private void executeRequest(ExchangeNode exchangeNode) {
 		ProductSystemNode model = node.parent();
 		long exchangeId = exchangeNode.exchange.getId();
-		long flowId = exchangeNode.exchange.getFlow().getId();
+		long flowId = exchangeNode.exchange.flow.getId();
 		long nodeId = node.process.getId();
 		ConnectionDialog dialog = new ConnectionDialog(exchangeNode);
 		if (dialog.open() == IDialogConstants.OK_ID) {
@@ -90,7 +90,7 @@ class SearchConnectorsAction extends EditorAction {
 			for (ExchangeNode exchangeNode : node.loadExchangeNodes()) {
 				if (exchangeNode.isDummy())
 					continue;
-				if (exchangeNode.exchange.isInput() != providers)
+				if (exchangeNode.exchange.isInput != providers)
 					continue;
 				exchangeNodes.add(exchangeNode);
 			}

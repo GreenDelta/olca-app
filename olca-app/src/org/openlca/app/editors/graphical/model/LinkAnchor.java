@@ -1,57 +1,40 @@
 package org.openlca.app.editors.graphical.model;
 
 import org.eclipse.draw2d.AbstractConnectionAnchor;
-import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.openlca.app.editors.graphical.command.CreateLinkCommand;
 
 class LinkAnchor extends AbstractConnectionAnchor {
 
-	private static final int SOURCE_ANCHOR = 1;
-	private static final int TARGET_ANCHOR = 2;
-	private final int type;
+	private final boolean forInput;
 	private final ProcessNode node;
 
-	static LinkAnchor newSourceAnchor(Link link) {
-		ExchangeNode eNode = link.sourceNode.getOutput(link.processLink.flowId);
-		return newSourceAnchor(link.sourceNode, eNode);
+	/**
+	 * Creates a link anchor for an output. The exchange node can be null if the
+	 * process is minimized.
+	 */
+	static LinkAnchor forOutput(ProcessNode p, ExchangeNode e) {
+		if (p == null)
+			return null;
+		return new LinkAnchor(p, e, false);
 	}
 
-	static LinkAnchor newSourceAnchor(CreateLinkCommand cmd) {
-		ExchangeNode eNode = cmd.sourceNode.getOutput(cmd.getLink().processLink.flowId);
-		return newSourceAnchor(cmd.sourceNode, eNode);
+	/**
+	 * Creates a link anchor for an output. The exchange node can be null if the
+	 * process is minimized.
+	 */
+	static LinkAnchor forInput(ProcessNode p, ExchangeNode e) {
+		if (p == null)
+			return null;
+		return new LinkAnchor(p, e, true);
 	}
 
-	static LinkAnchor newSourceAnchor(ProcessNode node, ExchangeNode eNode) {
-		return newAnchor(node, eNode, SOURCE_ANCHOR);
-	}
-
-	static LinkAnchor newTargetAnchor(Link link) {
-		ExchangeNode eNode = link.targetNode.getNode(link.processLink.exchangeId);
-		return newTargetAnchor(link.targetNode, eNode);
-	}
-
-	static LinkAnchor newTargetAnchor(CreateLinkCommand cmd) {
-		ProcessNode node = cmd.targetNode.parent();
-		return newTargetAnchor(node, cmd.targetNode);
-	}
-
-	static LinkAnchor newTargetAnchor(ProcessNode node, ExchangeNode eNode) {
-		return newAnchor(node, eNode, TARGET_ANCHOR);
-	}
-
-	private static LinkAnchor newAnchor(ProcessNode node, ExchangeNode eNode, int type) {
-		IFigure figure = node.figure;
-		if (!node.isMinimized())
-			figure = eNode.figure;
-		return new LinkAnchor(node, figure, type);
-	}
-
-	private LinkAnchor(ProcessNode node, IFigure figure, int type) {
-		super(figure);
-		this.node = node;
-		this.type = type;
+	private LinkAnchor(ProcessNode pNode, ExchangeNode eNode, boolean forInput) {
+		super(pNode.isMinimized() || eNode == null
+				? pNode.figure
+				: eNode.figure);
+		this.node = pNode;
+		this.forInput = forInput;
 	}
 
 	@Override
@@ -59,7 +42,7 @@ class LinkAnchor extends AbstractConnectionAnchor {
 		int hTrans = 0;
 		if (!node.isMinimized()) {
 			hTrans = ProcessFigure.MARGIN_WIDTH + 1;
-			if (type == TARGET_ANCHOR) {
+			if (forInput) {
 				hTrans *= -1;
 			}
 		}
@@ -67,9 +50,9 @@ class LinkAnchor extends AbstractConnectionAnchor {
 		r.translate(hTrans, 0);
 		getOwner().translateToAbsolute(r);
 		Point location = null;
-		if (type == TARGET_ANCHOR) {
+		if (forInput) {
 			location = r.getLeft();
-		} else if (type == SOURCE_ANCHOR) {
+		} else {
 			location = r.getRight();
 		}
 		return location;

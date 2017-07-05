@@ -31,7 +31,7 @@ public class BaseLabelProvider extends ColumnLabelProvider {
 		if (element instanceof BaseDescriptor)
 			return Images.get((BaseDescriptor) element);
 		if (element instanceof Exchange)
-			return Images.get(((Exchange) element).getFlow());
+			return Images.get(((Exchange) element).flow);
 		if (element instanceof FlowType)
 			return Images.get((FlowType) element);
 		if (element instanceof ProcessType)
@@ -52,7 +52,7 @@ public class BaseLabelProvider extends ColumnLabelProvider {
 		if (element instanceof ImpactCategory)
 			return ((ImpactCategory) element).getName();
 		if (element instanceof Exchange)
-			return getModelLabel(((Exchange) element).getFlow());
+			return getModelLabel(((Exchange) element).flow);
 		if (element instanceof FlowPropertyFactor)
 			return getModelLabel(((FlowPropertyFactor) element).getFlowProperty());
 		if (element instanceof Unit)

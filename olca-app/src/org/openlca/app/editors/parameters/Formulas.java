@@ -97,11 +97,11 @@ public class Formulas {
 
 	private void evalExchanges(List<Exchange> exchanges, Scope s) {
 		for (Exchange e : exchanges) {
-			if (e.getAmountFormula() != null)
-				e.setAmountValue(eval(e.getAmountFormula(), s));
-			eval(e.getUncertainty(), s);
+			if (e.amountFormula != null)
+				e.amount = eval(e.amountFormula, s);
+			eval(e.uncertainty, s);
 			if (e.costFormula != null)
-				e.costValue = eval(e.costFormula, s);
+				e.costs = eval(e.costFormula, s);
 		}
 	}
 

@@ -100,7 +100,7 @@ public class SimulationPage extends FormPage {
 			ProductSystem system = setup.productSystem;
 			Exchange exchange = system.getReferenceExchange();
 			double amount = system.getTargetAmount();
-			Flow flow = exchange.getFlow();
+			Flow flow = exchange.flow;
 			Unit unit = system.getTargetUnit();
 			return String.format("%s %s %s", Numbers.format(amount, 2),
 					unit.getName(), Labels.getDisplayName(flow));

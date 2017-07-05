@@ -52,7 +52,7 @@ public class UncertaintyCellEditor extends DialogCellEditor {
 			uncertainty = factor.getUncertainty();
 		} else if (value instanceof Exchange) {
 			exchange = (Exchange) value;
-			uncertainty = exchange.getUncertainty();
+			uncertainty = exchange.uncertainty;
 		} else if (value instanceof Parameter) {
 			parameter = (Parameter) value;
 			uncertainty = parameter.getUncertainty();
@@ -77,18 +77,18 @@ public class UncertaintyCellEditor extends DialogCellEditor {
 		return exchange != null ? exchange : factor;
 	}
 
-	private void setUncertainty(Uncertainty uncertainty) {
-		if (uncertainty.getDistributionType() == UncertaintyType.NONE)
-			uncertainty = null;
+	private void setUncertainty(Uncertainty u) {
+		if (u.getDistributionType() == UncertaintyType.NONE)
+			u = null;
 		if (exchange != null)
-			exchange.setUncertainty(uncertainty);
+			exchange.uncertainty = u;
 		else if (factor != null)
-			factor.setUncertainty(uncertainty);
+			factor.setUncertainty(u);
 		else if (parameter != null)
-			parameter.setUncertainty(uncertainty);
+			parameter.setUncertainty(u);
 		else if (parameterRedef != null)
-			parameterRedef.setUncertainty(uncertainty);
-		updateContents(UncertaintyLabel.get(uncertainty));
+			parameterRedef.setUncertainty(u);
+		updateContents(UncertaintyLabel.get(u));
 		if (editor != null)
 			editor.setDirty(true);
 	}
@@ -97,8 +97,8 @@ public class UncertaintyCellEditor extends DialogCellEditor {
 		double val = 1;
 		Uncertainty uncertainty = null;
 		if (exchange != null) {
-			uncertainty = exchange.getUncertainty();
-			val = exchange.getAmountValue();
+			uncertainty = exchange.uncertainty;
+			val = exchange.amount;
 		} else if (factor != null) {
 			uncertainty = factor.getUncertainty();
 			val = factor.getValue();

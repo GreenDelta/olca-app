@@ -1,40 +1,47 @@
 package org.openlca.app.editors.graphical.model;
 
+import java.util.Objects;
+
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.Exchange;
+import org.openlca.core.model.FlowType;
 import org.openlca.core.model.descriptors.Descriptors;
 
 public class ExchangeNode extends Node {
 
-	public Exchange exchange;
+	public final Exchange exchange;
 
 	public ExchangeNode(Exchange exchange) {
 		this.exchange = exchange;
 	}
 
+	/**
+	 * Dummy nodes are created to have the same size of inputs and outputs in a
+	 * process figure. The exchange is null in this case.
+	 */
 	public boolean isDummy() {
 		return exchange == null;
 	}
 
+	public boolean isWaste() {
+		if (exchange == null || exchange.flow == null)
+			return false;
+		return exchange.flow.getFlowType() == FlowType.WASTE_FLOW;
+	}
+
 	@Override
 	public String getName() {
-		if (isDummy())
+		if (exchange == null)
 			return "";
-		return Labels.getDisplayName(Descriptors.toDescriptor(exchange.getFlow()));
+		return Labels.getDisplayName(Descriptors.toDescriptor(exchange.flow));
 	}
 
 	public boolean matches(ExchangeNode node) {
-		if (node == null)
+		if (node == null || this.exchange == null || node.exchange == null)
 			return false;
-		if (node.isDummy())
+		if (!Objects.equals(exchange.flow, node.exchange.flow))
 			return false;
-		if (isDummy())
-			return false;
-		if (!exchange.getFlow().equals(node.exchange.getFlow()))
-			return false;
-		if (exchange.isInput() == node.exchange.isInput())
-			return false;
-		return true;
+		return exchange.isInput != node.exchange.isInput;
 	}
 
 	public void setHighlighted(boolean value) {
@@ -47,5 +54,5 @@ public class ExchangeNode extends Node {
 	public ProcessNode parent() {
 		return (ProcessNode) super.parent().parent();
 	}
-	
+
 }

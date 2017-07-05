@@ -163,9 +163,11 @@ public class ReplaceProvidersDialog extends FormDialog {
 	}
 
 	private List<ProcessDescriptor> getProviders(FlowDescriptor product) {
-		FlowDao flowDao = (FlowDao) Daos.createCategorizedDao(Database.get(), ModelType.FLOW);
-		Set<Long> ids = flowDao.getProviders(product.getId());
 		List<ProcessDescriptor> result = new ArrayList<>();
+		// TODO: search for processes and waste flows
+		FlowDao flowDao = (FlowDao) Daos.createCategorizedDao(Database.get(),
+				ModelType.FLOW);
+		Set<Long> ids = flowDao.getWhereOutput(product.getId());
 		result.add(new ProcessDescriptor());
 		ProcessDao processDao = (ProcessDao) Daos.createCategorizedDao(Database.get(), ModelType.PROCESS);
 		result.addAll(processDao.getDescriptors(ids));

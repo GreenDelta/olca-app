@@ -40,7 +40,7 @@ class ExchangePart extends AbstractNodeEditPart<ExchangeNode> {
 	protected void refreshVisuals() {
 		if (getModel().isDummy())
 			return;
-		int hAlign = getModel().exchange.isInput() ? SWT.LEFT : SWT.RIGHT;
+		int hAlign = getModel().exchange.isInput ? SWT.LEFT : SWT.RIGHT;
 		getFigure().getParent().setConstraint(getFigure(), new GridData(hAlign, SWT.TOP, true, false));
 	}
 

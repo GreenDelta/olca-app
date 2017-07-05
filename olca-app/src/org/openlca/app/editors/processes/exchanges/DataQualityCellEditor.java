@@ -31,9 +31,9 @@ class DataQualityCellEditor extends DialogCellEditor {
 	protected void doSetValue(Object value) {
 		if (value instanceof Exchange) {
 			exchange = (Exchange) value;
-			oldEntryVal = exchange.getDqEntry();
-			oldBaseVal = exchange.getBaseUncertainty();
-			super.doSetValue(exchange.getDqEntry());
+			oldEntryVal = exchange.dqEntry;
+			oldBaseVal = exchange.baseUncertainty;
+			super.doSetValue(exchange.dqEntry);
 		} else {
 			exchange = null;
 			oldEntryVal = null;
@@ -48,8 +48,8 @@ class DataQualityCellEditor extends DialogCellEditor {
 			return null;
 		}
 		DQSystem system = editor.getModel().exchangeDqSystem;
-		String dqEntry = exchange.getDqEntry();
-		Double uncertainty = exchange.getBaseUncertainty();
+		String dqEntry = exchange.dqEntry;
+		Double uncertainty = exchange.baseUncertainty;
 		DataQualityShell shell = DataQualityShell.withUncertainty(
 				control.getShell(), system, dqEntry, uncertainty);
 		shell.onOk = this::onOk;
@@ -57,7 +57,7 @@ class DataQualityCellEditor extends DialogCellEditor {
 		shell.onUseUncertainties = this::onUseUncertainties;
 		shell.addDisposeListener(e -> {
 			if (valuesChanged()) {
-				updateContents(exchange.getDqEntry());
+				updateContents(exchange.dqEntry);
 				viewer.refresh();
 				editor.setDirty(true);
 			}
@@ -67,25 +67,25 @@ class DataQualityCellEditor extends DialogCellEditor {
 	}
 
 	private boolean valuesChanged() {
-		return !Objects.equals(oldEntryVal, exchange.getDqEntry())
-				|| !Objects.equals(oldBaseVal, exchange.getBaseUncertainty());
+		return !Objects.equals(oldEntryVal, exchange.dqEntry)
+				|| !Objects.equals(oldBaseVal, exchange.baseUncertainty);
 	}
 
 	private void onDelete(DataQualityShell shell) {
-		exchange.setDqEntry(null);
+		exchange.dqEntry = null;
 	}
 
 	private void onOk(DataQualityShell shell) {
-		exchange.setDqEntry(shell.getSelection());
-		exchange.setBaseUncertainty(shell.getBaseValue());
+		exchange.dqEntry = shell.getSelection();
+		exchange.baseUncertainty = shell.getBaseValue();
 	}
 
 	private void onUseUncertainties(DataQualityShell shell) {
 		Uncertainty u = new Uncertainty();
 		u.setDistributionType(UncertaintyType.LOG_NORMAL);
-		u.setParameter1Value(exchange.getAmountValue());
+		u.setParameter1Value(exchange.amount);
 		u.setParameter2Value(shell.updateSigmaG());
-		exchange.setUncertainty(u);
+		exchange.uncertainty = u;
 		viewer.refresh();
 	}
 

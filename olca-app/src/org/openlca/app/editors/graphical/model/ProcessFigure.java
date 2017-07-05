@@ -1,12 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
 package org.openlca.app.editors.graphical.model;
 
 import java.util.ArrayList;
@@ -82,8 +73,8 @@ class ProcessFigure extends Figure {
 		topLayout.marginHeight = 0;
 		topLayout.marginWidth = 0;
 		top.setLayoutManager(topLayout);
-		leftExpander = new ProcessExpander(node, Side.LEFT);
-		rightExpander = new ProcessExpander(node, Side.RIGHT);
+		leftExpander = new ProcessExpander(node, Side.INPUT);
+		rightExpander = new ProcessExpander(node, Side.OUTPUT);
 		top.add(leftExpander, new GridData(SWT.LEFT, SWT.CENTER, false, false));
 		top.add(new Label(node.getName()), new GridData(SWT.FILL, SWT.FILL, true, false));
 		top.add(rightExpander, new GridData(SWT.RIGHT, SWT.CENTER, false, false));
@@ -114,9 +105,9 @@ class ProcessFigure extends Figure {
 			return;
 		getParent().setConstraint(this, new Rectangle(x - 1, y - 1, width, height));
 		for (Link link : node.links)
-			if (node.equals(link.targetNode))
+			if (node.equals(link.inputNode))
 				link.refreshTargetAnchor();
-			else if (node.equals(link.sourceNode))
+			else if (node.equals(link.outputNode))
 				link.refreshSourceAnchor();
 	}
 
@@ -173,7 +164,7 @@ class ProcessFigure extends Figure {
 		int y = getLocation().y;
 		graphics.drawLine(new Point(x + margin, y + MINIMUM_HEIGHT
 				+ TEXT_HEIGHT + MARGIN_HEIGHT), new Point(x + width - margin, y
-				+ MINIMUM_HEIGHT + TEXT_HEIGHT + MARGIN_HEIGHT));
+						+ MINIMUM_HEIGHT + TEXT_HEIGHT + MARGIN_HEIGHT));
 		if (height - margin > MINIMUM_HEIGHT + margin)
 			graphics.drawLine(new Point(x + width / 2, y + MINIMUM_HEIGHT + margin), new Point(x + width / 2, y
 					+ height - margin));
@@ -245,7 +236,7 @@ class ProcessFigure extends Figure {
 		int outputs = 0;
 		for (ExchangeNode e : node.getChildren().get(0).getChildren())
 			if (!e.isDummy())
-				if (e.exchange.isInput())
+				if (e.exchange.isInput)
 					inputs++;
 				else
 					outputs++;

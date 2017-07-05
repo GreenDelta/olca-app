@@ -16,7 +16,7 @@ import org.openlca.app.results.IResultEditor;
 import org.openlca.app.results.NwResultPage;
 import org.openlca.app.results.ResultEditorInput;
 import org.openlca.app.results.SunBurstView;
-import org.openlca.app.results.TotalFlowResultPage;
+import org.openlca.app.results.InventoryPage;
 import org.openlca.app.results.TotalImpactResultPage;
 import org.openlca.app.results.analysis.AnalyzeInfoPage;
 import org.openlca.app.results.analysis.sankey.SankeyDiagram;
@@ -98,7 +98,7 @@ public class RegionalizedResultEditor extends FormEditor implements IResultEdito
 		try {
 			FullResultProvider regioResult = this.result.result;
 			addPage(new AnalyzeInfoPage(this, regioResult, dqResult, setup));
-			addPage(new TotalFlowResultPage(this, regioResult, dqResult));
+			addPage(new InventoryPage(this, regioResult, dqResult));
 			if (regioResult.hasImpactResults())
 				addPage(new TotalImpactResultPage(this, regioResult, dqResult, this::getImpactFactor));
 			if (regioResult.hasImpactResults() && setup.nwSet != null)

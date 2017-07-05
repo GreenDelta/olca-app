@@ -50,11 +50,11 @@ final class SaveProcessUtil {
 	private void addRefFlow(Process p) {
 		CalculationSetup setup = editor.getSetup();
 		Exchange qRef = new Exchange();
-		qRef.setFlow(getProduct(setup));
-		qRef.setAmountValue(setup.getAmount());
-		qRef.setFlowPropertyFactor(setup.getFlowPropertyFactor());
-		qRef.setInput(false);
-		qRef.setUnit(setup.getUnit());
+		qRef.flow = getProduct(setup);
+		qRef.amount = setup.getAmount();
+		qRef.flowPropertyFactor = setup.getFlowPropertyFactor();
+		qRef.isInput = false;
+		qRef.unit = setup.getUnit();
 		p.getExchanges().add(qRef);
 		p.setQuantitativeReference(qRef);
 	}
@@ -63,7 +63,7 @@ final class SaveProcessUtil {
 		if (setup == null || setup.productSystem == null)
 			return null;
 		Exchange ref = setup.productSystem.getReferenceExchange();
-		return ref == null ? null : ref.getFlow();
+		return ref == null ? null : ref.flow;
 	}
 
 	private void addElemFlows(Process p) {
@@ -79,11 +79,11 @@ final class SaveProcessUtil {
 			if (flow == null)
 				continue;
 			Exchange e = new Exchange();
-			e.setFlow(flow);
-			e.setInput(result.input);
-			e.setAmountValue(result.value);
-			e.setFlowPropertyFactor(flow.getReferenceFactor());
-			e.setUnit(getRefUnit(flow));
+			e.flow = flow;
+			e.isInput = result.input;
+			e.amount = result.value;
+			e.flowPropertyFactor = flow.getReferenceFactor();
+			e.unit = getRefUnit(flow);
 			p.getExchanges().add(e);
 		}
 	}

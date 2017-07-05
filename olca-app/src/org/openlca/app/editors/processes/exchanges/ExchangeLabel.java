@@ -2,12 +2,13 @@ package org.openlca.app.editors.processes.exchanges;
 
 import java.util.Objects;
 
-import org.eclipse.jface.viewers.CellLabelProvider;
-import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ITableColorProvider;
+import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.openlca.app.Preferences;
 import org.openlca.app.db.Cache;
@@ -17,6 +18,7 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
+import org.openlca.app.util.UI;
 import org.openlca.app.util.UncertaintyLabel;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.Exchange;
@@ -26,16 +28,15 @@ import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.io.CategoryPath;
 
-class ExchangeLabel extends LabelProvider implements ITableLabelProvider {
+class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
+		ITableColorProvider, ITableFontProvider {
 
-	private final boolean forInputs;
 	private final ProcessEditor editor;
 
 	boolean showFormulas = true;
 
-	ExchangeLabel(ProcessEditor editor, boolean forInputs) {
+	ExchangeLabel(ProcessEditor editor) {
 		this.editor = editor;
-		this.forInputs = forInputs;
 	}
 
 	@Override
@@ -44,28 +45,35 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider {
 			return null;
 		Exchange e = (Exchange) obj;
 		if (col == 0)
-			if (e.getFlow() == null)
+			if (e.flow == null)
 				return Images.get(ModelType.FLOW);
 			else
-				return Images.get(e.getFlow());
+				return Images.get(e.flow);
 		if (col == 3)
 			return Images.get(ModelType.UNIT);
-		if (col == 6 && forInputs && e.getDefaultProviderId() != 0l)
+		if (col == 7 && e.defaultProviderId != 0)
 			return Images.get(ModelType.PROCESS);
-		if (col == 6 && !forInputs)
+		if (col == 6)
 			return getAvoidedCheck(e);
 		return null;
 	}
 
 	private Image getAvoidedCheck(Exchange e) {
-		if (e.getFlow() == null)
+		if (e.isAvoided)
+			return Icon.CHECK_TRUE.get();
+		if (e.flow == null)
 			return null;
-		if (e.getFlow().getFlowType() != FlowType.PRODUCT_FLOW)
+		FlowType type = e.flow.getFlowType();
+		if (type == FlowType.ELEMENTARY_FLOW)
 			return null;
 		Process process = editor.getModel();
 		if (Objects.equals(process.getQuantitativeReference(), e))
 			return null;
-		return e.isAvoidedProduct() ? Icon.CHECK_TRUE.get() : Icon.CHECK_FALSE.get();
+		if (e.isInput && type == FlowType.WASTE_FLOW)
+			return Icon.CHECK_FALSE.get();
+		if (!e.isInput && type == FlowType.PRODUCT_FLOW)
+			return Icon.CHECK_FALSE.get();
+		return null;
 	}
 
 	@Override
@@ -75,96 +83,93 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider {
 		Exchange e = (Exchange) obj;
 		switch (col) {
 		case 0:
-			return Labels.getDisplayName(e.getFlow());
+			return Labels.getDisplayName(e.flow);
 		case 1:
-			if (e.getFlow() == null)
+			if (e.flow == null)
 				return null;
-			return CategoryPath.getShort(e.getFlow().getCategory());
+			return CategoryPath.getShort(e.flow.getCategory());
 		case 2:
 			return getAmountText(e);
 		case 3:
-			return Labels.getDisplayName(e.getUnit());
+			return Labels.getDisplayName(e.unit);
 		case 4:
 			return getCostValue(e);
 		case 5:
-			return UncertaintyLabel.get(e.getUncertainty());
-		case 6:
-			return forInputs ? getDefaultProvider(e) : null;
+			return UncertaintyLabel.get(e.uncertainty);
 		case 7:
-			return e.getDqEntry();
+			return getDefaultProvider(e);
 		case 8:
+			return e.dqEntry;
+		case 9:
 			return e.description;
 		}
 		return null;
 	}
 
 	private String getDefaultProvider(Exchange e) {
-		if (e.getDefaultProviderId() == 0)
+		if (e.defaultProviderId == 0)
 			return null;
 		EntityCache cache = Cache.getEntityCache();
 		ProcessDescriptor p = cache.get(ProcessDescriptor.class,
-				e.getDefaultProviderId());
+				e.defaultProviderId);
 		if (p == null)
 			return null;
 		return Labels.getDisplayName(p);
 	}
 
 	private String getAmountText(Exchange e) {
-		if (!showFormulas || e.getAmountFormula() == null) {
+		if (!showFormulas || e.amountFormula == null) {
 			if (Preferences.is(Preferences.FORMAT_INPUT_VALUES)) {
-				return Numbers.format(e.getAmountValue());
+				return Numbers.format(e.amount);
 			} else {
-				return Double.toString(e.getAmountValue());
+				return Double.toString(e.amount);
 			}
 		}
-		return e.getAmountFormula();
+		return e.amountFormula;
 	}
 
 	private String getCostValue(Exchange e) {
-		if (e == null || e.costValue == null)
+		if (e == null || e.costs == null)
 			return null;
 		String unit = e.currency == null ? "" : " " + e.currency.code;
 		if (showFormulas && e.costFormula != null)
 			return e.costFormula + unit;
 		if (Preferences.is(Preferences.FORMAT_INPUT_VALUES))
-			return Numbers.format(e.costValue) + unit;
+			return Numbers.format(e.costs) + unit;
 		else
-			return Double.toString(e.costValue) + unit;
+			return Double.toString(e.costs) + unit;
 	}
 
-	CellLabelProvider asColumnLabel() {
-		return new ColumnLabel();
+	@Override
+	public Color getBackground(Object obj, int columnIndex) {
+		return null;
 	}
 
-	private class ColumnLabel extends ColumnLabelProvider {
-
-		@Override
-		public void update(ViewerCell cell) {
-			super.update(cell);
-			if (cell == null)
-				return;
-			Object obj = cell.getElement();
-			int col = cell.getColumnIndex();
-			cell.setText(getColumnText(obj, col));
-			cell.setImage(getColumnImage(obj, col));
-			if (col == 4)
-				setCostColor(cell);
-		}
-
-		private void setCostColor(ViewerCell cell) {
-			if (cell == null)
-				return;
-			Object obj = cell.getElement();
-			if (!(obj instanceof Exchange))
-				return;
-			Exchange e = (Exchange) obj;
-			if (e.getFlow() == null)
-				return;
-			if (!e.isInput() && e.getFlow().getFlowType() == FlowType.PRODUCT_FLOW)
-				cell.setForeground(Colors.systemColor(SWT.COLOR_DARK_GREEN));
-			else
-				cell.setForeground(Colors.systemColor(SWT.COLOR_DARK_MAGENTA));
-		}
+	@Override
+	public Color getForeground(Object obj, int col) {
+		// we currently only use this for costs
+		if (col != 4)
+			return null;
+		Exchange e = (Exchange) obj;
+		if (e.flow == null || e.costs == null)
+			return null;
+		FlowType type = e.flow.getFlowType();
+		boolean isRevenue = (e.isInput && type == FlowType.WASTE_FLOW)
+				|| (!e.isInput && type == FlowType.PRODUCT_FLOW);
+		if ((isRevenue && e.costs >= 0) || (!isRevenue && e.costs < 0))
+			return Colors.systemColor(SWT.COLOR_DARK_GREEN);
+		else
+			return Colors.systemColor(SWT.COLOR_DARK_MAGENTA);
 	}
 
+	@Override
+	public Font getFont(Object obj, int col) {
+		if (!(obj instanceof Exchange))
+			return null;
+		Exchange e = (Exchange) obj;
+		Exchange qRef = editor.getModel().getQuantitativeReference();
+		if (Objects.equals(e, qRef))
+			return UI.boldFont();
+		return null;
+	}
 }

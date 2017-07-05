@@ -378,7 +378,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 			if (system == null || system.getReferenceExchange() == null)
 				return null;
 			Exchange refExchange = system.getReferenceExchange();
-			return Labels.getDisplayName(refExchange.getFlow());
+			return Labels.getDisplayName(refExchange.flow);
 		}
 	}
 }

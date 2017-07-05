@@ -44,17 +44,17 @@ import org.openlca.core.results.FlowResult;
 import org.openlca.util.Strings;
 
 /**
- * Shows the total inventory result of a quick calculation, analysis result,
- * etc.
+ * Shows the inventory result with process contributions.
  */
-public class TotalFlowResultPage extends FormPage {
+public class InventoryPage extends FormPage {
 
 	private EntityCache cache = Cache.getEntityCache();
 	private FormToolkit toolkit;
 	private ContributionResultProvider<?> result;
 	private DQResult dqResult;
 
-	public TotalFlowResultPage(FormEditor editor, ContributionResultProvider<?> result, DQResult dqResult) {
+	public InventoryPage(FormEditor editor, ContributionResultProvider<?> result,
+			DQResult dqResult) {
 		super(editor, "InventoryPage", M.InventoryResults);
 		this.result = result;
 		this.dqResult = dqResult;

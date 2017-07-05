@@ -2,17 +2,23 @@ package org.openlca.app.editors.graphical.model;
 
 import java.util.List;
 
+import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
 import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
+import org.openlca.core.matrix.cache.FlowTypeTable;
+import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
 
 public class ProductSystemNode extends Node {
 
 	public final ProductSystemGraphEditor editor;
 	public final MutableProcessLinkSearchMap linkSearch;
+	public final FlowTypeTable flowTypes = FlowTypeTable.create(Database.get());
 
 	public ProductSystemNode(ProductSystemGraphEditor editor) {
-		this.linkSearch = new MutableProcessLinkSearchMap(editor.getSystemEditor().getModel().getProcessLinks());
+		List<ProcessLink> links = editor.getSystemEditor()
+				.getModel().getProcessLinks();
+		this.linkSearch = new MutableProcessLinkSearchMap(links);
 		this.editor = editor;
 	}
 
@@ -39,25 +45,17 @@ public class ProductSystemNode extends Node {
 	}
 
 	public void highlightMatchingExchanges(ExchangeNode toMatch) {
-		long flowId = toMatch.exchange.getFlow().getId();
-		for (ProcessNode node : getChildren()) {
-			if (!node.isVisible() || node.isMinimized())
+		if (toMatch == null)
+			return;
+		for (ProcessNode process : getChildren()) {
+			if (!process.isVisible() || process.isMinimized())
 				continue;
-			for (ExchangeNode inputNode : node.getInputs(flowId))
-				highlightExchange(node, inputNode, toMatch);
-			ExchangeNode outputNode = node.getOutput(flowId);
-			highlightExchange(node, outputNode, toMatch);
+			for (ExchangeNode e : process.getExchangeNodes()) {
+				if (toMatch.matches(e)) {
+					e.setHighlighted(true);
+				}
+			}
 		}
-	}
-
-	private void highlightExchange(ProcessNode node, ExchangeNode exchangeNode, ExchangeNode toMatch) {
-		if (exchangeNode == null)
-			return;
-		if (toMatch.exchange.isInput() == exchangeNode.exchange.isInput())
-			return;
-		if (!toMatch.exchange.isInput() && node.hasIncoming(exchangeNode.exchange.getId()))
-			return;
-		exchangeNode.setHighlighted(true);
 	}
 
 	public void removeHighlighting() {

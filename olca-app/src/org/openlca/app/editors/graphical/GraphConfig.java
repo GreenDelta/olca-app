@@ -45,29 +45,21 @@ import org.openlca.app.editors.graphical.model.AppEditPartFactory;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.app.rcp.RcpActivator;
 
-public class GraphicalViewerConfigurator {
+public class GraphConfig {
 
-	public static final double[] ZOOM_LEVELS = new double[] { 0.01, 0.1, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0, 5.0, 10.0 };
-	private GraphicalViewer viewer;
-	private ActionRegistry actionRegistry;
-	private CommandStack commandStack;
-	private ProductSystemNode model;
+	public static final double[] ZOOM_LEVELS = new double[] {
+			0.01, 0.1, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0, 5.0, 10.0 };
+
+	private final GraphicalViewer viewer;
+
+	ActionRegistry actionRegistry;
+	CommandStack commandStack;
+	ProductSystemNode model;
+
 	private Collection<String> actionExtensionIds = new HashSet<>();
 
-	GraphicalViewerConfigurator(GraphicalViewer viewer) {
+	GraphConfig(GraphicalViewer viewer) {
 		this.viewer = viewer;
-	}
-
-	void setActionRegistry(ActionRegistry actionRegistry) {
-		this.actionRegistry = actionRegistry;
-	}
-
-	void setCommandStack(CommandStack commandStack) {
-		this.commandStack = commandStack;
-	}
-
-	void setModel(ProductSystemNode model) {
-		this.model = model;
 	}
 
 	void initializeGraphicalViewer() {
