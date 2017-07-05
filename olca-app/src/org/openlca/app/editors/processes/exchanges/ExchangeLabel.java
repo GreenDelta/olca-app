@@ -147,12 +147,16 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 
 	@Override
 	public Color getForeground(Object obj, int col) {
+		// we currently only use this for costs
 		if (col != 4)
 			return null;
 		Exchange e = (Exchange) obj;
-		if (e.flow == null)
+		if (e.flow == null || e.costs == null)
 			return null;
-		if (!e.isInput && e.flow.getFlowType() == FlowType.PRODUCT_FLOW)
+		FlowType type = e.flow.getFlowType();
+		boolean isRevenue = (e.isInput && type == FlowType.WASTE_FLOW)
+				|| (!e.isInput && type == FlowType.PRODUCT_FLOW);
+		if ((isRevenue && e.costs >= 0) || (!isRevenue && e.costs < 0))
 			return Colors.systemColor(SWT.COLOR_DARK_GREEN);
 		else
 			return Colors.systemColor(SWT.COLOR_DARK_MAGENTA);

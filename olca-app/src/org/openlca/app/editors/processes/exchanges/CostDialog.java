@@ -103,7 +103,7 @@ class CostDialog extends FormDialog {
 	}
 
 	private void createCostsRow(Composite body, FormToolkit tk) {
-		priceText = UI.formText(body, tk, M.Costs);
+		priceText = UI.formText(body, tk, M.CostsRevenues);
 		currencyLabel = UI.formLabel(body, tk, "");
 		if (exchange.costFormula != null)
 			priceText.setText(exchange.costFormula);
@@ -159,7 +159,8 @@ class CostDialog extends FormDialog {
 	private void updateCurrencyLabels() {
 		String code = currency == null ? "?" : currency.code;
 		String unit = exchange.unit == null
-				? "?" : exchange.unit.getName();
+				? "?"
+				: exchange.unit.getName();
 		currencyLabel.setText(code);
 		currencyLabel.pack();
 		currencyPerUnitLabel.setText(code + " / " + unit);
