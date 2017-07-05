@@ -50,14 +50,14 @@ class TotalRequirementsSection {
 	private DQResult dqResult;
 	private Costs costs;
 	private String currencySymbol;
-	private Map<Long, ProcessDescriptor> processDescriptors = new HashMap<>();
+	private Map<Long, ProcessDescriptor> processes = new HashMap<>();
 
 	private TableViewer table;
 
 	TotalRequirementsSection(SimpleResultProvider<?> result, DQResult dqResult) {
 		this.result = result;
 		for (ProcessDescriptor desc : result.getProcessDescriptors())
-			processDescriptors.put(desc.getId(), desc);
+			processes.put(desc.getId(), desc);
 		if (!result.hasCostResults())
 			costs = Costs.NONE;
 		else
@@ -207,6 +207,7 @@ class TotalRequirementsSection {
 		String unit;
 		double costValue;
 		double costShare;
+		FlowType flowtype;
 
 		Item(int idx, double amount) {
 			this.amount = amount;
@@ -225,7 +226,7 @@ class TotalRequirementsSection {
 			LongPair lp = techIdx.getProviderAt(idx);
 			if (lp == null)
 				return;
-			ProcessDescriptor process = processDescriptors.get(lp.getFirst());
+			ProcessDescriptor process = processes.get(lp.getFirst());
 			if (process != null) {
 				this.process = process;
 			}
@@ -233,6 +234,7 @@ class TotalRequirementsSection {
 			if (flow != null) {
 				this.product = Labels.getDisplayName(flow);
 				this.unit = Labels.getRefUnit(flow, cache);
+				this.flowtype = flow.getFlowType();
 			}
 		}
 
@@ -257,7 +259,9 @@ class TotalRequirementsSection {
 				UI.shell().getDisplay());
 
 		public Label() {
-			super(dqResult, dqResult != null ? dqResult.setup.processDqSystem : null, costs == Costs.NONE ? 4 : 5);
+			super(dqResult, dqResult != null
+					? dqResult.setup.processDqSystem
+					: null, costs == Costs.NONE ? 4 : 5);
 		}
 
 		@Override
@@ -270,15 +274,16 @@ class TotalRequirementsSection {
 		public Image getImage(Object obj, int col) {
 			if (!(obj instanceof Item))
 				return null;
+			Item item = (Item) obj;
 			switch (col) {
 			case 0:
 				return Images.get(ModelType.PROCESS);
 			case 1:
-				return Images.get(FlowType.PRODUCT_FLOW);
+				return Images.get(item.flowtype);
 			case 4:
 				if (costs == Costs.NONE)
 					return null;
-				return costImage.getForTable(((Item) obj).costShare);
+				return costImage.getForTable(item.costShare);
 			default:
 				return null;
 			}
@@ -295,7 +300,10 @@ class TotalRequirementsSection {
 			case 1:
 				return item.product;
 			case 2:
-				return Numbers.format(item.amount);
+				double val = item.flowtype == FlowType.WASTE_FLOW
+						? -item.amount
+						: item.amount;
+				return Numbers.format(val);
 			case 3:
 				return item.unit;
 			case 4:
@@ -312,7 +320,5 @@ class TotalRequirementsSection {
 			Item item = (Item) obj;
 			return dqResult.get(item.process);
 		}
-
 	}
-
 }

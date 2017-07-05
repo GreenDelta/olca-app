@@ -10,7 +10,7 @@ import org.openlca.app.results.IResultEditor;
 import org.openlca.app.results.NwResultPage;
 import org.openlca.app.results.ResultEditorInput;
 import org.openlca.app.results.SaveProcessDialog;
-import org.openlca.app.results.TotalFlowResultPage;
+import org.openlca.app.results.InventoryPage;
 import org.openlca.app.results.TotalImpactResultPage;
 import org.openlca.app.results.contributions.locations.LocationPage;
 import org.openlca.app.results.grouping.GroupPage;
@@ -35,11 +35,11 @@ public class QuickResultEditor extends FormEditor implements IResultEditor<Contr
 	private DQResult dqResult;
 
 	@Override
-	public void init(IEditorSite site, IEditorInput editorInput)
+	public void init(IEditorSite site, IEditorInput iInput)
 			throws PartInitException {
-		super.init(site, editorInput);
+		super.init(site, iInput);
 		try {
-			ResultEditorInput input = (ResultEditorInput) editorInput;
+			ResultEditorInput input = (ResultEditorInput) iInput;
 			setup = Cache.getAppCache().remove(input.setupKey,
 					CalculationSetup.class);
 			result = Cache.getAppCache().remove(
@@ -72,7 +72,7 @@ public class QuickResultEditor extends FormEditor implements IResultEditor<Contr
 	protected void addPages() {
 		try {
 			addPage(new QuickResultInfoPage(this, result, dqResult));
-			addPage(new TotalFlowResultPage(this, result, dqResult));
+			addPage(new InventoryPage(this, result, dqResult));
 			if (result.hasImpactResults())
 				addPage(new TotalImpactResultPage(this, result, dqResult, this::getImpactFactor));
 			if (result.hasImpactResults() && setup.nwSet != null)
