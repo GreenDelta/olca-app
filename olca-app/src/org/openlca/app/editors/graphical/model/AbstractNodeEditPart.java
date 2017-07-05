@@ -15,7 +15,7 @@ abstract class AbstractNodeEditPart<N extends Node> extends AppAbstractEditPart<
 		Link link = (Link) con.getModel();
 		ProcessNode process = link.outputNode;
 		ExchangeNode output = process.getOutput(link.processLink);
-		return LinkAnchor.forOutput(output);
+		return LinkAnchor.forOutput(process, output);
 	}
 
 	@Override
@@ -31,20 +31,20 @@ abstract class AbstractNodeEditPart<N extends Node> extends AppAbstractEditPart<
 		CreateLinkCommand cmd = (CreateLinkCommand) ((CreateConnectionRequest) req)
 				.getStartCommand();
 		if (cmd.output != null)
-			return LinkAnchor.forOutput(cmd.output);
+			return LinkAnchor.forOutput(cmd.output.parent(), cmd.output);
 		if (cmd.input != null)
-			return LinkAnchor.forInput(cmd.input);
+			return LinkAnchor.forInput(cmd.input.parent(), cmd.input);
 		return null;
 	}
 
 	private ConnectionAnchor sourceAnchor(ReconnectRequest req) {
 		Link link = (Link) req.getConnectionEditPart().getModel();
-		ProcessNode node = ((ExchangePart) req.getTarget()).getModel().parent();
-		ExchangeNode output = node.getOutput(link.processLink);
+		ProcessNode process = ((ExchangePart) req.getTarget()).getModel().parent();
+		ExchangeNode output = process.getOutput(link.processLink);
 		ExchangeNode input = link.inputNode.getInput(link.processLink);
 		if (input == null || !input.matches(output))
 			return null;
-		return LinkAnchor.forOutput(output);
+		return LinkAnchor.forOutput(process, output);
 	}
 
 	@Override
@@ -52,7 +52,7 @@ abstract class AbstractNodeEditPart<N extends Node> extends AppAbstractEditPart<
 		Link link = (Link) con.getModel();
 		ProcessNode process = link.inputNode;
 		ExchangeNode input = process.getInput(link.processLink);
-		return LinkAnchor.forInput(input);
+		return LinkAnchor.forInput(process, input);
 	}
 
 	@Override
@@ -68,11 +68,11 @@ abstract class AbstractNodeEditPart<N extends Node> extends AppAbstractEditPart<
 		CreateLinkCommand cmd = (CreateLinkCommand) req.getStartCommand();
 		if (cmd.startedFromOutput) {
 			if (cmd.input != null)
-				return LinkAnchor.forInput(cmd.input);
+				return LinkAnchor.forInput(cmd.input.parent(), cmd.input);
 			return null;
 		}
 		if (cmd.output != null)
-			return LinkAnchor.forOutput(cmd.output);
+			return LinkAnchor.forOutput(cmd.output.parent(), cmd.output);
 		return null;
 	}
 
@@ -88,6 +88,6 @@ abstract class AbstractNodeEditPart<N extends Node> extends AppAbstractEditPart<
 				&& input.parent().isConnected(input.exchange.getId()))
 			return null;
 
-		return LinkAnchor.forInput(input);
+		return LinkAnchor.forInput(input.parent(), input);
 	}
 }

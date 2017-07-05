@@ -9,20 +9,30 @@ class LinkAnchor extends AbstractConnectionAnchor {
 	private final boolean forInput;
 	private final ProcessNode node;
 
-	static LinkAnchor forOutput(ExchangeNode e) {
-		if (e == null)
+	/**
+	 * Creates a link anchor for an output. The exchange node can be null if the
+	 * process is minimized.
+	 */
+	static LinkAnchor forOutput(ProcessNode p, ExchangeNode e) {
+		if (p == null)
 			return null;
-		return new LinkAnchor(e.parent(), e, false);
+		return new LinkAnchor(p, e, false);
 	}
 
-	static LinkAnchor forInput(ExchangeNode e) {
-		if (e == null)
+	/**
+	 * Creates a link anchor for an output. The exchange node can be null if the
+	 * process is minimized.
+	 */
+	static LinkAnchor forInput(ProcessNode p, ExchangeNode e) {
+		if (p == null)
 			return null;
-		return new LinkAnchor(e.parent(), e, true);
+		return new LinkAnchor(p, e, true);
 	}
 
 	private LinkAnchor(ProcessNode pNode, ExchangeNode eNode, boolean forInput) {
-		super(pNode.isMinimized() ? pNode.figure : eNode.figure);
+		super(pNode.isMinimized() || eNode == null
+				? pNode.figure
+				: eNode.figure);
 		this.node = pNode;
 		this.forInput = forInput;
 	}
