@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.openlca</groupId>
 	<artifactId>olca-deps</artifactId>
-	<version>1.6.3</version>
+	<version>1.7.0</version>
 	<packaging>pom</packaging>
 
 	<repositories>
@@ -72,12 +72,6 @@
 		<dependency>
 			<groupId>org.openlca</groupId>
 			<artifactId>olca-geo</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.openlca</groupId>
-			<artifactId>olca-eigen</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 
