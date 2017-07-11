@@ -13,11 +13,7 @@ import java.util.UUID;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
@@ -31,7 +27,6 @@ import org.openlca.app.components.FileChooser;
 import org.openlca.app.editors.lcia_methods.ImpactMethodEditor;
 import org.openlca.app.editors.parameters.ModelParameterPage;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
@@ -39,10 +34,8 @@ import org.openlca.app.util.Error;
 import org.openlca.app.util.Info;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
-import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.model.ImpactMethod;
-import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterScope;
 import org.openlca.core.model.Uncertainty;
@@ -179,7 +172,7 @@ public class ShapeFilePage extends FormPage {
 		private int index;
 		private String shapeFile;
 		private Section section;
-		private ShapeFileParameterTable parameterTable;
+		private SFParameterTable parameterTable;
 
 		ShapeFileSection(int index, String shapeFile) {
 			this.index = index;
@@ -189,8 +182,8 @@ public class ShapeFilePage extends FormPage {
 
 		private void render() {
 			section = UI.section(body, tk, M.Parameters + " - " + shapeFile);
-			Composite composite = UI.sectionClient(section, tk);
-			parameterTable = new ShapeFileParameterTable(shapeFile, composite);
+			Composite comp = UI.sectionClient(section, tk);
+			parameterTable = new SFParameterTable(editor, shapeFile, comp);
 			Action delete = Actions.onRemove(() -> {
 				if (delete()) {
 					removeExternalSourceReferences();
@@ -301,56 +294,6 @@ public class ShapeFilePage extends FormPage {
 					if (shapeFile.equals(parameter.getExternalSource()))
 						names.add(parameter.getName());
 			return names;
-		}
-	}
-
-	private class ShapeFileParameterTable {
-
-		private String[] columns = { M.Name, M.Minimum,
-				M.Maximum };
-		private TableViewer viewer;
-		private List<ShapeFileParameter> params;
-
-		ShapeFileParameterTable(String shapeFile, Composite parent) {
-			viewer = Tables.createViewer(parent, columns);
-			viewer.setLabelProvider(new ShapeFileParameterLabel());
-			Tables.bindColumnWidths(viewer, 0.4, 0.3, 0.3);
-			try {
-				params = ShapeFileUtils.getParameters(method(), shapeFile);
-				viewer.setInput(params);
-			} catch (Exception e) {
-				log.error("failed to read parameteres for shape file "
-						+ shapeFile, e);
-			}
-		}
-
-		private class ShapeFileParameterLabel extends LabelProvider implements
-				ITableLabelProvider {
-
-			@Override
-			public Image getColumnImage(Object o, int i) {
-				if (i == 0)
-					return Images.get(ModelType.PARAMETER);
-				else
-					return null;
-			}
-
-			@Override
-			public String getColumnText(Object o, int i) {
-				if (!(o instanceof ShapeFileParameter))
-					return null;
-				ShapeFileParameter p = (ShapeFileParameter) o;
-				switch (i) {
-				case 0:
-					return p.name;
-				case 1:
-					return Double.toString(p.min);
-				case 2:
-					return Double.toString(p.max);
-				default:
-					return null;
-				}
-			}
 		}
 	}
 

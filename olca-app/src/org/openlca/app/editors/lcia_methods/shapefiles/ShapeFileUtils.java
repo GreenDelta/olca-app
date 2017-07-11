@@ -264,7 +264,7 @@ public class ShapeFileUtils {
 					fType = FeatureType.LINE;
 				Style style = SLD.createSimpleStyle(source.getSchema());
 				if (parameter != null && fType != FeatureType.POINT)
-					style = ShapeFileStyle.create(dataStore, parameter, fType);
+					style = SFMapStyle.create(dataStore, parameter, fType);
 				showMapFrame(shapeFileName, source, style);
 			}
 			it.close();

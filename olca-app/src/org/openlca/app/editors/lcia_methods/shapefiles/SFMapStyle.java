@@ -24,9 +24,9 @@ import org.openlca.geo.kml.FeatureType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class ShapeFileStyle {
+class SFMapStyle {
 
-	private ShapeFileStyle() {
+	private SFMapStyle() {
 	}
 
 	public static Style create(DataStore dataStore, ShapeFileParameter param,
@@ -44,7 +44,7 @@ class ShapeFileStyle {
 			style.featureTypeStyles().add(fts);
 			return style;
 		} catch (Exception e) {
-			Logger log = LoggerFactory.getLogger(ShapeFileStyle.class);
+			Logger log = LoggerFactory.getLogger(SFMapStyle.class);
 			log.error("failed to create shape file style", e);
 			return null;
 		}
