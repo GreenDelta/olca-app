@@ -71,7 +71,7 @@ class ImpactFactorTable {
 		viewer = Tables.createViewer(parent, new String[] { FLOW, CATEGORY, FLOW_PROPERTY, FACTOR, UNIT, UNCERTAINTY });
 		FactorLabelProvider label = new FactorLabelProvider();
 		Viewers.sortByLabels(viewer, label, 0, 1, 2, 4, 5);
-		Viewers.sortByDouble(viewer, (ImpactFactor f) -> f.getValue(), 3);
+		Viewers.sortByDouble(viewer, (ImpactFactor f) -> f.value, 3);
 		viewer.setLabelProvider(label);
 		Tables.bindColumnWidths(viewer, 0.2, 0.2, 0.15, 0.15, 0.15, 0.15);
 		ModifySupport<ImpactFactor> support = new ModifySupport<>(viewer);
@@ -90,7 +90,7 @@ class ImpactFactorTable {
 			return;
 		}
 		this.category = impact;
-		List<ImpactFactor> factors = impact.getImpactFactors();
+		List<ImpactFactor> factors = impact.impactFactors;
 		if (sort)
 			sortFactors(factors);
 		viewer.setInput(factors);
@@ -98,8 +98,8 @@ class ImpactFactorTable {
 
 	private void sortFactors(List<ImpactFactor> factors) {
 		Collections.sort(factors, (o1, o2) -> {
-			Flow f1 = o1.getFlow();
-			Flow f2 = o2.getFlow();
+			Flow f1 = o1.flow;
+			Flow f2 = o2.flow;
 			int c = Strings.compare(f1.getName(), f2.getName());
 			if (c != 0)
 				return c;
@@ -140,14 +140,15 @@ class ImpactFactorTable {
 			if (descriptors == null || descriptor.getModelType() != ModelType.FLOW)
 				continue;
 			Flow flow = database.createDao(Flow.class).getForId(descriptor.getId());
-			ImpactFactor factor = new ImpactFactor();
-			factor.setFlow(flow);
-			factor.setFlowPropertyFactor(flow.getReferenceFactor());
-			factor.setUnit(flow.getReferenceFactor().getFlowProperty().getUnitGroup().getReferenceUnit());
-			factor.setValue(1d);
-			category.getImpactFactors().add(factor);
+			ImpactFactor f = new ImpactFactor();
+			f.flow = flow;
+			f.flowPropertyFactor = flow.getReferenceFactor();
+			f.unit = flow.getReferenceFactor()
+					.getFlowProperty().getUnitGroup().getReferenceUnit();
+			f.value = 1.0;
+			category.impactFactors.add(f);
 		}
-		viewer.setInput(category.getImpactFactors());
+		viewer.setInput(category.impactFactors);
 		editor.setDirty(true);
 	}
 
@@ -156,8 +157,8 @@ class ImpactFactorTable {
 			return;
 		List<ImpactFactor> factors = Viewers.getAllSelected(viewer);
 		for (ImpactFactor factor : factors)
-			category.getImpactFactors().remove(factor);
-		viewer.setInput(category.getImpactFactors());
+			category.impactFactors.remove(factor);
+		viewer.setInput(category.impactFactors);
 		editor.setDirty(true);
 	}
 
@@ -170,7 +171,7 @@ class ImpactFactorTable {
 			if (!(o instanceof ImpactFactor))
 				return null;
 			ImpactFactor f = (ImpactFactor) o;
-			return Images.get(f.getFlow());
+			return Images.get(f.flow);
 		}
 
 		@Override
@@ -180,35 +181,35 @@ class ImpactFactorTable {
 			ImpactFactor f = (ImpactFactor) o;
 			switch (col) {
 			case 0:
-				return Labels.getDisplayName(f.getFlow());
+				return Labels.getDisplayName(f.flow);
 			case 1:
-				return CategoryPath.getShort(f.getFlow().getCategory());
+				return CategoryPath.getShort(f.flow.getCategory());
 			case 2:
-				if (f.getFlowPropertyFactor() == null)
+				if (f.flowPropertyFactor == null)
 					return null;
-				return Labels.getDisplayName(f.getFlowPropertyFactor().getFlowProperty());
+				return Labels.getDisplayName(f.flowPropertyFactor.getFlowProperty());
 			case 3:
-				if (f.getFormula() == null || !showFormulas)
-					return Double.toString(f.getValue());
+				if (f.formula == null || !showFormulas)
+					return Double.toString(f.value);
 				else
-					return f.getFormula();
+					return f.formula;
 			case 4:
 				return getFactorUnit(f);
 			case 5:
-				return UncertaintyLabel.get(f.getUncertainty());
+				return UncertaintyLabel.get(f.uncertainty);
 			default:
 				return null;
 			}
 		}
 
 		private String getFactorUnit(ImpactFactor factor) {
-			if (factor.getUnit() == null || category == null)
+			if (factor.unit == null || category == null)
 				return null;
-			String impactUnit = category.getReferenceUnit();
+			String impactUnit = category.referenceUnit;
 			if (Strings.notEmpty(impactUnit))
-				return impactUnit + "/" + factor.getUnit().getName();
+				return impactUnit + "/" + factor.unit.getName();
 			else
-				return "1/" + factor.getUnit().getName();
+				return "1/" + factor.unit.getName();
 		}
 
 	}
@@ -218,16 +219,16 @@ class ImpactFactorTable {
 		@Override
 		protected FlowProperty[] getItems(ImpactFactor element) {
 			List<FlowProperty> items = new ArrayList<>();
-			for (FlowPropertyFactor factor : element.getFlow().getFlowPropertyFactors())
+			for (FlowPropertyFactor factor : element.flow.getFlowPropertyFactors())
 				items.add(factor.getFlowProperty());
 			return items.toArray(new FlowProperty[items.size()]);
 		}
 
 		@Override
 		protected FlowProperty getItem(ImpactFactor element) {
-			if (element.getFlowPropertyFactor() == null)
+			if (element.flowPropertyFactor == null)
 				return null;
-			return element.getFlowPropertyFactor().getFlowProperty();
+			return element.flowPropertyFactor.getFlowProperty();
 		}
 
 		@Override
@@ -236,11 +237,11 @@ class ImpactFactorTable {
 		}
 
 		@Override
-		protected void setItem(ImpactFactor element, FlowProperty item) {
-			if (element.getFlowPropertyFactor() == null
-					|| !Objects.equals(item, element.getFlowPropertyFactor().getFlowProperty())) {
-				FlowPropertyFactor factor = element.getFlow().getFactor(item);
-				element.setFlowPropertyFactor(factor);
+		protected void setItem(ImpactFactor f, FlowProperty prop) {
+			if (f.flowPropertyFactor == null
+					|| !Objects.equals(prop, f.flowPropertyFactor.getFlowProperty())) {
+				FlowPropertyFactor factor = f.flow.getFactor(prop);
+				f.flowPropertyFactor = factor;
 				editor.setDirty(true);
 			}
 		}
@@ -249,22 +250,22 @@ class ImpactFactorTable {
 	private class UnitModifier extends ComboBoxCellModifier<ImpactFactor, Unit> {
 
 		@Override
-		protected Unit[] getItems(ImpactFactor element) {
-			if (element.getFlowPropertyFactor() == null)
+		protected Unit[] getItems(ImpactFactor f) {
+			if (f.flowPropertyFactor == null)
 				return new Unit[0];
-			if (element.getFlowPropertyFactor().getFlowProperty() == null)
+			if (f.flowPropertyFactor.getFlowProperty() == null)
 				return new Unit[0];
-			if (element.getFlowPropertyFactor().getFlowProperty().getUnitGroup() == null)
+			if (f.flowPropertyFactor.getFlowProperty().getUnitGroup() == null)
 				return new Unit[0];
 			List<Unit> items = new ArrayList<>();
-			for (Unit unit : element.getFlowPropertyFactor().getFlowProperty().getUnitGroup().getUnits())
+			for (Unit unit : f.flowPropertyFactor.getFlowProperty().getUnitGroup().getUnits())
 				items.add(unit);
 			return items.toArray(new Unit[items.size()]);
 		}
 
 		@Override
-		protected Unit getItem(ImpactFactor element) {
-			return element.getUnit();
+		protected Unit getItem(ImpactFactor f) {
+			return f.unit;
 		}
 
 		@Override
@@ -273,9 +274,9 @@ class ImpactFactorTable {
 		}
 
 		@Override
-		protected void setItem(ImpactFactor element, Unit item) {
-			if (!Objects.equals(item, element.getUnit())) {
-				element.setUnit(item);
+		protected void setItem(ImpactFactor f, Unit u) {
+			if (!Objects.equals(u, f.unit)) {
+				f.unit = u;
 				editor.setDirty(true);
 			}
 		}
@@ -285,24 +286,24 @@ class ImpactFactorTable {
 
 		@Override
 		protected String getText(ImpactFactor factor) {
-			if (factor.getFormula() == null)
-				return Double.toString(factor.getValue());
+			if (factor.formula == null)
+				return Double.toString(factor.value);
 			else
-				return factor.getFormula();
+				return factor.formula;
 		}
 
 		@Override
 		protected void setText(ImpactFactor factor, String text) {
 			try {
 				double value = Double.parseDouble(text);
-				if (value == factor.getValue() && factor.getFormula() == null)
+				if (value == factor.value && factor.formula == null)
 					return; // nothing changed
-				factor.setValue(value);
-				factor.setFormula(null);
+				factor.value = value;
+				factor.formula = null;
 				editor.setDirty(true);
 			} catch (NumberFormatException e) {
 				try {
-					factor.setFormula(text);
+					factor.formula = text;
 					editor.setDirty(true);
 					editor.getParameterSupport().evaluate();
 				} catch (Exception ex) {

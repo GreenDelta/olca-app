@@ -19,9 +19,9 @@ import org.openlca.app.M;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.preferencepages.FeatureFlag;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Editors;
-import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
@@ -97,16 +97,15 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 			category.setDescription(text);
 			fireCategoryChange();
 		});
-		support.bind(REFERENCE_UNIT, ImpactCategory::getReferenceUnit, (
-				category, text) -> {
-			category.setReferenceUnit(text);
+		support.bind(REFERENCE_UNIT, c -> c.referenceUnit, (c, text) -> {
+			c.referenceUnit = text;
 			fireCategoryChange();
 		});
 	}
 
 	private List<ImpactCategory> getCategories(boolean sorted) {
 		ImpactMethod method = editor.getModel();
-		List<ImpactCategory> categories = method.getImpactCategories();
+		List<ImpactCategory> categories = method.impactCategories;
 		if (!sorted)
 			return categories;
 		Collections.sort(categories,
@@ -134,8 +133,8 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 		ImpactCategory category = new ImpactCategory();
 		category.setRefId(UUID.randomUUID().toString());
 		category.setName(M.NewImpactCategory);
-		method.getImpactCategories().add(category);
-		viewer.setInput(method.getImpactCategories());
+		method.impactCategories.add(category);
+		viewer.setInput(method.impactCategories);
 		fireCategoryChange();
 	}
 
@@ -143,14 +142,14 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 		ImpactMethod method = editor.getModel();
 		List<ImpactCategory> categories = Viewers.getAllSelected(viewer);
 		for (ImpactCategory category : categories) {
-			method.getImpactCategories().remove(category);
-			for (NwSet set : method.getNwSets()) {
+			method.impactCategories.remove(category);
+			for (NwSet set : method.nwSets) {
 				NwFactor factor = set.getFactor(category);
 				if (factor != null)
-					set.getFactors().remove(factor);
+					set.factors.remove(factor);
 			}
 		}
-		viewer.setInput(method.getImpactCategories());
+		viewer.setInput(method.impactCategories);
 		fireCategoryChange();
 	}
 
@@ -165,7 +164,7 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 		@Override
 		public Image getColumnImage(Object element, int column) {
 			if (column == 0)
-				return Images.get(ModelType.IMPACT_CATEGORY); 
+				return Images.get(ModelType.IMPACT_CATEGORY);
 			return null;
 		}
 
@@ -180,7 +179,7 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 			case 1:
 				return category.getDescription();
 			case 2:
-				return category.getReferenceUnit();
+				return category.referenceUnit;
 			default:
 				return null;
 			}

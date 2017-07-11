@@ -45,8 +45,8 @@ public class JsonLoader {
 		if (entity instanceof ImpactMethod) {
 			ImpactMethod method = (ImpactMethod) entity;
 			replaceReferences(json, "impactCategories",
-					method.getImpactCategories());
-			replaceReferences(json, "nwSets", method.getNwSets());
+					method.impactCategories);
+			replaceReferences(json, "nwSets", method.nwSets);
 		} else if (entity instanceof Process) {
 			splitExchanges(json);
 		}

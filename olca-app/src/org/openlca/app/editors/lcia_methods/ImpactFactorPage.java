@@ -73,7 +73,7 @@ class ImpactFactorPage extends ModelPage<ImpactMethod> {
 			return;
 		categoryViewer.setInput(getDescriptorList());
 		categoryViewer.select(descriptor);
-		for (ImpactCategory cat : editor.getModel().getImpactCategories()) {
+		for (ImpactCategory cat : editor.getModel().impactCategories) {
 			if (equal(descriptor, cat)) {
 				categoryViewer.select(Descriptors.toDescriptor(cat));
 				break;
@@ -95,7 +95,7 @@ class ImpactFactorPage extends ModelPage<ImpactMethod> {
 
 	private List<ImpactCategoryDescriptor> getDescriptorList() {
 		List<ImpactCategoryDescriptor> list = new ArrayList<>();
-		for (ImpactCategory category : getModel().getImpactCategories())
+		for (ImpactCategory category : getModel().impactCategories)
 			list.add(Descriptors.toDescriptor(category));
 		Collections.sort(list,
 				(o1, o2) -> Strings.compare(o1.getName(), o2.getName()));
@@ -115,7 +115,7 @@ class ImpactFactorPage extends ModelPage<ImpactMethod> {
 		if (category.getRefId() != null && descriptor.getRefId() != null)
 			return Objects.equals(category.getRefId(), descriptor.getRefId());
 		return Objects.equals(category.getName(), descriptor.getName())
-				&& Objects.equals(category.getReferenceUnit(),
+				&& Objects.equals(category.referenceUnit,
 						descriptor.getReferenceUnit());
 	}
 
@@ -128,7 +128,7 @@ class ImpactFactorPage extends ModelPage<ImpactMethod> {
 				factorTable.setImpactCategory(null, false);
 				return;
 			}
-			for (ImpactCategory cat : getModel().getImpactCategories()) {
+			for (ImpactCategory cat : getModel().impactCategories) {
 				if (equal(selection, cat)) {
 					factorTable.setImpactCategory(cat, true);
 					break;

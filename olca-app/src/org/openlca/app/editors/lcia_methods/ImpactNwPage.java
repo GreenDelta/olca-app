@@ -84,8 +84,7 @@ class ImpactNwPage extends ModelPage<ImpactMethod> {
 	private NwSetViewer createNwSetViewer(Section section, SashForm sashForm) {
 		NwSetViewer viewer = new NwSetViewer(sashForm, editor);
 		viewer.bindTo(section);
-		viewer.addSelectionChangedListener((selection) ->
-				factorViewer.setInput(selection));
+		viewer.addSelectionChangedListener((selection) -> factorViewer.setInput(selection));
 		viewer.setInput(getModel());
 		return viewer;
 	}
@@ -97,7 +96,7 @@ class ImpactNwPage extends ModelPage<ImpactMethod> {
 	}
 
 	private NwSet findNewNwSet() {
-		List<NwSet> list = getModel().getNwSets();
+		List<NwSet> list = getModel().nwSets;
 		if (list.isEmpty())
 			return null;
 		NwSet old = setViewer.getSelected();

@@ -1,6 +1,5 @@
 package org.openlca.app.editors.lcia_methods;
 
-import org.openlca.app.M;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,11 +7,13 @@ import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.processes.kml.KmlUtil;
 import org.openlca.core.database.LocationDao;
 import org.openlca.core.database.ParameterDao;
 import org.openlca.core.model.ImpactMethod;
+import org.openlca.core.model.ImpactMethod.ParameterMean;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.descriptors.LocationDescriptor;
 import org.openlca.geo.kml.KmlFeature;
@@ -59,8 +60,11 @@ class EvaluateLocationsJob implements IRunnableWithProgress {
 		List<Parameter> parameters = getShapeFileParameters();
 		if (parameters.size() == 0)
 			return Collections.emptyList();
+		ParameterMean meanFn = method.parameterMean != null
+				? method.parameterMean
+				: ParameterMean.WEIGHTED_MEAN;
 		parameterCalculator = new ParameterCalculator(parameters,
-				shapeFileFolder);
+				shapeFileFolder, meanFn);
 		locationDao = new LocationDao(Database.get());
 		return locationDao.getDescriptors();
 	}

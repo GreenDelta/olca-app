@@ -62,7 +62,7 @@ public class ModelParameterPage extends FormPage {
 		super(editor, ID, M.Parameters);
 		this.support = editor.getParameterSupport();
 		this.editor = editor;
-		this.supplier = () -> editor.getModel().getParameters();
+		this.supplier = () -> editor.getModel().parameters;
 		this.scope = ParameterScope.IMPACT_METHOD;
 		this.sourceHandler = new ImpactMethodSourceHandler(editor);
 	}

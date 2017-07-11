@@ -48,7 +48,7 @@ class FactorCalculator {
 		if (setup.impactMethod != null) {
 			ImpactMethodDao methodDao = new ImpactMethodDao(db);
 			ImpactMethod method = methodDao.getForId(setup.impactMethod.getId());
-			addToContext(method.getParameters());
+			addToContext(method.parameters);
 		}
 	}
 
@@ -65,10 +65,10 @@ class FactorCalculator {
 	Map<FlowDescriptor, Double> calculate(ImpactCategory category, long locationId) {
 		Scope scope = buildScope(locationId);
 		Map<FlowDescriptor, Double> result = new HashMap<>();
-		for (ImpactFactor factor : category.getImpactFactors()) {
-			FlowDescriptor flow = Descriptors.toDescriptor(factor.getFlow());
-			if (factor.getFormula() == null) {
-				result.put(flow, factor.getValue());
+		for (ImpactFactor factor : category.impactFactors) {
+			FlowDescriptor flow = Descriptors.toDescriptor(factor.flow);
+			if (factor.formula == null) {
+				result.put(flow, factor.value);
 			} else {
 				result.put(flow, eval(factor, scope));
 			}
@@ -98,9 +98,9 @@ class FactorCalculator {
 
 	private double eval(ImpactFactor factor, Scope scope) {
 		try {
-			return scope.eval(factor.getFormula());
+			return scope.eval(factor.formula);
 		} catch (InterpreterException e) {
-			log.error("Error evaluating formula " + factor.getFormula(), e);
+			log.error("Error evaluating formula " + factor.formula, e);
 		}
 		return 0;
 	}

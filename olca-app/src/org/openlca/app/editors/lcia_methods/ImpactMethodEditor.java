@@ -79,7 +79,7 @@ public class ImpactMethodEditor extends ModelEditor<ImpactMethod> implements
 	protected void doAfterUpdate() {
 		super.doAfterUpdate();
 		EntityCache cache = Cache.getEntityCache();
-		for (ImpactCategory category : getModel().getImpactCategories()) {
+		for (ImpactCategory category : getModel().impactCategories) {
 			cache.refresh(ImpactCategory.class, category.getId());
 			cache.invalidate(ImpactCategory.class, category.getId());
 			Cache.evict(Descriptors.toDescriptor(category));

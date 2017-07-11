@@ -39,7 +39,7 @@ class NwSetViewer extends AbstractTableViewer<NwSet> {
 		if (method == null)
 			setInput(new NwSet[0]);
 		else
-			setInput(method.getNwSets());
+			setInput(method.nwSets);
 	}
 
 	@Override
@@ -58,8 +58,8 @@ class NwSetViewer extends AbstractTableViewer<NwSet> {
 		set.setName("Enter a name");
 		set.setRefId(UUID.randomUUID().toString());
 		ImpactMethod method = editor.getModel();
-		method.getNwSets().add(set);
-		setInput(method.getNwSets());
+		method.nwSets.add(set);
+		setInput(method.nwSets);
 		select(set);
 		editor.setDirty(true);
 	}
@@ -68,8 +68,8 @@ class NwSetViewer extends AbstractTableViewer<NwSet> {
 	protected void onRemove() {
 		ImpactMethod method = editor.getModel();
 		for (NwSet set : getAllSelected())
-			method.getNwSets().remove(set);
-		setInput(method.getNwSets());
+			method.nwSets.remove(set);
+		setInput(method.nwSets);
 		editor.setDirty(true);
 	}
 
@@ -77,25 +77,23 @@ class NwSetViewer extends AbstractTableViewer<NwSet> {
 			ITableLabelProvider {
 
 		@Override
-		public Image getColumnImage(Object element, int column) {
+		public Image getColumnImage(Object obj, int col) {
 			return null;
 		}
 
 		@Override
-		public String getColumnText(Object element, int columnIndex) {
-			if (!(element instanceof NwSet))
+		public String getColumnText(Object obj, int col) {
+			if (!(obj instanceof NwSet))
 				return null;
-			NwSet set = (NwSet) element;
-			switch (columnIndex) {
+			NwSet set = (NwSet) obj;
+			switch (col) {
 			case 0:
 				return set.getName();
 			case 1:
-				return set.getWeightedScoreUnit();
+				return set.weightedScoreUnit;
 			default:
 				return null;
 			}
 		}
-
 	}
-
 }

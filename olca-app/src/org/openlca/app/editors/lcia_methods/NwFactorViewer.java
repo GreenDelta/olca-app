@@ -41,8 +41,7 @@ class NwFactorViewer extends AbstractTableViewer<Wrapper> {
 		if (set == null)
 			setInput(new Wrapper[0]);
 		else {
-			List<ImpactCategory> categories = editor.getModel()
-					.getImpactCategories();
+			List<ImpactCategory> categories = editor.getModel().impactCategories;
 			Wrapper[] wrappers = new Wrapper[categories.size()];
 			for (int i = 0; i < wrappers.length; i++) {
 				ImpactCategory category = categories.get(i);
@@ -81,7 +80,7 @@ class NwFactorViewer extends AbstractTableViewer<Wrapper> {
 		@Override
 		public Image getColumnImage(Object element, int column) {
 			if (column == 0)
-				return Images.get(ModelType.IMPACT_CATEGORY); 
+				return Images.get(ModelType.IMPACT_CATEGORY);
 			return null;
 		}
 
@@ -129,7 +128,7 @@ class NwFactorViewer extends AbstractTableViewer<Wrapper> {
 				if (element.factor == null) {
 					element.factor = new NwFactor();
 					element.factor.setImpactCategory(element.category);
-					set.getFactors().add(element.factor);
+					set.factors.add(element.factor);
 				}
 				if (element.factor.getNormalisationFactor() == null
 						|| element.factor.getNormalisationFactor() != factor) {
@@ -160,7 +159,7 @@ class NwFactorViewer extends AbstractTableViewer<Wrapper> {
 				if (element.factor == null) {
 					element.factor = new NwFactor();
 					element.factor.setImpactCategory(element.category);
-					set.getFactors().add(element.factor);
+					set.factors.add(element.factor);
 				}
 				if (element.factor.getWeightingFactor() == null
 						|| element.factor.getWeightingFactor() != factor) {

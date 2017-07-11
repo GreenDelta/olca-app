@@ -49,7 +49,7 @@ public class UncertaintyCellEditor extends DialogCellEditor {
 		Uncertainty uncertainty = null;
 		if (value instanceof ImpactFactor) {
 			factor = (ImpactFactor) value;
-			uncertainty = factor.getUncertainty();
+			uncertainty = factor.uncertainty;
 		} else if (value instanceof Exchange) {
 			exchange = (Exchange) value;
 			uncertainty = exchange.uncertainty;
@@ -83,7 +83,7 @@ public class UncertaintyCellEditor extends DialogCellEditor {
 		if (exchange != null)
 			exchange.uncertainty = u;
 		else if (factor != null)
-			factor.setUncertainty(u);
+			factor.uncertainty = u;
 		else if (parameter != null)
 			parameter.setUncertainty(u);
 		else if (parameterRedef != null)
@@ -100,8 +100,8 @@ public class UncertaintyCellEditor extends DialogCellEditor {
 			uncertainty = exchange.uncertainty;
 			val = exchange.amount;
 		} else if (factor != null) {
-			uncertainty = factor.getUncertainty();
-			val = factor.getValue();
+			uncertainty = factor.uncertainty;
+			val = factor.value;
 		} else if (parameter != null) {
 			uncertainty = parameter.getUncertainty();
 			val = parameter.getValue();

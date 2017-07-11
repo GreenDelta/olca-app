@@ -76,10 +76,10 @@ public class Formulas {
 
 	private List<String> eval(ImpactMethod m) {
 		try {
-			Scope s = makeLocalScope(m.getParameters(), m.getId());
-			evalParams(m.getParameters(), s);
-			for (ImpactCategory ic : m.getImpactCategories())
-				evalFactors(ic.getImpactFactors(), s);
+			Scope s = makeLocalScope(m.parameters, m.getId());
+			evalParams(m.parameters, s);
+			for (ImpactCategory ic : m.impactCategories)
+				evalFactors(ic.impactFactors, s);
 		} catch (Exception e) {
 			log.warn("unexpected error in formula evaluation", e);
 		}
@@ -107,9 +107,9 @@ public class Formulas {
 
 	private void evalFactors(List<ImpactFactor> factors, Scope s) {
 		for (ImpactFactor f : factors) {
-			if (f.getFormula() != null)
-				f.setValue(eval(f.getFormula(), s));
-			eval(f.getUncertainty(), s);
+			if (f.formula != null)
+				f.value = eval(f.formula, s);
+			eval(f.uncertainty, s);
 		}
 	}
 

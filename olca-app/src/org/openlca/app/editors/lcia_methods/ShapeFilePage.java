@@ -257,7 +257,7 @@ class ShapeFilePage extends FormPage {
 		}
 
 		private void removeExternalSourceReferences() {
-			for (Parameter parameter : method().getParameters()) {
+			for (Parameter parameter : method().parameters) {
 				if (!parameter.isInputParameter())
 					continue;
 				if (shapeFile.equals(parameter.getExternalSource())) {
@@ -274,7 +274,7 @@ class ShapeFilePage extends FormPage {
 		 */
 		private void updateExternalSourceReferences(Set<String> stillLinked,
 				Map<String, ShapeFileParameter> nameToParam) {
-			for (Parameter parameter : method().getParameters()) {
+			for (Parameter parameter : method().parameters) {
 				if (!parameter.isInputParameter())
 					continue;
 				if (!shapeFile.equals(parameter.getExternalSource()))
@@ -295,7 +295,7 @@ class ShapeFilePage extends FormPage {
 
 		private Set<String> getReferencedParameters() {
 			Set<String> names = new HashSet<>();
-			for (Parameter parameter : method().getParameters())
+			for (Parameter parameter : method().parameters)
 				if (parameter.isInputParameter())
 					if (shapeFile.equals(parameter.getExternalSource()))
 						names.add(parameter.getName());
@@ -424,7 +424,7 @@ class ShapeFilePage extends FormPage {
 		}
 
 		private boolean exists(ShapeFileParameter param) {
-			for (Parameter realParam : method().getParameters()) {
+			for (Parameter realParam : method().parameters) {
 				if (Strings.nullOrEqual(param.getName(), realParam.getName())
 						&& Strings.nullOrEqual("SHAPE_FILE",
 								realParam.getSourceType())
@@ -436,7 +436,7 @@ class ShapeFilePage extends FormPage {
 		}
 
 		private boolean otherExists(ShapeFileParameter param) {
-			for (Parameter realParam : method().getParameters()) {
+			for (Parameter realParam : method().parameters) {
 				if (Strings.nullOrEqual(param.getName(), realParam.getName())
 						&& !Strings.nullOrEqual(section.shapeFile,
 								realParam.getExternalSource()))
@@ -457,7 +457,7 @@ class ShapeFilePage extends FormPage {
 					param.getMax()));
 			realParam.setScope(ParameterScope.IMPACT_METHOD);
 			realParam.setSourceType("SHAPE_FILE");
-			method().getParameters().add(realParam);
+			method().parameters.add(realParam);
 			editor.setDirty(true);
 			editor.setActivePage(ModelParameterPage.ID);
 			editor.getParameterSupport().evaluate();
