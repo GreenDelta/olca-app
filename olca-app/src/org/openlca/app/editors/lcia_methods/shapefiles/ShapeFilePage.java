@@ -3,16 +3,9 @@ package org.openlca.app.editors.lcia_methods.shapefiles;
 import java.awt.Desktop;
 import java.io.File;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -21,24 +14,15 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.editors.lcia_methods.ImpactMethodEditor;
-import org.openlca.app.editors.parameters.ModelParameterPage;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.util.Actions;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
-import org.openlca.app.util.Error;
-import org.openlca.app.util.Info;
-import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
-import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.Parameter;
-import org.openlca.core.model.ParameterScope;
-import org.openlca.core.model.Uncertainty;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,12 +33,13 @@ import org.slf4j.LoggerFactory;
  */
 public class ShapeFilePage extends FormPage {
 
+	final ImpactMethodEditor editor;
+
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private FormToolkit tk;
 	private Composite body;
-	private ShapeFileSection[] sections;
+	private SFSection[] sections;
 	private ScrolledForm form;
-	private ImpactMethodEditor editor;
 
 	public ShapeFilePage(ImpactMethodEditor editor) {
 		super(editor, "ShapeFilePage", "Shape files (beta)");
@@ -68,9 +53,11 @@ public class ShapeFilePage extends FormPage {
 		body = UI.formBody(form, tk);
 		createFileSection();
 		List<String> shapeFiles = ShapeFileUtils.getShapeFiles(method());
-		sections = new ShapeFileSection[shapeFiles.size()];
-		for (int i = 0; i < shapeFiles.size(); i++)
-			sections[i] = new ShapeFileSection(i, shapeFiles.get(i));
+		sections = new SFSection[shapeFiles.size()];
+		for (int i = 0; i < shapeFiles.size(); i++) {
+			sections[i] = new SFSection(this, i, shapeFiles.get(i));
+			sections[i].render(body, tk);
+		}
 		form.reflow(true);
 	}
 
@@ -117,7 +104,7 @@ public class ShapeFilePage extends FormPage {
 		});
 	}
 
-	private List<ShapeFileParameter> checkRunImport(File file) {
+	List<ShapeFileParameter> checkRunImport(File file) {
 		if (!ShapeFileUtils.isValid(file)) {
 			org.openlca.app.util.Error.showBox("Invalid file", "The file "
 					+ file.getName() + " is not a valid shape file.");
@@ -150,262 +137,39 @@ public class ShapeFilePage extends FormPage {
 				return Collections.emptyList();
 			}
 		}
-		ShapeFileSection section = new ShapeFileSection(sections.length,
-				shapeFile);
-		ShapeFileSection[] newSections = new ShapeFileSection[sections.length
-				+ 1];
+		addSection(shapeFile, params);
+		return params;
+	}
+
+	private void addSection(String shapeFile, List<ShapeFileParameter> params) {
+		SFSection s = new SFSection(
+				this, sections.length, shapeFile);
+		s.render(body, tk);
+		SFSection[] newSections = new SFSection[sections.length + 1];
 		System.arraycopy(sections, 0, newSections, 0, sections.length);
-		newSections[sections.length] = section;
+		newSections[sections.length] = s;
 		this.sections = newSections;
-		section.parameterTable.viewer.setInput(params);
+		s.parameterTable.viewer.setInput(params);
 		form.reflow(true);
 		editor.getParameterSupport().evaluate();
-		return params;
+	}
+
+	void removeSection(SFSection section) {
+		if (section == null)
+			return;
+		SFSection[] newSections = new SFSection[sections.length - 1];
+		int idx = section.index;
+		System.arraycopy(sections, 0, newSections, 0, idx);
+		if ((idx + 1) < sections.length) {
+			System.arraycopy(sections, idx + 1, newSections, idx,
+					newSections.length - idx);
+		}
+		sections = newSections;
+		form.reflow(true);
 	}
 
 	private ImpactMethod method() {
 		return editor.getModel();
-	}
-
-	private class ShapeFileSection {
-
-		private int index;
-		private String shapeFile;
-		private Section section;
-		private SFParameterTable parameterTable;
-
-		ShapeFileSection(int index, String shapeFile) {
-			this.index = index;
-			this.shapeFile = shapeFile;
-			render();
-		}
-
-		private void render() {
-			section = UI.section(body, tk, M.Parameters + " - " + shapeFile);
-			Composite comp = UI.sectionClient(section, tk);
-			parameterTable = new SFParameterTable(editor, shapeFile, comp);
-			Action delete = Actions.onRemove(() -> {
-				if (delete()) {
-					removeExternalSourceReferences();
-					save();
-				}
-			});
-			Action update = new Action(M.Update) {
-
-				@Override
-				public ImageDescriptor getImageDescriptor() {
-					return Icon.REFRESH.descriptor();
-
-				}
-
-				@Override
-				public void run() {
-					File file = FileChooser.forImport("*.shp");
-					if (file == null)
-						return;
-					Set<String> previouslyLinked = getReferencedParameters();
-					delete(true);
-					List<ShapeFileParameter> parameters = checkRunImport(file);
-					Set<String> stillLinked = getReferencedParameters();
-					Map<String, ShapeFileParameter> nameToParam = new HashMap<>();
-					for (ShapeFileParameter parameter : parameters)
-						if (previouslyLinked.contains(parameter.name)) {
-							stillLinked.add(parameter.name);
-							nameToParam.put(parameter.name, parameter);
-						}
-					updateExternalSourceReferences(stillLinked, nameToParam);
-					save();
-				}
-			};
-			ShowMapAction showAction = new ShowMapAction(this);
-			AddParamAction addAction = new AddParamAction(this);
-			Actions.bind(section, showAction, delete, update);
-			Actions.bind(parameterTable.viewer, showAction, addAction);
-		}
-
-		private void save() {
-			editor.doSave(null);
-		}
-
-		private boolean delete() {
-			return delete(false);
-		}
-
-		private boolean delete(boolean force) {
-			boolean del = force
-					|| Question.ask(M.DeleteShapeFile, M.ReallyDeleteShapeFile);
-			if (!del)
-				return false;
-			ShapeFileUtils.deleteFile(method(), shapeFile);
-			section.dispose();
-			ShapeFileSection[] newSections = new ShapeFileSection[sections.length
-					- 1];
-			System.arraycopy(sections, 0, newSections, 0, index);
-			if ((index + 1) < sections.length) {
-				System.arraycopy(sections, index + 1, newSections, index,
-						newSections.length - index);
-			}
-			sections = newSections;
-			form.reflow(true);
-			return true;
-		}
-
-		private void removeExternalSourceReferences() {
-			for (Parameter parameter : method().parameters) {
-				if (!parameter.isInputParameter())
-					continue;
-				if (shapeFile.equals(parameter.getExternalSource())) {
-					parameter.setExternalSource(null);
-				}
-			}
-			editor.getParameterSupport().evaluate();
-			editor.setDirty(true);
-		}
-
-		/*
-		 * stillLinked: names of parameters that were linked to the shape file
-		 * before updating and afterwards (only set those)
-		 */
-		private void updateExternalSourceReferences(Set<String> stillLinked,
-				Map<String, ShapeFileParameter> nameToParam) {
-			for (Parameter parameter : method().parameters) {
-				if (!parameter.isInputParameter())
-					continue;
-				if (!shapeFile.equals(parameter.getExternalSource()))
-					continue;
-				if (!stillLinked.contains(parameter.getName())) {
-					parameter.setExternalSource(null);
-				} else {
-					ShapeFileParameter param = nameToParam.get(parameter.getName());
-					if (param == null)
-						continue;
-					parameter.setValue((param.min + param.max) / 2);
-					parameter.setUncertainty(Uncertainty.uniform(
-							param.min, param.max));
-				}
-			}
-			editor.getParameterSupport().evaluate();
-		}
-
-		private Set<String> getReferencedParameters() {
-			Set<String> names = new HashSet<>();
-			for (Parameter parameter : method().parameters)
-				if (parameter.isInputParameter())
-					if (shapeFile.equals(parameter.getExternalSource()))
-						names.add(parameter.getName());
-			return names;
-		}
-	}
-
-	private class ShowMapAction extends Action {
-
-		private ShapeFileSection section;
-
-		public ShowMapAction(ShapeFileSection section) {
-			this.section = section;
-			setToolTipText(M.ShowInMap);
-			setText(M.ShowInMap);
-			setImageDescriptor(Icon.MAP.descriptor());
-		}
-
-		@Override
-		public void run() {
-			if (section == null || section.parameterTable == null)
-				return;
-			ShapeFileParameter param = Viewers
-					.getFirstSelected(section.parameterTable.viewer);
-			if (param == null)
-				ShapeFileUtils.openFileInMap(method(), section.shapeFile);
-			else
-				ShapeFileUtils.openFileInMap(method(), section.shapeFile, param);
-		}
-	}
-
-	private class AddParamAction extends Action {
-
-		private ShapeFileSection section;
-
-		public AddParamAction(ShapeFileSection section) {
-			this.section = section;
-			setToolTipText(M.AddToMethodParameters);
-			setText(M.AddToMethodParameters);
-			setImageDescriptor(Icon.ADD.descriptor());
-		}
-
-		@Override
-		public void run() {
-			ShapeFileParameter param = getSelected();
-			if (param == null)
-				return;
-			if (exists(param)) {
-				Info.showBox(M.ParameterAlreadyAdded,
-						M.SelectedParameterWasAlreadyAdded);
-				return;
-			}
-			if (otherExists(param)) {
-				Error.showBox(M.ParameterWithSameNameExists,
-						M.ParameterWithSameNameExistsInMethod);
-				return;
-			}
-			if (!Parameter.isValidName(param.name)) {
-				Error.showBox(M.InvalidParameterName, param.name + " "
-						+ M.IsNotValidParameterName);
-				return;
-			}
-			addParam(param);
-		}
-
-		private ShapeFileParameter getSelected() {
-			if (section == null || section.parameterTable == null)
-				return null;
-			ShapeFileParameter param = Viewers
-					.getFirstSelected(section.parameterTable.viewer);
-			if (param == null) {
-				Error.showBox(M.NoParameterSelected, M.NoShapefileParameterSelected);
-				return null;
-			}
-			return param;
-		}
-
-		private boolean exists(ShapeFileParameter param) {
-			for (Parameter realParam : method().parameters) {
-				if (Strings.nullOrEqual(param.name, realParam.getName())
-						&& Strings.nullOrEqual("SHAPE_FILE",
-								realParam.getSourceType())
-						&& Strings.nullOrEqual(section.shapeFile,
-								realParam.getExternalSource()))
-					return true;
-			}
-			return false;
-		}
-
-		private boolean otherExists(ShapeFileParameter param) {
-			for (Parameter p : method().parameters) {
-				if (Strings.nullOrEqual(param.name, p.getName())
-						&& !Strings.nullOrEqual(section.shapeFile,
-								p.getExternalSource()))
-					return true;
-			}
-			return false;
-		}
-
-		private void addParam(ShapeFileParameter shapeParam) {
-			Parameter p = new Parameter();
-			p.setRefId(UUID.randomUUID().toString());
-			p.setExternalSource(section.shapeFile);
-			p.setInputParameter(true);
-			p.setName(shapeParam.name);
-			p.setDescription("from shapefile: " + section.shapeFile);
-			p.setValue((shapeParam.min + shapeParam.max) / 2);
-			p.setUncertainty(Uncertainty.uniform(shapeParam.min,
-					shapeParam.max));
-			p.setScope(ParameterScope.IMPACT_METHOD);
-			p.setSourceType("SHAPE_FILE");
-			method().parameters.add(p);
-			editor.setDirty(true);
-			editor.setActivePage(ModelParameterPage.ID);
-			editor.getParameterSupport().evaluate();
-		}
 	}
 
 }
