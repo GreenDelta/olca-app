@@ -5,7 +5,7 @@ import java.util.List;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelEditor;
-import org.openlca.app.editors.lcia_methods.ShapeFileUtils;
+import org.openlca.app.editors.lcia_methods.shapefiles.ShapeFileUtils;
 import org.openlca.app.util.Info;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.model.Location;

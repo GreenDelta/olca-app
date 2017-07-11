@@ -1,4 +1,4 @@
-package org.openlca.app.editors.lcia_methods;
+package org.openlca.app.editors.lcia_methods.shapefiles;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -219,7 +219,7 @@ public class ShapeFileUtils {
 				@Override
 				public int compare(ShapeFileParameter o1,
 						ShapeFileParameter o2) {
-					return Strings.compare(o1.getName(), o2.getName());
+					return Strings.compare(o1.name, o2.name);
 				}
 			});
 			return list;
@@ -360,13 +360,13 @@ public class ShapeFileUtils {
 			ShapeFileParameter param = params.get(name);
 			if (param == null) {
 				param = new ShapeFileParameter();
-				param.setName(name);
-				param.setMax(value);
-				param.setMin(value);
+				param.name = name;
+				param.max = value;
+				param.min = value;
 				params.put(name, param);
 			} else {
-				param.setMax(Math.max(param.getMax(), value));
-				param.setMin(Math.min(param.getMin(), value));
+				param.max = Math.max(param.max, value);
+				param.min = Math.min(param.min, value);
 			}
 		}
 	}

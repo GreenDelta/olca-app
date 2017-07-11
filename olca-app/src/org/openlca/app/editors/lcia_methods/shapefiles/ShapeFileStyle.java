@@ -1,4 +1,4 @@
-package org.openlca.app.editors.lcia_methods;
+package org.openlca.app.editors.lcia_methods.shapefiles;
 
 import java.awt.Color;
 
@@ -34,9 +34,9 @@ class ShapeFileStyle {
 		try {
 			StyleBuilder styleBuilder = new StyleBuilder();
 			Style style = styleBuilder.createStyle();
-			double[] breaks = createBreaks(param.getMin(), param.getMax());
+			double[] breaks = createBreaks(param.min, param.max);
 			Color[] colors = createColors();
-			Rule[] rules = createRules(param.getName(), styleBuilder, breaks,
+			Rule[] rules = createRules(param.name, styleBuilder, breaks,
 					colors, type);
 			String typeName = dataStore.getTypeNames()[0];
 			FeatureTypeStyle fts = styleBuilder.createFeatureTypeStyle(

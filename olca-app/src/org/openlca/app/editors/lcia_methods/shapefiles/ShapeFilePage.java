@@ -1,4 +1,4 @@
-package org.openlca.app.editors.lcia_methods;
+package org.openlca.app.editors.lcia_methods.shapefiles;
 
 import java.awt.Desktop;
 import java.io.File;
@@ -28,6 +28,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
+import org.openlca.app.editors.lcia_methods.ImpactMethodEditor;
 import org.openlca.app.editors.parameters.ModelParameterPage;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
@@ -51,9 +52,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Shows imported shape-files and parameters from these shape-files that can be
- * used in a localised LCIA method.
+ * used in a localized LCIA method.
  */
-class ShapeFilePage extends FormPage {
+public class ShapeFilePage extends FormPage {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private FormToolkit tk;
@@ -148,9 +149,9 @@ class ShapeFilePage extends FormPage {
 		List<ShapeFileParameter> params = ShapeFileUtils.getParameters(method(),
 				shapeFile);
 		for (ShapeFileParameter parameter : params) {
-			if (!Parameter.isValidName(parameter.getName())) {
+			if (!Parameter.isValidName(parameter.name)) {
 				org.openlca.app.util.Error.showBox("Invalid parameter",
-						"The parameter name '" + parameter.getName()
+						"The parameter name '" + parameter.name
 								+ "' is not supported");
 				ShapeFileUtils.deleteFile(method(), shapeFile);
 				return Collections.emptyList();
@@ -215,9 +216,9 @@ class ShapeFilePage extends FormPage {
 					Set<String> stillLinked = getReferencedParameters();
 					Map<String, ShapeFileParameter> nameToParam = new HashMap<>();
 					for (ShapeFileParameter parameter : parameters)
-						if (previouslyLinked.contains(parameter.getName())) {
-							stillLinked.add(parameter.getName());
-							nameToParam.put(parameter.getName(), parameter);
+						if (previouslyLinked.contains(parameter.name)) {
+							stillLinked.add(parameter.name);
+							nameToParam.put(parameter.name, parameter);
 						}
 					updateExternalSourceReferences(stillLinked, nameToParam);
 					save();
@@ -285,9 +286,9 @@ class ShapeFilePage extends FormPage {
 					ShapeFileParameter param = nameToParam.get(parameter.getName());
 					if (param == null)
 						continue;
-					parameter.setValue((param.getMin() + param.getMax()) / 2);
+					parameter.setValue((param.min + param.max) / 2);
 					parameter.setUncertainty(Uncertainty.uniform(
-							param.getMin(), param.getMax()));
+							param.min, param.max));
 				}
 			}
 			editor.getParameterSupport().evaluate();
@@ -341,11 +342,11 @@ class ShapeFilePage extends FormPage {
 				ShapeFileParameter p = (ShapeFileParameter) o;
 				switch (i) {
 				case 0:
-					return p.getName();
+					return p.name;
 				case 1:
-					return Double.toString(p.getMin());
+					return Double.toString(p.min);
 				case 2:
-					return Double.toString(p.getMax());
+					return Double.toString(p.max);
 				default:
 					return null;
 				}
@@ -403,8 +404,8 @@ class ShapeFilePage extends FormPage {
 						M.ParameterWithSameNameExistsInMethod);
 				return;
 			}
-			if (!Parameter.isValidName(param.getName())) {
-				Error.showBox(M.InvalidParameterName, param.getName() + " "
+			if (!Parameter.isValidName(param.name)) {
+				Error.showBox(M.InvalidParameterName, param.name + " "
 						+ M.IsNotValidParameterName);
 				return;
 			}
@@ -425,7 +426,7 @@ class ShapeFilePage extends FormPage {
 
 		private boolean exists(ShapeFileParameter param) {
 			for (Parameter realParam : method().parameters) {
-				if (Strings.nullOrEqual(param.getName(), realParam.getName())
+				if (Strings.nullOrEqual(param.name, realParam.getName())
 						&& Strings.nullOrEqual("SHAPE_FILE",
 								realParam.getSourceType())
 						&& Strings.nullOrEqual(section.shapeFile,
@@ -436,28 +437,28 @@ class ShapeFilePage extends FormPage {
 		}
 
 		private boolean otherExists(ShapeFileParameter param) {
-			for (Parameter realParam : method().parameters) {
-				if (Strings.nullOrEqual(param.getName(), realParam.getName())
+			for (Parameter p : method().parameters) {
+				if (Strings.nullOrEqual(param.name, p.getName())
 						&& !Strings.nullOrEqual(section.shapeFile,
-								realParam.getExternalSource()))
+								p.getExternalSource()))
 					return true;
 			}
 			return false;
 		}
 
-		private void addParam(ShapeFileParameter param) {
-			Parameter realParam = new Parameter();
-			realParam.setRefId(UUID.randomUUID().toString());
-			realParam.setExternalSource(section.shapeFile);
-			realParam.setInputParameter(true);
-			realParam.setName(param.getName());
-			realParam.setDescription("from shapefile: " + section.shapeFile);
-			realParam.setValue((param.getMin() + param.getMax()) / 2);
-			realParam.setUncertainty(Uncertainty.uniform(param.getMin(),
-					param.getMax()));
-			realParam.setScope(ParameterScope.IMPACT_METHOD);
-			realParam.setSourceType("SHAPE_FILE");
-			method().parameters.add(realParam);
+		private void addParam(ShapeFileParameter shapeParam) {
+			Parameter p = new Parameter();
+			p.setRefId(UUID.randomUUID().toString());
+			p.setExternalSource(section.shapeFile);
+			p.setInputParameter(true);
+			p.setName(shapeParam.name);
+			p.setDescription("from shapefile: " + section.shapeFile);
+			p.setValue((shapeParam.min + shapeParam.max) / 2);
+			p.setUncertainty(Uncertainty.uniform(shapeParam.min,
+					shapeParam.max));
+			p.setScope(ParameterScope.IMPACT_METHOD);
+			p.setSourceType("SHAPE_FILE");
+			method().parameters.add(p);
 			editor.setDirty(true);
 			editor.setActivePage(ModelParameterPage.ID);
 			editor.getParameterSupport().evaluate();

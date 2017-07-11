@@ -10,6 +10,7 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.IEditor;
 import org.openlca.app.editors.ModelEditor;
+import org.openlca.app.editors.lcia_methods.shapefiles.ShapeFilePage;
 import org.openlca.app.editors.parameters.Formulas;
 import org.openlca.app.editors.parameters.ModelParameterPage;
 import org.openlca.app.editors.parameters.ParameterChangeSupport;

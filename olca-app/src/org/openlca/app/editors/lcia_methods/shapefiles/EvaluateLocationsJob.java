@@ -1,4 +1,4 @@
-package org.openlca.app.editors.lcia_methods;
+package org.openlca.app.editors.lcia_methods.shapefiles;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;

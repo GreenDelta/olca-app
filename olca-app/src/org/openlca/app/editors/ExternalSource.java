@@ -3,7 +3,7 @@ package org.openlca.app.editors;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openlca.app.editors.lcia_methods.ShapeFileParameter;
+import org.openlca.app.editors.lcia_methods.shapefiles.ShapeFileParameter;
 
 public class ExternalSource {
 
@@ -32,7 +32,7 @@ public class ExternalSource {
 
 	public ShapeFileParameter getParameter(String name) {
 		for (ShapeFileParameter parameter : this.providedParameters)
-			if (parameter.getName().equals(name))
+			if (parameter.name.equals(name))
 				return parameter;
 		return null;
 	}

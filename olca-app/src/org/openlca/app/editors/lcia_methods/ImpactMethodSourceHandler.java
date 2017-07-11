@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.openlca.app.editors.lcia_methods.shapefiles.ShapeFileParameter;
+import org.openlca.app.editors.lcia_methods.shapefiles.ShapeFileUtils;
 import org.openlca.app.editors.parameters.SourceHandler;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterScope;
@@ -30,7 +32,7 @@ public class ImpactMethodSourceHandler implements SourceHandler {
 				List<ShapeFileParameter> params = ShapeFileUtils.getParameters(
 						editor.getModel(), name);
 				for (ShapeFileParameter param : params)
-					if (param.getName().equals(parameter.getName()))
+					if (param.name.equals(parameter.getName()))
 						sources.add(name);
 			}
 		} catch (IOException e) {
@@ -46,7 +48,7 @@ public class ImpactMethodSourceHandler implements SourceHandler {
 			List<ShapeFileParameter> sfParams = ShapeFileUtils.getParameters(
 					editor.getModel(), source);
 			for (ShapeFileParameter sfp : sfParams) {
-				if (parameter.getName().equals(sfp.getName()))
+				if (parameter.getName().equals(sfp.name))
 					sfParam = sfp;
 			}
 		} catch (IOException e) {
@@ -58,9 +60,9 @@ public class ImpactMethodSourceHandler implements SourceHandler {
 		parameter.setExternalSource(source);
 		parameter.setInputParameter(true);
 		parameter.setDescription("from shapefile: " + source);
-		parameter.setValue((sfParam.getMin() + sfParam.getMax()) / 2);
-		parameter.setUncertainty(Uncertainty.uniform(sfParam.getMin(),
-				sfParam.getMax()));
+		parameter.setValue((sfParam.min + sfParam.max) / 2);
+		parameter.setUncertainty(Uncertainty.uniform(sfParam.min,
+				sfParam.max));
 		parameter.setScope(ParameterScope.IMPACT_METHOD);
 		parameter.setSourceType("SHAPE_FILE");
 		editor.getParameterSupport().evaluate();
