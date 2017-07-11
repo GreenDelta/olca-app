@@ -51,6 +51,7 @@ public class ShapeFilePage extends FormPage {
 		form = UI.formHeader(managedForm, "Shape file parameters");
 		tk = managedForm.getToolkit();
 		body = UI.formBody(form, tk);
+		new SFParamMeanSection(this).render(body, tk);
 		createFileSection();
 		List<String> shapeFiles = ShapeFileUtils.getShapeFiles(method());
 		sections = new SFSection[shapeFiles.size()];
