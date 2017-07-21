@@ -25,22 +25,42 @@ public class ModelLabelProvider implements IJsonNodeLabelProvider {
 	public String getText(JsonNode node, Side side) {
 		JsonElement element = node.getElement(side);
 		JsonElement otherElement = node.getElement(side.getOther());
-		JsonElement parent = node.parent.getElement();
-		boolean isArrayElement = false;
-		if (parent.isJsonArray()) {
-			isArrayElement = true;
-			parent = node.parent.parent.getElement();
-		}
 		if (isFiller(element, node.parent.getElement(side)))
 			return null;
-		String type = ModelUtil.getType(parent);
-		String propertyLabel = PropertyLabels.get(type, node.property);
+		String propertyLabel = getPropertyText(node, side);
+		boolean isArrayElement = node.parent.getElement().isJsonArray();
+		JsonElement parent = getParent(node);
 		if (showPropertyOnly(element, otherElement, parent, isArrayElement))
 			return propertyLabel;
-		String value = getValue(element, parent);
-		String valueLabel = ValueLabels.get(node.property, element, parent,
-				value);
+		String valueLabel = getValueText(node, side);
 		return propertyLabel + ": " + valueLabel;
+	}
+
+	@Override
+	public String getPropertyText(JsonNode node, Side side) {
+		JsonElement element = node.getElement(side);
+		if (isFiller(element, node.parent.getElement(side)))
+			return null;
+		JsonElement parent = getParent(node);
+		String type = ModelUtil.getType(parent);
+		return PropertyLabels.get(type, node.property);
+	}
+
+	@Override
+	public String getValueText(JsonNode node, Side side) {
+		JsonElement element = node.getElement(side);
+		if (isFiller(element, node.parent.getElement(side)))
+			return null;
+		JsonElement parent = getParent(node);
+		String value = getValue(element, parent);
+		return ValueLabels.get(node.property, element, parent, value);
+	}
+
+	private JsonElement getParent(JsonNode node) {
+		JsonElement parent = node.parent.getElement();
+		if (!parent.isJsonArray())
+			return parent;
+		return node.parent.parent.getElement();
 	}
 
 	private boolean isFiller(JsonElement element, JsonElement parent) {

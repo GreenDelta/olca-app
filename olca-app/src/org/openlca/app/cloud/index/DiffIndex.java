@@ -81,19 +81,18 @@ public class DiffIndex {
 			updateParents(diff, true);
 		}
 		if (dataset.categoryRefId == null)
-			updateChangedTopLevelElements(dataset, newType);
+			updateChangedTopLevelElements(dataset.categoryType.name(), dataset.refId, newType);
 		index.put(dataset.refId, diff);
 	}
 
-	private void updateChangedTopLevelElements(Dataset dataset, DiffType newType) {
-		String type = dataset.categoryType.name();
+	private void updateChangedTopLevelElements(String type, String refId, DiffType newType) {
 		Set<String> elements = changedTopLevelElements.get(type);
 		if (elements == null)
 			elements = new HashSet<>();
 		if (newType == DiffType.NO_DIFF)
-			elements.remove(dataset.refId);
+			elements.remove(refId);
 		else
-			elements.add(dataset.refId);
+			elements.add(refId);
 		if (elements.isEmpty())
 			changedTopLevelElements.remove(type);
 		else
@@ -125,7 +124,7 @@ public class DiffIndex {
 		Diff diff = index.remove(key);
 		if (diff == null)
 			return;
-		updateChangedTopLevelElements(diff.getDataset(), DiffType.NO_DIFF);
+		updateChangedTopLevelElements(diff.getDataset().categoryType.name(), diff.getDataset().refId, DiffType.NO_DIFF);
 		updateParents(diff, false);
 	}
 
@@ -140,6 +139,8 @@ public class DiffIndex {
 		String parentId = dataset.categoryRefId;
 		while (parentId != null) {
 			Diff parent = index.get(parentId);
+			if (parent == null)
+				break;
 			if (add)
 				parent.changedChildren.add(dataset.refId);
 			else
@@ -148,9 +149,9 @@ public class DiffIndex {
 			parentId = parent.dataset.categoryRefId;
 		}
 		if (add)
-			updateChangedTopLevelElements(dataset, DiffType.CHANGED);
+			updateChangedTopLevelElements(dataset.categoryType.name(), dataset.refId, DiffType.CHANGED);
 		else
-			updateChangedTopLevelElements(dataset, DiffType.NO_DIFF);
+			updateChangedTopLevelElements(dataset.categoryType.name(), dataset.refId, DiffType.NO_DIFF);
 	}
 
 	public void commit() {

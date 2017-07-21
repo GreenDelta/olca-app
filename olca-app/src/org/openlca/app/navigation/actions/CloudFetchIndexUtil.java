@@ -13,7 +13,6 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import org.openlca.app.cloud.index.DiffIndex;
-import org.openlca.app.cloud.index.DiffType;
 import org.openlca.app.cloud.ui.diff.DiffResult;
 import org.openlca.app.cloud.ui.diff.DiffResult.DiffResponse;
 import org.openlca.app.db.Database;
@@ -135,6 +134,8 @@ class FetchIndexHelper {
 	private void indexConflict(DiffResult diff) {
 		if (diff.local.type == CHANGED)
 			indexChanged(diff);
+		else if (diff.local.type == NEW)
+			indexChanged(diff);
 		else if (diff.local.type == DELETED)
 			indexDeleted(diff);
 	}
@@ -160,9 +161,7 @@ class FetchIndexHelper {
 			index.add(dataset, localIds.get(dataset.refId));
 			index.update(dataset, NEW);
 		} else {
-			DiffType previousType = index.get(dataset.refId).type;
-			if (previousType != NEW)
-				index.update(dataset, CHANGED);
+			index.update(dataset, CHANGED);
 		}
 	}
 
