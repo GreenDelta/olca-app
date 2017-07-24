@@ -26,6 +26,7 @@ import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.UncertaintyType;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
+import org.openlca.core.model.ImpactMethod.ParameterMean;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
@@ -153,6 +154,8 @@ public class Labels {
 			return Labels.riskLevel((RiskLevel) enumValue);
 		if (enumValue instanceof ModelType)
 			return Labels.modelTypeSingular((ModelType) enumValue);
+		if (enumValue instanceof ParameterMean)
+			return Labels.parameterMean((ParameterMean) enumValue);
 		if (enumValue != null)
 			return enumValue.toString();
 		return null;
@@ -406,6 +409,19 @@ public class Labels {
 			return M.HalfUp;
 		case CEILING:
 			return M.Up;
+		default:
+			return null;
+		}
+	}
+
+	public static String parameterMean(ParameterMean mean) {
+		if (mean == null)
+			return null;
+		switch (mean) {
+		case ARITHMETIC_MEAN:
+			return "#Arithmetic mean";
+		case WEIGHTED_MEAN:
+			return "#Weighted arithmetic mean";
 		default:
 			return null;
 		}
