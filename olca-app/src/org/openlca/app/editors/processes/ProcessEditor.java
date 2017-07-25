@@ -2,6 +2,7 @@ package org.openlca.app.editors.processes;
 
 import java.util.List;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
@@ -17,6 +18,7 @@ import org.openlca.app.editors.processes.exchanges.ProcessExchangePage;
 import org.openlca.app.editors.processes.social.SocialAspectsPage;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessDocumentation;
+import org.openlca.util.AllocationCleanup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,6 +64,12 @@ public class ProcessEditor extends ModelEditor<Process>implements IEditor {
 
 	public ParameterChangeSupport getParameterSupport() {
 		return parameterSupport;
+	}
+	
+	@Override
+	public void doSave(IProgressMonitor monitor) {
+		AllocationCleanup.on(getModel());
+		super.doSave(monitor);
 	}
 
 	@Override

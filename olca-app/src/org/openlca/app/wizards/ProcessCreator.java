@@ -108,6 +108,7 @@ class ProcessCreator {
 		if (unitGroup != null)
 			qRef.unit = unitGroup.getReferenceUnit();
 		qRef.isInput = flow.getFlowType() == FlowType.WASTE_FLOW;
+		qRef.internalId = process.drawNextInternalId();
 		process.getExchanges().add(qRef);
 		process.setQuantitativeReference(qRef);
 	}

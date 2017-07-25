@@ -147,6 +147,8 @@ public class ModelUtil {
 	static boolean displayElement(JsonElement parent, String property) {
 		if (property.startsWith("@"))
 			return false;
+		if (property.equals("internalId"))
+			return false;
 		if (property.equals("lastChange"))
 			return false;
 		if (property.equals("version"))
@@ -259,14 +261,14 @@ public class ModelUtil {
 				return new String[] { "name" };
 			if (property.equals("flowProperties"))
 				return new String[] { "flowProperty.@id" };
-			if (property.equals("inputs") || property.equals("outputs"))
-				return new String[] { "flow.@id", "input" };
+			if (property.equals("inputs") || property.equals("outputs") || property.equals("exchanges"))
+				return new String[] { "internalId" };
 			if (property.equals("socialAspects"))
 				return new String[] { "socialIndicator.@id" };
 			if (property.equals("synonyms"))
 				return new String[0];
 			if (property.equals("allocationFactors"))
-				return new String[] { "product.@id", "exchange.flow.@id", "allocationType" };
+				return new String[] { "product.@id", "exchange.internalId", "allocationType" };
 			if (property.equals("impactFactors"))
 				return new String[] { "flow.@id" };
 			if (property.equals("factors"))
@@ -283,15 +285,6 @@ public class ModelUtil {
 		@Override
 		protected boolean skipOnEqualsCheck(String parentProperty,
 				JsonElement parent, String property) {
-			if ("@id".equals(property))
-				if ("referenceExchange".equals(parentProperty))
-					return true;
-				else if ("exchange".equals(parentProperty))
-					return true;
-				else if ("providerOutput".equals(parentProperty))
-					return true;
-				else if ("recipientInput".equals(parentProperty))
-					return true;
 			if (parentProperty == null)
 				if ("version".equals(property))
 					return true;
