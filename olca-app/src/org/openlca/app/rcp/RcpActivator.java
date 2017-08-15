@@ -68,6 +68,7 @@ public class RcpActivator extends AbstractUIPlugin {
 		log.trace("Bundle {} started", PLUGIN_ID);
 		log.trace("initialize HTML folder");
 		HtmlFolder.initialize(RcpActivator.getDefault().getBundle(), "html/base_html.zip");
+		SslCertificates.load();
 		Preferences.init();
 		Job.create("init. Python", m -> {
 			Python.getDir();
