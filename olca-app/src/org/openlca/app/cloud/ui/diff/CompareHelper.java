@@ -112,7 +112,7 @@ class CompareHelper {
 			version.incUpdate();
 			obj.addProperty("version", Version.asString(version.getValue()));			
 		}
-		obj.addProperty("lastChange", Dates.toString(Calendar.getInstance().getTime()));
+		obj.addProperty("lastChange", Dates.toDateTime(Calendar.getInstance().getTime()));
 		return obj;
 	}
 

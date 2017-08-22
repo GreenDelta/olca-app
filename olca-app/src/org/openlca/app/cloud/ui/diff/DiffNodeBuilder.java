@@ -17,16 +17,23 @@ public class DiffNodeBuilder {
 
 	private final Map<String, DiffNode> nodes = new HashMap<>();
 	private final Map<String, DiffResult> diffs = new HashMap<>();
-	private final CategoryDao categoryDao;
+	private final Map<String, Category> categories = new HashMap<>();
 	private final DiffIndex index;
 	private final String database;
 
 	public DiffNodeBuilder(IDatabase database, DiffIndex index) {
-		this.categoryDao = new CategoryDao(database);
+		putCategories(new CategoryDao(database).getRootCategories());
 		this.index = index;
 		this.database = database.getName();
 	}
 
+	private void putCategories(List<Category> categories) {
+		for (Category category : categories) {
+			this.categories.put(category.getRefId(), category);
+			putCategories(category.getChildCategories());
+		}
+	}
+	
 	public DiffNode build(List<DiffResult> diffs) {
 		if (!init(diffs))
 			return null;
@@ -70,7 +77,7 @@ public class DiffNodeBuilder {
 		DiffResult result = diffs.get(parentId);
 		if (result != null)
 			return createNodeFromDiff(result);
-		Category category = categoryDao.getForRefId(parentId);
+		Category category = categories.get(parentId);
 		return createNodeFromCategory(category);
 	}
 
