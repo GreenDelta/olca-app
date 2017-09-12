@@ -104,6 +104,8 @@ public class DiffResult {
 		case NEW:
 			if (!remote.version.equals(local.dataset.version))
 				return DiffResponse.CONFLICT;
+			if (remote.isDeleted())
+				return DiffResponse.CONFLICT;
 			// TODO check if this always correct
 			if (isNewer(local.getDataset().version, remote.version))
 				return DiffResponse.MODIFY_IN_REMOTE;
@@ -201,8 +203,8 @@ public class DiffResult {
 		}
 		String r = "null";
 		if (remote != null) {
-			l = "modelType: " + remote.type;
-			l += ", name: " + remote.name;
+			r = "modelType: " + remote.type;
+			r += ", name: " + remote.name;
 		}
 		String text = "local: {" + l + "}, remote: {" + r + "}, resultType: {" + getType() + "}";
 		return text;

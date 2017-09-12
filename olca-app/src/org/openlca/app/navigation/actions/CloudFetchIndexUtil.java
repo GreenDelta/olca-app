@@ -158,7 +158,6 @@ class FetchIndexHelper {
 	private void indexOverwritten(DiffResult diff) {
 		Dataset dataset = diff.getDataset();
 		if (diff.remote.isDeleted()) {
-			index.add(dataset, localIds.get(dataset.refId));
 			index.update(dataset, NEW);
 		} else {
 			index.update(dataset, CHANGED);
