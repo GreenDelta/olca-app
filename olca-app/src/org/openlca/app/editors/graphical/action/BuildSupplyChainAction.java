@@ -18,6 +18,7 @@ import org.openlca.core.matrix.LongPair;
 import org.openlca.core.matrix.ProductSystemBuilder;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.ProductSystem;
+import org.openlca.core.model.descriptors.Descriptors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,7 +85,7 @@ class BuildSupplyChainAction extends Action implements IBuildAction {
 			}
 			ProductSystemGraphEditor editor = nodes.get(0).parent().editor;
 			editor.updateModel(monitor);
-			Database.get().notifyUpdate(system);
+			Database.get().notifyUpdate(Descriptors.toDescriptor(system));
 		}
 	}
 

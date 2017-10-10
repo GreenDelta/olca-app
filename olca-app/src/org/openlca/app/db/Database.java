@@ -43,7 +43,7 @@ public class Database {
 			throws Exception {
 		try {
 			Database.database = config.createInstance();
-			listener = new DatabaseListener();
+			listener = new DatabaseListener(Database.database);
 			Database.database.addListener(listener);
 			Cache.create(database);
 			Database.config = config;
