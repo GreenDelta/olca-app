@@ -48,9 +48,10 @@ public class CalculationWizard extends Wizard {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
-	CalculationWizardPage calculationPage;
-	DQSettingsPage dqSettingsPage;
-	ProductSystem productSystem;
+	final ProductSystem productSystem;
+
+	private CalculationWizardPage page;
+	private DQSettingsPage dqPage;
 
 	public CalculationWizard(ProductSystem productSystem) {
 		this.productSystem = productSystem;
@@ -68,19 +69,19 @@ public class CalculationWizard extends Wizard {
 
 	@Override
 	public void addPages() {
-		calculationPage = new CalculationWizardPage();
-		addPage(calculationPage);
-		dqSettingsPage = new DQSettingsPage();
-		addPage(dqSettingsPage);
+		page = new CalculationWizardPage();
+		addPage(page);
+		dqPage = new DQSettingsPage();
+		addPage(dqPage);
 	}
 
 	@Override
 	public boolean performFinish() {
-		CalculationSetup setup = calculationPage.getSetup(productSystem);
-		CalculationType type = calculationPage.getCalculationType();
+		CalculationSetup setup = page.getSetup(productSystem);
+		CalculationType type = page.getCalculationType();
 		DQCalculationSetup dqSetup = null;
-		if (calculationPage.doDqAssessment())
-			dqSetup = dqSettingsPage.getSetup(productSystem);
+		if (page.doDqAssessment())
+			dqSetup = dqPage.getSetup(productSystem);
 		saveDefaults(setup, dqSetup, type);
 		try {
 			Calculation calculation = new Calculation(setup, type, dqSetup);
@@ -94,11 +95,11 @@ public class CalculationWizard extends Wizard {
 		}
 	}
 
-	private ResultEditorInput getEditorInput(Object result, CalculationSetup setup,
-			ParameterSet parameterSet, DQResult dqResult) {
+	private ResultEditorInput getEditorInput(Object result,
+			CalculationSetup setup, ParameterSet parameterSet,
+			DQResult dqResult) {
 		ResultEditorInput input = ResultEditorInput.create(setup, result)
-				.with(dqResult)
-				.with(parameterSet);
+				.with(dqResult).with(parameterSet);
 		return input;
 	}
 
@@ -138,14 +139,16 @@ public class CalculationWizard extends Wizard {
 		private DQCalculationSetup dqSetup;
 		private boolean outOfMemory;
 
-		public Calculation(CalculationSetup setup, CalculationType type, DQCalculationSetup dqSetup) {
+		public Calculation(CalculationSetup setup, CalculationType type,
+				DQCalculationSetup dqSetup) {
 			this.setup = setup;
 			this.type = type;
 			this.dqSetup = dqSetup;
 		}
 
 		@Override
-		public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+		public void run(IProgressMonitor monitor)
+				throws InvocationTargetException, InterruptedException {
 			outOfMemory = false;
 			monitor.beginTask(M.RunCalculation, IProgressMonitor.UNKNOWN);
 			int size = productSystem.getProcesses().size();
@@ -204,17 +207,23 @@ public class CalculationWizard extends Wizard {
 
 		private void calcRegionalized() {
 			log.trace("calculate regionalized result");
-			RegionalizedCalculator calculator = new RegionalizedCalculator(setup, App.getSolver());
-			RegionalizedResult regioResult = calculator.calculate(Database.get(), Cache.getMatrixCache());
-			if (regioResult == null) {
-				Info.showBox("No regionalized information available for this system");
+			RegionalizedCalculator calc = new RegionalizedCalculator(
+					setup, App.getSolver());
+			RegionalizedResult result = calc.calculate(
+					Database.get(), Cache.getMatrixCache());
+			if (result == null) {
+				Info.showBox("#No regionalized information "
+						+ "available for this system");
 				return;
 			}
 			RegionalizedResultProvider provider = new RegionalizedResultProvider();
-			provider.result = new FullResultProvider(regioResult.result, Cache.getEntityCache());
-			provider.kmlData = regioResult.kmlData;
-			DQResult dqResult = DQResult.calculate(Database.get(), regioResult.result, dqSetup);
-			ResultEditorInput input = getEditorInput(provider, setup, regioResult.parameterSet, dqResult);
+			provider.result = new FullResultProvider(
+					result.result, Cache.getEntityCache());
+			provider.kmlData = result.kmlData;
+			DQResult dqResult = DQResult.calculate(
+					Database.get(), result.result, dqSetup);
+			ResultEditorInput input = getEditorInput(
+					provider, setup, result.parameterSet, dqResult);
 			Editors.open(input, RegionalizedResultEditor.ID);
 		}
 

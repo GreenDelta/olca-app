@@ -18,10 +18,8 @@ import org.openlca.ilcd.descriptors.ProcessDescriptor;
 import org.openlca.ilcd.io.DataStoreException;
 import org.openlca.ilcd.io.SodaClient;
 import org.openlca.ilcd.processes.Process;
-import org.openlca.ilcd.util.ProcessBag;
 import org.openlca.io.ilcd.input.ImportConfig;
 import org.openlca.io.ilcd.input.ProcessImport;
-import org.openlca.io.ilcd.input.SystemImport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,18 +72,11 @@ public class ImportWizard extends Wizard implements IImportWizard {
 
 	private void importProcesses(List<ProcessDescriptor> descriptors,
 			ImportConfig config) throws Exception {
-		for (ProcessDescriptor descriptor : descriptors) {
-			Process process = config.store.get(Process.class,
-					descriptor.uuid);
-			if (process != null) {
-				ProcessBag bag = new ProcessBag(process, config.langs);
-				if (bag.hasProductModel()) {
-					SystemImport systemImport = new SystemImport(config);
-					systemImport.run(process);
-				} else {
-					ProcessImport processImport = new ProcessImport(config);
-					processImport.run(process);
-				}
+		for (ProcessDescriptor d : descriptors) {
+			Process p = config.store.get(Process.class, d.uuid);
+			if (p != null) {
+				ProcessImport imp = new ProcessImport(config);
+				imp.run(p);
 			}
 		}
 	}

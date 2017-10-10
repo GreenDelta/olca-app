@@ -70,9 +70,10 @@ public class DatabaseActivateAction extends Action implements INavigationAction 
 		// App.run does not work as we have to show a modal dialog in the
 		// callback
 		try {
-			PlatformUI.getWorkbench().getProgressService().busyCursorWhile(activation);
-			ActivationCallback callback = new ActivationCallback(activation);
-			callback.run();
+			PlatformUI.getWorkbench()
+					.getProgressService()
+					.busyCursorWhile(activation);
+			new ActivationCallback(activation).run();
 		} catch (Exception e) {
 			log.error("Database activation failed", e);
 		}
@@ -88,8 +89,8 @@ public class DatabaseActivateAction extends Action implements INavigationAction 
 			try {
 				monitor.beginTask(M.OpenDatabase, IProgressMonitor.UNKNOWN);
 				Database.close();
-				IDatabase database = Database.activate(config);
-				versionState = VersionState.checkVersion(database);
+				IDatabase db = Database.activate(config);
+				versionState = VersionState.checkVersion(db);
 				monitor.done();
 			} catch (Exception e) {
 				log.error("Failed to activate database", e);
