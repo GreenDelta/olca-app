@@ -60,6 +60,8 @@ public class JsonTreeViewer extends AbstractViewer<JsonNode, TreeViewer> {
 	private void onDoubleClick(DoubleClickEvent e) {
 		IStructuredSelection sel = (IStructuredSelection) e.getSelection();
 		JsonNode node = (JsonNode) sel.getFirstElement();
+		if (!node.getElement().isJsonPrimitive())
+			return;
 		new TextDiffDialog(node, direction).open();
 	}
 

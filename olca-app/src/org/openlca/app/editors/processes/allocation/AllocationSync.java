@@ -12,11 +12,11 @@ import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.FlowPropertyType;
 import org.openlca.core.model.Process;
+import org.openlca.util.AllocationCleanup;
 
 class AllocationSync {
 
 	private final Process process;
-	private boolean firstInit;
 
 	private AllocationSync(Process process) {
 		this.process = process;
@@ -30,7 +30,7 @@ class AllocationSync {
 	public static void updateFactors(Process process) {
 		if (process == null)
 			return;
-		new AllocationSync(process).doUpdate();
+		AllocationCleanup.on(process);
 	}
 
 	/**
@@ -44,7 +44,7 @@ class AllocationSync {
 	}
 
 	private void doCalc() {
-		doUpdate();
+		AllocationCleanup.on(process);
 		List<Exchange> pFlows = Util.getProviderFlows(process);
 		if (pFlows.size() < 2)
 			return;
@@ -79,63 +79,6 @@ class AllocationSync {
 		}
 	}
 
-	private void doUpdate() {
-		List<Exchange> pFlows = Util.getProviderFlows(process);
-		if (pFlows.size() < 2) {
-			process.getAllocationFactors().clear();
-			return;
-		}
-		firstInit = process.getAllocationFactors().isEmpty();
-		removeUnusedFactors(pFlows);
-		addNewFactors(pFlows);
-	}
-
-	private void removeUnusedFactors(List<Exchange> products) {
-		List<AllocationFactor> removals = new ArrayList<>();
-		for (AllocationFactor factor : process.getAllocationFactors()) {
-			long productId = factor.getProductId();
-			boolean remove = true;
-			for (Exchange product : products) {
-				if (productId == product.flow.getId()) {
-					remove = false;
-					break;
-				}
-			}
-			if (remove)
-				removals.add(factor);
-		}
-		process.getAllocationFactors().removeAll(removals);
-	}
-
-	private void addNewFactors(List<Exchange> products) {
-		for (Exchange product : products) {
-			createIfAbsent(product, AllocationMethod.PHYSICAL);
-			createIfAbsent(product, AllocationMethod.ECONOMIC);
-			for (Exchange e : Util.getNonProviderFlows(process)) {
-				createCausalIfAbsent(product, e);
-			}
-		}
-	}
-
-	/** For physical and economic allocation. */
-	private void createIfAbsent(Exchange product, AllocationMethod method) {
-		AllocationFactor factor = getFactor(product, method);
-		if (factor != null)
-			return;
-		factor = new AllocationFactor();
-		factor.setAllocationType(method);
-		factor.setProductId(product.flow.getId());
-		factor.setValue(getInitialValue(product));
-		process.getAllocationFactors().add(factor);
-	}
-
-	private double getInitialValue(Exchange product) {
-		if (firstInit && Objects.equals(product, process.getQuantitativeReference()))
-			return 1;
-		else
-			return 0d;
-	}
-
 	/** For physical and economic allocation. */
 	private AllocationFactor getFactor(Exchange product, AllocationMethod method) {
 		for (AllocationFactor factor : process.getAllocationFactors()) {
@@ -145,19 +88,6 @@ class AllocationSync {
 				return factor;
 		}
 		return null;
-	}
-
-	/** For causal allocation. */
-	private void createCausalIfAbsent(Exchange product, Exchange exchange) {
-		AllocationFactor factor = getCausalFactor(product, exchange);
-		if (factor != null)
-			return;
-		factor = new AllocationFactor();
-		factor.setAllocationType(AllocationMethod.CAUSAL);
-		factor.setExchange(exchange);
-		factor.setProductId(product.flow.getId());
-		factor.setValue(getInitialValue(product));
-		process.getAllocationFactors().add(factor);
 	}
 
 	private AllocationFactor getCausalFactor(Exchange product, Exchange exchange) {

@@ -216,6 +216,7 @@ public class CopyPaste {
 		if (newParent != null)
 			newParent = dao.update(newParent);
 		Version.incUpdate(category);
+		category.setLastChange(System.currentTimeMillis());
 		category = dao.update(category);
 	}
 
@@ -238,7 +239,7 @@ public class CopyPaste {
 		Database.createCategorizedDao(entity.getModelType()).updateCategory(entity, parent);
 		// need to notifiy index updater manually here
 		Dataset dataset = CloudUtil.toDataset(entity, category);
-		Database.getIndexUpdater().update(dataset);
+		Database.getIndexUpdater().update(dataset, entity.getId());
 	}
 
 	private static void copy(CategoryElement element, INavigationElement<?> category) {

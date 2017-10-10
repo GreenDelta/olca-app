@@ -55,6 +55,7 @@ final class SaveProcessUtil {
 		qRef.flowPropertyFactor = setup.getFlowPropertyFactor();
 		qRef.isInput = false;
 		qRef.unit = setup.getUnit();
+		qRef.internalId = p.drawNextInternalId();
 		p.getExchanges().add(qRef);
 		p.setQuantitativeReference(qRef);
 	}
@@ -84,6 +85,7 @@ final class SaveProcessUtil {
 			e.amount = result.value;
 			e.flowPropertyFactor = flow.getReferenceFactor();
 			e.unit = getRefUnit(flow);
+			e.internalId = p.drawNextInternalId();
 			p.getExchanges().add(e);
 		}
 	}

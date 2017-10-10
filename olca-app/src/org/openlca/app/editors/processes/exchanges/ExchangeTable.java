@@ -30,6 +30,7 @@ import org.openlca.core.database.FlowDao;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowPropertyFactor;
+import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.Unit;
@@ -185,17 +186,33 @@ class ExchangeTable {
 			Exchange e = new Exchange();
 			FlowDao flowDao = new FlowDao(Database.get());
 			Flow flow = flowDao.getForId(descriptor.getId());
+			if (!canAdd(flow)) {
+				continue;
+			}
 			e.flow = flow;
 			e.flowPropertyFactor = flow.getReferenceFactor();
 			Unit unit = getUnit(flow.getReferenceFactor());
 			e.unit = unit;
 			e.amount = 1.0;
 			e.isInput = forInputs;
+			e.internalId = process.drawNextInternalId();
 			process.getExchanges().add(e);
 		}
 		viewer.setInput(process.getExchanges());
 		editor.setDirty(true);
 		editor.postEvent(editor.EXCHANGES_CHANGED, this);
+	}
+	
+	private boolean canAdd(Flow flow) {
+		if (forInputs && flow.getFlowType() == FlowType.WASTE_FLOW) 
+			for (Exchange ex : editor.getModel().getExchanges()) 
+				if (ex.isInput && ex.flow.equals(flow)) 
+					return false;
+		if (!forInputs && flow.getFlowType() == FlowType.PRODUCT_FLOW) 
+			for (Exchange ex : editor.getModel().getExchanges()) 
+				if (!ex.isInput && ex.flow.equals(flow)) 
+					return false;
+		return true;
 	}
 
 	private Unit getUnit(FlowPropertyFactor factor) {

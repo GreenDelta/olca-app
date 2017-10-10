@@ -151,7 +151,7 @@ class CloudFetchAction extends Action implements INavigationAction {
 				}
 				if (data != null) {
 					mergedData.put(dataset, data);
-				} else {
+				} else if (!result.overwriteRemoteChanges()) {
 					toFetch.add(dataset.asFileReference());
 				}
 			}

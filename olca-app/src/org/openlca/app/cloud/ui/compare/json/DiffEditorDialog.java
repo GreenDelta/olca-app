@@ -99,9 +99,9 @@ public class DiffEditorDialog extends FormDialog {
 			createButton(parent, IDialogConstants.OK_ID, M.MarkAsMerged, true);
 		else if (hasRight) {
 			createButton(parent, KEEP_LOCAL_MODEL, M.KeepModelDeleted, true);
-			createButton(parent, FETCH_REMOTE_MODEL, M.FetchRemoteModel, true);
+			createButton(parent, FETCH_REMOTE_MODEL, M.FetchRemoteModel, false);
 		} else {
-			createButton(parent, KEEP_LOCAL_MODEL, M.KeepLocalModel, true);
+			createButton(parent, KEEP_LOCAL_MODEL, M.KeepLocalModel, false);
 			createButton(parent, FETCH_REMOTE_MODEL, M.DeleteLocalModel, true);
 		}
 	}

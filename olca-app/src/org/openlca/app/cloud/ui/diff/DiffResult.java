@@ -5,6 +5,7 @@ import org.openlca.app.cloud.index.DiffType;
 import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer.Direction;
 import org.openlca.cloud.model.data.Dataset;
 import org.openlca.cloud.model.data.FetchRequestData;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Version;
 
 import com.google.gson.JsonObject;
@@ -100,7 +101,10 @@ public class DiffResult {
 				return DiffResponse.CONFLICT;
 			return DiffResponse.DELETE_FROM_REMOTE;
 		case CHANGED:
+		case NEW:
 			if (!remote.version.equals(local.dataset.version))
+				return DiffResponse.CONFLICT;
+			if (remote.isDeleted())
 				return DiffResponse.CONFLICT;
 			// TODO check if this always correct
 			if (isNewer(local.getDataset().version, remote.version))
@@ -150,7 +154,10 @@ public class DiffResult {
 
 	public String getDisplayName() {
 		if (local != null)
-			return local.getDataset().name;
+			if (getType() != DiffResponse.DELETE_FROM_REMOTE || local.getDataset().type != ModelType.CATEGORY)
+				return local.getDataset().name;
+			else
+				return local.dataset.name;
 		if (remote != null)
 			return remote.name;
 		return null;
@@ -196,8 +203,8 @@ public class DiffResult {
 		}
 		String r = "null";
 		if (remote != null) {
-			l = "modelType: " + remote.type;
-			l += ", name: " + remote.name;
+			r = "modelType: " + remote.type;
+			r += ", name: " + remote.name;
 		}
 		String text = "local: {" + l + "}, remote: {" + r + "}, resultType: {" + getType() + "}";
 		return text;

@@ -25,7 +25,7 @@ class DatabaseListener implements IDatabaseListener {
 		if (!(object instanceof CategorizedEntity))
 			return;
 		CategorizedEntity entity = (CategorizedEntity) object;
-		indexUpdater.update(CloudUtil.toDataset(entity));
+		indexUpdater.update(CloudUtil.toDataset(entity), entity.getId());
 	}
 
 	@Override
@@ -35,4 +35,5 @@ class DatabaseListener implements IDatabaseListener {
 		CategorizedEntity entity = (CategorizedEntity) object;
 		indexUpdater.delete(CloudUtil.toDataset(entity));
 	}
+	
 }

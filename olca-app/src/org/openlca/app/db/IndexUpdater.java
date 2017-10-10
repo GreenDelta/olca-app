@@ -1,5 +1,6 @@
 package org.openlca.app.db;
 
+import org.openlca.app.cloud.index.Diff;
 import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.cloud.index.DiffType;
 import org.openlca.cloud.model.data.Dataset;
@@ -48,18 +49,23 @@ public class IndexUpdater {
 		index.update(dataset, DiffType.NEW);
 	}
 
-	public void update(Dataset dataset) {
+	public void update(Dataset dataset, long localId) {
 		DiffIndex index = getIndex();
 		if (index == null)
 			return;
-		update(dataset, index);
+		update(dataset, localId, index);
 		if (inTransaction)
 			return;
 		index.commit();
 	}
 
-	private void update(Dataset dataset, DiffIndex index) {
-		DiffType previousType = index.get(dataset.refId).type;
+	private void update(Dataset dataset, long localId, DiffIndex index) {
+		Diff existing = index.get(dataset.refId);
+		if (existing == null)  {
+			insert(dataset, localId);
+			return;
+		}
+		DiffType previousType = existing.type;
 		if (previousType == DiffType.NEW)
 			index.update(dataset, DiffType.NEW);
 		else
@@ -86,5 +92,5 @@ public class IndexUpdater {
 		DiffIndex index = Database.getDiffIndex();
 		return index;
 	}
-
+	
 }

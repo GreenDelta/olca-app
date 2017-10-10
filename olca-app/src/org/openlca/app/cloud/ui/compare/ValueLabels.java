@@ -13,7 +13,8 @@ import com.google.gson.JsonElement;
 
 class ValueLabels {
 
-	private static DateFormat dateFormatter = DateFormat.getDateTimeInstance();
+	private static DateFormat timestampFormatter = DateFormat.getDateTimeInstance();
+	private static DateFormat dateFormatter = DateFormat.getDateInstance();
 
 	static String get(String property, JsonElement element, JsonElement parent,
 			String value) {
@@ -22,10 +23,12 @@ class ValueLabels {
 		if (EnumFields.isEnum(parent, property)) {
 			Object enumValue = EnumFields.getEnum(parent, property, value);
 			value = Labels.getEnumText(enumValue);
-		} else if (DateFields.isTimestamp(parent, property)) {
+		} else if (DateFields.isDateOrTimestamp(parent, property)) {
 			Date date = Dates.fromString(value);
-			if (date != null)
-				value = dateFormatter.format(date);
+			if (date != null) {
+				DateFormat formatter = DateFields.isDate(parent, property) ? dateFormatter : timestampFormatter;
+				value = formatter.format(date);
+			}
 		}
 		if (value == null)
 			return "null";
@@ -52,7 +55,7 @@ class ValueLabels {
 	}
 
 	private static boolean isInputField(String property, JsonElement parent) {
-		return ModelUtil.isType(parent, Exchange.class)	&& property.equals("input");
+		return ModelUtil.isType(parent, Exchange.class) && property.equals("input");
 	}
 
 	private static String getInputValue(String value) {
