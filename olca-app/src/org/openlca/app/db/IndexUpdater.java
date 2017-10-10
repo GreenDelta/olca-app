@@ -7,7 +7,7 @@ import org.openlca.cloud.model.data.Dataset;
 
 public class IndexUpdater {
 
-	private boolean disabled;
+	boolean disabled;
 	private boolean inTransaction;
 
 	public void beginTransaction() {

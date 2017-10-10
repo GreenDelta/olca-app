@@ -174,8 +174,10 @@ public class DatabaseActivateAction extends Action implements INavigationAction 
 
 		private void runUpgrades(IDatabase db, AtomicBoolean failed) {
 			try {
+				Database.getIndexUpdater().disable();
 				Upgrades.runUpgrades(db);
 				db.getEntityFactory().getCache().evictAll();
+				Database.getIndexUpdater().enable();
 			} catch (Exception e) {
 				failed.set(true);
 				log.error("Failed to update database", e);

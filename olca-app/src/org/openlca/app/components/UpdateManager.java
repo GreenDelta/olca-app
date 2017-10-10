@@ -135,6 +135,7 @@ public class UpdateManager {
 			List<String> selection = new ArrayList<>(Arrays.asList(webkit.executeScript("getSelection()").toString()
 					.split(",")));
 			App.runWithProgress(M.ApplyingDatabaseUpdates, () -> {
+				Database.getIndexUpdater().disable();
 				for (UpdateMetaInfo metaInfo : updates) {
 					Update update = updater.getForRefId(metaInfo.refId);
 					if (selection.contains(metaInfo.refId)) {
@@ -147,6 +148,7 @@ public class UpdateManager {
 				for (String refId : selection) {
 					execute(localUpdates.get(refId));
 				}
+				Database.getIndexUpdater().enable();
 			});
 			Navigator.refresh();
 			super.okPressed();

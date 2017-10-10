@@ -24,6 +24,8 @@ class DatabaseListener implements IDatabaseListener {
 
 	@Override
 	public void modelInserted(BaseDescriptor descriptor) {
+		if (indexUpdater.disabled)
+			return;
 		Dataset dataset = toDataset(descriptor);
 		if (dataset == null)
 			return;
@@ -32,6 +34,8 @@ class DatabaseListener implements IDatabaseListener {
 
 	@Override
 	public void modelUpdated(BaseDescriptor descriptor) {
+		if (indexUpdater.disabled)
+			return;
 		Dataset dataset = toDataset(descriptor);
 		if (dataset == null)
 			return;
@@ -40,6 +44,8 @@ class DatabaseListener implements IDatabaseListener {
 
 	@Override
 	public void modelDeleted(BaseDescriptor descriptor) {
+		if (indexUpdater.disabled)
+			return;
 		Dataset dataset = toDataset(descriptor);
 		if (dataset == null)
 			return;
