@@ -9,9 +9,9 @@ import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
 import org.openlca.cloud.model.data.Dataset;
-import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.CategorizedEntityDao;
 import org.openlca.core.database.CategoryDao;
+import org.openlca.core.database.Daos;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
@@ -236,7 +236,7 @@ public class CopyPaste {
 		CategorizedDescriptor entity = element.getContent();
 		Category category = getCategory(categoryElement);
 		Optional<Category> parent = Optional.fromNullable(category);
-		Database.createCategorizedDao(entity.getModelType()).updateCategory(entity, parent);
+		Daos.categorized(Database.get(), entity.getModelType()).updateCategory(entity, parent);
 		// need to notifiy index updater manually here
 		Dataset dataset = CloudUtil.toDataset(entity, category);
 		Database.getIndexUpdater().update(dataset, entity.getId());
@@ -271,7 +271,7 @@ public class CopyPaste {
 
 	private static CategorizedEntity copy(ModelElement element) {
 		CategorizedDescriptor descriptor = element.getContent();
-		CategorizedEntityDao<?, ?> dao = Database.createCategorizedDao(descriptor.getModelType());
+		CategorizedEntityDao<?, ?> dao = Daos.categorized(Database.get(), descriptor.getModelType());
 		CategorizedEntity entity = dao.getForId(descriptor.getId());
 		CategorizedEntity copy = cloneIt(entity);
 		if (copy != null)
@@ -293,8 +293,8 @@ public class CopyPaste {
 
 	@SuppressWarnings("unchecked")
 	private static <T extends CategorizedEntity> T insert(T entity) {
-		BaseDao<T> dao = (BaseDao<T>) Database.get().createDao(entity.getClass());
-		return dao.insert(entity);
+		Class<T> clazz = (Class<T>) entity.getClass();
+		return Daos.base(Database.get(), clazz).insert(entity);
 	}
 
 	public static boolean cacheIsEmpty() {

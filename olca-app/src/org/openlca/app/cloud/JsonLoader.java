@@ -7,6 +7,7 @@ import org.openlca.app.db.Database;
 import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.model.data.Dataset;
 import org.openlca.cloud.util.WebRequests.WebRequestException;
+import org.openlca.core.database.Daos;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.ModelType;
@@ -56,7 +57,7 @@ public class JsonLoader {
 	private CategorizedEntity load(Dataset dataset) {
 		ModelType type = dataset.type;
 		String refId = dataset.refId;
-		return Database.createCategorizedDao(type).getForRefId(refId);
+		return Daos.categorized(Database.get(), type).getForRefId(refId);
 	}
 
 	public JsonObject getRemoteJson(Dataset dataset) {

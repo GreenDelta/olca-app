@@ -11,7 +11,7 @@ import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Question;
-import org.openlca.core.database.BaseDao;
+import org.openlca.core.database.CategoryDao;
 import org.openlca.core.model.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +58,7 @@ class DeleteCategoryAction extends Action implements INavigationAction {
 	private void delete() {
 		Category category = categoryElement.getContent();
 		try {
-			BaseDao<Category> dao = Database.get().createDao(Category.class);
+			CategoryDao dao = new CategoryDao(Database.get());
 			Category parent = category.getCategory();
 			if (parent != null) {
 				parent.getChildCategories().remove(category);

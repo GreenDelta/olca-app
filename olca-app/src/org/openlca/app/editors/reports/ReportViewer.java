@@ -1,5 +1,7 @@
 package org.openlca.app.editors.reports;
 
+import javafx.scene.web.WebEngine;
+
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -24,8 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-
-import javafx.scene.web.WebEngine;
 
 public class ReportViewer extends SimpleFormEditor {
 

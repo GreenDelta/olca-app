@@ -1,17 +1,17 @@
 package org.openlca.app.editors.graphical.search;
 
+import gnu.trove.impl.Constants;
+import gnu.trove.iterator.TIntIterator;
+import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.set.hash.TIntHashSet;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 import org.openlca.core.model.ProcessLink;
-
-import gnu.trove.impl.Constants;
-import gnu.trove.iterator.TIntIterator;
-import gnu.trove.list.array.TIntArrayList;
-import gnu.trove.map.hash.TLongObjectHashMap;
-import gnu.trove.set.hash.TIntHashSet;
 
 /**
  * This is a data structure for searching a set of existing process links by

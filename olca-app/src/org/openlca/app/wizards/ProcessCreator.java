@@ -2,6 +2,8 @@ package org.openlca.app.wizards;
 
 import java.util.UUID;
 
+import org.openlca.core.database.FlowDao;
+import org.openlca.core.database.FlowPropertyDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
@@ -87,14 +89,13 @@ class ProcessCreator {
 		FlowType type = wasteProcess ? FlowType.WASTE_FLOW
 				: FlowType.PRODUCT_FLOW;
 		flow.setFlowType(type);
-		FlowProperty property = db.createDao(FlowProperty.class)
-				.getForId(flowProperty.getId());
+		FlowProperty property = new FlowPropertyDao(db).getForId(flowProperty.getId());
 		flow.setReferenceFlowProperty(property);
 		FlowPropertyFactor factor = new FlowPropertyFactor();
 		factor.setConversionFactor(1);
 		factor.setFlowProperty(property);
 		flow.getFlowPropertyFactors().add(factor);
-		db.createDao(Flow.class).insert(flow);
+		new FlowDao(db).insert(flow);
 		return flow;
 	}
 

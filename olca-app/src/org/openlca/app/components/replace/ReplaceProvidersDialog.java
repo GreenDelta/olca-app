@@ -25,12 +25,10 @@ import org.openlca.app.util.UI;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.BaseLabelProvider;
 import org.openlca.app.viewers.BaseNameSorter;
-import org.openlca.core.database.Daos;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.FlowType;
-import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
@@ -143,7 +141,7 @@ public class ReplaceProvidersDialog extends FormDialog {
 	}
 
 	private List<ProcessDescriptor> getUsedInExchanges() {
-		ProcessDao dao = (ProcessDao) Daos.createCategorizedDao(Database.get(), ModelType.PROCESS);
+		ProcessDao dao = new ProcessDao(Database.get());
 		Set<Long> ids = dao.getUsed();
 		List<ProcessDescriptor> result = new ArrayList<>();
 		result.add(new ProcessDescriptor());
@@ -154,7 +152,7 @@ public class ReplaceProvidersDialog extends FormDialog {
 	private List<FlowDescriptor> getProductOutputs(ProcessDescriptor process) {
 		if (process == null || process.getId() == 0l)
 			return Collections.emptyList();
-		ProcessDao dao = (ProcessDao) Daos.createCategorizedDao(Database.get(), ModelType.PROCESS);
+		ProcessDao dao = new ProcessDao(Database.get());
 		List<FlowDescriptor> products = dao.getTechnologyOutputs(process);
 		for (FlowDescriptor flow : new ArrayList<>(products))
 			if (flow.getFlowType() != FlowType.PRODUCT_FLOW)
@@ -165,11 +163,10 @@ public class ReplaceProvidersDialog extends FormDialog {
 	private List<ProcessDescriptor> getProviders(FlowDescriptor product) {
 		List<ProcessDescriptor> result = new ArrayList<>();
 		// TODO: search for processes and waste flows
-		FlowDao flowDao = (FlowDao) Daos.createCategorizedDao(Database.get(),
-				ModelType.FLOW);
+		FlowDao flowDao = new FlowDao(Database.get());
 		Set<Long> ids = flowDao.getWhereOutput(product.getId());
 		result.add(new ProcessDescriptor());
-		ProcessDao processDao = (ProcessDao) Daos.createCategorizedDao(Database.get(), ModelType.PROCESS);
+		ProcessDao processDao = new ProcessDao(Database.get());
 		result.addAll(processDao.getDescriptors(ids));
 		return result;
 	}
@@ -185,7 +182,7 @@ public class ReplaceProvidersDialog extends FormDialog {
 		ProcessDescriptor oldProcess = Viewers.getFirstSelected(processViewer);
 		FlowDescriptor product = Viewers.getFirstSelected(productViewer);
 		ProcessDescriptor newProcess = Viewers.getFirstSelected(replacementViewer);
-		ProcessDao dao = (ProcessDao) Daos.createCategorizedDao(Database.get(), ModelType.PROCESS);
+		ProcessDao dao = new ProcessDao(Database.get());
 		dao.replace(oldProcess.getId(), product.getId(), newProcess != null ? newProcess.getId() : null);
 		Database.get().getEntityFactory().getCache().evictAll();
 		super.okPressed();

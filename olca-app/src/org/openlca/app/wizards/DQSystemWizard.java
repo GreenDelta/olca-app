@@ -1,13 +1,12 @@
 package org.openlca.app.wizards;
 
-import org.openlca.app.M;
-
 import java.util.UUID;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.openlca.app.M;
 import org.openlca.core.model.DQSystem;
 import org.openlca.core.model.ModelType;
 

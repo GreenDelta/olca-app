@@ -26,6 +26,7 @@ import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.tables.Tables;
+import org.openlca.core.database.FlowPropertyDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.ModelType;
@@ -197,7 +198,7 @@ public abstract class UnitMappingPage extends WizardPage {
 			setPageComplete(false);
 		else {
 			try {
-				flowProperties = database.createDao(FlowProperty.class)
+				flowProperties = new FlowPropertyDao(database)
 						.getAll();
 				// flow properties are sorted for the combo cell editor
 				Collections.sort(flowProperties,

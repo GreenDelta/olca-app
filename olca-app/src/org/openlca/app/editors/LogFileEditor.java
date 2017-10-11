@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.UUID;
 
+import javafx.embed.swt.FXCanvas;
+import javafx.scene.web.WebEngine;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -21,9 +24,6 @@ import org.openlca.app.util.Editors;
 import org.openlca.app.util.UI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javafx.embed.swt.FXCanvas;
-import javafx.scene.web.WebEngine;
 
 public class LogFileEditor extends FormEditor {
 

@@ -1,5 +1,7 @@
 package org.openlca.app.editors.locations;
 
+import javafx.scene.web.WebEngine;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -20,8 +22,6 @@ import org.openlca.app.util.UI;
 import org.openlca.core.model.Location;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javafx.scene.web.WebEngine;
 
 public class LocationInfoPage extends ModelPage<Location> implements WebPage {
 

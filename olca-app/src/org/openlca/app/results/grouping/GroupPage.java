@@ -40,6 +40,7 @@ import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
+import org.openlca.core.database.ProcessGroupSetDao;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessGroup;
 import org.openlca.core.model.ProcessGroupSet;
@@ -412,7 +413,7 @@ public class GroupPage extends FormPage {
 				return null;
 			ProcessGroupSet set = new ProcessGroupSet();
 			set.setName(dialog.getValue());
-			Database.createDao(ProcessGroupSet.class).insert(set);
+			new ProcessGroupSetDao(Database.get()).insert(set);
 			return set;
 		}
 
@@ -448,7 +449,7 @@ public class GroupPage extends FormPage {
 				throws Exception {
 			List<ProcessGroup> groups = createGroups();
 			groupSet.setGroups(groups);
-			Database.createDao(ProcessGroupSet.class).update(groupSet);
+			new ProcessGroupSetDao(Database.get()).update(groupSet);
 			page.groupSet = groupSet;
 		}
 	}

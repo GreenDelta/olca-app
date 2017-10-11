@@ -1,6 +1,5 @@
 package org.openlca.app.cloud.ui;
 
-import org.openlca.app.M;
 import java.util.Collections;
 
 import org.eclipse.swt.graphics.Point;
@@ -11,6 +10,7 @@ import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.openlca.app.M;
 import org.openlca.app.cloud.JsonLoader;
 import org.openlca.app.cloud.ui.diff.DiffNode;
 import org.openlca.app.cloud.ui.diff.FetchDiffViewer;

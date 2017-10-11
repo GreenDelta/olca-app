@@ -13,6 +13,7 @@ import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.UI;
+import org.openlca.core.database.CategoryDao;
 import org.openlca.core.model.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +65,7 @@ class RenameCategoryAction extends Action implements INavigationAction {
 	private void doUpdate(String newName) {
 		try {
 			category.setName(newName.trim());
-			Database.get().createDao(Category.class).update(category);
+			new CategoryDao(Database.get()).update(category);
 			Navigator.refresh(element);
 		} catch (final Exception e) {
 			log.error("Update category failed", e);

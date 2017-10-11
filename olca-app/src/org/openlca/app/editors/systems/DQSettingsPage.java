@@ -1,7 +1,5 @@
 package org.openlca.app.editors.systems;
 
-import org.openlca.app.M;
-
 import java.math.RoundingMode;
 
 import org.eclipse.jface.viewers.IBaseLabelProvider;
@@ -9,6 +7,7 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.openlca.app.M;
 import org.openlca.app.Preferences;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.processes.DQSystemViewer;

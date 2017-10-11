@@ -1,6 +1,5 @@
 package org.openlca.app.rcp;
 
-import org.openlca.app.M;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
@@ -10,6 +9,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
+import org.openlca.app.M;
 import org.openlca.app.Preferences;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;

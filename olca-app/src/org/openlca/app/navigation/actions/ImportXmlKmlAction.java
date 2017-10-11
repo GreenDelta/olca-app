@@ -1,6 +1,5 @@
 package org.openlca.app.navigation.actions;
 
-import org.openlca.app.M;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
@@ -9,6 +8,7 @@ import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.wizards.IWizardDescriptor;
+import org.openlca.app.M;
 import org.openlca.app.editors.locations.KmzImportWizard;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelTypeElement;

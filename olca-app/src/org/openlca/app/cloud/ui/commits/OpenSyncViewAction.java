@@ -1,11 +1,10 @@
 package org.openlca.app.cloud.ui.commits;
 
-import org.openlca.app.M;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.openlca.app.M;
 import org.openlca.app.cloud.ui.diff.SyncView;
 import org.openlca.cloud.model.data.Commit;
 import org.slf4j.Logger;

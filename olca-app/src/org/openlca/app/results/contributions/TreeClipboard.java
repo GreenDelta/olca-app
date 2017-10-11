@@ -12,8 +12,8 @@ import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.ISharedImages;
 import org.openlca.app.M;
-import org.openlca.app.util.Actions;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
 
 final class TreeClipboard {

@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javafx.scene.web.WebEngine;
+
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -26,8 +28,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-
-import javafx.scene.web.WebEngine;
 
 class KmlResultView extends FormPage implements WebPage {
 

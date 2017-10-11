@@ -1,11 +1,11 @@
 package org.openlca.app.util;
 
-import org.openlca.app.M;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Queue;
 
+import org.openlca.app.M;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.ContributionItem;
 import org.openlca.core.results.ContributionSet;

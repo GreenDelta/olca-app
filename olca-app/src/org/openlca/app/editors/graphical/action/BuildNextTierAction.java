@@ -15,7 +15,7 @@ import org.openlca.app.editors.graphical.command.MassCreationCommand;
 import org.openlca.app.editors.graphical.model.ExchangeNode;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
-import org.openlca.core.database.BaseDao;
+import org.openlca.core.database.ExchangeDao;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.Exchange;
@@ -26,7 +26,7 @@ class BuildNextTierAction extends Action implements IBuildAction {
 
 	private final FlowDao flowDao;
 	private final ProcessDao processDao;
-	private final BaseDao<Exchange> exchangeDao;
+	private final ExchangeDao exchangeDao;
 	private List<ProcessNode> nodes;
 	private ProductSystemNode systemNode;
 	private ProcessType preferredType = ProcessType.UNIT_PROCESS;
@@ -36,7 +36,7 @@ class BuildNextTierAction extends Action implements IBuildAction {
 		setText(M.BuildNextTier);
 		flowDao = new FlowDao(Database.get());
 		processDao = new ProcessDao(Database.get());
-		exchangeDao = new BaseDao<>(Exchange.class, Database.get());
+		exchangeDao = new ExchangeDao(Database.get());
 	}
 
 	@Override

@@ -60,7 +60,7 @@ class Search implements Runnable {
 	private List<?> getDescriptors(ModelType type) {
 		if (type == ModelType.PARAMETER)
 			return new ParameterDao(database).getGlobalDescriptors();
-		return Daos.createRootDao(database, type).getDescriptors();
+		return Daos.root(database, type).getDescriptors();
 	}
 
 	private void fetchResults(List<?> descriptors) {

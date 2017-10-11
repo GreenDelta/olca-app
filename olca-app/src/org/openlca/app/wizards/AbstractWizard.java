@@ -67,7 +67,7 @@ public abstract class AbstractWizard<T extends CategorizedEntity> extends
 
 	@SuppressWarnings("unchecked")
 	protected BaseDao<T> createDao() {
-		return (BaseDao<T>) Daos.createCategorizedDao(Database.get(), getModelType());
+		return (BaseDao<T>) Daos.categorized(Database.get(), getModelType());
 	}
 
 	protected abstract String getTitle();

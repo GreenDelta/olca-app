@@ -1,6 +1,5 @@
 package org.openlca.app.editors.systems;
 
-import org.openlca.app.M;
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
@@ -10,6 +9,7 @@ import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.M;
 import org.openlca.app.components.HyperlinkListener;
 import org.openlca.app.util.UI;
 

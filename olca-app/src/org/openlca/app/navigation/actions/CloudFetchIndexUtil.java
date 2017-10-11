@@ -36,10 +36,6 @@ class FetchIndexHelper {
 		this.index = index;
 	}
 
-	static void index(List<DiffResult> changed, DiffIndex index) {
-		index(changed, index, null);
-	}
-
 	static void index(List<DiffResult> changed, DiffIndex index, Consumer<DiffResult> callback) {
 		FetchIndexHelper helper = new FetchIndexHelper(index);
 		helper.localIds = getLocalIds(changed);
@@ -57,7 +53,7 @@ class FetchIndexHelper {
 		Map<String, Long> refIdToLocalId = new HashMap<>();
 		IDatabase db = Database.get();
 		for (ModelType type : refIds.keySet()) {
-			CategorizedEntityDao<?, ? extends CategorizedDescriptor> dao = Daos.createCategorizedDao(db, type);
+			CategorizedEntityDao<?, ?> dao = Daos.categorized(db, type);
 			Set<String> ids = refIds.get(type);
 			List<? extends CategorizedDescriptor> descriptors = dao.getDescriptorsForRefIds(ids);
 			for (CategorizedDescriptor descriptor : descriptors) {

@@ -2,6 +2,9 @@ package org.openlca.app.editors;
 
 import java.util.UUID;
 
+import javafx.scene.web.WebEngine;
+import netscape.javascript.JSObject;
+
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
@@ -21,9 +24,6 @@ import org.openlca.app.util.UI;
 import org.openlca.util.OS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javafx.scene.web.WebEngine;
-import netscape.javascript.JSObject;
 
 public class StartPage extends SimpleFormEditor {
 

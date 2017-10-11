@@ -3,6 +3,13 @@ package org.openlca.app.util;
 import java.net.CookieHandler;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javafx.concurrent.Worker.State;
+import javafx.embed.swt.FXCanvas;
+import javafx.scene.Scene;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
+import netscape.javascript.JSObject;
+
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
@@ -30,13 +37,6 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.rcp.html.WebPage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javafx.concurrent.Worker.State;
-import javafx.embed.swt.FXCanvas;
-import javafx.scene.Scene;
-import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebView;
-import netscape.javascript.JSObject;
 
 public class UI {
 

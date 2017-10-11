@@ -15,7 +15,7 @@ import org.openlca.app.navigation.ModelTypeElement;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.UI;
-import org.openlca.core.database.BaseDao;
+import org.openlca.core.database.CategoryDao;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 import org.slf4j.Logger;
@@ -80,7 +80,7 @@ class CreateCategoryAction extends Action implements INavigationAction {
 	}
 
 	private void tryInsert(Category category) {
-		BaseDao<Category> dao = Database.get().createDao(Category.class);
+		CategoryDao dao = new CategoryDao(Database.get());
 		if (parent == null)
 			dao.insert(category);
 		else {

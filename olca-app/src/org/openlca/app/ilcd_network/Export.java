@@ -9,6 +9,8 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.openlca.app.M;
 import org.openlca.app.preferencepages.IoPreference;
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.database.ProcessDao;
+import org.openlca.core.database.ProductSystemDao;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
@@ -74,7 +76,7 @@ public class Export implements IRunnableWithProgress {
 
 	private void tryExportProcess(ExportConfig config, BaseDescriptor descriptor) {
 		try {
-			Process process = database.createDao(Process.class).getForId(
+			Process process = new ProcessDao(database).getForId(
 					descriptor.getId());
 			ProcessExport export = new ProcessExport(config);
 			export.run(process);
@@ -86,8 +88,7 @@ public class Export implements IRunnableWithProgress {
 
 	private void tryExportSystem(ExportConfig config, BaseDescriptor descriptor) {
 		try {
-			ProductSystem system = database.createDao(ProductSystem.class)
-					.getForId(descriptor.getId());
+			ProductSystem system = new ProductSystemDao(database).getForId(descriptor.getId());
 			SystemExport export = new SystemExport(config);
 			export.run(system);
 			monitor.worked(1);

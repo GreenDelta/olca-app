@@ -1,5 +1,7 @@
 package org.openlca.app.editors.processes.kml;
 
+import javafx.scene.web.WebEngine;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
@@ -11,8 +13,6 @@ import org.openlca.app.util.Info;
 import org.openlca.app.util.UI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javafx.scene.web.WebEngine;
 
 public class MapEditor implements WebPage {
 

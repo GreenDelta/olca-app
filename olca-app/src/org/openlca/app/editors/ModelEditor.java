@@ -21,6 +21,7 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.BaseDao;
+import org.openlca.core.database.Daos;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Version;
@@ -71,7 +72,7 @@ public abstract class ModelEditor<T extends CategorizedEntity> extends
 		setPartName(input.getName());
 		setTitleImage(Images.get(i.getDescriptor()));
 		try {
-			dao = new BaseDao<>(modelClass, Database.get());
+			dao = Daos.base(Database.get(), modelClass);
 			model = dao.getForId(i.getDescriptor().getId());
 			eventBus.register(this);
 		} catch (Exception e) {

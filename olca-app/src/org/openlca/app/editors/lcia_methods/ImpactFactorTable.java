@@ -31,6 +31,7 @@ import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.table.modify.ComboBoxCellModifier;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
+import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
@@ -139,7 +140,7 @@ class ImpactFactorTable {
 		for (BaseDescriptor descriptor : descriptors) {
 			if (descriptors == null || descriptor.getModelType() != ModelType.FLOW)
 				continue;
-			Flow flow = database.createDao(Flow.class).getForId(descriptor.getId());
+			Flow flow = new FlowDao(database).getForId(descriptor.getId());
 			ImpactFactor f = new ImpactFactor();
 			f.flow = flow;
 			f.flowPropertyFactor = flow.getReferenceFactor();

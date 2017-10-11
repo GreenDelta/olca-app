@@ -1,7 +1,5 @@
 package org.openlca.app.cloud.ui.commits;
 
-import org.openlca.app.M;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +12,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.cloud.JsonLoader;
 import org.openlca.app.cloud.ui.compare.ModelLabelProvider;

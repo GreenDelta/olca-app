@@ -23,6 +23,7 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.combo.FlowPropertyViewer;
+import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowType;
@@ -229,7 +230,7 @@ public class ProcessWizard extends AbstractWizard<Process> {
 				return null;
 			FlowDescriptor flow = (FlowDescriptor) e.getContent();
 			IDatabase db = Database.get();
-			return db.createDao(Flow.class).getForId(flow.getId());
+			return new FlowDao(db).getForId(flow.getId());
 		}
 	}
 

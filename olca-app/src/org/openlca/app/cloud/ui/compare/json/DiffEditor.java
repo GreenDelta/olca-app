@@ -1,10 +1,10 @@
 package org.openlca.app.cloud.ui.compare.json;
 
-import org.openlca.app.M;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.M;
 import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer;
 import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer.Direction;
 import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer.Side;

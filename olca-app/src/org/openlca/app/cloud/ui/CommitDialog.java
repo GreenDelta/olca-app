@@ -1,6 +1,5 @@
 package org.openlca.app.cloud.ui;
 
-import org.openlca.app.M;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -19,6 +18,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.M;
 import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.cloud.JsonLoader;
 import org.openlca.app.cloud.ui.diff.CommitDiffViewer;

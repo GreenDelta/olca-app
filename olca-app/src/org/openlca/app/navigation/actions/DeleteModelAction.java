@@ -20,9 +20,10 @@ import org.openlca.app.util.Error;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Question;
 import org.openlca.core.database.BaseDao;
+import org.openlca.core.database.Daos;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.usage.IUseSearch;
-import org.openlca.core.model.AbstractEntity;
+import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.slf4j.Logger;
@@ -98,13 +99,12 @@ class DeleteModelAction extends Action implements INavigationAction {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T extends AbstractEntity> void delete(BaseDescriptor descriptor) {
+	private <T extends RootEntity> void delete(BaseDescriptor descriptor) {
 		try {
 			log.trace("delete model {}", descriptor);
 			IDatabase database = Database.get();
-			Class<T> clazz = (Class<T>) descriptor.getModelType()
-					.getModelClass();
-			BaseDao<T> dao = database.createDao(clazz);
+			Class<T> clazz = (Class<T>) descriptor.getModelType().getModelClass();
+			BaseDao<T> dao = Daos.base(database, clazz);
 			T instance = dao.getForId(descriptor.getId());
 			dao.delete(instance);
 			Cache.evict(descriptor);

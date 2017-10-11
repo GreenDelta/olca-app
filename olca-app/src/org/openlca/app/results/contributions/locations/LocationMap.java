@@ -3,6 +3,8 @@ package org.openlca.app.results.contributions.locations;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.scene.web.WebEngine;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
@@ -19,8 +21,6 @@ import org.openlca.core.model.Location;
 import org.openlca.core.results.ContributionItem;
 
 import com.google.gson.Gson;
-
-import javafx.scene.web.WebEngine;
 
 class LocationMap implements WebPage {
 

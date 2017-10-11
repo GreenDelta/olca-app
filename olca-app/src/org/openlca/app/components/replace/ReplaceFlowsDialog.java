@@ -26,10 +26,8 @@ import org.openlca.app.util.UI;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.BaseLabelProvider;
 import org.openlca.app.viewers.BaseNameSorter;
-import org.openlca.core.database.Daos;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.model.Category;
-import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 
 public class ReplaceFlowsDialog extends FormDialog {
@@ -146,7 +144,7 @@ public class ReplaceFlowsDialog extends FormDialog {
 	}
 
 	private List<FlowDescriptor> getUsedInExchanges() {
-		FlowDao dao = (FlowDao) Daos.createCategorizedDao(Database.get(), ModelType.FLOW);
+		FlowDao dao = new FlowDao(Database.get());
 		Set<Long> ids = dao.getUsed();
 		List<FlowDescriptor> result = new ArrayList<>();
 		result.add(new FlowDescriptor());
@@ -155,7 +153,7 @@ public class ReplaceFlowsDialog extends FormDialog {
 	}
 
 	private List<FlowDescriptor> getReplacementCandidates(FlowDescriptor flow) {
-		FlowDao dao = (FlowDao) Daos.createCategorizedDao(Database.get(), ModelType.FLOW);
+		FlowDao dao = new FlowDao(Database.get());
 		Set<Long> ids = dao.getReplacementCandidates(flow.getId(), flow.getFlowType());
 		List<FlowDescriptor> result = new ArrayList<>();
 		result.add(new FlowDescriptor());
@@ -173,7 +171,7 @@ public class ReplaceFlowsDialog extends FormDialog {
 	protected void okPressed() {
 		FlowDescriptor oldFlow = Viewers.getFirstSelected(selectionViewer);
 		FlowDescriptor newFlow = Viewers.getFirstSelected(replacementViewer);
-		FlowDao dao = (FlowDao) Daos.createCategorizedDao(Database.get(), ModelType.FLOW);
+		FlowDao dao = new FlowDao(Database.get());
 		dao.replace(oldFlow.getId(), newFlow.getId(), excludeWithProviders.getSelection());
 		Database.get().getEntityFactory().getCache().evictAll();
 		super.okPressed();

@@ -1,8 +1,13 @@
 package org.openlca.app.editors.systems;
 
+import gnu.trove.list.linked.TLongLinkedList;
+import gnu.trove.set.hash.TLongHashSet;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import javafx.scene.web.WebEngine;
 
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -27,10 +32,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-
-import gnu.trove.list.linked.TLongLinkedList;
-import gnu.trove.set.hash.TLongHashSet;
-import javafx.scene.web.WebEngine;
 
 class HtmlGraph extends FormPage implements WebPage {
 

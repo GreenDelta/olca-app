@@ -2,6 +2,7 @@ package org.openlca.app.viewers.combo;
 
 import java.util.Collections;
 import java.util.List;
+
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ImpactMethodDao;

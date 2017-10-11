@@ -1,7 +1,5 @@
 package org.openlca.app.validation;
 
-import org.openlca.app.M;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -12,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.Labels;
 import org.openlca.core.database.Daos;
@@ -90,7 +89,7 @@ public class DatabaseValidation {
 		IDatabase db = Database.get();
 		if (type == ModelType.PARAMETER)
 			return new ParameterDao(db).getGlobalDescriptors();
-		return Daos.createCategorizedDao(db, type).getDescriptors();
+		return Daos.categorized(db, type).getDescriptors();
 	}
 
 	public ModelStatus evaluate(ModelType type, long id) {
@@ -203,7 +202,7 @@ public class DatabaseValidation {
 			Map<Long, List<Reference>> refMap = byType.get(type);
 			Collection<List<Reference>> values = refMap.values();
 			Set<Long> ids = toIdSet(values);
-			Map<Long, Boolean> map = Daos.createBaseDao(db, type).contains(ids);
+			Map<Long, Boolean> map = Daos.base(db, type).contains(ids);
 			for (Long id : map.keySet())
 				if (map.get(id) == false)
 					notExisting.addAll(refMap.get(id));

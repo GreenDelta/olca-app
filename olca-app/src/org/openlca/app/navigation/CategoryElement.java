@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.openlca.app.db.Database;
 import org.openlca.core.database.CategorizedEntityDao;
+import org.openlca.core.database.Daos;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.slf4j.Logger;
@@ -42,8 +43,7 @@ public class CategoryElement extends NavigationElement<Category> {
 	private void addModelElements(Category category,
 			List<INavigationElement<?>> list) {
 		try {
-			CategorizedEntityDao<?, ?> dao = Database.createCategorizedDao(category
-					.getModelType());
+			CategorizedEntityDao<?, ?> dao = Daos.categorized(Database.get(), category.getModelType());
 			if (dao == null)
 				return;
 			Optional<Category> optional = Optional.fromNullable(category);

@@ -1,11 +1,11 @@
 package org.openlca.app.editors.costs;
 
-import org.openlca.app.M;
 import java.util.Objects;
 
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.Question;

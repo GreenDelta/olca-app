@@ -19,6 +19,7 @@ import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.UI;
+import org.openlca.core.database.ProcessGroupSetDao;
 import org.openlca.core.model.ProcessGroupSet;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
@@ -65,8 +66,7 @@ class GroupSetAction extends Action {
 
 		private ProcessGroupSet[] getGroupSets() {
 			try {
-				List<ProcessGroupSet> list = Database.createDao(
-						ProcessGroupSet.class).getAll();
+				List<ProcessGroupSet> list = new ProcessGroupSetDao(Database.get()).getAll();
 				ProcessGroupSet[] groups = list
 						.toArray(new ProcessGroupSet[list.size()]);
 				Arrays.sort(groups, (s1, s2) ->

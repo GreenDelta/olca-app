@@ -1,7 +1,5 @@
 package org.openlca.app.cloud.ui.commits;
 
-import org.openlca.app.M;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +10,7 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.openlca.app.M;
 import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.UI;

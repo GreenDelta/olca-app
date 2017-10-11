@@ -1,5 +1,7 @@
 package org.openlca.app.devtools;
 
+import javafx.scene.web.WebEngine;
+
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
@@ -11,8 +13,6 @@ import org.openlca.app.rcp.html.WebPage;
 import org.openlca.app.util.UI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javafx.scene.web.WebEngine;
 
 public abstract class ScriptEditorPage extends FormPage implements WebPage {
 

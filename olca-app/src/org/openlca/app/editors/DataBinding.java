@@ -22,6 +22,8 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.core.database.BaseDao;
+import org.openlca.core.database.Daos;
+import org.openlca.core.model.AbstractEntity;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.Descriptors;
@@ -58,9 +60,8 @@ public class DataBinding {
 			Object newValue = viewer.getSelected();
 			if (newValue instanceof BaseDescriptor) {
 				BaseDescriptor descriptor = (BaseDescriptor) newValue;
-				Class<?> modelClass = descriptor.getModelType().getModelClass();
-				newValue = new BaseDao<>(modelClass, Database.get())
-						.getForId(descriptor.getId());
+				Class<? extends AbstractEntity> modelClass = descriptor.getModelType().getModelClass();
+				newValue = Daos.base(Database.get(), modelClass).getForId(descriptor.getId());
 			}
 			Object oldValue = Bean.getValue(bean, property);
 			if (Objects.equals(newValue, oldValue))
@@ -89,8 +90,7 @@ public class DataBinding {
 			BaseDescriptor descriptor = text.getContent();
 			Object newValue = null;
 			if (descriptor != null) {
-				BaseDao<?> dao = new BaseDao<>(descriptor.getModelType()
-						.getModelClass(), Database.get());
+				BaseDao<?> dao = Daos.base(Database.get(), descriptor.getModelType().getModelClass());
 				newValue = dao.getForId(descriptor.getId());
 			}
 			Object oldValue = Bean.getValue(bean, property);

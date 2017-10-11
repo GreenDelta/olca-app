@@ -30,6 +30,7 @@ import org.openlca.app.util.trees.Trees;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.validation.ModelStatus.Status;
 import org.openlca.core.database.CategoryDao;
+import org.openlca.core.database.Daos;
 import org.openlca.core.database.references.IReferenceSearch.Reference;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Parameter;
@@ -64,7 +65,7 @@ public class ValidationView extends ViewPart {
 			if (el == null || el instanceof StatusList)
 				return;
 			ModelStatus status = el instanceof ModelStatus ? (ModelStatus) el : ((StatusEntry) el).status;
-			App.openEditor(Database.createCategorizedDao(status.modelType).getDescriptor(status.id));
+			App.openEditor(Daos.categorized(Database.get(), status.modelType).getDescriptor(status.id));
 		});
 		Action copy = TreeClipboard.onCopy(viewer.getTree());
 		Actions.bind(viewer, new Action(M.ExpandAll) {
@@ -202,7 +203,7 @@ public class ValidationView extends ViewPart {
 		}
 
 		private String getText(ModelStatus status, int column) {
-			CategorizedDescriptor descriptor = Database.createCategorizedDao(status.modelType).getDescriptor(status.id);
+			CategorizedDescriptor descriptor = Daos.categorized(Database.get(), status.modelType).getDescriptor(status.id);
 			Category category = null;
 			if (descriptor.getCategory() != null)
 				category = new CategoryDao(Database.get()).getForId(descriptor.getCategory());

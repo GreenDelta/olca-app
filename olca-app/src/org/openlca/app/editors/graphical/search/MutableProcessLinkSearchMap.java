@@ -1,11 +1,11 @@
 package org.openlca.app.editors.graphical.search;
 
+import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.map.hash.TLongObjectHashMap;
+
 import java.util.Collection;
 
 import org.openlca.core.model.ProcessLink;
-
-import gnu.trove.list.array.TIntArrayList;
-import gnu.trove.map.hash.TLongObjectHashMap;
 
 public class MutableProcessLinkSearchMap extends ProcessLinkSearchMap {
 

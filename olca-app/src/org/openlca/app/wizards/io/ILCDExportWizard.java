@@ -12,6 +12,7 @@ import org.eclipse.ui.IWorkbench;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.preferencepages.IoPreference;
+import org.openlca.core.database.Daos;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
@@ -71,9 +72,7 @@ public class ILCDExportWizard extends Wizard implements IExportWizard {
 				break;
 			monitor.setTaskName(descriptor.getName());
 			try {
-				Object component = config.db.createDao(
-						descriptor.getModelType().getModelClass()).getForId(
-								descriptor.getId());
+				Object component = Daos.root(config.db, descriptor.getModelType()).getForId(descriptor.getId());
 				if (component instanceof CategorizedEntity)
 					export.export((CategorizedEntity) component);
 			} catch (Exception e) {

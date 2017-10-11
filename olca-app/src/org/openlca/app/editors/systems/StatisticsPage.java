@@ -1,5 +1,7 @@
 package org.openlca.app.editors.systems;
 
+import javafx.scene.web.WebEngine;
+
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
@@ -18,8 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-
-import javafx.scene.web.WebEngine;
 
 public class StatisticsPage extends FormPage implements WebPage {
 
