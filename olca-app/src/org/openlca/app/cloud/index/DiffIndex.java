@@ -70,8 +70,7 @@ public class DiffIndex {
 		updateDiff(diff, dataset, newType);
 	}
 
-	private void updateDiff(Diff diff, Dataset dataset, DiffType newType) {
-		diff.type = newType;
+	private void updateDiff(Diff diff, Dataset dataset, DiffType newType) {		diff.type = newType;
 		if (newType == DiffType.NO_DIFF) {
 			updateParents(diff, false);
 			diff.dataset = dataset;
@@ -124,7 +123,8 @@ public class DiffIndex {
 		Diff diff = index.remove(key);
 		if (diff == null)
 			return;
-		updateChangedTopLevelElements(diff.getDataset().categoryType.name(), diff.getDataset().refId, DiffType.NO_DIFF);
+		Dataset ds = diff.getDataset();
+		updateChangedTopLevelElements(ds.categoryType.name(), ds.refId, DiffType.NO_DIFF);
 		updateParents(diff, false);
 	}
 

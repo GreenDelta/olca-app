@@ -12,6 +12,7 @@ import org.openlca.cloud.model.data.FetchRequestData;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
+import org.openlca.core.model.Version;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.CategoryDescriptor;
 import org.openlca.core.model.descriptors.Descriptors;
@@ -40,7 +41,12 @@ public class CloudUtil {
 	}
 
 	public static Dataset toDataset(CategorizedDescriptor descriptor, Category category) {
-		Dataset dataset = Dataset.toDataset(descriptor);
+		Dataset dataset = new Dataset();
+		dataset.name = descriptor.getName();
+		dataset.refId = descriptor.getRefId();
+		dataset.type = descriptor.getModelType();
+		dataset.version = Version.asString(descriptor.getVersion());
+		dataset.lastChange = descriptor.getLastChange();
 		ModelType categoryType = null;
 		if (category != null) {
 			dataset.categoryRefId = category.getRefId();
