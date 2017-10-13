@@ -41,7 +41,7 @@ public class ModelNodeBuilder extends JsonNodeBuilder implements Comparator<Json
 			return 0;
 		JsonElement parent = node.parent.getElement();
 		String type = ModelUtil.getType(parent);
-		if (node.parent.getElement().isJsonArray()) {
+		if (node.parent.getElement().isJsonArray() && node.getElement().isJsonObject()) {
 			JsonObject obj = node.getElement().getAsJsonObject();
 			if (obj.has("position")) {
 				return obj.get("position").getAsInt();
