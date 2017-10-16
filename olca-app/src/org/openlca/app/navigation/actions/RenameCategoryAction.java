@@ -6,6 +6,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.window.Window;
 import org.openlca.app.M;
+import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.CategoryElement;
 import org.openlca.app.navigation.INavigationElement;
@@ -64,6 +65,14 @@ class RenameCategoryAction extends Action implements INavigationAction {
 
 	private void doUpdate(String newName) {
 		try {
+			// updates of category names are treated as if the user would:
+			// 1) create a new category
+			// 2) move all contents
+			// 3) delete the old category
+			// the new category is added in the dao already
+			if (Database.getIndexUpdater() != null) {
+				Database.getIndexUpdater().delete(CloudUtil.toDataset(category));
+			}
 			category.setName(newName.trim());
 			new CategoryDao(Database.get()).update(category);
 			Navigator.refresh(element);

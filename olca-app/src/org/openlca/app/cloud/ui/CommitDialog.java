@@ -36,6 +36,10 @@ public class CommitDialog extends FormDialog {
 	private Set<String> initialSelection = new HashSet<>();
 
 	public CommitDialog(DiffNode node, RepositoryClient client) {
+		// TODO if a category is renamed it should be handled as 'deletion of
+		// old category, creation of new category and moving of the content to
+		// the new category'
+		// these changes should only be committed together
 		super(UI.shell());
 		this.node = node;
 		this.client = client;
@@ -53,8 +57,7 @@ public class CommitDialog extends FormDialog {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		ScrolledForm form = UI.formHeader(mform,
-				M.CommitChangesToRepository);
+		ScrolledForm form = UI.formHeader(mform, M.CommitChangesToRepository);
 		FormToolkit toolkit = mform.getToolkit();
 		Composite body = form.getBody();
 		body.setLayout(new GridLayout());

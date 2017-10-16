@@ -62,6 +62,8 @@ public class DiffIndex {
 
 	public void update(Dataset dataset, DiffType newType) {
 		Diff diff = index.get(dataset.refId);
+		if (diff.type == DiffType.DELETED && newType == DiffType.DELETED)
+			return;
 		if (diff.type == DiffType.NEW && newType == DiffType.DELETED) {
 			// user added something and then deleted it again
 			remove(dataset.refId);
@@ -70,7 +72,8 @@ public class DiffIndex {
 		updateDiff(diff, dataset, newType);
 	}
 
-	private void updateDiff(Diff diff, Dataset dataset, DiffType newType) {		diff.type = newType;
+	private void updateDiff(Diff diff, Dataset dataset, DiffType newType) {		
+		diff.type = newType;
 		if (newType == DiffType.NO_DIFF) {
 			updateParents(diff, false);
 			diff.dataset = dataset;
