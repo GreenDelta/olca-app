@@ -62,6 +62,8 @@ public class DiffIndex {
 
 	public void update(Dataset dataset, DiffType newType) {
 		Diff diff = index.get(dataset.refId);
+		if (diff == null)
+			return;
 		if (diff.type == DiffType.DELETED && newType == DiffType.DELETED)
 			return;
 		if (diff.type == DiffType.NEW && newType == DiffType.DELETED) {
