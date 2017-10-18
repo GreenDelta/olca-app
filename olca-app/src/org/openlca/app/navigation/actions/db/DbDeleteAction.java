@@ -72,8 +72,12 @@ public class DbDeleteAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		if (configs == null || configs.isEmpty())
-			return;
+		if (configs == null || configs.isEmpty()) {
+			IDatabaseConfiguration config = Database.getActiveConfiguration();
+			if (config == null)
+				return;
+			configs = Collections.singletonList(config);
+		}
 		if (createMessageDialog().open() != MessageDialog.OK)
 			return;
 		checkCloseEditors();

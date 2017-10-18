@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.openlca.app.M;
+import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabasePropertiesDialog;
 import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.navigation.DatabaseElement;
@@ -40,8 +41,11 @@ public class DbPropertiesAction extends Action implements
 
 	@Override
 	public void run() {
-		if (config == null)
-			return;
+		if (config == null) {
+			config = Database.getActiveConfiguration();
+			if (config == null)
+				return;
+		}
 		new DatabasePropertiesDialog(config).open();
 	}
 }

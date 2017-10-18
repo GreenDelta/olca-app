@@ -51,9 +51,14 @@ public class DbExportAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		if (element == null || element.getContent() == null)
+		IDatabaseConfiguration config = null;
+		if (element == null || element.getContent() == null) {
+			config = Database.getActiveConfiguration();
+		} else {
+			config = element.getContent();
+		}
+		if (config == null)
 			return;
-		IDatabaseConfiguration config = element.getContent();
 		File file = FileChooser.forExport("*.zolca", config.getName()
 				+ ".zolca");
 		if (file == null)

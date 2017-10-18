@@ -56,8 +56,12 @@ public class DbRenameAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		if (config == null)
-			return;
+		if (config == null) {
+			IDatabaseConfiguration conf = Database.getActiveConfiguration();
+			if (!(conf instanceof DerbyConfiguration))
+				return;
+			config = (DerbyConfiguration) conf;
+		}
 		InputDialog dialog = new InputDialog(UI.shell(),
 				M.Rename,
 				M.PleaseEnterANewName,
