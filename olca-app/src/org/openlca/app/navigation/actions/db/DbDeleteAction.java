@@ -1,4 +1,4 @@
-package org.openlca.app.navigation.actions;
+package org.openlca.app.navigation.actions.db;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -20,6 +20,7 @@ import org.openlca.app.db.MySQLConfiguration;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
+import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.UI;
@@ -31,13 +32,13 @@ import org.slf4j.LoggerFactory;
  * Deletes a database. Works only for local Derby databases; remote databases
  * cannot be deleted.
  */
-class DatabaseDeleteAction extends Action implements INavigationAction {
+public class DbDeleteAction extends Action implements INavigationAction {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
 	private List<IDatabaseConfiguration> configs;
 
-	public DatabaseDeleteAction() {
+	public DbDeleteAction() {
 		setImageDescriptor(Icon.DELETE.descriptor());
 		setDisabledImageDescriptor(Icon.DELETE_DISABLED.descriptor());
 	}
@@ -120,7 +121,8 @@ class DatabaseDeleteAction extends Action implements INavigationAction {
 		return new MessageDialog(UI.shell(), M.Delete, null, NLS.bind(
 				M.DoYouReallyWantToDelete, name),
 				MessageDialog.QUESTION, new String[] { M.Yes,
-						M.No, }, MessageDialog.CANCEL);
+						M.No, },
+				MessageDialog.CANCEL);
 	}
 
 }

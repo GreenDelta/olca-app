@@ -10,6 +10,16 @@ import org.eclipse.ui.actions.ActionContext;
 import org.eclipse.ui.navigator.CommonActionProvider;
 import org.openlca.app.App;
 import org.openlca.app.navigation.INavigationElement;
+import org.openlca.app.navigation.actions.db.DbActivateAction;
+import org.openlca.app.navigation.actions.db.DbCloseAction;
+import org.openlca.app.navigation.actions.db.DbCopyAction;
+import org.openlca.app.navigation.actions.db.DbCreateAction;
+import org.openlca.app.navigation.actions.db.DbDeleteAction;
+import org.openlca.app.navigation.actions.db.DbExportAction;
+import org.openlca.app.navigation.actions.db.DbImportAction;
+import org.openlca.app.navigation.actions.db.DbPropertiesAction;
+import org.openlca.app.navigation.actions.db.DbRenameAction;
+import org.openlca.app.navigation.actions.db.DbValidateAction;
 import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.util.viewers.Viewers;
 
@@ -89,8 +99,8 @@ public class NavigationActionProvider extends CommonActionProvider {
 		if (registered > 0)
 			menu.add(new Separator());
 		addCloudMenu(elements, menu);
-		menu.add(new DatabaseCreateAction());
-		menu.add(new DatabaseImportAction());
+		menu.add(new DbCreateAction());
+		menu.add(new DbImportAction());
 	}
 
 	private void addCloudMenu(List<INavigationElement<?>> elements, IMenuManager menu) {
@@ -121,14 +131,14 @@ public class NavigationActionProvider extends CommonActionProvider {
 	private INavigationAction[] getDatabaseActions() {
 		int count = App.runsInDevMode() ? 15 : 9;
 		INavigationAction[] actions = new INavigationAction[count];
-		actions[0] = new DatabaseActivateAction();
-		actions[1] = new DatabaseCopyAction();
-		actions[2] = new DatabasePropertiesAction();
-		actions[3] = new DatabaseValidateAction();
-		actions[4] = new DatabaseCloseAction();
-		actions[5] = new DatabaseExportAction();
-		actions[6] = new DatabaseRenameAction();
-		actions[7] = new DatabaseDeleteAction();
+		actions[0] = new DbActivateAction();
+		actions[1] = new DbCopyAction();
+		actions[2] = new DbPropertiesAction();
+		actions[3] = new DbValidateAction();
+		actions[4] = new DbCloseAction();
+		actions[5] = new DbExportAction();
+		actions[6] = new DbRenameAction();
+		actions[7] = new DbDeleteAction();
 		actions[8] = new OpenUpdateManagerAction();
 		if (App.runsInDevMode()) {
 			actions[9] = new XEI3MetaDataImportAction();

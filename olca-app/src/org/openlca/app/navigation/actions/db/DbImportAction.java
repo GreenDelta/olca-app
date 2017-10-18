@@ -1,4 +1,4 @@
-package org.openlca.app.navigation.actions;
+package org.openlca.app.navigation.actions.db;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -13,12 +13,13 @@ import org.openlca.app.db.Database;
 import org.openlca.app.db.DerbyConfiguration;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
+import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.rcp.images.Icon;
 import org.zeroturnaround.zip.ZipUtil;
 
-class DatabaseImportAction extends Action implements INavigationAction {
+public class DbImportAction extends Action implements INavigationAction {
 
-	public DatabaseImportAction() {
+	public DbImportAction() {
 		setText(M.RestoreDatabase);
 		setImageDescriptor(Icon.DATABASE_IMPORT.descriptor());
 	}

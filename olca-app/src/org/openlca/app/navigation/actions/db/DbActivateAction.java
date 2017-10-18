@@ -1,4 +1,4 @@
-package org.openlca.app.navigation.actions;
+package org.openlca.app.navigation.actions.db;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -17,6 +17,7 @@ import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
+import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.Question;
@@ -29,17 +30,17 @@ import org.slf4j.LoggerFactory;
 /**
  * Activates a database with a version check and possible upgrade.
  */
-public class DatabaseActivateAction extends Action implements INavigationAction {
+public class DbActivateAction extends Action implements INavigationAction {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private IDatabaseConfiguration config;
 
-	public DatabaseActivateAction() {
+	public DbActivateAction() {
 		setText(M.OpenDatabase);
 		setImageDescriptor(Icon.CONNECT.descriptor());
 	}
 
-	public DatabaseActivateAction(IDatabaseConfiguration config) {
+	public DbActivateAction(IDatabaseConfiguration config) {
 		this();
 		this.config = config;
 	}
@@ -168,7 +169,7 @@ public class DatabaseActivateAction extends Action implements INavigationAction 
 					() -> runUpgrades(db, failed),
 					() -> {
 						closeDatabase();
-						DatabaseActivateAction.this.run();
+						DbActivateAction.this.run();
 					});
 		}
 
