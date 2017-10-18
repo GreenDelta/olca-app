@@ -20,18 +20,24 @@ import org.openlca.app.navigation.actions.db.DbValidateAction;
 
 class DatabaseMenu implements IMenuListener {
 
-	private final DbCreateAction createAction;
-	private final DbImportAction importAction;
-	private final IAction[] actions;
-
 	private DatabaseMenu(IMenuManager manager) {
 		MenuManager menu = new MenuManager(M.Database, "Database.Menu");
 		menu.setRemoveAllWhenShown(true);
 		menu.addMenuListener(this);
 		manager.add(menu);
-		createAction = new DbCreateAction();
-		importAction = new DbImportAction();
-		actions = new IAction[] {
+	}
+
+	static void addTo(IMenuManager manager) {
+		new DatabaseMenu(manager);
+	}
+
+	@Override
+	public void menuAboutToShow(IMenuManager menu) {
+		menu.add(new DbCreateAction());
+		menu.add(new DbImportAction());
+		if (Database.getActiveConfiguration() == null)
+			return;
+		IAction[] actions = new IAction[] {
 				new DbExportAction(),
 				new DbValidateAction(),
 				new DbCopyAction(),
@@ -42,20 +48,8 @@ class DatabaseMenu implements IMenuListener {
 				new DbRenameAction(),
 				new DbDeleteAction()
 		};
-	}
-
-	static void addTo(IMenuManager manager) {
-		new DatabaseMenu(manager);
-	}
-
-	@Override
-	public void menuAboutToShow(IMenuManager menu) {
-		menu.add(createAction);
-		menu.add(importAction);
-		if (Database.get() != null) {
-			for (IAction a : actions) {
-				menu.add(a);
-			}
+		for (IAction a : actions) {
+			menu.add(a);
 		}
 	}
 }
