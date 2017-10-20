@@ -1,4 +1,4 @@
-package org.openlca.app.navigation.actions;
+package org.openlca.app.navigation.actions.db;
 
 import java.io.File;
 import java.util.List;
@@ -17,6 +17,7 @@ import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
+import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.UI;
@@ -25,13 +26,13 @@ import org.openlca.core.database.DbUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class DatabaseCopyAction extends Action implements INavigationAction {
+public class DbCopyAction extends Action implements INavigationAction {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 
 	private DerbyConfiguration config;
 
-	public DatabaseCopyAction() {
+	public DbCopyAction() {
 		setText(M.Copy);
 		setImageDescriptor(Icon.COPY.descriptor());
 	}
@@ -57,8 +58,12 @@ class DatabaseCopyAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		if (config == null)
-			return;
+		if (config == null) {
+			IDatabaseConfiguration conf = Database.getActiveConfiguration();
+			if (!(conf instanceof DerbyConfiguration))
+				return;
+			config = (DerbyConfiguration) conf;
+		}
 		InputDialog dialog = new InputDialog(UI.shell(),
 				M.Copy,
 				M.PleaseEnterAName,

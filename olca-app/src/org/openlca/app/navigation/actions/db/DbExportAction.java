@@ -1,4 +1,4 @@
-package org.openlca.app.navigation.actions;
+package org.openlca.app.navigation.actions.db;
 
 import java.io.File;
 import java.util.List;
@@ -17,6 +17,7 @@ import org.openlca.app.db.MySQLDatabaseExport;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
+import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.InformationPopup;
@@ -24,12 +25,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeroturnaround.zip.ZipUtil;
 
-class DatabaseExportAction extends Action implements INavigationAction {
+public class DbExportAction extends Action implements INavigationAction {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private DatabaseElement element;
 
-	public DatabaseExportAction() {
+	public DbExportAction() {
 		setText(M.BackupDatabase);
 		setImageDescriptor(Icon.DATABASE_EXPORT.descriptor());
 	}
@@ -50,9 +51,14 @@ class DatabaseExportAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		if (element == null || element.getContent() == null)
+		IDatabaseConfiguration config = null;
+		if (element == null || element.getContent() == null) {
+			config = Database.getActiveConfiguration();
+		} else {
+			config = element.getContent();
+		}
+		if (config == null)
 			return;
-		IDatabaseConfiguration config = element.getContent();
 		File file = FileChooser.forExport("*.zolca", config.getName()
 				+ ".zolca");
 		if (file == null)

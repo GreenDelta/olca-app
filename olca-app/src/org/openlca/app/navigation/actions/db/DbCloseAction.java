@@ -1,4 +1,4 @@
-package org.openlca.app.navigation.actions;
+package org.openlca.app.navigation.actions.db;
 
 import java.util.List;
 
@@ -11,6 +11,7 @@ import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
+import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Editors;
 import org.openlca.app.validation.ValidationView;
@@ -18,11 +19,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** Close the activated database */
-class DatabaseCloseAction extends Action implements INavigationAction {
+public class DbCloseAction extends Action implements INavigationAction {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 
-	public DatabaseCloseAction() {
+	public DbCloseAction() {
 		setText(M.CloseDatabase);
 		setImageDescriptor(Icon.DISCONNECT.descriptor());
 	}

@@ -73,6 +73,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	protected void fillMenuBar(IMenuManager menuBar) {
 		super.fillMenuBar(menuBar);
 		fillFileMenu(menuBar);
+		DatabaseMenu.addTo(menuBar);
 		fillWindowMenu(menuBar);
 		fillHelpMenu(menuBar);
 		removeActionSets();

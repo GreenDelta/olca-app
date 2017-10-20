@@ -1,4 +1,4 @@
-package org.openlca.app.navigation.actions;
+package org.openlca.app.navigation.actions.db;
 
 import java.util.List;
 
@@ -6,14 +6,15 @@ import org.eclipse.jface.action.Action;
 import org.openlca.app.M;
 import org.openlca.app.db.DatabaseWizard;
 import org.openlca.app.navigation.INavigationElement;
+import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.rcp.images.Images;
 
 /**
  * Opens the wizard for creating a new database.
  */
-class DatabaseCreateAction extends Action implements INavigationAction {
+public class DbCreateAction extends Action implements INavigationAction {
 
-	public DatabaseCreateAction() {
+	public DbCreateAction() {
 		setText(M.NewDatabase);
 		setImageDescriptor(Images.newDatabase());
 	}

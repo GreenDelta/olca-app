@@ -25,7 +25,7 @@ import org.eclipse.ui.navigator.CommonViewer;
 import org.openlca.app.App;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.IDatabaseConfiguration;
-import org.openlca.app.navigation.actions.DatabaseActivateAction;
+import org.openlca.app.navigation.actions.db.DbActivateAction;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.viewers.Viewers;
 
@@ -71,7 +71,7 @@ public class Navigator extends CommonNavigator {
 			DatabaseElement e = (DatabaseElement) element;
 			IDatabaseConfiguration config = e.getContent();
 			if (config != null && !Database.isActive(config)) {
-				new DatabaseActivateAction(config).run();
+				new DbActivateAction(config).run();
 			}
 		}
 	}

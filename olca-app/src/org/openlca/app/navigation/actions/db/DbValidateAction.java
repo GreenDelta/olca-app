@@ -1,4 +1,4 @@
-package org.openlca.app.navigation.actions;
+package org.openlca.app.navigation.actions.db;
 
 import java.util.List;
 
@@ -8,12 +8,13 @@ import org.openlca.app.db.Database;
 import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
+import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.validation.ValidationView;
 
-class DatabaseValidateAction extends Action implements INavigationAction {
+public class DbValidateAction extends Action implements INavigationAction {
 
-	public DatabaseValidateAction() {
+	public DbValidateAction() {
 		setText(M.Validate);
 		setImageDescriptor(Icon.VALIDATE.descriptor());
 	}
