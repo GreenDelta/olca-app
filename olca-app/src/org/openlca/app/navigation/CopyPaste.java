@@ -15,7 +15,6 @@ import org.openlca.core.database.Daos;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.Version;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -215,8 +214,6 @@ public class CopyPaste {
 			oldParent = dao.update(oldParent);
 		if (newParent != null)
 			newParent = dao.update(newParent);
-		Version.incUpdate(category);
-		category.setLastChange(System.currentTimeMillis());
 		category = dao.update(category);
 	}
 

@@ -1,6 +1,7 @@
 package org.openlca.app.editors;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -87,7 +88,7 @@ public abstract class ModelEditor<T extends CategorizedEntity> extends
 			if (monitor != null)
 				monitor.beginTask(M.Save + " " + modelClass.getSimpleName()
 						+ "...", IProgressMonitor.UNKNOWN);
-			model.setLastChange(System.currentTimeMillis());
+			model.setLastChange(Calendar.getInstance().getTimeInMillis());
 			Version.incUpdate(model);
 			model = dao.update(model);
 			doAfterUpdate();
