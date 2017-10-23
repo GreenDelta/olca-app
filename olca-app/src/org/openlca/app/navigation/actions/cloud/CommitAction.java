@@ -1,4 +1,4 @@
-package org.openlca.app.navigation.actions;
+package org.openlca.app.navigation.actions.cloud;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -28,6 +28,7 @@ import org.openlca.app.cloud.ui.preferences.CloudPreference;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
+import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Info;
 import org.openlca.app.util.TimeEstimatingMonitor;
@@ -38,7 +39,7 @@ import org.openlca.core.database.IDatabase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class CloudCommitAction extends Action implements INavigationAction {
+public class CommitAction extends Action implements INavigationAction {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	private IDatabase database;
@@ -46,7 +47,7 @@ class CloudCommitAction extends Action implements INavigationAction {
 	private RepositoryClient client;
 	private List<INavigationElement<?>> selection;
 
-	public CloudCommitAction() {
+	public CommitAction() {
 		setText(M.Commit);
 	}
 

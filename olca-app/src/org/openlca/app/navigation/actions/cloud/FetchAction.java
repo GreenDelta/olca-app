@@ -1,4 +1,4 @@
-package org.openlca.app.navigation.actions;
+package org.openlca.app.navigation.actions.cloud;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -32,6 +32,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
+import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Info;
 import org.openlca.app.util.UI;
@@ -49,13 +50,13 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-class CloudFetchAction extends Action implements INavigationAction {
+public class FetchAction extends Action implements INavigationAction {
 
-	private Logger log = LoggerFactory.getLogger(CloudFetchAction.class);
+	private Logger log = LoggerFactory.getLogger(FetchAction.class);
 	private RepositoryClient client;
 	private DiffIndex index;
 
-	public CloudFetchAction() {
+	public FetchAction() {
 		setText(M.Fetch);
 	}
 

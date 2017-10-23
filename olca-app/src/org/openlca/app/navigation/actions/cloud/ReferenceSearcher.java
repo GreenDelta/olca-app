@@ -1,4 +1,4 @@
-package org.openlca.app.navigation.actions;
+package org.openlca.app.navigation.actions.cloud;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,9 +42,13 @@ class ReferenceSearcher {
 
 	List<DiffResult> run(List<DiffResult> toCheck) {
 		allChanged.clear();
+		int zeroCount = 0;
 		for (DiffResult result : toCheck)
-			allChanged.add(result.local.localId);
-		if (allChanged.size() == index.getChanged().size())
+			if (result.local.localId != 0)
+				allChanged.add(result.local.localId);
+			else
+				zeroCount++;
+		if (allChanged.size() + zeroCount == index.getChanged().size())
 			return Collections.emptyList();
 		Map<ModelType, Set<Long>> typeToIds = prepareFromResults(toCheck);
 		search(typeToIds);
@@ -60,6 +64,8 @@ class ReferenceSearcher {
 			List<Diff> diffs = getChanged(refs);
 			for (Diff diff : diffs) {
 				DiffResult diffResult = new DiffResult(diff);
+				if (diffResult.local.localId == 0)
+					continue;
 				diffResult.ignoreRemote = true;
 				allChanged.add(diffResult.local.localId);
 				results.add(diffResult);
@@ -162,6 +168,8 @@ class ReferenceSearcher {
 	private Map<ModelType, Set<Long>> prepareFromResults(List<DiffResult> toCheck) {
 		Map<ModelType, Set<Long>> typeToIds = new HashMap<>();
 		for (DiffResult result : toCheck) {
+			if (result.local.localId == 0)
+				continue;
 			ModelType type = result.local.getDataset().type;
 			addId(typeToIds, type, result.local.localId);
 			idToRefId.put(result.local.localId, result.local.getDataset().refId);

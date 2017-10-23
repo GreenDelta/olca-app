@@ -1,4 +1,4 @@
-package org.openlca.app.navigation.actions;
+package org.openlca.app.navigation.actions.cloud;
 
 import java.util.List;
 
@@ -9,9 +9,10 @@ import org.openlca.app.db.Database;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
+import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.cloud.api.RepositoryClient;
 
-class CloudDisconnectAction extends Action implements INavigationAction {
+public class DisconnectAction extends Action implements INavigationAction {
 
 	private RepositoryClient client;
 

@@ -11,6 +11,12 @@ import org.eclipse.ui.navigator.CommonActionProvider;
 import org.openlca.app.App;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
+import org.openlca.app.navigation.actions.cloud.CommitAction;
+import org.openlca.app.navigation.actions.cloud.ConnectAction;
+import org.openlca.app.navigation.actions.cloud.DisconnectAction;
+import org.openlca.app.navigation.actions.cloud.FetchAction;
+import org.openlca.app.navigation.actions.cloud.OpenHistoryViewAction;
+import org.openlca.app.navigation.actions.cloud.OpenSyncViewAction;
 import org.openlca.app.navigation.actions.db.DbActivateAction;
 import org.openlca.app.navigation.actions.db.DbCloseAction;
 import org.openlca.app.navigation.actions.db.DbCopyAction;
@@ -66,20 +72,20 @@ public class NavigationActionProvider extends CommonActionProvider {
 
 	private INavigationAction[][] cloudActions = new INavigationAction[][] {
 			new INavigationAction[] {
-					new CloudCommitAction(),
-					new CloudFetchAction(),
-					new CloudOpenHistoryViewAction()
+					new CommitAction(),
+					new FetchAction(),
+					new OpenHistoryViewAction()
 			},
 			new INavigationAction[] {
-					new CloudConnectAction(),
-					new CloudDisconnectAction()
+					new ConnectAction(),
+					new DisconnectAction()
 			}
 	};
 
 	private INavigationAction[][] cloudCompareActions = new INavigationAction[][] {
 			new INavigationAction[] {
-					new CloudOpenSyncViewAction(false),
-					new CloudOpenSyncViewAction(true)
+					new OpenSyncViewAction(false),
+					new OpenSyncViewAction(true)
 			}
 	};
 
