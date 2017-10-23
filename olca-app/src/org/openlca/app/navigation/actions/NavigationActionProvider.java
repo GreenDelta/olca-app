@@ -122,13 +122,13 @@ public class NavigationActionProvider extends CommonActionProvider {
 		if (!FeatureFlag.REPOSITORIES.isEnabled())
 			return;
 		int registered = 0;
-		IMenuManager subMenu = new MenuManager("Repository");
+		IMenuManager subMenu = new MenuManager("#Repository");
 		if (elements.size() == 1)
 			registered += registerSingleActions(elements.get(0), subMenu, cloudActions);
 		else if (elements.size() > 1)
 			registered += registerMultiActions(elements, subMenu, cloudActions);
 		int subRegistered = 0;
-		IMenuManager compareMenu = new MenuManager("Compare with");
+		IMenuManager compareMenu = new MenuManager("#Compare with");
 		if (elements.size() == 1)
 			subRegistered += registerSingleActions(elements.get(0), compareMenu, cloudCompareActions);
 		else if (elements.size() > 1)
