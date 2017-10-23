@@ -14,6 +14,7 @@ import org.openlca.core.database.CategorizedEntityDao;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.Daos;
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.database.ParameterDao;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Version;
@@ -31,24 +32,34 @@ public class IndexSync {
 		Map<ModelType, Map<String, FetchRequestData>> datasets = init();
 		if (datasets == null)
 			return;
-		for (ModelType type : datasets.keySet()) {
+		for (ModelType type : ModelType.values()) {
 			if (!type.isCategorized())
 				continue;
 			Map<String, CategorizedDescriptor> descriptorMap = getDescriptors(type);
 			Map<String, FetchRequestData> dataMap = datasets.get(type);
-			for (FetchRequestData data : dataMap.values()) {
-				CategorizedDescriptor descriptor = descriptorMap.get(data.refId);
-				if (descriptor == null && !data.isDeleted()) {
-					put(data.asDataset());
-				} else {
-					put(data.asDataset(), descriptor);
+			if (dataMap != null) {
+				for (FetchRequestData data : dataMap.values()) {
+					CategorizedDescriptor descriptor = descriptorMap.get(data.refId);
+					if (descriptor == null && !data.isDeleted()) {
+						put(data.asDataset());
+					} else {
+						put(data.asDataset(), descriptor);
+					}
 				}
 			}
+			if (type == ModelType.PARAMETER)
+				continue; // handle global parameters seperately
 			for (CategorizedDescriptor descriptor : descriptorMap.values()) {
-				if (dataMap.containsKey(descriptor.getRefId()))
+				if (dataMap != null && dataMap.containsKey(descriptor.getRefId()))
 					continue;
 				put(descriptor);
 			}
+		}
+		Map<String, FetchRequestData> dataMap = datasets.get(ModelType.PARAMETER);
+		for (CategorizedDescriptor descriptor : new ParameterDao(database).getGlobalDescriptors()) {
+			if (dataMap != null && dataMap.containsKey(descriptor.getRefId()))
+				continue;
+			put(descriptor);
 		}
 		index.commit();
 	}
@@ -65,9 +76,11 @@ public class IndexSync {
 			return null;
 		categoryDao = new CategoryDao(database);
 		index.clear();
+		if (client.getConfig().getLastCommitId() == null)
+			return new HashMap<>();
 		try {
-			Set<FetchRequestData> data = client.sync(client.getConfig().getLastCommitId());
 			Map<ModelType, Map<String, FetchRequestData>> mapped = new HashMap<>();
+			Set<FetchRequestData> data = client.sync(client.getConfig().getLastCommitId());
 			for (FetchRequestData d : data) {
 				Map<String, FetchRequestData> forType = mapped.get(d.type);
 				if (forType == null) {
@@ -111,7 +124,7 @@ public class IndexSync {
 		index.add(dataset, descriptor.getId());
 		index.update(dataset, DiffType.NEW);
 	}
-	
+
 	private boolean areEqual(Dataset dataset, CategorizedDescriptor descriptor) {
 		if (!dataset.refId.equals(descriptor.getRefId()))
 			return false;
