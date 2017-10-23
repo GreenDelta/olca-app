@@ -110,6 +110,8 @@ public class SyncView extends ViewPart {
 			return true;
 		if (element instanceof ModelTypeElement) {
 			ModelType type = ((ModelTypeElement) element).getContent();
+			if (dataset.type == ModelType.CATEGORY && type == dataset.categoryType)
+				return true;
 			if (type == dataset.type)
 				return true;
 		}
@@ -146,6 +148,10 @@ public class SyncView extends ViewPart {
 				continue;
 			if (local == null && !isContainedIn(identifier, elements))
 				continue;
+			if (local != null && local.getDataset().equals(identifier)) {
+				added.add(identifier.refId);
+				continue;
+			}
 			differences.add(new DiffResult(identifier, local));
 			added.add(identifier.refId);
 		}
@@ -158,7 +164,7 @@ public class SyncView extends ViewPart {
 		}
 		return differences;
 	}
-
+	
 	@Override
 	public void setFocus() {
 
