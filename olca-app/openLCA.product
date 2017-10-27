@@ -33,7 +33,7 @@ project and other open source software.
 
    <splash
       location="olca-app"
-      startupProgressRect="0,360,540,5"
+      startupProgressRect="0,387,540,5"
       startupMessageRect="7,525,445,20"
       startupForegroundColor="000000" />
    <launcher name="openLCA">
@@ -612,7 +612,7 @@ project and other open source software.
       <plugin id="org.eclipse.equinox.p2.reconciler.dropins" autoStart="true" startLevel="5" />
       <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
    </configurations>
-
+   
    <preferencesInfo>
       <targetfile overwrite="false"/>
    </preferencesInfo>
