@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -136,17 +137,22 @@ public class UpdateManager {
 					.split(",")));
 			App.runWithProgress(M.ApplyingDatabaseUpdates, () -> {
 				Database.getIndexUpdater().disable();
+				List<Update> toExecute = new ArrayList<>();
 				for (UpdateMetaInfo metaInfo : updates) {
 					Update update = updater.getForRefId(metaInfo.refId);
 					if (selection.contains(metaInfo.refId)) {
-						execute(update);
+						toExecute.add(update);
 						selection.remove(metaInfo.refId);
 					} else {
 						updater.skip(update);
 					}
 				}
 				for (String refId : selection) {
-					execute(localUpdates.get(refId));
+					toExecute.add(localUpdates.get(refId));
+				}
+				Collections.sort(toExecute);
+				for (Update update : toExecute) {
+					execute(update);
 				}
 				Database.getIndexUpdater().enable();
 			});
