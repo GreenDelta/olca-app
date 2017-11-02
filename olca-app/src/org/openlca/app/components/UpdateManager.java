@@ -140,6 +140,8 @@ public class UpdateManager {
 				List<Update> toExecute = new ArrayList<>();
 				for (UpdateMetaInfo metaInfo : updates) {
 					Update update = updater.getForRefId(metaInfo.refId);
+					if (update == null)
+						continue;
 					if (selection.contains(metaInfo.refId)) {
 						toExecute.add(update);
 						selection.remove(metaInfo.refId);
@@ -148,7 +150,10 @@ public class UpdateManager {
 					}
 				}
 				for (String refId : selection) {
-					toExecute.add(localUpdates.get(refId));
+					Update update = localUpdates.get(refId);
+					if (update == null)
+						continue;
+					toExecute.add(update);
 				}
 				Collections.sort(toExecute);
 				for (Update update : toExecute) {
